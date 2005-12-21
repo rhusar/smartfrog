@@ -22,15 +22,15 @@ package org.smartfrog.sfcore.languages.cdl.dom;
 import nu.xom.Attribute;
 import nu.xom.Element;
 import nu.xom.Node;
+import org.ggf.cddlm.generated.api.CddlmConstants;
+import org.smartfrog.services.xml.java5.NamespaceUtils;
+import org.smartfrog.sfcore.languages.cdl.Constants;
 import org.smartfrog.sfcore.languages.cdl.faults.CdlException;
 import org.smartfrog.sfcore.languages.cdl.faults.CdlXmlParsingException;
 import org.smartfrog.sfcore.languages.cdl.generate.GenerateContext;
-import org.smartfrog.sfcore.languages.cdl.utils.ClassLogger;
-import org.smartfrog.services.xml.java5.NamespaceUtils;
-import org.smartfrog.sfcore.languages.cdl.Constants;
 import org.smartfrog.sfcore.languages.cdl.resolving.ResolveEnum;
+import org.smartfrog.sfcore.languages.cdl.utils.ClassLogger;
 import org.smartfrog.sfcore.logging.Log;
-import org.ggf.cddlm.generated.api.CddlmConstants;
 
 import javax.xml.namespace.QName;
 import java.io.IOException;
@@ -45,8 +45,7 @@ public class PropertyList extends DocNode {
     /**
      * this flag is set if we are toplevel, something that
      * can be extended
-     * 
-     */ 
+     */
     private boolean template = false;
 
     /**
@@ -58,11 +57,11 @@ public class PropertyList extends DocNode {
     /**
      * What is the state of resolution
      */
-    private ResolveEnum resolveState= ResolveEnum.ResolvedUnknown;
+    private ResolveEnum resolveState = ResolveEnum.ResolvedUnknown;
 
     /**
-    * a log
-    */
+     * a log
+     */
     private Log log = ClassLogger.getLog(this);
 
     public PropertyList(String name) {
@@ -123,17 +122,28 @@ public class PropertyList extends DocNode {
         }
     }
 
+
     /**
      * Copy the element and local state.
+     *
      * @return
      */
-    @Override
     protected Element shallowCopy() {
-        PropertyList copy = new PropertyList(getQualifiedName(), getNamespaceURI());
+        PropertyList copy = newList(getQualifiedName(), getNamespaceURI());
         copy.setResolveState(getResolveState());
         copy.setExtendsName(getExtendsName());
         copy.setTemplate(isTemplate());
         return copy;
+    }
+
+
+    /**
+     * this is an override point, part of a shallowCopy.
+     *
+     * @return a new PropertyList or a subclass, with
+     */
+    protected PropertyList newList(String name, String namespace) {
+        return new PropertyList(name, namespace);
     }
 
     /**
@@ -294,7 +304,7 @@ public class PropertyList extends DocNode {
      * @return
      */
     public PropertyList getChildTemplateMatching(String namespaceURI,
-            String localname) {
+                                                 String localname) {
         return getChildTemplateMatching(new QName(namespaceURI, localname));
     }
 
@@ -314,7 +324,7 @@ public class PropertyList extends DocNode {
             CdlException {
         //printNodeAsSFComment(out);
         String name = getSfName(out);
-        out.enter(name,getBaseComponent(out));
+        out.enter(name, getBaseComponent(out));
         printValueToSF(out);
         printAttributesToSmartFrog(out);
         printChildrenToSmartFrog(out);
@@ -325,24 +335,25 @@ public class PropertyList extends DocNode {
         return out.convertElementName(this);
     }
 
-    /** 
-     * logic to extract a command or a java classname from 
+    /**
+     * logic to extract a command or a java classname from
      * the command. Crude and ugly.
      * 1. anything that begins with an @ is a reference
      * 2. anything that begins with a normal char is not.
-     * TODO use the arguments to split it properly, add inclusion 
+     * TODO use the arguments to split it properly, add inclusion
+     *
      * @param out
      * @return
      */
     protected String getBaseComponent(GenerateContext out) {
         String parent = out.getDefaultBaseComponent();
         ElementEx commandPath = (ElementEx) getFirstChildElement(
-                        CddlmConstants.CMP_ELEMENT_COMMAND_PATH, Constants.CMP_NAMESPACE);
-        if (commandPath!=null) {
+                CddlmConstants.CMP_ELEMENT_COMMAND_PATH, Constants.CMP_NAMESPACE);
+        if (commandPath != null) {
             //we have a new extensor.
             String command = commandPath.getTextValue().trim();
-            if(command.startsWith("@")) {
-                parent=command.substring(1);
+            if (command.startsWith("@")) {
+                parent = command.substring(1);
             }
         }
         return parent;
@@ -352,15 +363,16 @@ public class PropertyList extends DocNode {
      * Run through the list and update the entire aggregate resolution state
      * This will set all children to their appropriate values, using
      * the priority logic of {@link ResolveEnum#merge(ResolveEnum, ResolveEnum)}
+     *
      * @return the new state of the tree.
      */
     public ResolveEnum aggregateResolutionState() {
-        ResolveEnum state=getResolveState();
-        for(Node n:nodes()) {
-            if(n instanceof PropertyList) {
-                PropertyList child=(PropertyList) n;
+        ResolveEnum state = getResolveState();
+        for (Node n : nodes()) {
+            if (n instanceof PropertyList) {
+                PropertyList child = (PropertyList) n;
                 ResolveEnum childState = child.aggregateResolutionState();
-                state=ResolveEnum.merge(resolveState,childState);
+                state = ResolveEnum.merge(resolveState, childState);
             }
         }
         setResolveState(state);

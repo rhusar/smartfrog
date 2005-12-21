@@ -135,44 +135,107 @@ public interface Filenames {
             + "extends-bad-reference.cdl";
     String EXTENDS_DUPLICATE_NAME = INVALID_RESOLUTION_RESOURCES
             + "extends-duplicate-name.cdl";
+    /**
+     * {@value}
+     */
     String EXTENDS_INDIRECT_LOOP = INVALID_RESOLUTION_RESOURCES
             + "extends-indirect-loop.cdl";
+    /**
+     * {@value}
+     */
     String EXTENDS_DIRECT_LOOP = INVALID_RESOLUTION_RESOURCES
             + "extends-direct-loop.cdl";
+    /**
+     * {@value}
+     */
     String EXTENDS_UNKNOWN_LOCALNAME = INVALID_RESOLUTION_RESOURCES
             + "extends-unknown-localname.cdl";
+    /**
+     * {@value}
+     */
     String EXTENDS_UNKNOWN_NAMESPACE = INVALID_RESOLUTION_RESOURCES
             + "extends-unknown-namespace.cdl";
+    /**
+     * {@value}
+     */
     String EXTENDS_RECURSIVE_EXTENDS = INVALID_RESOLUTION_RESOURCES
             + "extends-recursive-extends.cdl";
+    /**
+     * {@value}
+     */
     String EXTENDS_DEFAULT_NAMESPACE_NOT_IN_EXTENDS = INVALID_RESOLUTION_RESOURCES
             + "extends-default-namespace-not-in-extends.cdl";
+    /**
+     * {@value}
+     */
     String EXTENDS_SYSTEM_EXTENDS = INVALID_RESOLUTION_RESOURCES
             + "extends-default-namespace-not-in-extends.cdl";
+    /**
+     * {@value}
+     */
     String EXTENDS_INDIRECT_RECURSIVE = INVALID_RESOLUTION_RESOURCES
             + "extends-indirect-recursive.cdl";
+    /**
+     * {@value}
+     */
     String EXTENDS_RECURSIVE_OVERRIDE = INVALID_RESOLUTION_RESOURCES
             + "extends-recursive-override.cdl";
+    /**
+     * {@value}
+     */
     String EXTENDS_DOCUMENTATION = INVALID_RESOLUTION_RESOURCES
             + "extends-documentation.cdl";
+    /**
+     * {@value}
+     */
     String EXTENDS_DOCUMENTATION2 = INVALID_RESOLUTION_RESOURCES
             + "extends-documentation2.cdl";
 
+    /**
+     * {@value}
+     */
     String CDL_SF_VALID = "files/sfcdl/valid/";
 
+    /**
+     * {@value}
+     */
     String CDL_SF_ECHO = CDL_SF_VALID + "echo.cdl";
 
-    String INVALID_IMPORT= INVALID_RESOURCES +
+    /**
+     * {@value}
+     */
+    String INVALID_IMPORT = INVALID_RESOURCES +
             "imports/";
-    String IMPORT_DUPLICATE_CLASH = INVALID_IMPORT 
+    /**
+     * {@value}
+     */
+    String IMPORT_DUPLICATE_CLASH = INVALID_IMPORT
             + "import-duplicate-clash.cdl";
+    /**
+     * {@value}
+     */
     String IMPORT_RECURSIVE_LOCAL = INVALID_IMPORT
             + "import-recursive-local.cdl";
+    /**
+     * {@value}
+     */
     String IMPORT_RECURSIVE = INVALID_IMPORT
             + "import-recursive.cdl";
 
+    /**
+     * {@value}
+     */
     String NORMATIVE_VALID = "org/ggf/cddlm/files/normative/";
+    /**
+     * {@value}
+     */
     String NORMATIVE_VALID_RESOLUTION = NORMATIVE_VALID + "resolution/";
+    /**
+     * {@value}
+     */
     String NORMATIVE_INVALID = INVALID_RESOURCES + "normative/";
+    /**
+     * {@value}
+     */
     String NORMATIVE_INVALID_RESOLUTION = NORMATIVE_INVALID + "resolution/";
 }

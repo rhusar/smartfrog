@@ -304,8 +304,8 @@ public class ExtendsTest extends XmlTestBase {
      * @return property list
      */
     public PropertyList lookupChildPropertyList(PropertyList parent,
-            String name,
-            String namespace) {
+                                                String name,
+                                                String namespace) {
         PropertyList child = (PropertyList) parent.getFirstChildElement(name,
                 namespace);
         assertNotNull("Failed to resolve child on " + parent, child);
@@ -313,7 +313,7 @@ public class ExtendsTest extends XmlTestBase {
     }
 
     public PropertyList lookupChildPropertyList(PropertyList parent,
-            String name) {
+                                                String name) {
         return lookupChildPropertyList(parent, name, "");
     }
 
