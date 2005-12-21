@@ -42,6 +42,7 @@ public class ResourceLoader {
 
     private String codebase = null;
     private ClassLoader loader = null;
+    public static final String ERROR_NOT_LOADED = "Resource not loaded: ";
 
     public ResourceLoader() {
         loader = getClass().getClassLoader();
@@ -105,7 +106,7 @@ public class ResourceLoader {
     private void assertResourceLoaded(InputStream in, String resourcename)
             throws IOException {
         if ( in == null ) {
-            throw new IOException("Not found: " + resourcename);
+            throw new IOException(ERROR_NOT_LOADED + resourcename);
         }
     }
 
