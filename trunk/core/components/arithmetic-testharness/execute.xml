@@ -233,6 +233,7 @@ daemons/hostx/dist/lib -->
         	<exec dir="${sharedFolder}/daemons" executable="cat">
             		<arg line="report"/>
         	</exec>
+		<antcall target="stopDaemons"/>
          </target>
         
 	<target name="test" depends="showReport"/>
@@ -244,7 +245,7 @@ daemons/hostx/dist/lib -->
 	</target>
 
     
-        <target name="clean" depends="common.clean, stopDaemons">
+        <target name="clean" depends="common.clean,stopDaemons">
                 <delete dir="${sharedFolder}/daemons"/>
                 <delete file="${arithmetic.dir}/startRemoteDaemons.sf"/>
                 <delete >	
