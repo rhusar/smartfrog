@@ -188,7 +188,7 @@ daemons/hostx/dist/lib -->
 
    <!-- Start the Remote Daemons-->
    
-   <target name="startRemoteDaemons" depends="startDriverDaemon" >
+   <target name="startRemoteDaemons" depends="startDriverDaemon">
 	 <!--
           wait ten seconds for the harness to start
           without this the first tests will fail as there is no
@@ -205,9 +205,10 @@ daemons/hostx/dist/lib -->
           Deploy ATH Component
     -->
          <target name="deployATH" depends="startRemoteDaemons">
-                <waitfor maxwaitunit="second">
+                <!--waitfor maxwaitunit="second">
                         <socket server="lx97120" port="${smartfrog.daemon.port}"/>
-                </waitfor>
+                </waitfor-->
+		<sleep minutes="15"/>
                         
                         
                 <sf-deploy classpathref="smartfrog.classpath">
@@ -218,21 +219,32 @@ daemons/hostx/dist/lib -->
      <!--
           Generate Report
     -->
-           <target name="showReport">
+           <target name="showReport" depends="deployATH">
                 <!-- Wait for the report file to get populated-->
-		<waitfor maxwait="5" maxwaitunit="minute">
-			<length file="${arithmetic.dir}/report" when="greater" length="0"/>         
-       		</waitfor>
-        	<exec dir="${arithmetic.dir}" executable="cat">
-            		<arg line="${arithmetic.dir}/report"/>
+		<!--waitfor maxwait="4" maxwaitunit="minute">
+			<not>
+                        	<socket server="localhost" port="3801"/>
+			</not>
+       		</waitfor-->
+		<sleep minutes="5"/>
+        	<exec dir="${sharedFolder}/daemons" executable="sh">
+            		<arg line="${arithmetic.dir}/bin/reportgen ${sharedFolder} ${releaseName} ${hostList}"/>
+        	</exec>
+        	<exec dir="${sharedFolder}/daemons" executable="cat">
+            		<arg line="report"/>
         	</exec>
          </target>
+        
+	<target name="test" depends="showReport"/>
 
-    <target name="test" depends="showReport">
+       <target name="stopDaemons">
+        	<exec dir="${sharedFolder}/daemons" executable="sh">
+            		<arg line="${arithmetic.dir}/bin/stopDaemons ${sharedFolder} ${hostList}"/>
+        	</exec>
+	</target>
 
-    </target>
     
-        <target name="clean" depends="common.clean">
+        <target name="clean" depends="common.clean,stopDaemons">
                 <delete dir="${sharedFolder}/daemons"/>
                 <delete file="${arithmetic.dir}/startRemoteDaemons.sf"/>
                 <delete >	
