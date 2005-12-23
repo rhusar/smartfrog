@@ -100,7 +100,7 @@ public class ExtendsResolver {
      * @return
      * @throws CdlResolutionException
      */
-    public ResolveResult resolveExtends(QName targetName)
+    public PropertyList resolveExtends(QName targetName)
             throws CdlException {
         PropertyList target = lookup(targetName);
         if (target == null) {
@@ -108,9 +108,9 @@ public class ExtendsResolver {
                     targetName);
         }
         //resolve the reference, the thing we are extending
-        ResolveResult resolveResult = resolveExtends(target);
+        PropertyList resolveResult = resolveExtends(target);
         //now patch the context so that it is updated.
-        parseContext.prototypeUpdate(resolveResult.getResolvedPropertyList());
+        parseContext.prototypeUpdate(resolveResult);
         return resolveResult;
     }
 
@@ -122,7 +122,7 @@ public class ExtendsResolver {
      * @return
      * @throws CdlResolutionException
      */
-    public ResolveResult resolveExtends(PropertyList target)
+    public PropertyList resolveExtends(PropertyList target)
             throws CdlException {
         boolean toplevel = target.isTemplate();
         if (toplevel) {
@@ -140,7 +140,7 @@ public class ExtendsResolver {
      * @return
      * @throws CdlException
      */
-    private ResolveResult resolveToplevelTemplate(PropertyList target) throws CdlException {
+    private PropertyList resolveToplevelTemplate(PropertyList target) throws CdlException {
         QName name = target.getQName();
         assert name != null;
         stack.enter(name);
@@ -172,10 +172,10 @@ public class ExtendsResolver {
      * as we do not need to.
      *
      * @param target
-     * @return
+     * @return the resolved target, which may be different
      * @throws CdlResolutionException
      */
-    private ResolveResult innerResolve(PropertyList target)
+    private PropertyList innerResolve(PropertyList target)
             throws CdlException {
         ResolveResult result;
         PropertyList output = target;
@@ -183,7 +183,7 @@ public class ExtendsResolver {
         ResolveEnum resolveState = target.getResolveState();
         if (resolveState.isParseTimeResolutionComplete()) {
             //we are in a state where no parse time resolution is required.
-            return new ResolveResult(target);
+            return target;
         }
         //do the work
         QName extending = target.getExtendsName();
@@ -193,32 +193,33 @@ public class ExtendsResolver {
             state = ResolveEnum.ResolvedComplete;
         } else {
             //something to resolve.
-            ResolveResult extended;
+            PropertyList extended;
             log.debug("Resolving " +
                     target.getQName() +
                     " extends " +
                     extending);
             extended = resolveExtends(extending);
-            if (extended.state == ResolveEnum.ResolvedIncomplete) {
+            if (extended.getResolveState() == ResolveEnum.ResolvedIncomplete) {
                 //if there is something that is unfinished at this level,
                 //leave off it for now. though this state should be
                 //impossible to reach here.
-                log.debug("extended state=" + extended.state);
+                log.debug("extended state=" + extended.getResolveState());
                 //propagate it
+                output=extended;
             } else {
                 //we have now resolved our parent.
                 //get on with it
-                PropertyList resolvedPropertyList = extended.getResolvedPropertyList();
+                PropertyList resolvedPropertyList = extended;
                 //copy attributes
                 target.mergeAttributes(resolvedPropertyList);
                 //now do the element inheritance
                 output = inheritChildren(target, resolvedPropertyList);
             }
-            state = ResolveEnum.propagate(extended.state);
+            state = extended.getResolveState();
         }
         output.setResolveState(state);
         result = new ResolveResult(output);
-        return result;
+        return output;
     }
 
     /**
@@ -243,8 +244,7 @@ public class ExtendsResolver {
                 QName name = template.getQName();
 
                 //resolve it
-                ResolveResult resolved = resolveExtends(template);
-                PropertyList resolvedList = resolved.getResolvedPropertyList();
+                PropertyList resolvedList = resolveExtends(template);
 
                 //now, at this point we have a property list which contains
                 //a resolved element. We are going to get that element out because
@@ -261,10 +261,10 @@ public class ExtendsResolver {
                 } else {
                     //complex merge.
                     //extend the document
-                    ResolveResult result = resolveExtends(matchedList);
-                    assert result.getState().isParseTimeResolutionComplete();
+                    PropertyList result = resolveExtends(matchedList);
+                    assert result.getResolveState().isParseTimeResolutionComplete();
                     //clone it
-                    copiedList = (PropertyList) result.getResolvedPropertyList().copy();
+                    copiedList = (PropertyList) result.copy();
                     //pull in the attributes of the child
                     copiedList.inheritAttributes(resolvedList);
                     //then insert the children of the current list into place
@@ -320,8 +320,7 @@ public class ExtendsResolver {
                 PropertyList entry = (PropertyList) node;
                 QName name = entry.getQName();
                 //merge it
-                ResolveResult result = resolveExtends(entry);
-                PropertyList resolvedList = result.getResolvedPropertyList();
+                PropertyList resolvedList = resolveExtends(entry);
                 assert name.equals(resolvedList.getQName());
                 //now, at this point we have a resolved property list.
                 //we add this to our children
