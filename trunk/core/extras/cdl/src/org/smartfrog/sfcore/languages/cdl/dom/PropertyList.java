@@ -409,6 +409,7 @@ public class PropertyList extends DocNode {
     }
 
     public ResolveEnum resolveLocalReference() {
-
+        //this resolves references.
+        return null;
     }
 }
