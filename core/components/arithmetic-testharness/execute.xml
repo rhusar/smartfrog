@@ -43,7 +43,7 @@
     <property name="releaseFile" location="SmartFrog.3.06.020rc3.20050915_DIST.z
 ip"/>
     <property name="releaseName" location="SmartFrog.3.06.020rc3"/>
-    <property name="arithmetic.dir" location="${sharedFolder}/testbed/core/components/arithmetic-testharness"/>
+    <property name="arithmetic.dir" location="${sharedFolder}/core/components/arithmetic-testharness"/>
     <property name="build.dir" location="build"/>
     <property name="build.classes.dir" location="${build.dir}/classes"/>
     
@@ -239,7 +239,7 @@ daemons/hostx/dist/lib -->
 	<target name="test" depends="showReport"/>
 
        <target name="stopDaemons">
-        	<exec dir="${sharedFolder}/daemons" executable="sh">
+        	<exec dir="${sharedFolder}" executable="sh">
             		<arg line="${arithmetic.dir}/bin/stopDaemons ${sharedFolder} ${hostList}"/>
         	</exec>
 	</target>
