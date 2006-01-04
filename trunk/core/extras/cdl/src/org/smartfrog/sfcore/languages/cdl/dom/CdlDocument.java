@@ -27,6 +27,9 @@ import nu.xom.ParsingException;
 import org.smartfrog.services.xml.java5.iterators.IteratorRelay;
 import org.smartfrog.services.xml.java5.iterators.NodeIterator;
 import org.smartfrog.sfcore.languages.cdl.ParseContext;
+import org.smartfrog.sfcore.languages.cdl.references.EarlyReferenceProcessor;
+import org.smartfrog.sfcore.languages.cdl.process.ProcessingPhase;
+import org.smartfrog.sfcore.languages.cdl.importing.ImportProcessor;
 import org.smartfrog.sfcore.languages.cdl.dom.attributes.GenericAttribute;
 import org.smartfrog.sfcore.languages.cdl.dom.attributes.URIAttribute;
 import org.smartfrog.sfcore.languages.cdl.faults.CdlDuplicatePrototypeException;
@@ -35,7 +38,7 @@ import org.smartfrog.sfcore.languages.cdl.faults.CdlResolutionException;
 import org.smartfrog.sfcore.languages.cdl.faults.CdlXmlParsingException;
 import org.smartfrog.sfcore.languages.cdl.generate.GenerateContext;
 import org.smartfrog.sfcore.languages.cdl.generate.ToSmartFrog;
-import org.smartfrog.sfcore.languages.cdl.resolving.ExtendsResolver;
+import org.smartfrog.sfcore.languages.cdl.resolving.ExtendsProcessor;
 import org.smartfrog.sfcore.languages.cdl.utils.ClassLogger;
 import org.smartfrog.sfcore.logging.Log;
 
@@ -344,7 +347,7 @@ public class CdlDocument implements Names, ToSmartFrog {
         parsePhaseBuildDom();
         parsePhaseProcessImports();
         parsePhaseExtendProcessing();
-        parsePhaseResolveVariables();
+        parsePhaseResolveEarlyReferences();
         parsePhaseEvaluateExpressions();
     }
 
@@ -452,13 +455,8 @@ public class CdlDocument implements Names, ToSmartFrog {
      */
     public void parsePhaseProcessImports() throws CdlException, IOException,
             ParsingException {
-        ParseContext context = getParseContext();
-        for (Import imp : getImports()) {
-            CdlDocument imported = context.importDocument(this, imp);
-            //TODO: do we need to do anything with the imported doc?
-        }
-
-
+        ProcessingPhase processor=new ImportProcessor();
+        processor.process(this);
     }
 
     /**
@@ -466,23 +464,22 @@ public class CdlDocument implements Names, ToSmartFrog {
      *
      * @throws CdlResolutionException
      */
-    public void parsePhaseExtendProcessing() throws CdlException {
+    public void parsePhaseExtendProcessing() throws CdlException, IOException, ParsingException {
         //extends our extendendables
-        ExtendsResolver extendsResolver = new ExtendsResolver(
-                getParseContext());
-        extendsResolver.resolveExtends(this);
-
+        ProcessingPhase processor=new ExtendsProcessor();
+        processor.process(this);
     }
 
     /**
      * Resolve compile-time variables
      * @throws CdlException
      */
-    public void parsePhaseResolveVariables() throws CdlException {
-        //TODO
+    public void parsePhaseResolveEarlyReferences() throws CdlException, IOException, ParsingException {
+        ProcessingPhase processor = new EarlyReferenceProcessor();
+        processor.process(this);
     }
 
-    public void parsePhaseEvaluateExpressions() throws CdlException {
+    public void parsePhaseEvaluateExpressions() throws CdlException, IOException, ParsingException {
         //TODO
     }
 
