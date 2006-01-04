@@ -61,9 +61,9 @@
       <dependency groupID="xom"
         artifactID="xom"
         version="${xom.version}"/>
-      <dependency groupID="nux"
+<!--      <dependency groupID="nux"
         artifactID="nux"
-        version="${nux.version}"/>        
+        version="${nux.version}"/> -->
       </m2-libraries>
   </target>
     
