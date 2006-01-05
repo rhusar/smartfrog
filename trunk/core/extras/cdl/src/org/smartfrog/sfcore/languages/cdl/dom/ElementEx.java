@@ -239,4 +239,30 @@ public class ElementEx extends Element implements ToSmartFrog {
         }
         return builder.toString();
     }
+
+    /**
+     * turn a qname string into a QName value, resolving prefixes relative to here
+     * @param qname
+     * @return a qname from the element
+     * @throws IllegalArgumentException if the prefix would not resolve
+     */
+    public QName resolveQName(String qname) {
+        String prefix;
+        String namespace;
+        String localname;
+
+        localname = NamespaceUtils.extractLocalname(qname);
+        prefix=NamespaceUtils.extractNamespacePrefix(qname);
+        if(prefix!=null) {
+            namespace=getNamespaceURI(prefix);
+            if(namespace==null) {
+                //this is an error.
+                throw new IllegalArgumentException("No namespace defined for ["+prefix+"]");
+            }
+            return new QName(namespace,localname,prefix);
+        } else {
+            return new QName(localname);
+        }
+
+    }
 }

@@ -19,31 +19,17 @@
  */
 package org.smartfrog.sfcore.languages.cdl.references;
 
-import org.smartfrog.sfcore.languages.cdl.process.ProcessingPhase;
-import org.smartfrog.sfcore.languages.cdl.dom.CdlDocument;
-import org.smartfrog.sfcore.languages.cdl.faults.CdlException;
-
-import java.io.IOException;
-
-import nu.xom.ParsingException;
-
 /**
- * Handle compile-time/not-late references.
- * created 04-Jan-2006 15:50:59
  */
-
-public class EarlyReferenceProcessor implements ProcessingPhase {
+public class StepUp extends Step {
 
     /**
-     * Process a document.
+     * Returns a string representation of the object.
      *
-     * @param document the document to work on
-     * @throws java.io.IOException
-     * @throws org.smartfrog.sfcore.languages.cdl.faults.CdlException
-     *
-     * @throws nu.xom.ParsingException
+     * @return .
      */
-    public void process(CdlDocument document) throws IOException, CdlException, ParsingException {
-
+    public String toString() {
+        return "..";
     }
+
 }

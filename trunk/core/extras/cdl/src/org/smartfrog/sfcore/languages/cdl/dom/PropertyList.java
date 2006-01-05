@@ -27,6 +27,7 @@ import org.smartfrog.services.xml.java5.NamespaceUtils;
 import org.smartfrog.sfcore.languages.cdl.Constants;
 import org.smartfrog.sfcore.languages.cdl.faults.CdlException;
 import org.smartfrog.sfcore.languages.cdl.faults.CdlXmlParsingException;
+import org.smartfrog.sfcore.languages.cdl.faults.CdlRuntimeException;
 import org.smartfrog.sfcore.languages.cdl.generate.GenerateContext;
 import org.smartfrog.sfcore.languages.cdl.resolving.ResolveEnum;
 import org.smartfrog.sfcore.languages.cdl.utils.ClassLogger;
@@ -398,16 +399,32 @@ public class PropertyList extends DocNode {
         return getAttributeValue(ATTR_REF, CDL_NAMESPACE);
     }
 
+    /**
+     * Mark a reference as being resolved
+     */
     protected void markReferenceResolved() {
-        String localname=ATTR_REF;
-        String namespace=CDL_NAMESPACE;
-        removeAttribute(localname, namespace);
+        removeAttribute(ATTR_REF, CDL_NAMESPACE);
     }
 
-    private void removeAttribute(String localname, String namespace) {
-        removeAttribute(getAttribute(localname,namespace));
+    /**
+     * remove an attribute
+     * @param localname local attr name
+     * @param namespace
+     */
+    private boolean removeAttribute(String localname, String namespace) {
+        Attribute attribute = getAttribute(localname, namespace);
+        if(attribute==null) {
+            return false;
+        }
+        removeAttribute(attribute);
+        return true;
     }
 
+    /**
+     * Resolve any reference.
+     * @throws CdlRuntimeException if needed, such as when there is an invalid reference
+     * @return
+     */
     public ResolveEnum resolveLocalReference() {
         //this resolves references.
         return null;
