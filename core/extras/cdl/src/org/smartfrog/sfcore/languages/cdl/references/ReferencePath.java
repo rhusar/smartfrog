@@ -22,6 +22,8 @@ package org.smartfrog.sfcore.languages.cdl.references;
 import org.smartfrog.sfcore.languages.cdl.dom.PropertyList;
 import org.smartfrog.sfcore.languages.cdl.faults.CdlRuntimeException;
 import org.smartfrog.services.xml.java5.NamespaceUtils;
+import org.smartfrog.services.xml.utils.XsdUtils;
+import org.ggf.cddlm.generated.api.CddlmConstants;
 
 import javax.xml.namespace.QName;
 import java.util.List;
@@ -34,7 +36,15 @@ import nu.xom.ParentNode;
  * Nothing in here is thread safe.
  */
 public class ReferencePath {
+    /**
+     * Error message when constructing from something that lacks a cdl:ref attribute.
+     * {@value}
+     */
     public static final String ERROR_NON_REFERENCE = "Trying to create a reference path from a non-reference";
+    /**
+     * Error message when trying to make relative something that has no toplevel node to bind against.
+     * {@value}
+     */
     public static final String ERROR_NO_TOPLEVEL = "There is no toplevel node in this graph; unable to make relative";
 
     public ReferencePath() {
@@ -55,18 +65,23 @@ public class ReferencePath {
 
         build(refValue);
 
+        //extract lazy flag.
+        String lazyValue=source.getAttributeValue(CddlmConstants.ATTRIBUTE_LAZY,
+                CddlmConstants.XML_CDL_NAMESPACE);
+        lazy=XsdUtils.isXsdBooleanTrue(lazyValue);
+
         if (refRootValue != null) {
+            //a refroot: paste this in to the front of the path.
             QName resolved = source.resolveQName(refRootValue);
-            setRefroot(resolved);
+            Step step=new StepRefRoot(resolved);
+            steps.add(0,step);
+
         } else {
             makeRelative(source);
         }
     }
 
-    /**
-     * refroot; may be null
-     */
-    private QName refroot;
+    private boolean lazy;
 
     /**
      * the steps in the path
@@ -75,15 +90,6 @@ public class ReferencePath {
 
     public List<Step> getSteps() {
         return steps;
-    }
-
-    public QName getRefroot() {
-        return refroot;
-    }
-
-    public void setRefroot(QName refroot) {
-        assert refroot != null;
-        this.refroot = refroot;
     }
 
     /**
@@ -114,17 +120,41 @@ public class ReferencePath {
         return !steps.get(0).isRoot();
     }
 
+
+    /**
+     * Is a path lazy?
+     * @return
+     */
+    public boolean isLazy() {
+        return lazy;
+    }
+
+    /**
+     * Mark a path as lazy
+     * @param lazy
+     */
+    public void setLazy(boolean lazy) {
+        this.lazy = lazy;
+    }
+
+
+    /**
+     * Get a step in a position
+     * @param position
+     * @return the step
+     * @throws IndexOutOfBoundsException if there is nothing at that location
+     */
+    public Step getStep(int position) {
+        return steps.get(position);
+    }
+
     /**
      * Returns a string representation of the object.
      * Has an extra / at the end, whether you want it or not.
      */
     public String toString() {
         StringBuffer result = new StringBuffer();
-        if (refroot != null) {
-            result.append('[');
-            result.append(refroot);
-            result.append("]#");
-        }
+
         if (!isEmpty()) {
             for (Step step : steps) {
                 result.append(step.toString());
@@ -221,5 +251,28 @@ public class ReferencePath {
         //here we are at a toplevel node
         //nothing remains to be done
         assert isRelative();
+    }
+
+    /**
+     * this operation copies a reference path.
+     * a new list is created, but the contents of the
+     * list are the original steps; this is not a deep clone.
+     * @return a new path that looks like the original
+     */
+    public ReferencePath shallowCopy() {
+        ReferencePath copy=new ReferencePath();
+        copy.steps=new ArrayList(steps);
+        return copy;
+    }
+
+    /**
+     * Append a path to this.
+     * Any lazy flag propagates, so the total path is lazy if the appended path is lazy,
+     * and the base path was not already.
+     * @param other
+     */
+    public void appendPath(ReferencePath other) {
+        lazy |= other.isLazy();
+        steps.addAll(other.getSteps());
     }
 }
