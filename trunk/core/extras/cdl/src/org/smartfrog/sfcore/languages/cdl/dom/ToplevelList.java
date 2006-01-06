@@ -97,4 +97,14 @@ public class ToplevelList extends PropertyList {
             }
         }
     }
+
+    /**
+     * test for being a toplevel list.
+     * The relevant subclass overrides it to return true
+     *
+     * @return true always. 
+     */
+    public boolean isToplevel() {
+        return true;
+    }
 }

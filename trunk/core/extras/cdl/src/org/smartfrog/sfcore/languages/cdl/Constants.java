@@ -23,6 +23,8 @@ package org.smartfrog.sfcore.languages.cdl;
 
 import org.ggf.cddlm.generated.api.CddlmConstants;
 
+import javax.xml.namespace.QName;
+
 /**
  * Date: 15-Jul-2004 Time: 22:26:34
  */
@@ -57,4 +59,11 @@ public class Constants {
     public static final String SMARTFROG_ELEMENT_NAME = "smartfrog";
 
     public static final String SMARTFROG_ELEMENT_VERSION_ATTR = "version";
+
+    public static final QName QNAME_CDL_REF = new QName(CddlmConstants.XML_CDL_NAMESPACE,
+            CddlmConstants.ATTRIBUTE_REF, "cdl");
+
+    public static final QName QNAME_CDL_REFROOT = new QName(CddlmConstants.XML_CDL_NAMESPACE,
+            CddlmConstants.ATTRIBUTE_REFROOT,"cdl");
+
 }

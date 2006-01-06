@@ -20,44 +20,58 @@
 package org.smartfrog.sfcore.languages.cdl.references;
 
 import org.smartfrog.sfcore.languages.cdl.dom.PropertyList;
+import org.smartfrog.sfcore.languages.cdl.faults.CdlRuntimeException;
 import org.smartfrog.services.xml.java5.NamespaceUtils;
 
 import javax.xml.namespace.QName;
 import java.util.List;
 import java.util.ArrayList;
 
+import nu.xom.ParentNode;
+
 /**
+ * A reference path
+ * Nothing in here is thread safe.
  */
 public class ReferencePath {
     public static final String ERROR_NON_REFERENCE = "Trying to create a reference path from a non-reference";
+    public static final String ERROR_NO_TOPLEVEL = "There is no toplevel node in this graph; unable to make relative";
 
     public ReferencePath() {
     }
 
     /**
      * Build from a source
+     *
      * @param source
      * @throws IllegalArgumentException
      */
     public ReferencePath(PropertyList source) {
         String refRootValue = source.getRefRootValue();
         String refValue = source.getRefValue();
-        if(refValue==null) {
+        if (refValue == null) {
             throw new IllegalArgumentException(ERROR_NON_REFERENCE);
         }
+
+        build(refValue);
 
         if (refRootValue != null) {
             QName resolved = source.resolveQName(refRootValue);
             setRefroot(resolved);
+        } else {
+            makeRelative(source);
         }
-
-
     }
 
+    /**
+     * refroot; may be null
+     */
     private QName refroot;
 
-    /** the steps in the path */
-    private List<Step> steps=new ArrayList<Step>();
+    /**
+     * the steps in the path
+     */
+    private List<Step> steps = new ArrayList<Step>();
 
     public List<Step> getSteps() {
         return steps;
@@ -68,12 +82,13 @@ public class ReferencePath {
     }
 
     public void setRefroot(QName refroot) {
-        assert refroot!=null;
+        assert refroot != null;
         this.refroot = refroot;
     }
 
     /**
      * add a new step to the path
+     *
      * @param step
      */
     public void append(Step step) {
@@ -83,6 +98,7 @@ public class ReferencePath {
 
     /**
      * Test for the path being empty
+     *
      * @return
      */
     public boolean isEmpty() {
@@ -91,6 +107,7 @@ public class ReferencePath {
 
     /**
      * This function can only be called on a non-empty path.
+     *
      * @return true iff this is a relative path.
      */
     public boolean isRelative() {
@@ -102,16 +119,16 @@ public class ReferencePath {
      * Has an extra / at the end, whether you want it or not.
      */
     public String toString() {
-        StringBuffer result=new StringBuffer();
-        if(refroot!=null) {
+        StringBuffer result = new StringBuffer();
+        if (refroot != null) {
             result.append('[');
             result.append(refroot);
             result.append("]#");
         }
-        if(!isEmpty()) {
-            for(Step step:steps) {
+        if (!isEmpty()) {
+            for (Step step : steps) {
                 result.append(step.toString());
-                if(!step.isRoot()) {
+                if (!step.isRoot()) {
                     result.append('/');
                 }
             }
@@ -122,44 +139,50 @@ public class ReferencePath {
 
     /**
      * Build from a path of the spec
+     * <pre>
      * . | .. | localname | prefix:localname separated by /
+     * </pre>
+     * This is public primarily for testing; normally the
+     * {@link ReferencePath#ReferencePath(org.smartfrog.sfcore.languages.cdl.dom.PropertyList)}
+     * constructor should be used, as that will make the link relative at the same time.
+     *
      * @param path
      */
     public void build(String path) {
         //this is very easy to parse; no need for any complex recursive
         //parser. Even so, regexp work may make this tractable
         steps = new ArrayList<Step>();
-        int start=0;
+        int start = 0;
         final int pathlength = path.length();
-        if(path.startsWith("/")) {
+        if (path.startsWith("/")) {
             append(new StepRoot());
-            start=1;
-            if(pathlength ==1) {
+            start = 1;
+            if (pathlength == 1) {
                 return;
             }
         }
         //now, scan through the source looking for stuff
-        boolean finished=false;
+        boolean finished = false;
 
         while (!finished) {
-            int slash=path.indexOf('/',start);
+            int slash = path.indexOf('/', start);
             String qname;
-            if(slash<0) {
-                finished=true;
-                qname=path.substring(start);
+            if (slash < 0) {
+                finished = true;
+                qname = path.substring(start);
             } else {
-                qname=path.substring(start,slash);
+                qname = path.substring(start, slash);
                 start = slash + 1;
-                finished=start>=pathlength;
+                finished = start >= pathlength;
             }
             //here qname is the current element. Extract but do not yet evaluate
-            if(".".equals(qname)) {
+            if (".".equals(qname)) {
                 append(new StepHere());
             } else if ("..".equals(qname)) {
                 append(new StepUp());
-            } else{
-                String prefix= NamespaceUtils.extractNamespacePrefix(qname);
-                String localname= NamespaceUtils.extractLocalname(qname);
+            } else {
+                String prefix = NamespaceUtils.extractNamespacePrefix(qname);
+                String localname = NamespaceUtils.extractLocalname(qname);
                 StepDown step = new StepDown(prefix, localname);
                 append(step);
             }
@@ -168,8 +191,35 @@ public class ReferencePath {
 
     }
 
-    //pattern
-    /*
-
-    */
+    /**
+     * logic to turn an absolute list into a relative one. This has to be done
+     * before extends processing, so is executed during initialisation.
+     *
+     * @param source
+     */
+    private void makeRelative(PropertyList source) {
+        assert !isEmpty();
+        Step first = steps.get(0);
+        if (!first.isRoot()) {
+            //no work needed
+            return;
+        }
+        //remove the relative reference.
+        steps.remove(first);
+        //now we count the number of steps to a parent.
+        PropertyList node = source;
+        while (!node.isToplevel()) {
+            //insert a new upward step
+            steps.add(0, new StepUp());
+            ParentNode parent = node.getParent();
+            if (parent==null || !(parent instanceof PropertyList)) {
+                //bad type. bail out now.
+                throw new CdlRuntimeException(ERROR_NO_TOPLEVEL);
+            }
+            node = (PropertyList) parent;
+        }
+        //here we are at a toplevel node
+        //nothing remains to be done
+        assert isRelative();
+    }
 }
