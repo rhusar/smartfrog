@@ -129,8 +129,8 @@ public class PropertyList extends DocNode {
             setExtendsName(NamespaceUtils.makeQName(namespace, local, prefix));
         }
 
-        //check for having a refroot
-        if(getRefRootValue()!=null) {
+        //check for having a refroot and us not already being bound
+        if(getRefRootValue()!=null && referencePath==null) {
             //and create a reference path if so
             referencePath=new ReferencePath(this);
         }
@@ -140,14 +140,29 @@ public class PropertyList extends DocNode {
     /**
      * Copy the element and local state.
      *
-     * @return
+     * Subclassers must subclass override the {@link #newList(String, String)} operation
+     * to return their subclass, and then hand off to this superclass the act of creation
+     * and initialisation. They may also want to override {@link #propagateFieldValuesToShallowCopy(PropertyList)}
+     * to add extra attribute copying.
+     * @return a shallow copy of the original.
      */
     protected Element shallowCopy() {
         PropertyList copy = newList(getQualifiedName(), getNamespaceURI());
+        propagateFieldValuesToShallowCopy(copy);
+        return copy;
+    }
+
+    /**
+     * This is here for subclasses to play with.
+     * @param copy
+     */
+    protected void propagateFieldValuesToShallowCopy(PropertyList copy) {
         copy.setResolveState(getResolveState());
         copy.setExtendsName(getExtendsName());
         copy.setTemplate(isTemplate());
-        return copy;
+        if (referencePath != null) {
+            copy.referencePath = referencePath.shallowCopy();
+        }
     }
 
 

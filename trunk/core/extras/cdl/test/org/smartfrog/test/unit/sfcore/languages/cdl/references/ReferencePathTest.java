@@ -26,6 +26,7 @@ import org.smartfrog.sfcore.languages.cdl.references.StepHere;
 import org.smartfrog.sfcore.languages.cdl.references.StepRoot;
 import org.smartfrog.sfcore.languages.cdl.references.StepUp;
 import org.smartfrog.sfcore.languages.cdl.references.StepDown;
+import org.smartfrog.sfcore.languages.cdl.references.StepRefRoot;
 import org.smartfrog.sfcore.languages.cdl.dom.ToplevelList;
 import org.smartfrog.sfcore.languages.cdl.dom.PropertyList;
 import org.smartfrog.sfcore.languages.cdl.dom.ElementEx;
@@ -41,9 +42,9 @@ import java.util.List;
  */
 public class ReferencePathTest extends TestCase {
 
-    private  ReferencePath path;
+    private ReferencePath path;
 
-    private  ToplevelList root;
+    private ToplevelList root;
     private PropertyList child1;
     private PropertyList child2;
 
@@ -53,23 +54,36 @@ public class ReferencePathTest extends TestCase {
      */
     protected void setUp() throws Exception {
         super.setUp();
-        path=new ReferencePath();
+        path = new ReferencePath();
 
-        root =new ToplevelList("root");
+        root = new ToplevelList("root");
         child1 = new PropertyList("child1");
         root.appendChild(child1);
         child2 = new PropertyList("child2");
         child1.appendChild(child2);
     }
 
-    private void assertStepType(int position,Class type) {
+    private void assertStepType(int position, Class type) {
         List<Step> steps = path.getSteps();
         Step s1 = steps.get(position);
-        assertEquals(type,s1.getClass());
+        assertEquals(type, s1.getClass());
     }
 
     private void assertStepRoot(int position) {
         assertStepType(position, StepRoot.class);
+    }
+
+    private void assertStepRefRoot(int position, String localname) {
+        assertStepRefRoot(position, localname, "");
+
+    }
+
+    private void assertStepRefRoot(int position, String localname, String uri) {
+        assertStepType(position, StepRefRoot.class);
+        StepRefRoot s1 = (StepRefRoot) path.getStep(position);
+        QName root = s1.getRefroot();
+        assertEquals(localname, root.getLocalPart());
+        assertEquals(uri, root.getNamespaceURI());
     }
 
     private void assertStepUp(int position) {
@@ -82,26 +96,27 @@ public class ReferencePathTest extends TestCase {
 
 
     private void assertStepDown(int position, String localname) {
-        assertStepDown(position,localname,null);
+        assertStepDown(position, localname, null);
     }
 
-        private void assertStepDown(int position,String localname,String prefix) {
+    private void assertStepDown(int position, String localname, String prefix) {
         assertStepType(position, StepDown.class);
-        StepDown s1 = (StepDown) path.getSteps().get(position);
-        assertEquals(localname,s1.getLocalname());
+        StepDown s1 = (StepDown) path.getStep(position);
+        assertEquals(localname, s1.getLocalname());
         assertEquals(prefix, s1.getPrefix());
     }
 
     private void assertStepSize(int size) {
         List<Step> steps = path.getSteps();
-        String pathstr=steps.toString();
+        String pathstr = steps.toString();
         int actual = steps.size();
-        if(size!=actual) {
+        if (size != actual) {
             String text;
-            text="Expected "+size+" elements in path "+pathstr+" but found "+actual;
+            text = "Expected " + size + " elements in path " + pathstr + " but found " + actual;
             fail(text);
         }
     }
+
     public void testBuildHere() throws Exception {
         path.build(".");
         assertStepSize(1);
@@ -124,7 +139,7 @@ public class ReferencePathTest extends TestCase {
         path.build("child");
         List<Step> steps = path.getSteps();
         assertStepSize(1);
-        assertStepDown(0,"child");
+        assertStepDown(0, "child");
     }
 
     public void testBuildDownPrefix() throws Exception {
@@ -139,10 +154,10 @@ public class ReferencePathTest extends TestCase {
         assertStepSize(9);
         assertStepRoot(0);
         assertStepUp(1);
-        assertStepDown(2,"child","tns");
+        assertStepDown(2, "child", "tns");
         assertStepUp(3);
         assertStepHere(4);
-        assertStepDown(5,"something","ns2");
+        assertStepDown(5, "something", "ns2");
         assertStepUp(6);
         assertStepDown(7, "local");
         assertStepHere(8);
@@ -151,7 +166,7 @@ public class ReferencePathTest extends TestCase {
 
     public void testExtractHere() throws Exception {
         child2.addNewAttribute(Constants.QNAME_CDL_REF, ".");
-        path=new ReferencePath(child2);
+        path = new ReferencePath(child2);
         assertStepSize(1);
         assertStepHere(0);
     }
@@ -162,7 +177,7 @@ public class ReferencePathTest extends TestCase {
         assertStepSize(3);
         assertStepUp(0);
         assertStepHere(1);
-        assertStepDown(2,"child2");
+        assertStepDown(2, "child2");
     }
 
     public void testExtractRoot() throws Exception {
@@ -179,11 +194,11 @@ public class ReferencePathTest extends TestCase {
         assertStepSize(3);
         assertStepUp(0);
         assertStepUp(1);
-        assertStepDown(2,"child1");
+        assertStepDown(2, "child1");
     }
 
     public void testNoParentBreaks() throws Exception {
-        PropertyList orphan=new PropertyList("orphan");
+        PropertyList orphan = new PropertyList("orphan");
         orphan.addNewAttribute(Constants.QNAME_CDL_REF, "/child1");
         try {
             path = new ReferencePath(orphan);
@@ -197,26 +212,22 @@ public class ReferencePathTest extends TestCase {
         child2.addNewAttribute(Constants.QNAME_CDL_REFROOT, "application");
         child2.addNewAttribute(Constants.QNAME_CDL_REF, "/something/else");
         path = new ReferencePath(child2);
-        assertStepSize(3);
-        assertStepRoot(0);
-        assertStepDown(1, "something");
-        assertStepDown(2, "else");
-        QName root = path.getRefroot();
-        assertEquals("application",root.getLocalPart());
+        assertStepSize(4);
+        assertStepRefRoot(0, "application");
+        assertStepRoot(1);
+        assertStepDown(2, "something");
+        assertStepDown(3, "else");
     }
 
     public void testExtractRefRootPrefix() throws Exception {
         child2.addNewAttribute(Constants.QNAME_CDL_REFROOT, "cdl:application");
         child2.addNewAttribute(Constants.QNAME_CDL_REF, "/something/else");
         path = new ReferencePath(child2);
-        assertStepSize(3);
-        assertStepRoot(0);
-        assertStepDown(1, "something");
-        assertStepDown(2, "else");
-        QName root = path.getRefroot();
-        assertEquals("application", root.getLocalPart());
-        assertEquals("cdl", root.getPrefix());
-        assertEquals(Constants.XML_CDL_NAMESPACE, root.getNamespaceURI());
+        assertStepSize(4);
+        assertStepRefRoot(0, "application", Constants.XML_CDL_NAMESPACE);
+        assertStepRoot(1);
+        assertStepDown(2, "something");
+        assertStepDown(3, "else");
     }
 
     public void testRefRootBadPrefixBreaks() throws Exception {
@@ -226,8 +237,24 @@ public class ReferencePathTest extends TestCase {
             path = new ReferencePath(child2);
             fail("expected an assertion");
         } catch (IllegalArgumentException e) {
-            assertTrue(e.getMessage(),e.getMessage().startsWith(ElementEx.ERROR_NON_RESOLVABLE_QNAME_PREFIX));
+            assertTrue(e.getMessage(), e.getMessage().startsWith(ElementEx.ERROR_NON_RESOLVABLE_QNAME_PREFIX));
         }
+    }
+
+    public void testLazyPathMerge() throws Exception {
+        child2.addNewAttribute(Constants.QNAME_CDL_REFROOT, "cdl:application");
+        child2.addNewAttribute(Constants.QNAME_CDL_REF, "/something/else");
+        path = new ReferencePath(child2);
+        assertFalse(path.isLazy());
+        child2.addNewAttribute(Constants.QNAME_CDL_LAZY,"true");
+        ReferencePath path2=new ReferencePath(child2);
+        path.appendPath(path2);
+        assertTrue(path.isLazy());
+        assertStepSize(8);
+        assertStepRefRoot(4, "application", Constants.XML_CDL_NAMESPACE);
+        assertStepRoot(5);
+        assertStepDown(6, "something");
+        assertStepDown(7, "else");
     }
 
 }

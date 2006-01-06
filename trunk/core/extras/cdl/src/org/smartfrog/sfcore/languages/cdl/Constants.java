@@ -66,4 +66,6 @@ public class Constants {
     public static final QName QNAME_CDL_REFROOT = new QName(CddlmConstants.XML_CDL_NAMESPACE,
             CddlmConstants.ATTRIBUTE_REFROOT,"cdl");
 
+    public static final QName QNAME_CDL_LAZY = new QName(CddlmConstants.XML_CDL_NAMESPACE,
+            CddlmConstants.ATTRIBUTE_LAZY, "cdl");
 }
