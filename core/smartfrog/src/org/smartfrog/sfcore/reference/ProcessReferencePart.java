@@ -104,7 +104,7 @@ public class ProcessReferencePart extends ReferencePart {
      */
     public Object resolve(ReferenceResolver rr, Reference r, int index)
         throws SmartFrogResolutionException {
-        ProcessCompound pc = (ProcessCompound) SFProcess.getProcessCompound();
+        ProcessCompound pc = SFProcess.getProcessCompound();
 
         if (pc != null) {
             return forwardReference(pc, r, index + 1);
@@ -130,7 +130,7 @@ public class ProcessReferencePart extends ReferencePart {
      */
     public Object resolve(RemoteReferenceResolver rr, Reference r, int index)
         throws SmartFrogResolutionException {
-        ProcessCompound pc = (ProcessCompound) SFProcess.getProcessCompound();
+        ProcessCompound pc = SFProcess.getProcessCompound();
 
         if (pc != null) {
             return forwardReference(pc, r, index + 1);
