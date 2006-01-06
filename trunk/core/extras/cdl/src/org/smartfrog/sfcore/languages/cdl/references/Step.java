@@ -19,10 +19,15 @@
  */
 package org.smartfrog.sfcore.languages.cdl.references;
 
+import org.smartfrog.sfcore.languages.cdl.faults.CdlResolutionException;
+
 /**
  * This represents a step in a path
  */
 public abstract class Step {
+    public static final String ERROR_WRONG_PARENT = " parent is not of the right type";
+    public static final String ERROR_NO_STEP_UP = "Cannot apply '..' action to ";
+    public static final String ERROR_ORPHAN_NODE = " there is no parent";
 
     /**
      * Is this step a root node?
@@ -31,4 +36,12 @@ public abstract class Step {
     public boolean isRoot() {
         return false;
     }
+
+    /**
+     * This is the operation that steps need to do, to execute a step.
+     *
+     * @return the result.
+     * @throws CdlResolutionException if something failed.
+     */
+    public abstract StepExecutionResult execute(StepExecutionResult state) throws CdlResolutionException;
 }

@@ -19,6 +19,9 @@
  */
 package org.smartfrog.sfcore.languages.cdl.references;
 
+import org.smartfrog.sfcore.languages.cdl.faults.CdlResolutionException;
+import org.smartfrog.sfcore.languages.cdl.dom.PropertyList;
+
 /**
  * This is a normal step down the tree.
  */
@@ -64,4 +67,28 @@ public class StepDown extends Step {
         result.append(localname);
         return result.toString();
     }
+
+    /**
+     * This is the operation that steps need to do, to execute a step.
+     *
+     * @return the result.
+     * @throws org.smartfrog.sfcore.languages.cdl.faults.CdlResolutionException
+     *          if something failed.
+     */
+    public StepExecutionResult execute(StepExecutionResult state) throws CdlResolutionException {
+        PropertyList node = state.getNode();
+        String uri="";
+        if(prefix!=null) {
+            uri = node.getNamespaceURI(prefix);
+            if(uri==null) {
+                throw new CdlResolutionException("Unknown prefix :"+prefix,state);
+            }
+        }
+        PropertyList child = node.getChildTemplateMatching(localname, uri);
+        if(child==null) {
+            throw new CdlResolutionException("Child element not found  {" + uri+"}#"+localname, state);
+        }
+        return state.next(child);
+    }
+
 }

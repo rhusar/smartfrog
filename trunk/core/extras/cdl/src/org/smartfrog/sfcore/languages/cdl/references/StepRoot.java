@@ -19,6 +19,11 @@
  */
 package org.smartfrog.sfcore.languages.cdl.references;
 
+import org.smartfrog.sfcore.languages.cdl.faults.CdlResolutionException;
+import org.smartfrog.sfcore.languages.cdl.dom.PropertyList;
+import org.smartfrog.sfcore.languages.cdl.dom.ToplevelList;
+import nu.xom.Node;
+
 /**
  */
 public class StepRoot extends Step {
@@ -39,6 +44,27 @@ public class StepRoot extends Step {
      */
     public boolean isRoot() {
         return true;
+    }
+
+    /**
+     * This is the operation that steps need to do, to execute a step.
+     *
+     * @return the result.
+     * @throws org.smartfrog.sfcore.languages.cdl.faults.CdlResolutionException
+     *          if something failed.
+     */
+    public StepExecutionResult execute(StepExecutionResult state) throws CdlResolutionException {
+        PropertyList node = state.getNode();
+        Node current =node;
+        while(!(current instanceof ToplevelList)) {
+            Node parent = node.getParent();
+            if (parent == null) {
+                throw new CdlResolutionException(ERROR_NO_STEP_UP + node + ERROR_ORPHAN_NODE, state);
+            }
+            current =parent;
+        }
+
+        return state.next((PropertyList) current);
     }
 
 }

@@ -19,6 +19,10 @@
  */
 package org.smartfrog.sfcore.languages.cdl.references;
 
+import org.smartfrog.sfcore.languages.cdl.faults.CdlResolutionException;
+import org.smartfrog.sfcore.languages.cdl.dom.CdlDocument;
+import org.smartfrog.sfcore.languages.cdl.dom.PropertyList;
+
 import javax.xml.namespace.QName;
 
 /**
@@ -39,27 +43,24 @@ public class StepRefRoot extends Step {
     }
 
     /**
-     * Returns a string representation of the object. In general, the
-     * <code>toString</code> method returns a string that
-     * "textually represents" this object. The result should
-     * be a concise but informative representation that is easy for a
-     * person to read.
-     * It is recommended that all subclasses override this method.
-     * <p/>
-     * The <code>toString</code> method for class <code>Object</code>
-     * returns a string consisting of the name of the class of which the
-     * object is an instance, the at-sign character `<code>@</code>', and
-     * the unsigned hexadecimal representation of the hash code of the
-     * object. In other words, this method returns a string equal to the
-     * value of:
-     * <blockquote>
-     * <pre>
-     * getClass().getName() + '@' + Integer.toHexString(hashCode())
-     * </pre></blockquote>
-     *
+     * Returns a string representation of the object.
      * @return a string representation of the object.
      */
     public String toString() {
         return "~"+refroot+"/";
     }
+
+    /**
+     * This is the operation that steps need to do, to execute a step.
+     *
+     * @return the result.
+     * @throws org.smartfrog.sfcore.languages.cdl.faults.CdlResolutionException
+     *          if something failed.
+     */
+    public StepExecutionResult execute(StepExecutionResult state) throws CdlResolutionException {
+        CdlDocument owner = state.getNode().getOwner();
+        PropertyList target = owner.lookup(refroot);
+        return state.next(target);
+    }
+
 }

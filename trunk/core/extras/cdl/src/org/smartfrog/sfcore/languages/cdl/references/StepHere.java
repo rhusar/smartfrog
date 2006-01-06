@@ -19,6 +19,8 @@
  */
 package org.smartfrog.sfcore.languages.cdl.references;
 
+import org.smartfrog.sfcore.languages.cdl.faults.CdlResolutionException;
+
 /**
  */
 public class StepHere extends Step {
@@ -30,5 +32,16 @@ public class StepHere extends Step {
      */
     public String toString() {
         return ".";
+    }
+
+    /**
+     * This is the operation that steps need to do, to execute a step.
+     *
+     * @return the result.
+     * @throws org.smartfrog.sfcore.languages.cdl.faults.CdlResolutionException
+     *          if something failed.
+     */
+    public StepExecutionResult execute(StepExecutionResult state) throws CdlResolutionException {
+        return state.next();
     }
 }

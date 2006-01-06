@@ -19,6 +19,12 @@
  */
 package org.smartfrog.sfcore.languages.cdl.faults;
 
+import org.smartfrog.sfcore.languages.cdl.references.StepExecutionResult;
+import org.ggf.cddlm.utils.FaultTemplate;
+import org.ggf.cddlm.generated.api.CddlmConstants;
+
+import javax.xml.namespace.QName;
+
 /**
  * Fault when there is a problem resolving something
  * created 10-Jun-2005 15:31:11
@@ -74,5 +80,19 @@ public class CdlResolutionException extends CdlException {
      */
     public CdlResolutionException(Throwable cause) {
         super(cause);
+    }
+
+    public CdlResolutionException(String message, StepExecutionResult state) {
+        super(message+" in "+ state.getPath().toString()+" at "+state.getNode());
+    }
+
+    /**
+     * Override point called in constructor (danger, danger),
+     * to get the default fault code. This is not called when
+     * creating a fault using the FaultTemplate-based ctor, but
+     * is in all other cases
+     */
+    protected QName createDefaultFaultCode() {
+        return CddlmConstants.FAULT_COMPILE_RESOLUTION_FAILURE;
     }
 }
