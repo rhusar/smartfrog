@@ -92,6 +92,10 @@ public class ReferencePath {
         return steps;
     }
 
+    public int size() {
+        return steps.size();
+    }
+
     /**
      * add a new step to the path
      *

@@ -55,7 +55,6 @@ public class ReferencePathTest extends TestCase {
     protected void setUp() throws Exception {
         super.setUp();
         path = new ReferencePath();
-
         root = new ToplevelList("root");
         child1 = new PropertyList("child1");
         root.appendChild(child1);
@@ -107,12 +106,10 @@ public class ReferencePathTest extends TestCase {
     }
 
     private void assertStepSize(int size) {
-        List<Step> steps = path.getSteps();
-        String pathstr = steps.toString();
-        int actual = steps.size();
+        int actual = path.size();
         if (size != actual) {
             String text;
-            text = "Expected " + size + " elements in path " + pathstr + " but found " + actual;
+            text = "Expected " + size + " elements in path " + path + " but found " + actual;
             fail(text);
         }
     }
