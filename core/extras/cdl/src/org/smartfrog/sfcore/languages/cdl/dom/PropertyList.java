@@ -25,6 +25,7 @@ import nu.xom.Node;
 import org.ggf.cddlm.generated.api.CddlmConstants;
 import org.smartfrog.services.xml.java5.NamespaceUtils;
 import org.smartfrog.sfcore.languages.cdl.Constants;
+import org.smartfrog.sfcore.languages.cdl.references.ReferencePath;
 import org.smartfrog.sfcore.languages.cdl.faults.CdlException;
 import org.smartfrog.sfcore.languages.cdl.faults.CdlXmlParsingException;
 import org.smartfrog.sfcore.languages.cdl.faults.CdlRuntimeException;
@@ -64,6 +65,11 @@ public class PropertyList extends DocNode {
      * a log
      */
     private Log log = ClassLogger.getLog(this);
+
+    /**
+     * a reference path; will be null if not supplied; set at bind time.
+     */
+    private ReferencePath referencePath;
 
     public PropertyList(String name) {
         super(name);
@@ -121,6 +127,12 @@ public class PropertyList extends DocNode {
                 }
             }
             setExtendsName(NamespaceUtils.makeQName(namespace, local, prefix));
+        }
+
+        //check for having a refroot
+        if(getRefRootValue()!=null) {
+            //and create a reference path if so
+            referencePath=new ReferencePath(this);
         }
     }
 
