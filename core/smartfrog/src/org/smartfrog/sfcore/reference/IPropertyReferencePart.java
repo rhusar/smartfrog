@@ -92,13 +92,15 @@ public class IPropertyReferencePart extends ReferencePart {
      * @throws SmartFrogResolutionException if failed to resolve reference
      */
     public Object resolve(ReferenceResolver rr, Reference r, int index)
-        throws SmartFrogResolutionException {
+            throws SmartFrogResolutionException {
         try {
-          String v = (String) SFSystem.getProperty( (String) value, null);
-          if (v==null) throw SmartFrogResolutionException.notFound (r,null);
-          return new Integer(v);
-        } catch (Throwable ex){
-            throw (SmartFrogResolutionException)SmartFrogResolutionException.forward (ex.toString(),r,ex);
+            String v = SFSystem.getProperty((String) value, null);
+            if (v == null) {
+                throw SmartFrogResolutionException.notFound(r, null);
+            }
+            return new Integer(v);
+        } catch (Throwable ex) {
+            throw (SmartFrogResolutionException) SmartFrogResolutionException.forward(ex.toString(), r, ex);
         }
     }
 
@@ -116,12 +118,14 @@ public class IPropertyReferencePart extends ReferencePart {
      */
     public Object resolve(RemoteReferenceResolver rr, Reference r, int index)
        throws SmartFrogResolutionException {
-     try {
-       String v = (String) SFSystem.getProperty( (String) value, null);
-       if (v==null) throw SmartFrogResolutionException.notFound (r,null);
-       return new Integer(v);
-     } catch (Throwable ex) {
-         throw (SmartFrogResolutionException)SmartFrogResolutionException.forward (ex.toString(),r,ex);
-     }
-   }
+        try {
+            String v = SFSystem.getProperty((String) value, null);
+            if (v == null) {
+                throw SmartFrogResolutionException.notFound(r, null);
+            }
+            return new Integer(v);
+        } catch (Throwable ex) {
+            throw (SmartFrogResolutionException) SmartFrogResolutionException.forward(ex.toString(), r, ex);
+        }
+    }
 }
