@@ -2,7 +2,6 @@
 <%@ page import="org.apache.axis2.AxisFault,
                  org.apache.axis2.Constants,
                  org.apache.axis2.addressing.EndpointReference,
-                 org.apache.axis2.clientapi.Call,
                  org.apache.axis2.om.OMAbstractFactory,
                  org.apache.axis2.om.OMElement,
                  org.apache.axis2.om.OMFactory,
@@ -13,9 +12,9 @@
                  javax.servlet.jsp.JspWriter,
                  javax.xml.namespace.QName,
                  javax.xml.parsers.SAXParser,
-                 javax.xml.parsers.SAXParserFactory"
+                 javax.xml.parsers.SAXParserFactory,
+                 javax.xml.stream.XMLOutputFactory"
    session="false" %>
-<%@ page import="javax.xml.stream.XMLOutputFactory"%>
 <%@ page import="javax.xml.stream.XMLStreamException"%>
 <%@ page import="java.io.IOException"%>
 <%@ page import="java.io.InputStream"%>

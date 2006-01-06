@@ -23,7 +23,6 @@ package org.smartfrog.services.deployapi.client;
 import nu.xom.Document;
 import nu.xom.Element;
 import org.apache.axis2.AxisFault;
-import org.apache.axis2.addressing.EndpointReference;
 import org.apache.axis2.description.AxisOperation;
 import org.apache.axis2.description.AxisService;
 import org.apache.axis2.description.InOutAxisOperation;

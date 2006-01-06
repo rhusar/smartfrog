@@ -44,7 +44,6 @@ import java.io.Serializable;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.rmi.RemoteException;
-import java.util.Random;
 
 /** created 21-Sep-2005 13:20:35 */
 

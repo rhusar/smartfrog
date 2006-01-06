@@ -28,7 +28,6 @@ import org.smartfrog.services.deployapi.system.Constants;
 import org.smartfrog.services.deployapi.transport.faults.BaseException;
 import org.smartfrog.services.xml.utils.ResourceLoader;
 import org.smartfrog.services.xml.utils.XmlCatalogResolver;
-import org.w3c.dom.Node;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLInputFactory;
@@ -36,7 +35,6 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.Iterator;
 
 /**

@@ -20,22 +20,15 @@
 
 package org.smartfrog.services.deployapi.binding;
 
-import static org.ggf.cddlm.generated.api.CddlmConstants.CDL_API_TYPES_NAMESPACE;
 import nu.xom.Attribute;
 import nu.xom.Element;
 import nu.xom.Node;
 import nu.xom.Nodes;
-import nu.xom.Document;
-import nu.xom.Serializer;
-import org.ggf.cddlm.generated.api.CddlmConstants;
+import static org.ggf.cddlm.generated.api.CddlmConstants.CDL_API_TYPES_NAMESPACE;
 import org.smartfrog.services.deployapi.system.Constants;
 import org.smartfrog.services.deployapi.transport.faults.FaultRaiser;
 import org.smartfrog.services.xml.utils.XomUtils;
 import org.smartfrog.services.xml.utils.XsdUtils;
-
-import javax.xml.namespace.QName;
-import java.io.IOException;
-import java.io.ByteArrayOutputStream;
 
 /** generic xom stuff */
 public class XomHelper extends XomUtils  {

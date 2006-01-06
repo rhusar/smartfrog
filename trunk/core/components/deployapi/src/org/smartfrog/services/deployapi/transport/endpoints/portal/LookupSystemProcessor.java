@@ -19,12 +19,12 @@
  */
 package org.smartfrog.services.deployapi.transport.endpoints.portal;
 
+import nu.xom.Document;
+import nu.xom.Element;
 import org.smartfrog.services.deployapi.binding.XomHelper;
 import org.smartfrog.services.deployapi.engine.Job;
 import org.smartfrog.services.deployapi.transport.endpoints.Processor;
 import org.smartfrog.services.deployapi.transport.endpoints.SmartFrogAxisEndpoint;
-import nu.xom.Element;
-import nu.xom.Document;
 
 import java.io.IOException;
 

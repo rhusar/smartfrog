@@ -1,16 +1,15 @@
 package org.smartfrog.services.deployapi.transport.faults;
 
+import nu.xom.Element;
 import org.apache.axis2.AxisFault;
 import org.ggf.cddlm.utils.FaultTemplate;
 import org.smartfrog.services.deployapi.binding.XomHelper;
 
 import javax.xml.namespace.QName;
-import java.util.GregorianCalendar;
-import java.util.List;
 import java.util.ArrayList;
 import java.util.Calendar;
-
-import nu.xom.Element;
+import java.util.GregorianCalendar;
+import java.util.List;
 
 /**
  */
