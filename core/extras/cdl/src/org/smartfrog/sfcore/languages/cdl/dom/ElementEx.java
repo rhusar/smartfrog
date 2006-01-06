@@ -39,6 +39,7 @@ import java.io.IOException;
  * Extended element with a backpointer to the element
  */
 public class ElementEx extends Element implements ToSmartFrog {
+    public static final String ERROR_NON_RESOLVABLE_QNAME_PREFIX = "No namespace defined for [";
 
 
     public ElementEx(String name) {
@@ -127,6 +128,34 @@ public class ElementEx extends Element implements ToSmartFrog {
         return getLocalName().equals(testName.getLocalPart()) &&
                 getNamespaceURI().equals(testName.getNamespaceURI());
     }
+
+    /**
+     * Add a new attribute in the given namespace
+     * @param namespace namespace URI
+     * @param localname localname
+     * @param value value
+     */
+    public void addNewAttribute(String namespace,String localname,String value) {
+        Attribute attr=new Attribute(localname,namespace,value);
+        addAttribute(attr);
+    }
+
+    /**
+     * Add a new attribute
+     * @param name attribute QName
+     * @param value attribute value
+     */
+    public void addNewAttribute(QName name, String value) {
+        String local;
+        if(name.getPrefix().length()>0) {
+            local = name.getPrefix() + ':' + name.getLocalPart();
+        } else {
+            local= name.getLocalPart();
+        }
+        Attribute attr = new Attribute(local, name.getNamespaceURI(),value);
+        addAttribute(attr);
+    }
+
 
     /**
      * Write something to a smartfrog file. Parent elements should delegate to
@@ -257,7 +286,7 @@ public class ElementEx extends Element implements ToSmartFrog {
             namespace=getNamespaceURI(prefix);
             if(namespace==null) {
                 //this is an error.
-                throw new IllegalArgumentException("No namespace defined for ["+prefix+"]");
+                throw new IllegalArgumentException(ERROR_NON_RESOLVABLE_QNAME_PREFIX +prefix+"]");
             }
             return new QName(namespace,localname,prefix);
         } else {

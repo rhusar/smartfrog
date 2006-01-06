@@ -390,6 +390,7 @@ public class PropertyList extends DocNode {
         return getAttributeValue(ATTR_REFROOT, CDL_NAMESPACE);
     }
 
+
     /**
      * Get the reference
      *
@@ -428,5 +429,14 @@ public class PropertyList extends DocNode {
     public ResolveEnum resolveLocalReference() {
         //this resolves references.
         return null;
+    }
+
+    /**
+     * test for being a toplevel list.
+     * The relevant subclass overrides it to return true
+     * @return true iff this is a ToplevelList.
+     */
+    public boolean isToplevel() {
+        return false;
     }
 }

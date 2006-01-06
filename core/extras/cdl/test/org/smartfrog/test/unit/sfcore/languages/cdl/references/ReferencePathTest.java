@@ -26,7 +26,14 @@ import org.smartfrog.sfcore.languages.cdl.references.StepHere;
 import org.smartfrog.sfcore.languages.cdl.references.StepRoot;
 import org.smartfrog.sfcore.languages.cdl.references.StepUp;
 import org.smartfrog.sfcore.languages.cdl.references.StepDown;
+import org.smartfrog.sfcore.languages.cdl.dom.ToplevelList;
+import org.smartfrog.sfcore.languages.cdl.dom.PropertyList;
+import org.smartfrog.sfcore.languages.cdl.dom.ElementEx;
+import org.smartfrog.sfcore.languages.cdl.Constants;
+import org.smartfrog.sfcore.languages.cdl.faults.CdlRuntimeException;
+import org.ggf.cddlm.generated.api.CddlmConstants;
 
+import javax.xml.namespace.QName;
 import java.util.List;
 
 /**
@@ -34,7 +41,12 @@ import java.util.List;
  */
 public class ReferencePathTest extends TestCase {
 
-    public ReferencePath path;
+    private  ReferencePath path;
+
+    private  ToplevelList root;
+    private PropertyList child1;
+    private PropertyList child2;
+
     /**
      * Sets up the fixture, for example, open a network connection.
      * This method is called before a test is executed.
@@ -42,56 +54,180 @@ public class ReferencePathTest extends TestCase {
     protected void setUp() throws Exception {
         super.setUp();
         path=new ReferencePath();
+
+        root =new ToplevelList("root");
+        child1 = new PropertyList("child1");
+        root.appendChild(child1);
+        child2 = new PropertyList("child2");
+        child1.appendChild(child2);
     }
 
+    private void assertStepType(int position,Class type) {
+        List<Step> steps = path.getSteps();
+        Step s1 = steps.get(position);
+        assertEquals(type,s1.getClass());
+    }
+
+    private void assertStepRoot(int position) {
+        assertStepType(position, StepRoot.class);
+    }
+
+    private void assertStepUp(int position) {
+        assertStepType(position, StepUp.class);
+    }
+
+    private void assertStepHere(int position) {
+        assertStepType(position, StepHere.class);
+    }
+
+
+    private void assertStepDown(int position, String localname) {
+        assertStepDown(position,localname,null);
+    }
+
+        private void assertStepDown(int position,String localname,String prefix) {
+        assertStepType(position, StepDown.class);
+        StepDown s1 = (StepDown) path.getSteps().get(position);
+        assertEquals(localname,s1.getLocalname());
+        assertEquals(prefix, s1.getPrefix());
+    }
+
+    private void assertStepSize(int size) {
+        List<Step> steps = path.getSteps();
+        String pathstr=steps.toString();
+        int actual = steps.size();
+        if(size!=actual) {
+            String text;
+            text="Expected "+size+" elements in path "+pathstr+" but found "+actual;
+            fail(text);
+        }
+    }
     public void testBuildHere() throws Exception {
         path.build(".");
-        List<Step> steps = path.getSteps();
-        assertEquals(1,steps.size());
-        Step s1 = steps.get(0);
-        assertTrue(s1 instanceof StepHere);
+        assertStepSize(1);
+        assertStepHere(0);
     }
 
     public void testBuildRoot() throws Exception {
         path.build("/");
-        List<Step> steps = path.getSteps();
-        assertEquals(1, steps.size());
-        Step s1 = steps.get(0);
-        assertTrue(s1 instanceof StepRoot);
+        assertStepSize(1);
+        assertStepRoot(0);
     }
 
     public void testBuildUp() throws Exception {
         path.build("..");
-        List<Step> steps = path.getSteps();
-        assertEquals(1, steps.size());
-        Step s1 = steps.get(0);
-        assertTrue(s1 instanceof StepUp);
+        assertStepSize(1);
+        assertStepUp(0);
     }
 
     public void testBuildDownLocal() throws Exception {
         path.build("child");
         List<Step> steps = path.getSteps();
-        assertEquals(1, steps.size());
-        Step s1 = steps.get(0);
-        assertTrue(s1 instanceof StepDown);
-        StepDown sd=(StepDown) s1;
-        assertEquals("child",sd.getLocalname());
+        assertStepSize(1);
+        assertStepDown(0,"child");
     }
 
     public void testBuildDownPrefix() throws Exception {
         path.build("../tns:child");
         List<Step> steps = path.getSteps();
-        assertEquals(2, steps.size());
-        Step s1 = steps.get(1);
-        assertTrue(s1 instanceof StepDown);
-        StepDown sd = (StepDown) s1;
-        assertEquals("child", sd.getLocalname());
-        assertEquals("tns", sd.getPrefix());
+        assertStepSize(2);
+        assertStepDown(1, "child", "tns");
     }
 
     public void testComplexPath() throws Exception {
         path.build("/../tns:child/.././ns2:something/../local/.");
-        List<Step> steps = path.getSteps();
-        assertEquals(9, steps.size());
+        assertStepSize(9);
+        assertStepRoot(0);
+        assertStepUp(1);
+        assertStepDown(2,"child","tns");
+        assertStepUp(3);
+        assertStepHere(4);
+        assertStepDown(5,"something","ns2");
+        assertStepUp(6);
+        assertStepDown(7, "local");
+        assertStepHere(8);
     }
+
+
+    public void testExtractHere() throws Exception {
+        child2.addNewAttribute(Constants.QNAME_CDL_REF, ".");
+        path=new ReferencePath(child2);
+        assertStepSize(1);
+        assertStepHere(0);
+    }
+
+    public void testExtractUp() throws Exception {
+        child2.addNewAttribute(Constants.QNAME_CDL_REF, ".././child2");
+        path = new ReferencePath(child2);
+        assertStepSize(3);
+        assertStepUp(0);
+        assertStepHere(1);
+        assertStepDown(2,"child2");
+    }
+
+    public void testExtractRoot() throws Exception {
+        child2.addNewAttribute(Constants.QNAME_CDL_REF, "/");
+        path = new ReferencePath(child2);
+        assertStepSize(2);
+        assertStepUp(0);
+        assertStepUp(1);
+    }
+
+    public void testExtractRootChild1() throws Exception {
+        child2.addNewAttribute(Constants.QNAME_CDL_REF, "/child1");
+        path = new ReferencePath(child2);
+        assertStepSize(3);
+        assertStepUp(0);
+        assertStepUp(1);
+        assertStepDown(2,"child1");
+    }
+
+    public void testNoParentBreaks() throws Exception {
+        PropertyList orphan=new PropertyList("orphan");
+        orphan.addNewAttribute(Constants.QNAME_CDL_REF, "/child1");
+        try {
+            path = new ReferencePath(orphan);
+            fail("expected an assertion");
+        } catch (CdlRuntimeException e) {
+            assertEquals(ReferencePath.ERROR_NO_TOPLEVEL, e.getMessage());
+        }
+    }
+
+    public void testExtractRefRoot() throws Exception {
+        child2.addNewAttribute(Constants.QNAME_CDL_REFROOT, "application");
+        child2.addNewAttribute(Constants.QNAME_CDL_REF, "/something/else");
+        path = new ReferencePath(child2);
+        assertStepSize(3);
+        assertStepRoot(0);
+        assertStepDown(1, "something");
+        assertStepDown(2, "else");
+        QName root = path.getRefroot();
+        assertEquals("application",root.getLocalPart());
+    }
+
+    public void testExtractRefRootPrefix() throws Exception {
+        child2.addNewAttribute(Constants.QNAME_CDL_REFROOT, "cdl:application");
+        child2.addNewAttribute(Constants.QNAME_CDL_REF, "/something/else");
+        path = new ReferencePath(child2);
+        assertStepSize(3);
+        assertStepRoot(0);
+        assertStepDown(1, "something");
+        assertStepDown(2, "else");
+        QName root = path.getRefroot();
+        assertEquals("application", root.getLocalPart());
+        assertEquals("cdl", root.getPrefix());
+        assertEquals(Constants.XML_CDL_NAMESPACE, root.getNamespaceURI());
+    }
+
+    public void testRefRootBadPrefixBreaks() throws Exception {
+        child2.addNewAttribute(Constants.QNAME_CDL_REFROOT, "cdl4:application");
+        child2.addNewAttribute(Constants.QNAME_CDL_REF, "/something/else");
+        try {
+            path = new ReferencePath(child2);
+            fail("expected an assertion");
+        } catch (IllegalArgumentException e) {
+            assertTrue(e.getMessage(),e.getMessage().startsWith(ElementEx.ERROR_NON_RESOLVABLE_QNAME_PREFIX));
+        }
+    }
+
 }
