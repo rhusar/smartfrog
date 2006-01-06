@@ -69,10 +69,12 @@ public class AttribReferencePart extends HereReferencePart {
      * @return the representation
      */
     public String toString(int index) {
-	if (index == 0)
-	    return getValue().toString();
-	else
-	    return ATTRIB + ' ' + getValue().toString();
+        if (index == 0) {
+            return getValue().toString();
+        }
+        else {
+            return ATTRIB + ' ' + getValue().toString();
+        }
     }
 
     /**

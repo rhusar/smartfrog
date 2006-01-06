@@ -129,7 +129,7 @@ public class HostReferencePart extends ReferencePart {
         ProcessCompound pc = null;
 
         try {
-            pc = (ProcessCompound) SFProcess.getRootLocator()
+            pc = SFProcess.getRootLocator()
                                   .getRootProcessCompound(getAddress());
         } catch (Exception e) {
             //TODO: Check
@@ -163,7 +163,7 @@ public class HostReferencePart extends ReferencePart {
         ProcessCompound pc = null;
 
         try {
-            pc = (ProcessCompound) SFProcess.getRootLocator()
+            pc = SFProcess.getRootLocator()
                             .getRootProcessCompound(getAddress());
         } catch (Exception e) {
             //TODO: Check

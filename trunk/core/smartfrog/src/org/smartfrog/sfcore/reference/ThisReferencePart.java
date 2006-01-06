@@ -55,7 +55,7 @@ public class ThisReferencePart extends ReferencePart {
      * @return hash code for part
      */
     public int hashCode() {
-        return "THIS".hashCode();
+        return THIS.hashCode();
     }
 
     /**

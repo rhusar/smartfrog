@@ -94,11 +94,14 @@ public class HereReferencePart extends ReferencePart {
      * @return the representation
      */
     public String toString(int index) {
-	if (value == null) return "";
-	if (index == 0)
-	    return HERE + ' ' + getValue().toString();
-	else
-	    return getValue().toString();
+        if (value == null) {
+            return "";
+        }
+        if (index == 0) {
+            return HERE + ' ' + getValue().toString();
+        } else {
+            return getValue().toString();
+        }
     }
 
     /**
