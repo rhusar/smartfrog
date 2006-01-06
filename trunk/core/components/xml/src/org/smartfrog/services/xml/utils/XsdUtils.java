@@ -36,7 +36,7 @@ public final class XsdUtils {
      * @return true iff the string value matches the XSD boolean types
      */
     public static boolean isXsdBooleanTrue(String value) {
-        return "true".equals(value) || "1".equals(value);
+        return value!=null && "true".equals(value) || "1".equals(value);
     }
 
     /**
@@ -47,7 +47,7 @@ public final class XsdUtils {
      * @link http://www.w3.org/TR/2004/REC-xmlschema-2-20041028/datatypes.html#boolean
      */
     public static boolean isXsdBooleanFalse(String value) {
-        return "false".equals(value) || "0".equals(value);
+        return value!=null && "false".equals(value) || "0".equals(value);
     }
 
 }
