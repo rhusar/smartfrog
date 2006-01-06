@@ -23,8 +23,8 @@ package org.smartfrog.services.deployapi.test.unit;
 import org.apache.axis2.addressing.EndpointReference;
 import org.smartfrog.services.deployapi.engine.Job;
 import org.smartfrog.services.deployapi.engine.JobRepository;
-import org.smartfrog.services.deployapi.system.LifecycleStateEnum;
 import org.smartfrog.services.deployapi.system.Constants;
+import org.smartfrog.services.deployapi.system.LifecycleStateEnum;
 import org.smartfrog.services.deployapi.transport.faults.BaseException;
 
 import java.net.MalformedURLException;

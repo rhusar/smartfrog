@@ -21,12 +21,11 @@ package org.smartfrog.services.deployapi.engine;
 
 import nu.xom.Element;
 import nu.xom.Node;
-
-import java.util.HashMap;
-
-import org.smartfrog.services.xml.java5.iterators.NodeIterator;
 import org.smartfrog.services.deployapi.binding.XomHelper;
 import org.smartfrog.services.deployapi.transport.faults.FaultRaiser;
+import org.smartfrog.services.xml.java5.iterators.NodeIterator;
+
+import java.util.HashMap;
 
 
 /**

@@ -19,6 +19,8 @@
  */
 package org.smartfrog.services.deployapi.transport.endpoints.portal;
 
+import nu.xom.Document;
+import nu.xom.Element;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.smartfrog.services.deployapi.binding.XomHelper;
@@ -31,9 +33,6 @@ import org.smartfrog.services.deployapi.transport.endpoints.SmartFrogAxisEndpoin
 import org.smartfrog.services.deployapi.transport.faults.BaseException;
 
 import java.util.Locale;
-
-import nu.xom.Document;
-import nu.xom.Element;
 
 /**
  * This class is *NOT* re-entrant. Create one for each deployment. created Aug

@@ -21,8 +21,6 @@
 package org.smartfrog.services.deployapi.test.unit;
 
 import org.apache.axis2.addressing.EndpointReference;
-import static org.smartfrog.services.deployapi.binding.EprHelper.compareEndpoints;
-import static org.smartfrog.services.deployapi.binding.EprHelper.stringify;
 
 /**
 

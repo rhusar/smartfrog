@@ -20,11 +20,7 @@
 package org.smartfrog.services.deployapi.test.unit;
 
 import org.apache.axis2.om.OMElement;
-import org.smartfrog.services.deployapi.system.Constants;
 import org.smartfrog.services.deployapi.transport.endpoints.PortalEndpoint;
-import org.smartfrog.services.deployapi.transport.endpoints.portal.CreateProcessor;
-
-import javax.xml.namespace.QName;
 
 /**
  * created 14-Sep-2005 11:53:51

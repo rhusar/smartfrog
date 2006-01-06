@@ -19,6 +19,8 @@
  */
 package org.smartfrog.services.deployapi.transport.endpoints;
 
+import nu.xom.Document;
+import nu.xom.Element;
 import org.apache.axis2.context.MessageContext;
 import org.apache.axis2.om.OMElement;
 import org.apache.commons.logging.Log;
@@ -26,17 +28,14 @@ import org.apache.commons.logging.LogFactory;
 import org.smartfrog.services.deployapi.engine.Job;
 import org.smartfrog.services.deployapi.engine.JobRepository;
 import org.smartfrog.services.deployapi.engine.ServerInstance;
-import org.smartfrog.services.deployapi.system.Utils;
 import org.smartfrog.services.deployapi.system.Constants;
+import org.smartfrog.services.deployapi.system.Utils;
 import org.smartfrog.services.deployapi.transport.faults.BaseException;
-import org.smartfrog.services.deployapi.transport.faults.FaultRaiser;
 import org.smartfrog.services.deployapi.transport.faults.DeploymentException;
+import org.smartfrog.services.deployapi.transport.faults.FaultRaiser;
 
 import java.io.IOException;
 import java.net.URI;
-
-import nu.xom.Document;
-import nu.xom.Element;
 
 /**
  * created Aug 4, 2004 3:59:42 PM

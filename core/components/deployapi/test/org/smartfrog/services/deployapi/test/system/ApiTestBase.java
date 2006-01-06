@@ -23,13 +23,11 @@ package org.smartfrog.services.deployapi.test.system;
 
 import org.smartfrog.services.deployapi.client.ConsoleOperation;
 import org.smartfrog.services.deployapi.client.Deploy;
-import org.smartfrog.services.deployapi.client.Endpointer;
 import org.smartfrog.services.deployapi.client.SystemEndpointer;
 import org.smartfrog.services.deployapi.system.Constants;
 import org.smartfrog.services.deployapi.system.Utils;
 import org.smartfrog.services.xml.utils.ResourceLoader;
 
-import javax.xml.namespace.QName;
 import java.io.File;
 import java.io.IOException;
 import java.rmi.RemoteException;
