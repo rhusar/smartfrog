@@ -20,7 +20,6 @@
 package org.smartfrog.sfcore.languages.cdl.faults;
 
 import org.smartfrog.sfcore.languages.cdl.references.StepExecutionResult;
-import org.ggf.cddlm.utils.FaultTemplate;
 import org.ggf.cddlm.generated.api.CddlmConstants;
 
 import javax.xml.namespace.QName;
@@ -83,7 +82,7 @@ public class CdlResolutionException extends CdlException {
     }
 
     public CdlResolutionException(String message, StepExecutionResult state) {
-        super(message+" in "+ state.getPath().toString()+" at "+state.getNode());
+        super(message+" in "+ state.getPath().toString()+" at "+state.getNode().getDescription());
     }
 
     /**

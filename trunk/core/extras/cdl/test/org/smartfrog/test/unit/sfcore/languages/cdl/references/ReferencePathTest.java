@@ -243,7 +243,8 @@ public class ReferencePathTest extends TestCase {
         child2.addNewAttribute(Constants.QNAME_CDL_REF, "/something/else");
         path = new ReferencePath(child2);
         assertFalse(path.isLazy());
-        child2.addNewAttribute(Constants.QNAME_CDL_LAZY,"true");
+        //child2.addNewAttribute(Constants.QNAME_CDL_LAZY,"true");
+        child2.setLazy(true);
         ReferencePath path2=new ReferencePath(child2);
         path.appendPath(path2);
         assertTrue(path.isLazy());
