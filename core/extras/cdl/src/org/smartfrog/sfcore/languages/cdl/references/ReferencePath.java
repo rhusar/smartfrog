@@ -21,9 +21,9 @@ package org.smartfrog.sfcore.languages.cdl.references;
 
 import org.smartfrog.sfcore.languages.cdl.dom.PropertyList;
 import org.smartfrog.sfcore.languages.cdl.faults.CdlRuntimeException;
+import org.smartfrog.sfcore.languages.cdl.faults.CdlResolutionException;
+import org.smartfrog.sfcore.languages.cdl.faults.CdlException;
 import org.smartfrog.services.xml.java5.NamespaceUtils;
-import org.smartfrog.services.xml.utils.XsdUtils;
-import org.ggf.cddlm.generated.api.CddlmConstants;
 
 import javax.xml.namespace.QName;
 import java.util.List;
@@ -47,6 +47,12 @@ public class ReferencePath {
      */
     public static final String ERROR_NO_TOPLEVEL = "There is no toplevel node in this graph; unable to make relative";
 
+    /**
+     * Completely arbitrary limit on number of steps, used to catch iterations.
+     * {@value}
+     */
+    private static final int LIMIT =10000;
+
     public ReferencePath() {
     }
 
@@ -66,9 +72,7 @@ public class ReferencePath {
         build(refValue);
 
         //extract lazy flag.
-        String lazyValue=source.getAttributeValue(CddlmConstants.ATTRIBUTE_LAZY,
-                CddlmConstants.XML_CDL_NAMESPACE);
-        lazy=XsdUtils.isXsdBooleanTrue(lazyValue);
+        setLazy(source.isLazy());
 
         if (refRootValue != null) {
             //a refroot: paste this in to the front of the path.
@@ -278,5 +282,30 @@ public class ReferencePath {
     public void appendPath(ReferencePath other) {
         lazy |= other.isLazy();
         steps.addAll(other.getSteps());
+    }
+
+    /**
+     * Evaluate the graph by walking down it until things are done or the depth gets beyond {@link #LIMIT}
+     * @param startingPoint
+     * @return the final state and execution result.
+     * @throws CdlResolutionException
+     */
+    public StepExecutionResult execute(PropertyList startingPoint) throws CdlException {
+        StepExecutionResult state=new StepExecutionResult(this,startingPoint);
+        int count =0;
+        //the number of steps can increase during the run. I'm avoiding
+        //using iterators to be sure of what is happening
+        while(!state.isFinished()) {
+            count++;
+            if(count >LIMIT) {
+                //too deep, way too deep
+                throw new CdlResolutionException("Reference path is too deep; suspected recursive resolution "
+                        +" starting at "+startingPoint.getDescription(),
+                        state);
+            }
+            state=state.executeCurrentStep();
+        }
+        //here we have finished.
+        return state;
     }
 }

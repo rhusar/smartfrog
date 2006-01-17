@@ -22,13 +22,16 @@ package org.smartfrog.sfcore.languages.cdl.dom;
 import nu.xom.Attribute;
 import nu.xom.Element;
 import nu.xom.Node;
+import nu.xom.Elements;
 import org.ggf.cddlm.generated.api.CddlmConstants;
 import org.smartfrog.services.xml.java5.NamespaceUtils;
+import org.smartfrog.services.xml.utils.XsdUtils;
 import org.smartfrog.sfcore.languages.cdl.Constants;
 import org.smartfrog.sfcore.languages.cdl.references.ReferencePath;
 import org.smartfrog.sfcore.languages.cdl.faults.CdlException;
 import org.smartfrog.sfcore.languages.cdl.faults.CdlXmlParsingException;
 import org.smartfrog.sfcore.languages.cdl.faults.CdlRuntimeException;
+import org.smartfrog.sfcore.languages.cdl.faults.CdlInvalidValueReferenceException;
 import org.smartfrog.sfcore.languages.cdl.generate.GenerateContext;
 import org.smartfrog.sfcore.languages.cdl.resolving.ResolveEnum;
 import org.smartfrog.sfcore.languages.cdl.utils.ClassLogger;
@@ -195,16 +198,34 @@ public class PropertyList extends DocNode {
      */
     public String getDescription() {
         StringBuffer buffer = new StringBuffer();
-        buffer.append("Prototype : ");
+        buffer.append("<");
         buffer.append(getQName());
         if (extendsName != null) {
-            buffer.append(" extends ");
+            buffer.append(" cdl:extends ");
             buffer.append(extendsName);
         }
+        String refValue = getRefValue();
+        if(refValue!=null) {
+            buffer.append(" cdl:ref=\"");
+            buffer.append(refValue);
+            buffer.append('"');
+        }
+        String refRootValue = getRefRootValue();
+        if (refRootValue != null) {
+            buffer.append(" cdl:refroot=\"");
+            buffer.append(refRootValue);
+            buffer.append('"');
+        }
+        if(isLazy()) {
+            buffer.append(" cdl:lazy=\"true\"");
+        }
+        buffer.append(">");
+/*
         if (getOwner() != null) {
             buffer.append(" from ");
             buffer.append(getOwner());
         }
+*/
         return buffer.toString();
     }
 
@@ -459,11 +480,61 @@ public class PropertyList extends DocNode {
     }
 
     /**
+     * Test for a node being a value references
+     * @return true if this is a valid value reference, fault if not (though its
+     * children may be)
+     * @throws CdlInvalidValueReferenceException if the node is inconsistent
+     */
+    public boolean isValueReference() throws CdlInvalidValueReferenceException {
+        String ref= getRefValue();
+        if(ref==null) {
+            return false;
+        }
+        Elements childElements = getChildElements();
+        if(childElements.size()>0) {
+            throw new CdlInvalidValueReferenceException(
+                    CdlInvalidValueReferenceException.ERROR_CHILD_ELEMENTS_IN_REFERENCE
+            +getDescription());
+        }
+        return true;
+    }
+
+    /**
+     * Test for a node having a lazy attribute
+     * @return returns true if cdl:lazy is present; the value is unimportant
+     */
+    public boolean isLazy() {
+        String lazyValue = getAttributeValue(ATTR_LAZY, CDL_NAMESPACE);
+        boolean lazy = lazyValue!=null && XsdUtils.isXsdBooleanTrue(lazyValue);
+        return lazy;
+    }
+
+    /**
+     * Set the lazy flag/attribute.
+     * When a list is lazy it has the attribute cdl:lazy set; when it is not, it is removed
+     * @param lazy
+     */
+    public void setLazy(boolean lazy) {
+        removeAttribute(ATTR_LAZY, CDL_NAMESPACE);
+        if (lazy) {
+            addAttribute(new Attribute("cdl:"+ATTR_LAZY, CDL_NAMESPACE, XsdUtils.TRUE));
+        }
+    }
+
+    /**
      * test for being a toplevel list.
      * The relevant subclass overrides it to return true
      * @return true iff this is a ToplevelList.
      */
     public boolean isToplevel() {
         return false;
+    }
+
+    /**
+     * Get a factory for this particular instance/subclass of PropertyList.
+     * @return a factory that can be used to create new objects of this type.
+     */
+    public PropertyListFactory getFactory() {
+        return new PropertyListFactory();
     }
 }

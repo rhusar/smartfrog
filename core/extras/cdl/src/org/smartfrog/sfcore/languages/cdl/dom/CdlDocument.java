@@ -205,7 +205,7 @@ public class CdlDocument implements Names, ToSmartFrog {
      */
     public void replaceSystem(ToplevelList newsystem) {
 
-        if (system != null) {
+        if (system != null ) {
             root.replaceChild(system, newsystem);
         }
         setSystem(newsystem);

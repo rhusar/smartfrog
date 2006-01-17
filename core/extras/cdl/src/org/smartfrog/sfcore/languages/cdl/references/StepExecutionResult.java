@@ -20,6 +20,8 @@
 package org.smartfrog.sfcore.languages.cdl.references;
 
 import org.smartfrog.sfcore.languages.cdl.dom.PropertyList;
+import org.smartfrog.sfcore.languages.cdl.faults.CdlResolutionException;
+import org.smartfrog.sfcore.languages.cdl.faults.CdlException;
 
 /**
  * This path keeps track of the processing of a (successful) resolution.
@@ -103,5 +105,23 @@ public class StepExecutionResult {
      */
     public boolean isFinished() {
         return index>=path.size();
+    }
+
+    public Step getCurrentStep() {
+        if(isFinished()) {
+            return null;
+        } else {
+            return path.getStep(index);
+        }
+    }
+
+    public StepExecutionResult executeCurrentStep() throws CdlException {
+        Step currentStep = getCurrentStep();
+        if(currentStep==null) {
+            //already finished; do nothing else
+            return this;
+        } else {
+            return currentStep.execute(this);
+        }
     }
 }
