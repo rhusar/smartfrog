@@ -68,4 +68,36 @@ public class Constants {
 
     public static final QName QNAME_CDL_LAZY = new QName(CddlmConstants.XML_CDL_NAMESPACE,
             CddlmConstants.ATTRIBUTE_LAZY, "cdl");
+
+    /**
+     * Completely arbitrary limit on number of steps, used to catch recursion errors
+     * {@value}
+     */
+    public static final int RESOLUTION_PATH_LIMIT = 10000;
+
+    /**
+     * Completely arbitrary limit on the depth of nested references, used to catch recursion errors
+     * {@value}
+     */
+    public static final int RESOLUTION_DEPTH_LIMIT = 100;
+
+    /**
+     * Completely arbitrary limit on the number of times we iterate through, the graph trying to
+     * resolve references. After a while you have to give up.
+     * {@value}
+     */
+    public static final int RESOLUTION_SPIN_LIMIT = 100;
+
+    /**
+     * QName used for fault detail containing the current phase
+     * {@value}
+     */
+    public static final QName QNAME_DETAIL_PHASE = new QName(SMARTFROG_NAMESPACE,"phase","sf");
+
+    /**
+     * QName used for fault detail containing the current phase
+     * {@value}
+     */
+    public static final QName QNAME_DETAIL_DOCUMENT = new QName(SMARTFROG_NAMESPACE, "phase", "sf");
+
 }

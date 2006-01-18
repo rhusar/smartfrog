@@ -338,7 +338,7 @@ public class ExtendsResolver {
                 }
                 if (add) {
                     //add if told to
-                    state = ResolveEnum.merge(state, resolvedList.getResolveState());
+                    state = state.merge(resolvedList.getResolveState());
                     newChildren.add(resolvedList);
                 }
             } else {

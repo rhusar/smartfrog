@@ -27,6 +27,7 @@ import org.smartfrog.sfcore.languages.cdl.references.StepRoot;
 import org.smartfrog.sfcore.languages.cdl.references.StepUp;
 import org.smartfrog.sfcore.languages.cdl.references.StepDown;
 import org.smartfrog.sfcore.languages.cdl.references.StepRefRoot;
+import org.smartfrog.sfcore.languages.cdl.references.StepStart;
 import org.smartfrog.sfcore.languages.cdl.dom.ToplevelList;
 import org.smartfrog.sfcore.languages.cdl.dom.PropertyList;
 import org.smartfrog.sfcore.languages.cdl.dom.ElementEx;
@@ -93,6 +94,9 @@ public class ReferencePathTest extends TestCase {
         assertStepType(position, StepHere.class);
     }
 
+    private void assertStepStart(int position) {
+        assertStepType(position, StepStart.class);
+    }
 
     private void assertStepDown(int position, String localname) {
         assertStepDown(position, localname, null);
@@ -116,8 +120,9 @@ public class ReferencePathTest extends TestCase {
 
     public void testBuildHere() throws Exception {
         path.build(".");
-        assertStepSize(1);
-        assertStepHere(0);
+        assertStepSize(2);
+        assertStepStart(0);
+        assertStepHere(1);
     }
 
     public void testBuildRoot() throws Exception {
@@ -128,22 +133,24 @@ public class ReferencePathTest extends TestCase {
 
     public void testBuildUp() throws Exception {
         path.build("..");
-        assertStepSize(1);
-        assertStepUp(0);
+        assertStepSize(2);
+        assertStepStart(0);
+        assertStepUp(1);
     }
 
     public void testBuildDownLocal() throws Exception {
         path.build("child");
-        List<Step> steps = path.getSteps();
-        assertStepSize(1);
-        assertStepDown(0, "child");
+        assertStepSize(2);
+        assertStepStart(0);
+        assertStepDown(1, "child");
     }
 
     public void testBuildDownPrefix() throws Exception {
         path.build("../tns:child");
-        List<Step> steps = path.getSteps();
-        assertStepSize(2);
-        assertStepDown(1, "child", "tns");
+        assertStepSize(3);
+        assertStepStart(0);
+        assertStepUp(1);
+        assertStepDown(2, "child", "tns");
     }
 
     public void testComplexPath() throws Exception {
@@ -164,17 +171,19 @@ public class ReferencePathTest extends TestCase {
     public void testExtractHere() throws Exception {
         child2.addNewAttribute(Constants.QNAME_CDL_REF, ".");
         path = new ReferencePath(child2);
-        assertStepSize(1);
-        assertStepHere(0);
+        assertStepSize(2);
+        assertStepStart(0);
+        assertStepHere(1);
     }
 
     public void testExtractUp() throws Exception {
         child2.addNewAttribute(Constants.QNAME_CDL_REF, ".././child2");
         path = new ReferencePath(child2);
-        assertStepSize(3);
-        assertStepUp(0);
-        assertStepHere(1);
-        assertStepDown(2, "child2");
+        assertStepSize(4);
+        assertStepStart(0);
+        assertStepUp(1);
+        assertStepHere(2);
+        assertStepDown(3, "child2");
     }
 
     public void testExtractRoot() throws Exception {

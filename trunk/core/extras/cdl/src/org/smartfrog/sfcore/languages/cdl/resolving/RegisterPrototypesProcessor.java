@@ -1,4 +1,4 @@
-/** (C) Copyright 2005 Hewlett-Packard Development Company, LP
+/** (C) Copyright 2006 Hewlett-Packard Development Company, LP
 
  This library is free software; you can redistribute it and/or
  modify it under the terms of the GNU Lesser General Public
@@ -17,25 +17,22 @@
  For more information: www.smartfrog.org
 
  */
-package org.smartfrog.sfcore.languages.cdl.importing;
+package org.smartfrog.sfcore.languages.cdl.resolving;
 
 import org.smartfrog.sfcore.languages.cdl.process.ProcessingPhase;
 import org.smartfrog.sfcore.languages.cdl.dom.CdlDocument;
-import org.smartfrog.sfcore.languages.cdl.dom.Import;
 import org.smartfrog.sfcore.languages.cdl.faults.CdlException;
-import org.smartfrog.sfcore.languages.cdl.ParseContext;
+import org.smartfrog.sfcore.languages.cdl.faults.CdlDuplicatePrototypeException;
 
 import java.io.IOException;
 
 import nu.xom.ParsingException;
 
 /**
- * created 04-Jan-2006 15:44:47
+ * created 18-Jan-2006 15:13:30
  */
 
-public class ImportProcessor implements ProcessingPhase {
-
-
+public class RegisterPrototypesProcessor implements ProcessingPhase {
 
     /**
      * Process a document.
@@ -47,21 +44,14 @@ public class ImportProcessor implements ProcessingPhase {
      * @throws nu.xom.ParsingException
      */
     public void process(CdlDocument document) throws IOException, CdlException, ParsingException {
-
-            ParseContext context = document.getParseContext();
-            for (Import imp : document.getImports()) {
-                CdlDocument imported = context.importDocument(document, imp);
-                //TODO: do we need to do anything with the imported doc?
-            }
-
+        document.registerPrototypes();
     }
-
 
     /**
      * @return a string representation of the phase
      */
     public String toString() {
-        return "Document Importer";
+        return "Register Prototypes";
     }
 
 }

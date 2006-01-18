@@ -21,8 +21,13 @@ package org.smartfrog.sfcore.languages.cdl.faults;
 
 import org.ggf.cddlm.utils.FaultCodeComparator;
 import org.ggf.cddlm.utils.FaultTemplate;
+import org.smartfrog.sfcore.languages.cdl.dom.ElementEx;
 
 import javax.xml.namespace.QName;
+import java.util.List;
+import java.util.LinkedList;
+
+import nu.xom.Element;
 
 
 /**
@@ -33,6 +38,8 @@ import javax.xml.namespace.QName;
 public class CdlException extends Exception implements FaultCodeComparator {
 
     private QName faultCode;
+
+    private List<Element> detail=new LinkedList<Element>();
 
     /**
      * Constructs a new exception with <code>null</code> as its detail message.
@@ -126,5 +133,69 @@ public class CdlException extends Exception implements FaultCodeComparator {
             return expected==null;
         }
         return faultCode.equals(expected);
+    }
+
+
+    /**
+     * Copy the element and append it to the detail
+     * @param element
+     * @param toCopy to copy or not?
+     */
+    public void addDetail(Element element, boolean toCopy) {
+        Element copy = maybeCopy(element, toCopy);
+        detail.add(copy);
+    }
+
+    private Element maybeCopy(Element element, boolean toCopy) {
+        Element copy;
+        copy = toCopy?(Element) element.copy():element;
+        return copy;
+    }
+
+    /**
+     * Add a new element containing nothing but text
+     * @param name qname of the detail
+     * @param text text
+     */
+    public void addDetailText(QName name,String text) {
+        Element e=new ElementEx(name);
+        e.appendChild(text);
+    }
+
+    /**
+     * Add a new element containing nothing but text
+     *
+     * @param name qname of the detail
+     * @param element element to add under the qname
+     * @param toCopy copy flag
+     */
+    public void addDetailElement(QName name, Element element, boolean toCopy) {
+        Element e = new ElementEx(name);
+        e.appendChild(maybeCopy(element,toCopy));
+    }
+
+
+    /**
+     * Returns a short description of this throwable.
+     * If this <code>Throwable</code> object was created with a non-null detail
+     * message string, then the result is the concatenation of three strings:
+     * <ul>
+     * <li>The name of the actual class of this object
+     * <li>": " (a colon and a space)
+     * <li>The result of the {@link #getMessage} method for this object
+     * </ul>
+     * If this <code>Throwable</code> object was created with a <tt>null</tt>
+     * detail message string, then the name of the actual class of this object
+     * is returned.
+     *
+     * @return a string representation of this throwable.
+     */
+    public String toString() {
+        StringBuffer buffer=new StringBuffer(super.toString());
+        buffer.append("\n");
+        for(Element e:detail) {
+            buffer.append(e.toXML());
+        }
+        return buffer.toString();
     }
 }

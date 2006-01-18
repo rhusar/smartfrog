@@ -133,8 +133,9 @@ public class PropertyList extends DocNode {
         }
 
         //check for having a refroot and us not already being bound
-        if(getRefRootValue()!=null && referencePath==null) {
+        if(getRefValue()!=null && referencePath==null) {
             //and create a reference path if so
+            //this will make a relative one absolute in the process, incidentally.
             referencePath=new ReferencePath(this);
         }
     }
@@ -412,7 +413,7 @@ public class PropertyList extends DocNode {
     /**
      * Run through the list and update the entire aggregate resolution state
      * This will set all children to their appropriate values, using
-     * the priority logic of {@link ResolveEnum#merge(ResolveEnum, ResolveEnum)}
+     * the priority logic of {@link ResolveEnum#merge(ResolveEnum)}
      *
      * @return the new state of the tree.
      */
@@ -422,7 +423,7 @@ public class PropertyList extends DocNode {
             if (n instanceof PropertyList) {
                 PropertyList child = (PropertyList) n;
                 ResolveEnum childState = child.aggregateResolutionState();
-                state = ResolveEnum.merge(resolveState, childState);
+                state = state.merge(childState);
             }
         }
         setResolveState(state);
@@ -449,10 +450,20 @@ public class PropertyList extends DocNode {
     }
 
     /**
-     * Mark a reference as being resolved
+     * Mark a reference as being resolved.
+     * The reference path is removed at the same time.
      */
     protected void markReferenceResolved() {
         removeAttribute(ATTR_REF, CDL_NAMESPACE);
+        referencePath=null;
+    }
+
+    /**
+     * Get the reference path of a node
+     * @return the reference path or null
+     */
+    public ReferencePath getReferencePath() {
+        return referencePath;
     }
 
     /**
@@ -467,16 +478,6 @@ public class PropertyList extends DocNode {
         }
         removeAttribute(attribute);
         return true;
-    }
-
-    /**
-     * Resolve any reference.
-     * @throws CdlRuntimeException if needed, such as when there is an invalid reference
-     * @return
-     */
-    public ResolveEnum resolveLocalReference() {
-        //this resolves references.
-        return null;
     }
 
     /**
@@ -537,4 +538,38 @@ public class PropertyList extends DocNode {
     public PropertyListFactory getFactory() {
         return new PropertyListFactory();
     }
+
+    /**
+     * What is our local resolution state
+     * @return our current state. {@link ResolveEnum#ResolvedIncomplete}
+     * or {@link ResolveEnum#ResolvedIncomplete} for references, {@link ResolveEnum#ResolvedComplete}
+     * for nothing left to do. And {@link ResolveEnum#ResolvedUnknown} if there are child elements,
+     * so our state is effectively unknown.
+     * @throws CdlInvalidValueReferenceException
+     */
+    public ResolveEnum inferLocalResolutionState() throws CdlInvalidValueReferenceException {
+        ResolveEnum state;
+        if (isValueReference()) {
+            //its a link
+            state = ResolveEnum.ResolvedIncomplete;
+            if (isLazy()) {
+                //its a lazy link
+                state = ResolveEnum.ResolvedLazyLinksRemaining;
+            }
+        } else {
+            //start with complete state
+            state = ResolveEnum.ResolvedComplete;
+            //then look for property nodes
+            for (Node node : this) {
+                if (node instanceof PropertyList) {
+                    //if there is one or more property list child
+                    //then state is unknown
+                    state = ResolveEnum.ResolvedUnknown;
+                    break;
+                }
+            }
+        }
+        return state;
+    }
+
 }

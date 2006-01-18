@@ -134,8 +134,8 @@ public class ExtendsTest extends XmlTestBase {
 
     public void testExtendsAttributeExtracted() throws IOException, CdlException,
             ParsingException {
-
-        CdlDocument cdlDocument = loadCDLToDOM(CDL_DOC_EXTENDS_1);
+        ParseContext context = new ParseContext();
+        CdlDocument cdlDocument = parseValidCDL(context, CDL_DOC_EXTENDS_1);
         PropertyList propertyList = cdlDocument.getParseContext()
                 .prototypeResolve(a2);
         assertNotNull(propertyList);

@@ -60,6 +60,9 @@ public class StepRefRoot extends Step {
     public StepExecutionResult execute(StepExecutionResult state) throws CdlResolutionException {
         CdlDocument owner = state.getNode().getOwner();
         PropertyList target = owner.lookup(refroot);
+        if(target==null) {
+            throw new CdlResolutionException("Unknown reference root "+refroot.toString());
+        }
         return state.next(target);
     }
 

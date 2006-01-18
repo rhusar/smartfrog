@@ -1,4 +1,4 @@
-/** (C) Copyright 2005 Hewlett-Packard Development Company, LP
+/** (C) Copyright 2006 Hewlett-Packard Development Company, LP
 
  This library is free software; you can redistribute it and/or
  modify it under the terms of the GNU Lesser General Public
@@ -19,41 +19,33 @@
  */
 package org.smartfrog.sfcore.languages.cdl.resolving;
 
-import org.smartfrog.sfcore.languages.cdl.process.ProcessingPhase;
-import org.smartfrog.sfcore.languages.cdl.dom.CdlDocument;
+import org.smartfrog.sfcore.languages.cdl.process.PropertyListOperation;
+import org.smartfrog.sfcore.languages.cdl.dom.PropertyList;
 import org.smartfrog.sfcore.languages.cdl.faults.CdlException;
 
 import java.io.IOException;
 
-import nu.xom.ParsingException;
-
 /**
- * created 04-Jan-2006 15:47:01
+ * Operation to put the node into any state we like
+ * created 18-Jan-2006 13:23:44
  */
 
-public class ExtendsProcessor implements ProcessingPhase {
+public class ResetStateOperation implements PropertyListOperation {
+
+    private ResolveEnum state;
+
+    public ResetStateOperation(ResolveEnum state) {
+        this.state = state;
+    }
 
     /**
-     * Process a document.
+     * Apply an operation to a node.
      *
-     * @param document the document to work on
-     * @throws java.io.IOException
+     * @param node
      * @throws org.smartfrog.sfcore.languages.cdl.faults.CdlException
      *
-     * @throws nu.xom.ParsingException
      */
-    public void process(CdlDocument document) throws IOException, CdlException, ParsingException {
-        ExtendsResolver extendsResolver = new ExtendsResolver(
-                document.getParseContext());
-        extendsResolver.resolveExtends(document);
+    public void apply(PropertyList node) throws CdlException, IOException {
+        node.setResolveState(state);
     }
-
-
-    /**
-     * @return a string representation of the phase
-     */
-    public String toString() {
-        return "Extends Processor";
-    }
-
 }
