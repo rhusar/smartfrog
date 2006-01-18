@@ -25,9 +25,13 @@ package org.smartfrog.services.xml.utils;
  */
 
 public final class XsdUtils {
+    public static final String TRUE = "true";
+    public static final String FALSE = "false";
 
     private XsdUtils() {
     }
+
+
 
     /**
      * Test for a string being true against the XSD types
@@ -36,7 +40,7 @@ public final class XsdUtils {
      * @return true iff the string value matches the XSD boolean types
      */
     public static boolean isXsdBooleanTrue(String value) {
-        return value!=null && "true".equals(value) || "1".equals(value);
+        return value!=null && TRUE.equals(value) || "1".equals(value);
     }
 
     /**
@@ -47,7 +51,7 @@ public final class XsdUtils {
      * @link http://www.w3.org/TR/2004/REC-xmlschema-2-20041028/datatypes.html#boolean
      */
     public static boolean isXsdBooleanFalse(String value) {
-        return value!=null && "false".equals(value) || "0".equals(value);
+        return value!=null && FALSE.equals(value) || "0".equals(value);
     }
 
 }
