@@ -62,7 +62,7 @@ public class ToplevelList extends PropertyList {
      *                                        already
      */
     public void registerPrototypes() throws CdlDuplicatePrototypeException {
-        for (Node node : nodes()) {
+        for (Node node : this) {
             if (node instanceof PropertyList) {
                 PropertyList prototype = (PropertyList) node;
                 getParseContext().prototypeAddNew(prototype);

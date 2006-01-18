@@ -84,7 +84,7 @@ public class StepDown extends Step {
                 throw new CdlResolutionException("Unknown prefix :"+prefix,state);
             }
         }
-        PropertyList child = node.getChildTemplateMatching(localname, uri);
+        PropertyList child = node.getChildTemplateMatching(uri, localname);
         if(child==null) {
             throw new CdlResolutionException("Child element not found  {" + uri+"}#"+localname, state);
         }

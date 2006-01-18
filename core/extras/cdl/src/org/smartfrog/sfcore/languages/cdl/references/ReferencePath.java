@@ -23,6 +23,7 @@ import org.smartfrog.sfcore.languages.cdl.dom.PropertyList;
 import org.smartfrog.sfcore.languages.cdl.faults.CdlRuntimeException;
 import org.smartfrog.sfcore.languages.cdl.faults.CdlResolutionException;
 import org.smartfrog.sfcore.languages.cdl.faults.CdlException;
+import org.smartfrog.sfcore.languages.cdl.Constants;
 import org.smartfrog.services.xml.java5.NamespaceUtils;
 
 import javax.xml.namespace.QName;
@@ -46,12 +47,8 @@ public class ReferencePath {
      * {@value}
      */
     public static final String ERROR_NO_TOPLEVEL = "There is no toplevel node in this graph; unable to make relative";
-
-    /**
-     * Completely arbitrary limit on number of steps, used to catch iterations.
-     * {@value}
-     */
-    private static final int LIMIT =10000;
+    public static final String ERROR_RECURSIVE_RESOLUTION = "Reference path is too deep; suspected recursive resolution "
+           +" starting at ";
 
     public ReferencePath() {
     }
@@ -192,12 +189,20 @@ public class ReferencePath {
         steps = new ArrayList<Step>();
         int start = 0;
         final int pathlength = path.length();
+
+        //handle the beginning of the document as absolute or relative
         if (path.startsWith("/")) {
+            //absolute paths have a root
             append(new StepRoot());
             start = 1;
             if (pathlength == 1) {
+                //and exit here if there is nothing else
                 return;
             }
+        } else {
+            //relative refs have a step start, that puts the
+            //cursor in the right place to begin resolution
+            append(new StepStart());
         }
         //now, scan through the source looking for stuff
         boolean finished = false;
@@ -284,8 +289,19 @@ public class ReferencePath {
         steps.addAll(other.getSteps());
     }
 
+
+    public void validate() throws CdlResolutionException {
+        if(size()==0) {
+            throw new CdlResolutionException("Empty path");
+        }
+        Step last=getStep(size()-1);
+        if(last instanceof StepRoot) {
+
+        }
+    }
+
     /**
-     * Evaluate the graph by walking down it until things are done or the depth gets beyond {@link #LIMIT}
+     * Evaluate the graph by walking down it until things are done or the depth gets beyond {@link org.smartfrog.sfcore.languages.cdl.Constants#RESOLUTION_DEPTH_LIMIT}
      * @param startingPoint
      * @return the final state and execution result.
      * @throws CdlResolutionException
@@ -297,10 +313,9 @@ public class ReferencePath {
         //using iterators to be sure of what is happening
         while(!state.isFinished()) {
             count++;
-            if(count >LIMIT) {
+            if(count > Constants.RESOLUTION_PATH_LIMIT) {
                 //too deep, way too deep
-                throw new CdlResolutionException("Reference path is too deep; suspected recursive resolution "
-                        +" starting at "+startingPoint.getDescription(),
+                throw new CdlResolutionException(ERROR_RECURSIVE_RESOLUTION +startingPoint.getDescription(),
                         state);
             }
             state=state.executeCurrentStep();

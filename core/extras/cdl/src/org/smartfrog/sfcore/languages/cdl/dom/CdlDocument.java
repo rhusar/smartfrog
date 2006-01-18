@@ -24,9 +24,12 @@ import nu.xom.Element;
 import nu.xom.Node;
 import nu.xom.ParentNode;
 import nu.xom.ParsingException;
+import nu.xom.Serializer;
 import org.smartfrog.services.xml.java5.iterators.IteratorRelay;
 import org.smartfrog.services.xml.java5.iterators.NodeIterator;
+import org.smartfrog.services.filesystem.FileSystem;
 import org.smartfrog.sfcore.languages.cdl.ParseContext;
+import org.smartfrog.sfcore.languages.cdl.Constants;
 import org.smartfrog.sfcore.languages.cdl.references.EarlyReferenceProcessor;
 import org.smartfrog.sfcore.languages.cdl.process.ProcessingPhase;
 import org.smartfrog.sfcore.languages.cdl.importing.ImportProcessor;
@@ -39,11 +42,15 @@ import org.smartfrog.sfcore.languages.cdl.faults.CdlXmlParsingException;
 import org.smartfrog.sfcore.languages.cdl.generate.GenerateContext;
 import org.smartfrog.sfcore.languages.cdl.generate.ToSmartFrog;
 import org.smartfrog.sfcore.languages.cdl.resolving.ExtendsProcessor;
+import org.smartfrog.sfcore.languages.cdl.resolving.RegisterPrototypesProcessor;
 import org.smartfrog.sfcore.languages.cdl.utils.ClassLogger;
 import org.smartfrog.sfcore.logging.Log;
 
 import javax.xml.namespace.QName;
 import java.io.IOException;
+import java.io.PrintStream;
+import java.io.File;
+import java.io.ByteArrayOutputStream;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
@@ -345,10 +352,26 @@ public class CdlDocument implements Names, ToSmartFrog {
             ParsingException {
         setParseContext(context);
         parsePhaseBuildDom();
-        parsePhaseProcessImports();
-        parsePhaseExtendProcessing();
-        parsePhaseResolveEarlyReferences();
-        parsePhaseEvaluateExpressions();
+        List<ProcessingPhase> phases = new ArrayList<ProcessingPhase>(8);
+        phases.add(new RegisterPrototypesProcessor());
+        phases.add(new ImportProcessor());
+        phases.add(new ExtendsProcessor());
+        phases.add(new EarlyReferenceProcessor());
+
+        //list is full, so execute.
+        String currentPhase = "";
+        try {
+            for (ProcessingPhase phase : phases) {
+                currentPhase = phase.toString();
+                phase.process(this);
+            }
+        } catch (CdlException e) {
+            e.addDetailText(Constants.QNAME_DETAIL_PHASE, currentPhase);
+//            e.addDetailText(Constants.QNAME_DETAIL_DOCUMENT, printToString());
+            e.addDetail(getRoot(), true);
+
+            throw e;
+        }
     }
 
 
@@ -367,11 +390,7 @@ public class CdlDocument implements Names, ToSmartFrog {
             throw new CdlXmlParsingException(rootElement,
                     ERROR_WRONG_ROOT_ELT);
         }
-
         bind();
-
-        //at this point, we are mapped into custom classes to represent stuff
-        registerPrototypes();
     }
 
     /**
@@ -470,26 +489,13 @@ public class CdlDocument implements Names, ToSmartFrog {
         processor.process(this);
     }
 
-    /**
-     * Resolve compile-time variables
-     * @throws CdlException
-     */
-    public void parsePhaseResolveEarlyReferences() throws CdlException, IOException, ParsingException {
-        ProcessingPhase processor = new EarlyReferenceProcessor();
-        processor.process(this);
-    }
-
-    public void parsePhaseEvaluateExpressions() throws CdlException, IOException, ParsingException {
-        //TODO
-    }
-
 
     /**
      * register all our prototypes
      *
      * @throws CdlDuplicatePrototypeException if there is one in use already
      */
-    private void registerPrototypes() throws CdlDuplicatePrototypeException {
+    public void registerPrototypes() throws CdlDuplicatePrototypeException {
         if (configuration != null) {
             configuration.registerPrototypes();
         }
@@ -518,4 +524,40 @@ public class CdlDocument implements Names, ToSmartFrog {
             //out.leave();
         }
     }
+
+    /**
+     * Save a doc to a stream.
+     * does not close the stream afterwards.
+     * @param out
+     * @throws IOException
+     */
+
+    public void print(PrintStream out) throws IOException {
+        Serializer ser = new Serializer(out);
+        ser.write(this.getDocument());
+    }
+
+
+    /**
+     * Save the document to a text file in UTF-8 format,
+     * prettily where appropriate.
+     * @param file destination
+     * @throws IOException
+     */
+    public void printToFile(File file) throws IOException {
+        PrintStream print = null;
+        try {
+            print = new PrintStream(file, "UTF-8");
+            print(print);
+        } finally {
+            FileSystem.close(print);
+        }
+    }
+
+    public String printToString() throws IOException {
+        ByteArrayOutputStream out=new ByteArrayOutputStream();
+        print(new PrintStream(out));
+        return out.toString("UTF-8");
+    }
+
 }

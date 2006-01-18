@@ -26,7 +26,6 @@ public enum ResolveEnum {
     There is some deviousness here
     */
     ResolvedUnknown(0),
-    //ResolvedNoWorkNeeded(1),
     ResolvedComplete(1),
     ResolvedIncomplete(2),
     ResolvedLazyLinksRemaining(3),
@@ -38,39 +37,16 @@ public enum ResolveEnum {
    }
 
     /**
-     * Propagate resolution
-     *
-     * @param parent
-     * @return
-     */
-    public static ResolveEnum propagate(ResolveEnum parent) {
-        switch (parent) {
-            case ResolvedComplete:
-                return ResolvedComplete;
-            case ResolvedIncomplete:
-                return ResolvedIncomplete;
-//            case ResolvedNoWorkNeeded:
-//                return ResolvedComplete;
-            case ResolvedUnknown:
-                return ResolvedUnknown;
-            case ResolvedLazyLinksRemaining:
-            default:
-                return ResolvedLazyLinksRemaining;
-        }
-    }
-
-    /**
      * Merge the parent state and the child state to produce an aggregate which is
      * the worst-case merging of the two.
-     * @param parent
      * @param child
      * @return whichever of the two is in the least resolved state.
      */
-    public static ResolveEnum merge(ResolveEnum parent, ResolveEnum child) {
-        if(child.value>parent.value) {
+    public ResolveEnum merge(ResolveEnum child) {
+        if (child.value > this.value) {
             return child;
         } else {
-            return parent;
+            return this;
         }
     }
 

@@ -20,10 +20,14 @@
 package org.smartfrog.sfcore.languages.cdl.references;
 
 import org.smartfrog.sfcore.languages.cdl.process.ProcessingPhase;
+import org.smartfrog.sfcore.languages.cdl.process.DepthFirstOperationPhase;
 import org.smartfrog.sfcore.languages.cdl.dom.CdlDocument;
 import org.smartfrog.sfcore.languages.cdl.dom.ToplevelList;
 import org.smartfrog.sfcore.languages.cdl.dom.PropertyList;
 import org.smartfrog.sfcore.languages.cdl.faults.CdlException;
+import org.smartfrog.sfcore.languages.cdl.faults.CdlResolutionException;
+import org.smartfrog.sfcore.languages.cdl.Constants;
+import org.smartfrog.sfcore.languages.cdl.resolving.ResolveEnum;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -41,6 +45,32 @@ public class EarlyReferenceProcessor implements ProcessingPhase {
 
     private static Log log= LogFactory.getLog(EarlyReferenceProcessor.class);
 
+    DepthFirstOperationPhase stateInferrer;
+
+    public EarlyReferenceProcessor() {
+        stateInferrer=createStateInferrer();
+    }
+
+
+    /**
+     * @return a string representation of the phase
+     */
+    public String toString() {
+        return "Static Reference Processor";
+    }
+
+
+    /**
+     * create a processor that infers our state.
+     * @return
+     */
+    private DepthFirstOperationPhase createStateInferrer() {
+        DepthFirstOperationPhase processor = new DepthFirstOperationPhase(null,
+            new InferEarlyReferenceState(),
+            false, true);
+        return processor;
+    }
+
     /**
      * Process a document.
      *
@@ -53,47 +83,77 @@ public class EarlyReferenceProcessor implements ProcessingPhase {
     public void process(CdlDocument document) throws IOException, CdlException, ParsingException {
         //1. go through the doc and resolve references. Everywhere? or just under the system?
         //2. run through all
-        ToplevelList system = document.getSystem();
-        if (system != null) {
-            PropertyList newPropertyList = resolveReferences(system);
-            if(newPropertyList!=system) {
-                ToplevelList toplevel =(ToplevelList) newPropertyList;
-                document.replaceSystem(toplevel);
-            }
+
+        int count=0;
+        stateInferrer.process(document);
+        ResolveEnum state= ResolveEnum.ResolvedUnknown;
+        boolean finished;
+        do {
+            state = resolveList(document.getConfiguration());
+            state.merge(resolveList(document.getSystem()));
+            finished = state == ResolveEnum.ResolvedComplete;
+
+        } while(!finished && count++<Constants.RESOLUTION_SPIN_LIMIT);
+
+        if(!finished) {
+            throw new CdlResolutionException("Gave up trying to resolve this document ");
         }
+
+    }
+
+    private ResolveEnum resolveList(ToplevelList target) throws CdlException, IOException {
+        if(target==null) {
+            return ResolveEnum.ResolvedComplete;
+        }
+        ResolveEnum state = target.getResolveState();
+        if(state==ResolveEnum.ResolvedComplete || state==ResolveEnum.ResolvedLazyLinksRemaining) {
+            return state;
+        }
+        resolveReferences(target,0);
+        stateInferrer.apply(target);
+        return target.getResolveState();
     }
 
 
     /**
      * resolve all references in a property list
      * @param target list in
+     * @param depth
      * @return a (possibly new) list, or the current one with changes
      */
-    private PropertyList resolveReferences(PropertyList target) throws CdlException {
-        boolean shouldResolve=target.isValueReference();
-        PropertyList result=target;
-        if(shouldResolve) {
-            if(target.isLazy()) {
-                //this is lazy, skip until later.
-                if(log.isDebugEnabled()) {
-                    log.debug("skipping lazy reference "+target);
-                }
-            } else {
-                //its a reference, process it
-                result=resolveReferenceNode(target);
-            }
+    private PropertyList resolveReferences(PropertyList target, int depth) throws CdlException {
+        if (depth > Constants.RESOLUTION_DEPTH_LIMIT) {
+            throw new CdlResolutionException(ReferencePath.ERROR_RECURSIVE_RESOLUTION
+                    + target.getDescription());
+        }
+        ResolveEnum state = target.getResolveState();
+        if (state == ResolveEnum.ResolvedComplete || state == ResolveEnum.ResolvedLazyLinksRemaining) {
+            return target;
+        }
+        boolean shouldResolve = target.isValueReference();
+        PropertyList result = target;
+        if (shouldResolve) {
+            //its a reference, process it
+            result = resolveReferenceNode(target);
         } else {
-            //resolve child references
-            for (Node node : target.nodes()) {
-                if (node instanceof PropertyList) {
-                    //cast it
-                    PropertyList template = (PropertyList) node;
-                    PropertyList newTemplate=resolveReferences(template);
-                    if(template!=newTemplate) {
-                        target.replaceChild(template,newTemplate);
+
+            if (state == ResolveEnum.ResolvedIncomplete) {
+                //there is something under here that needs resolving
+
+                //resolve child references
+                for (Node node : target.nodes()) {
+                    if (node instanceof PropertyList) {
+                        //cast it
+                        PropertyList template = (PropertyList) node;
+                        PropertyList newTemplate = resolveReferences(template, 0);
+                        if (template != newTemplate) {
+                            target.replaceChild(template, newTemplate);
+                            //then resolve it again, to get the children picked up
+                        }
                     }
                 }
             }
+
         }
         return result;
     }
@@ -109,7 +169,8 @@ public class EarlyReferenceProcessor implements ProcessingPhase {
         }
 
         ReferencePath path;
-        path=new ReferencePath(target);
+        path=target.getReferencePath();
+        assert path!=null: "Path is null on "+target.getDescription();
         StepExecutionResult result = path.execute(target);
         assert result.isFinished();
         if(result.isLazyFlagFound()) {
@@ -126,7 +187,6 @@ public class EarlyReferenceProcessor implements ProcessingPhase {
         //using a factory specific to the type of the current target, to
         //ensure that toplevel lists get handled
         PropertyList replacement=target.getFactory().create(dest);
-
         replacement.setLocalName(target.getLocalName());
         replacement.setNamespaceURI(target.getNamespaceURI());
         replacement.setNamespacePrefix(target.getNamespacePrefix());

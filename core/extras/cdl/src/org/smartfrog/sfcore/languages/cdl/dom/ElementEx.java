@@ -34,11 +34,12 @@ import org.smartfrog.sfcore.languages.sf.functions.BaseUnaryOperator;
 
 import javax.xml.namespace.QName;
 import java.io.IOException;
+import java.util.Iterator;
 
 /**
  * Extended element with a backpointer to the element
  */
-public class ElementEx extends Element implements ToSmartFrog {
+public class ElementEx extends Element implements ToSmartFrog, Iterable<Node>  {
     public static final String ERROR_NON_RESOLVABLE_QNAME_PREFIX = "No namespace defined for [";
 
 
@@ -52,6 +53,13 @@ public class ElementEx extends Element implements ToSmartFrog {
 
     public ElementEx(Element element) {
         super(element);
+    }
+
+    public ElementEx(QName name) {
+        super((name.getPrefix().length()>0?
+                (name.getPrefix()+":")
+                :"")
+                +name.getLocalPart(),name.getNamespaceURI());
     }
 
     /**
@@ -73,6 +81,16 @@ public class ElementEx extends Element implements ToSmartFrog {
      */
     protected Element shallowCopy() {
         return new ElementEx(getQualifiedName(), getNamespaceURI());
+    }
+
+
+    /**
+     * Returns an iterator over a set of elements of type T.
+     *
+     * @return an Iterator.
+     */
+    public Iterator<Node> iterator() {
+        return nodes();
     }
 
     /**
@@ -195,9 +213,9 @@ public class ElementEx extends Element implements ToSmartFrog {
      * @param trim
      */
     protected void printValueToSF(GenerateContext out,
-            String key,
-            boolean includeEmptyStrings,
-            boolean trim) {
+                                  String key,
+                                  boolean includeEmptyStrings,
+                                  boolean trim) {
 
         String value = getTextValue();
         if(trim) {
@@ -257,7 +275,7 @@ public class ElementEx extends Element implements ToSmartFrog {
      * Get the immediate text value of an element. That is -the concatenation
      * of all direct child text elements. This string is not trimmed.
      * @return a next string, which will be empty "" if there is no text
-     */ 
+     */
     public String getTextValue() {
         StringBuilder builder=new StringBuilder();
         for (Node n:nodes()) {
@@ -293,5 +311,18 @@ public class ElementEx extends Element implements ToSmartFrog {
             return new QName(localname);
         }
 
+    }
+
+    /**
+     * Test for having one or more child elements
+     * @return true iff there is at least one child element
+     */
+    public boolean hasChildElements() {
+        for(Node n:this) {
+            if(n instanceof Element) {
+                return true;
+            }
+        }
+        return false;
     }
 }
