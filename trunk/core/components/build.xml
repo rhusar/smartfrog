@@ -81,6 +81,8 @@ For more information: www.smartfrog.org
   <target name="init" depends="init-common-simpledefinitions" >
     <!-- add new components here, in alphabetical order. this is
       not where dependency logic is imposed -->
+    <property name="anubis.project" location="anubis" />
+    <property name="anubisdeployer.project" location="anubisdeployer" />
     <property name="arithmetic-testharness.project" location="arithmetic-testharness" />
     <property name="cdl.project" location="${extras.dir}/cdl"/>
     <property name="deployapi.project" location="deployapi" />
@@ -121,6 +123,8 @@ For more information: www.smartfrog.org
     -->
 
     <path id="component.path">
+      <pathelement location="${anubis.project}"/>
+      <pathelement location="${anubisdeployer.project}"/>
       <pathelement location="${utils.project}"/>
       <!--pathelement location="${logger.project}"/-->
       <pathelement location="${ssh.project}"/>
@@ -282,6 +286,8 @@ For more information: www.smartfrog.org
              source="${javac.java.version}"
        >
      <sourcepath>
+       <pathelement path="${anubis.project}/$(src)"/>
+       <pathelement path="${anubisdeployer.project}/$(src)"/>
        <pathelement path="${emailer.project}/${src}"/>
        <pathelement path="${jetty.project}/${src}"/>
        <!--pathelement path="${logger.project}/${src}"/-->
@@ -329,6 +335,8 @@ For more information: www.smartfrog.org
       </sequential>
     </macrodef>
 
+    <copybuild project="${anubis.project}" />
+    <copybuild project="${anubisdeployer.project}" />
     <copybuild project="${emailer.project}" />
     <copybuild project="${jetty.project}" />
     <!--copybuild project="${logger.project}" /-->
@@ -360,6 +368,8 @@ For more information: www.smartfrog.org
       </sequential>
     </macrodef>
 
+    <copybins project="${anubis.project}" />
+    <copybins project="${anubisdeployer.project}" />
     <copybins project="${emailer.project}" />
     <copybins project="${jetty.project}" />
     <!--copybins project="${logger.project}" /!-->
@@ -391,6 +401,8 @@ For more information: www.smartfrog.org
       </sequential>
     </macrodef>
 
+    <copylibs project="${anubis.project}" />
+    <copylibs project="${anubisdeployer.project}" />
     <copylibs project="${emailer.project}" />
     <copylibs project="${jetty.project}" />
     <!--copylibs project="${logger.project}" /-->
@@ -424,6 +436,8 @@ For more information: www.smartfrog.org
       </sequential>
     </macrodef>
 
+    <copycomponents project="${anubis.project}" />
+    <copycomponents project="${anubisdeployer.project}" />
     <copycomponents project="${emailer.project}" />
     <copycomponents project="${jetty.project}" />
     <!--copycomponents project="${logger.project}" /-->
@@ -455,6 +469,8 @@ For more information: www.smartfrog.org
       </sequential>
     </macrodef>
 
+    <copydocs project="${anubis.project}" />
+    <copydocs project="${anubisdeployer.project}" />
     <copydocs project="${emailer.project}" />
     <copydocs project="${jetty.project}" />
     <!--copydocs project="${logger.project}" /-->
@@ -476,6 +492,8 @@ For more information: www.smartfrog.org
     <!-- whatever a .dfPackage is, we do not want it  -->
     <defaultexcludes echo="false" add="**/*.dfPackage"/>
     <zip destfile="${comp.dist.dir}/src.zip" >
+      <zipfileset dir="${anubis.project}/${dist.src.dir}" />
+      <zipfileset dir="${anubisdeployer.project}/${dist.src.dir}" />
       <zipfileset dir="${emailer.project}/${dist.src.dir}" />
       <zipfileset dir="${jetty.project}/${dist.src.dir}" />
       <zipfileset dir="${net.project}/${dist.src.dir}" />
@@ -569,6 +587,8 @@ For more information: www.smartfrog.org
     </macrodef>
 
 
+    <updateversion project="${anubis.project}" compname="anubis" />
+    <updateversion project="${anubisdeployer.project}" compname="anubisdeployer"/>
     <updateversion project="${emailer.project}" compname="emailer"/>
     <updateversion project="${jetty.project}" compname="jetty" />
     <!--updateversion project="${logger.project}" compname="logger" /-->
