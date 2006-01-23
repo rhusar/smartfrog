@@ -1,0 +1,119 @@
+#include "org/smartfrog/components.sf"
+#include "org/smartfrog/predicates.sf"
+#include "org/smartfrog/sfcore/workflow/components.sf";
+#include "org/smartfrog/services/anubis/components.sf";
+
+// some global constants that define how to locate key elements
+
+ClusterNodeManagerProcessName "ClusterManagement";
+ClusterNodeManagerComponentName "clusterNodeManager";
+
+AnubisServiceName "clusterAnubis";
+
+// basic definition of a softUDC physical node
+
+ExampleNodeDescription extends {
+    resources extends {
+	memory 3072;
+    }
+    attributes extends {
+	os "xen linux 2.4";
+	cpuType "x86";
+	cpuClass "Xeon";
+	cpuCount 2;
+	cpuFrequency "1.5GHz";
+    }
+    data extends LAZY {
+	ufcPartition ["p6"];
+	vmPartition ["p8","p10","p12","p14"];
+	swapPartition ["p7","p9","p11","p13","p15"];
+	macAddress ["aa:00:00:01:01:00", "aa:00:00:01:01:05"];
+	vmid [2,3,4,5,6];
+    }
+}
+
+
+// basic templates
+
+ClusteringAnubisService extends AnubisService {
+    getNodeFromLocalIP (IF (node==NULL) THEN true ELSE false FI);
+    node               ;
+    magic              234332;
+    address            "233.1.2.34";
+    port               1966;
+    
+    anubisServiceName PARENT:ATTRIB AnubisServiceName;
+    testable "true";
+}
+
+
+ClusterNodeManager extends Prim {
+    sfClass "org.smartfrog.services.anubisdeployer.ClusterNodeManager";
+    debug false;
+    rebootCommandLine "/usr/bin/sudo /sbin/shutdown -r 0";
+    shutdownCommandLine "/usr/bin/sudo /sbin/shutdown -r 0";
+    anubisLocator TBD;
+}
+
+
+ClusterNodeInfo extends Prim {
+    sfClass "org.smartfrog.services.anubisdeployer.ClusterNodeInfo";
+    nodeDescription TBD;
+    clusterNodeManager TBD;
+}
+
+
+ClusterStatusMonitor extends Prim {
+    sfClass "org.smartfrog.services.anubisdeployer.ClusterStatusMonitor";
+    debug false;
+    anubisLocator TBD;
+}
+
+
+ClusterDisplay extends Prim {
+    sfClass "org.smartfrog.services.anubisdeployer.ClusterDisplay";
+    clusterMonitor TBD;
+    autoClean false;
+    autoSave false;
+}
+
+ClusterSystem extends Compound {
+    nodeDescription TBD;
+    anubisAddress TBD;
+    anubisNode TBD;
+    anubisPort TBD;
+
+    sfProcessComponentName "clusterNodeManagement";
+
+    anubis extends ClusteringAnubisService {
+	address anubisAddress;
+	node anubisNode;
+	port anubisPort;
+    }
+
+    clusterNodeManager extends ClusterNodeManager {
+	    anubisLocator LAZY anubis:locator;
+    }
+
+    clusterNodeInfo extends ClusterNodeInfo {
+	    clusterNodeManager LAZY PARENT:clusterNodeManager;
+	    nodeDescription PARENT:ATTRIB nodeDescription;
+    }
+
+    clusterStatusMonitor extends ClusterStatusMonitor {
+	    anubisLocator LAZY anubis:locator;
+    }
+/*
+    clusterDisplay extends ClusterDisplay {
+	    clusterMonitor LAZY PARENT:clusterStatusMonitor;
+    }
+*/
+}
+
+
+
+ClusterCompound extends Compound {
+    sfClass "org.smartfrog.services.anubisdeployer.ClusterCompoundImpl";
+    sfDeployerClass "org.smartfrog.services.anubisdeployer.ClusterDeployerImpl";
+    clusterNodeManager LAZY HOST localhost:rootProcess:clusterNodeManagement:clusterNodeManager;
+}
