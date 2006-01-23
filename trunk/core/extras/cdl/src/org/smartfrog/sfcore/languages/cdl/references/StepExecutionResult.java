@@ -20,15 +20,16 @@
 package org.smartfrog.sfcore.languages.cdl.references;
 
 import org.smartfrog.sfcore.languages.cdl.dom.PropertyList;
-import org.smartfrog.sfcore.languages.cdl.faults.CdlResolutionException;
+import org.smartfrog.sfcore.languages.cdl.dom.ToplevelList;
 import org.smartfrog.sfcore.languages.cdl.faults.CdlException;
+import org.smartfrog.sfcore.languages.cdl.utils.NamespaceLookup;
 
 /**
  * This path keeps track of the processing of a (successful) resolution.
  * created 06-Jan-2006 16:52:48
  */
 
-public class StepExecutionResult {
+public class StepExecutionResult implements NamespaceLookup {
 
     private ReferencePath path;
     private int index;
@@ -67,6 +68,7 @@ public class StepExecutionResult {
     }
 
     public void setNode(PropertyList node) {
+        assert !(node instanceof ToplevelList): "trying to move to a root node "+node;
         this.node = node;
     }
 
@@ -123,5 +125,30 @@ public class StepExecutionResult {
         } else {
             return currentStep.execute(this);
         }
+    }
+
+    /**
+     * Returns a string representation of the object.
+     *
+     * @return a string representation of the object.
+     */
+    public String toString() {
+        Step currentStep = getCurrentStep();
+        if (currentStep == null) {
+            //already finished; do nothing else
+            return "(finished)";
+        } else {
+            return "@"+currentStep.toString();
+        }
+    }
+
+    /**
+     * Get the URI of a namespace
+     *
+     * @param prefix the prefix
+     * @return the URI or null for none.
+     */
+    public String resolveNamespaceURI(String prefix) {
+        return path.resolveNamespaceURI(prefix);
     }
 }

@@ -30,7 +30,6 @@ import org.smartfrog.sfcore.languages.cdl.Constants;
 import org.smartfrog.sfcore.languages.cdl.references.ReferencePath;
 import org.smartfrog.sfcore.languages.cdl.faults.CdlException;
 import org.smartfrog.sfcore.languages.cdl.faults.CdlXmlParsingException;
-import org.smartfrog.sfcore.languages.cdl.faults.CdlRuntimeException;
 import org.smartfrog.sfcore.languages.cdl.faults.CdlInvalidValueReferenceException;
 import org.smartfrog.sfcore.languages.cdl.generate.GenerateContext;
 import org.smartfrog.sfcore.languages.cdl.resolving.ResolveEnum;
@@ -133,10 +132,22 @@ public class PropertyList extends DocNode {
         }
 
         //check for having a refroot and us not already being bound
-        if(getRefValue()!=null && referencePath==null) {
-            //and create a reference path if so
-            //this will make a relative one absolute in the process, incidentally.
-            referencePath=new ReferencePath(this);
+        if (getRefValue() != null) {
+            if (referencePath == null) {
+                //and create a reference path if so
+                //this will make a relative one absolute in the process, incidentally.
+                referencePath = new ReferencePath(this);
+            }
+
+            if (getChildCount() > 0) {
+                boolean childElements = getChildElements().size()>0;
+                if(Constants.POLICY_NESTED_NODES_FORBIDDEN_IN_REFERENCES || childElements) {
+                    throw new CdlInvalidValueReferenceException(
+                            CdlInvalidValueReferenceException.ERROR_CHILDREN_IN_REFERENCE
+                                    + getDescription());
+                }
+            }
+
         }
     }
 
@@ -491,12 +502,6 @@ public class PropertyList extends DocNode {
         if(ref==null) {
             return false;
         }
-        Elements childElements = getChildElements();
-        if(childElements.size()>0) {
-            throw new CdlInvalidValueReferenceException(
-                    CdlInvalidValueReferenceException.ERROR_CHILD_ELEMENTS_IN_REFERENCE
-            +getDescription());
-        }
         return true;
     }
 
@@ -548,15 +553,15 @@ public class PropertyList extends DocNode {
      * @throws CdlInvalidValueReferenceException
      */
     public ResolveEnum inferLocalResolutionState() throws CdlInvalidValueReferenceException {
-        ResolveEnum state;
+        if (isLazy()) {
+            //its a lazy link, bail out
+            return ResolveEnum.ResolvedLazyLinksRemaining;
+        }
         if (isValueReference()) {
-            //its a link
-            state = ResolveEnum.ResolvedIncomplete;
-            if (isLazy()) {
-                //its a lazy link
-                state = ResolveEnum.ResolvedLazyLinksRemaining;
-            }
+            //its a (non-lazy) link
+            return ResolveEnum.ResolvedIncomplete;
         } else {
+            ResolveEnum state;
             //start with complete state
             state = ResolveEnum.ResolvedComplete;
             //then look for property nodes
@@ -568,8 +573,8 @@ public class PropertyList extends DocNode {
                     break;
                 }
             }
+            return state;
         }
-        return state;
     }
 
 }

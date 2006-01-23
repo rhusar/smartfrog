@@ -20,10 +20,13 @@
 package org.smartfrog.sfcore.languages.cdl.references;
 
 import org.smartfrog.sfcore.languages.cdl.dom.PropertyList;
+import org.smartfrog.sfcore.languages.cdl.dom.ToplevelList;
 import org.smartfrog.sfcore.languages.cdl.faults.CdlRuntimeException;
 import org.smartfrog.sfcore.languages.cdl.faults.CdlResolutionException;
 import org.smartfrog.sfcore.languages.cdl.faults.CdlException;
 import org.smartfrog.sfcore.languages.cdl.Constants;
+import org.smartfrog.sfcore.languages.cdl.utils.NamespaceLookup;
+import org.smartfrog.sfcore.languages.cdl.utils.Namespaces;
 import org.smartfrog.services.xml.java5.NamespaceUtils;
 
 import javax.xml.namespace.QName;
@@ -36,7 +39,7 @@ import nu.xom.ParentNode;
  * A reference path
  * Nothing in here is thread safe.
  */
-public class ReferencePath {
+public class ReferencePath implements NamespaceLookup {
     /**
      * Error message when constructing from something that lacks a cdl:ref attribute.
      * {@value}
@@ -51,7 +54,13 @@ public class ReferencePath {
            +" starting at ";
 
     public ReferencePath() {
+        namespaces=new Namespaces();
     }
+
+    /**
+     * a cached ref to the owner. Why? so that
+     */
+    private NamespaceLookup namespaces;
 
     /**
      * Build from a source
@@ -65,8 +74,9 @@ public class ReferencePath {
         if (refValue == null) {
             throw new IllegalArgumentException(ERROR_NON_REFERENCE);
         }
+        namespaces=source.getNamespaces();
 
-        build(refValue);
+        build(refValue, refRootValue);
 
         //extract lazy flag.
         setLazy(source.isLazy());
@@ -182,8 +192,9 @@ public class ReferencePath {
      * constructor should be used, as that will make the link relative at the same time.
      *
      * @param path
+     * @param refRootValue
      */
-    public void build(String path) {
+    public void build(String path, String refRootValue) {
         //this is very easy to parse; no need for any complex recursive
         //parser. Even so, regexp work may make this tractable
         steps = new ArrayList<Step>();
@@ -200,9 +211,11 @@ public class ReferencePath {
                 return;
             }
         } else {
-            //relative refs have a step start, that puts the
-            //cursor in the right place to begin resolution
-            append(new StepStart());
+            if(refRootValue==null) {
+                //relative refs have a step start, that puts the
+                //cursor in the right place to begin resolution
+                append(new StepStart());
+            }
         }
         //now, scan through the source looking for stuff
         boolean finished = false;
@@ -253,13 +266,16 @@ public class ReferencePath {
         PropertyList node = source;
         while (!node.isToplevel()) {
             //insert a new upward step
-            steps.add(0, new StepUp());
             ParentNode parent = node.getParent();
             if (parent==null || !(parent instanceof PropertyList)) {
                 //bad type. bail out now.
                 throw new CdlRuntimeException(ERROR_NO_TOPLEVEL);
             }
+
             node = (PropertyList) parent;
+            if(!(node instanceof ToplevelList)) {
+                steps.add(0, new StepUp());
+            }
         }
         //here we are at a toplevel node
         //nothing remains to be done
@@ -275,6 +291,7 @@ public class ReferencePath {
     public ReferencePath shallowCopy() {
         ReferencePath copy=new ReferencePath();
         copy.steps=new ArrayList(steps);
+        copy.namespaces=namespaces;
         return copy;
     }
 
@@ -322,5 +339,15 @@ public class ReferencePath {
         }
         //here we have finished.
         return state;
+    }
+
+    /**
+     * Get the URI of a namespace
+     *
+     * @param prefix the prefix
+     * @return the URI or null for none.
+     */
+    public String resolveNamespaceURI(String prefix) {
+        return namespaces.resolveNamespaceURI(prefix);
     }
 }

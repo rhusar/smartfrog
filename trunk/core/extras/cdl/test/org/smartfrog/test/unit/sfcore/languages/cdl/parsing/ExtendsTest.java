@@ -132,7 +132,13 @@ public class ExtendsTest extends XmlTestBase {
                 ParseContext.ERROR_DUPLICATE_PROTOTYPE);
     }
 
-    public void testExtendsAttributeExtracted() throws IOException, CdlException,
+    /**
+     * test is obsolete
+     * @throws IOException
+     * @throws CdlException
+     * @throws ParsingException
+     */
+    public void NotestExtendsAttributeExtracted() throws IOException, CdlException,
             ParsingException {
         ParseContext context = new ParseContext();
         CdlDocument cdlDocument = parseValidCDL(context, CDL_DOC_EXTENDS_1);

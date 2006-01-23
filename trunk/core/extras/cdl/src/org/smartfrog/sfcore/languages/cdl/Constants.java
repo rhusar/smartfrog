@@ -100,4 +100,22 @@ public class Constants {
      */
     public static final QName QNAME_DETAIL_DOCUMENT = new QName(SMARTFROG_NAMESPACE, "phase", "sf");
 
+
+    /**
+     * This is one of those places where bits of the spec can be tuned.
+     * Here we set the policy about how to handle nested text/comments/PI in a cdl:ref node,
+     * {@value}
+     */
+    public static final boolean POLICY_NESTED_NODES_FORBIDDEN_IN_REFERENCES=true;
+
+    /**
+     * Policy logic: do we extends configs as well as systems. {@value}
+     */
+    public static final boolean POLICY_ALWAYS_EXTEND_CONFIGURATION = true;
+
+    /**
+     * Are we a debug release, in which case there are extra tests in the phases
+     * that every step worked
+     */
+    public static final boolean POLICY_DEBUG_RELEASE = true;
 }

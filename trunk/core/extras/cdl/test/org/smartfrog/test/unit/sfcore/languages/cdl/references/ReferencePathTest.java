@@ -33,7 +33,6 @@ import org.smartfrog.sfcore.languages.cdl.dom.PropertyList;
 import org.smartfrog.sfcore.languages.cdl.dom.ElementEx;
 import org.smartfrog.sfcore.languages.cdl.Constants;
 import org.smartfrog.sfcore.languages.cdl.faults.CdlRuntimeException;
-import org.ggf.cddlm.generated.api.CddlmConstants;
 
 import javax.xml.namespace.QName;
 import java.util.List;
@@ -119,34 +118,34 @@ public class ReferencePathTest extends TestCase {
     }
 
     public void testBuildHere() throws Exception {
-        path.build(".");
+        path.build(".", null);
         assertStepSize(2);
         assertStepStart(0);
         assertStepHere(1);
     }
 
     public void testBuildRoot() throws Exception {
-        path.build("/");
+        path.build("/", null);
         assertStepSize(1);
         assertStepRoot(0);
     }
 
     public void testBuildUp() throws Exception {
-        path.build("..");
+        path.build("..", null);
         assertStepSize(2);
         assertStepStart(0);
         assertStepUp(1);
     }
 
     public void testBuildDownLocal() throws Exception {
-        path.build("child");
+        path.build("child", null);
         assertStepSize(2);
         assertStepStart(0);
         assertStepDown(1, "child");
     }
 
     public void testBuildDownPrefix() throws Exception {
-        path.build("../tns:child");
+        path.build("../tns:child", null);
         assertStepSize(3);
         assertStepStart(0);
         assertStepUp(1);
@@ -154,7 +153,7 @@ public class ReferencePathTest extends TestCase {
     }
 
     public void testComplexPath() throws Exception {
-        path.build("/../tns:child/.././ns2:something/../local/.");
+        path.build("/../tns:child/.././ns2:something/../local/.", null);
         assertStepSize(9);
         assertStepRoot(0);
         assertStepUp(1);
@@ -189,18 +188,16 @@ public class ReferencePathTest extends TestCase {
     public void testExtractRoot() throws Exception {
         child2.addNewAttribute(Constants.QNAME_CDL_REF, "/");
         path = new ReferencePath(child2);
-        assertStepSize(2);
+        assertStepSize(1);
         assertStepUp(0);
-        assertStepUp(1);
     }
 
     public void testExtractRootChild1() throws Exception {
         child2.addNewAttribute(Constants.QNAME_CDL_REF, "/child1");
         path = new ReferencePath(child2);
-        assertStepSize(3);
+        assertStepSize(2);
         assertStepUp(0);
-        assertStepUp(1);
-        assertStepDown(2, "child1");
+        assertStepDown(1, "child1");
     }
 
     public void testNoParentBreaks() throws Exception {
