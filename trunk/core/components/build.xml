@@ -120,6 +120,23 @@ For more information: www.smartfrog.org
     <!-- this is where dependency logic is imposed
          the path must be ordered such that dependent projects
          come in the path after the things they depend on
+         
+         
+         IMPORTANT
+         =========
+         If you add something here, it will be built by Gump in the
+         nightly build. 
+         The Gump descriptor (in Gump's SVN repository) needs 
+         patching with
+         
+         -the dirs that classes get built into
+         -any new artifacts that get created.
+         
+         Without this Gump will fail. Whoever adds a new item to this
+         list gets the blame and the opportunity to fix it.
+         
+         If you add new dependency JARs, gump also needs to be patched,
+         because under gump, gump owns your classpath.
     -->
 
     <path id="component.path">
