@@ -40,7 +40,7 @@ public class StepRoot extends Step {
     /**
      * Is this step a root node?
      *
-     * @return true always. 
+     * @return true always.
      */
     public boolean isRoot() {
         return true;
@@ -55,14 +55,19 @@ public class StepRoot extends Step {
      */
     public StepExecutionResult execute(StepExecutionResult state) throws CdlResolutionException {
         PropertyList node = state.getNode();
-        Node current =node;
-        while(!(current instanceof ToplevelList)) {
+        Node current = node;
+        boolean finished=false;
+        do {
             Node parent = node.getParent();
             if (parent == null) {
                 throw new CdlResolutionException(ERROR_NO_STEP_UP + node + ERROR_ORPHAN_NODE, state);
             }
-            current =parent;
-        }
+            if(parent instanceof ToplevelList) {
+                finished=true;
+            } else {
+                current=parent;
+            }
+        } while(!finished);
 
         return state.next((PropertyList) current);
     }

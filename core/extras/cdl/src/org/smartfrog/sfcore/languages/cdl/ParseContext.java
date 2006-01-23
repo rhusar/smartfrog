@@ -428,6 +428,16 @@ public class ParseContext {
         return resolvablePrototypes.get(prototypeName);
     }
 
+
+    /**
+     * test for an name mapping to a prototype
+     * @param name qname to look for
+     * @return true iff there is a match in the current context
+     */
+    public boolean hasPrototypeNamed(QName name) {
+        return prototypeResolve(name)!=null;
+    }
+
     /**
      * Add a new prototype to our list of known prototypes. If the prototype
      * exists, then it is replaced.

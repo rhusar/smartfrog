@@ -27,6 +27,8 @@ import org.smartfrog.sfcore.languages.cdl.faults.CdlException;
 import org.smartfrog.sfcore.languages.cdl.faults.CdlXmlParsingException;
 import org.smartfrog.sfcore.languages.cdl.generate.GenerateContext;
 import org.smartfrog.sfcore.languages.cdl.generate.ToSmartFrog;
+import org.smartfrog.sfcore.languages.cdl.utils.NamespaceLookup;
+import org.smartfrog.sfcore.languages.cdl.utils.Namespaces;
 import org.smartfrog.services.xml.java5.iterators.AttributeIterator;
 import org.smartfrog.services.xml.java5.iterators.NodeIterator;
 import org.smartfrog.services.xml.java5.NamespaceUtils;
@@ -39,7 +41,7 @@ import java.util.Iterator;
 /**
  * Extended element with a backpointer to the element
  */
-public class ElementEx extends Element implements ToSmartFrog, Iterable<Node>  {
+public class ElementEx extends Element implements ToSmartFrog, Iterable<Node>, NamespaceLookup {
     public static final String ERROR_NON_RESOLVABLE_QNAME_PREFIX = "No namespace defined for [";
 
 
@@ -324,5 +326,24 @@ public class ElementEx extends Element implements ToSmartFrog, Iterable<Node>  {
             }
         }
         return false;
+    }
+
+
+    /**
+     * Get the URI of a namespace
+     *
+     * @param prefix the prefix
+     * @return the URI or null for none.
+     */
+    public String resolveNamespaceURI(String prefix) {
+        return getNamespaceURI(prefix);
+    }
+
+    /**
+     * Get a static cache of all namespaces currently in scope
+     * @return a map of prefixes to namespaces
+     */
+    public Namespaces getNamespaces() {
+        return new Namespaces(this);
     }
 }

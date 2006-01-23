@@ -43,6 +43,7 @@ import org.smartfrog.sfcore.languages.cdl.generate.GenerateContext;
 import org.smartfrog.sfcore.languages.cdl.generate.ToSmartFrog;
 import org.smartfrog.sfcore.languages.cdl.resolving.ExtendsProcessor;
 import org.smartfrog.sfcore.languages.cdl.resolving.RegisterPrototypesProcessor;
+import org.smartfrog.sfcore.languages.cdl.resolving.VerifyExtendsComplete;
 import org.smartfrog.sfcore.languages.cdl.utils.ClassLogger;
 import org.smartfrog.sfcore.logging.Log;
 
@@ -165,7 +166,6 @@ public class CdlDocument implements Names, ToSmartFrog {
      * @return
      */
     public boolean isValid() {
-        //TODO
         return document != null;
     }
 
@@ -216,6 +216,13 @@ public class CdlDocument implements Names, ToSmartFrog {
             root.replaceChild(system, newsystem);
         }
         setSystem(newsystem);
+    }
+
+    public void replaceConfiguration(ToplevelList newconfiguration) {
+        if(configuration != null) {
+            root.replaceChild(configuration,newconfiguration);
+        }
+        setConfiguration(newconfiguration);
     }
 
     /**
@@ -356,6 +363,9 @@ public class CdlDocument implements Names, ToSmartFrog {
         phases.add(new RegisterPrototypesProcessor());
         phases.add(new ImportProcessor());
         phases.add(new ExtendsProcessor());
+        if(Constants.POLICY_DEBUG_RELEASE) {
+            phases.add(VerifyExtendsComplete.createVerificationPhase());
+        }
         phases.add(new EarlyReferenceProcessor());
 
         //list is full, so execute.
@@ -367,9 +377,7 @@ public class CdlDocument implements Names, ToSmartFrog {
             }
         } catch (CdlException e) {
             e.addDetailText(Constants.QNAME_DETAIL_PHASE, currentPhase);
-//            e.addDetailText(Constants.QNAME_DETAIL_DOCUMENT, printToString());
             e.addDetail(getRoot(), true);
-
             throw e;
         }
     }

@@ -17,9 +17,11 @@
  For more information: www.smartfrog.org
 
  */
-package org.smartfrog.sfcore.languages.cdl.references;
+package org.smartfrog.sfcore.languages.cdl.resolving;
 
 import org.smartfrog.sfcore.languages.cdl.process.PropertyListOperation;
+import org.smartfrog.sfcore.languages.cdl.process.ProcessingPhase;
+import org.smartfrog.sfcore.languages.cdl.process.DepthFirstOperationPhase;
 import org.smartfrog.sfcore.languages.cdl.dom.PropertyList;
 import org.smartfrog.sfcore.languages.cdl.faults.CdlException;
 import org.smartfrog.sfcore.languages.cdl.resolving.ResolveEnum;
@@ -28,14 +30,14 @@ import java.io.IOException;
 
 import nu.xom.Node;
 
+import javax.xml.namespace.QName;
+
 /**
- * Operation to infer early reference state. That is, it turns lazy links into
- * complete ones, for they are complete as far as early ref resolution is concerned.
- * this operation must be run "after", as it infers state from its children
- * created 18-Jan-2006 13:28:37
+ * Operation to verify that extends is complete
+ * This is just a development option.
  */
 
-public class InferEarlyReferenceState implements PropertyListOperation {
+public class VerifyExtendsComplete implements PropertyListOperation {
 
     /**
      * Apply an operation to a node.
@@ -45,22 +47,13 @@ public class InferEarlyReferenceState implements PropertyListOperation {
      *
      */
     public void apply(PropertyList target) throws CdlException, IOException {
-        ResolveEnum state;
-        state=target.inferLocalResolutionState();
-        if(state==ResolveEnum.ResolvedLazyLinksRemaining) {
-            //turn lazy links into complete ones, because there is no more resolution to do here
-            state=ResolveEnum.ResolvedComplete;
+        QName extendsName = target.getExtendsName();
+        if(extendsName!=null) {
+            throw new CdlException("Still thinks it is extensible: <"+target.getDescription()+">");
         }
-        if(state==ResolveEnum.ResolvedUnknown) {
-            //get info from our immediate children.
-            for(Node node:target) {
-                if(node instanceof PropertyList) {
-                    PropertyList child = (PropertyList) node;
-                    ResolveEnum childState = child.getResolveState();
-                    state=state.merge(childState);
-                }
-            }
-        }
-        target.setResolveState(state);
+    }
+
+    public static ProcessingPhase createVerificationPhase() {
+        return new DepthFirstOperationPhase(new VerifyExtendsComplete(), null,true,true);
     }
 }

@@ -3,7 +3,7 @@ package org.smartfrog.test.unit.sfcore.languages.cdl;
 /**
  */
 public interface Filenames {
-    String RESOURCES = "test/cdl/";
+    String RESOURCES = "cdl/";
     String VALID_RESOURCES = RESOURCES + "valid/";
     String INVALID_RESOURCES = RESOURCES + "invalid/";
     String RESOLUTION_RESOURCES = VALID_RESOURCES +

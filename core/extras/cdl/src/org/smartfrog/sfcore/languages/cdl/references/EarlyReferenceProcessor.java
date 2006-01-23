@@ -67,7 +67,7 @@ public class EarlyReferenceProcessor implements ProcessingPhase {
     private DepthFirstOperationPhase createStateInferrer() {
         DepthFirstOperationPhase processor = new DepthFirstOperationPhase(null,
             new InferEarlyReferenceState(),
-            false, true);
+            true, true);
         return processor;
     }
 
@@ -89,8 +89,11 @@ public class EarlyReferenceProcessor implements ProcessingPhase {
         ResolveEnum state= ResolveEnum.ResolvedUnknown;
         boolean finished;
         do {
-            state = resolveList(document.getConfiguration());
-            state.merge(resolveList(document.getSystem()));
+            ToplevelList configuration = document.getConfiguration();
+            state = resolveList(configuration);
+            ToplevelList system = document.getSystem();
+            ResolveEnum resolvedSystem = resolveList(system);
+            state.merge(resolvedSystem);
             finished = state == ResolveEnum.ResolvedComplete;
 
         } while(!finished && count++<Constants.RESOLUTION_SPIN_LIMIT);
@@ -131,31 +134,28 @@ public class EarlyReferenceProcessor implements ProcessingPhase {
             return target;
         }
         boolean shouldResolve = target.isValueReference();
-        PropertyList result = target;
         if (shouldResolve) {
             //its a reference, process it
-            result = resolveReferenceNode(target);
+            return resolveReferenceNode(target);
         } else {
 
             if (state == ResolveEnum.ResolvedIncomplete) {
                 //there is something under here that needs resolving
 
                 //resolve child references
-                for (Node node : target.nodes()) {
+                for (Node node : target) {
                     if (node instanceof PropertyList) {
                         //cast it
                         PropertyList template = (PropertyList) node;
                         PropertyList newTemplate = resolveReferences(template, 0);
                         if (template != newTemplate) {
                             target.replaceChild(template, newTemplate);
-                            //then resolve it again, to get the children picked up
                         }
                     }
                 }
             }
-
+            return target;
         }
-        return result;
     }
 
     /**
@@ -173,7 +173,7 @@ public class EarlyReferenceProcessor implements ProcessingPhase {
         assert path!=null: "Path is null on "+target.getDescription();
         StepExecutionResult result = path.execute(target);
         assert result.isFinished();
-        if(result.isLazyFlagFound()) {
+        if(result.isLazyFlagFound() && result.getNode().isValueReference()) {
             //lazy was hit. we need to mark ourselves as lazy and continue without resolving
             target.setLazy(true);
             return target;
@@ -190,7 +190,7 @@ public class EarlyReferenceProcessor implements ProcessingPhase {
         replacement.setLocalName(target.getLocalName());
         replacement.setNamespaceURI(target.getNamespaceURI());
         replacement.setNamespacePrefix(target.getNamespacePrefix());
-        return target;
+        return replacement;
 
     }
 

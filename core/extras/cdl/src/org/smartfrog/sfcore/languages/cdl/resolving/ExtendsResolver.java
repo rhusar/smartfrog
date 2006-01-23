@@ -21,6 +21,7 @@ package org.smartfrog.sfcore.languages.cdl.resolving;
 
 import nu.xom.Node;
 import org.smartfrog.sfcore.languages.cdl.ParseContext;
+import org.smartfrog.sfcore.languages.cdl.Constants;
 import org.smartfrog.sfcore.languages.cdl.dom.CdlDocument;
 import org.smartfrog.sfcore.languages.cdl.dom.PropertyList;
 import org.smartfrog.sfcore.languages.cdl.dom.ToplevelList;
@@ -72,24 +73,42 @@ public class ExtendsResolver {
      * Resolve the extends for an entire document
      *
      * @param document
-     * @return true iff there was a system element needing resolving
      * @throws CdlResolutionException
      */
-    public boolean resolveExtends(CdlDocument document)
+    public void  resolveExtends(CdlDocument document)
             throws CdlException {
-        ToplevelList system = document.getSystem();
-        if (system != null) {
-            PropertyList newSystem = resolveChildExtends(system);
-            document.replaceSystem((ToplevelList) newSystem);
-            ResolveEnum state = newSystem.aggregateResolutionState();
-            if (!state.isParseTimeResolutionComplete()) {
-                throw new CdlInternalErrorException("Incomplete parse time resolution");
-            }
-            return true;
-        } else {
-            return false;
+        ToplevelList config = document.getConfiguration();
+        if (Constants.POLICY_ALWAYS_EXTEND_CONFIGURATION && config != null) {
+            ToplevelList newConfig;
+            newConfig = resolveToplevel(config);
+            document.replaceConfiguration(newConfig);
         }
 
+        ToplevelList system = document.getSystem();
+        if (system != null) {
+            ToplevelList newSystem;
+            newSystem = resolveToplevel(system);
+            document.replaceSystem(newSystem);
+        }
+
+    }
+
+    /**
+     * This does two things.
+     * It resolves the node and then checks that extension is complete; if not it bails out
+     * drastically
+     * @param target toplevel list to process
+     * @return the resolved list
+     * @throws CdlException
+     */
+    private ToplevelList resolveToplevel(ToplevelList target) throws CdlException {
+        ToplevelList newSystem;
+        newSystem = (ToplevelList) resolveChildExtends(target);
+        ResolveEnum state = newSystem.aggregateResolutionState();
+        if (!state.isParseTimeResolutionComplete()) {
+            throw new CdlInternalErrorException("Incomplete parse time resolution");
+        }
+        return newSystem;
     }
 
     /**
@@ -100,7 +119,7 @@ public class ExtendsResolver {
      * @return
      * @throws CdlResolutionException
      */
-    public PropertyList resolveExtends(QName targetName)
+    public PropertyList resolveExtendsTarget(QName targetName)
             throws CdlException {
         PropertyList target = lookup(targetName);
         if (target == null) {
@@ -145,7 +164,12 @@ public class ExtendsResolver {
         assert name != null;
         stack.enter(name);
         try {
-            return innerResolve(target);
+            final PropertyList resolved = innerResolve(target);
+            boolean isProto=parseContext.hasPrototypeNamed(target.getQName());
+            if(isProto) {
+                parseContext.prototypeUpdate(resolved);
+            }
+            return resolved;
         } finally {
             stack.exit(name);
         }
@@ -198,7 +222,7 @@ public class ExtendsResolver {
                     target.getQName() +
                     " extends " +
                     extending);
-            extended = resolveExtends(extending);
+            extended = resolveExtendsTarget(extending);
             if (extended.getResolveState() == ResolveEnum.ResolvedIncomplete) {
                 //if there is something that is unfinished at this level,
                 //leave off it for now. though this state should be
@@ -313,7 +337,7 @@ public class ExtendsResolver {
         List<Node> newChildren = new ArrayList<Node>(childCount);
         //our goal state.
         ResolveEnum state = ResolveEnum.ResolvedComplete;
-        for (Node node : target.nodes()) {
+        for (Node node : target) {
             if (node instanceof PropertyList) {
 
                 //find the matching property list element

@@ -21,11 +21,13 @@ package org.smartfrog.sfcore.languages.cdl.references;
 
 import org.smartfrog.sfcore.languages.cdl.faults.CdlResolutionException;
 import org.smartfrog.sfcore.languages.cdl.dom.PropertyList;
+import org.smartfrog.sfcore.languages.cdl.dom.ToplevelList;
 import nu.xom.Node;
 
 /**
  */
 public class StepUp extends Step {
+    public static final String ERROR_PATH_TOO_FAR_UP = " the path goes too far up";
 
     /**
      * Returns a string representation of the object.
@@ -52,6 +54,10 @@ public class StepUp extends Step {
         if (!(parent instanceof PropertyList)) {
             throw new CdlResolutionException(ERROR_NO_STEP_UP + node + ERROR_WRONG_PARENT, state);
         }
+        if (parent instanceof ToplevelList) {
+            throw new CdlResolutionException(ERROR_NO_STEP_UP + node + ERROR_PATH_TOO_FAR_UP, state);
+        }
+
         return state.next((PropertyList) parent);
     }
 }

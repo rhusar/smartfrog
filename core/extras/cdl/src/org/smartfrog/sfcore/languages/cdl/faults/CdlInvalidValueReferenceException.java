@@ -24,8 +24,8 @@ package org.smartfrog.sfcore.languages.cdl.faults;
  * created 17-Jan-2006 11:29:55
  */
 
-public class CdlInvalidValueReferenceException extends CdlResolutionException {
-    public static final String ERROR_CHILD_ELEMENTS_IN_REFERENCE = "Value references can not have children";
+public class CdlInvalidValueReferenceException extends CdlXmlParsingException {
+    public static final String ERROR_CHILDREN_IN_REFERENCE = "Value references can not have children";
 
     /**
      * Constructs a new exception with <code>null</code> as its detail message.

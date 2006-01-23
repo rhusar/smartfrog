@@ -22,6 +22,7 @@ package org.smartfrog.sfcore.languages.cdl.references;
 import org.smartfrog.sfcore.languages.cdl.faults.CdlResolutionException;
 import org.smartfrog.sfcore.languages.cdl.dom.CdlDocument;
 import org.smartfrog.sfcore.languages.cdl.dom.PropertyList;
+import org.smartfrog.sfcore.languages.cdl.dom.ToplevelList;
 
 import javax.xml.namespace.QName;
 
@@ -61,8 +62,9 @@ public class StepRefRoot extends Step {
         CdlDocument owner = state.getNode().getOwner();
         PropertyList target = owner.lookup(refroot);
         if(target==null) {
-            throw new CdlResolutionException("Unknown reference root "+refroot.toString());
+            throw new CdlResolutionException("Unknown cdl:refroot \""+refroot.toString()+"\"");
         }
+        assert !(target instanceof ToplevelList) : "we have gone up too far!";
         return state.next(target);
     }
 

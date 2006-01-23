@@ -79,7 +79,7 @@ public class StepDown extends Step {
         PropertyList node = state.getNode();
         String uri="";
         if(prefix!=null) {
-            uri = node.getNamespaceURI(prefix);
+            uri = state.resolveNamespaceURI(prefix);
             if(uri==null) {
                 throw new CdlResolutionException("Unknown prefix :"+prefix,state);
             }
