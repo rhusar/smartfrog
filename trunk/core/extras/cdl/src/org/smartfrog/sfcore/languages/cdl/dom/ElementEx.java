@@ -58,10 +58,10 @@ public class ElementEx extends Element implements ToSmartFrog, Iterable<Node>, N
     }
 
     public ElementEx(QName name) {
-        super((name.getPrefix().length()>0?
-                (name.getPrefix()+":")
-                :"")
-                +name.getLocalPart(),name.getNamespaceURI());
+        super((name.getPrefix().length() > 0 ?
+                (name.getPrefix() + ":")
+                : "")
+                + name.getLocalPart(), name.getNamespaceURI());
     }
 
     /**
@@ -121,7 +121,7 @@ public class ElementEx extends Element implements ToSmartFrog, Iterable<Node>, N
      */
     public void bind() throws CdlXmlParsingException {
         //recurse through children, binding them
-        for (Node child : nodes()) {
+        for (Node child : this) {
             if (child instanceof ElementEx) {
                 ElementEx ex = (ElementEx) child;
                 ex.bind();
@@ -151,28 +151,30 @@ public class ElementEx extends Element implements ToSmartFrog, Iterable<Node>, N
 
     /**
      * Add a new attribute in the given namespace
+     *
      * @param namespace namespace URI
      * @param localname localname
-     * @param value value
+     * @param value     value
      */
-    public void addNewAttribute(String namespace,String localname,String value) {
-        Attribute attr=new Attribute(localname,namespace,value);
+    public void addNewAttribute(String namespace, String localname, String value) {
+        Attribute attr = new Attribute(localname, namespace, value);
         addAttribute(attr);
     }
 
     /**
      * Add a new attribute
-     * @param name attribute QName
+     *
+     * @param name  attribute QName
      * @param value attribute value
      */
     public void addNewAttribute(QName name, String value) {
         String local;
-        if(name.getPrefix().length()>0) {
+        if (name.getPrefix().length() > 0) {
             local = name.getPrefix() + ':' + name.getLocalPart();
         } else {
-            local= name.getLocalPart();
+            local = name.getLocalPart();
         }
-        Attribute attr = new Attribute(local, name.getNamespaceURI(),value);
+        Attribute attr = new Attribute(local, name.getNamespaceURI(), value);
         addAttribute(attr);
     }
 
@@ -209,6 +211,7 @@ public class ElementEx extends Element implements ToSmartFrog, Iterable<Node>, N
 
     /**
      * get the value of anode, print its value
+     *
      * @param out
      * @param key
      * @param includeEmptyStrings
@@ -220,22 +223,21 @@ public class ElementEx extends Element implements ToSmartFrog, Iterable<Node>, N
                                   boolean trim) {
 
         String value = getTextValue();
-        if(trim) {
-            value=value.trim();
+        if (trim) {
+            value = value.trim();
         }
-        if(value.length()==0 && !includeEmptyStrings) {
+        if (value.length() == 0 && !includeEmptyStrings) {
             return;
         }
         //replace the # statement with the 0x23, decimal 35 value
         value = value.replace("#", "\u0023");
-        out.printTuple(key,value);
+        out.printTuple(key, value);
     }
 
 
     protected void printValueToSF(GenerateContext out) {
-        printValueToSF(out,BaseUnaryOperator.DATA_ATTRIBUTE,false,true);
+        printValueToSF(out, BaseUnaryOperator.DATA_ATTRIBUTE, false, true);
     }
-
 
 
     /**
@@ -248,7 +250,7 @@ public class ElementEx extends Element implements ToSmartFrog, Iterable<Node>, N
     public void printChildrenToSmartFrog(GenerateContext out)
             throws IOException,
             CdlException {
-        for (Node node : nodes()) {
+        for (Node node : this) {
             if (node instanceof ToSmartFrog) {
                 ToSmartFrog sfwriter = (ToSmartFrog) node;
                 sfwriter.toSmartFrog(out);
@@ -276,13 +278,14 @@ public class ElementEx extends Element implements ToSmartFrog, Iterable<Node>, N
     /**
      * Get the immediate text value of an element. That is -the concatenation
      * of all direct child text elements. This string is not trimmed.
+     *
      * @return a next string, which will be empty "" if there is no text
      */
     public String getTextValue() {
-        StringBuilder builder=new StringBuilder();
-        for (Node n:nodes()) {
+        StringBuilder builder = new StringBuilder();
+        for (Node n : this) {
             if (n instanceof Text) {
-                Text text=(Text) n;
+                Text text = (Text) n;
                 builder.append(text.getValue());
             }
         }
@@ -291,6 +294,7 @@ public class ElementEx extends Element implements ToSmartFrog, Iterable<Node>, N
 
     /**
      * turn a qname string into a QName value, resolving prefixes relative to here
+     *
      * @param qname
      * @return a qname from the element
      * @throws IllegalArgumentException if the prefix would not resolve
@@ -301,14 +305,14 @@ public class ElementEx extends Element implements ToSmartFrog, Iterable<Node>, N
         String localname;
 
         localname = NamespaceUtils.extractLocalname(qname);
-        prefix=NamespaceUtils.extractNamespacePrefix(qname);
-        if(prefix!=null) {
-            namespace=getNamespaceURI(prefix);
-            if(namespace==null) {
+        prefix = NamespaceUtils.extractNamespacePrefix(qname);
+        if (prefix != null) {
+            namespace = getNamespaceURI(prefix);
+            if (namespace == null) {
                 //this is an error.
-                throw new IllegalArgumentException(ERROR_NON_RESOLVABLE_QNAME_PREFIX +prefix+"]");
+                throw new IllegalArgumentException(ERROR_NON_RESOLVABLE_QNAME_PREFIX + prefix + "]");
             }
-            return new QName(namespace,localname,prefix);
+            return new QName(namespace, localname, prefix);
         } else {
             return new QName(localname);
         }
@@ -317,11 +321,12 @@ public class ElementEx extends Element implements ToSmartFrog, Iterable<Node>, N
 
     /**
      * Test for having one or more child elements
+     *
      * @return true iff there is at least one child element
      */
     public boolean hasChildElements() {
-        for(Node n:this) {
-            if(n instanceof Element) {
+        for (Node n : this) {
+            if (n instanceof Element) {
                 return true;
             }
         }
@@ -341,6 +346,7 @@ public class ElementEx extends Element implements ToSmartFrog, Iterable<Node>, N
 
     /**
      * Get a static cache of all namespaces currently in scope
+     *
      * @return a map of prefixes to namespaces
      */
     public Namespaces getNamespaces() {

@@ -22,29 +22,34 @@ package org.smartfrog.sfcore.languages.cdl.dom;
 import nu.xom.Attribute;
 import nu.xom.Element;
 import nu.xom.Node;
-import nu.xom.Elements;
 import org.ggf.cddlm.generated.api.CddlmConstants;
 import org.smartfrog.services.xml.java5.NamespaceUtils;
 import org.smartfrog.services.xml.utils.XsdUtils;
+import org.smartfrog.services.cddlm.cdl.components.CdlComponentDescriptionImpl;
+import org.smartfrog.services.cddlm.cdl.components.CdlComponentDescription;
 import org.smartfrog.sfcore.languages.cdl.Constants;
 import org.smartfrog.sfcore.languages.cdl.references.ReferencePath;
 import org.smartfrog.sfcore.languages.cdl.faults.CdlException;
 import org.smartfrog.sfcore.languages.cdl.faults.CdlXmlParsingException;
 import org.smartfrog.sfcore.languages.cdl.faults.CdlInvalidValueReferenceException;
 import org.smartfrog.sfcore.languages.cdl.generate.GenerateContext;
+import org.smartfrog.sfcore.languages.cdl.generate.DescriptorSource;
 import org.smartfrog.sfcore.languages.cdl.resolving.ResolveEnum;
 import org.smartfrog.sfcore.languages.cdl.utils.ClassLogger;
 import org.smartfrog.sfcore.logging.Log;
+import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
+import org.smartfrog.sfcore.common.SmartFrogException;
 
 import javax.xml.namespace.QName;
 import java.io.IOException;
+import java.rmi.RemoteException;
 
 /**
  * This represents a template in the CDL
  * created 21-Apr-2005 14:26:55
  */
 
-public class PropertyList extends DocNode {
+public class PropertyList extends DocNode implements DescriptorSource {
 
     /**
      * this flag is set if we are toplevel, something that
@@ -140,8 +145,8 @@ public class PropertyList extends DocNode {
             }
 
             if (getChildCount() > 0) {
-                boolean childElements = getChildElements().size()>0;
-                if(Constants.POLICY_NESTED_NODES_FORBIDDEN_IN_REFERENCES || childElements) {
+                boolean childElements = getChildElements().size() > 0;
+                if (Constants.POLICY_NESTED_NODES_FORBIDDEN_IN_REFERENCES || childElements) {
                     throw new CdlInvalidValueReferenceException(
                             CdlInvalidValueReferenceException.ERROR_CHILDREN_IN_REFERENCE
                                     + getDescription());
@@ -154,11 +159,12 @@ public class PropertyList extends DocNode {
 
     /**
      * Copy the element and local state.
-     *
+     * <p/>
      * Subclassers must subclass override the {@link #newList(String, String)} operation
      * to return their subclass, and then hand off to this superclass the act of creation
      * and initialisation. They may also want to override {@link #propagateFieldValuesToShallowCopy(PropertyList)}
      * to add extra attribute copying.
+     *
      * @return a shallow copy of the original.
      */
     protected Element shallowCopy() {
@@ -169,6 +175,7 @@ public class PropertyList extends DocNode {
 
     /**
      * This is here for subclasses to play with.
+     *
      * @param copy
      */
     protected void propagateFieldValuesToShallowCopy(PropertyList copy) {
@@ -217,7 +224,7 @@ public class PropertyList extends DocNode {
             buffer.append(extendsName);
         }
         String refValue = getRefValue();
-        if(refValue!=null) {
+        if (refValue != null) {
             buffer.append(" cdl:ref=\"");
             buffer.append(refValue);
             buffer.append('"');
@@ -228,16 +235,10 @@ public class PropertyList extends DocNode {
             buffer.append(refRootValue);
             buffer.append('"');
         }
-        if(isLazy()) {
+        if (isLazy()) {
             buffer.append(" cdl:lazy=\"true\"");
         }
         buffer.append(">");
-/*
-        if (getOwner() != null) {
-            buffer.append(" from ");
-            buffer.append(getOwner());
-        }
-*/
         return buffer.toString();
     }
 
@@ -346,7 +347,7 @@ public class PropertyList extends DocNode {
      * @return the propertly list or null for no match
      */
     public PropertyList getChildTemplateMatching(QName name) {
-        for (Node node : nodes()) {
+        for (Node node : this) {
             if (node instanceof PropertyList) {
                 PropertyList child = (PropertyList) node;
                 if (child.isNamed(name)) {
@@ -421,6 +422,52 @@ public class PropertyList extends DocNode {
         return parent;
     }
 
+
+    /**
+     * Add a new description
+     *
+     * @param parent node: add attribute or children
+     * @throws java.rmi.RemoteException
+     */
+    public void exportDescription(CdlComponentDescription parent) throws RemoteException, SmartFrogException {
+
+        QName name=this.getQName();
+        if (hasChildElements()) {
+            //we have children, go into parent mode
+            //TODO: what about cmp: special attributes?
+            CdlComponentDescriptionImpl description = new CdlComponentDescriptionImpl(name,parent);
+            exportChildren(description);
+        } else {
+
+            //no kids. export our text value. how?
+            if(isValueReference() && isLazy()) {
+                //export a lazy reference
+                //TODO
+            } else {
+                //normal text node.
+                String text=getTextValue();
+                parent.sfReplaceAttribute(name,text);
+            }
+        }
+
+    }
+
+    /**
+     * export all our children
+     * @param parent
+     * @return
+     * @throws RemoteException
+     */
+    private void exportChildren(CdlComponentDescription parent) throws RemoteException, SmartFrogException {
+        for (Node node : this) {
+            if (node instanceof DescriptorSource) {
+                DescriptorSource source = (DescriptorSource) node;
+                source.exportDescription(parent);
+            }
+        }
+    }
+
+
     /**
      * Run through the list and update the entire aggregate resolution state
      * This will set all children to their appropriate values, using
@@ -430,7 +477,7 @@ public class PropertyList extends DocNode {
      */
     public ResolveEnum aggregateResolutionState() {
         ResolveEnum state = getResolveState();
-        for (Node n : nodes()) {
+        for (Node n : this) {
             if (n instanceof PropertyList) {
                 PropertyList child = (PropertyList) n;
                 ResolveEnum childState = child.aggregateResolutionState();
@@ -466,11 +513,12 @@ public class PropertyList extends DocNode {
      */
     protected void markReferenceResolved() {
         removeAttribute(ATTR_REF, CDL_NAMESPACE);
-        referencePath=null;
+        referencePath = null;
     }
 
     /**
      * Get the reference path of a node
+     *
      * @return the reference path or null
      */
     public ReferencePath getReferencePath() {
@@ -479,12 +527,13 @@ public class PropertyList extends DocNode {
 
     /**
      * remove an attribute
+     *
      * @param localname local attr name
      * @param namespace
      */
     private boolean removeAttribute(String localname, String namespace) {
         Attribute attribute = getAttribute(localname, namespace);
-        if(attribute==null) {
+        if (attribute == null) {
             return false;
         }
         removeAttribute(attribute);
@@ -493,13 +542,15 @@ public class PropertyList extends DocNode {
 
     /**
      * Test for a node being a value references
+     *
      * @return true if this is a valid value reference, fault if not (though its
-     * children may be)
-     * @throws CdlInvalidValueReferenceException if the node is inconsistent
+     *         children may be)
+     * @throws CdlInvalidValueReferenceException
+     *          if the node is inconsistent
      */
     public boolean isValueReference() throws CdlInvalidValueReferenceException {
-        String ref= getRefValue();
-        if(ref==null) {
+        String ref = getRefValue();
+        if (ref == null) {
             return false;
         }
         return true;
@@ -507,29 +558,40 @@ public class PropertyList extends DocNode {
 
     /**
      * Test for a node having a lazy attribute
+     *
      * @return returns true if cdl:lazy is present; the value is unimportant
      */
     public boolean isLazy() {
         String lazyValue = getAttributeValue(ATTR_LAZY, CDL_NAMESPACE);
-        boolean lazy = lazyValue!=null && XsdUtils.isXsdBooleanTrue(lazyValue);
+        boolean lazy = lazyValue != null && XsdUtils.isXsdBooleanTrue(lazyValue);
         return lazy;
+    }
+
+    /**
+     * Test for being a lazy reference
+     * @return true iff we are a reference with cdl:lazy=true
+     */
+    public boolean isLazyReference() {
+        return isValueReference() && isLazy();
     }
 
     /**
      * Set the lazy flag/attribute.
      * When a list is lazy it has the attribute cdl:lazy set; when it is not, it is removed
+     *
      * @param lazy
      */
     public void setLazy(boolean lazy) {
         removeAttribute(ATTR_LAZY, CDL_NAMESPACE);
         if (lazy) {
-            addAttribute(new Attribute("cdl:"+ATTR_LAZY, CDL_NAMESPACE, XsdUtils.TRUE));
+            addAttribute(new Attribute("cdl:" + ATTR_LAZY, CDL_NAMESPACE, XsdUtils.TRUE));
         }
     }
 
     /**
      * test for being a toplevel list.
      * The relevant subclass overrides it to return true
+     *
      * @return true iff this is a ToplevelList.
      */
     public boolean isToplevel() {
@@ -538,6 +600,7 @@ public class PropertyList extends DocNode {
 
     /**
      * Get a factory for this particular instance/subclass of PropertyList.
+     *
      * @return a factory that can be used to create new objects of this type.
      */
     public PropertyListFactory getFactory() {
@@ -546,11 +609,13 @@ public class PropertyList extends DocNode {
 
     /**
      * What is our local resolution state
+     *
      * @return our current state. {@link ResolveEnum#ResolvedIncomplete}
-     * or {@link ResolveEnum#ResolvedIncomplete} for references, {@link ResolveEnum#ResolvedComplete}
-     * for nothing left to do. And {@link ResolveEnum#ResolvedUnknown} if there are child elements,
-     * so our state is effectively unknown.
+     *         or {@link ResolveEnum#ResolvedIncomplete} for references, {@link ResolveEnum#ResolvedComplete}
+     *         for nothing left to do. And {@link ResolveEnum#ResolvedUnknown} if there are child elements,
+     *         so our state is effectively unknown.
      * @throws CdlInvalidValueReferenceException
+     *
      */
     public ResolveEnum inferLocalResolutionState() throws CdlInvalidValueReferenceException {
         if (isLazy()) {
@@ -576,5 +641,4 @@ public class PropertyList extends DocNode {
             return state;
         }
     }
-
 }

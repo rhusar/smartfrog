@@ -23,15 +23,21 @@ import nu.xom.Element;
 import nu.xom.Node;
 import org.smartfrog.sfcore.languages.cdl.dom.attributes.ValueOfAttribute;
 import org.smartfrog.sfcore.languages.cdl.faults.CdlXmlParsingException;
+import org.smartfrog.sfcore.languages.cdl.generate.DescriptorSource;
+import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.services.cddlm.cdl.components.CdlComponentDescription;
+import org.smartfrog.services.cddlm.cdl.components.CdlComponentDescriptionImpl;
 
+import javax.xml.namespace.QName;
 import java.util.Collection;
 import java.util.HashMap;
+import java.rmi.RemoteException;
 
 /**
  * created 21-Apr-2005 14:42:51
  */
 
-public class Expression extends DocNode {
+public class Expression extends DocNode implements DescriptorSource {
 
     private ValueOfAttribute valueOf;
 
@@ -93,7 +99,7 @@ public class Expression extends DocNode {
         variables = new HashMap<String, Variable>();
         valueOf = ValueOfAttribute.extract(this, true);
         //now run though our children
-        for (Node child : nodes()) {
+        for (Node child : this) {
 
             if (child instanceof Variable) {
                 //add variables to our list of vars
@@ -129,5 +135,17 @@ public class Expression extends DocNode {
      */
     public static boolean isA(String namespace, String localname) {
         return isNode(namespace, localname, ELEMENT_EXPRESSION);
+    }
+
+    /**
+     * Add a new description
+     *
+     * @param parent node: add attribute or children
+     * @throws java.rmi.RemoteException
+     */
+    public void exportDescription(CdlComponentDescription parent) throws RemoteException, SmartFrogException {
+        QName name=getQName();
+        CdlComponentDescription node=new CdlComponentDescriptionImpl(name,parent);
+        node.sfReplaceAttribute("expression","TODO");
     }
 }

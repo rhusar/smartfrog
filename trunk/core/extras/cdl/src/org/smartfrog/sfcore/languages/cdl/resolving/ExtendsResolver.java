@@ -261,7 +261,7 @@ public class ExtendsResolver {
         List<Node> newChildren = new ArrayList<Node>(maxsize);
         //this is a map that caches mappings of things
         HashMap<QName, QName> entries = new HashMap<QName, QName>(maxsize);
-        for (Node node : extension.nodes()) {
+        for (Node node : extension) {
             if (node instanceof PropertyList) {
                 //cast it
                 PropertyList template = (PropertyList) node;
