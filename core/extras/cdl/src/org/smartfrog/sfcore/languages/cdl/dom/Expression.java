@@ -68,7 +68,7 @@ public class Expression extends DocNode {
      * @param variable variable to add
      * @throws CdlXmlParsingException if it already exists
      */
-    protected void add(Variable variable) throws CdlXmlParsingException {
+    protected void addVariable(Variable variable) throws CdlXmlParsingException {
         String nameValue = variable.getNameValue();
         if (lookupVariable(nameValue) != null) {
             throw new CdlXmlParsingException(this,
@@ -90,13 +90,14 @@ public class Expression extends DocNode {
 
     public void bind() throws CdlXmlParsingException {
         super.bind();
+        variables = new HashMap<String, Variable>();
         valueOf = ValueOfAttribute.extract(this, true);
         //now run though our children
         for (Node child : nodes()) {
 
             if (child instanceof Variable) {
                 //add variables to our list of vars
-                add((Variable) child);
+                addVariable((Variable) child);
             } else {
                 if (child instanceof Element && !(child instanceof Documentation)) {
                     //everything that is not documentation is rejected
