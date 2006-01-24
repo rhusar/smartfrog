@@ -38,6 +38,9 @@ public class Timer implements Runnable {
     /** Flag indicating that thread is currently waiting. */
     protected boolean waiting = false;
 
+    /** Thread name. */
+    protected String name= "TimerThread";
+
     /**
      * Constructor.
      *
@@ -61,6 +64,7 @@ public class Timer implements Runnable {
 
         stopped = false;
         timerThread = createThread(this);
+        timerThread.setName(name);
         timerThread.start();
     }
 
@@ -182,5 +186,9 @@ public class Timer implements Runnable {
             timerWait();
             doTick();
         }
+    }
+
+    public void setName(String name){
+        this.name=name;
     }
 }
