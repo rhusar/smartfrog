@@ -34,8 +34,6 @@ public class LivenessSender extends Timer {
     /** Target for the liveness messages. */
     protected Liveness target;
 
-    protected String name = "LivenessSender";
-
     /**
      * Constructor.
      *
@@ -44,7 +42,11 @@ public class LivenessSender extends Timer {
      */
     public LivenessSender(Liveness target, long delay, String name) {
         super(delay);
-        this.name=name;
+        this.name = "LivenessSender";
+        if ((name!=null)&&(!(name.trim().equals("")))){
+            this.name = this.name+"_"+name;
+        }
+
         this.target = target;
     }
 
