@@ -20,6 +20,7 @@
 package org.smartfrog.sfcore.languages.cdl;
 
 import org.smartfrog.services.xml.utils.ResourceLoader;
+import org.smartfrog.services.cddlm.cdl.components.CdlComponentDescription;
 import org.smartfrog.sfcore.common.SmartFrogParseException;
 import org.smartfrog.sfcore.languages.cdl.dom.CdlDocument;
 import org.smartfrog.sfcore.languages.cdl.generate.SmartFrogSourceGenerator;
@@ -62,6 +63,10 @@ public class SFParser implements StreamParser {
             CdlDocument cdlDocument = parser.parseStream(is);
             //here it is loaded; create the dom
             cdlDocument.parse(parseContext);
+
+            //create the CD graph
+            CdlComponentDescription graph = cdlDocument.convertToComponentDescription();
+
 
             //now we are ready to create a smartfrog file.
             File generated=SmartFrogSourceGenerator.translate(cdlDocument);

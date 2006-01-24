@@ -28,6 +28,8 @@ import nu.xom.Serializer;
 import org.smartfrog.services.xml.java5.iterators.IteratorRelay;
 import org.smartfrog.services.xml.java5.iterators.NodeIterator;
 import org.smartfrog.services.filesystem.FileSystem;
+import org.smartfrog.services.cddlm.cdl.components.CdlComponentDescription;
+import org.smartfrog.services.cddlm.cdl.components.CdlComponentDescriptionImpl;
 import org.smartfrog.sfcore.languages.cdl.ParseContext;
 import org.smartfrog.sfcore.languages.cdl.Constants;
 import org.smartfrog.sfcore.languages.cdl.references.EarlyReferenceProcessor;
@@ -41,11 +43,16 @@ import org.smartfrog.sfcore.languages.cdl.faults.CdlResolutionException;
 import org.smartfrog.sfcore.languages.cdl.faults.CdlXmlParsingException;
 import org.smartfrog.sfcore.languages.cdl.generate.GenerateContext;
 import org.smartfrog.sfcore.languages.cdl.generate.ToSmartFrog;
+import org.smartfrog.sfcore.languages.cdl.generate.DescriptorSource;
 import org.smartfrog.sfcore.languages.cdl.resolving.ExtendsProcessor;
 import org.smartfrog.sfcore.languages.cdl.resolving.RegisterPrototypesProcessor;
 import org.smartfrog.sfcore.languages.cdl.resolving.VerifyExtendsComplete;
 import org.smartfrog.sfcore.languages.cdl.utils.ClassLogger;
+import org.smartfrog.sfcore.languages.sf.sfcomponentdescription.SFComponentDescriptionImpl;
 import org.smartfrog.sfcore.logging.Log;
+import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.common.ContextImpl;
+import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
 
 import javax.xml.namespace.QName;
 import java.io.IOException;
@@ -57,13 +64,14 @@ import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.rmi.RemoteException;
 
 
 /**
  * This represents a parsed CDL document, or an error caused during parsing.
  */
 
-public class CdlDocument implements Names, ToSmartFrog {
+public class CdlDocument implements Names, ToSmartFrog, DescriptorSource {
 
     /**
      * a log
@@ -424,7 +432,7 @@ public class CdlDocument implements Names, ToSmartFrog {
         getRoot().bind();
 
         //now process our children
-        for (Node node : root.nodes()) {
+        for (Node node : root) {
             if (!(node instanceof Element)) {
                 continue;
             }
@@ -532,6 +540,35 @@ public class CdlDocument implements Names, ToSmartFrog {
             //out.leave();
         }
     }
+
+    /**
+     * Add a new description
+     *
+     * @param parent node: add attribute or children
+     * @throws java.rmi.RemoteException
+     * @throws org.smartfrog.sfcore.common.SmartFrogException
+     *
+     */
+    public void exportDescription(CdlComponentDescription parent) throws RemoteException, SmartFrogException {
+
+        if (getSystem() != null) {
+            getSystem().exportDescription(parent);
+        }
+
+    }
+
+    /**
+     * convert a doc to a CD graph
+     * @return
+     * @throws SmartFrogException
+     * @throws RemoteException
+     */
+    public CdlComponentDescription convertToComponentDescription() throws SmartFrogException, RemoteException {
+        CdlComponentDescription root=new CdlComponentDescriptionImpl(null,null);
+        exportDescription(root);
+        return root;
+    }
+
 
     /**
      * Save a doc to a stream.

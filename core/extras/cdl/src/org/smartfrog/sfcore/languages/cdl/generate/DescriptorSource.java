@@ -1,4 +1,4 @@
-/** (C) Copyright 2005 Hewlett-Packard Development Company, LP
+/** (C) Copyright 2006 Hewlett-Packard Development Company, LP
 
  This library is free software; you can redistribute it and/or
  modify it under the terms of the GNU Lesser General Public
@@ -17,42 +17,26 @@
  For more information: www.smartfrog.org
 
  */
+package org.smartfrog.sfcore.languages.cdl.generate;
 
-package org.smartfrog.sfcore.languages.cdl.dom;
+import org.smartfrog.services.cddlm.cdl.components.CdlComponentDescription;
+import org.smartfrog.sfcore.common.SmartFrogException;
 
-import nu.xom.Document;
-import nu.xom.Element;
+import java.rmi.RemoteException;
 
 /**
+ * created 24-Jan-2006 14:41:56
  */
-public class DocumentNode extends Document {
 
-    public DocumentNode(Element root) {
-        super(root);
-    }
 
-    public DocumentNode(Document doc) {
-        super(doc);
-    }
-
-    public static DocumentNode create() {
-        return new DocumentNode(new Element("root",
-                "http://www.xom.nu/fakeRoot"));
-    }
-
+public interface DescriptorSource {
 
     /**
-     * owner document. may be null.
+     * Add a new description
+     * @param parent node: add attribute or children
+     * @throws RemoteException
+     * @throws SmartFrogException
      */
-    private CdlDocument owner;
-
-
-    public CdlDocument getOwner() {
-        return owner;
-    }
-
-    public void setOwner(CdlDocument owner) {
-        this.owner = owner;
-    }
+    public void exportDescription(CdlComponentDescription parent) throws RemoteException, SmartFrogException;
 
 }

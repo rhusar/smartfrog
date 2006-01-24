@@ -1,4 +1,4 @@
-/** (C) Copyright 2005 Hewlett-Packard Development Company, LP
+/** (C) Copyright 2006 Hewlett-Packard Development Company, LP
 
  This library is free software; you can redistribute it and/or
  modify it under the terms of the GNU Lesser General Public
@@ -17,42 +17,27 @@
  For more information: www.smartfrog.org
 
  */
+package org.smartfrog.services.cddlm.cdl.components;
 
-package org.smartfrog.sfcore.languages.cdl.dom;
+import org.smartfrog.sfcore.componentdescription.ComponentDescription;
+import org.smartfrog.sfcore.languages.sf.sfcomponentdescription.SFComponentDescription;
 
-import nu.xom.Document;
-import nu.xom.Element;
+import javax.xml.namespace.QName;
+import java.rmi.Remote;
+import java.rmi.RemoteException;
 
 /**
+ * created 24-Jan-2006 13:37:36
+ * This extends Cdl Component descriptions with extra operations.
  */
-public class DocumentNode extends Document {
 
-    public DocumentNode(Element root) {
-        super(root);
-    }
 
-    public DocumentNode(Document doc) {
-        super(doc);
-    }
-
-    public static DocumentNode create() {
-        return new DocumentNode(new Element("root",
-                "http://www.xom.nu/fakeRoot"));
-    }
-
+public interface CdlComponentDescription extends SFComponentDescription {
 
     /**
-     * owner document. may be null.
+     * Get the Qualified name of a node
+     * @return the qname
+     * @throws RemoteException
      */
-    private CdlDocument owner;
-
-
-    public CdlDocument getOwner() {
-        return owner;
-    }
-
-    public void setOwner(CdlDocument owner) {
-        this.owner = owner;
-    }
-
+    public QName getQName() throws RemoteException;
 }
