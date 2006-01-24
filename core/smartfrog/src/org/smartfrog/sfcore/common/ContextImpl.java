@@ -168,7 +168,7 @@ public class ContextImpl extends OrderedHashtable implements Context,
       *
       * @return previous value for name or null if none
       *
-      * @throws SmartFrogRuntimeException when name or value are null or name already used
+      * @throws SmartFrogContextException when name or value are null or name already used
       */
      public synchronized Object sfAddAttribute(Object name, Object value)
          throws SmartFrogContextException{
