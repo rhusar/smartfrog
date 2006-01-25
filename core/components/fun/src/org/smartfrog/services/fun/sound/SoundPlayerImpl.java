@@ -1,4 +1,4 @@
-/** (C) Copyright 2005 Hewlett-Packard Development Company, LP
+/** (C) Copyright 2005-2006 Hewlett-Packard Development Company, LP
 
  This library is free software; you can redistribute it and/or
  modify it under the terms of the GNU Lesser General Public
@@ -17,6 +17,7 @@
  For more information: www.smartfrog.org
 
  */
+
 /*
  * Copyright  2000-2002,2004-2005 The Apache Software Foundation
  *
@@ -40,6 +41,8 @@ import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLivenessException;
 import org.smartfrog.sfcore.logging.Log;
+import org.smartfrog.services.filesystem.FileSystem;
+import org.smartfrog.services.filesystem.FileUsingComponentImpl;
 
 import javax.sound.sampled.Clip;
 import javax.sound.sampled.AudioInputStream;
@@ -56,17 +59,24 @@ import java.io.File;
 import java.io.IOException;
 
 /**
+ * Sound player based on code extracted from Ant's <sound> task.
  * created 13-Oct-2005 11:28:31
  */
 
-public class SoundPlayerImpl extends PrimImpl implements SoundPlayer, LineListener {
+public class SoundPlayerImpl extends FileUsingComponentImpl implements SoundPlayer {
 
     private Log log;
+
     public static final int SLEEP_INTERVAL_MILLIS = 100;
+
+    private SoundPlayer player = null;
 
     public SoundPlayerImpl() throws RemoteException {
     }
 
+    public Log getLog() {
+        return log;
+    }
 
     /**
      * Can be called to start components. Subclasses should override to provide
@@ -78,12 +88,17 @@ public class SoundPlayerImpl extends PrimImpl implements SoundPlayer, LineListen
      */
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
-        log=sfGetApplicationLog();
+        log = sfGetApplicationLog();
+        bind(true, null);
+        int loops = sfResolve(ATTR_LOOPS, 1, false);
+        player = new SoundPlayer(this, getFile(), loops);
+
     }
 
 
     /**
      * Liveness call in to check if this component is still alive.
+     *
      * @param source source of call
      * @throws org.smartfrog.sfcore.common.SmartFrogLivenessException
      *                                  component is terminated
@@ -91,6 +106,18 @@ public class SoundPlayerImpl extends PrimImpl implements SoundPlayer, LineListen
      */
     public void sfPing(Object source) throws SmartFrogLivenessException, RemoteException {
         super.sfPing(source);
+        if (player != null) {
+            synchronized (player) {
+                if (player.getPlaybackException() != null) {
+                    throw (SmartFrogLivenessException) SmartFrogLivenessException
+                            .forward(player.getPlaybackException());
+                }
+                //clean up the player if we are finished.
+                if (player.isFinished()) {
+                    player = null;
+                }
+            }
+        }
     }
 
     /**
@@ -101,92 +128,63 @@ public class SoundPlayerImpl extends PrimImpl implements SoundPlayer, LineListen
      */
     public synchronized void sfTerminateWith(TerminationRecord status) {
         super.sfTerminateWith(status);
+        if(player!=null) {
+            synchronized(player) {
+                player.kill();
+                player=null;
+            }
+        }
     }
 
-
-    private Throwable playbackException;
 
     /**
      * Plays the file for duration milliseconds or loops.
-     *
+     * <p/>
      * Taken from org.apache.tools.ant.taskdefs.optional.sound.AntSoundPlayer; ASF 2.0 license
      */
-    private boolean play( File file, int loops) throws RemoteException,SmartFrogException{
 
-        Clip audioClip = null;
-
-        AudioInputStream audioInputStream = null;
-
-
-        try {
-            audioInputStream = AudioSystem.getAudioInputStream(file);
-
-            if (audioInputStream != null) {
-                AudioFormat format = audioInputStream.getFormat();
-                DataLine.Info info = new DataLine.Info(Clip.class, format,
-                        AudioSystem.NOT_SPECIFIED);
-                try {
-                    audioClip = (Clip) AudioSystem.getLine(info);
-                    audioClip.addLineListener(this);
-                    audioClip.open(audioInputStream);
-                } catch (LineUnavailableException e) {
-                    playbackException=e;
-                    log.error("The sound device is currently unavailable");
-                    return false;
-                }
-
-                audioClip.loop(loops);
-                while (audioClip.isRunning()) {
-                    try {
-                        Thread.sleep(SLEEP_INTERVAL_MILLIS);
-                    } catch (InterruptedException e1) {
-                        // Ignore Exception
-                    }
-                }
-                audioClip.drain();
-                    audioClip.close();
-            } else {
-                String message = "Can't get audio data from file " + file.getName();
-                log.error(message);
-                playbackException=new SmartFrogException(message);
-            }
-        } catch (UnsupportedAudioFileException
-                uafe) {
-            log.error("Audio format is not yet supported: "
-                    + uafe.getMessage());
-            playbackException=uafe;
-            return false;
-        } catch (IOException
-                ioe) {
-            log.error("Failed to play file",ioe);
-            playbackException=ioe;
-            return false;
-        }
-        return true;
-    }
-
-
-    /**
-     * This is implemented to listen for any line events and closes the
-     * clip if required.
-     * Runs in the separate thread.
-     * @param event the line event to follow
-     */
-    public void update(LineEvent event) {
-        if (event.getType().equals(LineEvent.Type.STOP)) {
-            Line line = event.getLine();
-            line.close();
-        } else if (event.getType().equals(LineEvent.Type.CLOSE)) {
-
-        }
-    }
 
     private static class SoundPlayer implements Runnable, LineListener {
-        SoundPlayerImpl owner;
-        File file;
+        private SoundPlayerImpl owner;
+        private File file;
+        private int loops;
+        private Log log;
         private Throwable playbackException;
         private boolean finished;
+        public static final String ERROR_DURING_PLAYBACK = "during playback";
+        public static final String ERROR_NO_SOUNDCARD = "The sound device is currently unavailable";
+        public static final String ERROR_NO_DATA = "Can't get audio data from file ";
+        public static final String ERROR_UNKNOWN_FORMAT = "Audio format is not yet supported: ";
+        public static final String ERROR_PLAYBACK_FAILURE = "Failed to play file";
+        private Thread thread;
 
+
+        public SoundPlayer(SoundPlayerImpl owner, File file, int loops) {
+            this.owner = owner;
+            this.file = file;
+            this.loops = loops;
+        }
+
+        public void start() {
+            thread = new Thread(this);
+            thread.run();
+        }
+
+        public Throwable getPlaybackException() {
+            return playbackException;
+        }
+
+        public boolean isFinished() {
+            return finished;
+        }
+
+        public void kill() {
+            if (thread == null) {
+                return;
+            } else {
+                thread.interrupt();
+            }
+        }
 
         /**
          * When an object implementing interface <code>Runnable</code> is used
@@ -200,19 +198,95 @@ public class SoundPlayerImpl extends PrimImpl implements SoundPlayer, LineListen
          * @see Thread#run()
          */
         public void run() {
+            log = owner.getLog();
+            play(file, loops);
+            //forget about ourselves
+            thread = null;
+        }
 
+
+        /**
+         * This is implemented to listen for any line events and closes the
+         * clip if required.
+         * Runs in the separate thread.
+         *
+         * @param event the line event to follow
+         */
+        public void update(LineEvent event) {
+            if (event.getType().equals(LineEvent.Type.STOP)) {
+                Line line = event.getLine();
+                line.close();
+            } else if (event.getType().equals(LineEvent.Type.CLOSE)) {
+                //line closure
+            }
         }
 
         /**
-         * Informs the listener that a line's state has changed.  The listener can then invoke
-         * <code>LineEvent</code> methods to obtain information about the event.
-         *
-         * @param event a line event that describes the change
+         * Play a clip. this is based on apache code
+         * @param file
+         * @param loops
+         * @return
          */
+        private boolean play(File file, int loops) {
 
-        public void update(LineEvent event) {
+            Clip audioClip = null;
 
+            AudioInputStream audioInputStream = null;
+            try {
+                audioInputStream = AudioSystem.getAudioInputStream(file);
+            } catch (UnsupportedAudioFileException uafe) {
+                log.error(ERROR_UNKNOWN_FORMAT
+                        + uafe.getMessage());
+                playbackException = uafe;
+                return false;
+            } catch (IOException ioe) {
+                log.error(ERROR_PLAYBACK_FAILURE, ioe);
+                playbackException = ioe;
+                return false;
+            }
+            if (audioInputStream == null) {
+                String message = ERROR_NO_DATA + file.getName();
+                log.error(message);
+                playbackException = new SmartFrogException(message);
+            }
+
+
+            try {
+
+                AudioFormat format = audioInputStream.getFormat();
+                DataLine.Info info = new DataLine.Info(Clip.class, format,
+                        AudioSystem.NOT_SPECIFIED);
+                try {
+                    audioClip = (Clip) AudioSystem.getLine(info);
+                    audioClip.addLineListener(this);
+                    audioClip.open(audioInputStream);
+                } catch (LineUnavailableException e) {
+                    playbackException = e;
+                    log.error(ERROR_NO_SOUNDCARD);
+                    return false;
+                }
+
+                audioClip.loop(loops);
+                while (audioClip.isRunning()) {
+                    try {
+                        Thread.sleep(SLEEP_INTERVAL_MILLIS);
+                    } catch (InterruptedException e1) {
+                        // Ignore Exception
+                    }
+                }
+                audioClip.drain();
+            } catch (IOException  ioe) {
+                log.error(ERROR_PLAYBACK_FAILURE, ioe);
+                playbackException = ioe;
+                return false;
+            } finally {
+                if (audioClip != null) {
+                    audioClip.close();
+                }
+            }
+            return true;
         }
+
     }
 
 

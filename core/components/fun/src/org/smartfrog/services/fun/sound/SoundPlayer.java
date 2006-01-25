@@ -1,4 +1,4 @@
-/** (C) Copyright 2005 Hewlett-Packard Development Company, LP
+/** (C) Copyright 2005-2006 Hewlett-Packard Development Company, LP
 
  This library is free software; you can redistribute it and/or
  modify it under the terms of the GNU Lesser General Public
@@ -19,19 +19,20 @@
  */
 package org.smartfrog.services.fun.sound;
 
-import java.rmi.Remote;
+import org.smartfrog.services.filesystem.FileUsingComponent;
+
 
 /**
  * created 13-Oct-2005 11:26:53
  */
 
 
-public interface SoundPlayer extends Remote {
+public interface SoundPlayer extends FileUsingComponent {
 
-    final static String ATTR_STARTFILE="startFile";
-
-    final static String ATTR_PINGFILE = "pingFile";
-
-    final static String ATTR_ENDFILE = "endFile";
+    /**
+     * number of loops {@value}
+     *
+     */
+    public static final String ATTR_LOOPS="loops";
 
 }
