@@ -20,6 +20,7 @@
 package org.smartfrog.services.filesystem;
 
 import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
+import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimImpl;
 
@@ -86,7 +87,7 @@ public class FileUsingComponentImpl extends PrimImpl implements FileUsingCompone
 
     /**
      * creates the file object instance, to the absolute path,
-     * then sets the attribute {@value FileIntf#varAbsolutePath}
+     * then sets the attribute {@value FileIntf#ATTR_ABSOLUTE_PATH}
      * to the absolute path, and {@value FileUsingComponent#ATTR_URI}
      * to the URI. From here on, {@link #getFile()} is valid.
      * @param absolutePath
@@ -146,7 +147,7 @@ public class FileUsingComponentImpl extends PrimImpl implements FileUsingCompone
 
     /**
      * Helper method for all components that support delete-on-clearup;
-     * This should be called from the {@link Prim#sfTerminatedWith(TerminationRecord, Prim)}
+     * This should be called from the {@link Prim#sfTerminatedWith(org.smartfrog.sfcore.prim.TerminationRecord, org.smartfrog.sfcore.prim.Prim)}
      * implementation -after calling the superclass.
      * Will delete the file if {@link FileIntf#ATTR_DELETE_ON_EXIT } is set to
      * true, and there is a file to delete. If the file cannot be deleted immediately,
@@ -167,4 +168,5 @@ public class FileUsingComponentImpl extends PrimImpl implements FileUsingCompone
             //ignore this, as the delete flag will retain its previous value
         }
     }
+
 }

@@ -28,4 +28,5 @@ public interface CopyFile extends Remote, Compound {
     String ATTR_FROM = "source";
     /** new file copy {@value} */
     String ATTR_TO = "destination";
+    
 }
