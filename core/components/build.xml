@@ -87,6 +87,7 @@ For more information: www.smartfrog.org
     <property name="cdl.project" location="${extras.dir}/cdl"/>
     <property name="deployapi.project" location="deployapi" />
     <property name="emailer.project" location="emailer" />
+    <property name="fun.project" location="fun"/>
     <property name="jetty.project" location="jetty" />
     <property name="junit.project" location="junit" />
     <!--property name="logger.project" location="logger" /-->
@@ -142,6 +143,7 @@ For more information: www.smartfrog.org
     <path id="component.path">
       <pathelement location="${anubis.project}"/>
       <pathelement location="${anubisdeployer.project}"/>
+      <pathelement location="${fun.project}"/>
       <pathelement location="${utils.project}"/>
       <!--pathelement location="${logger.project}"/-->
       <pathelement location="${ssh.project}"/>
@@ -306,6 +308,7 @@ For more information: www.smartfrog.org
        <pathelement path="${anubis.project}/$(src)"/>
        <pathelement path="${anubisdeployer.project}/$(src)"/>
        <pathelement path="${emailer.project}/${src}"/>
+       <pathelement path="${fun.project}/${src}"/>
        <pathelement path="${jetty.project}/${src}"/>
        <!--pathelement path="${logger.project}/${src}"/-->
        <pathelement path="${net.project}/${src}"/>
@@ -355,6 +358,7 @@ For more information: www.smartfrog.org
     <copybuild project="${anubis.project}" />
     <copybuild project="${anubisdeployer.project}" />
     <copybuild project="${emailer.project}" />
+    <copybuild project="${fun.project}"/>
     <copybuild project="${jetty.project}" />
     <!--copybuild project="${logger.project}" /-->
     <copybuild project="${net.project}" />
@@ -388,6 +392,7 @@ For more information: www.smartfrog.org
     <copybins project="${anubis.project}" />
     <copybins project="${anubisdeployer.project}" />
     <copybins project="${emailer.project}" />
+    <copybins project="${fun.project}"/>
     <copybins project="${jetty.project}" />
     <!--copybins project="${logger.project}" /!-->
     <copybins project="${net.project}" />
@@ -421,6 +426,7 @@ For more information: www.smartfrog.org
     <copylibs project="${anubis.project}" />
     <copylibs project="${anubisdeployer.project}" />
     <copylibs project="${emailer.project}" />
+    <copylibs project="${fun.project}"/>
     <copylibs project="${jetty.project}" />
     <!--copylibs project="${logger.project}" /-->
     <copylibs project="${net.project}" />
@@ -456,6 +462,7 @@ For more information: www.smartfrog.org
     <copycomponents project="${anubis.project}" />
     <copycomponents project="${anubisdeployer.project}" />
     <copycomponents project="${emailer.project}" />
+    <copycomponents project="${fun.project}"/>
     <copycomponents project="${jetty.project}" />
     <!--copycomponents project="${logger.project}" /-->
     <copycomponents project="${net.project}"  />
@@ -489,6 +496,7 @@ For more information: www.smartfrog.org
     <copydocs project="${anubis.project}" />
     <copydocs project="${anubisdeployer.project}" />
     <copydocs project="${emailer.project}" />
+    <copydocs project="${fun.project}"/>
     <copydocs project="${jetty.project}" />
     <!--copydocs project="${logger.project}" /-->
     <copydocs project="${net.project}" />
@@ -512,6 +520,7 @@ For more information: www.smartfrog.org
       <zipfileset dir="${anubis.project}/${dist.src.dir}" />
       <zipfileset dir="${anubisdeployer.project}/${dist.src.dir}" />
       <zipfileset dir="${emailer.project}/${dist.src.dir}" />
+      <zipfileset dir="${fun.project}/${dist.src.dir}"/>
       <zipfileset dir="${jetty.project}/${dist.src.dir}" />
       <zipfileset dir="${net.project}/${dist.src.dir}" />
       <zipfileset dir="${scripting.project}/${dist.src.dir}" />
@@ -530,8 +539,9 @@ For more information: www.smartfrog.org
 
 
   <target name="generatedoc" depends="init" description="Document Generation" if="env.FORREST_HOME">
-    <ant antfile="documentation.xml" inheritall="false" />
-  <delete dir="build"/>  <!-- Forrest build dir -->
+    <ant antfile="documentation.xml" inheritall="false"/>
+    <delete dir="build"/>
+    <!-- Forrest build dir -->
   </target>
 
   <!-- =================================================================== -->
@@ -607,6 +617,7 @@ For more information: www.smartfrog.org
     <updateversion project="${anubis.project}" compname="anubis" />
     <updateversion project="${anubisdeployer.project}" compname="anubisdeployer"/>
     <updateversion project="${emailer.project}" compname="emailer"/>
+    <updateversion project="${fun.project}" compname="jetty"/>
     <updateversion project="${jetty.project}" compname="jetty" />
     <!--updateversion project="${logger.project}" compname="logger" /-->
     <updateversion project="${net.project}" compname="net"/>
