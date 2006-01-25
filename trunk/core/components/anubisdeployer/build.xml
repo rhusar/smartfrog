@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<project name="anubisdeploer" default="default">
+<project name="anubisdeployer" default="default">
 
   <!--
   /** (C) Copyright 2005 Hewlett-Packard Development Company, LP
