@@ -290,7 +290,7 @@ public class FileSystem {
      * @throws SmartFrogResolutionException If the attribute is not defined.
      * @throws RemoteException
      */
-    public static File resolveAbsolutePath(FileUsingComponent component)
+    private static File resolveAbsolutePath(FileUsingComponent component)
             throws SmartFrogResolutionException, RemoteException {
         return resolveAbsolutePath((Prim) component);
     }
@@ -308,14 +308,14 @@ public class FileSystem {
      * @throws IOException for IO Trouble
      * @throws SmartFrogResolutionException if the source or dest doesnt have a filename
      */
-    public static void fCopy(FileUsingComponent src, FileUsingComponent dest)
+    public static void fCopy(Prim src, Prim dest)
             throws IOException,
             SmartFrogResolutionException {
 
         File sourceFile= resolveAbsolutePath(src);
         File destFile = resolveAbsolutePath(dest);
         fCopy(sourceFile, destFile);
-    }    
+    }
     /**
      * Copies a <code>File</code> to a <code>File</code>
      *
