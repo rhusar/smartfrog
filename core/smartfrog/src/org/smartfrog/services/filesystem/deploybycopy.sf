@@ -18,24 +18,17 @@ For more information: www.smartfrog.org
 
 */
 
-#include "org/smartfrog/services/filesystem/filesystemtemplate.sf"
-
-
-CopyFileSchema extends Schema {
-
-    //file is a file component.
-    source extends FilenameType;
-
-    //file is a file component.
-    destination extends FilenameType;
-}
+#include "org/smartfrog/services/filesystem/copyfile.sf"
 
 /**
- * creates a copy of a file
+ * This component creates a copy of a file, and deletes it when undeploying.
+ * it can be used for deploying to any of the deploy-by-copy application servers
+ * such as jboss or tomcat
+ 
  */
 
-CopyFile extends Compound {
-    copySchema extends CopyFileSchema;
-    sfClass "org.smartfrog.services.filesystem.CopyFileImpl";
-
+DeployByCopy extends CopyFile {
+    sfClass "org.smartfrog.services.filesystem.DeployByCopyImpl";
 }
+
+

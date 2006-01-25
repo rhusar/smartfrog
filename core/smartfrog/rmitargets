@@ -46,6 +46,7 @@ org/smartfrog/services/filesystem/MkdirImpl.class
 org/smartfrog/services/filesystem/MkdirImpl.class
 org/smartfrog/services/filesystem/SelfDeletingFileImpl.class
 org/smartfrog/services/filesystem/CopyFileImpl.class
+org/smartfrog/services/filesystem/DeployByCopyImpl.class
 org/smartfrog/services/www/LivenessPageComponent.class
 org/smartfrog/services/www/context/MimeTypeImpl.class
 org/smartfrog/services/www/context/ServletContextImpl.class

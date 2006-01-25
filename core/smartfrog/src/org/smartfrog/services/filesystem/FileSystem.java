@@ -46,12 +46,15 @@ import java.io.FileOutputStream;
 public class FileSystem {
 
     /**
-     * Error text when a looked up reference resolves to something
-     * that is not yet deployed.
-     * {@value}
+     * Error text when a looked up reference resolves to something that is not
+     * yet deployed. {@value}
      */
     public static final String ERROR_UNDEPLOYED_CD = "This attribute resolves" +
-                        "to a not-yet-deployed component: ";
+            "to a not-yet-deployed component: ";
+    public static final String ERROR_INACCESSIBLE_FILE =
+            "Error! File is not accessible : ";
+    public static final String ERROR_FILE_IS_A_DIRECTORY =
+            "Error! File is a directory : ";
 
     // helper class only
     private FileSystem() {
@@ -103,11 +106,26 @@ public class FileSystem {
     }
 
     /**
-     * Close a stream; do nothing if null. Ignore all thrown IOExceptions
+     * Close a reader; do nothing if null. Ignore all thrown IOExceptions
      *
      * @param channel
      */
     public static void close(Reader channel) {
+        if (channel != null) {
+            try {
+                channel.close();
+            } catch (IOException e) {
+
+            }
+        }
+    }
+
+    /**
+     * Close a channel; do nothing if null. Ignore all thrown IOExceptions
+     *
+     * @param channel
+     */
+    public static void close(FileChannel channel) {
         if (channel != null) {
             try {
                 channel.close();
@@ -142,11 +160,11 @@ public class FileSystem {
      * @throws RemoteException
      */
     public static String lookupAbsolutePath(Prim component,
-            Reference attribute,
-            String defval,
-            File baseDir,
-            boolean mandatory,
-            PlatformHelper platform)
+                                            Reference attribute,
+                                            String defval,
+                                            File baseDir,
+                                            boolean mandatory,
+                                            PlatformHelper platform)
             throws SmartFrogResolutionException, RemoteException {
         Object pathAttr = component.sfResolve(attribute, mandatory);
         if (pathAttr == null) {
@@ -158,9 +176,10 @@ public class FileSystem {
             //FileIntf fileComponent = (FileIntf) pathAttr;
             //String path = fileComponent.getAbsolutePath();
             Prim fileAsPrim = (Prim) pathAttr;
-            String path = fileAsPrim.sfResolve(FileUsingComponent.ATTR_ABSOLUTE_PATH,
-                    (String)null,
-                    true);
+            String path =
+                    fileAsPrim.sfResolve(FileUsingComponent.ATTR_ABSOLUTE_PATH,
+                            (String) null,
+                            true);
             return path;
         }
         if (pathAttr instanceof String) {
@@ -191,15 +210,15 @@ public class FileSystem {
         owner = ComponentHelper.completeNameSafe(component);
         if (pathAttr instanceof ComponentDescription) {
             ComponentDescription cd = (ComponentDescription) pathAttr;
-            throw new SmartFrogResolutionException(ERROR_UNDEPLOYED_CD+cd);
+            throw new SmartFrogResolutionException(ERROR_UNDEPLOYED_CD + cd);
         }
 
         throw new SmartFrogResolutionException(attribute, owner,
                 MessageUtil.formatMessage(SmartFrogResolutionException.MSG_ILLEGAL_CLASS_TYPE)
-                +
-                " : " +
-                pathAttr.getClass().toString()
-                + " - " + pathAttr);
+                        +
+                        " : " +
+                        pathAttr.getClass().toString()
+                        + " - " + pathAttr);
     }
 
     /**
@@ -227,11 +246,11 @@ public class FileSystem {
      * @throws RemoteException
      */
     public static String lookupAbsolutePath(Prim component,
-            String attribute,
-            String defval,
-            File baseDir,
-            boolean mandatory,
-            PlatformHelper platform)
+                                            String attribute,
+                                            String defval,
+                                            File baseDir,
+                                            boolean mandatory,
+                                            PlatformHelper platform)
             throws SmartFrogResolutionException, RemoteException {
         return lookupAbsolutePath(component,
                 new Reference(attribute),
@@ -253,7 +272,10 @@ public class FileSystem {
     public static File resolveAbsolutePath(Prim component)
             throws SmartFrogResolutionException,
             RemoteException {
-        String absolutePath = component.sfResolve(FileUsingComponent.ATTR_ABSOLUTE_PATH, "", true);
+        String absolutePath =
+                component.sfResolve(FileUsingComponent.ATTR_ABSOLUTE_PATH,
+                        "",
+                        true);
         File file = new File(absolutePath);
         return file;
     }
@@ -273,218 +295,276 @@ public class FileSystem {
         return resolveAbsolutePath((Prim) component);
     }
 
+    // Contributed by Sanjay Dahiya
 
+    public static final int BUF_SIZE = 50000;
+    private static byte[] BUF = new byte[BUF_SIZE];
 
+    /**
+     * Copies a <code>File</code> to a <code>File</code>
+     *
+     * @param src  File
+     * @param dest File
+     * @throws IOException for IO Trouble
+     * @throws SmartFrogResolutionException if the source or dest doesnt have a filename
+     */
+    public static void fCopy(FileUsingComponent src, FileUsingComponent dest)
+            throws IOException,
+            SmartFrogResolutionException {
 
- // Contributed by Sanjay Dahiya
+        File sourceFile= resolveAbsolutePath(src);
+        File destFile = resolveAbsolutePath(dest);
+        fCopy(sourceFile, destFile);
+    }    
+    /**
+     * Copies a <code>File</code> to a <code>File</code>
+     *
+     * @param src  File
+     * @param dest File
+     * @throws IOException
+     */
+    public static void fCopy(File src, File dest) throws IOException {
+        if(src.equals(dest)) {
+            return;
+        }
+        fCopy(new FileInputStream(src), dest);
+    }
 
- public static final int BUF_SIZE = 50000;
- private static byte[] BUF = new byte[BUF_SIZE];
+    /**
+     * Copies an <code>FileInputStream</code> to a <code>File</code>
+     *
+     * @param src  FileInputStream
+     * @param dest File
+     * @throws IOException
+     */
+    public static void fCopy(FileInputStream src, File dest)
+            throws IOException {
+        FileChannel srcChannel = null;
+        FileChannel dstChannel = null;
+        try {
+            if (null == src) {
+                throw new IOException("No source stream");
+            }
+            if (null == dest) {
+                throw new IOException("No dest file");
+            }
 
- /**
-  * Copies a <code>File</code> to a <code>File</code>
-  * @param src File
-  * @param dest File
-  * @throws IOException
-  */
- public static void fCopy(File src, File dest) throws IOException {
-     fCopy(new FileInputStream(src), dest);
- }
+            srcChannel = src.getChannel();
+            dstChannel = new FileOutputStream(dest).getChannel();
+            dstChannel.transferFrom(srcChannel, 0, srcChannel.size());
+        } finally {
+            // Close the streams
+            close(srcChannel);
+            close(dstChannel);
+            close(src);
+        }
 
- /**
-  * Copies an <code>FileInputStream</code> to a <code>File</code>
-  * @param src FileInputStream
-  * @param dest File
-  * @throws IOException
-  */
- public static void fCopy(FileInputStream src, File dest) throws IOException {
-     if (null==src||null==dest) {
-         //TODO
-     }
+    }
 
-     FileChannel srcChannel = src.getChannel();
-     FileChannel dstChannel = new FileOutputStream(dest).getChannel();
-     dstChannel.transferFrom(srcChannel, 0, srcChannel.size());
+    /**
+     * Copies an <code>InputStream</code> to a file All streams are closed
+     * afterwards.
+     *
+     * @param in         stream to copy from
+     * @param outputFile file to copy to
+     * @return the number of bytes copied
+     * @throws IOException if an I/O error occurs (may result in partially done
+     *                     work)
+     */
+    public static long fCopy(InputStream in, File outputFile) throws
+            IOException {
+        FileOutputStream out = null;
+        out = new FileOutputStream(outputFile);
+        return fCopy(in, out);
+    }
 
-     // Close the channels
-     srcChannel.close();
-     dstChannel.close();
- }
+    /**
+     * Copies an <code>InputStream</code> to an <code>OutputStream</ code> using
+     * a local internal buffer for performance. Compared to {@link
+     * #globalBufferCopy(InputStream, OutputStream)} this method allows for
+     * better concurrency, but each time it is called generates a buffer which
+     * will be garbage.
+     * <p/>
+     * All streams are closed afterwards.
+     *
+     * @param in  stream to copy from
+     * @param out stream to copy to
+     * @return the number of bytes copied
+     * @throws IOException if an I/O error occurs (may result in partially done
+     *                     work)
+     * @see #globalBufferCopy(InputStream, OutputStream)
+     */
+    public static long fCopy(InputStream in, OutputStream out) throws
+            IOException {
+        // we need a buffer of our own, so no one else interferes
+        byte[] buf = new byte[BUF_SIZE];
+        return copy(in, out, buf);
+    }
 
- /**
-  * Copies an <code>InputStream</code> to a file
-  *
-  * @param in stream to copy from
-  * @param outputFile file to copy to
-  * @return the number of bytes copied
-  * @throws IOException if an I/O error occurs (may result in partially done work)
-  */
- public static long fCopy(InputStream in, File outputFile) throws
-     IOException {
-     FileOutputStream out = null;
-     try {
-         out = new FileOutputStream(outputFile);
-         return fCopy(in, out);
-     } finally {
-         if (out!=null) {
-             try {
-                 in.close();
-                 out.close();
-             } catch (IOException e) {
-             }
-         }
-     }
- }
+    /**
+     * Copies an <code>InputStream</code> to an <code>OutputStream</ code> using
+     * a global internal buffer for performance. Compared to {@link
+     * #fCopy(InputStream, OutputStream)} this method generated no garbage, but
+     * decreases concurrency.
+     *
+     * All streams are closed afterwards.
+     * @param in  stream to copy from
+     * @param out stream to copy to
+     * @return the number of bytes copied
+     * @throws IOException if an I/O error occurs (may result in partially done
+     *                     work)
+     * @see #fCopy(InputStream, OutputStream)
+     */
+    public static long globalBufferCopy(InputStream in, OutputStream out) throws
+            IOException {
+        synchronized (BUF) {
+            return copy(in, out, BUF);
+        }
+    }
 
- /**
-  * Copies an <code>InputStream</code> to an <code>OutputStream</
-  code> using a local internal buffer for performance.
-  * Compared to {@link #globalBufferCopy(InputStream, OutputStream)} this method allows for better
-  * concurrency, but each time it is called generates a buffer which will be garbage.
-  *
-  * @param in stream to copy from
-  * @param out stream to copy to
-  * @return the number of bytes copied
-  * @throws IOException if an I/O error occurs (may result in partially done work)
-  * @see #globalBufferCopy(InputStream, OutputStream)
-  */
- public static long fCopy(InputStream in, OutputStream out) throws
-     IOException {
-     // we need a buffer of our own, so no one else interferes
-     byte[] buf = new byte[BUF_SIZE];
-     return copy(in, out, buf);
- }
+    /**
+     * Copies an <code>InputStream</code> to an <code>OutputStream</ code> using
+     * the specified buffer.
+     *
+     * All streams are closed afterwards.
+     * @param in         stream to copy from
+     * @param out        stream to copy to
+     * @param copyBuffer buffer used for copying
+     * @return the number of bytes copied
+     * @throws IOException if an I/O error occurs (may result in partially done
+     *                     work)
+     * @see #globalBufferCopy(InputStream, OutputStream)
+     * @see #fCopy(InputStream, OutputStream)
+     */
+    public static long copy(InputStream in, OutputStream out, byte[] copyBuffer)
+            throws
+            IOException {
+        long bytesCopied = 0;
+        int read = -1;
+        try {
 
- /**
-  * Copies an <code>InputStream</code> to an <code>OutputStream</
-  code> using a global internal buffer for performance.
-  * Compared to {@link #copy(InputStream, OutputStream)} this method generated no garbage,
-  * but decreases concurrency.
-  *
-  * @param in stream to copy from
-  * @param out stream to copy to
-  * @return the number of bytes copied
-  * @throws IOException if an I/O error occurs (may result in partially done work)
-  * @see #copy(InputStream, OutputStream)
-  */
- public static long globalBufferCopy(InputStream in, OutputStream out) throws
-     IOException {
-     synchronized (BUF) {
-         return copy(in, out, BUF);
-     }
- }
+            while ((read = in.read(copyBuffer, 0, copyBuffer.length)) != -1) {
+                out.write(copyBuffer, 0, read);
+                bytesCopied += read;
+            }
+            return bytesCopied;
+        } finally {
+            close(out);
+            close(in);
+        }
+    }
 
- /**
-  * Copies an <code>InputStream</code> to an <code>OutputStream</
-  code> using the specified buffer.
-  *
-  * @param in stream to copy from
-  * @param out stream to copy to
-  * @param copyBuffer buffer used for copying
-  * @return the number of bytes copied
-  * @throws IOException if an I/O error occurs (may result in partially done work)
-  * @see #globalBufferCopy(InputStream, OutputStream)
-  * @see #copy(InputStream, OutputStream)
-  */
- public static long copy(InputStream in, OutputStream out, byte[] copyBuffer) throws
-     IOException {
-     long bytesCopied = 0;
-     int read = -1;
+    /**
+     * Read a file fully into a string buffer.
+     *
+     * @param file
+     * @return
+     * @throws IOException
+     */
+    public static StringBuffer readFile(File file) throws IOException {
+        StringBuffer buf = new StringBuffer();
 
-     while ((read = in.read(copyBuffer, 0, copyBuffer.length))!=-1) {
-         out.write(copyBuffer, 0, read);
-         bytesCopied += read;
-     }
-     return bytesCopied;
- }
+        if (null == file) {
+            return null;
+        }
 
- /**
-  * Read a file fully into a string buffer.
-  * @param file
-  * @return
-  * @throws IOException
-  */
- public static StringBuffer readFile(File file) throws IOException {
-     StringBuffer buf = new StringBuffer();
+        if (!file.exists() || !file.canRead()) {
+            throw new IOException(ERROR_INACCESSIBLE_FILE + file);
+        }
 
-     if (null==file) {
-         return null;
-     }
+        BufferedReader reader = null;
+        try {
+            reader = new BufferedReader(new FileReader(file));
+            String str = null;
+            while (null != (str = reader.readLine())) {
+                buf.append(str);
+                buf.append("\n");
+            }
+            return buf;
+        } finally {
+            close(reader);
+        }
+    }
 
-     if (!file.exists()||!file.canRead()) {
-         throw new IOException("Error! File is not accessible : "+file);
-     }
+    /**
+     * Reads last (numLines) lines from end of a file.
+     *
+     * @param file
+     * @param numLines
+     * @return
+     * @throws IOException
+     */
+    public static StringBuffer tail(File file, int numLines)
+            throws IOException {
+        StringBuffer buf = new StringBuffer();
+        String[] strings = new String[numLines];
 
-     BufferedReader reader = new BufferedReader(new FileReader(file));
-     String str = null;
-     while (null!=(str = reader.readLine())) {
-         buf.append(str+"\n");
-     }
-     reader.close();
-     return buf;
- }
+        if (null == file) {
+            return null;
+        }
+        //  dont even open the file if no lines need to be read.
+        //  following algo doesnt work for zero lines.
+        if (0 == numLines) {
+            return buf;
+        }
 
- /**
-  * Reads last (numLines) lines from end of a file.
-  * @param file
-  * @param numLines
-  * @return
-  * @throws IOException
-  */
- public static StringBuffer tail(File file, int numLines) throws IOException {
-     StringBuffer buf = new StringBuffer();
-     String[] strings = new String[numLines];
+        if (!file.exists() || !file.canRead()) {
+            throw new IOException(ERROR_INACCESSIBLE_FILE + file);
+        }
+        if (file.isDirectory()) {
+            throw new IOException(ERROR_FILE_IS_A_DIRECTORY + file);
+        }
 
-     if (null==file) {
-         return null;
-     }
-     //  dont even open the file if no lines need to be read.
-     //  following algo doesnt work for zero lines.
-     if (0==numLines) {
-         return buf;
-     }
+        BufferedReader reader = null;
+        try {
+            reader = new BufferedReader(new FileReader(file));
+            String str = null;
+            int totalLines = 0;
+            for (int lineCtr = 0;
+                 null != (str = reader.readLine());
+                 totalLines++) {
 
-     if (!file.exists()||!file.canRead()) {
-         throw new IOException("Error! File is not accessible : "+file);
-     }
-     if (file.isDirectory()) {
-         throw new IOException("Error! File is a directory : "+file);
-     }
+                // first check if end of array has reached.
+                // makes lines to rotate in array,
+                if (lineCtr == strings.length) {
+                    lineCtr = 0;
+                }
+                // this wont work if strings.length == 0, but that ok since we already checked
+                // for that.
+                strings[lineCtr++] = str + "\n";
+            }
 
-     BufferedReader reader = new BufferedReader(new FileReader(file));
-     String str = null;
-     int totalLines = 0;
-     for (int lineCtr = 0; null!=(str = reader.readLine()); totalLines++) {
+            // this is where we need to start reading the (circular) array from
+            int firstLineIndex = (totalLines < strings.length) ? 0 :
+                    totalLines % strings.length;
+            // this is where we stop, useful if file is smaller than number of lines.
+            int endMarker =
+                    (totalLines < strings.length) ? totalLines : strings.length;
 
-         // first check if end of array has reached.
-         // makes lines to rotate in array,
-         if (lineCtr==strings.length) {
-             lineCtr = 0;
-         }
-         // this wont work if strings.length == 0, but that ok since we already checked
-         // for that.
-         strings[lineCtr++] = str+"\n";
-     }
+            for (int i = 0, ctr = firstLineIndex; i < endMarker; i++) {
+                buf.append(strings[ctr++]);
+                if (ctr == strings.length) {
+                    ctr = 0;
+                }
+            }
+            return buf;
+        } finally {
+            close(reader);
+        }
+    }
 
-     // this is where we need to start reading the (circular) array from
-     int firstLineIndex = (totalLines<strings.length)?0:
-         totalLines%strings.length;
-     // this is where we stop, useful if file is smaller than number of lines.
-     int endMarker = (totalLines<strings.length)?totalLines:strings.length;
-
-     for (int i = 0, ctr = firstLineIndex; i<endMarker; i++) {
-         buf.append(strings[ctr++]);
-         if (ctr==strings.length) {
-             ctr = 0;
-         }
-     }
-     return buf;
- }
-
- public static StringBuffer tail(String filepath, int numLines) throws
-     IOException {
-     return tail(new File(filepath), numLines);
- }
+    /**
+     * Get the tail of a file
+     *
+     * @param filepath
+     * @param numLines
+     * @return
+     * @throws IOException
+     */
+    public static StringBuffer tail(String filepath, int numLines) throws
+            IOException {
+        return tail(new File(filepath), numLines);
+    }
 //  End Contributed by Sanjay Dahiya
 
 }

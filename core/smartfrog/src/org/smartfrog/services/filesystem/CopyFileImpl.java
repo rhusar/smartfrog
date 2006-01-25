@@ -20,6 +20,7 @@
 package org.smartfrog.services.filesystem;
 
 import java.io.IOException;
+import java.io.File;
 import java.rmi.RemoteException;
 
 import org.smartfrog.sfcore.common.SmartFrogException;
@@ -31,11 +32,21 @@ import org.smartfrog.sfcore.common.*;
 
 public class CopyFileImpl extends CompoundImpl implements CopyFile, Compound {
 
-    FileUsingComponent fromFile = null;
-    FileUsingComponent toFile = null;
 
+    private File fromFile=null;
+    private File toFile=null;
+    
     public CopyFileImpl() throws RemoteException {
     }
+
+    public File getFromFile() {
+        return fromFile;
+    }
+
+    public File getToFile() {
+        return toFile;
+    }
+
 
     /**
      * Can be called to start components. Subclasses should override to provide
@@ -58,21 +69,22 @@ public class CopyFileImpl extends CompoundImpl implements CopyFile, Compound {
      */
     private void copyFile() throws SmartFrogException, RemoteException,
         SmartFrogResolutionException {
-        Object obj =null;
-        obj = sfResolve (ATTR_FROM , true);
-        if ((obj!=null) && (obj instanceof FileUsingComponent)) {
-            fromFile = ((FileUsingComponent)obj);
-        }
-        obj = sfResolve (ATTR_TO , false);
-        if ((obj!=null) && (obj instanceof FileUsingComponent)) {
-            toFile = ((FileUsingComponent)obj);
-        }
+        String from= FileSystem.lookupAbsolutePath(this, ATTR_FROM,null,null,true,null);
+        String to =
+                FileSystem.lookupAbsolutePath(this,
+                        ATTR_TO,
+                        null,
+                        null,
+                        true,
+                        null);
+        fromFile=new File(from);
+        toFile=new File(to);
         try {
-            FileSystem.fCopy( ((FileUsingComponentImpl)fromFile).getFile(), ((FileUsingComponentImpl)toFile).getFile());
+            FileSystem.fCopy( fromFile, toFile);
         } catch (IOException ex) {
             throw SmartFrogException.forward("Failed when copying "+
-                                              ((FileIntf)fromFile).getAbsolutePath() +
-                                              " to " +((FileIntf)fromFile).getAbsolutePath()
+                                              from +
+                                              " to "+to
                                               ,ex);
         }
     }
@@ -84,6 +96,7 @@ public class CopyFileImpl extends CompoundImpl implements CopyFile, Compound {
      */
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
-        new ComponentHelper(this).sfSelfDetachAndOrTerminate("normal","Copy ",this.sfCompleteNameSafe(),null);
+        new ComponentHelper(this).sfSelfDetachAndOrTerminate("normal","Copy ",sfCompleteNameSafe(),null);
     }
+
 }
