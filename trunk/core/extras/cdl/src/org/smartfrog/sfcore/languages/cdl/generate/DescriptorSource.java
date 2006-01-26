@@ -19,7 +19,7 @@
  */
 package org.smartfrog.sfcore.languages.cdl.generate;
 
-import org.smartfrog.services.cddlm.cdl.components.CdlComponentDescription;
+import org.smartfrog.sfcore.languages.cdl.components.CdlComponentDescription;
 import org.smartfrog.sfcore.common.SmartFrogException;
 
 import java.rmi.RemoteException;

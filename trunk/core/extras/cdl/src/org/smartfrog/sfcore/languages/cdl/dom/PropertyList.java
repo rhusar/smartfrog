@@ -25,8 +25,8 @@ import nu.xom.Node;
 import org.ggf.cddlm.generated.api.CddlmConstants;
 import org.smartfrog.services.xml.java5.NamespaceUtils;
 import org.smartfrog.services.xml.utils.XsdUtils;
-import org.smartfrog.services.cddlm.cdl.components.CdlComponentDescriptionImpl;
-import org.smartfrog.services.cddlm.cdl.components.CdlComponentDescription;
+import org.smartfrog.sfcore.languages.cdl.components.CdlComponentDescriptionImpl;
+import org.smartfrog.sfcore.languages.cdl.components.CdlComponentDescription;
 import org.smartfrog.sfcore.languages.cdl.Constants;
 import org.smartfrog.sfcore.languages.cdl.references.ReferencePath;
 import org.smartfrog.sfcore.languages.cdl.faults.CdlException;
@@ -36,8 +36,8 @@ import org.smartfrog.sfcore.languages.cdl.generate.GenerateContext;
 import org.smartfrog.sfcore.languages.cdl.generate.DescriptorSource;
 import org.smartfrog.sfcore.languages.cdl.resolving.ResolveEnum;
 import org.smartfrog.sfcore.languages.cdl.utils.ClassLogger;
+import org.smartfrog.sfcore.languages.cdl.utils.Namespaces;
 import org.smartfrog.sfcore.logging.Log;
-import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
 import org.smartfrog.sfcore.common.SmartFrogException;
 
 import javax.xml.namespace.QName;
@@ -434,9 +434,12 @@ public class PropertyList extends DocNode implements DescriptorSource {
         QName name=this.getQName();
         if (hasChildElements()) {
             //we have children, go into parent mode
-            //TODO: what about cmp: special attributes?
+            //TODO: what about cmp: special attributes?, namespace etc
             CdlComponentDescriptionImpl description = new CdlComponentDescriptionImpl(name,parent);
+            description.registerWithParent();
             exportChildren(description);
+            final Namespaces namespaces = getNamespaces();
+            namespaces.exportDescription(description);
         } else {
 
             //no kids. export our text value. how?

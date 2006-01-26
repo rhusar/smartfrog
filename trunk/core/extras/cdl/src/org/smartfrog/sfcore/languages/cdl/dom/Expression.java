@@ -24,9 +24,9 @@ import nu.xom.Node;
 import org.smartfrog.sfcore.languages.cdl.dom.attributes.ValueOfAttribute;
 import org.smartfrog.sfcore.languages.cdl.faults.CdlXmlParsingException;
 import org.smartfrog.sfcore.languages.cdl.generate.DescriptorSource;
+import org.smartfrog.sfcore.languages.cdl.components.CdlComponentDescription;
 import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.services.cddlm.cdl.components.CdlComponentDescription;
-import org.smartfrog.services.cddlm.cdl.components.CdlComponentDescriptionImpl;
+import org.smartfrog.sfcore.languages.cdl.components.CdlComponentDescriptionImpl;
 
 import javax.xml.namespace.QName;
 import java.util.Collection;
@@ -145,7 +145,8 @@ public class Expression extends DocNode implements DescriptorSource {
      */
     public void exportDescription(CdlComponentDescription parent) throws RemoteException, SmartFrogException {
         QName name=getQName();
-        CdlComponentDescription node=new CdlComponentDescriptionImpl(name,parent);
+        CdlComponentDescriptionImpl node=new CdlComponentDescriptionImpl(name,parent);
+        node.registerWithParent();
         node.sfReplaceAttribute("expression","TODO");
     }
 }
