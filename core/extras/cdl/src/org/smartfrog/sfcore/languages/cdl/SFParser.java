@@ -20,10 +20,12 @@
 package org.smartfrog.sfcore.languages.cdl;
 
 import org.smartfrog.services.xml.utils.ResourceLoader;
-import org.smartfrog.services.cddlm.cdl.components.CdlComponentDescription;
+import org.smartfrog.sfcore.languages.cdl.components.CdlComponentDescription;
 import org.smartfrog.sfcore.common.SmartFrogParseException;
+import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.languages.cdl.dom.CdlDocument;
 import org.smartfrog.sfcore.languages.cdl.generate.SmartFrogSourceGenerator;
+import org.smartfrog.sfcore.languages.cdl.faults.CdlException;
 import org.smartfrog.sfcore.parser.Phases;
 import org.smartfrog.sfcore.parser.StreamParser;
 import org.smartfrog.sfcore.reference.Reference;
@@ -31,6 +33,7 @@ import org.smartfrog.sfcore.reference.Reference;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
+import java.io.IOException;
 
 /**
  * This is a parser for CDL XML streams. The base SFParser class contains some
@@ -54,10 +57,11 @@ public class SFParser implements StreamParser {
      */
     public Phases sfParse(InputStream is) throws SmartFrogParseException {
         try {
-            //first, parse the CDL into smartfrog
 
             //TODO: use the smartfrog classloader
             ResourceLoader loader = new ResourceLoader(this.getClass());
+            //first, parse the CDL into smartfrog
+
             ParseContext parseContext = new ParseContext(null,loader);
             CdlParser parser = parseContext.createParser();
             CdlDocument cdlDocument = parser.parseStream(is);
@@ -67,24 +71,7 @@ public class SFParser implements StreamParser {
             //create the CD graph
             CdlComponentDescription graph = cdlDocument.convertToComponentDescription();
 
-
-            //now we are ready to create a smartfrog file.
-            File generated=SmartFrogSourceGenerator.translate(cdlDocument);
-            //it is created, now parse that
-            org.smartfrog.sfcore.parser.SFParser sfparser;
-            sfparser=new org.smartfrog.sfcore.parser.SFParser("sf");
-
-            InputStream newIn=null;
-            Phases phases=null;
-            try {
-                newIn = new FileInputStream(generated);
-                phases = sfparser.sfParse(newIn);
-            } finally {
-                if(newIn!=null) {
-                    newIn.close();
-                }
-            }
-            return phases;
+            return graph;
 
         } catch (Throwable thrown) {
             throw (SmartFrogParseException) SmartFrogParseException.forward(
@@ -92,6 +79,27 @@ public class SFParser implements StreamParser {
         }
 
 
+    }
+
+    private Phases exportDocumentToSmartFrogSource(CdlDocument cdlDocument) throws IOException, CdlException,
+            SmartFrogException {
+        //now we are ready to create a smartfrog file.
+        File generated= SmartFrogSourceGenerator.translate(cdlDocument);
+        //it is created, now parse that
+        org.smartfrog.sfcore.parser.SFParser sfparser;
+        sfparser=new org.smartfrog.sfcore.parser.SFParser("sf");
+
+        InputStream newIn=null;
+        Phases phases=null;
+        try {
+            newIn = new FileInputStream(generated);
+            phases = sfparser.sfParse(newIn);
+        } finally {
+            if(newIn!=null) {
+                newIn.close();
+            }
+        }
+        return phases;
     }
 
     /**

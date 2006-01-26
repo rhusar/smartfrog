@@ -17,27 +17,26 @@
  For more information: www.smartfrog.org
 
  */
-package org.smartfrog.services.cddlm.cdl.components;
-
-import org.smartfrog.sfcore.componentdescription.ComponentDescription;
-import org.smartfrog.sfcore.languages.sf.sfcomponentdescription.SFComponentDescription;
-
-import javax.xml.namespace.QName;
-import java.rmi.Remote;
-import java.rmi.RemoteException;
+package org.smartfrog.sfcore.parser;
 
 /**
- * created 24-Jan-2006 13:37:36
- * This extends Cdl Component descriptions with extra operations.
+ * This the standard phases of parsing
  */
 
+public class PhaseNames {
 
-public interface CdlComponentDescription extends SFComponentDescription {
-
-    /**
-     * Get the Qualified name of a node
-     * @return the qname
-     * @throws RemoteException
-     */
-    public QName getQName() throws RemoteException;
+    /** {@value} */
+    public static final String TYPE = "type";
+    /** {@value} */
+    public static final String PLACE = "place";
+    /** {@value} */
+    public static final String SFCONFIG = "sfConfig";
+    /** {@value} */
+    public static final String LINK = "link";
+    /** {@value} */
+    public static final String FUNCTION = "function";
+    /** {@value} */
+    public static final String PHASE_LIST = "predicate";
+    /** {@value} */
+    public static final String PRINT = "print";
 }

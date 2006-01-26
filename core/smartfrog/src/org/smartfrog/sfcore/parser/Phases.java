@@ -80,7 +80,7 @@ public interface Phases extends ComponentDescription {
 
     /**
      * Convert the Phases (resulting from applying the phases) to a
-     * ComponentDescritpion ready for the SmartFrog deployment engine.
+     * ComponentDescription ready for the SmartFrog deployment engine.
      *
      * @return the convertion to a component description
      *

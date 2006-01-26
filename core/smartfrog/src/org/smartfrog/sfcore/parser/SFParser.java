@@ -186,8 +186,6 @@ public class SFParser implements Parser, MessageKeys {
      *
      * @param url to resource to parse and compile from
      * @param codebase suggested codebase for the classloader
-     * @param useDefaultCodebase whether to try to find the class in the
-     *        default codebase before using codebase.
      *
      * @return Phases root component containing parsed component(s)
      *
@@ -240,8 +238,6 @@ public class SFParser implements Parser, MessageKeys {
      *
      * @param str string to parse
      * @param codebase suggested codebase for the classloader
-     * @param useDefaultCodebase whether to try to find the class in the
-     *        default codebase before using codebase.
      *
      * @return root component containing parsed component(s)
      *

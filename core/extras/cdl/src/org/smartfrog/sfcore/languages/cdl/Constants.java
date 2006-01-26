@@ -100,6 +100,11 @@ public class Constants {
      */
     public static final QName QNAME_DETAIL_DOCUMENT = new QName(SMARTFROG_NAMESPACE, "phase", "sf");
 
+    /**
+     * QName used for the system element
+     * {@value}
+     */
+    public static final QName QNAME_SYSTEM_ELEMENT = new QName(XML_CDL_NAMESPACE, "system", "cdl");
 
     /**
      * This is one of those places where bits of the spec can be tuned.

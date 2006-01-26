@@ -24,12 +24,28 @@ import nu.xom.ParentNode;
 
 import java.util.Map;
 import java.util.HashMap;
+import java.util.Vector;
+import java.io.Serializable;
+import java.rmi.RemoteException;
+
+import org.smartfrog.sfcore.languages.cdl.generate.DescriptorSource;
+import org.smartfrog.sfcore.languages.cdl.components.CdlComponentDescription;
+import org.smartfrog.sfcore.languages.cdl.Constants;
+import org.smartfrog.sfcore.common.SmartFrogException;
+
+import javax.xml.namespace.QName;
 
 /**
  * created 23-Jan-2006 17:21:13
  */
 
-public class Namespaces implements NamespaceLookup{
+public class Namespaces implements NamespaceLookup, Serializable, DescriptorSource {
+
+    /**
+     * our namespace node
+     * {@value}
+     */
+    public static final QName QNAME_NAMESPACE=new QName(Constants.XML_CDL_NAMESPACE,"namespace");
 
     private Map<String, String> map=new HashMap<String, String>();
 
@@ -40,7 +56,7 @@ public class Namespaces implements NamespaceLookup{
         addNamespacesAndParentValues(e);
     }
 
-    private void addNamespaces(Element element) {
+    private synchronized void addNamespaces(Element element) {
         int count = element.getNamespaceDeclarationCount();
         for(int i=0;i<count;i++) {
             String prefix=element.getNamespacePrefix(i);
@@ -56,7 +72,7 @@ public class Namespaces implements NamespaceLookup{
      * Tail recursion up the graph to add all ns values
      * @param element
      */
-    private void addNamespacesAndParentValues(Element element) {
+    private synchronized void addNamespacesAndParentValues(Element element) {
         addNamespaces(element);
         final ParentNode parent = element.getParent();
         if(parent!=null && parent instanceof Element) {
@@ -74,4 +90,23 @@ public class Namespaces implements NamespaceLookup{
         return map.get(prefix);
     }
 
+    /**
+     * Add a new description
+     *
+     * @param parent node: add attribute or children
+     * @throws java.rmi.RemoteException
+     * @throws org.smartfrog.sfcore.common.SmartFrogException
+     *
+     */
+    public void exportDescription(CdlComponentDescription parent) throws RemoteException, SmartFrogException {
+        Vector list=new Vector(map.size());
+        for(String prefix :map.keySet()) {
+            String uri =map.get(prefix);
+            Vector tuple =new Vector(2);
+            tuple.add(prefix);
+            tuple.add(uri);
+            list.add(tuple);
+        }
+        parent.sfReplaceAttribute(QNAME_NAMESPACE, list);
+    }
 }

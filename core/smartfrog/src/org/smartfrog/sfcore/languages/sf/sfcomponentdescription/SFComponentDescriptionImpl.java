@@ -33,6 +33,7 @@ import org.smartfrog.sfcore.componentdescription.ComponentDescriptionImpl;
 import org.smartfrog.sfcore.languages.sf.Phase;
 import org.smartfrog.sfcore.languages.sf.SmartFrogCompileResolutionException;
 import org.smartfrog.sfcore.parser.Phases;
+import org.smartfrog.sfcore.parser.PhaseNames;
 import org.smartfrog.sfcore.reference.HereReferencePart;
 import org.smartfrog.sfcore.reference.Reference;
 
@@ -63,18 +64,18 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
    public Reference type;
 
 
-   /**
-    *  Constuctor.
-    *
-    *@param  type    supertype for component
-    *@param  parent  parent component
-    *@param  cxt     context for description
-    *@param  eager   eager flag
-    */
-   public SFComponentDescriptionImpl(Reference type, SFComponentDescription parent, Context cxt, boolean eager) {
-      super(parent, cxt, eager);
-      this.type = type;
-   }
+    /**
+     *  Constuctor.
+     *
+     *@param  type    supertype for component
+     *@param  parent  parent component
+     *@param  cxt     context for description
+     *@param  eager   eager flag
+     */
+    public SFComponentDescriptionImpl(Reference type, SFComponentDescription parent, Context cxt, boolean eager) {
+       super(parent, cxt, eager);
+       this.type = type;
+    }
 
 
    /**
@@ -666,19 +667,19 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
       for (Enumeration e = phases.elements(); e.hasMoreElements(); ) {
          String name = (String) e.nextElement();
          try {
-           if (name.equals("type")) {
+           if (name.equals(PhaseNames.TYPE)) {
              actOn.typeResolve();
            }
-           else if (name.equals("place")) {
+           else if (name.equals(PhaseNames.PLACE)) {
              actOn.placeResolve();
            }
-           else if (name.equals("sfConfig")) {
+           else if (name.equals(PhaseNames.SFCONFIG)) {
              actOn = (SFComponentDescription) sfResolve(sfConfigRef);
            }
-           else if (name.equals("link")) {
+           else if (name.equals(PhaseNames.LINK)) {
              actOn.linkResolve();
            }
-           else if (name.equals("print")) {
+           else if (name.equals(PhaseNames.PRINT)) {
              //org.smartfrog.sfcore.common.Logger.log(actOn.toString());
              org.smartfrog.SFSystem.sfLog().out(actOn.toString());
            }
@@ -710,12 +711,12 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
 
          if (phases == null) {
             phases = new Vector();
-            phases.add("type");
-            phases.add("place");
-            phases.add("sfConfig");
-            phases.add("link");
-            phases.add("function");
-            phases.add("predicate");
+            phases.add(PhaseNames.TYPE);
+            phases.add(PhaseNames.PLACE);
+            phases.add(PhaseNames.SFCONFIG);
+            phases.add(PhaseNames.LINK);
+            phases.add(PhaseNames.FUNCTION);
+            phases.add(PhaseNames.PHASE_LIST);
          } else {
             context.remove("phaseList");
          }
