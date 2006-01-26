@@ -262,7 +262,7 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
     /**
      * Returns an ordered iterator over the values in the context.
      * The remove operation of this Iterator won't affect
-     * the contents of ConponentDescription
+     * the contents of the ComponentDescription
      *
      * @return iterator
      */
