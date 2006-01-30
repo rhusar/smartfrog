@@ -69,7 +69,7 @@ public class SoundPlayerImpl extends FileUsingComponentImpl implements SoundPlay
 
     public static final int SLEEP_INTERVAL_MILLIS = 100;
 
-    private SoundPlayer player = null;
+    private SoundPlayerListener player = null;
 
     public SoundPlayerImpl() throws RemoteException {
     }
@@ -91,7 +91,7 @@ public class SoundPlayerImpl extends FileUsingComponentImpl implements SoundPlay
         log = sfGetApplicationLog();
         bind(true, null);
         int loops = sfResolve(ATTR_LOOPS, 1, false);
-        player = new SoundPlayer(this, getFile(), loops);
+        player = new SoundPlayerListener(this, getFile(), loops);
 
     }
 
@@ -144,7 +144,7 @@ public class SoundPlayerImpl extends FileUsingComponentImpl implements SoundPlay
      */
 
 
-    private static class SoundPlayer implements Runnable, LineListener {
+    private static class SoundPlayerListener implements Runnable, LineListener {
         private SoundPlayerImpl owner;
         private File file;
         private int loops;
@@ -159,7 +159,7 @@ public class SoundPlayerImpl extends FileUsingComponentImpl implements SoundPlay
         private Thread thread;
 
 
-        public SoundPlayer(SoundPlayerImpl owner, File file, int loops) {
+        public SoundPlayerListener(SoundPlayerImpl owner, File file, int loops) {
             this.owner = owner;
             this.file = file;
             this.loops = loops;
