@@ -17,16 +17,13 @@
  For more information: www.smartfrog.org
 
  */
-package org.smartfrog.test.unit.sfcore;
+package org.smartfrog.test.process;
 
-import org.smartfrog.sfcore.processcompound.ProcessCompound;
-import org.smartfrog.sfcore.processcompound.DefaultRootLocatorImpl;
-import org.smartfrog.sfcore.processcompound.SFProcess;
-import org.smartfrog.sfcore.processcompound.RootLocator;
-import org.smartfrog.sfcore.common.SmartFrogException;
 import junit.framework.TestCase;
+import org.smartfrog.sfcore.processcompound.ProcessCompound;
+import org.smartfrog.sfcore.processcompound.RootLocator;
+import org.smartfrog.sfcore.processcompound.SFProcess;
 
-import java.rmi.RemoteException;
 import java.net.InetAddress;
 
 /**
@@ -41,10 +38,14 @@ public class NoProcessTest extends TestCase {
         assertNull(SFProcess.getProcessCompound());
         RootLocator locator=SFProcess.getRootLocator();
         InetAddress self= InetAddress.getByName("127.0.0.1");
+        ProcessCompound process = null;
         try {
-            ProcessCompound process=locator.getRootProcessCompound(self);
+            process = locator.getRootProcessCompound(self);
+            fail("we should have got an error");
         } catch (Exception e) {
-            assert(e.getMessage().indexOf("Connection refused to host: 127.0.0.1")>=0);
+            assert(e.getMessage().indexOf("Connection refused")>=0);
+        } finally {
+            //TODO: clean up?
         }
     }
 }
