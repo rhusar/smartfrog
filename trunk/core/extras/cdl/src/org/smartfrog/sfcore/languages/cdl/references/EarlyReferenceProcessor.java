@@ -24,6 +24,7 @@ import org.smartfrog.sfcore.languages.cdl.process.DepthFirstOperationPhase;
 import org.smartfrog.sfcore.languages.cdl.dom.CdlDocument;
 import org.smartfrog.sfcore.languages.cdl.dom.ToplevelList;
 import org.smartfrog.sfcore.languages.cdl.dom.PropertyList;
+import org.smartfrog.sfcore.languages.cdl.dom.SystemElement;
 import org.smartfrog.sfcore.languages.cdl.faults.CdlException;
 import org.smartfrog.sfcore.languages.cdl.faults.CdlResolutionException;
 import org.smartfrog.sfcore.languages.cdl.Constants;
@@ -91,7 +92,7 @@ public class EarlyReferenceProcessor implements ProcessingPhase {
         do {
             ToplevelList configuration = document.getConfiguration();
             state = resolveList(configuration);
-            ToplevelList system = document.getSystem();
+            SystemElement system = document.getSystem();
             ResolveEnum resolvedSystem = resolveList(system);
             state.merge(resolvedSystem);
             finished = state == ResolveEnum.ResolvedComplete;
@@ -104,7 +105,7 @@ public class EarlyReferenceProcessor implements ProcessingPhase {
 
     }
 
-    private ResolveEnum resolveList(ToplevelList target) throws CdlException, IOException {
+    private ResolveEnum resolveList(PropertyList target) throws CdlException, IOException {
         if(target==null) {
             return ResolveEnum.ResolvedComplete;
         }

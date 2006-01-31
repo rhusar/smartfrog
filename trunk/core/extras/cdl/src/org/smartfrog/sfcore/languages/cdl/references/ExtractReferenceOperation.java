@@ -17,43 +17,34 @@
  For more information: www.smartfrog.org
 
  */
-package org.smartfrog.sfcore.languages.cdl.resolving;
+package org.smartfrog.sfcore.languages.cdl.references;
 
 import org.smartfrog.sfcore.languages.cdl.process.PropertyListOperation;
-import org.smartfrog.sfcore.languages.cdl.process.ProcessingPhase;
 import org.smartfrog.sfcore.languages.cdl.process.DepthFirstOperationPhase;
+import org.smartfrog.sfcore.languages.cdl.process.ProcessingPhase;
 import org.smartfrog.sfcore.languages.cdl.dom.PropertyList;
 import org.smartfrog.sfcore.languages.cdl.faults.CdlException;
-import org.smartfrog.sfcore.languages.cdl.resolving.ResolveEnum;
 
 import java.io.IOException;
 
-import nu.xom.Node;
-
-import javax.xml.namespace.QName;
-
 /**
- * Operation to verify that extends is complete
- * This is just a development option.
+ * created 31-Jan-2006 12:54:43
  */
 
-public class VerifyExtendsComplete implements PropertyListOperation {
+public class ExtractReferenceOperation implements PropertyListOperation {
 
     /**
      * Apply an operation to a node.
      *
-     * @param target
+     * @param node
      * @throws org.smartfrog.sfcore.languages.cdl.faults.CdlException
      *
      */
-    public void apply(PropertyList target) throws CdlException, IOException {
-        QName extendsName = target.getExtendsName();
-        if(extendsName!=null) {
-            throw new CdlException("Still thinks it is extensible: <"+target.getDescription()+">");
-        }
+    public void apply(PropertyList node) throws CdlException, IOException {
+        node.extractReferenceInformation();
     }
 
     public static ProcessingPhase createPhase() {
-        return new DepthFirstOperationPhase(new VerifyExtendsComplete(), null,true,true);
+        return new DepthFirstOperationPhase(new ExtractReferenceOperation(), null, true, true);
     }
 }

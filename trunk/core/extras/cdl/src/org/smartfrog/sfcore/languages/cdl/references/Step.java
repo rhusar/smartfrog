@@ -33,7 +33,7 @@ public abstract class Step {
      * Is this step a root node?
      * @return true iff we are a root node. The default value is false.
      */
-    public boolean isRoot() {
+    public boolean isRootStep() {
         return false;
     }
 

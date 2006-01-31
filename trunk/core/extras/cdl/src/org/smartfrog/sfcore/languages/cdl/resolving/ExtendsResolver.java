@@ -25,6 +25,7 @@ import org.smartfrog.sfcore.languages.cdl.Constants;
 import org.smartfrog.sfcore.languages.cdl.dom.CdlDocument;
 import org.smartfrog.sfcore.languages.cdl.dom.PropertyList;
 import org.smartfrog.sfcore.languages.cdl.dom.ToplevelList;
+import org.smartfrog.sfcore.languages.cdl.dom.SystemElement;
 import org.smartfrog.sfcore.languages.cdl.faults.CdlException;
 import org.smartfrog.sfcore.languages.cdl.faults.CdlInternalErrorException;
 import org.smartfrog.sfcore.languages.cdl.faults.CdlResolutionException;
@@ -84,10 +85,10 @@ public class ExtendsResolver {
             document.replaceConfiguration(newConfig);
         }
 
-        ToplevelList system = document.getSystem();
+        SystemElement system = document.getSystem();
         if (system != null) {
-            ToplevelList newSystem;
-            newSystem = resolveToplevel(system);
+            SystemElement newSystem;
+            newSystem = resolveSystem(system);
             document.replaceSystem(newSystem);
         }
 
@@ -102,15 +103,25 @@ public class ExtendsResolver {
      * @throws CdlException
      */
     private ToplevelList resolveToplevel(ToplevelList target) throws CdlException {
-        ToplevelList newSystem;
-        newSystem = (ToplevelList) resolveChildExtends(target);
+        ToplevelList newList;
+        newList = (ToplevelList) resolveChildExtends(target);
+        verifyCompletelyExtended(newList);
+        return newList;
+    }
+
+    private void verifyCompletelyExtended(PropertyList newSystem) throws CdlInternalErrorException {
         ResolveEnum state = newSystem.aggregateResolutionState();
         if (!state.isParseTimeResolutionComplete()) {
             throw new CdlInternalErrorException("Incomplete parse time resolution");
         }
-        return newSystem;
     }
 
+    private SystemElement resolveSystem(SystemElement system) throws CdlException {
+        SystemElement newList;
+        newList = (SystemElement) resolveChildExtends(system);
+        verifyCompletelyExtended(newList);
+        return newList;
+    }
     /**
      * Resolve the extends for a single node. The algorithm for resolution is
      * defined in the CDL document specification.

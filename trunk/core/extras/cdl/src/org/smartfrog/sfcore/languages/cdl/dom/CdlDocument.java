@@ -33,7 +33,9 @@ import org.smartfrog.sfcore.languages.cdl.components.CdlComponentDescriptionImpl
 import org.smartfrog.sfcore.languages.cdl.ParseContext;
 import org.smartfrog.sfcore.languages.cdl.Constants;
 import org.smartfrog.sfcore.languages.cdl.references.EarlyReferenceProcessor;
+import org.smartfrog.sfcore.languages.cdl.references.ExtractReferenceOperation;
 import org.smartfrog.sfcore.languages.cdl.process.ProcessingPhase;
+import org.smartfrog.sfcore.languages.cdl.process.DepthFirstOperationPhase;
 import org.smartfrog.sfcore.languages.cdl.importing.ImportProcessor;
 import org.smartfrog.sfcore.languages.cdl.dom.attributes.GenericAttribute;
 import org.smartfrog.sfcore.languages.cdl.dom.attributes.URIAttribute;
@@ -109,7 +111,7 @@ public class CdlDocument implements Names, ToSmartFrog, DescriptorSource {
     /**
      * System declaration
      */
-    private ToplevelList system;
+    private SystemElement system;
 
     /**
      * Our list of imports
@@ -192,7 +194,7 @@ public class CdlDocument implements Names, ToSmartFrog, DescriptorSource {
      *
      * @return system or null for none defined
      */
-    public ToplevelList getSystem() {
+    public SystemElement getSystem() {
         return system;
     }
 
@@ -206,7 +208,7 @@ public class CdlDocument implements Names, ToSmartFrog, DescriptorSource {
      *
      * @param system
      */
-    protected void setSystem(ToplevelList system) {
+    protected void setSystem(SystemElement system) {
         this.system = system;
     }
 
@@ -215,7 +217,7 @@ public class CdlDocument implements Names, ToSmartFrog, DescriptorSource {
      *
      * @param newsystem
      */
-    public void replaceSystem(ToplevelList newsystem) {
+    public void replaceSystem(SystemElement newsystem) {
 
         if (system != null ) {
             root.replaceChild(system, newsystem);
@@ -365,12 +367,19 @@ public class CdlDocument implements Names, ToSmartFrog, DescriptorSource {
         setParseContext(context);
         parsePhaseBuildDom();
         List<ProcessingPhase> phases = new ArrayList<ProcessingPhase>(8);
+        //register the protos
         phases.add(new RegisterPrototypesProcessor());
+        //imports
         phases.add(new ImportProcessor());
+        //extract all reference bindings
+        phases.add(ExtractReferenceOperation.createPhase());
+        //do the extends processing
         phases.add(new ExtendsProcessor());
+        //debug builds and a sanity check
         if(Constants.POLICY_DEBUG_RELEASE) {
-            phases.add(VerifyExtendsComplete.createVerificationPhase());
+            phases.add(VerifyExtendsComplete.createPhase());
         }
+        //now do early references
         phases.add(new EarlyReferenceProcessor());
 
         //list is full, so execute.
@@ -449,11 +458,12 @@ public class CdlDocument implements Names, ToSmartFrog, DescriptorSource {
             //<configuration> and system elements
             if (child instanceof ToplevelList) {
                 ToplevelList toplevelList = (ToplevelList) child;
-                if (ELEMENT_CONFIGURATION.equals(toplevelList.getLocalName())) {
-                    configuration = toplevelList;
-                } else {
-                    system = toplevelList;
-                }
+                configuration = toplevelList;
+                continue;
+            }
+            if (child instanceof SystemElement) {
+                SystemElement toplevelList = (SystemElement) child;
+                system = toplevelList;
                 continue;
             }
 

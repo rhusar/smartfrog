@@ -62,10 +62,15 @@ public class PropertyList extends DocNode implements DescriptorSource {
      */
     protected QName extendsName;
 
+    /**
+     * boolean to say whether or not we are a root node. A root node is where references stop.
+     */
+
+    protected boolean root;
 
     /**
-     * What is the state of resolution
-     */
+    * What is the state of resolution
+    */
     private ResolveEnum resolveState = ResolveEnum.ResolvedUnknown;
 
     /**
@@ -108,6 +113,14 @@ public class PropertyList extends DocNode implements DescriptorSource {
     }
 
 
+    public boolean isRoot() {
+        return root;
+    }
+
+    public void setRoot(boolean root) {
+        this.root = root;
+    }
+
     /**
      * Parse from XML
      *
@@ -136,6 +149,12 @@ public class PropertyList extends DocNode implements DescriptorSource {
             setExtendsName(NamespaceUtils.makeQName(namespace, local, prefix));
         }
 
+    }
+
+    /**
+     * This is called to pull reference info out of the system
+     */
+    public void extractReferenceInformation() {
         //check for having a refroot and us not already being bound
         if (getRefValue() != null) {
             if (referencePath == null) {
@@ -182,6 +201,7 @@ public class PropertyList extends DocNode implements DescriptorSource {
         copy.setResolveState(getResolveState());
         copy.setExtendsName(getExtendsName());
         copy.setTemplate(isTemplate());
+        copy.setRoot(isRoot());
         if (referencePath != null) {
             copy.referencePath = referencePath.shallowCopy();
         }

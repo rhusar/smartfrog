@@ -20,7 +20,6 @@
 package org.smartfrog.sfcore.languages.cdl.references;
 
 import org.smartfrog.sfcore.languages.cdl.dom.PropertyList;
-import org.smartfrog.sfcore.languages.cdl.dom.ToplevelList;
 import org.smartfrog.sfcore.languages.cdl.faults.CdlRuntimeException;
 import org.smartfrog.sfcore.languages.cdl.faults.CdlResolutionException;
 import org.smartfrog.sfcore.languages.cdl.faults.CdlException;
@@ -132,7 +131,7 @@ public class ReferencePath implements NamespaceLookup {
      * @return true iff this is a relative path.
      */
     public boolean isRelative() {
-        return !steps.get(0).isRoot();
+        return !steps.get(0).isRootStep();
     }
 
 
@@ -173,7 +172,7 @@ public class ReferencePath implements NamespaceLookup {
         if (!isEmpty()) {
             for (Step step : steps) {
                 result.append(step.toString());
-                if (!step.isRoot()) {
+                if (!step.isRootStep()) {
                     result.append('/');
                 }
             }
@@ -256,7 +255,7 @@ public class ReferencePath implements NamespaceLookup {
     private void makeRelative(PropertyList source) {
         assert !isEmpty();
         Step first = steps.get(0);
-        if (!first.isRoot()) {
+        if (!first.isRootStep()) {
             //no work needed
             return;
         }
@@ -264,17 +263,18 @@ public class ReferencePath implements NamespaceLookup {
         steps.remove(first);
         //now we count the number of steps to a parent.
         PropertyList node = source;
-        while (!node.isToplevel()) {
+        while (!node.isRoot()) {
             //insert a new upward step
             ParentNode parent = node.getParent();
             if (parent==null || !(parent instanceof PropertyList)) {
                 //bad type. bail out now.
                 throw new CdlRuntimeException(ERROR_NO_TOPLEVEL);
             }
+            steps.add(0, new StepUp());
 
             node = (PropertyList) parent;
-            if(!(node instanceof ToplevelList)) {
-                steps.add(0, new StepUp());
+            if(!node.isToplevel()) {
+//                steps.add(0, new StepUp());
             }
         }
         //here we are at a toplevel node
@@ -292,6 +292,7 @@ public class ReferencePath implements NamespaceLookup {
         ReferencePath copy=new ReferencePath();
         copy.steps=new ArrayList(steps);
         copy.namespaces=namespaces;
+        copy.lazy=lazy;
         return copy;
     }
 

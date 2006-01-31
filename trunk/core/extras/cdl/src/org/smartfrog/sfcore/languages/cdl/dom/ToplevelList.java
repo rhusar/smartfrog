@@ -44,18 +44,6 @@ public class ToplevelList extends PropertyList {
     }
 
     /**
-     * Test that a (namespace,localname) pair matches our type
-     *
-     * @param namespace
-     * @param localname
-     * @return true for a match
-     */
-    public static boolean isSystemElement(String namespace,
-                                          String localname) {
-        return isNode(namespace, localname, ELEMENT_SYSTEM);
-    }
-
-    /**
      * Register our nodes with our parse context.
      *
      * @throws CdlDuplicatePrototypeException if there is a registration
@@ -65,6 +53,7 @@ public class ToplevelList extends PropertyList {
         for (Node node : this) {
             if (node instanceof PropertyList) {
                 PropertyList prototype = (PropertyList) node;
+                prototype.setRoot(true);
                 getParseContext().prototypeAddNew(prototype);
             }
         }
@@ -87,14 +76,10 @@ public class ToplevelList extends PropertyList {
      */
     public String getSfName(GenerateContext out) {
         //are we the system node?
-        if (getOwner().getSystem() == this) {
-            return GenerateContext.COMPONENT_SFSYSTEM;
+        if (getOwner().getConfiguration() == this) {
+            return GenerateContext.COMPONENT_CONFIGURATION;
         } else {
-            if (getOwner().getConfiguration() == this) {
-                return GenerateContext.COMPONENT_CONFIGURATION;
-            } else {
-                return super.getSfName(out);
-            }
+            return super.getSfName(out);
         }
     }
 

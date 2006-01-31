@@ -21,7 +21,6 @@ package org.smartfrog.sfcore.languages.cdl.references;
 
 import org.smartfrog.sfcore.languages.cdl.faults.CdlResolutionException;
 import org.smartfrog.sfcore.languages.cdl.dom.PropertyList;
-import org.smartfrog.sfcore.languages.cdl.dom.ToplevelList;
 import nu.xom.Node;
 
 /**
@@ -42,7 +41,7 @@ public class StepRoot extends Step {
      *
      * @return true always.
      */
-    public boolean isRoot() {
+    public boolean isRootStep() {
         return true;
     }
 
@@ -55,21 +54,17 @@ public class StepRoot extends Step {
      */
     public StepExecutionResult execute(StepExecutionResult state) throws CdlResolutionException {
         PropertyList node = state.getNode();
-        Node current = node;
-        boolean finished=false;
-        do {
+        PropertyList current = node;
+        while(!current.isRoot()) {
             Node parent = node.getParent();
             if (parent == null) {
                 throw new CdlResolutionException(ERROR_NO_STEP_UP + node + ERROR_ORPHAN_NODE, state);
             }
-            if(parent instanceof ToplevelList) {
-                finished=true;
-            } else {
-                current=parent;
-            }
-        } while(!finished);
+            PropertyList next=(PropertyList) parent;
+            current=next;
+        }
 
-        return state.next((PropertyList) current);
+        return state.next(current);
     }
 
 }
