@@ -81,6 +81,7 @@ For more information: www.smartfrog.org
     <property name="services" value="org/smartfrog/services/" />
     <property name="unittests" value="org/smartfrog/test/unit/" />
     <property name="systemtests" value="org/smartfrog/test/system/" />
+    <property name="processtests" value="org/smartfrog/test/process/"/>
     <property name="componenttests" value="${systemtests}components/" />
     
     

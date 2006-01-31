@@ -17,18 +17,16 @@
  For more information: www.smartfrog.org
 
  */
-package org.smartfrog.test.unit.sfcore;
+package org.smartfrog.test.process;
 
 import junit.framework.TestCase;
-
-import org.smartfrog.sfcore.processcompound.ProcessCompound;
+import org.smartfrog.sfcore.common.TerminatorThread;
 import org.smartfrog.sfcore.prim.TerminationRecord;
+import org.smartfrog.sfcore.processcompound.ProcessCompound;
 import org.smartfrog.sfcore.processcompound.SFProcess;
-import org.smartfrog.sfcore.common.*;
+import org.smartfrog.test.unit.sfcore.StartDaemon;
+
 import java.net.InetAddress;
-import java.io.File;
-import java.util.Properties;
-import java.util.Enumeration;
 
 /**
  * created Oct 14, 2005 4:14:04 PM
@@ -36,21 +34,21 @@ import java.util.Enumeration;
 
 public class DaemonTest extends TestCase {
 
-   private static final String home = System.getProperty("smartfrog.dist.dir");
-   
-   public DaemonTest(String name) {
+    private static final String home = System.getProperty("smartfrog.dist.dir");
+
+    public DaemonTest(String name) {
         super(name);
     }
 
     public void testStartDaemon() throws Exception {
-            StartDaemon obj = new StartDaemon(home);
-	    ProcessCompound daemon = StartDaemon.getSFDaemon();
+        StartDaemon obj = new StartDaemon(home);
+        ProcessCompound daemon = StartDaemon.getSFDaemon();
     }
 
-   public void testStopDaemon() throws Exception {
-            TerminationRecord tr = new TerminationRecord("Process Terminated", null, null);
-            ProcessCompound sfDaemon = SFProcess.getRootLocator().getRootProcessCompound(InetAddress.getLocalHost(), 3800);
-            TerminatorThread terminator = new TerminatorThread(sfDaemon, tr).detach().quietly();
-            terminator.start();
-   }
+    public void testStopDaemon() throws Exception {
+        TerminationRecord tr = new TerminationRecord("Process Terminated", null, null);
+        ProcessCompound sfDaemon = SFProcess.getRootLocator().getRootProcessCompound(InetAddress.getLocalHost(), 3800);
+        TerminatorThread terminator = new TerminatorThread(sfDaemon, tr).detach().quietly();
+        terminator.start();
+    }
 }
