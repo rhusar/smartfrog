@@ -454,7 +454,6 @@ public class PropertyList extends DocNode implements DescriptorSource {
         QName name=this.getQName();
         if (hasChildElements()) {
             //we have children, go into parent mode
-            //TODO: what about cmp: special attributes?, namespace etc
             CdlComponentDescriptionImpl description = new CdlComponentDescriptionImpl(name,parent);
             description.registerWithParent();
             exportChildren(description);

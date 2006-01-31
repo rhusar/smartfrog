@@ -240,8 +240,7 @@ public class ParseContext {
         String path = declaration.getLocation();
         //now, do some relative resolution stuff. This needs to happen early,
         //because the map tables need absolute references to work properly.
-        URL url=resolveRelativePath(parent, path);
-        String urlpath=url.toExternalForm();
+        String urlpath=resolveRelativePath(parent, path);
         if (namespace == null) {
             return importLocalDocument(urlpath);
         } else {
@@ -256,25 +255,25 @@ public class ParseContext {
      * @return
      * @throws CdlResolutionException
      */
-    public URL resolveRelativePath(CdlDocument parent,String path) throws CdlResolutionException {
+    public String resolveRelativePath(CdlDocument parent,String path) throws CdlResolutionException {
         URL documentURL = parent != null ? parent.getDocumentURL() : null;
         URL url=null;
         try {
-            url=new URL(path);
+            url=urlFactory.createUrl(path);
         } catch (MalformedURLException first) {
             String message = ERROR_RELATIVE_IMPORT_FAILED + path;
             try {
                 if(documentURL == null) {
                     throw new CdlResolutionException(message +" - no base document/URL");
                 }
-                url=new URL(documentURL, path);
+                url= urlFactory.createUrl(documentURL, path);
             } catch (MalformedURLException second) {
                 //double failure. Throw the first exception, as it may be the most meaningful.
                 log.info("resolving "+path+" relative to "+documentURL,second);
                 throw new CdlResolutionException(message,first);
             }
         }
-        return url;
+        return url.toExternalForm();
     }
 
     /**

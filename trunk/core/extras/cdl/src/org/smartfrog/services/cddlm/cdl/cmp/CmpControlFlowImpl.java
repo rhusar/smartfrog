@@ -17,18 +17,11 @@
  For more information: www.smartfrog.org
 
  */
-package org.smartfrog.services.cddlm.cdl;
-
-import java.rmi.Remote;
+package org.smartfrog.services.cddlm.cdl.cmp;
 
 /**
- * created 23-Jun-2005 16:30:51
+ * created 23-Jun-2005 16:39:35
  */
 
-public interface CmpComponent extends Remote {
-
-    /**
-     * codebase {@value}
-     */
-    public static final String ATTR_COMMAND_PATH = "_cmp_CommandPath";
+public class CmpControlFlowImpl {
 }

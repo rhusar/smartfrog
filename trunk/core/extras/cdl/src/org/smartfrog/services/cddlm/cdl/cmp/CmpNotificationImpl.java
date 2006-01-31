@@ -17,24 +17,20 @@
  For more information: www.smartfrog.org
 
  */
-package org.smartfrog.services.cddlm.cdl;
+package org.smartfrog.services.cddlm.cdl.cmp;
 
-import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.services.cddlm.cdl.cmp.CmpComponentImpl;
+import org.smartfrog.services.cddlm.cdl.cmp.CmpNotification;
 
 import java.rmi.RemoteException;
 
 /**
- * created 23-Jun-2005 17:52:13
+ * created 23-Jun-2005 16:38:41
  */
 
-public class EchoImpl extends CmpComponentImpl implements Echo {
-    public EchoImpl() throws RemoteException {
-    }
+public class CmpNotificationImpl extends CmpComponentImpl
+        implements CmpNotification {
 
-    public synchronized void sfStart() throws SmartFrogException,
-            RemoteException {
-        super.sfStart();
-        String message = sfResolve(ATTR_MESSAGE, "", false);
-        System.out.println("Message: " + message);
+    public CmpNotificationImpl() throws RemoteException {
     }
 }

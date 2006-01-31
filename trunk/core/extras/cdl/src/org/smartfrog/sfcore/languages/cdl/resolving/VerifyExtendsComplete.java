@@ -49,7 +49,7 @@ public class VerifyExtendsComplete implements PropertyListOperation {
     public void apply(PropertyList target) throws CdlException, IOException {
         QName extendsName = target.getExtendsName();
         if(extendsName!=null) {
-            throw new CdlException("Still thinks it is extensible: <"+target.getDescription()+">");
+            throw new CdlException("Still thinks it is extensible: "+target.getDescription());
         }
     }
 

@@ -17,11 +17,15 @@
  For more information: www.smartfrog.org
 
  */
-package org.smartfrog.services.cddlm.cdl;
+package org.smartfrog.services.cddlm.cdl.demo;
+
+import java.rmi.Remote;
 
 /**
- * created 23-Jun-2005 16:39:35
+ * created 23-Jun-2005 17:51:37
  */
 
-public class CmpControlFlowImpl {
+
+public interface Echo extends Remote {
+    public static final String ATTR_MESSAGE = "a_sf_message";
 }

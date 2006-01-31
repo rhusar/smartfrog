@@ -9,7 +9,7 @@
 
     <!-- Echo something -->
     <sf:echo sf:message="">
-      <cmp:CommandPath>org.smartfrog.services.cddlm.cdl.EchoImpl</cmp:CommandPath>
+      <cmp:CommandPath>org.smartfrog.services.cddlm.cdl.demo.EchoImpl</cmp:CommandPath>
     </sf:echo>
 
 

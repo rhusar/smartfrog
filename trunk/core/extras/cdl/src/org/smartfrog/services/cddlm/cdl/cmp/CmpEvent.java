@@ -17,17 +17,21 @@
  For more information: www.smartfrog.org
 
  */
-package org.smartfrog.services.cddlm.cdl;
+package org.smartfrog.services.cddlm.cdl.cmp;
+
+import org.smartfrog.services.cddlm.cdl.cmp.CmpComponent;
+
 
 /**
- * created 23-Jun-2005 16:37:56
+ * created 23-Jun-2005 16:36:10
+ * <p/>
+ * CmpEvent extends CmpComponent { a_process TBD; a_target TBD; }
  */
 
-/*
- CmpNotification extends CdlPrimBase {
-     a_notify TBD;
-  }
-  */
-public interface CmpNotification extends CmpComponent {
-    public static final String ATTR_NOTIFY = "a_notify";
+
+public interface CmpEvent extends CmpComponent {
+
+    public static final String ATTR_PROCESS = "a_process";
+    public static final String ATTR_TARGET = "a_target";
+
 }

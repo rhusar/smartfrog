@@ -17,7 +17,10 @@
  For more information: www.smartfrog.org
 
  */
-package org.smartfrog.services.cddlm.cdl;
+package org.smartfrog.services.cddlm.cdl.cmp;
+
+import org.smartfrog.services.cddlm.cdl.cmp.CmpComponentImpl;
+import org.smartfrog.services.cddlm.cdl.cmp.CmpEvent;
 
 import java.rmi.RemoteException;
 

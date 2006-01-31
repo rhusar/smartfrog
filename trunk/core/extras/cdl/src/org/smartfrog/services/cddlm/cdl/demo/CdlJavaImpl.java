@@ -17,19 +17,26 @@
  For more information: www.smartfrog.org
 
  */
-package org.smartfrog.services.cddlm.cdl;
+package org.smartfrog.services.cddlm.cdl.demo;
 
+import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.services.cddlm.cdl.demo.CdlJava;
+import org.smartfrog.services.cddlm.cdl.cmp.CmpComponentImpl;
+
+import java.rmi.RemoteException;
 
 /**
- * created 23-Jun-2005 16:36:10
- * <p/>
- * CmpEvent extends CmpComponent { a_process TBD; a_target TBD; }
+ * created 24-Jun-2005 14:01:08
  */
 
+public class CdlJavaImpl extends CmpComponentImpl implements CdlJava {
 
-public interface CmpEvent extends CmpComponent {
+    public CdlJavaImpl() throws RemoteException {
+    }
 
-    public static final String ATTR_PROCESS = "a_process";
-    public static final String ATTR_TARGET = "a_target";
-
+    public synchronized void sfStart() throws SmartFrogException,
+            RemoteException {
+        super.sfStart();
+        
+    }
 }

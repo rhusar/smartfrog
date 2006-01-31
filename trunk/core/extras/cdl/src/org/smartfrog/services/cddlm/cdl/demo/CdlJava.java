@@ -17,15 +17,19 @@
  For more information: www.smartfrog.org
 
  */
-package org.smartfrog.services.cddlm.cdl;
+package org.smartfrog.services.cddlm.cdl.demo;
 
-import java.rmi.Remote;
+import org.smartfrog.services.cddlm.cdl.cmp.CmpComponent;
 
 /**
- * created 23-Jun-2005 17:51:37
+ * created 24-Jun-2005 14:00:46
  */
 
 
-public interface Echo extends Remote {
-    public static final String ATTR_MESSAGE = "a_sf_message";
+public interface CdlJava extends CmpComponent {
+
+    /**
+     *  {@value}
+     */
+    public static final String ATTR_JAVA_CLASSNAME= "a_sf_classname";
 }

@@ -19,7 +19,7 @@
  */
 package org.smartfrog.test.system.sfcore.languages.cdl.execute;
 
-import org.smartfrog.services.cddlm.cdl.Echo;
+import org.smartfrog.services.cddlm.cdl.demo.Echo;
 import org.smartfrog.sfcore.parser.Phases;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.test.unit.sfcore.languages.cdl.XmlTestBase;
@@ -63,7 +63,7 @@ public class CdlEchoTest extends XmlTestBase {
         try {
             application = deployExpectingSuccess(ECHO_CDL, "testSimplePackage");
             Object echo=resolveAttribute(application,"__echo");
-            String message=resolveStringAttribute((Prim)echo,Echo.ATTR_MESSAGE);
+            String message=resolveStringAttribute((Prim)echo, Echo.ATTR_MESSAGE);
             assertTrue("Empty message attribute",message.length()>0);
 
         } finally {

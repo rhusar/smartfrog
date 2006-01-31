@@ -1,0 +1,43 @@
+<?xml version="1.0"?>
+<cdl:cdl xmlns:cdl="http://www.gridforum.org/namespaces/2005/02/cddlm/CDL-1.0"
+    xmlns:cmp="http://www.gridforum.org/cddlm/components/2005/02"
+    xmlns:sf="http://www.gridforum.org/cddlm/smartfrog/2005/02"
+    xmlns:base="http://smartfrog.org/services/cdl/base/">
+
+
+  <cdl:documentation>
+    This set of components represents some base classes of smartfrog, declared in CDL format
+  </cdl:documentation>
+  <!--smartfrog extra classes-->
+
+  <cdl:configuration>
+
+
+    <base:Prim>
+<!--
+      <sf:sfClass/>
+      <sf:sfCodeBase />
+      <sf:sfDeployerClass />
+      <sf:sfExport/>
+      <sf:sfExportPort/>
+      <sf:sfLivenessDelay />
+      <sf:sfLivenessFactor />
+      <sf:sfLog />
+      <sf:sfProcessName />
+      <sf:sfProcessComponentName />
+      <sf:sfProcessHost/>
+-->
+    </base:Prim>
+
+
+    <!--Declare the compound. sfSyncTerminate is trouble, as it is boolean not string-->
+    <base:Compound cdl:extends="base:Prim">
+      <sf:sfClass>org.smartfrog.sfcore.compound.CompoundImpl</sf:sfClass>
+    </base:Compound>
+
+
+
+
+
+  </cdl:configuration>
+</cdl:cdl>

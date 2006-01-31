@@ -59,8 +59,7 @@ public class ImportTest extends XmlTestBase {
         ParseContext context = new ParseContext();
         CdlDocument parent=context.createRootDocument();
         parent.setDocumentURL(base);
-        URL resolved= context.resolveRelativePath(parent, path);
-        String actual=resolved.toExternalForm();
+        String actual= context.resolveRelativePath(parent, path);
         assertEquals(expected, actual);
     }
 
