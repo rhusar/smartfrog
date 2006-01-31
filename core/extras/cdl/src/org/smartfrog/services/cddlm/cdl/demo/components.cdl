@@ -3,7 +3,7 @@
   xmlns:cmp="http://www.gridforum.org/cddlm/components/2005/02"
   xmlns:sf="http://smartfrog.org/services/cdl/2005/06">
 
-  <cdl:import location="org/smartfrog/services/cddlm/cdl/components.cdl"
+  <cdl:import location="classpath:/org/smartfrog/services/cddlm/cdl/cmp/components.cdl"
     namespace="http://www.gridforum.org/cddlm/components/2005/02"/>
 
   <!--smartfrog extra classes-->
@@ -12,7 +12,7 @@
 
     <!-- Echo something -->
     <sf:echo sf:message="" >
-      <cmp:CommandPath>org.smartfrog.services.cddlm.cdl.EchoImpl</cmp:CommandPath>
+      <cmp:CommandPath>org.smartfrog.services.cddlm.cdl.demo.EchoImpl</cmp:CommandPath>
     </sf:echo>
 
     
@@ -23,7 +23,7 @@
 
     
     <sf:java sf:classname="">
-      <cmp:CommandPath>org.smartfrog.services.cddlm.cdl.JavaImpl</cmp:CommandPath>
+      <cmp:CommandPath>org.smartfrog.services.cddlm.cdl.demo.JavaImpl</cmp:CommandPath>
     </sf:java>
 
   </cdl:configuration>

@@ -43,6 +43,14 @@ import java.util.Enumeration;
 
 /**
  * This is an extended component description that is used when turning a CDL graph into a smartfrog graph
+ *
+ * There is a special bit of deviousness here.
+ * Every Node that is in the Smartfrog XML namespace {@link Constants#SMARTFROG_NAMESPACE}
+ * is registered only under its local name, not the
+ * full namespace. So by using sf namespaced elements, we can merge a CDL description into a smartfrog one,
+ * without contaminating any local namespaced elements.
+ *
+ *
  * created 24-Jan-2006 13:34:37
  */
 
@@ -61,7 +69,7 @@ public class CdlComponentDescriptionImpl extends SFComponentDescriptionImpl impl
     }
 
     public CdlComponentDescriptionImpl(QName name, SFComponentDescription parent) {
-        this(name,parent, new ContextImpl(),false);
+        this(name,parent, new ContextImpl(),true);
     }
 
     /**
@@ -73,6 +81,7 @@ public class CdlComponentDescriptionImpl extends SFComponentDescriptionImpl impl
      */
     public CdlComponentDescriptionImpl(QName name, SFComponentDescription parent, Context cxt, boolean eager) {
         super(null,(SFComponentDescription) parent, cxt, eager);
+        qname=name;
     }
 
     /**
@@ -82,6 +91,12 @@ public class CdlComponentDescriptionImpl extends SFComponentDescriptionImpl impl
      */
     public void registerWithParent() throws SmartFrogRuntimeException {
         if(sfParent()!=null) {
+            assert qname!=null;
+            Object name=qname;
+            if(Constants.SMARTFROG_NAMESPACE.equals(qname.getNamespaceURI())) {
+
+                name=qname.getLocalPart();
+            }
             sfParent().sfReplaceAttribute(qname,this);
         }
     }
@@ -209,7 +224,7 @@ public class CdlComponentDescriptionImpl extends SFComponentDescriptionImpl impl
      *          componentdescription
      */
     public ComponentDescription sfAsComponentDescription() throws SmartFrogCompilationException {
-        throw notImplemented("");
+        return this;
     }
 
     private SmartFrogCompilationException notImplemented(String text) {

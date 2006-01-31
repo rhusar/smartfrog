@@ -20,14 +20,12 @@
 
 package org.smartfrog.test.system.sfcore.languages.cdl.execute;
 
-import org.smartfrog.test.SmartFrogTestBase;
 import org.smartfrog.test.unit.sfcore.languages.cdl.XmlTestBase;
 import org.smartfrog.sfcore.parser.Phases;
 import org.smartfrog.sfcore.prim.Prim;
-import org.smartfrog.services.cddlm.cdl.Echo;
 
 /**
- 
+
  */
 public class CdlExecTest extends XmlTestBase {
 
@@ -39,18 +37,18 @@ public class CdlExecTest extends XmlTestBase {
     public CdlExecTest(String name) {
         super(name);
     }
-    
+
     public void testParse() throws Exception {
         Phases phases = parse(EXEC_CDL);
     }
-    
+
     public void testDeployExec() throws Throwable {
         Prim application = null;
         try {
             application = deployExpectingSuccess(EXEC_CDL, "testExec");
         } finally {
-            //terminateApplication(application);
+            terminateApplication(application);
         }
     }
-    
+
 }

@@ -13,7 +13,7 @@
 
  <!-- Events -->
     <cmp:Event process="" target="">
-      <cmp:CommandPath>org.smartfrog.services.cdl.CmpEventImpl</cmp:CommandPath>
+      <cmp:CommandPath>org.smartfrog.services.cdl.cmp.CmpEventImpl</cmp:CommandPath>
     </cmp:Event>
 
     <cmp:OnInitalized cdl:extends="cmp:Event"/>
@@ -24,7 +24,7 @@
 <!--Notifications -->
 
     <cmp:Notification process="" target="">
-      <cmp:CommandPath>org.smartfrog.services.cdl.CmpNotificationImpl</cmp:CommandPath>
+      <cmp:CommandPath>org.smartfrog.services.cdl.cmp.CmpNotificationImpl</cmp:CommandPath>
     </cmp:Notification>
 
     <cmp:OnFault cdl:extends="cmp:Notification" cmp:faultName="" cmp:faultType="" />
@@ -32,12 +32,12 @@
 
 
     <cmp:CmpControlFlow lifecycle="">
-      <cmp:CommandPath>org.smartfrog.services.cdl.CmpControlFlowImpl</cmp:CommandPath>
+      <cmp:CommandPath>org.smartfrog.services.cdl.cmp.CmpControlFlowImpl</cmp:CommandPath>
     </cmp:CmpControlFlow>
 
     
     <CmpControlFlow cdl:extends="cmp:CmpControlFlow" cmp:lifecycle=""
-      xmns="http:..gfljklfr">
+      xmns="http://www.gridforum.org/cddlm/components/2005/02">
     </CmpControlFlow>
     
     <cmp:sequence cdl:extends="cmp:CmpControlFlow" />

@@ -1,4 +1,4 @@
-/** (C) Copyright 2005 Hewlett-Packard Development Company, LP
+/** (C) Copyright 2006 Hewlett-Packard Development Company, LP
 
  This library is free software; you can redistribute it and/or
  modify it under the terms of the GNU Lesser General Public
@@ -17,24 +17,17 @@
  For more information: www.smartfrog.org
 
  */
-package org.smartfrog.services.cddlm.cdl;
+package org.smartfrog.test.system.sfcore.languages.cdl.execute;
 
-import org.smartfrog.sfcore.common.SmartFrogException;
-
-import java.rmi.RemoteException;
+import org.smartfrog.test.SmartFrogTestBase;
+import org.smartfrog.test.unit.sfcore.languages.cdl.Filenames;
 
 /**
- * created 24-Jun-2005 14:01:08
+ * created 31-Jan-2006 13:43:11
  */
 
-public class CdlJavaImpl extends CmpComponentImpl implements CdlJava {
-
-    public CdlJavaImpl() throws RemoteException {
-    }
-
-    public synchronized void sfStart() throws SmartFrogException,
-            RemoteException {
-        super.sfStart();
-        
+public abstract class DeployingTestBase extends SmartFrogTestBase implements Filenames {
+    public DeployingTestBase(String name) {
+        super(name);
     }
 }

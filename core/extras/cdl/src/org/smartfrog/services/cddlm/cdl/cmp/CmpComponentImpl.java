@@ -17,14 +17,32 @@
  For more information: www.smartfrog.org
 
  */
-package org.smartfrog.services.cddlm.cdl;
+
+
+package org.smartfrog.services.cddlm.cdl.cmp;
+
+import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.compound.CompoundImpl;
+import org.smartfrog.services.cddlm.cdl.cmp.CmpComponent;
+
+import java.rmi.RemoteException;
 
 /**
- * created 23-Jun-2005 16:39:43
+ * created 22-Jun-2005 13:14:43
  */
 
+public class CmpComponentImpl extends CompoundImpl implements CmpComponent {
 
-public interface CmpControlFlow extends CmpComponent {
+    public CmpComponentImpl() throws RemoteException {
+    }
 
-    public static final String ATTR_LIFECYCLE = "a_lifecycle";
+    public synchronized void sfDeploy() throws SmartFrogException,
+            RemoteException {
+        super.sfDeploy();
+    }
+
+    public synchronized void sfStart() throws SmartFrogException,
+            RemoteException {
+        super.sfStart();
+    }
 }

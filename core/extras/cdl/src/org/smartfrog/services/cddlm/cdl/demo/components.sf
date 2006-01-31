@@ -40,12 +40,12 @@ ITS MEDIA, AND YOU HEREBY WAIVE ANY CLAIM IN THIS REGARD.
 
 #include "/org/smartfrog/services/os/runshell/components.sf"
 #include "/org/smartfrog/services/os/java/components.sf"
-#include "org/smartfrog/sfcore/workflow/components.sf";
+#include "/org/smartfrog/sfcore/workflow/components.sf";
 
 // Management Component
 #include "/org/smartfrog/services/management/components.sf"
 
-#include "org/smartfrog/functions.sf"
+#include "/org/smartfrog/functions.sf"
 
 SfExecuteProgram extends ExecuteProgram {
     terminateOnFailure extends BooleanValue {

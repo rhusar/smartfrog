@@ -17,17 +17,19 @@
  For more information: www.smartfrog.org
 
  */
-package org.smartfrog.services.cddlm.cdl;
+package org.smartfrog.services.cddlm.cdl.cmp;
+
+import org.smartfrog.services.cddlm.cdl.cmp.CmpComponent;
 
 /**
- * created 24-Jun-2005 14:00:46
+ * created 23-Jun-2005 16:37:56
  */
 
-
-public interface CdlJava extends CmpComponent {
-
-    /**
-     *  {@value}
-     */
-    public static final String ATTR_JAVA_CLASSNAME= "a_sf_classname";
+/*
+ CmpNotification extends CdlPrimBase {
+     a_notify TBD;
+  }
+  */
+public interface CmpNotification extends CmpComponent {
+    public static final String ATTR_NOTIFY = "a_notify";
 }

@@ -21,6 +21,9 @@ package org.smartfrog.sfcore.languages.cdl.dom;
 
 import nu.xom.Element;
 import org.smartfrog.sfcore.languages.cdl.generate.GenerateContext;
+import org.smartfrog.sfcore.languages.cdl.faults.CdlXmlParsingException;
+
+import javax.xml.namespace.QName;
 
 /**
  * This is the system element, which is different from the toplevel list and slightly different
@@ -36,16 +39,25 @@ public class SystemElement extends PropertyList {
 
     public SystemElement(String name) {
         super(name);
-        setRoot(true);
     }
 
     public SystemElement(String name, String uri) {
         super(name, uri);
-        setRoot(true);
     }
 
     public SystemElement(Element element) {
         super(element);
+    }
+
+    /**
+     * Parse from XML
+     *
+     * @throws org.smartfrog.sfcore.languages.cdl.faults.CdlXmlParsingException
+     *
+     */
+    @Override
+    public void bind() throws CdlXmlParsingException {
+        super.bind();
         setRoot(true);
     }
 

@@ -46,7 +46,7 @@ import org.smartfrog.sfcore.prim.Prim;
  }
  }
  */ 
-public class CdlComponentTest extends SmartFrogTestBase {
+public class CdlComponentTest extends DeployingTestBase {
 
     
     public static final String FILES = "files/sfcdl/valid/";
@@ -59,5 +59,10 @@ public class CdlComponentTest extends SmartFrogTestBase {
         Prim prim=deployExpectingSuccess(FILES+"echo.sf","echo");
         terminateApplication(prim);
     }
-    
+
+    public void testCompound() throws Throwable {
+        Prim prim = deployExpectingSuccess(FILES + "compound.cdl", "echo");
+        terminateApplication(prim);
+    }
+
 }

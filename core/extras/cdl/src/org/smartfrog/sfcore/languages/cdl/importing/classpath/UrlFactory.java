@@ -31,6 +31,9 @@ import java.io.IOException;
  * This is a URL factory.
  * What is special about it is that it is bound to a resource loader, and can
  * handle classpath: URLs by resolving stuff on that resolver.
+ *
+ * Use this when working with URLs, rather than new URL() directly, because the
+ * latter is not as easily extended as one woudl like
  * created 20-Dec-2005 12:57:04
  */
 
@@ -70,6 +73,18 @@ public class UrlFactory {
                 throw failure;
             }
         }
+    }
+
+    /**
+     * Create a url
+     * @param base
+     * @param path
+     * @return
+     * @throws MalformedURLException
+     */
+    public URL createUrl(URL base,String path)
+            throws MalformedURLException {
+        return new URL(base,path);
     }
 
     /**

@@ -17,17 +17,18 @@
  For more information: www.smartfrog.org
 
  */
-package org.smartfrog.services.cddlm.cdl;
+package org.smartfrog.services.cddlm.cdl.cmp;
 
-import java.rmi.RemoteException;
+import java.rmi.Remote;
 
 /**
- * created 23-Jun-2005 16:38:41
+ * created 23-Jun-2005 16:30:51
  */
 
-public class CmpNotificationImpl extends CmpComponentImpl
-        implements CmpNotification {
+public interface CmpComponent extends Remote {
 
-    public CmpNotificationImpl() throws RemoteException {
-    }
+    /**
+     * codebase {@value}
+     */
+    public static final String ATTR_COMMAND_PATH = "_cmp_CommandPath";
 }
