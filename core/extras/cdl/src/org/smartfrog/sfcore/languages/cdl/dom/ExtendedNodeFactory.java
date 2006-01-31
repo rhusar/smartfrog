@@ -24,6 +24,7 @@ import nu.xom.NodeFactory;
 import nu.xom.Element;
 import nu.xom.Nodes;
 import nu.xom.Document;
+import nu.xom.Comment;
 
 /**
  * A node factory that returns elements all of the right type.
@@ -68,8 +69,8 @@ public class ExtendedNodeFactory extends NodeFactory {
         }
 
         //<system> element
-        if (ToplevelList.isSystemElement(namespace, name)) {
-            return new ToplevelList(name, namespace);
+        if (SystemElement.isSystemElement(namespace, name)) {
+            return new SystemElement(name, namespace);
         }
 
         //add a doc node
@@ -124,10 +125,6 @@ public class ExtendedNodeFactory extends NodeFactory {
      * @return the nodes to be added to the tree
      */
     public Nodes makeProcessingInstruction(String target, String data) {
-        return empty;
-    }
-
-    public Nodes makeComment(String data) {
         return empty;
     }
 

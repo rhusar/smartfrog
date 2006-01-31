@@ -26,6 +26,7 @@ import org.smartfrog.sfcore.languages.cdl.ParseContext;
 import org.smartfrog.sfcore.languages.cdl.dom.CdlDocument;
 import org.smartfrog.sfcore.languages.cdl.dom.PropertyList;
 import org.smartfrog.sfcore.languages.cdl.dom.ToplevelList;
+import org.smartfrog.sfcore.languages.cdl.dom.SystemElement;
 import org.smartfrog.sfcore.languages.cdl.faults.CdlException;
 import org.smartfrog.sfcore.languages.cdl.faults.CdlRecursiveExtendsException;
 import org.smartfrog.sfcore.languages.cdl.faults.CdlResolutionException;
@@ -205,7 +206,7 @@ public class ExtendsTest extends XmlTestBase {
         CdlDocument cdlDocument = parseValidCDL(context,
                 CDL_DOC_ATTRIBUTE_INHERITANCE);
         //xpath tests to verify the stuff
-        ToplevelList system = cdlDocument.getSystem();
+        SystemElement system = cdlDocument.getSystem();
         PropertyList child = system.getChildTemplateMatching(
                 new QName("child"));
         assertHasAttribute(child, "attr_a2");
@@ -247,7 +248,7 @@ public class ExtendsTest extends XmlTestBase {
         CdlDocument cdlDocument = parseValidCDL(context,
                 CDL_DOC_EXTENDS_ELEMENT_PROPAGATION);
         //xpath tests to verify the stuff
-        ToplevelList system = cdlDocument.getSystem();
+        SystemElement system = cdlDocument.getSystem();
         PropertyList component = lookupChildPropertyList(system,
                 "Component",
                 "");
@@ -259,7 +260,7 @@ public class ExtendsTest extends XmlTestBase {
         CdlDocument cdlDocument = parseValidCDL(context,
                 CDL_DOC_EXTENDS_NESTED_ELEMENTS);
         //xpath tests to verify the stuff
-        ToplevelList system = cdlDocument.getSystem();
+        SystemElement system = cdlDocument.getSystem();
         PropertyList component = lookupChildPropertyList(system,
                 "Component",
                 "");
@@ -274,7 +275,7 @@ public class ExtendsTest extends XmlTestBase {
         CdlDocument cdlDocument = parseValidCDL(context,
                 CDL_DOC_EXTENDS_CHILD_EXTENSION);
         //xpath tests to verify the stuff
-        ToplevelList system = cdlDocument.getSystem();
+        SystemElement system = cdlDocument.getSystem();
         PropertyList component = lookupChildPropertyList(system,
                 "Component",
                 "");
@@ -290,7 +291,7 @@ public class ExtendsTest extends XmlTestBase {
 /*
         CdlDocument cdlDocument = parseValidCDL(context,
                 CDL_DOC_EXTENDS_WITHIN_SYSTEM);
-        ToplevelList system = cdlDocument.getSystem();
+        SystemElement system = cdlDocument.getSystem();
         PropertyList component = lookupChildPropertyList(system,
                 "Component",
                 "");
@@ -329,7 +330,7 @@ public class ExtendsTest extends XmlTestBase {
         CdlDocument cdlDocument = parseValidCDL(context,
                 CDL_DOC_EXTENDS_1);
         //xpath tests to verify the stuff
-        ToplevelList system = cdlDocument.getSystem();
+        SystemElement system = cdlDocument.getSystem();
         PropertyList a3 = system.getChildTemplateMatching("", "a3");
     }
 
@@ -343,7 +344,7 @@ public class ExtendsTest extends XmlTestBase {
         CdlDocument cdlDocument = parseValidCDL(context,
                 CDL_DOC_EXTENDS_NON_ELEMENT_CHILDREN);
         //xpath tests to verify the stuff
-        ToplevelList system = cdlDocument.getSystem();
+        SystemElement system = cdlDocument.getSystem();
         PropertyList component = lookupChildPropertyList(system,
                 "Extension",
                 "");

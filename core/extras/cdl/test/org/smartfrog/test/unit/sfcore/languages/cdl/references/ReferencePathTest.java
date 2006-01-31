@@ -31,6 +31,7 @@ import org.smartfrog.sfcore.languages.cdl.references.StepStart;
 import org.smartfrog.sfcore.languages.cdl.dom.ToplevelList;
 import org.smartfrog.sfcore.languages.cdl.dom.PropertyList;
 import org.smartfrog.sfcore.languages.cdl.dom.ElementEx;
+import org.smartfrog.sfcore.languages.cdl.dom.SystemElement;
 import org.smartfrog.sfcore.languages.cdl.Constants;
 import org.smartfrog.sfcore.languages.cdl.faults.CdlRuntimeException;
 
@@ -44,7 +45,7 @@ public class ReferencePathTest extends TestCase {
 
     private ReferencePath path;
 
-    private ToplevelList root;
+    private PropertyList root;
     private PropertyList child1;
     private PropertyList child2;
 
@@ -55,7 +56,8 @@ public class ReferencePathTest extends TestCase {
     protected void setUp() throws Exception {
         super.setUp();
         path = new ReferencePath();
-        root = new ToplevelList("root");
+        root = new SystemElement("root");
+
         child1 = new PropertyList("child1");
         root.appendChild(child1);
         child2 = new PropertyList("child2");
