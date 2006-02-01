@@ -54,15 +54,26 @@ public class CdlComponentTest extends DeployingTestBase {
     public CdlComponentTest(String name) {
         super(name);
     }
-    
-    public void testSfComponentsWork() throws Throwable {
-        Prim prim=deployExpectingSuccess(FILES+"echo.sf","echo");
+
+    public void testSimple() throws Throwable {
+        deployAndTerminate("simple");
+    }
+
+    private void deployAndTerminate(String name) throws Throwable {
+        Prim prim = deployExpectingSuccess(FILES + name +".cdl", name);
         terminateApplication(prim);
     }
 
     public void testCompound() throws Throwable {
-        Prim prim = deployExpectingSuccess(FILES + "compound.cdl", "echo");
-        terminateApplication(prim);
+        deployAndTerminate("compound");
+    }
+
+    public void testMessage() throws Throwable {
+        deployAndTerminate("message");
+    }
+
+    public void testMessageBox() throws Throwable {
+        deployAndTerminate("message-box");
     }
 
 }

@@ -24,6 +24,7 @@ import nu.xom.Element;
 import org.smartfrog.sfcore.languages.cdl.Constants;
 import org.smartfrog.sfcore.languages.cdl.utils.ClassLogger;
 import org.smartfrog.sfcore.logging.Log;
+import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
 
 import java.io.File;
 import java.io.IOException;
@@ -63,7 +64,6 @@ public class GenerateContext {
      * the default charset for this doc is defined here. {@value}
      */
     public static final String DEFAULT_CHARSET = "US-ASCII";
-    public static final String COMPONENT_SFSYSTEM = "sfConfig";
 
     /**
      * name of the dest file

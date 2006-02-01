@@ -21,6 +21,8 @@ package org.smartfrog.sfcore.languages.cdl.components;
 
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.languages.sf.sfcomponentdescription.SFComponentDescription;
+import org.smartfrog.sfcore.common.SmartFrogResolutionException;
+import org.smartfrog.sfcore.common.SmartFrogException;
 
 import javax.xml.namespace.QName;
 import java.rmi.Remote;
@@ -40,4 +42,23 @@ public interface CdlComponentDescription extends SFComponentDescription {
      * @throws RemoteException
      */
     public QName getQName() throws RemoteException;
+
+    /**
+     * Helper operation to do a full resolve of a child thing
+     * @param child
+     * @param mandatory
+     * @return the thing at the end of the link, or null for no match
+     * @throws org.smartfrog.sfcore.common.SmartFrogResolutionException if there is no match and mandatory==true
+     */
+    Object resolve(QName child,boolean mandatory) throws SmartFrogResolutionException, RemoteException;
+
+    /**
+     * Like sfReplace but with some special magic related to stuff in the local namespace, which
+     * is turned into non-qname stuff.
+     * @param child
+     * @param value
+     * @throws SmartFrogResolutionException
+     * @throws RemoteException
+     */
+    void replace(QName child,Object value) throws SmartFrogResolutionException, RemoteException, SmartFrogException;
 }

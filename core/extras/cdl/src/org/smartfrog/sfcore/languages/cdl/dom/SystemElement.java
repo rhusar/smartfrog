@@ -22,8 +22,7 @@ package org.smartfrog.sfcore.languages.cdl.dom;
 import nu.xom.Element;
 import org.smartfrog.sfcore.languages.cdl.generate.GenerateContext;
 import org.smartfrog.sfcore.languages.cdl.faults.CdlXmlParsingException;
-
-import javax.xml.namespace.QName;
+import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
 
 /**
  * This is the system element, which is different from the toplevel list and slightly different
@@ -39,14 +38,17 @@ public class SystemElement extends PropertyList {
 
     public SystemElement(String name) {
         super(name);
+        setRoot(true);
     }
 
     public SystemElement(String name, String uri) {
         super(name, uri);
+        setRoot(true);
     }
 
     public SystemElement(Element element) {
         super(element);
+        setRoot(true);
     }
 
     /**
@@ -82,8 +84,9 @@ public class SystemElement extends PropertyList {
         return new SystemElement(name, namespace);
     }
 
+/*
     public String getSfName(GenerateContext out) {
-        return GenerateContext.COMPONENT_SFSYSTEM;
+        return SmartFrogCoreKeys.SF_CONFIG;
     }
-
+*/
 }

@@ -1,4 +1,4 @@
-/** (C) Copyright 2005 Hewlett-Packard Development Company, LP
+/** (C) Copyright 2006 Hewlett-Packard Development Company, LP
 
  This library is free software; you can redistribute it and/or
  modify it under the terms of the GNU Lesser General Public
@@ -17,17 +17,18 @@
  For more information: www.smartfrog.org
 
  */
-package org.smartfrog.services.cddlm.cdl.demo;
+package org.smartfrog.services.cddlm.cdl.base;
 
-import java.rmi.Remote;
+import org.smartfrog.sfcore.compound.CompoundImpl;
+
+import java.rmi.RemoteException;
 
 /**
- * created 23-Jun-2005 17:51:37
+ * created 01-Feb-2006 11:19:17
  */
 
+public class CdlComponentImpl extends CompoundImpl implements CdlComponent {
 
-public interface Echo extends Remote {
-    public static final String ATTR_MESSAGE = "message";
-    public static final String ATTR_GUI = "gui";
-    public static final String DEMO_NAMESPACE = "http://smartfrog.org/services/cdl/demo/";
+    public CdlComponentImpl() throws RemoteException {
+    }
 }

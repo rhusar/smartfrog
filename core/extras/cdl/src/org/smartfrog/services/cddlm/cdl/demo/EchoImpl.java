@@ -20,9 +20,13 @@
 package org.smartfrog.services.cddlm.cdl.demo;
 
 import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.services.cddlm.cdl.cmp.CmpComponentImpl;
 import org.smartfrog.services.cddlm.cdl.demo.Echo;
+import org.smartfrog.services.xml.utils.XsdUtils;
 
+import javax.xml.namespace.QName;
+import javax.swing.*;
 import java.rmi.RemoteException;
 
 /**
@@ -30,13 +34,23 @@ import java.rmi.RemoteException;
  */
 
 public class EchoImpl extends CmpComponentImpl implements Echo {
+
+    public static QName QNAME_MESSAGE=new QName(Echo.DEMO_NAMESPACE,Echo.ATTR_MESSAGE);
+    public static QName QNAME_GUI = new QName(Echo.DEMO_NAMESPACE, Echo.ATTR_GUI);
+
     public EchoImpl() throws RemoteException {
     }
 
     public synchronized void sfStart() throws SmartFrogException,
             RemoteException {
         super.sfStart();
-        String message = sfResolve(ATTR_MESSAGE, "", false);
-        System.out.println("Message: " + message);
+        String message = sfResolve(new Reference(QNAME_MESSAGE), "", false);
+        String gui= sfResolve(new Reference(QNAME_GUI), "", false);
+        boolean showGui= XsdUtils.isXsdBooleanTrue(gui);
+        if(showGui) {
+            JOptionPane.showMessageDialog(null, message);
+        } else {
+            System.out.println("Message: " + message);
+        }
     }
 }
