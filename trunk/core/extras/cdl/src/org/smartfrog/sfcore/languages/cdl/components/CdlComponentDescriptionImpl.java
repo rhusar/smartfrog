@@ -40,64 +40,64 @@ import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import javax.xml.namespace.QName;
 import java.util.Vector;
 import java.util.Enumeration;
+import java.rmi.RemoteException;
 
 /**
  * This is an extended component description that is used when turning a CDL graph into a smartfrog graph
- *
+ * <p/>
  * There is a special bit of deviousness here.
  * Every Node that is in the Smartfrog XML namespace {@link Constants#SMARTFROG_NAMESPACE}
  * is registered only under its local name, not the
  * full namespace. So by using sf namespaced elements, we can merge a CDL description into a smartfrog one,
  * without contaminating any local namespaced elements.
- *
- *
+ * <p/>
+ * <p/>
  * created 24-Jan-2006 13:34:37
  */
 
 public class CdlComponentDescriptionImpl extends SFComponentDescriptionImpl implements CdlComponentDescription, Phases {
 
-    /** node name */
+    /**
+     * node name
+     */
     private QName qname;
 
     private ParseContext parseContext;
 
-    public static final String PHASE_BUILD="build";
+    public static final String PHASE_BUILD = "build";
 
 
-    public CdlComponentDescriptionImpl(Reference type, SFComponentDescription parent, Context cxt, boolean eager) {
+    public CdlComponentDescriptionImpl(Reference type, CdlComponentDescription parent, Context cxt, boolean eager) {
         super(type, parent, cxt, eager);
     }
 
-    public CdlComponentDescriptionImpl(QName name, SFComponentDescription parent) {
-        this(name,parent, new ContextImpl(),true);
+    public CdlComponentDescriptionImpl(QName name, CdlComponentDescription parent) {
+        this(name, parent, new ContextImpl(), true);
     }
 
     /**
      * Create and bind to the parent using the qname
+     *
      * @param name
      * @param parent
      * @param cxt
      * @param eager
      */
-    public CdlComponentDescriptionImpl(QName name, SFComponentDescription parent, Context cxt, boolean eager) {
-        super(null,(SFComponentDescription) parent, cxt, eager);
-        qname=name;
+    public CdlComponentDescriptionImpl(QName name, CdlComponentDescription parent, Context cxt, boolean eager) {
+        super(null, (SFComponentDescription) parent, cxt, eager);
+        qname = name;
     }
 
     /**
-     *
      * Create and bind to the parent using the qname
+     *
      * @throws SmartFrogRuntimeException
      */
-    public void registerWithParent() throws SmartFrogRuntimeException {
-        if(sfParent()!=null) {
-            assert qname!=null;
-            Object name=qname;
-            if(Constants.SMARTFROG_NAMESPACE.equals(qname.getNamespaceURI())) {
-
-                name=qname.getLocalPart();
-            }
-            sfParent().sfReplaceAttribute(qname,this);
+    public void registerWithParent() throws SmartFrogException, RemoteException {
+        if (sfParent() != null) {
+            assert qname != null;
+            CdlComponentDescription cdlParent = (CdlComponentDescription) sfParent();
+            cdlParent.replace(qname, this);
         }
     }
 
@@ -161,7 +161,8 @@ public class CdlComponentDescriptionImpl extends SFComponentDescriptionImpl impl
      *
      * @param phase the phase to apply
      * @return An instance of Phases that is the result of applying the phase.
-     * @throws org.smartfrog.sfcore.common.SmartFrogException error evaluating phases
+     * @throws org.smartfrog.sfcore.common.SmartFrogException
+     *          error evaluating phases
      */
     public Phases sfResolvePhase(String phase)
             throws SmartFrogException {
@@ -175,7 +176,8 @@ public class CdlComponentDescriptionImpl extends SFComponentDescriptionImpl impl
      *               phases
      * @return the resultant Phases object, ready for the
      *         next phase action or convertion into the core ComponentDescription
-     * @throws org.smartfrog.sfcore.common.SmartFrogException In case of SmartFrog system error
+     * @throws org.smartfrog.sfcore.common.SmartFrogException
+     *          In case of SmartFrog system error
      */
     public Phases sfResolvePhases(Vector phases)
             throws SmartFrogException {
@@ -210,7 +212,7 @@ public class CdlComponentDescriptionImpl extends SFComponentDescriptionImpl impl
     }
 
     protected CdlComponentDescription resolveRootNode() throws SmartFrogResolutionException {
-        Reference system =new Reference(Constants.QNAME_SYSTEM_ELEMENT);
+        Reference system = new Reference(Constants.QNAME_SYSTEM_ELEMENT);
         return (CdlComponentDescription) sfResolve(system);
     }
 
@@ -228,8 +230,38 @@ public class CdlComponentDescriptionImpl extends SFComponentDescriptionImpl impl
     }
 
     private SmartFrogCompilationException notImplemented(String text) {
-        return new SmartFrogCompilationException("not implemented "+text);
+        return new SmartFrogCompilationException("not implemented " + text);
     }
 
+    /**
+     * Helper operation to do a full resolve of a child thing
+     *
+     * @param child
+     * @param mandatory
+     * @return the thing at the end of the link, or null for no match
+     * @throws SmartFrogResolutionException if there is no match and mandatory==true
+     */
+    public Object resolve(QName child, boolean mandatory) throws SmartFrogResolutionException {
+        Reference r = new Reference(child);
+        return sfResolve(r, mandatory);
+    }
 
+    /**
+     * Like sfReplace but with some special magic related to stuff in the local namespace, which
+     * is turned into non-qname stuff.
+     *
+     * @param child
+     * @param value
+     * @throws org.smartfrog.sfcore.common.SmartFrogResolutionException
+     *
+     * @throws java.rmi.RemoteException
+     */
+    public void replace(QName child, Object value) throws SmartFrogException, RemoteException {
+        Object name = child;
+        final String namespaceURI = child.getNamespaceURI();
+        if (Constants.SMARTFROG_NAMESPACE.equals(namespaceURI) || namespaceURI.length()==0) {
+            name = child.getLocalPart();
+        }
+        sfReplaceAttribute(name, value);
+    }
 }

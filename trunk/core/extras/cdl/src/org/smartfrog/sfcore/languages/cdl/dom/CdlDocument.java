@@ -35,7 +35,6 @@ import org.smartfrog.sfcore.languages.cdl.Constants;
 import org.smartfrog.sfcore.languages.cdl.references.EarlyReferenceProcessor;
 import org.smartfrog.sfcore.languages.cdl.references.ExtractReferenceOperation;
 import org.smartfrog.sfcore.languages.cdl.process.ProcessingPhase;
-import org.smartfrog.sfcore.languages.cdl.process.DepthFirstOperationPhase;
 import org.smartfrog.sfcore.languages.cdl.importing.ImportProcessor;
 import org.smartfrog.sfcore.languages.cdl.dom.attributes.GenericAttribute;
 import org.smartfrog.sfcore.languages.cdl.dom.attributes.URIAttribute;
@@ -571,9 +570,14 @@ public class CdlDocument implements Names, ToSmartFrog, DescriptorSource {
      * @throws RemoteException
      */
     public CdlComponentDescription convertToComponentDescription() throws SmartFrogException, RemoteException {
+        //create a stub parent
         CdlComponentDescription root=new CdlComponentDescriptionImpl(null,null);
+        //export everything
         exportDescription(root);
-        return root;
+        //then extract the system from underneath
+        final QName name = getSystem().getQName();
+        final CdlComponentDescription system = (CdlComponentDescription) root.resolve(name, true);
+        return system;
     }
 
 

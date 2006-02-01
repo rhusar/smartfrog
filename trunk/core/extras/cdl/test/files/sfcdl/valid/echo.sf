@@ -1,7 +1,7 @@
 
 something extends {
 
-#include "/org/smartfrog/services/cddlm/cdl/components.sf";
+#include "/org/smartfrog/services/cddlm/cdl/demo/components.sf";
 
 }
 /*

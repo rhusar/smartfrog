@@ -190,16 +190,18 @@ public class ReferencePathTest extends TestCase {
     public void testExtractRoot() throws Exception {
         child2.addNewAttribute(Constants.QNAME_CDL_REF, "/");
         path = new ReferencePath(child2);
-        assertStepSize(1);
+        assertStepSize(2);
         assertStepUp(0);
+        assertStepUp(1);
     }
 
     public void testExtractRootChild1() throws Exception {
         child2.addNewAttribute(Constants.QNAME_CDL_REF, "/child1");
         path = new ReferencePath(child2);
-        assertStepSize(2);
+        assertStepSize(3);
         assertStepUp(0);
-        assertStepDown(1, "child1");
+        assertStepUp(1);
+        assertStepDown(2, "child1");
     }
 
     public void testNoParentBreaks() throws Exception {

@@ -123,4 +123,9 @@ public class Constants {
      * that every step worked
      */
     public static final boolean POLICY_DEBUG_RELEASE = true;
+
+    /**
+     * This is the default classname of anything, unless you say otherwise
+     */
+    public static final String CDL_COMPONENT_CLASSNAME = "org.smartfrog.services.cddlm.cdl.base.CdlComponentImpl";
 }

@@ -39,6 +39,9 @@ import org.smartfrog.sfcore.languages.cdl.utils.ClassLogger;
 import org.smartfrog.sfcore.languages.cdl.utils.Namespaces;
 import org.smartfrog.sfcore.logging.Log;
 import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
+import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
+import org.smartfrog.sfcore.prim.Prim;
 
 import javax.xml.namespace.QName;
 import java.io.IOException;
@@ -457,21 +460,40 @@ public class PropertyList extends DocNode implements DescriptorSource {
             CdlComponentDescriptionImpl description = new CdlComponentDescriptionImpl(name,parent);
             description.registerWithParent();
             exportChildren(description);
+            //namespaces
             final Namespaces namespaces = getNamespaces();
             namespaces.exportDescription(description);
+            //finally, if there is no child element in the description with the classname, we
+            //register our classname as the default
+            if(getChildTemplateMatching(Constants.SMARTFROG_NAMESPACE, SmartFrogCoreKeys.SF_CLASS)==null) {
+                addDefaultSFClass(description);
+            }
+
+            //sanity check: force validate here and now
+            assert null!=description.sfResolve(SmartFrogCoreKeys.SF_CLASS,true);
         } else {
 
             //no kids. export our text value. how?
             if(isValueReference() && isLazy()) {
                 //export a lazy reference
                 //TODO
+                throw new SmartFrogException("Lazy references not supported yet");
             } else {
                 //normal text node.
                 String text=getTextValue();
-                parent.sfReplaceAttribute(name,text);
+                parent.replace(name,text);
             }
         }
 
+    }
+
+    /**
+     * Override point: add the sf class to a component.
+     * @param description
+     * @throws SmartFrogRuntimeException
+     */
+    protected void addDefaultSFClass(CdlComponentDescriptionImpl description) throws SmartFrogRuntimeException {
+        description.sfReplaceAttribute(SmartFrogCoreKeys.SF_CLASS, Constants.CDL_COMPONENT_CLASSNAME);
     }
 
     /**

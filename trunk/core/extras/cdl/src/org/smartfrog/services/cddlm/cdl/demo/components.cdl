@@ -1,30 +1,34 @@
 <?xml version="1.0"?>
 <cdl:cdl xmlns:cdl="http://www.gridforum.org/namespaces/2005/02/cddlm/CDL-1.0"
-  xmlns:cmp="http://www.gridforum.org/cddlm/components/2005/02"
-  xmlns:sf="http://smartfrog.org/services/cdl/2005/06">
+    xmlns:cmp="http://www.gridforum.org/cddlm/components/2005/02"
+    xmlns:sf="http://www.gridforum.org/cddlm/smartfrog/2005/02"
+    xmlns:base="http://smartfrog.org/services/cdl/base/"
+    xmlns:demo="http://smartfrog.org/services/cdl/demo/">
 
-  <cdl:import location="classpath:/org/smartfrog/services/cddlm/cdl/cmp/components.cdl"
-    namespace="http://www.gridforum.org/cddlm/components/2005/02"/>
+  <cdl:import location="classpath:/org/smartfrog/services/cddlm/cdl/cmp/components.cdl"/>
 
   <!--smartfrog extra classes-->
 
   <cdl:configuration>
 
     <!-- Echo something -->
-    <sf:echo sf:message="" >
+    <demo:echo cdl:extends="cmp:Component">
       <cmp:CommandPath>org.smartfrog.services.cddlm.cdl.demo.EchoImpl</cmp:CommandPath>
-    </sf:echo>
+      <demo:message></demo:message>
+      <demo:gui>false</demo:gui>
+    </demo:echo>
 
-    
-    <sf:exec 
-      sf:dir=".">
+
+    <demo:exec >
       <cmp:CommandPath>@SfExecuteProgram</cmp:CommandPath>
-    </sf:exec>
+      <sf:sfClass>org.smartfrog.services.cddlm.cdl.demo.JavaImpl</sf:sfClass>
+    </demo:exec>
 
-    
-    <sf:java sf:classname="">
-      <cmp:CommandPath>org.smartfrog.services.cddlm.cdl.demo.JavaImpl</cmp:CommandPath>
-    </sf:java>
+
+    <demo:java >
+      <demo:classname />
+      <sf:sfClass>org.smartfrog.services.cddlm.cdl.demo.CdlJavaImpl</sf:sfClass>
+    </demo:java>
 
   </cdl:configuration>
 </cdl:cdl>
