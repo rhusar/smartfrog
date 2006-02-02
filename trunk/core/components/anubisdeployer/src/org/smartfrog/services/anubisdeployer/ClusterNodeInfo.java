@@ -2,7 +2,6 @@ package org.smartfrog.services.anubisdeployer;
 
 import java.rmi.*;
 
-import java.net.*;
 
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.prim.Prim;
@@ -42,7 +41,7 @@ public class ClusterNodeInfo extends PrimImpl implements Prim {
 
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
 	super.sfStart();
-	hr.setHostNodeDescription(data);
+	hr.setHostNodeDescription((ComponentDescription) data.copy());
     }
 
 
