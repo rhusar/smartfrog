@@ -34,8 +34,10 @@ import java.io.PrintStream;
  */
 public class LogToNothingImpl implements LogToNothing, Log, LogMessage, LogLevel  {
 
-    //Configuration for LogImpl class
+    //Configuration for class
     protected ComponentDescription classComponentDescription = null;
+    //Configuration for component
+    protected ComponentDescription componentComponentDescription = null;
 
     /** The name of this simple log instance */
     protected String logName = null;
@@ -82,6 +84,20 @@ public class LogToNothingImpl implements LogToNothing, Log, LogMessage, LogLevel
      */
 
     public LogToNothingImpl(String name, Integer initialLogLevel, PrintStream out, PrintStream err) {
+        this (name,null, initialLogLevel, out, err);
+    }
+
+    /**
+     * Construct a simple log with given name and log level
+     * and log to output level
+     * @param name log name
+     * @param componentComponentDescription A component description to overwrite class configuration
+     * @param initialLogLevel level to log at. It will be ignored.
+     * @param out output stream to log to
+     * @param err error stream to log to
+     */
+
+    public LogToNothingImpl(String name,ComponentDescription componentComponentDescription, Integer initialLogLevel, PrintStream out, PrintStream err) {
         assert name != null;
         logName = name;
         setOutstream(out);
@@ -92,10 +108,19 @@ public class LogToNothingImpl implements LogToNothing, Log, LogMessage, LogLevel
            this.warn(ex.toString());
         }
         try {
-          readSFNothingAttributes();
-          if (errToOut) setErrstream(outstream);
+          readSFNothingAttributes(classComponentDescription);
         } catch (SmartFrogException ex1) {
            this.error("",ex1);
+        }
+        try {
+          readSFNothingAttributes(componentComponentDescription);
+        } catch (SmartFrogException ex1) {
+           this.error("",ex1);
+        }
+        if (errToOut) setErrstream(outstream);
+        if (isDebugEnabled() && this.getClass().toString().endsWith("LogToFileImpl")) {
+                    //This will go to the std output only if system.out is not redirected
+                    out("[DEBUG] Log using LogToNothing.");
         }
     }
 
@@ -104,12 +129,13 @@ public class LogToNothingImpl implements LogToNothing, Log, LogMessage, LogLevel
      *
      * @exception  SmartFrogException error while reading attributes
      */
-    protected void readSFNothingAttributes() throws SmartFrogException {
+    protected void readSFNothingAttributes(ComponentDescription cd) throws SmartFrogException {
         //Optional attributes.
+        if (cd==null) return;
         try {
-          errToOut = classComponentDescription.sfResolve(ATR_ERR_TO_OUT, errToOut, false);
+          errToOut = cd.sfResolve(ATR_ERR_TO_OUT, errToOut, false);
         } catch (Exception sex){
-           this.warn("",sex);;
+           this.warn("",sex);
         }
     }
 

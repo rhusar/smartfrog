@@ -27,6 +27,7 @@ import java.io.PrintStream;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 
 
 /**
@@ -145,11 +146,30 @@ public class LogToStreamsImpl extends LogToNothingImpl implements LogToStreams, 
      */
 
     public LogToStreamsImpl(String name, Integer initialLogLevel, PrintStream out, PrintStream err) {
+        this(name,null,initialLogLevel,out,err);
+    }
+
+    /**
+     * Construct a simple log with given name and log level
+     * and log to output level
+     *
+     * @param name            log name
+     * @param componentComponentDescription A component description to overwrite class configuration
+     * @param initialLogLevel level to log at
+     * @param out             output stream to log to
+     */
+
+    public LogToStreamsImpl(String name,ComponentDescription componentComponentDescription, Integer initialLogLevel, PrintStream out, PrintStream err) {
         super(name, initialLogLevel, out, err);
         setLevel(initialLogLevel.intValue());
         //Check Class and read configuration...including system.properties
         try {
-            readSFStreamsAttributes();
+            readSFStreamsAttributes(classComponentDescription);
+        } catch (SmartFrogException ex1) {
+            this.error("", ex1);
+        }
+        try {
+            readSFStreamsAttributes(componentComponentDescription);
         } catch (SmartFrogException ex1) {
             this.error("", ex1);
         }
@@ -159,7 +179,10 @@ public class LogToStreamsImpl extends LogToNothingImpl implements LogToStreams, 
         setLevel(initialLogLevel.intValue());
 
         if (isTraceEnabled() && this.getClass().toString().endsWith("LogToStreamsImpl")) {
-            trace(this.getClass().toString() + " '" + name + "' using ComponentDescription:\n" + classComponentDescription.toString());
+            String msg2 = "Log '"+name+"' "+
+                        "\nusing Class ComponentDescription:\n{"+classComponentDescription+
+                        "}\n, and using Component ComponentDescription:\n{"+ componentComponentDescription+"}";
+            trace(this.getClass().toString() + " "+msg2);
         }
 
     }
@@ -170,21 +193,21 @@ public class LogToStreamsImpl extends LogToNothingImpl implements LogToStreams, 
      *
      * @throws SmartFrogException error while reading attributes
      */
-    protected void readSFStreamsAttributes() throws SmartFrogException {
-        if (classComponentDescription == null) return;
+    protected void readSFStreamsAttributes(ComponentDescription cd) throws SmartFrogException {
+        if (cd == null) return;
         //Optional attributes.
         try {
-            showStackTrace = classComponentDescription.sfResolve(ATR_SHOW_STACK_TRACE, showStackTrace, false);
-            showLogName = classComponentDescription.sfResolve(ATR_SHOW_LOG_NAME, showLogName, false);
-            showShortName = classComponentDescription.sfResolve(ATR_SHOW_SHORT_NAME, showShortName, false);
-            showDateTime = classComponentDescription.sfResolve(ATR_SHOW_DATE_TIME, showDateTime, false);
+            showStackTrace = cd.sfResolve(ATR_SHOW_STACK_TRACE, showStackTrace, false);
+            showLogName = cd.sfResolve(ATR_SHOW_LOG_NAME, showLogName, false);
+            showShortName = cd.sfResolve(ATR_SHOW_SHORT_NAME, showShortName, false);
+            showDateTime = cd.sfResolve(ATR_SHOW_DATE_TIME, showDateTime, false);
             try {
-                dateFormatter = new SimpleDateFormat(classComponentDescription.sfResolve(ATR_DATE_FORMAT, "yyyy/MM/dd HH:mm:ss:SSS zzz", false));
+                dateFormatter = new SimpleDateFormat(cd.sfResolve(ATR_DATE_FORMAT, "yyyy/MM/dd HH:mm:ss:SSS zzz", false));
             } catch (Exception ex) {
                 if (this.isErrorEnabled())this.error("dateFormatter", ex);
             }
-            showThreadName = classComponentDescription.sfResolve(ATR_SHOW_THREAD_NAME, showThreadName, false);
-            showMethodCall = classComponentDescription.sfResolve(ATR_SHOW_METHOD_CALL, showMethodCall, false);
+            showThreadName = cd.sfResolve(ATR_SHOW_THREAD_NAME, showThreadName, false);
+            showMethodCall = cd.sfResolve(ATR_SHOW_METHOD_CALL, showMethodCall, false);
         } catch (Exception sex) {
             this.warn("", sex);
         }
