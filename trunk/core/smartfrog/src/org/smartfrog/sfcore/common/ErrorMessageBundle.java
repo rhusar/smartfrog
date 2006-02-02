@@ -88,6 +88,7 @@ public class ErrorMessageBundle extends ListResourceBundle
         { MSG_NOT_COMPONENT_REFERENCE , "Reference is not a SmartFrog Component"},
         { MSG_ILLEGAL_REFERENCE , "Illegal Reference"},
         { MSG_ILLEGAL_CLASS_TYPE , "Illegal ClassType"},
+        { MSG_ILLEGAL_CLASS_TYPE_EXPECTING_GOT , "Illegal ClassType. Expecting type \"[{0}]\" and got \"{1} [{2}]\""},
         // Resolution Exception messages end
         { MSG_DEPLOY_SUCCESS , "Successfully deployed: {0}"},
         { MSG_TERMINATE_SUCCESS , "Successfully terminated: {0}"},
