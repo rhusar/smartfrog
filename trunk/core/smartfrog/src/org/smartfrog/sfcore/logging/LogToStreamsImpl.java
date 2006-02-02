@@ -86,7 +86,7 @@ public class LogToStreamsImpl extends LogToNothingImpl implements LogToStreams, 
     /**
      * Used to format times
      */
-    protected DateFormat dateFormatter = null;
+    protected DateFormat dateFormatter = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss:SSS zzz");;
 
     /**
      * The name of this simple log instance
@@ -157,9 +157,7 @@ public class LogToStreamsImpl extends LogToNothingImpl implements LogToStreams, 
         logName = name;
         // Set initial log level
         setLevel(initialLogLevel.intValue());
-        if (showDateTime) {
-            dateFormatter = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss:SSS zzz");
-        }
+
         if (isTraceEnabled() && this.getClass().toString().endsWith("LogToStreamsImpl")) {
             trace(this.getClass().toString() + " '" + name + "' using ComponentDescription:\n" + classComponentDescription.toString());
         }
@@ -176,25 +174,20 @@ public class LogToStreamsImpl extends LogToNothingImpl implements LogToStreams, 
         if (classComponentDescription == null) return;
         //Optional attributes.
         try {
+            showStackTrace = classComponentDescription.sfResolve(ATR_SHOW_STACK_TRACE, showStackTrace, false);
             showLogName = classComponentDescription.sfResolve(ATR_SHOW_LOG_NAME, showLogName, false);
             showShortName = classComponentDescription.sfResolve(ATR_SHOW_SHORT_NAME, showShortName, false);
             showDateTime = classComponentDescription.sfResolve(ATR_SHOW_DATE_TIME, showDateTime, false);
+            try {
+                dateFormatter = new SimpleDateFormat(classComponentDescription.sfResolve(ATR_DATE_FORMAT, "yyyy/MM/dd HH:mm:ss:SSS zzz", false));
+            } catch (Exception ex) {
+                if (this.isErrorEnabled())this.error("dateFormatter", ex);
+            }
             showThreadName = classComponentDescription.sfResolve(ATR_SHOW_THREAD_NAME, showThreadName, false);
             showMethodCall = classComponentDescription.sfResolve(ATR_SHOW_METHOD_CALL, showMethodCall, false);
-            showStackTrace = classComponentDescription.sfResolve(ATR_SHOW_STACK_TRACE, showStackTrace, false);
         } catch (Exception sex) {
             this.warn("", sex);
-            ;
         }
-        DateFormat newDateFormatter = null;
-        try {
-            newDateFormatter = new SimpleDateFormat(classComponentDescription.sfResolve
-                    (ATR_DATE_FORMAT, "yyyy/MM/dd HH:mm:ss:SSS zzz", false));
-            dateFormatter = newDateFormatter;
-        } catch (Exception ex) {
-            if (this.isErrorEnabled()) this.error("dateFormatter", ex);
-        }
-
     }
 
 
