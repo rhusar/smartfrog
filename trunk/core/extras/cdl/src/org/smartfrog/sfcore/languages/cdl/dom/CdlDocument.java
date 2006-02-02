@@ -25,51 +25,49 @@ import nu.xom.Node;
 import nu.xom.ParentNode;
 import nu.xom.ParsingException;
 import nu.xom.Serializer;
+import org.smartfrog.services.filesystem.FileSystem;
 import org.smartfrog.services.xml.java5.iterators.IteratorRelay;
 import org.smartfrog.services.xml.java5.iterators.NodeIterator;
-import org.smartfrog.services.filesystem.FileSystem;
+import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.languages.cdl.Constants;
+import org.smartfrog.sfcore.languages.cdl.ParseContext;
 import org.smartfrog.sfcore.languages.cdl.components.CdlComponentDescription;
 import org.smartfrog.sfcore.languages.cdl.components.CdlComponentDescriptionImpl;
-import org.smartfrog.sfcore.languages.cdl.ParseContext;
-import org.smartfrog.sfcore.languages.cdl.Constants;
-import org.smartfrog.sfcore.languages.cdl.references.EarlyReferenceProcessor;
-import org.smartfrog.sfcore.languages.cdl.references.ExtractReferenceOperation;
-import org.smartfrog.sfcore.languages.cdl.process.ProcessingPhase;
-import org.smartfrog.sfcore.languages.cdl.importing.ImportProcessor;
 import org.smartfrog.sfcore.languages.cdl.dom.attributes.GenericAttribute;
 import org.smartfrog.sfcore.languages.cdl.dom.attributes.URIAttribute;
 import org.smartfrog.sfcore.languages.cdl.faults.CdlDuplicatePrototypeException;
 import org.smartfrog.sfcore.languages.cdl.faults.CdlException;
 import org.smartfrog.sfcore.languages.cdl.faults.CdlResolutionException;
 import org.smartfrog.sfcore.languages.cdl.faults.CdlXmlParsingException;
-import org.smartfrog.sfcore.languages.cdl.generate.GenerateContext;
-import org.smartfrog.sfcore.languages.cdl.generate.ToSmartFrog;
 import org.smartfrog.sfcore.languages.cdl.generate.DescriptorSource;
+import org.smartfrog.sfcore.languages.cdl.importing.ImportProcessor;
+import org.smartfrog.sfcore.languages.cdl.process.ProcessingPhase;
+import org.smartfrog.sfcore.languages.cdl.references.EarlyReferenceProcessor;
+import org.smartfrog.sfcore.languages.cdl.references.ExtractReferenceOperation;
 import org.smartfrog.sfcore.languages.cdl.resolving.ExtendsProcessor;
 import org.smartfrog.sfcore.languages.cdl.resolving.RegisterPrototypesProcessor;
 import org.smartfrog.sfcore.languages.cdl.resolving.VerifyExtendsComplete;
 import org.smartfrog.sfcore.languages.cdl.utils.ClassLogger;
 import org.smartfrog.sfcore.logging.Log;
-import org.smartfrog.sfcore.common.SmartFrogException;
 
 import javax.xml.namespace.QName;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
-import java.io.File;
-import java.io.ByteArrayOutputStream;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
+import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
-import java.rmi.RemoteException;
 
 
 /**
  * This represents a parsed CDL document, or an error caused during parsing.
  */
 
-public class CdlDocument implements Names, ToSmartFrog, DescriptorSource {
+public class CdlDocument implements Names, DescriptorSource {
 
     /**
      * a log
@@ -520,30 +518,6 @@ public class CdlDocument implements Names, ToSmartFrog, DescriptorSource {
     public void registerPrototypes() throws CdlDuplicatePrototypeException {
         if (configuration != null) {
             configuration.registerPrototypes();
-        }
-    }
-
-    /**
-     * Write something to a smartfrog file. Parent elements should delegate to
-     * their children as appropriate.
-     * <p/>
-     * The Base class delegates to children and otherwise does nothing
-     *
-     * @param out
-     * @throws java.io.IOException
-     * @throws org.smartfrog.sfcore.languages.cdl.faults.CdlException
-     *
-     */
-    public void toSmartFrog(GenerateContext out) throws IOException,
-            CdlException {
-        if (getConfiguration() != null) {
-            //ignore the configuration
-            //getConfiguration().toSmartFrog(out);
-        }
-        if (getSystem() != null) {
-            //out.enter(GenerateContext.COMPONENT_SFSYSTEM);
-            getSystem().toSmartFrog(out);
-            //out.leave();
         }
     }
 

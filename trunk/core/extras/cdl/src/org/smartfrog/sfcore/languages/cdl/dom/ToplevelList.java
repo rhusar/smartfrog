@@ -3,7 +3,6 @@ package org.smartfrog.sfcore.languages.cdl.dom;
 import nu.xom.Element;
 import nu.xom.Node;
 import org.smartfrog.sfcore.languages.cdl.faults.CdlDuplicatePrototypeException;
-import org.smartfrog.sfcore.languages.cdl.generate.GenerateContext;
 
 /**
  * This is the toplevel container
@@ -56,30 +55,6 @@ public class ToplevelList extends PropertyList {
                 prototype.setRoot(true);
                 getParseContext().prototypeAddNew(prototype);
             }
-        }
-    }
-
-    /**
-     * create a smartfrog name from a component This is a string that is a valid
-     * SF name. no spaces, colons or other forbidden stuff, and it includes the
-     * qname if needed.
-     * <p/>
-     * If there is a weakness in this algorithm, it is that it is neither
-     * complete nor unique. Better to have unique names in the firstplace,
-     * maybe.
-     * <p/>
-     * A big troublespot is qnames. Things would be simpler if they were not
-     * there, or aliased to something. but they are always incorporated, if
-     * present.
-     *
-     * @return a safer string.
-     */
-    public String getSfName(GenerateContext out) {
-        //are we the system node?
-        if (getOwner().getConfiguration() == this) {
-            return GenerateContext.COMPONENT_CONFIGURATION;
-        } else {
-            return super.getSfName(out);
         }
     }
 

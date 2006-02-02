@@ -28,7 +28,6 @@ import org.smartfrog.sfcore.languages.cdl.references.StepUp;
 import org.smartfrog.sfcore.languages.cdl.references.StepDown;
 import org.smartfrog.sfcore.languages.cdl.references.StepRefRoot;
 import org.smartfrog.sfcore.languages.cdl.references.StepStart;
-import org.smartfrog.sfcore.languages.cdl.dom.ToplevelList;
 import org.smartfrog.sfcore.languages.cdl.dom.PropertyList;
 import org.smartfrog.sfcore.languages.cdl.dom.ElementEx;
 import org.smartfrog.sfcore.languages.cdl.dom.SystemElement;
@@ -231,7 +230,7 @@ public class ReferencePathTest extends TestCase {
         child2.addNewAttribute(Constants.QNAME_CDL_REF, "/something/else");
         path = new ReferencePath(child2);
         assertStepSize(4);
-        assertStepRefRoot(0, "application", Constants.XML_CDL_NAMESPACE);
+        assertStepRefRoot(0, "application", Constants.XMLNS_CDL);
         assertStepRoot(1);
         assertStepDown(2, "something");
         assertStepDown(3, "else");
@@ -259,7 +258,7 @@ public class ReferencePathTest extends TestCase {
         path.appendPath(path2);
         assertTrue(path.isLazy());
         assertStepSize(8);
-        assertStepRefRoot(4, "application", Constants.XML_CDL_NAMESPACE);
+        assertStepRefRoot(4, "application", Constants.XMLNS_CDL);
         assertStepRoot(5);
         assertStepDown(6, "something");
         assertStepDown(7, "else");

@@ -23,25 +23,20 @@ import nu.xom.Attribute;
 import nu.xom.Element;
 import nu.xom.Node;
 import nu.xom.Text;
-import org.smartfrog.sfcore.languages.cdl.faults.CdlException;
-import org.smartfrog.sfcore.languages.cdl.faults.CdlXmlParsingException;
-import org.smartfrog.sfcore.languages.cdl.generate.GenerateContext;
-import org.smartfrog.sfcore.languages.cdl.generate.ToSmartFrog;
-import org.smartfrog.sfcore.languages.cdl.utils.NamespaceLookup;
-import org.smartfrog.sfcore.languages.cdl.utils.Namespaces;
+import org.smartfrog.services.xml.java5.NamespaceUtils;
 import org.smartfrog.services.xml.java5.iterators.AttributeIterator;
 import org.smartfrog.services.xml.java5.iterators.NodeIterator;
-import org.smartfrog.services.xml.java5.NamespaceUtils;
-import org.smartfrog.sfcore.languages.sf.functions.BaseUnaryOperator;
+import org.smartfrog.sfcore.languages.cdl.faults.CdlXmlParsingException;
+import org.smartfrog.sfcore.languages.cdl.utils.NamespaceLookup;
+import org.smartfrog.sfcore.languages.cdl.utils.Namespaces;
 
 import javax.xml.namespace.QName;
-import java.io.IOException;
 import java.util.Iterator;
 
 /**
  * Extended element with a backpointer to the element
  */
-public class ElementEx extends Element implements ToSmartFrog, Iterable<Node>, NamespaceLookup {
+public class ElementEx extends Element implements Iterable<Node>, NamespaceLookup {
     public static final String ERROR_NON_RESOLVABLE_QNAME_PREFIX = "No namespace defined for [";
 
 
@@ -179,101 +174,6 @@ public class ElementEx extends Element implements ToSmartFrog, Iterable<Node>, N
     }
 
 
-    /**
-     * Write something to a smartfrog file. Parent elements should delegate to
-     * their children as appropriate.
-     * <p/>
-     * The Base class delegates to children and otherwise does nothing
-     *
-     * @param out
-     * @throws java.io.IOException
-     * @throws org.smartfrog.sfcore.languages.cdl.faults.CdlException
-     *
-     */
-    public void toSmartFrog(GenerateContext out) throws IOException,
-            CdlException {
-        //printNodeAsSFComment(out);
-        //printAttributesToSmartFrog(out);
-        printChildrenToSmartFrog(out);
-    }
-
-    /**
-     * print our node value as a comment
-     */
-    protected void printNodeAsSFComment(GenerateContext out) {
-        out.commentln(getQualifiedName());
-        String value = getValue();
-        if (value != null && value.length() > 0) {
-            String v = value.replace("\n", " ");
-            out.commentln("value:" + v);
-        }
-    }
-
-    /**
-     * get the value of anode, print its value
-     *
-     * @param out
-     * @param key
-     * @param includeEmptyStrings
-     * @param trim
-     */
-    protected void printValueToSF(GenerateContext out,
-                                  String key,
-                                  boolean includeEmptyStrings,
-                                  boolean trim) {
-
-        String value = getTextValue();
-        if (trim) {
-            value = value.trim();
-        }
-        if (value.length() == 0 && !includeEmptyStrings) {
-            return;
-        }
-        //replace the # statement with the 0x23, decimal 35 value
-        value = value.replace("#", "\u0023");
-        out.printTuple(key, value);
-    }
-
-
-    protected void printValueToSF(GenerateContext out) {
-        printValueToSF(out, BaseUnaryOperator.DATA_ATTRIBUTE, false, true);
-    }
-
-
-    /**
-     * print out all the children to smartfrog
-     *
-     * @param out
-     * @throws IOException
-     * @throws CdlException
-     */
-    public void printChildrenToSmartFrog(GenerateContext out)
-            throws IOException,
-            CdlException {
-        for (Node node : this) {
-            if (node instanceof ToSmartFrog) {
-                ToSmartFrog sfwriter = (ToSmartFrog) node;
-                sfwriter.toSmartFrog(out);
-            }
-        }
-    }
-
-    /**
-     * print out our attribute as name "value"; pairs, with a leading underscore
-     * on each. If the local namespace matches that of us, no namespace info is
-     * included.
-     *
-     * @param out
-     * @throws IOException
-     * @throws CdlException
-     */
-    public void printAttributesToSmartFrog(GenerateContext out)
-            throws IOException,
-            CdlException {
-        for (Attribute attr : attributes()) {
-            out.printAttribute(attr);
-        }
-    }
 
     /**
      * Get the immediate text value of an element. That is -the concatenation

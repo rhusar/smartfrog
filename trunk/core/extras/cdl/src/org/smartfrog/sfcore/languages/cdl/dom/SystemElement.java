@@ -20,9 +20,7 @@
 package org.smartfrog.sfcore.languages.cdl.dom;
 
 import nu.xom.Element;
-import org.smartfrog.sfcore.languages.cdl.generate.GenerateContext;
 import org.smartfrog.sfcore.languages.cdl.faults.CdlXmlParsingException;
-import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
 
 /**
  * This is the system element, which is different from the toplevel list and slightly different

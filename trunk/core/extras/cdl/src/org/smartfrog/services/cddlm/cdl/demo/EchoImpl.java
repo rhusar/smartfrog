@@ -35,7 +35,7 @@ import java.rmi.RemoteException;
 
 public class EchoImpl extends CmpComponentImpl implements Echo {
 
-    public static QName QNAME_MESSAGE=new QName(Echo.DEMO_NAMESPACE,Echo.ATTR_MESSAGE);
+    public static QName QNAME_MESSAGE = new QName(Echo.DEMO_NAMESPACE, Echo.ATTR_MESSAGE);
     public static QName QNAME_GUI = new QName(Echo.DEMO_NAMESPACE, Echo.ATTR_GUI);
 
     public EchoImpl() throws RemoteException {
@@ -44,10 +44,10 @@ public class EchoImpl extends CmpComponentImpl implements Echo {
     public synchronized void sfStart() throws SmartFrogException,
             RemoteException {
         super.sfStart();
-        String message = sfResolve(new Reference(QNAME_MESSAGE), "", false);
-        String gui= sfResolve(new Reference(QNAME_GUI), "", false);
-        boolean showGui= XsdUtils.isXsdBooleanTrue(gui);
-        if(showGui) {
+        String message = resolveText(QNAME_MESSAGE, true);
+        String gui = resolveText(QNAME_GUI, true);
+        boolean showGui = XsdUtils.isXsdBooleanTrue(gui);
+        if (showGui) {
             JOptionPane.showMessageDialog(null, message);
         } else {
             System.out.println("Message: " + message);

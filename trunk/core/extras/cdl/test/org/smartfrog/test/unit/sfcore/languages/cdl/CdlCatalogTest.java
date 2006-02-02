@@ -52,28 +52,28 @@ public class CdlCatalogTest extends XmlTestBase {
     }
 
     public void testCdlLookup() {
-        String cddlm = catalog.lookup(Constants.XML_CDL_NAMESPACE);
+        String cddlm = catalog.lookup(Constants.XMLNS_CDL);
         assertTrue(cddlm != null && cddlm.endsWith(CddlmConstants.CDL_FILENAME_XML_CDL));
     }
 
 
     public void testApiLookup() {
-        String resource = catalog.lookup(Constants.DEPLOY_API_TYPES_NAMESPACE);
+        String resource = catalog.lookup(Constants.XMLNS_DEPLOY_API_TYPES);
         assertTrue(resource != null &&
                 resource.endsWith(Constants.DEPLOY_API_SCHEMA_FILENAME));
     }
 
     public void testCdlResolve() throws TransformerException {
-        Source src = catalog.resolve(Constants.XML_CDL_NAMESPACE, "");
+        Source src = catalog.resolve(Constants.XMLNS_CDL, "");
         assertTrue(src != null);
     }
 
     public void testCdlEntityResolved() throws IOException, SAXException {
-        assertResolved(Constants.XML_CDL_NAMESPACE);
+        assertResolved(Constants.XMLNS_CDL);
     }
 
     public void testSaxResolve() throws IOException, SAXException {
-        assertResolved(Constants.DEPLOY_API_TYPES_NAMESPACE);
+        assertResolved(Constants.XMLNS_DEPLOY_API_TYPES);
     }
 
     private void assertResolved(String uri) throws SAXException, IOException {

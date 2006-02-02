@@ -25,7 +25,6 @@ import org.smartfrog.sfcore.languages.cdl.Constants;
 import org.smartfrog.sfcore.languages.cdl.ParseContext;
 import org.smartfrog.sfcore.languages.cdl.dom.CdlDocument;
 import org.smartfrog.sfcore.languages.cdl.dom.PropertyList;
-import org.smartfrog.sfcore.languages.cdl.dom.ToplevelList;
 import org.smartfrog.sfcore.languages.cdl.dom.SystemElement;
 import org.smartfrog.sfcore.languages.cdl.faults.CdlException;
 import org.smartfrog.sfcore.languages.cdl.faults.CdlRecursiveExtendsException;
@@ -47,7 +46,7 @@ public class ExtendsTest extends XmlTestBase {
 
     ExtendsContext extendsContext = new ExtendsContext();
     public static final QName PROPERTYLIST = new QName(
-            Constants.DEPLOY_API_TYPES_NAMESPACE,
+            Constants.XMLNS_DEPLOY_API_TYPES,
             "propertylist");
     public static final QName LOCALONLY = new QName("propertylist");
 

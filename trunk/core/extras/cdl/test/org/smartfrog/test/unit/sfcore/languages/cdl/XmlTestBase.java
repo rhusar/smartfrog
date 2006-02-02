@@ -1,23 +1,18 @@
 package org.smartfrog.test.unit.sfcore.languages.cdl;
 
-import nu.xom.Attribute;
 import nu.xom.Element;
 import nu.xom.ParsingException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.smartfrog.sfcore.languages.cdl.CdlCatalog;
-import org.smartfrog.sfcore.languages.cdl.CdlParser;
 import org.smartfrog.sfcore.languages.cdl.ParseContext;
 import org.smartfrog.sfcore.languages.cdl.dom.CdlDocument;
 import org.smartfrog.sfcore.languages.cdl.dom.PropertyList;
 import org.smartfrog.sfcore.languages.cdl.faults.CdlException;
 import org.smartfrog.sfcore.languages.cdl.faults.CdlXmlParsingException;
-import org.smartfrog.sfcore.languages.cdl.generate.SmartFrogSourceGenerator;
 import org.smartfrog.test.SmartFrogTestBase;
 import org.xml.sax.SAXException;
 
-import javax.xml.namespace.QName;
-import java.io.File;
 import java.io.IOException;
 
 /**
@@ -277,11 +272,6 @@ public abstract class XmlTestBase extends SmartFrogTestBase
      */
     protected PropertyList lookup(CdlDocument doc, String localname) {
         return DocumentTestHelper.lookup(doc,localname);
-    }
-
-    protected File saveToSmartFrog(CdlDocument cdlDocument) throws IOException,
-            CdlException {
-        return DocumentTestHelper.saveToSmartFrog(cdlDocument);
     }
 
 }

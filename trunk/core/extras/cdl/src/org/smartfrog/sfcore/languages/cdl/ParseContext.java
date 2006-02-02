@@ -35,7 +35,9 @@ import org.smartfrog.sfcore.languages.cdl.importing.ImportedDocumentMap;
 import org.smartfrog.sfcore.languages.cdl.importing.BaseImportResolver;
 import org.smartfrog.sfcore.languages.cdl.importing.classpath.UrlFactory;
 import org.smartfrog.sfcore.languages.cdl.utils.ClassLogger;
+import org.smartfrog.sfcore.languages.cdl.generate.TypeMapper;
 import org.smartfrog.sfcore.logging.Log;
+import org.smartfrog.sfcore.common.SmartFrogException;
 import org.xml.sax.SAXException;
 
 import javax.xml.namespace.QName;
@@ -107,6 +109,8 @@ public class ParseContext {
 
     private UrlFactory urlFactory;
 
+    private TypeMapper typeMapper;
+
     /**
      * base document. may be null
      */
@@ -138,7 +142,12 @@ public class ParseContext {
         this.loader=loader;
         //URL factory
         urlFactory= new UrlFactory(loader);
-
+        try {
+            typeMapper =new TypeMapper();
+        } catch (SmartFrogException e) {
+            //only if we are very incompetent and ignoring unit test results
+            throw new CdlRuntimeException(e);
+        }
     }
     
     /**
@@ -494,5 +503,9 @@ public class ParseContext {
 
     public UrlFactory getUrlFactory() {
         return urlFactory;
+    }
+
+    public TypeMapper getTypeMapper() {
+        return typeMapper;
     }
 }

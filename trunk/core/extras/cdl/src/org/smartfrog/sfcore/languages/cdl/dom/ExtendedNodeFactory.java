@@ -20,11 +20,10 @@
 
 package org.smartfrog.sfcore.languages.cdl.dom;
 
-import nu.xom.NodeFactory;
-import nu.xom.Element;
-import nu.xom.Nodes;
 import nu.xom.Document;
-import nu.xom.Comment;
+import nu.xom.Element;
+import nu.xom.NodeFactory;
+import nu.xom.Nodes;
 
 /**
  * A node factory that returns elements all of the right type.

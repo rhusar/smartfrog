@@ -46,7 +46,7 @@ import java.rmi.RemoteException;
  * This is an extended component description that is used when turning a CDL graph into a smartfrog graph
  * <p/>
  * There is a special bit of deviousness here.
- * Every Node that is in the Smartfrog XML namespace {@link Constants#SMARTFROG_NAMESPACE}
+ * Every Node that is in the Smartfrog XML namespace {@link Constants#XMLNS_SMARTFROG}
  * is registered only under its local name, not the
  * full namespace. So by using sf namespaced elements, we can merge a CDL description into a smartfrog one,
  * without contaminating any local namespaced elements.
@@ -258,10 +258,18 @@ public class CdlComponentDescriptionImpl extends SFComponentDescriptionImpl impl
      */
     public void replace(QName child, Object value) throws SmartFrogException, RemoteException {
         Object name = child;
-        final String namespaceURI = child.getNamespaceURI();
-        if (Constants.SMARTFROG_NAMESPACE.equals(namespaceURI) || namespaceURI.length()==0) {
+        if (isSpecialNamespace(child)) {
             name = child.getLocalPart();
         }
         sfReplaceAttribute(name, value);
+    }
+
+    /**
+     * special logic for stuff in {@Constants.SMARTFROG_NAMESPACE}
+     * @param name
+     * @return true if this is in a special smartfrog namespace
+     */
+    public static boolean isSpecialNamespace(QName name) {
+        return Constants.XMLNS_SMARTFROG.equals(name.getNamespaceURI());
     }
 }
