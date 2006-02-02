@@ -15,7 +15,7 @@
 
     <!--Not part of the spec: a cmp:component-->
     <cmp:Component>
-      <sf:sfClass ref="cmp:CommandPath"/>
+      <sfClass ref="cmp:CommandPath"/>
       <cmp:CommandPath >org.smartfrog.services.cddlm.cdl.base.CdlComponentImpl</cmp:CommandPath>
     </cmp:Component>
 

@@ -115,6 +115,9 @@ public class TypeMapperTest extends TestCase {
         assertConverts("string", " \t\n7.3e-3 \r", " \t\n7.3e-3 \r");
     }
 
+    public void testTrimWhitespace() throws Exception {
+        assertConverts("trimmed", " \t\n7.3e-3 \r", "7.3e-3");
+    }
     public void testLong() throws Exception {
         assertConverts("long", " 75", 75L);
     }

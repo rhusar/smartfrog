@@ -140,6 +140,12 @@ public class Constants {
     public static final boolean POLICY_ALWAYS_EXTEND_CONFIGURATION = true;
 
     /**
+     * Policy logic: do we always export text nodes, even when there 
+     * are child templates? {@value}
+     */
+    public static final boolean POLICY_ALWAYS_EXPORT_TEXT_NODES=false;
+    
+    /**
      * Are we a debug release, in which case there are extra tests in the phases
      * that every step worked
      */
@@ -149,4 +155,9 @@ public class Constants {
      * This is the default classname of anything, unless you say otherwise
      */
     public static final String CDL_COMPONENT_CLASSNAME = "org.smartfrog.services.cddlm.cdl.base.CdlComponentImpl";
+
+    /** our namespace node {@value} */
+    public static final QName QNAME_SMARTFROG_TYPES_NAMESPACE_ATTRIBUTE =
+            new QName(XMLNS_SMARTFROG_TYPES, "namespace");
+
 }
