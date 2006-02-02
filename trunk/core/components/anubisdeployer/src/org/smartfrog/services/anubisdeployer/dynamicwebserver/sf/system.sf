@@ -22,27 +22,9 @@ For more information: www.smartfrog.org
 #include "/org/smartfrog/functions.sf"
 #include "/org/smartfrog/predicates.sf"
 
-#include "/org/smartfrog/examples/dynamicwebserver/sf/serviceTemplate.sf"
-#include "/org/smartfrog/examples/dynamicwebserver/sf/loadGeneratorTemplate.sf"
-
-
-
-/*
- * Set the hosts for the appropriate nodes to use for the demo
- */
-
-// the host on which the load generators will run
-stressTestHost     "localhost";
-
-// the host on which the thresholder, measuring component, etc will run
-serviceManagerHost "sfdemo01";
-
-// the host on which the load balancer will run
-balancerHost       "sfdemo01";
-
-// a vector of all of the hosts to be used for the Apache web server
-// they must all be x86, linux
-serverHosts ["sfdemo02", "sfdemo03"];
+#include "/org/smartfrog/services/anubisdeployer/dynamicwebserver/sf/serviceTemplate.sf"
+#include "/org/smartfrog/services/anubisdeployer/dynamicwebserver/sf/loadGeneratorTemplate.sf"
+#include "org/smartfrog/services/anubisdeployer/components.sf"
 
 
 
@@ -105,6 +87,7 @@ loadingCgi  "/cgi-bin/u1";
 //
 
 sfConfig extends ClusterCompound {
+    sfPrcoessHost "localhost"; // make sure it stays here!
     sfResources extends DATA {
         resources extends DATA {
             serviceInstances 1;  // is a single instance of a service
