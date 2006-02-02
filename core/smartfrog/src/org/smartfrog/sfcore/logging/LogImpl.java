@@ -42,15 +42,13 @@ import java.lang.reflect.Method;
 import java.rmi.RemoteException;
 import java.util.Enumeration;
 import java.util.Hashtable;
+import org.smartfrog.sfcore.common.*;
 
 
 /**
  *
  */
 public class LogImpl implements LogSF, LogRegistration, Serializable {
-
-    //Configuration for LogImpl class
-    ComponentDescription classComponentDescription = null;
 
     /** Default Log object */
     protected Log localLog = null;
@@ -59,6 +57,8 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
     protected String logName = null;
     /** Current log level */
     protected int currentLogLevel= LOG_LEVEL_INFO;
+
+
 
     public static final Method TRACE_O =
           getObjectMethod("trace", new Class[] {Object.class});
@@ -147,41 +147,99 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
      * @param name
      */
     public LogImpl (String name){
-        //@TODO: improve error protection
+        //Configuration for LogImpl class
+        ComponentDescription classComponentDescription = null;
+        //Configuration for LogImpl class
+        ComponentDescription componentComponentDescription = null;
+
+        // Level set in configuration
+        int configurationLevel = currentLogLevel;
+        // logger class set in configuration (Vector or String)
+        Object configurationClass = "org.smartfrog.sfcore.logging.LogToFileImpl";
+        // codebase used to load  class set in configuration
+        String configurationCodeBase = null;
+
         logName = name;
         try {
+
             //Check Class and read configuration...including system.properties
             classComponentDescription = ComponentDescriptionImpl.getClassComponentDescription(this, true,null);
-            //Get int from Double
-            setLevel (((Number)new Double(classComponentDescription.sfResolve(ATR_LOG_LEVEL,((double)getLevel()),false))).intValue());
-            localLog = getLocalLog(name
-                                   , new Integer(currentLogLevel)
-                                   , (String) classComponentDescription.sfResolve(
-                                            ATR_LOCAL_LOGGER_CLASS
-                                           ,"org.smartfrog.sfcore.logging.LogToFileImpl"
-                                           ,false)
-                                   , getSfCodeBase(classComponentDescription));
+            configurationClass = this.getConfigurationClass(classComponentDescription,configurationClass);
+            configurationLevel = this.getConfigurationLevel(classComponentDescription,configurationLevel);
+            configurationCodeBase = this.readConfigurationCodeBase(classComponentDescription,configurationCodeBase);
+
+            setLevel (configurationLevel);
+
+            localLog = getLocalLog(name, new Integer(currentLogLevel), (String)configurationClass, configurationCodeBase);
+
             //Set lower level of the two, just in case local logger has its own mechanism to set log level
             int i= getLevel(localLog);
             if (currentLogLevel>i){
               setLevel(i);
             }
         } catch (Exception ex ){
-            String msg = "Error during initialization of localLog for LogImpl. Using Default (LogToFile)";
+            String msg = "Error during initialization of localLog for LogImpl. Next trying to using Default (LogToFile)";
+            String msg2 = "Log '"+name+"' , values [class,level,codebase]: "+ configurationClass +", "+  configurationLevel +", "+ configurationCodeBase +
+                        "\nusing Class ComponentDescription:\n{"+classComponentDescription+
+                        "}\n, and using Component ComponentDescription:\n{"+ componentComponentDescription+"}";
+            System.err.println("[WARN] "+msg2);
             System.err.println("[WARN] "+msg+", Reason: "+ex.getMessage());
             try {
                 localLog=new LogToFileImpl(name,new Integer(currentLogLevel));
-                if (localLog.isWarnEnabled())localLog.warn(msg, ex);
+                if ((localLog.isWarnEnabled())) localLog.warn(msg2);
+                if ((localLog.isWarnEnabled())) localLog.warn(msg, ex);
             } catch (java.lang.NullPointerException nex){
-                msg = "Error during initialization of localLog for LogImpl. No log available.";
-                System.err.println("[FATAL] "+msg+", Reason: "+nex.getMessage());
-                nex.printStackTrace();
+                msg = "Error during emergency initialization of localLog using default LogToFile for LogImpl. No logger available.";
+                System.err.println("[FATAL] "+msg+", Reason: "+nex.toString());
+                if (org.smartfrog.sfcore.common.Logger.logStackTrace) nex.printStackTrace();
                 throw nex;
             }
         }
-        if (localLog.isTraceEnabled()) {
-            localLog.trace("Log '"+name+"' using ComponentDescription:\n"+classComponentDescription.toString());
+        if ((localLog!=null)&&(localLog.isTraceEnabled())) {
+            String msg2 = "Log '"+name+"' , values [class,level,codebase]: "+ configurationClass +", "+  configurationLevel +", "+ configurationCodeBase +
+                        "\nusing Class ComponentDescription:\n {"+classComponentDescription+
+            "}\n, and using Component ComponentDescription:\n{"+ componentComponentDescription+"}";
+            localLog.trace(msg2);
         }
+    }
+
+    /**
+     * Reads configurationClass attribute for LogImpl from a componentDescription
+     *
+     * @param componentDescription ComponentDescription
+     * @param default configurationClass Object
+     * @return Object (Vector or String)
+     * @throws SmartFrogResolutionException
+     */
+    private Object getConfigurationClass(ComponentDescription componentDescription, Object configurationClass) throws SmartFrogResolutionException {
+        if (componentDescription==null) return configurationClass;
+        return (String)componentDescription.sfResolve( ATR_LOCAL_LOGGER_CLASS, configurationClass, false);
+    }
+
+    /**
+     * Reads configurationLevel attribute for LogImpl from a componentDescription
+     *
+     * @param componentDescription ComponentDescription
+     * @param default configurationLevel int
+     * @return int
+     * @throws SmartFrogResolutionException
+     */
+    private int getConfigurationLevel(ComponentDescription componentDescription, int configurationLevel) throws SmartFrogResolutionException {
+        if (componentDescription==null) return configurationLevel;
+        return componentDescription.sfResolve(ATR_LOG_LEVEL, getLevel(), false);
+    }
+
+    /**
+     * Reads configurationCodeBase attribute for LogImpl from a componentDescription
+     *
+     * @param componentDescription ComponentDescription
+     * @param default configurationCodeBase String
+     * @return String
+     * @throws SmartFrogResolutionException
+     */
+    private String readConfigurationCodeBase(ComponentDescription componentDescription,String configurationCodeBase) throws SmartFrogResolutionException {
+        if (componentDescription==null) return configurationCodeBase;
+        return getSfCodeBase(componentDescription);
     }
 
     /**
@@ -218,8 +276,11 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
             throw new SmartFrogLogException(MessageUtil.formatMessage(
                     MessageKeys.MSG_ILLEGAL_ACCESS, targetClassName, "newInstance()"), illaexcp);
         } catch (InvocationTargetException intarexcp) {
-            System.out.println("Exllllll: "+intarexcp);
-            intarexcp.printStackTrace();
+            String msg = "Error during initialization of localLog for LogImpl."+
+                         " Data: name "+name+", targetClassName "+targetClassName+
+                         ", logLevel "+logLevel+", targetCodeBase "+targetCodeBase;
+            System.err.println("[ERROR] "+msg+", Reason: "+intarexcp.toString());
+            intarexcp.getCause().printStackTrace();
             throw new SmartFrogLogException(MessageUtil.formatMessage(
                     MessageKeys.MSG_INVOCATION_TARGET, targetClassName), intarexcp);
 
