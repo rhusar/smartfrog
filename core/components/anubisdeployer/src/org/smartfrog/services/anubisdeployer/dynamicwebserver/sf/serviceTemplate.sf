@@ -27,24 +27,13 @@ For more information: www.smartfrog.org
 #include "/org/smartfrog/examples/dynamicwebserver/logging/components.sf"
 #include "/org/smartfrog/examples/dynamicwebserver/stresstest/components.sf"
 #include "/org/smartfrog/examples/dynamicwebserver/balancer/components.sf"
-#include "/org/smartfrog/examples/dynamicwebserver/sf/webTemplate.sf";
+#include "/org/smartfrog/services/anubisdeployer/dynamicwebserver/dynamicwebserver/sf/webTemplate.sf";
 
 
 /*
  * The following global values must be defined in the include location 
  * for this file, otherwise errors will be thrown.
  */
-
-
-// the host on which the thresholder, measuring component, etc will run
-serviceManagerHost TBD;
-
-// the host on which the load balancer will run
-balancerHost       TBD;
-
-// a vector of all of the hosts to be used for the Apache web server
-// they must all be x86, linux
-serverHosts        TBD;
 
 // the cgi script to use to measure webserver performance
 measurementCgi     TBD;
@@ -77,8 +66,6 @@ ServiceTemplate extends Compound {
         template extends LAZY WebServerTemplate {
             //logTo LAZY logger;
         }
-
-        servers extends serverHosts;
 
         polling         PARENT:polling;
         lowerThreshold  lower;
@@ -121,7 +108,6 @@ ServiceTemplate extends Compound {
 
 
     balancerGroup extends Compound{
-       sfProcessHost           balancerHost;
        sfProcessComponentName "loadBalancer";
 
        balancer extends WebBalancer {
