@@ -94,9 +94,7 @@ public class ClusterNodeManager extends PrimImpl implements Prim, ClusterNode {
     private void publishNodeDescription() throws SmartFrogException, RemoteException {
         if (nodeDescription == null)
             setHostNodeDescription(new ComponentDescriptionImpl(null, new ContextImpl(), true));
-        else {
-            System.out.println("publishing as cluster:");
-            System.out.println(nodeDescription);            
+        else {          
             idProvider.setValue(nodeDescription);
         }
     }
