@@ -297,7 +297,7 @@ public class SmartFrogResolutionException extends SmartFrogRuntimeException
     public static SmartFrogResolutionException illegalClassType(Reference ref,
         Reference source,Object resolvedValue, String referenceValueType, String defaultValueType) {
         SmartFrogResolutionException srex = new SmartFrogResolutionException (ref, source,
-                MessageUtil.formatMessage(MSG_ILLEGAL_CLASS_TYPE));
+                MessageUtil.formatMessage(MSG_ILLEGAL_CLASS_TYPE_EXPECTING_GOT, defaultValueType, resolvedValue, referenceValueType));
         srex.put(REFERENCE_OBJECT_RESOLVED,resolvedValue.toString());
         srex.put(REFERENCE_OBJECT_CLASS_TYPE,referenceValueType);
         srex.put(DEFAULT_OBJECT_CLASS_TYPE,defaultValueType);

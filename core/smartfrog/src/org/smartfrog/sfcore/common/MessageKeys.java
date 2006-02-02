@@ -245,8 +245,16 @@ public interface MessageKeys {
     public static String MSG_ILLEGAL_REFERENCE = "MSG_ILLEGAL_REFERENCE";
     /**
      * Message key: illegal classtype.
+     * @see MSG_ILLEGAL_CLASS_TYPE_EXPECTING_GOT
      */
     public static String MSG_ILLEGAL_CLASS_TYPE = "MSG_ILLEGAL_CLASS_TYPE";
+
+    /**
+     * Message key: illegal classtype with added information.
+     * @see MSG_ILLEGAL_CLASS_TYPE
+     */
+    public static String MSG_ILLEGAL_CLASS_TYPE_EXPECTING_GOT ="MSG_ILLEGAL_CLASS_TYPE_EXPECTING_GOT";
+
     // Resolution Exception Messages ends
     /**
      * Message key: unhandled exception.
