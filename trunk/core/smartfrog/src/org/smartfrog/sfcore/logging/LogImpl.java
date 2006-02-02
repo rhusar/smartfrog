@@ -143,14 +143,22 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
     }
 
     /**
-     * constructor
-     * @param name
+     * Constructor
+     * @param name for Log
      */
     public LogImpl (String name){
+        this (name,null);
+    }
+
+
+    /**
+     * Constructor
+     * @param name for Log
+     * @param componentComponentDescription configuration that overwrites class configuraion
+     */
+    public LogImpl (String name, ComponentDescription componentComponentDescription){
         //Configuration for LogImpl class
         ComponentDescription classComponentDescription = null;
-        //Configuration for LogImpl class
-        ComponentDescription componentComponentDescription = null;
 
         // Level set in configuration
         int configurationLevel = currentLogLevel;
@@ -161,12 +169,19 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
 
         logName = name;
         try {
-
             //Check Class and read configuration...including system.properties
             classComponentDescription = ComponentDescriptionImpl.getClassComponentDescription(this, true,null);
-            configurationClass = this.getConfigurationClass(classComponentDescription,configurationClass);
-            configurationLevel = this.getConfigurationLevel(classComponentDescription,configurationLevel);
-            configurationCodeBase = this.readConfigurationCodeBase(classComponentDescription,configurationCodeBase);
+            if (classComponentDescription!=null){
+               configurationClass = this.getConfigurationClass(classComponentDescription,configurationClass);
+               configurationLevel = this.getConfigurationLevel(classComponentDescription,configurationLevel);
+               configurationCodeBase = this.readConfigurationCodeBase(classComponentDescription,configurationCodeBase);
+            }
+            // overwriting class configuration with component configuration if provided.
+            if (componentComponentDescription!=null){
+                configurationClass = this.getConfigurationClass(componentComponentDescription,configurationClass);
+                configurationLevel = this.getConfigurationLevel(componentComponentDescription,configurationLevel);
+                configurationCodeBase = this.readConfigurationCodeBase(componentComponentDescription,configurationCodeBase);
+            }
 
             setLevel (configurationLevel);
 
@@ -198,7 +213,7 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
         if ((localLog!=null)&&(localLog.isTraceEnabled())) {
             String msg2 = "Log '"+name+"' , values [class,level,codebase]: "+ configurationClass +", "+  configurationLevel +", "+ configurationCodeBase +
                         "\nusing Class ComponentDescription:\n {"+classComponentDescription+
-            "}\n, and using Component ComponentDescription:\n{"+ componentComponentDescription+"}";
+                        "}\n, and using Component ComponentDescription:\n{"+ componentComponentDescription+"}";
             localLog.trace(msg2);
         }
     }

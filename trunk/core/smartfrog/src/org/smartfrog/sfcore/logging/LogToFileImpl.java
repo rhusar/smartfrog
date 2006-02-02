@@ -32,6 +32,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
 import org.smartfrog.sfcore.common.SmartFrogCoreProperty;
+import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 
 /**
  *
@@ -77,7 +78,6 @@ public class LogToFileImpl extends LogToStreamsImpl implements LogToFile {
     boolean append = true;
 
 
-
     /**
      * Construct a simple log with given name and log level
      * and log to output level
@@ -85,13 +85,28 @@ public class LogToFileImpl extends LogToStreamsImpl implements LogToFile {
      * @param initialLogLevel level to log at
      */
     public LogToFileImpl (String name, Integer initialLogLevel) {
+        this (name,null,initialLogLevel);
+    }
+
+    /**
+     * Construct a simple log with given name and log level
+     * and log to output level
+     * @param name log name
+     * @param componentComponentDescription A component description to overwrite class configuration
+     * @param initialLogLevel level to log at
+     */
+    public LogToFileImpl (String name, ComponentDescription componentComponentDescription, Integer initialLogLevel) {
         super(name,initialLogLevel);
         try {
-          readSFFileAttributes();
+          readSFFileAttributes(classComponentDescription);
         } catch (SmartFrogException ex1) {
            this.error("",ex1);
         }
-
+        try {
+          readSFFileAttributes(componentComponentDescription);
+        } catch (SmartFrogException ex1) {
+           this.error("",ex1);
+        }
         PrintStream out=null;
         try {
            logFile = createFile(logFileExtension);
@@ -114,7 +129,10 @@ public class LogToFileImpl extends LogToStreamsImpl implements LogToFile {
             }
         }
         if (isTraceEnabled() && this.getClass().toString().endsWith("LogToFileImpl")) {
-            trace(this.getClass().toString()+" '"+name+"' using ComponentDescription:\n"+classComponentDescription.toString());
+            String msg2 = "Log '"+name+"' "+
+            "\nusing Class ComponentDescription:\n{"+classComponentDescription+
+            "}\n, and using Component ComponentDescription:\n{"+ componentComponentDescription+"}";
+            trace(this.getClass().toString() + " "+msg2);
         }
 //        setLevel(initialLogLevel.intValue());
     }
@@ -125,19 +143,19 @@ public class LogToFileImpl extends LogToStreamsImpl implements LogToFile {
      *
      * @exception  SmartFrogException error while reading attributes
      */
-    protected void readSFFileAttributes() throws SmartFrogException {
-        if (classComponentDescription==null) return;
+    protected void readSFFileAttributes(ComponentDescription cd) throws SmartFrogException {
+        if (cd==null) return;
         //Optional attributes.
         try {
-          path = classComponentDescription.sfResolve(ATR_PATH,path, false);
-          logFileExtension =classComponentDescription.sfResolve(ATR_LOG_FILE_EXTENSION,logFileExtension, false);
-          datedName =classComponentDescription.sfResolve(ATR_USE_DATED_FILE_NAME,datedName, false);
-          redirectSystemOutputs = classComponentDescription.sfResolve(ATR_REDIRECT_SYSTEM_OUTPUTS,redirectSystemOutputs, false);
-          fileNamePrefix = classComponentDescription.sfResolve(ATR_FILE_NAME_PREFIX,fileNamePrefix, false);
-          useLogNameInFileName = classComponentDescription.sfResolve(ATR_USE_LOG_NAME_IN_FILE_NAME,useLogNameInFileName, false);
-          useHostNameInFileName = classComponentDescription.sfResolve(ATR_USE_HOST_NAME_IN_FILE_NAME,useHostNameInFileName, false);
-          useProcessNameInFileName = classComponentDescription.sfResolve(ATR_USE_PROCESS_NAME_IN_FILE_NAME,useProcessNameInFileName, false);
-          append = classComponentDescription.sfResolve(ATR_APPEND,append, false);
+          path = cd.sfResolve(ATR_PATH,path, false);
+          logFileExtension =cd.sfResolve(ATR_LOG_FILE_EXTENSION,logFileExtension, false);
+          datedName =cd.sfResolve(ATR_USE_DATED_FILE_NAME,datedName, false);
+          redirectSystemOutputs = cd.sfResolve(ATR_REDIRECT_SYSTEM_OUTPUTS,redirectSystemOutputs, false);
+          fileNamePrefix = cd.sfResolve(ATR_FILE_NAME_PREFIX,fileNamePrefix, false);
+          useLogNameInFileName = cd.sfResolve(ATR_USE_LOG_NAME_IN_FILE_NAME,useLogNameInFileName, false);
+          useHostNameInFileName = cd.sfResolve(ATR_USE_HOST_NAME_IN_FILE_NAME,useHostNameInFileName, false);
+          useProcessNameInFileName = cd.sfResolve(ATR_USE_PROCESS_NAME_IN_FILE_NAME,useProcessNameInFileName, false);
+          append = cd.sfResolve(ATR_APPEND,append, false);
         } catch (Exception ex){
            this.warn("",ex);
         }
