@@ -10,40 +10,60 @@ ClusterNodeManagerComponentName "clusterNodeManager";
 
 AnubisServiceName "clusterAnubis";
 
-// basic definition of a softUDC physical node
-
 ExampleNodeDescription extends {
     resources extends {
-	memory 3072;
+	    memory 3072;
     }
     attributes extends {
-	os "xen linux 2.4";
-	cpuType "x86";
-	cpuClass "Xeon";
-	cpuCount 2;
-	cpuFrequency "1.5GHz";
+	    os "xen linux 2.4";
+	    cpuType "x86";
+	    cpuClass "Xeon";
+	    cpuCount 2;
+	    cpuFrequency "1.5GHz";
     }
     data extends LAZY {
-	ufcPartition ["p6"];
-	vmPartition ["p8","p10","p12","p14"];
-	swapPartition ["p7","p9","p11","p13","p15"];
-	macAddress ["aa:00:00:01:01:00", "aa:00:00:01:01:05"];
-	vmid [2,3,4,5,6];
+	    ufcPartition ["p6"];
+	    vmPartition ["p8","p10","p12","p14"];
+	    swapPartition ["p7","p9","p11","p13","p15"];
+	    macAddress ["aa:00:00:01:01:00", "aa:00:00:01:01:05"];
+	    vmid [2,3,4,5,6];
     }
+}
+
+AnubisDefaultParameters extends Compound {
+
+    identity extends Compound {
+        magic              123456;
+        getNodeFromLocalIP IF (node == NULL) THEN true ELSE false FI;
+        node               ;
+        epoch extends      Epoch;
+    }
+    contactAddress extends ConnectionAddress {
+        host       "localhost";
+        port       1966;
+    }
+    heartbeatGroup extends MulticastAddress {
+        host       "233.1.2.30";
+        port       1960;
+        timeToLive 1;
+    }
+    heartbeatInterval  2000;
+    heartbeatTimeout   3;
+
+    heartbeatTransport       extends MulticastHeartbeatTransport;
+    connectionTransport      extends NonBlockingConnectionTransport;
+    heartbeatProtocolFactory extends TimedHeartbeatProtocol;
+    leaderProtocolFactory    extends MajorityLeaderProtocol;
+
+    testable                 true;
 }
 
 
 // basic templates
 
 ClusteringAnubisService extends AnubisService {
-    getNodeFromLocalIP (IF (node==NULL) THEN true ELSE false FI);
-    node               ;
-    magic              234332;
-    address            "233.1.2.34";
-    port               1966;
-    
+    anubisParameters extends AnubisDefaultParameters;
     anubisServiceName PARENT:ATTRIB AnubisServiceName;
-    testable "true";
 }
 
 
@@ -80,15 +100,11 @@ ClusterDisplay extends Prim {
 ClusterSystem extends Compound {
     nodeDescription TBD;
     anubisAddress TBD;
-    anubisNode TBD;
-    anubisPort TBD;
 
     sfProcessComponentName "clusterNodeManagement";
 
     anubis extends ClusteringAnubisService {
-	address anubisAddress;
-	node anubisNode;
-	port anubisPort;
+        anubisParameters:heartbeatGroup:host anubisAddress;
     }
 
     clusterNodeManager extends ClusterNodeManager {
@@ -103,14 +119,10 @@ ClusterSystem extends Compound {
     clusterStatusMonitor extends ClusterStatusMonitor {
 	    anubisLocator LAZY anubis:locator;
     }
-/*
     clusterDisplay extends ClusterDisplay {
 	    clusterMonitor LAZY PARENT:clusterStatusMonitor;
     }
-*/
 }
-
-
 
 ClusterCompound extends Compound {
     sfClass "org.smartfrog.services.anubisdeployer.ClusterCompoundImpl";
