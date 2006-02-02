@@ -101,9 +101,9 @@ public class LogToFileImpl extends LogToStreamsImpl implements LogToFile {
           //@todo
           ex.printStackTrace();
         }
-        if (isTraceEnabled() && this.getClass().toString().endsWith("LogToFileImpl")) {
+        if (isDebugEnabled() && this.getClass().toString().endsWith("LogToFileImpl")) {
             //This will go to the std output.
-            trace("LogToFileImpl using file name: "+logFile.getAbsolutePath());
+            debug("LogToFileImpl using file name: "+logFile.getAbsolutePath());
         }
         setOutstream(out);
         if (redirectSystemOutputs){
@@ -216,10 +216,10 @@ public class LogToFileImpl extends LogToStreamsImpl implements LogToFile {
         // add the extension
         newfileName.append("."+fileExtension);
 
-        fullLogFileName.append (newfileName);
+        fullLogFileName.append (correctFilename(newfileName.toString()));
 
         //Return file
-        return new File( correctFilename(fullLogFileName.toString()));
+        return new File( fullLogFileName.toString());
     }
 
     private String correctFilename(String filename) {
