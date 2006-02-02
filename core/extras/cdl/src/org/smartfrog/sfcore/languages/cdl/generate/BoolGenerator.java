@@ -1,4 +1,4 @@
-/** (C) Copyright 2005 Hewlett-Packard Development Company, LP
+/** (C) Copyright 2006 Hewlett-Packard Development Company, LP
 
  This library is free software; you can redistribute it and/or
  modify it under the terms of the GNU Lesser General Public
@@ -19,26 +19,27 @@
  */
 package org.smartfrog.sfcore.languages.cdl.generate;
 
-import org.smartfrog.sfcore.languages.cdl.faults.CdlException;
-
-import java.io.IOException;
+import org.smartfrog.sfcore.languages.cdl.dom.PropertyList;
+import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.services.xml.utils.XsdUtils;
 
 /**
- * created 12-May-2005 17:33:45
+ * created 02-Feb-2006 14:41:13
  */
 
+public class BoolGenerator extends BaseGenerator {
 
-public interface ToSmartFrog {
+    public BoolGenerator() {
+        super(true);
+    }
 
+    public Object generateType(PropertyList node) throws SmartFrogException {
+        String value=extractStringValue(node);
 
-    /**
-     * Write something to a smartfrog file. Parent elements should delegate to
-     * their children as appropriate.
-     *
-     * @param out output stream
-     * @throws IOException
-     * @throws CdlException
-     */
-    public void toSmartFrog(GenerateContext out) throws IOException,
-            CdlException;
+        Boolean result=XsdUtils.convertFromXsdForm(value);
+        if(result==null) {
+            throw new SmartFrogException("Unrecognised boolean value "+value);
+        }
+        return result;
+    }
 }

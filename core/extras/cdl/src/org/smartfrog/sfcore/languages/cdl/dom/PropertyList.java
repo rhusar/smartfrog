@@ -22,29 +22,25 @@ package org.smartfrog.sfcore.languages.cdl.dom;
 import nu.xom.Attribute;
 import nu.xom.Element;
 import nu.xom.Node;
-import org.ggf.cddlm.generated.api.CddlmConstants;
+import org.smartfrog.services.cddlm.cdl.cmp.CmpComponentImpl;
 import org.smartfrog.services.xml.java5.NamespaceUtils;
 import org.smartfrog.services.xml.utils.XsdUtils;
-import org.smartfrog.sfcore.languages.cdl.components.CdlComponentDescriptionImpl;
-import org.smartfrog.sfcore.languages.cdl.components.CdlComponentDescription;
+import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
+import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
 import org.smartfrog.sfcore.languages.cdl.Constants;
-import org.smartfrog.sfcore.languages.cdl.references.ReferencePath;
-import org.smartfrog.sfcore.languages.cdl.faults.CdlException;
-import org.smartfrog.sfcore.languages.cdl.faults.CdlXmlParsingException;
+import org.smartfrog.sfcore.languages.cdl.components.CdlComponentDescription;
+import org.smartfrog.sfcore.languages.cdl.components.CdlComponentDescriptionImpl;
 import org.smartfrog.sfcore.languages.cdl.faults.CdlInvalidValueReferenceException;
-import org.smartfrog.sfcore.languages.cdl.generate.GenerateContext;
+import org.smartfrog.sfcore.languages.cdl.faults.CdlXmlParsingException;
 import org.smartfrog.sfcore.languages.cdl.generate.DescriptorSource;
+import org.smartfrog.sfcore.languages.cdl.references.ReferencePath;
 import org.smartfrog.sfcore.languages.cdl.resolving.ResolveEnum;
 import org.smartfrog.sfcore.languages.cdl.utils.ClassLogger;
 import org.smartfrog.sfcore.languages.cdl.utils.Namespaces;
 import org.smartfrog.sfcore.logging.Log;
-import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
-import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
-import org.smartfrog.sfcore.prim.Prim;
 
 import javax.xml.namespace.QName;
-import java.io.IOException;
 import java.rmi.RemoteException;
 
 /**
@@ -72,8 +68,8 @@ public class PropertyList extends DocNode implements DescriptorSource {
     protected boolean root;
 
     /**
-    * What is the state of resolution
-    */
+     * What is the state of resolution
+     */
     private ResolveEnum resolveState = ResolveEnum.ResolvedUnknown;
 
     /**
@@ -395,33 +391,6 @@ public class PropertyList extends DocNode implements DescriptorSource {
     }
 
     /**
-     * Write something to a smartfrog file. Parent elements should delegate to
-     * their children as appropriate.
-     * <p/>
-     * The Base class delegates to children and otherwise does nothing
-     *
-     * @param out
-     * @throws java.io.IOException
-     * @throws org.smartfrog.sfcore.languages.cdl.faults.CdlException
-     *
-     */
-    @Override
-    public void toSmartFrog(GenerateContext out) throws IOException,
-            CdlException {
-        //printNodeAsSFComment(out);
-        String name = getSfName(out);
-        out.enter(name, getBaseComponent(out));
-        printValueToSF(out);
-        printAttributesToSmartFrog(out);
-        printChildrenToSmartFrog(out);
-        out.leave();
-    }
-
-    protected String getSfName(GenerateContext out) {
-        return out.convertElementName(this);
-    }
-
-    /**
      * logic to extract a command or a java classname from
      * the command. Crude and ugly.
      * 1. anything that begins with an @ is a reference
@@ -431,7 +400,7 @@ public class PropertyList extends DocNode implements DescriptorSource {
      * @param out
      * @return
      */
-    protected String getBaseComponent(GenerateContext out) {
+/*    protected String getBaseComponent(GenerateContext out) {
         String parent = out.getDefaultBaseComponent();
         ElementEx commandPath = (ElementEx) getFirstChildElement(
                 CddlmConstants.CMP_ELEMENT_COMMAND_PATH, Constants.CMP_NAMESPACE);
@@ -443,7 +412,7 @@ public class PropertyList extends DocNode implements DescriptorSource {
             }
         }
         return parent;
-    }
+    }*/
 
 
     /**
@@ -454,41 +423,42 @@ public class PropertyList extends DocNode implements DescriptorSource {
      */
     public void exportDescription(CdlComponentDescription parent) throws RemoteException, SmartFrogException {
 
-        QName name=this.getQName();
-        if (hasChildElements()) {
-            //we have children, go into parent mode
-            CdlComponentDescriptionImpl description = new CdlComponentDescriptionImpl(name,parent);
-            description.registerWithParent();
-            exportChildren(description);
-            //namespaces
-            final Namespaces namespaces = getNamespaces();
-            namespaces.exportDescription(description);
-            //finally, if there is no child element in the description with the classname, we
-            //register our classname as the default
-            if(getChildTemplateMatching(Constants.SMARTFROG_NAMESPACE, SmartFrogCoreKeys.SF_CLASS)==null) {
-                addDefaultSFClass(description);
-            }
-
-            //sanity check: force validate here and now
-            assert null!=description.sfResolve(SmartFrogCoreKeys.SF_CLASS,true);
+        QName name = this.getQName();
+        String text = getTextValue();
+        if (isValueReference() && isLazy()) {
+            //export a lazy reference
+            //TODO
+            throw new SmartFrogException("Lazy references not supported yet");
         } else {
+            boolean special=CdlComponentDescriptionImpl.isSpecialNamespace(name);
+            if (!special) {
+                CdlComponentDescriptionImpl description = new CdlComponentDescriptionImpl(name, parent);
+                description.registerWithParent();
+                exportChildren(description);
+                //namespaces
+                final Namespaces namespaces = getNamespaces();
+                namespaces.exportDescription(description);
+                //finally, if there is no child element in the description with the classname, we
+                //register our classname as the default
+                if (getChildTemplateMatching(Constants.XMLNS_SMARTFROG, SmartFrogCoreKeys.SF_CLASS) == null) {
+                    addDefaultSFClass(description);
+                }
 
-            //no kids. export our text value. how?
-            if(isValueReference() && isLazy()) {
-                //export a lazy reference
-                //TODO
-                throw new SmartFrogException("Lazy references not supported yet");
+                //sanity check: force validate here and now
+                assert null != description.sfResolve(SmartFrogCoreKeys.SF_CLASS, true);
+                if(text!=null) {
+                    description.sfReplaceAttribute(CmpComponentImpl.ATTR_TEXT,text);
+                }
             } else {
-                //normal text node.
-                String text=getTextValue();
-                parent.replace(name,text);
+                //something in the smartfrog namespace. special treatment
+                parent.replace(name, text);
             }
         }
-
     }
 
     /**
      * Override point: add the sf class to a component.
+     *
      * @param description
      * @throws SmartFrogRuntimeException
      */
@@ -498,6 +468,7 @@ public class PropertyList extends DocNode implements DescriptorSource {
 
     /**
      * export all our children
+     *
      * @param parent
      * @return
      * @throws RemoteException
@@ -613,6 +584,7 @@ public class PropertyList extends DocNode implements DescriptorSource {
 
     /**
      * Test for being a lazy reference
+     *
      * @return true iff we are a reference with cdl:lazy=true
      */
     public boolean isLazyReference() {

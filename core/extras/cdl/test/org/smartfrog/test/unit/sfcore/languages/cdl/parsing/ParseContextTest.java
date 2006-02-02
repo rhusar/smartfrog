@@ -74,7 +74,7 @@ public class ParseContextTest extends XmlTestBase {
     public void testDuplicatePrototype() throws Exception {
         ParseContext context = new ParseContext();
         PropertyList prototype = new PropertyList("smartfrog",
-                Constants.SMARTFROG_NAMESPACE);
+                Constants.XMLNS_SMARTFROG);
         try {
             context.prototypeAddNew(prototype);
             context.prototypeAddNew(prototype);
@@ -88,7 +88,7 @@ public class ParseContextTest extends XmlTestBase {
     public void testUpdatePrototype() throws Exception {
         ParseContext context = new ParseContext();
         PropertyList prototype = new PropertyList("smartfrog",
-                Constants.SMARTFROG_NAMESPACE);
+                Constants.XMLNS_SMARTFROG);
         context.prototypeAddNew(prototype);
         context.prototypeUpdate(prototype);
     }

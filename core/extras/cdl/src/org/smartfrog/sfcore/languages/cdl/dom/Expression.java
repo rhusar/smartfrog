@@ -21,17 +21,17 @@ package org.smartfrog.sfcore.languages.cdl.dom;
 
 import nu.xom.Element;
 import nu.xom.Node;
+import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.languages.cdl.components.CdlComponentDescription;
+import org.smartfrog.sfcore.languages.cdl.components.CdlComponentDescriptionImpl;
 import org.smartfrog.sfcore.languages.cdl.dom.attributes.ValueOfAttribute;
 import org.smartfrog.sfcore.languages.cdl.faults.CdlXmlParsingException;
 import org.smartfrog.sfcore.languages.cdl.generate.DescriptorSource;
-import org.smartfrog.sfcore.languages.cdl.components.CdlComponentDescription;
-import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.sfcore.languages.cdl.components.CdlComponentDescriptionImpl;
 
 import javax.xml.namespace.QName;
+import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.HashMap;
-import java.rmi.RemoteException;
 
 /**
  * created 21-Apr-2005 14:42:51

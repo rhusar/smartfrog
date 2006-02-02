@@ -45,7 +45,7 @@ public class Namespaces implements NamespaceLookup, Serializable, DescriptorSour
      * our namespace node
      * {@value}
      */
-    public static final QName QNAME_NAMESPACE=new QName(Constants.XML_CDL_NAMESPACE,"namespace");
+    public static final QName QNAME_NAMESPACE=new QName(Constants.XMLNS_CDL,"namespace");
 
     private Map<String, String> map=new HashMap<String, String>();
 

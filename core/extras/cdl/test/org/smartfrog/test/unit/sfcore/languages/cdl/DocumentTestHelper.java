@@ -32,11 +32,9 @@ import org.smartfrog.sfcore.languages.cdl.ParseContext;
 import org.smartfrog.sfcore.languages.cdl.dom.CdlDocument;
 import org.smartfrog.sfcore.languages.cdl.dom.PropertyList;
 import org.smartfrog.sfcore.languages.cdl.faults.CdlException;
-import org.smartfrog.sfcore.languages.cdl.generate.SmartFrogSourceGenerator;
 import org.xml.sax.SAXException;
 
 import javax.xml.namespace.QName;
-import java.io.File;
 import java.io.IOException;
 
 /**
@@ -316,8 +314,4 @@ public class DocumentTestHelper extends Assert {
         return template;
     }
 
-    public static File saveToSmartFrog(CdlDocument cdlDocument) throws IOException,
-            CdlException {
-        return SmartFrogSourceGenerator.translate(cdlDocument);
-    }
 }

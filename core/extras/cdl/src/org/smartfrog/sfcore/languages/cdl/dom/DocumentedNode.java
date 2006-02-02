@@ -20,7 +20,6 @@
 package org.smartfrog.sfcore.languages.cdl.dom;
 
 import nu.xom.Element;
-import org.smartfrog.sfcore.languages.cdl.faults.CdlXmlParsingException;
 
 /**
  * A node that has an (optional) documentation element created 21-Apr-2005

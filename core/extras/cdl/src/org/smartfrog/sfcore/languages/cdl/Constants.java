@@ -34,38 +34,59 @@ public class Constants {
     }
 
 
-    public static final String XML_NAMESPACE_URI="http://www.w3.org/2000/xmlns/";
+    public static final String XMLNS_XMLNS ="http://www.w3.org/2000/xmlns/";
 
     public static final String DEPLOY_API_SCHEMA_FILENAME =
             CddlmConstants.CDL_FILENAME_DEPLOYMENT_API;
 
-    public static final String XML_CDL_NAMESPACE = CddlmConstants.XML_CDL_NAMESPACE;
+    /** {@value} */
+    public static final String XMLNS_CDL = CddlmConstants.XML_CDL_NAMESPACE;
 
-    public static final String DEPLOY_API_TYPES_NAMESPACE = CddlmConstants.CDL_API_TYPES_NAMESPACE;
+    /** {@value} */
+    public static final String XMLNS_DEPLOY_API_TYPES = CddlmConstants.CDL_API_TYPES_NAMESPACE;
 
-    public static final String CMP_NAMESPACE = CddlmConstants.CDL_CMP_TYPES_NAMESPACE;
+    /** {@value} */
+    public static final String XMLNS_CMP = CddlmConstants.CDL_CMP_TYPES_NAMESPACE;
 
+    /** {@value} */
     public static final String CDL_ELT_CDL = "cdl";
 
-    public static final String XPATH_URI = "http://www.w3.org/TR/1999/REC-xpath-19991116";
+    /** {@value} */
+    public static final String XMLNS_XPATH = "http://www.w3.org/TR/1999/REC-xpath-19991116";
 
-    public static final String SMARTFROG_NAMESPACE = CddlmConstants.SMARTFROG_NAMESPACE;
+    /** {@value} */
+    public static final String XMLNS_SMARTFROG = CddlmConstants.SMARTFROG_NAMESPACE;
 
+    /** {@value} */
+    public static final String XMLNS_SMARTFROG_TYPES = "http://smartfrog.org/types/2006/01/";
 
+    /** {@value} */
     public static final String OPTION_VALIDATE_ONLY = CddlmConstants.OPTION_VALIDATE_ONLY;
 
+    /** {@value} */
     public static final String OPTION_PROPERTIES = CddlmConstants.OPTION_PROPERTIES;
 
+    /** {@value} */
     public static final String SMARTFROG_ELEMENT_NAME = "smartfrog";
 
+    /** {@value} */
     public static final String SMARTFROG_ELEMENT_VERSION_ATTR = "version";
 
+    /** {@value} */
+    public static final String SMARTFROG_TYPES_TYPE_ATTR = "type";
+
+    /** {@value} */
+    public static final QName QNAME_SFI_TYPE = new QName(XMLNS_SMARTFROG_TYPES,SMARTFROG_TYPES_TYPE_ATTR,"sfi");
+
+    /** {@value} */
     public static final QName QNAME_CDL_REF = new QName(CddlmConstants.XML_CDL_NAMESPACE,
             CddlmConstants.ATTRIBUTE_REF, "cdl");
 
+    /** {@value} */
     public static final QName QNAME_CDL_REFROOT = new QName(CddlmConstants.XML_CDL_NAMESPACE,
             CddlmConstants.ATTRIBUTE_REFROOT,"cdl");
 
+    /** {@value} */
     public static final QName QNAME_CDL_LAZY = new QName(CddlmConstants.XML_CDL_NAMESPACE,
             CddlmConstants.ATTRIBUTE_LAZY, "cdl");
 
@@ -92,19 +113,19 @@ public class Constants {
      * QName used for fault detail containing the current phase
      * {@value}
      */
-    public static final QName QNAME_DETAIL_PHASE = new QName(SMARTFROG_NAMESPACE,"phase","sf");
+    public static final QName QNAME_DETAIL_PHASE = new QName(XMLNS_SMARTFROG,"phase","sf");
 
     /**
      * QName used for fault detail containing the current phase
      * {@value}
      */
-    public static final QName QNAME_DETAIL_DOCUMENT = new QName(SMARTFROG_NAMESPACE, "phase", "sf");
+    public static final QName QNAME_DETAIL_DOCUMENT = new QName(XMLNS_SMARTFROG, "phase", "sf");
 
     /**
      * QName used for the system element
      * {@value}
      */
-    public static final QName QNAME_SYSTEM_ELEMENT = new QName(XML_CDL_NAMESPACE, "system", "cdl");
+    public static final QName QNAME_SYSTEM_ELEMENT = new QName(XMLNS_CDL, "system", "cdl");
 
     /**
      * This is one of those places where bits of the spec can be tuned.
