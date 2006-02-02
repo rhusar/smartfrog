@@ -33,19 +33,11 @@ import org.smartfrog.sfcore.languages.cdl.components.CdlComponentDescription;
 import org.smartfrog.sfcore.languages.cdl.Constants;
 import org.smartfrog.sfcore.common.SmartFrogException;
 
-import javax.xml.namespace.QName;
-
 /**
  * created 23-Jan-2006 17:21:13
  */
 
 public class Namespaces implements NamespaceLookup, Serializable, DescriptorSource {
-
-    /**
-     * our namespace node
-     * {@value}
-     */
-    public static final QName QNAME_NAMESPACE=new QName(Constants.XMLNS_CDL,"namespace");
 
     private Map<String, String> map=new HashMap<String, String>();
 
@@ -99,14 +91,14 @@ public class Namespaces implements NamespaceLookup, Serializable, DescriptorSour
      *
      */
     public void exportDescription(CdlComponentDescription parent) throws RemoteException, SmartFrogException {
-        Vector list=new Vector(map.size());
+        Vector<Vector<String>> list=new Vector<Vector<String>>(map.size());
         for(String prefix :map.keySet()) {
             String uri =map.get(prefix);
-            Vector tuple =new Vector(2);
+            Vector<String> tuple =new Vector<String>(2);
             tuple.add(prefix);
             tuple.add(uri);
             list.add(tuple);
         }
-        parent.sfReplaceAttribute(QNAME_NAMESPACE, list);
+        parent.sfReplaceAttribute(Constants.QNAME_SMARTFROG_TYPES_NAMESPACE_ATTRIBUTE, list);
     }
 }

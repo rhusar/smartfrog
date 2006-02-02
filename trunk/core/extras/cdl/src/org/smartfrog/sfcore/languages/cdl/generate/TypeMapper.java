@@ -40,6 +40,9 @@ public class TypeMapper {
      */
     public static final String STRING = "string";
 
+    /** supported type mapping {@value} */
+    public static final String TRIMMED = "trimmed";
+
     /**
      *  supported type mapping
      * {@value}
@@ -73,6 +76,7 @@ public class TypeMapper {
     private void initialize() throws SmartFrogException {
         map = new Hashtable<String, TypeGenerator>(8);
         map.put(STRING,new ConstructorGenerator(String.class,false));
+        map.put(TRIMMED, new ConstructorGenerator(String.class, true));
         map.put(BOOLEAN, new BoolGenerator());
         map.put(INTEGER, new ConstructorGenerator(Integer.class, true));
         map.put(LONG, new ConstructorGenerator(Long.class, true));

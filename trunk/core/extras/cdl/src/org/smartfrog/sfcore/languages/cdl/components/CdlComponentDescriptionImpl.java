@@ -29,7 +29,6 @@ import org.smartfrog.sfcore.languages.sf.sfcomponentdescription.SFComponentDescr
 import org.smartfrog.sfcore.languages.sf.sfcomponentdescription.SFComponentDescription;
 import org.smartfrog.sfcore.languages.sf.Phase;
 import org.smartfrog.sfcore.languages.sf.SmartFrogCompileResolutionException;
-import org.smartfrog.sfcore.languages.cdl.components.CdlComponentDescription;
 import org.smartfrog.sfcore.languages.cdl.ParseContext;
 import org.smartfrog.sfcore.languages.cdl.Constants;
 import org.smartfrog.sfcore.reference.Reference;
@@ -265,11 +264,11 @@ public class CdlComponentDescriptionImpl extends SFComponentDescriptionImpl impl
     }
 
     /**
-     * special logic for stuff in {@Constants.SMARTFROG_NAMESPACE}
+     * special logic for stuff to be converted down to a string from a qname
      * @param name
      * @return true if this is in a special smartfrog namespace
      */
     public static boolean isSpecialNamespace(QName name) {
-        return Constants.XMLNS_SMARTFROG.equals(name.getNamespaceURI());
+        return name.getNamespaceURI().length()==0;
     }
 }

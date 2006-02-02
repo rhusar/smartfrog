@@ -427,31 +427,34 @@ public class PropertyList extends DocNode implements DescriptorSource {
         String text = getTextValue();
         if (isValueReference() && isLazy()) {
             //export a lazy reference
-            //TODO
+            //TODO export a lazy reference
             throw new SmartFrogException("Lazy references not supported yet");
         } else {
-            boolean special=CdlComponentDescriptionImpl.isSpecialNamespace(name);
-            if (!special) {
+            Object contents=getParseContext().getTypeMapper().map(this);
+            if(contents!=null) {
+                //specially mapped things
+                parent.replace(name, contents);
+            } else {
+                //normal composite type
                 CdlComponentDescriptionImpl description = new CdlComponentDescriptionImpl(name, parent);
                 description.registerWithParent();
-                exportChildren(description);
+                int exported=exportChildren(description);
                 //namespaces
                 final Namespaces namespaces = getNamespaces();
                 namespaces.exportDescription(description);
                 //finally, if there is no child element in the description with the classname, we
                 //register our classname as the default
-                if (getChildTemplateMatching(Constants.XMLNS_SMARTFROG, SmartFrogCoreKeys.SF_CLASS) == null) {
+                if (description.sfResolve(SmartFrogCoreKeys.SF_CLASS, false) == null) {
                     addDefaultSFClass(description);
                 }
 
                 //sanity check: force validate here and now
                 assert null != description.sfResolve(SmartFrogCoreKeys.SF_CLASS, true);
-                if(text!=null) {
+                //only do the text if there were no children
+                if(text!=null &&
+                        (Constants.POLICY_ALWAYS_EXPORT_TEXT_NODES || exported>0)) {
                     description.sfReplaceAttribute(CmpComponentImpl.ATTR_TEXT,text);
                 }
-            } else {
-                //something in the smartfrog namespace. special treatment
-                parent.replace(name, text);
             }
         }
     }
@@ -473,13 +476,17 @@ public class PropertyList extends DocNode implements DescriptorSource {
      * @return
      * @throws RemoteException
      */
-    private void exportChildren(CdlComponentDescription parent) throws RemoteException, SmartFrogException {
+    private int exportChildren(CdlComponentDescription parent) 
+            throws RemoteException, SmartFrogException {
+        int exported=0;
         for (Node node : this) {
             if (node instanceof DescriptorSource) {
+                exported++;
                 DescriptorSource source = (DescriptorSource) node;
                 source.exportDescription(parent);
             }
         }
+        return exported;
     }
 
 
