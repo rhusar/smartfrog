@@ -27,8 +27,4 @@ import java.rmi.Remote;
 
 public interface CmpComponent extends Remote {
 
-    /**
-     * codebase {@value}
-     */
-    public static final String ATTR_COMMAND_PATH = "_cmp_CommandPath";
 }

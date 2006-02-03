@@ -19,14 +19,13 @@
  */
 package org.smartfrog.services.cddlm.cdl.demo;
 
+import org.smartfrog.services.cddlm.cdl.cmp.CmpComponentImpl;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.reference.Reference;
-import org.smartfrog.services.cddlm.cdl.cmp.CmpComponentImpl;
-import org.smartfrog.services.cddlm.cdl.demo.Echo;
-import org.smartfrog.services.xml.utils.XsdUtils;
+import org.smartfrog.sfcore.logging.Log;
 
-import javax.xml.namespace.QName;
 import javax.swing.*;
+import javax.xml.namespace.QName;
 import java.rmi.RemoteException;
 
 /**
@@ -35,22 +34,28 @@ import java.rmi.RemoteException;
 
 public class EchoImpl extends CmpComponentImpl implements Echo {
 
+    Log log;
     public static QName QNAME_MESSAGE = new QName(Echo.DEMO_NAMESPACE, Echo.ATTR_MESSAGE);
     public static QName QNAME_GUI = new QName(Echo.DEMO_NAMESPACE, Echo.ATTR_GUI);
 
     public EchoImpl() throws RemoteException {
     }
 
+
+    public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
+        super.sfDeploy();
+    }
+
     public synchronized void sfStart() throws SmartFrogException,
             RemoteException {
         super.sfStart();
-        String message = resolveText(QNAME_MESSAGE, true);
-        String gui = resolveText(QNAME_GUI, true);
-        boolean showGui = XsdUtils.isXsdBooleanTrue(gui);
+        log=sfGetApplicationLog();
+        String message = (String) resolve(QNAME_MESSAGE, true);
+        boolean showGui;
+        showGui =sfResolve(new Reference(QNAME_GUI),false,false);
+        log.info(message);
         if (showGui) {
             JOptionPane.showMessageDialog(null, message);
-        } else {
-            System.out.println("Message: " + message);
         }
     }
 }

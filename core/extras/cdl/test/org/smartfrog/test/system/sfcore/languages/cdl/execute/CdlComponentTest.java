@@ -61,6 +61,11 @@ public class CdlComponentTest extends DeployingTestBase {
 
     private void deployAndTerminate(String name) throws Throwable {
         Prim prim = deployExpectingSuccess(FILES + name +".cdl", name);
+        assertLivenessSuccess(prim);
+        assertLivenessSuccess(prim);
+        assertLivenessSuccess(prim);
+        assertLivenessSuccess(prim);
+        assertLivenessSuccess(prim);
         terminateApplication(prim);
     }
 
@@ -74,6 +79,10 @@ public class CdlComponentTest extends DeployingTestBase {
 
     public void testMessageBox() throws Throwable {
         deployAndTerminate("message-box");
+    }
+
+    public void testEchoSystem() throws Throwable {
+        deployAndTerminate("echo-system");
     }
 
 }

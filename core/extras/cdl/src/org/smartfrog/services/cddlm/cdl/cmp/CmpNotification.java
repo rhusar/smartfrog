@@ -19,8 +19,6 @@
  */
 package org.smartfrog.services.cddlm.cdl.cmp;
 
-import org.smartfrog.services.cddlm.cdl.cmp.CmpComponent;
-
 /**
  * created 23-Jun-2005 16:37:56
  */
