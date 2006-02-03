@@ -97,7 +97,7 @@ public class ClusterDeployerImpl extends PrimProcessDeployerImpl {
         ComponentDescription allocations = new ComponentDescriptionImpl(null, new ContextImpl(), true);
 
         try {
-            dcopy.visit(new Gatherer(requirements), true);
+            dcopy.visit(new Gatherer(requirements), true, false);
 
             System.out.println("requirements" + requirements);
 
@@ -106,7 +106,7 @@ public class ClusterDeployerImpl extends PrimProcessDeployerImpl {
             if (allocations == null) {
                 throw new SmartFrogDeploymentException("insufficient resources");
             } else {
-                dcopy.visit(new Mapper(allocations), true);
+                dcopy.visit(new Mapper(allocations), true, false);
             }
 
         } catch (Exception e) {

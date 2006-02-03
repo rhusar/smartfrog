@@ -110,7 +110,7 @@ WebServer extends Sequence {
 WebServerTemplate extends ClusterCompound {
     sfClusterNode extends DATA {
         resources extends DATA {
-            //serviceInstances 1;  // is a single instance of a service
+            serviceInstances 1;  // is a single instance of a service
         }
         attributes extends DATA {}
         data extends DATA {}
