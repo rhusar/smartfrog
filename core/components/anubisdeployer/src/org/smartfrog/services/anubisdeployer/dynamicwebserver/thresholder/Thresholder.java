@@ -30,28 +30,6 @@ import java.rmi.RemoteException;
  *
  */
 
-public interface Thresholder extends Remote {
-    public final String LOGTO = "logTo";
-    public final String UPPERTHRESHOLD = "upperThreshold";
-    public final String LOWERTHRESHOLD = "lowerThreshold";
-    public final String POLLFREQUENCY = "pollFrequency";
-    public final String REPEATMEASURES = "repeatMeasures";
-    public final String STABILIZATIONMEASURES = "stabilizationMeasures";
-    public final String MININSTANCES = "minInstances";
+public interface Thresholder extends org.smartfrog.examples.dynamicwebserver.thresholder.Thresholder {
     public final String MAXINSTANCES = "maxInstances";
-
-    public final String TEMPLATE = "template";
-    public final String SERVERS = "servers";
-    public final String BALANCER = "balancer";
-    public final String DATASOURCENAME = "dataSourceName";
-    public final String DATASOURCE = "dataSource";
-    public final String ISAUTO = "isAuto";
-
-    public int upperThreshold() throws RemoteException;
-
-    public void setUpperThreshold(int threshold) throws RemoteException;
-
-    public int lowerThreshold() throws RemoteException;
-
-    public void setLowerThreshold(int threshold) throws RemoteException;
 }

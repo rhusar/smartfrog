@@ -1,27 +1,28 @@
 /** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
 
-This library is free software; you can redistribute it and/or
-modify it under the terms of the GNU Lesser General Public
-License as published by the Free Software Foundation; either
-version 2.1 of the License, or (at your option) any later version.
+ This library is free software; you can redistribute it and/or
+ modify it under the terms of the GNU Lesser General Public
+ License as published by the Free Software Foundation; either
+ version 2.1 of the License, or (at your option) any later version.
 
-This library is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-Lesser General Public License for more details.
+ This library is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ Lesser General Public License for more details.
 
-You should have received a copy of the GNU Lesser General Public
-License along with this library; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ You should have received a copy of the GNU Lesser General Public
+ License along with this library; if not, write to the Free Software
+ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-For more information: www.smartfrog.org
+ For more information: www.smartfrog.org
 
-*/
+ */
 
 package org.smartfrog.services.anubisdeployer;
 
 import java.rmi.RemoteException;
 import java.util.Stack;
+
 import org.smartfrog.sfcore.common.ContextImpl;
 import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.common.SmartFrogException;
@@ -43,9 +44,9 @@ import org.smartfrog.sfcore.processcompound.SFProcess;
 public class ClusterDeployerImpl extends PrimProcessDeployerImpl {
 
     public static final String CLUSTERCOMPOUNDCLASS =
-        "org.smartfrog.services.clustering.ClusterCompoundImpl";
+            "org.smartfrog.services.anubisdeployer.ClusterCompoundImpl";
 
-     /**
+    /**
      * Constructs the ClusetrDeployerImpl with ComponentDescription.
      *
      * @param descr target to operate on
@@ -55,19 +56,18 @@ public class ClusterDeployerImpl extends PrimProcessDeployerImpl {
     }
 
     public Prim deploy(Reference name, Prim parent, Context params)
-        throws SmartFrogDeploymentException {
+            throws SmartFrogDeploymentException {
         target = preprocess(target);
         return super.deploy(name, parent, params);
     }
 
-    private static ComponentDescription preprocess(ComponentDescription descr) 
-	throws SmartFrogDeploymentException {
-
+    private static ComponentDescription preprocess(ComponentDescription descr)
+            throws SmartFrogDeploymentException {
 
         /*
-         * if the attribute sfProcessHost is set - simply pass to the super-class
-         * deployer - as this overrides cluster deployment
-         */
+        * if the attribute sfProcessHost is set - simply pass to the super-class
+        * deployer - as this overrides cluster deployment
+        */
 
         boolean alreadyAllocated = true;
         try {
@@ -99,33 +99,37 @@ public class ClusterDeployerImpl extends PrimProcessDeployerImpl {
         try {
             dcopy.visit(new Gatherer(requirements), true);
 
+            System.out.println("requirements" + requirements);
+
             allocations = allocate(requirements);
 
-	    if (allocations == null) {
-		throw new SmartFrogDeploymentException("insufficient resources"); 
-	    } else {
-		dcopy.visit(new Mapper(allocations), true);
-	    }
+            if (allocations == null) {
+                throw new SmartFrogDeploymentException("insufficient resources");
+            } else {
+                dcopy.visit(new Mapper(allocations), true);
+            }
 
         } catch (Exception e) {
             dcopy = descr;
-	    throw (SmartFrogDeploymentException)SmartFrogDeploymentException.forward(e);
+            throw (SmartFrogDeploymentException) SmartFrogDeploymentException.forward(e);
         }
         return dcopy;
     }
 
     private static ComponentDescription allocate(ComponentDescription reqs) {
+        System.out.println("allocating " + reqs);
         Reference clusterManagementRef = new Reference(ReferencePart.here("clusterNodeManagement"));
         Reference clusterStatusRef = new Reference(ReferencePart.here("clusterStatusMonitor"));
-        
+
         ComponentDescription resources = null;
         ProcessCompound pc = SFProcess.getProcessCompound();
 
         ClusterMonitor cm;
         try {
-            Prim cd =  (Prim) pc.sfResolve(clusterManagementRef);
+            Prim cd = (Prim) pc.sfResolve(clusterManagementRef);
             cm = (ClusterMonitor) cd.sfResolve(clusterStatusRef);
         } catch (SmartFrogException e) {
+            e.printStackTrace();
             return null; // shouldn't happen - at least don't know what to do if it does...
         } catch (RemoteException e) {
             return null; // shouldn't happen, as it is local...
@@ -137,7 +141,10 @@ public class ClusterDeployerImpl extends PrimProcessDeployerImpl {
             return null; // shouldn't happen as it is local...
         }
 
+        System.out.println("to resources " + resources);
         ComponentDescription allocations = ClusterResourceMapper.mapNodes(resources, reqs);
+
+        System.out.println("with allocations " + allocations);
         return allocations;
     }
 
@@ -154,17 +161,19 @@ public class ClusterDeployerImpl extends PrimProcessDeployerImpl {
              * sfClass, look to see if it is already allocated to a
              * node (sfProcessHost attribute exists) if not, then
              * gather the data into the reqs.
-	     *
-	     * Note that since the assumption is made that the tree is fully resolved,
-	     * the path is irrelevant.
+	         *
+	         * Note that since the assumption is made that the tree is fully resolved,
+	         * the path is irrelevant.
              */
+            //if (!node.getEager()) return;
             Context c = node.sfContext();
             Object sfClass = c.get("sfClass");
             if (sfClass != null && sfClass.equals(CLUSTERCOMPOUNDCLASS)) {
                 if (!c.containsKey("sfProcessHost")) {
+                    System.out.println("putting reservationId");
                     c.put("reservationId", newUniqueName());
                     ComponentDescription req =
-                        (ComponentDescription) c.get("sfClusterNode");
+                            (ComponentDescription) c.get("sfClusterNode");
                     if (req != null) {
                         Object id;
                         try {
@@ -200,12 +209,13 @@ public class ClusterDeployerImpl extends PrimProcessDeployerImpl {
 	     * Note that since the assumption is made that the tree is fully resolved,
 	     * the path is irrelevant.
              */
+            //if (!node.getEager()) return;
             Context c = node.sfContext();
             Object sfClass = c.get("sfClass");
             if (sfClass != null && sfClass.equals(CLUSTERCOMPOUNDCLASS)) {
                 if (!c.containsKey("sfProcessHost")) {
                     ComponentDescription req =
-                        (ComponentDescription) c.get("sfClusterNode");
+                            (ComponentDescription) c.get("sfClusterNode");
                     if (req != null) {
                         Object id;
                         try {

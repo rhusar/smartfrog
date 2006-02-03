@@ -26,7 +26,7 @@ public class ClusterCompoundImpl extends CompoundImpl implements Compound {
 
     public ClusterCompoundImpl() throws RemoteException {
     }
-    
+
     // /////////////////////////////////////////////////////
     //
     // Template methods
@@ -35,41 +35,45 @@ public class ClusterCompoundImpl extends CompoundImpl implements Compound {
 
 
     public synchronized void sfDeployWith(Prim parent, Context comp) throws SmartFrogDeploymentException, RemoteException {
-	super.sfDeployWith(parent, comp);
+        super.sfDeployWith(parent, comp);
 
-	ComponentDescription reservationInfo = null;
+        System.out.println("deployed context");
+        System.out.println(comp);
+        ComponentDescription reservationInfo = null;
 
-	try {
-	    reservationInfo = (ComponentDescription)((ComponentDescription)sfResolve("sfClusterNode", true));
-	    resourceManager = (ClusterNode)sfResolve("clusterNodeManager", true);
-	    id = (String)sfResolve("reservationId", true);
-	} catch (Throwable e) {
-	    e.printStackTrace();
-	    throw new SmartFrogDeploymentException("Error obtaining cluster node manager or required reservation", e);
-	}
+        try {
+            reservationInfo = (ComponentDescription) ((ComponentDescription) sfResolve("sfClusterNode", true));
+            resourceManager = (ClusterNode) sfResolve("clusterNodeManager", true);
+            id = (String) sfResolve("reservationId", true);
+        } catch (Throwable e) {
+            e.printStackTrace();
+            throw new SmartFrogDeploymentException("Error obtaining cluster node manager or required reservation", e);
+        }
 
-	/*
-	 * The resource reservation assumes that the resource manager is already running.
-	 * Hence it assumes that reserving the resources is OK as part of the deployment phase. 
-	 * In this way the resources may be used in the start phase.
-	 */
-	try {
-	    resourceManager.reserveResources(id, reservationInfo, this);
-	} catch (Exception e) {
-	    e.printStackTrace();
-	    try {
-		resourceManager.releaseResources(id);
-	    } catch (Exception ex) {}
-	    throw new SmartFrogDeploymentException("unable to reserve required resources", e);
-	}
+        /*
+       * The resource reservation assumes that the resource manager is already running.
+       * Hence it assumes that reserving the resources is OK as part of the deployment phase.
+       * In this way the resources may be used in the start phase.
+       */
+        try {
+            resourceManager.reserveResources(id, reservationInfo, this);
+        } catch (Exception e) {
+            e.printStackTrace();
+            try {
+                resourceManager.releaseResources(id);
+            } catch (Exception ex) {
+            }
+            throw new SmartFrogDeploymentException("unable to reserve required resources", e);
+        }
     }
 
 
     public synchronized void sfTerminateWith(TerminationRecord tr) {
-	super.sfTerminateWith(tr);
-	try {
-	    resourceManager.releaseResources(id);
-	} catch (Exception e) {}
+        super.sfTerminateWith(tr);
+        try {
+            resourceManager.releaseResources(id);
+        } catch (Exception e) {
+        }
     }
 
 

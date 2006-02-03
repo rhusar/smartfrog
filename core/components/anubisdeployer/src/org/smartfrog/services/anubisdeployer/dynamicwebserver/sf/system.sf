@@ -87,19 +87,25 @@ loadingCgi  "/cgi-bin/u1";
 //
 
 sfConfig extends ClusterCompound {
-    sfPrcoessHost "localhost"; // make sure it stays here!
-    sfResources extends DATA {
+    sfClusterNode extends DATA {
         resources extends DATA {
-            serviceInstances 1;  // is a single instance of a service
+           serviceInstances 1;  // is a single instance of a service
         }
         attributes extends DATA {}
         data extends DATA {}
+        description extends DATA {
+            role "web service thresholder and loadbalancer";
+        }
     }
+
     // Deploy an instance of the service
     service extends ServiceTemplate;
 
     // Deploy a set of load generators
-    loadGenerators extends LoadGeneratorTemplate;
+    loadGenerators extends LoadGeneratorTemplate {
+        host "localhost";
+    }
+
 }
 
 

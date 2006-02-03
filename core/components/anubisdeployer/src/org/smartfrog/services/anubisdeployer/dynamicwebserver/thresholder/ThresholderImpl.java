@@ -347,6 +347,7 @@ public class ThresholderImpl extends CompoundImpl implements Thresholder,
                 boolean removeOne = false;
                 boolean addOne = false;
                 int instances = currentInstances();
+                logger.logOptional(name, "poller web server instances " + instances);
 
                 try {
                     int value = dataSource.getData();
