@@ -19,9 +19,8 @@
  */
 package org.smartfrog.services.cddlm.cdl.demo;
 
-import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.services.cddlm.cdl.demo.CdlJava;
 import org.smartfrog.services.cddlm.cdl.cmp.CmpComponentImpl;
+import org.smartfrog.sfcore.common.SmartFrogException;
 
 import java.rmi.RemoteException;
 

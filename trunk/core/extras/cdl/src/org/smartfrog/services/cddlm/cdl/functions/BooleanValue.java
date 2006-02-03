@@ -20,11 +20,9 @@
 
 package org.smartfrog.services.cddlm.cdl.functions;
 
-import org.smartfrog.sfcore.languages.sf.functions.BaseFunction;
-import org.smartfrog.sfcore.languages.sf.functions.BaseUnaryOperator;
 import org.smartfrog.sfcore.languages.sf.PhaseAction;
 import org.smartfrog.sfcore.languages.sf.SmartFrogCompileResolutionException;
-import org.smartfrog.sfcore.common.MessageUtil;
+import org.smartfrog.sfcore.languages.sf.functions.BaseUnaryOperator;
 
 /**
  

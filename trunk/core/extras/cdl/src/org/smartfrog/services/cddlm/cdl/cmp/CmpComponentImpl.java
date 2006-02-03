@@ -26,7 +26,7 @@ import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.compound.CompoundImpl;
 import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.reference.ReferencePart;
-import org.smartfrog.services.cddlm.cdl.cmp.CmpComponent;
+import org.smartfrog.services.cddlm.cdl.base.CdlComponentImpl;
 
 import javax.xml.namespace.QName;
 import java.rmi.RemoteException;
@@ -35,30 +35,11 @@ import java.rmi.RemoteException;
  * created 22-Jun-2005 13:14:43
  */
 
-public class CmpComponentImpl extends CompoundImpl implements CmpComponent {
-    public static final String ATTR_TEXT = "sfText";
+public class CmpComponentImpl extends CdlComponentImpl implements CmpComponent {
+
 
     public CmpComponentImpl() throws RemoteException {
     }
 
-    public synchronized void sfDeploy() throws SmartFrogException,
-            RemoteException {
-        super.sfDeploy();
-    }
 
-    public synchronized void sfStart() throws SmartFrogException,
-            RemoteException {
-        super.sfStart();
-    }
-
-    public Object resolve(QName name,boolean mandatory) throws SmartFrogResolutionException, RemoteException {
-        Reference r=new Reference(name);
-        return sfResolve(r,mandatory);
-    }
-
-    public String resolveText(QName name, boolean mandatory) throws SmartFrogResolutionException, RemoteException {
-        Reference r = new Reference(name);
-        r.addElement(ReferencePart.attrib(ATTR_TEXT));
-        return (String)sfResolve(r, mandatory);
-    }
 }

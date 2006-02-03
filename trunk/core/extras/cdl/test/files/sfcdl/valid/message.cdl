@@ -10,9 +10,9 @@
   <cdl:configuration>
   </cdl:configuration>
   <cdl:system>
-    <demo:echo>
-      <demo:message>Hello, World</demo:message>
-    </demo:echo>
+    <echo cdl:extends="demo:echo">
+      <demo:message>Test message</demo:message>
+    </echo>
   </cdl:system>
 </cdl:cdl>
 

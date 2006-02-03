@@ -25,6 +25,7 @@ import org.smartfrog.sfcore.languages.cdl.dom.CdlDocument;
 import org.smartfrog.sfcore.languages.cdl.dom.ToplevelList;
 import org.smartfrog.sfcore.languages.cdl.dom.PropertyList;
 import org.smartfrog.sfcore.languages.cdl.dom.SystemElement;
+import org.smartfrog.sfcore.languages.cdl.dom.Names;
 import org.smartfrog.sfcore.languages.cdl.faults.CdlException;
 import org.smartfrog.sfcore.languages.cdl.faults.CdlResolutionException;
 import org.smartfrog.sfcore.languages.cdl.Constants;
@@ -36,6 +37,7 @@ import java.io.IOException;
 
 import nu.xom.ParsingException;
 import nu.xom.Node;
+import nu.xom.Attribute;
 
 /**
  * Handle compile-time/not-late references.
@@ -188,6 +190,22 @@ public class EarlyReferenceProcessor implements ProcessingPhase {
         //using a factory specific to the type of the current target, to
         //ensure that toplevel lists get handled
         PropertyList replacement=target.getFactory().create(dest);
+        if(Constants.POLICY_STRIP_ATTRIBUTES_FROM_REFERNCE_DESTINATION) {
+            replacement.removeAllAttributes();
+        }
+        //now copy attributes from the target.
+        boolean lazy=target.isLazy();
+        for (Attribute attr : target.attributes()) {
+            if(Constants.XMLNS_CDL.equals(attr.getNamespaceURI())) {
+                String name = attr.getLocalName();
+                if(!lazy && (Names.ATTR_REFROOT.equals(name)
+                || Names.ATTR_REF.equals(name))) {
+                    continue;
+                }
+            }
+            Attribute cloned=new Attribute(attr);
+            replacement.addAttribute(cloned);
+        }
         replacement.setLocalName(target.getLocalName());
         replacement.setNamespaceURI(target.getNamespaceURI());
         replacement.setNamespacePrefix(target.getNamespacePrefix());

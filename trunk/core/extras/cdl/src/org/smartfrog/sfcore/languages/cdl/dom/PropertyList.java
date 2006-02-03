@@ -34,6 +34,7 @@ import org.smartfrog.sfcore.languages.cdl.components.CdlComponentDescriptionImpl
 import org.smartfrog.sfcore.languages.cdl.faults.CdlInvalidValueReferenceException;
 import org.smartfrog.sfcore.languages.cdl.faults.CdlXmlParsingException;
 import org.smartfrog.sfcore.languages.cdl.generate.DescriptorSource;
+import org.smartfrog.sfcore.languages.cdl.generate.TypeMapper;
 import org.smartfrog.sfcore.languages.cdl.references.ReferencePath;
 import org.smartfrog.sfcore.languages.cdl.resolving.ResolveEnum;
 import org.smartfrog.sfcore.languages.cdl.utils.ClassLogger;
@@ -430,7 +431,8 @@ public class PropertyList extends DocNode implements DescriptorSource {
             //TODO export a lazy reference
             throw new SmartFrogException("Lazy references not supported yet");
         } else {
-            Object contents=getParseContext().getTypeMapper().map(this);
+            TypeMapper typeMapper = getParseContext().getTypeMapper();
+            Object contents=typeMapper.map(this);
             if(contents!=null) {
                 //specially mapped things
                 parent.replace(name, contents);
@@ -476,7 +478,7 @@ public class PropertyList extends DocNode implements DescriptorSource {
      * @return
      * @throws RemoteException
      */
-    private int exportChildren(CdlComponentDescription parent) 
+    private int exportChildren(CdlComponentDescription parent)
             throws RemoteException, SmartFrogException {
         int exported=0;
         for (Node node : this) {
@@ -534,8 +536,21 @@ public class PropertyList extends DocNode implements DescriptorSource {
      * The reference path is removed at the same time.
      */
     protected void markReferenceResolved() {
-        removeAttribute(ATTR_REF, CDL_NAMESPACE);
         referencePath = null;
+        removeOptionalCdlAttribute(ATTR_REF);
+        removeOptionalCdlAttribute(ATTR_REFROOT);
+        removeOptionalCdlAttribute(ATTR_LAZY);
+    }
+
+
+    /**
+     * remove a CDL attr iff it is present
+     */
+    public void removeOptionalCdlAttribute(String name) {
+        Attribute attribute = getAttribute(name,CDL_NAMESPACE);
+        if(attribute!=null) {
+            removeAttribute(attribute);
+        }
     }
 
     /**
@@ -664,4 +679,14 @@ public class PropertyList extends DocNode implements DescriptorSource {
             return state;
         }
     }
+
+    /**
+     * Remove all attributes from a node
+     */
+    public void removeAllAttributes() {
+        for(Attribute attr:attributes()) {
+            removeAttribute(attr);
+        }
+    }
+
 }

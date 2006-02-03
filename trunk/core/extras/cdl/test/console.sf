@@ -1,4 +1,4 @@
-/** (C) Copyright 2005 Hewlett-Packard Development Company, LP
+/** (C) Copyright 1998-2006 Hewlett-Packard Development Company, LP
 
 Disclaimer of Warranty
 
@@ -31,48 +31,47 @@ ITS MEDIA, AND YOU HEREBY WAIVE ANY CLAIM IN THIS REGARD.
 */
 
 /*
- This is a smartfrog file to provide CDL wrapping to java
+ This is a test console
  */
 
+#include "org/smartfrog/services/display/components.sf"
+#include "org/smartfrog/services/trace/components.sf"
+#include "org/smartfrog/services/persistence/components.sf"
+#include "org/smartfrog/components.sf"
 
-#include "/org/smartfrog/services/cddlm/cdl/base/components.sf";
-#include "/org/smartfrog/services/cddlm/cdl/functions/functions.sf";
+// Default sfDaemon Display
+DefaultDisplay extends  Display {
+    nameDisplay "sfDaemon Display"; // Window Title
+    positionDisplay "NE";         // Window position: North-West
+    redirectStd true;             // Redirect std output and error to this wind.
+    showIP false;                  // Show IP address in window title
+    showSfProcess false;           // Show sfProcess name in  window title
+    terminateSFProcessOnExit false; // Terminates sfDaemon when window is closed
+};
 
-#include "/org/smartfrog/services/os/runshell/components.sf"
-#include "/org/smartfrog/services/os/java/components.sf"
-#include "/org/smartfrog/sfcore/workflow/components.sf";
+DisplayTrace extends TraceDisplay{
+  nameDisplay "System Trace";
+  formatMsg   true;
+  stepTrace false; // Should ask for confirmation before stepping through?
+}
 
-// Management Component
-#include "/org/smartfrog/services/management/components.sf"
+Console extends Compound {
+    sfProcessComponentName "sfDefault";
+    display extends DefaultDisplay;
+}
 
-#include "/org/smartfrog/functions.sf"
-
-SfExecuteProgram extends ExecuteProgram {
-    terminateOnFailure extends BooleanValue {
-        data a_sf_terminateOnFailure;
+TraceDisplayConsole extends Console {
+    displayTrace extends DisplayTrace;
+    trace extends Trace{ // Component lifecycle trace notification
+       outputMsg LAZY ATTRIB displayTrace;
     }
-    a_sf_terminateOnFailure "true";
-    a_sf_dir TBD;
-    workDir a_sf_dir;
-    a_sf_directory ".";
-    a_sf_command TBD;
-    a_sf_name "exec";
-    processName a_sf_name;
-    shellCmd extends PatchPath {
-        data a_sf_command;
-    }
-    
+}
+
+TraceConsole extends Console {
+    trace extends Trace; // Component lifecycle trace notification
+    //outputMsg LAZY HOST localhost:rootProcess:sfDefault:display;
 }
 
 
-sfExecuteJava extends ExecuteProgram {
-        javaSchema extends JavaSchema;
-    sfClass "org.smartfrog.services.os.java.RunJavaImpl";
-    processName "JVM";
-    jvm "java";
-    //bind the shell command to the jvm command
-    shellCmd ATTRIB jvm;
-    //declare a classname
-    classname LAZY a_sf_classname;
-    a_sf_classname TBD;
-}
+sfConfig extends TraceDisplayConsole;
+
