@@ -679,7 +679,7 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
             name = e.nextElement();
 
             if ((value = context.get(name)) instanceof ComponentDescription) {
-                if (includeLazy || eager) {
+                if (includeLazy || ((ComponentDescription)value).getEager()) {
                     ((ComponentDescription) value).visit(action, topDown, includeLazy, path);
                 }
             }
