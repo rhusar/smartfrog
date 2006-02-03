@@ -30,8 +30,8 @@ Thresholder extends Compound {
     //pollFrequency 5;                 // gap in seconds
     //repeatMeasures 3;                // number to average over to decide on thresholds
     //stabilizationMeasures 5;         // number of measurements to wait after deploy or terminate of template
-    //minInstances 1;                  // minimum accepted instances of template (must be >= 0)
-    //maxInstances 1;                  // maximum accepted instances of template (must be >= 0)
+    minInstances 1;                    // minimum accepted instances of template (must be >= 0)
+    maxInstances 1;                    // maximum accepted instances of template (must be >= 0)
     template extends LAZY {};          // template LAZY component description (obligatory)
     servers [];                        // vector of server names for deploying the templates - must contain at least one element
     //dataSourceName "dataSource";     // name of data source for values to compare to thresholds

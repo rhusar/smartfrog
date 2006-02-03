@@ -91,12 +91,15 @@ public class ThresholderImpl extends CompoundImpl implements Thresholder,
         pollFrequency = sfResolve(POLLFREQUENCY, 5, false) * 1000;
         repeatMeasures = sfResolve(REPEATMEASURES, 3, false);
         stabilizationMeasures = sfResolve(STABILIZATIONMEASURES, 5, false);
+
         minInstances = sfResolve(MININSTANCES, 1, false);
         maxInstances = sfResolve(MAXINSTANCES, 1, false);
-        ;
-
+        if (maxInstances < minInstances) maxInstances = minInstances;
         if (maxInstances < 1) {
             maxInstances = 1;
+        }
+        if (minInstances < 1) {
+            minInstances = 1;
         }
 
         template = (ComponentDescription) sfResolve(TEMPLATE, true);
@@ -180,14 +183,14 @@ public class ThresholderImpl extends CompoundImpl implements Thresholder,
     public synchronized Object sfReplaceAttribute(Object name, Object value)
             throws SmartFrogRuntimeException, RemoteException {
         if (name.equals(MININSTANCES)) {
-            if (minInstances < 0) minInstances = 0;
+            if (minInstances < 1) minInstances = 1;
             minInstances = ((Integer) value).intValue();
             if (minInstances > maxInstances) {
                 maxInstances = minInstances;
                 super.sfReplaceAttribute(MAXINSTANCES, new Integer(maxInstances));
             }
         } else if (name.equals(MAXINSTANCES)) {
-            if (maxInstances < 0) maxInstances = 0;
+            if (maxInstances < 1) maxInstances = 1;
             maxInstances = ((Integer) value).intValue();
             if (minInstances > maxInstances) {
                 minInstances = maxInstances;
