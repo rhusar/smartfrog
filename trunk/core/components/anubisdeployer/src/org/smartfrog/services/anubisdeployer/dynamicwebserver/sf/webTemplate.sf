@@ -55,6 +55,7 @@ webPagesLocation   TBD;
 CoreWebServer extends Compound {
     polling 5;
 
+/*
     server extends Apache {
         name           "web server";
         interCheckTime 5;
@@ -70,6 +71,7 @@ CoreWebServer extends Compound {
         lowerThresholdValue 5;
         gridStepY           5;
     }
+*/
 
     cpuMonitor extends CpuMonitor {
         delay  polling;
@@ -81,7 +83,7 @@ CoreWebServer extends Compound {
         panelWidth      600;
         panelHeight     200;
         dataDisplayed   "cpu usage";
-	frameTitle      "apache web server";
+	    frameTitle      "apache web server";
         maxY            100;
         minY            0;
         gridStepY       10;
@@ -90,28 +92,31 @@ CoreWebServer extends Compound {
 
 
 WebServer extends Sequence {
-//    actions extends LAZY {
+/*
         install extends Install {
-	    // for simplicity, we will assume this is being defined in a context
-	    // with these attributes defined... probably in the root
+	       // for simplicity, we will assume this is being defined in a context
+	       // with these attributes defined... probably in the root
             ServerHost         PARENT:ATTRIB ServerHost;
-	    ServerPort         PARENT:ATTRIB ServerPort;
+	        ServerPort         PARENT:ATTRIB ServerPort;
 
             ApacheTarLocation  PARENT:ATTRIB ApacheTarLocation;
             cgiScriptsLocation PARENT:ATTRIB cgiScriptsLocation;
             webPagesLocation   PARENT:ATTRIB webPagesLocation;
         }
+*/
         server extends CoreWebServer;
-//    } //end actions
 }
 
 WebServerTemplate extends ClusterCompound {
-    sfResources extends DATA {
+    sfClusterNode extends DATA {
         resources extends DATA {
-            serviceInstances 1;  // is a single instance of a service
+            //serviceInstances 1;  // is a single instance of a service
         }
         attributes extends DATA {}
         data extends DATA {}
+        description extends DATA {
+           role "web server instance";
+        }
     }
 
     sfProcessComponentName "webServer";

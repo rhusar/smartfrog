@@ -23,11 +23,11 @@ For more information: www.smartfrog.org
 #include "/org/smartfrog/predicates.sf"
 
 
-#include "/org/smartfrog/examples/dynamicwebserver/thresholder/components.sf"
+#include "/org/smartfrog/services/anubisdeployer/dynamicwebserver/thresholder/components.sf"
 #include "/org/smartfrog/examples/dynamicwebserver/logging/components.sf"
 #include "/org/smartfrog/examples/dynamicwebserver/stresstest/components.sf"
 #include "/org/smartfrog/examples/dynamicwebserver/balancer/components.sf"
-#include "/org/smartfrog/services/anubisdeployer/dynamicwebserver/dynamicwebserver/sf/webTemplate.sf";
+#include "/org/smartfrog/services/anubisdeployer/dynamicwebserver/sf/webTemplate.sf";
 
 
 /*
@@ -53,14 +53,14 @@ ServiceTemplate extends Compound {
 
 
     logger extends Logger {
-        //verbose true;
+        verbose true;
     }
 
 
     webThresholder extends Thresholder {
-        minInstances 0;
+        minInstances 1;
 
-        //logTo LAZY logger;
+        logTo LAZY logger;
         balancer        LAZY balancerGroup:balancer;
 
         template extends LAZY WebServerTemplate {
@@ -96,8 +96,6 @@ ServiceTemplate extends Compound {
 
     loadGenerator extends StressTester {
         //logTo LAZY logger;
-
-        host balancerHost;
         port 80;
 
         page      measurementCgi;
@@ -112,7 +110,7 @@ ServiceTemplate extends Compound {
 
        balancer extends WebBalancer {
             //logTo LAZY logger;
-            hosts extends serverHosts;
+            hosts [];
        }
 
        connectionMeter extends Meter {
@@ -123,7 +121,7 @@ ServiceTemplate extends Compound {
             gridStepY        10;
             positionDisplay  "NE";
             dataDisplayed    "connections";
-	    frameTitle       "load balancer";
+	        frameTitle       "load balancer";
        }
     }
 
