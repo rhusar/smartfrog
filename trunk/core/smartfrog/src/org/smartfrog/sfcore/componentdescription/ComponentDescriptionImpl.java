@@ -117,8 +117,6 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
      * application.
      *
      * @return reference of attribute names to this component
-     *
-     * @throws RemoteException In case of network/rmi error
      */
     public Reference sfCompleteName() {
 //        if (sfCompleteName==null) { //No cache. Conflict with Schema error report
@@ -624,7 +622,21 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
      * @throws Exception error during applying an action
      */
     public void visit(CDVisitor action, boolean topDown) throws Exception {
-        visit(action, topDown, new Stack());
+       visit(action, topDown, true, new Stack());
+    }
+
+    /**
+     * Visit every node in the tree, applying an action to that node. The nodes
+     * may be visited top-down or bottom-up
+     *
+     * @param action the action to apply
+     * @param topDown true if top-down, false if bottom-up
+     * @param includeLazy  whether to visit into sub-nodes tagged LAZY
+     *
+     * @throws Exception error during applying an action
+     */
+    public void visit(CDVisitor action, boolean topDown, boolean includeLazy) throws Exception {
+       visit(action, topDown, includeLazy, new Stack());
     }
 
      /**
@@ -637,7 +649,22 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
      *
      * @throws Exception error during applying an action
      */
-     public void visit(CDVisitor action, boolean topDown, Stack path)
+     public void visit(CDVisitor action, boolean topDown, Stack path) throws Exception {
+        visit(action, topDown, true, new Stack());
+    }
+
+         /**
+     * Visit every node in the tree from path downwards, applying an action to that node. The nodes
+     * may be visited top-down or bottom-up
+     *
+     * @param action the action to apply
+     * @param topDown true if top-down, false if bottom-up
+     * @param includeLazy  whether to visit into sub-nodes tagged LAZY
+     * @param path the path through the CD hierarchy taken to get here
+     *
+     * @throws Exception error during applying an action
+     */
+     public void visit(CDVisitor action, boolean topDown, boolean includeLazy, Stack path)
         throws Exception {
         Object name;
         Object value;
@@ -652,7 +679,9 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
             name = e.nextElement();
 
             if ((value = context.get(name)) instanceof ComponentDescription) {
-                ((ComponentDescription) value).visit(action, topDown, path);
+                if (includeLazy || eager) {
+                    ((ComponentDescription) value).visit(action, topDown, includeLazy, path);
+                }
             }
         }
         path.pop();
@@ -695,7 +724,7 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
                   Vector phases, Reference ref)
         throws SmartFrogException{
         String language = url;
-        return sfComponentDescription(url,language, phases, ref);
+        return sfComponentDescription(url, language, phases, ref);
     }
 
     /**
@@ -902,7 +931,7 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
        *    the default phases are applied
        * @param ref reference to resolve in ComponentDescription.
        *        If ref is null the whole result ComponentDescription is returned.
-       * @param description to parse into ComponentDescription
+       * @param descr description to parse into ComponentDescription
        *
        * @return process the selected ComponentDescription after compound
        *         description 'phases' are resolved

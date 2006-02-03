@@ -267,6 +267,19 @@ public interface ComponentDescription extends PrettyPrinting, Copying, Reference
      public void visit(CDVisitor action, boolean topDown)
          throws Exception;
 
+    /**
+      * Visit every node in the tree using this as the root, applying an action to the nodes. The nodes
+      * may be visited top-down or bottom-up
+      *
+      * @param action the action to apply
+      * @param topDown true if top-down, false if bottom-up
+      * @param includeLazy  whether to visit into sub-nodes tagged LAZY
+      *
+      * @exception Exception error during applying an action
+      */
+     public void visit(CDVisitor action, boolean topDown, boolean includeLazy)
+         throws Exception;
+
       /**
       * Visit every node in the tree from this node, applying an action to the nodes. The nodes
       * may be visited top-down or bottom-up. Used if there is a previous set of ancestor nodes that have
@@ -280,6 +293,22 @@ public interface ComponentDescription extends PrettyPrinting, Copying, Reference
       */
      public void visit(CDVisitor action, boolean topDown, Stack path)
          throws Exception;
+
+    /**
+    * Visit every node in the tree from this node, applying an action to the nodes. The nodes
+    * may be visited top-down or bottom-up. Used if there is a previous set of ancestor nodes that have
+    * been visited
+    *
+    * @param action the action to apply
+    * @param topDown true if top-down, false if bottom-up
+    * @param includeLazy  whether to visit into sub-nodes tagged LAZY
+    * @param path the path of nodes visited before this one, from the root
+    *
+    * @exception Exception error during applying an action
+    */
+   public void visit(CDVisitor action, boolean topDown, boolean includeLazy, Stack path)
+       throws Exception;
+
 
     /**
      *  To log into sfCore logger. This method should be used to log Core messages
