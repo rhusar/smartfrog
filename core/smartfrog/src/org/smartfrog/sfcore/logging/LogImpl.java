@@ -129,14 +129,13 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
                 try {
                     log = (Log) logs.nextElement();
                     if (isCurrentLevelEnabled(log)) {
-                        method.invoke(logs.nextElement(), args);
+                        method.invoke(log, args);
                     }
                 } catch (Throwable thr) {
                     if (log!=null) log.trace("",thr);
                     else if (localLog!=null)
                         localLog.trace("",thr);
                     else thr.printStackTrace();
-
                 }
             }
         }
