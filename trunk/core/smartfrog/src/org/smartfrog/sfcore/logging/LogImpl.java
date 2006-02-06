@@ -153,18 +153,31 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
         this (name,null);
     }
 
-
     /**
      * Constructor
      * @param name for Log
      * @param componentComponentDescription configuration that overwrites class configuraion
      */
-    public LogImpl (String name, ComponentDescription componentComponentDescription){
+    public LogImpl (String name, ComponentDescription componentComponentDescription) {
+        this (name, componentComponentDescription,null);
+    }
+
+    /**
+     * Constructor
+     * @param name for Log
+     * @param componentComponentDescription configuration that overwrites class configuraion
+     * @param initialLogLevel level to log at. If null it will be ignored.
+     */
+    public LogImpl (String name, ComponentDescription componentComponentDescription, Integer initialLogLevel) {
         //Configuration for LogImpl class
         ComponentDescription classComponentDescription = null;
 
         // Level set in configuration
         int configurationLevel = currentLogLevel;
+
+        if (initialLogLevel!=null){
+            configurationLevel = initialLogLevel.intValue();
+        }
         // logger class set in configuration (Vector or String)
         Object configurationClass = "org.smartfrog.sfcore.logging.LogToFileImpl";
         // codebase used to load  class set in configuration
