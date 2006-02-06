@@ -43,6 +43,7 @@ import java.rmi.RemoteException;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import org.smartfrog.sfcore.common.*;
+import java.util.Vector;
 
 
 /**
@@ -106,6 +107,8 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
         }
     }
 
+    // Used to process one of the registered logs
+    private Log log=null;
     /**
      * <p> Invokes method in localLog and registered logs. </p>
      *
@@ -123,7 +126,7 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
         }
         //Registered logs
         synchronized (registeredLogs){
-            Log log=null;
+            log=null;
             Enumeration logs = registeredLogs.elements();
             while (logs.hasMoreElements()){
                 try {
@@ -138,6 +141,7 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
                     else thr.printStackTrace();
                 }
             }
+            log=null;
         }
     }
 
@@ -166,38 +170,46 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
         // codebase used to load  class set in configuration
         String configurationCodeBase = null;
 
+        Vector loggersConfiguration = null;
+
         logName = name;
         try {
             //Check Class and read configuration...including system.properties
             classComponentDescription = ComponentDescriptionImpl.getClassComponentDescription(this, true,null);
             if (classComponentDescription!=null){
-               configurationClass = this.getConfigurationClass(classComponentDescription,configurationClass);
-               configurationLevel = this.getConfigurationLevel(classComponentDescription,configurationLevel);
-               configurationCodeBase = this.readConfigurationCodeBase(classComponentDescription,configurationCodeBase);
+               configurationClass = getConfigurationClass(classComponentDescription,configurationClass);
+               loggersConfiguration = getLoggersConfigurationForConfigurationClass(classComponentDescription, configurationClass, loggersConfiguration);
+               configurationLevel = getConfigurationLevel(classComponentDescription,configurationLevel);
+               configurationCodeBase = getConfigurationCodeBase(classComponentDescription,configurationCodeBase);
             }
             // overwriting class configuration with component configuration if provided.
             if (componentComponentDescription!=null){
-                configurationClass = this.getConfigurationClass(componentComponentDescription,configurationClass);
-                configurationLevel = this.getConfigurationLevel(componentComponentDescription,configurationLevel);
-                configurationCodeBase = this.readConfigurationCodeBase(componentComponentDescription,configurationCodeBase);
+                configurationClass = getConfigurationClass(componentComponentDescription,configurationClass);
+                loggersConfiguration = getLoggersConfigurationForConfigurationClass(componentComponentDescription, configurationClass, loggersConfiguration);
+                configurationLevel = getConfigurationLevel(componentComponentDescription,configurationLevel);
+                configurationCodeBase = getConfigurationCodeBase(componentComponentDescription,configurationCodeBase);
             }
 
             setLevel (configurationLevel);
 
-            localLog = getLocalLog(name, new Integer(currentLogLevel), (String)configurationClass, configurationCodeBase);
+            loadStartUpLoggers(name, configurationClass, configurationCodeBase, loggersConfiguration);
 
             //Set lower level of the two, just in case local logger has its own mechanism to set log level
             int i= getLevel(localLog);
             if (currentLogLevel>i){
               setLevel(i);
             }
+
         } catch (Exception ex ){
             String msg = "Error during initialization of localLog for LogImpl. Next trying to using Default (LogToFile)";
             String msg2 = "Log '"+name+"' , values [class,level,codebase]: "+ configurationClass +", "+  configurationLevel +", "+ configurationCodeBase +
                         "\nusing Class ComponentDescription:\n{"+classComponentDescription+
                         "}\n, and using Component ComponentDescription:\n{"+ componentComponentDescription+"}";
-            System.err.println("[WARN] "+msg2);
+
             System.err.println("[WARN] "+msg+", Reason: "+ex.getMessage());
+            if (org.smartfrog.sfcore.common.Logger.logStackTrace) {
+                System.err.println("[WARN] "+msg2);
+            }
             try {
                 localLog=new LogToFileImpl(name,new Integer(currentLogLevel));
                 if ((localLog.isWarnEnabled())) localLog.warn(msg2);
@@ -218,6 +230,89 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
     }
 
     /**
+     *  Loads all predefined loggers and their configurations.
+     *
+     * @param name String
+     * @param configurationClass Object
+     * @param configurationCodeBase String
+     * @param loggersConfiguration Vector
+     * @throws RemoteException
+     * @throws SmartFrogLogException
+     */
+
+    private void loadStartUpLoggers(String name, Object configurationClass, String configurationCodeBase, Vector loggersConfiguration) throws RemoteException, SmartFrogLogException {
+        if (configurationClass instanceof String) {
+            localLog = loadLogger(name, (ComponentDescription)loggersConfiguration.firstElement(), new Integer(currentLogLevel), (String)configurationClass, configurationCodeBase);
+            if (localLog.isDebugEnabled()) localLog.debug("Logger registered: "+ localLog.getClass().toString());
+        } else if (configurationClass instanceof Vector) {
+            String className = null;
+            ComponentDescription loggerConfiguration = null;
+            Log logger = null;
+            for (int i = 0; i<((Vector)configurationClass).size(); i++) {
+                try {
+                    className = (String)((Vector)configurationClass).get(i);
+                    loggerConfiguration = (ComponentDescription)loggersConfiguration.get(i);
+                    logger = loadLogger(name, loggerConfiguration,
+                                        new Integer(currentLogLevel), className,
+                                        configurationCodeBase);
+                    if (i==0) {
+                        localLog = logger;
+                    } else {
+                        register("localLog"+i, logger);
+                    }
+                    if (isDebugEnabled()) {
+                        debug("Logger registered: "+logger.getClass().toString());
+                    }
+                } catch (Exception ex) {
+                   if (i ==0) {
+                       throw (SmartFrogLogException)SmartFrogLogException.forward("Fail to register mandatory logger",ex);
+                   } else {
+                       if ((localLog!=null)&&isErrorEnabled()){
+                           error("Fail to register logger: "+className,ex);
+                       }
+                   }
+                }
+            }
+        }
+    }
+
+    /**
+     * Gets configurations (if any) for one (String) or several (Vector) for logger classes
+     * @param configurationComponentDescription ComponentDescription Where to find the configuration
+     * @param configurationClass Object String or Vector which configuration is to be found
+     * @param loggersConfiguration Vector default Configuration/s for configurationClass/es
+     * @throws SmartFrogResolutionException
+     */
+    private Vector getLoggersConfigurationForConfigurationClass( ComponentDescription configurationComponentDescription,
+        Object configurationClass, Vector defaultLoggersConfiguration) throws SmartFrogResolutionException {
+        Vector loggersConfiguration = new Vector();
+        ComponentDescription defaultConfig = null;
+        String className=null;
+        if (configurationClass instanceof String){
+             if ((defaultLoggersConfiguration!=null)&& (defaultLoggersConfiguration.size()>=1)){
+                 defaultConfig = (ComponentDescription)defaultLoggersConfiguration.firstElement();
+             }
+             loggersConfiguration.add(getConfigurationForClass(configurationComponentDescription,(String)configurationClass,defaultConfig));
+        } else if (configurationClass instanceof Vector) {
+           for( int i = 0; i < ((Vector)configurationClass).size(); i++){
+               defaultConfig = null;
+               if ((defaultLoggersConfiguration!=null)){
+                   try {
+                       defaultConfig = (ComponentDescription) defaultLoggersConfiguration.get(i);
+                   } catch (Exception ex) {
+                       defaultConfig = null;
+                   }
+               }
+               className = (String)((Vector)configurationClass).get(i);
+               loggersConfiguration.add(getConfigurationForClass(configurationComponentDescription,className,defaultConfig));
+           }
+        } else {
+            throw SmartFrogResolutionException.illegalClassType(null,null,configurationClass,configurationClass.getClass().toString(),"String or Vector");
+        }
+        return loggersConfiguration;
+    }
+
+    /**
      * Reads configurationClass attribute for LogImpl from a componentDescription
      *
      * @param componentDescription ComponentDescription
@@ -227,7 +322,29 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
      */
     private Object getConfigurationClass(ComponentDescription componentDescription, Object configurationClass) throws SmartFrogResolutionException {
         if (componentDescription==null) return configurationClass;
-        return (String)componentDescription.sfResolve( ATR_LOCAL_LOGGER_CLASS, configurationClass, false);
+        try {
+            return componentDescription.sfResolve(ATR_LOCAL_LOGGER_CLASS, true);
+        } catch (SmartFrogResolutionException ex) {
+            return configurationClass;
+        }
+    }
+
+    /**
+     * Searches componentDescription for a particular configurationClass searching for an
+     * attribute called classname+Config this is used to overwrite the class configuration stored in
+     * default classname.sf files
+     * @param componentDescription ComponentDescription where to find the configuration
+     * @param default configuration Object returned if nothing is found
+     * @return componentdescription configuration found or default value if nothing was found or null if
+     * a problem ocurred
+     * @throws SmartFrogResolutionException
+     */
+    private Object getConfigurationForClass(ComponentDescription componentDescription, String configurationClass, ComponentDescription defaultConfig) throws SmartFrogResolutionException {
+        if (componentDescription==null) {
+            return defaultConfig;
+        }
+        String className = configurationClass.substring(configurationClass.lastIndexOf("."));
+        return (ComponentDescription)componentDescription.sfResolve(className+"Config", defaultConfig, false);
     }
 
     /**
@@ -251,10 +368,11 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
      * @return String
      * @throws SmartFrogResolutionException
      */
-    private String readConfigurationCodeBase(ComponentDescription componentDescription,String configurationCodeBase) throws SmartFrogResolutionException {
+    private String getConfigurationCodeBase(ComponentDescription componentDescription,String configurationCodeBase) throws SmartFrogResolutionException {
         if (componentDescription==null) return configurationCodeBase;
         return getSfCodeBase(componentDescription);
     }
+
 
     /**
      *  Registered inputs, distribution list
@@ -263,17 +381,26 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
 
     //LogImpl configuration
 
+    /**
+     *  Dinamically loads the class that implements the selected logger
+     * @param name String
+     * @param logLevel Integer
+     * @param targetClassName String
+     * @param targetCodeBase String
+     * @return Log logger implementing Log interface.
+     * @throws SmartFrogLogException
+     */
 
-   protected Log getLocalLog(String name, Integer logLevel, String targetClassName , String targetCodeBase)
+   protected Log loadLogger(String name, ComponentDescription configuration,Integer logLevel, String targetClassName , String targetCodeBase)
           throws SmartFrogLogException{
           try {
             Class deplClass = SFClassLoader.forName(targetClassName, targetCodeBase, true);
 
-            Class[] deplConstArgsTypes = { name.getClass(), logLevel.getClass() };
+            Class[] deplConstArgsTypes = { String.class, ComponentDescription.class , Integer.class };
 
             Constructor deplConst = deplClass.getConstructor(deplConstArgsTypes);
 
-            Object[] deplConstArgs = { name, logLevel};
+            Object[] deplConstArgs = { name, configuration, logLevel};
 
             return (Log) deplConst.newInstance(deplConstArgs);
         } catch (NoSuchMethodException nsmetexcp) {
@@ -295,8 +422,7 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
                          ", logLevel "+logLevel+", targetCodeBase "+targetCodeBase;
             System.err.println("[ERROR] "+msg+", Reason: "+intarexcp.toString());
             intarexcp.getCause().printStackTrace();
-            throw new SmartFrogLogException(MessageUtil.formatMessage(
-                    MessageKeys.MSG_INVOCATION_TARGET, targetClassName), intarexcp);
+            throw new SmartFrogLogException(MessageUtil.formatMessage(MessageKeys.MSG_INVOCATION_TARGET, targetClassName), intarexcp);
 
        } catch (Exception ex){
           throw (SmartFrogLogException)SmartFrogLogException.forward(ex);
@@ -741,7 +867,7 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
 
         //Registered logs
         synchronized (registeredLogs){
-            Log log=null;
+            log=null;
             Enumeration logs = registeredLogs.elements();
             while (logs.hasMoreElements()){
                 try {
@@ -759,6 +885,7 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
 
                 }
             }
+            log=null;
         }
     }
 
@@ -801,7 +928,7 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
         }
         //Registered logs
         synchronized (registeredLogs){
-            Log log=null;
+            log=null;
             Enumeration logs = registeredLogs.elements();
             while (logs.hasMoreElements()){
                 try {
@@ -819,6 +946,7 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
 
                 }
             }
+            log=null;
         }
     }
 
@@ -1000,58 +1128,6 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
             throw (SmartFrogLogException)SmartFrogLogException.forward(ex);
        }
     }
-
-
-//    /**
-//        * Main method used in unit testing.
-//        *
-//        *@param  args  Command line arguments
-//        */
-//       public static void main(String[] args) {
-//          // Example of use
-//          LogSF log = new LogImpl("test");
-//          log.setLevel(LogSF.LOG_LEVEL_ALL);
-//          String message = "message - ";
-//          int i = 1;
-//          log.out(message+ i++);
-//          log.info(message+ i++);
-//          try {
-//              log.trace(message+ i++);
-//          } catch (Exception ex){
-//              log.fatal("Oppss!"+message+ i++,ex);
-//          }
-//          try {
-//              log.trace("Hola -2-"+message+ i++);
-//          } catch (Exception ex){
-//              log.fatal("Oppss! -2-"+message+ i++,ex);
-//          }
-//
-//       }
-//
-
-
-/*
-
-@TODO add method for user message output! -> Use default Logger!
-
-
----
-System.err.println((sfex).toString("\n   "));
----
-TR and ComponentName
-          if ((logStackTrace)&&!tr.errorType.equals(TerminationRecord.NORMAL)) {
-            StringBuffer strb = new StringBuffer();
-            strb.append("LOG TR: Component: " +componentName +", "+ tr.toString());
-            log(strb.toString());
-
-
-          }
-
-// SET the level of current log according to the level used to register!
-
-*/
-
-
 }
 
 
