@@ -136,6 +136,19 @@ public class LogToStreamsImpl extends LogToNothingImpl implements LogToStreams, 
         this(name, initialLogLevel, System.out, System.err);
     }
 
+
+    /**
+     * Construct a simple log with given name and log level
+     * and log to output level
+     *
+     * @param name            log name
+     * @param componentComponentDescription A component description to overwrite class configuration
+     * @param initialLogLevel level to log at
+     */
+    public LogToStreamsImpl(String name, ComponentDescription componentComponentDescription, Integer initialLogLevel) {
+        this(name, componentComponentDescription, initialLogLevel, System.out, System.err);
+    }
+
     /**
      * Construct a simple log with given name and log level
      * and log to output level
@@ -158,7 +171,6 @@ public class LogToStreamsImpl extends LogToNothingImpl implements LogToStreams, 
      * @param initialLogLevel level to log at
      * @param out             output stream to log to
      */
-
     public LogToStreamsImpl(String name,ComponentDescription componentComponentDescription, Integer initialLogLevel, PrintStream out, PrintStream err) {
         super(name, initialLogLevel, out, err);
         setLevel(initialLogLevel.intValue());
