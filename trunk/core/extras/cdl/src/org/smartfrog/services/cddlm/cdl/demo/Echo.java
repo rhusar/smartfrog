@@ -30,4 +30,5 @@ public interface Echo extends Remote {
     public static final String ATTR_MESSAGE = "message";
     public static final String ATTR_GUI = "gui";
     public static final String DEMO_NAMESPACE = "http://smartfrog.org/services/cdl/demo/";
+    public static final String ATTR_END_NORMAL = "normalTermination";
 }
