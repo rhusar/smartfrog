@@ -79,7 +79,7 @@ public class LogToNothingImpl implements LogToNothing, Log, LogMessage, LogLevel
      * and log to output level
      * @param name log name
      * @param componentComponentDescription A component description to overwrite class configuration
-     * @param initialLogLevel level to log at. It will be ignored.
+     * @param initialLogLevel level to log at.
      */
     public LogToNothingImpl(String name,ComponentDescription componentComponentDescription, Integer initialLogLevel) {
         this(name, componentComponentDescription, initialLogLevel, System.out, System.err);
@@ -88,7 +88,7 @@ public class LogToNothingImpl implements LogToNothing, Log, LogMessage, LogLevel
      * Construct a simple log with given name and log level
      * and log to output level
      * @param name log name
-     * @param initialLogLevel level to log at. It will be ignored.
+     * @param initialLogLevel level to log at.
      * @param out output stream to log to
      * @param err error stream to log to
      */
@@ -102,7 +102,7 @@ public class LogToNothingImpl implements LogToNothing, Log, LogMessage, LogLevel
      * and log to output level
      * @param name log name
      * @param componentComponentDescription A component description to overwrite class configuration
-     * @param initialLogLevel level to log at. It will be ignored.
+     * @param initialLogLevel level to log at.
      * @param out output stream to log to
      * @param err error stream to log to
      */
