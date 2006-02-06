@@ -55,7 +55,6 @@ webPagesLocation   TBD;
 CoreWebServer extends Compound {
     polling 5;
 
-/*
     server extends Apache {
         name           "web server";
         interCheckTime 5;
@@ -71,7 +70,6 @@ CoreWebServer extends Compound {
         lowerThresholdValue 5;
         gridStepY           5;
     }
-*/
 
     cpuMonitor extends CpuMonitor {
         delay  polling;
@@ -92,7 +90,6 @@ CoreWebServer extends Compound {
 
 
 WebServer extends Sequence {
-/*
         install extends Install {
 	       // for simplicity, we will assume this is being defined in a context
 	       // with these attributes defined... probably in the root
@@ -103,7 +100,6 @@ WebServer extends Sequence {
             cgiScriptsLocation PARENT:ATTRIB cgiScriptsLocation;
             webPagesLocation   PARENT:ATTRIB webPagesLocation;
         }
-*/
         server extends CoreWebServer;
 }
 
