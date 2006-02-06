@@ -20,8 +20,10 @@
 
 package org.smartfrog.test.system.sfcore.languages.cdl.execute;
 
-import org.smartfrog.test.SmartFrogTestBase;
 import org.smartfrog.sfcore.prim.Prim;
+import org.smartfrog.services.cddlm.cdl.demo.Echo;
+
+import java.rmi.RemoteException;
 
 /**
  * Test that the underlying CDL components work.
@@ -59,16 +61,6 @@ public class CdlComponentTest extends DeployingTestBase {
         deployAndTerminate("simple");
     }
 
-    private void deployAndTerminate(String name) throws Throwable {
-        Prim prim = deployExpectingSuccess(FILES + name +".cdl", name);
-        assertLivenessSuccess(prim);
-        assertLivenessSuccess(prim);
-        assertLivenessSuccess(prim);
-        assertLivenessSuccess(prim);
-        assertLivenessSuccess(prim);
-        terminateApplication(prim);
-    }
-
     public void testCompound() throws Throwable {
         deployAndTerminate("compound");
     }
@@ -85,4 +77,34 @@ public class CdlComponentTest extends DeployingTestBase {
         deployAndTerminate("echo-system");
     }
 
+    public void testMessageBoxWait() throws Throwable {
+        Prim prim = deployExpectingSuccess(FILES + "message-box" + ".cdl", "echoSystem");
+        Thread.sleep(10 * 1000);
+        Prim echoPrim = prim.sfResolve("echo", (Prim) null, true);
+        //cast it
+        Echo echo = (Echo) echoPrim;
+        try {
+            boolean terminated = spinUntilTerminated(echoPrim, 30);
+            assertTrue("successful termination", terminated);
+        } finally {
+            terminateApplication(prim);
+        }
+    }
+    public void testEchoSystemWait() throws Throwable {
+        Prim prim = deployExpectingSuccess(FILES + "echo-system" +".cdl", "echoSystem2");
+        Prim echoPrim =prim;
+        boolean terminated = false;
+        try {
+            terminated = spinUntilTerminated(echoPrim, 30);
+            assertTrue("successful termination",terminated);
+        } finally {
+            if(!terminated) {
+                try {
+                    terminateApplication(prim);
+                } catch (java.rmi.NoSuchObjectException ignore) {
+                    //already terminated, do nothing
+                }
+            }
+        }
+    }
 }

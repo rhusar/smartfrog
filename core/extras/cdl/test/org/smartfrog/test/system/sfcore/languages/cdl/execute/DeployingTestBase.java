@@ -21,13 +21,49 @@ package org.smartfrog.test.system.sfcore.languages.cdl.execute;
 
 import org.smartfrog.test.SmartFrogTestBase;
 import org.smartfrog.test.unit.sfcore.languages.cdl.Filenames;
+import org.smartfrog.sfcore.prim.Prim;
+
+import java.rmi.RemoteException;
 
 /**
  * created 31-Jan-2006 13:43:11
  */
 
 public abstract class DeployingTestBase extends SmartFrogTestBase implements Filenames {
+    public static final int SPIN_LAG = 1000;
+
     public DeployingTestBase(String name) {
         super(name);
+    }
+
+    protected void deployAndTerminate(String name) throws Throwable {
+        Prim prim = deployExpectingSuccess(getResourceBase() + name + ".cdl", name);
+        assertLivenessSuccess(prim);
+        assertLivenessSuccess(prim);
+        assertLivenessSuccess(prim);
+        assertLivenessSuccess(prim);
+        assertLivenessSuccess(prim);
+        terminateApplication(prim);
+    }
+
+    protected String getResourceBase() {
+        return CdlComponentTest.FILES;
+    }
+
+    protected boolean spinUntilTerminated(Prim prim,int timeout) throws RemoteException {
+        try {
+            long timeLimit =System.currentTimeMillis()+timeout*1000;
+            boolean tooLong =false;
+            while(!prim.sfIsTerminated() && !tooLong) {
+                Thread.sleep(SPIN_LAG);
+                tooLong =System.currentTimeMillis()>timeLimit;
+            }
+            return !prim.sfIsTerminated();
+        } catch (InterruptedException e) {
+            return false;
+        } catch (java.rmi.NoSuchObjectException noSuchObject) {
+            //hey, we are not here any more.
+            return true;
+        }
     }
 }
