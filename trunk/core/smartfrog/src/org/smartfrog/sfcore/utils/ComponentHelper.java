@@ -246,7 +246,7 @@ public class ComponentHelper {
             name = null;
         }
         TerminationRecord record = TerminationRecord.normal(name);
-        targetForTermination(record, true,false);
+        targetForTermination(record, false,false);
     }
 
     /**
