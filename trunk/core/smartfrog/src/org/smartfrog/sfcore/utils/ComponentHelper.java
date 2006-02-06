@@ -132,6 +132,7 @@ public class ComponentHelper {
      * Method that can be invoked in any PrimImpl to trigger the detach and/or termination of a component
      * according to the values of the boolean attributes 'sfShouldDetach', 'sfShouldTerminate'
      * and 'sfShouldTerminateQuietly'
+     * Example: new ComponentHelper(this).sfSelfDetachAndOrTerminate("normal","Copy ",this.sfCompleteNameSafe(),null);
      * @param terminationType - termination type, system recognized types are "normal", "abnormal" and "externalReferenceDead".
      * @param terminationMessage - description of termination
      * @param refId Reference - id of terminating component
