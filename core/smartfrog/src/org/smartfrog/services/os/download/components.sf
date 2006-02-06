@@ -48,12 +48,13 @@ DownloadComponent extends Prim {
         /**
          * terminate after downloading
          */
+        sfShouldTerminate extends Boolean;
         shouldTerminate extends Boolean;
-
-
     }
     sfClass "org.smartfrog.services.os.download.DownloadImpl";
     blocksize 1024;
+    //real termination attribute. shouldTerminate is kept for legazy reasons
+    sfShouldTerminate shouldTerminate;
     shouldTerminate false;
     deleteOnExit false;
 }

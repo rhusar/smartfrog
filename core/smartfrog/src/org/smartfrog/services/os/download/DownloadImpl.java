@@ -77,18 +77,22 @@ public class DownloadImpl extends FileUsingComponentImpl implements Download {
 
             int blocksize = ((Integer) sfResolve(ATTR_BLOCKSIZE)).intValue();
             terminate = sfResolve(ATTR_TERMINATE, terminate, true);
+            if (sfLog().isInfoEnabled()){
+                sfLog().info(" Donwloading '"+url+"' to '"+localFile+"'. Blocksize: "+blocksize);
+            }
             File file = new File(localFile);
+
             bind(file);
 
             download(url, file, blocksize);
-
-            if (terminate) {
-                //spawn the thread to terminate normally
-                ComponentHelper helper = new ComponentHelper(this);
-                helper.targetForTermination();
+            if (sfLog().isInfoEnabled()){
+                sfLog().info(" Donwload complete. File in: "+ file);
             }
 
-        } catch (IOException e) {
+            new ComponentHelper(this).sfSelfDetachAndOrTerminate("normal","Donwload completed. File in: "+ file,this.sfCompleteNameSafe(),null);
+
+
+        } catch (Exception e) {
             String errStr = ERROR_IN_DOWNLOAD +
                     url +
                     " to " +
@@ -141,6 +145,10 @@ public class DownloadImpl extends FileUsingComponentImpl implements Download {
 
             // transfer the data
             do {
+//                if (sfLog().isTraceEnabled()){
+//                    sfLog().trace(" Donwloading a block. ");
+//                }
+
                 bytesRead = is.read(b, 0, blocksize);
 
                 if (bytesRead > 0) {
