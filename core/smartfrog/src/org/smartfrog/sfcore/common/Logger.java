@@ -34,7 +34,7 @@ public class Logger implements MessageKeys {
     /** Property to enable stack trace. The default value is overridden by the
      * value specified in default.ini file.
      */
-    public static boolean logStackTrace = false;
+    public static boolean logStackTrace = true;
 
     /** Property to enable sfPing log. The default value is overridden by the
      * value specified in default.ini file.
