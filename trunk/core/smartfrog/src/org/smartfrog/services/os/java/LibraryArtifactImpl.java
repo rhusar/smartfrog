@@ -182,11 +182,10 @@ public class LibraryArtifactImpl extends FileUsingCompoundImpl implements Librar
                 throw new SmartFrogException(message.toString(), this);
             }
         }
+        String message = "LibraryArtifactImpl completed. File : "+ getFile();
+        if (sfLog().isDebugEnabled()) sfLog().debug(message);
 
-        //do we need to terminate ourselves?
-        if (terminate) {
-            new ComponentHelper(this).targetForTermination();
-        }
+        new ComponentHelper(this).sfSelfDetachAndOrTerminate("normal",message,this.sfCompleteNameSafe(),null);
     }
 
     /**
@@ -385,7 +384,7 @@ public class LibraryArtifactImpl extends FileUsingCompoundImpl implements Librar
         return owner.determineArtifactRelativeURLPath(createSerializedArtifact());
     }
 
-    
+
     /**
      * get the full name of the artifact. If a version tag is included, it
      * is artifact-version+extension. If not, it is artifact+extension.
@@ -394,7 +393,7 @@ public class LibraryArtifactImpl extends FileUsingCompoundImpl implements Librar
 /*    public String makeArtifactName() {
         return Maven1Policy.createMaven1ArtifactName(artifact,version,extension);
     }
-*/    
+*/
     /**
      * create the file that represents the full path to the local file.
      *
