@@ -238,11 +238,7 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
 
             return result;
         } catch (Exception sfex){
-            if (sfex instanceof SmartFrogDeploymentException){
-                throw (SmartFrogDeploymentException)sfex;
-            } else {
-                throw new SmartFrogDeploymentException(sfex);
-            }
+            throw (SmartFrogDeploymentException)SmartFrogDeploymentException.forward(sfex);
         }
     }
 
@@ -356,7 +352,7 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
         } catch (RemoteException rex) {
             throw new SmartFrogRuntimeException(MSG_FAILED_TO_CONTACT_PARENT, rex, this);
         }
-        if (sfLog().isDebugEnabled()) sfLog().trace("ProcessCompound '"+sfProcessName+"' started.");
+        if (sfLog().isDebugEnabled()) sfLog().debug("ProcessCompound '"+sfProcessName+"' started.");
     }
 
     /**
@@ -681,12 +677,11 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
 
             try {
                 // read sfHost attribute. Faster that using sfDeployedHost().
-                canonicalHostName = ((java.net.InetAddress)sfResolveHere(
-                    canonicalHostName,false)).getCanonicalHostName();
+                canonicalHostName = ((java.net.InetAddress)sfResolveHere(canonicalHostName,false)).getCanonicalHostName();
             } catch (SmartFrogResolutionException srex){
               //@todo log ignore.
             } catch (NullPointerException exSfHost) {
-                //Problem hre a null exc trown.
+                //Problem here a null exc thrown.
                 canonicalHostName = this.sfDeployedHost().getCanonicalHostName();
             }
 
@@ -866,7 +861,7 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
             pc = ((ProcessCompound) sfParent()).sfResolveProcess(name, cd);
         }
         if (sfLog().isTraceEnabled()){
-            sfLog().trace("ProcessCompound '"+name+"' found: "+pc.sfCompleteName());
+            sfLog().trace("ProcessCompound '"+name+"' found.");
         }
 
         return pc;
@@ -907,7 +902,7 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
                 SmartFrogResolutionException srex =
                         SmartFrogResolutionException.illegalClassType(
                                 Reference.fromString(SmartFrogCoreKeys.SF_PROCESS_ALLOW),
-                                this.sfCompleteName(),
+                                sfCompleteNameSafe(),
                                 ap,
                                 ap.getClass().getName(),
                                 "java.lang.Boolean");
@@ -929,7 +924,7 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
         } catch (ClassCastException ccex) {
             throw SmartFrogResolutionException.illegalClassType(
                 Reference.fromString(SmartFrogCoreKeys.SF_PROCESS_TIMEOUT),
-                this.sfCompleteName(),
+                sfCompleteNameSafe(),
                 timeoutObj,
                 timeoutObj.getClass().getName(),
                 "java.lang.Integer");
@@ -962,7 +957,12 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
             // Wait for new compound to appear and try to return it
             ProcessCompound newPc = (ProcessCompound) sfResolveHereOrWait(name, timeout);
             if (sfLog().isDebugEnabled()){
-                sfLog().debug("New ProcessCompound "+name+" created: "+ newPc.sfCompleteName());
+                try {
+                    sfLog().debug("New ProcessCompound "+name+" created: "+ newPc.sfCompleteName());
+                } catch (Throwable thr) {
+                    sfLog().debug("New ProcessCompound "+name+" created.");
+                    thr.printStackTrace();
+                }
             }
             return newPc;
         } catch (Exception ex) {
