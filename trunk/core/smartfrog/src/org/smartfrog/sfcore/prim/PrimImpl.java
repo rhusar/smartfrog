@@ -175,10 +175,10 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
         try {
            result = sfContext.sfResolveAttribute(name);
            try {
-               if (sfGetCoreLog().isTraceEnabled()) {
-                   sfGetCoreLog().trace(sfCompleteNameSafe()+ " sfResolved HERE '"+name.toString()+"' to '"+ result.toString()+"'");
+               if (sfLog().isTraceEnabled()) {
+                   sfLog().trace("sfResolved HERE '"+name.toString()+"' to '"+ result.toString()+"'");
                }
-           } catch (Exception ex) {ex.printStackTrace();} //ignore
+           } catch (Throwable thr) {thr.printStackTrace();} //ignore
 
         } catch (SmartFrogContextException ex) {
             //sfCompleteName() uses sfResolveHere() and therefore it can be a problem here :-)!
@@ -241,10 +241,10 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
             obj = ((SFMarshalledObject)obj).get();
         }
         try {
-            if (sfGetCoreLog().isTraceEnabled()) {
-                sfGetCoreLog().trace(sfCompleteNameSafe()+ " sfResolved '"+r.toString()+"' to '"+ obj.toString()+"'");
+            if (sfLog().isTraceEnabled()) {
+                sfLog().trace(sfCompleteNameSafe()+ " sfResolved '"+r.toString()+"' to '"+ obj.toString()+"'");
             }
-        } catch (Exception ex) {ex.printStackTrace();} //ignore
+        } catch (Throwable thr) {thr.printStackTrace();} //ignore
         return obj;
     }
 
