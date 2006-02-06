@@ -34,7 +34,7 @@ For more information: www.smartfrog.org
  * -DhttpProxyHost and -DhttpProxyPort options, or use the SetProperty component
  * to set up the proxy at deploy-time
  */
- 
+
 
 /**
  * Policy classes are stateless objects that implement the Policy/Strategy
@@ -66,7 +66,7 @@ Maven2Policy extends Prim {
 }
 
 /**
- * This is a local file policy only. 
+ * This is a local file policy only.
  * It tells the library to save stuff flat
  */
 FlattenLocalFilesPolicy extends Prim {
@@ -89,17 +89,17 @@ Library extends FileUsingComponent {
         repositories extends Vector;
         //cache dir; is created if needed
         cacheDir extends Compulsory;
-    
+
         /**
          * Component implementing local cache policy
          */
         localCachePolicy extends CD;
-        
+
         /**
          * Component implementing local cache policy
          */
         remoteCachePolicy extends CD;
-                
+
     }
 }
 
@@ -113,19 +113,19 @@ Maven1Library extends Library {
     /**
      * Maven file policy
      */
-     
+
     policy extends Maven1Policy;
-    
+
     /**
      * local policy is maven1
      */
     localCachePolicy policy;
-    
+
     /**
      * Remote policy is maven1
      */
-    remoteCachePolicy policy;   
-    
+    remoteCachePolicy policy;
+
     /**
      * Well known cache directory
      */
@@ -153,21 +153,21 @@ Maven2Library extends Library {
     /**
      * Maven file policy
      */
-     
+
     policy extends Maven2Policy;
-    
+
     /**
      * local policy is maven2
      */
     localCachePolicy policy;
-    
+
     /**
      * Remote policy is maven2
      */
-    remoteCachePolicy policy;   
+    remoteCachePolicy policy;
 
 
-    
+
     /**
      * Well known cache directory
      */
@@ -178,7 +178,7 @@ Maven2Library extends Library {
         filename ".m2/repository";
     }
 
-    
+
 
     /**
      * Maven2 repository at ibiblio.org. Really we should permit mirrors; or include
@@ -226,6 +226,7 @@ LibraryArtifact extends FileUsingComponent {
         downloadIfAbsent extends Boolean;
         downloadAlways extends Boolean;
         failIfNotPresent extends Boolean;
+        sfShouldTerminate extends Boolean;
         terminate extends Boolean;
     }
     artifact ATTRIB project;
@@ -246,6 +247,8 @@ LibraryArtifact extends FileUsingComponent {
     failIfNotPresent true;
 
     //stay present after download
+    //real terminate flag, terminate is kept for legacy reasons.
+    sfShouldTerminate terminate;
     terminate false;
 
 
@@ -264,4 +267,4 @@ JarArtifact extends LibraryArtifact {
 MavenJar extends JarArtifact  {
     library LAZY Maven2Library;
 }
- 
+
