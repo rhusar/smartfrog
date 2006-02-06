@@ -147,8 +147,8 @@ public class CompoundImpl extends PrimImpl implements Compound {
                   message.append(", Params: ");
                   message.append(parms.toString());
                 }
-              } catch (Exception ex1) {
-                sfLog().trace("",ex1);
+              } catch (Throwable  thr) {
+                sfLog().trace("",thr);
               }
               sfLog().trace(message.toString());
             }
