@@ -361,8 +361,17 @@ public class CdlDocument implements Names, DescriptorSource {
      */
     public void parse(ParseContext context) throws CdlException, IOException,
             ParsingException {
-        setParseContext(context);
-        parsePhaseBuildDom();
+        List<ProcessingPhase> phases = createPhaseList(false);
+        parseAndApplyPhases(context, phases);
+    }
+
+    public void parseImportedDocument(ParseContext context) throws CdlException, IOException,
+            ParsingException {
+        List<ProcessingPhase> phases = createPhaseList(true);
+        parseAndApplyPhases(context, phases);
+    }
+
+    private List<ProcessingPhase> createPhaseList(boolean importedDocument) {
         List<ProcessingPhase> phases = new ArrayList<ProcessingPhase>(8);
         //register the protos
         phases.add(new RegisterPrototypesProcessor());
@@ -373,11 +382,20 @@ public class CdlDocument implements Names, DescriptorSource {
         //do the extends processing
         phases.add(new ExtendsProcessor());
         //debug builds and a sanity check
-        if(Constants.POLICY_DEBUG_RELEASE) {
+        if (Constants.POLICY_DEBUG_RELEASE) {
             phases.add(VerifyExtendsComplete.createPhase());
         }
-        //now do early references
-        phases.add(new EarlyReferenceProcessor());
+        if (!importedDocument) {
+            //now do early references
+            phases.add(new EarlyReferenceProcessor());
+        }
+        return phases;
+    }
+
+    private void parseAndApplyPhases(ParseContext context, List<ProcessingPhase> phases) throws CdlException,
+            IOException, ParsingException {
+        setParseContext(context);
+        parsePhaseBuildDom();
 
         //list is full, so execute.
         String currentPhase = "";

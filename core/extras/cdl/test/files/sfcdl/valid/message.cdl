@@ -11,7 +11,10 @@
   </cdl:configuration>
   <cdl:system>
     <echo cdl:extends="demo:echo">
-      <demo:message>Test message</demo:message>
+      <demo:message >
+        Test message to antlai &amp; julgui
+      </demo:message>
+      <demo:gui>false</demo:gui>
     </echo>
   </cdl:system>
 </cdl:cdl>
