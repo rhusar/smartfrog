@@ -16,7 +16,7 @@
     <demo:echo cdl:extends="cmp:Component">
       <cmp:CommandPath>org.smartfrog.services.cddlm.cdl.demo.EchoImpl</cmp:CommandPath>
       <demo:message sfi:type="trimmed"/>
-      <demo:gui>false</demo:gui>
+      <demo:gui sfi:type="boolean">false</demo:gui>
     </demo:echo>
 
 

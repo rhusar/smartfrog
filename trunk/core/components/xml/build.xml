@@ -51,7 +51,7 @@
   
   <!-- import libs. may need proxy setup -->
   <target name="m2" depends="m2-tasks" >
-    <m2-libraries pathID="libraries.path">
+    <m2-libraries pathID="libraries.path" verbose="true">
       <dependency groupID="xerces"
         artifactID="xercesImpl"
         version="${xerces.version}"/>        

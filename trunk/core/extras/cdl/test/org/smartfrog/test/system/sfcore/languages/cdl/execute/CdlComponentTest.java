@@ -23,8 +23,6 @@ package org.smartfrog.test.system.sfcore.languages.cdl.execute;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.services.cddlm.cdl.demo.Echo;
 
-import java.rmi.RemoteException;
-
 /**
  * Test that the underlying CDL components work.
  */
@@ -51,35 +49,39 @@ import java.rmi.RemoteException;
 public class CdlComponentTest extends DeployingTestBase {
 
     
-    public static final String FILES = "files/sfcdl/valid/";
-    
+    public static final String VALID_CDL_FILES = "files/sfcdl/valid/";
+    public static final String SIMPLE = "simple.cdl";
+    public static final String COMPOUND = "compound.cdl";
+    public static final String MESSAGE = "message.cdl";
+    public static final String MESSAGEBOX = "message-box.cdl";
+    public static final String ECHO_SYSTEM = "echo-system.cdl";
+
     public CdlComponentTest(String name) {
         super(name);
     }
 
     public void testSimple() throws Throwable {
-        deployAndTerminate("simple");
+        deployAndTerminate(SIMPLE);
     }
 
     public void testCompound() throws Throwable {
-        deployAndTerminate("compound");
+        deployAndTerminate(COMPOUND);
     }
 
     public void testMessage() throws Throwable {
-        deployAndTerminate("message");
+        deployAndTerminate(MESSAGE);
     }
 
     public void testMessageBox() throws Throwable {
-        deployAndTerminate("message-box");
+        deployAndTerminate(MESSAGEBOX);
     }
 
     public void testEchoSystem() throws Throwable {
-        deployAndTerminate("echo-system");
+        deployAndTerminate(ECHO_SYSTEM);
     }
 
     public void testMessageBoxWait() throws Throwable {
-        Prim prim = deployExpectingSuccess(FILES + "message-box" + ".cdl", "echoSystem");
-        Thread.sleep(10 * 1000);
+        Prim prim = deployExpectingSuccess(VALID_CDL_FILES + MESSAGEBOX, MESSAGEBOX);
         Prim echoPrim = prim.sfResolve("echo", (Prim) null, true);
         //cast it
         Echo echo = (Echo) echoPrim;
@@ -91,7 +93,7 @@ public class CdlComponentTest extends DeployingTestBase {
         }
     }
     public void testEchoSystemWait() throws Throwable {
-        Prim prim = deployExpectingSuccess(FILES + "echo-system" +".cdl", "echoSystem2");
+        Prim prim = deployExpectingSuccess(VALID_CDL_FILES + ECHO_SYSTEM, ECHO_SYSTEM+"2");
         Prim echoPrim =prim;
         boolean terminated = false;
         try {

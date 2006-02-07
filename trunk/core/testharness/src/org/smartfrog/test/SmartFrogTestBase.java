@@ -44,6 +44,7 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.UnknownHostException;
 import java.rmi.RemoteException;
+import java.rmi.NoSuchObjectException;
 
 /**
  * A base class for smartfrog tests
@@ -162,9 +163,9 @@ public abstract class SmartFrogTestBase extends TestCase {
      * @throws RemoteException in the event of remote trouble.
      */
     protected Throwable deployExpectingException(String testURL,
-                                            String appName,
-                                            String exceptionName,
-                                            String searchString) throws RemoteException,
+                                                 String appName,
+                                                 String exceptionName,
+                                                 String searchString) throws RemoteException,
             SmartFrogException, SFGeneralSecurityException,
             UnknownHostException {
         return deployExpectingException(testURL,
@@ -191,11 +192,11 @@ public abstract class SmartFrogTestBase extends TestCase {
      * @return the exception that was returned
      */
     protected Throwable deployExpectingException(String testURL,
-                                            String appName,
-                                            String exceptionName,
-                                            String searchString,
-                                            String containedExceptionName,
-                                            String containedExceptionText) throws SmartFrogException,
+                                                 String appName,
+                                                 String exceptionName,
+                                                 String searchString,
+                                                 String containedExceptionName,
+                                                 String containedExceptionText) throws SmartFrogException,
             RemoteException, UnknownHostException, SFGeneralSecurityException {
 
         startSmartFrog();
@@ -266,7 +267,7 @@ public abstract class SmartFrogTestBase extends TestCase {
      * @param details status string for reporting purposes
      */
     protected void assertFaultCauseAndTextContains(Throwable cause, String faultName,
-                                                 String faultText, String details) {
+                                                   String faultText, String details) {
         //if we wanted the name of a fault
         if (faultName != null) {
             //then look for the name of contained exception and see it matches what was
@@ -526,20 +527,20 @@ public abstract class SmartFrogTestBase extends TestCase {
      * parse a smartfrog file; throw an exception if something went wrong
       * The language of the parser is determined from the file extension; if there
       * is none, then 'sf' is assumed.
-     * @param fileUrl
+     * @param resource resource to parse
      * @throws SmartFrogException
      */
-    protected Phases parse(String fileUrl) throws SmartFrogException {
+    protected Phases parse(String resource) throws SmartFrogException {
         Phases phases=null;
         InputStream is=null;
         try {
-            is = SFClassLoader.getResourceAsStream(fileUrl);
+            is = SFClassLoader.getResourceAsStream(resource);
             if (is == null) {
                 String msg = MessageUtil.
-                        formatMessage(MessageKeys.MSG_URL_TO_PARSE_NOT_FOUND, fileUrl);
+                        formatMessage(MessageKeys.MSG_URL_TO_PARSE_NOT_FOUND, resource);
                 throw new SmartFrogParseException(msg);
             }
-            String extension = determineLanguage(fileUrl);
+            String extension = determineLanguage(resource);
             phases = (new SFParser(extension)).sfParse(is);
         } finally {
             if (is != null) {
@@ -630,9 +631,11 @@ public abstract class SmartFrogTestBase extends TestCase {
     }
 
     /**
-     * terminate a named application
-     * @param application
-     * @throws java.rmi.RemoteException on network trouble
+     * terminate a named application.
+     * If the application parameter is null or refers to a nonexistent node, nothing happens.
+     *
+     * @param application; can be null
+     * @throws java.rmi.RemoteException on network trouble other than an already terminated app
      */
     public void terminateApplication(Prim application) throws RemoteException {
         if(application==null) {
@@ -644,7 +647,11 @@ public abstract class SmartFrogTestBase extends TestCase {
         } catch (RemoteException e) {
             name = null;
         }
-        application.sfDetachAndTerminate(TerminationRecord.normal(name));
+        try {
+            application.sfDetachAndTerminate(TerminationRecord.normal(name));
+        } catch (NoSuchObjectException ignore) {
+            //app is already terminated, do not fail a test.
+        }
     }
 
     /**
@@ -695,7 +702,7 @@ public abstract class SmartFrogTestBase extends TestCase {
      * @throws AssertionError if a condition is not met
      */
     public Object resolveAttributeWithTypeAssertion(Prim application,
-            String attribute, Class expectedClass) throws SmartFrogResolutionException,
+                                                    String attribute, Class expectedClass) throws SmartFrogResolutionException,
             RemoteException {
         assertNotNull(expectedClass);
         Object value = resolveAttribute(application,attribute);
@@ -760,7 +767,7 @@ public abstract class SmartFrogTestBase extends TestCase {
      * @throws AssertionError if a condition is not met
      */
     public void assertAttributeEquals(Prim app, String attribute,
-            Object mustEqual) throws SmartFrogResolutionException,
+                                      Object mustEqual) throws SmartFrogResolutionException,
             RemoteException {
         Object value = resolveAttribute(app, attribute);
         assertEquals(mustEqual, value);
@@ -775,7 +782,7 @@ public abstract class SmartFrogTestBase extends TestCase {
      * @throws RemoteException
      */
     public void assertAttributeEquals(Prim app, String attribute,
-            boolean expected) throws SmartFrogResolutionException,
+                                      boolean expected) throws SmartFrogResolutionException,
             RemoteException {
         Object value = resolveAttribute(app, attribute);
         assertEquals(Boolean.class,value.getClass());

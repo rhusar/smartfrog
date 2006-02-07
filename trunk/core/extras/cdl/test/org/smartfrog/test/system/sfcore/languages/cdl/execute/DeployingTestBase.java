@@ -37,7 +37,7 @@ public abstract class DeployingTestBase extends SmartFrogTestBase implements Fil
     }
 
     protected void deployAndTerminate(String name) throws Throwable {
-        Prim prim = deployExpectingSuccess(getResourceBase() + name + ".cdl", name);
+        Prim prim = deployExpectingSuccess(getResourceBase() + name , name);
         assertLivenessSuccess(prim);
         assertLivenessSuccess(prim);
         assertLivenessSuccess(prim);
@@ -47,7 +47,7 @@ public abstract class DeployingTestBase extends SmartFrogTestBase implements Fil
     }
 
     protected String getResourceBase() {
-        return CdlComponentTest.FILES;
+        return CdlComponentTest.VALID_CDL_FILES;
     }
 
     protected boolean spinUntilTerminated(Prim prim,int timeout) throws RemoteException {
