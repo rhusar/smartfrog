@@ -1,9 +1,0 @@
-Different documents/presentations can go under here. Please
-use a separate subdir for each particular conference/paper
-
-The Tex bibliography, bibliography.bib is in this directory,
-because it is intended for sharing across .tex documents.
-Accordingly, please do not delete entries or rename index keys
-without verifying that they are in use.
-
-
