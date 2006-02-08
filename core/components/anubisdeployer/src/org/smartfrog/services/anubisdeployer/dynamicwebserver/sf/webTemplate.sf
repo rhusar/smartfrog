@@ -64,7 +64,7 @@ CoreWebServer extends Compound {
         dataSource          LAZY server;
         pollingPeriod       polling;
         dataDisplayed       "httpd threads";
-	frameTitle          "apache web server";
+	    frameTitle          "apache web server";
         maxY                50;
         minY                0;
         lowerThresholdValue 5;

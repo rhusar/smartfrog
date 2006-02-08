@@ -5,7 +5,7 @@
 sfConfig extends ClusterSystem {
     nodeDescription extends DATA {
         resources extends DATA {
-            serviceInstances 2;  // can run a single instance of a service
+            serviceInstances 1;  // can run a single instance of a service
                                  // ensures that at most one webserver or manager runs anywhere
         }
         attributes extends DATA {}
