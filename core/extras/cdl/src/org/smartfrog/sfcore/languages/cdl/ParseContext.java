@@ -391,7 +391,7 @@ public class ParseContext {
             //patch the document's origin
             cdlDocument.setDocumentURL(referenceURL);
             //recursive parse
-            cdlDocument.parseImportedDocument(this);
+            cdlDocument.parseImportedDocument(this, namespace);
         } finally {
             inputStream.close();
         }

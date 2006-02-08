@@ -33,8 +33,8 @@
       <useExitCmd sfi:type="boolean">false</useExitCmd>
       <terminateOnFailure sfi:type="boolean">true</terminateOnFailure>
       <shouldTerminate>true</shouldTerminate>
-      <shellCmd sft:type="trimmed" />
-      <exitCmd sft:type="trimmed"/>
+      <shellCmd sfi:type="trimmed" />
+      <exitCmd sfi:type="trimmed"/>
       <logLevel sfi:type="int">3</logLevel>
       <processID sfi:type="trimmed">demo:run</processID>
     </demo:run>

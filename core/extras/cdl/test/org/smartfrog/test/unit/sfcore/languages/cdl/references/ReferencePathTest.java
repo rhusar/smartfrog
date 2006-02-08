@@ -40,6 +40,7 @@ import java.util.List;
 /**
  * This is the test case for reference building
  */
+@SuppressWarnings({"ProhibitedExceptionDeclared"})
 public class ReferencePathTest extends TestCase {
 
     private ReferencePath path;
@@ -81,9 +82,9 @@ public class ReferencePathTest extends TestCase {
     private void assertStepRefRoot(int position, String localname, String uri) {
         assertStepType(position, StepRefRoot.class);
         StepRefRoot s1 = (StepRefRoot) path.getStep(position);
-        QName root = s1.getRefroot();
-        assertEquals(localname, root.getLocalPart());
-        assertEquals(uri, root.getNamespaceURI());
+        QName r = s1.getRefroot();
+        assertEquals(localname, r.getLocalPart());
+        assertEquals(uri, r.getNamespaceURI());
     }
 
     private void assertStepUp(int position) {

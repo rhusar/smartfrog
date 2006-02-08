@@ -49,11 +49,12 @@ public class ReferencePath implements NamespaceLookup {
      * {@value}
      */
     public static final String ERROR_NO_TOPLEVEL = "There is no toplevel node in this graph; unable to make relative";
-    public static final String ERROR_RECURSIVE_RESOLUTION = "Reference path is too deep; suspected recursive resolution "
-           +" starting at ";
+    public static final String ERROR_RECURSIVE_RESOLUTION =
+            "Reference path is too deep; suspected recursive resolution "
+                    + " starting at ";
 
     public ReferencePath() {
-        namespaces=new Namespaces();
+        namespaces = new Namespaces();
     }
 
     /**
@@ -73,7 +74,7 @@ public class ReferencePath implements NamespaceLookup {
         if (refValue == null) {
             throw new IllegalArgumentException(ERROR_NON_REFERENCE);
         }
-        namespaces=source.getNamespaces();
+        namespaces = source.getNamespaces();
 
         build(refValue, refRootValue);
 
@@ -83,8 +84,8 @@ public class ReferencePath implements NamespaceLookup {
         if (refRootValue != null) {
             //a refroot: paste this in to the front of the path.
             QName resolved = source.resolveQName(refRootValue);
-            Step step=new StepRefRoot(resolved);
-            steps.add(0,step);
+            Step step = new StepRefRoot(resolved);
+            steps.add(0, step);
 
         } else {
             makeRelative(source);
@@ -119,7 +120,7 @@ public class ReferencePath implements NamespaceLookup {
     /**
      * Test for the path being empty
      *
-     * @return
+     * @return true if the path is empty
      */
     public boolean isEmpty() {
         return steps.isEmpty();
@@ -128,7 +129,7 @@ public class ReferencePath implements NamespaceLookup {
     /**
      * This function can only be called on a non-empty path.
      *
-     * @return true iff this is a relative path.
+     * @return true iff this is a non-empty relative path.
      */
     public boolean isRelative() {
         return !steps.get(0).isRootStep();
@@ -137,7 +138,8 @@ public class ReferencePath implements NamespaceLookup {
 
     /**
      * Is a path lazy?
-     * @return
+     *
+     * @return true iff it is
      */
     public boolean isLazy() {
         return lazy;
@@ -145,6 +147,7 @@ public class ReferencePath implements NamespaceLookup {
 
     /**
      * Mark a path as lazy
+     *
      * @param lazy
      */
     public void setLazy(boolean lazy) {
@@ -154,6 +157,7 @@ public class ReferencePath implements NamespaceLookup {
 
     /**
      * Get a step in a position
+     *
      * @param position
      * @return the step
      * @throws IndexOutOfBoundsException if there is nothing at that location
@@ -210,7 +214,7 @@ public class ReferencePath implements NamespaceLookup {
                 return;
             }
         } else {
-            if(refRootValue==null) {
+            if (refRootValue == null) {
                 //relative refs have a step start, that puts the
                 //cursor in the right place to begin resolution
                 append(new StepStart());
@@ -266,14 +270,14 @@ public class ReferencePath implements NamespaceLookup {
         while (!node.isRoot()) {
             //insert a new upward step
             ParentNode parent = node.getParent();
-            if (parent==null || !(parent instanceof PropertyList)) {
+            if (parent == null || !(parent instanceof PropertyList)) {
                 //bad type. bail out now.
                 throw new CdlRuntimeException(ERROR_NO_TOPLEVEL);
             }
             steps.add(0, new StepUp());
 
             node = (PropertyList) parent;
-            if(!node.isToplevel()) {
+            if (!node.isToplevel()) {
 //                steps.add(0, new StepUp());
             }
         }
@@ -286,13 +290,14 @@ public class ReferencePath implements NamespaceLookup {
      * this operation copies a reference path.
      * a new list is created, but the contents of the
      * list are the original steps; this is not a deep clone.
+     *
      * @return a new path that looks like the original
      */
     public ReferencePath shallowCopy() {
-        ReferencePath copy=new ReferencePath();
-        copy.steps=new ArrayList(steps);
-        copy.namespaces=namespaces;
-        copy.lazy=lazy;
+        ReferencePath copy = new ReferencePath();
+        copy.steps = new ArrayList<Step>(steps);
+        copy.namespaces = namespaces;
+        copy.lazy = lazy;
         return copy;
     }
 
@@ -300,6 +305,7 @@ public class ReferencePath implements NamespaceLookup {
      * Append a path to this.
      * Any lazy flag propagates, so the total path is lazy if the appended path is lazy,
      * and the base path was not already.
+     *
      * @param other
      */
     public void appendPath(ReferencePath other) {
@@ -308,38 +314,63 @@ public class ReferencePath implements NamespaceLookup {
     }
 
 
+    /**
+     * validate ourselves
+     * @throws CdlResolutionException
+     */
     public void validate() throws CdlResolutionException {
-        if(size()==0) {
+        if (size() == 0) {
             throw new CdlResolutionException("Empty path");
-        }
-        Step last=getStep(size()-1);
-        if(last instanceof StepRoot) {
-
         }
     }
 
+
+
     /**
      * Evaluate the graph by walking down it until things are done or the depth gets beyond {@link org.smartfrog.sfcore.languages.cdl.Constants#RESOLUTION_DEPTH_LIMIT}
+     *
      * @param startingPoint
      * @return the final state and execution result.
      * @throws CdlResolutionException
      */
     public StepExecutionResult execute(PropertyList startingPoint) throws CdlException {
-        StepExecutionResult state=new StepExecutionResult(this,startingPoint);
-        int count =0;
-        //the number of steps can increase during the run. I'm avoiding
-        //using iterators to be sure of what is happening
-        while(!state.isFinished()) {
-            count++;
-            if(count > Constants.RESOLUTION_PATH_LIMIT) {
-                //too deep, way too deep
-                throw new CdlResolutionException(ERROR_RECURSIVE_RESOLUTION +startingPoint.getDescription(),
-                        state);
+        return execute(startingPoint, new ReferenceResolutionContext());
+    }
+
+
+    /**
+     * Evaluate the graph by walking down it until things are done or the depth gets beyond {@link org.smartfrog.sfcore.languages.cdl.Constants#RESOLUTION_DEPTH_LIMIT}
+     *
+     * @param startingPoint
+     * @return the final state and execution result.
+     * @throws CdlResolutionException
+     */
+    public StepExecutionResult execute(PropertyList startingPoint, ReferenceResolutionContext context)
+            throws CdlException {
+        context.beginResolveReference(startingPoint);
+        StepExecutionResult state = new StepExecutionResult(this, startingPoint, context);
+        try {
+            int count = 0;
+            //the number of steps can increase during the run. I'm avoiding
+            //using iterators to be sure of what is happening
+            while (!state.isFinished()) {
+                count++;
+                if (count > Constants.RESOLUTION_PATH_LIMIT) {
+                    //too deep, way too deep
+                    throw new CdlResolutionException(ERROR_RECURSIVE_RESOLUTION + startingPoint.getDescription(),
+                            state);
+                }
+                state = state.executeCurrentStep();
+                if(!state.isFinished()) {
+                    //do any resolution we need on the next node
+                    state.resolveNextNode();
+                }
             }
-            state=state.executeCurrentStep();
+            //here we have finished.
+            return state;
+        } finally {
+            context.endResolveReference(startingPoint,state.getNode());
         }
-        //here we have finished.
-        return state;
     }
 
     /**
