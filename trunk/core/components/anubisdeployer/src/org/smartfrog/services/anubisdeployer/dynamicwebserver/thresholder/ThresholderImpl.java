@@ -24,6 +24,7 @@ import java.rmi.RemoteException;
 import java.util.Enumeration;
 import java.util.Vector;
 import java.util.HashMap;
+import java.net.InetAddress;
 
 import org.smartfrog.examples.dynamicwebserver.balancer.Balancer;
 import org.smartfrog.examples.dynamicwebserver.gui.graphpanel.DataSource;
@@ -239,10 +240,15 @@ public class ThresholderImpl extends CompoundImpl implements Thresholder,
                 deployed = sfCreateNewChild(componentNamePrefix + instanceCount++, template, null);
                 logger.logOptional(name, "instance created");
 
-                String host = deployed.sfResolve("sfHost", false).toString();
+                String host = ((InetAddress)deployed.sfResolve("sfHost", false)).getCanonicalHostName();
                 childServerMapping.put(deployed, host);
+
+                System.out.println("adding alancer bhost " + host);
                 if (balancer != null) {
+                    System.out.println("really adding alancer bhost " + host);
                     balancer.addServer(host);
+                    System.out.println("done adding alancer bhost " + host);                   
+
                 }
                 logger.logOptional(name, "started instance");
 

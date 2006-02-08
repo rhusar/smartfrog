@@ -59,6 +59,7 @@ ServiceTemplate extends Compound {
 
     webThresholder extends Thresholder {
         minInstances 1;
+        maxInstances 3;
 
         logTo LAZY logger;
         balancer        LAZY balancerGroup:balancer;
