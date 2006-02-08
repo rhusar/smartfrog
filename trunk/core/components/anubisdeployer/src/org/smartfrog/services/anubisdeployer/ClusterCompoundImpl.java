@@ -42,7 +42,7 @@ public class ClusterCompoundImpl extends CompoundImpl implements Compound {
         ComponentDescription reservationInfo = null;
 
         try {
-            reservationInfo = (ComponentDescription) ((ComponentDescription) sfResolve("sfClusterNode", true));
+            reservationInfo = (ComponentDescription)((ComponentDescription) ((ComponentDescription) sfResolve("sfClusterNode", true))).copy();
             resourceManager = (ClusterNode) sfResolve("clusterNodeManager", true);
             id = (String) sfResolve("reservationId", true);
         } catch (Throwable e) {
