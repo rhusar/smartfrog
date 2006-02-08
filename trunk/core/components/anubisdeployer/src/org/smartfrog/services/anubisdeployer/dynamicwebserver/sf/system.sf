@@ -34,7 +34,7 @@ For more information: www.smartfrog.org
  */
 
 // web server and port at which to find the tarballs
-ServerHost         "www.smartfrog.org";
+ServerHost         "serrano.hpl.hp.com"; //"www.smartfrog.org";
 ServerPort         80;
 
 // the three tarball locations are on this server...
