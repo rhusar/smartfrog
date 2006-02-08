@@ -33,9 +33,13 @@ import org.smartfrog.sfcore.languages.cdl.components.CdlComponentDescription;
 import org.smartfrog.sfcore.languages.cdl.components.CdlComponentDescriptionImpl;
 import org.smartfrog.sfcore.languages.cdl.faults.CdlInvalidValueReferenceException;
 import org.smartfrog.sfcore.languages.cdl.faults.CdlXmlParsingException;
+import org.smartfrog.sfcore.languages.cdl.faults.CdlRuntimeException;
+import org.smartfrog.sfcore.languages.cdl.faults.CdlException;
 import org.smartfrog.sfcore.languages.cdl.generate.DescriptorSource;
 import org.smartfrog.sfcore.languages.cdl.generate.TypeMapper;
 import org.smartfrog.sfcore.languages.cdl.references.ReferencePath;
+import org.smartfrog.sfcore.languages.cdl.references.ReferenceResolutionContext;
+import org.smartfrog.sfcore.languages.cdl.references.StepExecutionResult;
 import org.smartfrog.sfcore.languages.cdl.resolving.ResolveEnum;
 import org.smartfrog.sfcore.languages.cdl.utils.ClassLogger;
 import org.smartfrog.sfcore.languages.cdl.utils.Namespaces;
@@ -260,6 +264,33 @@ public class PropertyList extends DocNode implements DescriptorSource {
         }
         buffer.append(">");
         return buffer.toString();
+    }
+
+    /**
+     * Describe a node by something like its XPath value. Good for diagnostics.
+     * @return
+     */
+    public String getXPathDescription() {
+        StringBuffer buffer=new StringBuffer();
+        if(getParent()!=null) {
+            if(getParent() instanceof PropertyList) {
+                PropertyList parent = (PropertyList) getParent();
+                buffer.append(parent.getXPathDescription());
+            } else {
+
+            }
+            buffer.append('/');
+        }
+        String prefix=getQName().getPrefix();
+        if(prefix!=null) {
+            buffer.append(prefix);
+            buffer.append(';');
+            buffer.append(getQName().getLocalPart());
+        } else {
+            buffer.append(getQName().toString());
+        }
+        return buffer.toString();
+
     }
 
     /**
@@ -689,4 +720,90 @@ public class PropertyList extends DocNode implements DescriptorSource {
         }
     }
 
+    /**
+     * Replace a target reference with a clone of the destination node.
+     *
+     * @param dest   destination reference
+     * @return a property list that represents the resolved node. It may be the same as this,
+     * or it will be something new
+     */
+    public PropertyList replaceByReference(PropertyList dest) {
+        assert dest != null;
+        if (this == dest) {
+            return this;
+        }
+        //create a clone of the initial property list
+        //using a factory specific to the type of the current target, to
+        //ensure that toplevel lists get handled
+        PropertyList replacement = getFactory().create(dest);
+        if (Constants.POLICY_STRIP_ATTRIBUTES_FROM_REFERENCE_DESTINATION) {
+            replacement.removeAllAttributes();
+        }
+        //now copy attributes from the target.
+        boolean lazy = isLazy();
+        for (Attribute attr : attributes()) {
+            if (Constants.XMLNS_CDL.equals(attr.getNamespaceURI())) {
+                String name = attr.getLocalName();
+                if (!lazy && (Names.ATTR_REFROOT.equals(name)
+                        || Names.ATTR_REF.equals(name))) {
+                    continue;
+                }
+            }
+            Attribute cloned = new Attribute(attr);
+            replacement.addAttribute(cloned);
+        }
+        replacement.setLocalName(getLocalName());
+        replacement.setNamespaceURI(getNamespaceURI());
+        replacement.setNamespacePrefix(getNamespacePrefix());
+        return replacement;
+    }
+
+    /**
+     * Resolve a node
+     *
+     * @param context current resolution context (essentially a history)
+     * @return this node or whatever replaced it
+     * @throws CdlException if resolution failed
+     */
+    public PropertyList resolveNode(ReferenceResolutionContext context) throws CdlException {
+        if(referencePath==null) {
+            //nothing to resolve; we are here
+            return this;
+        }
+        if(isLazyReference()) {
+            //todo: lazy stuff
+            throw new CdlException("Not implemented: lazy reference on "
+                    +this.getXPathDescription());
+        } else {
+            StepExecutionResult result = referencePath.execute(this,context);
+            assert result.isFinished();
+            PropertyList dest = result.getNode();
+            if (result.isLazyFlagFound() && dest.isValueReference()) {
+                //lazy was hit. we need to mark ourselves as lazy and continue without resolving
+                throw new CdlException("Not implemented: lazy reference on "
+                        + this.getXPathDescription());
+//                setLazy(true);
+//                return this;
+
+            }
+            //patch up everything
+            //do the copy (will be a no-op for dest==this)
+            PropertyList replacement = replaceByReference(dest);
+            //then patch our parent (will be a no-op for dest==this)
+            getParent().replaceChild(this,replacement);
+            resolveState=replacement.inferLocalResolutionState();
+            return replacement;
+        }
+
+    }
+
+    /**
+     * resolve a node
+     * @return this node or whatever replaced it
+     * @throws CdlException if resolution failed
+     */
+    public PropertyList resolveNode() throws CdlException {
+        ReferenceResolutionContext context = new ReferenceResolutionContext();
+        return resolveNode(context);
+    }
 }

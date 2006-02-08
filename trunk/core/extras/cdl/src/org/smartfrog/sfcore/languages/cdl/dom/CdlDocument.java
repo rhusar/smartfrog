@@ -365,10 +365,29 @@ public class CdlDocument implements Names, DescriptorSource {
         parseAndApplyPhases(context, phases);
     }
 
-    public void parseImportedDocument(ParseContext context) throws CdlException, IOException,
+    public void parseImportedDocument(ParseContext context,String namespace) throws CdlException, IOException,
             ParsingException {
-        List<ProcessingPhase> phases = createPhaseList(true);
+        List<ProcessingPhase> phases = createImportPhaseList(namespace);
         parseAndApplyPhases(context, phases);
+    }
+
+    private List<ProcessingPhase> createImportPhaseList(String namespace) {
+        List<ProcessingPhase> phases = new ArrayList<ProcessingPhase>(8);
+        //register the protos
+        phases.add(new RegisterPrototypesProcessor());
+        //imports
+        phases.add(new ImportProcessor());
+        //extract all reference bindings
+        phases.add(ExtractReferenceOperation.createPhase());
+        //do the extends processing
+        phases.add(new ExtendsProcessor());
+        //debug builds and a sanity check
+        if (Constants.POLICY_DEBUG_RELEASE) {
+            phases.add(VerifyExtendsComplete.createPhase());
+        }
+        //now do early references
+        phases.add(new EarlyReferenceProcessor());
+        return phases;
     }
 
     private List<ProcessingPhase> createPhaseList(boolean importedDocument) {
@@ -385,10 +404,8 @@ public class CdlDocument implements Names, DescriptorSource {
         if (Constants.POLICY_DEBUG_RELEASE) {
             phases.add(VerifyExtendsComplete.createPhase());
         }
-        if (!importedDocument) {
-            //now do early references
-            phases.add(new EarlyReferenceProcessor());
-        }
+        //now do early references
+        phases.add(new EarlyReferenceProcessor());
         return phases;
     }
 

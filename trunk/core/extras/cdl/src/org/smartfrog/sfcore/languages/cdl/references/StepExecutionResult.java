@@ -31,14 +31,23 @@ import org.smartfrog.sfcore.languages.cdl.utils.NamespaceLookup;
 
 public class StepExecutionResult implements NamespaceLookup {
 
+    private ReferenceResolutionContext resolutionContext;
     private ReferencePath path;
     private int index;
     private PropertyList node;
     private boolean lazyFlagFound;
 
-    public StepExecutionResult(ReferencePath path, PropertyList nextNode) {
+    /**
+     * create a result tracker
+     * @param path path to use
+     * @param node node to start on
+     * @param resolutionContext context for tracking resolution
+     */
+    public StepExecutionResult(ReferencePath path, PropertyList node,
+                               ReferenceResolutionContext resolutionContext) {
         this.path = path;
-        this.node = nextNode;
+        this.node = node;
+        this.resolutionContext = resolutionContext;
     }
 
     public ReferencePath getPath() {
@@ -80,6 +89,10 @@ public class StepExecutionResult implements NamespaceLookup {
         this.lazyFlagFound = lazyFlagFound;
     }
 
+    public ReferenceResolutionContext getResolutionContext() {
+        return resolutionContext;
+    }
+
     /**
      * Move to the next element in the graph;
      * return the updated state
@@ -101,6 +114,18 @@ public class StepExecutionResult implements NamespaceLookup {
         return next();
     }
 
+
+    /**
+     * Resolve the next node. This can trigger recursive resolution,
+     * and may change the shape of the tree
+     * @throws CdlException if something went wrong
+     */
+    public void resolveNextNode() throws CdlException {
+        if(node.getReferencePath()!=null) {
+            node=node.resolveNode(resolutionContext);
+        }
+    }
+
     /**
      * Test for a path being finished; that is, we have indexed over it.
      * @return
@@ -109,6 +134,10 @@ public class StepExecutionResult implements NamespaceLookup {
         return index>=path.size();
     }
 
+    /**
+     * Get the current standard
+     * @return the current step or null
+     */
     public Step getCurrentStep() {
         if(isFinished()) {
             return null;
@@ -117,6 +146,11 @@ public class StepExecutionResult implements NamespaceLookup {
         }
     }
 
+    /**
+     * if we are finished; return ourselves. If not, execute the next step
+     * @return the next step
+     * @throws CdlException
+     */
     public StepExecutionResult executeCurrentStep() throws CdlException {
         Step currentStep = getCurrentStep();
         if(currentStep==null) {

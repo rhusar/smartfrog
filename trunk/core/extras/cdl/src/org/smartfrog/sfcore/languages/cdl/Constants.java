@@ -149,7 +149,7 @@ public class Constants {
     public static final boolean POLICY_ALWAYS_EXPORT_TEXT_NODES=false;
 
 
-    public static final boolean POLICY_STRIP_ATTRIBUTES_FROM_REFERNCE_DESTINATION=true;
+    public static final boolean POLICY_STRIP_ATTRIBUTES_FROM_REFERENCE_DESTINATION =true;
 
     /**
      * Are we a debug release, in which case there are extra tests in the phases

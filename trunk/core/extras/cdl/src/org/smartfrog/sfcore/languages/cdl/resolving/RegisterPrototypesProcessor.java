@@ -34,6 +34,16 @@ import nu.xom.ParsingException;
 
 public class RegisterPrototypesProcessor implements ProcessingPhase {
 
+    private String namespace;
+
+    public RegisterPrototypesProcessor(String namespace) {
+        this.namespace = namespace;
+    }
+
+    public RegisterPrototypesProcessor() {
+        namespace="";
+    }
+
     /**
      * Process a document.
      *
