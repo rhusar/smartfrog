@@ -25,11 +25,19 @@
     </demo:exec>
 
 
-    <demo:java cdl:extends="cmp:Component">
+    <demo:run cdl:extends="cmp:Component">
       <cmp:CommandPath>
-        org.smartfrog.services.cddlm.cdl.demo.CdlJavaImpl</cmp:CommandPath>
-      <demo:classname />
-    </demo:java>
+        org.smartfrog.services.os.runshell.RunShellImpl
+      </cmp:CommandPath>
+      
+      <useExitCmd sfi:type="boolean">false</useExitCmd>
+      <terminateOnFailure sfi:type="boolean">true</terminateOnFailure>
+      <shouldTerminate>true</shouldTerminate>
+      <shellCmd sft:type="trimmed" />
+      <exitCmd sft:type="trimmed"/>
+      <logLevel sfi:type="int">3</logLevel>
+      <processID sfi:type="trimmed">demo:run</processID>
+    </demo:run>
 
   </cdl:configuration>
 </cdl:cdl>

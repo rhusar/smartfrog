@@ -22,6 +22,7 @@ package org.smartfrog.sfcore.languages.cdl.generate;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.languages.cdl.dom.PropertyList;
 import org.smartfrog.sfcore.languages.cdl.Constants;
+import org.smartfrog.services.xml.utils.XsdUtils;
 
 import java.util.Hashtable;
 
@@ -113,5 +114,19 @@ public class TypeMapper {
         final String value = node.getAttributeValue(Constants.SMARTFROG_TYPES_TYPE_ATTR,
                 Constants.XMLNS_SMARTFROG_TYPES);
         return value;
+    }
+
+    /**
+     * test for a node having the nillable=true value,
+     * which states that an empty node means "this element is not here".
+     * For curiousity, 'nillable' is a concept from Soap section 5, and 
+     * causes no end of interop problems. 
+     * @param node
+     * @return true iff the sfi:nillable attribute is true
+     */
+    public boolean isNillable(PropertyList node) {
+        String value = node.getAttributeValue(Constants.SMARTFROG_TYPES_NILLABLE_ATTR,
+                        Constants.XMLNS_SMARTFROG_TYPES);
+        return XsdUtils.isXsdBooleanTrue(value);
     }
 }
