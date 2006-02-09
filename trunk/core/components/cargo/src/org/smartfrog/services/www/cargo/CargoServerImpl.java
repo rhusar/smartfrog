@@ -21,6 +21,7 @@
 package org.smartfrog.services.www.cargo;
 
 import org.codehaus.cargo.container.Container;
+import org.codehaus.cargo.container.LocalContainer;
 import org.codehaus.cargo.container.configuration.Configuration;
 import org.codehaus.cargo.generic.configuration.ConfigurationFactory;
 import org.codehaus.cargo.generic.configuration.DefaultConfigurationFactory;
@@ -30,8 +31,10 @@ import org.smartfrog.services.www.JavaWebApplication;
 import org.smartfrog.services.www.ServletContextIntf;
 import org.smartfrog.services.www.cargo.delegates.CargoServerDelegateWebapp;
 import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimImpl;
+import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.security.SFClassLoader;
 
 import java.io.File;
@@ -43,12 +46,15 @@ import java.lang.reflect.InvocationTargetException;
 /**
  * Cargo component deploys using cargo
  */
-public class CargoServerImpl extends PrimImpl implements CargoServer {
+public class CargoServerImpl extends PrimImpl implements CargoServer,Runnable {
 
-    private Container container;
+    private LocalContainer container;
     private Configuration configuration;
     private File dir;
     private String containerClassname;
+    private String codebase;
+    private Thread thread;
+    private boolean started;
 
 
     public CargoServerImpl() throws RemoteException {
@@ -115,8 +121,7 @@ public class CargoServerImpl extends PrimImpl implements CargoServer {
         String dirname = FileSystem.lookupAbsolutePath(this, ATTR_DIRECTORY, null, null, true, null);
         ConfigurationFactory factory = new DefaultConfigurationFactory();
         String name = sfResolve(ATTR_CONFIGURATION_CLASS, "", true);
-        //TODO
-        //String codebase = sfResolve("sfcodebase");
+        codebase = sfResolve(SmartFrogCoreKeys.SF_CODE_BASE,(String)null,false);
         configuration = (Configuration) createClassInstance(name);
         dir = new File(dirname);
         containerClassname = sfResolve(ATTR_CONTAINER_CLASS, "", true);
@@ -125,20 +130,21 @@ public class CargoServerImpl extends PrimImpl implements CargoServer {
         signature[0] = Container.class;
         Object args[] = new Object[1];
         args[0] = configuration;
-        container = (Container) instantiate(containerClass, signature, args);
+        container = (LocalContainer) instantiate(containerClass, signature, args);
 
         //at this point the container is instantiated
     }
 
-    private Object createClassInstance(String name) throws SmartFrogException {
-        Object instance;
-        Class clazz = loadClass(name);
-        Class signature[] = null;
-        Object arguments[] = null;
-        instance = instantiate(clazz, signature, arguments);
-        return instance;
-    }
 
+
+    /**
+     * Create a new container
+     * @param clazz
+     * @param signature
+     * @param arguments
+     * @return
+     * @throws SmartFrogException
+     */
     private Object instantiate(Class clazz, Class[] signature, Object[] arguments) throws SmartFrogException {
         Object instance;
         try {
@@ -159,10 +165,19 @@ public class CargoServerImpl extends PrimImpl implements CargoServer {
         return instance;
     }
 
+    private Object createClassInstance(String name) throws SmartFrogException {
+        Object instance;
+        Class clazz = loadClass(name);
+        Class signature[] = null;
+        Object arguments[] = null;
+        instance = instantiate(clazz, signature, arguments);
+        return instance;
+    }
+
     private Class loadClass(String name) throws SmartFrogException {
         Class newclass = null;
         try {
-            newclass = SFClassLoader.forName(name);
+            newclass = SFClassLoader.forName(name,codebase,true);
         } catch (ClassNotFoundException e) {
             throw SmartFrogException.forward(e);
         }
@@ -178,8 +193,45 @@ public class CargoServerImpl extends PrimImpl implements CargoServer {
      */
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
-        //dynamically load the class of 'classname' and instantiate
-        //TODO
-        //then run container.start() in a new thread
+        startInNewThread();
+    }
+
+    /**
+     * Provides hook for subclasses to implement useful termination behavior.
+     * Deregisters component from local process compound (if ever registered)
+     *
+     * @param status termination status
+     */
+    public synchronized void sfTerminateWith(TerminationRecord status) {
+        super.sfTerminateWith(status);
+        if(started) {
+            try {
+                container.stop();
+            } finally {
+                started = false;
+                container = null;
+            }
+        }
+    }
+
+    private void startInNewThread() {
+        thread = new Thread(this);
+        thread.run();
+    }
+
+    /**
+     * When an object implementing interface <code>Runnable</code> is used
+     * to create a thread, starting the thread causes the object's
+     * <code>run</code> method to be called in that separately executing
+     * thread.
+     * <p/>
+     * The general contract of the method <code>run</code> is that it may
+     * take any action whatsoever.
+     *
+     * @see Thread#run()
+     */
+    public void run() {
+        container.start();
+        started = true;
     }
 }
