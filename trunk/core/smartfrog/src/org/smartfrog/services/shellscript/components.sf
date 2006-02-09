@@ -88,7 +88,7 @@ Process extends Prim {
    exec extends DATA Exec;
 
    detach false;
-   retart false;
+   restart false;
    terminate false;
    autoStart true;
 
