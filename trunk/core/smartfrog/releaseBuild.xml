@@ -114,9 +114,9 @@ These are the meaningful targets for this build file:
      <property name="build" value="classes"/> <!-- all protected files -->
      <property name="src" value="src"/> <!-- all protected files -->
      <property name="debugmode" value="on"/> <!-- turn on compile -g -->
-     <property name="rmitargets" value="rmitargets"/>
      <property name="jdocs" value="jdocs"/>
      <property name="dist.lib.dir" location="${dist}/${lib}"/>
+     <property name="rmic.compiler" value="sun"/>
      <!-- Sercurity related files -->
      <property name="manifestName" value="${private}/sealManifest.mf"/>
 
@@ -207,15 +207,23 @@ These are the meaningful targets for this build file:
      	<pathelement location="lib/sfExamples-${Version}.jar"/>
      </classpath>
     </javac>
-    <rmic includesfile="${rmitargets}" base="${build}">
-      <!--classpath refid="smartfrog.class.path"/-->
-      <classpath>
-      	<pathelement path="${classpath}"/>
-     	<pathelement location="lib/smartfrog-${Version}.jar"/>
-     	<pathelement location="lib/sfServices-${Version}.jar"/>
-     	<pathelement location="lib/sfExamples-${Version}.jar"/>
-     </classpath>
-    </rmic>
+    
+  <!-- RMI compile by looking for all remote classes in the
+       compiled project-->
+      <rmic stubversion="1.2"
+          base="${build}"
+          verify="true"
+          compiler="${rmic.compiler}"
+          includes="**/*.class">
+          <classpath>
+          	<pathelement path="${classpath}"/>
+         	<pathelement location="lib/smartfrog-${Version}.jar"/>
+         	<pathelement location="lib/sfServices-${Version}.jar"/>
+         	<pathelement location="lib/sfExamples-${Version}.jar"/>
+         </classpath>
+      </rmic>
+      
+   
     <!--  sfExamples.jar                                               -->
     <!-- Create sfExamples.jar file -->
     <jar jarfile="${lib}/sfExamples-${Version}.jar"
@@ -238,8 +246,8 @@ These are the meaningful targets for this build file:
       	   </fileset>
 	 </classpath>
   </java>
-  </target>
-
+  </target> 
+  
   <!-- =================================================================== -->
   <!--   JDocs                                                                  -->
   <!-- =================================================================== -->
