@@ -24,10 +24,11 @@ LogToFileImpl extends  LogToStreamsImpl {
   path (PROPERTY java.io.tmpdir ++ "/sflogs"); //".";
   logFileExtension "sf.log";
   useDatedFileName true;
-  useLogNameInFileName true;
+  fileNameDateFormat "yyyy.MM.dd_HH";//""yyyyMMdd-HHmmss_SSSzzz";
+  useLogNameInFileName false;
   useHostNameInFileName true;
-  useProcessNameInFileName true;
-  //fileNamePrefix //"prefix"; //or PROPERTY java.io.tmpdir;
+  useProcessNameInFileName false;
+  //fileNamePrefix //"prefix";
   redirectSystemOutputs false;
   append true;
 }
