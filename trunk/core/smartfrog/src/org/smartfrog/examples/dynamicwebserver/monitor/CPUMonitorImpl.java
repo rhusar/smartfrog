@@ -57,8 +57,10 @@ public class CPUMonitorImpl extends PrimImpl implements Prim, Runnable,
     int delay = 5; // number of seconds between samples
     LogWrapper logger;
     int perMinute = 60 / delay;
-    String fromPoint = " | awk '{print $15 }'";
+
     String vmstatCmd = cmd + delay + ((char) 10);
+    int splitIndex = 15;
+
     Vector last10 = new Vector(10);
     private int intLast10 = 0;
     Vector last30 = new Vector(30);
@@ -77,7 +79,7 @@ public class CPUMonitorImpl extends PrimImpl implements Prim, Runnable,
         logger = new LogWrapper((Logger) sfResolve(LOGTO, false));
         delay = sfResolve(DELAY, 5, false);
 
-        vmstatCmd = cmd + delay + ((char) 10) + " " + fromPoint;
+        vmstatCmd = cmd + delay + ((char) 10);
         perMinute = 60 / delay;
 
         name = sfCompleteName().toString();
@@ -218,6 +220,7 @@ public class CPUMonitorImpl extends PrimImpl implements Prim, Runnable,
                         String s = pOut.readLine();
 
                         if (s != null) {
+                            s = s.split(" ")[splitIndex];
                             current = 100 -
                                 (Integer.parseInt(s.trim()));
                             totalCPU = totalCPU + current;
