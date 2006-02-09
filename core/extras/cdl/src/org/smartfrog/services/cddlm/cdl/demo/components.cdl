@@ -25,6 +25,9 @@
     </demo:exec>
 
 
+    <!--
+    Run anything
+    -->
     <demo:run cdl:extends="cmp:Component">
       <cmp:CommandPath>
         org.smartfrog.services.os.runshell.RunShellImpl
@@ -38,6 +41,15 @@
       <logLevel sfi:type="int">3</logLevel>
       <processID sfi:type="trimmed">demo:run</processID>
     </demo:run>
+    
+    <!--Run Java -->
+    <demo:java cdl:extends="demo:run">
+      <classname sfi:type="trimmed"/>
+      <jar sfi:type="trimmed"/>
+      <maxMemory sfi:type="integer"/>
+      <processID sfi:type="trimmed">demo:java</processID>
+    </demo:java>
+
 
   </cdl:configuration>
 </cdl:cdl>

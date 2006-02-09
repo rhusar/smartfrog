@@ -301,7 +301,7 @@ public class PropertyList extends DocNode implements DescriptorSource {
      */
     public void mergeAttributes(PropertyList extension) {
         //sanity check: we are merging ourselves
-        assert extension.getQName().equals(extendsName);
+//        assert extension.getQName().equals(extendsName);
         //now apply the rules of the CDL spec, section 7.2.2
         inheritAttributes(extension);
         //clear our extendsname, as we are now merged. no more extending for us.
@@ -463,6 +463,12 @@ public class PropertyList extends DocNode implements DescriptorSource {
             throw new SmartFrogException("Lazy references not supported yet");
         } else {
             TypeMapper typeMapper = getParseContext().getTypeMapper();
+            
+            if(typeMapper.isNilNode(this)) {
+                //skip out if we are nil
+                return;
+            }
+            
             Object contents=typeMapper.map(this);
             if(contents!=null) {
                 //specially mapped things

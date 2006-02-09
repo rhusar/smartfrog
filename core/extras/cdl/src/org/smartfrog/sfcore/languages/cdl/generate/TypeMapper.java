@@ -90,26 +90,49 @@ public class TypeMapper {
     }
 
     /**
-     *
+     * map from a node to a type.
      * return null for no mapping.
      * @param node
-     * @return
+     * @return null for no mapping.
      * @throws SmartFrogException
      */
     public Object map(PropertyList node) throws SmartFrogException {
-        String type=extractMappingType(node);
-        if(type==null) {
+        TypeGenerator generator = getGenerator(node);
+        if(generator==null) {
             return null;
         }
-        type=type.trim();
-        TypeGenerator generator = map.get(type);
-        if(generator==null) {
-            generator=new ConstructorGenerator(type,false);
-        }
-        Object result=generator.generateType(node);
+        Object result;
+        result = generator.generateType(node);
         return result;
     }
 
+    /**
+     * Get the generator for this node
+     * @param node
+     * @return null for no type specified
+     * @throws SmartFrogException
+     */
+    private TypeGenerator getGenerator(PropertyList node) throws
+            SmartFrogException {
+        String type = extractMappingType(node);
+        TypeGenerator generator = null;
+        if (type != null) {
+            type = type.trim();
+            if (type.length() != 0) {
+                generator = map.get(type);
+                if (generator == null) {
+                    generator = new ConstructorGenerator(type, false);
+                }
+            }
+        }
+        return generator;
+    }
+
+    /**
+     * get the mapping from the attributes
+     * @param node
+     * @return
+     */
     public String extractMappingType(PropertyList node) {
         final String value = node.getAttributeValue(Constants.SMARTFROG_TYPES_TYPE_ATTR,
                 Constants.XMLNS_SMARTFROG_TYPES);
@@ -128,5 +151,20 @@ public class TypeMapper {
         String value = node.getAttributeValue(Constants.SMARTFROG_TYPES_NILLABLE_ATTR,
                         Constants.XMLNS_SMARTFROG_TYPES);
         return XsdUtils.isXsdBooleanTrue(value);
+    }
+
+    /**
+     * Test for a node being "nil"
+     * That is: there is no text, there is an sfi:type attribute, and there
+     * is an sfi:nillable attribute. 
+     * @param node
+     * @return
+     */
+    public boolean isNilNode(PropertyList node) {
+        if(isNillable(node) && extractMappingType(node)!=null) {
+            String text = node.getTextValue();
+            return text == null;
+        }
+        return false;
     }
 }

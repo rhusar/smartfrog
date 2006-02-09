@@ -54,7 +54,7 @@ public class RegisterPrototypesProcessor implements ProcessingPhase {
      * @throws nu.xom.ParsingException
      */
     public void process(CdlDocument document) throws IOException, CdlException, ParsingException {
-        document.registerPrototypes();
+        document.registerPrototypes(namespace);
     }
 
     /**
