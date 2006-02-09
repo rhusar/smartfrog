@@ -41,7 +41,7 @@
                   artifactID="sf-www"
                   version="${Version}"/>
       <dependency groupID="cargo"
-                  artifactID="cargo"
+                  artifactID="cargo-core-uberjar"
                   version="${cargo.version}"/>
       <dependency groupID="ant"
                   artifactID="ant"
