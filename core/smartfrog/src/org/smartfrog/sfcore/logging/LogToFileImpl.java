@@ -228,14 +228,11 @@ public class LogToFileImpl extends LogToStreamsImpl implements LogToFile {
         }
 
         if (datedName){
-            /** Used to format times in filename */
-            DateFormat dateFileNameFormatter = null;
-            dateFileNameFormatter = new SimpleDateFormat("yyyyMMdd-HHmmss_SSSzzz");
             if ((newfileName.toString().length()>0)&&!(newfileName.toString().endsWith("_"))) {
                             newfileName.append("_");
             }
             // add the extension
-            newfileName.append(dateFileNameFormatter.format(new Date()));
+            newfileName.append(fileNameDateFormatter.format(new Date()));
         }
 
         // add the extension
