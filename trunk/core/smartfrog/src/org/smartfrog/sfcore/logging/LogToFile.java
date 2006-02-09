@@ -37,6 +37,8 @@ public interface LogToFile extends LogToStreams {
     /** String name for optional attribute "{@value}". */
     final static String ATR_USE_DATED_FILE_NAME = "useDatedFileName";
     /** String name for optional attribute "{@value}". */
+    final static String ATR_FILE_NAME_DATE_FORMAT = "fileNameDateFormat";
+    /** String name for optional attribute "{@value}". */
     final static String ATR_USE_LOG_NAME_IN_FILE_NAME = "useLogNameInFileName";
     /** String name for optional attribute "{@value}". */
     final static String ATR_USE_HOST_NAME_IN_FILE_NAME = "useHostNameInFileName";
