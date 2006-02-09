@@ -59,7 +59,7 @@ public class CPUMonitorImpl extends PrimImpl implements Prim, Runnable,
     int perMinute = 60 / delay;
 
     String vmstatCmd = cmd + delay + ((char) 10);
-    int splitIndex = 15;
+    int splitIndex = 14;
 
     Vector last10 = new Vector(10);
     private int intLast10 = 0;
@@ -218,11 +218,13 @@ public class CPUMonitorImpl extends PrimImpl implements Prim, Runnable,
                     //Every delay until 1 minutes data is obtained...
                     try {
                         String s = pOut.readLine();
-
                         if (s != null) {
-                            s = s.split(" ")[splitIndex];
+                            String[] a = s.trim().split("\\W+");
+                            s = a[splitIndex];
+
                             current = 100 -
                                 (Integer.parseInt(s.trim()));
+
                             totalCPU = totalCPU + current;
                             logger.logOptional(name,
                                 "monitored value..." + current +
