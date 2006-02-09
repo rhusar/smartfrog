@@ -61,6 +61,8 @@ public class LogToFileImpl extends LogToStreamsImpl implements LogToFile {
 
     /** Use date in file name */
     boolean datedName = true;
+    /**  Used to format date used in filename */
+    protected DateFormat fileNameDateFormatter = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss:SSS zzz");;
 
     /** Use Log Name in file name */
     boolean useLogNameInFileName = true;
@@ -155,6 +157,11 @@ public class LogToFileImpl extends LogToStreamsImpl implements LogToFile {
           useLogNameInFileName = cd.sfResolve(ATR_USE_LOG_NAME_IN_FILE_NAME,useLogNameInFileName, false);
           useHostNameInFileName = cd.sfResolve(ATR_USE_HOST_NAME_IN_FILE_NAME,useHostNameInFileName, false);
           useProcessNameInFileName = cd.sfResolve(ATR_USE_PROCESS_NAME_IN_FILE_NAME,useProcessNameInFileName, false);
+          try {
+             fileNameDateFormatter = new SimpleDateFormat(cd.sfResolve(ATR_FILE_NAME_DATE_FORMAT, "yyyy/MM/dd HH:mm:ss:SSS zzz", false));
+          } catch (Exception ex) {
+             if (this.isErrorEnabled())this.error("fileNameDateFormatter", ex);
+          }
           append = cd.sfResolve(ATR_APPEND,append, false);
         } catch (Exception ex){
            this.warn("",ex);
