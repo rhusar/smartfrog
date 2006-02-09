@@ -469,8 +469,20 @@ public class ParseContext {
      */
     public void prototypeAddNew(PropertyList prototype)
             throws CdlDuplicatePrototypeException {
-
         QName prototypeName = prototype.getQName();
+        prototypeAddNew(prototype, prototypeName);
+    }
+
+        /**
+        * Add a new prototype to our list of known prototypes. If the prototype
+        * exists, then we fault
+        *
+        * @param prototype
+        * @param prototypeName name to register prototype under
+        * @throws CdlDuplicatePrototypeException for duplicates
+        */
+    public void prototypeAddNew(PropertyList prototype, QName prototypeName)
+            throws CdlDuplicatePrototypeException {
         if (prototypeName == null) {
             throw new CdlRuntimeException(ERROR_NO_PROTOTYPE_NAME + prototype);
         }

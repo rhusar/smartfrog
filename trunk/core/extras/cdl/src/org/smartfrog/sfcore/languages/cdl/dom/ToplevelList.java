@@ -4,6 +4,8 @@ import nu.xom.Element;
 import nu.xom.Node;
 import org.smartfrog.sfcore.languages.cdl.faults.CdlDuplicatePrototypeException;
 
+import javax.xml.namespace.QName;
+
 /**
  * This is the toplevel container
  */
@@ -47,13 +49,20 @@ public class ToplevelList extends PropertyList {
      *
      * @throws CdlDuplicatePrototypeException if there is a registration
      *                                        already
+     * @param namespace
      */
-    public void registerPrototypes() throws CdlDuplicatePrototypeException {
+    public void registerPrototypes(String namespace) throws CdlDuplicatePrototypeException {
+        boolean intoNamespace=namespace != null && namespace.length() != 0;
         for (Node node : this) {
             if (node instanceof PropertyList) {
                 PropertyList prototype = (PropertyList) node;
                 prototype.setRoot(true);
-                getParseContext().prototypeAddNew(prototype);
+                QName name=prototype.getQName();
+                if(intoNamespace && name.getNamespaceURI().length()==0) {
+                    //inject the prototype in to a new namespace
+                    name=new QName(namespace,name.getLocalPart());
+                }
+                getParseContext().prototypeAddNew(prototype,name);
             }
         }
     }

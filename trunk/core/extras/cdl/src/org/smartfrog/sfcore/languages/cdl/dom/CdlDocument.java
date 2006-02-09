@@ -312,9 +312,12 @@ public class CdlDocument implements Names, DescriptorSource {
      * Look up a toplevel node
      *
      * @param name
-     * @return
+     * @return the node or null for nothing of that name (or even, no configuration)
      */
     public PropertyList lookup(QName name) {
+        if(configuration==null) {
+            return null;
+        }
         return configuration.getChildTemplateMatching(name);
     }
 
@@ -374,7 +377,7 @@ public class CdlDocument implements Names, DescriptorSource {
     private List<ProcessingPhase> createImportPhaseList(String namespace) {
         List<ProcessingPhase> phases = new ArrayList<ProcessingPhase>(8);
         //register the protos
-        phases.add(new RegisterPrototypesProcessor());
+        phases.add(new RegisterPrototypesProcessor(namespace));
         //imports
         phases.add(new ImportProcessor());
         //extract all reference bindings
@@ -549,10 +552,11 @@ public class CdlDocument implements Names, DescriptorSource {
      * register all our prototypes
      *
      * @throws CdlDuplicatePrototypeException if there is one in use already
+     * @param namespace
      */
-    public void registerPrototypes() throws CdlDuplicatePrototypeException {
+    public void registerPrototypes(String namespace) throws CdlDuplicatePrototypeException {
         if (configuration != null) {
-            configuration.registerPrototypes();
+            configuration.registerPrototypes(namespace);
         }
     }
 

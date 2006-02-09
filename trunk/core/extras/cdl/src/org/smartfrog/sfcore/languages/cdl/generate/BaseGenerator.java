@@ -43,6 +43,7 @@ public abstract class BaseGenerator implements TypeGenerator {
      * Override point: get the string value of a node.
      * @param node
      * @return
+     * @throws SmartFrogException if there was no text
      */
     protected String extractStringValue(PropertyList node) throws SmartFrogException {
         String text = node.getTextValue();
@@ -53,5 +54,21 @@ public abstract class BaseGenerator implements TypeGenerator {
             text=text.trim();
         }
         return text;
+    }
+
+    /**
+     * Test for the text being empty after any trimming
+     * @param node to check
+     * @return true if the text under the node is absent, or, after trimming, empty.
+     */
+    public boolean isEmptyText(PropertyList node) {
+        String text = node.getTextValue();
+        if(text==null) {
+            return true;
+        }
+        if (trim) {
+            text = text.trim();
+        }
+        return text.length()==0;
     }
 }
