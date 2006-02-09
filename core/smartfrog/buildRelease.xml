@@ -138,8 +138,6 @@ To Be Written
      <property name="dist.lib.dir" location="${dist}/${lib}"/>
 
      <property name="examplesFiles" value="org/smartfrog/examples/**/*"/>
-       <!-- a list of files for rmic -->
-     <property name="rmitargets" value="${basedir}/rmitargets"/>
 
      <property name="unix-executables" value="**/*.sh,**/*.pl,**/*.py" />
      <property name="dos-executables" value="**/*.bat,**/*.cmd" />
@@ -269,12 +267,9 @@ To Be Written
         <include name="src/**"/>
         <include name="private/**"/>
         <include name="testCA/**"/>
-        <include name="test/**"/>
         <include name="javacc/*"/>
         <include name="build.xml"/>
         <include name="releaseBuild.xml"/>
-        <include name="rmitargets"/>
-        <include name="rmitargetsExamples"/>
         <include name="parsertargets"/>
         <include name="COPYRIGHT.txt"/>
         <include name="LICENSE.txt"/>
@@ -396,12 +391,9 @@ To Be Written
         <include name="src/**"/>
         <include name="private/**"/>
         <include name="testCA/**"/>
-        <include name="test/**"/>
         <include name="javacc/*"/>
         <include name="build.xml"/>
         <include name="releaseBuild.xml"/>
-        <include name="rmitargets"/>
-        <include name="rmitargetsExamples"/>
         <include name="parsertargets"/>
         <include name="COPYRIGHT.txt"/>
         <include name="LICENSE.txt"/>
