@@ -91,16 +91,10 @@ public class EarlyReferenceProcessor implements ProcessingPhase {
         stateInferrer.process(document);
         ResolveEnum state= ResolveEnum.ResolvedUnknown;
         boolean finished;
-        do {
-//            ToplevelList configuration = document.getConfiguration();
-//            state = resolveList(configuration);
-            SystemElement system = document.getSystem();
-            ResolveEnum resolvedSystem = resolveList(system);
-            state=state.merge(resolvedSystem);
-            finished = state == ResolveEnum.ResolvedComplete;
-
-        } while(!finished && count++<Constants.RESOLUTION_SPIN_LIMIT);
-
+        SystemElement system = document.getSystem();
+        ResolveEnum resolvedSystem = resolveList(system);
+        state = state.merge(resolvedSystem);
+        finished = state == ResolveEnum.ResolvedComplete;
         if(!finished) {
             throw new CdlResolutionException("Gave up trying to resolve this document ");
         }

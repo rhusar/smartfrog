@@ -350,21 +350,12 @@ public class ReferencePath implements NamespaceLookup {
         context.beginResolveReference(startingPoint);
         StepExecutionResult state = new StepExecutionResult(this, startingPoint, context);
         try {
-            int count = 0;
             //the number of steps can increase during the run. I'm avoiding
             //using iterators to be sure of what is happening
             while (!state.isFinished()) {
-                count++;
-                if (count > Constants.RESOLUTION_PATH_LIMIT) {
-                    //too deep, way too deep
-                    throw new CdlResolutionException(ERROR_RECURSIVE_RESOLUTION + startingPoint.getDescription(),
-                            state);
-                }
                 state = state.executeCurrentStep();
-                if(!state.isFinished()) {
-                    //do any resolution we need on the next node
-                    state.resolveNextNode();
-                }
+                //do any resolution we need on the next node
+                state.resolveNextNode();
             }
             //here we have finished.
             return state;

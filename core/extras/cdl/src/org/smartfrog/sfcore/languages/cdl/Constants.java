@@ -110,7 +110,7 @@ public class Constants {
      * resolve references. After a while you have to give up.
      * {@value}
      */
-    public static final int RESOLUTION_SPIN_LIMIT = 100;
+    public static final int RESOLUTION_SPIN_LIMIT = 5;
 
     /**
      * QName used for fault detail containing the current phase

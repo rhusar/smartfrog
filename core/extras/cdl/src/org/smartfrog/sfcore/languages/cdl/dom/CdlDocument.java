@@ -361,7 +361,7 @@ public class CdlDocument implements Names, DescriptorSource {
      */
     public void parse(ParseContext context) throws CdlException, IOException,
             ParsingException {
-        List<ProcessingPhase> phases = createPhaseList(false);
+        List<ProcessingPhase> phases = createPhaseList();
         parseAndApplyPhases(context, phases);
     }
 
@@ -390,7 +390,7 @@ public class CdlDocument implements Names, DescriptorSource {
         return phases;
     }
 
-    private List<ProcessingPhase> createPhaseList(boolean importedDocument) {
+    private List<ProcessingPhase> createPhaseList() {
         List<ProcessingPhase> phases = new ArrayList<ProcessingPhase>(8);
         //register the protos
         phases.add(new RegisterPrototypesProcessor());
