@@ -37,17 +37,26 @@ public class LogAsyncQueue {
      * These can be invoked by calling the invoke() method.
      */
     protected class LogRequest {
-        private LogImpl  logImpl;
+        private Log  logImpl;
         private Method   method;
         private Object[] params;
-        public LogRequest(LogImpl logImpl, Method method, Object[] params) {
+        public LogRequest(Log logImpl, Method method, Object[] params) {
             this.logImpl = logImpl;
             this.method  = method;
             this.params  = params;
         }
         public void invoke() {
-            logImpl.invoke(method, params);
+            try {
+                if (logImpl!=null)
+                    method.invoke(logImpl, params);
+            } catch (Throwable thr) {
+                if (logImpl!=null)
+                    logImpl.error("Error Invoke LogRequest", thr);
+                else thr.printStackTrace();
+            }
+            //logImpl.invoke(method, params);
         }
+
         public String toString() {
             String str = "LOG=" + logImpl.toString() + " METHOD=" + method.toString() + " PARAMS=[";
             str += params[0].toString();
@@ -74,7 +83,7 @@ public class LogAsyncQueue {
      * @param method - the method to invoke
      * @param params - the parameters for the method
      */
-    public synchronized void enqueueLogRequest(LogImpl logImpl, Method method, Object[] params) {
+    public synchronized void enqueueLogRequest(Log logImpl, Method method, Object[] params) {
         list.addLast(new LogRequest(logImpl, method, params));
         notify();
     }
