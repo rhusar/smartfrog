@@ -65,7 +65,7 @@ document.write("<text>Last Published:</text> " + document.lastModified);
 //  --></script>
 </div>
 <div class="breadtrail">
-             
+
              &nbsp;
            </div>
 <div id="content">
@@ -453,7 +453,7 @@ document.write("<text>Last Published:</text> " + document.lastModified);
 <p class="Text body">The primary configuration file is &ldquo;/org/smartfrog/sfcore/logging/logimpl.sf&rdquo;. This file defines two attributes &ndash; the class of the local logger and the default level at which to generate logs. These, in the sf file provided as part of the system, are set to LogToStreams and info-level respectively.</p>
 <p class="Text body">As stated above, if there is the need to alter their values, this can be done by setting appropriate properties on the command line or in the default.ini file. The property names follow the normal SmartFrog convention of using the class name and attribute name combined. So these properties, if they were to be overwritten in the default.sf file, would be set as follows:</p>
 <p class="P22">org.smartfrog.sfcore.logging.LogImpl.logLevel=3</p>
-<p class="P22">org.smartfrog.sfcore.logging.LogImpl.localLoggerClass=...</p>
+<p class="P22">org.smartfrog.sfcore.logging.LogImpl.loggerClass=...</p>
 <p class="code"></p>
 <p class="Text body">To set them on the command line, the -D option should be used.</p>
 <p class="Text body">Each of the logger classes provided have their own configuration file setting default values, so for the LogToStreams logger, there is the configuration file &ldquo;org/smartfrog/sfcore/logging/logtostreams.sf&rdquo; which contains all the attributes to determine the behaviour of the logger. These attributes are defined in the description of the logger above. Again these can be overridden on the command line or in the default.ini file using a similar attribute naming scheme:</p>
