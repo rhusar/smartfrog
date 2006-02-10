@@ -17,7 +17,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 For more information: www.smartfrog.org
 
 */
- 
+
 package org.smartfrog.sfcore.logging;
 
 import org.smartfrog.sfcore.common.SmartFrogException;
@@ -33,11 +33,17 @@ import java.sql.Timestamp;
  */
 public class LogImplAsyncWrapper implements LogSF {
 
-    private        LogImpl        logImpl;
+    private        Log            logImpl;
     private static LogAsyncQueue  logQueue;
     private static LogAsyncThread worker;
 
     static {
+
+    }
+
+
+    public LogImplAsyncWrapper(Log logImpl) {
+        this.logImpl = logImpl;
         logQueue = new LogAsyncQueue();
         worker   = new LogAsyncThread(logQueue);
         worker.setName("Async Logging");
@@ -46,13 +52,8 @@ public class LogImplAsyncWrapper implements LogSF {
     }
 
 
-    public LogImplAsyncWrapper(LogImpl logImpl) {
-        this.logImpl = logImpl;
-    }
-
-
     public LogImplAsyncWrapper(LogSF logSF) {
-        this.logImpl = (LogImpl)logSF;
+        this((Log)logSF);
     }
 
 
@@ -90,7 +91,9 @@ public class LogImplAsyncWrapper implements LogSF {
      * <p> Get log name. </p>
      */
     public String getLogName(){
-        return logImpl.getLogName();
+        if (logImpl instanceof LogSF){
+            return ((LogSF)logImpl).getLogName();
+        } else return "AsyncLogger";
     }
 
     /**
@@ -99,14 +102,22 @@ public class LogImplAsyncWrapper implements LogSF {
      * @param currentLogLevel new logging level
      */
     public void setLevel(int currentLogLevel) {
-        logImpl.setLevel(currentLogLevel);
+        if (logImpl instanceof LogLevel){
+            ((LogLevel)logImpl).setLevel(currentLogLevel);
+        } else {
+            //ignore
+        }
     }
 
     /**
      * <p> Get logging level. </p>
      */
     public int getLevel() {
-        return logImpl.getLevel();
+        if (logImpl instanceof LogLevel){
+            return ((LogLevel)logImpl).getLevel();
+        } else {
+            return LogImpl.getLevel(logImpl);
+        }
     }
 
 
@@ -116,7 +127,11 @@ public class LogImplAsyncWrapper implements LogSF {
      * @param logLevel is this level enabled?
      */
     public boolean isLevelEnabled(int logLevel) {
-        return logImpl.isLevelEnabled(logLevel);
+        if (logImpl instanceof LogLevel){
+            return ((LogLevel)logImpl).isLevelEnabled(logLevel);
+        } else {
+            return (logLevel >= getLevel());
+        }
     }
 
     /**
@@ -127,7 +142,7 @@ public class LogImplAsyncWrapper implements LogSF {
      * when the log level is more than ignore. </p>
      */
     public boolean isIgnoreEnabled() {
-        return logImpl.isIgnoreEnabled();
+        return isLevelEnabled(LOG_LEVEL_IGNORE);
     }
 
 
