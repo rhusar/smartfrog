@@ -34,7 +34,6 @@ import org.smartfrog.sfcore.common.MessageKeys;
 import org.smartfrog.sfcore.common.MessageUtil;
 import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
 
-import java.lang.Double;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.io.Serializable;
@@ -44,7 +43,6 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 import org.smartfrog.sfcore.common.*;
 import java.util.Vector;
-
 
 /**
  *
@@ -336,7 +334,7 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
     private Object getConfigurationClass(ComponentDescription componentDescription, Object configurationClass) throws SmartFrogResolutionException {
         if (componentDescription==null) return configurationClass;
         try {
-            return componentDescription.sfResolve(ATR_LOCAL_LOGGER_CLASS, true);
+            return componentDescription.sfResolve(ATR_LOGGER_CLASS, true);
         } catch (SmartFrogResolutionException ex) {
             return configurationClass;
         }
