@@ -33,19 +33,37 @@ public class CdlExecTest extends XmlTestBase {
     public static final String VALID = FILES + "valid/";
     public static final String INVALID = FILES + "invalid/";
     public static final String EXEC_CDL = VALID + "exec.cdl";
+    public static final String JBOSS_CDL = VALID + "jboss.cdl";
+    public static final String SOUND_CDL = VALID + "fun.cdl";
 
     public CdlExecTest(String name) {
         super(name);
     }
 
-    public void testParse() throws Exception {
-        Phases phases = parse(EXEC_CDL);
-    }
 
     public void testDeployExec() throws Throwable {
         Prim application = null;
         try {
             application = deployExpectingSuccess(EXEC_CDL, "testExec");
+        } finally {
+            terminateApplication(application);
+        }
+    }
+
+    public void testDeployJBoss() throws Throwable {
+        Prim application = null;
+        try {
+            application = deployExpectingSuccess(JBOSS_CDL, "testJboss");
+        } finally {
+            terminateApplication(application);
+        }
+    }
+
+    public void testDeploySound() throws Throwable {
+        Prim application = null;
+        try {
+            application = deployExpectingSuccess(SOUND_CDL, "testSound");
+            Thread.sleep(15000);
         } finally {
             terminateApplication(application);
         }

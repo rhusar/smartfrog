@@ -71,7 +71,7 @@
       <deployDir sfi:type="trimmed"/>
       <processID>JBoss</processID>
       <!--bindings for the parent-->
-      <workDir cdl:ref="home"/>
+      <workDir cdl:ref="homeDir"/>
 
 
     </jboss:JBoss>
@@ -97,7 +97,7 @@
       <application>diary</application>
       <source>c:\diary.war</source>
 
-      <server cdl:extends="cdl:JBossOnDOS">
+      <server cdl:extends="jboss:JBossOnDOS">
       </server>
 
 
@@ -118,11 +118,6 @@
     </jboss:System>
 
   </cdl:configuration>
-
-  <cdl:system>
-    <system cdl:extends="jboss:System">
-    </system>
-  </cdl:system>
 
 
 </cdl:cdl>

@@ -21,6 +21,7 @@ package org.smartfrog.test.unit.sfcore.languages.cdl.generate;
 
 import junit.framework.TestCase;
 import org.smartfrog.test.system.sfcore.languages.cdl.execute.CdlComponentTest;
+import org.smartfrog.test.system.sfcore.languages.cdl.execute.CdlExecTest;
 import org.smartfrog.test.SmartFrogTestBase;
 import org.smartfrog.sfcore.parser.Phases;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
@@ -65,5 +66,16 @@ public class GenerateComponentsTest extends SmartFrogTestBase {
         assertEquals(EchoImpl.class.getName(), sfClass);
     }
 
+    public void testParseExec() throws Exception {
+        Phases phases = parse(CdlExecTest.EXEC_CDL);
+    }
+
+    public void testParseJBoss() throws Exception {
+        Phases phases = parse(CdlExecTest.JBOSS_CDL);
+    }
+
+    public void testParseSound() throws Exception {
+        Phases phases = parse(CdlExecTest.SOUND_CDL);
+    }
 
 }

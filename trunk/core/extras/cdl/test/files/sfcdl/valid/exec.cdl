@@ -17,8 +17,10 @@
     <echo cdl:extends="demo:echo" >
       <demo:message>hello</demo:message>
     </echo>
-    <run cdl:extends="demo:exec"
-      command="C:/Java/Apps/Tomcat/bin/tomcat5.exe"/>
+    <run cdl:extends="demo:Run">
+      <processName>tomcat</processName>
+      <shellCmd>C:/Java/Apps/tomcat-5.5.15/bin/tomcat5.exe</shellCmd>
+    </run>
     <echo3 cdl:extends="echo2" />
   </cdl:system>
 </cdl:cdl>
