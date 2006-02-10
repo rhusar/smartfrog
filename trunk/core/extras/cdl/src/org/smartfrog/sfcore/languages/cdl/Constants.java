@@ -76,7 +76,7 @@ public class Constants {
     public static final String SMARTFROG_TYPES_TYPE_ATTR = "type";
 
     /** {@value} */
-    public static final String SMARTFROG_TYPES_NILLABLE_ATTR = "nillable";
+    public static final String SMARTFROG_TYPES_NILLABLE_ATTR = "optional";
 
     /** {@value} */
     public static final QName QNAME_SFI_TYPE = new QName(XMLNS_SMARTFROG_TYPES,SMARTFROG_TYPES_TYPE_ATTR,"sfi");

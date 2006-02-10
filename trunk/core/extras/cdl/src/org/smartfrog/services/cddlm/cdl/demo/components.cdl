@@ -14,42 +14,81 @@
 
     <!-- Echo something -->
     <demo:echo cdl:extends="cmp:Component">
-      <cmp:CommandPath>org.smartfrog.services.cddlm.cdl.demo.EchoImpl</cmp:CommandPath>
+      <cmp:CommandPath>
+        org.smartfrog.services.cddlm.cdl.demo.EchoImpl</cmp:CommandPath>
       <demo:message sfi:type="trimmed"/>
       <demo:gui sfi:type="boolean">false</demo:gui>
     </demo:echo>
 
 
-    <demo:exec cdl:extends="cmp:Component">
-      <cmp:CommandPath>org.smartfrog.services.cddlm.cdl.demo.JavaImpl</cmp:CommandPath>
-    </demo:exec>
+<!--    <demo:exec cdl:extends="cmp:Component">
+      <cmp:CommandPath>
+        org.smartfrog.services.cddlm.cdl.demo.JavaImpl</cmp:CommandPath>
+    </demo:exec>-->
 
 
     <!--
     Run anything
     -->
-    <demo:run cdl:extends="cmp:Component">
+
+    <demo:Run cdl:extends="cmp:Component">
       <cmp:CommandPath>
         org.smartfrog.services.os.runshell.RunShellImpl
       </cmp:CommandPath>
-      
+
       <useExitCmd sfi:type="boolean">false</useExitCmd>
       <terminateOnFailure sfi:type="boolean">true</terminateOnFailure>
       <shouldTerminate>true</shouldTerminate>
-      <shellCmd sfi:type="trimmed" />
+      <shellCmd sfi:type="trimmed"/>
       <exitCmd sfi:type="trimmed"/>
-      <logLevel sfi:type="int">3</logLevel>
+      <workDir sfi:type="trimmed" sfi:optional="true"/>
+      <logLevel sfi:type="integer">3</logLevel>
       <processID sfi:type="trimmed">demo:run</processID>
-    </demo:run>
-    
+    </demo:Run>
+
     <!--Run Java -->
-    <demo:java cdl:extends="demo:run">
+    <demo:Java cdl:extends="demo:run">
       <classname sfi:type="trimmed"/>
       <jar sfi:type="trimmed"/>
       <maxMemory sfi:type="integer"/>
       <processID sfi:type="trimmed">demo:java</processID>
-    </demo:java>
+    </demo:Java>
+
+    <demo:File cdl:extends="cmp:Component">
+      <sfClass>org.smartfrog.services.filesystem.FileImpl</sfClass>
+      <testOnDeploy sfi:type="boolean">false</testOnDeploy>
+      <testOnLiveness sfi:type="boolean">true</testOnLiveness>
+    </demo:File>
+
+    <demo:Mkdir cdl:extends="cmp:Component">
+      <sfClass>org.smartfrog.services.filesystem.MkdirImpl</sfClass>
+      <dir sfi:type="trimmed"/>
+      <parentDir sfi:type="trimmed" sfi:nillable="true"/>
+    </demo:Mkdir>
 
 
+    <demo:TouchFile cdl:extends="cmp:Component">
+      <sfClass>org.smartfrog.services.filesystem.TouchFileImpl</sfClass>
+      <timestamp sfi:type="long">-1</timestamp>
+    </demo:TouchFile>
+
+    <demo:CopyFile cdl:extends="cmp:Component">
+      <sfClass>org.smartfrog.services.filesystem.CopyFileImpl</sfClass>
+      <source sfi:type="trimmed"/>
+      <destination sfi:type="trimmed"/>
+    </demo:CopyFile>
+
+    <demo:DeployByCopy cdl:extends="demo:CopyFile">
+      <sfClass>org.smartfrog.services.filesystem.DeployByCopyImpl</sfClass>
+    </demo:DeployByCopy>
+
+    <demo:TextFile cdl:extends="cmp:Component">
+      <sfClass>org.smartfrog.services.filesystem.TextFileImpl</sfClass>
+      <filename sfi:type="trimmed"/>
+      <text sfi:type="string"/>
+      <encoding sfi:type="UTF-8"/>
+      <deleteOnExit sfi:type="boolean">false</deleteOnExit>
+    </demo:TextFile>    
+    
   </cdl:configuration>
 </cdl:cdl>
