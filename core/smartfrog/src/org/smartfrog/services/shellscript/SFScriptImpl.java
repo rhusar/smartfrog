@@ -90,7 +90,7 @@ public class SFScriptImpl  extends PrimImpl implements Prim, SFScript, SFReadCon
 
   /**
    *  This method retrieves the paramters from the .sf file. For the purposes
-   *  of a demo default paramteres could be hard coded.
+   *  of a demo default parameters could be hard coded.
    *
    * @exception SmartFrogException deployment failure
    * @exception  RemoteException In case of network/rmi error
