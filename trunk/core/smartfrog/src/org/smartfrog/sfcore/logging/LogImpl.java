@@ -404,7 +404,7 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
      * @throws SmartFrogLogException
      */
 
-   protected Log loadLogger(String name, ComponentDescription configuration,Integer logLevel, String targetClassName , String targetCodeBase)
+   public static Log loadLogger(String name, ComponentDescription configuration,Integer logLevel, String targetClassName , String targetCodeBase)
           throws SmartFrogLogException{
           try {
             Class deplClass = SFClassLoader.forName(targetClassName, targetCodeBase, true);
@@ -430,7 +430,7 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
             throw new SmartFrogLogException(MessageUtil.formatMessage(
                     MessageKeys.MSG_ILLEGAL_ACCESS, targetClassName, "newInstance()"), illaexcp);
         } catch (InvocationTargetException intarexcp) {
-            String msg = "Error during initialization of localLog for LogImpl."+
+            String msg = "Error during initialization of logger."+
                          " Data: name "+name+", targetClassName "+targetClassName+
                          ", logLevel "+logLevel+", targetCodeBase "+targetCodeBase;
             System.err.println("[ERROR] "+msg+", Reason: "+intarexcp.toString());
@@ -496,7 +496,7 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
      *
      * @param logger
      */
-    public int getLevel(Log logger) {
+    public static int getLevel(Log logger) {
        if (logger.isTraceEnabled()){
          return LOG_LEVEL_TRACE;
        } else if (logger.isDebugEnabled()){

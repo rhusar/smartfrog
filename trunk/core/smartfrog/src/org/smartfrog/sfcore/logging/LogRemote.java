@@ -23,6 +23,7 @@ package org.smartfrog.sfcore.logging;
 
 
 import java.rmi.Remote;
+import java.rmi.RemoteException;
 /**
  * A simple logging interface abstracting logging APIs based in Apache Jakarta
  * logging.
@@ -40,7 +41,7 @@ public interface LogRemote extends Remote {
      * (for example, <code>String</code> concatenation)
      * when the log level is more than debug. </p>
      */
-    public boolean isDebugEnabled();
+    public boolean isDebugEnabled() throws RemoteException;
 
 
     /**
@@ -50,7 +51,7 @@ public interface LogRemote extends Remote {
      * (for example, <code>String</code> concatenation)
      * when the log level is more than error. </p>
      */
-    public boolean isErrorEnabled();
+    public boolean isErrorEnabled() throws RemoteException;
 
 
     /**
@@ -60,7 +61,7 @@ public interface LogRemote extends Remote {
      * (for example, <code>String</code> concatenation)
      * when the log level is more than fatal. </p>
      */
-    public boolean isFatalEnabled();
+    public boolean isFatalEnabled() throws RemoteException;
 
 
     /**
@@ -70,7 +71,7 @@ public interface LogRemote extends Remote {
      * (for example, <code>String</code> concatenation)
      * when the log level is more than info. </p>
      */
-    public boolean isInfoEnabled();
+    public boolean isInfoEnabled() throws RemoteException;
 
 
     /**
@@ -80,7 +81,7 @@ public interface LogRemote extends Remote {
      * (for example, <code>String</code> concatenation)
      * when the log level is more than trace. </p>
      */
-    public boolean isTraceEnabled();
+    public boolean isTraceEnabled() throws RemoteException;
 
 
     /**
@@ -90,7 +91,7 @@ public interface LogRemote extends Remote {
      * (for example, <code>String</code> concatenation)
      * when the log level is more than warn. </p>
      */
-    public boolean isWarnEnabled();
+    public boolean isWarnEnabled() throws RemoteException;
 
 
     // -------------------------------------------------------- Logging Methods
@@ -100,7 +101,7 @@ public interface LogRemote extends Remote {
      *
      * @param message log this message
      */
-    public void trace(Object message);
+    public void trace(Object message) throws RemoteException;
 
 
     /**
@@ -109,7 +110,7 @@ public interface LogRemote extends Remote {
      * @param message log this message
      * @param t log this cause
      */
-    public void trace(Object message, Throwable t);
+    public void trace(Object message, Throwable t) throws RemoteException;
 
 
     /**
@@ -117,7 +118,7 @@ public interface LogRemote extends Remote {
      *
      * @param message log this message
      */
-    public void debug(Object message);
+    public void debug(Object message) throws RemoteException;
 
 
     /**
@@ -126,7 +127,7 @@ public interface LogRemote extends Remote {
      * @param message log this message
      * @param t log this cause
      */
-    public void debug(Object message, Throwable t);
+    public void debug(Object message, Throwable t) throws RemoteException;
 
 
     /**
@@ -134,7 +135,7 @@ public interface LogRemote extends Remote {
      *
      * @param message log this message
      */
-    public void info(Object message);
+    public void info(Object message) throws RemoteException;
 
 
     /**
@@ -143,7 +144,7 @@ public interface LogRemote extends Remote {
      * @param message log this message
      * @param t log this cause
      */
-    public void info(Object message, Throwable t);
+    public void info(Object message, Throwable t) throws RemoteException;
 
 
     /**
@@ -151,7 +152,7 @@ public interface LogRemote extends Remote {
      *
      * @param message log this message
      */
-    public void warn(Object message);
+    public void warn(Object message) throws RemoteException;
 
 
     /**
@@ -160,7 +161,7 @@ public interface LogRemote extends Remote {
      * @param message log this message
      * @param t log this cause
      */
-    public void warn(Object message, Throwable t);
+    public void warn(Object message, Throwable t) throws RemoteException;
 
 
     /**
@@ -168,7 +169,7 @@ public interface LogRemote extends Remote {
      *
      * @param message log this message
      */
-    public void error(Object message);
+    public void error(Object message) throws RemoteException;
 
 
     /**
@@ -177,7 +178,7 @@ public interface LogRemote extends Remote {
      * @param message log this message
      * @param t log this cause
      */
-    public void error(Object message, Throwable t);
+    public void error(Object message, Throwable t) throws RemoteException;
 
 
     /**
@@ -185,7 +186,7 @@ public interface LogRemote extends Remote {
      *
      * @param message log this message
      */
-    public void fatal(Object message);
+    public void fatal(Object message) throws RemoteException;
 
 
     /**
@@ -194,7 +195,7 @@ public interface LogRemote extends Remote {
      * @param message log this message
      * @param t log this cause
      */
-    public void fatal(Object message, Throwable t);
+    public void fatal(Object message, Throwable t) throws RemoteException;
 
 
 }
