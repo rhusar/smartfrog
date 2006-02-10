@@ -35,7 +35,7 @@ public interface LogSF extends Log, LogMessage, LogLevel {
     /** String name for optional attribute "debug". */
     final static String ATR_LOG_LEVEL = "logLevel";
     /** String name for optional attribute "debug". */
-    final static String ATR_LOCAL_LOGGER_CLASS = "localLoggerClass";
+    final static String ATR_LOGGER_CLASS = "loggerClass";
 
     /**
      * <p> Set logging level. </p>

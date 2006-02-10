@@ -38,10 +38,10 @@ LOG_LEVEL_ALL  0;
 LOG_LEVEL_OFF  (LOG_LEVEL_FATAL + 1);
 
 LogImpl extends {
-  //localLoggerClass "org.smartfrog.sfcore.logging.LogToFileImpl";  //LogToFileImplConfig extends LAZY ... to overwrite default class config
-  localLoggerClass "org.smartfrog.sfcore.logging.LogToStreamsImpl"; //LogToStreamsImplConfig extends LAZY ...to overwrite default class config
-  //localLoggerClass ["org.smartfrog.sfcore.logging.LogToStreamsImpl","org.smartfrog.sfcore.logging.LogToFileImpl"];
-  //localLoggerClass "org.smartfrog.sfcore.logging.LogToNothingImpl"; //LogToNothingImplConfig extends LAZY ...to overwrite default class config
+  //loggerClass "org.smartfrog.sfcore.logging.LogToFileImpl";  //LogToFileImplConfig extends LAZY ... to overwrite default class config
+  loggerClass "org.smartfrog.sfcore.logging.LogToStreamsImpl"; //LogToStreamsImplConfig extends LAZY ...to overwrite default class config
+  //loggerClass ["org.smartfrog.sfcore.logging.LogToStreamsImpl","org.smartfrog.sfcore.logging.LogToFileImpl"];
+  //loggerClass "org.smartfrog.sfcore.logging.LogToNothingImpl"; //LogToNothingImplConfig extends LAZY ...to overwrite default class config
   logLevel LOG_LEVEL_INFO;
 
 }
