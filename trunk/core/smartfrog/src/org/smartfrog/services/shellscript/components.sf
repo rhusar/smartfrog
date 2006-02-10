@@ -83,7 +83,7 @@ Process extends Prim {
    sfClass "org.smartfrog.services.shellscript.SFProcessExecutionImpl";
 
    exec:restart LAZY PARENT:restart;
-   exec:detach LAZY PARENT:detatch;
+   exec:detach LAZY PARENT:detach;
    exec:terminate LAZY PARENT:terminate;
    exec extends DATA Exec;
 

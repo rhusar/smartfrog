@@ -23,7 +23,6 @@ package org.smartfrog.services.shellscript;
 import java.util.Vector;
 import java.io.File;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
-import org.smartfrog.sfcore.componentdescription.ComponentDescriptionImpl;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import java.io.Serializable;
 
@@ -249,7 +248,7 @@ import java.io.Serializable;
               return this.exitErrorCommand;
      }
 
-     public boolean detatch() {
+     public boolean detach() {
          return this.shouldDetach;
      }
 
@@ -299,7 +298,7 @@ import java.io.Serializable;
          }
 
          str.append(", detach: ");
-         str.append(this.detatch());
+         str.append(this.detach());
          str.append(", terminate: ");
          str.append(this.terminate());
          str.append(", restart: ");

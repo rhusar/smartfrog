@@ -35,8 +35,6 @@ import java.util.Vector;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.common.TerminatorThread;
 import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
-import java.rmi.*;
-import org.smartfrog.sfcore.common.*;
 
 //------------------- RUNProcess -------------------------------
 public class RunProcessImpl  extends Thread implements RunProcess {
@@ -202,7 +200,7 @@ public class RunProcessImpl  extends Thread implements RunProcess {
             }
         } while (cmd.restart());
 
-        if ((prim!=null)&&(cmd.terminate()||cmd.detatch())){
+        if ((prim!=null)&&(cmd.terminate()||cmd.detach())){
            String terminationType = TerminationRecord.ABNORMAL;
            if (exitValue==0){
                terminationType=TerminationRecord.NORMAL;
@@ -210,7 +208,7 @@ public class RunProcessImpl  extends Thread implements RunProcess {
            TerminationRecord termR = new TerminationRecord(terminationType, "Exit code: " + exitValue , null);
 
            TerminatorThread terminator = new TerminatorThread(prim,termR);
-           if (cmd.detatch())   {
+           if (cmd.detach())   {
                terminator.detach();
            }
            if (!cmd.terminate()) {
