@@ -92,7 +92,7 @@ public class SoundPlayerImpl extends FileUsingComponentImpl implements SoundPlay
         bind(true, null);
         int loops = sfResolve(ATTR_LOOPS, 1, false);
         player = new SoundPlayerListener(this, getFile(), loops);
-
+        player.start();
     }
 
 
@@ -199,8 +199,10 @@ public class SoundPlayerImpl extends FileUsingComponentImpl implements SoundPlay
          */
         public void run() {
             log = owner.getLog();
+            log.info("Playing "+file);
             play(file, loops);
             //forget about ourselves
+            finished=true;
             thread = null;
         }
 
@@ -265,16 +267,22 @@ public class SoundPlayerImpl extends FileUsingComponentImpl implements SoundPlay
                     log.error(ERROR_NO_SOUNDCARD);
                     return false;
                 }
+                boolean interrupted=false;
 
                 audioClip.loop(loops);
-                while (audioClip.isRunning()) {
+                while (!interrupted && audioClip.isRunning()) {
                     try {
                         Thread.sleep(SLEEP_INTERVAL_MILLIS);
-                    } catch (InterruptedException e1) {
+                    } catch (InterruptedException interrupt) {
+                        //we have been interrupted
                         // Ignore Exception
+                        audioClip.stop();
+                        interrupted=true;
                     }
                 }
-                audioClip.drain();
+                if(!interrupted) {
+                    audioClip.drain();
+                }
             } catch (IOException  ioe) {
                 log.error(ERROR_PLAYBACK_FAILURE, ioe);
                 playbackException = ioe;
