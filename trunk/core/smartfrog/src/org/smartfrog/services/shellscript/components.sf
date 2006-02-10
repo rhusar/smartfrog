@@ -55,7 +55,7 @@ ShellExecSchema extends ExecSchema {
 }
 
 ShellExec extends Exec {
-  execShema extends ShellExecSchema;
+  execSchema extends ShellExecSchema;
   echoCmd "echo";
 }
 
@@ -79,7 +79,7 @@ ProcessSchema extends Schema {
 }
 
 Process extends Prim {
-   processShema extends ProcessSchema;
+   processSchema extends ProcessSchema;
    sfClass "org.smartfrog.services.shellscript.SFProcessExecutionImpl";
 
    exec:restart LAZY PARENT:restart;
