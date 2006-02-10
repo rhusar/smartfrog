@@ -38,16 +38,17 @@
 
       <useExitCmd sfi:type="boolean">false</useExitCmd>
       <terminateOnFailure sfi:type="boolean">true</terminateOnFailure>
-      <shouldTerminate>true</shouldTerminate>
+      <shouldTerminate sfi:type="boolean">true</shouldTerminate>
       <shellCmd sfi:type="trimmed"/>
-      <exitCmd sfi:type="trimmed"/>
+      <exitCmd sfi:type="trimmed" sfi:optional="true"/>
       <workDir sfi:type="trimmed" sfi:optional="true"/>
       <logLevel sfi:type="integer">3</logLevel>
       <processID sfi:type="trimmed">demo:run</processID>
+      <processName sfi:type="trimmed">demo:run</processName>
     </demo:Run>
 
     <!--Run Java -->
-    <demo:Java cdl:extends="demo:run">
+    <demo:Java cdl:extends="demo:Run">
       <classname sfi:type="trimmed"/>
       <jar sfi:type="trimmed"/>
       <maxMemory sfi:type="integer"/>
@@ -55,40 +56,46 @@
     </demo:Java>
 
     <demo:File cdl:extends="cmp:Component">
-      <sfClass>org.smartfrog.services.filesystem.FileImpl</sfClass>
+      <cmp:CommandPath>org.smartfrog.services.filesystem.FileImpl</cmp:CommandPath>
       <testOnDeploy sfi:type="boolean">false</testOnDeploy>
       <testOnLiveness sfi:type="boolean">true</testOnLiveness>
     </demo:File>
 
     <demo:Mkdir cdl:extends="cmp:Component">
-      <sfClass>org.smartfrog.services.filesystem.MkdirImpl</sfClass>
+      <cmp:CommandPath>org.smartfrog.services.filesystem.MkdirImpl</cmp:CommandPath>
       <dir sfi:type="trimmed"/>
-      <parentDir sfi:type="trimmed" sfi:nillable="true"/>
+      <parentDir sfi:type="trimmed" sfi:optional="true"/>
     </demo:Mkdir>
 
 
     <demo:TouchFile cdl:extends="cmp:Component">
-      <sfClass>org.smartfrog.services.filesystem.TouchFileImpl</sfClass>
+      <cmp:CommandPath>org.smartfrog.services.filesystem.TouchFileImpl</cmp:CommandPath>
       <timestamp sfi:type="long">-1</timestamp>
     </demo:TouchFile>
 
     <demo:CopyFile cdl:extends="cmp:Component">
-      <sfClass>org.smartfrog.services.filesystem.CopyFileImpl</sfClass>
+      <cmp:CommandPath>org.smartfrog.services.filesystem.CopyFileImpl</cmp:CommandPath>
       <source sfi:type="trimmed"/>
       <destination sfi:type="trimmed"/>
     </demo:CopyFile>
 
     <demo:DeployByCopy cdl:extends="demo:CopyFile">
-      <sfClass>org.smartfrog.services.filesystem.DeployByCopyImpl</sfClass>
+      <cmp:CommandPath>org.smartfrog.services.filesystem.DeployByCopyImpl</cmp:CommandPath>
     </demo:DeployByCopy>
 
     <demo:TextFile cdl:extends="cmp:Component">
-      <sfClass>org.smartfrog.services.filesystem.TextFileImpl</sfClass>
+      <cmp:CommandPath>org.smartfrog.services.filesystem.TextFileImpl</cmp:CommandPath>
       <filename sfi:type="trimmed"/>
       <text sfi:type="string"/>
       <encoding sfi:type="UTF-8"/>
       <deleteOnExit sfi:type="boolean">false</deleteOnExit>
     </demo:TextFile>    
+    
+    <demo:Open cdl:extends="cmp:Component">
+      <cmp:CommandPath>org.smartfrog.services.cddlm.cdl.demo.OpenImpl</cmp:CommandPath>
+      <executable sfi:type="trimmed" sfi:optional="true" />
+      <filename sfi:type="trimmed" sfi:optional="true"/>
+    </demo:Open>
     
   </cdl:configuration>
 </cdl:cdl>

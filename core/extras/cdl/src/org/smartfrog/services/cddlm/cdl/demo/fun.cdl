@@ -13,11 +13,12 @@
   <cdl:configuration>
 
     <!-- Echo something -->
-    <fun:sound cdl:extends="cmp:Component">
+    <fun:Sound cdl:extends="cmp:Component">
       <cmp:CommandPath>org.smartfrog.services.fun.sound.SoundPlayerImpl</cmp:CommandPath>
       <filename sfi:type="trimmed"/>
       <loops sfi:type="integer">1</loops>
-    </fun:sound>
+      <sfShouldTerminate sfi:type="boolean">true</sfShouldTerminate>
+    </fun:Sound>
 
 
   </cdl:configuration>

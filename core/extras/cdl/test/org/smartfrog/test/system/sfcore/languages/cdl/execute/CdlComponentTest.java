@@ -55,6 +55,7 @@ public class CdlComponentTest extends DeployingTestBase {
     public static final String MESSAGE = "message.cdl";
     public static final String MESSAGEBOX = "message-box.cdl";
     public static final String ECHO_SYSTEM = "echo-system.cdl";
+    public static final String CDL_OPEN_MP3 = "open-mp3.cdl";
 
     public CdlComponentTest(String name) {
         super(name);
@@ -68,6 +69,10 @@ public class CdlComponentTest extends DeployingTestBase {
         deployAndTerminate(COMPOUND);
     }
 
+    public void testOpenMP3() throws Throwable {
+        deployAndTerminate(CDL_OPEN_MP3);
+    }
+    
     public void testMessage() throws Throwable {
         deployAndTerminate(MESSAGE);
     }
