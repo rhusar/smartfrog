@@ -294,6 +294,15 @@ public class LogToStreamsImpl extends LogToNothingImpl implements LogToStreams, 
         // Use a string buffer for better performance
         StringBuffer buf = new StringBuffer();
 
+        logToText(type, message, t, buf);
+
+        // Print to the appropriate destination
+        write(buf);
+
+    }
+
+    protected void logToText(int type, Object message, Throwable t,
+                           StringBuffer buf) {
         // Append date-time if so configured
         if (showDateTime) {
             buf.append(dateFormatter.format(new Date()));
@@ -373,10 +382,6 @@ public class LogToStreamsImpl extends LogToNothingImpl implements LogToStreams, 
                 buf.append(sw.toString());
             }
         }
-
-        // Print to the appropriate destination
-        write(buf);
-
     }
 
 
