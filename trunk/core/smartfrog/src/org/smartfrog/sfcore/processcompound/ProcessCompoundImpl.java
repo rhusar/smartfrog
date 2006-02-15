@@ -335,7 +335,11 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
         if (Logger.processCompoundDiagReport){
           sfAddAttribute(SmartFrogCoreKeys.SF_DIAGNOSTICS_REPORT,sfDiagnosticsReport());
         }
-        if (sfLog().isDebugEnabled()) sfLog().debug(sfDiagnosticsReport());
+        if (sfLog().isDebugEnabled()&& Logger.logStackTrace) {
+            sfLog().debug(sfDiagnosticsReport());
+        } else if (sfLog().isTraceEnabled()){
+            sfLog().trace(sfDiagnosticsReport());
+        }
         // Add boot time only in rootProcess
         if (sfIsRoot) {
           sfAddAttribute(SmartFrogCoreKeys.SF_BOOT_DATE,new Date(System.currentTimeMillis()));
