@@ -30,13 +30,18 @@ import org.smartfrog.sfcore.componentdescription.ComponentDescription;
  */
 public class Logger implements MessageKeys {
 
+    /** Property name for Logger class
+     *  Value {@value}
+     *  */
+    public static final String loggerPropertyBase = "org.smartfrog.sfcore.common.Logger";
+
     //Configuration parameters
     /** String name for optional attribute "{@value}". */
-    final static String ATR_LOG_STACK_TRACE = "logStackTrace";
+    public final static String ATR_LOG_STACK_TRACE = "logStackTrace";
     /** String name for optional attribute "{@value}". */
-    final static String ATR_LOG_LIVENESS = "logLiveness";
+    public final static String ATR_LOG_LIVENESS = "logLiveness";
     /** String name for optional attribute "{@value}". */
-    final static String ATR_LOG_PC_DIAG_REPORT = "processCompoundDiagReport";
+    public final static String ATR_LOG_PC_DIAG_REPORT = "processCompoundDiagReport";
 
     /** Property to enable stack trace. The default value is overridden by the
      * value specified in default.ini file.
@@ -62,7 +67,7 @@ public class Logger implements MessageKeys {
         ComponentDescription configuration = null;
         //Check Class and read configuration...including system.properties
         try {
-            configuration = ComponentDescriptionImpl.getClassComponentDescription("org.smartfrog.sfcore.common.Logger", true, null);
+            configuration = ComponentDescriptionImpl.getClassComponentDescription(loggerPropertyBase, true, null);
             if (configuration!=null){
                logStackTrace = configuration.sfResolve(ATR_LOG_STACK_TRACE,logStackTrace,false);
                logLiveness = configuration.sfResolve(ATR_LOG_LIVENESS,logLiveness,false);
