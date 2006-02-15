@@ -23,7 +23,7 @@ import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
 import org.smartfrog.sfcore.common.SmartFrogCoreProperty;
 import org.smartfrog.sfcore.security.SFClassLoader;
 import org.smartfrog.sfcore.security.SFSecurityProperties;
-
+import org.smartfrog.sfcore.common.Logger;
 /**
  * Single location for all JVM properties
  * created Jul 6, 2004 2:46:28 PM
@@ -48,11 +48,11 @@ public class SmartFrogJVMProperties {
 
     /**
      * name of the process.
-     * 
+     *
      * {@value}
      */
     public static final String PROCESS_NAME =       SmartFrogCoreProperty.propBaseSFProcess + SmartFrogCoreKeys.SF_PROCESS_NAME;
-            
+
     /**
      * classloader
      * @see org.smartfrog.sfcore.security.SFClassLoader#SF_CODEBASE_PROPERTY
@@ -70,14 +70,14 @@ public class SmartFrogJVMProperties {
      * Value {@value}
      */
 
-    public static final String LOG_STACK_TRACE =   SmartFrogCoreProperty.propLogStackTrace;
-    
+    public static final String LOG_STACK_TRACE =  Logger.loggerPropertyBase+"."+Logger.ATR_LOG_STACK_TRACE;
+
     /**
      * @value "org.smartfrog.sfcore.processcompound.sfRootLocatorPort";
      */
 
     public static final String ROOT_LOCATOR_PORT = SmartFrogCoreProperty.propBaseSFProcess + SmartFrogCoreKeys.SF_ROOT_LOCATOR_PORT;
-            
+
     /**
      * @value org.smartfrog.sfcore.processcompound.sfLivenessDelay
      */
@@ -101,8 +101,8 @@ public class SmartFrogJVMProperties {
     /**
      * @value org.smartfrog.sfcore.processcompound.sfDefault.sfDefault
      */
-    public static final String SF_DEFAULT =        SmartFrogCoreProperty.propBaseSFProcess +  "sfDefault.sfDefault";  
-    
+    public static final String SF_DEFAULT =        SmartFrogCoreProperty.propBaseSFProcess +  "sfDefault.sfDefault";
+
     public static final String INIFILE =           SmartFrogCoreProperty.iniFile;
 
     /**
@@ -127,16 +127,16 @@ public class SmartFrogJVMProperties {
      * @value "org.smartfrog.SFSystem";
      */
     public static final String SMARTFROG_ENTRY_POINT = "org.smartfrog.SFSystem";
-    
-    
+
+
     public static final String GUI_ENTRY_POINT = "org.smartfrog.tools.gui.browser.SFGui";
 
     public static final String MANAGEMENT_ENTRY_POINT = "org.smartfrog.services.management.SFDeployDisplay";
-        
+
     /**
      * parser entry point
      * @value org.smartfrog.SFParse
-     */ 
+     */
     public static final String PARSER_ENTRY_POINT = "org.smartfrog.SFParse";
     public static final String PARSER_OPTION_QUIET = "-q";
     public static final String PARSER_OPTION_VERBOSE = "-v";
