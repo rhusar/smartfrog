@@ -369,8 +369,7 @@ public class ConfigurationDescriptor implements MessageKeys{
               result= messageError.toString();
           }
           if ((Logger.logStackTrace)||
-              (((resultMessage!=null)||
-                (resultException!=null))&&(this.resultType!=Result.SUCCESSFUL))) {
+              (((resultMessage!=null)||(resultException!=null))&&(this.resultType!=Result.SUCCESSFUL))) {
                   messageError = new StringBuffer();
                   messageError.append(lineSeparator);
                   messageError.append("Result:");
@@ -387,12 +386,14 @@ public class ConfigurationDescriptor implements MessageKeys{
                          messageError.append("* StackTrace: '"+parseExceptionStackTrace(resultException,lineSeparator+"   ")+"'");
                        }
                   }
-                  if (originalSFACT!=null) {
+                  if ((originalSFACT!=null)&&Logger.logStackTrace) {
                     messageError.append(lineSeparator);
                     messageError.append("* Command line SFACT: '" + originalSFACT+"'");
                   }
-                  messageError.append(lineSeparator);
-                  messageError.append("* To String: '" + this.toString(separator)+"'");
+                  if ((originalSFACT!=null)&&Logger.logStackTrace) {
+                      messageError.append(lineSeparator);
+                      messageError.append("* To String: '" + this.toString(separator) + "'");
+                  }
                   result = result + messageError.toString();
            }
 
