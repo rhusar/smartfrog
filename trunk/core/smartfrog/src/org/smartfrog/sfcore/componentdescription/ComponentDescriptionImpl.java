@@ -1049,7 +1049,8 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
          *  be used to locate its Reference. Name of the description file will be in lower case.
          *  System properties that start with same package name as obj  are added to
          * ComponentDescription if addSystemProperties is true.
-         * @param obj which class Component description has to be read
+         *  Note: If obj is java.lang.string, then the string is used as the class name. Useful for static classes
+         * @param obj which class Component description has to be read (or java.lang.String)
          * @param addSystemProperties to select if to add system properties
          * @param newPhases parser phases to apply to component description
          * languageExtension provide extenstion for the language used (ex. sf by default)
@@ -1067,7 +1068,8 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
      *  be used to locate its Reference. Name of the description file will be in lower case.
      *  System properties that start with same package name as obj  are added to
      * ComponentDescription if addSystemProperties is true.
-     * @param obj which class Component description has to be read
+     *  Note: If obj is java.lang.string, then the string is used as the class name. Useful for static classes
+     * @param obj which class Component description has to be read (or java.lang.String)
      * @param addSystemProperties to select if to add system properties
      * @param newPhases parser phases to apply to component description
      * @ languageExtension provide extenstion for the language used (ex. sf by default)
@@ -1079,9 +1081,13 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
           boolean addSystemProperties, Vector newPhases,String languageExtension) throws SmartFrogException {
         //Get Component description for this log class
         String className = obj.getClass().toString();
-        className = className.substring(6).replace('.','/');
-        String urlDescription = className+"."+languageExtension;
-        Reference selectedRef = new Reference (className.substring(className.lastIndexOf("/")+1));
+        if (obj instanceof java.lang.String) className = obj.toString();
+        if (className.startsWith("class ")) {
+            className = className.substring(6);
+        }
+        String tempClassName = className.replace('.','/');
+        String urlDescription = tempClassName+"."+languageExtension;
+        Reference selectedRef = new Reference (tempClassName.substring(tempClassName.lastIndexOf("/")+1));
         Vector phases = new Vector();
         if (newPhases!=null){
             phases = newPhases;
@@ -1098,9 +1104,7 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
                                                                  , selectedRef);
         if (addSystemProperties){
             //add properties that start with package name.
-            cmpDesc = ComponentDescriptionImpl.addSystemProperties(
-                       obj.getClass().toString().substring(6)+"."
-                     , cmpDesc,languageExtension);
+            cmpDesc = ComponentDescriptionImpl.addSystemProperties( className+".", cmpDesc, languageExtension);
         }
 
         return cmpDesc;
