@@ -22,14 +22,21 @@ package org.smartfrog.sfcore.common;
 
 //import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.SFSystem;
+import org.smartfrog.sfcore.componentdescription.ComponentDescriptionImpl;
+import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 
 /**
  * Class used to store some flags used for log reporting.
  */
 public class Logger implements MessageKeys {
 
-//   /** String name for caller. */
-//    public static final String CALLER = "caller";
+    //Configuration parameters
+    /** String name for optional attribute "{@value}". */
+    final static String ATR_LOG_STACK_TRACE = "logStackTrace";
+    /** String name for optional attribute "{@value}". */
+    final static String ATR_LOG_LIVENESS = "logLiveness";
+    /** String name for optional attribute "{@value}". */
+    final static String ATR_LOG_PC_DIAG_REPORT = "processCompoundDiagReport";
 
     /** Property to enable stack trace. The default value is overridden by the
      * value specified in default.ini file.
@@ -52,41 +59,25 @@ public class Logger implements MessageKeys {
 
     public static synchronized void  init() {
         if (initialized) return;
-        /**
-         * Reads System property "org.smartfrog.logger.logStrackTrace" and
-         * updates Logger with the value to enable stack tracing.
-         */
-        String source = System.getProperty(SmartFrogCoreProperty.propLogStackTrace);
-        if ("true".equals(source)) {
-            Logger.logStackTrace = true;
-            if (SFSystem.sfLog().isWarnEnabled()) {
-              SFSystem.sfLog().warn(MessageUtil.
-                    formatMessage(MSG_WARNING_STACKTRACE_ENABLED));
+        ComponentDescription configuration = null;
+        //Check Class and read configuration...including system.properties
+        try {
+            configuration = ComponentDescriptionImpl.getClassComponentDescription("org.smartfrog.sfcore.common.Logger", true, null);
+            if (configuration!=null){
+               logStackTrace = configuration.sfResolve(ATR_LOG_STACK_TRACE,logStackTrace,false);
+               logLiveness = configuration.sfResolve(ATR_LOG_LIVENESS,logLiveness,false);
+               processCompoundDiagReport = configuration.sfResolve(ATR_LOG_PC_DIAG_REPORT,processCompoundDiagReport,false);
             }
-        }
-        /**
-         * Reads System property "org.smartfrog.logger.logLiveness" and
-         * updates Logger with the value to enable sfPing tracing.
-         */
-        source="false";
-        source = System.getProperty(SmartFrogCoreProperty.propLogLiveness);
-        if ("true".equals(source)) {
-            Logger.logLiveness = true;
-            if (SFSystem.sfLog().isWarnEnabled()) {
-              SFSystem.sfLog().warn(MessageUtil.
-                    formatMessage(MSG_WARNING_LIVENESS_ENABLED));
-            }
+        } catch (Exception ex){
+            if (SFSystem.sfLog().isErrorEnabled()) { SFSystem.sfLog().error(ex); }
         }
 
-        /**
-         * Reads System property "org.smartfrog.logger.processCompoundDiagnosticsReport" and
-         * updates Logger with the value to create diagnostics report in
-         * every ProcessCompound.
-         */
-        source="false";
-        source = System.getProperty(SmartFrogCoreProperty.processCompoundDiagnosticsReport);
-        if ("true".equals(source)) {
-            Logger.processCompoundDiagReport = true;
+        if (logStackTrace&&(SFSystem.sfLog().isWarnEnabled())) {
+              SFSystem.sfLog().warn(MessageUtil.formatMessage(MSG_WARNING_STACKTRACE_ENABLED));
+        }
+
+        if (logLiveness && (SFSystem.sfLog().isWarnEnabled())) {
+          SFSystem.sfLog().warn(MessageUtil.formatMessage(MSG_WARNING_LIVENESS_ENABLED));
         }
 
         initialized = true;
