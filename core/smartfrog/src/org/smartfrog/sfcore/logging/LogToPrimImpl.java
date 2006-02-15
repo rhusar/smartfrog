@@ -183,6 +183,8 @@ public class LogToPrimImpl extends LogToStreamsImpl implements LogToPrim {
         try {
           Prim logToPrim = null;
           logTo = (Log)(cd.sfResolve(ATR_LOG_TO, logToPrim, false));
+
+          System.out.println("Got  LogTo:" + logTo);
           redirectSystemOutputs = cd.sfResolve(ATR_REDIRECT_SYSTEM_OUTPUTS,redirectSystemOutputs, false);
           tagMessage = cd.sfResolve(ATR_TAG_MESSAGE, tagMessage, false);
         } catch (SmartFrogResolutionException ex){
@@ -247,6 +249,8 @@ public class LogToPrimImpl extends LogToStreamsImpl implements LogToPrim {
      * <p> Log a message with trace log level.</p>
      */
     public void trace(Object message) {
+        Throwable t =null;
+        if (tagMessage) message = logToText(LogLevel.LOG_LEVEL_TRACE,message,t);
         logTo.trace(message);
     }
 
@@ -254,6 +258,7 @@ public class LogToPrimImpl extends LogToStreamsImpl implements LogToPrim {
      * <p> Log an error with trace log level.</p>
      */
     public void trace(Object message, Throwable t) {
+        if (tagMessage) message = logToText(LogLevel.LOG_LEVEL_TRACE,message,t);
         logTo.trace(message,t);
     }
 
@@ -261,6 +266,8 @@ public class LogToPrimImpl extends LogToStreamsImpl implements LogToPrim {
      * <p> Log a message with info log level.</p>
      */
     public void info(Object message) {
+        Throwable t =null;
+        if (tagMessage) message = logToText(LogLevel.LOG_LEVEL_INFO,message,t);
         logTo.info(message);
     }
 
@@ -268,6 +275,7 @@ public class LogToPrimImpl extends LogToStreamsImpl implements LogToPrim {
      * <p> Log an error with info log level.</p>
      */
     public void info(Object message, Throwable t) {
+        if (tagMessage) message = logToText(LogLevel.LOG_LEVEL_INFO,message,t);
         logTo.info(message,t);
     }
 
@@ -275,6 +283,8 @@ public class LogToPrimImpl extends LogToStreamsImpl implements LogToPrim {
      * <p> Log a message with warn log level.</p>
      */
     public void warn(Object message) {
+        Throwable t =null;
+        if (tagMessage) message = logToText(LogLevel.LOG_LEVEL_WARN,message,t);
         logTo.warn(message);
     }
 
@@ -282,6 +292,7 @@ public class LogToPrimImpl extends LogToStreamsImpl implements LogToPrim {
      * <p> Log an error with warn log level.</p>
      */
     public void warn(Object message, Throwable t) {
+        if (tagMessage) message = logToText(LogLevel.LOG_LEVEL_WARN,message,t);
         logTo.warn(message,t);
     }
 
@@ -289,6 +300,8 @@ public class LogToPrimImpl extends LogToStreamsImpl implements LogToPrim {
      * <p> Log a message with error log level.</p>
      */
     public void error(Object message) {
+        Throwable t =null;
+        if (tagMessage) message = logToText(LogLevel.LOG_LEVEL_ERROR,message,t);
         logTo.error(message);
     }
 
@@ -296,6 +309,7 @@ public class LogToPrimImpl extends LogToStreamsImpl implements LogToPrim {
      * <p> Log an error with error log level.</p>
      */
     public void error(Object message, Throwable t) {
+        if (tagMessage) message = logToText(LogLevel.LOG_LEVEL_ERROR,message,t);
         logTo.error(message,t);
     }
 
@@ -303,6 +317,8 @@ public class LogToPrimImpl extends LogToStreamsImpl implements LogToPrim {
      * <p> Log a message with fatal log level.</p>
      */
     public void fatal(Object message) {
+        Throwable t =null;
+        if (tagMessage) message = logToText(LogLevel.LOG_LEVEL_FATAL,message,t);
         logTo.fatal(message);
     }
 
@@ -310,6 +326,7 @@ public class LogToPrimImpl extends LogToStreamsImpl implements LogToPrim {
      * <p> Log an error with fatal log level.</p>
      */
     public void fatal(Object message, Throwable t) {
+        if (tagMessage) message = logToText(LogLevel.LOG_LEVEL_FATAL,message,t);
         logTo.fatal(message,t);
     }
 
@@ -321,6 +338,7 @@ public class LogToPrimImpl extends LogToStreamsImpl implements LogToPrim {
      * logger. </p>
      */
     public boolean isDebugEnabled() {
+        if (logTo==null) return false;
         return logTo.isDebugEnabled();
     }
 
@@ -332,6 +350,7 @@ public class LogToPrimImpl extends LogToStreamsImpl implements LogToPrim {
      * logger. </p>
      */
     public boolean isErrorEnabled() {
+        if (logTo==null) return false;
         return logTo.isErrorEnabled();
     }
 
@@ -343,6 +362,7 @@ public class LogToPrimImpl extends LogToStreamsImpl implements LogToPrim {
      * logger. </p>
      */
     public boolean isFatalEnabled() {
+        if (logTo==null) return false;
         return logTo.isFatalEnabled();
     }
 
@@ -355,6 +375,7 @@ public class LogToPrimImpl extends LogToStreamsImpl implements LogToPrim {
      * logger. </p>
      */
     public boolean isInfoEnabled() {
+        if (logTo==null) return false;
         return logTo.isInfoEnabled();
     }
 
@@ -366,6 +387,7 @@ public class LogToPrimImpl extends LogToStreamsImpl implements LogToPrim {
      * logger. </p>
      */
     public boolean isTraceEnabled() {
+        if (logTo==null) return false;
         return logTo.isTraceEnabled();
     }
 
@@ -377,6 +399,7 @@ public class LogToPrimImpl extends LogToStreamsImpl implements LogToPrim {
      * logger. </p>
      */
     public boolean isWarnEnabled() {
+        if (logTo==null) return false;
         return logTo.isWarnEnabled();
     }
 
