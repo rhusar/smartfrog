@@ -368,7 +368,7 @@ public class SFSystem implements MessageKeys {
             ExitCodes.exitWithError(ExitCodes.EXIT_ERROR_CODE_GENERAL);
         }
 
-        //Report Actions successes of failures.
+        //Report Actions successes or failures.
          boolean somethingFailed = false;
          ConfigurationDescriptor cfgDesc = null;
          for (Enumeration items = opts.cfgDescriptors.elements();
