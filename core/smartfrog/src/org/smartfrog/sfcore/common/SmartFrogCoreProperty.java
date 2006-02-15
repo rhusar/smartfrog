@@ -69,32 +69,6 @@ public class SmartFrogCoreProperty {
      */
     public static final String iniFile = propBase + "iniFile";
 
-
-    /** Property name for logging stackTrace during exceptions.
-     *
-     *  Value {@value}
-     *  @see org.smartfrog.SFSystem
-     *  */
-    public static final String propLogStackTrace = propBase +
-        "logger.logStackTrace";
-
-    /** Property name for logging Liveness .
-     *
-     *  Value {@value}
-     *  @see org.smartfrog.SFSystem
-     *  */
-    public static final String propLogLiveness = propBase +
-        "logger.logLiveness";
-
-    /** Property name for process compound diagnostics report.
-         *
-         *  Value {@value}
-         *  @see org.smartfrog.SFSystem
-         *  */
-        public static final String processCompoundDiagnosticsReport = propBase +
-        "logger.processCompoundDiagnosticsReport";
-
-
     // Reference
 
     /**
