@@ -52,7 +52,7 @@ public class OptionSet {
     /** Flag indicating show root process. */
     public boolean showRootProcess = false;
     /** Flag indicating show Cd as child. */
-    public boolean showCDasChild = false;
+    public boolean showCDasChild = true;
 
     /** Hostname. */
     public String host = "localhost";
@@ -122,7 +122,7 @@ public class OptionSet {
                         break;
 
                     case 'c':
-                         showCDasChild = true;
+                         showCDasChild = false;
 
                          break;
 

@@ -43,7 +43,7 @@ import org.smartfrog.sfcore.componentdescription.ComponentDescription;
  */
 public class DeployEntry implements Entry {
 
-    boolean showCDasChild = false;
+    boolean showCDasChild = true;
 
     private Object entry = null;
 

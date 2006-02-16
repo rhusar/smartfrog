@@ -62,14 +62,14 @@ public class DeployTreePanel extends JPanel implements TreeSelectionListener {
     private BorderLayout borderLayout3 = new BorderLayout();
 
     private boolean inRootPanel = false;
-    private boolean showCDasChild = false;
+    private boolean showCDasChild = true;
 
     /**
      * Constructs the DeployTreePanel object
      */
     public DeployTreePanel() {
         try {
-            treeInit(null, false,false);
+            treeInit(null, false,true);
             jbInit();
         } catch (Exception ex) {
             ex.printStackTrace();

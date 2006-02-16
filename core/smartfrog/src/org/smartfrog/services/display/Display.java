@@ -1060,20 +1060,16 @@ public class Display extends JFrame implements ActionListener, KeyListener {
          int height = 480;
          int width = 640;
          boolean showRootProcess = false;
-         boolean showCDasChild = false;
+         boolean showCDasChild = true;
          String positionDisplay = "NE";
 
          try {
-            port = this.sfObj.sfResolve(new Reference(
-                 SmartFrogCoreKeys.SF_ROOT_LOCATOR_PORT ), port, false);
+            port = this.sfObj.sfResolve(new Reference(SmartFrogCoreKeys.SF_ROOT_LOCATOR_PORT ), port, false);
          } catch (SmartFrogResolutionException rex) {
          }
-
          String nameDisplay = "sfManagementConsole ";
          mngConsole = org.smartfrog.services.management.SFDeployDisplay.
-         startConsole(nameDisplay,
-               height, width, positionDisplay, showRootProcess,showCDasChild, hostName,
-               port, false);
+         startConsole(nameDisplay, height, width, positionDisplay, showRootProcess,showCDasChild, hostName,port, false);
       } catch (java.net.UnknownHostException uex) {
          if (mngConsole != null) {
             mngConsole.dispose();
