@@ -38,14 +38,11 @@ import org.smartfrog.services.display.Display;
 import org.smartfrog.services.display.SFDisplay;
 import org.smartfrog.sfcore.common.Context;
 import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
-import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.processcompound.SFProcess;
-import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.services.display.WindowUtilities;
-import org.smartfrog.sfcore.common.Logger;
 import org.smartfrog.sfcore.common.ExitCodes;
 
 
@@ -320,7 +317,7 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
 
          //root= new CompoundImpl();
          //System.out.println("Root: "+root.toString());
-         this.panelTree = new DeployTreePanel(root, false,false);
+         this.panelTree = new DeployTreePanel(root, false,true);
          this.panelTree.setEnabled(true);
          addFrogIcon(display);
          display.tabPane.add(panelTree, "Deploy Deployed System ...", 0);
