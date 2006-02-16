@@ -376,14 +376,14 @@ public class ConfigurationDescriptor implements MessageKeys{
                   lineSeparator=lineSeparator+"  ";
                   if ((resultMessage!=null)&&(!(resultMessage.toString().trim().equals("")))) {
                      messageError.append(lineSeparator);
-                     messageError.append("* Message: '"+ resultMessage.toString()+"'");
+                     messageError.append("* Message: '"+ resultMessage.toString().replaceAll("\n",lineSeparator+"    ")+"'");
                   }
                   if (resultException!=null) {
                       messageError.append(lineSeparator);
-                      messageError.append("* Exception: '"+parseException(resultException,lineSeparator+"   ")+"'");
+                      messageError.append("* Exception: '"+parseException(resultException,lineSeparator+"  ")+"'");
                       if (Logger.logStackTrace) {
                          messageError.append(lineSeparator);
-                         messageError.append("* StackTrace: '"+parseExceptionStackTrace(resultException,lineSeparator+"   ")+"'");
+                         messageError.append("* StackTrace: '"+parseExceptionStackTrace(resultException,lineSeparator+"    ")+"'");
                        }
                   }
                   if ((originalSFACT!=null)&&Logger.logStackTrace) {
@@ -426,14 +426,14 @@ public class ConfigurationDescriptor implements MessageKeys{
 
         if (thr instanceof SmartFrogException) {
             //messageError.append(lineSeparator);
-            messageError.append(((SmartFrogException)thr).toString(lineSeparator));
+            messageError.append(((SmartFrogException)thr).toString("\n"));
         } else {
             if ( thr !=null) {
                 //messageError.append(lineSeparator);
                 messageError.append(thr.toString());
             }
         }
-        return messageError.toString();
+        return messageError.toString().replaceAll("\n",lineSeparator);
     }
 
     /**
