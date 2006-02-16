@@ -379,7 +379,6 @@ public class SFSystem implements MessageKeys {
 		 opts.exitCode =ExitCodes.EXIT_ERROR_CODE_GENERAL;
              }
              sfLog().out(" - "+(cfgDesc).statusString()+"\n");
-             //Logger.logQuietly(cfgDesc.resultException);
              if (sfLog().isIgnoreEnabled() && cfgDesc.resultException!=null){
                sfLog().ignore(cfgDesc.resultException);
             }
