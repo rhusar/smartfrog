@@ -276,7 +276,8 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
                     }
                 }
             }
-
+            //Clean any cached sfcompletename
+            this.sfParentageChanged();
             // Now go on with normal deployment
             try {
                 super.sfDeployWith(sfParent, sfContext);
@@ -693,8 +694,7 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
                 r.addElement(ReferencePart.host((canonicalHostName)));
 
                 if (this.sfProcessName()==null) {
-                    // Process created when using sfDeployFrom (use by sfStart &
-                    //  sfRun)
+                    // Process created when using sfDeployFrom (use by sfStart & sfRun)
                     r.addElement(ReferencePart.here(SmartFrogCoreKeys.SF_RUN_PROCESS));
                 } else {
                     r.addElement(ReferencePart.here(this.sfProcessName()));
