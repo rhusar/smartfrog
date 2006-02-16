@@ -88,4 +88,8 @@ public class Logger implements MessageKeys {
         initialized = true;
     }
 
+    public static boolean initialized(){
+        return initialized;
+    }
+
 }

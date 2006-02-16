@@ -34,6 +34,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PipedOutputStream;
 import java.io.PipedInputStream;
+import org.smartfrog.sfcore.processcompound.ProcessCompound;
+import org.smartfrog.sfcore.common.Logger;
 
 
 /**
@@ -102,12 +104,17 @@ public class LogToPrimImpl extends LogToStreamsImpl implements LogToPrim {
 
     /** Prim component that implements Log. */
     Log logTo = null;
+    /** Config attribute for LogTo */
+    Object logToAttribute = null;
 
     /** Redirect system.out and system.err */
     boolean redirectSystemOutputs = false;
 
     /** Add local log information to the message? */
     boolean tagMessage = false;
+
+    private boolean debug = false;
+
 
     /**
      * Construct a simple log with given name and log level
@@ -135,25 +142,9 @@ public class LogToPrimImpl extends LogToStreamsImpl implements LogToPrim {
 
         String logToName = "unknowLogToName";
 
-        if (logTo == null) {
+        if (logToAttribute == null) {
            throw new SmartFrogResolutionException( "LogTo component for logging not found!");
         }
-
-        if (!(logTo instanceof Log)||(logTo instanceof Prim) ) {
-           throw new SmartFrogResolutionException( "Found wrong component for logging: " + logToName + ", " + logTo.getClass().getName());
-        }
-
-        try {
-            logToName = ((Prim)logTo).sfCompleteName().toString();
-        } catch (RemoteException ex) {
-            throw new SmartFrogException (ex);
-        }
-
-        if (isDebugEnabled() && this.getClass().toString().endsWith("LogToPrimImpl")) {
-            //This will go to the std output.
-            debug("LogToPrimImpl using component: "+logToName + ", " + logTo.getClass().getName());
-        }
-
 
         if (redirectSystemOutputs){
             try {
@@ -161,12 +152,6 @@ public class LogToPrimImpl extends LogToStreamsImpl implements LogToPrim {
             } catch (Exception ex1) {
                 ex1.printStackTrace();
             }
-        }
-        if (isTraceEnabled() && this.getClass().toString().endsWith("LogToPrimImpl")) {
-            String msg2 = "Log '"+name+"' using '"+logToName+"'"+
-            "\nusing Class ComponentDescription:\n{"+classComponentDescription+
-            "}\n, and using Component ComponentDescription:\n{"+ componentComponentDescription+"}";
-            trace(this.getClass().toString() + " "+msg2);
         }
 //        setLevel(initialLogLevel.intValue());
     }
@@ -179,18 +164,50 @@ public class LogToPrimImpl extends LogToStreamsImpl implements LogToPrim {
      */
     protected void readSFPrimAttributes(ComponentDescription cd) throws SmartFrogResolutionException {
         if (cd==null) return;
+        logTo();
         //Optional attributes.
         try {
-          Prim logToPrim = null;
-          logTo = (Log)(cd.sfResolve(ATR_LOG_TO, logToPrim, false));
-
-          System.out.println("Got  LogTo:" + logTo);
+          logToAttribute = (cd.sfResolve(ATR_LOG_TO, false));
           redirectSystemOutputs = cd.sfResolve(ATR_REDIRECT_SYSTEM_OUTPUTS,redirectSystemOutputs, false);
           tagMessage = cd.sfResolve(ATR_TAG_MESSAGE, tagMessage, false);
+          debug = cd.sfResolve(ATR_DEBUG,debug,false);
         } catch (SmartFrogResolutionException ex){
            this.warn(ex);
            throw ex;
         }
+    }
+
+    private Log logTo()  {
+
+        if (logTo!=null) return logTo;
+        if (!(Logger.initialized())) return null;
+        try {
+            try {
+                if (debug) System.out.println("Trying logToAttribute - "+logToAttribute);
+                Prim logToPrim = null;
+                ProcessCompound pc = org.smartfrog.sfcore.processcompound.SFProcess.getProcessCompound();
+                System.out.println("PC - "+pc);
+                if (pc==null) return null;
+                logTo = (Log)pc.sfResolveWithParser(logToAttribute.toString());
+                if (debug) System.out.println("Got for logging: "+ logTo.getClass().getName());
+            } catch (Exception re) {
+                throw (SmartFrogResolutionException) SmartFrogResolutionException.forward(re);
+            }
+            if (!(logTo instanceof Log)||!(logTo instanceof Prim)) {
+                throw new SmartFrogResolutionException("Found wrong component for logging: "+((Prim)logTo).sfCompleteName().toString()+", "+ logTo.getClass().getName());
+            }
+            if (isDebugEnabled()&& this.getClass().toString().endsWith("LogToPrimImpl")) {
+                //This will go to the std output.
+                debug("LogToPrimImpl using component: "+((Prim)logTo).sfCompleteName().toString()+", "+ logTo.getClass().getName());
+            }
+            return logTo;
+        } catch (Exception ex) {
+            if (debug){
+                System.err.println("Error in LogToPrimImpl.logTo(): "+ ex.toString());
+                if (Logger.logStackTrace) ex.printStackTrace();
+            }
+        }
+         return null;
     }
 
     /**
@@ -229,46 +246,49 @@ public class LogToPrimImpl extends LogToStreamsImpl implements LogToPrim {
         }
     }
 
-
-
     /**
      * <p> Log a message with debug log level.</p>
      */
     public void debug(Object message) {
-        logTo.debug(message);
+        if (logTo()==null) return;
+        logTo().debug(message);
     }
 
     /**
      * <p> Log an error with debug log level.</p>
      */
     public void debug(Object message, Throwable t) {
-        logTo.debug(message,t);
+        if (logTo()==null) return;
+        logTo().debug(message,t);
     }
 
     /**
      * <p> Log a message with trace log level.</p>
      */
     public void trace(Object message) {
+        if (logTo()==null) return;
         Throwable t =null;
         if (tagMessage) message = logToText(LogLevel.LOG_LEVEL_TRACE,message,t);
-        logTo.trace(message);
+        logTo().trace(message);
     }
 
     /**
      * <p> Log an error with trace log level.</p>
      */
     public void trace(Object message, Throwable t) {
+        if (logTo()==null) return;
         if (tagMessage) message = logToText(LogLevel.LOG_LEVEL_TRACE,message,t);
-        logTo.trace(message,t);
+        logTo().trace(message,t);
     }
 
     /**
      * <p> Log a message with info log level.</p>
      */
     public void info(Object message) {
+        if (logTo()==null) return;
         Throwable t =null;
         if (tagMessage) message = logToText(LogLevel.LOG_LEVEL_INFO,message,t);
-        logTo.info(message);
+        logTo().info(message);
     }
 
     /**
@@ -276,7 +296,7 @@ public class LogToPrimImpl extends LogToStreamsImpl implements LogToPrim {
      */
     public void info(Object message, Throwable t) {
         if (tagMessage) message = logToText(LogLevel.LOG_LEVEL_INFO,message,t);
-        logTo.info(message,t);
+        logTo().info(message,t);
     }
 
     /**
@@ -285,13 +305,14 @@ public class LogToPrimImpl extends LogToStreamsImpl implements LogToPrim {
     public void warn(Object message) {
         Throwable t =null;
         if (tagMessage) message = logToText(LogLevel.LOG_LEVEL_WARN,message,t);
-        logTo.warn(message);
+        logTo().warn(message);
     }
 
     /**
      * <p> Log an error with warn log level.</p>
      */
     public void warn(Object message, Throwable t) {
+        if (logTo()==null) return;
         if (tagMessage) message = logToText(LogLevel.LOG_LEVEL_WARN,message,t);
         logTo.warn(message,t);
     }
@@ -300,34 +321,38 @@ public class LogToPrimImpl extends LogToStreamsImpl implements LogToPrim {
      * <p> Log a message with error log level.</p>
      */
     public void error(Object message) {
+        if (logTo()==null) return;
         Throwable t =null;
         if (tagMessage) message = logToText(LogLevel.LOG_LEVEL_ERROR,message,t);
-        logTo.error(message);
+        logTo().error(message);
     }
 
     /**
      * <p> Log an error with error log level.</p>
      */
     public void error(Object message, Throwable t) {
+        if (logTo()==null) return;
         if (tagMessage) message = logToText(LogLevel.LOG_LEVEL_ERROR,message,t);
-        logTo.error(message,t);
+        logTo().error(message,t);
     }
 
     /**
      * <p> Log a message with fatal log level.</p>
      */
     public void fatal(Object message) {
+        if (logTo()==null) return;
         Throwable t =null;
         if (tagMessage) message = logToText(LogLevel.LOG_LEVEL_FATAL,message,t);
-        logTo.fatal(message);
+        logTo().fatal(message);
     }
 
     /**
      * <p> Log an error with fatal log level.</p>
      */
     public void fatal(Object message, Throwable t) {
+        if (logTo()==null) return;
         if (tagMessage) message = logToText(LogLevel.LOG_LEVEL_FATAL,message,t);
-        logTo.fatal(message,t);
+        logTo().fatal(message,t);
     }
 
     /**
@@ -338,8 +363,8 @@ public class LogToPrimImpl extends LogToStreamsImpl implements LogToPrim {
      * logger. </p>
      */
     public boolean isDebugEnabled() {
-        if (logTo==null) return false;
-        return logTo.isDebugEnabled();
+        if (logTo()==null) return false;
+        return logTo().isDebugEnabled();
     }
 
     /**
@@ -350,8 +375,8 @@ public class LogToPrimImpl extends LogToStreamsImpl implements LogToPrim {
      * logger. </p>
      */
     public boolean isErrorEnabled() {
-        if (logTo==null) return false;
-        return logTo.isErrorEnabled();
+        if (logTo()==null) return false;
+        return logTo().isErrorEnabled();
     }
 
     /**
@@ -362,8 +387,8 @@ public class LogToPrimImpl extends LogToStreamsImpl implements LogToPrim {
      * logger. </p>
      */
     public boolean isFatalEnabled() {
-        if (logTo==null) return false;
-        return logTo.isFatalEnabled();
+        if (logTo()==null) return false;
+        return logTo().isFatalEnabled();
     }
 
 
@@ -375,8 +400,8 @@ public class LogToPrimImpl extends LogToStreamsImpl implements LogToPrim {
      * logger. </p>
      */
     public boolean isInfoEnabled() {
-        if (logTo==null) return false;
-        return logTo.isInfoEnabled();
+        if (logTo()==null) return false;
+        return logTo().isInfoEnabled();
     }
 
     /**
@@ -387,8 +412,8 @@ public class LogToPrimImpl extends LogToStreamsImpl implements LogToPrim {
      * logger. </p>
      */
     public boolean isTraceEnabled() {
-        if (logTo==null) return false;
-        return logTo.isTraceEnabled();
+        if (logTo()==null) return false;
+        return logTo().isTraceEnabled();
     }
 
     /**
@@ -399,8 +424,8 @@ public class LogToPrimImpl extends LogToStreamsImpl implements LogToPrim {
      * logger. </p>
      */
     public boolean isWarnEnabled() {
-        if (logTo==null) return false;
-        return logTo.isWarnEnabled();
+        if (logTo()==null) return false;
+        return logTo().isWarnEnabled();
     }
 
 }

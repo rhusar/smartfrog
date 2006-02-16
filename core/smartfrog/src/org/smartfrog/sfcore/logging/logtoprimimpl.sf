@@ -24,4 +24,5 @@ LogToPrimImpl extends  LogToStreamsImpl {
   logTo;
   redirectSystemOutputs false;
   tagMessage true;
+  debug true;
 }
