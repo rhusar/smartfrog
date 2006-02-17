@@ -22,7 +22,7 @@ For more information: www.smartfrog.org
 
 LogToPrimImpl extends  LogToStreamsImpl {
   logTo;
-  redirectSystemOutputs false;
+  redirectSystemOutputs true;
   tagMessage true;
-  debug true;
+//  debug false;
 }

@@ -103,7 +103,9 @@ public class SFLogImpl extends PrimImpl implements Prim, SFLog, Log {
         logAsynch = sfResolve(ATR_LOG_ASYNCH, logAsynch , false);
         logTo = getLog(logToCD);
         if (logAsynch) logTo = new LogImplAsyncWrapper(logTo);
-        logTo.info("HOLA...");
+        if (logTo.isTraceEnabled()){
+            logTo.trace("logTo ready.");
+        }
     }
 
     /**
