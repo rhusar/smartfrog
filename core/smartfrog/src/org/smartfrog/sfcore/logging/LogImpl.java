@@ -97,7 +97,7 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
      * @param args An array with the arguments of that method.
      * @return A  corresponding method of java.lang.Object.
      */
-    private static Method getObjectMethod(String method, Class[] args) {
+    public static Method getObjectMethod(String method, Class[] args) {
         try {
             return (Log.class).getDeclaredMethod(method, args);
         } catch (Exception e) {

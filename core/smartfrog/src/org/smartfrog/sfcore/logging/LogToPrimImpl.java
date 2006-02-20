@@ -47,65 +47,6 @@ import org.smartfrog.sfcore.common.Logger;
 public class LogToPrimImpl extends LogToStreamsImpl implements LogToPrim {
 
 
-        /**
-         * This class redirect InputStream to logTo.info or logTo.err (outputStream).
-         */
-        public class StreamGobbler extends Thread {
-            InputStream is;
-            boolean out = true;
-
-            /**
-             * Constructs StreamGobbler with the input stream and type of stream
-             *
-             * @param is Imput stream to gobble
-             * @param typeS Type of the stream
-             */
-            public StreamGobbler(InputStream is, String typeS) {
-                this.setName("StreamGobbler("+typeS+")");
-                this.is = is;
-
-                if (typeS.equals("err")) {
-                    this.out = false;
-                }
-            }
-
-            /**
-             * Reads an inputStream and shows the content in the System.out.
-             * Overrides Thread.run.
-             */
-            public void run() {
-                try {
-                    InputStreamReader isr = new InputStreamReader(is);
-                    BufferedReader br = new BufferedReader(isr);
-                    String line = null;
-                   try {
-                       while (!br.ready()) {
-                           this.sleep(500);
-                       }
-                   } catch (InterruptedException ex) {
-                   }
-
-                    while ((line = br.readLine()) != null) {
-                        if (out) {
-                            if (logTo()!=null){
-                                (logTo()).info("[stdout]"+line);
-                            } else {
-                                System.out.println(line);
-                            }
-                        } else {
-                            if (logTo()!=null){
-                                (logTo()).error("[stderr]"+line);
-                            } else {
-                                System.err.println(line);
-                            }
-                        }
-                    }
-                } catch (IOException ioe) {
-                    ioe.printStackTrace();
-                }
-            }
-        }
-
    //Configuration parameters
 
     /** Prim component that implements Log. */
@@ -113,8 +54,6 @@ public class LogToPrimImpl extends LogToStreamsImpl implements LogToPrim {
     /** Config attribute for LogTo */
     Object logToAttribute = null;
 
-    /** Redirect system.out and system.err */
-    boolean redirectSystemOutputs = false;
     boolean init =false;
 
     /** Add local log information to the message? */
@@ -153,13 +92,6 @@ public class LogToPrimImpl extends LogToStreamsImpl implements LogToPrim {
            throw new SmartFrogResolutionException( "LogTo component for logging not found!");
         }
 
-        if (redirectSystemOutputs){
-            try {
-                redirectOutputs();
-            } catch (Exception ex1) {
-                ex1.printStackTrace();
-            }
-        }
 //        setLevel(initialLogLevel.intValue());
     }
 
@@ -174,7 +106,6 @@ public class LogToPrimImpl extends LogToStreamsImpl implements LogToPrim {
         //Optional attributes.
         try {
           logToAttribute = (cd.sfResolve(ATR_LOG_TO, false));
-          redirectSystemOutputs = cd.sfResolve(ATR_REDIRECT_SYSTEM_OUTPUTS,redirectSystemOutputs, false);
           tagMessage = cd.sfResolve(ATR_TAG_MESSAGE, tagMessage, false);
           debug = cd.sfResolve(ATR_DEBUG,debug,false);
         } catch (SmartFrogResolutionException ex){
@@ -189,6 +120,8 @@ public class LogToPrimImpl extends LogToStreamsImpl implements LogToPrim {
         if (!(Logger.initialized())) return null;
         try {
             try {
+                //This class needs to use special debug flag because is can be used as a logger for the log system an be
+                // used during the boot strap of the logging when the daemon is started.
                 if (debug) System.out.println("Trying logToAttribute - "+logToAttribute);
                 Prim logToPrim = null;
                 ProcessCompound pc = org.smartfrog.sfcore.processcompound.SFProcess.getProcessCompound();
@@ -225,41 +158,6 @@ public class LogToPrimImpl extends LogToStreamsImpl implements LogToPrim {
          return null;
     }
 
-    /**
-     * Redirects system outputs to a file.
-     * @throws Exception if any io error
-     */
-    public void redirectOutputs() throws Exception {
-
-        PrintStream originalOut = System.out; //OutputStream
-        PrintStream originalErr = System.err;
-
-       // writerOut -> pipedWriter(outStream)--->pipedReader (InputStream)
-       PipedInputStream pipeReaderOut = new PipedInputStream();
-       PipedOutputStream pipeWriter = new PipedOutputStream(pipeReaderOut);
-        /** Direct brand new outs to log.info*/
-       PrintStream writerOut = new PrintStream(pipeWriter);
-              // writerOut -> pipedWriter(outStream)--->pipedReader (InputStream)
-       PipedInputStream pipeReaderErr = new PipedInputStream();
-       PipedOutputStream pipeWriterErr = new PipedOutputStream(pipeReaderErr);
-        /** Direct brand new err to log.err*/
-       PrintStream writerErr = new PrintStream(pipeWriterErr);
-
-        try {
-            System.setErr(writerErr);
-            StreamGobbler errorGobbler = new StreamGobbler(pipeReaderErr,"err");
-            System.setOut(writerOut);
-            StreamGobbler outputGobbler = new StreamGobbler(pipeReaderOut,"out");
-            // kick them off
-            errorGobbler.setName(logName+".errorGobbler");
-            outputGobbler.setName(logName+".outputGobbler");
-            errorGobbler.start();
-            outputGobbler.start();
-        } catch (Exception e) {
-            System.setOut(originalOut);
-            System.setErr(originalErr);
-        }
-    }
 
     /**
      * <p> Log a message with debug log level.</p>

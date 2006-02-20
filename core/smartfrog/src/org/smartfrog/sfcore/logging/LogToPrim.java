@@ -32,8 +32,6 @@ public interface LogToPrim extends LogToStreams {
    /** String name for optional attribute "{@value}". */
     final static String ATR_LOG_TO = "logTo";
     /** String name for optional attribute "{@value}". */
-    final static String ATR_REDIRECT_SYSTEM_OUTPUTS = "redirectSystemOutputs";
-    /** String name for optional attribute "{@value}". */
     final static String ATR_TAG_MESSAGE = "tagMessage";
     /** String name for optional attribute "{@value}". */
     final static String ATR_DEBUG = "debug";

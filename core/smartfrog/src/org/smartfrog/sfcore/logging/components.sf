@@ -39,3 +39,15 @@ SFLog extends Prim {
    logAsynch true;
 }
 
+
+SFLogStdStream extends Prim {
+    sfClass "org.smartfrog.sfcore.logging.SFLogStdStreamImpl";
+
+    logStdOut true;
+    logStdOutTag "out";
+    logStdOutLevel "info";
+
+    logStdErr true;
+    logStdErrTag "err";
+    logStdErrLevel "error";
+}
