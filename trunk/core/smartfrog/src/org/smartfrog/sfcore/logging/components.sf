@@ -51,3 +51,10 @@ SFLogStdStream extends Prim {
     logStdErrTag "err";
     logStdErrLevel "error";
 }
+
+
+SFLogRegistration extends Prim {
+    sfClass "org.smartfrog.sfcore.logging.SFLogRegistrationImpl";
+
+    //log; //-> Optional: bind to log name using LogFactory or Prim log when nothing is defined.
+}

@@ -1,4 +1,4 @@
-/** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
+/** (C) Copyright 1998-2006 Hewlett-Packard Development Company, LP
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
@@ -23,17 +23,10 @@ package org.smartfrog.sfcore.logging;
 
 import org.smartfrog.sfcore.common.SmartFrogException;
 
-import java.io.PrintStream;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import java.rmi.*;
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PipedOutputStream;
-import java.io.PipedInputStream;
 import org.smartfrog.sfcore.processcompound.ProcessCompound;
 import org.smartfrog.sfcore.common.Logger;
 
