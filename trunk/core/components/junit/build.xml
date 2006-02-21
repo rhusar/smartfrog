@@ -69,7 +69,7 @@
 
   </target>    
     
-  <target name="dist-Tests" depends="package, ,package-tests"
+  <target name="dist-Tests" depends="package,package-tests"
     description="create a distribution including SF tests">
 
   </target>        
