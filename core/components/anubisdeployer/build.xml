@@ -29,7 +29,8 @@
   <description>
      Build file for the Anubis Deployer.
   </description>
-
+  
+  <property name="is.component" value="true"  />
   <!-- override point -->
   <property file="build.properties"/>
 
