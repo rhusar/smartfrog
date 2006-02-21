@@ -45,15 +45,16 @@ For more information: www.smartfrog.org
      
 </description>
 
+  <property name="is.component" value="true"  />
    <!-- override point -->
   <property file="build.properties" />
   <property name="root.dir" location="../../"  />
   <property name="Name.System" value="Jetty"/>
- <!-- Import common stuff -->
+  <!-- Import common stuff -->
   <!--available file="../../common.xml" property="root.dir" value="../.."/--> 
   <import file="${root.dir}/common.xml"/>
   
-   <property name="is.component" value="true"  />
+   
   <!-- ========================================================== -->
   <!-- ========================================================== -->
 

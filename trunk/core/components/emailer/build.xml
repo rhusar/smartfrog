@@ -28,6 +28,7 @@ For more information: www.smartfrog.org
 </description>
 
    <!-- override point -->
+  <property name="is.component" value="true"  />   
   <property file="build.properties" />
   <property name="root.dir" location="../../"  />
 
@@ -35,8 +36,6 @@ For more information: www.smartfrog.org
   <!-- Import common stuff -->
   <!--available file="../../common.xml" property="root.dir" value="../.."/--> 
   <import file="${root.dir}/common.xml"/>
-
-  <property name="is.component" value="true"  />
   
 
 
