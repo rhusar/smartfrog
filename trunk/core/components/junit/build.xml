@@ -63,7 +63,8 @@
   <!-- create a distro. 
        we want both sf-junit and the test har -->
   <!-- ========================================================== -->
-  <target name="dist" depends="package,package-tests"
+  <!--target name="dist" depends="package,package-tests"-->
+  <target name="dist" depends="package"
     description="create a distribution">
 
   </target>    
