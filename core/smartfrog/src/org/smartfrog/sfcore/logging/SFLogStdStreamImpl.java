@@ -37,9 +37,6 @@ import java.io.PipedInputStream;
 import java.io.PrintStream;
 import java.lang.reflect.Method;
 
-/**
- * This class has to be run through RMIC compiler (add it to RMITARGETS)
- */
 public class SFLogStdStreamImpl extends PrimImpl implements Prim, SFLogStdStream {
 
 

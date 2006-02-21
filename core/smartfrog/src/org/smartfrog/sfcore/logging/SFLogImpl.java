@@ -31,10 +31,8 @@ import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
+import org.smartfrog.sfcore.common.*;
 
-/**
- * This class has to be run through RMIC compiler (add it to RMITARGETS)
- */
 public class SFLogImpl extends PrimImpl implements Prim, SFLog, Log {
 
     Log logTo = null;
@@ -59,7 +57,7 @@ public class SFLogImpl extends PrimImpl implements Prim, SFLog, Log {
      *
      * @exception  SmartFrogException In case of error in deploying
      * @exception  RemoteException In case of network/rmi error
-     */
+      */
     public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
        super.sfDeploy();
        readConfiguration();
@@ -81,6 +79,13 @@ public class SFLogImpl extends PrimImpl implements Prim, SFLog, Log {
      */
     public synchronized void sfTerminateWith(TerminationRecord t) {
         if (sfLog().isDebugEnabled()) sfLog().debug(" Terminating for reason: " + t.toString());
+        if (logFrom != null) {
+            try {
+                logFrom.deregister(logName);
+            } catch (Exception ex) {
+                if (sfLog().isErrorEnabled()) sfLog().error("Deregistration failed for: " + logName,ex);
+            }
+        }
         super.sfTerminateWith(t);
     }
 
@@ -97,7 +102,6 @@ public class SFLogImpl extends PrimImpl implements Prim, SFLog, Log {
         logTo = sfLog(); //default logger
         Prim prim = null;
         logToCD = sfResolve(ATR_LOG_TO, logToCD , false);// Get a logger from a component. if it does not exists use sfLog()
-        logFrom = (LogRegistration)sfResolve(ATR_LOG_FROM, logFrom, false);// Register with Log if exists, if not listen only.
         logName = sfResolve(ATR_LOG_NAME, sfCompleteName().toString() , false);
         logLevel = sfResolve (ATR_LOG_LEVEL, logLevel , false);
         logAsynch = sfResolve(ATR_LOG_ASYNCH, logAsynch , false);
@@ -105,6 +109,22 @@ public class SFLogImpl extends PrimImpl implements Prim, SFLog, Log {
         if (logAsynch) logTo = new LogImplAsyncWrapper(logTo);
         if (logTo.isTraceEnabled()){
             logTo.trace("logTo ready.");
+        }
+
+        //Try to get a Prim implementing LogResgistration and if not, then get sfLog() from targeted PrimImpl.
+        Prim logFromPrim = (Prim)sfResolve(ATR_LOG_FROM, logFrom, false);// Register with Log if exists, if not listen only.
+        if (logFromPrim !=null) {
+            if (logFromPrim instanceof LogRegistration) {
+                logFrom = (LogRegistration) logFromPrim;
+            } else{
+                LogSF logsf = ((PrimImpl) logFromPrim).sfLog();
+                if (logsf instanceof LogRegistration) {
+                    logFrom = (LogRegistration)logsf;
+                }
+            }
+            if  (logFrom == null){
+                throw new SmartFrogResolutionException("'logFrom' not found for "+logFromPrim+" ["+logFromPrim.getClass().getName()+"]");
+             }
         }
     }
 
