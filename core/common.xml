@@ -1038,19 +1038,29 @@
   <!-- ========================================================== -->
   <target name="dist" depends="package"
     description="create a distribution">
-  </target>    
-    
- 
+  </target>
+
+
+  <!-- ========================================================== -->
+  <!-- this is an override point -->
+  <!-- copy all dependencies -->
+  <!-- ========================================================== -->
+  <target name="install-dependencies" depends="package"
+      if="smartfrog.dist.lib.dir">
+    <copy-useful-files src="${lib.dir}"
+        pattern="**/*.jar"
+        dest="${smartfrog.dist.lib.dir}"
+        failonerror="false"/>
+  </target> 
+  
   <!-- ========================================================== -->
   <!-- this is an override point -->
   <!-- install the jar, if we know where to put it -->
   <!-- ========================================================== -->
-  <target name="install" depends="package"
+  <target name="install" depends="package,install-dependencies"
       if="smartfrog.dist.lib.dir"
       description="copy the jar file to the SmartFrog distribution directory">
     <copy file="${target.jar}" todir="${smartfrog.dist.lib.dir}"/>
-    <copy-useful-files src="${lib.dir}" 
-      pattern="**/*.jar" dest="${smartfrog.dist.lib.dir}" failonerror="false"/>       
   </target>
 
   <!-- ========================================================== -->
@@ -1363,6 +1373,7 @@
     <copy file="${target.jar}.md5" todir="${m2.subdir}" failonerror="false"/>
 
   </target>
+  
   
   
 </project>   
