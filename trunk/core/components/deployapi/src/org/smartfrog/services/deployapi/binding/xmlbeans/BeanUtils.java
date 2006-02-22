@@ -19,18 +19,17 @@
  */
 package org.smartfrog.services.deployapi.binding.xmlbeans;
 
-import org.apache.xmlbeans.XmlObject;
-import org.apache.xmlbeans.XmlOptions;
+import nu.xom.Element;
+import nu.xom.converters.DOMConverter;
+import org.apache.axis2.addressing.AnyContentType;
 import org.apache.axis2.addressing.EndpointReference;
 import org.apache.axis2.addressing.ServiceName;
-import org.apache.axis2.addressing.AnyContentType;
+import org.apache.xmlbeans.XmlObject;
+import org.apache.xmlbeans.XmlOptions;
 import org.smartfrog.services.deployapi.transport.faults.FaultRaiser;
 import org.w3c.dom.Node;
 
 import java.util.ArrayList;
-
-import nu.xom.Element;
-import nu.xom.converters.DOMConverter;
 
 /**
  * This is only for use with beans

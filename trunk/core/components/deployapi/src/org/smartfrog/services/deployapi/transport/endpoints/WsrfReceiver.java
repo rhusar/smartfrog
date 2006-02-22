@@ -21,7 +21,6 @@
 package org.smartfrog.services.deployapi.transport.endpoints;
 
 import org.apache.axis2.AxisFault;
-import org.apache.axis2.addressing.MessageInformationHeaders;
 import org.apache.axis2.context.MessageContext;
 import org.apache.axis2.description.AxisOperation;
 import org.apache.axis2.description.AxisService;
@@ -29,14 +28,15 @@ import org.apache.axis2.description.Parameter;
 import org.apache.axis2.engine.DependencyManager;
 import org.apache.axis2.engine.MessageReceiver;
 import org.apache.axis2.i18n.Messages;
-import org.apache.axis2.om.OMAbstractFactory;
-import org.apache.axis2.om.OMElement;
 import org.apache.axis2.receivers.AbstractInOutSyncMessageReceiver;
-import org.apache.axis2.soap.SOAP11Constants;
-import org.apache.axis2.soap.SOAP12Constants;
-import org.apache.axis2.soap.SOAPEnvelope;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.ws.commons.om.OMElement;
+import org.apache.ws.commons.om.OMAbstractFactory;
+import org.apache.ws.commons.soap.SOAPEnvelope;
+import org.apache.ws.commons.soap.SOAP12Constants;
+import org.apache.ws.commons.soap.SOAP11Constants;
+import org.apache.ws.commons.soap.SOAPFactory;
 import org.apache.wsdl.WSDLService;
 import org.smartfrog.services.deployapi.transport.faults.BaseException;
 import org.smartfrog.sfcore.security.SFClassLoader;
@@ -74,11 +74,14 @@ public class WsrfReceiver extends AbstractInOutSyncMessageReceiver
             //Inject the Message Context if it is asked for
             DependencyManager.configureBusinessLogicProvider(destObject, inMessage,outMessage);
 
+/*
+            
             MessageInformationHeaders addressInfo = inMessage.getMessageInformationHeaders();
             if (isAddressingMandatory() && addressInfo != null) {
                 throw new BaseException("WS-Addressing is mandatory on WSRF resources");
             }
 
+*/
             //get the operation
             AxisOperation opDesc = inMessage.getOperationContext()
                     .getAxisOperation();
@@ -94,7 +97,7 @@ public class WsrfReceiver extends AbstractInOutSyncMessageReceiver
             OMElement result = null;
             SmartFrogAxisEndpoint endpoint = (SmartFrogAxisEndpoint) destObject;
             result = endpoint.dispatch(operation, inMessage);
-            envelope = getSOAPFactory().getDefaultEnvelope();
+            envelope = getSOAPFactory(inMessage).getDefaultEnvelope();
             if (result != null) {
                 envelope.getBody().addChild(result);
             }
@@ -136,30 +139,31 @@ public class WsrfReceiver extends AbstractInOutSyncMessageReceiver
     }
 */
 
-    /**
-     * Method makeNewServiceObject
-     * This is an override of the normal one, as we need to use a different classloader
-     *
-     * @param msgContext
-     * @return the service object
-     * @throws AxisFault
-     */
-    @Override
+
     protected Object makeNewServiceObject(MessageContext msgContext)
             throws AxisFault {
+        try {
+            AxisService service =
+                    msgContext.getOperationContext()
+                            .getServiceContext()
+                            .getAxisService();
+            ClassLoader classLoader = service.getClassLoader();
+            Parameter implInfoParam = service.getParameter(SERVICE_CLASS);
 
-        String nsURI = msgContext.getEnvelope().getNamespace().getName();
-        if (SOAP12Constants.SOAP_ENVELOPE_NAMESPACE_URI.equals(nsURI)) {
-            fac = OMAbstractFactory.getSOAP12Factory();
-        } else if (
-                SOAP11Constants.SOAP_ENVELOPE_NAMESPACE_URI.equals(nsURI)) {
-            fac = OMAbstractFactory.getSOAP11Factory();
-        } else {
-            throw new AxisFault(Messages.getMessage("invalidSOAPversion"));
+            if (implInfoParam != null) {
+                return loadImplementationClassViaSmartFrog(msgContext);
+            } else {
+                throw new AxisFault(Messages.getMessage("paramIsNotSpecified",
+                        "SERVICE_CLASS"));
+            }
+        } catch (Exception e) {
+            throw AxisFault.makeFault(e);
         }
-        return loadImplementationClassViaSmartFrog(msgContext);
     }
-
+    
+ 
+    
+    
     private Object loadImplementationClassViaClassloader(MessageContext msgContext) throws AxisFault {
         try {
 

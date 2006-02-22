@@ -19,7 +19,7 @@
  */
 package org.smartfrog.services.deployapi.test.unit;
 
-import org.apache.axis2.om.OMElement;
+import org.apache.ws.commons.om.OMElement;
 import org.smartfrog.services.deployapi.transport.endpoints.PortalEndpoint;
 
 /**

@@ -73,7 +73,7 @@ public class SystemEndpointer extends Endpointer {
 
         //creating the Service
         serviceDescription = new AxisService(
-                new QName(CDL_API_WSDL_NAMESPACE, "SystemEPR"));
+                new QName(CDL_API_WSDL_NAMESPACE, "SystemEPR").toString());
 
         //creating the operations
         AxisOperation __operation;

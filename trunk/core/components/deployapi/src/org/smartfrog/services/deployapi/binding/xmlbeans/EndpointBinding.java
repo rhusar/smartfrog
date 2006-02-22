@@ -20,13 +20,12 @@
 package org.smartfrog.services.deployapi.binding.xmlbeans;
 
 import org.apache.axis2.AxisFault;
-import org.apache.axis2.om.OMElement;
+import org.apache.ws.commons.om.OMElement;
 import org.apache.xmlbeans.XmlObject;
 import org.apache.xmlbeans.XmlOptions;
 import org.smartfrog.services.deployapi.client.ApiCall;
 import org.smartfrog.services.deployapi.client.Endpointer;
 import org.smartfrog.services.deployapi.transport.faults.BaseException;
-import org.smartfrog.services.deployapi.binding.xmlbeans.Axis2Beans;
 
 import javax.xml.namespace.QName;
 import java.rmi.RemoteException;

@@ -22,6 +22,7 @@ package org.smartfrog.services.deployapi.client;
 import nu.xom.Document;
 import nu.xom.Element;
 import org.apache.axis2.AxisFault;
+import org.apache.axis2.client.Options;
 import org.apache.axis2.addressing.EndpointReference;
 import org.apache.axis2.context.ConfigurationContext;
 import org.apache.axis2.context.ConfigurationContextFactory;
@@ -30,8 +31,8 @@ import org.apache.axis2.context.ServiceGroupContext;
 import org.apache.axis2.description.AxisService;
 import org.apache.axis2.description.AxisServiceGroup;
 import org.apache.axis2.engine.AxisConfiguration;
-import org.apache.axis2.om.OMElement;
-import org.apache.axis2.soap.SOAP12Constants;
+import org.apache.ws.commons.om.OMElement;
+import org.apache.ws.commons.soap.SOAP12Constants;
 import org.smartfrog.services.deployapi.system.Constants;
 import static org.smartfrog.services.deployapi.system.Constants.WSRF_OPERATION_GETRESOURCEPROPERTY;
 import static org.smartfrog.services.deployapi.system.Constants.WSRF_RP_ELEMENT_GETRESOURCEPROPERTY_REQUEST;
@@ -45,7 +46,11 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.rmi.RemoteException;
 
-/** created 21-Sep-2005 13:20:35 */
+/** 
+ * This represence a reference to an EPR
+ * 
+ * created 21-Sep-2005 13:20:35 
+ * */
 
 public abstract class Endpointer implements Serializable {
     /** url */
@@ -144,13 +149,15 @@ public abstract class Endpointer implements Serializable {
         ServiceContext serviceContext = getServiceContext();
         assert serviceContext != null;
         ApiCall call = new ApiCall(serviceContext);
-        call.setExceptionToBeThrownOnSOAPFault(true);
-        call.setTo(getEndpointer());
-        call.setSoapVersionURI(SOAP12Constants.SOAP_ENVELOPE_NAMESPACE_URI);
+        Options override=new Options();
+        
+        override.setExceptionToBeThrownOnSOAPFault(true);
+        call.setTargetEPR(getEndpointer());
+        override.setSoapVersionURI(SOAP12Constants.SOAP_ENVELOPE_NAMESPACE_URI);
         if (operationName != null) {
-            call.setSoapAction(operationName);
+            override.setSoapAction(operationName);
             //REVISIT: turn this off if things misbehave w.r.t namespaces
-            call.setWsaAction(operationName);
+            //override.setWsaAction(operationName);
         }
 //        call.setTransportInfo(getSenderTransport(),getListenerTransport(),isSeparateListenerTransport());
         //turn on addressing
@@ -216,38 +223,50 @@ public abstract class Endpointer implements Serializable {
      * @return a string representing the home dir, in a platform-specific
      *         location.
      */
-    protected String getAxis2Home() {
+    private  String getAxis2Home() {
         return null;
     }
 
     /**
      * this does any late initialisation of the EPR, primarily setting up axis
-     *
+     * @see AxisConfiguration#addService(org.apache.axis2.description.AxisService) 
      * @throws org.apache.axis2.AxisFault
      */
     protected void init() throws AxisFault {
-        configurationContext = new ConfigurationContextFactory()
-                .buildClientConfigurationContext(getAxis2Home());
+        ConfigurationContextFactory ctxFactory = new ConfigurationContextFactory();
+        
+        configurationContext = ConfigurationContextFactory.createEmptyConfigurationContext();
+        //        .buildClientConfigurationContext(getAxis2Home());
         AxisService serviceDescription = getServiceDescription();
         AxisConfiguration axisConfiguration = configurationContext.getAxisConfiguration();
 
         //bind to everything. see AxisConfiguration.addService(serviceDescription);
         AxisServiceGroup axisServiceGroup =new AxisServiceGroup();
-        String localPart = serviceDescription.getName().getLocalPart();
+        String localPart = serviceDescription.getName();
         axisServiceGroup.setServiceGroupName(localPart);
         axisServiceGroup.setParent(axisConfiguration);
         axisServiceGroup.addService(serviceDescription);
         axisConfiguration.addServiceGroup(axisServiceGroup);
+        
         ServiceGroupContext serviceGroupContext=new ServiceGroupContext(configurationContext,axisServiceGroup);
-
+        serviceGroupContext.setId(localPart);
         String serviceInstanceID = localPart;
-        serviceContext = configurationContext.getServiceContext(
-                serviceInstanceID);
-        if(serviceContext==null) {
-            serviceContext=new ServiceContext(serviceDescription,serviceGroupContext);
-            configurationContext.registerServiceContext(serviceInstanceID,getServiceContext());
+        Object sgc=configurationContext.getServiceGroupContexts().get(serviceInstanceID);
+        if(sgc==null) {
+            configurationContext.registerServiceGroupContext(serviceGroupContext);
 
         }
+        serviceContext=serviceGroupContext.getServiceContext(serviceDescription);
+        assert serviceContext!=null;
+/*
+        what did this do? looks like it registers things if needed
+        if(serviceContext==null) {
+            serviceContext=new ServiceContext(serviceDescription,serviceGroupContext);
+            configurationContext.registerServiceGroupContext();
+                    registerServiceContext(serviceInstanceID,getServiceContext());
+
+        }
+*/
     }
 
 
