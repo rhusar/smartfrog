@@ -84,7 +84,29 @@
       </fileset>
     </path>
   </target>
- 
+
+
+
+  <!-- ========================================================== -->
+  <!-- this is an override point -->
+  <!-- copy all dependencies -->
+  <!-- ========================================================== -->
+  <target name="install-dependencies" depends="m2-files"
+      if="smartfrog.dist.lib.dir">
+    <property name="build.lib.dir" location="${build.dir}/lib"/>
+    <mkdir dir="${build.lib.dir}"/>
+
+    <copy todir="${smartfrog.dist.lib.dir}" flatten="true">
+      <path refid="m2.classpath"/>
+    </copy>
+
+    <copy-useful-files src="${lib.dir}"
+        pattern="**/*.jar"
+        dest="${smartfrog.dist.lib.dir}"
+        failonerror="false"/>
+  </target>
+
+
   <!-- =================================================================== -->
   <!--   JDocs                                                             -->
   <!-- =================================================================== -->

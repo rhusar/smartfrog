@@ -20,6 +20,8 @@
 package org.smartfrog.sfcore.languages.cdl.references;
 
 import org.smartfrog.sfcore.languages.cdl.faults.CdlResolutionException;
+import org.smartfrog.sfcore.languages.cdl.utils.NamespaceLookup;
+import org.smartfrog.sfcore.reference.Reference;
 
 /**
  * This represents a step in a path
@@ -44,4 +46,17 @@ public abstract class Step {
      * @throws CdlResolutionException if something failed.
      */
     public abstract StepExecutionResult execute(StepExecutionResult state) throws CdlResolutionException;
+
+
+    /**
+     * append zero or more reference parts to the current reference chain.
+     * @param namespaces base to use for determining xmlns mapping
+     * @param reference reference to build up
+     */
+    public abstract void appendReferenceParts(NamespaceLookup namespaces,Reference reference)
+            throws CdlResolutionException;
+    
+    
+    
+    
 }

@@ -24,6 +24,9 @@ import org.smartfrog.sfcore.languages.cdl.dom.CdlDocument;
 import org.smartfrog.sfcore.languages.cdl.dom.PropertyList;
 import org.smartfrog.sfcore.languages.cdl.dom.ToplevelList;
 import org.smartfrog.sfcore.languages.cdl.ParseContext;
+import org.smartfrog.sfcore.languages.cdl.utils.NamespaceLookup;
+import org.smartfrog.sfcore.reference.Reference;
+import org.smartfrog.sfcore.reference.ReferencePart;
 
 import javax.xml.namespace.QName;
 
@@ -70,4 +73,23 @@ public class StepRefRoot extends Step {
         return state.next(target);
     }
 
+
+    /**
+     * append zero or more reference parts to the current reference chain.
+     *
+     * @param namespaces base to use for determining xmlns mapping
+     * @param reference  reference to build up
+     */
+    public void appendReferenceParts(NamespaceLookup namespaces,
+                                     Reference reference)
+            throws CdlResolutionException {
+        //go to the top
+        reference.addElement(ReferencePart.root());
+        //now go to, well, to a deployed thing of the specified name
+        Object name=refroot;
+        if(refroot.getNamespaceURI().length()==0) {
+            name=refroot.getLocalPart();
+        }
+        reference.addElement(ReferencePart.attrib(name));
+    }
 }

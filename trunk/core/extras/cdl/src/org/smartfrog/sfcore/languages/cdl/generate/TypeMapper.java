@@ -147,23 +147,22 @@ public class TypeMapper {
      * @param node
      * @return true iff the sfi:nillable attribute is true
      */
-    public boolean isNillable(PropertyList node) {
-        String value = node.getAttributeValue(Constants.SMARTFROG_TYPES_NILLABLE_ATTR,
+    public boolean isOptional(PropertyList node) {
+        String value = node.getAttributeValue(Constants.SMARTFROG_TYPES_OPTIONAL_ATTR,
                         Constants.XMLNS_SMARTFROG_TYPES);
         return XsdUtils.isXsdBooleanTrue(value);
     }
 
     /**
-     * Test for a node being "nil"
+     * Test for a node being optional
      * That is: there is no text, there is an sfi:type attribute, and there
      * is an sfi:nillable attribute. 
      * @param node
      * @return
      */
-    public boolean isNilNode(PropertyList node) {
-        if(isNillable(node) && extractMappingType(node)!=null) {
-            String text = node.getTextValue();
-            return text == null;
+    public boolean isEmptyOptionalNode(PropertyList node) {
+        if(isOptional(node) && extractMappingType(node)!=null) {
+            return node.getChildCount()==0;
         }
         return false;
     }
