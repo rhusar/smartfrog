@@ -547,8 +547,8 @@ For more information: www.smartfrog.org
   <!-- =================================================================== -->
   <!-- update version                                                      -->
   <!-- =================================================================== -->
- <target name="updateversion" depends="init-common, init">
-    <property name="skin.dir" location="forrest_skin" />
+  <target name="updateversion" depends="init-common, init">
+    <property name="skin.dir" location="forrest_skin"/>
     <!--replace
         file="buildRelease.xml"
       propertyFile="version.properties">
@@ -557,7 +557,7 @@ For more information: www.smartfrog.org
         property="component.version"/>
     </replace-->
 
-  <!--replace
+    <!--replace
         file="releaseBuild.xml"
       propertyFile="version.properties">
       <replacefilter
@@ -565,50 +565,49 @@ For more information: www.smartfrog.org
         property="component.version"/>
     </replace-->
 
-    <macrodef name="updateversion" >
+    <macrodef name="updateversion">
       <attribute name="project" description="component to update"/>
-     <attribute name="compname" description="component to update"/>
+      <attribute name="compname" description="component to update"/>
 
-     <sequential>
-  <!--replace
-        file="@{project}/buildRelease.xml"
-      propertyFile="version.properties">
-      <replacefilter
-        token="@version"
-        property="@{compname}.version"/>
-  </replace>
+      <sequential>
+        <!--replace
+              file="@{project}/buildRelease.xml"
+            propertyFile="version.properties">
+            <replacefilter
+              token="@version"
+              property="@{compname}.version"/>
+        </replace>
+      
+        <replace
+              file="@{project}/build.xml"
+            propertyFile="version.properties">
+            <replacefilter
+              token="@version"
+              property="@{compname}.version"/>
+        </replace-->
 
-  <replace
-        file="@{project}/build.xml"
-      propertyFile="version.properties">
-      <replacefilter
-        token="@version"
-        property="@{compname}.version"/>
-  </replace-->
-
-  <!--replace
-        file="@{project}/releaseBuild.xml"
-        propertyFile="@{project}/version.properties">
-      <replacefilter
-        token="@version"
-        property="sf.build.version"/>
-  </replace-->
+        <!--replace
+              file="@{project}/releaseBuild.xml"
+              propertyFile="@{project}/version.properties">
+            <replacefilter
+              token="@version"
+              property="sf.build.version"/>
+        </replace-->
 
 
-
-  <replace
-        file="${skin.dir}/SFComponents.xml"
-        propertyFile="@{project}/version.properties">
-      <replacefilter
-        token="@{compname}-ver"
-        property="sf.build.version"/>
-      <replacefilter
-        token="@{compname}-minver"
-        property="sf.min.version"/>
-      <!--replacefilter
-        token="@{compname}-maxver"
-        property="@{compname}.maxversion"/-->
-  </replace>
+        <replace
+            file="${skin.dir}/SFComponents.xml"
+            propertyFile="@{project}/version.properties">
+          <replacefilter
+              token="@{compname}-ver"
+              property="sf.build.version"/>
+          <replacefilter
+              token="@{compname}-minver"
+              property="sf.min.version"/>
+          <!--replacefilter
+          token="@{compname}-maxver"
+          property="@{compname}.maxversion"/-->
+        </replace>
       </sequential>
 
     </macrodef>
