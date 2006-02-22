@@ -617,17 +617,17 @@ For more information: www.smartfrog.org
     <updateversion project="${anubis.project}" compname="anubis" />
     <updateversion project="${anubisdeployer.project}" compname="anubisdeployer"/>
     <updateversion project="${emailer.project}" compname="emailer"/>
-    <updateversion project="${fun.project}" compname="jetty"/>
-    <updateversion project="${jetty.project}" compname="jetty" />
+    <updateversion project="${fun.project}" compname="fun"/>
+    <!--<updateversion project="${jetty.project}" compname="jetty" />-->
     <!--updateversion project="${logger.project}" compname="logger" /-->
     <updateversion project="${net.project}" compname="net"/>
     <updateversion project="${scripting.project}" compname="scripting"/>
     <updateversion project="${sfLoggingServices.project}" compname="sfLoggingServices"/>
     <updateversion project="${slp.project}" compname="slp"/>
     <updateversion project="${ssh.project}" compname="ssh"/>
-    <updateversion project="${tomcat.project}" compname="utils"/>
+    <!--<updateversion project="${tomcat.project}" compname="tomcat"/>-->
     <updateversion project="${utils.project}" compname="utils"/>
-    <updateversion project="${www.project}" compname="utils"/>
+    <!--<updateversion project="${www.project}" compname="www"/>-->
   </target>
 
   <!-- =================================================================== -->
