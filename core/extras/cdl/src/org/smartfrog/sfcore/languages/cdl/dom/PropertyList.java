@@ -33,8 +33,8 @@ import org.smartfrog.sfcore.languages.cdl.components.CdlComponentDescription;
 import org.smartfrog.sfcore.languages.cdl.components.CdlComponentDescriptionImpl;
 import org.smartfrog.sfcore.languages.cdl.faults.CdlInvalidValueReferenceException;
 import org.smartfrog.sfcore.languages.cdl.faults.CdlXmlParsingException;
-import org.smartfrog.sfcore.languages.cdl.faults.CdlRuntimeException;
 import org.smartfrog.sfcore.languages.cdl.faults.CdlException;
+import org.smartfrog.sfcore.languages.cdl.faults.CdlResolutionException;
 import org.smartfrog.sfcore.languages.cdl.generate.DescriptorSource;
 import org.smartfrog.sfcore.languages.cdl.generate.TypeMapper;
 import org.smartfrog.sfcore.languages.cdl.references.ReferencePath;
@@ -44,6 +44,7 @@ import org.smartfrog.sfcore.languages.cdl.resolving.ResolveEnum;
 import org.smartfrog.sfcore.languages.cdl.utils.ClassLogger;
 import org.smartfrog.sfcore.languages.cdl.utils.Namespaces;
 import org.smartfrog.sfcore.logging.Log;
+import org.smartfrog.sfcore.reference.Reference;
 
 import javax.xml.namespace.QName;
 import java.rmi.RemoteException;
@@ -459,12 +460,16 @@ public class PropertyList extends DocNode implements DescriptorSource {
         String text = getTextValue();
         if (isValueReference() && isLazy()) {
             //export a lazy reference
-            //TODO export a lazy reference
-            throw new SmartFrogException("Lazy references not supported yet");
+            try {
+                Reference reference=getReferencePath().generateReference();
+                parent.replace(name, reference);
+            } catch (CdlResolutionException e) {
+                throw SmartFrogException.forward(e);
+            }
         } else {
             TypeMapper typeMapper = getParseContext().getTypeMapper();
             
-            if(typeMapper.isNilNode(this)) {
+            if(typeMapper.isEmptyOptionalNode(this)) {
                 //skip out if we are nil
                 return;
             }

@@ -185,4 +185,8 @@ public class StepExecutionResult implements NamespaceLookup {
     public String resolveNamespaceURI(String prefix) {
         return path.resolveNamespaceURI(prefix);
     }
+    
+    public NamespaceLookup getNamespaces() {
+        return path.getNamespaces();
+    }
 }

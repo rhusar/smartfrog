@@ -21,6 +21,12 @@ package org.smartfrog.sfcore.languages.cdl.references;
 
 import org.smartfrog.sfcore.languages.cdl.faults.CdlResolutionException;
 import org.smartfrog.sfcore.languages.cdl.dom.PropertyList;
+import org.smartfrog.sfcore.languages.cdl.components.CdlComponentDescriptionImpl;
+import org.smartfrog.sfcore.languages.cdl.utils.NamespaceLookup;
+import org.smartfrog.sfcore.reference.Reference;
+import org.smartfrog.sfcore.reference.ReferencePart;
+
+import javax.xml.namespace.QName;
 
 /**
  * This is a normal step down the tree.
@@ -77,9 +83,10 @@ public class StepDown extends Step {
      */
     public StepExecutionResult execute(StepExecutionResult state) throws CdlResolutionException {
         PropertyList node = state.getNode();
+        NamespaceLookup namespaces=state.getNamespaces();
         String uri="";
         if(prefix!=null) {
-            uri = state.resolveNamespaceURI(prefix);
+            uri = namespaces.resolveNamespaceURI(prefix);
             if(uri==null) {
                 throw new CdlResolutionException("Unknown prefix :"+prefix,state);
             }
@@ -89,6 +96,33 @@ public class StepDown extends Step {
             throw new CdlResolutionException("Child element not found  {" + uri+"}#"+localname, state);
         }
         return state.next(child);
+    }
+
+
+    /**
+     * append zero or more reference parts to the current reference chain.
+     *
+     * @param namespaces   base to use for determining xmlns mapping
+     * @param reference reference to build up
+     */
+    public void appendReferenceParts(NamespaceLookup namespaces,
+                                     Reference reference) throws
+            CdlResolutionException {
+        String uri = "";
+        if (prefix != null) {
+            uri = namespaces.resolveNamespaceURI(prefix);
+            if (uri == null) {
+                throw new CdlResolutionException("Unknown prefix :" + prefix);
+            }
+        }
+
+        Object refName;
+        if(uri.length()==0) {
+            refName=localname;
+        } else {
+            refName=new QName(uri,localname,prefix);
+        }
+        reference.addElement(ReferencePart.attrib(refName));
     }
 
 }

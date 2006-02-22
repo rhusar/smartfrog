@@ -26,6 +26,7 @@ import org.smartfrog.sfcore.languages.cdl.faults.CdlException;
 import org.smartfrog.sfcore.languages.cdl.Constants;
 import org.smartfrog.sfcore.languages.cdl.utils.NamespaceLookup;
 import org.smartfrog.sfcore.languages.cdl.utils.Namespaces;
+import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.services.xml.java5.NamespaceUtils;
 
 import javax.xml.namespace.QName;
@@ -372,5 +373,28 @@ public class ReferencePath implements NamespaceLookup {
      */
     public String resolveNamespaceURI(String prefix) {
         return namespaces.resolveNamespaceURI(prefix);
+    }
+
+    /**
+     * Get the namespaces for this node
+     * @return whatever provides namespace information
+     */
+    public NamespaceLookup getNamespaces() {
+        return namespaces;
+    }
+
+    /**
+     * Generate the SmartFrog reference.
+     * @return the sf reference.
+     * @throws CdlResolutionException if there is trouble
+     */
+    
+    public Reference generateReference() throws CdlResolutionException {
+        Reference refList=new Reference();
+        refList.setEager(false);
+        for(Step step:steps) {
+            step.appendReferenceParts(namespaces, refList);
+        }
+        return refList;
     }
 }

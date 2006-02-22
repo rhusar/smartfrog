@@ -21,6 +21,9 @@ package org.smartfrog.sfcore.languages.cdl.references;
 
 import org.smartfrog.sfcore.languages.cdl.faults.CdlResolutionException;
 import org.smartfrog.sfcore.languages.cdl.dom.PropertyList;
+import org.smartfrog.sfcore.languages.cdl.utils.NamespaceLookup;
+import org.smartfrog.sfcore.reference.Reference;
+import org.smartfrog.sfcore.reference.ReferencePart;
 import nu.xom.Node;
 
 /**
@@ -67,4 +70,16 @@ public class StepRoot extends Step {
         return state.next(current);
     }
 
+    /**
+     * append zero or more reference parts to the current reference chain.
+     *
+     * @param namespaces base to use for determining xmlns mapping
+     * @param reference  reference to build up
+     */
+    public void appendReferenceParts(NamespaceLookup namespaces,
+                                     Reference reference)
+            throws CdlResolutionException {
+        //TODO: check this is correct
+        reference.addElement(ReferencePart.root());
+    }
 }

@@ -30,11 +30,11 @@ CLASSARGS=""
 #e.g. -J -Djava.library.path=/libs -J -Xmx400M
 while [ $# -ge 1 ]; do
     case $1 in
-	-J | -j) shift
-	    JVMARGS="$JVMARGS $1"
-	    ;;
-	*) CLASSARGS="$CLASSARGS $1"
-	    ;;
+    -J | -j) shift
+        JVMARGS="$JVMARGS $1"
+        ;;
+    *) CLASSARGS="$CLASSARGS $1"
+        ;;
     esac
     shift
 done
@@ -57,5 +57,5 @@ elif test "$SFSECURITY" && ! test "$SFCODEBASE"; then
 elif test "$SFCODEBASE" && test "$SFSECURITY"; then
         java $JVMARGS "$SFDEFAULTINI" "$SFDEFAULTSF" "$SFCODEBASE" $SFSECURITY -Dorg.smartfrog.sfcore.processcompound.sfProcessName=rootProcess org.smartfrog.SFSystem $CLASSARGS
 else
-	java $JVMARGS "$SFDEFAULTINI" "$SFDEFAULTSF" -Dorg.smartfrog.sfcore.processcompound.sfProcessName=rootProcess org.smartfrog.SFSystem $CLASSARGS
+    java $JVMARGS "$SFDEFAULTINI" "$SFDEFAULTSF" -Dorg.smartfrog.sfcore.processcompound.sfProcessName=rootProcess org.smartfrog.SFSystem $CLASSARGS
 fi
