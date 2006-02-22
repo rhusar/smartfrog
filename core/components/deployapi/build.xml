@@ -289,15 +289,17 @@
   
     <property name="build.archives.dir" location="${build.dir}/archives" />
     <mkdir dir="${build.archives.dir}" /> 
-    <property name="portal.aar" location="${build.archives.dir}/portal.aar" />
     <property name="system.aar" location="${build.archives.dir}/system.aar" />
     <property name="archives.dir" location="archives" />
-    <jar destFile="${portal.aar}">
-      <fileset dir="${archives.dir}/portal" includes="**/*" />
-    </jar>
     <jar destFile="${system.aar}">
       <fileset dir="${archives.dir}/system" includes="**/*" />
     </jar>
+<!--
+    <property name="portal.aar" location="${build.archives.dir}/portal.aar"/>
+    <jar destFile="${portal.aar}">
+      <fileset dir="${archives.dir}/portal" includes="**/*"/>
+    </jar>
+-->
   </target>  
 
   <target name="copy-archives" depends="archives">

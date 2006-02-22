@@ -21,7 +21,7 @@
 package org.smartfrog.services.deployapi.transport.wsrf;
 
 import nu.xom.Element;
-import org.apache.axis2.om.OMElement;
+import org.apache.ws.commons.om.OMElement;
 import org.smartfrog.services.deployapi.system.Utils;
 
 import javax.xml.namespace.QName;

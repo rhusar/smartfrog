@@ -60,7 +60,7 @@ public class PortalEndpointer extends Endpointer {
 
         //creating the Service
         serviceDescription = new AxisService(
-                new QName(Constants.CDL_API_WSDL_NAMESPACE, "PortalEPR"));
+                new QName(Constants.CDL_API_WSDL_NAMESPACE, "PortalEPR").toString());
 
         //creating the operations
         AxisOperation __operation;

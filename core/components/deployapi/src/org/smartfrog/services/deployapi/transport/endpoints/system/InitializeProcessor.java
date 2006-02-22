@@ -21,9 +21,9 @@ package org.smartfrog.services.deployapi.transport.endpoints.system;
 
 import nu.xom.Document;
 import nu.xom.Element;
-import org.apache.axis2.om.OMElement;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.ws.commons.om.OMElement;
 import org.smartfrog.services.deployapi.binding.DescriptorHelper;
 import org.smartfrog.services.deployapi.binding.XomHelper;
 import org.smartfrog.services.deployapi.engine.ServerInstance;

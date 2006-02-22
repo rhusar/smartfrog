@@ -21,9 +21,9 @@ package org.smartfrog.services.deployapi.test.unit;
 
 import junit.framework.TestCase;
 import org.apache.axis2.addressing.EndpointReference;
-import org.apache.axis2.om.OMAttribute;
-import org.apache.axis2.om.OMElement;
-import org.apache.axis2.om.impl.llom.builder.StAXOMBuilder;
+import org.apache.ws.commons.om.OMAttribute;
+import org.apache.ws.commons.om.OMElement;
+import org.apache.ws.commons.om.impl.llom.builder.StAXOMBuilder;
 import org.smartfrog.services.deployapi.system.Constants;
 import org.smartfrog.services.deployapi.transport.faults.BaseException;
 import org.smartfrog.services.xml.utils.ResourceLoader;

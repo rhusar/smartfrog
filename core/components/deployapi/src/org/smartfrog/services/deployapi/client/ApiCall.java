@@ -23,15 +23,17 @@ package org.smartfrog.services.deployapi.client;
 import org.apache.axis2.AxisFault;
 import org.apache.axis2.addressing.EndpointReference;
 import org.apache.axis2.client.Call;
-import org.apache.axis2.client.Callback;
+import org.apache.axis2.client.ServiceClient;
+import org.apache.axis2.client.Options;
+import org.apache.axis2.client.async.Callback;
 import org.apache.axis2.context.MessageContext;
 import org.apache.axis2.context.ServiceContext;
 import org.apache.axis2.description.AxisOperation;
 import org.apache.axis2.description.AxisService;
-import org.apache.axis2.om.OMElement;
 import org.apache.axis2.transport.http.HTTPConstants;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.ws.commons.om.OMElement;
 import org.apache.wsdl.WSDLInterface;
 import org.smartfrog.services.deployapi.binding.EprHelper;
 
@@ -41,7 +43,7 @@ import java.util.HashMap;
 /**
 
  */
-public class ApiCall extends Call {
+public class ApiCall extends ServiceClient {
     /**
      * The default timeout is huge, because it makes stepping through in a debugger possible.
      */
@@ -68,38 +70,43 @@ public class ApiCall extends Call {
      * @throws org.apache.axis2.AxisFault
      */
     public ApiCall(String clientHome) throws AxisFault {
-        super(clientHome);
+        //TODO
+        //super(clientHome);
+        super();
         init();
     }
 
     /**
      * @param service
-     * @see org.apache.axis2.clientapi.InOutMEPClient constructer
      */
-    public ApiCall(ServiceContext service) {
-        super(service);
+    public ApiCall(ServiceContext service) throws AxisFault{
+        //TODO
+        //super(service);
         init();
     }
 
     private void init() {
-        setTimeOutInMilliSeconds(DEFAULT_TIMEOUT);
-    }
-
-    public ServiceContext getServiceContext() {
-        return serviceContext;
+        Options clientOptions=new Options();
+        clientOptions.setTimeOutInMilliSeconds(DEFAULT_TIMEOUT);
+        clientOptions.setExceptionToBeThrownOnSOAPFault(true);
+        super.setOptions(clientOptions);
     }
 
 
     public AxisOperation lookupOperation(String operation) {
         QName operationName = new QName(operation);
+        AxisOperation description;
+/*
         ServiceContext serviceContext = getServiceContext();
         assert serviceContext!=null:"service context is null";
         AxisService service = serviceContext.getAxisService();
         WSDLInterface serviceInterface = service.getServiceInterface();
         HashMap allOperations = serviceInterface.getAllOperations();
-        AxisOperation description;
+        
         description= (AxisOperation) allOperations.get(operation);
         description = service.getOperation(operationName);
+*/
+        description=super.getAxisService().getOperation(operationName);
         return description;
     }
 
@@ -109,7 +116,9 @@ public class ApiCall extends Call {
                                   OMElement toSend,
                                   Callback callback) throws AxisFault {
         logInvocation(axisop);
-        super.invokeNonBlocking(axisop, toSend, callback);
+        //TODO
+        QName target=new QName(axisop);
+        super.sendReceiveNonBlocking(target,toSend,callback);
     }
 
     private void logInvocation(String axisop) {
@@ -120,7 +129,8 @@ public class ApiCall extends Call {
     public OMElement invokeBlocking(String axisop, OMElement toSend)
             throws AxisFault {
         logInvocation(axisop);
-        return super.invokeBlocking(axisop, toSend);
+        QName target = new QName(axisop);
+        return super.sendReceive(target, toSend);
     }
 
     /**
@@ -128,7 +138,7 @@ public class ApiCall extends Call {
      * @return the address or null
      */
     public EndpointReference getAddress() {
-        return this.messageInformationHeaders.getTo();
+        return this.getTargetEPR();
     }
     
     public String toString() {
@@ -138,9 +148,9 @@ public class ApiCall extends Call {
     /**
      *  patch in decent timeouts
      */
-    protected void prepareInvocation(AxisOperation axisop, MessageContext msgCtx) throws AxisFault {
+/*    protected void prepareInvocation(AxisOperation axisop, MessageContext msgCtx) throws AxisFault {
         super.prepareInvocation(axisop, msgCtx);
         msgCtx.setProperty(HTTPConstants.SO_TIMEOUT, Integer.valueOf(timeout));
         msgCtx.setProperty(HTTPConstants.CONNECTION_TIMEOUT, Integer.valueOf(timeout));
-    }
+    }*/
 }

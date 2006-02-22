@@ -21,7 +21,7 @@
 package org.smartfrog.services.deployapi.test.unit;
 
 import nu.xom.Element;
-import org.apache.axis2.om.OMElement;
+import org.apache.ws.commons.om.OMElement;
 import org.smartfrog.services.deployapi.binding.XomHelper;
 import org.smartfrog.services.deployapi.system.Constants;
 import org.smartfrog.services.deployapi.system.Utils;

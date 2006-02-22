@@ -21,10 +21,10 @@ package org.smartfrog.services.deployapi.system;
 
 import nu.xom.Document;
 import nu.xom.Element;
-import org.apache.axis2.om.OMAbstractFactory;
-import org.apache.axis2.om.OMElement;
-import org.apache.axis2.om.OMFactory;
-import org.apache.axis2.om.impl.llom.builder.StAXOMBuilder;
+import org.apache.ws.commons.om.OMAbstractFactory;
+import org.apache.ws.commons.om.OMElement;
+import org.apache.ws.commons.om.OMFactory;
+import org.apache.ws.commons.om.impl.llom.builder.StAXOMBuilder;
 import org.smartfrog.services.deployapi.binding.NuxStaxBuilder;
 import org.smartfrog.services.deployapi.binding.XomHelper;
 import org.smartfrog.services.deployapi.transport.faults.BaseException;
