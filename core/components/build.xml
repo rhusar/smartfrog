@@ -379,7 +379,7 @@ For more information: www.smartfrog.org
 
     <macrodef name="copybins" >
       <attribute name="project" description="component to copy"/>
-      <attribute name="bindir" default="${dist.bin.dir}" />
+      <attribute name="bindir" default="dist/${bin}" />
       <attribute name="includes" default="**/*" />
 
       <sequential>
@@ -413,7 +413,7 @@ For more information: www.smartfrog.org
 
     <macrodef name="copylibs" >
       <attribute name="project" description="component to copy"/>
-      <attribute name="libdir" default="${dist.lib.dir}" />
+      <attribute name="libdir" default="dist/${lib}" />
       <attribute name="includes" default="**/*" />
 
       <sequential>
@@ -447,7 +447,7 @@ For more information: www.smartfrog.org
 
     <macrodef name="copycomponents" >
       <attribute name="project" description="component to copy"/>
-      <attribute name="srcdir" default="${dist.src.dir}" />
+      <attribute name="srcdir" default="dist/${src}" />
       <attribute name="includes" default="**/*" />
       <sequential>
         <copy todir="${comp.dist.src.dir}">
@@ -483,7 +483,7 @@ For more information: www.smartfrog.org
 
     <macrodef name="copydocs" >
       <attribute name="project" description="component to copy"/>
-      <attribute name="docdir" default="${dist.doc.dir}" />
+      <attribute name="docdir" default="dist/${docs}" />
       <attribute name="includes" default="**/*" />
 
       <sequential>
@@ -517,19 +517,19 @@ For more information: www.smartfrog.org
     <!-- whatever a .dfPackage is, we do not want it  -->
     <defaultexcludes echo="false" add="**/*.dfPackage"/>
     <zip destfile="${comp.dist.dir}/src.zip" >
-      <zipfileset dir="${anubis.project}/${dist.src.dir}" />
-      <zipfileset dir="${anubisdeployer.project}/${dist.src.dir}" />
-      <zipfileset dir="${emailer.project}/${dist.src.dir}" />
-      <zipfileset dir="${fun.project}/${dist.src.dir}"/>
-      <zipfileset dir="${jetty.project}/${dist.src.dir}" />
-      <zipfileset dir="${net.project}/${dist.src.dir}" />
-      <zipfileset dir="${scripting.project}/${dist.src.dir}" />
-      <zipfileset dir="${sfLoggingServices.project}/${dist.src.dir}" />
-      <zipfileset dir="${slp.project}/${dist.src.dir}" />
-      <zipfileset dir="${ssh.project}/${dist.src.dir}" />
-      <zipfileset dir="${tomcat.project}/${dist.src.dir}" />
-      <zipfileset dir="${utils.project}/${dist.src.dir}" />
-      <zipfileset dir="${www.project}/${dist.src.dir}" />
+      <zipfileset dir="${anubis.project}/dist/${src}" />
+      <zipfileset dir="${anubisdeployer.project}/dist/${src}" />
+      <zipfileset dir="${emailer.project}/dist/${src}" />
+      <zipfileset dir="${fun.project}/dist/${src}"/>
+      <zipfileset dir="${jetty.project}/dist/${src}" />
+      <zipfileset dir="${net.project}/dist/${src}" />
+      <zipfileset dir="${scripting.project}/dist/${src}" />
+      <zipfileset dir="${sfLoggingServices.project}/dist/${src}" />
+      <zipfileset dir="${slp.project}/dist/${src}" />
+      <zipfileset dir="${ssh.project}/dist/${src}" />
+      <zipfileset dir="${tomcat.project}/dist/${src}" />
+      <zipfileset dir="${utils.project}/dist/${src}" />
+      <zipfileset dir="${www.project}/dist/${src}" />
     </zip>
   </target>
 
@@ -539,7 +539,7 @@ For more information: www.smartfrog.org
 
 
   <target name="generatedoc" depends="init" description="Document Generation" if="env.FORREST_HOME">
-    <ant antfile="documentation.xml" inheritall="false"/>
+    <!--<ant antfile="documentation.xml" inheritall="false"/> -->
     <delete dir="build"/>
     <!-- Forrest build dir -->
   </target>

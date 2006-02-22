@@ -226,14 +226,14 @@ For more information: www.smartfrog.org
   <!-- full clean Cruise Control build                                     -->
   <!-- =================================================================== -->
     <target name="cc-full"
-        depends="cvsupdate,clean,cc-incremental,cc-test, mavenReport" 
+        depends="cvsupdate,clean,release,cc-incremental,cc-test, mavenReport" 
         description="cruise control full build, with checkout"/>
 
   <!-- =================================================================== -->
   <!-- full clean Cruise Control build without Checkout                    -->
   <!-- =================================================================== -->
     <target name="cc"
-        depends="clean,dist, tasks ,cc-test, mavenReportNoCVSUpdate" 
+        depends="clean, release, dist, tasks ,cc-test, mavenReportNoCVSUpdate" 
         description="cruise control full build, with NO checkout"/>
 
   <!-- =================================================================== -->
@@ -285,6 +285,16 @@ For more information: www.smartfrog.org
             <arg line="site:generate" />
         </exec>
     </target>
+
+  <!-- =================================================================== -->
+  <!-- release all sub-projects                                              -->
+  <!-- =================================================================== -->
+  <target name="release" depends="init" description="release">
+    <forward2 dir="${main.project}" target="release"  />
+    <forward2 dir="${main.project}" target="dist"  />    
+    <forward2 dir="${ant.project}" target="release"  />    
+    <forward2 dir="${components.project}" target="release"  /> 
+  </target>
 
 <!-- =================================================================== -->
 <!-- Gump target for distribution -->

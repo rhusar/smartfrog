@@ -45,11 +45,11 @@ For more information: www.smartfrog.org
      
 </description>
 
-  <property name="is.component" value="true"  />
+  <property name="is.component" value="false"  />
    <!-- override point -->
   <property file="build.properties" />
   <property name="root.dir" location="../../"  />
-  <property name="Name.System" value="Jetty"/>
+  <property name="Name.System" value="jetty"/>
   <!-- Import common stuff -->
   <!--available file="../../common.xml" property="root.dir" value="../.."/--> 
   <import file="${root.dir}/common.xml"/>
@@ -71,7 +71,7 @@ For more information: www.smartfrog.org
 
 
   </target>
-    
+  <!---  
   <target name="m2-files" depends="m2-tasks">
     <m2-libraries pathID="m2.classpath">
       <dependency groupID="org.smartfrog"
@@ -91,6 +91,15 @@ For more information: www.smartfrog.org
       </fileset>
     </path>
   </target>
+  -->
+   <target name="declare-compile.classpath" depends="declare-base.compile.classpath">
+    <property name="jetty.lib.dir" value="${smartfrog.components.dir}/jetty/lib/" />
+    <path id="compile.classpath">
+      <path refid="base.compile.classpath"/>
+      <fileset dir="${jetty.lib.dir}" includes="*.jar"/>
+    </path>
+  </target>
+  
   
   <!-- ========================================================== -->
   <!-- this is an override point -->
