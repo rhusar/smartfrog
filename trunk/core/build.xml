@@ -290,9 +290,8 @@ For more information: www.smartfrog.org
   <!-- release all sub-projects                                              -->
   <!-- =================================================================== -->
   <target name="release" depends="init" description="release">
-    <forward2 dir="${main.project}" target="release"  />
     <forward2 dir="${main.project}" target="dist"  />    
-    <forward2 dir="${ant.project}" target="release"  />    
+    <forward2 dir="${ant.project}" target="dist"  />    
     <forward2 dir="${components.project}" target="release"  /> 
   </target>
 
