@@ -141,9 +141,11 @@
       <dependency groupID="jetty"
         artifactID="jetty"
         version="${jetty.version}"/>
+<!--
       <dependency groupID="jetty"
         artifactID="jasper-compiler"
         version="${jetty.version}"/>
+-->
       <dependency groupID="jetty"
         artifactID="jasper-runtime"
         version="${jetty.version}"/>

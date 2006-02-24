@@ -60,7 +60,20 @@
         version="${xerces.version}"/>
       <dependency groupID="xom"
         artifactID="xom"
-        version="${xom.version}"/>
+        version="${xom.version}">
+          <exclusion
+            groupId="jdom"
+            artifactId="jdom" />
+          <exclusion
+            groupId="xalan"
+            artifactId="xalan" />
+          <exclusion
+            groupId="dom4j"
+            artifactId="dom4j" />
+          <exclusion
+            groupId="jaxme"
+            artifactId="jaxme" />
+      </dependency>
 <!--      <dependency groupID="nux"
         artifactID="nux"
         version="${nux.version}"/> -->
