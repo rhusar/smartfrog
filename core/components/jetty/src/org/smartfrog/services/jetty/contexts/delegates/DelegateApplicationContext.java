@@ -31,7 +31,8 @@ import java.rmi.RemoteException;
 /**
  * Abstract class for representing a delegated context
  */
-public abstract class DelegateApplicationContext implements ApplicationServerContext {
+public abstract class DelegateApplicationContext
+        implements ApplicationServerContext {
     public static final String ERROR_NULL_CONTEXT = "Null context";
     public static final String ERROR_NOT_RUNNING = "Not started";
 
@@ -56,6 +57,7 @@ public abstract class DelegateApplicationContext implements ApplicationServerCon
 
     /**
      * Get the server that created this
+     *
      * @return the server
      */
     public SFJetty getServer() {
@@ -64,6 +66,7 @@ public abstract class DelegateApplicationContext implements ApplicationServerCon
 
     /**
      * Get the context
+     *
      * @return the context; will be null if not running
      */
     public HttpContext getContext() {
@@ -72,10 +75,21 @@ public abstract class DelegateApplicationContext implements ApplicationServerCon
 
     /**
      * set the context
+     *
      * @param context
      */
     public void setContext(HttpContext context) {
         this.context = context;
+    }
+
+    /**
+     * Do nothing in our deploy operation
+     *
+     * @throws SmartFrogException
+     * @throws RemoteException
+     */
+    public void deploy() throws SmartFrogException, RemoteException {
+
     }
 
     /**
@@ -104,29 +118,28 @@ public abstract class DelegateApplicationContext implements ApplicationServerCon
      * @throws RemoteException
      */
     public void ping() throws SmartFrogLivenessException, RemoteException {
-        if(context==null) {
+        if (context == null) {
             throw new SmartFrogLivenessException(ERROR_NULL_CONTEXT);
         }
-        if(!context.isStarted()) {
+        if (!context.isStarted()) {
             throw new SmartFrogLivenessException(ERROR_NOT_RUNNING);
         }
     }
 
     /**
-     * undeploy a context. if the server is already stopped,
-     * this the undeployment is skipped without an error.
-     * The {@link #context} field is set to null, to tell
-     * the system to skip this in future.
+     * undeploy a context. if the server is already stopped, this the
+     * undeployment is skipped without an error. The {@link #context} field is
+     * set to null, to tell the system to skip this in future.
      *
      * @throws java.rmi.RemoteException
      * @throws org.smartfrog.sfcore.common.SmartFrogException
      *
      */
-    public void undeploy() throws RemoteException, SmartFrogException {
+    public void terminate() throws RemoteException, SmartFrogException {
         if (context != null) {
             try {
                 HttpServer httpServer = getServer().getServer();
-                if(httpServer!=null) {
+                if (httpServer != null) {
                     httpServer.removeContext(context);
                 } else {
                     //do nothing, the server is not alive any more

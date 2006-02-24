@@ -8,20 +8,20 @@ import org.smartfrog.services.www.ServletContextComponentDelegate;
 import org.smartfrog.services.www.ServletContextIntf;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLivenessException;
-import org.smartfrog.sfcore.prim.Prim;
-import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.logging.Log;
 import org.smartfrog.sfcore.logging.LogFactory;
+import org.smartfrog.sfcore.prim.Prim;
+import org.smartfrog.sfcore.reference.Reference;
 
 import java.rmi.RemoteException;
 import java.util.Enumeration;
-import java.util.Vector;
-import java.util.List;
 import java.util.Iterator;
+import java.util.Vector;
 
 /**
  */
-public class JettyServletDelegate implements ServletContextComponentDelegate, ServletComponent {
+public class JettyServletDelegate
+        implements ServletContextComponentDelegate, ServletComponent {
 
     /**
      * default inititialisaion order {@value}
@@ -52,18 +52,21 @@ public class JettyServletDelegate implements ServletContextComponentDelegate, Se
     private Log log;
 
     /**
-     * Create the delegate and configure the {@link ServletHttpContext} of Jetty that
-     * is the real context
+     * Create the delegate and configure the {@link ServletHttpContext} of Jetty
+     * that is the real context
+     *
      * @param context
      * @param owner
+     *
      * @throws SmartFrogException
      * @throws RemoteException
      */
-    public JettyServletDelegate(DelegateServletContext context,Prim owner) throws SmartFrogException, RemoteException {
+    public JettyServletDelegate(DelegateServletContext context, Prim owner)
+            throws SmartFrogException, RemoteException {
         this.context = context;
         this.owner = owner;
         try {
-            log=LogFactory.getOwnerLog(owner);
+            log = LogFactory.getOwnerLog(owner);
             name = owner.sfResolve(nameRef, name, true);
             pathSpec = owner.sfResolve(pathSpecRef, pathSpec, true);
             className = owner.sfResolve(classNameRef, className, true);
@@ -93,18 +96,21 @@ public class JettyServletDelegate implements ServletContextComponentDelegate, Se
 
             //update our path attribute
             String ancestorPath = context.getAbsolutePath();
-            absolutePath = JettyHelper.deregexpPath(JettyHelper.concatPaths(ancestorPath, pathSpec));
-            owner.sfReplaceAttribute(ServletContextIntf.ATTR_ABSOLUTE_PATH, absolutePath);
-
+            absolutePath = JettyHelper.deregexpPath(JettyHelper.concatPaths(
+                    ancestorPath,
+                    pathSpec));
+            owner.sfReplaceAttribute(ServletContextIntf.ATTR_ABSOLUTE_PATH,
+                    absolutePath);
 
             //extract mappings
-            Vector mappings=null;
-            mappings=(Vector) owner.sfResolve(ATTR_MAPPINGS,mappings,false);
-            if(mappings!=null) {
-                Iterator it=mappings.iterator();
+            Vector mappings = null;
+            mappings = (Vector) owner.sfResolve(ATTR_MAPPINGS, mappings, false);
+            if (mappings != null) {
+                Iterator it = mappings.iterator();
                 while (it.hasNext()) {
                     String mapping = it.next().toString();
-                    servletContext.getServletHandler().mapPathToServlet(mapping, name);
+                    servletContext.getServletHandler()
+                            .mapPathToServlet(mapping, name);
                 }
             }
 
@@ -121,16 +127,19 @@ public class JettyServletDelegate implements ServletContextComponentDelegate, Se
 
     /**
      * Returns a string representation of the object.
+     *
      * @return a string representation of the object.
      */
     public String toString() {
-        return "name="+name
-                +"; className="+ className
-                +"; pathSpec="+ pathSpec
-                +"; absolutePath="+ absolutePath;
+        return "name=" + name
+                + "; className=" + className
+                + "; pathSpec=" + pathSpec
+                + "; absolutePath=" + absolutePath;
     }
 
+    public void deploy() throws SmartFrogException, RemoteException {
 
+    }
 
     /**
      * start the component
@@ -154,7 +163,7 @@ public class JettyServletDelegate implements ServletContextComponentDelegate, Se
      * @throws RemoteException
      * @throws SmartFrogException
      */
-    public void undeploy() throws RemoteException, SmartFrogException {
+    public void terminate() throws RemoteException, SmartFrogException {
         if (holder != null) {
             holder.stop();
             holder = null;
@@ -171,7 +180,7 @@ public class JettyServletDelegate implements ServletContextComponentDelegate, Se
         if (holder == null || !holder.isStarted()) {
             throw new SmartFrogLivenessException("Servlet " +
                     name +
-                    " is not running under"+getAbsolutePath());
+                    " is not running under" + getAbsolutePath());
         }
     }
 }

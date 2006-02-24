@@ -2,7 +2,7 @@
 <project name="cargo" default="default">
 
   <!--
-  /** (C) Copyright 2005 Hewlett-Packard Development Company, LP
+  /** (C) Copyright 2005-2006 Hewlett-Packard Development Company, LP
 
   This library is free software; you can redistribute it and/or
   modify it under the terms of the GNU Lesser General Public
@@ -38,28 +38,28 @@
   <target name="m2-files" depends="m2-tasks">
     <m2-libraries pathID="m2.classpath">
       <dependency groupID="org.smartfrog"
-                  artifactID="sf-www"
-                  version="${Version}"/>
+          artifactID="sf-www"
+          version="${Version}"/>
       <dependency groupID="cargo"
-                  artifactID="cargo-core-uberjar"
-                  version="${cargo.version}"/>
+          artifactID="cargo-core-uberjar"
+          version="${cargo.version}"/>
       <dependency groupID="ant"
-                  artifactID="ant"
-                  version="${ant.m2.version}">
+          artifactID="ant"
+          version="${ant.m2.version}">
         <exclusion groupId="xml-apis" artifactId="xml-apis"/>
         <exclusion groupId="xerces" artifactId="xerces-impl"/>
       </dependency>
       <dependency groupID="xerces"
-                  artifactID="xmlParserAPIs"
-                  version="${xerces.version}"/>
+          artifactID="xmlParserAPIs"
+          version="${xerces.version}"/>
       <dependency groupID="xerces"
-                  artifactID="xercesImpl"
-                  version="${xerces.version}"/>
+          artifactID="xercesImpl"
+          version="${xerces.version}"/>
     </m2-libraries>
   </target>
 
   <target name="declare-compile.classpath-lib-dir"
-          depends="declare-base.compile.classpath,probe-lib-dir,m2-files">
+      depends="declare-base.compile.classpath,probe-lib-dir,m2-files">
     <path id="compile.classpath">
       <path refid="base.compile.classpath"/>
       <path refid="m2.classpath"/>
@@ -73,10 +73,10 @@
     </path>
     <property name="exec.classpath.value" refid="exec.classpath"/>
     <echo level="verbose">exec.classpath=${exec.classpath.value}</echo>
-  </target>  
+  </target>
 
   <target name="declare-tests.run.classpath"
-          depends="declare-tests.compile.classpath">
+      depends="declare-tests.compile.classpath">
     <path id="tests.run.classpath">
       <path refid="tests.compile.classpath"/>
       <pathelement location="${test.jar}"/>
@@ -85,11 +85,11 @@
     <echo level="verbose">
       tests.run.classpath=${tests.run.classpath.value}</echo>
   </target>
-  
+
   <!-- ========================================================== -->
   <!-- ========================================================== -->
   <target name="init"
-          depends="init-standard-output-dirs,use-smartfrog-tasks,use-smartfrog-testharness">
+      depends="init-standard-output-dirs,use-smartfrog-tasks,use-smartfrog-testharness">
 
 
   </target>
@@ -107,7 +107,7 @@
   <!-- set-->
   <!-- ========================================================== -->
   <target name="init-codebase" depends="init-deploy-properties"
-          description="set up the codebase property">
+      description="set up the codebase property">
     <sf-tourl property="codebase">
       <fileset file="${target.jar}"/>
       <fileset file="${test.jar}"/>
@@ -122,17 +122,17 @@
   <!-- parse the file -->
   <!-- ========================================================== -->
   <target name="parse" depends="init,dist,init-codebase"
-          description="parse the deployment descriptor">
+      description="parse the deployment descriptor">
     <property name="parse.quiet" value="true"/>
     <sf-parse quiet="${parse.quiet}">
       <classpath path="${target.jar}:${test.jar}"/>
       <sysproperty key="org.smartfrog.codebase"
-                   value="${codebase}"/>
+          value="${codebase}"/>
       <!-- source files -->
       <source dir="${test.src.dir}/org/smartfrog/services/www/cargo/test/"
           >
         <include name="**/test*.sf"/>
-        <exclude name="**/testIncomplete.sf" />
+        <exclude name="**/testIncomplete.sf"/>
       </source>
     </sf-parse>
   </target>
@@ -142,12 +142,12 @@
   <!-- deploy; requires a host -->
   <!-- ========================================================== -->
   <target name="deploy" depends="parse,init-codebase,init-deploy-properties"
-          description="deploy">
+      description="deploy">
 
     <sf-deploy classpathref="run.classpath"
-               logStackTraces="true"
-               host="${deploy.host}"
-               timeout="30000"
+        logStackTraces="true"
+        host="${deploy.host}"
+        timeout="30000"
         >
       <codebase url="${codebase}"/>
 
@@ -159,21 +159,21 @@
   </target>
 
   <target name="undeploy" depends="init-deploy-properties"
-          description="deploy">
+      description="deploy">
 
     <sf-undeploy classpathref="run.classpath"
-                 logStackTraces="true"
-                 host="${deploy.host}"
-                 timeout="30000"
-                 application="${application.name}"/>
+        logStackTraces="true"
+        host="${deploy.host}"
+        timeout="30000"
+        application="${application.name}"/>
   </target>
 
   <!-- ========================================================== -->
   <!-- system tests -->
   <!-- ========================================================== -->
   <target name="system-tests" depends="parse,dist,compile-tests,init-codebase"
-          description="run system tests"
-          if="system.tests.enabled">
+      description="run system tests"
+      if="system.tests.enabled">
     <parallel>
 
       <!-- first thread runs the daemon -->
@@ -209,7 +209,8 @@
           <batchtest todir="${test.data.dir}" unless="testcase">
             <!-- bulk test case -->
             <fileset dir="${test.classes.dir}">
-              <include name="org/smartfrog/services/www/cargo/test/**/*Test.class"/>
+              <include
+                  name="org/smartfrog/services/www/cargo/test/**/*Test.class"/>
             </fileset>
           </batchtest>
         </sf-junit>
@@ -223,5 +224,5 @@
 
   <target name="conditional-daemon-exit" unless="no.stop.daemon">
     <antcall target="stop-daemon-if-started"/>
-  </target>  
+  </target>
 </project>

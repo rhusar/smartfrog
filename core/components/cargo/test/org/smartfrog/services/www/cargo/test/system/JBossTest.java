@@ -19,36 +19,17 @@
  */
 package org.smartfrog.services.www.cargo.test.system;
 
+/**
+ */
+public class JBossTest extends CargoTestBase {
 
-public class CargoTest extends CargoTestBase {
-    public CargoTest(String name) {
+    public JBossTest(String name) {
         super(name);
     }
 
-    public void testIncomplete() throws Exception {
-        deployExpectingException(FILE_BASE + "testIncomplete.sf",
-                "testIncomplete",
-                EXCEPTION_DEPLOYMENT,
-                "",
-                EXCEPTION_RESOLUTION,
-                "error in schema: non-optional attribute 'configurationClass' is missing");
-    }
-
-    public void testTomcat() throws Throwable {
-        deployApplication(FILE_BASE + "testTomcat.sf",
-                "testTomcat"
+    public void testJBoss4() throws Throwable {
+        deployApplication(FILE_BASE + "testJBoss4.sf",
+                "testJBoss"
         );
     }
-
-
-    public void testBadCargoClass() throws Throwable {
-        deployExpectingException(FILE_BASE + "testBadCargoClass.sf",
-                "testBadCargoClass",
-                EXCEPTION_LIFECYCLE,
-                "",
-                EXCEPTION_SMARTFROG,
-                "Cannot find org.codehaus.cargo.container.badConfigurationClass");
-    }
-
-
 }

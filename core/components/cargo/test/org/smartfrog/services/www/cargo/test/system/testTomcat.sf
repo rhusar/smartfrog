@@ -1,26 +1,8 @@
 
 #include "org/smartfrog/services/www/cargo/components.sf"
 
-/**
-CargoServer extends ApplicationServer {
-    sfClass "org.smartfrog.services.www.cargo.CargoServerImpl";
-    cargoServerSchema extends CargoServerSchema;
-    serverHost "localhost";
-    port 8080;
-    logging "medium;
-    //no servlet contexts; war ear and sar may be something of an implementaton
-    supportsServletContext false;
 
-}
-
- TomcatCargoServer extends CargoServer {
-  configurationClass "org.codehaus.cargo.container.tomcat.CatalinaStandaloneLocalConfiguration";
-  containerClass "org.codehaus.cargo.container.tomcat.Tomcat5xLocalContainer";
-}
-
- */
-
-CargoServerExtension extends TomcatCargoServer {
+CargoServerExtension extends Tomcat5CargoServer {
  port 8080;
  logging "low";
  directory LAZY PROPERTY java.io.tmpdir;

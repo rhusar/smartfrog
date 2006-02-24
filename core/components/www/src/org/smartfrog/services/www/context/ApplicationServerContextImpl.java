@@ -15,7 +15,8 @@ import java.rmi.RemoteException;
 /**
  * a non-instantiable abstract server component
  */
-public abstract class ApplicationServerContextImpl extends PrimImpl implements ApplicationServerContext {
+public abstract class ApplicationServerContextImpl extends PrimImpl
+        implements ApplicationServerContext {
     /**
      * delegate class itself
      */
@@ -43,7 +44,8 @@ public abstract class ApplicationServerContextImpl extends PrimImpl implements A
     }
 
     /**
-     * Get the server. Only valid after {@link #bindToServer()} has been successful
+     * Get the server. Only valid after {@link #bindToServer()} has been
+     * successful
      *
      * @return the server
      */
@@ -52,14 +54,17 @@ public abstract class ApplicationServerContextImpl extends PrimImpl implements A
     }
 
     /**
-     * Bind to the server, by extracting the value of {@link #ATTR_SERVER} and saving
-     * it somewhere that {@link #getContextHandle()} can retrieve it.
+     * Bind to the server, by extracting the value of {@link #ATTR_SERVER} and
+     * saving it somewhere that {@link #getContextHandle()} can retrieve it.
      *
      * @throws SmartFrogResolutionException
      * @throws RemoteException
      */
-    protected void bindToServer() throws SmartFrogResolutionException, RemoteException {
-        server = (JavaWebApplicationServer) sfResolve(ATTR_SERVER, (Prim) null, true);
+    protected void bindToServer()
+            throws SmartFrogResolutionException, RemoteException {
+        server = (JavaWebApplicationServer) sfResolve(ATTR_SERVER,
+                (Prim) null,
+                true);
     }
 
     /**
@@ -71,23 +76,52 @@ public abstract class ApplicationServerContextImpl extends PrimImpl implements A
      * @throws SmartFrogException error while deploying
      * @throws RemoteException    In case of network/rmi error
      */
-    public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
+    public synchronized void sfDeploy()
+            throws SmartFrogException, RemoteException {
         super.sfDeploy();
         bindToServer();
         delegate = deployThisComponent();
+        delegate.deploy();
+    }
+
+
+    public void deploy() throws SmartFrogException, RemoteException {
+        if (delegate != null) {
+            delegate.deploy();
+        }
     }
 
     /**
-     * undeploy us if bound, do nothing if not. the context handle is reset,
-     * so we no longer consider ourselves bound
+     * Can be called to start components. Subclasses should override to provide
+     * functionality Do not block in this call, but spawn off any main loops!
+     *
+     * @throws SmartFrogException failure while starting
+     * @throws RemoteException    In case of network/rmi error
+     */
+    public synchronized void sfStart()
+            throws SmartFrogException, RemoteException {
+        super.sfStart();
+        start();
+    }
+
+
+    public void start() throws SmartFrogException, RemoteException {
+        if (delegate != null) {
+            delegate.start();
+        }
+    }
+
+    /**
+     * undeploy us if bound, do nothing if not. the context handle is reset, so
+     * we no longer consider ourselves bound
      *
      * @throws SmartFrogException
      * @throws RemoteException
      */
-    public void undeploy() throws SmartFrogException, RemoteException {
+    public void terminate() throws SmartFrogException, RemoteException {
         try {
             if (delegate != null) {
-                delegate.undeploy();
+                delegate.terminate();
             }
         } finally {
             delegate = null;
@@ -95,14 +129,16 @@ public abstract class ApplicationServerContextImpl extends PrimImpl implements A
     }
 
     /**
-     * subclasses must implement this to deploy their component.
-     * It is called during sfDeploy, after we have bound to a server
+     * subclasses must implement this to deploy their component. It is called
+     * during sfDeploy, after we have bound to a server
      *
      * @return
+     *
      * @throws RemoteException
      * @throws SmartFrogException
      */
-    protected abstract ApplicationServerContext deployThisComponent() throws RemoteException, SmartFrogException;
+    protected abstract ApplicationServerContext deployThisComponent()
+            throws RemoteException, SmartFrogException;
 
     public ApplicationServerContext getDelegate() {
         return delegate;
@@ -112,10 +148,13 @@ public abstract class ApplicationServerContextImpl extends PrimImpl implements A
      * Liveness call in to check if this component is still alive.
      *
      * @param source source of call
+     *
      * @throws SmartFrogLivenessException component is terminated
-     * @throws RemoteException            for consistency with the {@link Liveness} interface
+     * @throws RemoteException            for consistency with the {@link
+     *                                    Liveness} interface
      */
-    public void sfPing(Object source) throws SmartFrogLivenessException, RemoteException {
+    public void sfPing(Object source)
+            throws SmartFrogLivenessException, RemoteException {
         super.sfPing(source);
         ping();
     }
@@ -129,7 +168,7 @@ public abstract class ApplicationServerContextImpl extends PrimImpl implements A
     public synchronized void sfTerminateWith(TerminationRecord status) {
         super.sfTerminateWith(status);
         try {
-            undeploy();
+            terminate();
         } catch (RemoteException e) {
             //ignore
         } catch (SmartFrogException e) {
@@ -137,24 +176,6 @@ public abstract class ApplicationServerContextImpl extends PrimImpl implements A
         }
     }
 
-    /**
-     * Can be called to start components. Subclasses should override to provide
-     * functionality Do not block in this call, but spawn off any main loops!
-     *
-     * @throws SmartFrogException failure while starting
-     * @throws RemoteException    In case of network/rmi error
-     */
-    public synchronized void sfStart() throws SmartFrogException, RemoteException {
-        super.sfStart();
-        start();
-    }
-
-
-    public void start() throws SmartFrogException, RemoteException {
-        if (delegate != null) {
-            delegate.start();
-        }
-    }
 
     /**
      * liveness check

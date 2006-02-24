@@ -85,8 +85,8 @@ WebApplicationSchema extends Schema {
     //where to deploy under the server
     contextPath extends String;
 
-    //warFile can be a File or a string
-    warFile extends FilenameType;
+    //a File or a string
+    filename extends FilenameType;
 
 }
 
@@ -103,12 +103,8 @@ WebApplication extends ApplicationServerContext {
  * a jetty web application has a context path
  * and a a path to its home directory
  */
-EarApplicationSchema extends Schema {
-    //where to deploy under the server
-    contextPath extends String;
+EarApplicationSchema extends WebApplicationSchema {
 
-    //earFile can be a File or a string
-    earFile extends FilenameType;
 
 }
 
@@ -116,7 +112,7 @@ EarApplicationSchema extends Schema {
  * This is a generic java web application, as defined by a WAR File
  */
 EarApplication extends ApplicationServerContext {
-    earApplicationSchema extends WebApplicationSchema;
+    earApplicationSchema extends EarApplicationSchema;
     sfClass "org.smartfrog.services.www.context.EarApplicationImpl";
 }
 

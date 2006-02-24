@@ -1,4 +1,4 @@
-/** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
+/** (C) Copyright 2006 Hewlett-Packard Development Company, LP
 
  This library is free software; you can redistribute it and/or
  modify it under the terms of the GNU Lesser General Public
@@ -17,18 +17,31 @@
  For more information: www.smartfrog.org
 
  */
-package org.smartfrog.services.www;
+package org.smartfrog.services.www.cargo;
+
+import org.codehaus.cargo.util.monitor.Monitor;
+import org.smartfrog.sfcore.logging.Log;
 
 /**
- * created 23-Jun-2004 13:42:09
+ * Monitor messages from the container
  */
+class MonitorToSFLog implements Monitor {
 
+    private Log log;
 
-public interface JavaWebApplication extends ApplicationServerContext {
+    public MonitorToSFLog(Log log) {
+        this.log = log;
+    }
 
+    public void info(String string, String category) {
+        log.info(category + ":" + string);
+    }
 
-    /**
-     * run time attribute: the full URL to the component {@value}
-     */
-    public static final String ATTR_APPLICATION_URL = "applicationURL";
+    public void warn(String string, String category) {
+        log.warn(category + ":" + string);
+    }
+
+    public void debug(String string, String category) {
+        log.debug(category + ":" + string);
+    }
 }

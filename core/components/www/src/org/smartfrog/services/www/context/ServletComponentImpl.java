@@ -32,7 +32,8 @@ import java.rmi.RemoteException;
 /**
  * This implements a servlet
  */
-public class ServletComponentImpl extends ServletContextComponentImpl implements ServletComponent {
+public class ServletComponentImpl extends ServletContextComponentImpl
+        implements ServletComponent {
     private ServletContextComponentDelegate delegate;
 
     public ServletComponentImpl() throws RemoteException {
@@ -48,7 +49,8 @@ public class ServletComponentImpl extends ServletContextComponentImpl implements
      * @throws SmartFrogException error while deploying
      * @throws RemoteException    In case of network/rmi error
      */
-    public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
+    public synchronized void sfDeploy()
+            throws SmartFrogException, RemoteException {
         super.sfDeploy();
         //here we are bound to our context
         ServletContextIntf servletContext = getServletContext();
@@ -63,7 +65,8 @@ public class ServletComponentImpl extends ServletContextComponentImpl implements
      * @throws SmartFrogException failure while starting
      * @throws RemoteException    In case of network/rmi error
      */
-    public synchronized void sfStart() throws SmartFrogException, RemoteException {
+    public synchronized void sfStart()
+            throws SmartFrogException, RemoteException {
         super.sfStart();
         delegate.start();
     }
@@ -72,10 +75,13 @@ public class ServletComponentImpl extends ServletContextComponentImpl implements
      * Liveness call in to check if this component is still alive.
      *
      * @param source source of call
+     *
      * @throws SmartFrogLivenessException component is terminated
-     * @throws RemoteException            for consistency with the {@link Liveness} interface
+     * @throws RemoteException            for consistency with the {@link
+     *                                    Liveness} interface
      */
-    public void sfPing(Object source) throws SmartFrogLivenessException, RemoteException {
+    public void sfPing(Object source)
+            throws SmartFrogLivenessException, RemoteException {
         super.sfPing(source);
         if (delegate == null) {
             throw new SmartFrogLivenessException("Not live");
@@ -94,7 +100,7 @@ public class ServletComponentImpl extends ServletContextComponentImpl implements
         super.sfTerminateWith(status);
         if (delegate != null) {
             try {
-                delegate.undeploy();
+                delegate.terminate();
             } catch (RemoteException e) {
                 //swallowed
 
