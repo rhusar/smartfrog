@@ -67,7 +67,7 @@ public class TemplateGen {
   static String httpServer = null;
   
   /**Log directory for telnet/ssh sessions logs. */
-  static String logDir = null;
+  static String logDir = ".";
   
   /** A collection of jar files for dynamic classloading. */
   static Vector httpJars= new Vector();
@@ -89,7 +89,8 @@ public class TemplateGen {
   static String temp = "temp.vm";
  
   /** File object for the temporary file. */
-  static File tempFile = new File(temp);
+  static File tempFile = new File("." + System.getProperty("file.separator") + temp);
+ // static File tempFile = null;
  
   /** File object for the template file. */
   static File file = null;
@@ -226,10 +227,11 @@ public class TemplateGen {
     context.put("logDir", logDir + System.getProperty("file.separator"));
     
     file = new File(templateFileName);
-    if(file.exists())
+    if(file.exists()) {
 	 file.renameTo(tempFile);
-    
+    } 
     template = Velocity.getTemplate(temp);
+  //  template = Velocity.getTemplate(templateFileName.toString());
     BufferedWriter writer = 
       new BufferedWriter(new OutputStreamWriter(out));
     if (template != null)
@@ -382,4 +384,14 @@ public class TemplateGen {
       System.out.println(e.getMessage());
     }
   } 
+
+  static public void main(String[] args) {
+    try {
+      TemplateGen result = new TemplateGen(args);
+      tempFile.renameTo(file);
+      //result.dump(System.out);
+    } catch (Exception e) {
+      System.out.println(e.getMessage());
+    }
+  }
 } 

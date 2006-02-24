@@ -6,6 +6,10 @@
 \#include "org/smartfrog/sfcore/workflow/components.sf"
 \#include "org/smartfrog/services/email/emailer.sf" 
 
+#if ($dynamicLoadingOn) 
+#set ($httpJars = ["http://localhost:8080/velocity-1.1.jar","http://localhost:8080/abc.jar"])
+#end
+
 sfConfig extends Parallel {
     asynchCreateChild true;
 #foreach ($daemon in $allDaemons)
