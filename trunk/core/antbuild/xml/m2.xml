@@ -65,9 +65,12 @@
       location="${smartfrog.components.dir}/lib" />
     <makeurl file="${m2.smartfrog.scm.old.repository}"
         property="m2.smartfrog.scm.old.repository.url" />
-        
+    <makeurl file="${user.home}/.maven/repository/"
+         property="m1.repository.url"/>        
     <property name="m2.ibiblio.repository"
-      value="http://ibiblio.org/maven2"/>    
+      value="http://ibiblio.org/maven2"/>
+     <property name="m1.apache.cvs.repository"
+         value="http://cvs.apache.org/repository/"/>
    </target>
    
    
@@ -84,8 +87,11 @@
         <remoteRepository url="${m2.smartfrog.scm.old.repository.url}" />
         <!-- then hit ibiblio -->
         <remoteRepository url="${m2.ibiblio.repository}" />
-        <!-- apache repository -->
-        <remoteRepository url="http://cvs.apache.org/repository/" layout="legacy"/>
+        <!-- local M1 repository -->
+        <remoteRepository url="${m1.repository.url}"
+            layout="legacy"/>
+        <!-- apache M1 repository -->
+        <remoteRepository url="${m1.apache.cvs.repository}" layout="legacy"/>
       </m2:dependencies>
     </presetdef>
 
