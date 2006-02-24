@@ -24,9 +24,4 @@ package org.smartfrog.services.www;
  */
 public interface JavaEnterpriseApplication extends ApplicationServerContext {
 
-    /*
-    earFile can be a File or a string
-    */
-    String ATTR_EARFILE="earFile";
-
 }

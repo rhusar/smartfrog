@@ -22,31 +22,37 @@ package org.smartfrog.services.www.cargo;
 
 import org.codehaus.cargo.container.Container;
 import org.codehaus.cargo.container.LocalContainer;
+import org.codehaus.cargo.container.State;
 import org.codehaus.cargo.container.configuration.Configuration;
-import org.codehaus.cargo.generic.configuration.ConfigurationFactory;
-import org.codehaus.cargo.generic.configuration.DefaultConfigurationFactory;
 import org.smartfrog.services.filesystem.FileSystem;
 import org.smartfrog.services.www.JavaEnterpriseApplication;
 import org.smartfrog.services.www.JavaWebApplication;
 import org.smartfrog.services.www.ServletContextIntf;
-import org.smartfrog.services.www.cargo.delegates.CargoServerDelegateWebapp;
-import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.services.www.cargo.delegates.CargoDelegateEarApplication;
+import org.smartfrog.services.www.cargo.delegates.CargoDelegateWebApplication;
 import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
+import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
+import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.common.SmartFrogLivenessException;
+import org.smartfrog.sfcore.logging.Log;
+import org.smartfrog.sfcore.logging.LogFactory;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.security.SFClassLoader;
 
 import java.io.File;
-import java.rmi.RemoteException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.rmi.RemoteException;
+import java.util.Iterator;
+import java.util.Vector;
 
 
 /**
  * Cargo component deploys using cargo
  */
-public class CargoServerImpl extends PrimImpl implements CargoServer,Runnable {
+public class CargoServerImpl extends PrimImpl implements CargoServer, Runnable {
 
     private LocalContainer container;
     private Configuration configuration;
@@ -55,40 +61,60 @@ public class CargoServerImpl extends PrimImpl implements CargoServer,Runnable {
     private String codebase;
     private Thread thread;
     private boolean started;
+    private Log log;
 
 
     public CargoServerImpl() throws RemoteException {
     }
 
+    public Log getLog() {
+        return log;
+    }
+
+    public LocalContainer getContainer() {
+        return container;
+    }
+
+    public Configuration getConfiguration() {
+        return configuration;
+    }
 
     /**
-     * deploy a web application.
-     * Deploys a web application identified by the component passed as a parameter; a component of arbitrary
-     * type but which must have the mandatory attributes identified in {@link JavaWebApplication};
-     * possibly even extra types required by the particular application server.
+     * deploy a web application. Deploys a web application identified by the
+     * component passed as a parameter; a component of arbitrary type but which
+     * must have the mandatory attributes identified in {@link
+     * JavaWebApplication}; possibly even extra types required by the particular
+     * application server.
      *
-     * @param webApplication the web application. this must be a component whose attributes include the
-     *                       mandatory set of attributes defined for a JavaWebApplication component. Application-server specific attributes
-     *                       (both mandatory and optional) are also permitted
+     * @param webApplication the web application. this must be a component whose
+     *                       attributes include the mandatory set of attributes
+     *                       defined for a JavaWebApplication component.
+     *                       Application-server specific attributes (both
+     *                       mandatory and optional) are also permitted
+     *
      * @return an entry referring to the application
+     *
      * @throws RemoteException    on network trouble
      * @throws SmartFrogException on any other problem
      */
-    public JavaWebApplication deployWebApplication(Prim webApplication) throws RemoteException, SmartFrogException {
-        return new CargoServerDelegateWebapp(webApplication);
+    public JavaWebApplication deployWebApplication(Prim webApplication)
+            throws RemoteException, SmartFrogException {
+        return new CargoDelegateWebApplication(webApplication, this);
     }
 
     /**
      * Deploy an EAR file
      *
      * @param enterpriseApplication
+     *
      * @return an entry referring to the application
+     *
      * @throws RemoteException
      * @throws SmartFrogException
      */
     public JavaEnterpriseApplication deployEnterpriseApplication(Prim enterpriseApplication)
             throws RemoteException, SmartFrogException {
-        throw new SmartFrogException("not implemented");
+        return new CargoDelegateEarApplication(enterpriseApplication, this);
     }
 
     /**
@@ -97,11 +123,14 @@ public class CargoServerImpl extends PrimImpl implements CargoServer,Runnable {
      * This should be called from sfDeploy. The servlet is not deployed
      *
      * @param servlet
+     *
      * @return a token referring to the application
+     *
      * @throws RemoteException    on network trouble
      * @throws SmartFrogException on any other problem
      */
-    public ServletContextIntf deployServletContext(Prim servlet) throws RemoteException, SmartFrogException {
+    public ServletContextIntf deployServletContext(Prim servlet)
+            throws RemoteException, SmartFrogException {
         throw new SmartFrogException("not supported");
     }
 
@@ -115,13 +144,21 @@ public class CargoServerImpl extends PrimImpl implements CargoServer,Runnable {
      * @throws SmartFrogException error while deploying
      * @throws RemoteException    In case of network/rmi error
      */
-    public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
+    public synchronized void sfDeploy()
+            throws SmartFrogException, RemoteException {
         super.sfDeploy();
-
-        String dirname = FileSystem.lookupAbsolutePath(this, ATTR_DIRECTORY, null, null, true, null);
-        ConfigurationFactory factory = new DefaultConfigurationFactory();
+        log = LogFactory.getLog(this);
+        String dirname = FileSystem.lookupAbsolutePath(this,
+                ATTR_HOME,
+                null,
+                null,
+                true,
+                null);
+        //ConfigurationFactory factory = new DefaultConfigurationFactory();
         String name = sfResolve(ATTR_CONFIGURATION_CLASS, "", true);
-        codebase = sfResolve(SmartFrogCoreKeys.SF_CODE_BASE,(String)null,false);
+        codebase = sfResolve(SmartFrogCoreKeys.SF_CODE_BASE,
+                (String) null,
+                false);
         configuration = (Configuration) createClassInstance(name);
         dir = new File(dirname);
         containerClassname = sfResolve(ATTR_CONTAINER_CLASS, "", true);
@@ -130,22 +167,59 @@ public class CargoServerImpl extends PrimImpl implements CargoServer,Runnable {
         signature[0] = Container.class;
         Object args[] = new Object[1];
         args[0] = configuration;
-        container = (LocalContainer) instantiate(containerClass, signature, args);
+        container = (LocalContainer) instantiate(containerClass,
+                signature,
+                args);
 
         //at this point the container is instantiated
-    }
 
+        //set the home
+        String home = FileSystem.lookupAbsolutePath(this, ATTR_EXTRA_CLASSPATH,
+                null, null, true, null);
+        container.setHome(home);
+
+        //monitoring relays to smartfrog
+        container.setMonitor(new MonitorToSFLog(log));
+
+        //add any extra classpath
+        Vector classes = null;
+        classes = sfResolve(ATTR_EXTRA_CLASSPATH, classes, false);
+        if (classes != null) {
+            final int size = classes.size();
+            String[] classArray = new String[size];
+            Iterator classesIterator = classes.listIterator();
+            for (int i = 0; i < size; i++) {
+                Object o = classesIterator.next();
+                String pathElement = o.toString();
+                File pathElementFile = new File(pathElement);
+                if (!pathElementFile.exists()) {
+                    throw new SmartFrogDeploymentException(
+                            "Path element not found:"
+                                    + pathElementFile.getAbsolutePath());
+                }
+                classArray[i] = pathElementFile.getAbsolutePath();
+            }
+            container.setExtraClasspath(classArray);
+        }
+
+
+    }
 
 
     /**
      * Create a new container
+     *
      * @param clazz
      * @param signature
      * @param arguments
+     *
      * @return
+     *
      * @throws SmartFrogException
      */
-    private Object instantiate(Class clazz, Class[] signature, Object[] arguments) throws SmartFrogException {
+    private Object instantiate(Class clazz,
+                               Class[] signature,
+                               Object[] arguments) throws SmartFrogException {
         Object instance;
         try {
             Constructor constructor = clazz.getConstructor(signature);
@@ -165,6 +239,16 @@ public class CargoServerImpl extends PrimImpl implements CargoServer,Runnable {
         return instance;
     }
 
+
+    /**
+     * Create an instance of a class
+     *
+     * @param name
+     *
+     * @return
+     *
+     * @throws SmartFrogException
+     */
     private Object createClassInstance(String name) throws SmartFrogException {
         Object instance;
         Class clazz = loadClass(name);
@@ -174,10 +258,19 @@ public class CargoServerImpl extends PrimImpl implements CargoServer,Runnable {
         return instance;
     }
 
+    /**
+     * Load a class
+     *
+     * @param name
+     *
+     * @return
+     *
+     * @throws SmartFrogException
+     */
     private Class loadClass(String name) throws SmartFrogException {
         Class newclass = null;
         try {
-            newclass = SFClassLoader.forName(name,codebase,true);
+            newclass = SFClassLoader.forName(name, codebase, true);
         } catch (ClassNotFoundException e) {
             throw SmartFrogException.forward(e);
         }
@@ -191,7 +284,8 @@ public class CargoServerImpl extends PrimImpl implements CargoServer,Runnable {
      * @throws SmartFrogException failure while starting
      * @throws RemoteException    In case of network/rmi error
      */
-    public synchronized void sfStart() throws SmartFrogException, RemoteException {
+    public synchronized void sfStart()
+            throws SmartFrogException, RemoteException {
         super.sfStart();
         startInNewThread();
     }
@@ -204,7 +298,7 @@ public class CargoServerImpl extends PrimImpl implements CargoServer,Runnable {
      */
     public synchronized void sfTerminateWith(TerminationRecord status) {
         super.sfTerminateWith(status);
-        if(started) {
+        if (started) {
             try {
                 container.stop();
             } finally {
@@ -214,24 +308,68 @@ public class CargoServerImpl extends PrimImpl implements CargoServer,Runnable {
         }
     }
 
-    private void startInNewThread() {
+    /**
+     * Liveness call in to check if this component is still alive. This method
+     * can be overriden to check other state of a component. An example is
+     * Compound where all children of the compound are checked. This basic check
+     * updates the liveness count if the ping came from its parent. Otherwise
+     * (if source non-null) the liveness count is decreased by the
+     * sfLivenessFactor attribute. If the count ever reaches 0 liveness failure
+     * on tha parent has occurred and sfLivenessFailure is called with source
+     * this, and target parent. Note: the sfLivenessCount must be decreased
+     * AFTER doing the test to correctly count the number of ping opportunities
+     * that remain before invoking sfLivenessFailure. If done before then the
+     * number of missing pings is reduced by one. E.g. if sfLivenessFactor is 1
+     * then a sfPing from the parent sets sfLivenessCount to 1. The sfPing from
+     * a non-parent would reduce the count to 0 and immediately fail.
+     *
+     * @param source source of call
+     *
+     * @throws org.smartfrog.sfcore.common.SmartFrogLivenessException
+     *                                  component is terminated
+     * @throws java.rmi.RemoteException for consistency with the {@link
+     *                                  org.smartfrog.sfcore.prim.Liveness}
+     *                                  interface
+     */
+    public void sfPing(Object source)
+            throws SmartFrogLivenessException, RemoteException {
+        super.sfPing(source);
+        if (!started) {
+            throw new SmartFrogLivenessException(
+                    "Application Server not started");
+        }
+        State state = container.getState();
+        if (state.isStopped()) {
+            throw new SmartFrogLivenessException(
+                    "Application Server has stopped");
+        }
+    }
+
+    private synchronized void startInNewThread() throws SmartFrogException {
+        if (started) {
+            throw new SmartFrogException("We are already running!");
+        }
         thread = new Thread(this);
         thread.run();
     }
 
     /**
-     * When an object implementing interface <code>Runnable</code> is used
-     * to create a thread, starting the thread causes the object's
-     * <code>run</code> method to be called in that separately executing
-     * thread.
+     * When an object implementing interface <code>Runnable</code> is used to
+     * create a thread, starting the thread causes the object's <code>run</code>
+     * method to be called in that separately executing thread.
      * <p/>
-     * The general contract of the method <code>run</code> is that it may
-     * take any action whatsoever.
+     * The general contract of the method <code>run</code> is that it may take
+     * any action whatsoever.
      *
      * @see Thread#run()
      */
     public void run() {
         container.start();
-        started = true;
+        synchronized (this) {
+            started = true;
+        }
+        //end of life
+        thread = null;
     }
+
 }

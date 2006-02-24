@@ -26,9 +26,7 @@ import org.mortbay.jetty.servlet.ServletHandler;
 import org.mortbay.jetty.servlet.WebApplicationContext;
 import org.smartfrog.services.filesystem.FileSystem;
 import org.smartfrog.services.jetty.SFJetty;
-import org.smartfrog.services.jetty.JettyHelper;
 import org.smartfrog.services.jetty.contexts.JettyWebApplicationContext;
-import org.smartfrog.services.www.JavaWebApplication;
 import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.prim.Prim;
@@ -40,7 +38,8 @@ import java.rmi.RemoteException;
 /**
  * This represents a web application that has been deployed on a jetty system
  */
-public class DelegateWebApplicationContext extends DelegateApplicationContext implements JettyWebApplicationContext {
+public class DelegateWebApplicationContext extends DelegateApplicationContext
+        implements JettyWebApplicationContext {
 
     private Reference contextPathRef = new Reference(ATTR_CONTEXT_PATH);
     private Reference requestIdRef = new Reference(ATTR_REQUEST_ID);
@@ -60,10 +59,11 @@ public class DelegateWebApplicationContext extends DelegateApplicationContext im
     public DelegateWebApplicationContext() {
     }
 
-    public void deploy(Prim declaration) throws SmartFrogException, RemoteException {
+    public void deploy(Prim declaration)
+            throws SmartFrogException, RemoteException {
         webApp =
                 FileSystem.lookupAbsolutePath(declaration,
-                        ATTR_WARFILE,
+                        ATTR_FILE,
                         null,
                         null,
                         true,
@@ -71,13 +71,15 @@ public class DelegateWebApplicationContext extends DelegateApplicationContext im
         //sanity check
         File webappFile = new File(webApp);
         if (!webappFile.exists()) {
-            throw new SmartFrogDeploymentException(ERROR_WARFILE_NOT_FOUND +
+            throw new SmartFrogDeploymentException(ERROR_FILE_NOT_FOUND +
                     webappFile);
         }
         //request ID
         requestId = declaration.sfResolve(requestIdRef, requestId, false);
 
-        contextPath = declaration.sfResolve(contextPathRef, (String) null, true);
+        contextPath = declaration.sfResolve(contextPathRef,
+                (String) null,
+                true);
         String absolutePath = contextPath;
         declaration.sfReplaceAttribute(ATTR_ABSOLUTE_PATH, absolutePath);
         application.setContextPath(contextPath);

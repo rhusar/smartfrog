@@ -1,0 +1,15 @@
+
+#include "org/smartfrog/services/www/cargo/components.sf"
+
+
+CargoServerExtension extends JBoss4CargoServer {
+ port 8080;
+ logging "high";
+
+ //set up a symlink for this if you need it
+ home "/home/jboss/jboss-4.0";
+}
+
+sfConfig extends CargoServerExtension {
+
+}

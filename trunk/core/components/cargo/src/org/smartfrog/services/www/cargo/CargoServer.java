@@ -37,7 +37,9 @@ public interface CargoServer extends JavaWebApplicationServer {
      */
     String ATTR_CONTAINER_CLASS = "containerClass";
 
-    String ATTR_DIRECTORY = "directory";
+    String ATTR_HOME = "home";
 
-    
+    String ATTR_EXTRA_CLASSPATH = "extraClasspath";
+
+
 }

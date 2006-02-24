@@ -27,7 +27,12 @@ import java.rmi.RemoteException;
 
 /**
  * An application server context is anything that can be deployed inside an app
- * server.
+ * server. There is a 1:1 mapping of the methods here and those of the normal
+ * smartfrog lifecycle, because the relevant delegate operations get called at
+ * the appropriate points.
+ * <p/>
+ * Why the different name? Just so that they can live side-by-side in the same
+ * classes.
  */
 public interface ApplicationServerContext extends Remote {
     /**
@@ -39,10 +44,20 @@ public interface ApplicationServerContext extends Remote {
      */
     final static String ATTR_SERVER = "server";
     /**
-     * absolute path is the path up to the first "*"
-     * {@value}
+     * absolute path is the path up to the first "*" {@value}
      */
     final static String ATTR_ABSOLUTE_PATH = "absolutePath";
+    /**
+     * name or File reference of a file {@value}
+     */
+    String ATTR_FILE = "filename";
+
+    /**
+     * Error string for missing WAR file {@value}
+     */
+    String ERROR_FILE_NOT_FOUND = "File not found:";
+
+    void deploy() throws SmartFrogException, RemoteException;
 
     /**
      * start the component
@@ -58,7 +73,7 @@ public interface ApplicationServerContext extends Remote {
      * @throws RemoteException
      * @throws SmartFrogException
      */
-    public void undeploy() throws RemoteException, SmartFrogException;
+    public void terminate() throws RemoteException, SmartFrogException;
 
 
     /**

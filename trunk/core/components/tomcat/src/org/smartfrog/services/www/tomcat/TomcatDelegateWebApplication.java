@@ -38,17 +38,20 @@ import java.net.URL;
 import java.rmi.RemoteException;
 
 /**
- * webapp for tomcat
- * TODO: move to httpclient simply to avoid having a single authenticator for the whole JVM
+ * webapp for tomcat TODO: move to httpclient simply to avoid having a single
+ * authenticator for the whole JVM
  */
 
-public class TomcatDelegateWebApplication extends TomcatDelegateApplicationContext implements JavaWebApplication {
+public class TomcatDelegateWebApplication
+        extends TomcatDelegateApplicationContext implements JavaWebApplication {
 
     private String contextPath = "/";
     private String webApp = null;
     private String absolutePath;
-    private Reference usernameRef = new Reference(ReferencePart.here(TomcatServer.ATTR_USERNAME));
-    private Reference passwordRef = new Reference(ReferencePart.here(TomcatServer.ATTR_PASSWORD));
+    private Reference usernameRef = new Reference(ReferencePart.here(
+            TomcatServer.ATTR_USERNAME));
+    private Reference passwordRef = new Reference(ReferencePart.here(
+            TomcatServer.ATTR_PASSWORD));
     private Reference portRef = new Reference(ReferencePart.here(TomcatServer.ATTR_PORT));
     private String username = "";
     private String password = "";
@@ -59,7 +62,8 @@ public class TomcatDelegateWebApplication extends TomcatDelegateApplicationConte
     private String manager = null;
 
 
-    protected TomcatDelegateWebApplication(TomcatServer server, Prim declaration) {
+    protected TomcatDelegateWebApplication(TomcatServer server,
+                                           Prim declaration) {
         super(server, declaration);
     }
 
@@ -73,7 +77,7 @@ public class TomcatDelegateWebApplication extends TomcatDelegateApplicationConte
     public void deploy() throws SmartFrogException, RemoteException {
         webApp =
                 FileSystem.lookupAbsolutePath(getDeclaration(),
-                        ATTR_WARFILE,
+                        ATTR_FILE,
                         null,
                         null,
                         true,
@@ -81,12 +85,14 @@ public class TomcatDelegateWebApplication extends TomcatDelegateApplicationConte
         //sanity check
         File webappFile = new File(webApp);
         if (!webappFile.exists()) {
-            throw new SmartFrogDeploymentException(ERROR_WARFILE_NOT_FOUND +
+            throw new SmartFrogDeploymentException(ERROR_FILE_NOT_FOUND +
                     webappFile);
         }
-        contextPath = getDeclaration().sfResolve(ATTR_CONTEXT_PATH, (String) null, true);
-        if(!contextPath.startsWith("/")) {
-            contextPath="/"+contextPath;
+        contextPath = getDeclaration().sfResolve(ATTR_CONTEXT_PATH,
+                (String) null,
+                true);
+        if (!contextPath.startsWith("/")) {
+            contextPath = "/" + contextPath;
         }
         absolutePath = contextPath;
         getDeclaration().sfReplaceAttribute(ATTR_ABSOLUTE_PATH, absolutePath);
@@ -96,7 +102,9 @@ public class TomcatDelegateWebApplication extends TomcatDelegateApplicationConte
         password = getServerPrim().sfResolve(passwordRef, password, true);
         port = getServerPrim().sfResolve(portRef, port, true);
         authenticator = new TomcatManagerAuthenticator(username, password);
-        manager = getServerPrim().sfResolve(TomcatServer.ATTR_MANAGER, manager, true);
+        manager = getServerPrim().sfResolve(TomcatServer.ATTR_MANAGER,
+                manager,
+                true);
         host = "localhost";
         if (!manager.startsWith("/")) {
             manager = "/" + manager;
@@ -115,13 +123,13 @@ public class TomcatDelegateWebApplication extends TomcatDelegateApplicationConte
      * @throws RemoteException
      */
     public void start() throws SmartFrogException, RemoteException {
-        undeploy();
+        terminate();
         Authenticator.setDefault(authenticator);
         //Install and start the webapp
         String warfile;
         //warfile= "jar:" + webApp; + "!/";
-        warfile =  webApp; 
-        String commandStr = "install?path=" + contextPath + "&war=" +warfile; 
+        warfile = webApp;
+        String commandStr = "install?path=" + contextPath + "&war=" + warfile;
         executeManagerCommand(commandStr, true);
         commandStr = "start?path=" + contextPath;
         executeManagerCommand(commandStr, true);
@@ -133,7 +141,7 @@ public class TomcatDelegateWebApplication extends TomcatDelegateApplicationConte
      * @throws RemoteException
      * @throws SmartFrogException
      */
-    public void undeploy() throws RemoteException, SmartFrogException {
+    public void terminate() throws RemoteException, SmartFrogException {
         Authenticator.setDefault(authenticator);
         String commandStr = "remove?path=" + contextPath;
         executeManagerCommand(commandStr, false);
@@ -150,11 +158,12 @@ public class TomcatDelegateWebApplication extends TomcatDelegateApplicationConte
     }
 
     /**
-     * This executes the Tomcat Manager commands. This could be and maybe
-     * should be updated to return the status of the command as oppossed
-     * to assuming it worked.
+     * This executes the Tomcat Manager commands. This could be and maybe should
+     * be updated to return the status of the command as oppossed to assuming it
+     * worked.
      */
-    private void executeManagerCommand(String urlString, boolean checkresponse) throws SmartFrogException {
+    private void executeManagerCommand(String urlString, boolean checkresponse)
+            throws SmartFrogException {
         BufferedReader in = null;
         String fullURL = managerURL + urlString;
         try {
@@ -162,14 +171,15 @@ public class TomcatDelegateWebApplication extends TomcatDelegateApplicationConte
             InputStream content = (InputStream) url.getContent();
             in = new BufferedReader(new InputStreamReader(content));
             String line;
-            StringBuffer response=new StringBuffer();
+            StringBuffer response = new StringBuffer();
             while ((line = in.readLine()) != null) {
-                System.out.println(line);//Should really return this maybe check the text for an error
+                System.out
+                        .println(line);//Should really return this maybe check the text for an error
                 response.append(line);
                 response.append("\n");
             }
-            if(checkresponse && response.indexOf("FAIL")>=0) {
-                throw new SmartFrogException("Command "+fullURL+" Failed\n"+response);
+            if (checkresponse && response.indexOf("FAIL") >= 0) {
+                throw new SmartFrogException("Command " + fullURL + " Failed\n" + response);
             }
         } catch (IOException e) {
             throw SmartFrogException.forward(e);
