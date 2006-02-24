@@ -1,7 +1,0 @@
-
-#include "org/smartfrog/components.sf"
-#include "org/smartfrog/sfcore/workflow/components.sf";
-#include "org/smartfrog/services/anubisdeployer/components.sf";
-
-
-sfConfig extends ClusterSystem;
