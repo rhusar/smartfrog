@@ -22,6 +22,7 @@ package org.smartfrog.sfcore.languages.cdl.faults;
 import org.ggf.cddlm.utils.FaultCodeComparator;
 import org.ggf.cddlm.utils.FaultTemplate;
 import org.smartfrog.sfcore.languages.cdl.dom.ElementEx;
+import org.smartfrog.sfcore.common.SmartFrogException;
 
 import javax.xml.namespace.QName;
 import java.util.List;
@@ -31,11 +32,13 @@ import nu.xom.Element;
 
 
 /**
- * Base class for our exceptions
+ * Base class for our exceptions.
+ * It extends the SmartFrogException base so that it can be sent up the wire
+ * from SmartFrog parsing/execution calls without being recast.
  * created 10-Jun-2005 15:29:38
  */
 
-public class CdlException extends Exception implements FaultCodeComparator {
+public class CdlException extends SmartFrogException implements FaultCodeComparator {
 
     private QName faultCode;
 
