@@ -21,7 +21,6 @@ package org.smartfrog.services.xml.impl;
 
 import nu.xom.DocType;
 import nu.xom.Node;
-import nu.xom.Attribute;
 import nu.xom.XMLException;
 import org.smartfrog.services.xml.interfaces.XmlDocType;
 import org.smartfrog.sfcore.common.SmartFrogException;

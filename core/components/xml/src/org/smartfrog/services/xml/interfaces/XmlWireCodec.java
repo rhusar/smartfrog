@@ -20,7 +20,6 @@
 package org.smartfrog.services.xml.interfaces;
 
 import nu.xom.Document;
-import nu.xom.Serializer;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;

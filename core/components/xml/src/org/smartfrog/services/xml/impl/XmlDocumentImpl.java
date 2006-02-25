@@ -23,7 +23,6 @@ import nu.xom.Document;
 import nu.xom.Node;
 import nu.xom.Serializer;
 import nu.xom.XMLException;
-import org.smartfrog.services.filesystem.FileImpl;
 import org.smartfrog.services.filesystem.FileSystem;
 import org.smartfrog.services.filesystem.FileUsingComponentImpl;
 import org.smartfrog.services.xml.interfaces.LocalNode;

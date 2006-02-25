@@ -21,22 +21,21 @@
 
 package org.smartfrog.services.xml.test.system;
 
-import org.smartfrog.test.SmartFrogTestBase;
+import junit.framework.AssertionFailedError;
+import nu.xom.Builder;
+import nu.xom.Document;
+import nu.xom.ParsingException;
 import org.smartfrog.services.xml.interfaces.XmlNode;
 import org.smartfrog.services.xml.utils.ParserHelper;
-import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
+import org.smartfrog.sfcore.prim.Prim;
+import org.smartfrog.test.SmartFrogTestBase;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 
-import java.rmi.RemoteException;
-import java.io.IOException;
 import java.io.File;
-
-import nu.xom.ParsingException;
-import nu.xom.Document;
-import nu.xom.Builder;
-import junit.framework.AssertionFailedError;
+import java.io.IOException;
+import java.rmi.RemoteException;
 
 /**
  * base class for tests; currently extends the smartfrog testbase
@@ -94,7 +93,7 @@ public abstract class TestBase extends SmartFrogTestBase {
      * @throws Throwable
      */
     public XmlNode deployXmlNode(String url,String appName) throws Throwable {
-        Prim prim = deployApplication(url, appName);
+        Prim prim = deployApplication2(url, appName);
         try {
             return (XmlNode) prim;
         } catch (Exception e) {
@@ -110,7 +109,7 @@ public abstract class TestBase extends SmartFrogTestBase {
      * @return
      * @throws Throwable
      */
-    protected Prim deployApplication(String url, String appName)
+    protected Prim deployApplication2(String url, String appName)
             throws Throwable {
         Prim prim = deployExpectingSuccess(url, appName);
         application = prim;

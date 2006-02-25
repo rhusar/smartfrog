@@ -20,15 +20,14 @@
 
 package org.smartfrog.services.xml.impl.codecs;
 
+import nu.xom.Document;
+import nux.xom.binary.BinaryParsingException;
+import nux.xom.binary.BinaryXMLCodec;
 import org.smartfrog.services.xml.interfaces.XmlWireCodec;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-
-import nu.xom.Document;
-import nux.xom.binary.BinaryXMLCodec;
-import nux.xom.binary.BinaryParsingException;
 
 /**
  * Uses the Nux high performance codec

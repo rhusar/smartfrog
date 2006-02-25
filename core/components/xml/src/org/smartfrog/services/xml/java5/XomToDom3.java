@@ -19,12 +19,12 @@
  */
 package org.smartfrog.services.xml.java5;
 
-import org.w3c.dom.DOMImplementation;
-import org.w3c.dom.bootstrap.DOMImplementationRegistry;
-import org.smartfrog.services.xml.utils.ParserHelper;
-import org.smartfrog.services.xml.utils.XmlConstants;
 import nu.xom.Document;
 import nu.xom.converters.DOMConverter;
+import org.smartfrog.services.xml.utils.ParserHelper;
+import org.smartfrog.services.xml.utils.XmlConstants;
+import org.w3c.dom.DOMImplementation;
+import org.w3c.dom.bootstrap.DOMImplementationRegistry;
 
 /**
  * created 30-Nov-2005 11:03:43

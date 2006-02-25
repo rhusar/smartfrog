@@ -19,9 +19,9 @@
  */
 package org.smartfrog.services.xml.java5;
 
-import javax.xml.namespace.QName;
-
 import nu.xom.Element;
+
+import javax.xml.namespace.QName;
 
 /**
  * Minor XML utility stuff, uses Qname

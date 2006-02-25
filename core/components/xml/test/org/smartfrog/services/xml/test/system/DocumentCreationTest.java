@@ -19,23 +19,12 @@
  */
 package org.smartfrog.services.xml.test.system;
 
-import org.smartfrog.sfcore.prim.Prim;
-import org.smartfrog.services.xml.interfaces.XmlNode;
-import org.smartfrog.services.xml.interfaces.XmlDocument;
-import org.smartfrog.services.xml.interfaces.XmlTextNode;
-import org.smartfrog.services.xml.utils.ParserHelper;
-import org.xml.sax.SAXException;
-import org.xml.sax.XMLReader;
-import junit.awtui.TestRunner;
-
-import java.rmi.RemoteException;
-import java.io.File;
-import java.io.IOException;
-
-import nu.xom.Builder;
-import nu.xom.ValidityException;
-import nu.xom.ParsingException;
 import nu.xom.Document;
+import org.smartfrog.services.xml.interfaces.XmlDocument;
+import org.smartfrog.services.xml.interfaces.XmlNode;
+import org.smartfrog.services.xml.interfaces.XmlTextNode;
+
+import java.io.File;
 
 /**
  * created 27-Jan-2005 14:02:01

@@ -19,13 +19,7 @@
  */
 package org.smartfrog.services.xml.test.system;
 
-import org.smartfrog.sfcore.prim.Prim;
-import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.services.xml.interfaces.XmlNode;
-
-import java.rmi.RemoteException;
-
-import junit.framework.AssertionFailedError;
 
 /**
  * created 01-Apr-2005 14:54:24
@@ -38,7 +32,7 @@ public class DocLoadTest extends TestBase {
     }
 
     public void testDocLoad() throws Throwable {
-        deployApplication(FILE_BASE + "docLoad.sf", "DocLoad");
+        deployApplication2(FILE_BASE + "docLoad.sf", "DocLoad");
         XmlNode node = resolveXmlNode();
         assertNotNull(node);
         

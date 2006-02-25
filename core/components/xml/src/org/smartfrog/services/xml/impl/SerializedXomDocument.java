@@ -20,12 +20,11 @@
 package org.smartfrog.services.xml.impl;
 
 import nu.xom.Document;
+import org.smartfrog.services.xml.impl.codecs.XmlTextCodec;
+import org.smartfrog.services.xml.interfaces.XmlWireCodec;
 
 import java.io.IOException;
 import java.io.Serializable;
-
-import org.smartfrog.services.xml.interfaces.XmlWireCodec;
-import org.smartfrog.services.xml.impl.codecs.XmlTextCodec;
 
 /**
  * switchable codec
