@@ -19,13 +19,13 @@
  */
 package org.smartfrog.services.xml.utils;
 
-import nu.xom.Element;
 import nu.xom.Document;
+import nu.xom.Element;
 import nu.xom.Serializer;
 
 import javax.xml.namespace.QName;
-import java.io.IOException;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 
 /**
  * Generic static Xom utils; all java1.4+

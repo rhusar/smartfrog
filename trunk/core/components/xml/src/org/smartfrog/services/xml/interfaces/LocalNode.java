@@ -32,10 +32,9 @@
 package org.smartfrog.services.xml.interfaces;
 
 import nu.xom.Node;
+import org.smartfrog.sfcore.common.SmartFrogException;
 
 import java.rmi.RemoteException;
-
-import org.smartfrog.sfcore.common.SmartFrogException;
 
 /**
  * This is not a remote interface; it is a local interface that both

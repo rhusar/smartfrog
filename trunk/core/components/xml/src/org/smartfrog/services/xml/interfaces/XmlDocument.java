@@ -31,11 +31,11 @@
  */
 package org.smartfrog.services.xml.interfaces;
 
-import org.smartfrog.services.xml.impl.SerializedXomDocument;
 import org.smartfrog.services.filesystem.FileUsingComponent;
+import org.smartfrog.services.xml.impl.SerializedXomDocument;
 
-import java.rmi.RemoteException;
 import java.io.IOException;
+import java.rmi.RemoteException;
 
 
 /**

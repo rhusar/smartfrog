@@ -19,16 +19,15 @@
  */
 package org.smartfrog.services.xml.impl.codecs;
 
+import nu.xom.Builder;
+import nu.xom.Document;
+import nu.xom.ParsingException;
+import nu.xom.Serializer;
 import org.smartfrog.services.xml.interfaces.XmlWireCodec;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-
-import nu.xom.Document;
-import nu.xom.Serializer;
-import nu.xom.Builder;
-import nu.xom.ParsingException;
 
 /**
  * created 27-Jul-2005 13:39:41
