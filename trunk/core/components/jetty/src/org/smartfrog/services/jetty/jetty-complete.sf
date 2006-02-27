@@ -95,17 +95,17 @@ JettyExampleWar extends WebApplication {
 
 RootWAR extends JettyExampleWar {
  contextPath "/";
- warFile "/demo/webapps/root";
+ filename "/demo/webapps/root";
 }
 
 JettyDemo extends JettyExampleWar {
  contextPath "/jetty";
- warFile "/demo/webapps/jetty";
+ filename "/demo/webapps/jetty";
 }
 
 JettyExamples extends JettyExampleWar {
  contextPath "/examples";
- warFile "/demo/webapps/examples";
+ filename "/demo/webapps/examples";
  requestId true; //optional
 }
 

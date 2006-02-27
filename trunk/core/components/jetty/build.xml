@@ -71,7 +71,14 @@ For more information: www.smartfrog.org
 
 
   </target>
-  <!---  
+
+
+  <!-- ==========================================================             -->
+  <!--- STOP! Do not attempt to comment these out. They are here for a reason -->
+  <!--  you do need the m2 tasks to get this to build, as it is how it manages -->
+  <!-- dependencies *Between* components-->
+  <!-- ========================================================== -->
+
   <target name="m2-files" depends="m2-tasks">
     <m2-libraries pathID="m2.classpath">
       <dependency groupID="org.smartfrog"
@@ -91,15 +98,7 @@ For more information: www.smartfrog.org
       </fileset>
     </path>
   </target>
-  -->
-   <target name="declare-compile.classpath" depends="declare-base.compile.classpath">
-    <property name="jetty.lib.dir" value="${smartfrog.components.dir}/jetty/lib/" />
-    <path id="compile.classpath">
-      <path refid="base.compile.classpath"/>
-      <fileset dir="${jetty.lib.dir}" includes="*.jar"/>
-    </path>
-  </target>
-  
+
   
   <!-- ========================================================== -->
   <!-- this is an override point -->
