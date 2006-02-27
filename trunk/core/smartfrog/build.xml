@@ -440,7 +440,8 @@
   <!-- =================================================================== -->
   <!--   JDocs                                                             -->
   <!-- =================================================================== -->
-  <target name="jdocs" depends="initdist,generateversion" description="Generates the API documentation">
+  <target name="jdocs" depends="initdist,generateversion,jjdocs"
+      description="Generates the API documentation">
     <!--  Java Docs for all                                                -->
     <echo message=""/>
     <echo message="------------------------------------------------------------------------"/>
@@ -463,15 +464,19 @@
       <group title="SmartFrog Packages" packages="org.smartfrog.*"/>
       <classpath refid="smartfrog.class.path"/>
     </javadoc>
+  </target>
+
+  <target name="jjdocs" depends="init">
     <!--  Java doc for the grammars -->
-     <java classname="jjdoc" failonerror="true">
+    <java classname="jjdoc" failonerror="true">
       <arg line="-OUTPUT_FILE=${docs}/DefaultParser.html"/>
       <arg line="${src}/org/smartfrog/sfcore/languages/sf/DefaultParser.jj"/>
       <classpath>
-         <pathelement location="${javacc.dir}/javacc.jar"/>
-       </classpath>
-     </java>
+        <pathelement location="${javacc.dir}/javacc.jar"/>
+      </classpath>
+    </java>
   </target>
+
   <!-- =================================================================== -->
   <!--  BUILD                                                              -->
   <!-- =================================================================== -->
