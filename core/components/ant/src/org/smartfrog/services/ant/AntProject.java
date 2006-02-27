@@ -1,41 +1,47 @@
 /** (C) Copyright Hewlett-Packard Development Company, LP
 
-This library is free software; you can redistribute it and/or
-modify it under the terms of the GNU Lesser General Public
-License as published by the Free Software Foundation; either
-version 2.1 of the License, or (at your option) any later version.
+ This library is free software; you can redistribute it and/or
+ modify it under the terms of the GNU Lesser General Public
+ License as published by the Free Software Foundation; either
+ version 2.1 of the License, or (at your option) any later version.
 
-This library is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-Lesser General Public License for more details.
+ This library is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ Lesser General Public License for more details.
 
-You should have received a copy of the GNU Lesser General Public
-License along with this library; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ You should have received a copy of the GNU Lesser General Public
+ License along with this library; if not, write to the Free Software
+ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-For more information: www.smartfrog.org
+ For more information: www.smartfrog.org
 
-*/
+ */
 
 package org.smartfrog.services.ant;
 
-import java.lang.reflect.Method;
-import java.lang.reflect.*;
-import org.smartfrog.sfcore.security.SFClassLoader;
-import java.io.InputStream;
-import java.io.File;
-import java.util.Properties;
-import java.io.*;
-import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
-import org.smartfrog.sfcore.componentdescription.ComponentDescription;
-import org.apache.tools.ant.Task;
-import org.apache.tools.ant.types.Mapper;
-import org.smartfrog.sfcore.common.SmartFrogException;
-import java.util.Iterator;
-import org.apache.tools.ant.types.EnumeratedAttribute;
 import org.apache.tools.ant.Project;
+import org.apache.tools.ant.Task;
 import org.apache.tools.ant.types.DataType;
+import org.apache.tools.ant.types.EnumeratedAttribute;
+import org.smartfrog.services.filesystem.FileSystem;
+import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
+import org.smartfrog.sfcore.common.SmartFrogResolutionException;
+import org.smartfrog.sfcore.componentdescription.ComponentDescription;
+import org.smartfrog.sfcore.logging.LogSF;
+import org.smartfrog.sfcore.prim.Prim;
+import org.smartfrog.sfcore.security.SFClassLoader;
+
+import java.io.File;
+import java.io.IOException;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.rmi.RemoteException;
+import java.util.Iterator;
+import java.util.Locale;
+import java.util.Properties;
+import java.util.Vector;
 
 /*
  * Some code derived from article by Pankaj Kumar (pankaj_kumar at hp.com):
@@ -43,201 +49,270 @@ import org.apache.tools.ant.types.DataType;
  */
 
 /**
-@todo: References - How are they resolved?
-@todo: Split in: Project, Target, Task
-@todo: Try to make the different parts remotable
-@todo: Integrate build listener and log
-@todo: improve error messages
-@todo: test typdef and taskdef
-@todo: how to do properties
-@todo: overload sfResolve for project and even task
-@todo: review the creation of an element inside a project (task=null)
-*/
+ * @todo: References - How are they resolved?
+ * @todo: Split in: Project, Target, Task
+ * @todo: Try to make the different parts remotable
+ * @todo: Integrate build listener and log
+ * @todo: improve error messages
+ * @todo: test typdef and taskdef
+ * @todo: how to do properties
+ * @todo: overload sfResolve for project and even task
+ * @todo: review the creation of an element inside a project (task=null)
+ */
 public class AntProject {
 
     private org.apache.tools.ant.Project project = null;
 
-        Properties tasks = null;
-        Properties types = null;
-
-        public AntProject() throws SmartFrogDeploymentException {
-
-            validateAnt();
-//        org.apache.tools.ant.Diagnostics.validateVersion();
-//       //System.out.println("Ant version: "+org.apache.tools.ant.Main.getAntVersion());
-            project = new org.apache.tools.ant.Project();
-            project.setCoreLoader(null);
-            project.init();
+    private Object aobj = null;
+    private Object parent = null;
 
 
-            //Register build listener @TODO replace this with our own listener
-            org.apache.tools.ant.DefaultLogger logger = new org.apache.tools.ant.DefaultLogger();
-            logger.setOutputPrintStream(System.out);
-            logger.setErrorPrintStream(System.err);
-//        logger.setMessageOutputLevel(org.apache.tools.ant.Project.MSG_INFO);
-//        logger.setMessageOutputLevel(org.apache.tools.ant.Project.MSG_DEBUG); //-d
-            logger.setMessageOutputLevel(org.apache.tools.ant.Project.MSG_VERBOSE); //-v
-//        logger.setMessageOutputLevel(org.apache.tools.ant.Project.MSG_WARN);    //-q
-            project.addBuildListener(logger);
+    private Properties tasks = null;
+    private Properties types = null;
+    private LogSF log;
+    private Prim owner;
 
-            // @TODO set this with a SmartFrog property
-            project.setBaseDir(new File("."));
+    public AntProject(Prim owner, LogSF log) throws SmartFrogDeploymentException, SmartFrogResolutionException,
+            RemoteException {
+        this.log = log;
+        this.owner=owner;
+        validateAnt();
+        log.debug("Ant version: " + org.apache.tools.ant.Main.getAntVersion());
+        project = new org.apache.tools.ant.Project();
+        project.setCoreLoader(null);
+        project.init();
 
-            tasks = new Properties();
-            // @TODO set this with a SmartFrog property
-            String propFilename ="/org/apache/tools/ant/taskdefs/defaults.properties";
-            try {
-                tasks.load(tasks.getClass().getResourceAsStream(propFilename));
-            } catch (IOException ex) {
-                ex.printStackTrace();
-            }
-            types = new Properties();
-            // @TODO set this with a SmartFrog property
-            propFilename = "/org/apache/tools/ant/types/defaults.properties";
-            try {
-                types.load(tasks.getClass().getResourceAsStream(propFilename));
-            } catch (IOException ex) {
-                ex.printStackTrace();
-            }
 
-            // Set environment.
-            org.apache.tools.ant.taskdefs.Property env_prop = new org.apache.tools.ant.taskdefs.Property();
-            env_prop.setProject(project);
-            env_prop.setEnvironment("myenv");
-            env_prop.execute();
+        String logLevel=owner.sfResolve(Ant.ATTR_LOG_LEVEL,Ant.ATTR_LOG_LEVEL_INFO,false);
+        int level = Project.MSG_INFO;
+        level = extractLogLevel(level, logLevel, Ant.ATTR_LOG_LEVEL_DEBUG, Project.MSG_DEBUG);
+        level = extractLogLevel(level, logLevel, Ant.ATTR_LOG_LEVEL_VERBOSE, Project.MSG_VERBOSE);
+        level = extractLogLevel(level, logLevel, Ant.ATTR_LOG_LEVEL_INFO, Project.MSG_INFO);
+        level = extractLogLevel(level, logLevel, Ant.ATTR_LOG_LEVEL_WARN, Project.MSG_WARN);
+        level = extractLogLevel(level, logLevel, Ant.ATTR_LOG_LEVEL_ERROR, Project.MSG_ERR);
+
+        //Register build listener @TODO replace this with our own listener
+        org.apache.tools.ant.DefaultLogger logger = new org.apache.tools.ant.DefaultLogger();
+        logger.setOutputPrintStream(System.out);
+        logger.setErrorPrintStream(System.err);
+        logger.setMessageOutputLevel(level);
+        project.addBuildListener(logger);
+
+        // set this with a SmartFrog property
+        String basedirpath= FileSystem.lookupAbsolutePath(owner, Ant.ATTR_BASEDIR,".",
+                new File("."),false,null);
+        project.setBaseDir(new File(basedirpath));
+        tasks = loadNamedPropertyResource(Ant.ATTR_TASKS_RESOURCE);
+        types = loadNamedPropertyResource(Ant.ATTR_TYPES_RESOURCE);
+
+        setUserProperties(Ant.ATTR_PROPERTIES,project);
+
+        // Set environment.
+        org.apache.tools.ant.taskdefs.Property env_prop = new org.apache.tools.ant.taskdefs.Property();
+        env_prop.setProject(project);
+        env_prop.setEnvironment(Ant.ENV_PREFIX);
+        env_prop.execute();
+    }
+
+    private Properties loadNamedPropertyResource(String attribute) throws SmartFrogResolutionException, RemoteException {
+        String resource = owner.sfResolve(attribute,"",true);
+        Properties props = new Properties();
+        try {
+            //TODO: better classloader
+            props.load(owner.getClass().getResourceAsStream(resource));
+        } catch (IOException ex) {
+            log.error("Failed to load resource" + resource, ex);
         }
+        return props;
+    }
 
-        Object aobj = null;
-        Object parent = null;
-
-
-        public Object getElement ( String name, ComponentDescription cd)throws Exception  {
-            String attribute = null;
-            String elementType = ((ComponentDescription)cd).sfResolve(ATR_ANT_ELEMENT, attribute, false);
-            Object newElement = createElement(null, null, elementType);
-            if (newElement!=null) {
-                ((DataType)newElement).setProject(project);
-                return getElement(newElement, (String)attribute, (ComponentDescription)cd);
-            }
-            return newElement;
-        }
-
-        final String ATR_ANT_ELEMENT = "AntElement";
-
-        Object getElement(Object task, String name, ComponentDescription cd )throws Exception {
-            //System.out.println("  * "+name+" - Processing new element for "+ task.getClass().getName());
-            java.lang.reflect.Method[] methods = task.getClass().getMethods();
-            String attribute = null;
-            Object value = null;
-            Iterator a = cd.sfAttributes();
-            for (Iterator v = cd.sfValues(); v.hasNext(); ) {
-                attribute = (String) a.next();
-                value = v.next();
-                if (value instanceof org.smartfrog.sfcore.componentdescription.ComponentDescription) {
-                    //Create an inner element
-                    String elementType = ((ComponentDescription)value).sfResolve(ATR_ANT_ELEMENT,attribute,false);
-                    Object newElement = createElement(task,methods, elementType);
-                    if (newElement !=null) {
-                       getElement(newElement, (String)attribute,(ComponentDescription)value);
-                    }
-                } else {
-                    // add attribute
-                    setAttribute(task, methods, attribute, value);
+    /**
+     * load properties from a [[name,value]] list and set them in an ant project
+     * @param attribute attribute to bind to
+     * @return a property list, which may have zero elements
+     * @throws SmartFrogResolutionException
+     * @throws RemoteException
+     */
+    private void setUserProperties(String attribute,Project project) throws SmartFrogResolutionException, RemoteException {
+        Vector propList=owner.sfResolve(Ant.ATTR_PROPERTIES,(Vector)null,false);
+        if(propList!=null) {
+            Iterator propertyListIt=propList.iterator();
+            while (propertyListIt.hasNext()) {
+                Vector entry = (Vector) propertyListIt.next();
+                if(entry.size()!=2) {
+                    throw new SmartFrogResolutionException("Property entry of the wrong size"+entry);
                 }
+                String name=entry.get(0).toString();
+                String value = entry.get(1).toString();
+                project.setUserProperty(name,value);
             }
-            return task;
         }
+    }
 
-        private void setAttribute(Object task,Method[] methods, String attribute, Object value) throws
+    public Project getProject() {
+        return project;
+    }
+
+    /**
+     * try and turn the value passed in to a log level
+     * @param current current log level (==default)
+     * @param value string value to check
+     * @param sought string to look for
+     * @param mapping the new level to return
+     * @return mapping iff sought==value; else current.
+     */
+    private static int extractLogLevel(int current,String value,String sought,int mapping) {
+        return sought.equals(value)?mapping:current;
+    }
+
+    public Object getElement(String name, ComponentDescription cd) throws Exception {
+        String attribute = null;
+        String elementType = ((ComponentDescription) cd).sfResolve(Ant.ATTR_ANT_ELEMENT, attribute, false);
+        Object newElement = createElement(null, null, elementType);
+        if (newElement != null) {
+            ((DataType) newElement).setProject(project);
+            return getElement(newElement, (String) attribute, (ComponentDescription) cd);
+        }
+        return newElement;
+    }
+
+
+    Object getElement(Object task, String name, ComponentDescription cd) throws SmartFrogResolutionException,
+            IllegalAccessException, InvocationTargetException, ClassNotFoundException, InstantiationException,
+            NoSuchMethodException {
+        //System.out.println("  * "+name+" - Processing new element for "+ task.getClass().getName());
+        java.lang.reflect.Method[] methods = task.getClass().getMethods();
+        String attribute = null;
+        Object value = null;
+        Iterator a = cd.sfAttributes();
+        for (Iterator v = cd.sfValues(); v.hasNext();) {
+            attribute = (String) a.next();
+            value = v.next();
+            if (value instanceof org.smartfrog.sfcore.componentdescription.ComponentDescription) {
+                //Create an inner element
+                String elementType = ((ComponentDescription) value).sfResolve(Ant.ATTR_ANT_ELEMENT, attribute, false);
+                Object newElement = createElement(task, methods, elementType);
+                if (newElement != null) {
+                    getElement(newElement, (String) attribute, (ComponentDescription) value);
+                }
+            } else {
+                // add attribute
+                setAttribute(task, methods, attribute, value);
+            }
+        }
+        return task;
+    }
+
+    private void setAttribute(Object task, Method[] methods, String attribute, Object value) throws
             InstantiationException, InvocationTargetException,
             IllegalAccessException, IllegalArgumentException, SecurityException,
             NoSuchMethodException, ClassNotFoundException {
-            if ((attribute.equals(this.ATR_ANT_ELEMENT))||(attribute.equals(this.ATR_TASK_NAME))) return;
-            Method method = null;
-            for (int m = 0; m<methods.length;) {
-                method = methods[m++];
-                ////System.out.println("                methodAttribute "+method.getName());
-                if (method.getName().equalsIgnoreCase("set"+attribute)||
-                    (attribute.equalsIgnoreCase("text")&& method.getName().equals("addText"))) {
-
-                    Class[] ptypes = method.getParameterTypes();
-                    if (ptypes.length!=1) {
-                        throw  new IllegalArgumentException("no such attribute to be added: "+attribute);
-                    }
-
-                    if ((value instanceof String) && (!(((attribute.equalsIgnoreCase("text")&& method.getName().equals("addText")))))){
-                       // Conversion for ${xxx} is not done in setText or addText
-                       String oldValue = (String)value;
-                       value = project.replaceProperties((String)value);
-                       //System.out.println("       -replaced properties in: '"+ oldValue + "' to '"+value+"'");
-                    }
-                    // May need for type conversion
-                    if (!ptypes[0].equals(value.getClass())) {
-                        value = convType((String)value, ptypes[0]);
-                    }
-                    ////System.out.println("    +  "+method.getName()+" - TO beAdded attribute "+attribute+" for "+task.getClass().getName()+", value "+value +", "+value.getClass().getName());
-                    method.invoke(task, new Object[] {value});
-                    //System.out.println("    +  "+method.getName()+"    - Added attribute "+attribute+" for "+task.getClass().getName()+", value "+value);
-                    return;
-                }
-            }
-            throw  new IllegalArgumentException("no such attribute: "+attribute);
+        if ((attribute.equals(Ant.ATTR_ANT_ELEMENT)) || (attribute.equals(Ant.ATTR_TASK_NAME))) {
+            //skip our declaration elements
+            return;
         }
+        Method method = null;
+        for (int m = 0; m < methods.length;) {
+            method = methods[m++];
+            final boolean isAddTextMethod = "addText".equals(method.getName());
+            final String attrLower = attribute.toLowerCase(Locale.ENGLISH);
+            final boolean isTextAttribute = "text".equals(attrLower);
 
-        private Object createElement(Object task, java.lang.reflect.Method[] methods, String elementType) throws
+            if (method.getName().toLowerCase(Locale.ENGLISH).equals("set" + attrLower) ||
+                    (isTextAttribute && isAddTextMethod)) {
+
+                Class[] ptypes = method.getParameterTypes();
+                if (ptypes.length != 1) {
+                    throw new IllegalArgumentException("no such attribute to be added: " + attribute);
+                }
+
+                if ((value instanceof String) && (!(((isTextAttribute && isAddTextMethod))))) {
+                    // Conversion for ${xxx} is not done in setText or addText
+                    String oldValue = (String) value;
+                    value = project.replaceProperties((String) value);
+                }
+                // May need for type conversion
+                if (!ptypes[0].equals(value.getClass())) {
+                    value = convType((String) value, ptypes[0]);
+                }
+                ////System.out.println("    +  "+method.getName()+" - TO beAdded attribute "+attribute+" for "+task.getClass().getName()+", value "+value +", "+value.getClass().getName());
+                method.invoke(task, new Object[]{value});
+                //System.out.println("    +  "+method.getName()+"    - Added attribute "+attribute+" for "+task.getClass().getName()+", value "+value);
+                return;
+            }
+        }
+        throw new IllegalArgumentException("no such attribute: " + attribute);
+    }
+
+    /**
+     * Create an element
+     *
+     * @param task
+     * @param methods
+     * @param elementType
+     * @return
+     * @throws InstantiationException
+     * @throws InvocationTargetException
+     * @throws IllegalArgumentException
+     * @throws IllegalAccessException
+     * @throws ClassNotFoundException
+     * @todo: internationalise the equalsIgnoreCase calls
+     */
+    private Object createElement(Object task, java.lang.reflect.Method[] methods, String elementType) throws
             InstantiationException, InvocationTargetException,
             IllegalArgumentException, IllegalAccessException, ClassNotFoundException {
-            Method method = null;
-            String mName = null;
-            if (methods!=null) {
-                //System.out.println(" # "+elementType+" - Creating element "+ elementType+" for "+task.getClass().getName());
-                for (int e = 0; e<methods.length; ) {
-                    method = methods[e++];
-                    mName = method.getName();
-                    ////System.out.println("            Method - "+mName);
-                    if (mName.equalsIgnoreCase("create"+elementType)) {
-                        //System.out.println("   #-Created element with: "+mName+ "of  element type "+elementType+" to "+task.getClass().getName());
-                        return method.invoke(task, new Object[] {});
-                    } else if (mName.equalsIgnoreCase("add"+elementType)|| mName.equalsIgnoreCase("addConfigured"+elementType)) {
-                        Class[] ptypes = method.getParameterTypes();
-                        if (ptypes.length==1) {
-                            Object[] args = new Object[] {ptypes[0].newInstance()};
-                            //System.out.println("   #-Adding element with: "+  mName+"of  element type "+ elementType+" to "+ task.getClass().getName());
-                            method.invoke(task, args);
-                            return args[0];
-                        }
+        Method method = null;
+        String mName = null;
+        if (methods != null) {
+            //System.out.println(" # "+elementType+" - Creating element "+ elementType+" for "+task.getClass().getName());
+            for (int e = 0; e < methods.length;) {
+                method = methods[e++];
+                mName = method.getName();
+                ////System.out.println("            Method - "+mName);
+                if (mName.equalsIgnoreCase("create" + elementType)) {
+                    //System.out.println("   #-Created element with: "+mName+ "of  element type "+elementType+" to "+task.getClass().getName());
+                    return method.invoke(task, new Object[]{});
+                } else if (mName.equalsIgnoreCase("add" + elementType) || mName
+                        .equalsIgnoreCase("addConfigured" + elementType)) {
+                    Class[] ptypes = method.getParameterTypes();
+                    if (ptypes.length == 1) {
+                        Object[] args = new Object[]{ptypes[0].newInstance()};
+                        //System.out.println("   #-Adding element with: "+  mName+"of  element type "+ elementType+" to "+ task.getClass().getName());
+                        method.invoke(task, args);
+                        return args[0];
                     }
                 }
             }
-            // If a method to create element is not found, then try finding the element class and create a new instance
-            //@TODO: project.createDataType(); or  project.getDataTypeDefinitions();
-            try {
-
-                //if (types.containsKey(elementType)) {
-                if (project.getDataTypeDefinitions().containsKey(elementType)){
-                    //Try to find the real class for Types that are defined in ant/types/default.properties
-                    //System.out.println("   #-Creating element for: "+elementType+" using "+project.getDataTypeDefinitions().get(elementType));
-                    //Object obj = Class.forName(types.getProperty(elementType)).newInstance();
-                    Object obj = ((Class)project.getDataTypeDefinitions().get(elementType)).newInstance();
-                    //@todo: improve error messages
-                    return obj;
-                } else {
-                    //Try to load the class directly
-                    //System.out.println("   #- Creating element for: "+elementType+" using "+elementType);
-                    Object obj = Class.forName(elementType).newInstance();
-                    return obj;
-                    //@todo: improve error messages
-                }
-            } catch (Exception ex1) {
-                ex1.printStackTrace();
-                String taskName = "noTask";
-                if (task!=null) taskName = task.getClass().getName();
-                IllegalArgumentException ex = new IllegalArgumentException("No such inner element: "+elementType +" in "+ taskName);
-                ex.initCause(ex1);
-                throw ex;
-            }
         }
+        // If a method to create element is not found, then try finding the element class and create a new instance
+        //@TODO: project.createDataType(); or  project.getDataTypeDefinitions();
+        try {
 
+            //if (types.containsKey(elementType)) {
+            if (project.getDataTypeDefinitions().containsKey(elementType)) {
+                //Try to find the real class for Types that are defined in ant/types/default.properties
+                //System.out.println("   #-Creating element for: "+elementType+" using "+project.getDataTypeDefinitions().get(elementType));
+                //Object obj = Class.forName(types.getProperty(elementType)).newInstance();
+                Object obj = ((Class) project.getDataTypeDefinitions().get(elementType)).newInstance();
+                //@todo: improve error messages
+                return obj;
+            } else {
+                //Try to load the class directly
+                //System.out.println("   #- Creating element for: "+elementType+" using "+elementType);
+                Object obj = Class.forName(elementType).newInstance();
+                return obj;
+                //@todo: improve error messages
+            }
+        } catch (Exception ex1) {
+            log.error("cound ot create a datatype ",ex1);
+            String taskName = "noTask";
+            if (task != null) taskName = task.getClass().getName();
+            IllegalArgumentException ex = new IllegalArgumentException(
+                    "No such inner element: " + elementType + " in " + taskName);
+            ex.initCause(ex1);
+            throw ex;
+        }
+    }
 
 /*
    Rules:
@@ -279,61 +354,63 @@ public class AntProject {
 */
 
 
-    Object convType (String arg, Class type) throws NoSuchMethodException, SecurityException,IllegalArgumentException, IllegalAccessException, InvocationTargetException,InstantiationException, ClassNotFoundException{
-         //System.out.println("          = ContType: "+ arg +", "+type);
-      if (type.isPrimitive()){
-        if (type.toString().equals("boolean")){
-          String ucArg = arg.toUpperCase();
-          return ((ucArg.equals("TRUE") || ucArg.equals("ON") ||
-              ucArg.equals("YES")) ? Boolean.TRUE : Boolean.FALSE);
-        } else if (type.toString().equals("int")){
-          return Integer.valueOf(arg);
-        } else if (type.toString().equals("short")){
-          return Short.valueOf(arg);
-        } else if (type.toString().equals("byte")){
-          return Byte.valueOf(arg);
-        } else if (type.toString().equals("long")){
-           return Long.valueOf(arg);
-        } else if (type.toString().equals("float")){
-          return Float.valueOf(arg);
-        } else if (type.toString().equals("double")){
-          return Double.valueOf(arg);
+    Object convType(String arg, Class type) throws NoSuchMethodException, SecurityException, IllegalArgumentException,
+            IllegalAccessException, InvocationTargetException, InstantiationException, ClassNotFoundException {
+        //System.out.println("          = ContType: "+ arg +", "+type);
+        if (type.isPrimitive()) {
+            final String typename = type.toString();
+            if (typename.equals("boolean")) {
+                String ucArg = arg.toUpperCase(Locale.ENGLISH);
+                return ((ucArg.equals("TRUE") || ucArg.equals("ON") ||
+                        ucArg.equals("YES")) ? Boolean.TRUE : Boolean.FALSE);
+            } else if (typename.equals("int")) {
+                return Integer.valueOf(arg);
+            } else if (typename.equals("short")) {
+                return Short.valueOf(arg);
+            } else if (typename.equals("byte")) {
+                return Byte.valueOf(arg);
+            } else if (typename.equals("long")) {
+                return Long.valueOf(arg);
+            } else if (typename.equals("float")) {
+                return Float.valueOf(arg);
+            } else if (typename.equals("double")) {
+                return Double.valueOf(arg);
+            } else {
+                throw new IllegalArgumentException("unknown type: " + type);
+            }
+        } else if (EnumeratedAttribute.class.isAssignableFrom(type)) {
+            Object newType = type.newInstance();
+            ((EnumeratedAttribute) newType).setValue(arg);
+            //System.out.println("Conv:Created EnumeratedAttribute:"+newType.toString());
+            return newType;
+        } else if (java.lang.String.class.equals(type)) {
+            return arg;
+        } else if (java.lang.Character.class.equals(type)) {
+            return (new Character(arg.charAt(0)));
+            // Class doesn't have a String constructor but a decent factory method
+        } else if (java.lang.Class.class.equals(type)) {
+            return Class.forName(arg);
+            // resolve relative paths through Project
+        } else if (java.io.File.class.equals(type)) {
+            return project.resolveFile(arg);
         } else {
-          throw new IllegalArgumentException("unknown type: " + type);
-        }
-      } else if (EnumeratedAttribute.class.isAssignableFrom(type)) {
-        Object newType = type.newInstance();
-        ((EnumeratedAttribute)newType).setValue(arg);
-        //System.out.println("Conv:Created EnumeratedAttribute:"+newType.toString());
-        return newType;
-      } else if (java.lang.String.class.equals(type)){
-          return (String)arg;
-      } else if (java.lang.Character.class.equals(type)){
-          return (new Character(arg.charAt(0)));
-          // Class doesn't have a String constructor but a decent factory method
-      } else if (java.lang.Class.class.equals(type)) {
-          return Class.forName(arg);
-          // resolve relative paths through Project
-      } else if (java.io.File.class.equals(type)) {
-           return project.resolveFile(arg);
-      } else {
 
 // Original default constructor
 //        Constructor ctor = null;
 //        ctor = type.getConstructor(new Class[] {arg.getClass()});
 //        return ctor.newInstance(new Object[] {arg});
 
-          // Code derived from org.apache.tools.ant.IntrospectionHelper
-          boolean includeProject;
-          Constructor c;
-          try {
-             // First try with Project.
-             c = type.getConstructor(new Class[] {Project.class, String.class});
-             includeProject = true;
-           } catch (NoSuchMethodException nme) {
+            // Code derived from org.apache.tools.ant.IntrospectionHelper
+            boolean includeProject;
+            Constructor c;
+            try {
+                // First try with Project.
+                c = type.getConstructor(new Class[]{Project.class, String.class});
+                includeProject = true;
+            } catch (NoSuchMethodException nme) {
                 // OK, try without.
                 try {
-                    c = type.getConstructor(new Class[] {String.class});
+                    c = type.getConstructor(new Class[]{String.class});
                     includeProject = false;
                 } catch (NoSuchMethodException nme2) {
                     // Well, no matching constructor.
@@ -343,7 +420,7 @@ public class AntProject {
             final boolean finalIncludeProject = includeProject;
             final Constructor finalConstructor = c;
             try {
-                Object[] args = (finalIncludeProject) ? new Object[] {project, arg} : new Object[] {arg};
+                Object[] args = (finalIncludeProject) ? new Object[]{project, arg} : new Object[]{arg};
                 Object attribute = finalConstructor.newInstance(args);
                 if (project != null) {
                     project.setProjectReference(attribute);
@@ -352,46 +429,47 @@ public class AntProject {
             } catch (InstantiationException ie) {
                 throw ie;
             }
-      }
+        }
     }
 
 
     private void validateAnt() throws SmartFrogDeploymentException {
-        if (SFClassLoader.getResourceAsStream("/org/apache/tools/ant/Project.class")==null) {
-            throw new SmartFrogDeploymentException ("Cannot initialize Ant. WARNING: Perhaps ant.jar is not in CLASSPATH ...");
+        if (SFClassLoader.getResourceAsStream("/org/apache/tools/ant/Project.class") == null) {
+            throw new SmartFrogDeploymentException(
+                    "Cannot initialize Ant. WARNING: Perhaps ant.jar is not in CLASSPATH ...");
         }
     }
 
-    void setenv(String key, String value) {
-        project.setProperty("myenv."+key,value);
+    public void setenv(String key, String value) {
+        project.setProperty(Ant.ENV_PREFIX+"." + key, value);
     }
 
 
-    String getenv(String key) {
-        return project.getProperty("myenv."+key);
+    public String getenv(String key) {
+        return project.getProperty(Ant.ENV_PREFIX + "." + key);
     }
 
-    String getenv(String key, String def) {
-        String value = (String)project.getProperty("myenv."+key);
-        return (value==null?def:value);
+    public String getenv(String key, String def) {
+        String value = project.getProperty(Ant.ENV_PREFIX + "." + key);
+        return (value == null ? def : value);
     }
 
-    final String ATR_TASK_NAME = "AntTask";
 
-   //Create task
-   Task getTask(String tname, ComponentDescription cd) throws Exception {
-      String taskname = cd.sfResolve(ATR_TASK_NAME,tname,false);
-  //      String clazz = tasks.getProperty(taskname);
-      Class clazz =  ((Class)(project.getTaskDefinitions().get(taskname)));
-      //System.out.println("- Creating task: "+tname+" ,type: "+taskname+", clazz: "+clazz);
-      if (clazz == null){
-        throw new Exception("no such task: " + taskname);
-      }
-      //Task tobj = (Task)Class.forName(clazz).newInstance();
-      Task tobj = (Task)clazz.newInstance();
-      tobj.setProject(project);
-      tobj.setTaskName(tname);
-      getElement(tobj,tname ,cd);
-      return tobj;
+    //Create task
+    Task getTask(String tname, ComponentDescription cd) throws SmartFrogResolutionException, IllegalAccessException,
+            InstantiationException, NoSuchMethodException, InvocationTargetException, ClassNotFoundException {
+        String taskname = cd.sfResolve(Ant.ATTR_TASK_NAME, tname, false);
+        //      String clazz = tasks.getProperty(taskname);
+        Class clazz = ((Class) (project.getTaskDefinitions().get(taskname)));
+        //System.out.println("- Creating task: "+tname+" ,type: "+taskname+", clazz: "+clazz);
+        if (clazz == null) {
+            throw new SmartFrogResolutionException("no such task: " + taskname);
+        }
+        //Task tobj = (Task)Class.forName(clazz).newInstance();
+        Task tobj = (Task) clazz.newInstance();
+        tobj.setProject(project);
+        tobj.setTaskName(tname);
+        getElement(tobj, tname, cd);
+        return tobj;
     }
 }

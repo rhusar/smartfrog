@@ -20,27 +20,67 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.services.ant;
 
+import java.rmi.Remote;
+
 /**
  * Defines the attributes for counter component.
  */
-public interface Ant {
-//    /** String name for optional attribute "debug". Value {@value}. */
-//    final static String ATR_DEBUG = "debug";
-//    /** String name for optional attribute "sleep". Value {@value}. */
-//    final static String ATR_PAUSE = "pause";
-//    /** String name for optional attribute "counter". Value {@value}. */
-//    final static String ATR_COUNTER = "counter";
-//    /** String name for optional attribute "message". Value {@value}. */
-//    final static String ATR_MESSAGE = "message";
-//    /** String name for mandatory attribute "limit". Value {@value}.*/
-//    final static String ATR_LIMIT = "limit";
+public interface Ant extends Remote {
 
-//    /**
-//     * string name for optional attribute, sleep. Value {@value}.
-//     */
-//    final static String ATR_SLEEP = "sleep";
-//    /**
-//      * string name for optional attribute, terminate. Value {@value}.
-//     */
-//    final static String ATR_TERMINATE = "terminate";
+
+    /**
+     * Smartfrog attribute: {@value}
+     */
+    String ATTR_TASK_NAME = "AntTask";
+    /**
+     * Smartfrog attribute: {@value}
+     */
+    String ATTR_ANT_ELEMENT = "AntElement";
+
+    /**
+     * Smartfrog attribute: {@value}
+     */
+    String ATTR_LOG_LEVEL = "logLevel";
+
+    /**
+     * log level: {@value}
+     */
+    String ATTR_LOG_LEVEL_DEBUG="debug";
+    /**
+     * log level: {@value}
+     */
+    String ATTR_LOG_LEVEL_VERBOSE = "verbose";
+    /**
+     * log level: {@value}
+     */
+    String ATTR_LOG_LEVEL_INFO = "info";
+    /**
+     * log level: {@value}
+     */
+    String ATTR_LOG_LEVEL_ERROR = "error";
+    /**
+     * log level: {@value}
+     */
+    String ATTR_LOG_LEVEL_WARN = "warn";
+
+    /**
+     * Smartfrog attribute: {@value}
+     */
+    String ATTR_PROPERTIES = "properties";
+
+    /**
+     * Smartfrog attribute: {@value}
+     */
+    String ATTR_BASEDIR = "basedir";
+
+    String ATTR_TASKS_RESOURCE = "tasksResource";
+
+    String ATTR_TYPES_RESOURCE = "typesResource";
+
+    /**
+     * Prefix for env variables {@value}
+     */
+    String ENV_PREFIX = "env";
+
+    String ATTR_RUNTIME = "runtime";
 }
