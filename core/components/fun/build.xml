@@ -26,7 +26,8 @@
   <description>
     Build file for the fun project.
   </description>
-
+  <!--we are a component -->
+  <property name="is.component" value="true"/>
   <!-- override point -->
   <property file="build.properties"/>
 
