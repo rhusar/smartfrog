@@ -58,7 +58,7 @@ TestWar extends Compound {
     
     webapp extends WebApplication {
         contextPath "/testwar";
-        warFile LAZY TestWarFile;
+        filename LAZY TestWarFile;
         server LAZY PARENT:server;
     }
 
@@ -93,10 +93,6 @@ TestWarBoundToMySql extends TestWar {
     dbhost "localhost";
     dbdatabase "test";
     props:dbport 80;
-/*
-    props:dbuser "mysql";
-    props:dbpassword "[empty]";
-*/
     props:dbuser "root";
     props:dbpassword "password";
 
