@@ -73,7 +73,7 @@ DeployServerOnJetty extends Compound {
     
     webapp extends WebApplication {
         contextPath "/";
-        warFile LAZY TestWar;
+        filename LAZY TestWar;
         server LAZY jettyServer;
     }
 
