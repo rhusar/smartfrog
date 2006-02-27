@@ -26,6 +26,8 @@
   <description>
      Build file for the JUnit tests.
   </description>
+  <!--we are a component -->
+  <property name="is.component" value="true"/>
 
   <!-- override point -->
   <property file="build.properties"/>
