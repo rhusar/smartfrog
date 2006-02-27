@@ -86,7 +86,7 @@ public class FileUsingCompoundImpl extends CompoundImpl implements
 
     /**
      * creates the file object instance, to the absolute path,
-     * then sets the attribute {@value FileIntf#varAbsolutePath}
+     * then sets the attribute {@value FileIntf#ATTR_ABSOLUTE_PATH}
      * to the absolute path, and {@value FileUsingComponent#ATTR_URI}
      * to the URI. From here on, {@link #getFile()} is valid.
      * @param absolutePath

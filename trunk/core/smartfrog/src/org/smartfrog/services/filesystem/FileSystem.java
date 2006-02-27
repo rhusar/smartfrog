@@ -41,6 +41,7 @@ import java.io.BufferedReader;
 import java.io.FileOutputStream;
 
 /**
+ * Filesystem operations
  */
 
 public class FileSystem {
@@ -70,7 +71,7 @@ public class FileSystem {
             try {
                 stream.close();
             } catch (IOException e) {
-
+                //ignored
             }
         }
     }
@@ -85,7 +86,7 @@ public class FileSystem {
             try {
                 stream.close();
             } catch (IOException e) {
-
+                //ignored
             }
         }
     }
@@ -100,7 +101,7 @@ public class FileSystem {
             try {
                 channel.close();
             } catch (IOException e) {
-
+                //ignored
             }
         }
     }
@@ -115,7 +116,7 @@ public class FileSystem {
             try {
                 channel.close();
             } catch (IOException e) {
-
+                //ignored
             }
         }
     }
@@ -130,7 +131,7 @@ public class FileSystem {
             try {
                 channel.close();
             } catch (IOException e) {
-
+                //ignored
             }
         }
     }

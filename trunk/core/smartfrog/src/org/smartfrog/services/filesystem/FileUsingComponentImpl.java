@@ -71,18 +71,15 @@ public class FileUsingComponentImpl extends PrimImpl implements FileUsingCompone
 
 
     /**
-     * Bind the class to the filename; indicate in the operation whether to
-     * dema
+     * Bind the class to the filename; indicate in the operation whether
+     * the filename is mandatory or not
      * @param mandatory flag to indicate mandatoryness
      * @param defval a default value to use if not mandatory (can be null)
      * @throws RemoteException
      * @throws SmartFrogRuntimeException
      */
     protected void bind(boolean mandatory,String defval) throws RemoteException, SmartFrogRuntimeException {
-        String absolutePath=FileSystem.lookupAbsolutePath(this,ATTR_FILENAME, defval,null, mandatory,null);
-        if(absolutePath!=null) {
-            setAbsolutePath(absolutePath);
-        }
+        bind(this,mandatory,defval);
     }
 
     /**
@@ -113,6 +110,32 @@ public class FileUsingComponentImpl extends PrimImpl implements FileUsingCompone
             RemoteException {
         file=newfile;
         bind(this,newfile);
+    }
+
+
+    /**
+     * Bind the class to the filename; indicate in the operation whether the
+     * filename is mandatory or not
+     *
+     * @param mandatory flag to indicate mandatoryness
+     * @param defval    a default value to use if not mandatory (can be null)
+     * @return the absolutePath value
+     * @throws RemoteException
+     * @throws SmartFrogRuntimeException
+     */
+    public static String bind(Prim component,boolean mandatory, String defval)
+            throws RemoteException, SmartFrogRuntimeException {
+        String absolutePath = FileSystem.lookupAbsolutePath(component,
+                ATTR_FILENAME,
+                defval,
+                null,
+                mandatory,
+                null);
+        if (absolutePath != null) {
+            File newfile = new File(absolutePath);
+            bind(component, newfile);
+        }
+        return absolutePath;
     }
 
 
