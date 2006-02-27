@@ -466,7 +466,7 @@
     </javadoc>
   </target>
 
-  <target name="jjdocs" depends="init">
+  <target name="jjdocs" depends="initdist">
     <!--  Java doc for the grammars -->
     <java classname="jjdoc" failonerror="true">
       <arg line="-OUTPUT_FILE=${docs}/DefaultParser.html"/>
