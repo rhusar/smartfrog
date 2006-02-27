@@ -268,3 +268,41 @@ MavenJar extends JarArtifact  {
     library LAZY Maven2Library;
 }
 
+/**
+ * This is something steve is still thinking of how to represent
+ * A classpath takes a list of classes or libraries
+ */
+
+ClasspathSchema extends Schema {
+    //filled in during startup
+    classpath extends OptionalVector;
+    //filled in during startup
+    classpathString extends OptionalString;
+}
+
+
+SimpleClasspath extends Prim {
+
+}
+
+LibraryClasspathSchema extends ClasspathSchema {
+    repository extends Compulsory;
+    libraries extends Vector;
+}
+
+LibraryClasspath extends Classpath {
+    libraryClasspathSchema extends LibraryClasspath;
+     sfClass "org.smartfrog.services.os.java.LibraryClasspathImpl";
+
+}
+
+Maven2Classpath extends LibraryClasspath {
+    maven2ClasspathSchema extends Maven2ClasspathSchema;
+
+    repository extends Maven2Library;
+
+    //a list of libraries as component descriptions, each of which is
+    //deployed on startup
+    libraries [];
+
+}
