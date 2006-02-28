@@ -1,5 +1,7 @@
 build
 dist
+releases
+version.properties
 build.properties
 runtime.properties
 common.properties

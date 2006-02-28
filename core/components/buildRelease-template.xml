@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<project name="anubis" default="process" basedir=".">
+<project name="release" default="process" basedir=".">
   <!--
   /** (C) Copyright 1998-2006 Hewlett-Packard Development Company, LP
 
@@ -26,13 +26,178 @@
     Build file to generate a release of a component.
   </description>
 
-  <property file="build.properties"/>
-  <property name="root.dir" location="../../"/>
+
+  <!-- we are a compoent unless otherwise stated -->
+  <property name="is.component" value="true"/>
+
+  <!-- Import common stuff -->
+  <!--available file="../../common.xml" property="root.dir" value="../.."/-->
+  <import file="${root.dir}/common.xml"/>
 
 
-  <import file="${root.dir}/components/buildRelease-template.xml"/>
+  <!-- =================================================================== -->
+  <!-- Initialization target                                               -->
+  <!-- =================================================================== -->
+  <target name="init">
+    <tstamp/>
+    <property name="Name.Framework" value="SmartFrog"/>
+    <property name="Name.System" value="${ant.project.name}"/>
+    <property name="Name.Company" value="(C) Copyright 1998-2006 Hewlett-Packard Development Company, LP"/>
+    <!--property name="version" value="1.00.000_beta"/-->
+    <property name="year" value="2004"/>
+
+    <echo>
+      ===================================================================
+      ${Name.Framework} - ${Name.System} - ${Name.Company}
+      ===================================================================
+    </echo>
+  </target>
+
+  <!-- =================================================================== -->
+  <!-- Help on usage                                                       -->
+  <!-- =================================================================== -->
+  <target name="help" depends="init" description="Process">
+    <echo>
+      -------------------------------------------------------------
+      ${Name.Framework} ${Name.System} Release file
+      -------------------------------------------------------------
+      * General:
+      help ==> this message
+      process ==> step by step release guide
+      release ==> generates zip file for release packages
+
+      help ==> this help
+      See the comments inside the build.xml file for more details.
+      -------------------------------------------------------------
+    </echo>
+  </target>
+
+  <!-- =================================================================== -->
+  <!-- Help on usage                                                       -->
+  <!-- =================================================================== -->
+  <target name="process" depends="init" description="step by step release guide">
+    <echo>
+      -------------------------------------------------------------
+      Step by step guide to making a release
+      -------------------------------------------------------------
+
+      1. ant release
+      2. buildRelease.xml release
+      3. Check content of zip and dist files:
+      Ex. SRC distribution: 'build.xml dist'
+      'dist\build.xml build'
+      'dist\build.xml jdocs'
+      Ex. BIN distribution: 'dist\build.xml build'
+      'dist\build.xml jdocs'
+
+      4. Upload files to web site
+      -------------------------------------------------------------
+    </echo>
+  </target>
+
+  <!-- =================================================================== -->
+  <!-- Initialization path (Libs needed for compiling)                     -->
+  <!-- =================================================================== -->
+  <path id="smartfrog.class.path">
+    <pathelement path="${classpath}"/>
+  </path>
+
+  <!-- =================================================================== -->
+  <!-- Global properties                                                   -->
+  <!-- =================================================================== -->
+  <!-- Release Directories -->
+  <property name="bin" value="bin"/>
+  <!-- where the source is -->
+  <property name="src" value="src"/>
+  <!-- where the source is -->
+  <property name="dist" value="dist"/>
+  <!-- where the files to zip go -->
+  <property name="releases" value="releases"/>
+  <!-- where the dated zips go, don't clean -->
+  <property name="lib" value="lib"/>
+  <property name="dist.lib.dir" location="${dist}/${lib}"/>
+  <property name="docs" value="docs"/>
+  <property name="examples" value="examples"/>
+  <property name="examplesSrc" value="src"/>
+
+  <property name="examplesFiles" value="org/smartfrog/examples/**/*"/>
+  <!-- a list of files for rmic -->
+  <property name="rmitargets" value="${basedir}/rmitargets"/>
+
+  <!-- =================================================================== -->
+  <!-- FixCRLF for different platforms                                     -->
+  <!-- =================================================================== -->
+  <target name="fixCRLF">
+    <!-- OS dependant -->
+    <fixcrlf srcdir="${dist}/${bin}"
+        includes="**/**"
+        excludes="**/*.bat, **/default*"
+        />
+    <!-- OS dependant -->
+    <fixcrlf srcdir="${dist}/${bin}"
+        tab="remove"
+        tablength="4"
+        includes="**/default*"
+        />
+    <!-- Windows/Dos format -->
+    <fixcrlf srcdir="${dist}/${bin}"
+        eol="crlf"
+        includes="**/*.bat"
+        />
+    <!-- OS dependant -->
+    <fixcrlf srcdir="${dist}"
+        includes="**/*.txt"
+        />
+  </target>
+
+  <!-- =================================================================== -->
+  <!-- Initialization path (Libs needed for compiling)                     -->
+  <!-- =================================================================== -->
+  <path id="smartfrog.class.path">
+    <pathelement path="${classpath}"/>
+  </path>
+
+  <target name="version-classpath">
+    <path id="version.class.path">
+      <pathelement path="${classpath}"/>
+      <fileset dir="${dist.lib.dir}">
+        <include name="**/*.jar"/>
+      </fileset>
+    </path>
+
+  </target>
+
+  <!-- =================================================================== -->
+  <!-- initrelease                                                             -->
+  <!-- =================================================================== -->
+  <target name="initrelease" depends="common.init,version-classpath">
+    <mkdir dir="releases"/>
+    <java classname="org.Version"
+        failonerror="true" fork="true"
+        outputproperty="version">
+      <arg value="-b"/>
+      <classpath>
+        <path refid="version.class.path"/>
+        <fileset refid="smartfrog.lib.fileset"/>
+      </classpath>
+    </java>
+  </target>
+
+  <!-- =================================================================== -->
+  <!-- release                                                             -->
+  <!-- =================================================================== -->
 
 
+  <target name="ready-to-package" depends="init, initrelease, fixCRLF"/>
+
+
+  <target name="release" depends="make-release-package"
+      description="Creates zip with release packages"/>
+
+
+  <!-- =================================================================== -->
+  <!-- this is what people have to override, the code to build up the packages -->
+  <!-- =================================================================== -->
   <!-- =================================================================== -->
   <!-- release                                                             -->
   <!-- =================================================================== -->
@@ -187,6 +352,7 @@
         <delete file="../${Name.System}.${version}.${DSTAMP}_JDOCS.tar"/>
     -->
   </target>
+
 </project>
 
     <!-- End of file -->
