@@ -28,6 +28,7 @@ import org.smartfrog.sfcore.compound.Compound;
 import org.smartfrog.sfcore.compound.CompoundImpl;
 import org.smartfrog.sfcore.utils.ComponentHelper;
 import org.smartfrog.sfcore.common.*;
+import org.smartfrog.sfcore.prim.TerminationRecord;
 
 
 public class CopyFileImpl extends CompoundImpl implements CopyFile, Compound {
@@ -35,7 +36,7 @@ public class CopyFileImpl extends CompoundImpl implements CopyFile, Compound {
 
     private File fromFile=null;
     private File toFile=null;
-    
+
     public CopyFileImpl() throws RemoteException {
     }
 
@@ -96,7 +97,7 @@ public class CopyFileImpl extends CompoundImpl implements CopyFile, Compound {
      */
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
-        new ComponentHelper(this).sfSelfDetachAndOrTerminate("normal","Copy ",sfCompleteNameSafe(),null);
+        new ComponentHelper(this).sfSelfDetachAndOrTerminate(TerminationRecord.NORMAL, "Copy",sfCompleteNameSafe(),null);
     }
 
 }

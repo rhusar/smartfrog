@@ -1,4 +1,4 @@
-/** (C) Copyright 2004-2005 Hewlett-Packard Development Company, LP
+/** (C) Copyright 2004-2006 Hewlett-Packard Development Company, LP
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
@@ -22,6 +22,7 @@ For more information: www.smartfrog.org
 #include "/org/smartfrog/predicates.sf"
 #include "/org/smartfrog/services/os/runshell/components.sf"
 #include "/org/smartfrog/services/filesystem/components.sf"
+#include "/org/smartfrog/services/os/java/propertyfile.sf"
 
 JavaPackage extends Prim {
 
