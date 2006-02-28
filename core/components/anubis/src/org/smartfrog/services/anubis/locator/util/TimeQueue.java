@@ -24,7 +24,6 @@ import java.util.Comparator;
 
 public class TimeQueue extends SortedSetMap {
 
-    private SetMap queue = null;
 
     /**
      * Construct the super class using the given comparator. The keys of the
@@ -34,10 +33,11 @@ public class TimeQueue extends SortedSetMap {
     public TimeQueue() {
         super( new Comparator() {
                        public int compare(Object obj1, Object obj2) {
-                           return ((Long)obj1).compareTo(obj2);
+                           Comparable c=(Comparable) obj1;
+                           return c.compareTo(obj2);
                        }
                        public boolean equals(Object obj1, Object obj2) {
-                           return ((Long)obj1).equals(obj2);
+                           return obj1.equals(obj2);
                        }
                } );
     }
