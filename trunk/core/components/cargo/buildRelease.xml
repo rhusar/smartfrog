@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<project name="jetty" default="process" basedir=".">
+<project name="cargo" default="process" basedir=".">
   <!--
   /** (C) Copyright 1998-2006 Hewlett-Packard Development Company, LP
 

@@ -28,13 +28,13 @@
     <p><link href="emailer/emailer.html">Emailer Version=3.08.005 SFCore-Min-version=SmartFrog 3.08.005 </link></p>	
 	<p><link href="fun/fun.html">fun Version=3.08.005 SFCore-Min-version=SmartFrog 3.08.005 </link></p>	 
 	<!--<p><link href="jetty/jetty.html">Jetty Version=jetty-ver SFCore-Min-version=jetty-minver </link></p>-->
-    <p><link href="net/net.html">Net Version=net-ver SFCore-Min-version=net-minver </link></p>
-    <p><link href="scripting/scripting.html">Scripting Version=scripting-ver SFCore-Min-version=scripting-minver </link></p>    
+    <p><link href="net/net.html">Net Version=3.08.steve-private SFCore-Min-version=SmartFrog 3.08.steve-private </link></p>
+    <p><link href="scripting/scripting.html">Scripting Version=3.08.steve-private SFCore-Min-version=SmartFrog 3.08.steve-private </link></p>    
     <p><link href="loggingservices/loggingservices.html">SFLoggingServices Version=loggingservices-ver SFCore-Min-version=loggingservices-minver </link></p>    
-    <p><link href="slp/slp.html">Slp Version=slp-ver SFCore-Min-version=slp-minver </link></p>    
-    <p><link href="ssh/ssh.html">SSH Version=ssh-ver SFCore-Min-version=ssh-minver </link></p>
+    <p><link href="slp/slp.html">Slp Version=3.08.steve-private SFCore-Min-version=SmartFrog 3.08.steve-private </link></p>    
+    <p><link href="ssh/ssh.html">SSH Version=3.08.steve-private SFCore-Min-version=SmartFrog 3.08.steve-private </link></p>
     <!--<p><link href="tomcat/tomcat.html">Tomcat Version=tomcat-ver SFCore-Min-version=tomcat-minver </link></p>	     -->
-    <p><link href="utils/utils.html">Utils Version=utils-ver SFCore-Min-version=utils-minver </link></p>
+    <p><link href="utils/utils.html">Utils Version=3.08.steve-private SFCore-Min-version=SmartFrog 3.08.steve-private </link></p>
     <!--<p><link href="www/www.html">www Version=www-ver SFCore-Min-version=www-minver </link></p>	     -->
   </body> 
  
