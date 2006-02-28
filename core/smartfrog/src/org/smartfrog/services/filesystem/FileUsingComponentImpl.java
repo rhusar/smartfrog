@@ -49,7 +49,11 @@ public class FileUsingComponentImpl extends PrimImpl implements FileUsingCompone
      * @return path of the file
      */
     public String getAbsolutePath()  {
-        return file.getAbsolutePath();
+        if(file==null) {
+            return null;
+        } else {
+            return file.getAbsolutePath();
+        }
     }
 
     /**
@@ -58,7 +62,11 @@ public class FileUsingComponentImpl extends PrimImpl implements FileUsingCompone
      * @return URI of the file
      */
     public URI getURI()  {
-        return file.toURI();
+        if (file == null) {
+            return null;
+        } else {
+            return file.toURI();
+        }
     }
 
     /**
