@@ -27,6 +27,8 @@ For more information: www.smartfrog.org
 #include "org/smartfrog/services/filesystem/mkdir.sf"
 #include "org/smartfrog/services/filesystem/touchfile.sf"
 #include "org/smartfrog/services/filesystem/copyfile.sf"
+#include "org/smartfrog/services/filesystem/deploybycopy.sf"
+
 
 
 

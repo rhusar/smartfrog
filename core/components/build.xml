@@ -616,7 +616,7 @@ For more information: www.smartfrog.org
     <updateversion project="${anubis.project}" compname="anubis" />
     <updateversion project="${anubisdeployer.project}" compname="anubisdeployer"/>
     <updateversion project="${emailer.project}" compname="emailer"/>
-    <updateversion project="${fun.project}" compname="fun"/>
+<!--    <updateversion project="${fun.project}" compname="fun"/>-->
     <!--<updateversion project="${jetty.project}" compname="jetty" />-->
     <!--updateversion project="${logger.project}" compname="logger" /-->
     <updateversion project="${net.project}" compname="net"/>
