@@ -295,7 +295,32 @@ For more information: www.smartfrog.org
     <forward2 dir="${components.project}" target="release"  /> 
   </target>
 
-<!-- =================================================================== -->
+  <!-- =================================================================== -->
+  <!-- Luntbuild target for distribution -->
+  <!-- =================================================================== -->
+  <target name="luntbuild-clean" depends="clean,luntbuild-incremental"/>
+
+
+  <!-- =================================================================== -->
+  <!-- incremental build                                    -->
+  <!-- =================================================================== -->
+  <target name="luntbuild-incremental"
+      depends="dist,tasks,components"/>
+
+  <!-- =================================================================== -->
+  <!-- luntbuild test suite                                           -->
+  <!-- =================================================================== -->
+  <target name="luntbuild-test"
+      depends="test-main,test-testharness,test-ant"/>
+
+  <!-- =================================================================== -->
+  <!-- luntbuild release process-->
+  <!-- =================================================================== -->
+  <target name="luntbuild-release"
+      depends="clean,release" />
+
+
+  <!-- =================================================================== -->
 <!-- Gump target for distribution -->
 <!-- =================================================================== -->
   <target name="gump-dist" depends="dist" />
