@@ -252,7 +252,7 @@ For more information: www.smartfrog.org
 
   <target name="xml" depends="init"
           description="xml support">
-    <delegate target="m2-install" buildpathref="web.path"/>
+    <delegate target="m2-install" buildpathref="xml.path"/>
   </target>
 
   <target name="cddlm" depends="web,m2-install,xml"
