@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.io.File;
 import java.rmi.RemoteException;
 
 /**
@@ -39,24 +40,25 @@ public class TextFileImpl extends SelfDeletingFileImpl implements TextFile {
     }
 
 
+
     /**
      * when we deploy, we write out our text stream
      * @throws SmartFrogException
      * @throws RemoteException
      */
-    public synchronized void sfDeploy() throws SmartFrogException,
+    public synchronized void sfStart() throws SmartFrogException,
             RemoteException {
-        //our parent binds to the file
-        super.sfDeploy();
         //now write the string value if needed.
         String text = sfResolve(ATTR_TEXT, (String) null, false);
         String encoding = null;
         if (text != null) {
             encoding = sfResolve(ATTR_TEXT_ENCODING, (String)null, true);
             Writer wout=null;
+            File file = getFile();
+            assert file!=null;
             try {
                 OutputStream fout;
-                fout = new FileOutputStream(getFile());
+                fout = new FileOutputStream(file);
                 wout = new OutputStreamWriter(fout, encoding);
                 wout.write(text);
                 wout.flush();
@@ -70,7 +72,7 @@ public class TextFileImpl extends SelfDeletingFileImpl implements TextFile {
                     }
                 }
                 throw SmartFrogException.forward("When trying to write to " +
-                        getFile(),
+                        file,
                         ioe);
             }
         }

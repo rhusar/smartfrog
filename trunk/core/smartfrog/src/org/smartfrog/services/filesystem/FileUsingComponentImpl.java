@@ -21,8 +21,10 @@ package org.smartfrog.services.filesystem;
 
 import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
+import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimImpl;
+import org.smartfrog.sfcore.logging.Log;
 
 import java.io.File;
 import java.net.URI;
@@ -39,6 +41,8 @@ public class FileUsingComponentImpl extends PrimImpl implements FileUsingCompone
      * the file we are bonded to
      */
     protected File file;
+
+    private Log log=sfLog();
 
     public FileUsingComponentImpl() throws RemoteException {
     }
@@ -87,7 +91,11 @@ public class FileUsingComponentImpl extends PrimImpl implements FileUsingCompone
      * @throws SmartFrogRuntimeException
      */
     protected void bind(boolean mandatory,String defval) throws RemoteException, SmartFrogRuntimeException {
-        bind(this,mandatory,defval);
+        String filename = bind(this, mandatory, defval);
+        if(filename!=null) {
+            file=new File(filename);
+        }
+
     }
 
     /**
@@ -139,9 +147,13 @@ public class FileUsingComponentImpl extends PrimImpl implements FileUsingCompone
                 null,
                 mandatory,
                 null);
-        if (absolutePath != null) {
+        if (absolutePath != null && absolutePath.length()>0) {
             File newfile = new File(absolutePath);
             bind(component, newfile);
+        } else {
+            if(mandatory) {
+                throw new SmartFrogDeploymentException("No filename supplied");
+            }
         }
         return absolutePath;
     }
