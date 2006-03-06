@@ -22,14 +22,15 @@ For more information: www.smartfrog.org
 
 /**
  * A text file represents a file that is given the predefined text
- * on deployment. It is retained after the end of deployment. To create
- * transient files, link it to a temporary file
+ * on deployment.
+ *
+ * To delete the file afterwards, set the deleteOnExit attribute to true
  */
 
 TextFileSchema extends DeletableFileSchema {
     //text to write out
     text extends String;
-    //encoding of the optional text. Only needed when text is set
+    //encoding of the optional text. 
     encoding extends String;
 }
 
