@@ -86,7 +86,7 @@
     </zip>
 
 
-    <tar tarfile="releases/${Name.System}.${version}.${DSTAMP}_DIST.tar">
+    <tar tarfile="releases/${Name.System}.${version}.${DSTAMP}_DIST.tar" longfile="gnu">
       <tarfileset dir="." prefix="${Name.System}.${version}">
         <include name="${dist}/bin/**/*.sf"/>
         <include name="${dist}/bin/**/*.bat"/>
@@ -115,7 +115,7 @@
         zipfile="releases/${Name.System}.${version}.${DSTAMP}_DIST.tar.gz"/>
     <delete file="releases/${Name.System}.${version}.${DSTAMP}_DIST.tar"/>
 
-    <tar tarfile="releases/${Name.System}.${version}.${DSTAMP}_ALL.tar">
+    <tar tarfile="releases/${Name.System}.${version}.${DSTAMP}_ALL.tar" longfile="gnu">
       <tarfileset dir="." prefix="${Name.System}.${version}">
 
         <include name="bin/**/*.sf"/>
