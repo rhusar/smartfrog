@@ -98,7 +98,7 @@ For more information: www.smartfrog.org
     <property name="slp.project" location="slp" />
     <property name="ssh.project" location="ssh" />
     <property name="tomcat.project" location="tomcat" />
-    <property name="utils.project" location="utils" />
+<!--    <property name="utils.project" location="utils" />-->
     <property name="xml.project" location="xml" />
     <property name="www.project" location="www" />
 
