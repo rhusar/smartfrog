@@ -29,7 +29,7 @@
 
   <!-- override point -->
   <property file="build.properties"/>
-
+  <property name="is.component" value="true"/>
 
   <property name="root.dir" location="../.."/>
   <!-- Import common stuff -->

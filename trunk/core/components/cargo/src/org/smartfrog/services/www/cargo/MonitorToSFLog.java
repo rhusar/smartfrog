@@ -23,7 +23,7 @@ import org.codehaus.cargo.util.monitor.Monitor;
 import org.smartfrog.sfcore.logging.Log;
 
 /**
- * Monitor messages from the container
+ * Monitor messages from the container to the SmartFrog log
  */
 class MonitorToSFLog implements Monitor {
 
