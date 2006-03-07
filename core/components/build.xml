@@ -98,7 +98,6 @@ For more information: www.smartfrog.org
     <property name="slp.project" location="slp" />
     <property name="ssh.project" location="ssh" />
     <property name="tomcat.project" location="tomcat" />
-<!--    <property name="utils.project" location="utils" />-->
     <property name="xml.project" location="xml" />
     <property name="www.project" location="www" />
 
@@ -144,7 +143,6 @@ For more information: www.smartfrog.org
       <pathelement location="${anubis.project}"/>
       <pathelement location="${anubisdeployer.project}"/>
       <pathelement location="${fun.project}"/>
-      <pathelement location="${utils.project}"/>
       <!--pathelement location="${logger.project}"/-->
       <pathelement location="${ssh.project}"/>
       <pathelement location="${junit.project}"/>
@@ -317,7 +315,6 @@ For more information: www.smartfrog.org
        <pathelement path="${slp.project}/${src}"/>
        <pathelement path="${ssh.project}/${src}"/>
        <pathelement path="${tomcat.project}/${src}"/>
-       <pathelement path="${utils.project}/${src}"/>
        <pathelement path="${www.project}/${src}"/>
       </sourcepath>
       <group title="SmartFrog Component Packages" packages="org.smartfrog.*"/>
@@ -367,7 +364,6 @@ For more information: www.smartfrog.org
     <copybuild project="${slp.project}"  />
     <copybuild project="${ssh.project}" />
     <copybuild project="${tomcat.project}" />
-    <copybuild project="${utils.project}" />
     <copybuild project="${www.project}" />
 
   </target>
@@ -401,7 +397,6 @@ For more information: www.smartfrog.org
     <copybins project="${slp.project}"  />
     <copybins project="${ssh.project}" />
     <copybins project="${tomcat.project}" />
-    <copybins project="${utils.project}" />
     <copybins project="${www.project}" />
 
   </target>
@@ -435,7 +430,6 @@ For more information: www.smartfrog.org
     <copylibs project="${slp.project}"  />
     <copylibs project="${ssh.project}" />
     <copylibs project="${tomcat.project}" />
-    <copylibs project="${utils.project}" />
     <copylibs project="${www.project}" />
 
   </target>
@@ -472,7 +466,6 @@ For more information: www.smartfrog.org
     <copycomponents project="${slp.project}"  />
     <copycomponents project="${ssh.project}" />
     <copycomponents project="${tomcat.project}" />
-    <copycomponents project="${utils.project}" />
     <copycomponents project="${www.project}" />
   </target>
 
@@ -505,7 +498,6 @@ For more information: www.smartfrog.org
     <copydocs project="${slp.project}" />
     <copydocs project="${ssh.project}" />
     <copydocs project="${tomcat.project}" />
-    <copydocs project="${utils.project}" />
     <copydocs project="${www.project}" />
   </target>
 
@@ -528,7 +520,6 @@ For more information: www.smartfrog.org
       <zipfileset dir="${slp.project}/dist/${src}" />
       <zipfileset dir="${ssh.project}/dist/${src}" />
       <zipfileset dir="${tomcat.project}/dist/${src}" />
-      <zipfileset dir="${utils.project}/dist/${src}" />
       <zipfileset dir="${www.project}/dist/${src}" />
     </zip>
   </target>
@@ -625,7 +616,6 @@ For more information: www.smartfrog.org
     <updateversion project="${slp.project}" compname="slp"/>
     <updateversion project="${ssh.project}" compname="ssh"/>
     <!--<updateversion project="${tomcat.project}" compname="tomcat"/>-->
-    <updateversion project="${utils.project}" compname="utils"/>
     <!--<updateversion project="${www.project}" compname="www"/>-->
   </target>
 
