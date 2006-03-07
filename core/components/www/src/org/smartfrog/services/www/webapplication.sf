@@ -78,7 +78,7 @@ ApplicationServerContext extends Compound {
 
 
 /**
- * a jetty web application has a context path
+ * a web application has a context path
  * and a a path to its home directory
  */
 WebApplicationSchema extends Schema {

@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <project name="common" basedir="."
-  xmlns:artifact="antlib:org.apache.maven.artifact.ant">
-  
+  >
+
 <description>
   This is not a standalone build file; nor is it an XML fragment for 
   inclusion into other build files. It is a self contained build file
@@ -147,17 +147,6 @@
   </target>
 
 
-  <!-- ========================================================== -->
-  <!-- common init loads in various settings, 
-       declaring paths and properties, and preset/macro tasks
-       but not the smartfrog custom tasks -->
-  <!-- ========================================================== -->
-<!--   <target name="settarget" if="is.component.not.enabled">
-    <property name="target.jar" 
-      location="${dist.lib.dir}/${jarfile.name}"/> 
-  </target> 
-  
- -->
  <target name="init-common" depends="init-common-simpledefinitions">
     
     <fileset id="smartfrog.core.fileset"
@@ -1272,40 +1261,43 @@
       location="${m2.repository}/${m2.groupID.path}/${artifact.name}/${Version}" />
  -->
     <!-- pom setup -->
-    <property name="target.pom" location="${dist.lib.dir}/${jarfile.stub}.pom" />
-    <property name="project.pom" location="project-template.pom" />
-    <available property="project.haspom" file="${project.pom}" />
-    <property name="m2.tasks.uri" value= "antlib:org.apache.maven.artifact.ant" />
-    <available property="m2.tasks.available"
-      resource="org/apache/maven/artifact/ant/antlib.xml" />
-      <!-- location of the bit of the repository we keep under SCM -->
-    <property name="m2.smartfrog.scm.repository"
-      location="${smartfrog.components.dir}/lib" />
-    <sf-tourl file="${m2.smartfrog.scm.repository}"
-        property="m2.smartfrog.scm.repository.url" />
-    <property name="m2.smartfrog.scm.new.repository"
-      location="${core.dir}/antbuild/repository" />
+     <property name="target.pom"
+         location="${dist.lib.dir}/${jarfile.stub}.pom"/>
+     <property name="project.pom" location="project-template.pom"/>
+     <available property="project.haspom" file="${project.pom}"/>
+     <property name="m2.tasks.uri"
+         value="antlib:org.apache.maven.artifact.ant"/>
+     <available property="m2.tasks.available"
+         resource="org/apache/maven/artifact/ant/antlib.xml"/>
+     <!-- location of the bit of the repository we keep under SCM -->
+     <property name="m2.smartfrog.scm.repository"
+         location="${smartfrog.components.dir}/lib"/>
+     <sf-tourl file="${m2.smartfrog.scm.repository}"
+         property="m2.smartfrog.scm.repository.url"/>
+     <property name="m2.smartfrog.scm.new.repository"
+         location="${core.dir}/antbuild/repository"/>
      <makeurl file="${m2.smartfrog.scm.new.repository}"
-              property="m2.smartfrog.scm.new.repository.url"/>
+         property="m2.smartfrog.scm.new.repository.url"/>
 
      <property name="m2.ibiblio.repository"
-               value="http://ibiblio.org/maven2"/>
+         value="http://ibiblio.org/maven2"/>
 
-  <property name="m1.local.repository"
-             location="${user.home}/.maven/repository"/>
+     <property name="m1.local.repository"
+         location="${user.home}/.maven/repository"/>
      <!--if there is no m1 repository, create it-->
-    <mkdir dir="${m1.local.repository}" />
-    <sf-tourl file="${m1.local.repository}"
-             property="m1.local.repository.url"/>
+     <mkdir dir="${m1.local.repository}"/>
+     <sf-tourl file="${m1.local.repository}"
+         property="m1.local.repository.url"/>
    </target>
-   
-   
-   <target name="m2-tasks" depends="m2-init">
+
+
+  <target name="m2-tasks" depends="m2-init"
+       xmlns:m2="antlib:org.apache.maven.artifact.ant">
      <fail unless="m2.tasks.available">
      you need the maven2 tasks from http://maven.apache.org/maven2/ant-tasks.html
      </fail>
     <presetdef name="m2-libraries">
-      <artifact:dependencies>
+      <m2:dependencies>
         <localRepository location="${m2.repository}" />
         <!-- look in SCM first -->
         <remoteRepository url="${m2.smartfrog.scm.repository.url}" />
@@ -1319,9 +1311,15 @@
         <remoteRepository url="${m1.local.repository.url}"
                           layout="legacy"/>
 
-      </artifact:dependencies>
+      </m2:dependencies>
     </presetdef>
 
+
+     <presetdef name="m2-publish-local">
+       <m2:install file="${target.jar}">
+         <pom refid="m2.pom"/>
+       </m2:install>
+     </presetdef>
    </target>
    
    <!-- look for local then remote definitions of library versions -->

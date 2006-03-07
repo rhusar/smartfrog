@@ -7,7 +7,8 @@ CargoServerExtension extends JBoss4CargoServer {
  logging "high";
 
  //set up a symlink for this if you need it
- home "/home/jboss/jboss-4.0";
+ //needs deployment in a JVM with jboss.dir set to the jboss directory
+ home PROPERTY jboss.dir;
 }
 
 sfConfig extends CargoServerExtension {
