@@ -232,7 +232,6 @@ public class SFJetty extends CompoundImpl implements Compound, JettyIntf {
      * @throws java.rmi.RemoteException on network trouble
      * @throws org.smartfrog.sfcore.common.SmartFrogException
      *                                  on any other problem
-     * @todo implement
      */
     public JavaWebApplication deployWebApplication(Prim webApplication)
             throws RemoteException, SmartFrogException {

@@ -348,7 +348,7 @@ public class JettyHelper extends ComponentHelper {
     /**
      * Get the ipaddrs of the local machine
      *
-     * @return
+     * @return the IP address that we are deployed on
      */
     public String getIpAddress() throws RemoteException {
         InetAddress deployedHost = getOwner().sfDeployedHost();
