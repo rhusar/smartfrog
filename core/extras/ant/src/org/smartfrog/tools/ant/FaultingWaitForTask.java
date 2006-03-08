@@ -22,7 +22,24 @@ package org.smartfrog.tools.ant;
 import org.apache.tools.ant.Task;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.taskdefs.WaitFor;
+import org.apache.tools.ant.taskdefs.Available;
+import org.apache.tools.ant.taskdefs.Checksum;
+import org.apache.tools.ant.taskdefs.UpToDate;
 import org.apache.tools.ant.taskdefs.condition.Condition;
+import org.apache.tools.ant.taskdefs.condition.Not;
+import org.apache.tools.ant.taskdefs.condition.And;
+import org.apache.tools.ant.taskdefs.condition.Or;
+import org.apache.tools.ant.taskdefs.condition.Equals;
+import org.apache.tools.ant.taskdefs.condition.Os;
+import org.apache.tools.ant.taskdefs.condition.IsSet;
+import org.apache.tools.ant.taskdefs.condition.Http;
+import org.apache.tools.ant.taskdefs.condition.Socket;
+import org.apache.tools.ant.taskdefs.condition.FilesMatch;
+import org.apache.tools.ant.taskdefs.condition.Contains;
+import org.apache.tools.ant.taskdefs.condition.IsTrue;
+import org.apache.tools.ant.taskdefs.condition.IsFalse;
+import org.apache.tools.ant.taskdefs.condition.IsReference;
+import org.apache.tools.ant.taskdefs.condition.TypeFound;
 
 /**
  * A sort of extension/delegate of WaitFor with two features
@@ -119,6 +136,191 @@ public class FaultingWaitForTask extends Task {
         if(getProject().getProperty(property)!=null) {
             throw new BuildException(message);
         }
+    }
+
+    /**
+     * Add an &lt;available&gt; condition.
+     *
+     * @param a an available condition
+     *
+     * @since 1.1
+     */
+    public void addAvailable(Available a) {
+        waitFor.add(a);
+    }
+
+    /**
+     * Add an &lt;checksum&gt; condition.
+     *
+     * @param c a Checksum condition
+     *
+     * @since 1.4, Ant 1.5
+     */
+    public void addChecksum(Checksum c) {
+        waitFor.add(c);
+    }
+
+    /**
+     * Add an &lt;uptodate&gt; condition.
+     *
+     * @param u an UpToDate condition
+     *
+     * @since 1.1
+     */
+    public void addUptodate(UpToDate u) {
+        waitFor.add(u);
+    }
+
+    /**
+     * Add an &lt;not&gt; condition "container".
+     *
+     * @param n a Not condition
+     *
+     * @since 1.1
+     */
+    public void addNot(Not n) {
+        waitFor.add(n);
+    }
+
+    /**
+     * Add an &lt;and&gt; condition "container".
+     *
+     * @param a an And condition
+     *
+     * @since 1.1
+     */
+    public void addAnd(And a) {
+        waitFor.add(a);
+    }
+
+    /**
+     * Add an &lt;or&gt; condition "container".
+     *
+     * @param o an Or condition
+     *
+     * @since 1.1
+     */
+    public void addOr(Or o) {
+        waitFor.add(o);
+    }
+
+    /**
+     * Add an &lt;equals&gt; condition.
+     *
+     * @param e an Equals condition
+     *
+     * @since 1.1
+     */
+    public void addEquals(Equals e) {
+        waitFor.add(e);
+    }
+
+    /**
+     * Add an &lt;os&gt; condition.
+     *
+     * @param o an Os condition
+     *
+     * @since 1.1
+     */
+    public void addOs(Os o) {
+        waitFor.add(o);
+    }
+
+    /**
+     * Add an &lt;isset&gt; condition.
+     *
+     * @param i an IsSet condition
+     *
+     * @since Ant 1.5
+     */
+    public void addIsSet(IsSet i) {
+        waitFor.add(i);
+    }
+
+    /**
+     * Add an &lt;http&gt; condition.
+     *
+     * @param h an Http condition
+     *
+     * @since Ant 1.5
+     */
+    public void addHttp(Http h) {
+        waitFor.add(h);
+    }
+
+    /**
+     * Add a &lt;socket&gt; condition.
+     *
+     * @param s a Socket condition
+     *
+     * @since Ant 1.5
+     */
+    public void addSocket(Socket s) {
+        waitFor.add(s);
+    }
+
+    /**
+     * Add a &lt;filesmatch&gt; condition.
+     *
+     * @param test a FilesMatch condition
+     *
+     * @since Ant 1.5
+     */
+    public void addFilesMatch(FilesMatch test) {
+        waitFor.add(test);
+    }
+
+    /**
+     * Add a &lt;contains&gt; condition.
+     *
+     * @param test a Contains condition
+     *
+     * @since Ant 1.5
+     */
+    public void addContains(Contains test) {
+        waitFor.add(test);
+    }
+
+    /**
+     * Add a &lt;istrue&gt; condition.
+     *
+     * @param test an IsTrue condition
+     *
+     * @since Ant 1.5
+     */
+    public void addIsTrue(IsTrue test) {
+        waitFor.add(test);
+    }
+
+    /**
+     * Add a &lt;isfalse&gt; condition.
+     *
+     * @param test an IsFalse condition
+     *
+     * @since Ant 1.5
+     */
+    public void addIsFalse(IsFalse test) {
+        waitFor.add(test);
+    }
+
+    /**
+     * Add an &lt;isreference&gt; condition.
+     *
+     * @param i an IsReference condition
+     *
+     * @since Ant 1.6
+     */
+    public void addIsReference(IsReference i) {
+        waitFor.add(i);
+    }
+
+    /**
+     * Add an &lt;typefound&gt; condition.
+     *
+     * @param test a TypeFound condition
+     */
+    public void addTypeFound(TypeFound test) {
+        waitFor.add(test);
     }
 
 }
