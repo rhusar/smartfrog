@@ -12,7 +12,7 @@
     <!-- this imports the XML file -->
   <taskdef 
     uri="http://smartfrog.org/"
-    resource="org/smartfrog/tools/ant/tasks.xml"
+    resource="org/smartfrog/tools/ant/antlib.xml"
     xmlns:sf="http://smartfrog.org/"
     />
     

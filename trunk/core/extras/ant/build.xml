@@ -31,14 +31,10 @@
       location="${smartfrog.tasks.dist.dir}/${smartfrog.tasks.prefix}.tar" />
     <property name="dist.zip" 
       location="${smartfrog.tasks.dist.dir}/${smartfrog.tasks.prefix}.zip" />
-    <condition property="system.tests.enabled">
-      <istrue value="${system.tests}"/>
-    </condition>    
     <property name="system.tests" value="true" />
+    <echo level="verbose">system.tests=${system.tests}</echo>
     <condition property="system.tests.enabled">
-      <not>
       <istrue value="${system.tests}"/>
-      </not>
     </condition>   
     
     <echo>system.tests.enabled=${system.tests.enabled}</echo>

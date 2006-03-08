@@ -1,0 +1,140 @@
+<?xml version="1.0"?>
+<project name="functionaltest" default="teardown">
+
+  <description>
+    Tests for the parse.
+
+    command line invocation
+    ant -lib ..\..\build\dist\lib\smartfrog-tasks.jar -lib ..\..\..\..\smartfrog\dist\lib\smartfrog.jar -lib -f faultingwaitfor.xml testTimeout
+
+    ant -lib ../../build/dist/lib/ -lib ../../../../smartfrog/dist/lib/ -f functionaltest.xml testSuccess
+
+    ant -lib ../../build/dist/lib/smartfrog-tasks.jar -lib
+    ../../../../smartfrog/dist/lib/smartfrog.jar -lib
+    ../../../../smartfrog/dist/lib/sfExamples.jar -f deploy.xml testResource
+  </description>
+  <import file="test-common.xml"/>
+
+  <target name="testSuccess">
+    <sf-functionaltest >
+      <setup>
+        <echo>setup</echo>
+      </setup>
+      <application>
+        <echo>application</echo>
+      </application>
+      <teardown>
+        <echo>teardown</echo>
+      </teardown>
+    </sf-functionaltest>
+  </target>
+
+  <target name="testTimeout">
+    <sf-functionaltest testTimeout="150">
+      <setup>
+        <echo>setup</echo>
+      </setup>
+      <application>
+        <echo>application</echo>
+      </application>
+      <probe maxwait="1">
+        <equals arg1="a" arg2="b"/>
+      </probe>      
+      <teardown>
+        <echo>teardown</echo>
+      </teardown>
+    </sf-functionaltest>
+  </target>
+
+<!--   <target name="testParallelTimeout">
+    <sf-functionaltest>
+      <setup>
+        <echo>setup</echo>
+      </setup>
+      <application>
+        <echo>application</echo>
+      </application>
+      <probe >
+        <equals arg1="a" arg2="b"/>
+      </probe>      
+      <teardown>
+        <echo>teardown</echo>
+      </teardown>
+    </sf-functionaltest>
+  </target>  -->
+  
+  <target name="testFunctional">
+    <sf-functionaltest testTimeout="10">
+      <setup>
+        <echo>setup</echo>
+      </setup>
+      <application>
+        <echo>application</echo>
+        <sleep seconds="2" />
+        <property name="app.property" value="true" />
+      </application>
+      <probe>
+        <isset property="app.property" />
+      </probe>      
+      <teardown>
+        <echo>teardown</echo>
+      </teardown>
+    </sf-functionaltest>
+  </target>
+  
+    <target name="testJunit">
+    <sf-functionaltest testTimeout="10">
+      <setup>
+        <echo>setup</echo>
+      </setup>
+      <application>
+        <echo>application</echo>
+        <sleep seconds="2" />
+        <property name="app.property" value="true" />
+      </application>
+      <probe>
+        <isset property="app.property" />
+      </probe>
+      <junit />
+      <teardown>
+        <echo>teardown</echo>
+      </teardown>
+    </sf-functionaltest>
+  </target>
+
+  
+  <target name="testApplicationFailure">
+    <sf-functionaltest testTimeout="10">
+      <setup>
+        <echo>setup</echo>
+      </setup>
+      <application>
+        <echo>application</echo>
+        <fail>failure!</fail>
+      </application>
+      <junit />
+      <teardown>
+        <echo>teardown</echo>
+      </teardown>
+    </sf-functionaltest>
+  </target>
+
+  
+  <target name="testApplicationFailurePreemptsTeardown">
+    <sf-functionaltest testTimeout="10">
+      <setup>
+        <echo>setup</echo>
+      </setup>
+      <application>
+        <echo>application</echo>
+        <fail>failure!</fail>
+      </application>
+      <junit />
+      <teardown>
+        <echo>teardown</echo>
+        <fail>TEARDOWN!</fail>
+      </teardown>
+    </sf-functionaltest>
+  </target>
+  
+</project>
