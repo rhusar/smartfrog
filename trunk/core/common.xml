@@ -1086,7 +1086,7 @@
        security reasons, unless security is active-->
   <!-- ========================================================== -->
   <target name="system-tests" if="system.tests.enabled" 
-          depends="init,dist,package-tests"
+          depends="init,package,package-tests"
     description="run the system tests">
     <echo message="No system tests"/>
   </target>  
@@ -1095,7 +1095,8 @@
   <!-- this is an override point -->
   <!-- unit tests : anything which does not need deployment to run-->
   <!-- ========================================================== -->
-  <target name="unit-tests" depends="init,dist,package-tests" if="unit.tests.enabled"
+  <target name="unit-tests" depends="init,package,package-tests"
+      if="unit.tests.enabled"
     description="run the unit tests">
     <echo message="No unit tests"/>
   </target> 
@@ -1276,7 +1277,7 @@
          property="m2.smartfrog.scm.repository.url"/>
      <property name="m2.smartfrog.scm.new.repository"
          location="${core.dir}/antbuild/repository"/>
-     <makeurl file="${m2.smartfrog.scm.new.repository}"
+     <sf-tourl file="${m2.smartfrog.scm.new.repository}"
          property="m2.smartfrog.scm.new.repository.url"/>
 
      <property name="m2.ibiblio.repository"
