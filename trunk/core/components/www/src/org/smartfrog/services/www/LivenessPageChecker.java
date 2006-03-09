@@ -210,7 +210,7 @@ public class LivenessPageChecker implements LivenessPage {
      *
      * @throws SmartFrogDeploymentException
      */
-    public synchronized void onDeploy() throws SmartFrogDeploymentException {
+    public synchronized void onStart() throws SmartFrogDeploymentException {
         demandCreateURL();
 
     }
@@ -284,7 +284,6 @@ public class LivenessPageChecker implements LivenessPage {
             String text = maybeGetErrorText(connection);
             String message = "Failed to read " + targetURL.toString() + "\n"
                     + text + "\n" + exception.getMessage();
-            log.error(message);
             throw new SmartFrogLivenessException(message, exception);
         }
     }

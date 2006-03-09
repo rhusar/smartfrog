@@ -55,6 +55,9 @@ For more information: www.smartfrog.org
      //page
      page extends OptionalString;
      //query list of things that get turned into queries -without escaping.
+     //vectors inside are treated as name=value pairs
+     //e.g ["name,"users",["error",500]] maps to
+     //    name&users&error=500
      queries extends OptionalVector;
 
    //and any of
@@ -86,6 +89,12 @@ For more information: www.smartfrog.org
  LivenessPage extends Prim {
      livenessPageSchema extends LivenessPageSchema;
      sfClass "org.smartfrog.services.www.LivenessPageComponent";
+     fetchErrorText true;
+     maximumResponseCode 299;
+     minimumResponseCode 200;
+     followRedirects true;
+     checkFrequency 1;
+     enabled true;
  }
 
 

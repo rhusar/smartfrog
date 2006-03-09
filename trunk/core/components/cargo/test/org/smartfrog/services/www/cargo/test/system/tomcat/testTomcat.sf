@@ -5,7 +5,7 @@
 CargoServerExtension extends Tomcat5CargoServer {
  port 8080;
  logging "low";
- directory LAZY PROPERTY java.io.tmpdir;
+ home PROPERTY runtime.tomcat.home;
 }
 
 sfConfig extends CargoServerExtension {

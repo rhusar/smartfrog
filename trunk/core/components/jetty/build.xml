@@ -66,7 +66,7 @@ For more information: www.smartfrog.org
        value="${smartfrog.home}/private/sealManifest.mf"/>
     <tstamp/>
 
-    <property file="${runtime.properties}" prefix="runtime"/>
+
     <echo level="verbose">jetty home=${runtime.jetty.home}</echo>
 
   </target>
@@ -170,7 +170,7 @@ For more information: www.smartfrog.org
   <target name="system-tests" depends="common.system-tests"
       description="run system tests"
       if="system.tests.enabled">
-    <sf-functionaltest testTimeout="60" shutdownTime="10">
+    <sf-functionaltest testTimeout="600" shutdownTime="10">
       <application>
         <sf-startdaemon-debug failonerror="false" spawn="false"/>
       </application>

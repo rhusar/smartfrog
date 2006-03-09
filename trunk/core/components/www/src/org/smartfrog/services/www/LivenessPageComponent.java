@@ -32,12 +32,11 @@ import java.util.Vector;
 
 
 /**
- * Initial liveness component.
- * The initial implementation does a liveness check every sfPing, and only every
- * sfPing(); a revision would run the checks in a separate thread at its own
- * rate and then report errors. That revision could cache information about the
- * GET with remote access, too.
- * created 21-Apr-2004 13:46:23
+ * Initial liveness component. The initial implementation does a liveness check
+ * every sfPing, and only every sfPing(); a revision would run the checks in a
+ * separate thread at its own rate and then report errors. That revision could
+ * cache information about the GET with remote access, too. created 21-Apr-2004
+ * 13:46:23
  */
 public class LivenessPageComponent extends PrimImpl implements LivenessPage {
 
@@ -47,8 +46,8 @@ public class LivenessPageComponent extends PrimImpl implements LivenessPage {
     private boolean enabled = true;
 
     /**
-     * the class that contains all the checking code. This is on the side
-     * for reuse in other components.
+     * the class that contains all the checking code. This is on the side for
+     * reuse in other components.
      */
     private LivenessPageChecker livenessPage;
 
@@ -75,6 +74,7 @@ public class LivenessPageComponent extends PrimImpl implements LivenessPage {
     public LivenessPageComponent() throws RemoteException {
     }
 
+
     /**
      * Called after instantiation for deployment purposed. Heart monitor is
      * started and if there is a parent the deployed component is added to the
@@ -88,6 +88,19 @@ public class LivenessPageComponent extends PrimImpl implements LivenessPage {
     public synchronized void sfDeploy()
             throws SmartFrogException, RemoteException {
         super.sfDeploy();
+    }
+
+    /**
+     * Can be called to start components. Subclasses should override to provide
+     * functionality Do not block in this call, but spawn off any main loops!
+     *
+     * @throws org.smartfrog.sfcore.common.SmartFrogException
+     *                                  failure while starting
+     * @throws java.rmi.RemoteException In case of network/rmi error
+     */
+    public synchronized void sfStart()
+            throws SmartFrogException, RemoteException {
+        super.sfStart();
         livenessPage = new LivenessPageChecker(this);
 
         String url = sfResolve(ATTR_URL, (String) null, false);
@@ -95,19 +108,23 @@ public class LivenessPageComponent extends PrimImpl implements LivenessPage {
         if (url != null) {
             livenessPage.bindToURL(url);
         } else {
-            livenessPage.setHost(sfResolve(ATTR_HOST, livenessPage.getHost(), false));
-            livenessPage.setPort(sfResolve(ATTR_PORT, livenessPage.getPort(), false));
+            livenessPage.setHost(sfResolve(ATTR_HOST,
+                    livenessPage.getHost(),
+                    false));
+            livenessPage.setPort(sfResolve(ATTR_PORT,
+                    livenessPage.getPort(),
+                    false));
             livenessPage.setProtocol(sfResolve(ATTR_PROTOCOL,
                     livenessPage.getProtocol(), false));
-            livenessPage.setPage(sfResolve(ATTR_PAGE, livenessPage.getPage(), false));
-            Vector queries = (Vector) sfResolve(ATTR_QUERIES, (Vector) null, false);
+            livenessPage.setPage(sfResolve(ATTR_PAGE,
+                    livenessPage.getPage(),
+                    false));
+            Vector queries = sfResolve(ATTR_QUERIES, (Vector) null, false);
             livenessPage.buildQueryString(queries);
         }
 
-        Vector mimeTypes = (Vector) sfResolve(ATTR_MIME_TYPES, (Vector) null, false);
+        Vector mimeTypes = sfResolve(ATTR_MIME_TYPES, (Vector) null, false);
         livenessPage.setMimeTypes(mimeTypes);
-        livenessPage.setFollowRedirects(sfResolve(ATTR_PROTOCOL,
-                livenessPage.getFollowRedirects(), false));
         livenessPage.setMinimumResponseCode(sfResolve(ATTR_MINIMUM_RESPONSE_CODE,
                 livenessPage.getMinimumResponseCode(), false));
         livenessPage.setMaximumResponseCode(sfResolve(ATTR_MAXIMUM_RESPONSE_CODE,
@@ -121,7 +138,7 @@ public class LivenessPageComponent extends PrimImpl implements LivenessPage {
 
         updateEnabledState();
         //now tell the liveness page it is deployed
-        livenessPage.onDeploy();
+        livenessPage.onStart();
         if (url == null) {
             //set the URL if it was not already set
             URL targetURL = livenessPage.getTargetURL();
@@ -132,7 +149,9 @@ public class LivenessPageComponent extends PrimImpl implements LivenessPage {
         log.info("Checking " + toString());
     }
 
-    private void updateEnabledState() throws SmartFrogResolutionException, RemoteException {
+
+    private void updateEnabledState()
+            throws SmartFrogResolutionException, RemoteException {
         enabled = sfResolve(ATTR_ENABLED, enabled, false);
         livenessPage.setEnabled(enabled);
     }
@@ -142,10 +161,12 @@ public class LivenessPageComponent extends PrimImpl implements LivenessPage {
      * Liveness call in to check if this component is still alive.
      *
      * @param source source of call
+     *
      * @throws org.smartfrog.sfcore.common.SmartFrogLivenessException
      *          component is terminated
      */
-    public void sfPing(Object source) throws SmartFrogLivenessException, RemoteException {
+    public void sfPing(Object source)
+            throws SmartFrogLivenessException, RemoteException {
         super.sfPing(source);
         try {
             updateEnabledState();

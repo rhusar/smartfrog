@@ -92,6 +92,7 @@
 
   <target name="war-installed"
     depends="war"
+      description="install the war file to the m2 repository"
       xmlns:m2="antlib:org.apache.maven.artifact.ant">
     <property name="testwar.pom.file" location="${build.dir}/testwar.pom"/>
     <echo file="${testwar.pom.file}"><![CDATA[<project>
@@ -111,5 +112,9 @@
 
   <target name="dist" depends="common.dist,m2-install,war-installed"/>
 
+  <target name="all" depends="dist" description="everything"/>
+
+  <target name="default" depends="all"
+      description="delegate to 'all'"/>
 
 </project>
