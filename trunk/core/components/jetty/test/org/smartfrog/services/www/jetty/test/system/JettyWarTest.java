@@ -50,13 +50,19 @@ public class JettyWarTest extends SmartFrogTestBase {
     protected void deployApplication(String resource, String name) throws
             Throwable {
         setApplication(deployExpectingSuccess(resource, name));
+        Liveness liveness = getApplication();
+        for(int i=0;i<100;i++) {
+            liveness.sfPing(null);
+        }
     }
 
     public void testWarDeployed() throws Throwable {
-        deployApplication("/org/smartfrog/services/www/jetty/test/system/jetty-does-war.sf",
+        deployApplication(FILE_BASE+"jetty-does-war.sf",
                 "JettyDoesWar");
-        Liveness liveness=(Liveness)getApplication();
-        liveness.sfPing(this);
-        liveness.sfPing(this);
+    }
+
+    public void testNestedWar() throws Throwable {
+        deployApplication(FILE_BASE + "nested-war.sf",
+                "nested-war");
     }
 }

@@ -213,8 +213,10 @@ public class JettyTest
         assertNotNull(application);
         Prim server = (Prim)application.sfResolve("server");
         String jettyhome = server.sfResolve("jettyhome", (String)null, true);
-        String filename = jettyhome.concat(File.separator+"webapps"
-                + File.separator+"template"
+        String filename = jettyhome.concat(
+                File.separator + "demo"
+                +File.separator+"webapps"
+                + File.separator+"root"
                 + File.separator+"index.html");
         File file = new File(filename);
         File jettyfile = new File(jettyhome);

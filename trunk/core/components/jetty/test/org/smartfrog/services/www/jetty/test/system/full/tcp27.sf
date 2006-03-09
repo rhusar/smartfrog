@@ -27,7 +27,9 @@ jetty_home LAZY PROPERTY jetty.home;
 //hard coded hostname,
 hostname 127.0.0.1;
 
-resourcebase LAZY PROPERTY user.home;
+resourcebase LAZY PROPERTY java.io.tmpdir;
+
+
 
 sfConfig extends Compound {
    sfProcessHost ROOT:hostname;

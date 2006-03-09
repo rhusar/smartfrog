@@ -19,20 +19,28 @@
  */
 #include "/org/smartfrog/services/www/jetty/test/system/full/components.sf";
 
+
 sfConfig extends Compound {
-    server extends CoreJettyServer {
+
+  server extends CoreJettyServer {
       jettyhome ROOT:jetty_home; // mandatory
-      //serverHost "localhost"; //mandatory
-    }
+
+
+      listener extends JettyListener {
+            listenerPort 8017;
+            //serverHost "localhost";
+            server LAZY PARENT;
+      }
+   }
 
     root extends Root {
-      server LAZY PARENT:server;
+        server LAZY server1;
     }
 
-    list1 extends JettyListener {
-        listenerPort 8012;
-        //serverHost "localhost";
-        server LAZY PARENT:server;
+    ping extends LivenessPage {
+        host LAZY server:listener:ipaddr;
+        port server:port;
+        page LAZY root:absolutePath;
+        checkFrequency 1;
     }
 }
-

@@ -18,9 +18,7 @@
 
  */
 #include "/org/smartfrog/services/www/jetty/test/system/full/components.sf";
-
-
-
+#include "/org/smartfrog/functions.sf"
 
 /** 
  * jetty server with nothing inside
