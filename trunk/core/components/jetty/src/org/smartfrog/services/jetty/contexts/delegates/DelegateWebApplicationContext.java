@@ -59,8 +59,15 @@ public class DelegateWebApplicationContext extends DelegateApplicationContext
     public DelegateWebApplicationContext() {
     }
 
+    /**
+     * at deploy time, do everything except starting the component
+     * @param declaration
+     * @throws SmartFrogException
+     * @throws RemoteException
+     */
     public void deploy(Prim declaration)
             throws SmartFrogException, RemoteException {
+        super.deploy();
         webApp =
                 FileSystem.lookupAbsolutePath(declaration,
                         ATTR_FILE,
@@ -88,9 +95,6 @@ public class DelegateWebApplicationContext extends DelegateApplicationContext
         AbstractSessionManager sessionmanager = (AbstractSessionManager)
                 servlethandler.getSessionManager();
         sessionmanager.setUseRequestedId(requestId);
-        HttpServer server = getServer().getServer();
-        //if the server is null, it means that we havent started yet.
-        server.addContext(application);
         setContext(application);
     }
 
