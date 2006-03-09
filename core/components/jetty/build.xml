@@ -60,15 +60,12 @@ For more information: www.smartfrog.org
 
   <target name="init" depends="init-standard-output-dirs,use-smartfrog-tasks">
 
-    <property name="example.path" value="/org/smartfrog/services/jetty/examples"/>
-    <property name="deploy.sf" value="${example.path}/example1.sf"/>
     <property name="manifestName"
        value="${smartfrog.home}/private/sealManifest.mf"/>
     <tstamp/>
-    <property name="Name.Company" value="(C) Copyright 1998-2005 Hewlett-Packard Development Company, LP"/>
-    <property name="version" value="smartfrog components"/>
-    <property name="year" value="2005"/>
 
+    <property file="${runtime.properties}" prefix="runtime"/>
+    <echo level="verbose">jetty home=${runtime.jetty.home}</echo>
 
   </target>
 
@@ -174,4 +171,49 @@ For more information: www.smartfrog.org
   <!-- =================================================================== -->
   <target name="jdocs" depends="javadoc" description="Generates the API documentation"/>
 
+
+  <!-- =================================================================== -->
+  <!-- system tests -->
+  <!-- =================================================================== -->
+  <target name="system-tests" depends="common.system-tests"
+      description="run system tests"
+      if="system.tests.enabled">
+    <sf-functionaltest testTimeout="60" shutdownTime="10">
+      <application>
+        <sf-startdaemon-debug failonerror="false" spawn="false"/>
+      </application>
+      <probe>
+        <socket port="${smartfrog.daemon.port}" server="localhost"/>
+      </probe>
+      <test>
+        <sf-junit
+            errorProperty="test.failed"
+            failureProperty="test.failed"
+            includeantruntime="true"
+            filtertrace="${filter.trace}"
+            >
+          <classpath
+              refid="tests.run.classpath"/>
+          <sysproperty key="test.files.dir"
+              value="${test.src.dir}/files"/>
+          <syspropertyset>
+            <propertyref prefix="runtime"/>
+          </syspropertyset>
+          <batchtest todir="${test.data.dir}">
+            <fileset dir="${test.classes.dir}">
+              <include name="**/unit/*Test.class"/>
+              <include name="**/system/*Test.class" if="system.tests.enabled"/>
+              <exclude name="**/system/JettyTest.class" unless="runtime.jetty.home"/>
+            </fileset>
+          </batchtest>
+        </sf-junit>
+      </test>
+      <teardown>
+        <sf-stopdaemon failonerror="false"/>
+        <sf-test-report data="${test.data.dir}"
+            reports="${test.reports.dir}"
+            failed="test.failed"/>
+      </teardown>
+    </sf-functionaltest>
+  </target>
 </project>
