@@ -60,6 +60,8 @@ For more information: www.smartfrog.org
 
   <target name="init" depends="init-standard-output-dirs,use-smartfrog-tasks">
 
+    <property name="example.path" value="/org/smartfrog/services/jetty/examples"/>
+    <property name="deploy.sf" value="${example.path}/example1.sf"/>
     <property name="manifestName"
        value="${smartfrog.home}/private/sealManifest.mf"/>
     <tstamp/>
@@ -156,16 +158,6 @@ For more information: www.smartfrog.org
    <copy tofile="${dist.dir}/build.example.properties" file="build.example.properties"/>
   </target>
 
-<!-- ========================================================== -->
-  <!-- clean -->
-  <!-- ========================================================== -->
-
- <target name="clean" depends="common.clean" description="clean up build ,dist and releases" >
-    <delete dir="releases"  />  
-    <delete dir="test"  /> 
-    <delete file="version.properties"/>
- </target>  
-
   <!-- =================================================================== -->
   <!--   JDocs                                                             -->
   <!-- =================================================================== -->
@@ -187,8 +179,6 @@ For more information: www.smartfrog.org
       </probe>
       <test>
         <sf-junit
-            errorProperty="test.failed"
-            failureProperty="test.failed"
             includeantruntime="true"
             filtertrace="${filter.trace}"
             >
@@ -196,23 +186,26 @@ For more information: www.smartfrog.org
               refid="tests.run.classpath"/>
           <sysproperty key="test.files.dir"
               value="${test.src.dir}/files"/>
+          <sysproperty key="jetty.home"
+              value="${test.src.dir}/files/jetty.home"/>
           <syspropertyset>
             <propertyref prefix="runtime"/>
           </syspropertyset>
           <batchtest todir="${test.data.dir}">
             <fileset dir="${test.classes.dir}">
               <include name="**/unit/*Test.class"/>
-              <include name="**/system/*Test.class" if="system.tests.enabled"/>
-              <exclude name="**/system/full/*Test.class" unless="runtime.jetty.home"/>
+              <include name="**/system/**/*Test.class" />
+              <!--unless="runtime.jetty.home"-->
+              <exclude name="**/system/full/*Test.class" />
             </fileset>
           </batchtest>
         </sf-junit>
       </test>
       <teardown>
         <sf-stopdaemon failonerror="false"/>
-        <sf-test-report data="${test.data.dir}"
+        <sf-junitreport data="${test.data.dir}"
             reports="${test.reports.dir}"
-            failed="test.failed"/>
+            />
       </teardown>
     </sf-functionaltest>
   </target>

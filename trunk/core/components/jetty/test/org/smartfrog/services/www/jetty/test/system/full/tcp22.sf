@@ -30,10 +30,10 @@ sfConfig extends Compound {
   server1 extends CoreJettyServer {
       jettyhome ROOT:jetty_home; // mandatory
 
-      contexts extends JettySampleContexts {
-            server LAZY PARENT;
-      }
-
+    root extends RootWAR {
+      server LAZY PARENT:server;
+    }
+ 
       list1 extends JettyListener {
             listenerPort 8017;
             //serverHost "localhost";
