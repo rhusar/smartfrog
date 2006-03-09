@@ -95,24 +95,24 @@ JettyExampleWar extends WebApplication {
 
 RootWAR extends JettyExampleWar {
  contextPath "/";
- filename "/demo/webapps/root";
+ filename "demo/webapps/root";
 }
 
 JettyDemo extends JettyExampleWar {
  contextPath "/jetty";
- filename "/demo/webapps/jetty";
+ filename "demo/webapps/jetty";
 }
 
 JettyExamples extends JettyExampleWar {
  contextPath "/examples";
- filename "/demo/webapps/examples";
+ filename "demo/webapps/examples";
  requestId true; //optional
 }
 
 JettyServletContexts extends ServletContext {
  contextPath "/demo";
  resourceBase "/demo/docroot";
- classpath "/demo/servlets";
+ classpath "demo/servlets";
  handlers extends Handlers {
   context LAZY PARENT;
   }
@@ -124,12 +124,12 @@ JettyServletContexts extends ServletContext {
 
 JettyJavadoc extends ServletContext {
  contextPath "/javadoc";
- resourceBase "/javadoc";
+ resourceBase "javadoc";
 }
 
 JettyCGIBIN extends ServletContext {
  contextPath "/cgi-bin";
- resourceBase "/cgi-bin";
+ resourceBase "cgi-bin";
 
  servlets extends CGIservlet {
    //server LAZY PARENT:server;

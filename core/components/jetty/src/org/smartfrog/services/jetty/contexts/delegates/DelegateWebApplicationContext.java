@@ -89,6 +89,7 @@ public class DelegateWebApplicationContext extends DelegateApplicationContext
                 servlethandler.getSessionManager();
         sessionmanager.setUseRequestedId(requestId);
         HttpServer server = getServer().getServer();
+        //if the server is null, it means that we havent started yet.
         server.addContext(application);
         setContext(application);
     }

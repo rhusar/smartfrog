@@ -49,3 +49,9 @@ TempDirServer extends CoreJettyServer {
   }
 }
 
+
+Root extends RootWAR {
+ contextPath "/";
+ filename ((ROOT:jetty_home)++"/demo/webapps/root");
+}
+

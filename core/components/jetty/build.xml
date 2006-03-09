@@ -181,7 +181,8 @@ For more information: www.smartfrog.org
         <sf-junit
             includeantruntime="true"
             filtertrace="${filter.trace}"
-            haltonerror="true"
+            errorproperty="failure"
+            failureproperty="failure"
             >
           <classpath
               refid="tests.run.classpath"/>
@@ -199,6 +200,7 @@ For more information: www.smartfrog.org
             </fileset>
           </batchtest>
         </sf-junit>
+        <fail if="failure">Junit failed</fail>
       </test>
       <teardown>
         <sf-stopdaemon failonerror="false"/>

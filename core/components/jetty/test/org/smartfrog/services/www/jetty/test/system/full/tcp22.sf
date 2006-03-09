@@ -19,26 +19,36 @@
  */
 #include "/org/smartfrog/services/www/jetty/test/system/full/components.sf";
 
-
-
+/**
+ * Test that we can deploy stuff inside ourselves.
+ * This is a good check of race conditions
+ */
 sfConfig extends Compound {
    adminServer extends HttpServerAdmin {
          httpserverHost "localhost"; // mandatory
          listenerPort 8088; // mandatory
    }
 
-  server1 extends CoreJettyServer {
+  server extends CoreJettyServer {
       jettyhome ROOT:jetty_home; // mandatory
 
-    root extends RootWAR {
-      server LAZY PARENT:server;
-    }
- 
-      list1 extends JettyListener {
+
+      listener extends JettyListener {
             listenerPort 8017;
             //serverHost "localhost";
             server LAZY PARENT;
       }
+
+       root extends Root {
+         server LAZY PARENT;
+       }
    }
-   
+
+
+    ping extends LivenessPage {
+        host LAZY server:listener:ipaddr;
+        port server:port;
+        page LAZY root:absolutePath;
+        checkFrequency 1;
+    }
 }
