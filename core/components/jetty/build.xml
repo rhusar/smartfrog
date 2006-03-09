@@ -203,7 +203,7 @@ For more information: www.smartfrog.org
             <fileset dir="${test.classes.dir}">
               <include name="**/unit/*Test.class"/>
               <include name="**/system/*Test.class" if="system.tests.enabled"/>
-              <exclude name="**/system/JettyTest.class" unless="runtime.jetty.home"/>
+              <exclude name="**/system/full/*Test.class" unless="runtime.jetty.home"/>
             </fileset>
           </batchtest>
         </sf-junit>
