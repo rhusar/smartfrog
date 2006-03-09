@@ -181,13 +181,14 @@ For more information: www.smartfrog.org
         <sf-junit
             includeantruntime="true"
             filtertrace="${filter.trace}"
+            haltonerror="true"
             >
           <classpath
               refid="tests.run.classpath"/>
           <sysproperty key="test.files.dir"
               value="${test.src.dir}/files"/>
           <sysproperty key="jetty.home"
-              value="${test.src.dir}/files/jetty.home"/>
+              value="${test.src.dir}/files/jettyhome"/>
           <syspropertyset>
             <propertyref prefix="runtime"/>
           </syspropertyset>
@@ -195,8 +196,6 @@ For more information: www.smartfrog.org
             <fileset dir="${test.classes.dir}">
               <include name="**/unit/*Test.class"/>
               <include name="**/system/**/*Test.class" />
-              <!--unless="runtime.jetty.home"-->
-              <exclude name="**/system/full/*Test.class" />
             </fileset>
           </batchtest>
         </sf-junit>

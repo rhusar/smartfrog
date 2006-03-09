@@ -110,7 +110,7 @@ public class JettyTest
                                  "java.net.UnknownHostException: no-hostname");
     }
 
-    public void testCaseTCN54() throws Exception {
+    public void NotestCaseTCN54() throws Exception {
         deployExpectingException(FILES+"tcn54.sf",
                                  "tcn54",
                                  EXCEPTION_DEPLOYMENT,
