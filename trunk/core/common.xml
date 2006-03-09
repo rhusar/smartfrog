@@ -144,6 +144,10 @@
       <available classname="java.lang.Readable"/>
     </condition>
 
+    <property name="year" value="2006"/>
+    <property name="Name.Company"
+        value="(C) Copyright 1998-${year} Hewlett-Packard Development Company, LP"/>
+
   </target>
 
 
@@ -330,17 +334,25 @@
     </presetdef>
     
     <!-- reporting wrapper -->
+   <macrodef name="sf-junitreport">
+     <attribute name="data"/>
+     <attribute name="reports"/>
+     <sequential>
+       <junitreport todir="@{data}">
+         <fileset dir="@{data}">
+           <include name="TEST-*.xml"/>
+         </fileset>
+         <report format="frames" todir="@{reports}"/>
+       </junitreport>
+     </sequential>
+   </macrodef>
+
     <macrodef name="sf-test-report">
       <attribute name="data"/>
       <attribute name="reports"/>
       <attribute name="failed"/>
       <sequential>
-        <junitreport todir="@{data}">
-          <fileset dir="@{data}">
-            <include name="TEST-*.xml"/>
-          </fileset>
-          <report format="frames" todir="@{reports}"/>
-        </junitreport>
+        <sf-junitreport data="@{data}" reports="@{reports}" />
         <fail if="@{failed}">Unit tests failed see @{reports}</fail>
       </sequential>
     </macrodef>
@@ -1088,8 +1100,7 @@
   <target name="system-tests" if="system.tests.enabled" 
           depends="init,package,package-tests"
     description="run the system tests">
-    <echo message="No system tests"/>
-  </target>  
+  </target>
   
   <!-- ========================================================== -->
   <!-- this is an override point -->
@@ -1098,8 +1109,7 @@
   <target name="unit-tests" depends="init,package,package-tests"
       if="unit.tests.enabled"
     description="run the unit tests">
-    <echo message="No unit tests"/>
-  </target> 
+  </target>
   
   <!-- ========================================================== -->
   <!-- run tests, both unit and system  -->
