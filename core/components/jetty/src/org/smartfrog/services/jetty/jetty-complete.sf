@@ -61,7 +61,7 @@ JettyHttpServer extends CoreJettyServer {
  * add all the example contexts
  */
 FullJettyServer extends JettyHttpServer {
-   contexts extends JettySampleContexts {
+   contexts extends Compound {
     server LAZY PARENT;
    }
 }

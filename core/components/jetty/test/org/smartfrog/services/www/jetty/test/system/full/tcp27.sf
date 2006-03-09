@@ -38,12 +38,16 @@ sfConfig extends Compound {
    server extends HttpServer {
       jettyhome ROOT:jetty_home; // mandatory
       serverHost ROOT:hostname; //mandatory
-      contexts extends JettySampleContexts;
 
-      context extends JettyServletContext {
-         contextPath "/test";
-         resourceBase (ROOT:resourcebase);
-         server LAZY PARENT;
-     }
   }
+        root extends RootWAR {
+            server LAZY PARENT:server;
+          }
+
+        context extends JettyServletContext {
+           contextPath "/test";
+           resourceBase (ROOT:resourcebase);
+           server LAZY PARENT;
+       }
+
 }
