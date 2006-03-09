@@ -60,10 +60,15 @@ public class FunctionalTestTaskTest extends TaskTestBase {
         }
         int setup=output.indexOf("setup");
         int application= output.indexOf("application");
+        int test = output.indexOf("(test)");
         int teardown= output.indexOf("teardown");
         assertTrue("no setup in "+output,setup>=0);
         assertTrue("app before setup in "+output,application>setup);
         assertTrue("teardown before app in"+output, teardown>application);
+        if(!noJunit) {
+            assertTrue("test before setup in " + output, test > setup);
+            assertTrue("teardown before test in" + output, teardown > test);
+        }
     }
 
     public void testTimeout() {
@@ -100,6 +105,26 @@ public class FunctionalTestTaskTest extends TaskTestBase {
         expectBuildExceptionContaining("testApplicationFailurePreemptsTeardown",
                 "failure exception not thrown",
                 "failure!");
+        assertAppSequenceFollowed(true);
+    }
+
+    public void testTestFailurePreemptsApplication() {
+        expectBuildExceptionContaining("testTestFailurePreemptsApplication",
+                "failure exception not thrown",
+                "failure!");
+        assertAppSequenceFollowed(true);
+    }
+
+    public void testTestFailurePreemptsTeardown() {
+        expectBuildExceptionContaining("testTestFailurePreemptsTeardown",
+                "failure exception not thrown",
+                "failure!");
+        assertAppSequenceFollowed(false);
+    }
+
+    public void testTeardownStopsTheApplication() {
+        executeTarget("testTeardownStopsTheApplication");
+        assertDebuglogContaining("application shut down");
         assertAppSequenceFollowed(false);
     }
 }
