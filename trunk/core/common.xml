@@ -116,7 +116,7 @@
       location="${core.dir}/runtime.properties"/>
     <echo level="verbose">Looking at ${runtime.properties} 
       for optional SmartFrog runtime properties</echo>
-      
+    <property file="${runtime.properties}" prefix="runtime"/>      
       <!-- turn on the tests. If you dont want this, set one (or both) to false)  in the unit tests-->
     <property name="system.tests" value="true" />
     <property name="unit.tests" value="true" />
