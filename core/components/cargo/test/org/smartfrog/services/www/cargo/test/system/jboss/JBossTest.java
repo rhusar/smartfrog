@@ -17,7 +17,9 @@
  For more information: www.smartfrog.org
 
  */
-package org.smartfrog.services.www.cargo.test.system;
+package org.smartfrog.services.www.cargo.test.system.jboss;
+
+import org.smartfrog.services.www.cargo.test.system.CargoTestBase;
 
 /**
  */
@@ -28,7 +30,7 @@ public class JBossTest extends CargoTestBase {
     }
 
     public void testJBoss4() throws Throwable {
-        deployApplication(FILE_BASE + "testJBoss4.sf",
+        deployApp(FILE_BASE + "jboss/testJBoss4.sf",
                 "testJBoss"
         );
     }

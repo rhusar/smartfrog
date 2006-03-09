@@ -34,13 +34,6 @@ public class CargoTest extends CargoTestBase {
                 "error in schema: non-optional attribute 'configurationClass' is missing");
     }
 
-    public void testTomcat() throws Throwable {
-        deployApplication(FILE_BASE + "testTomcat.sf",
-                "testTomcat"
-        );
-    }
-
-
     public void testBadCargoClass() throws Throwable {
         deployExpectingException(FILE_BASE + "testBadCargoClass.sf",
                 "testBadCargoClass",

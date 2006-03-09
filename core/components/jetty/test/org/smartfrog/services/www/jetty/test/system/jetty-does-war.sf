@@ -51,6 +51,7 @@ sfConfig extends Compound {
             port server:port;
             page LAZY deployedWar:absolutePath;
             checkFrequency 1;
+            followRedirects true;
     }
 
 }

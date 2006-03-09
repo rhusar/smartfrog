@@ -35,51 +35,23 @@ ITS MEDIA, AND YOU HEREBY WAIVE ANY CLAIM IN THIS REGARD.
 #include "/org/smartfrog/services/www/jetty/test/system/local_test_jetty_server.sf"
 
 sfConfig extends Compound {
-    sfSyncTerminate true;
 
     libraries extends testwarLoader;
 
-    port 5050;
-    home LAZY PROPERTY java.io.tmpdir;
+    server extends LocalJettyServer;
 
-   /*
-    this is the jetty server itself
-    */
-   server extends CoreJettyServer {
-
-      jettyhome PARENT:home;
-
-      port PARENT:port;
-
-      deployedWar extends WebApplication {
-            server LAZY PARENT;
-            filename LAZY libraries:testwar:absolutePath;
-            contextPath "testwar";
-        }
-
-
-   }
-
-
-    listener extends JettyListener {
-        listenerPort port;
-        server LAZY PARENT:server;
+    deployedWar extends WebApplication {
+        server LAZY PARENT:server:jettyServer;
+        filename LAZY libraries:testwar:absolutePath;
+        contextPath "testwar";
     }
-
-
-    deployedWar LAZY server:deployedWar;
-
-    //this is here because without it, ping doesnt get the lazy information from
-    //the webapp in time
-    //ping LAZY server:ping;
 
     ping extends LivenessPage {
             host LAZY server:listener:ipaddr;
             port server:port;
-            page LAZY deployedWar:absolutePath;
+            page "testwar/error";
             checkFrequency 1;
-            followRedirects true;
+            queries [["status",419]];
     }
-
 
 }

@@ -168,61 +168,50 @@
         application="${application.name}"/>
   </target>
 
-  <!-- ========================================================== -->
+  <!-- =================================================================== -->
   <!-- system tests -->
-  <!-- ========================================================== -->
-  <target name="system-tests" depends="parse,dist,compile-tests,init-codebase"
+  <!-- =================================================================== -->
+  <target name="system-tests" depends="common.system-tests"
       description="run system tests"
       if="system.tests.enabled">
-    <parallel>
-
-      <!-- first thread runs the daemon -->
-      <sequential>
-        <antcall target="start-daemon-if-needed"/>
-      </sequential>
-
-      <!-- this is the next thread -->
-      <sequential>
-
-        <!--
-          wait ten seconds for the harness to start
-          without this the first tests will fail as there is no
-          sf daemon around
-        -->
-        <sf-waitfordaemon maxwait="10" timeoutproperty="daemon.missing"/>
-        <fail if="daemon.missing">No daemon</fail>
+    <sf-functionaltest testTimeout="600" shutdownTime="10">
+      <application>
+        <sf-startdaemon-debug failonerror="false" spawn="false"/>
+      </application>
+      <probe>
+        <socket port="${smartfrog.daemon.port}" server="localhost"/>
+      </probe>
+      <test>
         <sf-junit
-            errorProperty="test.failed"
-            failureProperty="test.failed"
+            includeantruntime="true"
+            filtertrace="${filter.trace}"
+            errorproperty="failure"
+            failureproperty="failure"
             >
-          <classpath>
-            <path refid="tests.run.classpath"/>
-            <!-- <pathelement location="${test.classes.dir}"/> -->
-          </classpath>
-          <sysproperty key="org.smartfrog.codebase" value="${codebase}"/>
+          <classpath
+              refid="tests.run.classpath"/>
+          <sysproperty key="test.files.dir"
+              value="${test.src.dir}/files"/>
           <syspropertyset>
             <propertyref prefix="runtime"/>
           </syspropertyset>
-
-          <!-- #Test case isolation technique -->
-          <test name="${testcase}" if="testcase"/>
-          <batchtest todir="${test.data.dir}" unless="testcase">
-            <!-- bulk test case -->
+          <batchtest todir="${test.data.dir}">
             <fileset dir="${test.classes.dir}">
-              <include
-                  name="org/smartfrog/services/www/cargo/test/**/*Test.class"/>
+              <include name="**/unit/*Test.class"/>
+              <include name="**/system/**/*Test.class"/>
+              <exclude name="**/jboss/**" unless="runtime.jboss.home"/>
+              <exclude name="**/tomcat/**" unless="runtime.tomcat.home"/>
             </fileset>
           </batchtest>
         </sf-junit>
-
-        <!-- conditionally stop the daemon -->
-        <antcall target="conditional-daemon-exit"/>
-        <!-- end the test thread -->
-      </sequential>
-    </parallel>
-  </target>
-
-  <target name="conditional-daemon-exit" unless="no.stop.daemon">
-    <antcall target="stop-daemon-if-started"/>
+        <fail if="failure">Junit failed</fail>
+      </test>
+      <teardown>
+        <sf-stopdaemon failonerror="false"/>
+        <sf-junitreport data="${test.data.dir}"
+            reports="${test.reports.dir}"
+            />
+      </teardown>
+    </sf-functionaltest>
   </target>
 </project>

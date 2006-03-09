@@ -1,4 +1,4 @@
-/** (C) Copyright 2005 Hewlett-Packard Development Company, LP
+/** (C) Copyright 2006 Hewlett-Packard Development Company, LP
 
  This library is free software; you can redistribute it and/or
  modify it under the terms of the GNU Lesser General Public
@@ -17,40 +17,22 @@
  For more information: www.smartfrog.org
 
  */
+package org.smartfrog.services.www.jetty.test.system;
 
-package org.smartfrog.services.www.cargo.test.system;
-
-import org.smartfrog.test.SmartFrogTestBase;
+import org.smartfrog.sfcore.prim.Liveness;
 import org.smartfrog.sfcore.prim.Prim;
+import org.smartfrog.test.SmartFrogTestBase;
 
 /**
-
  */
-public abstract class CargoTestBase extends SmartFrogTestBase {
-
-
-    /** Node of any deployed application */
-    private Prim application;
-
-
-
-    /** location for files. {@value} */
-    public static final String FILE_BASE = "/org/smartfrog/services/www/cargo/test/system/";
-
-    public static final String CODEBASE_PROPERTY = "org.smartfrog.codebase";
-
-
-    public CargoTestBase(String name) {
-        super(name);
-    }
-
+public abstract class WebappTestBase extends SmartFrogTestBase {
     /**
-     * Sets up the fixture, for example, open a network connection. This method
-     * is called before a test is executed.
+     * Node of any deployed application
      */
-    protected void setUp() throws Exception {
-        super.setUp();
-        //assertSystemPropertySet(CODEBASE_PROPERTY);
+    protected Prim application;
+
+    protected WebappTestBase(String name) {
+        super(name);
     }
 
 
@@ -77,9 +59,12 @@ public abstract class CargoTestBase extends SmartFrogTestBase {
         this.application = application;
     }
 
-
-    protected void deployApp(String resource,String name) throws
+    public void deployWebApp(String resource, String name) throws
             Throwable {
         setApplication(deployExpectingSuccess(resource, name));
+        Prim liveness = (Prim)getApplication().sfResolve("ping");
+        for (int i = 0; i < 100; i++) {
+            liveness.sfPing(null);
+        }
     }
 }
