@@ -19,9 +19,8 @@ public class JettyWarTest extends SmartFrogTestBase {
      */
     public static final String FILE_BASE = "/org/smartfrog/services/www/jetty/test/system/";
 
-    public JettyWarTest(String name, Prim application) {
+    public JettyWarTest(String name) {
         super(name);
-        this.application = application;
     }
 
     /**
@@ -54,7 +53,7 @@ public class JettyWarTest extends SmartFrogTestBase {
     }
 
     public void testWarDeployed() throws Throwable {
-        deployApplication("/org/smartfrog/services/services/www/jetty/test/system/jetty-does-war.sf",
+        deployApplication("/org/smartfrog/services/www/jetty/test/system/jetty-does-war.sf",
                 "JettyDoesWar");
         Liveness liveness=(Liveness)getApplication();
         liveness.sfPing(this);
