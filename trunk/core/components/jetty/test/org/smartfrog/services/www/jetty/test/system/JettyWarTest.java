@@ -1,4 +1,4 @@
-package org.smartfrog.services.services.www.jetty.test.system;
+package org.smartfrog.services.www.jetty.test.system;
 
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.Liveness;
