@@ -71,6 +71,8 @@ For more information: www.smartfrog.org
 
   </target>
 
+  <target name="all" depends="dist,test"
+      description="Create a distribution and run tests"/>
 
   <!-- ==========================================================             -->
   <!--- STOP! Do not attempt to comment these out. They are here for a reason -->
