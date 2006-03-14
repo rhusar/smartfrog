@@ -46,7 +46,12 @@ import org.apache.tools.ant.taskdefs.condition.TypeFound;
  * <ol>
  * <li>Extends Task so that parallel/sequential containers can use it straight off</li>
  * <li>Throws a built exception if something failed</li>
- * <li>
+ * </ol>
+ * The class delegates rather than extends WaitFor for ease of insertion into a sequence, though
+ * using an ant.TaskAdapter would fix that. It also limits the number of things you can set
+ * directly with it to those in Ant1.6. To use later stuff you need to declare the
+ * ant1.7+ conditions using the xmlns:c="antlib:org.apache.tools.ant.tasks.conditions" antlib
+ * declaration, then insert conditions in their new namespace.
  */
 
 public class FaultingWaitForTask extends Task {
