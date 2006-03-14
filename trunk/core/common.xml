@@ -144,7 +144,10 @@
       <available classname="java.lang.Readable"/>
     </condition>
 
-    <property name="year" value="2006"/>
+    <tstamp>
+      <format property="year" pattern="yyyy"/>
+    </tstamp>
+    <property name="Name.System" value="SmartFrog"/>
     <property name="Name.Company"
         value="(C) Copyright 1998-${year} Hewlett-Packard Development Company, LP"/>
 
@@ -383,9 +386,34 @@
         verify="true"
         stubversion="1.2" />
     </presetdef>
-    
-    <!-- security -->
-    
+  </target>
+
+  <!--set up javadoc-->
+  <target name="init-javadoc" depends="init,init-common">
+
+    <property name="javadoc.access" value="protected"/>
+    <property name="javadoc.author" value="false"/>
+    <property name="javadoc.version" value="true"/>
+    <property name="javadoc.use" value="true"/>
+    <property name="javadoc.windowtitle" value="${Name.System}"/>
+    <property name="javadoc.packagenames" value="org.smartfrog.*"/>
+    <property name="javadoc.header" value="${Name.System} ${Version}"/>
+    <property name="javadoc.footer" value="${Name.System} ${Version}"/>
+    <presetdef name="sf-javadoc" >
+      <javadoc packagenames="${javadoc.packagenames}"
+          author="${javadoc.author}"
+          version="${javadoc.version}"
+          use="${javadoc.use}"
+          windowtitle="${javadoc.windowtitle}"
+          header="${javadoc.header}"
+          footer="${javadoc.footer}"
+          doctitle="${Name.System}"
+          bottom="${Name.Company}"
+          source="${javac.java.version}"
+          >
+      </javadoc>
+    </presetdef>
+
   </target>
 
   <target name="jdocs" depends="javadoc" description="Generates the API documentation"/>
@@ -394,7 +422,7 @@
   <!--   Javadocs. uses the compile classpath to set up the javadoc task   -->
   <!-- =================================================================== -->
   <target name="javadoc"
-          depends="init, generateversion,declare-classpaths"
+          depends="init, generateversion,declare-classpaths,init-javadoc"
           >
     <!--  Java Docs for all                                                -->
     <echo message=""/>
@@ -402,33 +430,14 @@
     <echo message="  Creating Java Docs for ${Name.System} ${version} [${dist.jdocs.dir}]"/>
     <echo message="------------------------------------------------------------------------"/>
     <mkdir dir="${dist.jdocs.dir}"/>
-    <property name="javadoc.access" value="protected" />
-    <property name="javadoc.author" value="false"/>
-    <property name="javadoc.version" value="true"/>
-    <property name="javadoc.use" value="true"/>
-    <property name="javadoc.windowtitle" value="${Name.System}"/>
-    <property name="javadoc.windowtitle" value="${Name.System}"/>
-    <property name="javadoc.packagenames" value="org.smartfrog.*" />
-    <property name="javadoc.header" value="${Name.System} ${CVersion}" />
-    <property name="javadoc.footer" value="${Name.System} ${version} ${CVersion}" />
-
-    <javadoc packagenames="${javadoc.packagenames}"
-             sourcepath="${src.dir}"
-             destdir="${dist.jdocs.dir}"
-             author="${javadoc.author}"
-             version="${javadoc.version}"
-             use="${javadoc.use}"
-             windowtitle="${javadoc.windowtitle}"
-             header="${javadoc.header}"
-             footer="${javadoc.footer}"
-             doctitle="${Name.System}"
-             bottom="${Name.Company}"
-             source="${javac.java.version}"
-             classpathref="compile.classpath"
+    <sf-javadoc
+        sourcepath="${src.dir}"
+        destdir="${dist.jdocs.dir}"
+        classpathref="compile.classpath"
         >
       <group title="SmartFrog Packages" packages="org.smartfrog.*"/>
-    </javadoc>
-  </target>  
+    </sf-javadoc>
+  </target>
   
   <!-- ========================================================== -->
   <!-- 

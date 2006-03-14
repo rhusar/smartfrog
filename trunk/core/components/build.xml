@@ -79,11 +79,16 @@ For more information: www.smartfrog.org
   <!-- initialisation -->
   <!-- ========================================================== -->
   <target name="init" depends="init-common-simpledefinitions" >
+
+    <property name="version" value="COMPONENTS"/>
+    <property name="Version" value="1.00.000_beta"/>
+
     <!-- add new components here, in alphabetical order. this is
       not where dependency logic is imposed -->
     <property name="anubis.project" location="anubis" />
     <property name="anubisdeployer.project" location="anubisdeployer" />
     <property name="arithmetic-testharness.project" location="arithmetic-testharness" />
+    <property name="cargo.project" location="cargo"/>
     <property name="cdl.project" location="${extras.dir}/cdl"/>
     <property name="deployapi.project" location="deployapi" />
     <property name="emailer.project" location="emailer" />
@@ -114,6 +119,14 @@ For more information: www.smartfrog.org
     <property name="comp.dist.src.dir" value="${comp.dist.dir}/${src}"/>
     <property name="comp.dist.docs.dir" value="${comp.dist.dir}/${docs}"/>
     <property name="comp.dist.jdocs.dir" value="${comp.dist.docs.dir}/${jdocs}"/>
+
+    <!--forrest skin directory-->
+    <property name="skin.dir" location="forrest_skin"/>
+
+    <!-- excludes and includes for source-->
+    <property name="src-includes" value="**/*"/>
+    <property name="src-excludes" value="**/*.dfPackage"/>
+
 
     <property name="componentsFiles" value="org/smartfrog/services/**/*"/>
 
@@ -192,18 +205,118 @@ For more information: www.smartfrog.org
           inheritall="false" inheritrefs="false"/>
     </presetdef>
 
+
+  </target>
+
+
+  <target name="macros">
+    <macrodef name="copybuild">
+      <attribute name="project" description="component to copy"/>
+      <attribute name="builddir" default="${build}"/>
+      <attribute name="includes" default="**/*"/>
+
+      <sequential>
+        <copy todir="${build.dir}">
+          <fileset dir="@{project}/@{builddir}" includes="@{includes}"/>
+        </copy>
+      </sequential>
+    </macrodef>
+
+    <macrodef name="copybins">
+      <attribute name="project" description="component to copy"/>
+      <attribute name="bindir" default="dist/${bin}"/>
+      <attribute name="includes" default="**/*"/>
+
+      <sequential>
+        <copy todir="${comp.dist.bin.dir}">
+          <fileset dir="@{project}/@{bindir}" includes="@{includes}"/>
+        </copy>
+      </sequential>
+    </macrodef>
+
+    <macrodef name="copylibs">
+      <attribute name="project" description="component to copy"/>
+      <attribute name="libdir" default="dist/${lib}"/>
+      <attribute name="includes" default="**/*"/>
+
+      <sequential>
+        <copy todir="${comp.dist.lib.dir}">
+          <fileset dir="@{project}/@{libdir}" includes="@{includes}"/>
+        </copy>
+      </sequential>
+    </macrodef>
+
+
+    <macrodef name="copycomponents">
+      <attribute name="project" description="component to copy"/>
+      <attribute name="srcdir" default="dist/${src}"/>
+      <attribute name="includes" default="**/*"/>
+      <sequential>
+        <copy todir="${comp.dist.src.dir}">
+          <fileset dir="@{project}/@{srcdir}">
+            <include name="@{includes}"/>
+            <exclude name="**/*.dfPackage"/>
+          </fileset>
+        </copy>
+      </sequential>
+    </macrodef>
+
+
+    <macrodef name="copydocs">
+      <attribute name="project" description="component to copy"/>
+      <attribute name="docdir" default="dist/${docs}"/>
+      <attribute name="includes" default="**/*"/>
+
+      <sequential>
+        <copy todir="${comp.dist.docs.dir}">
+          <fileset dir="@{project}/@{docdir}" includes="@{includes}"/>
+        </copy>
+      </sequential>
+    </macrodef>
+
+
+    <macrodef name="updateversion">
+      <attribute name="project" description="component to update"/>
+      <attribute name="compname" description="component to update"/>
+      <sequential>
+        <replace
+            file="${skin.dir}/SFComponents.xml"
+            propertyFile="@{project}/version.properties">
+          <replacefilter
+              token="@{compname}-ver"
+              property="sf.build.version"/>
+          <replacefilter
+              token="@{compname}-minver"
+              property="sf.min.version"/>
+          <!--replacefilter
+          token="@{compname}-maxver"
+          property="@{compname}.maxversion"/-->
+        </replace>
+      </sequential>
+    </macrodef>
+
+    <macrodef name="m2-release">
+      <attribute name="project" description="project to release"/>
+      <sequential>
+       <!-- <updateversion project="@{project}" compname="@{project}" />-->
+        <copydocs project="@{project}"/>
+        <copycomponents project="@{project}"/>
+        <copylibs project="@{project}"/>
+        <copybins project="@{project}"/>
+      </sequential>
+    </macrodef>
   </target>
 
 
   <target name="clean" depends="init, clean-dist"
-    description="clean all projects">
+      description="clean all projects">
     <delegate target="clean"/>
-  <delete dir="src"/> <!-- Forrest releated -->
-  <delete dir="build"/>  <!-- Forrest releated -->
-  <delete file="forrest.properties"/>
-  <delete file="status.xml"/>
-
-
+    <delete dir="src"/>
+    <!-- Forrest releated -->
+    <delete dir="build"/>
+    <!-- Forrest releated -->
+    <delete file="forrest.properties"/>
+    <delete file="status.xml"/>
   </target>
 
   <target name="test" depends="init"
@@ -270,16 +383,10 @@ For more information: www.smartfrog.org
    <!-- =================================================================== -->
   <!-- Initialization target                                               -->
   <!-- =================================================================== -->
-  <target name="initjdocs">
-    <tstamp/>
-    <property name="Name.System" value="SmartFrog"/>
-    <property name="Name.Company" value="(C) Copyright 1998-2004 Hewlett-Packard Development Company, LP"/>
-    <property name="version" value="COMPONENTS"/>
-    <property name="Version" value="1.00.000_beta"/>
-    <property name="year" value="2004"/>
-    <property name="javac.java.version" value="1.4" />
-    <echo level="verbose"/>
-  </target>
+  <target name="initjdocs" depends="init-javadoc"/>
+
+  <!--override common.xml version-->
+  <target name="javadoc" depends="jdocs" />
 
   <!-- =================================================================== -->
   <!--   JDocs                                                             -->
@@ -290,43 +397,30 @@ For more information: www.smartfrog.org
     <echo message="------------------------------------------------------------------------"/>
     <echo message="  Creating Java Docs for ${Name.System} ${version} [${dist.jdocs.dir}]"/>
     <echo message="------------------------------------------------------------------------"/>
-    <javadoc packagenames="org.*"
-             destdir="${comp.dist.jdocs.dir}"
-             author="true"
-             version="true"
-             use="true"
-             windowtitle="${Name.System}"
-             Header="${Name.System} ${Version}"
-             Footer="${Name.System} ${version} ${Version}"
-             doctitle="${Name.System}"
-             bottom="${Name.Company}"
-             source="${javac.java.version}"
-       >
-     <sourcepath>
-       <pathelement path="${anubis.project}/$(src)"/>
-       <pathelement path="${anubisdeployer.project}/$(src)"/>
-       <pathelement path="${emailer.project}/${src}"/>
-       <pathelement path="${fun.project}/${src}"/>
-       <pathelement path="${jetty.project}/${src}"/>
-       <!--pathelement path="${logger.project}/${src}"/-->
-       <pathelement path="${net.project}/${src}"/>
-       <pathelement path="${scripting.project}/${src}"/>
-       <pathelement path="${sfLoggingServices.project}/${src}"/>
-       <pathelement path="${slp.project}/${src}"/>
-       <pathelement path="${ssh.project}/${src}"/>
-       <pathelement path="${tomcat.project}/${src}"/>
-       <pathelement path="${www.project}/${src}"/>
+    <sf-javadoc
+        packagenames="org.smartfrog.*"
+        destdir="${comp.dist.jdocs.dir}"
+        >
+      <sourcepath>
+        <pathelement path="${anubis.project}/$(src)"/>
+        <pathelement path="${anubisdeployer.project}/$(src)"/>
+        <pathelement path="${emailer.project}/${src}"/>
+        <pathelement path="${fun.project}/${src}"/>
+        <!--pathelement path="${logger.project}/${src}"/-->
+        <pathelement path="${net.project}/${src}"/>
+        <pathelement path="${scripting.project}/${src}"/>
+        <pathelement path="${sfLoggingServices.project}/${src}"/>
+        <pathelement path="${slp.project}/${src}"/>
+        <pathelement path="${ssh.project}/${src}"/>
       </sourcepath>
       <group title="SmartFrog Component Packages" packages="org.smartfrog.*"/>
-    </javadoc>
-
-
+    </sf-javadoc>
   </target>
 
   <!-- =================================================================== -->
   <!-- Initialization target                                               -->
   <!-- =================================================================== -->
-  <target name="initdist" depends="init">
+  <target name="initdist" depends="init,macros">
       <mkdir dir="${comp.dist.dir}"/>
       <mkdir dir="${comp.dist.bin.dir}"/>
       <mkdir dir="${comp.dist.lib.dir}"/>
@@ -338,33 +432,18 @@ For more information: www.smartfrog.org
   <!-- =================================================================== -->
   <!--                                                                     -->
   <!-- =================================================================== -->
-  <target name="copybuild" depends="init">
-
-    <macrodef name="copybuild" >
-      <attribute name="project" description="component to copy"/>
-      <attribute name="builddir" default="${build}" />
-      <attribute name="includes" default="**/*" />
-
-      <sequential>
-        <copy todir="${build.dir}">
-          <fileset dir="@{project}/@{builddir}" includes="@{includes}" />
-        </copy>
-      </sequential>
-    </macrodef>
+  <target name="copybuild" depends="macros">
 
     <copybuild project="${anubis.project}" />
     <copybuild project="${anubisdeployer.project}" />
     <copybuild project="${emailer.project}" />
     <copybuild project="${fun.project}"/>
-    <copybuild project="${jetty.project}" />
     <!--copybuild project="${logger.project}" /-->
     <copybuild project="${net.project}" />
     <copybuild project="${scripting.project}" />
     <copybuild project="${sfLoggingServices.project}" />
     <copybuild project="${slp.project}"  />
     <copybuild project="${ssh.project}" />
-    <copybuild project="${tomcat.project}" />
-    <copybuild project="${www.project}" />
 
   </target>
 
@@ -373,31 +452,16 @@ For more information: www.smartfrog.org
   <!-- =================================================================== -->
   <target name="copybins" depends="init-common,initdist,dist">
 
-    <macrodef name="copybins" >
-      <attribute name="project" description="component to copy"/>
-      <attribute name="bindir" default="dist/${bin}" />
-      <attribute name="includes" default="**/*" />
-
-      <sequential>
-        <copy todir="${comp.dist.bin.dir}">
-          <fileset dir="@{project}/@{bindir}" includes="@{includes}" />
-        </copy>
-      </sequential>
-    </macrodef>
-
     <copybins project="${anubis.project}" />
     <copybins project="${anubisdeployer.project}" />
     <copybins project="${emailer.project}" />
     <copybins project="${fun.project}"/>
-    <copybins project="${jetty.project}" />
     <!--copybins project="${logger.project}" /!-->
     <copybins project="${net.project}" />
     <copybins project="${scripting.project}" />
     <copybins project="${sfLoggingServices.project}"/>
     <copybins project="${slp.project}"  />
     <copybins project="${ssh.project}" />
-    <copybins project="${tomcat.project}" />
-    <copybins project="${www.project}" />
 
   </target>
 
@@ -405,32 +469,16 @@ For more information: www.smartfrog.org
   <!--                                                                     -->
   <!-- =================================================================== -->
   <target name="copylibs" depends="init-common,initdist,dist">
-
-    <macrodef name="copylibs" >
-      <attribute name="project" description="component to copy"/>
-      <attribute name="libdir" default="dist/${lib}" />
-      <attribute name="includes" default="**/*" />
-
-      <sequential>
-        <copy todir="${comp.dist.lib.dir}">
-          <fileset dir="@{project}/@{libdir}" includes="@{includes}" />
-        </copy>
-      </sequential>
-    </macrodef>
-
     <copylibs project="${anubis.project}" />
     <copylibs project="${anubisdeployer.project}" />
     <copylibs project="${emailer.project}" />
     <copylibs project="${fun.project}"/>
-    <copylibs project="${jetty.project}" />
     <!--copylibs project="${logger.project}" /-->
     <copylibs project="${net.project}" />
     <copylibs project="${scripting.project}" />
     <copylibs project="${sfLoggingServices.project}" />
     <copylibs project="${slp.project}"  />
     <copylibs project="${ssh.project}" />
-    <copylibs project="${tomcat.project}" />
-    <copylibs project="${www.project}" />
 
   </target>
 
@@ -439,25 +487,10 @@ For more information: www.smartfrog.org
   <!-- =================================================================== -->
   <target name="copycomponents" depends="init-common,initdist">
 
-    <macrodef name="copycomponents" >
-      <attribute name="project" description="component to copy"/>
-      <attribute name="srcdir" default="dist/${src}" />
-      <attribute name="includes" default="**/*" />
-      <sequential>
-        <copy todir="${comp.dist.src.dir}">
-          <fileset dir="@{project}/@{srcdir}" >
-            <include name="@{includes}" />
-            <exclude name="**/*.dfPackage"/>
-          </fileset>
-        </copy>
-      </sequential>
-    </macrodef>
-
     <copycomponents project="${anubis.project}" />
     <copycomponents project="${anubisdeployer.project}" />
     <copycomponents project="${emailer.project}" />
     <copycomponents project="${fun.project}"/>
-    <copycomponents project="${jetty.project}" />
     <!--copycomponents project="${logger.project}" /-->
     <copycomponents project="${net.project}"  />
     <copycomponents project="${scripting.project}" />
@@ -465,40 +498,22 @@ For more information: www.smartfrog.org
     <copycomponents project="${net.project}"  />
     <copycomponents project="${slp.project}"  />
     <copycomponents project="${ssh.project}" />
-    <copycomponents project="${tomcat.project}" />
-    <copycomponents project="${www.project}" />
   </target>
 
   <!-- =================================================================== -->
   <!--                                                                     -->
   <!-- =================================================================== -->
   <target name="copydocs" depends="init-common,initdist,dist">
-
-    <macrodef name="copydocs" >
-      <attribute name="project" description="component to copy"/>
-      <attribute name="docdir" default="dist/${docs}" />
-      <attribute name="includes" default="**/*" />
-
-      <sequential>
-        <copy todir="${comp.dist.docs.dir}">
-          <fileset dir="@{project}/@{docdir}" includes="@{includes}" />
-        </copy>
-      </sequential>
-    </macrodef>
-
     <copydocs project="${anubis.project}" />
     <copydocs project="${anubisdeployer.project}" />
     <copydocs project="${emailer.project}" />
     <copydocs project="${fun.project}"/>
-    <copydocs project="${jetty.project}" />
     <!--copydocs project="${logger.project}" /-->
     <copydocs project="${net.project}" />
     <copydocs project="${scripting.project}" />
     <copydocs project="${sfLoggingServices.project}" />
     <copydocs project="${slp.project}" />
     <copydocs project="${ssh.project}" />
-    <copydocs project="${tomcat.project}" />
-    <copydocs project="${www.project}" />
   </target>
 
   <!-- =================================================================== -->
@@ -513,14 +528,11 @@ For more information: www.smartfrog.org
       <zipfileset dir="${anubisdeployer.project}/dist/${src}" />
       <zipfileset dir="${emailer.project}/dist/${src}" />
       <zipfileset dir="${fun.project}/dist/${src}"/>
-      <zipfileset dir="${jetty.project}/dist/${src}" />
       <zipfileset dir="${net.project}/dist/${src}" />
       <zipfileset dir="${scripting.project}/dist/${src}" />
       <zipfileset dir="${sfLoggingServices.project}/dist/${src}" />
       <zipfileset dir="${slp.project}/dist/${src}" />
       <zipfileset dir="${ssh.project}/dist/${src}" />
-      <zipfileset dir="${tomcat.project}/dist/${src}" />
-      <zipfileset dir="${www.project}/dist/${src}" />
     </zip>
   </target>
 
@@ -538,91 +550,62 @@ For more information: www.smartfrog.org
   <!-- =================================================================== -->
   <!-- update version                                                      -->
   <!-- =================================================================== -->
-  <target name="updateversion" depends="init-common, init">
-    <property name="skin.dir" location="forrest_skin"/>
-    <!--replace
-        file="buildRelease.xml"
-      propertyFile="version.properties">
-      <replacefilter
-        token="@version"
-        property="component.version"/>
-    </replace-->
-
-    <!--replace
-        file="releaseBuild.xml"
-      propertyFile="version.properties">
-      <replacefilter
-        token="@version"
-        property="component.version"/>
-    </replace-->
-
-    <macrodef name="updateversion">
-      <attribute name="project" description="component to update"/>
-      <attribute name="compname" description="component to update"/>
-
-      <sequential>
-        <!--replace
-              file="@{project}/buildRelease.xml"
-            propertyFile="version.properties">
-            <replacefilter
-              token="@version"
-              property="@{compname}.version"/>
-        </replace>
-      
-        <replace
-              file="@{project}/build.xml"
-            propertyFile="version.properties">
-            <replacefilter
-              token="@version"
-              property="@{compname}.version"/>
-        </replace-->
-
-        <!--replace
-              file="@{project}/releaseBuild.xml"
-              propertyFile="@{project}/version.properties">
-            <replacefilter
-              token="@version"
-              property="sf.build.version"/>
-        </replace-->
-
-
-        <replace
-            file="${skin.dir}/SFComponents.xml"
-            propertyFile="@{project}/version.properties">
-          <replacefilter
-              token="@{compname}-ver"
-              property="sf.build.version"/>
-          <replacefilter
-              token="@{compname}-minver"
-              property="sf.min.version"/>
-          <!--replacefilter
-          token="@{compname}-maxver"
-          property="@{compname}.maxversion"/-->
-        </replace>
-      </sequential>
-
-    </macrodef>
-
-
+  <target name="updateversion" depends="init-common, init,macros">
     <updateversion project="${anubis.project}" compname="anubis" />
     <updateversion project="${anubisdeployer.project}" compname="anubisdeployer"/>
     <updateversion project="${emailer.project}" compname="emailer"/>
 <!--    <updateversion project="${fun.project}" compname="fun"/>-->
-    <!--<updateversion project="${jetty.project}" compname="jetty" />-->
     <!--updateversion project="${logger.project}" compname="logger" /-->
     <updateversion project="${net.project}" compname="net"/>
     <updateversion project="${scripting.project}" compname="scripting"/>
     <updateversion project="${sfLoggingServices.project}" compname="sfLoggingServices"/>
     <updateversion project="${slp.project}" compname="slp"/>
     <updateversion project="${ssh.project}" compname="ssh"/>
-    <!--<updateversion project="${tomcat.project}" compname="tomcat"/>-->
-    <!--<updateversion project="${www.project}" compname="www"/>-->
   </target>
+
+  <!--make a release of the web stuff-->
+  <!--This is subtly different as each project is intra-dependent and uses
+      the m2 tasks to manage libraries. They also autogenerate project.xml
+      files that should be included in the maven artifact release -->
+  <target name="release-www" depends="init,macros,web,initdist,initjdocs">
+
+    <m2-release project="${jetty.project}"/>
+    <m2-release project="${tomcat.project}"/>
+    <m2-release project="${www.project}"/>
+    <m2-release project="${cargo.project}"/>
+
+    <zip destfile="${comp.dist.dir}/web-src.zip">
+      <zipfileset dir="${cargo.project}/dist/${src}"
+          includes="${src-includes}" excludes="${src-excludes}"/>
+      <zipfileset dir="${jetty.project}/dist/${src}"
+          includes="${src-includes}" excludes="${src-excludes}"/>
+      <zipfileset dir="${tomcat.project}/dist/${src}"
+          includes="${src-includes}" excludes="${src-excludes}"/>
+      <zipfileset dir="${www.project}/dist/${src}"
+          includes="${src-includes}" excludes="${src-excludes}"/>
+    </zip>
+
+    <sf-javadoc
+        packagenames="org.smartfrog.services.*"
+        destdir="${comp.dist.jdocs.dir}"
+        >
+      <sourcepath>
+        <pathelement path="${cargo.project}/${src}"/>
+        <pathelement path="${jetty.project}/${src}"/>
+        <pathelement path="${tomcat.project}/${src}"/>
+        <pathelement path="${www.project}/${src}"/>
+      </sourcepath>
+      <group title="SmartFrog Web Components" packages="org.smartfrog.services.www.*"/>
+    </sf-javadoc>
+
+  </target>
+
 
   <!-- =================================================================== -->
   <!--  Release                                                            -->
   <!-- =================================================================== -->
-  <target name="release"  depends=" verify-smartfrog,  clean, dist, updateversion, initdist, copybuild, copybins, copylibs, copydocs, copycomponents, srczip,generatedoc, buildrelease " description="Creates clean new release">
+  <target name="release"  depends=" verify-smartfrog,  clean, dist, updateversion, initdist, copybuild, copybins, copylibs, copydocs, copycomponents, srczip,generatedoc, buildrelease "
+      description="Creates clean new release">
     <copy tofile="${dist.dir}/build.xml" file="releaseBuild.xml"/>
     <copy tofile="${dist.dir}/build.example.properties" file="build.example.properties"/>
     <copy file="version.properties" todir="${dist.dir}" />
