@@ -28,7 +28,7 @@ import org.smartfrog.sfcore.logging.Log;
 /**
  * Abstract parent class for ScpTo and ScpFrom.
  * @author Ashish Awasthi
- * @see http://www.jcraft.com/jsch/
+ * @see <a href="http://www.jcraft.com/jsch/">jsch</a>
  * 
  */
 public abstract class AbsScp {

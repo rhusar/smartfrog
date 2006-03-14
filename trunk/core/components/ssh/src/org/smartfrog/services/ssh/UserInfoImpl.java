@@ -65,14 +65,14 @@ public class UserInfoImpl implements UserInfo {
     }
 
     /**
-     * @see com.jcraft.jsch.UserInfo#prompt(String)
+     * @see com.jcraft.jsch.UserInfo#prompt
      */
     public boolean prompt(String str) {
         return false;
     }
 
     /**
-     * @see com.jcraft.jsch.UserInfo#retry()
+     * @see com.jcraft.jsch.UserInfo#retry
      */
     public boolean retry() {
         return false;

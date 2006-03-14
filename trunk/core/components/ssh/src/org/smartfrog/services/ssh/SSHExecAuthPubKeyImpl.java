@@ -47,7 +47,7 @@ import org.smartfrog.sfcore.logging.Log;
  * SmartFrog component to executes a command on a remote machine via ssh. 
  * It is a wrapper around jsch-0.1.14
  * @author Ashish Awasthi
- * @see http://www.jcraft.com/jsch/
+ * @see <a href="http://www.jcraft.com/jsch/">jsch</a>
  * 
  */
 public class SSHExecAuthPubKeyImpl extends PrimImpl implements SSHExec{

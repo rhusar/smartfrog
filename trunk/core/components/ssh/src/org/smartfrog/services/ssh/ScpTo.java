@@ -37,7 +37,7 @@ import org.smartfrog.sfcore.logging.Log;
 /**
  * Class to upload files to a remote host over SSH Session.
  * @author Ashish Awasthi
- * @see http://www.jcraft.com/jsch/
+ * @see <a href="http://www.jcraft.com/jsch/">jsch</a>
  * 
  */
 public class ScpTo extends AbsScp {

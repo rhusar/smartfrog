@@ -132,7 +132,7 @@ public abstract class ApplicationServerContextImpl extends PrimImpl
      * subclasses must implement this to deploy their component. It is called
      * during sfDeploy, after we have bound to a server
      *
-     * @return
+     * @return a new context
      *
      * @throws RemoteException
      * @throws SmartFrogException
@@ -151,7 +151,7 @@ public abstract class ApplicationServerContextImpl extends PrimImpl
      *
      * @throws SmartFrogLivenessException component is terminated
      * @throws RemoteException            for consistency with the {@link
-     *                                    Liveness} interface
+     *                                    org.smartfrog.sfcore.common.Liveness} interface
      */
     public void sfPing(Object source)
             throws SmartFrogLivenessException, RemoteException {
