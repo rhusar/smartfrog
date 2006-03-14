@@ -314,13 +314,5 @@ public class FaultingWaitForTask extends Task {
         waitFor.add(i);
     }
 
-    /**
-     * Add an &lt;typefound&gt; condition.
-     *
-     * @param test a TypeFound condition
-     */
-    public void addTypeFound(TypeFound test) {
-        waitFor.add(test);
-    }
 
 }
