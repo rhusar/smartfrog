@@ -37,7 +37,7 @@ public class EarApplicationImpl extends ApplicationServerContextImpl implements 
      * subclasses must implement this to deploy their component.
      * It is called during sfDeploy, after we have bound to a server
      *
-     * @return
+     * @return the context
      * @throws java.rmi.RemoteException
      * @throws org.smartfrog.sfcore.common.SmartFrogException
      */

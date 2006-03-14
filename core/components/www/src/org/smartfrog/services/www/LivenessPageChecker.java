@@ -208,7 +208,7 @@ public class LivenessPageChecker implements LivenessPage {
      * SmartFrogDeploymentException}. If the target URL is already defined, does
      * nothing.
      *
-     * @throws SmartFrogDeploymentException
+     * @throws org.smartfrog.sfcore.common.SmartFrogDeploymentException
      */
     public synchronized void onStart() throws SmartFrogDeploymentException {
         demandCreateURL();

@@ -77,7 +77,7 @@ public class ScriptPrimImpl
    * Evaluate the String as a beanshell script.
    * The string is handed off to the internal interpreter object
    * @param script the script as a string.
-   * @throw Exception if the execution of the script fails.
+   * @throws Exception if the execution of the script fails.
    */
   public synchronized Object eval(String script) throws SmartFrogException,
       RemoteException {
@@ -174,7 +174,7 @@ public class ScriptPrimImpl
 
   /**
    * Start phase : execute the code described with the 'sfStartCode' attribute.
-   * @throw Exception if the start phase fails.
+   * @throws Exception if the start phase fails.
    */
   public void sfStart() throws SmartFrogException, RemoteException {
     super.sfStart();

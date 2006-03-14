@@ -83,7 +83,7 @@ public class TomcatServerImpl extends PrimImpl implements TomcatServer {
      *
      * @param source source of call
      * @throws SmartFrogLivenessException component is terminated
-     * @throws RemoteException            for consistency with the {@link Liveness} interface
+     * @throws RemoteException            for consistency with the {@link org.smartfrog.sfcore.prim.Liveness} interface
      */
     public void sfPing(Object source) throws SmartFrogLivenessException, RemoteException {
         super.sfPing(source);

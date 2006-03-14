@@ -42,7 +42,7 @@ import org.smartfrog.sfcore.logging.Log;
 /**
  * Class to copy securely from a remote machine. 
  * @author Ashish Awasthi
- * @see http://www.jcraft.com/jsch/
+ * @see <a href="http://www.jcraft.com/jsch/">jsch</a>
  * 
  */
 public class ScpFrom extends AbsScp {
