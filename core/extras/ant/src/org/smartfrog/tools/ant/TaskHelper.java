@@ -8,10 +8,11 @@ public class TaskHelper {
 
     private Task owner;
 
-    private int counter=0;
+    private ProjectHelper projectHelper;
 
     public TaskHelper(Task owner) {
         this.owner = owner;
+        projectHelper=new ProjectHelper(owner.getProject());
     }
 
     /**
@@ -31,17 +32,16 @@ public class TaskHelper {
         task.init();
     }
 
+
     /**
      * using our memory location and a per-instance counter,
      * make up a new unique number.
+     *
      * @return a new property name that is currently unique
      */
-    public synchronized String createUniquePropertyName() {
-        String prefix=this.toString()+"_";
-        String name;
-        do {
-            name=prefix+counter++;
-        } while(owner.getProject().getProperty(name)!=null);
-        return name;
+    public String createUniquePropertyName() {
+        return projectHelper.createUniquePropertyName();
     }
+
+
 }
