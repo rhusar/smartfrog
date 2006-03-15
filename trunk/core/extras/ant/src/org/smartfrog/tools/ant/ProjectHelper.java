@@ -20,6 +20,7 @@
 package org.smartfrog.tools.ant;
 
 import org.apache.tools.ant.Project;
+import org.apache.tools.ant.BuildException;
 
 /**
  * Ant Project help
@@ -33,6 +34,9 @@ public class ProjectHelper {
     private int counter = 0;
 
     public ProjectHelper(Project project) {
+        if(project==null) {
+            throw new BuildException("No project");
+        }
         this.project = project;
     }
 

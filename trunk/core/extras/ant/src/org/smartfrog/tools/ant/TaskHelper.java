@@ -12,7 +12,6 @@ public class TaskHelper {
 
     public TaskHelper(Task owner) {
         this.owner = owner;
-        projectHelper=new ProjectHelper(owner.getProject());
     }
 
     /**
@@ -32,6 +31,12 @@ public class TaskHelper {
         task.init();
     }
 
+    private  ProjectHelper getProjectHelper() {
+        if(projectHelper==null) {
+            projectHelper=new ProjectHelper(owner.getProject());
+        }
+        return projectHelper;
+    }
 
     /**
      * using our memory location and a per-instance counter,
@@ -40,7 +45,7 @@ public class TaskHelper {
      * @return a new property name that is currently unique
      */
     public String createUniquePropertyName() {
-        return projectHelper.createUniquePropertyName();
+        return getProjectHelper().createUniquePropertyName();
     }
 
 
