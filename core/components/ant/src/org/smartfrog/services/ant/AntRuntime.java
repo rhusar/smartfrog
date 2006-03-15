@@ -70,13 +70,18 @@ public class AntRuntime extends PrimImpl implements RemoteReferenceResolver {
      * @throws RemoteException
      */
     public void setStaticProperties(Hashtable properties) throws SmartFrogRuntimeException, RemoteException {
-        Enumeration keys=properties.keys();
-        while (keys.hasMoreElements()) {
-            String key = (String) keys.nextElement();
-            String value=(String) properties.get(key);
-            sfReplaceAttribute(key,value);
+        if ((owner!=null)&&(properties !=null)) {
+            Enumeration keys = properties.keys();
+            while (keys.hasMoreElements()) {
+                String key = (String) keys.nextElement();
+                if (key != null) {
+                    String value = (String) properties.get(key);
+                    if (value!=null) {
+                        owner.sfReplaceAttribute(key, value);
+                    }
+                }
+            }
         }
     }
-
 
 }
