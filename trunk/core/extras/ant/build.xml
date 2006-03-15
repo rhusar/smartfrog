@@ -203,6 +203,7 @@
            failureProperty="test.failed" 
            includeantruntime="true"
            filtertrace="${filter.trace}"
+           timeout="300000"
            >
        <classpath
           refid="tests.run.classpath"/>
