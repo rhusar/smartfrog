@@ -39,7 +39,6 @@ import org.apache.tools.ant.taskdefs.condition.Contains;
 import org.apache.tools.ant.taskdefs.condition.IsTrue;
 import org.apache.tools.ant.taskdefs.condition.IsFalse;
 import org.apache.tools.ant.taskdefs.condition.IsReference;
-import org.apache.tools.ant.taskdefs.condition.TypeFound;
 
 /**
  * A sort of extension/delegate of WaitFor with two features
