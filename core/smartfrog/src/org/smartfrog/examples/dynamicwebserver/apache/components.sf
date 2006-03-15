@@ -51,5 +51,6 @@ Apache extends Compound {
 
     //interCheckTime;
     //logTo;
+    //manageDaemon true;
 
 }

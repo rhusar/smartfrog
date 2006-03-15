@@ -38,6 +38,7 @@ public interface Apache extends Remote {
     public final String APACHECTLLOCATION = "apachectlLocation";
     public final String INTERCHECKTIME = "interCheckTime";
     public final String LOGTO = "logTo";
+    public final String MANAGEDAEMON = "manageDaemon";
 
     /**
      * As the method name indicates, this simply starts the httpd daemon
