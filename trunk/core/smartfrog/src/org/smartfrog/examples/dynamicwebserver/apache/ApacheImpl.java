@@ -1,22 +1,22 @@
 /** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
 
-This library is free software; you can redistribute it and/or
-modify it under the terms of the GNU Lesser General Public
-License as published by the Free Software Foundation; either
-version 2.1 of the License, or (at your option) any later version.
+ This library is free software; you can redistribute it and/or
+ modify it under the terms of the GNU Lesser General Public
+ License as published by the Free Software Foundation; either
+ version 2.1 of the License, or (at your option) any later version.
 
-This library is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-Lesser General Public License for more details.
+ This library is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ Lesser General Public License for more details.
 
-You should have received a copy of the GNU Lesser General Public
-License along with this library; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ You should have received a copy of the GNU Lesser General Public
+ License along with this library; if not, write to the Free Software
+ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-For more information: www.smartfrog.org
+ For more information: www.smartfrog.org
 
-*/
+ */
 
 
 package org.smartfrog.examples.dynamicwebserver.apache;
@@ -45,12 +45,14 @@ import org.smartfrog.sfcore.prim.TerminationRecord;
  * and ended in sfTerminate by setting the apacheState variable to false.
  */
 public class ApacheImpl extends CompoundImpl implements Compound, Apache,
-    DataSource, Runnable {
+        DataSource, Runnable {
     String name = "";
     String location = "";
     String baseConfigLocation = "";
     String configLocation = "";
     String apachectlLocation = "";
+    boolean manageDaemon = true;
+
     int interCheckTime;
     LogWrapper logger;
     Vector envVars;
@@ -72,7 +74,7 @@ public class ApacheImpl extends CompoundImpl implements Compound, Apache,
      * This method retrieves the paramters from the .sf file.
      *
      * @throws SmartFrogException DOCUMENT ME!
-     * @throws RemoteException DOCUMENT ME!
+     * @throws RemoteException    DOCUMENT ME!
      */
     public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
         super.sfDeploy();
@@ -91,6 +93,7 @@ public class ApacheImpl extends CompoundImpl implements Compound, Apache,
         configLocation = sfResolve(CONFIGLOCATION, "", true);
         envVars = (Vector) sfResolve(ENVVARS, true);
         apachectlLocation = sfResolve(APACHECTLLOCATION, "", true);
+        manageDaemon = sfResolve(MANAGEDAEMON, manageDaemon, false);
 
         logger.log(name, "apache deployed");
     }
@@ -99,7 +102,7 @@ public class ApacheImpl extends CompoundImpl implements Compound, Apache,
      * This sets a flag that will start the httpd process running.
      *
      * @throws SmartFrogException DOCUMENT ME!
-     * @throws RemoteException DOCUMENT ME!
+     * @throws RemoteException    DOCUMENT ME!
      */
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
@@ -133,7 +136,7 @@ public class ApacheImpl extends CompoundImpl implements Compound, Apache,
      */
     public synchronized void setApacheState(boolean newState) {
         logger.log(name,
-            "setting apache state to " + newState + " from " + apacheState);
+                "setting apache state to " + newState + " from " + apacheState);
 
         if ((!apacheState) && (newState)) {
             apacheState = newState;
@@ -164,7 +167,8 @@ public class ApacheImpl extends CompoundImpl implements Compound, Apache,
         logger.log(name, "apache monitor thread running");
 
         try {
-            p = Runtime.getRuntime().exec(apachectlLocation + " start");
+            if (manageDaemon)
+                p = Runtime.getRuntime().exec(apachectlLocation + " start");
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -175,13 +179,14 @@ public class ApacheImpl extends CompoundImpl implements Compound, Apache,
             if (needRestart) {
                 try {
                     logger.log(name, "restarting apache");
-                    p = Runtime.getRuntime().exec(apachectlLocation + " start");
+                    if (manageDaemon)
+                        p = Runtime.getRuntime().exec(apachectlLocation + " start");
                     needRestart = false;
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
             }
-             //end if (needRestart)
+            //end if (needRestart)
 
             try {
                 Thread.sleep(interCheckTime * 1000);
@@ -194,9 +199,9 @@ public class ApacheImpl extends CompoundImpl implements Compound, Apache,
                 Process p2 = Runtime.getRuntime().exec(shellLocation);
                 BufferedReader pOut2 =
                         new BufferedReader(new InputStreamReader(p2.
-                                                            getInputStream()));
+                                getInputStream()));
                 DataOutputStream dos2 =
-                                new DataOutputStream(p2.getOutputStream());
+                        new DataOutputStream(p2.getOutputStream());
 
                 dos2.writeBytes("ps -A | grep httpd" + ((char) 10));
                 dos2.writeBytes("exit 0" + ((char) 10));
@@ -217,7 +222,7 @@ public class ApacheImpl extends CompoundImpl implements Compound, Apache,
                 pOut2.close();
                 threadCount = count;
                 logger.log(name,
-                    "Currently " + count + " httpd threads are running.");
+                        "Currently " + count + " httpd threads are running.");
 
                 /**
                  * If the count is 0 is means there are no daemon processes
@@ -229,9 +234,11 @@ public class ApacheImpl extends CompoundImpl implements Compound, Apache,
                 }
 
                 if (shouldRefresh) {
-                    Process pGraceful = Runtime.getRuntime().
-                                          exec(apachectlLocation +" graceful");
-                    pGraceful.waitFor();
+                    if (manageDaemon) {
+                        Process pGraceful = Runtime.getRuntime().
+                                exec(apachectlLocation + " graceful");
+                        pGraceful.waitFor();
+                    }
                     shouldRefresh = false;
                 }
             } catch (Exception e) {
@@ -246,7 +253,8 @@ public class ApacheImpl extends CompoundImpl implements Compound, Apache,
                 // someone may have restarted it with a new thread
                 if (!getApacheState()) {
                     logger.log(name, "stopping apache");
-                    p = Runtime.getRuntime().exec(apachectlLocation + " stop");
+                    if (manageDaemon)
+                        p = Runtime.getRuntime().exec(apachectlLocation + " stop");
                     logger.log(name, "apache stopped");
                 }
             }
@@ -291,12 +299,11 @@ public class ApacheImpl extends CompoundImpl implements Compound, Apache,
      * this state.
      *
      * @param scriptURL DOCUMENT ME!
-     * @param fileName DOCUMENT ME!
-     *
+     * @param fileName  DOCUMENT ME!
      * @throws RemoteException DOCUMENT ME!
      */
     public void refreshConfig(String scriptURL, String fileName)
-        throws RemoteException {
+            throws RemoteException {
     }
 
     /**
@@ -304,7 +311,6 @@ public class ApacheImpl extends CompoundImpl implements Compound, Apache,
      * DataSource interface
      *
      * @return DOCUMENT ME!
-     *
      * @throws RemoteException DOCUMENT ME!
      */
     public int getData() throws RemoteException {
