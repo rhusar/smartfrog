@@ -1,0 +1,13 @@
+<project>
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>nux</groupId>
+  <artifactId>nux</artifactId>
+  <version>1.0-rc3</version>
+  <dependencies>
+    <dependency>
+      <groupId>xom</groupId>
+      <artifactId>xom</artifactId>
+      <version>1.1b1</version>
+    </dependency>
+  </dependencies>
+</project>

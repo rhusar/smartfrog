@@ -1,0 +1,414 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta content="Apache Forrest" name="Generator">
+<meta name="Forrest-version" content="0.7">
+<meta name="Forrest-skin-name" content="pelt">
+<title>IDE_development</title>
+<link type="text/css" href="skin/basic.css" rel="stylesheet">
+<link media="screen" type="text/css" href="skin/screen.css" rel="stylesheet">
+<link media="print" type="text/css" href="skin/print.css" rel="stylesheet">
+<link type="text/css" href="skin/profile.css" rel="stylesheet">
+<script src="skin/getBlank.js" language="javascript" type="text/javascript"></script><script src="skin/getMenu.js" language="javascript" type="text/javascript"></script><script src="skin/fontsize.js" language="javascript" type="text/javascript"></script>
+<link rel="shortcut icon" href="">
+</head>
+<body onload="init()">
+<script type="text/javascript">ndeSetTextSize();</script>
+<div id="top">
+<div class="breadtrail">
+<script src="skin/breadcrumbs.js" language="JavaScript" type="text/javascript"></script>
+</div>
+<div class="header">
+<div class="grouplogo">
+<a href="http://www.SmartFrog.org/"><img class="logoImage" alt="SmartFrog" src="images/group.png" title="SmartFrog"></a>
+</div>
+<div class="projectlogoA1">
+<a href="http://www.SmartFrog.org"><img class="logoImage" alt="" src="images/frog.gif"></a>
+</div>
+<ul id="tabs">
+<li>
+<a class="base-not-selected" href="index.html">Home</a>
+</li>
+<li>
+<a class="base-not-selected" href="sfcore.html">SmartFrog Core</a>
+</li>
+<li>
+<a class="base-not-selected" href="comp.html">Components</a>
+</li>
+<li>
+<a class="base-not-selected" href="anttasks.html">Ant Tasks</a>
+</li>
+<li>
+<a class="base-not-selected" href="extras.html">Extras</a>
+</li>
+<li>
+<a class="base-not-selected" href="examples.html">Examples</a>
+</li>
+<li>
+<a class="base-not-selected" href="jdocs_index.html">Java Docs</a>
+</li>
+<li>
+<a class="base-not-selected" href="Copyright.html">Copyright</a>
+</li>
+<li>
+<a class="base-not-selected" href="lpgl.html">License Terms</a>
+</li>
+</ul>
+</div>
+</div>
+<div id="main">
+<div id="publishedStrip">
+<div id="level2tabs"></div>
+<script type="text/javascript"><!--
+document.write("<text>Last Published:</text> " + document.lastModified);
+//  --></script>
+</div>
+<div class="breadtrail">
+             
+             &nbsp;
+           </div>
+<div id="content">
+<h1>IDE_development</h1>
+<div class="abstract"></div>
+<div id="minitoc-area">
+<ul class="minitoc">
+<li>
+<a href="#Developing+SmartFrog+with+IDEs">Developing SmartFrog with IDEs</a>
+<ul class="minitoc">
+<li>
+<a href="#Introduction">Introduction</a>
+</li>
+<li>
+<a href="#All+IDEs">All IDEs</a>
+<ul class="minitoc">
+<li>
+<a href="#Before+using+the+IDE">Before using the IDE</a>
+</li>
+<li>
+<a href="#Starting+SmartFrog+daemon+under+an+IDE">Starting SmartFrog daemon under an IDE</a>
+</li>
+<li>
+<a href="#Running+a+SmartFrog+deployment+descriptor+under+an+IDE">Running a SmartFrog deployment descriptor under an IDE</a>
+</li>
+<li>
+<a href="#Running+Unit+tests+under+an+IDE">Running Unit tests under an IDE</a>
+</li>
+<li>
+<a href="#Running+Ant+builds+under+the+IDE">Running Ant builds under the IDE</a>
+</li>
+<li>
+<a href="#Running+Ant+test+suites+under+the+IDE">Running Ant test suites under the IDE</a>
+</li>
+</ul>
+</li>
+<li>
+<a href="#Specific+IDEs">Specific IDEs</a>
+<ul class="minitoc">
+<li>
+<a href="#IntelliJ+IDEA+4.5.x">IntelliJ IDEA 4.5.x</a>
+</li>
+<li>
+<a href="#Eclipse+3.1">Eclipse 3.1</a>
+</li>
+<li>
+<a href="#JBuilder">JBuilder</a>
+</li>
+<li>
+<a href="#NetBeans">NetBeans</a>
+</li>
+<li>
+<a href="#jEdit+4.2">jEdit 4.2</a>
+</li>
+<li>
+<a href="#Emacs">Emacs</a>
+</li>
+</ul>
+</li>
+<li>
+<a href="#Dependent+Projects">Dependent Projects</a>
+</li>
+<li>
+<a href="#CVS+Integration">CVS Integration</a>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+<a name="N1000C"></a><a name="Developing+SmartFrog+with+IDEs"></a>
+<h2 class="boxed">Developing SmartFrog with IDEs</h2>
+<div class="section">
+<a name="N10011"></a><a name="Introduction"></a>
+<h3 class="boxed">Introduction</h3>
+<div class="frame fixme">
+<div class="label">Fixme (openoffice-common2forrest template)</div>
+<div class="content">
+          The previous heading is more than one level below the heading before it. To remove this fixme, correct the structuring of your document.
+        </div>
+</div>
+<p class="Text body">This document covers how to work with the SmartFrog source trees from inside IDEs.</p>
+<a name="N1001C"></a><a name="All+IDEs"></a>
+<h3 class="boxed">All IDEs</h3>
+<a name="N10021"></a><a name="Before+using+the+IDE"></a>
+<h4>Before using the IDE</h4>
+<ol>
+<li>
+<p class="P1">Run "<span class="code inline">ant components</span>" in the core directory, to build smartfrog.jar, the Ant tasks, and all non-experimental components. It is essential to build the main distribution in Ant, at least initially, to create Java source files matching the language grammar. The Ant tasks are mandatory for the testharness and component development.</p>
+</li>
+<li>
+<p class="P1">Run <span class="code inline">sfDaemon</span> to bring up the standalone daemon. This helps isolate problems; it does not run standalone, it will not work under an IDE either. </p>
+</li>
+</ol>
+<a name="N10037"></a><a name="Starting+SmartFrog+daemon+under+an+IDE"></a>
+<h4>Starting SmartFrog daemon under an IDE</h4>
+<p class="Text body">If you start a daemon under the IDE, it can listen for incoming deployment requests, such as those coming from a test case, deploying the relevant components on demand. </p>
+<ol>
+<li>
+<p class="instruction">Set up the classpath to include that of all components, or write a deployment descriptor that includes the path to needed JARs as file: URLs</p>
+</li>
+<li>
+<p class="instruction">Create an executable entry point "<span class="code inline">org.smartfrog.SFSystem</span>"</p>
+</li>
+<li>
+<p class="instruction">Set the following JVM property:<br>
+<span class="code inline">-Dorg.smartfrog.sfcore.processcompound.sfProcessName=rootProcess<br>
+</span>This tells SmartFrog to export the root process for incoming deployment requests. It is the key to turn SmartFrog into a daemon.</p>
+</li>
+<li>
+<p class="instruction">Set the following (optional) JVM options<br>
+<span class="code inline">-Dorg.smartfrog.logger.logStackTrace=true<br>-Dorg.smartfrog.iniFile=bin/default.ini <br>
+</span>This turns stack tracing on in the logs; the second points to any initialisation file to load.</p>
+</li>
+<li>
+<p class="instruction">Set the <span class="code inline">-ea -esa</span> options if you want any assertions in components to be enabled</p>
+</li>
+<li>
+<p class="instruction">Set breakpoints on any code/data you wish to debug</p>
+</li>
+<li>
+<p class="instruction">Run the test case or deployment of choice. This can be from the command line, or from the IDE itself. </p>
+</li>
+</ol>
+<p class="P3">Security Advisory: When running a daemon under the IDE, don't open the port of the daemon to the rest of your network; don't allow anyone other than yourself a login on the localhost. </p>
+<a name="N10075"></a><a name="Running+a+SmartFrog+deployment+descriptor+under+an+IDE"></a>
+<h4>Running a SmartFrog deployment descriptor under an IDE</h4>
+<p class="Text body">This is the easiest way to debug a deployment. Instead of starting a (potentially insecure) daemon, you run a local deployment under the debugger.</p>
+<ol>
+<li>
+<p class="P4">Set up the classpath to include that of all components, or write a deployment descriptor that includes the path to needed JARs as file: URLs</p>
+</li>
+<li>
+<p class="P4">Create an executable entry point "<span class="code inline">org.smartfrog.SFSystem</span>"</p>
+</li>
+<li>
+<p class="P4">Set the following (optional) JVM options<br>
+<span class="code inline"><span class="code inline">-Dorg.smartfrog.logger.logStackTrace=true<br>-Dorg.smartfrog.iniFile=bin/default.ini <br>
+</span></span>This turns stack tracing on in the logs; the second points to any initialisation file to load.</p>
+</li>
+<li>
+<p class="P4">Set the <span class="code inline">-ea -esa</span> options if you want any assertions in components to be enabled</p>
+</li>
+<li>
+<p class="P4">Set breakpoints on any code/data you wish to debug</p>
+</li>
+<li>
+<p class="P4">Identify the descriptor you want to deploy, with the following command line entries<br>
+<span class="code inline">-a :DEPLOY:files/testDeployment.sf::: <br>-e</span>
+</p>
+</li>
+</ol>
+<p class="Text body">This deploys the file "./files/testDeployment.sf". You will need to set the home directory of the program up correctly, or use an absolute path. The -e argument tells SmartFrog to exit after the deployment. </p>
+<a name="N100B1"></a><a name="Running+Unit+tests+under+an+IDE"></a>
+<h4>Running Unit tests under an IDE</h4>
+<p class="Text body">If the IDE can run JUnit test suites/packages, configure it to run the JUnit tests of the testharness or component of choice, <span class="T1">while running the daemon</span><span class="T2">. The daemon can be hosted in the debugger, or running standalone. Unless the test deployment configurations declare the </span><span class="T3">sfCodebase</span><span class="T2"> of downloadable JAR files, all the JAR files that the component needs must be already in the JVM of the daemon. </span>
+</p>
+<p class="P3">The JUnit tests need to know the location of the directory into which the test classes have been compiled. This is so that it can construct file: URIs to the deployment descriptors in the class tree. As the Ant <span class="code inline">&lt;junit&gt;</span> test does, the JUnit instance must have the the system property <span class="code inline">test.smartfrog.classesdir</span> set to the absolute location of <span class="code inline">testharness/build/test/classes</span>
+</p>
+<p class="Code">-ea -esa <br>-Dtest.smartfrog.classesdir=/home/slo/Projects/SmartFrog/Forge/core/testharness/build/test/classes</p>
+<a name="N100D8"></a><a name="Running+Ant+builds+under+the+IDE"></a>
+<h4>Running Ant builds under the IDE</h4>
+<p class="Text body">As modern IDEs all host Ant, you should be able to run the Ant build files directly from the IDE. Here are some caveats.</p>
+<ul>
+<li>
+<p class="P5">The IDE's version of Ant may be older than that which the build files or SmartFrog Ant tasks need. </p>
+</li>
+<li>
+<p class="P5">You may not have all the optional JARs, such as JUnit or Xalan, in the IDE's own copy of Ant. These are needed for <span class="code inline">&lt;junit&gt;</span> and <span class="code inline">&lt;junitreport&gt;</span> respectively. If you can get the IDE to run against your existing installation, things are better.</p>
+</li>
+<li>
+<p class="P5">The IDE Ant engine may not autoload JAR files in <span class="code inline">${user.home}/.ant/lib.</span>
+</p>
+</li>
+<li>
+<p class="P5">The build can be (noticeably) slower. This appears to be related to reporting.</p>
+</li>
+</ul>
+<a name="N100FC"></a><a name="Running+Ant+test+suites+under+the+IDE"></a>
+<h4>Running Ant test suites under the IDE</h4>
+<p class="Text body">The testharness/test target runs the SmartFrog system tests; some other projects have self-contained test suites. Usually you want to use the IDE to run a single test case/package, rather than the full system. Run the testharness build file, with:-</p>
+<ol>
+<li>
+<p class="P6">The testcase property bound to the test class you want to test<br>
+<span class="code inline">-Dtestcase=org.smartfrog.test.system.java.LibraryTest</span>
+</p>
+</li>
+<li>
+<p class="P6">Use the target buildtest to compile smartfrog then compile and run the test suites, generating the HTML reports on failure</p>
+</li>
+<li>
+<p class="P6">Use the target buildtest-noreports to omit the XSL transforms that create the HTML pages. This can save time when you are rerunning tests, and can read the failure messages that get printed to the console. </p>
+</li>
+</ol>
+<a name="N10115"></a><a name="Specific+IDEs"></a>
+<h3 class="boxed">Specific IDEs</h3>
+<a name="N1011A"></a><a name="IntelliJ+IDEA+4.5.x"></a>
+<h4>IntelliJ IDEA 4.5.x</h4>
+<p class="Text body">IntelliJ IDEA works very well as the IDE for coding SmartFrog and components. As it supports multiple simultaneous debug sessions, you can debug the daemon and a unit test at the same time. It also lets you use an external version of Ant, which eliminates discrepancies between the IDE version of Ant and the command line version.</p>
+<ol>
+<li>
+<p class="P7">Create an empty project.</p>
+</li>
+<li>
+<p class="P7">Add sub projects for smartfrog, testharness, and any components you wish to build/use.</p>
+</li>
+<li>
+<p class="P7">Configure CVS if you have write access to the repository.</p>
+</li>
+</ol>
+<p class="Heading 4">Tips</p>
+<ul>
+<li>
+<p class="P8">Beware of refactoring code that may be used in components. Only those components currently in the set of projects will be refactored; external components will not pick up changes. </p>
+</li>
+</ul>
+<p class="Heading 4">CVS Integration</p>
+<p class="Text body">CVS works very well under IDEA, although the fact that the operations are blocking means that slow operations -as most CVS updates are against the SourceForge repository- can be slow. It is useful to have another client for updates and background commits. <a class="external" href="http://smartcvs.com/">SmartCVS</a> is a good choice; this vendor supplies the CVS code used in IDEA itself.</p>
+<a name="N10142"></a><a name="Eclipse+3.1"></a>
+<h4>Eclipse 3.1</h4>
+<p class="Text body">Eclipse 3.1M6 has been used to develop some SmartFrog source. </p>
+<p class="Heading 4">Tips</p>
+<ul>
+<li>
+<p class="P9">Configure the workspace to autosave everything before running Ant, and when working with CVS. </p>
+</li>
+<li>
+<p class="P9">After doing major configuration changes, restart the app so as to force saving of all your settings.</p>
+</li>
+</ul>
+<p class="Heading 4">Ant Integration</p>
+<p class="Text body">We have encountered problems here. Problems such as: </p>
+<p class="P10">compile-source:</p>
+<p class="P11">[echo] 1.4 build.compiler=modern javac.compiler=modern</p>
+<p class="P10">compile-rmi:</p>
+<p class="P10">[rmic] RMI Compiling 49 classes to core/smartfrog/build</p>
+<p class="P12"></p>
+<p class="P13">BUILD FAILED</p>
+<p class="P13">java.lang.UnsupportedClassVersionError: sun/rmi/rmic/Main (Unsupported major.minor version 49.0)</p>
+<p class="Text body">This was tracked down to Java version problems, with a Java1.4 runtime and a Java1.5 SDK mix. Interestingly, the same problem did not arise on the command line. The error was not in the IDE itself, it merely triggered the problem. Uninstalling the Java1.4 JRE corrected things. </p>
+<p class="Text body">The other issue is that with a different Ant runtime, optional files such as junit.jar and xalan.jar were not on the classpath. You have to edit the build.xml properties to set ANT_HOME to that of your ANT runtime. This will give you the Ant and extra JARs of your command line.</p>
+<p class="Heading 4">CVS Integration</p>
+<p class="Text body">In Window/Preferences/Team, add *.sxw and *.sxi as binary filetypes, and the following to the CVS Ignore list</p>
+<p class="Code">build.properties</p>
+<p class="Code">.classpath</p>
+<p class="Code last line">.project</p>
+<p class="Text body">This stops team synchronization trying to add personal files to the repository. We have found that having a ".cvsignore" file at the base of every project/component directory stops build directories from being synchronized. In the smartfrog project itself, care must be taken not to add machine-generated source to the repository; there is a special .cvsignore in the relevant directory to prevent this. </p>
+<p class="Text body">Overall, we currently find the 'seamless' synchronization feature of Eclipse 3.1, namely its willingness to add all unmanaged files to the repository <span class="T1">unless explicitly included</span><span class="T2"> overaggressive. The biggest problem is that CVS server handles deleted directories very badly; if someone were ever to accidentally import the build/ directory of a component, nobody would be able to rebuild that component until the SourceForge support team fielded a "please delete this directory from CVS" request. </span>
+</p>
+<p class="P3">To disconnect a project from CVS, bring up the context menu on a project in the navigator, then select Team|CVS|disconnect, then confirm the disconnect, making sure that the &ldquo;do not delete&rdquo; option is set, so that other CVS tools work normally.</p>
+<a name="N10194"></a><a name="JBuilder"></a>
+<h4>JBuilder</h4>
+<p class="Text body">TODO</p>
+<a name="N1019C"></a><a name="NetBeans"></a>
+<h4>NetBeans</h4>
+<p class="P14">untested</p>
+<a name="N101A4"></a><a name="jEdit+4.2"></a>
+<h4>jEdit 4.2</h4>
+<p class="Text body">There is a XML syntax file describing .sf files, in the smartfrog/doc directory. Add this to jedit/modes then edit modes/catalog </p>
+<p class="Code">&lt;MODE NAME="smartfrog" FILE="jedit-smartfrog.xml"</p>
+<p class="Code last line">FILE_NAME_GLOB="*.sf"/&gt;</p>
+<p class="Text body">After restarting jEdit, .sf files will be given syntax highlighting.</p>
+<a name="N101B5"></a><a name="Emacs"></a>
+<h4>Emacs</h4>
+<a name="N101BA"></a><a name="Dependent+Projects"></a>
+<h3 class="boxed">Dependent Projects</h3>
+<p class="Text body">Many IDEs work best if the source for dependent libraries and tools are available. We recommend having a local copy of:</p>
+<ul>
+<li>
+<p class="P15">JUnit - for Unit test debugging</p>
+</li>
+<li>
+<p class="P15">Ant source tree -if you are working with the Ant tasks. Use CVS_HEAD of Ant, if you are extending the tasks, but be careful not to use features not in versions of Ant that the SmartFrog Ant tasks still support. At the time of writing, that means Ant1.6.2.</p>
+</li>
+<li>
+<p class="P15">Dependent libraries of components which you are developing.</p>
+</li>
+</ul>
+<a name="N101CF"></a><a name="CVS+Integration"></a>
+<h3 class="boxed">CVS Integration</h3>
+<p class="Text body">Developers with write access to the CVS repository can enable CVS integration, if their IDE supports it.</p>
+<ul>
+<li>
+<p class="P16">Make sure that core/.cvsignore is being processed, and that the IDE is not trying to aggressively synchronize all output in the build directory (as Eclipse Team Synchronization is wont to do).</p>
+</li>
+<li>
+<p class="P16">Set the CVS compression level to high, to reduce the amount of communications with the server.</p>
+</li>
+<li>
+<p class="P16">Do an update, clean build and test before checking in anything. This will reduce the risk of inadvertent collisions.</p>
+</li>
+<li>
+<p class="P16">Do not check in broken code, otherwise CruiseControl will complain.</p>
+</li>
+<li>
+<p class="P16">Avoid checking in code when cruise control is already broken, as you will get CC:d on the complaint mail.</p>
+</li>
+<li>
+<p class="P16">Remember to check in files such as rmitargets, and core/common.xml, if they have changed. </p>
+</li>
+<li>
+<p class="P16">There is a mailing list just for CVS checkins. We encourage all active developers to watch this email.</p>
+</li>
+</ul>
+<p class="Heading 5">Things to Watch out for</p>
+<ul>
+<li>
+<p class="P17">Writing code specific to your version of Java. This can be Java1.5 framework features, or it can be using "<span class="code inline">enum</span>" as a variable name in Java1.4 applications. </p>
+</li>
+<li>
+<p class="P17">Writing code against the build of a library set up with the IDE, not that in the lib dir of a component.</p>
+</li>
+<li>
+<p class="P17">Gratuitous re-ordering of imports, comment layout, etc, etc. These confuse CVS and create conflicts when there should be none.</p>
+</li>
+<li>
+<p class="P17">Not maintaining the build file of a component. The build file is the way to build components in production; IDE-only builds are for development only.</p>
+</li>
+<li>
+<p class="P17">Changing the public API by accident, while refactoring.</p>
+</li>
+<li>
+<p class="P17">Checking in code having only verified that a single test case/package works not the whole testharness.</p>
+</li>
+<li>
+<p class="P17">Import handling replacing explicit imports with .* imports. Set the number of imports in a package to trigger this feature in an IDE to 999 to effectively disable it.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="clearboth">&nbsp;</div>
+</div>
+<div id="footer">
+<div class="lastmodified">
+<script type="text/javascript"><!--
+document.write("<text>Last Published:</text> " + document.lastModified);
+//  --></script>
+</div>
+<div class="copyright">
+        Copyright &copy;
+         2005 Hewlett Packard Company</div>
+<div class="host">
+<a href="http://sourceforge.net/projects/smartfrog"><img class="logoImage" alt="" src="images/sourceforge.gif"></a>
+</div>
+</div>
+</body>
+</html>

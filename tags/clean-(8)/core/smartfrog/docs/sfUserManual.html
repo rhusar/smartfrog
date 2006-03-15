@@ -1,0 +1,1731 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta content="Apache Forrest" name="Generator">
+<meta name="Forrest-version" content="0.7">
+<meta name="Forrest-skin-name" content="pelt">
+<title>SmartFrog User Manual</title>
+<link type="text/css" href="skin/basic.css" rel="stylesheet">
+<link media="screen" type="text/css" href="skin/screen.css" rel="stylesheet">
+<link media="print" type="text/css" href="skin/print.css" rel="stylesheet">
+<link type="text/css" href="skin/profile.css" rel="stylesheet">
+<script src="skin/getBlank.js" language="javascript" type="text/javascript"></script><script src="skin/getMenu.js" language="javascript" type="text/javascript"></script><script src="skin/fontsize.js" language="javascript" type="text/javascript"></script>
+<link rel="shortcut icon" href="">
+</head>
+<body onload="init()">
+<script type="text/javascript">ndeSetTextSize();</script>
+<div id="top">
+<div class="breadtrail">
+<script src="skin/breadcrumbs.js" language="JavaScript" type="text/javascript"></script>
+</div>
+<div class="header">
+<div class="grouplogo">
+<a href="http://www.SmartFrog.org/"><img class="logoImage" alt="SmartFrog" src="images/group.png" title="SmartFrog"></a>
+</div>
+<div class="projectlogoA1">
+<a href="http://www.SmartFrog.org"><img class="logoImage" alt="" src="images/frog.gif"></a>
+</div>
+<ul id="tabs">
+<li>
+<a class="base-not-selected" href="index.html">Home</a>
+</li>
+<li>
+<a class="base-not-selected" href="sfcore.html">SmartFrog Core</a>
+</li>
+<li>
+<a class="base-not-selected" href="comp.html">Components</a>
+</li>
+<li>
+<a class="base-not-selected" href="anttasks.html">Ant Tasks</a>
+</li>
+<li>
+<a class="base-not-selected" href="extras.html">Extras</a>
+</li>
+<li>
+<a class="base-not-selected" href="examples.html">Examples</a>
+</li>
+<li>
+<a class="base-not-selected" href="jdocs_index.html">Java Docs</a>
+</li>
+<li>
+<a class="base-not-selected" href="Copyright.html">Copyright</a>
+</li>
+<li>
+<a class="base-not-selected" href="lpgl.html">License Terms</a>
+</li>
+</ul>
+</div>
+</div>
+<div id="main">
+<div id="publishedStrip">
+<div id="level2tabs"></div>
+<script type="text/javascript"><!--
+document.write("<text>Last Published:</text> " + document.lastModified);
+//  --></script>
+</div>
+<div class="breadtrail">
+             
+             &nbsp;
+           </div>
+<div id="content">
+<h1>SmartFrog User Manual</h1>
+<div class="abstract"></div>
+<div id="minitoc-area">
+<ul class="minitoc">
+<li>
+<a href="#Introduction">Introduction</a>
+</li>
+<li>
+<a href="#SmartFrog+Framework">SmartFrog Framework</a>
+<ul class="minitoc">
+<li>
+<a href="#Directories+and+Files+in+the+binary+distribution">Directories and Files in the binary distribution</a>
+</li>
+<li>
+<a href="#Classpath">Classpath</a>
+</li>
+</ul>
+</li>
+<li>
+<a href="#Using+The+Framework">Using The Framework</a>
+<ul class="minitoc">
+<li>
+<a href="#SmartFrog+Resource+References">SmartFrog Resource References</a>
+</li>
+<li>
+<a href="#SmartFrog+Action+Descriptor">SmartFrog Action Descriptor</a>
+<ul class="minitoc">
+<li>
+<a href="#NAME">NAME</a>
+</li>
+<li>
+<a href="#ACTION">ACTION</a>
+</li>
+<li>
+<a href="#SFREF">SFREF</a>
+</li>
+<li>
+<a href="#SUBREF">SUBREF</a>
+</li>
+<li>
+<a href="#HOST">HOST</a>
+</li>
+<li>
+<a href="#PROCESS">PROCESS</a>
+</li>
+<li>
+<a href="#Examples">Examples</a>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<a href="#The+Command-Line+Scripts">The Command-Line Scripts</a>
+<ul class="minitoc">
+<li>
+<a href="#SFHOME+environment+variable">SFHOME environment variable</a>
+</li>
+<li>
+<a href="#setSFProperties+script">setSFProperties script</a>
+</li>
+<li>
+<a href="#setSFDefaultProperties+script">setSFDefaultProperties script</a>
+</li>
+<li>
+<a href="#setSFDynamicClassLoadingProperties+script">setSFDynamicClassLoadingProperties script</a>
+</li>
+<li>
+<a href="#setSFSecurityProperties+script">setSFSecurityProperties script</a>
+</li>
+<li>
+<a href="#sfDaemon">sfDaemon</a>
+</li>
+<li>
+<a href="#smartfrog">smartfrog</a>
+</li>
+<li>
+<a href="#sfRun">sfRun</a>
+</li>
+<li>
+<a href="#sfStart">sfStart</a>
+</li>
+<li>
+<a href="#sfStop">sfStop</a>
+</li>
+<li>
+<a href="#sfStopDaemon">sfStopDaemon</a>
+</li>
+<li>
+<a href="#sfDetachAndTerminate">sfDetachAndTerminate</a>
+</li>
+<li>
+<a href="#sfTerminate">sfTerminate</a>
+</li>
+<li>
+<a href="#sfParse">sfParse</a>
+</li>
+<li>
+<a href="#sfPing">sfPing</a>
+</li>
+<li>
+<a href="#sfDiagnostics">sfDiagnostics</a>
+</li>
+<li>
+<a href="#sfVersion">sfVersion</a>
+</li>
+<li>
+<a href="#Typical+Usage+Models">Typical Usage Models</a>
+</li>
+<li>
+<a href="#sfManagementConsole">sfManagementConsole</a>
+</li>
+</ul>
+</li>
+<li>
+<a href="#Re-+Compiling+the+examples">Re- Compiling the examples </a>
+<ul class="minitoc">
+<li>
+<a href="#Running+the+build+scripts">Running the build scripts</a>
+</li>
+<li>
+<a href="#Re-Compiling+examples">Re-Compiling examples </a>
+</li>
+<li>
+<a href="#Creating+Java+Docs+for+the+examples+code">Creating Java Docs for the examples code</a>
+</li>
+</ul>
+</li>
+<li>
+<a href="#Enabling+Security">Enabling Security</a>
+<ul class="minitoc">
+<li>
+<a href="#Creating+The+Security+Infrastructure">Creating The Security Infrastructure</a>
+<ul class="minitoc">
+<li>
+<a href="#Running+the+security+build+scripts">Running the security build scripts</a>
+</li>
+<li>
+<a href="#Creating+a+certification+authority">Creating a certification authority</a>
+</li>
+<li>
+<a href="#The+Test+Certification+Authority">The Test Certification Authority</a>
+</li>
+<li>
+<a href="#Resetting+the+authority">Resetting the authority</a>
+</li>
+<li>
+<a href="#Signing+the+jar+files">Signing the jar files</a>
+</li>
+<li>
+<a href="#Creating+new+daemon+identities">Creating new daemon identities</a>
+</li>
+</ul>
+</li>
+<li>
+<a href="#Preparing+Hosts">Preparing Hosts</a>
+</li>
+</ul>
+</li>
+<li>
+<a href="#Remote+Class+Loading">Remote Class Loading</a>
+<ul class="minitoc">
+<li>
+<a href="#The+Model">The Model</a>
+</li>
+<li>
+<a href="#JVM-wide+Class+Loading">JVM-wide Class Loading</a>
+<ul class="minitoc">
+<li>
+<a href="#Enabling+Class+Loading+Without+Security">Enabling Class Loading Without Security</a>
+</li>
+<li>
+<a href="#Enabling+Class+Loading+With+Security">Enabling Class Loading With Security</a>
+</li>
+<li>
+<a href="#Ant+Tasks">Ant Tasks</a>
+</li>
+</ul>
+</li>
+<li>
+<a href="#Codebase+in+deployment+descriptors">Codebase in deployment descriptors</a>
+</li>
+<li>
+<a href="#Getting+The+best+of+Both+Worlds%3A+dynamic+loading+for+parsing+and+execution">Getting The best of Both Worlds: dynamic loading for parsing and execution</a>
+</li>
+<li>
+<a href="#Points+of+Note">Points of Note</a>
+<ul class="minitoc">
+<li>
+<a href="#JAR+Caching+and+reloading.">JAR Caching and reloading.</a>
+</li>
+<li>
+<a href="#Futures">Futures</a>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<a href="#Running+The+First+Example">Running The First Example</a>
+<ul class="minitoc">
+<li>
+<a href="#Local%2C+single+process+deployment">Local, single process deployment</a>
+</li>
+<li>
+<a href="#Into+a+single+daemon">Into a single daemon</a>
+</li>
+<li>
+<a href="#Remote+host">Remote host</a>
+</li>
+</ul>
+</li>
+<li>
+<a href="#SmartFrog+Command+Line">SmartFrog Command Line</a>
+<ul class="minitoc">
+<li>
+<a href="#Key+command+line+facts">Key command line facts</a>
+</li>
+<li>
+<a href="#SmartFrog+command-line+operations">SmartFrog command-line operations</a>
+</li>
+<li>
+<a href="#SmartFrog+JVM+Properties">SmartFrog JVM Properties</a>
+<ul class="minitoc">
+<li>
+<a href="#org.smartfrog.iniFile">org.smartfrog.iniFile</a>
+</li>
+<li>
+<a href="#org.smartfrog.sfcore.processcompound.sfProcessName">org.smartfrog.sfcore.processcompound.sfProcessName</a>
+</li>
+<li>
+<a href="#org.smartfrog.sfcore.processcompound.sfRootLocatorPort">org.smartfrog.sfcore.processcompound.sfRootLocatorPort</a>
+</li>
+<li>
+<a href="#org.smartfrog.codebase">org.smartfrog.codebase</a>
+</li>
+<li>
+<a href="#org.smartfrog.logger.logStackTrace">org.smartfrog.logger.logStackTrace</a>
+</li>
+<li>
+<a href="#org.smartfrog.outStreamClass">org.smartfrog.outStreamClass</a>
+</li>
+<li>
+<a href="#org.smartfrog.errStreamClass">org.smartfrog.errStreamClass</a>
+</li>
+</ul>
+</li>
+<li>
+<a href="#Security+Configuration">Security Configuration</a>
+<ul class="minitoc">
+<li>
+<a href="#java.security.manager">java.security.manager</a>
+</li>
+<li>
+<a href="#org.smartfrog.sfcore.security.propFile">org.smartfrog.sfcore.security.propFile</a>
+</li>
+<li>
+<a href="#java.security.policy">java.security.policy</a>
+</li>
+<li>
+<a href="#org.smartfrog.sfcore.security.keyStoreName">org.smartfrog.sfcore.security.keyStoreName</a>
+</li>
+</ul>
+</li>
+<li>
+<a href="#Security+Property+File+Configuration">Security Property File Configuration</a>
+</li>
+<li>
+<a href="#Useful+JVM+properties">Useful JVM properties</a>
+</li>
+<li>
+<a href="#Other+JVM+options">Other JVM options</a>
+</li>
+<li>
+<a href="#Error+Codes">Error Codes</a>
+</li>
+</ul>
+</li>
+<li>
+<a href="#Troubleshooting">Troubleshooting</a>
+<ul class="minitoc">
+<li>
+<a href="#%22SMARTFROG+SECURITY+IS+NOT+ACTIVE%22">"SMARTFROG SECURITY IS NOT ACTIVE"</a>
+</li>
+<li>
+<a href="#Unresolved+reference">Unresolved reference</a>
+</li>
+<li>
+<a href="#A+reference+to+a+component+is+not+resolving+to+the+right+type%3B+it+is+resolving+to+a+ComponentDescription.">A reference to a component is not resolving to the right type; it is resolving to a ComponentDescription. </a>
+</li>
+<li>
+<a href="#Nested+components+are+not+deployed">Nested components are not deployed</a>
+</li>
+<li>
+<a href="#Components+declared+in+a+Compound+component+are+not+deployed+in+order">Components declared in a Compound component are not deployed in order</a>
+</li>
+<li>
+<a href="#JVM+Properties+appear+incorrect">JVM Properties appear incorrect</a>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+<p class="P1"></p>
+<p class="instruction"></p>
+<p class="instruction"></p>
+<p class="instruction"></p>
+<p class="instruction"></p>
+<p class="instruction"></p>
+<p class="instruction"></p>
+<p class="P3"></p>
+<p class="P4">SmartFrog User Manual</p>
+<p class="P5">For SmartFrog Version 3.06</p>
+<p class="P6"></p>
+<p class="P7"></p>
+<p class="P8"></p>
+<p class="P9"></p>
+<p class="Heading">Table Of Contents</p>
+<p class="Text body"></p>
+<p class="P13"></p>
+<a name="N10031"></a><a name="Introduction"></a>
+<h2 class="boxed">Introduction</h2>
+<div class="section">
+<p class="P15">This manual is aimed at those wanting to run the SmartFrog framework. It assumes that user is working with the binary distribution of the SmartFrog framework. </p>
+<p class="P15">It describes:</p>
+<ul>
+<li>
+<p class="P16">Directory structure for the binary distribution</p>
+</li>
+<li>
+<p class="P16">Starting and managing the daemons</p>
+</li>
+<li>
+<p class="P16">Setting up and managing the security infrastructure</p>
+</li>
+<li>
+<p class="P16">Running the first example</p>
+</li>
+<li>
+<p class="P16">Configuring dynamic code downloading </p>
+</li>
+<li>
+<p class="P16">The manual does not cover details of how to write SmartFrog applications i.e. how to use the SmartFrog notation, the component model, etc. The reader is directed to the SmartFrog Reference Manual and its accompanying Javadoc for this information.</p>
+</li>
+</ul>
+<ol>
+<li>
+<p class="P17"></p>
+</li>
+<li>
+<p class="P18"></p>
+</li>
+</ol>
+</div>
+<a name="N1005C"></a><a name="SmartFrog+Framework"></a>
+<h2 class="boxed">SmartFrog Framework</h2>
+<div class="section">
+<a name="N10061"></a><a name="Directories+and+Files+in+the+binary+distribution"></a>
+<h3 class="boxed">Directories and Files in the binary distribution</h3>
+<p class="P13"></p>
+<p class="P13">
+<img alt="Graphic1" src="openOfficeEmbeddedImage/zip-sfUserManual.sxw/file-Pictures/10000200000000B2000000E0475C10C7.png"></p>
+<p class="P13">SFHOME = INSTALLATION_DIRECTORY/dist</p>
+<p class="P13">The distribution expanded into <span class="code-inline">SFHOME</span> contains a number of directories and files. These are</p>
+<ul>
+<li>
+<p class="P20">
+<span class="code-inline">docs</span> &ndash; a directory which includes a number of documents describing the framework and examples. It also includes the javadocs for the framework and the accompanying packages.</p>
+</li>
+<li>
+<p class="P20">
+<span class="code-inline">bin</span> &ndash; contains scripts for starting and stopping the daemons and applications; these may be used as is, or modified as required to suit local conditions. It may be desirable to include SFHOME/bin in any path environmental variable used by the shells.</p>
+</li>
+<li>
+<p class="P20">
+<span class="code-inline">lib</span> &ndash; contains all the jar files provided in the distribution.</p>
+</li>
+<li>
+<p class="P20">
+<span class="code-inline">signedLib</span> &ndash; initially empty, it is used for placing jar files signed during the security initialization process. Not all jar files in lib will be signed as not all are compatible with the security infrastructure.</p>
+</li>
+<li>
+<p class="P20">
+<span class="code-inline">testCA</span> &ndash; the files needed to provide a dummy certification authority for testing security for those who do not have access to OpenSSL.</p>
+</li>
+<li>
+<p class="P20">
+<span class="code-inline">private</span> &ndash; a directory which will contain files for the security infrastructure. Note that before any re-installation of the infrastructure, this directory may need to be saved to preserve security information. For more details see section .</p>
+</li>
+<li>
+<p class="P20">
+<span class="code-inline">src</span> &ndash; the source code for some examples showing a few of the capabilities of the system. These examples have been precompiled and are provided in <span class="code-inline">sfExamples.jar</span> in the lib directory.</p>
+</li>
+<li>
+<p class="P20">
+<span class="code-inline">build.xm</span>l<span class="Footnote Symbol">1<p class="Footnote">ANT 1.6.5 or later (http://ant.apache.org/) and Java JDK 1.4.2 have to be installed and properly configured to be able to re-compile the examples, generate javadocs for the examples and run the security build process.</p>
+</span> &ndash; a file used by ant to re/compile the examples, to generate the javadocs for the examples and to control the security build process.</p>
+</li>
+<li>
+<p class="P20">
+<span class="code-inline">rmitargets</span> &ndash; a file that contains the classes that need to be compiled with the <span class="code-inline">rmic</span> compiler.</p>
+</li>
+</ul>
+<a name="N100C6"></a><a name="Classpath"></a>
+<h3 class="boxed">Classpath</h3>
+<p class="P13">We recommend that you start SmartFrog using the packaged scripts. When this is done, there should be no need to set the class path as it is set within the scripts. However, if the user does not use the scripts, he/she has to set the classpath. The classpath settings are determined by the use of security and/or remote class loading.</p>
+<ul>
+<li>
+<p class="P21">No security; classes are local &ndash;set the class path to include every jar file in the lib directory [For reference see packaged scripts <span class="code-inline">setSFProperties </span><span class="T1">and</span><span class="code-inline"> setClassPath</span>]</p>
+</li>
+<li>
+<p class="P21">Security; classes are local &ndash; set the class path to include every jar file in the <span class="code-inline">signedLib</span> directory; these are only present after the security infrastructure has been built and not all of the packages are available in this case.</p>
+</li>
+<li>
+<p class="P21">With remote class loading &ndash; set the class path to minimally include one of the <span class="T2">lib/smartfrog.jar </span>or <span class="T2">signedLib/smarfrog.jar</span> files, depending on whether security is enabled or not. This must be local since otherwise SmartFrog cannot be started and the class loading initiated. In addition, the property <span class="T2">org.smartfrog.codebase</span><span class="T3"> </span>must be set to contain URLs to the remaining jar files. This should be done even with the process running the server component.</p>
+</li>
+</ul>
+<ol>
+<li>
+<p class="P22">More details of how to do this are in the section on remote class loading.</p>
+</li>
+</ol>
+</div>
+<a name="N100FD"></a><a name="Using+The+Framework"></a>
+<h2 class="boxed">Using The Framework</h2>
+<div class="section">
+<p class="P13">SmartFrog has many different ways of being started; all provided by the Java class <span class="code-inline">SFSystem</span> that is fully documented in the SmartFrog reference manual. Users may use either this class or the scripts provided in the <span class="code-inline">SFHOME/bin</span> directory. This section only covers the use of these scripts. </p>
+<p class="P13">The scripts provide some of the more common use models for the SmartFrog framework. They are provided primarily to give users a simple way of experimenting with the framework and are useful for running the examples provided with the distribution. </p>
+<p class="P13">All the scripts assume the following:</p>
+<ul>
+<li>
+<p class="P23">security features are not required (for enabling security, <span class="T4">setSFProperties</span> script is provided in the directory <span class="T5">SFHOME/</span><span class="T6">bin</span>.</p>
+</li>
+<li>
+<p class="P23">the <span class="code-inline">SFHOME</span> variable has been set to refer to the installation directory.</p>
+</li>
+</ul>
+<p class="P13">It is, of course, possible to use remote class loading and security together. However, it should be noted that it is left to users to create appropriate scripts for their specific environment, those provided are merely examples demonstrating what must be done. The full set of environmental variations is too great for a generalized script set to be provided.</p>
+<p class="P13">There are two concepts to understand as part of the underlying control of the SmartFrog system. The first of these is the SmartFrog Resource Reference (SFREF). This is a URL to a description file to deploy or otherwise use. The second is an SmartFrog Action Descriptor (SFACT), which is used to indicate to SmartFrog an action to take. These are now described in more detail.</p>
+<a name="N10131"></a><a name="SmartFrog+Resource+References"></a>
+<h3 class="boxed">SmartFrog Resource References</h3>
+<p class="P13">Throughout the SmartFrog system, including on the command line, references to SmartFrog resources (i.e. files) may be given in a number of ways:</p>
+<ul>
+<li>
+<p class="P24">as a URL to the file;</p>
+</li>
+<li>
+<p class="P24">as a relative or absolute path name to a file;</p>
+</li>
+<li>
+<p class="P24">as a path to a resource in a jar file on the classpath or code base.</p>
+</li>
+</ul>
+<p class="P13">In this last case, the reference should be given as a path relative to the root of the package structure within the jar file, i.e. without the leading "<span class="code-inline">/</span>". In most cases this leading "<span class="code-inline">/</span>"is removed by the code, but there may be some instances where this is not so.</p>
+<p class="P13">In the following descriptions of the scripts, a reference to such a resource is referred to as an <span class="code-inline">SFREF</span>.</p>
+<a name="N10158"></a><a name="SmartFrog+Action+Descriptor"></a>
+<h3 class="boxed">SmartFrog Action Descriptor</h3>
+<p class="P13">An action descriptor is used on the command line to describe a certain type of action that will be carried on by the daemon. An action has a number of &ldquo;:&rdquo; separated fields, most of which may be left blank in many cases.</p>
+<p class="P13">The format is: </p>
+<p class="Code last line">NAME:ACTION:SFREF:SUBREF:HOST:PROCESS</p>
+<p class="P13">The semantics of the fields are defined as follows:</p>
+<a name="N10169"></a><a name="NAME"></a>
+<h4>NAME</h4>
+<p class="Text body">The name is a single word, or a SmartFrog reference in which case it must be surrounded by quotes. The name has one of two interpretations depending on the action to be taken (see next field). </p>
+<p class="Text body">In <span class="code-inline">TERMINATE</span>, <span class="code-inline">DETACH</span>, <span class="code-inline">DETaTERM, PING</span>, <span class="code-inline">DIAGNOSTICS</span> the name is a reference to the component on which to apply the action.</p>
+<p class="Text body">In <span class="code-inline">DEPLOY</span>, the name is treated like a placement and the name is split into two: all but the last part is a reference to another component and the last (or only) part is the name which will be given to the deployed component within that referenced component. If the component is not a <span class="code-inline">ProcessCompound</span>, the component is also made the parent of the deployment.</p>
+<p class="Text body">In all cases, the <span class="code-inline">NAME</span> is resolved relative to the process compound of the <span class="code-inline">HOST</span> and <span class="code-inline">PROCESS</span> specified by the appropriate fields.</p>
+<p class="Text body">When a name is not provided, it indicates the process compound of the host and process defined in the <span class="code-inline">HOST</span> and <span class="code-inline">PROCESS</span> fields. Also, in <span class="code-inline">DEPLOY</span> no name means use the sfProcessComponentName from the description if available or generate a random name to name the deployed description.</p>
+<p class="Text body">Examples:</p>
+<p class="Code last line">foo</p>
+<p class="Code last line">"HOST localhost:foo"</p>
+<a name="N101B6"></a><a name="ACTION"></a>
+<h4>ACTION</h4>
+<p class="Text body">This field defines the action to be taken on the named component</p>
+<ul>
+<li>
+<p class="P26">
+<span class="code-inline">DEPLOY</span> a component or application.</p>
+</li>
+<li>
+<p class="P26">
+<span class="code-inline">TERMINATE</span> a component or application.</p>
+</li>
+<li>
+<p class="P26">
+<span class="code-inline">DETACH</span> a component from its parent.</p>
+</li>
+<li>
+<p class="P26">
+<span class="code-inline">DETaTERM</span> detach and terminate a component from its parent.</p>
+</li>
+<li>
+<p class="P26">
+<span class="code-inline">PING</span> a component.</p>
+</li>
+<li>
+<p class="P26">
+<span class="code-inline">PARSE</span> a description and generates report.</p>
+</li>
+<li>
+<p class="P26">
+<span class="code-inline">DIAGNOSTICS</span> a component and generate report.</p>
+</li>
+</ul>
+<a name="N101F0"></a><a name="SFREF"></a>
+<h4>SFREF</h4>
+<p class="Text body">The SmartFrog description (if needed) to be used by ACTION. It is a SmartFrog Resource Reference see 3.1. It needs to use quotes (&ldquo; or ') when the reference is using &ldquo;<span class="code-inline">:</span>&rdquo;. Currently this is only required for a <span class="code-inline">DEPLOY </span><span class="code-inline"><span class="T1">and</span></span><span class="code-inline"><span class="T7"> </span></span><span class="code-inline"><span class="code-inline">PARSE</span></span> actions and is ignored otherwise.</p>
+<p class="Text body">Examples:</p>
+<p class="Code last line">/home/sf/foo.sf</p>
+<p class="Code last line">"c:\sf\foo.sf"</p>
+<p class="Code last line">'c:\sf\foo.sf'</p>
+<a name="N1021B"></a><a name="SUBREF"></a>
+<h4>SUBREF</h4>
+<p class="Text body">When the SFREF is parsed and resolved, the result is a component description containing a number of attributes. In the &ldquo;sf&rdquo; language, this is the contents of the <span class="code-inline">sfConfig</span> definition. Under normal circumstances, it is this whole definition that is used for the deployment, but occasionally, for testing purposes perhaps, it is useful to specify some single subcomponent. Under these circumstances, the name of this attribute, or a reference to a deeply nested application, may be provided. This is the SUBREF.</p>
+<p class="Text body">Examples:</p>
+<p class="Code last line">foo</p>
+<p class="Code last line">"fist:foo"</p>
+<p class="Code last line">'fist:foo'</p>
+<a name="N10233"></a><a name="HOST"></a>
+<h4>HOST</h4>
+<p class="Text body">host name or IP from where to resolve the name. If HOST is not present, the process name is ignored and the process executing is used. If you want to refer to another process, other than the executing one, on the local host, "localhost" should be used and the appropriate PROCESS name used.</p>
+<p class="Text body">Examples:</p>
+<p class="Code last line">foo.hpl.hp.com</p>
+<p class="Code last line">127.0.0.1</p>
+<a name="N10244"></a><a name="PROCESS"></a>
+<h4>PROCESS</h4>
+<p class="Text body">process name from where to resolve the name. When empty it defaults to &ldquo;<span class="code-inline">rootProcess</span>&rdquo;. </p>
+<a name="N10250"></a><a name="Examples"></a>
+<h4>Examples</h4>
+<p class="Text body">These examples show the use of the action descriptors for different purposes.</p>
+<p class="Text body">Example 1: Deploy a description in the local daemon</p>
+<p class="Code last line">Ex1:DEPLOY:org/smartfrog/examples/counter/example.sf::localhost:</p>
+<p class="Text body">Example 2. Terminate the local <span class="code-inline">sfDaemon</span>
+</p>
+<p class="Code last line">rootProcess:TERMINATE:::localhost: </p>
+<p class="Text body">or</p>
+<p class="Code last line">:TERMINATE:::localhost:</p>
+<p class="P13">Example 3: Deploy "<span class="code-inline">counterToSucceed</span>" from <span class="code-inline">counter/example2.sf</span>
+</p>
+<p class="Code last line">counterEx3:DEPLOY:org/smartfrog/examples/counter/example2.sf:"testLevel1:counterToSucceed":localhost:</p>
+<p class="P13">Example 4: Get diagnostics report for "<span class="code-inline">sfDefault</span>" component running in localhost</p>
+<p class="Code last line">sfDefault:DIAGNOSTICS:::localhost:</p>
+<p class="Text body"></p>
+</div>
+<a name="N10286"></a><a name="The+Command-Line+Scripts"></a>
+<h2 class="boxed">The Command-Line Scripts</h2>
+<div class="section">
+<a name="N1028B"></a><a name="SFHOME+environment+variable"></a>
+<h3 class="boxed">SFHOME environment variable</h3>
+<p class="Text body">This is a variable needed by all shell scripts to determine where the SmartFrog distribution files are installed</p>
+<a name="N10293"></a><a name="setSFProperties+script"></a>
+<h3 class="boxed">setSFProperties script</h3>
+<p class="Text body">
+<span class="T4">setSFProperties</span><span class="T8"> </span>is a script for setting all the necessary SmartFrog environment properties for starting the daemon and running the applications in various modes like without security, with security and remote classloading.</p>
+<p class="Text body">This script calls other three scripts to set all the necessary properties:</p>
+<p class="P27">setDefaultProperties</p>
+<p class="P28">setSFDynamicClassLoadingProperties. Run if <span class="T4">SFDYNAMICCLASSLOADING_ON</span> is set.</p>
+<p class="P27">setSFSecurityProperties. Run if <span class="T4">SFSECURITY_ON</span> is set.</p>
+<p class="Text body">These scripts are called in this order so that some properties can be overwritten in the same order. For example, when security is enabled, the setSecurityProperties file overwrites SFDEFAULTSF and SFDEFAULTINI properties that sfDefaultProperties file also defines.</p>
+<p class="Text body">Other properties:</p>
+<ul>
+<li>
+<ul>
+<li>
+<ul>
+<li>
+<p class="P29">
+<span class="T4">SFLIBPATH</span>: to set library path (lib, signedLib, user-defined library path) for SmartFrog jar files.</p>
+</li>
+<li>
+<p class="P30">
+<span class="T4">CLASSPATH: </span>this script also sets the classpath to include the required JAR files for various modes like security on/security off and/or classloading by using <span class="T4">setClassPath</span> script with <span class="T4">SFLIBPATH</span> variable.</p>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<a name="N102D6"></a><a name="setSFDefaultProperties+script"></a>
+<h3 class="boxed">setSFDefaultProperties script</h3>
+<p class="Text body">
+<span class="T4">setSFDefaultProperties</span><span class="T8"> </span><span class="T9">is a script for setting the default smartfrog environment properties for running smartfrog. This script is run by </span><span class="T4">setSFProperties</span> when the environment variable <span class="T4">SFSECURITY_ON</span> is set.</p>
+<p class="Text body">Properties:</p>
+<ul>
+<li>
+<ul>
+<li>
+<ul>
+<li>
+<p class="P30">
+<span class="code-inline">SFUSERHOME</span>: to set the user lib directory. There are several variables available for the user to set several lib directories: <span class="code-inline">SFUSERHOME</span>, <span class="code-inline">SFUSERHOME1</span>, <span class="code-inline">SFUSERHOME2</span>, <span class="code-inline">SFUSERHOME3</span>, <span class="code-inline">SFUSERHOME4</span>
+</p>
+</li>
+<li>
+<p class="P29">
+<span class="T4">SFDEFAULTINI: </span>to set the property <span class="T5">org.smartfrog.inifile </span>for <span class="T4">default.ini </span>file which defines all the JVM system properties. </p>
+</li>
+<li>
+<p class="P29">
+<span class="T4">SFDEFAULTSF:</span> to set the property <span class="T4">org.smartfrog.sfcore.processcompound.sfDefault.sfDefault</span> for <span class="T4">default.sf</span> that contains some standard components to be deployed in all daemons and subprocesses.</p>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<a name="N1032E"></a><a name="setSFDynamicClassLoadingProperties+script"></a>
+<h3 class="boxed">setSFDynamicClassLoadingProperties script</h3>
+<p class="Text body">
+<span class="T4">setSFDynamicClassLoadingProperties</span><span class="T8"> </span><span class="T9">is a script for setting all the necessary smartfrog environment properties for starting the daemon and running the applications with dynamic class-loading enabled. This script is run by </span><span class="T4">setSFProperties</span> when the environment variable <span class="T4">SFDYNAMICCLASSLOADING_ON </span>is set.</p>
+<p class="Text body">Properties:</p>
+<ul>
+<li>
+<ul>
+<li>
+<ul>
+<li>
+<p class="P29">
+<span class="T4">SERVER:</span> to set the hostname for remote class loading.</p>
+</li>
+<li>
+<p class="P29">
+<span class="T4">CODEBASE: </span>to contain URLs to include additional jar files for remote classloading.</p>
+</li>
+<li>
+<p class="P29">
+<span class="T4">SFCODEBASE: </span>to set the property <span class="T4">org.smartfrog.codebase </span>to contain URLs to include additional jar files for remote classloading.</p>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<a name="N10367"></a><a name="setSFSecurityProperties+script"></a>
+<h3 class="boxed">setSFSecurityProperties script</h3>
+<p class="Text body">
+<span class="T4">setSFSecurityProperties</span><span class="T8"> </span><span class="T9">is a script for setting all the necessary SmartFrog environment properties for starting the daemon and running the applications with security enabled. This script is run by </span><span class="T4">setSFProperties</span> when the environment variable <span class="T4">SFSECURITY_ON</span> is set.</p>
+<p class="P31">Properties:</p>
+<ul>
+<li>
+<ul>
+<li>
+<ul>
+<li>
+<p class="P32">
+<span class="T4">SFSECURITY: </span><span class="T10">to set the properties for enabling the security infrastructure.</span>
+</p>
+</li>
+<li>
+<p class="P33">
+<span class="T4">SFDEFAULTINI: </span>to set the property <span class="T5">org.smartfrog.inifile </span>for <span class="T4">default.ini </span>file which defines all the JVM system properties. This property will overwrite the definition included by <span class="T4">setSFDefaultProperties.</span>
+</p>
+</li>
+<li>
+<p class="P32">
+<span class="T4">SFDEFAULTSF:</span><span class="T10"> to set the property </span><span class="T4">org.smartfrog.sfcore.proccesscompound.sfDefault.sfDefault</span><span class="T10"> for </span><span class="T4">default.sf</span><span class="T10"> that contains some standard components to be deployed in all daemons and subprocesses. This property will overwrite the definition included by </span><span class="T4">setSFDefaultProperties. </span>
+</p>
+</li>
+<li>
+<p class="P32">
+<span class="T4">SFHOSTNAME: </span><span class="T10">to determine the credentials to used. It defines the name of the subdirectory in private that contains the credentials. </span><span class="T5">host1 </span><span class="T10">is used as default value</span><span class="T11">.</span>
+</p>
+<p class="P34">
+<span class="T10">The user only needs to modify these properties (</span><span class="T4">SFUSERHOME,SFDYNAMICCLASSLOADING_ON, SFSECURITY_ON,</span><span class="T10"> </span><span class="T4">SFDEFAULTINI, SFDEFAULTSF, SERVER, CODEBASE, SFCODEBASE, SFSECURITY</span><span class="T10">) for various modes in this script or in his system environment and all the other scripts for daemons and applications will use them.</span>
+</p>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<a name="N103DD"></a><a name="sfDaemon"></a>
+<h3 class="boxed">sfDaemon</h3>
+<p class="Text body">
+<span class="code-inline">sfDaemon</span> is a script that creates a root process compound (see reference manual). As a root process, it starts a registry to enable it to be located by other SmartFrog systems, by default this registry is on port 3800.</p>
+<p class="Text body">At start up, the daemon (and every sub-process created by it) reads the following files from the directory <span class="code-inline">${SFHOME}/bin/</span> . </p>
+<ul>
+<li>
+<ul>
+<li>
+<ul>
+<li>
+<p class="P35">
+<span class="code-inline">default.ini</span> : to define JVM system properties; this may be edited to alter those it uses. It may not be used for properties that affect security or code loading &ndash; it is read after these are already initialized.</p>
+</li>
+<li>
+<p class="P35">
+<span class="code-inline">default.sf</span> : containing some standard components that should be deployed in all daemons and sub-processes; this may be edited as required. By default, it contains a component to start a display window for the process (shows <span class="code-inline">stdout</span>, <span class="code-inline">stderror</span> and provides additional information). This description registers itself using the name <span class="code-inline">sfDefault</span>.</p>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="P13">To stop the daemon, see <span class="code-inline">sfStopDaemon</span>.</p>
+<a name="N10415"></a><a name="smartfrog"></a>
+<h3 class="boxed">smartfrog</h3>
+<p class="Text body">
+<span class="code-inline">smartfrog</span> wraps <span class="code-inline">SFSystem</span>. The <span class="code-inline">SFSystem</span> is documented in the SmartFrog reference manual. <span class="code-inline">smartfrog</span> behaves like <span class="code-inline">sfDaemon</span> except that the daemon created is not a root process, just a simple daemon which can be used to run SmartFrog applications which are run locally or do not require other SmartFrog systems to locate them.</p>
+<p class="Text body">The command line parameters are as for <span class="code-inline">sfDaemon</span>, none, one or more than one of each is permitted:</p>
+<ul>
+<li>
+<ul>
+<li>
+<ul>
+<li>
+<p class="P36">
+<span class="code-inline">-a SFACT</span>: SmartFrog Action Descriptors (SFACT) that the daemon has to execute.</p>
+</li>
+<li>
+<p class="P36">
+<span class="code-inline">-f SFREF</span>: file that contains a set of SmartFrog Action Descriptors (SFACT).</p>
+</li>
+<li>
+<p class="P36">
+<span class="T12">-e</span>: the daemon will terminate after finishing the deployment. Similar functionality can be achieved with:</p>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<ul></ul>
+<ul>
+<li>
+<ul>
+<li>
+<ul>
+<li>
+<ul>
+<li>
+<ul>
+<li>
+<ul>
+<li>
+<ul>
+<li>
+<ul>
+<li>
+<p class="P38">
+<span class="code-inline">-d</span>: environment diagnostics report for daemon</p>
+</li>
+<li>
+<p class="P38">
+<span class="code-inline">-?</span>: usage and help information</p>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="P13">Only the <span class="code-inline">default.ini</span> file is read by default: editing the script will be required to change this.</p>
+<p class="P13">The <span class="code-inline">smartfrog</span> script is the most flexible command and can be used to replace all other scripts except <span class="code-inline">sfDaemon</span>.</p>
+<a name="N10481"></a><a name="sfRun"></a>
+<h3 class="boxed">sfRun</h3>
+<p class="P13">The <span class="code-inline">sfRun</span> script is similar to <span class="code-inline">sfDaemon</span> except that the daemon created is not a root process, just a simple daemon which can be used to run SmartFrog applications which are run locally or do not require other SmartFrog systems to locate them using the registry (<span class="code-inline">HOST</span> links).</p>
+<p class="P13">The command line parameters are:</p>
+<ul>
+<li>
+<ul>
+<li>
+<ul>
+<li>
+<p class="P39">
+<span class="code-inline">SFREF</span> : the <span class="code-inline">SFREF</span> where the text is to be found to be parsed and deployed.</p>
+</li>
+<li>
+<p class="P39">
+<span class="code-inline">-e</span>: to terminate the daemon after if finishes the deployment. Optional.</p>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="P13">Only the <span class="code-inline">default.ini</span> file is read by default: editing the script will be required to change this.</p>
+<p class="P13">This command is equivalent to: </p>
+<p class="Code last line">smartfrog -a :DEPLOY:SFREF::: -e</p>
+<a name="N104BC"></a><a name="sfStart"></a>
+<h3 class="boxed">sfStart</h3>
+<p class="Text body">
+<span class="code-inline">sfStart</span> is a simple way of getting applications launched into a network of SmartFrog daemons, even if one is not running on the local host. The command line is</p>
+<ol>
+<li>
+<p class="P40">sfStart <span class="T3">hostname</span> <span class="T3">appname</span> SFREF</p>
+</li>
+</ol>
+<p class="P13">with the following interpretation:</p>
+<ul>
+<li>
+<p class="P41">
+<span class="T2">hostname</span> : is the name of a host on which the root daemon is running through which deployment should be done; the name <span class="T2">localhost</span> may be used to indicate that the daemon is running locally.</p>
+</li>
+<li>
+<p class="P41">
+<span class="T2">appname</span> : the name by which the application should be known in that daemon &ndash; this is important for <span class="T13">sfTerminate</span>. If not name is provided (using &ldquo;&rdquo;) if available sfProcessComponentName attribute in the description will be used to name the application or, if it is not available a random name will be generated.</p>
+</li>
+<li>
+<p class="P41">
+<span class="code-inline">SFREF</span> : the <span class="code-inline">SFREF</span> where the text is to be found to be parsed and deployed.</p>
+</li>
+</ul>
+<p class="P42">This command is equivalent to: </p>
+<p class="Code last line">smartfrog -a appname:DEPLOY:SFREF::hostname: -e</p>
+<a name="N104FF"></a><a name="sfStop"></a>
+<h3 class="boxed">sfStop</h3>
+<p class="P13">
+<span class="code-inline">sfStop</span> is now obsolete and replaced by <span class="code-inline">sfTerminate</span>. Please see <span class="code-inline">sfTerminate</span>.</p>
+<a name="N10512"></a><a name="sfStopDaemon"></a>
+<h3 class="boxed">sfStopDaemon</h3>
+<p class="P13">
+<span class="code-inline">sfStopDaemon</span> is the counterpart to the <span class="code-inline">sfDaemon</span> command, in that it can terminate every application that was deployed in a daemon and then the daemon itself. </p>
+<p class="P13">The command line is:</p>
+<p class="Code last line">sfStopDaemon hostname </p>
+<p class="P13">with the following interpretation:</p>
+<ul>
+<li>
+<p class="P41">
+<span class="T2">hostname</span> : is the name of a host on which the root daemon is running through which deployment should be done; the name <span class="T2">localhost</span> may be used to indicate that the daemon is running locally.</p>
+</li>
+</ul>
+<p class="P13">This command is equivalent to: </p>
+<p class="Code last line">
+<span class="T14">sfTerminate</span> <span class="T3">hostname</span> rootProcess</p>
+<p class="Text body">or</p>
+<p class="Code last line">smartfrog -a rootProcess:TERMINATE:::hostname: -e</p>
+<p class="Text body">or</p>
+<p class="Code last line">smartfrog -a :TERMINATE:::hostname: -e</p>
+<a name="N1054F"></a><a name="sfDetachAndTerminate"></a>
+<h3 class="boxed">sfDetachAndTerminate</h3>
+<p class="P13">
+<span class="code-inline">sfDetachAndTerminate</span> is a script that detaches the named component from the SmartFrog system and then terminates it. This detachment and termination does not affect the other components. </p>
+<p class="P13">The command line is:</p>
+<ol>
+<li>
+<p class="P43">sfDetachAndTerminate <span class="T3">hostname</span> <span class="T3">appname</span>
+</p>
+</li>
+</ol>
+<p class="P13">with the following interpretation:</p>
+<ul>
+<li>
+<p class="P41">
+<span class="T2">hostname</span> : is the name of a host on which the root daemon is running through which deployment should be done; the name <span class="T2">localhost</span> may be used to indicate that the daemon is running locally.</p>
+</li>
+<li>
+<p class="P41">
+<span class="T2">appname</span> : the complete name by which the component should be known in that daemon.</p>
+<p class="P44">This command is equivalent to: </p>
+</li>
+</ul>
+<ol>
+<li>
+<p class="P45">smartfrog -a appname:DETaTERM:::hostname: -e</p>
+</li>
+</ol>
+<a name="N10587"></a><a name="sfTerminate"></a>
+<h3 class="boxed">sfTerminate</h3>
+<p class="P13">
+<span class="code-inline">sfTerminate</span> is a script that terminates the named component from the SmartFrog system. The termination does not affect the other components. </p>
+<p class="P13">The command line is:</p>
+<ol>
+<li>
+<p class="P43">sfTerminate <span class="T3">hostname</span> <span class="T3">appname</span>
+</p>
+</li>
+</ol>
+<p class="P13">with the following interpretation:</p>
+<ul>
+<li>
+<p class="P41">
+<span class="T2">hostname</span> : is the name of a host on which the root daemon is running through which deployment should be done; the name <span class="T2">localhost</span> may be used to indicate that the daemon is running locally.</p>
+</li>
+<li>
+<p class="P41">
+<span class="T2">appname</span>: the complete name by which the component should be known in that daemon.</p>
+<p class="P44">This command is equivalent to: </p>
+</li>
+</ul>
+<ol>
+<li>
+<p class="P45">smartfrog -a appname:TERMINATE:::hostname: -e</p>
+</li>
+</ol>
+<a name="N105BF"></a><a name="sfParse"></a>
+<h3 class="boxed">sfParse</h3>
+<p class="P13">
+<span class="code-inline">sfParse</span> is different from the other scripts in that it does not invoke the <span class="code-inline">SFSystem</span> class to deploy the application. It is merely a tool to help in learning the notation or to debug an application description when unexpected effects are observed.</p>
+<p class="P13">The <span class="code-inline">sfParse</span> script parses and fully resolves the description and then prints the resultant expanded and processed description to the console.</p>
+<p class="P13">If the verbose flag is set, the <span class="code-inline">sfParse</span> script carries out the same process, but at each step, the abstract syntax tree on which the various tools operate is printed to the console. Consequently, the complete description (with include files expanded) is printed, it is printed again after type resolution, again after place resolution and so on, for all the required phases.</p>
+<p class="P13">The command is</p>
+<p class="Code last line">sfParse [-v] [-q] [-r] [-R] {[-f] filename | SFREF}</p>
+<ol>
+<li>
+<ol>
+<li>
+<ol>
+<li>
+<ol>
+<li>
+<ol></ol>
+</li>
+</ol>
+</li>
+</ol>
+</li>
+</ol>
+</li>
+</ol>
+<p class="P13">All the command line parameters are:</p>
+<ul>
+<li>
+<p class="P47">
+<span class="code-inline">-v</span>: verbose, prints every parser phase. </p>
+</li>
+<li>
+<p class="P48">
+<span class="code-inline">-q</span>: quiet, no phase printed. Overrides <span class="code-inline">-v</span>. Only errors are reported.</p>
+</li>
+<li>
+<p class="P47">
+<span class="code-inline">-r</span>: show status parsing report.</p>
+</li>
+<li>
+<p class="P48">
+<span class="code-inline">-R</span>: create status parsing report in an HTML file named: <span class="code-inline">&lt;filename&gt;_report.html</span>.</p>
+</li>
+<li>
+<p class="P47">
+<span class="code-inline">-f filename</span>: file with a list of SmartFrog descriptions (SFREFs) to parse.</p>
+</li>
+<li>
+<p class="P47">
+<span class="code-inline">SFREF:</span> reference for a SmartFrog file or description.</p>
+</li>
+<li>
+<p class="P47">
+<span class="code-inline">-?</span>: shows command line usage info. </p>
+</li>
+</ul>
+<p class="P13">Example:</p>
+<p class="Code last line">sfParse -r org/smartfrog/examples/counter/example.sf</p>
+<a name="N1062E"></a><a name="sfPing"></a>
+<h3 class="boxed">sfPing</h3>
+<p class="P13">
+<span class="code-inline">sfPing</span> pings a component to check if it is alive. If no component is selected it will ping the root process compound.</p>
+<p class="P49">sfPing <span class="T3">hostname [componentname]</span>
+</p>
+<ul></ul>
+<ol>
+<li>
+<p class="P45">smartfrog -a componentname:PING:::hostname: -e</p>
+</li>
+</ol>
+<a name="N10645"></a><a name="sfDiagnostics"></a>
+<h3 class="boxed">sfDiagnostics</h3>
+<p class="P13">
+<span class="code-inline">sfDiagnostics</span> creates a diagnostics report for a component. If no component is selected it will create the diagnostics report for the root process compound.</p>
+<p class="P49">sfDiagnostics <span class="T3">hostname [componentname] [processname]</span>
+</p>
+<ul></ul>
+<ol>
+<li>
+<p class="P45">smartfrog -a componentname:DIAGNOSTICS:::hostname:procssname -e</p>
+</li>
+</ol>
+<a name="N1065C"></a><a name="sfVersion"></a>
+<h3 class="boxed">sfVersion</h3>
+<p class="P13">
+<span class="code-inline">sfVersion</span> prints out the current SmartFrog version number to the console. The command line syntax for the script is</p>
+<p class="Code last line">sfVersion</p>
+<a name="N1066A"></a><a name="Typical+Usage+Models"></a>
+<h3 class="boxed">Typical Usage Models</h3>
+<p class="P13">The two models for deploying applications supported by the scripts are follows:</p>
+<ul>
+<li>
+<p class="P50">Locally, in a single process for testing or simply because no distribution is necessary. This is achieved by using the <span class="code-inline">sfRun</span> script.</p>
+</li>
+<li>
+<p class="P50">In a network of machines, each running a root daemon and each started by the <span class="code-inline">sfDaemon</span> script. The applications are launched using <span class="code-inline">sfStart</span> and perhaps terminated using the <span class="code-inline">sfTerminate</span> script.</p>
+</li>
+</ul>
+<a name="N1068B"></a><a name="sfManagementConsole"></a>
+<h3 class="boxed">sfManagementConsole</h3>
+<p class="P13">
+<span class="code-inline">sfManagementConsole</span> starts a console to show information and manage the applications deployed in a particular daemon in real time. No information is cached. Each application is shown in a different tab panel. </p>
+<p class="P13">The command line parameters are:</p>
+<ul>
+<li>
+<p class="P47">
+<span class="code-inline">-h &lt;HOSTNAME&gt;</span> : host name where the daemon is running.</p>
+</li>
+<li>
+<p class="P47">
+<span class="code-inline">-p &lt;PORT_NUMBER</span> &gt;: port that the daemon is using.</p>
+</li>
+<li>
+<p class="P48">
+<span class="code-inline">-w &lt;WINDOW_POSITION&gt;</span>: where to show the console window. Valid values are: <span class="code-inline">N</span> (north), <span class="code-inline">NE</span>, <span class="code-inline">NW</span>, <span class="code-inline">S</span> (south), <span class="code-inline">SE</span>, <span class="code-inline">SW</span>, <span class="code-inline">C</span> (centre), <span class="code-inline">E</span> (east), <span class="code-inline">W</span> (west).</p>
+</li>
+<li>
+<p class="P47">-r: shows an extra panel that connects to the daemon directly. Note that the <span class="code-inline">rootProcess</span> component has a link to itself. Experts only.</p>
+</li>
+<li>
+<p class="P47">-?: shows command line usage info. </p>
+</li>
+</ul>
+<p class="P13">Some important features:</p>
+<p class="P13">Button bar:</p>
+<p class="P51">
+<span class="T15">Reload Panels</span>: The system is rescanned for an updated view.</p>
+<p class="P13">Using the right button of the mouse there are some management actions available:</p>
+<ol>
+<li>
+<p class="P52">Right click in left panel:</p>
+</li>
+</ol>
+<p class="P51">
+<span class="T15">Terminate Component:</span> Terminates the component selected. The termination can be <span class="code-inline">NORMAL</span> or <span class="code-inline">ABNORMAL</span>.</p>
+<p class="P51">
+<span class="T15">Detach and Terminate Component:</span> Detaches the selected component from the SmartFrog system and then terminates it. It uses a <span class="code-inline">NORMAL</span> termination.</p>
+<p class="P51">
+<span class="T15">Detach Component:</span> Detaches the selected component from the SmartFrog system.</p>
+<ol>
+<li>
+<p class="P52">Right click <span class="T16">in right panel over the attributes table:</span>
+</p>
+</li>
+</ol>
+<p class="P51">
+<span class="T15">Remove Attribute: </span>Remove the selected attribute from the selected component.</p>
+<p class="P53">
+<img alt="Graphic7" src="openOfficeEmbeddedImage/zip-sfUserManual.sxw/file-Pictures/1000000000000280000001E0A1DF18CA.png"></p>
+<p class="P51">
+<span class="T15">Add/Modify Attribute: </span>Add a new attribute and its value or to modify an existing one. Next is shown a picture of the dialog used to add\modify attributes with the attribute types that it supports. <span class="T17">Value</span> will understand any notation understood by the parser.</p>
+<p class="P54"></p>
+<p class="P54">
+<img alt="Graphic8" src="openOfficeEmbeddedImage/zip-sfUserManual.sxw/file-Pictures/10000000000001E1000001567FB6DF00.png"></p>
+<p class="P13">At the bottom of the management console, a status bar shows the canonical name for the selected component. This information can be copied using &ldquo;<span class="code-inline">ctrl+C</span>&rdquo; after selecting it.</p>
+<p class="P13">This console can also be started from every daemon display using the option: <span class="code-inline">Help -&gt; SF Mng</span> Console. After selecting that option, a dialog is displayed to choose a host to connect. </p>
+<p class="P55">
+<img alt="Graphic9" src="openOfficeEmbeddedImage/zip-sfUserManual.sxw/file-Pictures/10000000000000B1000000B77C6A78E7.png"> <img alt="Graphic10" src="openOfficeEmbeddedImage/zip-sfUserManual.sxw/file-Pictures/100000000000010C000000807F8C7D97.png"></p>
+</div>
+<a name="N1074C"></a><a name="Re-+Compiling+the+examples"></a>
+<h2 class="boxed">Re- Compiling the examples </h2>
+<div class="section">
+<a name="N10751"></a><a name="Running+the+build+scripts"></a>
+<h3 class="boxed">Running the build scripts</h3>
+<p class="P56">The examples are built by an Ant build fileprovided as part of the release, in <span class="code-inline">SFHOME/build.xml</span>. Once Ant is installed, these may be run from the <span class="code-inline">SFHOME</span> directory. Running the command <span class="T2">ant -p</span> generates a short help message that describes the main targets. Actions that are possible include :</p>
+<a name="N10765"></a><a name="Re-Compiling+examples"></a>
+<h3 class="boxed">Re-Compiling examples </h3>
+<p class="P56">Compiling or recompiling the examples is as simple as running</p>
+<p class="Code last line">ant build</p>
+<p class="P56">in the <span class="code-inline">SFHOME</span> directory.</p>
+<p class="P56">This builds all the code contained in <span class="code-inline">SFHOME/src/org/smartfrog/examples</span> and creates a jar file called <span class="code-inline">sfExamples.jar </span>in <span class="code-inline">SFHOME/lib</span>.</p>
+<p class="P56">To compile code existing in different location a modification of <span class="code-inline">SFHOME/build.xml</span> is required.</p>
+<a name="N1078D"></a><a name="Creating+Java+Docs+for+the+examples+code"></a>
+<h3 class="boxed">Creating Java Docs for the examples code</h3>
+<p class="P56">Creating the javadocs for the examples code is as simple as running</p>
+<p class="Code last line">ant jdocs</p>
+<p class="P56">in the <span class="code-inline">SFHOME</span> directory.</p>
+<p class="P56">This creates a new directory called <span class="code-inline">SFHOME/jdocs</span> where the javadocs are placed. Once Ant finishes, check <span class="code-inline">SFHOME/jdocs/index.html</span> to browse the result.</p>
+</div>
+<a name="N107AA"></a><a name="Enabling+Security"></a>
+<h2 class="boxed">Enabling Security</h2>
+<div class="section">
+<p class="P13">The security infrastructure is designed to provide an environment within which a SmartFrog system may be securely deployed and applications executed. A complete description of the principles behind the security system is given in the reference manual.</p>
+<a name="N107B2"></a><a name="Creating+The+Security+Infrastructure"></a>
+<h3 class="boxed">Creating The Security Infrastructure</h3>
+<p class="P13">The principle behind the security build environment is as follows:</p>
+<ul>
+<li>
+<p class="P57">create a certification authority for code signing on a central host, thereby defining the community;</p>
+</li>
+<li>
+<p class="P58">sign all JAR files compatible with the security infrastructure (the main restrictions are to do with class loading) on that host;</p>
+</li>
+<li>
+<p class="P58">create host identities on the central host;</p>
+</li>
+<li>
+<p class="P58">securely distribute identities and signed files to each host;</p>
+</li>
+<li>
+<p class="P58">ensure operating system protection of security credentials;</p>
+</li>
+<li>
+<p class="P58">start SmartFrog with security enabled.</p>
+</li>
+</ul>
+<a name="N107D3"></a><a name="Running+the+security+build+scripts"></a>
+<h4>Running the security build scripts</h4>
+<p class="Text body">The security is built by Ant build scripts provided as part of the release, in <span class="code-inline">SFHOME/build.xml</span>. Once Ant is installed, these may be run from the <span class="code-inline">SFHOME</span> directory. Running the command <span class="T2">ant -p </span>generates a short help message that describes the main targets. Actions that are possible include:</p>
+<a name="N107E7"></a><a name="Creating+a+certification+authority"></a>
+<h4>Creating a certification authority</h4>
+<p class="Text body">This must be done once only for each security community required. It is usually done on a secure central host and the information distributed using secure means to the execution hosts in the system. Note that each security domain will require its own copy of the SmartFrog directories so as not to confuse the identities, keys, etc.</p>
+<p class="Text body">To create a new certification authority requires OpenSSL to be installed. Once this is done, creating a new CA is as simple as running</p>
+<p class="Code last line">ant initCA</p>
+<ol>
+<li>
+<ol>
+<li>
+<ol>
+<li>
+<ol>
+<li>
+<ol></ol>
+</li>
+</ol>
+</li>
+</ol>
+</li>
+</ol>
+</li>
+</ol>
+<p class="Text body">This creates the authority for signing code that will be checked for by each host as code is loaded. If a new certification authority is created, no existing signed code will be loaded by new daemons, and existing running daemons will no longer be able to interact with them.</p>
+<a name="N10801"></a><a name="The+Test+Certification+Authority"></a>
+<h4>The Test Certification Authority</h4>
+<p class="Text body">If OpenSSL is not present, yet there is a need to test code using a CA, the SmartFrog distribution comes with a dummy CA, contained in the directory <span class="code-inline">testCA</span>. Using this CA provides a fully capable security infrastructure, but it should not be considered secure for real deployment.</p>
+<p class="Text body">The command to create the dummy CA is</p>
+<p class="Code last line">ant dummyInitCA</p>
+<ol>
+<li>
+<ol>
+<li>
+<ol>
+<li>
+<ol>
+<li>
+<ol></ol>
+</li>
+</ol>
+</li>
+</ol>
+</li>
+</ol>
+</li>
+</ol>
+<a name="N1081C"></a><a name="Resetting+the+authority"></a>
+<h4>Resetting the authority</h4>
+<p class="Text body">At times, it might be useful to reset all the information regarding a certification authority. This may be done by running the script</p>
+<ol>
+<li>
+<ol>
+<li>
+<ol>
+<li>
+<ol>
+<li>
+<ol></ol>
+</li>
+</ol>
+</li>
+</ol>
+</li>
+</ol>
+</li>
+</ol>
+<p class="Text body">run from the <span class="code-inline">SFHOME</span> directory. Users must now run one of the above scripts.</p>
+<a name="N10834"></a><a name="Signing+the+jar+files"></a>
+<h4>Signing the jar files</h4>
+<p class="Text body">Once the certification authority has been created, all the jar files may be signed and placed into the <span class="code-inline">signedLib</span> directory by running the command</p>
+<p class="Code last line">ant signJars</p>
+<p class="Text body">from the SFHOME directory. Currently only a few of the jar files are signed. If a user jar file is required to be signed, in addition to those distributed with SmartFrog, the <span class="code-inline">signJars</span> target in the <span class="code-inline">build.xml </span>file may be modified. The alternate approach is to use the <span class="code-inline">&lt;sf-sign&gt;</span> Ant task within one's own build file.</p>
+<a name="N10852"></a><a name="Creating+new+daemon+identities"></a>
+<h4>Creating new daemon identities</h4>
+<p class="Text body">Each root daemon in the security domain must have a separate identity, this identity being cryptographically strong. The command</p>
+<p class="Code last line">ant newDaemon</p>
+<p class="Text body">creates a new identity. These identities are created in the <span class="code-inline">SFHOME/private</span> directory, each in a separate subdirectory named <span class="code-inline">hostxxx</span>, where <span class="code-inline">xxx</span> is a unique number generated from the current time and date. As many of these as required may be created. The <span class="code-inline">hostxxx</span> directory contains two files:</p>
+<ul>
+<li>
+<p class="P62">
+<span class="code-inline">mykeys.st</span> &ndash; the keystore for the host that contains certificates, trust assumptions and keys.</p>
+</li>
+<li>
+<p class="P62">
+<span class="code-inline">SFSecurity.properties</span> &ndash; the default security properties for the host, this may be edited if required, and contains a random password that unlocks the keystore.</p>
+</li>
+</ul>
+<p class="Text body">The <span class="code-inline">testCA</span> directory contains some pre-created identities that are copied into the private directory by the target <span class="code-inline">dummyInitCA</span>.</p>
+<a name="N1088A"></a><a name="Preparing+Hosts"></a>
+<h3 class="boxed">Preparing Hosts</h3>
+<p class="Text body">Each host must be prepared to run in a secure mode. This means that several simple steps must be taken:</p>
+<ul>
+<li>
+<p class="P63">All the signed jar files must be downloaded and placed in the appropriate location, such as the <span class="T2">signedJar</span> directory; minimally this must include the <span class="code-inline">smartfrog.jar</span> file.</p>
+</li>
+<li>
+<p class="P63">The host identity must be securely transferred to the host (by floppy, over a secure network or using some secured protocol). The two files from the selected <span class="code-inline">hostxxx</span> directory, the security properties and the key store, must be placed the <span class="T3">private</span> directory on the specific host and this directory MUST be made read-only and accessible only to the user account running the daemon.</p>
+</li>
+<li>
+<p class="P63">The start-up scripts must be protected to ensure that as SmartFrog is started the security is indeed enabled. </p>
+</li>
+<li>
+<p class="P63">If an .ini file is used during startup, this is read before the security system is initialized and consequently it is read without checking for signatures. It should therefore be read only from a secured source, such as the private directory. Note that security properties may not be set within the .ini file.</p>
+</li>
+<li>
+<p class="P63">All SmartFrog files and class files MUST be read from signed and sealed jar files otherwise exceptions will occur. This includes the <span class="code-inline">iniSFFile</span>. All application code must therefore be packaged, sealed, and signed.</p>
+</li>
+<li>
+<p class="P63">The environment variable SFHOSTNAME has to be defined to select the credentials from &ldquo;private&rdquo; directory that are going to be used. This variable names the subdirectory that has to be used. <span class="T18">host1</span> is used as default value. </p>
+</li>
+</ul>
+<p class="P64">
+<span class="T19">The </span><span class="T20">SFHOME/bin/security</span><span class="T21"> directory has a set of scripts to run SmartFrog with security enabled. Modify </span><span class="T22">setSFSecurityProperties</span><span class="T18"> </span><span class="T21">script to modify the property SFSECURITY to enable security features. The rest of the scripts like </span><span class="T22">sfDaemon</span><span class="T18">, </span><span class="T22">sfStart</span><span class="T18">, </span><span class="T22">sfTerminate</span><span class="T21"> </span><span class="T18">etc.</span><span class="T21"> use this to work in a secure mode.</span>
+</p>
+<p class="P64">
+<span class="T21">Another alternative is to define the property </span><span class="T18">SFSECURITY_ON</span><span class="T21"> in your environment or modify </span><span class="T22">setSFProperties</span><span class="T18"> </span><span class="T21">(remove comment) to get all the scripts running with security on.</span>
+</p>
+</div>
+<a name="N10903"></a><a name="Remote+Class+Loading"></a>
+<h2 class="boxed">Remote Class Loading</h2>
+<div class="section">
+<a name="N10908"></a><a name="The+Model"></a>
+<h3 class="boxed">The Model</h3>
+<p class="Text body">SmartFrog provides an integrated remote class loading system that is compatible with the security system, though it also works without security. It is slightly more restrictive than it might be because of the need to be secure, in that all the remote resources must be in Jar files.</p>
+<p class="Text body">A web server can be used to serve jar files to requesting daemons. All other daemons are then configured to use the server to access all jar files except the core <span class="code-inline">smartfrog.jar</span> that must be local to bootstrap the SmartFrog system. </p>
+<a name="N10917"></a><a name="JVM-wide+Class+Loading"></a>
+<h3 class="boxed">JVM-wide Class Loading</h3>
+<p class="Text body">The first way to control the classloader is to provide a list of URLs to JAR files -files which must be signed when running SmartFrog securely. When set in this way, the property controls not only which JAR files are loaded to run programs, but which are also used for searching for deployment descriptors used in #include statements.</p>
+<p class="Text body">Remember that these statements are parsed before everything else, but are parsed in the program doing the initial parsing of the deployment descriptor, <span class="T3">not the deployment.</span><span class="T23"> Except for the special case of </span><span class="T2">default.sf</span><span class="T23"> scripts for a daemon, the program doing the parsing is the copy of SmartFrog that is run to initiate the deployment, usually via the scripts or the ant tasks. </span>
+</p>
+<p class="Text body">To set the classloader URL path in a JVM, define it in the Java system property <span class="T2">org.smartfrog.codebase</span><span class="T3"> . </span>
+</p>
+<a name="N10937"></a><a name="Enabling+Class+Loading+Without+Security"></a>
+<h4>Enabling Class Loading Without Security</h4>
+<p class="Text body">All daemons that wish to make use of the class loading must be initialized at start-up to access the server. This is done by setting the <span class="T2">org.smartfrog.codebase</span><span class="T3"> </span>system property to be a list of space-separated URLs to jar files.</p>
+<p class="P65">This is done in the normal way (either using &ndash;D), and is set as in the following examples</p>
+<p class="P65">Windows:</p>
+<p class="P66">"-Dorg.smartfrog.codebase=http://aHost..com:8080/sfExamples.jar http://&hellip;"</p>
+<p class="P65">Unix:</p>
+<p class="Code last line">-Dorg.smartfrog.codebase=http\://aHost..com\:8080/sfExamples.jar\ http://&hellip;</p>
+<p class="Text body">
+<span class="T21">To use this feature modify the variable </span><span class="T18">CODEBASE</span><span class="T21"> and property </span><span class="T18">SFCODEBASE</span><span class="T21"> in </span><span class="T24">setSFDynamicClassLoadingProperties</span><span class="T21"> script in </span><span class="T25">SFHOME/bin and define </span><span class="T22">SFDYNAMICCLASSLOADING_ON</span><span class="T18"> </span><span class="T21">property in your environment or modify </span><span class="T22">setSFProperties</span><span class="T18"> </span><span class="T21">(remove comment) . The rest of the scripts will use them to enable classloading. </span>
+</p>
+<a name="N10981"></a><a name="Enabling+Class+Loading+With+Security"></a>
+<h4>Enabling Class Loading With Security</h4>
+<p class="Text body">
+<span class="T21">To use this feature modify the variable </span><span class="T18">CODEBASE</span><span class="T21"> and properties </span><span class="T22">SFSECURITY</span><span class="T18"> </span><span class="T26">and</span><span class="T18"> </span><span class="T22">SFCODEBASE</span><span class="T18"> </span><span class="T21">in </span><span class="T22">setSFDynamicClassLoadingProperties</span><span class="T18"> and </span><span class="T22">setSFSecurityProperties</span><span class="T21"> files in </span><span class="T27">SFHOME/bin</span><span class="T21"> and define the variables: </span><span class="T22">SFSECURITY_ON</span><span class="T18"> and </span><span class="T22">SFDYNAMICCLASSLOADING_ON</span><span class="T18"> </span><span class="T21">in your system environment. The rest of the scripts will use them to enable security and classloading. </span>
+</p>
+<a name="N109C7"></a><a name="Ant+Tasks"></a>
+<h4>Ant Tasks</h4>
+<p class="Text body">The Ant tasks have a special attribute for setting the codebase. They also have a helper task, <span class="code-inline">&lt;sf-tourl&gt;</span> that converts one or more file locations into file: URLs. This is for autogenerating the codebase list when deploying to a local daemon:</p>
+<p class="Text body">Here, for example: we create a URL list of our deliverable jar file (identified by <span class="code-inline">${target.jar} </span>and all our lib files, then hand it off for deployment. </p>
+<p class="Code">&lt;sf-tourl property="target.jar.url" file="${target.jar}"&gt;</p>
+<p class="Code">&lt;fileset dir="lib"&gt;</p>
+<p class="Code">&lt;include name="**/*.jar"/&gt;</p>
+<p class="Code">&lt;/fileset&gt;</p>
+<p class="Code">&lt;/sf-tourl&gt;</p>
+<p class="Code">&lt;echo&gt; codebase= ${target.jar.url}&lt;/echo&gt;</p>
+<p class="Code">&lt;sf-deploy classpathref="run.classpath"</p>
+<p class="Code">logStackTraces="true"</p>
+<p class="Code">host="${deploy.host}"</p>
+<p class="Code">&gt;</p>
+<p class="Code">
+<span class="T15">&lt;codebase url="${target.jar.url}"/&gt;</span>
+</p>
+<p class="Code">&lt;application name="app" file="valid.sf"/&gt;</p>
+<p class="Code last line">&lt;/sf-deploy&gt;</p>
+<a name="N10A03"></a><a name="Codebase+in+deployment+descriptors"></a>
+<h3 class="boxed">Codebase in deployment descriptors</h3>
+<p class="Text body">Setting the JVM codebase property sets the codebase for the program parsing the descriptor. It has no effect upon any remote daemons deploying the components.</p>
+<p class="Text body">The way to set the codebase dynamically for remote daemons is to declare it in the deployment descriptor, via the <span class="code-inline">sfCodeBase</span> attribute:</p>
+<p class="Code last line">sfCodeBase "http://example.com/sfExamples.jar file://nfs/apps/sfJetty.jar";</p>
+<p class="Text body">This attribute takes a string of the same style as the <span class="code-inline">org.smartfrog.codebase</span> parameter: a space separated list of URLs. </p>
+<p class="Text body">Setting the <span class="code-inline">sfCodeBase</span> attribute of a component sets the classpath for that component and all components nested within it. Components can override any <span class="code-inline">sfCodeBase</span> setting at any time, by declaring a new <span class="code-inline">sfCodeBase </span>attribute..</p>
+<p class="Text body">This is very powerful. Each instance of a component can have its own codebase -source JAR files, if needed, and if not, the parent codebase can be used automatically.</p>
+<p class="Text body">As <span class="code-inline">sfCodeBase</span> is a normal SmartFrog attribute, all the usual assignment and resolution operations apply to it. </p>
+<p class="Text body">The one thing that can not be done with it, is use the attribute to control where #include paths are resolved from, because the <span class="code-inline">#include</span> import takes place before the <span class="code-inline">sfCodeBase</span> attributes is parsed and resolved. </p>
+<a name="N10A40"></a><a name="Getting+The+best+of+Both+Worlds%3A+dynamic+loading+for+parsing+and+execution"></a>
+<h3 class="boxed">Getting The best of Both Worlds: dynamic loading for parsing and execution</h3>
+<p class="Text body">As covered above, there are separate ways to set the codebase for parsing -the <span class="code-inline">org.smartfrog.codebase</span> property, and at runtime with the <span class="code-inline">sfCodeBase</span> attribute(s). </p>
+<p class="Text body">It is often good to have the two synchronized, so that the runtime codebase is bound to the parse-time codebase. This is simple and easy to do, with the following fragment of a SmartFrog descriptor:</p>
+<p class="Code last line">sfCodeBase PROPERTY org.smartfrog.codebase;</p>
+<p class="Text body">Here we have told the program parsing the descriptor to set the <span class="code-inline">sfCodeBase</span> attribute to its value of the Java system property, <span class="code-inline">org.smartfrog.codebase.</span> If that property is not set, a resolution error will occur and deployment will fail. If it is set, then the deployment descriptor is dynamically bound to the current value of the property. This value will then be passed to all the other daemons in the network who are deploying parts of the program. </p>
+<p class="Callout">Do not use LAZY PROPERTY here, as that will retrieve the value of the system property on the remote machine.</p>
+<a name="N10A64"></a><a name="Points+of+Note"></a>
+<h3 class="boxed">Points of Note</h3>
+<a name="N10A69"></a><a name="JAR+Caching+and+reloading."></a>
+<h4>JAR Caching and reloading.</h4>
+<p class="Text body">When a resource or class from a JAR file is needed, the entire JAR file is retrieved from its URL-specified location and cached locally. Its signature is verified, and from then on, all accesses are locally. </p>
+<p class="Text body">This holds until the JAR file is no longer needed, and unloaded. When does that happen? Whenever all the things that have a reference to the JAR file are garbage collected. </p>
+<p class="P67">What happens if the source JAR file is needed and it is no longer there?</p>
+<p class="Text body">If the JAR file contains classes that were explicitly loaded by a component, the JAR file will be cached for the life of the component. Resources and dynamically loaded classes (those loaded by <span class="code-inline">Class.forName()</span>) are not going to be pre-loaded by the system, so are only guaranteed to be available while the source file is present. If the source JAR file is deleted or changed, then the loading may fail, or later versions of the JAR loaded instead.</p>
+<p class="Text body">Well-written components must handle this by not loading classes or resources during the termination phase of their lifecycle. </p>
+<p class="P67">What happens when a source JAR file is updated?</p>
+<p class="Text body">A change in a remote JAR file is only picked up when that file is next reloaded. That will only happen after all local references to that JAR file are gone. There is currently no way to predict when this will happen. Terminating an existing application, then redeploying a new version may be enough -provided nothing else is using the JAR files, but there are no guarantees. The only way to be 100% sure that the new version of a component has been picked up is to restart the daemon. </p>
+<p class="Text body">This is significantly weaker than application servers, that cleanly reload an entire Web Application on demand. Remember that SmartFrog is a deployment framework, rather than the actual host of applications. It is only when developing SmartFrog components themselves (or other code loaded in the daemon's JVM) that updating remote files becomes an issue. </p>
+<p class="Text body">One trick is to use URLs that are different, as the comparison is done by URL comparison -there are many different ways to refer to the same JAR file by URL path. This is just a workaround, and an ugly one.</p>
+<a name="N10A8D"></a><a name="Futures"></a>
+<h4>Futures</h4>
+<p class="Text body">There is room for improvement in dynamic class loading, though the need to maintain absolute security in the download process means that some improvements are not admissible.</p>
+<p class="Text body">With that caveat, we are open to suggestions for improvements, and even patch files containing implementations of the improvements. </p>
+<p class="Text body">One planned feature of the revised security model is that a component will be provided to force a flush of cached JAR files. </p>
+</div>
+<a name="N10A9B"></a><a name="Running+The+First+Example"></a>
+<h2 class="boxed">Running The First Example</h2>
+<div class="section">
+<a name="N10AA0"></a><a name="Local%2C+single+process+deployment"></a>
+<h3 class="boxed">Local, single process deployment</h3>
+<p class="Text body">The simplest model for a SmartFrog description to be launched is to start a SmartFrog process directly running the application, without any intention of providing interaction with other SmartFrog systems around. To do this, use the <span class="T2">sfRun</span> script. To try this out, run the command line:</p>
+<p class="Code last line">sfRun org/smartfrog/examples/arithnet/example1.sf</p>
+<p class="Text body">This should generate the following text on the screen.</p>
+<p class="Code">[WARN ][main] SFCORE_LOG - SmartFrog security is NOT active</p>
+<p class="Code">SmartFrog 3.04.002</p>
+<p class="Code">(C) Copyright 1998-2004 Hewlett-Packard Development Company, LP</p>
+<p class="P68"></p>
+<p class="Text body">To terminate the process, do so using the <span class="code-inline">ctrl-C</span> key.</p>
+<p class="Text body">A full explanation of this example is given in the reference manual, but roughly speaking, two component are created, a printer and a generator, the generator sends a message to the printer every few seconds and printer prints that.</p>
+<a name="N10AC7"></a><a name="Into+a+single+daemon"></a>
+<h3 class="boxed">Into a single daemon</h3>
+<p class="Text body">Now a slightly more complex model of deployment will be used. Firstly, a daemon will be started on a host &ndash; say the <span class="code-inline">localhost</span> &ndash; and one or more applications will be launched into this daemon.</p>
+<p class="Text body">First, start the daemon by running the command line</p>
+<p class="Code last line">sfDaemon</p>
+<p class="Text body">This should start the daemon which should open a window into which it will write all output. </p>
+<p class="Text body">
+<img alt="Graphic11" src="openOfficeEmbeddedImage/zip-sfUserManual.sxw/file-Pictures/100000000000017C0000013FA1E67C4C.png"></p>
+<p class="Text body">Next, in a different shell, launch the application into the daemon with the following command.</p>
+<p class="Code last line">sfStart localhost example1 org/smartfrog/examples/arithnet/example1.sf</p>
+<p class="Text body">The example should now be running in the daemon, writing its information on that screen and the <span class="T2">sfStart</span> command should have terminated. The first two command line parameters are the host containing the daemon and a name by which this application instance should be known on that host &ndash; the use for this will be shown later.</p>
+<p class="Text body">Now we can start many applications at once, into the same daemon. Type the following</p>
+<p class="Code">sfStart localhost example2 org/smartfrog/examples/arithnet/example2.sf</p>
+<p class="Code">sfStart localhost example3 org/smartfrog/examples/arithnet/example3.sf</p>
+<p class="Text body indent"></p>
+<p class="Text body">As each is launched, it should start printing on the screen of the daemon. Each is distinguishable by the differing printer names and the different messages output.</p>
+<p class="Text body">Once they are finished, the same lines can be typed again to launch the applications again. The only thing to note is that each application currently running must have a unique name (i.e. <span class="code-inline">example1</span>, <span class="code-inline">example2</span>, etc). This name may be any string and may be reused after the application using that name has terminated.</p>
+<p class="Text body">While an application is running, run the following command</p>
+<p class="Code last line">
+<span class="T14">sfTerminate</span> localhost example1 </p>
+<p class="Text body">replacing the example1 name with whatever application should be stopped.</p>
+<a name="N10B13"></a><a name="Remote+host"></a>
+<h3 class="boxed">Remote host</h3>
+<p class="Text body">Install the SmartFrog system onto a second host - say &ldquo;<span class="code-inline">foo.com</span>&rdquo;. Start the daemon in the same manner as above, using the <span class="code-inline">sfDaemon</span> command.</p>
+<p class="Text body">Repeat the <span class="code-inline">sfStart</span> commands, and <span class="code-inline">sfTerminate</span> if desired, with the hostname replacing &ldquo;<span class="code-inline">localhost</span>&rdquo;, for example</p>
+<p class="Code">sfStart foo.com example1 org/smartfrog/examples/arithnet/example1.sf </p>
+<p class="Code">
+<span class="T14">sfTerminate</span> foo..com example1</p>
+</div>
+<a name="N10B3B"></a><a name="SmartFrog+Command+Line"></a>
+<h2 class="boxed">SmartFrog Command Line</h2>
+<div class="section">
+<p class="Text body">If the reader does not wish to use the bundled startup scripts, SmartFrog can be started directly through the Java command line. This is how the Ant tasks work, incidentally.</p>
+<a name="N10B43"></a><a name="Key+command+line+facts"></a>
+<h3 class="boxed">Key command line facts</h3>
+<p class="Text body">JAR file: <span class="code-inline">smartfrog.jar</span> - all other JAR files are optional.</p>
+<p class="Text body">Main class: <span class="code-inline">org.smartfrog.SFSystem</span>
+</p>
+<a name="N10B55"></a><a name="SmartFrog+command-line+operations"></a>
+<h3 class="boxed">SmartFrog command-line operations</h3>
+<ul>
+<li>
+<ul>
+<li>
+<ul>
+<li>
+<p class="P69">
+<span class="code-inline">-a SFACT</span>: SmartFrog Action Descriptors (SFACT) that the daemon has to execute.</p>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="P70">examples:</p>
+<p class="P71">
+<span class="code-inline">-a newApp:DEPLOY:"</span><a class="external" href="file:///c:/descriptor.sf">c:/descriptor.sf</a><span class="code-inline">"::localhost:</span>
+</p>
+<p class="P71">
+<span class="code-inline">-a newApp:DETaTerm:::localhost:</span>
+</p>
+<p class="P71"></p>
+<ul>
+<li>
+<ul>
+<li>
+<ul>
+<li>
+<p class="P69">
+<span class="code-inline">-f SFREF</span>: file that contains a set of SmartFrog Action Descriptors (SFACT).</p>
+</li>
+<li>
+<p class="P69">
+<span class="T12">-e</span>: the daemon will terminate after finishing the deployment. Similar functionality can be achieved with:</p>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<ul></ul>
+<ul>
+<li>
+<ul>
+<li>
+<ul>
+<li>
+<ul>
+<li>
+<ul>
+<li>
+<ul>
+<li>
+<ul>
+<li>
+<ul>
+<li>
+<p class="P73">
+<span class="code-inline">-d</span>: environment diagnostics report for daemon</p>
+</li>
+<li>
+<p class="P73">
+<span class="code-inline">-?: usage and help information</span>
+</p>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<a name="N10BAC"></a><a name="SmartFrog+JVM+Properties"></a>
+<h3 class="boxed">SmartFrog JVM Properties</h3>
+<p class="Text body">These are the properties that can be set to control the JVM</p>
+<a name="N10BB4"></a><a name="org.smartfrog.iniFile"></a>
+<h4>org.smartfrog.iniFile</h4>
+<p class="Text body">The name of a Java properties file that will be loaded; all the properties in the file can then be used to configure the daemon.</p>
+<p class="Text body">Note #1: the current directory of the Java process is used as the base directory for resolving this path.</p>
+<p class="Text body">Note #2: the exact syntax of the properties file is defined by the <span class="code-inline">java.utils.Properties</span> class. It has its own rules as to valid syntax, which must be adhered to.</p>
+<p class="Text body">Note #3: This file is only read <span class="T3">after </span><span class="T23">the security settings have already been read and used. You cannot configure security settings from this file, only the command line and the security file indicated on that line. </span>
+</p>
+<p class="Code last line">
+<span class="code-inline">-Dorg.smartfrog.iniFile=daemon.properties</span>
+</p>
+<a name="N10BD4"></a><a name="org.smartfrog.sfcore.processcompound.sfProcessName"></a>
+<h4>org.smartfrog.sfcore.processcompound.sfProcessName</h4>
+<p class="Text body">This property sets the name of the root process. If the process is not given a name, it will not be exported, and the SmartFrog engine will not listen for incoming deployment requests. The lifetime of the engine will then be bound by that of any application deployed on the command line</p>
+<p class="Text body">The default name is <span class="code-inline">rootProcess</span>
+</p>
+<p class="Code last line">
+<span class="code-inline">-Dorg.smartfrog.sfcore.processcompound.sfProcessName=rootProcess</span>
+</p>
+<a name="N10BE7"></a><a name="org.smartfrog.sfcore.processcompound.sfRootLocatorPort"></a>
+<h4>org.smartfrog.sfcore.processcompound.sfRootLocatorPort</h4>
+<p class="Text body">This integer property identifies the port on which the daemon should listen for incoming requests:-</p>
+<p class="Code last line">
+<span class="code-inline">-Dorg.smartfrog.sfcore.processcompound.sfRootLocatorPort=3800</span>
+</p>
+<a name="N10BF4"></a><a name="org.smartfrog.codebase"></a>
+<h4>org.smartfrog.codebase</h4>
+<p class="Text body">This property sets the codebase for the application; a space separated list of URLs to JAR files:</p>
+<p class="Code">
+<span class="code-inline">"-Dorg.smartfrog.codebase=http://appserver/jars/sfextras.jar</span>
+</p>
+<p class="Code last line">
+<span class="code-inline">file:/home/sf2/jar"</span>
+</p>
+<a name="N10C06"></a><a name="org.smartfrog.logger.logStackTrace"></a>
+<h4>org.smartfrog.logger.logStackTrace</h4>
+<p class="Text body">This property enables/disables stack tracing</p>
+<p class="Code last line">
+<span class="code-inline">-Dorg.smartfrog.logger.logStackTrace=true</span>
+</p>
+<a name="N10C13"></a><a name="org.smartfrog.outStreamClass"></a>
+<h4>org.smartfrog.outStreamClass</h4>
+<p class="Text body">The name of a class that implements the <span class="code-inline">java.io.PrintStream</span> interface. If set, an instance will be instantiated and used as the output stream. </p>
+<p class="Code last line">
+<span class="code-inline">-Dorg.smartfrog.outStreamClass=org.example.OutStream</span>
+</p>
+<a name="N10C24"></a><a name="org.smartfrog.errStreamClass"></a>
+<h4>org.smartfrog.errStreamClass</h4>
+<p class="Text body">The name of a class that implements the <span class="code-inline">java.io.PrintStream</span> interface. If set, an instance will be instantiated and used as the error stream. </p>
+<p class="Code last line">
+<span class="code-inline">-Dorg.smartfrog.errStreamClass=org.example.ErrStream</span>
+</p>
+<p class="Text body"></p>
+<a name="N10C37"></a><a name="Security+Configuration"></a>
+<h3 class="boxed">Security Configuration</h3>
+<p class="Text body">If security is to be used, the JVM must be configured to run with security. There are four properties on the command line for this. All are required to enable security, with resulting command line appearing like the following:</p>
+<p class="Code">-Djava.security.manager </p>
+<p class="Code">-Djava.security.policy==sf.policy </p>
+<p class="Code">-Dorg.smartfrog.sfcore.security.keyStoreName=mykeys.st </p>
+<p class="Code last line">-Dorg.smartfrog.sfcore.security.propFile=SFSecurity.properties</p>
+<a name="N10C4B"></a><a name="java.security.manager"></a>
+<h4>java.security.manager</h4>
+<p class="Text body">A flag to indicate that there should be a security manager right from the outset.</p>
+<p class="Code last line">-Djava.security.manager</p>
+<a name="N10C56"></a><a name="org.smartfrog.sfcore.security.propFile"></a>
+<h4>org.smartfrog.sfcore.security.propFile</h4>
+<p class="Text body">The path to a Java properties file that contains SmartFrog-specific security information. </p>
+<p class="Text body">This file can either be on a path (absolute or relative to the process), or a resource inside a JAR file on the classpath. </p>
+<a name="N10C61"></a><a name="java.security.policy"></a>
+<h4>java.security.policy</h4>
+<p class="Text body">The path to a policy file, relative to the current directory.</p>
+<p class="Code last line">-Djava.security.policy<span class="T15">==</span>machines/local/security.policy</p>
+<p class="Text body">Note that a double equals sign is used in this assignment, to force in the new security policy.</p>
+<a name="N10C73"></a><a name="org.smartfrog.sfcore.security.keyStoreName"></a>
+<h4>org.smartfrog.sfcore.security.keyStoreName</h4>
+<p class="Text body">The path to a Java keystore. </p>
+<p class="Text body">This file can either be on an absolute path or one relative to the process. Resource paths <span class="T3">may </span>also work. </p>
+<a name="N10C82"></a><a name="Security+Property+File+Configuration"></a>
+<h3 class="boxed">Security Property File Configuration</h3>
+<p class="Text body">When security is enabled, there is a property file containing extra security configuration parameters, such as the passphrase to get into the keystore. These parameters are not documented here; they are autogenerated by the ant targets that create a new set of security credentials. </p>
+<p class="Text body"></p>
+<a name="N10C8C"></a><a name="Useful+JVM+properties"></a>
+<h3 class="boxed">Useful JVM properties</h3>
+<p class="Text body">Here are some JVM properties that are useful when configuring a SmartFrog daemon. Set them with <span class="code-inline">-Dname=value</span> on the command line. When a value has a space in it, the reliable cross platform quoting mechanism is to quote outside the whole string: </p>
+<p class="Code">"-Dname=value with spaces"</p>
+<table class="ForrestTable" cellspacing="1" cellpadding="4">
+<caption>Table1</caption>
+<tr>
+<th>Name</th><th>Meaning</th><th>example</th>
+</tr>
+<tr>
+<td>java.library.path</td><td>List of directories containing native .DLL or .SO files to search through when loading native libraries</td><td>C:\java\lib;c:\bin/usr/lib/java/extras</td>
+</tr>
+<tr>
+<td>networkaddress.cache.ttl</td><td>Time in seconds to cache successful DNS lookups. This defaults to -1 'forever'; this makes servers brittle to DNS updates.</td><td>120</td>
+</tr>
+</table>
+<a name="N10CB3"></a><a name="Other+JVM+options"></a>
+<h3 class="boxed">Other JVM options</h3>
+<p class="Text body">Options to control memory (<span class="code-inline">-Xmx -Xms -Xincgc </span>...etc) are matter of personal preference for the user.</p>
+<p class="Text body">One option we strongly recommend against is <span class="code-inline">-Xrs</span>, which tries to cut down on the number of signals the process listens to. Setting this stops the engine from hooking into termination signals and terminating deployments cleanly.</p>
+<a name="N10CC6"></a><a name="Error+Codes"></a>
+<h3 class="boxed">Error Codes</h3>
+<p class="Text body">The program will exit with a return code of 0 for successful operation, -1 for a failure. It will call <span class="code-inline">system.exit()</span>, so you cannot run it in-JVM, without creating a security manager to intercept the call. </p>
+</div>
+<a name="N10CD2"></a><a name="Troubleshooting"></a>
+<h2 class="boxed">Troubleshooting</h2>
+<div class="section">
+<p class="Text body">Here are some common problems that you may encounter, and what the cause and possible solution(s) may be.</p>
+<a name="N10CDA"></a><a name="%22SMARTFROG+SECURITY+IS+NOT+ACTIVE%22"></a>
+<h3 class="boxed">"SMARTFROG SECURITY IS NOT ACTIVE"</h3>
+<p class="Text body">This is a warning that the daemon is not running with security enabled. Anyone who can access the port on which the daemon is listening for incoming RMI requests is capable of deploying software with the rights of the daemon.</p>
+<p class="Text body">When running a deployment without a daemon, that is, when using <span class="code-inline">sfRun</span>, the system is less vulnerable. However, as JAR files will not have their signatures verified, any loading of remote JAR files exposes a security risk. </p>
+<p class="Text body">
+<span class="T15">Fix:</span> Use SmartFrog security and signed JAR files.</p>
+<a name="N10CEF"></a><a name="Unresolved+reference"></a>
+<h3 class="boxed">Unresolved reference</h3>
+<p class="Text body">This usually means that an attribute which a component requires, was not set. The exception information will identify both the attribute and the component. Either an attribute has been omitted, or the spelling is wrong.</p>
+<p class="Text body">
+<span class="T15">Fix:</span> consult the documentation, component declaration, examples and source to see what the required attributes of a component are.</p>
+<a name="N10CFD"></a><a name="A+reference+to+a+component+is+not+resolving+to+the+right+type%3B+it+is+resolving+to+a+ComponentDescription."></a>
+<h3 class="boxed">A reference to a component is not resolving to the right type; it is resolving to a ComponentDescription. </h3>
+<p class="Text body">This occurs in the following situation</p>
+<p class="Code">components extends Compound {</p>
+<p class="Code">FileToTouch extends TempFile {</p>
+<p class="Code">prefix "temp";</p>
+<p class="Code">suffix "txt";</p>
+<p class="Code">}</p>
+<p class="Code"></p>
+<p class="Code">touch extends TouchFile {</p>
+<p class="Code">filename FileToTouch;</p>
+<p class="Code">}</p>
+<p class="Code">}</p>
+<p class="Code last line"></p>
+<p class="Text body">When this is deployed, the <span class="code-inline">touch</span> component does not pick up the name of the file to touch, instead it complains that the filename is of the wrong type.</p>
+<p class="Text body">The underlying problem here is that the <span class="code-inline">filename</span> attribute is bound at parse time to a copy of the FileToTouch component declaration, before the component is actually instantiated. </p>
+<p class="Text body">
+<span class="T15">Fix: </span>to get a reference to the actual component, you need to declare a <span class="code-inline">LAZY</span> binding.</p>
+<p class="Code"></p>
+<p class="Code">touch extends TouchFile {</p>
+<p class="Code">filename <span class="T15">LAZY </span>FileToTouch;</p>
+<p class="Code">}</p>
+<p class="Code last line"></p>
+<a name="N10D4D"></a><a name="Nested+components+are+not+deployed"></a>
+<h3 class="boxed">Nested components are not deployed</h3>
+<p class="Text body">A component declaration has nested components. Either these components are seemingly not deployed, or the container component complains that they are of type ComponentDescription, when they should have another type.</p>
+<p class="Code">touch extends TouchFile {</p>
+<p class="Code">filename extends TempFile {</p>
+<p class="Code"> prefix "temp";</p>
+<p class="Code">suffix "txt";</p>
+<p class="Code">}</p>
+<p class="Code last line">}</p>
+<p class="Text body">The problem here is that a component has to explicitly deploy its child components, which is something only done by all component implementations that extend <span class="code-inline">CompoundImpl</span>. Non-compound components do not (currently) deploy nested components. </p>
+<p class="P80">Fix: </p>
+<ul>
+<li>
+<p class="P81">Move the nested declaration into a compound component the declares both components</p>
+</li>
+<li>
+<p class="P81">If the outer-level component is a custom component, consider having extend <span class="code-inline">CompountImpl</span> and so be able to deploy nested components.</p>
+</li>
+</ul>
+<p class="Text body">A future release of SmartFrog is likely to make it easy for all components to deploy and manage their children, by refactoring the relevant <span class="code-inline">CompoundImpl</span> code into utility methods, methods that will be moved up into the <span class="code-inline">PrimImpl</span> class.</p>
+<a name="N10D89"></a><a name="Components+declared+in+a+Compound+component+are+not+deployed+in+order"></a>
+<h3 class="boxed">Components declared in a Compound component are not deployed in order</h3>
+<p class="Text body">By default, there is no explicit ordering of how components in a compound component are deployed or terminated; it may be that they are deployed in parallel. Any code that assumes that components are deployed in order may not work correctly.</p>
+<p class="Text body">
+<span class="T15">Fix: t</span>o declare that you wish to deploy and terminate components in the order of declaration, set the <span class="T28">sfSyncTerminate</span><span class="T29"> flag:</span>
+</p>
+<p class="Code">components extends Compound {</p>
+<p class="P82">sfSyncTerminate true;</p>
+<p class="Code"></p>
+<p class="Code">FileToTouch extends TempFile {</p>
+<p class="Code">prefix "temp";</p>
+<p class="Code">suffix "txt";</p>
+<p class="Code">}</p>
+<p class="Code"></p>
+<p class="Code">touch extends TouchFile {</p>
+<p class="Code">filename FileToTouch;</p>
+<p class="Code">}</p>
+<p class="Code">}</p>
+<p class="Code last line"></p>
+<a name="N10DC1"></a><a name="JVM+Properties+appear+incorrect"></a>
+<h3 class="boxed">JVM Properties appear incorrect</h3>
+<p class="Text body">A descriptor uses PROPERTY to extract a JVM system property -such as <span class="code-inline">user.home</span>, finds that the value is not correct for a remote deployment:</p>
+<p class="Code">FileToTouch extends TempFile {</p>
+<p class="Code">dir PROPERTY user.home</p>
+<p class="Code">prefix "temp";</p>
+<p class="Code">suffix "txt";</p>
+<p class="Code">}</p>
+<p class="Text body">The problem here is that these properties are evaluated when the descriptor is parsed, which is <span class="T3">in the JVM initiating the deployment, not the one hosting the deployed components</span><span class="T23">.</span>
+</p>
+<p class="P83">In a local deployment, with the same user running the daemon and the parser JVM, there is often no difference between the system properties, to the descriptor will appear to be correct. It is only when doing remote deployments that the fact that java.io.tmpdir can be "C:\temp" on the local machine, and "/tmp" on the remote system that problems surface.</p>
+<p class="P83">
+<span class="T15">Fix</span>: use <span class="code-inline">LAZY</span> property assignment to get the properties on the remote system. Note that these are not available at the time functions are evaluated.</p>
+<p class="Code">FileToTouch extends TempFile {</p>
+<p class="Code">dir LAZY PROPERTY user.home</p>
+<p class="Code">prefix "temp";</p>
+<p class="Code">suffix "txt";</p>
+<p class="P84">}</p>
+</div>
+</div>
+<div class="clearboth">&nbsp;</div>
+</div>
+<div id="footer">
+<div class="lastmodified">
+<script type="text/javascript"><!--
+document.write("<text>Last Published:</text> " + document.lastModified);
+//  --></script>
+</div>
+<div class="copyright">
+        Copyright &copy;
+         2005 Hewlett Packard Company</div>
+<div class="host">
+<a href="http://sourceforge.net/projects/smartfrog"><img class="logoImage" alt="" src="images/sourceforge.gif"></a>
+</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,6 @@
+<project>
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>axis2</groupId>
+  <artifactId>axis2</artifactId>
+  <version>0.92</version>
+</project>

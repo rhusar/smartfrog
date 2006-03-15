@@ -1,0 +1,21 @@
+<project>
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.smartfrog</groupId>
+  <artifactId>sf-xml</artifactId>
+  <packaging>jar</packaging>
+  <version>${Version}</version>
+  <dependencies>
+      <dependency groupID="xerces"
+        artifactID="xercesImpl"
+        version="${xerces.version}"/>        
+      <dependency groupID="xerces"
+        artifactID="xmlParserAPIs"
+        version="${xerces.version}"/>
+      <dependency groupID="xom"
+        artifactID="xom"
+        version="${xom.version}"/>
+      <dependency groupID="nux"
+        artifactID="nux"
+        version="${nux.version}"/> 
+  </dependencies>  
+</project>
