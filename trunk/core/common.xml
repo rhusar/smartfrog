@@ -309,6 +309,7 @@
            fork="true"
            includeantruntime="true"
            showoutput="true"
+           timeout="6000000"
            >
        <jvmarg value="-ea"/>
        <jvmarg value="-esa"/>
