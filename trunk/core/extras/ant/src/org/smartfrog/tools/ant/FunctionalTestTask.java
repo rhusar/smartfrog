@@ -24,6 +24,7 @@ import org.apache.tools.ant.taskdefs.Parallel;
 import org.apache.tools.ant.Task;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
+import org.apache.tools.ant.TaskAdapter;
 
 /**
  * This is an extension of junit that lets us integrate startup, a waitfor
@@ -196,7 +197,13 @@ public class FunctionalTestTask extends Task {
         Sequential testRun = new Sequential();
         helper.bindTask(testRun);
         if (probe != null) {
-            testRun.addTask(probe);
+            //add it to the sequence. We need to create a
+            //TaskAdapter to reflect into the task, as ConditionBase is
+            //not an extension of Task.
+            TaskAdapter adapter=new TaskAdapter();
+            adapter.setProject(getProject());
+            adapter.setProxy(probe);
+            testRun.addTask(adapter);
         }
         if (test != null) {
             testRun.addTask(test);
