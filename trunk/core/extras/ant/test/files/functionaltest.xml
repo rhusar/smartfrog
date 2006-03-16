@@ -73,7 +73,7 @@
   </macrodef>
 
 <presetdef name="ftest">
-    <sf-functionaltest testTimeout="10" shutdownTimeout="1">
+    <sf-functionaltest testTimeout="10" shutdownTime="1">
       <setup>
         <do-setup/>
       </setup>
