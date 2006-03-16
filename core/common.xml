@@ -357,7 +357,8 @@
       <attribute name="failed"/>
       <sequential>
         <sf-junitreport data="@{data}" reports="@{reports}" />
-        <fail if="@{failed}">Unit tests failed see @{reports}</fail>
+        <fail if="@{failed}">Unit tests failed see: 
+          @{reports}</fail>
       </sequential>
     </macrodef>
     
@@ -1392,7 +1393,9 @@
     <copy file="${target.jar}.md5" todir="${m2.subdir}" failonerror="false"/>
 
   </target>
-  
+
+  <target name="installed" depends="m2-install"
+    description="Place the system in a state in which the components are installed for reuse" />
   
   
 </project>   
