@@ -331,4 +331,16 @@
   description="Create a tar file distribution" >
 </target>
 
+  <!--patch the new ant tasks into the core-->
+  <target name="update-core" depends="package">
+    <delete>
+      <fileset dir="${root.dir}/smartfrog/lib"
+        includes="sf-tasks*.jar" />
+    </delete>
+    <copy file="${target.jar}" todir="${root.dir}/smartfrog/lib" />
+  </target>
+
+  <target name="installed" depends="common.installed,update-core"
+      description="Place the system in a state in which the components are installed for reuse"/>
+
 </project>   
