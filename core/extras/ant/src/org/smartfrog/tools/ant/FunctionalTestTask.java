@@ -55,7 +55,7 @@ public class FunctionalTestTask extends Task {
     //waitfor operation
     private FaultingWaitForTask probe;
     private int timeout;
-    private int shutdownTime;
+    private int shutdownTime=10;
     private TaskHelper helper = new TaskHelper(this);
     public static final String MESSAGE_NO_JUNIT = "No tests defined";
     public static final String EXCEPTION_CAUGHT_ON_CLEANUP = "Exception caught on cleanup:";

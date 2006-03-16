@@ -26,6 +26,10 @@ import org.smartfrog.tools.ant.FunctionalTestTask;
 /**
  */
 public class FunctionalTestTaskTest extends TaskTestBase {
+    public static final String SETUP = "(setup)";
+    public static final String APPLICATION = "(application)";
+    public static final String TEST = "(test)";
+    public static final String TEARDOWN = "(teardown)";
 
     public FunctionalTestTaskTest(String s) {
         super(s);
@@ -39,13 +43,6 @@ public class FunctionalTestTaskTest extends TaskTestBase {
     protected String getBuildFile() {
         return "functionaltest.xml";
     }
-/*
-[sf-functionaltest] No junit element has been defined -no tests will run
-     [echo] setup
-     [echo] application
-     [echo] teardown
-*/
-
 
     public void testSuccess() {
         executeTarget("testSuccess");
@@ -55,19 +52,19 @@ public class FunctionalTestTaskTest extends TaskTestBase {
     private void assertAppSequenceFollowed(boolean noJunit) {
         String output = getFullLog();
         if(noJunit) {
-            assertTrue("Not found :"+FunctionalTestTask.MESSAGE_NO_JUNIT+" in " + output,
-                output.indexOf(FunctionalTestTask.MESSAGE_NO_JUNIT)>=0);
+//            assertTrue("Not found :"+FunctionalTestTask.MESSAGE_NO_JUNIT+" in \n" + output,
+//                output.indexOf(FunctionalTestTask.MESSAGE_NO_JUNIT)>=0);
         }
-        int setup=output.indexOf("setup");
-        int application= output.indexOf("application");
-        int test = output.indexOf("(test)");
-        int teardown= output.indexOf("teardown");
-        assertTrue("no setup in "+output,setup>=0);
-        assertTrue("app before setup in "+output,application>setup);
-        assertTrue("teardown before app in"+output, teardown>application);
+        int setup=output.indexOf(SETUP);
+        int application= output.indexOf(APPLICATION);
+        int test = output.indexOf(TEST);
+        int teardown= output.indexOf(TEARDOWN);
+        assertTrue(TEARDOWN+" was not found in \n" + output, teardown >= 0);
+        assertTrue(APPLICATION+" was not called in \n" + output, teardown >= 0);
+        assertTrue(SETUP+" was not found in \n"+output,setup>=0);
         if(!noJunit) {
-            assertTrue("test before setup in " + output, test > setup);
-            assertTrue("teardown before test in" + output, teardown > test);
+            assertTrue(TEST + " was not found in \n" + output,
+                    test >= 0);
         }
     }
 

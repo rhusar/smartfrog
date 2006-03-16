@@ -5,9 +5,9 @@
     Tests for the parse.
 
     command line invocation
-    ant -lib ..\..\build\dist\lib\smartfrog-tasks.jar -lib ..\..\..\..\smartfrog\dist\lib\smartfrog.jar -lib -f faultingwaitfor.xml testTimeout
+    ant -lib ..\..\dist\lib\ -f functionaltest.xml testTimeout
 
-    ant -lib ../../dist/lib/ -lib ../../../../smartfrog/dist/lib/ -f functionaltest.xml testTeardownStopsTheApplication
+    ant -lib ../../dist/lib/ -f functionaltest.xml testTeardownStopsTheApplication
 
     ant -lib ../../build/dist/lib/smartfrog-tasks.jar -lib
     ../../../../smartfrog/dist/lib/smartfrog.jar -lib
@@ -15,100 +15,153 @@
   </description>
   <import file="test-common.xml"/>
 
-  <presetdef name="ftest">
-    <sf-functionaltest testTimeout="10">
+
+
+  <macrodef name="assertProperty">
+    <attribute name="property"/>
+    <sequential>
+      <fail unless="@{property}">No @{property}</fail>
+    </sequential>
+  </macrodef>
+
+  <presetdef name="assertSetup">
+    <assertProperty property="setup"/>
+  </presetdef>
+
+  <presetdef name="assertSetup">
+    <assertProperty property="setup"/>
+  </presetdef>
+
+  <presetdef name="assertApplication">
+    <assertProperty property="application"/>
+  </presetdef>
+
+  <presetdef name="assertTest">
+    <assertProperty property="test"/>
+  </presetdef>
+
+  <presetdef name="assertTeardown">
+    <assertProperty property="teardown"/>
+  </presetdef>
+
+  <macrodef name="do-setup">
+    <sequential>
+      <echo>(setup)</echo>
+      <property name="setup" value="true"/>
+    </sequential>
+  </macrodef>
+
+  <macrodef name="do-application">
+    <sequential>
+      <echo>(application)</echo>
+      <property name="application" value="true"/>
+    </sequential>
+  </macrodef>
+
+  <macrodef name="do-test">
+    <sequential>
+      <echo>(test)</echo>
+      <property name="test" value="true"/>
+    </sequential>
+  </macrodef>
+
+  <macrodef name="do-teardown">
+    <sequential>
+      <echo>(teardown)</echo>
+      <property name="teardown" value="true"/>
+    </sequential>
+  </macrodef>
+
+<presetdef name="ftest">
+    <sf-functionaltest testTimeout="10" shutdownTimeout="1">
       <setup>
-        <echo>setup</echo>
+        <do-setup/>
       </setup>
       <application>
-        <echo>application</echo>
+        <do-application/>
       </application>
       <test>
-        <echo>(test)</echo>
+        <do-test/>
       </test>
       <teardown>
-        <echo>teardown</echo>
+        <do-teardown/>
       </teardown>
     </sf-functionaltest>
   </presetdef>
 
+  
   <target name="testSuccess">
-    <sf-functionaltest >
+    <ftest>
       <setup>
-        <echo>setup</echo>
+        <do-setup/>
       </setup>
+      <probe>
+        <isset property="application"/>
+      </probe>
       <application>
-        <echo>application</echo>
+        <assertSetup/>
+        <do-application/>
       </application>
+      <test>
+        <assertSetup/>
+        <assertApplication/>
+        <do-test/>
+      </test>
+
       <teardown>
-        <echo>teardown</echo>
+        <assertSetup/>
+        <assertApplication/>
+        <assertTest/>
+        <do-teardown/>
       </teardown>
-    </sf-functionaltest>
+    </ftest>
+    <assertTeardown/>
   </target>
 
   <target name="testTimeout">
-    <sf-functionaltest testTimeout="150">
+    <sf-functionaltest testTimeout="10">
       <setup>
-        <echo>setup</echo>
+        <do-setup/>
       </setup>
       <application>
-        <echo>application</echo>
+        <do-application/>
       </application>
       <probe maxwait="1">
         <equals arg1="a" arg2="b"/>
       </probe>      
       <teardown>
-        <echo>teardown</echo>
+        <do-teardown/>
       </teardown>
     </sf-functionaltest>
   </target>
-
-<!--   <target name="testParallelTimeout">
-    <sf-functionaltest>
-      <setup>
-        <echo>setup</echo>
-      </setup>
-      <application>
-        <echo>application</echo>
-      </application>
-      <probe >
-        <equals arg1="a" arg2="b"/>
-      </probe>      
-      <teardown>
-        <echo>teardown</echo>
-      </teardown>
-    </sf-functionaltest>
-  </target>  -->
   
   <target name="testFunctional">
-    <sf-functionaltest testTimeout="10">
-      <setup>
-        <echo>setup</echo>
-      </setup>
+    <ftest >
       <application>
-        <echo>application</echo>
+        <do-application/>
         <sleep seconds="2" />
         <property name="app.property" value="true" />
       </application>
       <probe>
         <isset property="app.property" />
       </probe>      
-      <teardown>
-        <echo>teardown</echo>
-      </teardown>
-    </sf-functionaltest>
+    </ftest>
   </target>
   
     <target name="testJunit">
       <ftest>
         <application>
-          <echo>application</echo>
+          <do-application/>
           <sleep seconds="2"/>
           <property name="app.property" value="true"/>
         </application>
         <probe>
           <isset property="app.property"/>
         </probe>
+        <test>
+          <do-test/>
+          <assertApplication/>
+        </test>
       </ftest>
   </target>
 
@@ -116,7 +169,7 @@
   <target name="testApplicationFailure">
     <ftest>
       <application>
-        <echo>application</echo>
+        <do-application/>
         <fail>failure!</fail>
       </application>
     </ftest>
@@ -124,13 +177,13 @@
 
   
   <target name="testApplicationFailurePreemptsTeardown">
-    <ftest>
+    <ftest testTimeout="2">
       <application>
-        <echo>application</echo>
+        <do-application/>
         <fail>failure!</fail>
       </application>
       <teardown>
-        <echo>teardown</echo>
+        <do-teardown/>
         <fail>TEARDOWN!</fail>
       </teardown>
     </ftest>
@@ -139,11 +192,11 @@
   <target name="testTestFailurePreemptsApplication">
     <ftest>
       <test>
-        <echo>(test)</echo>
+        <do-test/>
         <fail>failure!</fail>
       </test>
       <teardown>
-        <echo>teardown</echo>
+        <do-teardown/>
         <fail>TEARDOWN!</fail>
       </teardown>
     </ftest>
@@ -152,18 +205,18 @@
   <target name="testTestFailurePreemptsTeardown">
     <sf-functionaltest testTimeout="10">
       <setup>
-        <echo>setup</echo>
+        <do-setup/>
       </setup>
       <application>
-        <echo>application</echo>
+        <do-application/>
         <fail>application!</fail>
       </application>
       <test>
-        <echo>(test)</echo>
+        <do-test/>
         <fail>failure!</fail>
       </test>
       <teardown>
-        <echo>teardown</echo>
+        <do-teardown/>
         <fail>TEARDOWN!</fail>
       </teardown>
     </sf-functionaltest>
@@ -174,19 +227,19 @@
   <target name="testTeardownStopsTheApplication">
     <ftest shutdownTime="5" testTimeout="2">
       <application >
-        <echo>application</echo>
+        <do-application/>
         <sf-faultingwaitfor maxWait="10"
             message="application timed out">
           <isset property="app.property"/>
         </sf-faultingwaitfor>
-        <echo>application shut down</echo>
+        <echo> (application shut down) </echo>
       </application>
       <teardown>
-        <echo>teardown</echo>
+        <do-teardown/>
         <property name="app.property" value="true"/>
       </teardown>
     </ftest>
   </target>
 
-
+  
 </project>
