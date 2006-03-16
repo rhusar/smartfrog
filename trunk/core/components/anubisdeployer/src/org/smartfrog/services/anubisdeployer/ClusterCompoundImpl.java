@@ -8,8 +8,7 @@ import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.compound.Compound;
 import org.smartfrog.sfcore.compound.CompoundImpl;
 import org.smartfrog.sfcore.prim.TerminationRecord;
-import org.smartfrog.sfcore.reference.Reference;
-import org.smartfrog.sfcore.reference.ReferencePart;
+
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 
 public class ClusterCompoundImpl extends CompoundImpl implements Compound {
@@ -44,7 +43,7 @@ public class ClusterCompoundImpl extends CompoundImpl implements Compound {
         try {
             reservationInfo = (ComponentDescription)((ComponentDescription) ((ComponentDescription) sfResolve("sfClusterNode", true))).copy();
             resourceManager = (ClusterNode) sfResolve("clusterNodeManager", true);
-            id = (String) sfResolve("reservationId", true);
+            id = (String) sfResolve("sfReservationId", true);
         } catch (Throwable e) {
             e.printStackTrace();
             throw new SmartFrogDeploymentException("Error obtaining cluster node manager or required reservation", e);

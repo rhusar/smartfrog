@@ -22,6 +22,7 @@ package org.smartfrog.services.anubisdeployer;
 
 import java.rmi.RemoteException;
 import java.util.Stack;
+import java.util.Date;
 
 import org.smartfrog.sfcore.common.ContextImpl;
 import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
@@ -45,6 +46,15 @@ public class ClusterDeployerImpl extends PrimProcessDeployerImpl {
 
     public static final String CLUSTERCOMPOUNDCLASS =
             "org.smartfrog.services.anubisdeployer.ClusterCompoundImpl";
+    static String uniqueNameBase;
+
+    static {
+        try {
+            uniqueNameBase = "sfClusterReservation." + SFProcess.getProcessCompound().sfCompleteName();
+        } catch (RemoteException e) {
+            uniqueNameBase = "sfClusterReservation.error";
+        }
+    }
 
     /**
      * Constructs the ClusetrDeployerImpl with ComponentDescription.
@@ -170,8 +180,8 @@ public class ClusterDeployerImpl extends PrimProcessDeployerImpl {
             Object sfClass = c.get("sfClass");
             if (sfClass != null && sfClass.equals(CLUSTERCOMPOUNDCLASS)) {
                 if (!c.containsKey("sfProcessHost")) {
-                    System.out.println("putting reservationId");
-                    c.put("reservationId", newUniqueName());
+                    System.out.println("putting sfReservationId");
+                    c.put("sfReservationId", newUniqueName());
                     ComponentDescription req =
                             (ComponentDescription) c.get("sfClusterNode");
                     if (req != null) {
@@ -184,12 +194,19 @@ public class ClusterDeployerImpl extends PrimProcessDeployerImpl {
                         }
                         ClusterResourceMapper.accumulateRequirements(reqs, req);
                     }
+                } else {
+                    // although a host has been allocated, check that the resrvation id is set.
+                    // The host may have been set to ensure the location at which the  deployment is made, but
+                    // resources are still required to be reserved, just no mapping done.
+                    if (!c.containsKey("sfReservationId")) {
+                        c.put("sRreservationId", newUniqueName());
+                    }
                 }
             }
         }
 
         private static String newUniqueName() {
-            return "sfClusterReservation" + (index++);
+            return uniqueNameBase + new Date().getTime() + (index++);
         }
     }
 
