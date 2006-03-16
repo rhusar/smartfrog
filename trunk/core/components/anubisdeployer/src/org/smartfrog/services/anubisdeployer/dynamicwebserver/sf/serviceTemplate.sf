@@ -53,7 +53,7 @@ ServiceTemplate extends Compound {
 
 
     logger extends Logger {
-        verbose true;
+        verbose false;
     }
 
 
