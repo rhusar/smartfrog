@@ -198,6 +198,7 @@
   <target name="run-tests" depends="compile-tests,want-testutil"
     if="testutil.found">
     <property name="filter.trace" value="true"/>
+    <property name="junit.timeout" value="60000" />
     <sf-junit 
            errorProperty="test.failed"
            failureProperty="test.failed" 
