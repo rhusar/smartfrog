@@ -1,4 +1,0 @@
-#unable to locate File or URL :UnknownURL for component :ex1.
-#Reason: The path to URL may be incorrect or file may be missing.
-
-$SFHOME/bin/sfStart localhost ex1 UnknownURL
