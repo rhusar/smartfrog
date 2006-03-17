@@ -665,7 +665,7 @@
     <property name="smartfrog.pom"
       location="${dist.lib.dir}/${smartfrog.stub}.pom" />
     <property name="target.pom"
-      location="${dist.lib.dir}/${smartfrog.stub}.pom" />
+      value="${smartfrog.pom}" />
     <property name="sf-services.pom"
       location="${dist.lib.dir}/${sf-services.stub}.pom" />
 
@@ -692,9 +692,36 @@
 ]]></echo>
       </sequential>
     </macrodef>
-    <m2-makepom target="${target.pom}" artifact="smartfrog"/>
-    <m2-makepom target="${sf-services.pom}" artifact="sfServices"/>
-    <m2-makepom target="${sf-examples.pom}" artifact="sfExamples"/>
+
+
+     <!--make a pom that depends upon smartfrog-->
+     <macrodef name="m2-makesfpom">
+       <attribute name="artifact"/>
+       <attribute name="target"/>
+       <sequential>
+         <echo message="Creating Pom @{target}" level="verbose"/>
+         <echo file="@{target}"><![CDATA[<project>
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>${m2.groupID}</groupId>
+  <artifactId>@{artifact}</artifactId>
+  <packaging>jar</packaging>
+  <version>${Version}</version>
+     <dependencies>
+       <dependency>
+         <groupId>${m2.groupID}</groupId>
+         <artifactId>smartfrog</artifactId>
+         <version>${Version}</version>
+       </dependency>
+     </dependencies>
+</project>
+]]></echo>
+       </sequential>
+     </macrodef>
+
+
+     <m2-makepom target="${target.pom}" artifact="smartfrog"/>
+    <m2-makesfpom target="${sf-services.pom}" artifact="sfServices"/>
+    <m2-makesfpom target="${sf-examples.pom}" artifact="sfExamples"/>
    </target>
 
 
