@@ -161,36 +161,19 @@
 
   <target name="axis2-libraries" depends="m2.m2-tasks">
     <m2:libraries  pathID="axis2.classpath">
-      <dependency groupID="log4j"
-        artifactID="log4j"
-        version="${log4j.version}"/>    
       <dependency groupID="junit"
         artifactID="junit"
         version="${junit.version}"/>
-      <dependency groupID="axis"
-        artifactID="axis-wsdl4j"
-        version="${axis-wsdl4j.version}"/>
       <dependency groupID="commons-codec"
         artifactID="commons-codec"
         version="${commons-codec.version}"/>
       <dependency groupID="commons-httpclient"
         artifactID="commons-httpclient"
         version="${commons-httpclient.version}"/>
-      <dependency groupID="commons-logging"
-        artifactID="commons-logging"
-        version="${commons-logging.version}"/>
       <dependency groupID="javax.activation"
         artifactID="activation"
         version="${activation.version}"/>
-        
-<!--      <dependency groupID="geronimo-spec"
-        artifactID="geronimo-spec-javamail"
-        version="${geronimo-spec-javamail.version}"/> -->
-<!--       <dependency groupID="geronimo-spec"
-        artifactID="geronimo-spec-activation"
-        version="${geronimo-spec-activation.version}"/>
- -->
- <dependency groupID="stax"
+      <dependency groupID="stax"
         artifactID="stax"
         version="${stax.version}"/>
       <dependency groupID="stax"
@@ -202,45 +185,26 @@
       <dependency groupID="commons-fileupload"
         artifactID="commons-fileupload"
         version="${commons-fileupload.version}"/>
-     <dependency groupID="axis2"
+      <dependency groupID="org.apache.ws.axis2"
         artifactID="axis2"
         version="${axis2.version}"/>
-<!--      <dependency groupID="xmlbeans"
-        artifactID="xbean"
-        version="${xmlbeans.version}"/>
-      <dependency groupID="xmlbeans"
-        artifactID="xbean_xpath"
-        version="${xmlbeans.version}"/>
-      <dependency groupID="xmlbeans"
-        artifactID="xbean_xpath"
-        version="${xmlbeans.version}"/>
-      <dependency groupID="xmlbeans"
-        artifactID="xmlpublic"
-        version="${xmlbeans.version}"/>   -->
       <dependency groupID="saxon"
         artifactID="saxon"
-        version="${saxon.version}"/>        
+        version="${saxon.version}"/>
+
+
+      <!--      <dependency groupID="geronimo-spec"
+     artifactID="geronimo-spec-javamail"
+     version="${geronimo-spec-javamail.version}"/> -->
+      <!--       <dependency groupID="geronimo-spec"
+             artifactID="geronimo-spec-activation"
+             version="${geronimo-spec-activation.version}"/>
+      -->
+
     </m2:libraries >
     </target>
 
-      
 
-<!--       <dependency groupID="axis2"
-        artifactID="axis2-common"
-        version="${axis2.version}"/>
-      <dependency groupID="axis2"
-        artifactID="axis2-core"
-        version="${axis2.version}"/>
-      <dependency groupID="axis2"
-        artifactID="axis2-xml"
-        version="${axis2.version}"/>
-      <dependency groupID="axis2"
-        artifactID="axis2-addressing"
-        version="${axis2.version}"/>
-      <dependency groupID="axis2"
-        artifactID="axis2-wsdl"
-        version="${axis2.version}"/>
- -->        
 
        
   
@@ -305,16 +269,15 @@
 -->
   </target>  
 
-  <target name="copy-archives" depends="archives">
+  <target name="copy-archives" depends="archives"
+      description="copy the archives to where they can be checked in to SCM">
     <copy todir="${services.dir}">
       <fileset dir="${build.archives.dir}" includes="*.aar" /> 
     </copy>
   </target>
-  
 
   <target name="default" depends="war" />
     
-  
   <target name="specifications" depends="init" >
   
     <fail unless="deployment.project.dir" >

@@ -46,9 +46,9 @@ import java.util.Set;
  * created Aug 5, 2004 2:59:38 PM
  */
 
-public class JobRepository implements Iterable<Job> {
+public class JobRepository implements Iterable<Application> {
 
-    private Hashtable<String, Job> jobs = new Hashtable<String, Job>();
+    private Hashtable<String, Application> jobs = new Hashtable<String, Application>();
     private URL systemsURL;
     public static final String SEARCH_STRING = Constants.JOB_ID_PARAM + "=";
     Log log= LogFactory.getLog(JobRepository.class);
@@ -71,7 +71,7 @@ public class JobRepository implements Iterable<Job> {
         return jobs.keySet();
     }
 
-    public Object put(String key, Job value) {
+    public Object put(String key, Application value) {
         return jobs.put(key, value);
     }
 
@@ -84,7 +84,7 @@ public class JobRepository implements Iterable<Job> {
         return jobs.values();
     }
 
-    public void add(Job job) {
+    public void add(Application job) {
         put(job.getId().toString(), job);
     }
 
@@ -94,12 +94,12 @@ public class JobRepository implements Iterable<Job> {
      * @param uri job uri
      * @return
      */
-    public Job lookup(URI uri) {
+    public Application lookup(URI uri) {
         assert uri != null;
         return lookup(uri.toString());
     }
 
-    public Job lookup(String id) {
+    public Application lookup(String id) {
         return jobs.get(id);
     }
 
@@ -108,8 +108,8 @@ public class JobRepository implements Iterable<Job> {
      * @param job
      * @return
      */
-    public boolean inRepository(Job job) {
-        Job job2 = lookup(job.getId());
+    public boolean inRepository(Application job) {
+        Application job2 = lookup(job.getId());
         return job2!=null;
     }
 
@@ -122,7 +122,7 @@ public class JobRepository implements Iterable<Job> {
         jobs.remove(uri.toString());
     }
 
-    public void remove(Job job) {
+    public void remove(Application job) {
         jobs.remove(job.getId());
     }
 
@@ -131,7 +131,7 @@ public class JobRepository implements Iterable<Job> {
      *
      * @return
      */
-    public Iterator<Job> iterator() {
+    public Iterator<Application> iterator() {
         return values().iterator();
     }
 
@@ -148,7 +148,7 @@ public class JobRepository implements Iterable<Job> {
      * @param job
      * @param reason
      */
-    public synchronized boolean terminate(Job job,String reason) throws
+    public synchronized boolean terminate(Application job,String reason) throws
             RemoteException {
         log.info("Terminating " + job.getId() + " with reason:" + reason);
         
@@ -161,7 +161,7 @@ public class JobRepository implements Iterable<Job> {
      *
      * @param job
      */
-    public synchronized void destroy(Job job) throws
+    public synchronized void destroy(Application job) throws
             RemoteException {
         terminate(job, "destroy");
         remove(job);
@@ -176,7 +176,7 @@ public class JobRepository implements Iterable<Job> {
     public String[] listJobs() {
         String[] uriList = new String[size()];
         int count = 0;
-        for (Job job : this) {
+        for (Application job : this) {
             String id = job.getId();
             uriList[count++] = createJobAddress(id);
         }
@@ -194,8 +194,8 @@ public class JobRepository implements Iterable<Job> {
     }
 
 
-    public Job createNewJob(String hostname) {
-        Job job = new Job(Utils.createNewID());
+    public Application createNewJob(String hostname) {
+        Application job = new Application(Utils.createNewID());
         job.setHostname(hostname);
         String id = job.getId();
         job.setName(id);
@@ -238,10 +238,10 @@ public class JobRepository implements Iterable<Job> {
      * @return the job if it is present, null if not
      * @throws org.smartfrog.services.deployapi.transport.faults.BaseException on bad data
      */
-    public Job lookupJobFromQuery(String query) {
+    public Application lookupJobFromQuery(String query) {
         String jobID=extractJobIDFromQuery(query);
         log.debug("job is [" + jobID + "]");
-        Job job=lookup(jobID);
+        Application job=lookup(jobID);
         return job;
     }
 
@@ -251,7 +251,7 @@ public class JobRepository implements Iterable<Job> {
      * @return the job if it is present, null if not
      * @throws org.smartfrog.services.deployapi.transport.faults.BaseException on bad data
      */
-    public Job lookupJobFromEndpointer(EndpointReference epr) {
+    public Application lookupJobFromEndpointer(EndpointReference epr) {
         String address = epr.getAddress();
         URL url = null;
         try {
@@ -261,7 +261,7 @@ public class JobRepository implements Iterable<Job> {
                     address, e);
         }
         String query = url.getQuery();
-        Job job = lookupJobFromQuery(query);
+        Application job = lookupJobFromQuery(query);
         return job;
     }
 }

@@ -20,7 +20,7 @@
 
 package org.smartfrog.services.deployapi.transport.endpoints.system;
 
-import org.smartfrog.services.deployapi.engine.Job;
+import org.smartfrog.services.deployapi.engine.Application;
 import org.smartfrog.services.deployapi.transport.endpoints.Processor;
 import org.smartfrog.services.deployapi.transport.endpoints.SmartFrogAxisEndpoint;
 import org.smartfrog.services.deployapi.transport.faults.FaultRaiser;
@@ -35,15 +35,15 @@ public abstract class SystemProcessor extends Processor {
     }
 
 
-    public Job getJob() {
+    public Application getJob() {
         return job;
     }
 
-    public void setJob(Job job) {
+    public void setJob(Application job) {
         this.job = job;
     }
 
-    protected Job job;
+    protected Application job;
 
     /**
      * fail if there is no job

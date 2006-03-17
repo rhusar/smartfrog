@@ -20,7 +20,7 @@
 package org.smartfrog.services.deployapi.components.hosting;
 
 
-import org.smartfrog.services.deployapi.engine.Job;
+import org.smartfrog.services.deployapi.engine.Application;
 import org.smartfrog.services.deployapi.engine.ServerInstance;
 import org.smartfrog.services.deployapi.system.LifecycleStateEnum;
 import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
@@ -43,7 +43,7 @@ public class CddlmCompoundImpl extends CompoundImpl
 
     private URI jobURI;
 
-    private Job job;
+    private Application job;
 
     public static final String ERROR_UNKNOWN_JOB_URI = "No job of that address defined:";
 
@@ -103,10 +103,10 @@ public class CddlmCompoundImpl extends CompoundImpl
      */
     public static class LifecycleEventHook implements PrimHook {
 
-        Job job;
+        Application job;
         LifecycleStateEnum state;
 
-        public LifecycleEventHook(Job job, LifecycleStateEnum state) {
+        public LifecycleEventHook(Application job, LifecycleStateEnum state) {
             this.job = job;
             this.state = state;
         }

@@ -24,7 +24,7 @@
 #include "/org/smartfrog/components.sf"
 #include "/org/smartfrog/predicates.sf"
 #include "/org/smartfrog/services/filesystem/components.sf"
-#include "org/smartfrog/services/www/components.sf";
+#include "/org/smartfrog/services/www/components.sf";
 
 /**
  * This uses the www components to define axis2
