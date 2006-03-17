@@ -147,7 +147,8 @@
     <tstamp>
       <format property="year" pattern="yyyy"/>
     </tstamp>
-    <property name="Name.System" value="SmartFrog"/>
+    <property name="Name.Framework" value="SmartFrog"/>
+    <property name="Name.System" value="${ant.project.name}"/>
     <property name="Name.Company"
         value="(C) Copyright 1998-${year} Hewlett-Packard Development Company, LP"/>
 
@@ -155,7 +156,7 @@
 
 
  <target name="init-common" depends="init-common-simpledefinitions">
-    
+
     <fileset id="smartfrog.core.fileset"
       dir="${smartfrog.dist.lib.dir}">
       <include name="smartfrog*.jar"/>
@@ -164,14 +165,14 @@
       <include name="sfExamples*.jar"/>
       <include name="sfServices*.jar"/>
     </fileset>
-    
+
     <fileset id="smartfrog.lib.fileset"
       dir="${smartfrog.dist.lib.dir}">
       <include name="**/*.jar"/>
       <!-- we DO NOT want smartfrog tasks -->
       <exclude name="${smartfrog.tasks.prefix}*.jar"/>
     </fileset>
-    
+
 
     <!-- set up the path of common files in the dist/lib directory -->
     <path id="smartfrog.classpath">
@@ -180,13 +181,13 @@
     <path id="smartfrog.core.classpath">
       <fileset refid="smartfrog.core.fileset" />
     </path>
-    
-    
+
+
     <!-- name the resource -->
     <property name="smartfrog.version.property.resource"
       value="org/smartfrog/smartfrog-version.properties"
       />
-      
+
     <!-- check for its presence; break the build if missing -->
     <fail >
       <condition>
@@ -204,14 +205,14 @@
       classpathref="smartfrog.classpath"/>
     <fail unless="sf.build.version">No property sf.build.version found in resource ${smartfrog.version.property.resource}</fail>
     <property name="Version" value="${sf.build.version}" />
- 
+
     <!-- this is an override point; components call this -component -->
     <property name="jarfile.suffix" value=""/>
     <property name="jarfile.extension" value="jar"/>
     <property name="artifact.name" value="${project.name}" />
     <property name="jarfile.stub" value="${artifact.name}${jarfile.suffix}-${Version}" />
     <property name="jarfile.name" value="${jarfile.stub}.${jarfile.extension}"/>
-    
+
     <property name="target.jar"
       location="${dist.lib.dir}/${jarfile.name}"/>
 
@@ -220,41 +221,41 @@
     boxes
  -->
     <property name="test.jar.name" value="${artifact.name}-${Version}-test.jar"/>
-    <property name="test.jar" 
-        location="${dist.lib.dir}/${test.jar.name}" />  
+    <property name="test.jar"
+        location="${dist.lib.dir}/${test.jar.name}" />
 
     <!-- standard location for distributed stuff; used when locating
       other things -->
     <property name="dist.lib.dir.relative" value="/dist/lib" />
-    <property name="smartfrog.tasks.name" value="${smartfrog.tasks.prefix}-${Version}.jar"/>      
-      
+    <property name="smartfrog.tasks.name" value="${smartfrog.tasks.prefix}-${Version}.jar"/>
+
     <property name="smartfrog.tasks.lib.dir"
       location="${extras.dir}/ant/${dist.lib.dir.relative}"/>
     <property name="smartfrog.tasks.jar"
       location="${smartfrog.tasks.lib.dir}/${smartfrog.tasks.name}"/>
 
-    
+
       <!-- location of junit jar; override it if it is somewhere else-->
     <condition property="junit.jar" value="${ant.home}/lib/junit.jar">
       <available file="${ant.home}/lib/junit.jar" />
     </condition>
-    
+
     <condition property="junit.jar" value="${ant.home}/lib/junit-3.8.1.jar">
       <available file="${ant.home}/lib/junit-3.8.1.jar" />
     </condition>
-    
+
     <condition property="junit.jar" value="${user.home}/.ant/lib/junit-3.8.1.jar">
       <available file="${user.home}/.ant/lib/junit-3.8.1.jar" />
     </condition>
-    
+
     <echo >In project ${project.name}</echo>
     <echo level="verbose">system.tests.enabled=${system.tests.enabled}</echo>
     <echo level="verbose">unit.tests.enabled=${unit.tests.enabled}</echo>
-    
-    <!-- define a new javac task with new default options -->  
+
+    <!-- define a new javac task with new default options -->
     <presetdef name="sf-javac">
-       <javac debug="${javac.debug.mode}" 
-            nowarn="true"  
+       <javac debug="${javac.debug.mode}"
+            nowarn="true"
             deprecation="${javac.deprecation.mode}"
             source="${javac.java.version}"
             target="${javac.java.version}"
@@ -263,25 +264,25 @@
             >
        </javac>
     </presetdef>
-    
+
     <!-- an extension of the previous javac, this with ant classpath included -->
     <presetdef name="sf-javac-with-ant">
-       <sf-javac  
+       <sf-javac
           includeAntRuntime="true" />
-    </presetdef>    
-    
-    
+    </presetdef>
+
+
     <!-- a new version of the java task that always forks, does not include
     the ant runtime by default, and fails on any error -->
     <presetdef name="sf-java">
-      <java 
+      <java
         includeantruntime="false"
         fork="true"
         failonerror="true"
         >
        </java>
     </presetdef>
-    
+
    <!--
     JAR files are uncompressed, with duplicate classes preserved, meaning
     whatever was there first wins.
@@ -293,17 +294,27 @@
         >
        </jar>
     </presetdef>
-    
+
+   <!--
+   Tar files are gnu formatted for long files
+   -->
+   <presetdef name="sf-tar">
+     <tar
+         longfile="gnu"
+         >
+     </tar>
+   </presetdef>
+
     <!-- junit wrapper;
-      enables forking, turns assertions on in the code, 
+      enables forking, turns assertions on in the code,
       and enables XML output.
       Timeout is set to 10 minutes, so we dont ever hang.
-      User is still required to 
-        -specify failure properties 
+      User is still required to
+        -specify failure properties
         -provide test or batch test patterns
-        -set up the classpath. Dont forget to 
+        -set up the classpath. Dont forget to
         include a reference to smartfrog.classpath to get the core stuff
-      --> 
+      -->
     <presetdef name="sf-junit">
       <junit printsummary="no"
            fork="true"
@@ -319,15 +330,15 @@
         <formatter type="brief" usefile="false"/>
       </junit>
     </presetdef>
-    
+
     <!-- testing for a server being present; set a property to set -->
-    
+
     <presetdef name="sf-daemonfound">
       <condition >
         <socket port="${smartfrog.daemon.port}" server="localhost" />
       </condition>
     </presetdef>
-    
+
     <!-- wait for 10 seconds for a daemon. Set maxwait to a different
     value for more or less time, timeoutproperty to the name of a property
     to set on failure -->
@@ -336,7 +347,7 @@
             <socket server="localhost" port="${smartfrog.daemon.port}"/>
         </waitfor>
     </presetdef>
-    
+
     <!-- reporting wrapper -->
    <macrodef name="sf-junitreport">
      <attribute name="data"/>
@@ -357,15 +368,15 @@
       <attribute name="failed"/>
       <sequential>
         <sf-junitreport data="@{data}" reports="@{reports}" />
-        <fail if="@{failed}">Unit tests failed see: 
+        <fail if="@{failed}">Unit tests failed see:
           @{reports}</fail>
       </sequential>
     </macrodef>
-    
-    <!-- 
+
+    <!--
     Copy useful files from the source to dest directories. Use this for adding
-    extra stuff to the bin directory. By default it pulls in 
-    **/*.xml,**/*.dtd,**/*.xsd,**/*.sf,**/*.properties; 
+    extra stuff to the bin directory. By default it pulls in
+    **/*.xml,**/*.dtd,**/*.xsd,**/*.sf,**/*.properties;
     override the pattern property to set more
      -->
     <macrodef name="copy-useful-files">
@@ -381,10 +392,10 @@
         </copy>
       </sequential>
     </macrodef>
-    
+
     <!-- rmic configuration -->
     <presetdef name="sf-rmic">
-      <rmic 
+      <rmic
         verify="true"
         stubversion="1.2" />
     </presetdef>
@@ -419,7 +430,7 @@
   </target>
 
   <target name="jdocs" depends="javadoc" description="Generates the API documentation"/>
-  
+
   <!-- =================================================================== -->
   <!--   Javadocs. uses the compile classpath to set up the javadoc task   -->
   <!-- =================================================================== -->
@@ -440,11 +451,11 @@
       <group title="SmartFrog Packages" packages="org.smartfrog.*"/>
     </sf-javadoc>
   </target>
-  
+
   <!-- ========================================================== -->
-  <!-- 
+  <!--
     This target is used to set up the standard output for builds and tests and things
-   --> 
+   -->
   <!-- ========================================================== -->
   <target name="init-standard-output-dirs" depends="init-common">
 
@@ -458,16 +469,16 @@
       <isfalse value="${is.component}"/>
     </condition>
 
-    <mkdir dir="${build.dir}" />    
-    <mkdir dir="${build.classes.dir}" />    
-    
-    
+    <mkdir dir="${build.dir}" />
+    <mkdir dir="${build.classes.dir}" />
+
+
     <mkdir dir="${test.dir}" />
     <mkdir dir="${test.classes.dir}" />
     <mkdir dir="${test.data.dir}" />
     <mkdir dir="${test.datafiles.dir}" />
     <mkdir dir="${test.reports.dir}" />
-    
+
     <mkdir dir="${dist.dir}"/>
     <mkdir dir="${dist.lib.dir}"/>
     <mkdir dir="${dist.doc.dir}"/>
@@ -475,16 +486,16 @@
     <mkdir dir="${dist.src.dir}"/>
     <mkdir dir="${dist.jdocs.dir}"/>
   </target>
-  
 
-  <!--  assert that junit exists and fail if it is not there-->  
+
+  <!--  assert that junit exists and fail if it is not there-->
   <target name="assert-junit" depends="init" >
     <available file="${junit.jar}" property="junit.found"/>
     <fail unless="junit.found">
      Not found: ${junit.jar}
     </fail>
   </target>
-  
+
   <!-- ========================================================== -->
   <!-- this set of classpath targets is done to allow override of -->
   <!-- any stage of the process, with all the dependent classpaths -->
@@ -492,54 +503,54 @@
     <!-- define the common compile classpath, which includes
         smartfrog and our lib dir -->
   <!-- ========================================================== -->
-        
-  <target name="declare-base.compile.classpath" depends="init" >  
+
+  <target name="declare-base.compile.classpath" depends="init" >
     <path id="base.compile.classpath">
       <path refid="smartfrog.classpath"/>
     </path>
   </target>
-    
-  
+
+
   <target name="probe-lib-dir" depends="init">
-    <available file="${lib.dir}" type="dir" property="lib.dir.found" /> 
+    <available file="${lib.dir}" type="dir" property="lib.dir.found" />
   </target>
 
-  <target name="declare-compile.classpath-lib-dir" 
-    depends="declare-base.compile.classpath,probe-lib-dir" 
-    if="lib.dir.found">  
+  <target name="declare-compile.classpath-lib-dir"
+    depends="declare-base.compile.classpath,probe-lib-dir"
+    if="lib.dir.found">
     <path id="compile.classpath">
       <path refid="base.compile.classpath"/>
       <fileset dir="${lib.dir}">
         <include name="**/*.jar"/>
       </fileset>
-    </path>    
+    </path>
   </target>
-  
-  <target name="declare-compile.classpath-no-lib-dir" 
-    depends="declare-base.compile.classpath,probe-lib-dir" 
-    unless="lib.dir.found">  
+
+  <target name="declare-compile.classpath-no-lib-dir"
+    depends="declare-base.compile.classpath,probe-lib-dir"
+    unless="lib.dir.found">
     <path id="compile.classpath">
       <path refid="base.compile.classpath"/>
-    </path>    
+    </path>
   </target>
- 
- <target name="declare-compile.classpath" 
-    depends="declare-compile.classpath-no-lib-dir,declare-compile.classpath-lib-dir" >  
+
+ <target name="declare-compile.classpath"
+    depends="declare-compile.classpath-no-lib-dir,declare-compile.classpath-lib-dir" >
     <property name="compile.classpath.value" refid="compile.classpath"/>
     <echo level="verbose">compile.classpath=${compile.classpath.value}</echo>
   </target>
-  
-  <target name="declare-exec.classpath" depends="declare-compile.classpath" >  
+
+  <target name="declare-exec.classpath" depends="declare-compile.classpath" >
     <path id="exec.classpath">
       <path refid="compile.classpath"/>
       <pathelement location="${build.classes.dir}"/>
-    </path>    
+    </path>
     <property name="exec.classpath.value" refid="exec.classpath"/>
     <echo level="verbose">exec.classpath=${exec.classpath.value}</echo>
   </target>
 
-  <target name="declare-tests.compile.classpath" 
-      depends="declare-exec.classpath,use-smartfrog-testharness" >  
+  <target name="declare-tests.compile.classpath"
+      depends="declare-exec.classpath,use-smartfrog-testharness" >
     <path id="tests.compile.classpath">
       <path refid="exec.classpath"/>
       <pathelement location="${junit.jar}"/>
@@ -548,8 +559,8 @@
     <property name="tests.compile.classpath.value" refid="tests.compile.classpath"/>
     <echo level="verbose">tests.compile.classpath=${tests.compile.classpath.value}</echo>
   </target>
-   
-  <target name="declare-tests.run.classpath" depends="declare-tests.compile.classpath" >  
+
+  <target name="declare-tests.run.classpath" depends="declare-tests.compile.classpath" >
     <path id="tests.run.classpath">
       <path refid="tests.compile.classpath"/>
       <pathelement location="${test.classes.dir}"/>
@@ -558,13 +569,13 @@
     <echo level="verbose">tests.run.classpath=${tests.run.classpath.value}</echo>
   </target>
 
-  <target name="declare-run.classpath" depends="declare-tests.run.classpath" >  
+  <target name="declare-run.classpath" depends="declare-tests.run.classpath" >
     <path id="run.classpath">
       <path refid="tests.run.classpath"/>
     </path>
   </target>
 
-  <target name="declare-run.classpath-no-tests" depends="declare-exec.classpath" >  
+  <target name="declare-run.classpath-no-tests" depends="declare-exec.classpath" >
     <path id="run.classpath">
       <path refid="exec.classpath"/>
     </path>
@@ -572,11 +583,11 @@
 
   <!-- This target explicitly lists all dependencies so that if anyone starts overriding
     declarations, it doesnt matter if they omit dependencies. After this target, all classpaths
-    are defined-->  
-  <target name="declare-classpaths" 
+    are defined-->
+  <target name="declare-classpaths"
     depends=
      "declare-base.compile.classpath,declare-compile.classpath,declare-exec.classpath,declare-tests.compile.classpath,declare-tests.run.classpath,declare-tests.run.classpath,declare-run.classpath-no-tests,declare-run.classpath"/>
-  
+
   <!-- ========================================================== -->
   <!-- cleanup target -->
   <!-- This MUST work even if clean has already been run; test -->
@@ -584,24 +595,24 @@
   <!-- ========================================================== -->
   <target name="clean" description="clean up build and dist"
       depends="init-common-simpledefinitions">
-    <delete dir="${build.dir}" />    
-    <delete dir="${dist.dir}"  />  
-  </target>  
-   
+    <delete dir="${build.dir}" />
+    <delete dir="${dist.dir}"  />
+  </target>
+
   <!-- ========================================================== -->
   <!-- probe for the smartfrog binaries existing in the dist dir. -->
   <!-- and exit if they are not -->
   <!-- ========================================================== -->
-    
+
   <target name="assert-smartfrog"  depends="init-common"
     description="verify smartfrog is present, fail if not">
-    <available 
-      classname="org.smartfrog.SFSystem" 
-      classpathref="smartfrog.classpath" 
+    <available
+      classname="org.smartfrog.SFSystem"
+      classpathref="smartfrog.classpath"
       property="sfSystem.present"/>
     <property name="sfjars.fullpath" refid="smartfrog.classpath"/>
     <fail unless="sfSystem.present">
-      Smartfrog entry point not found in 
+      Smartfrog entry point not found in
       ${sfjars.fullpath}
     </fail>
     <echo level="verbose">Smartfrog found in ${smartfrog.dist.lib.dir}</echo>
@@ -610,9 +621,9 @@
   <!-- ========================================================== -->
   <!-- left in for backwards naming compatibility -->
   <!-- ========================================================== -->
-    
+
   <target name="verify-smartfrog"  depends="assert-smartfrog" />
-  
+
   <!-- ========================================================== -->
   <!-- probe for tasks and use them if they are found; fail if not -->
   <!-- ========================================================== -->
@@ -622,26 +633,26 @@
       <path refid="smartfrog.core.classpath"/>
       <pathelement location="${smartfrog.tasks.jar}"/>
     </path>
-    <available 
-      classname="org.smartfrog.tools.ant.Parse" 
-      classpathref="smartfrog.tasks.classpath" 
+    <available
+      classname="org.smartfrog.tools.ant.Parse"
+      classpathref="smartfrog.tasks.classpath"
       property="sfTasks.present"/>
     <property name="sftasks.fullpath" refid="smartfrog.tasks.classpath"/>
     <fail unless="sfTasks.present">
-      Smartfrog tasks not found in 
+      Smartfrog tasks not found in
       ${sftasks.fullpath}
     </fail>
-    <typedef 
+    <typedef
       resource="org/smartfrog/tools/ant/tasks.properties"
       classpathref="smartfrog.tasks.classpath"
       />
   </target>
 
   <!-- ========================================================== -->
-  <!-- declare presets and macrodefs to enhance the tasks better 
+  <!-- declare presets and macrodefs to enhance the tasks better
     for our needs -->
   <!-- ========================================================== -->
-  <target name="declare-extended-smartfrog-tasks" 
+  <target name="declare-extended-smartfrog-tasks"
       depends="init,use-smartfrog-tasks">
     <presetdef name="sf-startdaemon-debug">
       <sf-startdaemon classpathref="run.classpath"
@@ -650,11 +661,11 @@
         <assertions enableSystemAssertions="true">
           <enable/>
         </assertions>
-          <!-- load in a property file if it is present --> 
+          <!-- load in a property file if it is present -->
         <propertyfile file="${runtime.properties}" optional="true"/>
       </sf-startdaemon>
     </presetdef>
-    
+
     <presetdef name="sf-gui-debug">
       <sf-gui classpathref="run.classpath"
         logStackTraces="true" spawn="true">
@@ -662,11 +673,11 @@
         <assertions enableSystemAssertions="true">
           <enable/>
         </assertions>
-          <!-- load in a property file if it is present --> 
+          <!-- load in a property file if it is present -->
         <propertyfile file="${runtime.properties}" optional="true"/>
       </sf-gui>
     </presetdef>
-    
+
     <presetdef name="sf-console-debug">
       <sf-management-console classpathref="run.classpath"
         logStackTraces="true" >
@@ -674,24 +685,24 @@
         <assertions enableSystemAssertions="true">
           <enable/>
         </assertions>
-          <!-- load in a property file if it is present --> 
+          <!-- load in a property file if it is present -->
         <propertyfile file="${runtime.properties}" optional="true"/>
       </sf-management-console>
-    </presetdef>      
+    </presetdef>
 
-  </target>  
-  
+  </target>
+
   <!-- ========================================================== -->
   <!-- set up an HTTP proxy -->
   <!-- there is a bit of a problem here for laptops whose proxy varies from
   location to location; we are ignoring that for now. -->
   <!-- ========================================================== -->
-  
+
   <target name="init-web-proxy" if="http.proxy.host" depends="init">
     <property name="http.proxy.port" value="80" />
     <property name="http.proxy.user" value="" />
     <property name="http.proxy.password" value="" />
-    <setproxy 
+    <setproxy
       proxyhost="${http.proxy.host}"
       proxyport="${http.proxy.port}"
       proxyuser="${http.proxy.user}"
@@ -704,45 +715,45 @@
   <!-- ========================================================== -->
   <target name="init-socks-proxy" if="socks.proxy.host" depends="init">
     <property name="socks.proxy.port" value="1080" />
-    <setproxy 
+    <setproxy
       socksproxyhost="${socks.proxy.host}"
       socksproxyport="${socks.proxy.port}"
       />
-  </target>  
+  </target>
 
   <!-- ========================================================== -->
-  <!-- conditionally initialise socks or web proxy, if configured --> 
+  <!-- conditionally initialise socks or web proxy, if configured -->
   <!-- ========================================================== -->
   <target name="init-proxy" depends="init-web-proxy,init-socks-proxy"/>
-  
+
   <!-- ========================================================== -->
   <!-- location of testharness; create a relevant path -->
   <!-- ========================================================== -->
-  
+
   <target name="use-smartfrog-testharness" depends="init-common" >
         <!-- information about the test harness -->
       <!-- needs to be in sync w/ testharness/build.xml -->
       <!-- TODO :use maven lib to sync -->
-    <property name="testharness.dir" 
+    <property name="testharness.dir"
       location="${core.dir}/testharness" />
     <property name="testharness.jar.name"
-      value="sf-testharness-${Version}.jar" /> 
+      value="sf-testharness-${Version}.jar" />
     <property name="testharness.jar"
-        location="${testharness.dir}/${dist.lib.dir.relative}/${testharness.jar.name}" /> 
-    <available file="${testharness.jar}" 
+        location="${testharness.dir}/${dist.lib.dir.relative}/${testharness.jar.name}" />
+    <available file="${testharness.jar}"
       property="testharness.present" />
   </target>
 
   <!-- ========================================================== -->
   <!-- verify that the testharness is present-->
-  <!-- ========================================================== -->  
+  <!-- ========================================================== -->
   <target name="assert-smartfrog-testharness" depends="use-smartfrog-testharness" >
     <fail unless="testharness.present">
-      Smartfrog testharness not found at 
+      Smartfrog testharness not found at
       ${testharness.jar}
-    </fail>      
+    </fail>
   </target>
-  
+
   <!-- ========================================================== -->
   <!--  look for a local daemon. Sets the property  local.daemon.running if
     one is listening on port 3800-->
@@ -754,7 +765,7 @@
   <!-- ========================================================== -->
   <!-- conditionally start the daemon if one was not found already-->
   <!-- ========================================================== -->
-  <target name="start-daemon-if-needed" 
+  <target name="start-daemon-if-needed"
     depends="declare-extended-smartfrog-tasks,probe-local-daemon"
     unless="local.daemon.running">
       <sf-startdaemon-debug  />
@@ -769,16 +780,16 @@
     >
       <sf-startdaemon-debug  spawn="false" timeout="-1"/>
   </target>
-  
+
   <!-- ========================================================== -->
   <!-- conditionally start the daemon if one was not found already-->
   <!-- ========================================================== -->
-  <target name="start-gui" 
+  <target name="start-gui"
     depends="declare-extended-smartfrog-tasks" >
       <sf-gui-debug  />
   </target>
 
-  
+
   <!-- ========================================================== -->
   <!-- Start the console -->
   <!-- ========================================================== -->
@@ -792,15 +803,15 @@
   <!-- conditionally start the daemon if one was not found already-->
   <!-- and do not complain if it could not start (or execution timed out) -->
   <!-- ========================================================== -->
-  <target name="start-daemon-if-needed-no-failonerror" 
+  <target name="start-daemon-if-needed-no-failonerror"
     depends="declare-extended-smartfrog-tasks,probe-local-daemon"
     unless="local.daemon.running">
       <sf-startdaemon-debug failonerror="false"/>
   </target>
 
-  
+
   <!-- ========================================================== -->
-  <!-- this is the counterpoint to start-daemon-if-needed 
+  <!-- this is the counterpoint to start-daemon-if-needed
     if the probe did not find a daemon, then we shut down any daemon
     that we created.-->
   <!-- ========================================================== -->
@@ -808,7 +819,7 @@
     depends="use-smartfrog-tasks"
     unless="local.daemon.running" >
     <sf-stopdaemon failonerror="false" />
-  </target>  
+  </target>
 
   <!-- ========================================================== -->
   <!-- public startup operation -->
@@ -816,8 +827,8 @@
   <target name="startup"
     depends="start-daemon-if-needed"
     description="start a local daemon">
-  </target> 
-  
+  </target>
+
   <!-- ========================================================== -->
   <!-- always shutdown a local daemon. keep going if one is not running -->
   <!-- ========================================================== -->
@@ -825,75 +836,75 @@
     depends="use-smartfrog-tasks"
     description="shut down a local smartfrog daemon">
     <sf-stopdaemon timeout="60000" failonerror="false" />
-  </target> 
-  
- 
+  </target>
+
+
   <!-- ========================================================== -->
   <!-- this is an override point -->
   <!-- ========================================================== -->
   <target name="init" depends="init-standard-output-dirs"/>
-  
-  
+
+
   <!-- ========================================================== -->
   <!-- this is here to set up the depends graph properly for
        overriden verify-prerequisites targets -->
   <!-- ========================================================== -->
-  
+
   <target name="pre-verify-prerequisites" depends="init,declare-classpaths">
   </target>
-  
+
   <!-- ========================================================== -->
   <!-- this is an override point -->
   <!-- set the verified.ok property if everything needed is present -->
   <!-- Do Not Fail. This test is used to control conditional builds -->
   <!-- NB, set property verify.fail.message to something meaningful
-       for better diagnostic messages on failure (see assert-prerequisites) 
+       for better diagnostic messages on failure (see assert-prerequisites)
        -->
   <!-- ========================================================== -->
   <target name="verify-prerequisites" depends="pre-verify-prerequisites">
     <property name="verified.ok" value="true"/>
   </target>
-  
+
   <!-- ========================================================== -->
   <!-- entry point for the components/build.xml delegation;
-       probe for needed libraries, and skip the operation if they 
+       probe for needed libraries, and skip the operation if they
        are missing -->
   <!-- ========================================================== -->
-  
+
   <target name="maybe-dist" depends="verify-prerequisites" if="verified.ok">
     <antcall target="dist" />
   </target>
 
   <!-- ========================================================== -->
   <!-- entry point for the components/build.xml delegation;
-       default implementation runs batch-test if the 
+       default implementation runs batch-test if the
        prerequisites are met -->
   <!-- ========================================================== -->
   <target name="maybe-test" depends="verify-prerequisites" if="verified.ok">
     <antcall target="batch-test" />
   </target>
-  
+
   <!-- ========================================================== -->
   <!-- entry point for the components/build.xml delegation;
-       probe for needed libraries, and skip the operation if they 
+       probe for needed libraries, and skip the operation if they
        are missing -->
   <!-- ========================================================== -->
   <target name="maybe-install" depends="verify-prerequisites" if="verified.ok">
     <antcall target="install" />
   </target>
-  
+
   <!-- ========================================================== -->
-  <!-- assert the prerequisites were found. 
+  <!-- assert the prerequisites were found.
     Use this before you compile for a more meaningful failure message
     preset the property verify.fail.message for better diagnostics
     -->
   <!-- ========================================================== -->
   <target name="assert-prerequisites" depends="verify-prerequisites"
     unless="verified.ok">
-    <property name="verify.fail.message" 
+    <property name="verify.fail.message"
       value="The prerequisite classes for this project were not found"/>
     <fail>${verify.fail.message}</fail>
-  </target>  
+  </target>
 
 
   <!-- ========================================================== -->
@@ -905,7 +916,7 @@
   <target name="pre-compile"
       depends="init,declare-classpaths,assert-smartfrog,assert-prerequisites">
   </target>
-  
+
   <!-- ========================================================== -->
   <!-- this is an override point -->
   <!-- compile everything, copy useful files over-->
@@ -938,19 +949,19 @@
           includes="**/*.class">
           <classpath refid="compile.classpath"/>
       </sf-rmic>
-  </target>  
-  
+  </target>
+
   <!-- another name for rmi -->
   <target name="compile-RMI" depends="rmi" />
-  
-  
+
+
   <!-- ========================================================== -->
   <!-- this is an override point -->
   <!-- compile everything, copy useful files over-->
   <!-- ========================================================== -->
   <target name="compile-tests"
       depends="package,assert-smartfrog-testharness,declare-tests.compile.classpath">
-      <depend 
+      <depend
           srcdir="${test.src.dir}"
           destdir="${test.classes.dir}"
           cache="${build.test.dir}/depends"
@@ -961,14 +972,14 @@
           classpathref="tests.compile.classpath"
           />
       <copy-useful-files src="${test.src.dir}" dest="${test.classes.dir}"/>
-  </target>  
+  </target>
 
 
   <!--
   component only logic to create a versioned jar name
   -->
   <target name="generateversion" depends="generate-versioned-jar"/>
-  
+
   <target name="generate-versioned-jar" if="is.component.enabled" depends="rmi">
     <presetdef name="get-version">
       <java classname="org.smartfrog.Version" failonerror="true" fork="true" >
@@ -988,10 +999,10 @@
       <arg value="-max"/>
     </get-version>
     <property name="jar.name" value="${artifact.name}${jarfile.suffix}-${CVersion}.${jarfile.extension}"/>
-    <property name="target.jar" 
-      location="${dist.lib.dir}/${jar.name}"/>  
-    <sf-jar destfile="${target.jar}" 
-        basedir="${build.classes.dir}" 
+    <property name="target.jar"
+      location="${dist.lib.dir}/${jar.name}"/>
+    <sf-jar destfile="${target.jar}"
+        basedir="${build.classes.dir}"
         includes="**/*"/>
    <echo level="verbose">created package ${target.jar}</echo>
 
@@ -1011,19 +1022,19 @@
     <copy file="${sf.version.file}" todir="${dist.dir}" />
     <echo level="verbose">version=${sfversion}</echo>
     <!--property name="Version" value="${sfversion}"/-->
-    
+
   </target>
 
   <!--
     bypass all the self-referential stuff here.
   -->
   <target name="createjar" depends="generate-versioned-jar" if="is.component.not.enabled">
-    <sf-jar destfile="${target.jar}" 
-             basedir="${build.classes.dir}" 
+    <sf-jar destfile="${target.jar}"
+             basedir="${build.classes.dir}"
              includes="**/*"/>
      <echo level="verbose">created package ${target.jar}</echo>
   </target>
-  
+
   <!-- ========================================================== -->
   <!-- this is an override point -->
   <!-- create the JAR ${target.jar}-->
@@ -1038,12 +1049,12 @@
   <!-- ========================================================== -->
   <target name="package-tests" depends="compile-tests"
       description="create the JAR file for the tests">
-      <sf-jar destfile="${test.jar}" 
-        basedir="${test.classes.dir}" 
+      <sf-jar destfile="${test.jar}"
+        basedir="${test.classes.dir}"
         includes="**/*"/>
       <echo level="verbose">created package ${test.jar}</echo>
-  </target>  
-  
+  </target>
+
   <!-- ========================================================== -->
   <!-- this is an override point -->
   <!-- everything for distribution -->
@@ -1063,8 +1074,8 @@
         pattern="**/*.jar"
         dest="${smartfrog.dist.lib.dir}"
         failonerror="false"/>
-  </target> 
-  
+  </target>
+
   <!-- ========================================================== -->
   <!-- this is an override point -->
   <!-- install the jar, if we know where to put it -->
@@ -1087,7 +1098,7 @@
       failed="test.failed"/>
     <echo>reports in ${test.reports.dir}</echo>
   </target>
-  
+
   <!-- ========================================================== -->
   <!-- this is an override point -->
   <!-- generate test reports; ignore failur results-->
@@ -1100,19 +1111,19 @@
       failed="a.property.that.had.better.never.be.set"/>
     <echo>reports in ${test.reports.dir}</echo>
   </target>
-  
-  
+
+
   <!-- ========================================================== -->
   <!-- this is an override point -->
-  <!-- system tests : anything that is tested on a live daemon 
+  <!-- system tests : anything that is tested on a live daemon
        not to be run on public machines for
        security reasons, unless security is active-->
   <!-- ========================================================== -->
-  <target name="system-tests" if="system.tests.enabled" 
+  <target name="system-tests" if="system.tests.enabled"
           depends="init,package,package-tests"
     description="run the system tests">
   </target>
-  
+
   <!-- ========================================================== -->
   <!-- this is an override point -->
   <!-- unit tests : anything which does not need deployment to run-->
@@ -1121,14 +1132,14 @@
       if="unit.tests.enabled"
     description="run the unit tests">
   </target>
-  
+
   <!-- ========================================================== -->
   <!-- run tests, both unit and system  -->
   <!-- ========================================================== -->
   <target name="run-tests"
     depends="unit-tests,system-tests" />
-    
-    
+
+
   <!-- ========================================================== -->
   <!-- public entry point does all tests and the reports -->
   <!-- ========================================================== -->
@@ -1144,15 +1155,15 @@
     depends="run-tests,reports-no-failure"
     description="compile and run all the tests; do not break on test failure"
     />
-    
+
   <!-- ========================================================== -->
   <!-- this is the gump entry point; it does packaging and tests -->
   <!-- ========================================================== -->
   <target name="gump"
     depends="test,dist"
     description="target for gump builds"
-    />    
-    
+    />
+
   <!-- ========================================================== -->
   <!-- shortcut for testing -->
   <!-- ========================================================== -->
@@ -1169,7 +1180,7 @@
   <!-- ========================================================== -->
   <target name="buildtest"
     depends="smartfrog-dist,test"
-    description="compile the smartfrog distribution, 
+    description="compile the smartfrog distribution,
       compile and run all the tests, generate reports on failure"
     />
 
@@ -1184,11 +1195,11 @@
   <!-- ========================================================== -->
   <!-- this is an override point -->
   <!-- print meaningful diagnostics -->
-  <!-- ========================================================== -->    
+  <!-- ========================================================== -->
  <target name="diagnostics" depends="init"
     description="build file diagnostics">
     <echoproperties format="xml"/>
-  </target> 
+  </target>
 
  <target name="diag2" depends="init,verify-prerequisites">
     <echo>
@@ -1198,29 +1209,29 @@
       core dir ${core.dir}
       junit.jar ${junit.jar}
       verified.ok=${verified.ok}
-      
+
     </echo>
-  </target> 
-  
+  </target>
+
    <!-- ========================================================== -->
   <!-- this is an override point -->
   <!-- default target -->
   <!-- ========================================================== -->
-  <target name="default" depends="dist" 
+  <target name="default" depends="dist"
     description="default target creates a distribution" />
 
-    
+
  <!-- ========================================================== -->
   <!-- entry point for the components/buildRelease.xml delegation;
-       probe for needed libraries, and skip the operation if they 
+       probe for needed libraries, and skip the operation if they
        are missing -->
   <!-- ========================================================== -->
-  
+
   <target name="maybe-buildrelease">
     <antcall target="release"/>
   </target>
 
-  
+
   <!-- ========================================================== -->
   <!-- Security corner -->
   <!-- ========================================================== -->
@@ -1228,12 +1239,12 @@
   <target name="init-security" depends="init" >
     <!-- TODO -->
   </target>
-  
+
   <target name="sign-dependent-jars" depends="init-security"
     description="sign all jars that we depend upon">
     <!-- TODO -->
   </target>
-  
+
   <target name="sign-target-jar"
     description="sign our target jar" depends="package,init-security">
     <!-- TODO -->
@@ -1256,11 +1267,11 @@
 
     <!-- Maven2 stuff
       All components build into the org.smartfrog group, unless otherwise stated, but
-      are their own artifacts. 
+      are their own artifacts.
       -->
     <property name="m2.repository" location="${user.home}/.m2/repository" />
-    
-        
+
+
     <!-- make the root path of an artifact -->
     <macrodef name="m2-makepath">
       <attribute name="property"/>
@@ -1268,18 +1279,18 @@
       <attribute name="artifactID" default="@{groupIDpath}"/>
       <attribute name="version"/>
       <sequential>
-        <property name="@{property}" 
+        <property name="@{property}"
           location="${m2.repository}/@{groupIDpath}/@{artifactID}/@{version}" />
       </sequential>
     </macrodef>
-    
+
     <property name="m2.groupID" value="org.smartfrog" />
     <property name="m2.groupID.path" value="org/smartfrog" />
     <m2-makepath property="m2.subdir"
       groupIDpath="${m2.groupID.path}"
       artifactID="${artifact.name}"
       version="${Version}" />
-<!--     <property name="m2.subdir" 
+<!--     <property name="m2.subdir"
       location="${m2.repository}/${m2.groupID.path}/${artifact.name}/${Version}" />
  -->
     <!-- pom setup -->
@@ -1343,19 +1354,19 @@
        </m2:install>
      </presetdef>
    </target>
-   
+
    <!-- look for local then remote definitions of library versions -->
   <target name="m2-load-versions" depends="init">
     <property file="libraries.properties"/>
     <property file="${smartfrog.components.dir}/libraries.properties"/>
-  </target>   
+  </target>
 
   <!-- ========================================================== -->
   <!-- POM creation/copy, depending on whether it exists or not   -->
   <!-- ========================================================== -->
-  
+
    <target name="m2-copy-pom" depends="m2-init" if="project.haspom">
-     <copy file="${project.pom}" tofile="${target.pom}" > 
+     <copy file="${project.pom}" tofile="${target.pom}" >
       <!-- we expand ant properties here.  -->
        <filterchain>
         <expandproperties/>
@@ -1374,19 +1385,19 @@
   <version>${Version}</version>
 </project>
 ]]></echo>
-   
+
    </target>
-   
+
    <target name="m2-pom" depends="m2-copy-pom,m2-make-pom" />
-  
+
   <!-- ========================================================== -->
   <!-- this is not  normally for overriding -->
   <!-- install the jar, to the local maven2 repository -->
   <!-- ========================================================== -->
   <target name="m2-install" depends="checksum-target-jar,m2-pom"
       description="copy the JAR file local maven repository">
-      
-    <mkdir dir="${m2.subdir}"/>    
+
+    <mkdir dir="${m2.subdir}"/>
     <copy file="${target.jar}" todir="${m2.subdir}"/>
     <!-- copy a pom -->
     <copy file="${target.pom}" todir="${m2.subdir}" failonerror="false"/>

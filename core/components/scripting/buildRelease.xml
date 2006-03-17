@@ -51,18 +51,20 @@ To Be Written
   <!-- =================================================================== -->
   <!-- Initialization target                                               -->
   <!-- =================================================================== -->
-  <target name="init">
+  <target name="init" depends="init-common">
     <tstamp/>
-	<property name="Name.Framework" value="SmartFrog"/>
-     <property name="Name.System" value="scripting"/>
-    <property name="Name.Company" value="(C) Copyright 1998-2004 Hewlett-Packard Development Company, LP"/>
-    <!--property name="version" value="1.00.000_beta"/-->
-    <property name="year" value="2004"/>
+    <property name="Name.Framework" value="SmartFrog"/>
+    <property name="Name.System" value="scripting"/>
+    <property name="year" value="2006"/>
+    <property name="Name.Company"
+        value="(C) Copyright 1998-${year} Hewlett-Packard Development Company, LP"/>
 
-	<echo message=""/>
-    <echo message="==================================================================="/>
+    <echo message=""/>
+    <echo
+        message="==================================================================="/>
     <echo message="= ${Name.Framework} - ${Name.System} -  ${Name.Company} "/>
-    <echo message="==================================================================="/>
+    <echo
+        message="==================================================================="/>
   </target>
 <!-- =================================================================== -->
   <!-- Help on usage                                                       -->
@@ -163,18 +165,18 @@ To Be Written
   <!-- initrelease                                                             -->
   <!-- =================================================================== -->
   <target name="initrelease" depends="common.init">
-	  <mkdir dir="releases"/>
-	   <java classname="org.Version"
-	 failonerror="true" fork="true"
-	 outputproperty="version">
-	 <arg value="-b"/>
-	 <classpath>
-	    <fileset dir="${dist.lib.dir}">
-        		<include name="**/*.jar"/>
-		</fileset>
-	    <fileset refid="smartfrog.lib.fileset" />
-	 </classpath>
-      </java>
+    <mkdir dir="releases"/>
+    <java classname="org.Version"
+        failonerror="true" fork="true"
+        outputproperty="version">
+      <arg value="-b"/>
+      <classpath>
+        <fileset dir="${dist.lib.dir}">
+          <include name="**/*.jar"/>
+        </fileset>
+        <fileset refid="smartfrog.lib.fileset"/>
+      </classpath>
+    </java>
   </target>
   <!-- =================================================================== -->
   <!-- release                                                             -->
@@ -229,7 +231,7 @@ To Be Written
     </zip>
 
 
-     <tar tarfile="releases/${Name.System}.${version}.${DSTAMP}_DIST.tar" >
+     <sf-tar tarfile="releases/${Name.System}.${version}.${DSTAMP}_DIST.tar" >
        <tarfileset dir="." prefix="${Name.System}.${version}">
          <include name="${dist}/bin/**/*.sf"/>
          <include name="${dist}/bin/**/*.bat"/>
@@ -251,19 +253,19 @@ To Be Written
          <exclude name="${dist}/bin/**/*.bat"/>
          <exclude name="${dist}/bin/**/*.ini"/>
         </tarfileset>
-     </tar>
+     </sf-tar>
 
 
     <gzip src="releases/${Name.System}.${version}.${DSTAMP}_DIST.tar" zipfile="releases/${Name.System}.${version}.${DSTAMP}_DIST.tar.gz"/>
     <delete file="releases/${Name.System}.${version}.${DSTAMP}_DIST.tar"/>
 
-    <tar tarfile="releases/${Name.System}.${version}.${DSTAMP}_ALL.tar">
+    <sf-tar tarfile="releases/${Name.System}.${version}.${DSTAMP}_ALL.tar">
       <tarfileset dir="." prefix="${Name.System}.${version}">
-        
-		<include name="bin/**/*.sf"/>
+
+        <include name="bin/**/*.sf"/>
         <include name="bin/**/*.bat"/>
         <include name="bin/**/*.ini"/>
-		<include name="docs/SmartFrogScripting*"/>
+        <include name="docs/SmartFrogScripting*"/>
         <include name="lib/**"/>
         <include name="src/**"/>
         <include name="build.xml"/>
@@ -276,42 +278,42 @@ To Be Written
         <include name="LICENSE.txt"/>
         <include name="changes.txt"/>
         <include name="readme.txt"/>
-        <exclude name="**/CVS" />
-        <exclude name="**/*.dfPackage" />
-        <exclude name="**/Cvs" />
+        <exclude name="**/CVS"/>
+        <exclude name="**/*.dfPackage"/>
+        <exclude name="**/Cvs"/>
         <exclude name="bin/tools/**"/>
-        <exclude name="**/.#*" />
-        <exclude name="**/*.*~" />
-        </tarfileset>
-       <tarfileset dir="." prefix="${Name.System}.${version}" mode="755">
+        <exclude name="**/.#*"/>
+        <exclude name="**/*.*~"/>
+      </tarfileset>
+      <tarfileset dir="." prefix="${Name.System}.${version}" mode="755">
         <include name="bin/**"/>
         <exclude name="bin/**/*.sf"/>
         <exclude name="bin/**/*.bat"/>
         <exclude name="bin/**/*.ini"/>
-       </tarfileset>
+      </tarfileset>
 
-       <tarfileset dir="." prefix="${Name.System}.${version}">
-         <include name="${dist}/bin/**/*.sf"/>
-         <include name="${dist}/bin/**/*.bat"/>
-         <include name="${dist}/bin/**/*.ini"/>
-        </tarfileset>
-       <tarfileset dir="." prefix="${Name.System}.${version}">
-         <exclude name="${dist}/bin/**"/>
-         <include name="${dist}/**"/>
-         <exclude name="${dist}/classes/**"/>
-         <exclude name="${dist}/docs/**"/>
-        </tarfileset>
       <tarfileset dir="." prefix="${Name.System}.${version}">
-	  	<include name="${dist}/docs/SmartFrogScripting*"/>
+        <include name="${dist}/bin/**/*.sf"/>
+        <include name="${dist}/bin/**/*.bat"/>
+        <include name="${dist}/bin/**/*.ini"/>
+      </tarfileset>
+      <tarfileset dir="." prefix="${Name.System}.${version}">
+        <exclude name="${dist}/bin/**"/>
+        <include name="${dist}/**"/>
+        <exclude name="${dist}/classes/**"/>
+        <exclude name="${dist}/docs/**"/>
+      </tarfileset>
+      <tarfileset dir="." prefix="${Name.System}.${version}">
+        <include name="${dist}/docs/SmartFrogScripting*"/>
         <include name="${dist}/docs/jdocs/**"/>
-		</tarfileset>
-       <tarfileset dir="." mode="755" prefix="${Name.System}.${version}">
-         <include name="${dist}/bin/**"/>
-         <exclude name="${dist}/bin/**/*.sf"/>
-         <exclude name="${dist}/bin/**/*.bat"/>
-         <exclude name="${dist}/bin/**/*.ini"/>
-        </tarfileset>
-    </tar>
+      </tarfileset>
+      <tarfileset dir="." mode="755" prefix="${Name.System}.${version}">
+        <include name="${dist}/bin/**"/>
+        <exclude name="${dist}/bin/**/*.sf"/>
+        <exclude name="${dist}/bin/**/*.bat"/>
+        <exclude name="${dist}/bin/**/*.ini"/>
+      </tarfileset>
+    </sf-tar>
     <gzip src="releases/${Name.System}.${version}.${DSTAMP}_ALL.tar" zipfile="releases/${Name.System}.${version}.${DSTAMP}_ALL.tar.gz"/>
     <delete file="releases/${Name.System}.${version}.${DSTAMP}_ALL.tar"/>
 <!--
