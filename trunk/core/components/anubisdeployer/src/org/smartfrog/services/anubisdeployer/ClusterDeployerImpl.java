@@ -109,7 +109,7 @@ public class ClusterDeployerImpl extends PrimProcessDeployerImpl {
         try {
             dcopy.visit(new Gatherer(requirements), true, false);
 
-            System.out.println("requirements" + requirements);
+            //System.out.println("requirements" + requirements);
 
             allocations = allocate(requirements);
 
@@ -127,7 +127,7 @@ public class ClusterDeployerImpl extends PrimProcessDeployerImpl {
     }
 
     private static ComponentDescription allocate(ComponentDescription reqs) {
-        System.out.println("allocating " + reqs);
+        //System.out.println("allocating " + reqs);
         Reference clusterManagementRef = new Reference(ReferencePart.here("clusterNodeManagement"));
         Reference clusterStatusRef = new Reference(ReferencePart.here("clusterStatusMonitor"));
 
@@ -151,10 +151,10 @@ public class ClusterDeployerImpl extends PrimProcessDeployerImpl {
             return null; // shouldn't happen as it is local...
         }
 
-        System.out.println("to resources " + resources);
+        //System.out.println("to resources " + resources);
         ComponentDescription allocations = ClusterResourceMapper.mapNodes(resources, reqs);
 
-        System.out.println("with allocations " + allocations);
+        //System.out.println("with allocations " + allocations);
         return allocations;
     }
 
@@ -190,7 +190,7 @@ public class ClusterDeployerImpl extends PrimProcessDeployerImpl {
                         c.put("sfReservationId", newUniqueName());
                     }
                 } else {
-                    System.out.println("putting sfReservationId");
+                    //System.out.println("putting sfReservationId");
                     c.put("sfReservationId", newUniqueName());
                     ComponentDescription req =
                             (ComponentDescription) c.get("sfClusterNode");
