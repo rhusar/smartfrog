@@ -199,7 +199,7 @@ public class ClusterDeployerImpl extends PrimProcessDeployerImpl {
                     // The host may have been set to ensure the location at which the  deployment is made, but
                     // resources are still required to be reserved, just no mapping done.
                     if (!c.containsKey("sfReservationId")) {
-                        c.put("sRreservationId", newUniqueName());
+                        c.put("sfReservationId", newUniqueName());
                     }
                 }
             }
