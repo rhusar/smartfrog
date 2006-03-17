@@ -32,19 +32,21 @@
 
   <!-- Import common stuff -->
   <!--available file="../../common.xml" property="root.dir" value="../.."/-->
+  <property name="root.dir" value=".." />
   <import file="${root.dir}/common.xml"/>
 
 
   <!-- =================================================================== -->
   <!-- Initialization target                                               -->
   <!-- =================================================================== -->
-  <target name="init">
+  <target name="init" depends="init-common">
     <tstamp/>
     <property name="Name.Framework" value="SmartFrog"/>
     <property name="Name.System" value="${ant.project.name}"/>
-    <property name="Name.Company" value="(C) Copyright 1998-2006 Hewlett-Packard Development Company, LP"/>
-    <!--property name="version" value="1.00.000_beta"/-->
-    <property name="year" value="2004"/>
+    <tstamp>
+      <format property="year" pattern="yyyy" />
+    </tstamp>
+    <property name="Name.Company" value="(C) Copyright 1998-${year} Hewlett-Packard Development Company, LP"/>
 
     <echo>
       ===================================================================
@@ -250,8 +252,7 @@
     </zip>
 
 
-    <tar tarfile="releases/${Name.System}.${version}.${DSTAMP}_DIST.tar"
-        longfile="gnu">
+    <sf-tar tarfile="releases/${Name.System}.${version}.${DSTAMP}_DIST.tar">
       <tarfileset dir="." prefix="${Name.System}.${version}">
         <include name="${dist}/bin/**/*.sf"/>
         <include name="${dist}/bin/**/*.bat"/>
@@ -272,14 +273,14 @@
         <exclude name="${dist}/bin/**/*.bat"/>
         <exclude name="${dist}/bin/**/*.ini"/>
       </tarfileset>
-    </tar>
+    </sf-tar>
 
 
     <gzip src="releases/${Name.System}.${version}.${DSTAMP}_DIST.tar"
         zipfile="releases/${Name.System}.${version}.${DSTAMP}_DIST.tar.gz"/>
     <delete file="releases/${Name.System}.${version}.${DSTAMP}_DIST.tar"/>
 
-    <tar tarfile="releases/${Name.System}.${version}.${DSTAMP}_ALL.tar"
+    <sf-tar tarfile="releases/${Name.System}.${version}.${DSTAMP}_ALL.tar"
         longfile="gnu">
       <tarfileset dir="." prefix="${Name.System}.${version}">
 
@@ -333,7 +334,7 @@
         <exclude name="${dist}/bin/**/*.bat"/>
         <exclude name="${dist}/bin/**/*.ini"/>
       </tarfileset>
-    </tar>
+    </sf-tar>
     <gzip src="releases/${Name.System}.${version}.${DSTAMP}_ALL.tar"
         zipfile="releases/${Name.System}.${version}.${DSTAMP}_ALL.tar.gz"/>
     <delete file="releases/${Name.System}.${version}.${DSTAMP}_ALL.tar"/>

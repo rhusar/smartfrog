@@ -35,65 +35,14 @@ To Be Written
 
 -->
 <project name="sfinstaller" default="process" basedir=".">
+  <property file="build.properties"/>
+  <property name="root.dir" location="../../"/>
 
-  <!-- =================================================================== -->
-  <!-- Initialization target                                               -->
-  <!-- =================================================================== -->
-  <target name="init">
-    <tstamp/>
-	<property name="Name.Framework" value="SmartFrog"/>
-     <property name="Name.System" value="sfinstaller"/>
-    <property name="Name.Company" value="(C) Copyright 1998-2004 Hewlett-Packard Development Company, LP"/>
-    <property name="year" value="2004"/>
 
-	<echo message=""/>
-    <echo message="==================================================================="/>
-    <echo message="= ${Name.Framework} - ${Name.System} -  ${Name.Company} "/>
-    <echo message="==================================================================="/>
-  </target>
-<!-- =================================================================== -->
-  <!-- Help on usage                                                       -->
-  <!-- =================================================================== -->
-  <target name="help" depends="init" description="Process">
-    <echo message=""/>
-    <echo message="-------------------------------------------------------------"/>
-    <echo message="${Name.Framework}  ${Name.System}  Release file"/>
-    <echo message="-------------------------------------------------------------"/>
-    <echo message="* General:  "/>
-    <echo message="    help         --> this message"/>
-    <echo message="    process      --> step by step release guide"/>
-    <echo message="    release      --> generates zip file for release packages"/>
-    <echo message="   "/>
-    <echo message="    help --> this help"/>
-    <echo message="            See the comments inside the build.xml file for more details."/>
-    <echo message="-------------------------------------------------------------"/>
-    <echo message=""/>
-  </target>
+  <import file="${root.dir}/components/buildRelease-template.xml"/>
 
-  <!-- =================================================================== -->
-  <!-- Help on usage                                                       -->
-  <!-- =================================================================== -->
-  <target name="process" depends="init" description="Help">
-    <echo message=""/>
-    <echo message="-------------------------------------------------------------"/>
-    <echo message=" Step by step guide to make a release"/>
-    <echo message="-------------------------------------------------------------"/>
- 
-    <echo message="         	==>    ant release "/>
-    <echo message="            	==> ant -f buildRelease.xml release"/>
-    <echo message=" "/>
-    <echo message="			==>	Check content of zip and dist files: "/>
-    <echo message="         Ex. SRC distribution: 'build.xml dist' "/>
-    <echo message="                               'dist\build.xml build'  "/>
-    <echo message="                               'dist\build.xml jdocs'  "/>
-    <echo message="         Ex. BIN distribution: 'dist\build.xml build'  "/>
-    <echo message="                               'dist\build.xml jdocs'"/>
-    <echo message=" "/>
-    <echo message="			==> Upload files to web site."/>
-    <echo message=" "/>
-    <echo message="-------------------------------------------------------------"/>
-    <echo message=""/>
-  </target>
+
+
 
   <!-- =================================================================== -->
   <!-- Initialization path (Libs needed for compiling)                     -->
@@ -186,7 +135,7 @@ To Be Written
 	    zipfile="releases/${Name.System}.${DSTAMP}_DIST.tar.gz"/>
     <delete file="releases/${Name.System}.${DSTAMP}_DIST.tar"/>
 
-    <tar destfile="releases/${Name.System}.${DSTAMP}_ALL.tar">
+    <sf-tar destfile="releases/${Name.System}.${DSTAMP}_ALL.tar">
        <tarfileset dir="." prefix="${Name.System}">
         <include name="bin/**"/>
         <include name="dist/**"/>
@@ -195,7 +144,7 @@ To Be Written
         <include name="src/**"/>
         <include name="build.xml"/>
        </tarfileset>
-    </tar>
+    </sf-tar>
 
     <gzip src="releases/${Name.System}.${DSTAMP}_ALL.tar" 
 	    zipfile="releases/${Name.System}.${DSTAMP}_ALL.tar.gz"/>
