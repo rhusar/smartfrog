@@ -21,7 +21,7 @@
 package org.smartfrog.services.deployapi.test.unit;
 
 import org.apache.axis2.addressing.EndpointReference;
-import org.smartfrog.services.deployapi.engine.Job;
+import org.smartfrog.services.deployapi.engine.Application;
 import org.smartfrog.services.deployapi.engine.JobRepository;
 import org.smartfrog.services.deployapi.system.Constants;
 import org.smartfrog.services.deployapi.system.LifecycleStateEnum;
@@ -39,7 +39,7 @@ public class JobTest extends UnitTestBase {
         super(name);
     }
 
-    private Job job;
+    private Application job;
 
     private JobRepository repository;
 
@@ -50,7 +50,7 @@ public class JobTest extends UnitTestBase {
         job = createJob();
     }
 
-    Job createJob() {
+    Application createJob() {
         return repository.createNewJob("localhost");
     }
 
@@ -69,7 +69,7 @@ public class JobTest extends UnitTestBase {
 
     public void testMappingWorks() throws Exception {
         EndpointReference epr = getJobEndpointer();
-        Job job2=repository.lookupJobFromEndpointer(epr);
+        Application job2=repository.lookupJobFromEndpointer(epr);
         assertSame(job,job2);
     }
 
@@ -100,7 +100,7 @@ public class JobTest extends UnitTestBase {
     }
 
     private void assertQueryResolvesToJob(String query) {
-        Job job2 = repository.lookupJobFromQuery(query);
+        Application job2 = repository.lookupJobFromQuery(query);
         assertSame(job, job2);
     }
 
@@ -127,13 +127,13 @@ public class JobTest extends UnitTestBase {
     }
     
     public void testUnknownJob() throws Exception {
-        Job job = repository.lookupJobFromQuery(Constants.JOB_ID_PARAM+"=1234");
+        Application job = repository.lookupJobFromQuery(Constants.JOB_ID_PARAM+"=1234");
         assertNull(job);
     }
     
     private void assertLookupFaults(String query) {
         try {
-            Job job=repository.lookupJobFromQuery(query);
+            Application job=repository.lookupJobFromQuery(query);
             fail("expected to fail on "+query+" but got "+job);
         } catch (BaseException e) {
             //success

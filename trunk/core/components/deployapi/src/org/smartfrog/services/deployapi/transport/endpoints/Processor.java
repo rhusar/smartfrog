@@ -25,7 +25,7 @@ import org.apache.axis2.context.MessageContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.ws.commons.om.OMElement;
-import org.smartfrog.services.deployapi.engine.Job;
+import org.smartfrog.services.deployapi.engine.Application;
 import org.smartfrog.services.deployapi.engine.JobRepository;
 import org.smartfrog.services.deployapi.engine.ServerInstance;
 import org.smartfrog.services.deployapi.system.Constants;
@@ -84,8 +84,8 @@ public class Processor extends FaultRaiser {
      * @return the jobstate reference
      * @throws BaseException if there is no such job
      */
-    public Job lookupJob(URI jobURI) throws BaseException {
-        Job job = lookupJobNonFaulting(jobURI);
+    public Application lookupJob(URI jobURI) throws BaseException {
+        Application job = lookupJobNonFaulting(jobURI);
         if (job == null) {
             throw raiseNoSuchApplicationFault(
                     ERROR_APP_URI_NOT_FOUND + jobURI.toString());
@@ -100,9 +100,9 @@ public class Processor extends FaultRaiser {
      * @return job or null for no match
      */
 
-    public Job lookupJobNonFaulting(URI jobURI) {
+    public Application lookupJobNonFaulting(URI jobURI) {
         JobRepository jobs = ServerInstance.currentInstance().getJobs();
-        Job job = jobs.lookup(jobURI);
+        Application job = jobs.lookup(jobURI);
         return job;
     }
 
@@ -113,9 +113,9 @@ public class Processor extends FaultRaiser {
      * @return
      * @throws DeploymentException if there is no match
      */
-    protected Job lookupJob(String resourceId) {
+    protected Application lookupJob(String resourceId) {
         ServerInstance server = ServerInstance.currentInstance();
-        Job job = server.getJobs().lookup(resourceId);
+        Application job = server.getJobs().lookup(resourceId);
         if (job == null) {
             throw new DeploymentException(Constants.F_NO_SUCH_APPLICATION);
         }

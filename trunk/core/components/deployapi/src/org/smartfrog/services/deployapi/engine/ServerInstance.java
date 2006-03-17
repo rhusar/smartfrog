@@ -307,7 +307,7 @@ public class ServerInstance implements WSRPResourceSource {
         public OMElement getValue() {
             Element response=XomHelper.element(Constants.PROPERTY_PORTAL_ACTIVE_SYSTEMS);
             JobRepository jobs = owner.getJobs();
-            for (Job job : jobs) {
+            for (Application job : jobs) {
                 response.appendChild(job.getEndpointer().copy());
             }
             return Utils.xomToAxiom(response);

@@ -22,7 +22,7 @@ package org.smartfrog.services.deployapi.transport.endpoints.portal;
 import nu.xom.Document;
 import nu.xom.Element;
 import org.smartfrog.services.deployapi.binding.XomHelper;
-import org.smartfrog.services.deployapi.engine.Job;
+import org.smartfrog.services.deployapi.engine.Application;
 import org.smartfrog.services.deployapi.transport.endpoints.Processor;
 import org.smartfrog.services.deployapi.transport.endpoints.SmartFrogAxisEndpoint;
 
@@ -49,7 +49,7 @@ public class LookupSystemProcessor extends Processor {
     public Element process(Document request) throws IOException {
         Element rootElement = request.getRootElement();
         String resourceId=XomHelper.getElementValue(rootElement, "api:ResourceId");
-        Job job = lookupJob(resourceId);
+        Application job = lookupJob(resourceId);
         Element address = (Element) job.getEndpointer().copy();
         XomHelper.adopt(address, "lookupSystemResponse");
         return address;

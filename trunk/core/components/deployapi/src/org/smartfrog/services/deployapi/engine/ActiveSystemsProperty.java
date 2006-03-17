@@ -61,7 +61,7 @@ public class ActiveSystemsProperty implements Property {
 
     public OMElement getValue() {
         Element result =apiElement("ActiveSystems");
-        for (Job job : jobs) {
+        for (Application job : jobs) {
          //tODO           
         }
         return Utils.xomToAxiom(result);

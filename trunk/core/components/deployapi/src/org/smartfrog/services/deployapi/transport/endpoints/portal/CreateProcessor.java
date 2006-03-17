@@ -24,7 +24,7 @@ import nu.xom.Element;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.smartfrog.services.deployapi.binding.XomHelper;
-import org.smartfrog.services.deployapi.engine.Job;
+import org.smartfrog.services.deployapi.engine.Application;
 import org.smartfrog.services.deployapi.engine.JobRepository;
 import org.smartfrog.services.deployapi.engine.ServerInstance;
 import org.smartfrog.services.deployapi.system.Constants;
@@ -45,7 +45,7 @@ public class CreateProcessor extends Processor {
      */
     private static final Log log = LogFactory.getLog(CreateProcessor.class);
 
-    private Job job;
+    private Application job;
     public static final String ERROR_NO_DESCRIPTOR = "No descriptor element";
 
     public CreateProcessor(SmartFrogAxisEndpoint owner) {

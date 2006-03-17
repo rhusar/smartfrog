@@ -24,7 +24,7 @@ import org.apache.axis2.context.MessageContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.ws.commons.om.OMElement;
-import org.smartfrog.services.deployapi.engine.Job;
+import org.smartfrog.services.deployapi.engine.Application;
 import org.smartfrog.services.deployapi.engine.JobRepository;
 import org.smartfrog.services.deployapi.engine.ServerInstance;
 import org.smartfrog.services.deployapi.system.Constants;
@@ -44,7 +44,7 @@ import java.io.IOException;
 
 public class SystemEndpoint extends WsrfEndpoint {
 
-    Log log= LogFactory.getLog(SystemEndpoint.class);
+    private Log log= LogFactory.getLog(SystemEndpoint.class);
 
     /**
      * deliver a message
@@ -68,7 +68,7 @@ public class SystemEndpoint extends WsrfEndpoint {
         verifyProcessorSet(processor, operation);
 
         processor.setMessageContext(inMessage);
-        Job job = lookupJob(inMessage);
+        Application job = lookupJob(inMessage);
         processor.setJob(job);
         return processor.process(request);
     }
@@ -80,10 +80,10 @@ public class SystemEndpoint extends WsrfEndpoint {
      * @return a job or null for no job matching that query found
      * @throws BaseException if the args are bad
      */
-    protected Job lookupJob(MessageContext inMessage) {
+    protected Application lookupJob(MessageContext inMessage) {
         JobRepository jobs = ServerInstance.currentInstance().getJobs();
         EndpointReference to = inMessage.getTo();
-        Job job=jobs.lookupJobFromEndpointer(to);
+        Application job=jobs.lookupJobFromEndpointer(to);
         return job;
     }
 
@@ -133,7 +133,7 @@ public class SystemEndpoint extends WsrfEndpoint {
 
 
     public WSRPResourceSource retrieveResourceSource(MessageContext message) {
-        Job job = lookupJob(message);
+        Application job = lookupJob(message);
         if(job==null) {
             throw FaultRaiser.raiseNoSuchApplicationFault("Unknown application");
         }
