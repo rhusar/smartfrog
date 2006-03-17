@@ -81,7 +81,7 @@ public class ClusterDeployerImpl extends PrimProcessDeployerImpl {
 
         boolean alreadyAllocated = true;
         try {
-            descr.sfResolve(new Reference(ReferencePart.here("sfProcessHost")));
+            descr.sfResolve(new Reference(ReferencePart.here("sfReservationId")));
         } catch (Exception e) {
             alreadyAllocated = false;
         }
@@ -179,7 +179,17 @@ public class ClusterDeployerImpl extends PrimProcessDeployerImpl {
             Context c = node.sfContext();
             Object sfClass = c.get("sfClass");
             if (sfClass != null && sfClass.equals(CLUSTERCOMPOUNDCLASS)) {
-                if (!c.containsKey("sfProcessHost")) {
+                if (c.containsKey("sfProcessHost")) {
+                    // although a host has been allocated, check that the resrvation id is set.
+                    // The host may have been set to ensure the location at which the  deployment is made, but
+                    // resources are still required to be reserved, just no mapping done.
+
+                    /** @TODO fix the fact that resources still need to be checked and mapped...
+                     */
+                    if (!c.containsKey("sfReservationId")) {
+                        c.put("sfReservationId", newUniqueName());
+                    }
+                } else {
                     System.out.println("putting sfReservationId");
                     c.put("sfReservationId", newUniqueName());
                     ComponentDescription req =
@@ -193,13 +203,6 @@ public class ClusterDeployerImpl extends PrimProcessDeployerImpl {
                             req.sfContext().put("name", id);
                         }
                         ClusterResourceMapper.accumulateRequirements(reqs, req);
-                    }
-                } else {
-                    // although a host has been allocated, check that the resrvation id is set.
-                    // The host may have been set to ensure the location at which the  deployment is made, but
-                    // resources are still required to be reserved, just no mapping done.
-                    if (!c.containsKey("sfReservationId")) {
-                        c.put("sfReservationId", newUniqueName());
                     }
                 }
             }
