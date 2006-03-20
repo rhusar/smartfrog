@@ -136,10 +136,11 @@ public class ComponentHelper {
      * @param terminationType - termination type, system recognized types are "normal", "abnormal" and "externalReferenceDead".
      * @param terminationMessage - description of termination
      * @param refId Reference - id of terminating component
+     * @param thrown Thrown fault
      */
     public void sfSelfDetachAndOrTerminate(String terminationType,
                                             String terminationMessage,
-                                            Reference refId, Throwable thr) {
+                                            Reference refId, Throwable thrown) {
         /** Flag indicating detachment. */
         boolean shouldDetach = false;
         /** Flag indicating if the sfShouldDetach attribute was read. */
@@ -187,8 +188,10 @@ public class ComponentHelper {
                 terminationMessage = "Self Detatch and\\or Termination: ";
             }
 
-            TerminationRecord termR = (new TerminationRecord(terminationType,
-                terminationMessage, this.completeNameSafe(), thr));
+            TerminationRecord termR = new TerminationRecord(terminationType,
+                                            terminationMessage,
+                                            completeNameSafe(),
+                                            thrown);
             TerminatorThread terminator = new TerminatorThread(owner, termR);
 
             if (shouldDetachRead&&shouldDetach) {
