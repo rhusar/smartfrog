@@ -1,3 +1,4 @@
 jetty.iml
 build
 dist
+version.properties
