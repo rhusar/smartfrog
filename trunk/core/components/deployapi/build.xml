@@ -196,19 +196,19 @@
 
 
 
-       
-  
-  <target name="declare-exec.classpath" depends="declare-compile.classpath" >  
+
+
+  <target name="declare-exec.classpath" depends="declare-compile.classpath" >
     <path id="exec.classpath">
       <pathelement location="${target.jar}"/>
       <path refid="compile.classpath"/>
-    </path>    
+    </path>
     <property name="exec.classpath.value" refid="exec.classpath"/>
     <echo level="verbose">exec.classpath=${exec.classpath.value}</echo>
   </target>
 
   <!-- declares the testharness and junit path -->
-  
+
   <target name="test-libraries" depends="m2.m2-tasks">
     <m2-libraries pathID="test-libraries.classpath">
 
@@ -226,7 +226,7 @@
         version="${junit.version}"/>
     </m2-libraries>
   </target>
-  
+
 
 
 
@@ -240,7 +240,25 @@
       depends="init,declare-classpaths,core.core-tasks">
   </target>
 
-  
+  <!-- ========================================================== -->
+  <!-- this is an override point -->
+  <!-- compile everything, copy useful files over-->
+  <!-- ========================================================== -->
+  <target name="compile"
+      depends="pre-compile">
+    <depend srcdir="${src.dir}"
+        destdir="${build.classes.dir}"
+        cache="${build.dir}/depends"
+        closure="yes"/>
+    <core:javac
+        classpathref="compile.classpath"
+        srcdir="${src.dir}"
+        destdir="${build.classes.dir}"
+        excludes="**/engine/Job.java"
+        />
+    <core:copy-useful-files src="${src.dir}" dest="${build.classes.dir}"/>
+  </target>
+
   <target name="archives" depends="init"
     description="create the .aar files">
   
