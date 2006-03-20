@@ -18,9 +18,9 @@
     <open cdl:extends="demo:Open">
       <filename>C:\Projects\Machines\os\vmimage.vmx</filename>
     </open>
-
+<!--
     <jsdl-execute cdl:extends="jsdl:execute">
       <jsdl-file cdl:ref="/runtime/jsdlfile"/>
-    </jsdl-execute>
+    </jsdl-execute>-->
   </cdl:system>
 </cdl:cdl>

@@ -161,15 +161,9 @@
 
   <target name="axis2-libraries" depends="m2.m2-tasks">
     <m2:libraries  pathID="axis2.classpath">
-      <dependency groupID="junit"
-        artifactID="junit"
-        version="${junit.version}"/>
-      <dependency groupID="commons-codec"
-        artifactID="commons-codec"
-        version="${commons-codec.version}"/>
-      <dependency groupID="commons-httpclient"
-        artifactID="commons-httpclient"
-        version="${commons-httpclient.version}"/>
+      <dependency groupID="org.apache.ws.axis2"
+          artifactID="axis2"
+          version="${axis2.version}"/>
       <dependency groupID="javax.activation"
         artifactID="activation"
         version="${activation.version}"/>
@@ -185,22 +179,18 @@
       <dependency groupID="commons-fileupload"
         artifactID="commons-fileupload"
         version="${commons-fileupload.version}"/>
-      <dependency groupID="org.apache.ws.axis2"
-        artifactID="axis2"
-        version="${axis2.version}"/>
       <dependency groupID="saxon"
         artifactID="saxon"
         version="${saxon.version}"/>
-
-
-      <!--      <dependency groupID="geronimo-spec"
-     artifactID="geronimo-spec-javamail"
-     version="${geronimo-spec-javamail.version}"/> -->
-      <!--       <dependency groupID="geronimo-spec"
-             artifactID="geronimo-spec-activation"
-             version="${geronimo-spec-activation.version}"/>
-      -->
-
+      <dependency groupID="junit"
+          artifactID="junit"
+          version="${junit.version}"/>
+      <dependency groupID="commons-codec"
+          artifactID="commons-codec"
+          version="${commons-codec.version}"/>
+      <dependency groupID="commons-httpclient"
+          artifactID="commons-httpclient"
+          version="${commons-httpclient.version}"/>
     </m2:libraries >
     </target>
 
