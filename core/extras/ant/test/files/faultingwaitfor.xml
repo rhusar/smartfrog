@@ -7,7 +7,7 @@
     command line invocation
     ant -lib ..\..\build\dist\lib\smartfrog-tasks.jar -lib ..\..\..\..\smartfrog\dist\lib\smartfrog.jar -lib -f faultingwaitfor.xml testTimeout
 
-    ant -lib ../../build/dist/lib/ -lib ../../../../smartfrog/dist/lib/ -f faultingwaitfor.xml testTimeout
+    ant -lib ../../dist/lib/ -lib ../../../../smartfrog/dist/lib/ -f faultingwaitfor.xml testTimeout
 
     ant -lib ../../build/dist/lib/smartfrog-tasks.jar -lib
     ../../../../smartfrog/dist/lib/smartfrog.jar -lib
@@ -21,10 +21,23 @@
     </sf-faultingwaitfor>
   </target>
 
+  <target name="testSuccessPropertyUnset">
+    <sf-faultingwaitfor maxwait="2"
+        timeoutproperty="timeout" >
+      <equals arg1="a" arg2="a"/>
+    </sf-faultingwaitfor>
+    <fail if="timeout" >timeout property was set</fail>
+  </target>
+
   <target name="testTimeout">
+    <echo>in</echo>
+    <waitfor timeoutproperty="foo" maxwait="2">
+      <equals arg1="a" arg2="b"/>
+    </waitfor>
     <sf-faultingwaitfor maxwait="2" >
       <equals arg1="a" arg2="b"/>
     </sf-faultingwaitfor>
+    <echo>we should never get here</echo>
   </target>
 
   <target name="testTimeoutMessage">
@@ -33,4 +46,13 @@
     </sf-faultingwaitfor>
   </target>
 
+  <target name="testTimeoutProperty">
+    <sf-faultingwaitfor maxwait="2"
+        timeoutproperty="timeout">
+      <equals arg1="a" arg2="a"/>
+    </sf-faultingwaitfor>
+    <fail if="timeout">timeout property was set</fail>
+  </target>
+
+  <target name="teardown" />
 </project>

@@ -25,6 +25,7 @@ import org.smartfrog.tools.ant.FaultingWaitForTask;
 /**
  */
 public class FaultingWaitForTest extends TaskTestBase {
+    private static final String REASON = "task should throw an exception";
 
     public FaultingWaitForTest(String s) {
         super(s);
@@ -43,15 +44,23 @@ public class FaultingWaitForTest extends TaskTestBase {
         executeTarget("testSuccess");
     }
 
+    public void testSuccessPropertyUnset() {
+        executeTarget("testSuccessPropertyUnset");
+    }
+    public void testTimeoutProperty() {
+        expectBuildExceptionContaining("testTimeoutProperty",
+                REASON,
+                FaultingWaitForTask.ERROR_TIMEOUT);
+    }
     public void testTimeout() {
         expectBuildExceptionContaining("testTimeout",
-                "not found",
+                REASON,
                 FaultingWaitForTask.ERROR_TIMEOUT);
     }
 
     public void testTimeoutMessage() {
         expectBuildExceptionContaining("testTimeoutMessage",
-                "not found",
+                REASON,
                 "equality failed");
     }
 }
