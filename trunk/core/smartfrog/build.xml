@@ -40,10 +40,13 @@
   <!-- =================================================================== -->
   <target name="init">
     <tstamp/>
-    <property name="Name.System" value="SmartFrog "/>
-    <property name="Name.Company" value="(C) Copyright 1998-2005 Hewlett-Packard Development Company, LP"/>
+    <tstamp>
+      <format property="year" pattern="yyyy"/>
+    </tstamp>
+    <property name="Name.System" value="SmartFrog"/>
+    <property name="Name.Company"
+        value="(C) Copyright 1998-${year} Hewlett-Packard Development Company, LP"/>
     <property name="version" value="CORE"/>
-    <property name="year" value="2005"/>
     <echo level="verbose">
       ===================================================================
       = ${Name.System} ${version}
@@ -90,7 +93,7 @@
   <!-- =================================================================== -->
   <path id="smartfrog.class.path">
     <pathelement path="${classpath}"/>
-    <pathelement location="lib/log4j-1.2.8.jar"/>
+    <pathelement location="lib/log4j-1.2.13.jar"/>
     <pathelement location="lib/jmxri.jar"/>
     <pathelement location="lib/mx4j-tools.jar"/>
     <pathelement location="lib/sf-scripting.jar"/>
@@ -258,13 +261,6 @@
   <!--   Compiles source directory                                         -->
   <!-- =================================================================== -->
   <target name="compile-source" depends="initbuild,createParser" description="Compiles the source code">
-    <!-- use better dependency logic -->
-    <!--
-      <depend srcdir="${src.dir}"
-      destdir="${build.classes.dir}"
-      cache="${build}/testdepends"
-      closure="yes"/>
-    -->
     <!-- Compile the java code -->
     <echo>${javac.java.version} build.compiler=${build.compiler} javac.compiler=${javac.compiler}</echo>
     <javac compiler="${javac.compiler}" srcdir="${src.dir}"
@@ -421,8 +417,8 @@
       <fileset dir="${docs}">
         <include name="**/*.pdf"/>
         <include name="**/*.html"/>
-	<include name="**/*.htm"/>
-	<include name="**/*"/>
+        <include name="**/*.htm"/>
+        <include name="**/*"/>
       </fileset>
     </copy>
   </target>
@@ -469,8 +465,8 @@
   <target name="jjdocs" depends="initdist">
     <!--  Java doc for the grammars -->
     <java classname="jjdoc" failonerror="true">
-      <arg line="-OUTPUT_FILE=${docs}/DefaultParser.html"/>
-      <arg line="${src}/org/smartfrog/sfcore/languages/sf/DefaultParser.jj"/>
+      <arg value="-OUTPUT_FILE=${docs}/DefaultParser.html"/>
+      <arg value="${src}/org/smartfrog/sfcore/languages/sf/DefaultParser.jj"/>
       <classpath>
         <pathelement location="${javacc.dir}/javacc.jar"/>
       </classpath>
