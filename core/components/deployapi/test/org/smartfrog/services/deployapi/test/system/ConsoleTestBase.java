@@ -208,7 +208,7 @@ public abstract class ConsoleTestBase extends UnitTestBase {
                                           final QName expectedCode,
                                           final String text) {
         String faultAsString = fault.getMessage();
-        final String actualCode = fault.getFaultCode();
+        final QName actualCode = fault.getFaultCode();
         String expected = "expected [" +
                 expectedCode +
                 "] \nbut got\nfault code:[" +
@@ -217,7 +217,7 @@ public abstract class ConsoleTestBase extends UnitTestBase {
                 faultAsString;
 
         boolean localpartFound=actualCode!=null
-                && actualCode.indexOf(expectedCode.getLocalPart())>=0;
+                && expectedCode.getLocalPart().equals(actualCode.getLocalPart());
         //assertTrue(expected,localpartFound);
         if (text != null) {
             String message = fault.getMessage();
