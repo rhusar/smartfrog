@@ -155,7 +155,7 @@ public abstract class Endpointer implements Serializable {
         call.setTargetEPR(getEndpointer());
         override.setSoapVersionURI(SOAP12Constants.SOAP_ENVELOPE_NAMESPACE_URI);
         if (operationName != null) {
-            override.setSoapAction(operationName);
+            override.setAction(operationName);
             //REVISIT: turn this off if things misbehave w.r.t namespaces
             //override.setWsaAction(operationName);
         }

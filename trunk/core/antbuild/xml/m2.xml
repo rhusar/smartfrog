@@ -1,6 +1,5 @@
 <project name="m2" basedir="." default="checkstyle"
-  xmlns:sf="antlib:org.smartfrog.tools.ant"
-  xmlns:m2="antlib:org.apache.maven.artifact.ant"
+
   >
 
   <description>
@@ -71,10 +70,12 @@
       value="http://ibiblio.org/maven2"/>
      <property name="m1.apache.cvs.repository"
          value="http://cvs.apache.org/repository/"/>
+
    </target>
    
    
-   <target name="m2-tasks" depends="m2.init-m2">
+   <target name="m2-tasks" depends="m2.init-m2"
+       xmlns:m2="antlib:org.apache.maven.artifact.ant">
      <fail unless="m2.tasks.available">
      you need the maven2 tasks from http://maven.apache.org/maven2/ant-tasks.html
      </fail>
@@ -90,8 +91,12 @@
         <!-- local M1 repository -->
         <remoteRepository url="${m1.repository.url}"
             layout="legacy"/>
+
         <!-- apache M1 repository -->
         <remoteRepository url="${m1.apache.cvs.repository}" layout="legacy"/>
+
+        <remoteRepository url="http://dist.codehaus.org/" layout="legacy"/>
+
       </m2:dependencies>
     </presetdef>
 
@@ -129,7 +134,8 @@
    <target name="m2-pom" depends="m2-copy-pom,m2-make-pom" />
 
 
-  <target name="m2-install" depends="dist,m2-pom">
+  <target name="m2-install" depends="dist,m2-pom"
+      xmlns:m2="antlib:org.apache.maven.artifact.ant">
     <m2:install file="${target.jar}">
       <pom file="${target.pom}"/>
     </m2:install>
