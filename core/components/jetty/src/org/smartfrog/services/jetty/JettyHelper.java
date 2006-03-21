@@ -22,7 +22,6 @@
 package org.smartfrog.services.jetty;
 
 import org.mortbay.http.HttpContext;
-import org.mortbay.http.HttpHandler;
 import org.mortbay.http.HttpListener;
 import org.mortbay.http.HttpServer;
 import org.mortbay.jetty.servlet.ServletHttpContext;
@@ -285,14 +284,20 @@ public class JettyHelper extends ComponentHelper {
      *
      * @param listener
      */
-    public void terminateListener(HttpListener listener) {
+    public synchronized void terminateListener(HttpListener listener) {
         if (listener != null) {
             try {
                 listener.stop();
-            } catch (Exception ex) {
+            } catch (InterruptedException ex) {
                 if (getLogger().isErrorEnabled()) {
                     getLogger().error(" Interrupted on listener termination ",
                             ex);
+                }
+            } catch (NullPointerException npe) {
+                if (getLogger().isErrorEnabled()) {
+                    getLogger().warn(
+                            " Dropping NPE caught during Jetty teardown",
+                            npe);
                 }
             }
             removeListener(listener);
