@@ -73,10 +73,12 @@ sfConfig extends Compound {
     //the webapp in time
     //ping LAZY server:ping;
 
+    //there's a bit of a race condition here; no files are
+
     ping extends LivenessPage {
             host LAZY server:listener:ipaddr;
             port server:port;
-            page LAZY deployedWar:absolutePath;
+            page deployedWar:contextPath;
             checkFrequency 1;
             followRedirects true;
     }
