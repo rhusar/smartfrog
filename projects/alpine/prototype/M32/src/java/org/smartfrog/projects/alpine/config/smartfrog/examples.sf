@@ -18,26 +18,23 @@
 
  */
 
-package org.smartfrog.projects.alpine.core;
 
-import org.smartfrog.projects.alpine.om.soap11.MessageDocument;
-import nu.xom.Builder;
+#include "/org/smartfrog/projects/alpine/config/smartfrog/components.sf"
+#include "/org/smartfrog/projects/alpine/handlers/components.sf"
 
-/**
- * context around and endpoint
- */
-public class EndpointContext extends Context {
-    
-    /**
-     * Create a message context, filled in with stub requests and responses
-     * @return the new context
-     */ 
-    public MessageContext createMessageContext() {
-        MessageContext messageContext = new MessageContext();
-        messageContext.createRequest();
-        messageContext.createResponse();
-        return messageContext;
-    }
-    
-    
+
+//the simple echo endpoint
+EchoEndpoint extends AlpineEndpoint {
+    name "echo";
+    handlers [
+      MustUnderstandChecker:classname;
+      EchoHandler:classname;
+    ]
 }
+
+
+
+
+
+
+

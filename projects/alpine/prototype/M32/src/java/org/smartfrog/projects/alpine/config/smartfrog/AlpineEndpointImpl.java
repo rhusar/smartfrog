@@ -33,6 +33,9 @@ import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 
 import java.rmi.RemoteException;
+import java.util.Vector;
+import java.util.List;
+import java.util.ArrayList;
 
 /**
  * binding from smartfrog to configuring an endpoint
@@ -40,13 +43,13 @@ import java.rmi.RemoteException;
 public class AlpineEndpointImpl extends PrimImpl implements AlpineEndpoint {
 
     private String name;
-    private String handlerClass;
     private String getContentType;
     private String getMessage;
     private int getResponseCode;
     private String wsdlResource;
     private String path;
     private EndpointContext epx;
+    private Vector handlers;
 
     public AlpineEndpointImpl() throws RemoteException {
     }
@@ -61,12 +64,12 @@ public class AlpineEndpointImpl extends PrimImpl implements AlpineEndpoint {
     public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
         super.sfDeploy();
         name = sfResolve(ATTR_NAME, "", true);
-        handlerClass = sfResolve(ATTR_HANDLER_CLASS, "", true);
         path = sfResolve(ATTR_PATH, "", true);
         wsdlResource = sfResolve(ATTR_WSDL, "", false);
         getContentType = sfResolve(ATTR_CONTENT_TYPE, "", false);
         getMessage = sfResolve(ATTR_GET_MESSAGE, "", false);
         getResponseCode = sfResolve(ATTR_GET_RESPONSECODE, 200, false);
+        handlers = sfResolve(ATTR_HANDLER_LIST, handlers, true);
         Prim servlet = sfResolve(ATTR_SERVLET, (Prim) null, true);
         String servletPath = servlet.sfResolve(ApplicationServerContext.ATTR_ABSOLUTE_PATH, "", true);
         JettyHelper jettyHelper = new JettyHelper(this);
@@ -88,10 +91,25 @@ public class AlpineEndpointImpl extends PrimImpl implements AlpineEndpoint {
         epx = new EndpointContext();
         putIfSet(epx, ContextConstants.ATTR_GET_MESSAGE, getMessage);
         putIfSet(epx, ContextConstants.ATTR_WSDL, wsdlResource);
-        putIfSet(epx, ContextConstants.ATTR_HANDLER_CLASS, handlerClass);
         putIfSet(epx, ContextConstants.ATTR_NAME, name);
         putIfSet(epx, ContextConstants.ATTR_CONTENT_TYPE, getContentType);
         epx.put(ContextConstants.ATTR_GET_RESPONSECODE, getResponseCode);
+
+        //the handler list is a list of handlers
+        List handlerList = new ArrayList(handlers.size());
+        for (Object o : handlers) {
+            String classname;
+            if (o instanceof Prim) {
+                Prim prim = (Prim) o;
+                classname = prim.sfResolve(AlpineHandler.ATTR_CLASSNAME, "", true);
+            } else {
+                classname = o.toString();
+            }
+            handlerList.add(classname);
+        }
+        epx.put(ContextConstants.ATTR_HANDLERS, handlerList);
+
+        //now register a new endpoint
         context.getEndpoints().register(path, epx);
     }
 
@@ -115,17 +133,6 @@ public class AlpineEndpointImpl extends PrimImpl implements AlpineEndpoint {
     }
 
     /**
-     * Add a handler, or replace an existing one.
-     *
-     * @param name      unique name for this instance of the handler
-     * @param classname
-     */
-    public boolean addHandler(String name, String classname) throws RemoteException {
-        //TODO
-        return false;
-    }
-
-    /**
      * Liveness call in to check if this component is still alive. This method can be overriden to check other state of
      * a component. An example is Compound where all children of the compound are checked. This basic check updates the
      * liveness count if the ping came from its parent. Otherwise (if source non-null) the liveness count is decreased
@@ -145,17 +152,6 @@ public class AlpineEndpointImpl extends PrimImpl implements AlpineEndpoint {
         if (epx == null) {
             throw new SmartFrogLivenessException("Not started");
         }
-    }
-
-    /**
-     * Remove a handler
-     *
-     * @param name
-     * @throws RemoteException
-     */
-    public boolean removeHandler(String name) throws RemoteException {
-        //TODO
-        return false;
     }
 
 }

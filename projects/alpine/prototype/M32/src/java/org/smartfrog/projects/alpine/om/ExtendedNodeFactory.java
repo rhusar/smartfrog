@@ -28,8 +28,7 @@ import org.smartfrog.projects.alpine.interfaces.NamespaceNodeFactory;
 import org.smartfrog.projects.alpine.xmlutils.XsdUtils;
 
 /**
- * A node factory that returns elements all of the right type.
- * Anything we dont recognise is a propertylist.
+ * This is something that can be subclassed for more interesting class creation
  *
  */
 public class ExtendedNodeFactory extends NodeFactory {

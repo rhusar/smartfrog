@@ -73,9 +73,28 @@ public class Envelope extends Soap11Element {
      *
      * @return the body or null
      */
-    public BaseElementsIterator<Header> getHeaders() {
+    public BaseElementsIterator<Element> getHeaders() {
+        Header header=getHeader();
+        Elements childElements = header.getChildElements();
+        return new BaseElementsIterator<Element>(childElements);
+    }
+
+    /**
+     * Get the header. Does a demand creation of the header if needed.
+     * @return the header
+     */
+    public Header getHeader() {
         Elements childElements = getChildElements(QNAME_HEADER);
-        return new BaseElementsIterator<Header>(childElements);
+        Header header;
+        if(childElements==null || childElements.size()==0) {
+            //create a new, empty header where there was none
+            header=new Header();
+            //stick us at the front
+            insertChild(header,0);
+        } else {
+            header = (Header) childElements.get(0);
+        }
+        return header;
     }
     
 }

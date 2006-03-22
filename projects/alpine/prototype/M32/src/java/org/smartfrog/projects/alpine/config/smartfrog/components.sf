@@ -22,8 +22,8 @@
 #include "/org/smartfrog/components.sf"
 #include "/org/smartfrog/predicates.sf"
 #include "/org/smartfrog/services/filesystem/components.sf"
-#include "org/smartfrog/services/www/components.sf";
-#include "org/smartfrog/services/jetty/components.sf";
+#include "/org/smartfrog/services/www/components.sf";
+#include "/org/smartfrog/services/jetty/components.sf";
 
 AlpineEndpoint extends Prim {
     sfClass "org.smartfrog.projects.alpine.config.smartfrog.AlpineEndpointImpl";
@@ -34,8 +34,8 @@ AlpineEndpoint extends Prim {
         getResponseCode extends Integer;
         wsdl extends OptionalString;
         factory extends OptionalString;
-        handlerClass extends String;
         servlet extends CD;
+        handlers extends Vector;
     }
     
     //information on a get
@@ -65,8 +65,6 @@ AlpineEndpoint extends Prim {
   */ 
 AlpineHandler extends Prim {
     alpineHandlerSchema extends Schema {
-        //you must point to an endpoint, else there is nothing to handle
-        endpoint extends CD;
         //the name of the handler class
         classname extends String;
     }
@@ -92,9 +90,16 @@ AlpineServletOnJetty extends AlpineServlet  {
     //this is our endpoint
 EchoEndpoint extends AlpineEndpoint {
     name "echo";
-    handlerClass "org.smartfrog.projects.alpine.handlers.EchoHandler";
+    handlers [
+     "org.smartfrog.projects.alpine.handlers.EchoHandler";
+     ]
 }
     
+
+MustUnderstandChecker extends AlpineHandler {
+  classname "org.smartfrog.projects.alpine.handlers.MustUnderstandChecker";
+}
+
 
 
  

@@ -1,4 +1,4 @@
-/** (C) Copyright 2005 Hewlett-Packard Development Company, LP
+/** (C) Copyright 2006 Hewlett-Packard Development Company, LP
 
  This library is free software; you can redistribute it and/or
  modify it under the terms of the GNU Lesser General Public
@@ -17,27 +17,21 @@
  For more information: www.smartfrog.org
 
  */
+package org.smartfrog.projects.alpine.faults;
 
-package org.smartfrog.projects.alpine.core;
-
-import org.smartfrog.projects.alpine.om.soap11.MessageDocument;
-import nu.xom.Builder;
+import nu.xom.Element;
 
 /**
- * context around and endpoint
+ * created 22-Mar-2006 12:01:49
  */
-public class EndpointContext extends Context {
-    
-    /**
-     * Create a message context, filled in with stub requests and responses
-     * @return the new context
-     */ 
-    public MessageContext createMessageContext() {
-        MessageContext messageContext = new MessageContext();
-        messageContext.createRequest();
-        messageContext.createResponse();
-        return messageContext;
+
+public class MustUnderstandFault extends SoapException {
+
+    private Element header;
+
+    public MustUnderstandFault(Element header) {
+        super(header.getQualifiedName());
+        this.header=header;
     }
-    
-    
+
 }

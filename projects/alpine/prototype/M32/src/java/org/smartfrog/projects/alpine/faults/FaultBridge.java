@@ -26,7 +26,8 @@ import org.smartfrog.projects.alpine.om.soap11.Fault;
 
 /**
  * Bridge faults from Java to SOAPFault
- 
+ *
+ * A faultbridge may eventually be moved into a MessageContext, for per-endpoint fault bridge support.
  */
 public class FaultBridge {
 

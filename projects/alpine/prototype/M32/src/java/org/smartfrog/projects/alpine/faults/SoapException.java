@@ -40,6 +40,11 @@ public class SoapException extends AlpineRuntimeException implements SoapFaultSo
         this.fault = fault;
     }
 
+
+    public SoapException(String message) {
+        super(message);
+    }
+
     /**
      * a custom message
      * @param message

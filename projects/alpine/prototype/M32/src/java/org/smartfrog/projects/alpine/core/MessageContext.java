@@ -26,13 +26,23 @@ import org.smartfrog.projects.alpine.om.soap11.Body;
 import org.smartfrog.projects.alpine.om.base.ElementEx;
 import nu.xom.Element;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Hashtable;
+
 /**
  * This represents a message in the system. 
  */
 public class MessageContext extends Context {
-    
+
+    /**
+     * incoming request
+     */
     private MessageDocument request;
-    
+
+    /**
+     * outgoing response
+     */
     private MessageDocument response;
 
     public MessageDocument getRequest() {
@@ -55,7 +65,7 @@ public class MessageContext extends Context {
         ElementEx envelope = createMessage();
         request = new MessageDocument(envelope);
         return request;
-    }    
+    }
     public MessageDocument createResponse() {
         ElementEx envelope = createMessage();
         response = new MessageDocument(envelope);

@@ -24,13 +24,15 @@ package org.smartfrog.projects.alpine.core;
  
  */
 public interface ContextConstants {
-    
+
+
     /**
-     * name of class that is used to handle things
+     * name of list of handlers
      * {@value}
-     */ 
-    public static final String ATTR_HANDLER_CLASS="handlerClass";
-    
+     */
+    public static final String ATTR_HANDLERS = "handlers";
+
+
     /**
      * path for the endpoint
      * {@value}
