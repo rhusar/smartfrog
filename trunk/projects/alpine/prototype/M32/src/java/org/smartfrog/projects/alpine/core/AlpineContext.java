@@ -40,7 +40,7 @@ public class AlpineContext {
     }
 
     /**
-     * yes, singletons are bad
+     * yes, singletons are bad :)
      */ 
     private static AlpineContext alpineCtx;
     

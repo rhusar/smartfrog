@@ -2,13 +2,13 @@
 
 <?xml version="1.0" encoding="UTF-8"?>
 <wsdl:definitions
-  
+    xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
   targetNamespace="http://smartfrog.org/projects/alpine/m32/handlers/echo"
   xmlns:api="http://smartfrog.org/projects/alpine/m32/handlers/echo"
   xmlns:s12="http://www.w3.org/2003/05/soap-envelope"
   xmlns:xsd="http://www.w3.org/2001/XMLSchema"
   xmlns:wsa="http://schemas.xmlsoap.org/ws/2003/03/addressing"
-  elementFormDefault="qualified"
+    xmlns:wsdlsoap="http://schemas.xmlsoap.org/wsdl/soap/"
   >
   <!-- ============================================================= -->
   <wsdl:documentation>

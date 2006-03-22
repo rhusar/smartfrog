@@ -31,7 +31,13 @@ public interface Soap11Constants {
      * {@value}
      */
     public static final String URI_SOAP11="http://schemas.xmlsoap.org/soap/envelope/";
-    
+
+    /**
+     * {@value}
+     */
+    public static final String XMLNS_SOAP="soap";
+
+
     /**
      * {@value}
      */

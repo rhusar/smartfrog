@@ -30,6 +30,8 @@ import java.util.ArrayList;
  */
 public class FactoryChain {
     
-    //private List<String , NamespaceNodeFactory> chain=new ArrayList<String,NamespaceNodeFactory>;
+    private List<NamespaceNodeFactory> chain=new ArrayList<NamespaceNodeFactory>();
+
+
     
 }

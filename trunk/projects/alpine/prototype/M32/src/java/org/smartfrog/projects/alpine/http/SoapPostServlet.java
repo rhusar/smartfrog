@@ -27,18 +27,17 @@ import org.smartfrog.projects.alpine.core.ContextConstants;
 import org.smartfrog.projects.alpine.om.soap11.MessageDocument;
 import org.smartfrog.projects.alpine.om.soap11.Fault;
 import org.smartfrog.projects.alpine.om.soap11.Body;
-import org.smartfrog.projects.alpine.interfaces.SoapFaultSource;
 import org.smartfrog.projects.alpine.interfaces.MessageHandler;
 import org.smartfrog.projects.alpine.faults.FaultBridge;
 import org.smartfrog.projects.alpine.faults.AlpineRuntimeException;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.ServletException;
-import javax.servlet.ServletContext;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.List;
+import java.util.ArrayList;
 
 
 /**
@@ -52,11 +51,11 @@ public class SoapPostServlet extends ServletBase {
      * get the alpine context from the servlet context
      * ; create it if needed
      * @return
-     */ 
+     */
     public synchronized AlpineContext getAlpineContext() {
         return AlpineContext.getAlpineContext();
     }
-    
+
 
     public EndpointContext getContext(HttpServletRequest request) {
         AlpineContext ctx=getAlpineContext();
@@ -102,6 +101,13 @@ public class SoapPostServlet extends ServletBase {
     }
 
 
+    /**
+     * Post handles SOAP requests
+     * @param request
+     * @param response
+     * @throws ServletException
+     * @throws IOException
+     */
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         EndpointContext endpointContext = getContext(request);
         if(endpointContext==null) {
@@ -115,19 +121,27 @@ public class SoapPostServlet extends ServletBase {
         HttpBinder binder = new HttpBinder(endpointContext);
         try {
             requestMessage = binder.parseIncomingPost(messageContext,request);
-            String handlerClass=(String) endpointContext.get(ContextConstants.ATTR_HANDLER_CLASS);
-            if(handlerClass==null) {
+
+            //get the handler list
+            List<String> handlers=(List<String>) endpointContext.get(ContextConstants.ATTR_HANDLERS);
+            if(handlers==null) {
                 throw new AlpineRuntimeException(ERROR_NO_HANDLER);
             }
-            //create a new handler
-            Class<MessageHandler> aClass = (Class<MessageHandler>) Class.forName(handlerClass);
-            MessageHandler handler = aClass.newInstance();
-            //dispatch
-            handler.processMessage(messageContext, endpointContext);
+            //instantiate all of them before starting dispatch
+            List<MessageHandler> instances=new ArrayList<MessageHandler>(handlers.size());
+            for(String classname:handlers) {
+                MessageHandler handler = createMessageHandler(messageContext, classname);
+                instances.add(handler);
+            }
+            //now go and dispatch them
+            for (MessageHandler handler : instances) {
+                //dispatch
+                handler.processMessage(messageContext, endpointContext);
+            }
             responseMessage = messageContext.getResponse();
-        } catch (Exception e) {
+        } catch (Throwable thrown) {
             FaultBridge bridge=FaultBridge.getFaultBridge(messageContext);
-            Fault fault=bridge.extractFaultFromThrowable(e);
+            Fault fault=bridge.extractFaultFromThrowable(thrown);
             //we have the fault; patch it in
             responseMessage = messageContext.getResponse();
             Body body = responseMessage.getEnvelope().getBody();
@@ -135,8 +149,24 @@ public class SoapPostServlet extends ServletBase {
             body.appendChild(fault);
         }
         responseMessage = messageContext.getResponse();
-        response.setStatus(responseMessage.isFault()? 
+        response.setStatus(responseMessage.isFault()?
                 HttpServletResponse.SC_INTERNAL_SERVER_ERROR : HttpServletResponse.SC_OK);
         binder.outputResponse(messageContext, response);
+    }
+
+    /**
+     * Override point: create a new handler
+     * @param messageContext
+     * @param classname
+     * @return
+     * @throws ClassNotFoundException
+     * @throws IllegalAccessException
+     * @throws InstantiationException
+     */
+    MessageHandler createMessageHandler(MessageContext messageContext,String classname) throws ClassNotFoundException,
+            IllegalAccessException, InstantiationException {
+        Class<MessageHandler> aClass = (Class<MessageHandler>) Class.forName(classname);
+        MessageHandler handler = aClass.newInstance();
+        return handler;
     }
 }

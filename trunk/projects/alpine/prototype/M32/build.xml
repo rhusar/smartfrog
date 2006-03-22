@@ -65,13 +65,13 @@
         version="${xom.version}"/>
       <dependency groupID="jaxen"
         artifactID="jaxen"
-        version="1.1-beta-6"/>
+        version="${jaxen.version}"/>
       <dependency groupID="commons-logging"
         artifactID="commons-logging-api"
-        version="1.0.4"/>
+        version="${commons-logging.version}"/>
       <dependency groupID="log4j"
         artifactID="log4j"
-        version="1.2.8"/>
+        version="${log4j.version}"/>
       <dependency groupID="org.smartfrog"
         artifactID="sf-jetty"
         version="${smartfrog.version}"
@@ -86,7 +86,7 @@
         scope="compile"/>
       <dependency groupID="xom"
         artifactID="xom"
-        version="1.1b2"/>
+        version="${xom.version}"/>
       <dependency groupID="xalan"
         artifactID="xalan"
         version="2.6.0"/>
@@ -95,7 +95,7 @@
         version="5.0.18"/>
       <dependency groupID="junit"
         artifactID="junit"
-        version="3.8.1"
+        version="${junit.version}"
         scope="test"/>
       <dependency groupID="httpunit"
         artifactID="httpunit"
@@ -236,7 +236,7 @@
   <!-- ========================================================== -->
   <!-- system tests -->
   <!-- ========================================================== -->
-  <target name="system-tests" depends="dist,compile-tests,init-codebase"
+  <target name="system-tests0" depends="dist,compile-tests,init-codebase"
     description="run system tests"
     if="system.tests.enabled">
     <parallel>
@@ -279,14 +279,55 @@
           </batchtest>
         </sf-junit>
 
-        <!-- conditionally stop the daemon -->
-        <antcall target="conditional-daemon-exit"/>
-        <!-- end the test thread -->
       </sequential>
     </parallel>
   </target>
 
-  <target name="conditional-daemon-exit" unless="no.stop.daemon">
-    <antcall target="stop-daemon-if-started"/>
+
+
+  <!-- =================================================================== -->
+  <!-- system tests -->
+  <!-- =================================================================== -->
+  <target name="system-tests" depends="common.system-tests"
+      description="run system tests"
+      if="system.tests.enabled">
+    <sf-functionaltest testTimeout="600" shutdownTime="10">
+      <application>
+        <sf-startdaemon-debug failonerror="false" spawn="false"/>
+      </application>
+      <probe>
+        <socket port="${smartfrog.daemon.port}" server="localhost"/>
+      </probe>
+      <test>
+        <sf-junit
+            includeantruntime="true"
+            filtertrace="${filter.trace}"
+            errorproperty="failure"
+            failureproperty="failure"
+            >
+          <classpath
+              refid="tests.run.classpath"/>
+          <sysproperty key="test.files.dir"
+              value="${test.src.dir}/files"/>
+          <syspropertyset>
+            <propertyref prefix="runtime"/>
+          </syspropertyset>
+          <batchtest todir="${test.data.dir}">
+            <fileset dir="${test.classes.dir}">
+              <include name="**/unit/*Test.class"/>
+              <include name="**/system/**/*Test.class"/>
+            </fileset>
+          </batchtest>
+        </sf-junit>
+        <fail if="failure">Junit failed</fail>
+      </test>
+      <teardown>
+        <sf-stopdaemon failonerror="false"/>
+        <sf-junitreport data="${test.data.dir}"
+            reports="${test.reports.dir}"
+            />
+      </teardown>
+    </sf-functionaltest>
   </target>
+    
 </project>

@@ -30,8 +30,8 @@ For more information: www.smartfrog.org
 #include "/org/smartfrog/services/filesystem/components.sf"
 #include "/org/smartfrog/services/www/components.sf";
 #include "/org/smartfrog/services/jetty/components.sf";
-#include "/org/smartfrog/projects/alpine/config/smartfrog/components.sf";
-
+#include "/org/smartfrog/projects/alpine/config/smartfrog/components.sf"
+#include "/org/smartfrog/projects/alpine/config/smartfrog/examples.sf"
 
 AlpineServerOnJetty extends Compound {
 

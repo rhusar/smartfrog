@@ -24,6 +24,8 @@ import nu.xom.Attribute;
 import nu.xom.Element;
 import org.smartfrog.projects.alpine.faults.InvalidXmlException;
 
+import java.util.Locale;
+
 /**
  * The element MAY be present in a SOAP message. If present, the element MUST be the first immediate child element of a
  * SOAP Envelope element. The element MAY contain a set of header entries each being an immediate child element of the
@@ -62,24 +64,32 @@ public class Header extends Soap11Element {
      * @return true if it exists and is "1", false if it is absent or "0"
      * @throws InvalidXmlException if it has any other value
      */
-    public boolean isMustUnderstand() {
-        Attribute attribute = getAttribute(ATTR_MUST_UNDERSTAND, URI_SOAP11);
+    public static boolean isMustUnderstand(Element that) {
+        Attribute attribute = that.getAttribute(ATTR_MUST_UNDERSTAND, URI_SOAP11);
         if (attribute == null) {
             return false;
         }
-        if ("1".equals(attribute.getValue())) {
+        String value = attribute.getValue().toLowerCase(Locale.ENGLISH);
+        if ("1".equals(value) || "true".equals(value)) {
             return true;
         }
-        if ("0".equals(attribute.getValue())) {
+        if ("0".equals(value) || "false".equals(value)) {
             return false;
         }
         throw new InvalidXmlException(FAULTCODE_MUST_UNDERSTAND);
     }
 
     /**
-     * Validate the Xml. Throw {@link InvalidXmlException} if invalid.
+     * remove any existing mustUnderstand header, and set a new one to either true or false
+     * @param understand should we understand or not?
      */
-    public void validateXml() {
-        isMustUnderstand();
+    public static void setMustUnderstand(Element that,boolean understand) {
+        Attribute attribute = that.getAttribute(ATTR_MUST_UNDERSTAND, URI_SOAP11);
+        if (attribute != null) {
+            that.removeAttribute(attribute);
+        }
+        Attribute mu=new Attribute(XMLNS_SOAP+":"+ATTR_MUST_UNDERSTAND, URI_SOAP11,Boolean.toString(understand));
+        that.addAttribute(mu);
     }
+
 }

@@ -58,24 +58,11 @@ public interface AlpineEndpoint extends Remote {
      * {@value}
      */ 
     public static final String ATTR_FACTORY= ContextConstants.ATTR_FACTORY;
-    
+
     /**
-     * Name of a handler class
+     * Name of a list of handlers
      * {@value}
      */ 
-    public static final String ATTR_HANDLER_CLASS=ContextConstants.ATTR_HANDLER_CLASS;
+    public static final String ATTR_HANDLER_LIST= ContextConstants.ATTR_HANDLERS;
     
-    /**
-     * Add a handler, or replace an existing one. 
-     * @param name unique name for this instance of the handler
-     * @param classname
-     */ 
-    boolean addHandler(String name, String classname) throws RemoteException;
-    
-    /**
-     * Remove a handler
-     * @param name
-     * @throws RemoteException
-     */ 
-    boolean removeHandler(String name) throws RemoteException;
 }
