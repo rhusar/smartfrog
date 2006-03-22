@@ -19,7 +19,6 @@
  */
 package org.smartfrog.services.www.jetty.test.system;
 
-import org.smartfrog.sfcore.prim.Liveness;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.test.SmartFrogTestBase;
 
