@@ -69,7 +69,22 @@ public final class AlpineEPR implements Validatable, AddressingConstants, XomSou
 
     private Element referenceParameters;
 
+
+    /**
+     * The anonymous To: endpoint
+     */
+    public static AlpineEPR EPR_ANONYMOUS=new AlpineEPR(WSA_ADDRESS_ANON);
+
+    /**
+     * The not-an-endpoint endpoint
+     */
+    public static AlpineEPR EPR_NONE = new AlpineEPR(WSA_ADDRESS_NONE);
+
     public AlpineEPR() {
+    }
+
+    public AlpineEPR(String address) {
+        this.address = address;
     }
 
     /**
@@ -143,17 +158,18 @@ public final class AlpineEPR implements Validatable, AddressingConstants, XomSou
      * @param markReferences whether to mark references or not as references (the later specs require this)
      * @param mustUnderstand should the address + actions headers be mustUnderstand=true?
      */
-    public void addToSoapMessage(MessageDocument message, String namespace, String prefix,
-                                 boolean markReferences,
-                                 boolean mustUnderstand) {
+    public void addressMessage(MessageDocument message,
+                               String role,
+                               String namespace,
+                               String prefix,
+                               boolean markReferences,
+                               boolean mustUnderstand) {
         validate();
         String prefixColon=prefix+":";
         Envelope env=message.getEnvelope();
         Header header=env.getHeader();
-        Element to=new ElementEx(prefixColon+WSA_TO,namespace);
-        Header.setMustUnderstand(to,mustUnderstand);
-        to.appendChild(getAddress());
-        header.addOrReplaceChild(to);
+        Element to=new ElementEx(prefixColon+WSA_TO,namespace, getAddress());
+        header.setHeaderElement(to,mustUnderstand);
         if(referenceParameters!=null) {
             for(Node node: new NodeIterator(referenceParameters)) {
                 if(node instanceof Element) {
@@ -182,7 +198,6 @@ public final class AlpineEPR implements Validatable, AddressingConstants, XomSou
 
     /**
      * Convert it to a Xom element tree.
-     * ISSUE: there is no namespacing of reference params or metadata; we just clone them.
      * @param localname local name of root element (e.g "To"
      * @param namespace namespace, e.g. {@link AddressingConstants#XMLNS_WSA_2005}
      * @param prefix prefix, e.g. wsa2005

@@ -23,14 +23,13 @@ import nu.xom.Element;
 import org.smartfrog.projects.alpine.interfaces.Validatable;
 import org.smartfrog.projects.alpine.faults.ValidationException;
 import org.smartfrog.projects.alpine.om.soap11.MessageDocument;
+import org.smartfrog.projects.alpine.om.soap11.Header;
+import org.smartfrog.projects.alpine.om.base.ElementEx;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-/**
- * This is all the extra stuff for WS-A addressing of SOAP
- * created 23-Mar-2006 13:39:59
- * <p/>
- * <wsa:To>xs:anyURI</wsa:To> ?
+/*
+* <wsa:To>xs:anyURI</wsa:To> ?
  * <wsa:From>wsa:EndpointReferenceType</wsa:From> ?
  * <wsa:ReplyTo>wsa:EndpointReferenceType</wsa:ReplyTo> ?
  * <wsa:FaultTo>wsa:EndpointReferenceType</wsa:FaultTo> ?
@@ -38,6 +37,14 @@ import org.apache.commons.logging.LogFactory;
  * <wsa:MessageID>xs:anyURI</wsa:MessageID> ?
  * <wsa:RelatesTo RelationshipType="xs:anyURI"?>xs:anyURI</wsa:RelatesTo> *
  * <wsa:ReferenceParameters>xs:any*</wsa:ReferenceParameters> ?
+*/
+
+/**
+ * This is all the extra stuff for WS-A addressing of SOAP
+ * created 23-Mar-2006 13:39:59
+ * <p/>
+ * @see <a href="http://www.w3.org/TR/2005/CR-ws-addr-core-20050817/">WS-A core </a>
+ *  @see  <a href="http://www.w3.org/TR/2005/CR-ws-addr-soap-20050817/">WS-A SOAP binding</a>
  */
 
 public class AddressDetails implements Validatable, AddressingConstants {
@@ -194,11 +201,23 @@ public class AddressDetails implements Validatable, AddressingConstants {
     }
 
     /**
-     * read everything from the document. After this is done, the extracted elements are
-     * copied; they are not live. Changes in the values are not reflected in the message contents
-     *
-     * @param message
+     * validate everything, including that the To: address is there
+     * @return
+     * @throws ValidationException
      */
+    public void checkToIsValid() throws ValidationException {
+        validate();
+        if (to == null) {
+            throw new ValidationException("Missing " + WSA_TO + " attribute");
+        }
+    }
+
+        /**
+        * read everything from the document. After this is done, the extracted elements are
+        * copied; they are not live. Changes in the values are not reflected in the message contents
+        *
+        * @param message
+        */
     public void read(MessageDocument message, String namespace) {
         for (Element header : message.getEnvelope().getHeaders()) {
             if (!namespace.equals(header.getNamespaceURI())) {
@@ -226,20 +245,54 @@ public class AddressDetails implements Validatable, AddressingConstants {
                 log.warn("Not yet implemented "+header);
             }
         }
-        ;
-
-
     }
 
-    /*
-            Element action = new ElementEx(prefixColon +WSA_ACTION, namespace);
-        Header.setMustUnderstand(action, mustUnderstand);
-        action.appendChild(getAction());
-
-        if(action!=null) {
-            ElementEx actionElt = new ElementEx(prefixColon + WSA_ADDRESS, namespace, getAction());
-            root.appendChild(actionElt);
+    /**
+     * Add the address to a SOAP message as the To: element. This will also replace any existing headers of the same name
+     * This triggers a call to {@link #validate()} to validate the address
+     *
+     * @param message        message to add to
+     * @param namespace      which xmlns to use
+     * @param prefix         prefix for elements
+     * @param markReferences whether to mark references or not as references (the later specs require this)
+     * @param mustUnderstand should the address + actions headers be mustUnderstand=true?
+     */
+    public void addressMessage(MessageDocument message,
+                               String namespace,
+                               String prefix,
+                               boolean markReferences,
+                               boolean mustUnderstand) {
+        validate();
+        AlpineEPR dest = to;
+        if(to==null) {
+            dest=AlpineEPR.EPR_ANONYMOUS;
         }
+        maybeAdd(message, dest, WSA_TO, namespace, prefix, markReferences, mustUnderstand);
+        maybeAdd(message, from, WSA_FROM, namespace, prefix, markReferences, mustUnderstand);
+        maybeAdd(message, replyTo, WSA_REPLYTO, namespace, prefix, markReferences, mustUnderstand);
+        maybeAdd(message, faultTo, WSA_FAULTTO, namespace, prefix, markReferences, mustUnderstand);
+        final String prefixColon = prefix + ":";
+        Header header = message.getEnvelope().getHeader();
+        Element actionElement = new ElementEx(prefixColon + WSA_ACTION, namespace,action);
+        header.setHeaderElement(actionElement,mustUnderstand);
+    }
 
-    */
+    private void maybeAdd(MessageDocument message, AlpineEPR dest, String role, String namespace, String prefix,
+                          boolean markReferences, boolean mustUnderstand) {
+        if(dest!=null) {
+            dest.addressMessage(message,role,namespace,prefix,markReferences,mustUnderstand);
+        }
+    }
+
+    /**
+     * Get the destination address
+     * @return
+     */
+    public String getDestination() {
+        if(to==null) {
+            return null;
+        } else {
+            return to.getAddress();
+        }
+    }
 }

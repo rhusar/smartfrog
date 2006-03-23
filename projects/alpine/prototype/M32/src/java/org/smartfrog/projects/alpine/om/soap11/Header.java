@@ -52,6 +52,16 @@ public class Header extends Soap11Element {
         super(element);
     }
 
+
+    /**
+     * add or replace an element as a header
+     * @param element element to append
+     * @param mustUnderstand whether this header must be understood or not
+     */
+    public void setHeaderElement(Element element, boolean mustUnderstand) {
+        setMustUnderstand(element, mustUnderstand);
+        addOrReplaceChild(element);
+    }
     /**
      * duplicate ourselves
      *

@@ -73,13 +73,25 @@
         artifactID="log4j"
         version="${log4j.version}"/>
       <dependency groupID="org.smartfrog"
+          artifactID="sf-www"
+          version="${smartfrog.version}"
+          />
+      <dependency groupID="org.smartfrog"
+          artifactID="sf-www"
+          version="${smartfrog.version}"
+          />
+      <dependency groupID="org.smartfrog"
         artifactID="sf-jetty"
         version="${smartfrog.version}"
         />        
       <dependency groupID="org.smartfrog"
         artifactID="smartfrog"
         version="${smartfrog.version}"
-        scope="compile"/>
+        />
+      <dependency groupID="commons-httpclient"
+          artifactID="commons-httpclient"
+          version="${commons-httpclient.version}"
+          />
       <dependency groupID="org.smartfrog"
         artifactID="sf-testharness"
         version="${smartfrog.version}"
