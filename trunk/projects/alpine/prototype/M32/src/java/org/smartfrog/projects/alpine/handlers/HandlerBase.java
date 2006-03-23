@@ -1,4 +1,4 @@
-/** (C) Copyright 2005 Hewlett-Packard Development Company, LP
+/** (C) Copyright 2006 Hewlett-Packard Development Company, LP
 
  This library is free software; you can redistribute it and/or
  modify it under the terms of the GNU Lesser General Public
@@ -17,32 +17,34 @@
  For more information: www.smartfrog.org
 
  */
-
 package org.smartfrog.projects.alpine.handlers;
 
 import org.smartfrog.projects.alpine.interfaces.MessageHandler;
-import org.smartfrog.projects.alpine.faults.AlpineRuntimeException;
-import org.smartfrog.projects.alpine.core.MessageContext;
-import org.smartfrog.projects.alpine.core.EndpointContext;
 import org.smartfrog.projects.alpine.core.Context;
-import org.smartfrog.projects.alpine.om.soap11.MessageDocument;
 
 /**
- * Echo handler is there for fun
+ * Base for handlers
+ * created 23-Mar-2006 11:45:32
  */
-public class EchoHandler extends HandlerBase {
 
+public abstract class HandlerBase implements MessageHandler {
+    private Context context;
 
     /**
-     * Message handler
-     *
-     * @param messageContext
-     * @param endpointContext
-     * @throws AlpineRuntimeException
+     * Bind a handler to a context. This may include a SmartFrog binding, though
+     * that depends upon the implementation
+     * @param context the context of the handler
      */
-    public void processMessage(MessageContext messageContext, EndpointContext endpointContext) {
-        MessageDocument request = messageContext.getRequest();
-        MessageDocument response = request.copy();
-        messageContext.setResponse(response);
+
+    public void bind(Context context) {
+        this.context=context;
+    }
+
+    /**
+     * Get the context
+     * @return
+     */
+    protected Context getContext() {
+        return context;
     }
 }

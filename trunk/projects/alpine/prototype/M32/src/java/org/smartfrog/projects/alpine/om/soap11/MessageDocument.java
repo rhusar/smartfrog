@@ -26,19 +26,32 @@ import nu.xom.Node;
 import org.smartfrog.projects.alpine.xmlutils.NodeIterator;
 import org.smartfrog.projects.alpine.interfaces.ValidateXml;
 import org.smartfrog.projects.alpine.faults.InvalidXmlException;
+import org.smartfrog.projects.alpine.wsa.AddressDetails;
+import org.smartfrog.projects.alpine.om.base.Attachment;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import java.util.HashMap;
 import java.util.Enumeration;
+import java.util.List;
+import java.util.ArrayList;
 
 
 /**
  * a message
  */
 public class MessageDocument extends Document implements ValidateXml {
+
+    private static Log log= LogFactory.getLog(MessageDocument.class);
+
     public static final String ERROR_EMPTY_DOCUMENT = "Empty";
 
     private HashMap<String,String> mimeHeaders=new HashMap<String, String>();
-    
+
+    private AddressDetails addressDetails;
+
+    private List<Attachment> attachments;
+
     public MessageDocument(Element element) {
         super(element);
     }
@@ -46,8 +59,49 @@ public class MessageDocument extends Document implements ValidateXml {
     public MessageDocument(Document document) {
         super(document);
     }
-    
-    
+
+    /**
+     * this extracts the address information from the document
+     */
+    public void bindAddressing() {
+
+    }
+
+    /**
+     * Get the address details. This will demand create it if needed.
+     * @return
+     */
+    public AddressDetails getAddressDetails() {
+        if(addressDetails==null) {
+            addressDetails=new AddressDetails();
+        }
+        return addressDetails;
+    }
+
+    public void setAddressDetails(AddressDetails addressDetails) {
+        this.addressDetails = addressDetails;
+    }
+
+
+    /**
+     * add a new attachment
+     * @param attachment
+     */
+    public void addAttachment(Attachment attachment) {
+        getAttachments().add(attachment);
+    }
+
+    /**
+     * Get the attachment list. This will demand create an empty list
+     * @return the attachment list
+     */
+    public List<Attachment> getAttachments() {
+        if(attachments==null) {
+            attachments=new ArrayList<Attachment>();
+        }
+        return attachments;
+    }
+
     /**
      * Iterate just over elements
      *
@@ -60,27 +114,27 @@ public class MessageDocument extends Document implements ValidateXml {
     public Envelope getEnvelope() {
         return (Envelope) getRootElement();
     }
-    
+
     /**
      * Get the body. Fails horribly if there is no envelope/body
      * @return
-     */ 
+     */
     public Body getBody() {
         return getEnvelope().getBody();
     }
-    
+
     /**
      * Are we a fault. 
      * precondition: body!=null;
      * @return
-     */ 
+     */
     public boolean isFault() {
         Body body= getBody();
         return body.isFault();
     }
 
-    
-    
+
+
     /**
      * Validate the Xml. Throw {@link InvalidXmlException} if invalid.
      */
@@ -94,17 +148,17 @@ public class MessageDocument extends Document implements ValidateXml {
         Envelope env=(Envelope) getRootElement();
         env.validateXml();
     }
-    
+
     public static MessageDocument create() {
         return new MessageDocument(new Element("root",
                 "http://www.xom.nu/fakeRoot"));
     }
-    
+
     public void putMimeHeader(String name,String value) {
         mimeHeaders.put(name,value);
     }
-    
-    
+
+
     public String getMimeHeader(String name) {
         return mimeHeaders.get(name);
     }
@@ -120,6 +174,13 @@ public class MessageDocument extends Document implements ValidateXml {
      * @return a deep copy of this <code>Document</code> object
      */
     public MessageDocument copy() {
-        return (MessageDocument) super.copy();
+        MessageDocument newDoc = (MessageDocument) super.copy();
+        return newDoc;
+    }
+
+    protected Object clone() throws CloneNotSupportedException {
+        Object clone = super.clone();
+
+        return clone;
     }
 }

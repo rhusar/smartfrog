@@ -27,6 +27,8 @@ import org.smartfrog.projects.alpine.faults.InvalidXmlException;
 import java.util.Locale;
 
 /**
+ * This represents headers
+ *
  * The element MAY be present in a SOAP message. If present, the element MUST be the first immediate child element of a
  * SOAP Envelope element. The element MAY contain a set of header entries each being an immediate child element of the
  * SOAP Header element. All immediate child elements of the SOAP Header element MUST be namespace-qualified.

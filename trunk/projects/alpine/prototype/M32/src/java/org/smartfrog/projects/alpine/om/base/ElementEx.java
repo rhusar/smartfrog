@@ -47,6 +47,11 @@ public class ElementEx extends Element implements ValidateXml {
         super(name, uri);
     }
 
+    public ElementEx(String name, String uri,String text) {
+        super(name, uri);
+        appendChild(text);
+    }
+
     public ElementEx(Element element) {
         super(element);
     }
@@ -171,5 +176,49 @@ public class ElementEx extends Element implements ValidateXml {
         Nodes nodes = query(path, context);
         NodesIterator it = new NodesIterator(nodes);
         return it;
+    }
+
+    /**
+     * Remove a child element; do nothing if it is absent
+     * @param name qname of the element
+     * @return the detached element or null for no match
+     */
+    public Element removeChildElement(QName name) {
+        Element child =getFirstChildElement(name);
+        if(child !=null) {
+            removeChild(child);
+            return child;
+        }
+        return null;
+    }
+
+    /**
+     * Add an element, or, if it exists, replace it with the new one
+     * @param newElement the new element
+     * @return any old element, or null if there was none
+     */
+    public Element addOrReplaceChild(Element newElement) {
+        Element child = getFirstChildElement(newElement.getLocalName(),newElement.getNamespaceURI());
+        if (child != null) {
+            replaceChild(child,newElement);
+            return child;
+        } else {
+            appendChild(newElement);
+            return null;
+        }
+    }
+
+    /**
+     * copy all the child elements and attributes from a node
+     * @param that the source of the data
+     */
+    public void copyChildrenFrom(Element that) {
+        for (Attribute a: new AttributeIterator(that)) {
+            appendChild(a.copy());
+        }
+        for (Node n : new NodeIterator(that)) {
+            appendChild(n.copy());
+        }
+
     }
 }
