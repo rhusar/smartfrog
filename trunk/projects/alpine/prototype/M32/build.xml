@@ -92,7 +92,8 @@
         version="2.6.0"/>
       <dependency groupID="tomcat"
         artifactID="servlet-api"
-        version="5.0.18"/>
+        version="5.0.18"
+        scope="compile"/>
       <dependency groupID="junit"
         artifactID="junit"
         version="${junit.version}"
@@ -329,5 +330,7 @@
       </teardown>
     </sf-functionaltest>
   </target>
-    
+
+
+ <target name="all" depends="dist,unit-tests,installed" />
 </project>
