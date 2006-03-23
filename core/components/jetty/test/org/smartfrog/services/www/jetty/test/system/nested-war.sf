@@ -67,8 +67,6 @@ sfConfig extends Compound {
     }
 
 
-    deployedWar LAZY server:deployedWar;
-
     //this is here because without it, ping doesnt get the lazy information from
     //the webapp in time
     //ping LAZY server:ping;
@@ -78,7 +76,7 @@ sfConfig extends Compound {
     ping extends LivenessPage {
             host LAZY server:listener:ipaddr;
             port server:port;
-            page deployedWar:contextPath;
+            page server:deployedWar:contextPath;
             checkFrequency 1;
             followRedirects true;
     }
