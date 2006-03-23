@@ -26,7 +26,7 @@ import javax.xml.namespace.QName;
  * constants of soap11
  */
 public interface Soap11Constants {
-    
+
     /**
      * {@value}
      */
@@ -42,12 +42,12 @@ public interface Soap11Constants {
      * {@value}
      */
     public static final String ELEMENT_ENVELOPE="Envelope";
-    
+
     /**
      * Qname of the element
-     */ 
+     */
     public static final QName QNAME_ENVELOPE=new QName(URI_SOAP11,ELEMENT_ENVELOPE);
-    
+
     /**
      * {@value}
      */
@@ -56,7 +56,7 @@ public interface Soap11Constants {
      * Qname of the element
      */
     public static final QName QNAME_HEADER = new QName(URI_SOAP11, ELEMENT_HEADER);
-    
+
 
     /**
      * {@value}
@@ -66,7 +66,7 @@ public interface Soap11Constants {
      * Qname of the element
      */
     public static final QName QNAME_BODY = new QName(URI_SOAP11, ELEMENT_BODY);
-        
+
 
     /**
      * {@value}
@@ -95,14 +95,14 @@ public interface Soap11Constants {
      * {@value}
      */
     public static final String FAULT_DETAIL = "detail";
-    
+
     /**
      * The processing party found an invalid 
      * namespace for the SOAP Envelope element (see section 4.1.2)
      * {@value}
      */
     public static final String FAULTCODE_VERSION_MISMATCH = "VersionMismatch";
-    
+
     /**
      * MustUnderstand
      * An immediate child element of the SOAP Header element that was either
@@ -129,7 +129,7 @@ public interface Soap11Constants {
      * {@value}
      */
     public static final String ACTOR_NEXT = "http://schemas.xmlsoap.org/soap/actor/next";
-    
+
     /**
      * {@value}
      */
@@ -139,7 +139,7 @@ public interface Soap11Constants {
      * {@value}
      */
     public static final String ATTR_ENCODING_STYLE = "encodingStyle";
-    
+
     /**
      * {@value}
      */
@@ -149,8 +149,7 @@ public interface Soap11Constants {
      * {@value}
      */
     public static final String ENCODING_SECTION_5 = "http://schemas.xmlsoap.org/soap/encoding/";
-    
-    
+
     /*
     * Everything from here down is from Axis
     */
@@ -169,7 +168,7 @@ public interface Soap11Constants {
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-    
+
     //
     // Schema XSD Namespaces
     //
@@ -197,4 +196,8 @@ public interface Soap11Constants {
 
     String URI_XML_1998 = "http://www.w3.org/XML/1998/namespace";
     String URI_WSDL = "http://schemas.xmlsoap.org/wsdl/";
+
+
+
+
 }

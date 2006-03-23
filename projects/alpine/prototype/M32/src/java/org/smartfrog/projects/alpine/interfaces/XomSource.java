@@ -1,4 +1,4 @@
-/** (C) Copyright 2005 Hewlett-Packard Development Company, LP
+/** (C) Copyright 2006 Hewlett-Packard Development Company, LP
 
  This library is free software; you can redistribute it and/or
  modify it under the terms of the GNU Lesser General Public
@@ -17,35 +17,22 @@
  For more information: www.smartfrog.org
 
  */
- 
+package org.smartfrog.projects.alpine.interfaces;
 
-#include "/org/smartfrog/projects/alpine/config/smartfrog/components.sf"
+import nu.xom.Element;
+
+/**
+ * created 23-Mar-2006 13:09:51
+ */
 
 
-    //this is our endpoint
-EchoEndpoint extends AlpineEndpoint {
-    name "echo";
-    handlers [
-     "org.smartfrog.projects.alpine.handlers.EchoHandler";
-     ]
+public interface XomSource {
+
+
+    /**
+     * Convert the message into a Xom element
+     * @return the element
+     */
+    Element toXom();
+
 }
-    
-EchoHandler extends AlpineHandler {
-  classname "org.smartfrog.projects.alpine.handlers.EchoHandler";
-}
-
-
-MustUnderstandChecker extends AlpineHandler {
-  classname "org.smartfrog.projects.alpine.handlers.MustUnderstandChecker";
-}
-
-AddressHandler extends AlpineHandler {
-  classname "org.smartfrog.projects.alpine.handlers.AddressHandler";
-}
-
-
-
- 
- 
-
- 

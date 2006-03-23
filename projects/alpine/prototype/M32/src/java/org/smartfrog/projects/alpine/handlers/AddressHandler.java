@@ -1,4 +1,4 @@
-/** (C) Copyright 2005 Hewlett-Packard Development Company, LP
+/** (C) Copyright 2006 Hewlett-Packard Development Company, LP
 
  This library is free software; you can redistribute it and/or
  modify it under the terms of the GNU Lesser General Public
@@ -17,35 +17,22 @@
  For more information: www.smartfrog.org
 
  */
- 
+package org.smartfrog.projects.alpine.handlers;
 
-#include "/org/smartfrog/projects/alpine/config/smartfrog/components.sf"
+import org.smartfrog.projects.alpine.core.MessageContext;
+import org.smartfrog.projects.alpine.core.EndpointContext;
+import org.smartfrog.projects.alpine.om.soap11.MessageDocument;
 
+/**
+ * An address handler that extracts WS-A information from the request and validates that the stuff is present
+ * created 23-Mar-2006 14:50:25
+ */
 
-    //this is our endpoint
-EchoEndpoint extends AlpineEndpoint {
-    name "echo";
-    handlers [
-     "org.smartfrog.projects.alpine.handlers.EchoHandler";
-     ]
+public class AddressHandler extends HandlerBase {
+
+    public void processMessage(MessageContext messageContext, EndpointContext endpointContext) {
+        MessageDocument request = messageContext.getRequest();
+        request.bindAddressing();
+        request.getAddressDetails().validate();
+    }
 }
-    
-EchoHandler extends AlpineHandler {
-  classname "org.smartfrog.projects.alpine.handlers.EchoHandler";
-}
-
-
-MustUnderstandChecker extends AlpineHandler {
-  classname "org.smartfrog.projects.alpine.handlers.MustUnderstandChecker";
-}
-
-AddressHandler extends AlpineHandler {
-  classname "org.smartfrog.projects.alpine.handlers.AddressHandler";
-}
-
-
-
- 
- 
-
- 

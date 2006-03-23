@@ -22,8 +22,8 @@ package org.smartfrog.projects.alpine.handlers;
 import org.smartfrog.projects.alpine.interfaces.MessageHandler;
 import org.smartfrog.projects.alpine.core.MessageContext;
 import org.smartfrog.projects.alpine.core.EndpointContext;
+import org.smartfrog.projects.alpine.core.Context;
 import org.smartfrog.projects.alpine.om.soap11.Header;
-import org.smartfrog.projects.alpine.xmlutils.BaseElementsIterator;
 import org.smartfrog.projects.alpine.faults.MustUnderstandFault;
 import nu.xom.Element;
 
@@ -33,16 +33,16 @@ import nu.xom.Element;
  * created 22-Mar-2006 11:53:18
  */
 
-public class MustUnderstandChecker implements MessageHandler {
+public class MustUnderstandChecker extends HandlerBase {
 
     /**
-     * Message handler
-     *
-     * @param messageContext
-     * @param endpointContext
-     * @throws org.smartfrog.projects.alpine.faults.AlpineRuntimeException
-     *
-     */
+    * Message handler
+    *
+    * @param messageContext
+    * @param endpointContext
+    * @throws org.smartfrog.projects.alpine.faults.AlpineRuntimeException
+    *
+    */
     public void processMessage(MessageContext messageContext, EndpointContext endpointContext) {
         for(Element header:messageContext.getRequest().getEnvelope().getHeaders()) {
             checkOneElement(header);
