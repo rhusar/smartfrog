@@ -58,5 +58,32 @@
     depends="init-standard-output-dirs,use-smartfrog-tasks,use-smartfrog-testharness">
   </target>
   
-  
+  <!-- ========================================================== -->
+  <!-- clean -->
+  <!-- ========================================================== -->
+
+ <target name="clean" depends="common.clean" description="clean up build ,dist and releases" >
+    <delete dir="releases"  />  
+    <delete dir="test"  /> 
+    <delete file="version.properties"/> 
+ </target>
+ 
+  <!-- ========================================================== -->
+  <!-- create the jar -->
+  <!-- ========================================================== -->
+  <target name="dist" depends="common.dist,jdocs" description="create the jar files">
+   <!--copy todir = "${dist.lib.dir}">
+        <fileset dir ="${lib.dir}" />
+    </copy-->  
+     <!--copy todir = "${dist.doc.dir}">
+        <fileset dir ="${doc.dir}" />
+    </copy-->   
+     <copy todir = "${dist.src.dir}">
+        <fileset dir ="${src.dir}">
+            <include name="**/examples/**"/>
+        </fileset>
+           </copy>
+     <copy tofile="${dist.dir}/build.xml" file="releaseBuild.xml"/> 
+   <copy tofile="${dist.dir}/build.example.properties" file="build.example.properties"/>
+  </target> 
 </project>
