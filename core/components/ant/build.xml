@@ -22,7 +22,7 @@ For more information: www.smartfrog.org
 */
 -->
 
-<project name="Ant" default="dist" basedir=".">
+<project name="ant" default="dist" basedir=".">
 
 <description>
 Introduction
@@ -56,7 +56,7 @@ Reference URL:http://ant.apache.org
   <!-- =================================================================== -->
   <!-- Initialization target                                               -->
   <!-- =================================================================== -->
-  <target name="init" depends="init-standard-output-dirs">
+  <target name="init" depends="init-standard-output-dirs, use-smartfrog-tasks">
     <tstamp/>
     <property name="Name.Company" value="(C) Copyright 1998-2005 Hewlett-Packard Development Company, LP"/>
     <property name="version" value="smartfrog components"/>
@@ -289,10 +289,10 @@ Reference URL:http://ant.apache.org
 		        <include name="**/examples/**"/>
 		    </fileset>
 	         </copy>
-	<copy todir = "${dist.doc.dir}">
+	<!--copy todir = "${dist.doc.dir}">
         <fileset dir ="${doc.dir}" />
-    </copy>  
-	 <antcall target="copybins"/>
+    </copy-->  
+	 <!--antcall target="copybins"/-->
 	  <copy tofile="${dist.dir}/build.xml" file="releaseBuild.xml"/>	
 	  <copy tofile="${dist.dir}/build.example.properties" file="build.example.properties"/>
 	</target>

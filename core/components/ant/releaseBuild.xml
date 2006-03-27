@@ -156,7 +156,7 @@ These are the meaningful targets for this build file:
     </rmic>
     <!--  sfExamples.jar                                               -->
     <!-- Create sfExamples.jar file -->
-    <jar jarfile="${lib}/sf-Ant-examples.jar"
+    <jar jarfile="${lib}/sf-ant-examples.jar"
          basedir="${build}"
          includes="**/examples/**"/>
   </target>
