@@ -49,13 +49,13 @@ These are the meaningful targets for this build file:
  - jdocs
 -->
 
-<project  name="SFInstallerDist" default="help" basedir=".">
+<project  name="AnubisDist" default="help" basedir=".">
   <!-- =================================================================== -->
   <!-- Initialization target                                               -->
   <!-- =================================================================== -->
   <target name="init">
-    <property name="Name" value="SFInstaller Component"/>
-    <property name="name" value="(C) Copyright 1998-2003 Hewlett-Packard Development Company, LP"/>
+    <property name="Name" value="Anubis Component"/>
+    <property name="name" value="(C) Copyright 1998-2006 Hewlett-Packard Development Company, LP"/>
     <property name="version" value="DIST"/>
     <loadproperties srcFile="version.properties"/>
     <fail unless="sf.build.version">No property sf.build.version found in file version.properties</fail>
@@ -75,7 +75,7 @@ These are the meaningful targets for this build file:
   <target name="help" depends="init">
     <echo message=""/>
     <echo message=""/>
-    <echo message="SFInstaller Component ${version} Build file"/>
+    <echo message="Anubis Component ${version} Build file"/>
     <echo message="-------------------------------------------------------------"/>
     <echo message=""/>
     <echo message=" available targets are:"/>
@@ -107,10 +107,10 @@ These are the meaningful targets for this build file:
   <!-- =================================================================== -->
   <!-- Initialization path (Libs needed for compiling)                     -->
   <!-- =================================================================== -->
-  <path id="sfinstaller.class.path">
+  <path id="anubis.class.path">
 	  <pathelement path="${classpath}"/>
 	  <pathelement location="lib/**.jar"/>
-     
+     <!--pathelement location="lib/sf-anubislib.jar"/-->
   </path>
 
   <!-- =================================================================== -->
@@ -148,14 +148,14 @@ These are the meaningful targets for this build file:
   <target name="build" depends="copyFiles,initbuild" description="Compiles source code">
     <!-- Compile the java code from ${src} into ${build} -->
     <javac srcdir="${src}" destdir="${build}" debug="${debugmode}" compiler="javac1.4" source="1.4">
-      <classpath refid="sfinstaller.class.path"/>
+      <classpath refid="anubis.class.path"/>
     </javac>
     <rmic base="${build}" includes="**/*.class">
-      <classpath refid="sfinstaller.class.path"/>
+      <classpath refid="anubis.class.path"/>
     </rmic>
     <!--  sfExamples.jar                                               -->
     <!-- Create sfExamples.jar file -->
-    <jar jarfile="${lib}/sf-sfinstaller-examples.jar"
+    <jar jarfile="${lib}/sf-anubis-examples.jar"
          basedir="${build}"
          includes="**/examples/**"/>
   </target>
@@ -182,8 +182,8 @@ These are the meaningful targets for this build file:
            doctitle="${Name}"
            bottom="${name}"
            source="1.4">
-      <group title="SFInstaller Examples Package" packages="org.smartfrog.*"/>
-      <classpath refid="sfinstaller.class.path"/>
+      <group title="Anubis Examples Package" packages="org.smartfrog.*"/>
+      <classpath refid="anubis.class.path"/>
     </javadoc>
   </target>
 
