@@ -71,6 +71,8 @@ public class HttpBinder {
         messageContext.setRequest(message);
         return message;
     }
+
+
     
     /**
      * Churn out a response to the channel. If the message is a fault, we generate
