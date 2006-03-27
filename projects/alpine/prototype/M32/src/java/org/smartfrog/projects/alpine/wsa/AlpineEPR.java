@@ -25,7 +25,7 @@ import nu.xom.Attribute;
 import org.smartfrog.projects.alpine.om.soap11.Envelope;
 import org.smartfrog.projects.alpine.om.soap11.MessageDocument;
 import org.smartfrog.projects.alpine.om.soap11.Header;
-import org.smartfrog.projects.alpine.om.base.ElementEx;
+import org.smartfrog.projects.alpine.om.base.SoapElement;
 import org.smartfrog.projects.alpine.interfaces.Validatable;
 import org.smartfrog.projects.alpine.interfaces.XomSource;
 import org.smartfrog.projects.alpine.faults.ValidationException;
@@ -168,7 +168,7 @@ public final class AlpineEPR implements Validatable, AddressingConstants, XomSou
         String prefixColon=prefix+":";
         Envelope env=message.getEnvelope();
         Header header=env.getHeader();
-        Element to=new ElementEx(prefixColon+WSA_TO,namespace, getAddress());
+        Element to=new SoapElement(prefixColon+WSA_TO,namespace, getAddress());
         header.setHeaderElement(to,mustUnderstand);
         if(referenceParameters!=null) {
             for(Node node: new NodeIterator(referenceParameters)) {
@@ -203,20 +203,20 @@ public final class AlpineEPR implements Validatable, AddressingConstants, XomSou
      * @param prefix prefix, e.g. wsa2005
      * @return an address containing all the parts of the address as children
      */
-    public ElementEx toXom(String localname,String namespace, String prefix) {
+    public SoapElement toXom(String localname,String namespace, String prefix) {
         String prefixColon = prefix + ":";
-        ElementEx root=new ElementEx(prefixColon+localname,namespace);
+        SoapElement root=new SoapElement(prefixColon+localname,namespace);
         if(address!=null) {
-            Element to = new ElementEx(prefixColon + WSA_ADDRESS, namespace,getAddress());
+            Element to = new SoapElement(prefixColon + WSA_ADDRESS, namespace,getAddress());
             root.appendChild(to);
         }
         if(referenceParameters!=null) {
-            ElementEx elt=new ElementEx(prefixColon + WSA_REFERENCE_PARAMETERS, namespace);
+            SoapElement elt=new SoapElement(prefixColon + WSA_REFERENCE_PARAMETERS, namespace);
             elt.copyChildrenFrom(referenceParameters);
             root.appendChild(elt);
         }
         if (metadata != null) {
-            ElementEx elt = new ElementEx(prefixColon + WSA_METADATA, namespace);
+            SoapElement elt = new SoapElement(prefixColon + WSA_METADATA, namespace);
             elt.copyChildrenFrom(metadata);
         }
         return root;

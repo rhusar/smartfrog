@@ -23,7 +23,7 @@ package org.smartfrog.test.unit.projects.alpine.faults;
 import org.smartfrog.test.unit.projects.alpine.ParserTestBase;
 import org.smartfrog.projects.alpine.om.soap11.Fault;
 import org.smartfrog.projects.alpine.om.soap11.Body;
-import org.smartfrog.projects.alpine.om.base.ElementEx;
+import org.smartfrog.projects.alpine.om.base.SoapElement;
 import org.smartfrog.projects.alpine.faults.InvalidXmlException;
 import org.smartfrog.projects.alpine.faults.AlpineRuntimeException;
 import org.smartfrog.projects.alpine.faults.FaultConstants;
@@ -37,7 +37,7 @@ public class InvalidXmlExceptionTest extends ParserTestBase {
     
     private Fault fault;
     
-    private ElementEx element=new Body();
+    private SoapElement element=new Body();
     
     public InvalidXmlExceptionTest(String name) {
         super(name);
@@ -57,8 +57,8 @@ public class InvalidXmlExceptionTest extends ParserTestBase {
         
     //InvalidXmlException
     public void testElementIsPassedIn() throws Exception {
-        ElementEx detail=fault.getFaultDetail();
-        ElementEx child=(ElementEx) fault.getFirstFaultDetailChild(FaultConstants.QNAME_FAULTDETAIL_INVALID_XML);
+        SoapElement detail=fault.getFaultDetail();
+        SoapElement child=(SoapElement) fault.getFirstFaultDetailChild(FaultConstants.QNAME_FAULTDETAIL_INVALID_XML);
         assertNotNull("Node not found in detail",child);
         Element nested=child.getFirstChildElement(element.getQName());
         assertNotNull("nested not found in detail", nested);

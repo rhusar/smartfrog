@@ -20,7 +20,7 @@
 
 package org.smartfrog.projects.alpine.om.soap11;
 
-import org.smartfrog.projects.alpine.om.base.ElementEx;
+import org.smartfrog.projects.alpine.om.base.SoapElement;
 import nu.xom.Element;
 
 import javax.xml.namespace.QName;
@@ -28,7 +28,7 @@ import javax.xml.namespace.QName;
 /**
  * This is the base class of of all Soap11 elements
  */
-public class Soap11Element extends ElementEx implements Soap11Constants {
+public class Soap11Element extends SoapElement implements Soap11Constants {
 
     public Soap11Element(QName name) {
         super(name);
