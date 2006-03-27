@@ -34,7 +34,7 @@ Installing the build tools
 To Be Written
 
 -->
-<project name="Ant" default="process" basedir=".">
+<project name="ant" default="process" basedir=".">
 
 
  <property file="build.properties" />
