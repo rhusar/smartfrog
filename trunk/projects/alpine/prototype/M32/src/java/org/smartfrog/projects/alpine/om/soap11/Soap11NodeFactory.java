@@ -48,6 +48,7 @@ public class Soap11NodeFactory implements NamespaceNodeFactory {
             return new Header(name, namespace);
         }
         if (Soap11Constants.ELEMENT_FAULT.equals(name)) {
+            //TODO: more processing from the content?
             return new Fault(name, namespace);
         }
         
