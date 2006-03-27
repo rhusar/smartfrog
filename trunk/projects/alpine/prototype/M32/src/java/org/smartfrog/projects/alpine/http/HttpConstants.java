@@ -23,7 +23,11 @@ package org.smartfrog.projects.alpine.http;
  * @author Doug Davis 
  * @author Jacek Kopecky
  */
-public class HttpConstants {
+public final class HttpConstants {
+
+
+    private HttpConstants() {
+    }
 
     public static final String HEADER_PROTOCOL_10 = "HTTP/1.0";
     public static final String HEADER_PROTOCOL_11 = "HTTP/1.1";
