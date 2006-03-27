@@ -27,7 +27,11 @@ import org.smartfrog.projects.alpine.om.soap11.MessageDocument;
  * that you should not be able to stop them.
  *
  * Important: there are no guarantees as to what thread things are called in. however,
- * there will be no reentrant calling of these things. 
+ * there will be no reentrant calling of these things.
+ *
+ * When something is cancelled, a ProgressCancelledFault is thrown up. If the operations
+ * choose to throw one of their own, they get to add a meaningful message
+ *
  * created 23-Mar-2006 15:55:47
  */
 
@@ -49,6 +53,7 @@ public interface ProgressFeedback {
      * @param byteDone number of bytes sent/received
      * @param bytesPredicted bytes expected (or -1 for no idea whatsoever)
      * @return true if the operation should continue
+     * @throws ProgressCancelledFault if you want to give a meaningful message
      */
     boolean tick(Transmission tx, MessageDocument message,long byteDone, long bytesPredicted) ;
 
