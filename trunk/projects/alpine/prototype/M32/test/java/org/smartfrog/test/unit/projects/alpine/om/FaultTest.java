@@ -22,7 +22,6 @@ package org.smartfrog.test.unit.projects.alpine.om;
 
 import org.smartfrog.test.unit.projects.alpine.ParserTestBase;
 import org.smartfrog.projects.alpine.om.soap11.Fault;
-import org.smartfrog.projects.alpine.om.base.ElementEx;
 import org.smartfrog.projects.alpine.faults.FaultConstants;
 import nu.xom.Element;
 

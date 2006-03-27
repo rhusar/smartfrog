@@ -22,7 +22,7 @@ package org.smartfrog.test.unit.projects.alpine.om;
 
 import org.smartfrog.test.unit.projects.alpine.ParserTestBase;
 import org.smartfrog.projects.alpine.om.soap11.Fault;
-import org.smartfrog.projects.alpine.om.base.ElementEx;
+import org.smartfrog.projects.alpine.om.base.SoapElement;
 import org.smartfrog.projects.alpine.faults.FaultConstants;
 
 /**
@@ -53,7 +53,7 @@ public class FaultFromExceptionTest extends ParserTestBase {
     }
     
     public void testStack() throws Exception {
-        ElementEx details = fault.getFaultDetail();
+        SoapElement details = fault.getFaultDetail();
         details.getFirstChildElement(FaultConstants.QNAME_FAULTDETAIL_STACKTRACE);
     }
     

@@ -22,7 +22,7 @@ package org.smartfrog.projects.alpine.om.soap11;
 
 import org.smartfrog.projects.alpine.interfaces.NamespaceNodeFactory;
 import org.smartfrog.projects.alpine.xmlutils.XsdUtils;
-import org.smartfrog.projects.alpine.om.base.ElementEx;
+import org.smartfrog.projects.alpine.om.base.SoapElement;
 import nu.xom.Element;
 import nu.xom.NodeFactory;
 import nu.xom.Nodes;
@@ -51,7 +51,7 @@ public class Soap11NodeFactory implements NamespaceNodeFactory {
             return new Fault(name, namespace);
         }
         
-        return new ElementEx(name, namespace);
+        return new SoapElement(name, namespace);
     }
 
     public Nodes finishMakingElement(Element element, NodeFactory baseFactory) {

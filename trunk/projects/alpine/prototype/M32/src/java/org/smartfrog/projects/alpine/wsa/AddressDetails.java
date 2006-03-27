@@ -24,7 +24,7 @@ import org.smartfrog.projects.alpine.interfaces.Validatable;
 import org.smartfrog.projects.alpine.faults.ValidationException;
 import org.smartfrog.projects.alpine.om.soap11.MessageDocument;
 import org.smartfrog.projects.alpine.om.soap11.Header;
-import org.smartfrog.projects.alpine.om.base.ElementEx;
+import org.smartfrog.projects.alpine.om.base.SoapElement;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -273,7 +273,7 @@ public class AddressDetails implements Validatable, AddressingConstants {
         maybeAdd(message, faultTo, WSA_FAULTTO, namespace, prefix, markReferences, mustUnderstand);
         final String prefixColon = prefix + ":";
         Header header = message.getEnvelope().getHeader();
-        Element actionElement = new ElementEx(prefixColon + WSA_ACTION, namespace,action);
+        Element actionElement = new SoapElement(prefixColon + WSA_ACTION, namespace,action);
         header.setHeaderElement(actionElement,mustUnderstand);
     }
 

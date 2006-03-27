@@ -21,7 +21,7 @@
 package org.smartfrog.projects.alpine.om.soap11;
 
 import org.smartfrog.projects.alpine.om.ExtendedNodeFactory;
-import org.smartfrog.projects.alpine.om.base.ElementEx;
+import org.smartfrog.projects.alpine.om.base.SoapElement;
 import org.smartfrog.projects.alpine.xmlutils.XsdUtils;
 import nu.xom.Element;
 import nu.xom.Document;
@@ -56,7 +56,7 @@ public class SoapFactory extends ExtendedNodeFactory {
         }
         
         //something else in our namespace. wierd.
-        return new ElementEx(name, namespace);
+        return new SoapElement(name, namespace);
     }
 
     /**

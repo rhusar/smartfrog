@@ -21,10 +21,9 @@
 package org.smartfrog.projects.alpine.om.soap11;
 
 import nu.xom.Element;
-import nu.xom.Attribute;
 import nu.xom.Elements;
 import nu.xom.Node;
-import org.smartfrog.projects.alpine.om.base.ElementEx;
+import org.smartfrog.projects.alpine.om.base.SoapElement;
 import org.smartfrog.projects.alpine.faults.InvalidXmlException;
 import org.smartfrog.projects.alpine.faults.FaultConstants;
 
@@ -143,10 +142,10 @@ public class Fault extends Soap11Element {
      * get the fault detail, creating it if needed.
      * @return the fault detail.
      */ 
-    protected ElementEx demandCreateFaultDetail() {
-        ElementEx faultDetail = getFaultDetail();
+    protected SoapElement demandCreateFaultDetail() {
+        SoapElement faultDetail = getFaultDetail();
         if(faultDetail==null) {
-            faultDetail=new ElementEx(FAULT_DETAIL);
+            faultDetail=new SoapElement(FAULT_DETAIL);
             appendChild(faultDetail);
         }
         return faultDetail;
@@ -156,17 +155,17 @@ public class Fault extends Soap11Element {
      * Get our current fault detail
      * @return
      */ 
-    public ElementEx getFaultDetail() {
-        return (ElementEx)getFirstChildElement(FAULT_DETAIL);
+    public SoapElement getFaultDetail() {
+        return (SoapElement)getFirstChildElement(FAULT_DETAIL);
     }
 
     /**
      * replace any existing fault detail with a new one
      * @param detail
      */ 
-    public void setFaultDetail(ElementEx detail) {
+    public void setFaultDetail(SoapElement detail) {
         if(detail==null) {
-            replace(new ElementEx(FAULT_DETAIL));
+            replace(new SoapElement(FAULT_DETAIL));
         } else {
             replace(detail);
         }
@@ -239,13 +238,13 @@ public class Fault extends Soap11Element {
      * @param text message
      */ 
     public void addFaultDetail(QName qname, String text) {
-        ElementEx element = new ElementEx(qname);
+        SoapElement element = new SoapElement(qname);
         element.appendChild(text);
         appendToFaultDetail(element);
     }
     
     public void addFaultDetail(QName qname, Node node) {
-        ElementEx element = new ElementEx(qname);
+        SoapElement element = new SoapElement(qname);
         element.appendChild(node);
         appendToFaultDetail(element);
     }
