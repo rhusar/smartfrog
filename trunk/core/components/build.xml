@@ -159,7 +159,7 @@ For more information: www.smartfrog.org
       <pathelement location="${anubisdeployer.project}"/>
       <pathelement location="${fun.project}"/>
       <pathelement location="${ssh.project}"/>
-      <!--pathelement location="${junit.project}"/-->
+      <pathelement location="${junit.project}"/>
       <pathelement location="${net.project}"/>
       <pathelement location="${emailer.project}"/>
       <pathelement location="${slp.project}"/>
