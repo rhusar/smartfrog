@@ -26,6 +26,9 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
+import org.smartfrog.sfcore.logging.LogFactory;
+import org.smartfrog.sfcore.logging.LogSF;
+import org.smartfrog.sfcore.logging.LogImplAsyncWrapper;
 
 
 
@@ -56,6 +59,8 @@ public class MulticastComms extends Thread {
          private         DatagramPacket      inPacket;
                          Object              outObject;
          private         boolean             terminating;
+         private         LogSF               syncLog       = LogFactory.getLog(this.getClass().toString());
+         private         LogSF               asyncLog      = new LogImplAsyncWrapper( syncLog );
 
   /**
    * deliverObject is the method for delivering received
@@ -75,7 +80,6 @@ public class MulticastComms extends Thread {
   public MulticastComms(String threadName, MulticastAddress address) throws Exception {
 
       super(threadName);
-
       this.groupAddress = address;
       sock = new MulticastSocket(address.port);
       sock.joinGroup(address.ipaddress);
@@ -111,8 +115,8 @@ public class MulticastComms extends Thread {
 
           } catch ( Exception e ) {
 
-              if( !terminating )
-                  e.printStackTrace();
+              if( !terminating && asyncLog.isWarnEnabled())
+                  asyncLog.warn(e);
 
           }
       }
@@ -130,8 +134,8 @@ public class MulticastComms extends Thread {
       try {
           sock.send(bytesToPacket(bytes, groupAddress.ipaddress, groupAddress.port));
       } catch ( IOException ioe ) {
-          if( !terminating )
-              ioe.printStackTrace();
+          if( !terminating && asyncLog.isWarnEnabled())
+                  asyncLog.warn(ioe);
       }
   }
 

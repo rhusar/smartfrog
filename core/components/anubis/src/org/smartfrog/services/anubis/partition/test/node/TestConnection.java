@@ -58,7 +58,8 @@ public class TestConnection
         try {
             msg = (SerializedMsg) Wire.fromWire(bytes);
         } catch (Exception ex) {
-            ex.printStackTrace();
+            if( log.isWarnEnabled() )
+                log.warn(ex);
             return;
         }
 
@@ -89,7 +90,8 @@ public class TestConnection
             SerializedMsg msg = new SerializedMsg(obj);
             super.send(msg.toWire());
         } catch (Exception ex) {
-            ex.printStackTrace();
+            if( log.isWarnEnabled() )
+                log.warn(ex);
         }
     }
 
@@ -106,7 +108,8 @@ public class TestConnection
         try {
             super.send( (new SerializedMsg(new PartitionMsg(view, leader))).toWire() );
         } catch (Exception ex) {
-            ex.printStackTrace();
+            if( log.isWarnEnabled() )
+                log.warn(ex);
         }
     }
     public void objectNotification(Object o, int i, long l) {}

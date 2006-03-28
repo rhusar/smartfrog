@@ -104,7 +104,8 @@ public abstract class ConnectionComms extends Thread implements WireSizes {
 
         } catch(Exception ex) {
 
-            ex.printStackTrace();
+            // ex.printStackTrace();
+
             try { connection.close(); }
             catch(Exception ex2) { }
             open = false;

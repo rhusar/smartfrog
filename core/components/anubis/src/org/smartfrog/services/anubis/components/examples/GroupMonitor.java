@@ -47,7 +47,6 @@ public class GroupMonitor extends PrimImpl implements Prim {
             locator.registerListener(listener);
         }
         catch (Exception ex) {
-            ex.printStackTrace();
             throw (SmartFrogException)SmartFrogException.forward(ex);
         }
     }
@@ -57,7 +56,6 @@ public class GroupMonitor extends PrimImpl implements Prim {
             super.sfStart();
         }
         catch (Exception ex) {
-            ex.printStackTrace();
             throw (SmartFrogException)SmartFrogException.forward(ex);
         }
     }

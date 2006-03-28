@@ -60,7 +60,6 @@ public class StabilityNotices
             locator.registerStability(stability);
         }
         catch (Exception ex) {
-            ex.printStackTrace();
             throw (SmartFrogException)SmartFrogException.forward(ex);
         }
     }

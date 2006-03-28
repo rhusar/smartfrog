@@ -48,7 +48,6 @@ public class PartitionNotices
             partition.register(this);
         }
         catch (Exception ex) {
-            ex.printStackTrace();
             throw (SmartFrogException)SmartFrogException.forward(ex);
         }
     }

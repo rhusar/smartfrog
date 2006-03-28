@@ -43,7 +43,7 @@ public class RxQueueWorker extends Thread {
 			rxQueue.wait();
 		    }
 		    catch(InterruptedException ie){
-			ie.printStackTrace();
+			// ie.printStackTrace();
 		    }
 		}
 

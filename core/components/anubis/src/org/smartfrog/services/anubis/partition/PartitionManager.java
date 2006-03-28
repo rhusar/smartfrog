@@ -73,7 +73,6 @@ public class PartitionManager
             partitionProtocol = (PartitionProtocol)sfResolve("partitionProtocol");
         }
         catch (Exception ex) {
-            ex.printStackTrace();
             throw (SmartFrogException)SmartFrogException.forward(ex);
         }
     }
@@ -86,7 +85,6 @@ public class PartitionManager
                 log.info("Started partition manager at " + me + " " + Anubis.version);
         }
         catch (Exception ex) {
-            ex.printStackTrace();
             throw (SmartFrogException)SmartFrogException.forward(ex);
         }
     }

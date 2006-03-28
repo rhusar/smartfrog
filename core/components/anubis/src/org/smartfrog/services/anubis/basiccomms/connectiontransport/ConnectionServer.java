@@ -25,6 +25,8 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
+import org.smartfrog.sfcore.logging.LogFactory;
+import org.smartfrog.sfcore.logging.LogSF;
 
 
 /**
@@ -37,6 +39,7 @@ public class ConnectionServer extends Thread {
     private ServerSocketChannel      listenSocket;
     private ConnectionFactory connectionFactory;
     private boolean           open;
+    private LogSF             log = LogFactory.getLog(this.getClass().toString());
 
     /**
      * Constructor - sets a null listening socket and a null connection
@@ -166,8 +169,10 @@ public class ConnectionServer extends Thread {
                 SocketChannel channel = listenSocket.accept();
                 connectionFactory.createConnection(channel);
             } catch(Exception ex) {
-                if( open )
-                    ex.printStackTrace();
+                if( open ) {
+                    if( log.isInfoEnabled() )
+                        log.info(ex);
+                }
             }
 
         }

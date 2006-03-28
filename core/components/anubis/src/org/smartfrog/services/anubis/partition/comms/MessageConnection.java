@@ -420,8 +420,8 @@ public class MessageConnection
 
     public void logClose(String reason, Throwable throwable) {
 
-         if( log.isInfoEnabled() )
-             log.info(me + " message connection transport for " + this.getSender() + " shutdown:" + reason, throwable);
+         if( log.isDebugEnabled() )
+             log.debug(me + " message connection transport for " + this.getSender() + " shutdown:" + reason, throwable);
 
     }
 

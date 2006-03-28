@@ -109,7 +109,6 @@ public class Test
             driver = new Driver(this, "TestDriver: " + componentReference);
             driver.setVisible(true);
         } catch (Exception ex) {
-            ex.printStackTrace();
             throw (SmartFrogException)SmartFrogException.forward(ex);
         }
     }
@@ -125,7 +124,6 @@ public class Test
             super.sfStart();
         }
         catch (Exception ex) {
-            ex.printStackTrace();
             throw (SmartFrogException)SmartFrogException.forward(ex);
         }
     }

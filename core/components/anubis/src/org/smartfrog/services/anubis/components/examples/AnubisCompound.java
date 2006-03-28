@@ -69,7 +69,6 @@ public class AnubisCompound
             locator.registerProvider(provider);
         }
         catch (Exception ex) {
-            ex.printStackTrace();
             throw (SmartFrogException)SmartFrogException.forward(ex);
         }
 
@@ -82,7 +81,6 @@ public class AnubisCompound
             provider.setValue("started");
         }
         catch (Exception ex) {
-            ex.printStackTrace();
             throw (SmartFrogException)SmartFrogException.forward(ex);
         }
     }

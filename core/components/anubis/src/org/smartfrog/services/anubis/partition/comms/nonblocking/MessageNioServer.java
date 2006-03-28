@@ -92,7 +92,10 @@ public class MessageNioServer extends Thread implements IOConnectionServer {
 	    selector = Selector.open();
 	    server.register(selector, SelectionKey.OP_ACCEPT);
 	}
-	catch(Exception e){e.printStackTrace();}
+	catch(Exception e){
+            if( asyncLog.isWarnEnabled() )
+                asyncLog.warn(e);
+        }
 	this.setName("Anubis: MessageNioServer");
 	this.setPriority(MAX_PRIORITY);
 	pendingNewChannels = new Hashtable();
@@ -147,7 +150,11 @@ public class MessageNioServer extends Thread implements IOConnectionServer {
 	    pendingNewChannels.put(sendingChannel, mnh);
 	    selector.wakeup();
 	}
-	catch(Exception e){e.printStackTrace();}
+        catch(Exception e){
+            if( asyncLog.isWarnEnabled() )
+                asyncLog.warn(e);
+        }
+
     }
 
 
@@ -186,7 +193,11 @@ public class MessageNioServer extends Thread implements IOConnectionServer {
 	    try{
 		selectNbr = selector.select();
 	    }
-	    catch(Exception e){e.printStackTrace();}
+            catch(Exception e){
+                if( asyncLog.isWarnEnabled() )
+                    asyncLog.warn(e);
+            }
+
 
 	    // finally registering pending channels
 	    synchronized(pendingNewChannels){
@@ -205,7 +216,11 @@ public class MessageNioServer extends Thread implements IOConnectionServer {
                                     sc.register(selector, SelectionKey.OP_CONNECT, mnh);
 				}
 			    }
-			    catch(Exception e){e.printStackTrace();}
+                            catch(Exception e){
+                                if( asyncLog.isWarnEnabled() )
+                                    asyncLog.warn(e);
+                            }
+
 			}
 		    }
 		}
@@ -236,7 +251,11 @@ public class MessageNioServer extends Thread implements IOConnectionServer {
 			conHandler.readyForWriting();
 			conHandler.setConnected(true);
 		    }
-		    catch(Exception e){e.printStackTrace();}
+                    catch(Exception e){
+                        if( asyncLog.isWarnEnabled() )
+                            asyncLog.warn(e);
+                    }
+
 		}
 
 		if (key.isReadable()){
@@ -278,7 +297,10 @@ public class MessageNioServer extends Thread implements IOConnectionServer {
 			try{
 			    clientChannel.finishConnect();
 			}
-			catch(IOException ioe){ioe.printStackTrace();}
+                        catch(IOException ioe){
+                            if (asyncLog.isWarnEnabled())
+                                asyncLog.warn(ioe);
+                        }
 		    }
 		    // merge both calls?
 		    if( debug && asyncLog.isTraceEnabled() )
@@ -291,7 +313,8 @@ public class MessageNioServer extends Thread implements IOConnectionServer {
                         clientChannel.register(selector, SelectionKey.OP_READ, mnh);
                     }
                     catch (Exception ex) {
-                        ex.printStackTrace();
+                        if (asyncLog.isWarnEnabled())
+                            asyncLog.warn(ex);
                     }
 		}
 
@@ -319,7 +342,10 @@ public class MessageNioServer extends Thread implements IOConnectionServer {
 				    asyncLog.trace("MNS: Calling deadChannel.close()");
 				deadChannel.close();
 			    }
-			    catch(Exception e){e.printStackTrace();}
+                            catch(Exception e){
+                                if (asyncLog.isWarnEnabled())
+                                    asyncLog.warn(e);
+                            }
 			}
 		    }
 		}
@@ -354,7 +380,11 @@ public class MessageNioServer extends Thread implements IOConnectionServer {
 	    selector.close();
 	    server.close();
 	}
-	catch(IOException ioe){ioe.printStackTrace();}
+        catch(IOException ioe){
+            if( asyncLog.isWarnEnabled() )
+                asyncLog.warn(ioe);
+        }
+
     }
 
     public ConnectionAddress getAddress(){
@@ -389,7 +419,8 @@ public class MessageNioServer extends Thread implements IOConnectionServer {
         try {
             initiator = new NonBlockingConnectionInitiator(con, hb);
         } catch (Exception ex) {
-            ex.printStackTrace();
+            if (asyncLog.isWarnEnabled())
+                asyncLog.warn(ex);
             return;
         }
         startConnection(con.getSenderAddress(), me, connectionSet, con, initiator);
