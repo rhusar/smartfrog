@@ -61,8 +61,8 @@ public class LoadPropertyFileImpl extends FileUsingComponentImpl implements Load
      *                                  failure while starting
      * @throws java.rmi.RemoteException In case of network/rmi error
      */
-    public synchronized void sfStart() throws SmartFrogException, RemoteException {
-        super.sfStart();
+    public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
+        super.sfDeploy();
         bind(false,null);
         ComponentHelper helper = new ComponentHelper(this);
         String resource=sfResolve(ATTR_RESOURCE,(String)null,false);
