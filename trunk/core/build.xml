@@ -205,7 +205,7 @@ For more information: www.smartfrog.org
   <!-- =================================================================== -->
     <target name="cvsupdate" depends="cc-init"
       description="update CVS; needs cvs on the command line">
-      <exec executable="cvs" failonerror="false">
+      <exec executable="cvs" failonerror="true">
         <arg line="-r -z7 update -dP" />
       </exec>
     </target>
