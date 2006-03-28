@@ -42,6 +42,7 @@ import java.util.Iterator;
 import java.util.Locale;
 import java.util.Properties;
 import java.util.Vector;
+import org.smartfrog.sfcore.reference.Reference;
 
 /*
  * Some code derived from article by Pankaj Kumar (pankaj_kumar at hp.com):
@@ -196,7 +197,14 @@ public class AntProject {
                     getElement(newElement, (String) attribute, (ComponentDescription) value);
                 }
             } else {
-                // add attribute
+                // add attribute but relsove first if it is a reference.
+                if ((value instanceof Reference)&&(owner!=null)){
+                    try {
+                        value = owner.sfResolve((Reference)value);
+                    } catch (Exception ex) {
+                        log.error("Failed to resolve reference value for "+attribute+" in "+name+" task",ex);
+                    }
+                }
                 setAttribute(task, methods, attribute, value);
             }
         }
