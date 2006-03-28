@@ -57,7 +57,8 @@ public class TestConnection
 
             controller.deliverObject(obj, nodeData);
         } catch (Exception ex) {
-            ex.printStackTrace();
+            if( log.isWarnEnabled() )
+                log.warn(ex);
         }
     }
 
@@ -75,7 +76,8 @@ public class TestConnection
         try {
             super.send(msg.toWire());
         } catch (Exception ex) {
-            ex.printStackTrace();
+            if( log.isWarnEnabled() )
+                log.warn(ex);
         }
     }
 

@@ -59,7 +59,6 @@ public class AnubisPrim extends PrimImpl implements Prim {
             locator.registerProvider(provider);
         }
         catch (Exception ex) {
-            ex.printStackTrace();
             throw (SmartFrogException)SmartFrogException.forward(ex);
         }
     }
@@ -70,7 +69,6 @@ public class AnubisPrim extends PrimImpl implements Prim {
             provider.setValue("started");
         }
         catch (Exception ex) {
-            ex.printStackTrace();
             throw (SmartFrogException)SmartFrogException.forward(ex);
         }
     }

@@ -205,7 +205,6 @@ public class ConnectionSet extends CompoundImpl
             connectionView.add(me);
         }
         catch (Exception ex) {
-            ex.printStackTrace();
             throw SmartFrogException.forward(ex);
         }
 

@@ -130,12 +130,16 @@ public class MessageNioHandler implements SendingListener, IOConnection, WireSiz
 		}
 	    }
 	    catch(IOException ioe){
+                if( log.isWarnEnabled() ) {
+                    log.warn("Failed to read socket channel", ioe);
+                }
 		cleanup(key);
-		ioe.printStackTrace();
 		return null;
 	    }
             catch(NotYetConnectedException nycex) {
-                nycex.printStackTrace();
+                if( log.isWarnEnabled() ) {
+                    log.warn("Attempt to read a socket channel before it is connected", nycex);
+                }
                 return null;
             }
 
@@ -185,7 +189,8 @@ public class MessageNioHandler implements SendingListener, IOConnection, WireSiz
 	    }
 	    catch(IOException ioe){
 		cleanup(key);
-		ioe.printStackTrace();
+                if( debug && log.isWarnEnabled() )
+                    log.warn("MNH: IOException reading the object", ioe);
 		return null;
 	    }
 
@@ -307,7 +312,8 @@ public class MessageNioHandler implements SendingListener, IOConnection, WireSiz
 	    }
 	}
 	catch(IOException ioe){
-	    ioe.printStackTrace();
+            if( log.isWarnEnabled() )
+                log.warn(ioe);
 	    shutdown();
 	}
 
@@ -390,7 +396,7 @@ public class MessageNioHandler implements SendingListener, IOConnection, WireSiz
 			log.trace("MNH: SENDING_PENDING so go on wait for notification that writing is done");
 		    wait();
 		}
-		catch(InterruptedException ie){ie.printStackTrace();}
+		catch(InterruptedException ie){}
 	    }
 	    if (!sendingDoneOK){
 		if( debug && log.isTraceEnabled() )

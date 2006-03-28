@@ -63,7 +63,8 @@ public class HeartbeatComms extends MulticastComms implements HeartbeatCommsIntf
         try {
             obj = Wire.fromWire(bytes);
         } catch (Exception ex) {
-            ex.printStackTrace();
+            if( log.isErrorEnabled() )
+                log.error("Error reading wire form message", ex);
             return;
         }
 
@@ -128,7 +129,8 @@ public class HeartbeatComms extends MulticastComms implements HeartbeatCommsIntf
     public void sendHeartbeat(HeartbeatMsg msg) {
         try { super.sendObject(msg.toWire()); }
         catch (Exception ex) {
-            ex.printStackTrace();
+            if( log.isErrorEnabled() )
+                log.error("Error sending heartbeat message", ex);
         }
     }
 

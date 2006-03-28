@@ -93,7 +93,6 @@ public class SPLocatorAdapterImpl
             livenessChecker.start();
         }
         catch (Exception ex) {
-            ex.printStackTrace();
             throw (SmartFrogException)SmartFrogException.forward(ex);
         }
     }
@@ -102,7 +101,6 @@ public class SPLocatorAdapterImpl
             super.sfStart();
         }
         catch (Exception ex) {
-            ex.printStackTrace();
             throw (SmartFrogException)SmartFrogException.forward(ex);
         }
     }

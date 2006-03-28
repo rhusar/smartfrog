@@ -32,6 +32,8 @@ import org.smartfrog.services.anubis.partition.comms.MessageConnection;
 import org.smartfrog.services.anubis.partition.protocols.partitionmanager.ConnectionSet;
 import org.smartfrog.services.anubis.partition.util.Identity;
 import org.smartfrog.services.anubis.partition.wire.msg.HeartbeatMsg;
+import org.smartfrog.sfcore.logging.LogFactory;
+import org.smartfrog.sfcore.logging.LogSF;
 
 /**
  * When a connection request is received the MessageConnectionServer accepts it,
@@ -54,6 +56,7 @@ public class MessageConnectionServer
     private Identity me = null;
     private ConnectionSet connectionSet = null;
     private Set pending = new HashSet();
+    private LogSF log = LogFactory.getLog(this.getClass().toString());
 
     /**
      * Constructor - sets this class as the ConnectionFactory.
@@ -128,7 +131,8 @@ public class MessageConnectionServer
             initiator = new BlockingConnectionInitiator(id, con, connectionSet,
                 hb);
         } catch (Exception ex) {
-            ex.printStackTrace();
+            if( log.isErrorEnabled() )
+                log.error("Error initiating a blocking connection", ex);
             return;
         }
         initiator.setDaemon(true);

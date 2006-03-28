@@ -38,6 +38,10 @@ import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.reference.Reference;
+import org.smartfrog.sfcore.logging.LogFactory;
+import org.smartfrog.sfcore.logging.LogSF;
+import org.smartfrog.sfcore.logging.LogImplAsyncWrapper;
+
 
 public class SPLocatorImpl
         extends PrimImpl
@@ -78,6 +82,8 @@ public class SPLocatorImpl
     private Pinger           pinger;
     private ActiveTimeQueue  timers;
     private long             maxTransDelay;
+    private LogSF            syncLog;
+    private LogSF            asyncLog;
 
 
     /****************************************************/
@@ -93,6 +99,9 @@ public class SPLocatorImpl
     public void sfDeploy() throws SmartFrogException, RemoteException  {
         try {
             super.sfDeploy();
+
+            syncLog = this.sfGetApplicationLog();
+            asyncLog = new LogImplAsyncWrapper( syncLog );
 
             reference = sfCompleteName();
             long period = Config.getLong(this, "heartbeatInterval");
@@ -110,7 +119,6 @@ public class SPLocatorImpl
             }
         }
         catch (Exception ex) {
-            ex.printStackTrace();
             throw (SmartFrogException)SmartFrogException.forward(ex);
         }
     }
@@ -120,7 +128,6 @@ public class SPLocatorImpl
             registered();
         }
         catch (Exception ex) {
-            ex.printStackTrace();
             throw (SmartFrogException)SmartFrogException.forward(ex);
         }
     }
@@ -225,17 +232,20 @@ public class SPLocatorImpl
 
         } catch (UnknownSPLocatorException ex) {
 
-            ex.printStackTrace();
+            if( asyncLog.isWarnEnabled() )
+                asyncLog.warn(ex);
             pinger.terminate();
 
         } catch (RemoteException ex) {
 
-            ex.printStackTrace();
+            if( asyncLog.isWarnEnabled() )
+                asyncLog.warn(ex);
             pinger.terminate();
 
         } catch (AdapterTerminatedException ex) {
 
-            ex.printStackTrace();
+            if( asyncLog.isWarnEnabled() )
+                asyncLog.warn(ex);
             pinger.terminate();
 
         }

@@ -39,7 +39,6 @@ public class TestComp extends AnubisPrim implements Prim {
             System.out.println(myName + ": deployed");
         }
         catch (Exception ex) {
-            ex.printStackTrace();
             throw (SmartFrogException)SmartFrogException.forward(ex);
         }
     }
@@ -50,7 +49,6 @@ public class TestComp extends AnubisPrim implements Prim {
             System.out.println(myName + ": started");
         }
         catch (Exception ex) {
-            ex.printStackTrace();
             throw (SmartFrogException)SmartFrogException.forward(ex);
         }
     }
@@ -61,7 +59,7 @@ public class TestComp extends AnubisPrim implements Prim {
             super.sfTerminateWith(tr);
         }
         catch (Exception ex) {
-            ex.printStackTrace();
+
         }
     }
 }

@@ -69,7 +69,6 @@ public class ConnectionAddress implements Cloneable, WireSizes {
         try {
             inetAddress = InetAddress.getByAddress(address);
         } catch (UnknownHostException ex) {
-            ex.printStackTrace();
             return null;
         }
 
@@ -114,7 +113,6 @@ public class ConnectionAddress implements Cloneable, WireSizes {
             return addr;
         }
         catch (CloneNotSupportedException ex) {
-            ex.printStackTrace();
             return null;
         }
     }

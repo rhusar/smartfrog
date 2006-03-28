@@ -253,8 +253,8 @@ public class MessageConnectionImpl extends ConnectionComms implements IOConnecti
 
         if( messageConnection == null ) {
 
-             if( log.isInfoEnabled() )
-                 log.info(me + " shutdown unassigned message connection transport:" + reason, throwable);
+             if( log.isDebugEnabled() )
+                 log.debug(me + " shutdown unassigned message connection transport:" + reason, throwable);
 
         } else {
             messageConnection.logClose(reason, throwable);

@@ -106,8 +106,6 @@ public class Locator
         catch (Exception ex) {
             if( log != null )
                 log.error("failed to deploy", ex);
-            else
-                ex.printStackTrace();
             throw (SmartFrogException)SmartFrogException.forward(ex);
         }
     }

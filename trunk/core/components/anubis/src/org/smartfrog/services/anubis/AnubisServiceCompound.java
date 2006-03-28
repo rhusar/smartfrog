@@ -60,7 +60,6 @@ public class AnubisServiceCompound
             namedInSFProcess = true;
         }
         catch (Exception ex) {
-            ex.printStackTrace();
             throw (SmartFrogException)SmartFrogException.forward(ex);
         }
     }
@@ -75,7 +74,7 @@ public class AnubisServiceCompound
 
         if( namedInSFProcess )
             try { processCompound.sfRemoveAttribute(serviceName); }
-        catch(Exception ex) { ex.printStackTrace(); }
+        catch(Exception ex) {  }
 
         super.sfTerminateWith(terminationRecord);
     }
