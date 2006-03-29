@@ -56,15 +56,18 @@ public class ClusterDisplay
     // /////////////////////////////////////
     Hashtable serviceColours = new Hashtable();
     Integer getColour(String service) {
-        if (!serviceColours.contains(service)) {
+        System.out.println("Service: "+service);
+        if (!serviceColours.containsKey(service)) {
             serviceColours.put(service, nextColour());
         }
+        System.out.println("Service: "+service+" "+serviceColours.get(service));
+        System.out.println("Colors: "+serviceColours);
         return (Integer) serviceColours.get(service);
     }
     // /////////////////////////////////////
 
     public ClusterDisplay() throws RemoteException {
-        super();
+//        super();
     }
 
     public synchronized void sfDeploy() throws SmartFrogException,
