@@ -24,10 +24,14 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableModel;
 import java.awt.Insets;
+import java.awt.Font;
 
 
 
 public class ClusterPane extends JPanel {
+
+  int fontSize = 20;
+  int rowTableSize = fontSize+10;
 
   /* Inner classes */
   class ClusterDataModel extends DefaultTableModel implements TableModel {
@@ -154,10 +158,13 @@ public class ClusterPane extends JPanel {
       sorter = new TableSorter(dataModel);
 
       table = new JTable(sorter);
+      table.setFont(new Font("", Font.PLAIN, fontSize));
+      table.setRowHeight(rowTableSize);
 
       sorter.setTableHeader(table.getTableHeader());
 
-    setLayout(new BorderLayout());
+      setLayout(new BorderLayout());
+
 
     //        //Data Example
     Object[][] dataSet = new Object[0][0];
