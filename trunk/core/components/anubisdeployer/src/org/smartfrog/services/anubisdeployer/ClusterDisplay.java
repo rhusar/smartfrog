@@ -152,7 +152,7 @@ public class ClusterDisplay
         System.out.println("fininshed nodes, uopdating pane");
 
         try {
-            //clusterPane.setData(dataSet, headers);
+            clusterPane.setData(dataSet, headers);
         } catch (Exception ex) {
             ex.printStackTrace();
         }
