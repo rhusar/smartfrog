@@ -64,6 +64,7 @@ public class ClusterDisplay
     // /////////////////////////////////////
 
     public ClusterDisplay() throws RemoteException {
+        super();
     }
 
     public synchronized void sfDeploy() throws SmartFrogException,
