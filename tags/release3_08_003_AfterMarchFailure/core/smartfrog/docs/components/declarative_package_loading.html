@@ -1,0 +1,361 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta content="Apache Forrest" name="Generator">
+<meta name="Forrest-version" content="0.7">
+<meta name="Forrest-skin-name" content="pelt">
+<title>declarative_package_loading</title>
+<link type="text/css" href="../skin/basic.css" rel="stylesheet">
+<link media="screen" type="text/css" href="../skin/screen.css" rel="stylesheet">
+<link media="print" type="text/css" href="../skin/print.css" rel="stylesheet">
+<link type="text/css" href="../skin/profile.css" rel="stylesheet">
+<script src="../skin/getBlank.js" language="javascript" type="text/javascript"></script><script src="../skin/getMenu.js" language="javascript" type="text/javascript"></script><script src="../skin/fontsize.js" language="javascript" type="text/javascript"></script>
+<link rel="shortcut icon" href="../">
+</head>
+<body onload="init()">
+<script type="text/javascript">ndeSetTextSize();</script>
+<div id="top">
+<div class="breadtrail">
+<script src="../skin/breadcrumbs.js" language="JavaScript" type="text/javascript"></script>
+</div>
+<div class="header">
+<div class="grouplogo">
+<a href="http://www.SmartFrog.org/"><img class="logoImage" alt="SmartFrog" src="../images/group.png" title="SmartFrog"></a>
+</div>
+<div class="projectlogoA1">
+<a href="http://www.SmartFrog.org"><img class="logoImage" alt="" src="../images/frog.gif"></a>
+</div>
+<ul id="tabs">
+<li>
+<a class="base-not-selected" href="../index.html">Home</a>
+</li>
+<li>
+<a class="base-not-selected" href="../sfcore.html">SmartFrog Core</a>
+</li>
+<li>
+<a class="base-not-selected" href="../comp.html">Components</a>
+</li>
+<li>
+<a class="base-not-selected" href="../anttasks.html">Ant Tasks</a>
+</li>
+</ul>
+</div>
+</div>
+<div id="main">
+<div id="publishedStrip">
+<div id="level2tabs"></div>
+<script type="text/javascript"><!--
+document.write("<text>Last Published:</text> " + document.lastModified);
+//  --></script>
+</div>
+<div class="breadtrail">
+             
+             &nbsp;
+           </div>
+<div id="content">
+<h1>declarative_package_loading</h1>
+<div class="abstract"></div>
+<div id="minitoc-area">
+<ul class="minitoc">
+<li>
+<a href="#Declarative+Package+Loading">Declarative Package Loading </a>
+<ul class="minitoc">
+<li>
+<a href="#Steve+Loughran">Steve Loughran2004-09-29</a>
+</li>
+<li>
+<a href="#The+problem">The problem</a>
+</li>
+<li>
+<a href="#First+Solution%3A+Package+Components">First Solution: Package Components</a>
+</li>
+<li>
+<a href="#Versioning">Versioning</a>
+</li>
+<li>
+<a href="#The+Repository">The Repository</a>
+</li>
+<li>
+<a href="#Remote+Repository">Remote Repository</a>
+</li>
+<li>
+<a href="#Security">Security</a>
+</li>
+<li>
+<a href="#Integration+with+the+Java+component">Integration with the Java component</a>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+<a name="N1000C"></a><a name="Declarative+Package+Loading"></a>
+<h2 class="boxed">Declarative Package Loading </h2>
+<div class="section">
+<a name="N10011"></a><a name="Steve+Loughran"></a>
+<h3 class="boxed">Steve Loughran2004-09-29</h3>
+<div class="frame fixme">
+<div class="label">Fixme (openoffice-common2forrest template)</div>
+<div class="content">
+          The previous heading is more than one level below the heading before it. To remove this fixme, correct the structuring of your document.
+        </div>
+</div>
+<p class="Text body">This document discusses better ways of packaging JAR files for classloading in SmartFrog</p>
+<a name="N1001E"></a><a name="The+problem"></a>
+<h3 class="boxed">The problem</h3>
+<div class="frame fixme">
+<div class="label">Fixme (openoffice-common2forrest template)</div>
+<div class="content">
+          The previous heading is more than one level below the heading before it. To remove this fixme, correct the structuring of your document.
+        </div>
+</div>
+<p class="Text body">Add-on components often re-use common libraries. For example, Xerces and Xalan are ubiquitous, Ant can be used by Jetty, Tomcat and CruiseControl. To date, our components always include these libraries in their lib dir, under SCM, and rely on them being copied into the runtime at deploy time, or for the appropriate <span class="code inline">sfCodebase</span> URL to be generated during the build process.</p>
+<p class="Text body">What would be better would be if:</p>
+<ol>
+<li>
+<p class="P1">Every component could declare that they depend upon libraries supplied by other components</p>
+</li>
+<li>
+<p class="P1">The classpath of dependent components would be set up to refer to the locations of the packages they depend on.</p>
+</li>
+<li>
+<p class="P1">It would be nice if something could actually demand-locate JAR files in a network repository</p>
+</li>
+<li>
+<p class="P1">We could include version checking, to the best of our ability. </p>
+</li>
+</ol>
+<a name="N10041"></a><a name="First+Solution%3A+Package+Components"></a>
+<h3 class="boxed">First Solution: Package Components</h3>
+<div class="frame fixme">
+<div class="label">Fixme (openoffice-common2forrest template)</div>
+<div class="content">
+          The previous heading is more than one level below the heading before it. To remove this fixme, correct the structuring of your document.
+        </div>
+</div>
+<p class="Text body">A <span class="code inline">JavaPackage</span> component is a simple extension of Prim; it does </p>
+<p class="Code">
+<span class="code inline">JavaPackage extends Prim {</span>
+</p>
+<p class="Code">
+<span class="code inline"></span>
+</p>
+<p class="Code">
+<span class="code inline">sfClass "org.smartfrog.services.os.java.JavaPackageImpl";</span>
+</p>
+<p class="Code">
+<span class="code inline"></span>
+</p>
+<p class="Code">
+<span class="code inline">javaPackageSchema extends Schema {</span>
+</p>
+<p class="Code">
+<span class="code inline">//list of files, packages or URLs</span>
+</p>
+<p class="Code">
+<span class="code inline">source extends OptionalVector;</span>
+</p>
+<p class="Code">
+<span class="code inline">//a string classpath that is generated automatically</span>
+</p>
+<p class="Code">
+<span class="code inline">//classpath extends OptionalString;</span>
+</p>
+<p class="Code">
+<span class="code inline">//lazy attribute</span>
+</p>
+<p class="Code">
+<span class="code inline">//classpathList extends OptionalVector;</span>
+</p>
+<p class="Code">
+<span class="code inline">//classes to look for</span>
+</p>
+<p class="Code">
+<span class="code inline">requiredClasses extends OptionalVector;</span>
+</p>
+<p class="Code">
+<span class="code inline">requiredResources extends OptionalVector;</span>
+</p>
+<p class="Code">
+<span class="code inline">useCodebase extends Boolean;</span>
+</p>
+<p class="Code">
+<span class="code inline">}</span>
+</p>
+<p class="Code">
+<span class="code inline"></span>
+</p>
+<p class="Code">
+<span class="code inline">//we don't use the codebase</span>
+</p>
+<p class="Code">
+<span class="code inline">useCodebase false;</span>
+</p>
+<p class="Code">
+<span class="code inline"></span>
+</p>
+<p class="Code">
+<span class="code inline">}</span>
+</p>
+<p class="Text body">The health check for the component would verify that all classes named in the <span class="code inline">source</span> vector existed. We could use <span class="code inline">sfCodebase</span>, but that attribute must also contain the <span class="code inline">JavaPackage</span> implementation. </p>
+<p class="Text body">This component would be used in others</p>
+<p class="Code">
+<span class="code inline">XercesPackage extends JavaPackage {</span>
+</p>
+<p class="Code">
+<span class="code inline"></span><span class="code inline"><span class="code inline">source</span></span><span class="code inline"> "xerces.jar";</span>
+</p>
+<p class="Code">
+<span class="code inline"></span><span class="code inline"><span class="code inline">requiredClasses</span></span><span class="code inline"> ["org.apache.xerces.XercesImpl"];</span>
+</p>
+<p class="Code">
+<span class="code inline">//classpath: sfDeploy() instantiated attribute listing classes</span>
+</p>
+<p class="Code">
+<span class="code inline">}</span>
+</p>
+<p class="Code">
+<span class="code inline"></span>
+</p>
+<p class="Code">
+<span class="code inline">AxisPackage extends JavaPackage {</span>
+</p>
+<p class="Code">
+<span class="code inline"></span><span class="code inline"><span class="code inline">source </span></span><span class="code inline">["axis.jar",XercesPackage];</span>
+</p>
+<p class="Code">
+<span class="code inline"></span><span class="code inline"><span class="code inline">requiredClasses</span></span><span class="code inline"> </span><span class="code inline"><span class="code inline">["org.apache.axis.AxisEngine"];</span></span>
+</p>
+<p class="Code">
+<span class="code inline">}</span>
+</p>
+<p class="Code">
+<span class="code inline"></span>
+</p>
+<p class="Code">
+<span class="code inline">AxisEndpoint extends Prim {</span>
+</p>
+<p class="Code">
+<span class="code inline">sfCodebase [AxisPackage];</span>
+</p>
+<p class="Code">
+<span class="code inline">//...</span>
+</p>
+<p class="Code">
+<span class="code inline">}</span>
+</p>
+<p class="Text body"></p>
+<p class="Text body">The idea is that by referring to your dependent components, you could get your classpath set up right. But what if you want to use the default classpath? You may still have dependencies on code that must be there, and therefore still benefit from explicit declaration of dependence. Similarly, if we add version information to the declarations, we could use this to probe JAR files and verify their age.</p>
+<p class="Text body">This would need, at the very least, the classloader to be enhanced to handle a list as an alternative to a string. The handling logic of the list would be</p>
+<ol>
+<li>
+<p class="instruction">
+<span class="code inline">String</span> elements are treated as containing one or more URLs to content.</p>
+</li>
+<li>
+<p class="instruction">Elements that implement the <span class="code inline">File</span> interface have their <span class="code inline">absolutePath</span> attribute converted to a URL to a JAR file. Or we extend the interface to have a URL attribute and use that, which could be more flexible.</p>
+</li>
+<li>
+<p class="instruction">Elements that implement the Package interface, have their <span class="code inline">classpath</span> attribute read and the contents inserted into the list</p>
+</li>
+<li>
+<p class="instruction">Elements that are in fact lists themselves are recursively parsed.</p>
+</li>
+<li>
+<p class="instruction">Any other type of entry is an error.</p>
+</li>
+<li>
+<p class="instruction">All duplicate entries are eliminated; duplication is based on case-sensitive string comparison of URLs</p>
+</li>
+</ol>
+<p class="Text body">This would be enough to resolve paths, provided that package components had their classpath attribute set when needed. The default definition would mark it as lazy, with the appropriate consequences. This is to enable future extensions to actually set the classpath attribute with values other than the value of <span class="code inline">sfCodebase</span>, and do so during deployment. </p>
+<p class="Text body">This initial solution would do nothing to ensure that needed files were present on the machine, or up to date.</p>
+<a name="N1016B"></a><a name="Versioning"></a>
+<h3 class="boxed">Versioning</h3>
+<div class="frame fixme">
+<div class="label">Fixme (openoffice-common2forrest template)</div>
+<div class="content">
+          The previous heading is more than one level below the heading before it. To remove this fixme, correct the structuring of your document.
+        </div>
+</div>
+<p class="Text body">Could this solution support versioning?</p>
+<p class="Text body">It already supports it to the extent that one could explicitly bind a component to a package representing a particular file. If different packages with different files and names were declared -such as Xerces1, Xerces2, then components could declare their dependence upon the relevant package.</p>
+<p class="Text body">While this makes versioning explicit, it has the side effect of binding version options with the rest of the deployment/configuration data, which may or may not be what is desired. Given that one also tends to have a binding at build time, there is now duplication of information.</p>
+<p class="Text body">More important than the duplication, the configuration data may be scattered in many places; it may seem better to have a mapping file that explicitly mapped names of libraries used in a system to the versions that were needed. Of course, there is the extra challenge that a sufficiently large system will want to use different versions of libraries in different places, so the mapping file may need overriding. Perhaps the solution is just to integrate the version dependencies with the rest of the configuration data.</p>
+<p class="Text body">Let's assume that components include version dependencies in the declarations of which package they depend upon. To be precise, each package component includes an optional <span class="code inline">minVersion</span> attribute that declares the minimum version of a package which is to be supported, and a very optional <span class="code inline">maxVersion</span> attribute to declare the maximum that is allowed.</p>
+<a name="N1018A"></a><a name="The+Repository"></a>
+<h3 class="boxed">The Repository</h3>
+<div class="frame fixme">
+<div class="label">Fixme (openoffice-common2forrest template)</div>
+<div class="content">
+          The previous heading is more than one level below the heading before it. To remove this fixme, correct the structuring of your document.
+        </div>
+</div>
+<p class="Text body">If package declarations declare version information, then we can resolve the URLs of needed packages not through explicit path strings in the package, but via a repository component. This component would</p>
+<ol>
+<li>
+<p class="P3">Offer a mechanism for packages to locate a library that they need in a list of one or more local directories.</p>
+</li>
+<li>
+<p class="P3">Use introspection into JAR manifests to determine version information</p>
+</li>
+<li>
+<p class="P3">Support live update of the directories; polling or a <span class="code inline">touch()</span> operation would trigger a reload. </p>
+</li>
+</ol>
+<p class="Text body">With a repository, components (including the Java component) would declare their dependencies on packages, without the packages including a declaration of the location of their files. Instead, the repository would locate the files from the set of files it knew of. </p>
+<p class="Text body">A repository may also like to be able to delegate queries to one or more relay repositories.</p>
+<p class="Text body">We could integrate the repository with the SmartFrog command line, with a new parameter, <span class="code inline">-repository &lt;dir&gt;</span> which would take a path to a directory. Every occurrence on the command line would create a new repository, perhaps listed on the <span class="code inline">sfRepository</span> chain. </p>
+<p class="Text body">Repository support does seem to complicate the deployment process, as the repositories must be up and running before dependent components can be instantiated. </p>
+<p class="Text body"></p>
+<p class="Text body"></p>
+<a name="N101BE"></a><a name="Remote+Repository"></a>
+<h3 class="boxed">Remote Repository</h3>
+<div class="frame fixme">
+<div class="label">Fixme (openoffice-common2forrest template)</div>
+<div class="content">
+          The previous heading is more than one level below the heading before it. To remove this fixme, correct the structuring of your document.
+        </div>
+</div>
+<p class="Text body">A Remote Repository would be a component that actually retrieved JAR files from a remote repository, placed them somewhere visible, and returned the URLs to the files. This could be as simple as doing a lookup to determine the URL of the files on a public server, or it could actually download the files to the local file system.</p>
+<p class="Text body">URL lookup is the simplest; we could have an HTTP daemon that served up files, and listened to a request to look for a particular file, returning the URL of the aforementioned file, or an error code. We'd use Anubis as the means of locating daemons to query; it would also support an RMI interface for SmartFrog to use for the lookup.</p>
+<p class="Text body">A fetching repository would actually pull files from a remote system to a local cache; some simple timestamps/etag mechanism could be used to keep the cache up to date.</p>
+<p class="Text body">The Apache Maven repository system uses the 4-tuple of (project, artifact, version,extension) to determine what to download. A URL is built up of http://repository/project/artifact-version.extension and then timestamp-downloaded to the local filesystem. </p>
+<p class="Text body"></p>
+<a name="N101D4"></a><a name="Security"></a>
+<h3 class="boxed">Security</h3>
+<div class="frame fixme">
+<div class="label">Fixme (openoffice-common2forrest template)</div>
+<div class="content">
+          The previous heading is more than one level below the heading before it. To remove this fixme, correct the structuring of your document.
+        </div>
+</div>
+<p class="Text body">There should be no security implications, as when security is turned on, all JAR files have their signatures verified. It may be wise to disable remote repositories unless security is enabled, however.</p>
+<a name="N101DF"></a><a name="Integration+with+the+Java+component"></a>
+<h3 class="boxed">Integration with the Java component</h3>
+<div class="frame fixme">
+<div class="label">Fixme (openoffice-common2forrest template)</div>
+<div class="content">
+          The previous heading is more than one level below the heading before it. To remove this fixme, correct the structuring of your document.
+        </div>
+</div>
+<p class="Text body">While packaging and repository support would be useful during component deployment, where it would be very interesting would be when executing other Java programs, such as through the Java component. </p>
+<p class="Text body">This component will not need the packages until started, but it will then need all packages as local files, not as remote URLs, because it will need to pass them on the classpath of the new JVM. </p>
+<p class="Text body">This implies that we will need a way to get files from URLs. If the files a local file:// URLs, this is trivial; for remote files we will need to fetch them and store them locally. This argues in favour of a package retrieval component that retrieves all remote URLs in its classpath list, and creates a new classpath consisting entirely of local ones. </p>
+<p class="Text body"></p>
+</div>
+</div>
+<div class="clearboth">&nbsp;</div>
+</div>
+<div id="footer">
+<div class="lastmodified">
+<script type="text/javascript"><!--
+document.write("<text>Last Published:</text> " + document.lastModified);
+//  --></script>
+</div>
+<div class="copyright">
+        Copyright &copy;
+         2005 Hewlett Packard Company</div>
+</div>
+</body>
+</html>
