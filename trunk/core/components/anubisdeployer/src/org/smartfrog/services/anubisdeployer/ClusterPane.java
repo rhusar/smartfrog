@@ -162,7 +162,7 @@ public class ClusterPane extends JPanel {
       table.setRowHeight(rowTableSize);
 
       sorter.setTableHeader(table.getTableHeader());
-
+      sorter.setSortingStatus(0, sorter.DESCENDING);
       setLayout(new BorderLayout());
 
 
@@ -199,6 +199,7 @@ public class ClusterPane extends JPanel {
       ((ClusterDataModel)((TableSorter)table.getModel()).getTableModel()).setDataVector(dataSet, headers);
       ((TableSorter)table.getModel()).fireTableDataChanged();
       sorter.setTableHeader(table.getTableHeader());
+      sorter.setSortingStatus(0, sorter.DESCENDING);
       table = setTableRenderer(table.getModel());
       org.smartfrog.services.display.TableUtilities.setColumnWidths(table,new Insets(4, 4, 4, 4),false,false);
   }
