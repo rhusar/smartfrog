@@ -162,7 +162,7 @@ public class ClusterPane extends JPanel {
       table.setRowHeight(rowTableSize);
 
       sorter.setTableHeader(table.getTableHeader());
-      sorter.setSortingStatus(0, sorter.DESCENDING);
+      sorter.setSortingStatus(0, sorter.ASCENDING);
       setLayout(new BorderLayout());
 
 
