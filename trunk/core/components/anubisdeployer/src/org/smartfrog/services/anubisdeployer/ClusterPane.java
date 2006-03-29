@@ -23,25 +23,147 @@ import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableModel;
+import java.awt.Insets;
 
 
 
 public class ClusterPane extends JPanel {
 
-  private DefaultTableModel dataModel = new ClusterDataModel();
+  /* Inner classes */
+  class ClusterDataModel extends DefaultTableModel implements TableModel {
+      public ClusterDataModel() {
+          super();
+      }
+      public Class getColumnClass(int col) {
+          switch (col) {
+          case 0:
+            // Machine
+            return String.class;
+          case 1:
+            // role
+            return String.class;
+          case 2:
+            // cluster
+            return Integer.class;
+          default:
+            return Object.class;
+          }
+        }
 
-  private JTable table = new JTable(dataModel);
+        public boolean isCellEditable(int row, int col) {
+          switch (col) {
+          case 2:
+            return true;
+          default:
+            return false;
+          }
+        }
+
+        public void setValueAt(Object obj, int row, int col) {
+            switch (col) {
+                case 2:
+                    try {
+                        Integer integer = new Integer(obj.toString());
+                        super.setValueAt(integer, row, col);
+                    } catch (NumberFormatException ex) {
+                        ex.printStackTrace();
+                    }
+                    return ;
+                default:
+                    super.setValueAt(obj, row, col);
+                    return;
+            }
+        }
+  }
+
+  class ClusterCellRenderer extends JProgressBar implements TableCellRenderer {
+
+    Color[] colors;
+
+    private int[] limitValues;
+
+    public ClusterCellRenderer() {
+      super(JProgressBar.HORIZONTAL);
+      setBorderPainted(false);
+      setStringPainted(false);
+    }
+
+    public ClusterCellRenderer(int min, int max) {
+      super(JProgressBar.HORIZONTAL, min, max);
+      setBorderPainted(false);
+      this.setString("");
+    }
+
+    public Component getTableCellRendererComponent(JTable table, Object value,
+        boolean isSelected, boolean hasFocus, int row, int column) {
+      int n = 0;
+      if (!(value instanceof Number)) {
+        String str;
+        if (value instanceof String) {
+          str = (String) value;
+        } else {
+          str = value.toString();
+        }
+        try {
+          n = Integer.valueOf(str).intValue();
+        } catch (NumberFormatException ex) {
+        }
+      } else {
+        n = ((Number) value).intValue();
+      }
+      Color color = getColor(n);
+      if (color != null) {
+        setForeground(color);
+      }
+      setValue(this.getMaximum());
+      return this;
+    }
+
+    public void setColors(Color[] colors) {
+      this.colors = colors;
+    }
+
+    private Color getColor(int value) {
+      try {
+          return colors[value];
+      } catch (Exception ex) {
+          return null;
+      }
+    }
+
+  }
+
+  /* End inner classes */
+
+
+  private DefaultTableModel dataModel = null;
+
+  TableSorter sorter = null;
+
+  JTable table = null;
+
 
   private static final int MAX = 10;
 
   private static final int MIN = 0;
 
   public ClusterPane() {
+
+      dataModel = new ClusterDataModel();
+
+      sorter = new TableSorter(dataModel);
+
+      table = new JTable(sorter);
+
+      sorter.setTableHeader(table.getTableHeader());
+
     setLayout(new BorderLayout());
 
     //        //Data Example
     Object[][] dataSet = new Object[0][0];
-      /*{
+      /* Example...
+    Object[][] dataSet = new Object[][]
+       {
         {"cero", new Integer(0),new Integer(0)},
         {"uno", new Integer(76), new Integer(1)},
         {"dos", new Integer(2), new Integer(2)},
@@ -66,8 +188,12 @@ public class ClusterPane extends JPanel {
   }
 
   public void setData(Object[][] dataSet, Object[] headers){
-      ((ClusterDataModel)(table.getModel())).setDataVector(dataSet, headers);
+
+      ((ClusterDataModel)((TableSorter)table.getModel()).getTableModel()).setDataVector(dataSet, headers);
+      ((TableSorter)table.getModel()).fireTableDataChanged();
+      sorter.setTableHeader(table.getTableHeader());
       table = setTableRenderer(table.getModel());
+      org.smartfrog.services.display.TableUtilities.setColumnWidths(table,new Insets(4, 4, 4, 4),false,false);
   }
 
   private  JTable setTableRenderer(TableModel dm) {
@@ -104,110 +230,9 @@ public class ClusterPane extends JPanel {
         }
       }
     });
+
     return table;
-}
-
-}
-
-class ClusterDataModel extends DefaultTableModel implements TableModel {
-    public ClusterDataModel() {
-        super();
-    }
-    public Class getColumnClass(int col) {
-        switch (col) {
-        case 0:
-          // Machine
-          return String.class;
-        case 1:
-          // role
-          return Integer.class;
-        case 2:
-          // cluster
-          return Integer.class;
-        default:
-          return Object.class;
-        }
-      }
-
-      public boolean isCellEditable(int row, int col) {
-        switch (col) {
-        case 2:
-          return true;
-        default:
-          return false;
-        }
-      }
-
-      public void setValueAt(Object obj, int row, int col) {
-          switch (col) {
-              case 2:
-                  try {
-                      Integer integer = new Integer(obj.toString());
-                      super.setValueAt(integer, row, col);
-                  } catch (NumberFormatException ex) {
-                      ex.printStackTrace();
-                  }
-                  return ;
-              default:
-                  super.setValueAt(obj, row, col);
-                  return;
-          }
-      }
-}
-
-class ClusterCellRenderer extends JProgressBar implements TableCellRenderer {
-
-  Color[] colors;
-
-  private int[] limitValues;
-
-  public ClusterCellRenderer() {
-    super(JProgressBar.HORIZONTAL);
-    setBorderPainted(false);
-    setStringPainted(false);
-  }
-
-  public ClusterCellRenderer(int min, int max) {
-    super(JProgressBar.HORIZONTAL, min, max);
-    setBorderPainted(false);
-    setStringPainted(false);
-  }
-
-  public Component getTableCellRendererComponent(JTable table, Object value,
-      boolean isSelected, boolean hasFocus, int row, int column) {
-    int n = 0;
-    if (!(value instanceof Number)) {
-      String str;
-      if (value instanceof String) {
-        str = (String) value;
-      } else {
-        str = value.toString();
-      }
-      try {
-        n = Integer.valueOf(str).intValue();
-      } catch (NumberFormatException ex) {
-      }
-    } else {
-      n = ((Number) value).intValue();
-    }
-    Color color = getColor(n);
-    if (color != null) {
-      setForeground(color);
-    }
-    setValue(this.getMaximum());
-    return this;
-  }
-
-  public void setColors(Color[] colors) {
-    this.colors = colors;
-  }
-
-  private Color getColor(int value) {
-    try {
-        return colors[value];
-    } catch (Exception ex) {
-        return null;
-    }
   }
 
 }
+
