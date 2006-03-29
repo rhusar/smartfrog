@@ -115,6 +115,10 @@ ClusterDisplay extends Prim {
     clusterMonitor TBD;
     autoClean false;
     autoSave false;
+    nameDisplay "Cluster Display";
+    positionDisplay "S";
+    widthDisplay 800;
+    //heightDisplay 600;
 }
 
 ClusterSystem extends Compound {
