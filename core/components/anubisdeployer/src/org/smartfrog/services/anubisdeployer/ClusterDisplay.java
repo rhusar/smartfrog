@@ -98,10 +98,10 @@ public class ClusterDisplay
 
     public void clusterStatus(ComponentDescription d) throws RemoteException {
 
-        System.out.println("setting cluster status");
+        //System.out.println("setting cluster status");
         display.setTextScreen(d.toString());
 
-        System.out.println("creating cluster table");
+        //System.out.println("creating cluster table");
         int size = d.sfContext().size();
         Object[][] dataSet = new Object[size][3];
            /*{ {"cero", new Integer(0),
