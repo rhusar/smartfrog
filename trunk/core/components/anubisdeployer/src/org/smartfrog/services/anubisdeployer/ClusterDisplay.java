@@ -26,16 +26,42 @@ import java.rmi.RemoteException;
 import org.smartfrog.services.display.SFDisplay;
 
 import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import java.awt.BorderLayout;
+import java.util.Hashtable;
+import java.util.Enumeration;
 
 public class ClusterDisplay
     extends SFDisplay implements Prim, ClusterStatus {
 
     ClusterMonitor clusterMonitor;
     ClusterPane clusterPane;
+
+    // /////////////////////////////////////
+    String freeRoleString = "free";
+    // /////////////////////////////////////
+    //how to handle service colours...
+    // free = 0
+    // others: (index mod (maxC-1)) + 1
+    int colourIndex = 1;
+    Integer freeColour = new Integer(0);
+    Integer nextColour() {
+        colourIndex++;
+        if (colourIndex > 10) colourIndex = 1;
+        return new Integer(colourIndex);
+    }
+    // /////////////////////////////////////
+    Hashtable serviceColours = new Hashtable();
+    Integer getColour(String service) {
+        if (!serviceColours.contains(service)) {
+            serviceColours.put(service, nextColour());
+        }
+        return (Integer) serviceColours.get(service);
+    }
+    // /////////////////////////////////////
 
     public ClusterDisplay() throws RemoteException {
     }
@@ -67,9 +93,14 @@ public class ClusterDisplay
     }
 
     public void clusterStatus(ComponentDescription d) throws RemoteException {
+
+        System.out.println("setting cluster status");
         display.setTextScreen(d.toString());
-        //Data Example
-        Object[][] dataSet = new Object[][] { {"cero", new Integer(0),
+
+        System.out.println("creating cluster table");
+        int size = d.sfContext().size();
+        Object[][] dataSet = new Object[size][3];
+           /*{ {"cero", new Integer(0),
             new Integer(0)}, {"uno", new Integer(76), new Integer(1)}, {"dos",
             new Integer(2), new Integer(2)}, {"tres", new Integer(100),
             new Integer(3)}, {"cuatro", new Integer(100), new Integer(4)},
@@ -78,14 +109,54 @@ public class ClusterDisplay
             new Integer(7)}, {"ocho", new Integer(100), new Integer(8)},
             {"nueve", new Integer(100), new Integer(9)}, {"diez", new Integer(4),
             new Integer(10)}, {"once", new Integer(4), new Integer(11)}
-        };
+            };
+            */
 
-        Object[] headers = new Object[] {"Machine", "Role", "Cluster"};
+        Object[] headers = new Object[] {"Machine", "Role", "Service"};
+
+        //iterate through the cd, setting the host, the role, and the colour...
+        int index = 0;
+        for (Enumeration e = d.sfContext().keys(); e.hasMoreElements(); ) {
+            System.out.println("next node");
+            Object hostname = e.nextElement();
+            dataSet[index][0] = hostname;
+
+            ComponentDescription c = (ComponentDescription)d.sfContext().get(hostname);
+            Object role = freeRoleString;
+            Object colour = freeColour;
+
+            try {
+                System.out.println("checking reservation");
+
+                ComponentDescription reservations = (ComponentDescription) c.sfResolve("reservations", false);
+                if (reservations.sfContext().size() > 0) {
+                    System.out.println("found reservation");
+
+                    //pull out the first one, get service and role
+                    String serviceId = (String) reservations.sfAttributes().next();
+                    colour = getColour(serviceId.substring(0, serviceId.indexOf(':')));
+
+                    role = ((ComponentDescription) ((ComponentDescription)reservations
+                               .sfContext().get(serviceId))
+                               .sfContext().get("description"))
+                               .sfContext().get("role");
+                } // else leave as default free swettings
+            } catch (SmartFrogResolutionException e1) {
+                //shouldn't happen...
+            }
+
+            dataSet[index][1] = role;
+            dataSet[index][2] = colour;
+            index++;
+        }
+        System.out.println("fininshed nodes, uopdating pane");
 
         try {
-            clusterPane.setData(dataSet, headers);
+            //clusterPane.setData(dataSet, headers);
         } catch (Exception ex) {
             ex.printStackTrace();
         }
+        System.out.println("done updating the pane");
+
     }
 }
