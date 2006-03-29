@@ -40,7 +40,8 @@ public class ClusterPane extends JPanel {
     setLayout(new BorderLayout());
 
     //        //Data Example
-    Object[][] dataSet = new Object[][] {
+    Object[][] dataSet = new Object[0][0];
+      /*{
         {"cero", new Integer(0),new Integer(0)},
         {"uno", new Integer(76), new Integer(1)},
         {"dos", new Integer(2), new Integer(2)},
@@ -54,6 +55,7 @@ public class ClusterPane extends JPanel {
         {"diez", new Integer(4),new Integer(10)},
         {"once", new Integer(4), new Integer(11)}
     };
+    */
     Object[] headers = new Object[] {"Machine", "Role", "Cluster"};
 
     setData(dataSet,headers);
