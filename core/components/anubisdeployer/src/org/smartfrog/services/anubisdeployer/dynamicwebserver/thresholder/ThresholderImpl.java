@@ -243,11 +243,11 @@ public class ThresholderImpl extends CompoundImpl implements Thresholder,
                 String host = ((InetAddress)deployed.sfResolve("sfHost", false)).getCanonicalHostName();
                 childServerMapping.put(deployed, host);
 
-                System.out.println("adding alancer bhost " + host);
+                //System.out.println("adding alancer bhost " + host);
                 if (balancer != null) {
-                    System.out.println("really adding alancer bhost " + host);
+                    //System.out.println("really adding alancer bhost " + host);
                     balancer.addServer(host);
-                    System.out.println("done adding alancer bhost " + host);                   
+                    //System.out.println("done adding alancer bhost " + host);                   
 
                 }
                 logger.logOptional(name, "started instance");
@@ -255,7 +255,7 @@ public class ThresholderImpl extends CompoundImpl implements Thresholder,
             } catch (Exception e) {
                 logger.logOptional(name,
                         "help... exception in starting instance");
-                e.printStackTrace();
+                //e.printStackTrace();
 
                 try {
                     deployed.sfDetachAndTerminate(TerminationRecord.normal(null));
