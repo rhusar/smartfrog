@@ -117,7 +117,7 @@ public class ClusterDisplay
         //iterate through the cd, setting the host, the role, and the colour...
         int index = 0;
         for (Enumeration e = d.sfContext().keys(); e.hasMoreElements(); ) {
-            System.out.println("next node");
+            //System.out.println("next node");
             Object hostname = e.nextElement();
             dataSet[index][0] = hostname;
 
@@ -126,11 +126,11 @@ public class ClusterDisplay
             Object colour = freeColour;
 
             try {
-                System.out.println("checking reservation");
+                //System.out.println("checking reservation");
 
                 ComponentDescription reservations = (ComponentDescription) c.sfResolve("reservations", false);
                 if (reservations.sfContext().size() > 0) {
-                    System.out.println("found reservation");
+                    //System.out.println("found reservation");
 
                     //pull out the first one, get service and role
                     String serviceId = (String) reservations.sfAttributes().next();
@@ -149,14 +149,14 @@ public class ClusterDisplay
             dataSet[index][2] = colour;
             index++;
         }
-        System.out.println("fininshed nodes, uopdating pane");
+        //System.out.println("fininshed nodes, uopdating pane");
 
         try {
             clusterPane.setData(dataSet, headers);
         } catch (Exception ex) {
             ex.printStackTrace();
         }
-        System.out.println("done updating the pane");
+        //System.out.println("done updating the pane");
 
     }
 }
