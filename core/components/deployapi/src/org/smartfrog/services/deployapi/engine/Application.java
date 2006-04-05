@@ -90,6 +90,9 @@ public class Application implements WSRPResourceSource {
      */
     private File descriptorFile;
 
+    /**
+     * Any JSDL file that came with it
+     */
     private File jsdlFile;
 
     /**

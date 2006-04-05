@@ -27,6 +27,7 @@ import org.mortbay.http.HttpServer;
 import org.mortbay.jetty.servlet.ServletHttpContext;
 import org.smartfrog.services.jetty.contexts.JettyServletContextIntf;
 import org.smartfrog.services.www.ApplicationServerContext;
+import org.smartfrog.services.www.WebApplicationHelper;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
@@ -40,7 +41,7 @@ import java.rmi.RemoteException;
  * This helper class contains all the binding policy for use in contexts and
  * servlets. Date: 21-Jun-2004 Time: 22:02:20
  */
-public class JettyHelper extends ComponentHelper {
+public class JettyHelper extends WebApplicationHelper {
 
 
     /**
@@ -302,63 +303,6 @@ public class JettyHelper extends ComponentHelper {
             }
             removeListener(listener);
         }
-    }
-
-    /**
-     * strip any trailing * from a path and give the base bit up to where that
-     * began.
-     *
-     * @param path
-     * @return the stripped path
-     */
-    public static String deregexpPath(String path) {
-        String result;
-        int star = path.indexOf('*');
-        if (star < 0) {
-            return path;
-        }
-        if (star == 0) {
-            return "/";
-        }
-        result = path.substring(0, star - 1);
-        return result;
-    }
-
-    /**
-     * Concatenate two paths together, inserting a '/' if needed, and ensuring
-     * that there is no '//' at the join.
-     *
-     * @param path1
-     * @param path2
-     * @return concatenated paths
-     */
-    public static String concatPaths(String path1, String path2) {
-        StringBuffer buffer = new StringBuffer(path1.length() +
-                path2.length() +
-                1);
-        boolean endsWithSlash = path1.endsWith("/");
-        boolean beginsWithSlash = path2.startsWith("/");
-        buffer.append(path1);
-        if (!endsWithSlash) {
-            buffer.append('/');
-        }
-        if (beginsWithSlash) {
-            buffer.append(path2.substring(1));
-        } else {
-            buffer.append(path2);
-        }
-        return buffer.toString();
-    }
-
-    /**
-     * Get the ipaddrs of the local machine
-     *
-     * @return the IP address that we are deployed on
-     */
-    public String getIpAddress() throws RemoteException {
-        InetAddress deployedHost = getOwner().sfDeployedHost();
-        String hostAddress = deployedHost.getHostAddress();
-        return hostAddress;
     }
 
 

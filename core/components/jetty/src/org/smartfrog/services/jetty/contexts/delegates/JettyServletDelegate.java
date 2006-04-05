@@ -6,6 +6,7 @@ import org.smartfrog.services.jetty.JettyHelper;
 import org.smartfrog.services.www.ServletComponent;
 import org.smartfrog.services.www.ServletContextComponentDelegate;
 import org.smartfrog.services.www.ServletContextIntf;
+import org.smartfrog.services.www.WebApplicationHelper;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLivenessException;
 import org.smartfrog.sfcore.logging.Log;
@@ -96,7 +97,7 @@ public class JettyServletDelegate
 
             //update our path attribute
             String ancestorPath = context.getAbsolutePath();
-            absolutePath = JettyHelper.deregexpPath(JettyHelper.concatPaths(
+            absolutePath = WebApplicationHelper.deregexpPath(JettyHelper.concatPaths(
                     ancestorPath,
                     pathSpec));
             owner.sfReplaceAttribute(ServletContextIntf.ATTR_ABSOLUTE_PATH,
@@ -104,7 +105,7 @@ public class JettyServletDelegate
 
             //extract mappings
             Vector mappings = null;
-            mappings = (Vector) owner.sfResolve(ATTR_MAPPINGS, mappings, false);
+            mappings = owner.sfResolve(ATTR_MAPPINGS, mappings, false);
             if (mappings != null) {
                 Iterator it = mappings.iterator();
                 while (it.hasNext()) {
