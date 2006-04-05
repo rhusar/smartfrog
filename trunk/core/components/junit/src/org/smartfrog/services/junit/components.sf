@@ -82,6 +82,7 @@ TestSuite extends Prim {
  */
 JUnitTestSuite extends TestSuite {
     junitTestSuiteSchema extends JUnitTestSuiteSchema;
+    name LAZY package;
     //name "JUnit";
     sfClass "org.smartfrog.services.junit.JUnitTestSuiteImpl";
 }

@@ -28,6 +28,7 @@ import org.smartfrog.services.jetty.SFJetty;
 import org.smartfrog.services.www.ServletComponent;
 import org.smartfrog.services.www.ServletContextComponentDelegate;
 import org.smartfrog.services.www.ServletContextIntf;
+import org.smartfrog.services.www.WebApplicationHelper;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.reference.Reference;
@@ -87,7 +88,7 @@ public class DelegateServletContext extends DelegateApplicationContext implement
         //context path attribute
         contextPath = declaration.sfResolve(contextPathRef, (String)null, true);
         resourceBase = declaration.sfResolve(resourceBaseRef, (String) null, true);
-        absolutePath = JettyHelper.deregexpPath(contextPath);
+        absolutePath = WebApplicationHelper.deregexpPath(contextPath);
         declaration.sfReplaceAttribute(ATTR_ABSOLUTE_PATH, absolutePath);
         //hostnames
         String address = jettyHelper.getIpAddress();
@@ -97,17 +98,21 @@ public class DelegateServletContext extends DelegateApplicationContext implement
         if (!new File(resourceBase).exists()) {
             resourceBase = jettyhome.concat(resourceBase);
         }
-        //classpath stup
+        //classpath stuff.
+        //REVISIT: what does this bring to the table?
         String classPath = declaration.sfResolve(classPathRef, (String) null, false);
         if (classPath != null) {
             if (!new File(classPath).exists()) {
-                classPath = jettyhome.concat(classPath);
+                classPath = jettyhome+classPath;
             }
+            log.info("Jetty classpath="+classPath);
+            context.setClassPath(classPath);
         }
         //configure the context
-        context.setContextPath(contextPath);
+        log.debug("Jetty resource base ="+resourceBase);
         context.setResourceBase(resourceBase);
-        context.setClassPath(classPath);
+        log.debug("context path =" + contextPath);
+        context.setContextPath(contextPath);
         context.addHandler(new ResourceHandler());
     }
 
