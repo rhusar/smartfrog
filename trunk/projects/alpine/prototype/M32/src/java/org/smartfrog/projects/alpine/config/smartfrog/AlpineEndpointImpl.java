@@ -23,8 +23,8 @@ package org.smartfrog.projects.alpine.config.smartfrog;
 import org.smartfrog.projects.alpine.core.AlpineContext;
 import org.smartfrog.projects.alpine.core.ContextConstants;
 import org.smartfrog.projects.alpine.core.EndpointContext;
-import org.smartfrog.services.jetty.JettyHelper;
 import org.smartfrog.services.www.ApplicationServerContext;
+import org.smartfrog.services.www.WebApplicationHelper;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLivenessException;
 import org.smartfrog.sfcore.prim.Liveness;
@@ -72,9 +72,16 @@ public class AlpineEndpointImpl extends PrimImpl implements AlpineEndpoint {
         handlers = sfResolve(ATTR_HANDLER_LIST, handlers, true);
         Prim servlet = sfResolve(ATTR_SERVLET, (Prim) null, true);
         String servletPath = servlet.sfResolve(ApplicationServerContext.ATTR_ABSOLUTE_PATH, "", true);
-        JettyHelper jettyHelper = new JettyHelper(this);
-        String absolutePath = jettyHelper.concatPaths(servletPath, path);
+        WebApplicationHelper helper = new WebApplicationHelper(this);
+        String absolutePath = helper.concatPaths(servletPath, path);
         sfReplaceAttribute(ApplicationServerContext.ATTR_ABSOLUTE_PATH, absolutePath);
+/*
+        TODO: work out our full URL.
+        String url;
+        sfReplaceAttribute(ContextConstants.ATTR_URL, url);
+*/
+
+
     }
 
     /**
@@ -99,10 +106,12 @@ public class AlpineEndpointImpl extends PrimImpl implements AlpineEndpoint {
         List handlerList = new ArrayList(handlers.size());
         for (Object o : handlers) {
             String classname;
+            //if its a prim, get its classname attribute
             if (o instanceof Prim) {
                 Prim prim = (Prim) o;
                 classname = prim.sfResolve(AlpineHandler.ATTR_CLASSNAME, "", true);
             } else {
+                //otherwise, assume its a classname
                 classname = o.toString();
             }
             handlerList.add(classname);

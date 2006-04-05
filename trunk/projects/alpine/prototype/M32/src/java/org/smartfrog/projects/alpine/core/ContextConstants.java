@@ -21,7 +21,7 @@
 package org.smartfrog.projects.alpine.core;
 
 /**
- 
+ * Constants. These are here to decouple the toolkit from Smartfrog
  */
 public interface ContextConstants {
 
@@ -71,4 +71,10 @@ public interface ContextConstants {
      * {@value}
      */
     public static final String ATTR_FACTORY = "factory";
+
+    /**
+     * URL used to serve from
+     * {@value}
+     */
+    public static final String ATTR_URL = "url";
 }

@@ -23,15 +23,24 @@ package org.smartfrog.test.system.projects.alpine.remote;
 import junit.framework.TestCase;
 import com.meterware.httpunit.WebConversation;
 import com.meterware.httpunit.WebResponse;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
- 
+
  */
 public class PostTest extends RemoteTestBase {
 
+    Log log= LogFactory.getLog(PostTest.class);
+
+    public PostTest(String name) {
+        super(name);
+    }
+
     public void testGet() throws Exception {
         WebConversation wc = new WebConversation();
-        WebResponse wr = wc.getResponse(getEndpoint());
-
+        String endpoint = getEndpoint();
+        log.debug("Getting from "+endpoint);
+        WebResponse wr = wc.getResponse(endpoint);
     }
 }

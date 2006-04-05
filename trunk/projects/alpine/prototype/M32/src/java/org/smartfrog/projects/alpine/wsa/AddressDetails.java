@@ -71,6 +71,11 @@ public class AddressDetails implements Validatable, AddressingConstants {
     public AddressDetails() {
     }
 
+    /**
+     * Parse a set of address details from a message; supply the xmlns of the address expected
+     * @param message message to parse
+     * @param namespace namespace of addresses
+     */
     public AddressDetails(MessageDocument message, String namespace) {
         read(message, namespace);
     }

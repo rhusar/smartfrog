@@ -87,18 +87,7 @@ AlpineServletOnJetty extends AlpineServlet  {
 }
 
 
-    //this is our endpoint
-EchoEndpoint extends AlpineEndpoint {
-    name "echo";
-    handlers [
-     "org.smartfrog.projects.alpine.handlers.EchoHandler";
-     ]
-}
-    
 
-MustUnderstandChecker extends AlpineHandler {
-  classname "org.smartfrog.projects.alpine.handlers.MustUnderstandChecker";
-}
 
 
 

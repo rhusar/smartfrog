@@ -264,4 +264,44 @@ public final class AlpineEPR implements Validatable, AddressingConstants, XomSou
         }
     }
 
+    /**
+     * Returns a hash code value for the object. This is derived from the address if it is
+     * set, or our own address if not.
+     * Changing the address breaks the hash code immutability rule, loses us in hash tables, etc, etc.
+     * @return a hash code value for this object.
+     * @see Object#equals(Object)
+     * @see java.util.Hashtable
+     */
+    public int hashCode() {
+        if(getAddress()!=null) {
+            return address.hashCode();
+        } else {
+            return super.hashCode();
+        }
+    }
+
+    /**
+     * Indicates whether some other object is "equal to" this one.
+     * Only the address field is used in this test, and if it is  null, it is considered
+     * equal to any other EPR with no address
+     * <p/>
+     * The <code>equals</code> method implements an equivalence relation
+     * on non-null object references:
+     * Note that it is generally necessary to override the <tt>hashCode</tt>
+     * method whenever this method is overridden, so as to maintain the
+     * general contract for the <tt>hashCode</tt> method, which states
+     * that equal objects must have equal hash codes.
+     *
+     * @param obj the reference object with which to compare.
+     * @return <code>true</code> if this object is the same as the obj
+     *         argument; <code>false</code> otherwise.
+     * @see #hashCode()
+     * @see java.util.Hashtable
+     */
+    public boolean equals(Object obj) {
+        AlpineEPR that=(AlpineEPR) obj;
+        return
+                address ==null? that.address==null : address.equals(that.address);
+
+    }
 }

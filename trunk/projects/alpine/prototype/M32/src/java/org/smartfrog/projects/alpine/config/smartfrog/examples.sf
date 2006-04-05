@@ -27,9 +27,9 @@
 EchoEndpoint extends AlpineEndpoint {
     name "echo";
     handlers [
-      MustUnderstandChecker:classname;
-      EchoHandler:classname;
-    ]
+      MustUnderstandChecker:classname,
+      EchoHandler:classname
+    ];
 }
 
 

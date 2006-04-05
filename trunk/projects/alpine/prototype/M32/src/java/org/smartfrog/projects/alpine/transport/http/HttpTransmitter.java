@@ -20,21 +20,19 @@
 package org.smartfrog.projects.alpine.transport.http;
 
 import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.HttpStatus;
-import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.RequestEntity;
-import org.apache.commons.httpclient.methods.InputStreamRequestEntity;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.smartfrog.projects.alpine.transport.Transmission;
 import org.smartfrog.projects.alpine.wsa.AddressDetails;
 import org.smartfrog.projects.alpine.core.MessageContext;
 import org.smartfrog.projects.alpine.om.soap11.MessageDocument;
-import org.smartfrog.projects.alpine.faults.AlpineRuntimeException;
-import org.smartfrog.projects.alpine.http.HttpBinder;
+import org.smartfrog.projects.alpine.om.soap11.SoapMessageParser;
+import org.smartfrog.projects.alpine.http.HttpConstants;
+import org.xml.sax.SAXException;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.ServletOutputStream;
@@ -43,11 +41,10 @@ import java.io.File;
 import java.io.OutputStream;
 import java.io.FileOutputStream;
 import java.io.BufferedOutputStream;
-import java.io.FileInputStream;
 import java.io.InputStream;
-import java.io.FileNotFoundException;
 
 import nu.xom.Serializer;
+import nu.xom.ParsingException;
 
 /**
  * Implement Http using commons-httpclient
@@ -85,10 +82,10 @@ public class HttpTransmitter {
         log.debug("Posting to "+destination);
         PostMethod method= new ProgressingPostMethod(destination);
 
-        //TODO: fill in the details
+        //fill in the details
         //1. get the message into a byte array
         //2. add it
-        //3. add files?
+        //3. TODO: add files?
         File outputFile=null;
         OutputStream outToFile=null;
         RequestEntity re = null;
@@ -102,7 +99,7 @@ public class HttpTransmitter {
                     serializer.flush();
                     outToFile.flush();
                     re=new ProgressiveFileUploadRequestEntity(tx, request, outputFile,
-                            HttpBinder.CONTENT_TYPE_TEXT_XML,
+                            HttpConstants.CONTENT_TYPE_TEXT_XML,
                             tx.getUploadFeedback(), BLOCKSIZE);
                     method.setRequestEntity(re);
                 } finally {
@@ -125,14 +122,36 @@ public class HttpTransmitter {
                     throw new HttpTransportFault(destination,method);
                 }
                 String contentType=getResponseContentType(method);
+
+                if (!HttpConstants.CONTENT_TYPE_TEXT_XML.equals(contentType)) {
+                    HttpTransportFault fault = new HttpTransportFault(destination, method,
+                    "Wrong content type: expected "
+                            + HttpConstants.CONTENT_TYPE_TEXT_XML
+                            + " but got " + contentType);
+                    throw fault;
+                }
                 InputStream responseStream = method.getResponseBodyAsStream();
 
+                SoapMessageParser parser=tx.getContext().createParser();
+
+                MessageDocument response = parser.parseStream(responseStream);
+                tx.getContext().setResponse(response);
+
                 // Read the response body.
-                byte[] responseBody = method.getResponseBody();
+                //byte[] responseBody = method.getResponseBody();
+
+                // Turn it in to XML
+
+
+                // if it a fault, turn it into an exception.
 
 
             } catch(IOException ioe) {
                 throw new HttpTransportFault(destination, ioe);
+            } catch (SAXException e) {
+                throw new HttpTransportFault(destination, e);
+            } catch (ParsingException e) {
+                throw new HttpTransportFault(destination, e);
             } finally {
                 method.releaseConnection();
             }
@@ -167,4 +186,6 @@ public class HttpTransmitter {
             return content.getValue();
         }
     }
+
+
 }
