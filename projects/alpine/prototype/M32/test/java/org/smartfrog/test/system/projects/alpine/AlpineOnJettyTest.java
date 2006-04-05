@@ -25,7 +25,7 @@ import org.smartfrog.test.SmartFrogTestBase;
 /**
  
  */
-public class AlpineOnJettyTest extends SmartFrogTestBase{
+public class AlpineOnJettyTest extends SmartFrogTestBase {
 
     /**
      * Construct the base class, extract hostname and test classes directory from the JVM paramaters -but do not
@@ -36,6 +36,9 @@ public class AlpineOnJettyTest extends SmartFrogTestBase{
     public AlpineOnJettyTest(String name) {
         super(name);
     }
-    
+
+    public void testNothing() throws Exception {
+
+    }
     
 }

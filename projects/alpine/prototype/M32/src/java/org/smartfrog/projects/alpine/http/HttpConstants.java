@@ -24,6 +24,7 @@ package org.smartfrog.projects.alpine.http;
  * @author Jacek Kopecky
  */
 public final class HttpConstants {
+    public static final String CONTENT_TYPE_TEXT_XML = "text/xml";
 
 
     private HttpConstants() {

@@ -32,6 +32,11 @@ import java.util.concurrent.Callable;
 
 public class Transmission implements Callable {
 
+
+    public Transmission(MessageContext context) {
+        this.context = context;
+    }
+
     private MessageContext context;
 
     /**
@@ -61,9 +66,11 @@ public class Transmission implements Callable {
         return context;
     }
 
+/*
     public void setContext(MessageContext context) {
         this.context = context;
     }
+*/
 
     public ProgressFeedback getUploadFeedback() {
         return uploadFeedback;

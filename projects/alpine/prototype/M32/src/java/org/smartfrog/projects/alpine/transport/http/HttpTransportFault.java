@@ -36,13 +36,22 @@ public class HttpTransportFault extends AlpineRuntimeException {
 
     private String response;
 
-    private HttpMethod method;
 
     private static Log log = LogFactory.getLog(HttpTransmitter.class);
 
-    public HttpTransportFault(String destination,HttpMethod method) {
-        super("Error when communicating with "+destination);
-        this.method=method;
+    public HttpTransportFault(String destination, HttpMethod method) {
+        super("Error when communicating with " + destination);
+        bind(method);
+    }
+
+    public HttpTransportFault(String destination, HttpMethod method,String details) {
+        super("Error when communicating with "+destination
+                +"\n"
+                +details);
+        bind(method);
+    }
+
+    private void bind(HttpMethod method) {
         status=method.getStatusCode();
         try {
             response = method.getResponseBodyAsString();

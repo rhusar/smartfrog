@@ -59,7 +59,7 @@ AlpineServerOnJetty extends Compound {
     servlets extends ServletContext {
         
         resourceBase "./tmp";
-        contextPath "/servlets/";
+        contextPath "/";
         server LAZY jettyServer;
 
      }
@@ -78,7 +78,7 @@ server extends AlpineServerOnJetty {
     home LAZY PROPERTY java.io.tmpdir;
 
     //this is our endpoint
-    endpoint extends EchoEndpoint {
+    echo extends EchoEndpoint {
         name "echoEndpoint";
         path "/echo/";
         servlet LAZY alpineServlet;
@@ -87,23 +87,23 @@ server extends AlpineServerOnJetty {
     
 
     //fetch the page every so often, just to see that we are happy
-    ping extends LivenessPage {
-        sfProcessName "newVM";
-        enabled PARENT:liveness;
+    liveness extends LivenessPage {
+        enabled PARENT:livenessEnabled;
         host LAZY PARENT:servlets:ipaddr;
         port PARENT:port;
-        page LAZY endpoint:absolutePath;
+        page LAZY echo:absolutePath;
         checkFrequency 1;
     }
     
-    liveness true;
+    livenessEnabled true;
 }
 
 
 sfConfig extends server {
 
 
-    port 5050;
+    port 5051;
 
-    liveness false;
+    livenessEnabled false;
 }
+

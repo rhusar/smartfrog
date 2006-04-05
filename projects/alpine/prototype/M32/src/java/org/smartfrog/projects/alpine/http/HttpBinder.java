@@ -25,17 +25,14 @@ import org.smartfrog.projects.alpine.core.MessageContext;
 import org.smartfrog.projects.alpine.om.soap11.MessageDocument;
 import org.smartfrog.projects.alpine.om.soap11.SoapMessageParser;
 import org.smartfrog.projects.alpine.xmlutils.ResourceLoader;
-import org.smartfrog.projects.alpine.faults.AlpineRuntimeException;
 import org.smartfrog.projects.alpine.faults.ServerException;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.ServletOutputStream;
 import java.util.Enumeration;
-import java.io.PrintWriter;
 import java.io.IOException;
 
-import sun.net.www.protocol.http.HttpURLConnection;
 import nu.xom.Serializer;
 
 /**
@@ -49,7 +46,6 @@ public class HttpBinder {
     private EndpointContext endpointContext;
     public static final String ERROR_NO_SOAPACTION = "No SOAPAction";
     public static final String ERROR_UNSUPPORTED_CONTENT = "Unsupported content type: ";
-    public static final String CONTENT_TYPE_TEXT_XML = "text/xml";
 
     public HttpBinder(EndpointContext endpointContext) {
         this.endpointContext = endpointContext;
@@ -85,8 +81,7 @@ public class HttpBinder {
         int responseCode=message.isFault()?
                 HttpServletResponse.SC_OK:HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
         response.setStatus(responseCode);
-        response.setContentType(CONTENT_TYPE_TEXT_XML);
-        response.setContentType("UTF-8");
+        response.setContentType(HttpConstants.CONTENT_TYPE_TEXT_XML);
         //PrintWriter writer = response.getWriter();
         ServletOutputStream out=response.getOutputStream();
         Serializer serializer=new Serializer(out);
@@ -127,7 +122,7 @@ public class HttpBinder {
     
     public void validateContentType(HttpServletRequest request) {
         String contentType = request.getContentType();
-        if(!CONTENT_TYPE_TEXT_XML.equals(contentType)) {
+        if(!HttpConstants.CONTENT_TYPE_TEXT_XML.equals(contentType)) {
             throw new ServerException(ERROR_UNSUPPORTED_CONTENT+contentType);
         }
     }

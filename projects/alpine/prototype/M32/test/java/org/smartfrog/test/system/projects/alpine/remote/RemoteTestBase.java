@@ -23,28 +23,69 @@ package org.smartfrog.test.system.projects.alpine.remote;
 import junit.framework.TestCase;
 
 import java.net.URL;
+import java.net.MalformedURLException;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+import java.util.concurrent.ExecutionException;
+
+import org.smartfrog.projects.alpine.wsa.AlpineEPR;
+import org.smartfrog.projects.alpine.wsa.AddressDetails;
+import org.smartfrog.projects.alpine.transport.DirectExecutor;
+import org.smartfrog.projects.alpine.transport.TransmitQueue;
+import org.smartfrog.projects.alpine.transport.Transmission;
+import org.smartfrog.projects.alpine.core.MessageContext;
 
 /**
- 
+ * Test base for remote alpine client stuff.
  */
 public abstract class RemoteTestBase extends TestCase  {
-    
-    String endpoint;
-    URL endpointURL;
+
+    protected String endpoint;
+    protected URL endpointURL;
+
+    protected AlpineEPR epr;
+    protected TransmitQueue queue;
+    protected Executor executor;
+    protected static final int TIMEOUT = 30000;
+    protected MessageContext messageCtx;
+    protected AddressDetails address;
 
     /**
-     * Sets up the fixture, for example, open a network connection. This method is called before a test is executed.
+     * Constructs a test case with the given name.
      */
+    protected RemoteTestBase(String name) {
+        super(name);
+    }
+
+    /**
+    * Sets up the fixture, for example, open a network connection. This method is called before a test is executed.
+    */
     protected void setUp() throws Exception {
-        endpoint=System.getProperty(getEndpointPropertyName());
-        if(endpoint==null) {
+        String target =System.getProperty(getEndpointPropertyName());
+        if(target ==null) {
             throw new Exception("No endpoint property "+getEndpointPropertyName());
         }
-        endpointURL=new URL(endpoint);
+
+        bindToAddress(target);
+        executor = createExecutor();
+        queue = new TransmitQueue(executor);
+    }
+
+    /**
+     * bind to a target; set up the endpoint, endpointURL and epr fields from the target URL
+     * @param target
+     * @throws MalformedURLException
+     */
+    protected void bindToAddress(String target) throws MalformedURLException {
+        endpoint=target;
+        endpointURL=new URL(target);
+        epr=new AlpineEPR(target);
     }
 
     private String getEndpointPropertyName() {
-        return "echoEndpoint";
+        return "endpoint";
     }
 
     public String getEndpoint() {
@@ -53,5 +94,56 @@ public abstract class RemoteTestBase extends TestCase  {
 
     public URL getEndpointURL() {
         return endpointURL;
+    }
+
+    public AlpineEPR getEpr() {
+        return epr;
+    }
+
+    /**
+     * create a new executor. default impl does a direct one for ease of debug
+     * @return
+     */
+    protected Executor createExecutor() {
+        return new DirectExecutor();
+    }
+
+    public TransmitQueue getQueue() {
+        return queue;
+    }
+
+    public Executor getExecutor() {
+        return executor;
+    }
+
+    /**
+     * Send a soap message (Blocking).  Wait for TIMEOUT ms before giving up
+     * @param messageCtx
+     * @throws InterruptedException
+     */
+    protected Transmission send(MessageContext messageCtx) throws InterruptedException, ExecutionException,
+            TimeoutException {
+        return send(messageCtx,TIMEOUT);
+    }
+
+    /**
+     * Send a soap message (Blocking).  Wait for TIMEOUT ms before giving up
+     * @param messageCtx
+     * @throws InterruptedException
+     */
+    protected Transmission send(MessageContext messageCtx,long timeout) throws InterruptedException, TimeoutException,
+            ExecutionException {
+        Transmission tx=new Transmission(messageCtx);
+        getQueue().transmit(tx);
+        Future<?> result = tx.getResult();
+        result.get(timeout, TimeUnit.MILLISECONDS);
+        return tx;
+    }
+
+    protected void createMessageContext(String action) {
+        messageCtx = new MessageContext();
+        address = new AddressDetails();
+        address.setTo(getEpr());
+        address.setAction(action);
     }
 }

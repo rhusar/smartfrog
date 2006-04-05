@@ -23,12 +23,19 @@ package org.smartfrog.projects.alpine.core;
 import org.smartfrog.projects.alpine.om.soap11.MessageDocument;
 import org.smartfrog.projects.alpine.om.soap11.Envelope;
 import org.smartfrog.projects.alpine.om.soap11.Body;
+import org.smartfrog.projects.alpine.om.soap11.SoapMessageParser;
 import org.smartfrog.projects.alpine.om.base.SoapElement;
+import org.smartfrog.projects.alpine.xmlutils.ResourceLoader;
+import org.xml.sax.SAXException;
 
 /**
  * This represents a message in the system. 
  */
 public class MessageContext extends Context {
+
+    private ResourceLoader loader=new ResourceLoader();
+
+    private boolean validateResponses;
 
     /**
      * incoming request
@@ -73,5 +80,8 @@ public class MessageContext extends Context {
         return envelope;
     }
 
+    public SoapMessageParser createParser() throws SAXException {
+        return new SoapMessageParser(loader, validateResponses);
+    }
 
 }

@@ -64,5 +64,6 @@ public interface AlpineEndpoint extends Remote {
      * {@value}
      */ 
     public static final String ATTR_HANDLER_LIST= ContextConstants.ATTR_HANDLERS;
-    
+
+
 }
