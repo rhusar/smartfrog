@@ -21,6 +21,7 @@ package org.smartfrog.test.system.projects.alpine.remote;
 
 import org.smartfrog.projects.alpine.om.soap11.MessageDocument;
 import org.smartfrog.projects.alpine.transport.http.HttpTransportFault;
+import org.smartfrog.projects.alpine.faults.AlpineRuntimeException;
 
 import java.util.concurrent.ExecutionException;
 
@@ -41,6 +42,10 @@ public class ClientFailureTest extends RemoteTestBase {
         request.setAddressDetails(address);
         try {
             send(messageCtx);
+        } catch (AlpineRuntimeException cause) {
+            if (!(cause instanceof HttpTransportFault)) {
+                throw cause;
+            }
         } catch (ExecutionException e) {
             Throwable cause = e.getCause();
             assertNotNull("no root cause", cause);

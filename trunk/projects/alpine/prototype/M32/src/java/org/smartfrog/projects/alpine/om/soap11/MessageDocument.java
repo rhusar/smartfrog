@@ -133,6 +133,15 @@ public class MessageDocument extends Document implements ValidateXml {
         return body.isFault();
     }
 
+    /**
+     * Get the fault of a message
+     * @return the fault or null if there is no such fault
+     */
+    public Fault getFault() {
+        Body body = getBody();
+        return (Fault) body.getFirstChildElement(Soap11Constants.QNAME_FAULT);
+    }
+
 
 
     /**
@@ -174,8 +183,7 @@ public class MessageDocument extends Document implements ValidateXml {
      * @return a deep copy of this <code>Document</code> object
      */
     public MessageDocument copy() {
-        MessageDocument newDoc = (MessageDocument) super.copy();
-        return newDoc;
+        return new MessageDocument(this);
     }
 
     protected Object clone() throws CloneNotSupportedException {

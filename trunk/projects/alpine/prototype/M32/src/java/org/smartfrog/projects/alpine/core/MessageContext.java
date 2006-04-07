@@ -25,6 +25,7 @@ import org.smartfrog.projects.alpine.om.soap11.Envelope;
 import org.smartfrog.projects.alpine.om.soap11.Body;
 import org.smartfrog.projects.alpine.om.soap11.SoapMessageParser;
 import org.smartfrog.projects.alpine.om.base.SoapElement;
+import org.smartfrog.projects.alpine.om.soap12.Soap12Constants;
 import org.smartfrog.projects.alpine.xmlutils.ResourceLoader;
 import org.xml.sax.SAXException;
 
@@ -35,7 +36,16 @@ public class MessageContext extends Context {
 
     private ResourceLoader loader=new ResourceLoader();
 
+    /**
+     * should responses be validated on the way out?
+     */
     private boolean validateResponses;
+
+    /**
+     * actor. This is used in generating faults
+     */
+
+    private String role = Soap12Constants.ROLE_ULTIMATE_RECEIVER;
 
     /**
      * incoming request
@@ -63,25 +73,58 @@ public class MessageContext extends Context {
         this.response = response;
     }
 
+    /**
+     * Create a new request and return it, as well as saving
+     * it in the <code>request</code> attribute.
+     * @return the newly created message
+     */
+
     public MessageDocument createRequest() {
         SoapElement envelope = createMessage();
         request = new MessageDocument(envelope);
         return request;
     }
+
+    /**
+     * Create a new response and return it, as well as saving
+     * it in the <code>response</code> attribute.
+     * @return the newly created message
+     */
     public MessageDocument createResponse() {
         SoapElement envelope = createMessage();
         response = new MessageDocument(envelope);
         return response;
     }
 
-    protected SoapElement createMessage() {
-        SoapElement envelope=new Envelope();
+    /**
+     * Create a message with stub header and body elements
+     * @return
+     */
+    protected Envelope createMessage() {
+        Envelope envelope=new Envelope();
         envelope.appendChild(new Body());
+        envelope.getHeader();
         return envelope;
     }
 
+    /**
+     * Create a new parser
+     * @return
+     * @throws SAXException
+     */
     public SoapMessageParser createParser() throws SAXException {
         return new SoapMessageParser(loader, validateResponses);
     }
 
+    /**
+     * Get the fault actor
+     * @return
+     */
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
+    }
 }

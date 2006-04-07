@@ -21,11 +21,21 @@ package org.smartfrog.test.system.projects.alpine.remote;
 
 import org.smartfrog.projects.alpine.core.MessageContext;
 import org.smartfrog.projects.alpine.om.soap11.MessageDocument;
+import org.smartfrog.projects.alpine.om.soap11.Body;
+import org.smartfrog.projects.alpine.om.soap11.Header;
+import org.smartfrog.projects.alpine.om.soap11.Fault;
+import org.smartfrog.projects.alpine.om.soap11.Soap11Constants;
 import org.smartfrog.projects.alpine.wsa.AddressDetails;
 import org.smartfrog.projects.alpine.transport.http.HttpTransportFault;
+import org.smartfrog.projects.alpine.transport.Transmission;
+import org.smartfrog.projects.alpine.faults.SoapException;
 
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
+import java.io.IOException;
+
+import nu.xom.Element;
+import nu.xom.Elements;
 
 
 /**
@@ -51,6 +61,46 @@ public class EchoTest extends RemoteTestBase {
         MessageDocument request = messageCtx.createRequest();
         request.setAddressDetails(address);
         send(messageCtx);
+    }
+
+    public void testEchoString() throws Exception {
+        MessageDocument request = messageCtx.createRequest();
+        request.setAddressDetails(address);
+        Body body = request.getBody();
+        Element payload = new Element("payload");
+        String text = "Hello, World";
+        payload.appendChild(text);
+        body.addOrReplaceChild(payload);
+        Transmission transmission = send(messageCtx);
+        MessageDocument response = transmission.getContext().getResponse();
+        Body body2=response.getBody();
+        Elements childElements = body2.getChildElements("payload");
+        assertEquals(1,childElements.size());
+        Element pl2=childElements.get(0);
+        String value = pl2.getValue();
+        assertEquals(text,value);
+    }
+
+    public void testNotUnderstoodHeader() throws Exception {
+        MessageDocument request = messageCtx.createRequest();
+        request.setAddressDetails(address);
+        Header header = request.getEnvelope().getHeader();
+        Element headerElement=new Element("header");
+        header.setHeaderElement(headerElement,true);
+        Body body = request.getBody();
+        Element payload = new Element("payload");
+        String text = "Hello, World";
+        payload.appendChild(text);
+        body.addOrReplaceChild(payload);
+        try {
+            Transmission transmission = send(messageCtx);
+            fail("expected a not understood fault");
+        } catch (SoapException e) {
+            Fault fault=e.getFault();
+            assertEquals(Soap11Constants.FAULTCODE_MUST_UNDERSTAND,fault.getFaultCode());
+            assertNotNull(fault.getFaultActor(), fault.getFaultActor());
+            assertNotNull(fault.getFaultString(), fault.getFaultString());
+        }
     }
 
 }

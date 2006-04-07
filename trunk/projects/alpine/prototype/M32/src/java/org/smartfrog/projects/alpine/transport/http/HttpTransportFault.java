@@ -34,6 +34,8 @@ public class HttpTransportFault extends AlpineRuntimeException {
 
     private int status;
 
+    private String statusLine;
+
     private String response;
 
 
@@ -44,19 +46,22 @@ public class HttpTransportFault extends AlpineRuntimeException {
         bind(method);
     }
 
-    public HttpTransportFault(String destination, HttpMethod method,String details) {
-        super("Error when communicating with "+destination
-                +"\n"
-                +details);
+    public HttpTransportFault(String destination,
+                              HttpMethod method,
+                              String details) {
+        super("Error when communicating with " + destination
+                + "\n"
+                + details);
         bind(method);
     }
 
     private void bind(HttpMethod method) {
-        status=method.getStatusCode();
+        status = method.getStatusCode();
+        statusLine = method.getStatusText();
         try {
             response = method.getResponseBodyAsString();
         } catch (IOException e) {
-            log.warn("Could not read response of fault",e);
+            log.warn("Could not read response of fault", e);
         }
     }
 
@@ -76,11 +81,34 @@ public class HttpTransportFault extends AlpineRuntimeException {
         return status;
     }
 
-    public void setStatus(int status) {
-        this.status = status;
+    public String getStatusLine() {
+        return statusLine;
     }
 
     public String getResponse() {
         return response;
+    }
+
+    /**
+     * Returns a description of the fault, including http error info and the response
+     *
+     * @return a string representation of this throwable.
+     */
+    public String toString() {
+        StringBuffer base = new StringBuffer(super.toString());
+        if(getStatus()>0) {
+            base.append('\n');
+            base.append("Http error code: ");
+            base.append(getStatus());
+        }
+        if (getStatusLine()!=null) {
+            base.append('\n');
+            base.append(getStatusLine());
+        }
+        if (getResponse()!=null) {
+            base.append('\n');
+            base.append(response);
+        }
+        return base.toString();
     }
 }

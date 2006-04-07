@@ -29,6 +29,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.ExecutionException;
+import java.io.IOException;
 
 import org.smartfrog.projects.alpine.wsa.AlpineEPR;
 import org.smartfrog.projects.alpine.wsa.AddressDetails;
@@ -36,6 +37,7 @@ import org.smartfrog.projects.alpine.transport.DirectExecutor;
 import org.smartfrog.projects.alpine.transport.TransmitQueue;
 import org.smartfrog.projects.alpine.transport.Transmission;
 import org.smartfrog.projects.alpine.core.MessageContext;
+import org.smartfrog.projects.alpine.faults.AlpineRuntimeException;
 
 /**
  * Test base for remote alpine client stuff.
@@ -121,8 +123,10 @@ public abstract class RemoteTestBase extends TestCase  {
      * @param messageCtx
      * @throws InterruptedException
      */
-    protected Transmission send(MessageContext messageCtx) throws InterruptedException, ExecutionException,
-            TimeoutException {
+    protected Transmission send(MessageContext messageCtx)
+            throws InterruptedException, ExecutionException,
+            TimeoutException,
+            IOException {
         return send(messageCtx,TIMEOUT);
     }
 
@@ -132,11 +136,25 @@ public abstract class RemoteTestBase extends TestCase  {
      * @throws InterruptedException
      */
     protected Transmission send(MessageContext messageCtx,long timeout) throws InterruptedException, TimeoutException,
-            ExecutionException {
+            ExecutionException, IOException  {
         Transmission tx=new Transmission(messageCtx);
         getQueue().transmit(tx);
         Future<?> result = tx.getResult();
-        result.get(timeout, TimeUnit.MILLISECONDS);
+        try {
+            result.get(timeout, TimeUnit.MILLISECONDS);
+        } catch (ExecutionException e) {
+            Throwable cause=e.getCause();
+            //nested ioes are rethrown
+            if(cause instanceof IOException ) {
+                throw (IOException) cause;
+            }
+            //runtime exceptions are stripped out and rethrown
+            if(cause instanceof RuntimeException) {
+                throw (RuntimeException)cause;
+            }
+            //anything else is sent nested.
+            throw e;
+        }
         return tx;
     }
 

@@ -27,6 +27,7 @@ import org.smartfrog.services.www.ApplicationServerContext;
 import org.smartfrog.services.www.WebApplicationHelper;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLivenessException;
+import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.prim.Liveness;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimImpl;
@@ -50,6 +51,7 @@ public class AlpineEndpointImpl extends PrimImpl implements AlpineEndpoint {
     private String path;
     private EndpointContext epx;
     private Vector handlers;
+    private String role;
 
     public AlpineEndpointImpl() throws RemoteException {
     }
@@ -70,6 +72,7 @@ public class AlpineEndpointImpl extends PrimImpl implements AlpineEndpoint {
         getMessage = sfResolve(ATTR_GET_MESSAGE, "", false);
         getResponseCode = sfResolve(ATTR_GET_RESPONSECODE, 200, false);
         handlers = sfResolve(ATTR_HANDLER_LIST, handlers, true);
+        role = sfResolve(ContextConstants.ATTR_ROLE,"Server",false);
         Prim servlet = sfResolve(ATTR_SERVLET, (Prim) null, true);
         String servletPath = servlet.sfResolve(ApplicationServerContext.ATTR_ABSOLUTE_PATH, "", true);
         WebApplicationHelper helper = new WebApplicationHelper(this);
@@ -99,8 +102,10 @@ public class AlpineEndpointImpl extends PrimImpl implements AlpineEndpoint {
         putIfSet(epx, ContextConstants.ATTR_GET_MESSAGE, getMessage);
         putIfSet(epx, ContextConstants.ATTR_WSDL, wsdlResource);
         putIfSet(epx, ContextConstants.ATTR_NAME, name);
-        putIfSet(epx, ContextConstants.ATTR_CONTENT_TYPE, getContentType);
+        putIfSet(epx, ContextConstants.ATTR_GET_CONTENT_TYPE, getContentType);
         epx.put(ContextConstants.ATTR_GET_RESPONSECODE, getResponseCode);
+        putIfSet(epx, ContextConstants.ATTR_ROLE, role);
+        copyIfSet(epx, ContextConstants.ATTR_ROLE);
 
         //the handler list is a list of handlers
         List handlerList = new ArrayList(handlers.size());
@@ -120,6 +125,13 @@ public class AlpineEndpointImpl extends PrimImpl implements AlpineEndpoint {
 
         //now register a new endpoint
         context.getEndpoints().register(path, epx);
+    }
+
+    private void copyIfSet(EndpointContext epx, String attribute)
+            throws SmartFrogResolutionException,
+            RemoteException {
+        putIfSet(this.epx, attribute,
+                sfResolve(attribute,(String)null,false));
     }
 
     private void putIfSet(EndpointContext epx, String key, String value) {

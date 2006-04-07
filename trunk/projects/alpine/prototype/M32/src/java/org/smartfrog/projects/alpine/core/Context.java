@@ -95,4 +95,16 @@ public class Context implements Validatable {
         return true;
     }
 
+    /**
+     * copy something from one context to another, if it is set in the source
+     * @param source source context
+     * @param key key to look for
+     */
+    public void copy(Context source,String key) {
+        final Object value = source.get(key);
+        if(value!=null) {
+            put(key,value);
+        }
+    }
+
 }

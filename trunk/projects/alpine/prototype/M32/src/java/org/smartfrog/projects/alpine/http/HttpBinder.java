@@ -79,9 +79,9 @@ public class HttpBinder {
     public void outputResponse(MessageContext messageContext, HttpServletResponse response) throws IOException {
         MessageDocument message= messageContext.getResponse();
         int responseCode=message.isFault()?
-                HttpServletResponse.SC_OK:HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
+                HttpServletResponse.SC_INTERNAL_SERVER_ERROR:HttpServletResponse.SC_OK;
         response.setStatus(responseCode);
-        response.setContentType(HttpConstants.CONTENT_TYPE_TEXT_XML);
+        response.setContentType(HttpConstants.CONTENT_TYPE_SOAP_XML+"; charset=\"utf-8\"");
         //PrintWriter writer = response.getWriter();
         ServletOutputStream out=response.getOutputStream();
         Serializer serializer=new Serializer(out);

@@ -27,6 +27,8 @@ public final class HttpConstants {
     public static final String CONTENT_TYPE_TEXT_XML = "text/xml";
 
 
+    public static final String CONTENT_TYPE_SOAP_XML= "application/soap+xml";
+
     private HttpConstants() {
     }
 

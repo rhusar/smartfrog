@@ -21,11 +21,13 @@
 package org.smartfrog.projects.alpine.faults;
 
 import org.smartfrog.projects.alpine.om.soap11.Fault;
+import org.smartfrog.projects.alpine.om.soap11.MessageDocument;
+import org.smartfrog.projects.alpine.om.base.SoapElement;
 import org.smartfrog.projects.alpine.interfaces.SoapFaultSource;
 
 /**
  * This represents a SOAPException from the XML. 
- * The fault string is extracted, the rest is retained as XML
+ * The fault string is extracted, the rest is retained as XML.
  */
 public class SoapException extends AlpineRuntimeException implements SoapFaultSource {
 
@@ -40,9 +42,21 @@ public class SoapException extends AlpineRuntimeException implements SoapFaultSo
         this.fault = fault;
     }
 
+    /**
+     * Create a full fault
+     * @param faultcode faultcode
+     * @param faultActor actor
+     * @param message message (to use as FaultString)
+     * @param detail optional detail
+     */
+    public SoapException(String faultcode, String faultActor,String message, SoapElement detail) {
 
-    public SoapException(String message) {
         super(message);
+        fault=new Fault();
+        fault.setFaultCode(faultcode);
+        fault.setFaultActor(faultActor);
+        fault.setFaultString(message);
+        fault.setFaultDetail(detail);
     }
 
     /**
@@ -56,7 +70,7 @@ public class SoapException extends AlpineRuntimeException implements SoapFaultSo
     }
 
     /**
-     * create w
+     * create an exception with an underlying cause and a fault
      * @param message
      * @param cause
      * @param fault
@@ -77,6 +91,10 @@ public class SoapException extends AlpineRuntimeException implements SoapFaultSo
     }
 
 
+    public SoapException(MessageDocument message) {
+        this(message.getFault());
+    }
+
     /**
      * Get the fault information
      * @return
@@ -93,5 +111,21 @@ public class SoapException extends AlpineRuntimeException implements SoapFaultSo
     public Fault GenerateSoapFault() {
         return fault;
     }
+
+    /**
+     * Get the fault code.
+     *
+     * @return the string to be used in the fault code
+     */
+    public String getFaultCode() {
+        return fault.getFaultCode();
+    }
+
+    public String getFaultActor() {
+        return fault.getFaultActor();
+    }
+
+    
+
 
 }
