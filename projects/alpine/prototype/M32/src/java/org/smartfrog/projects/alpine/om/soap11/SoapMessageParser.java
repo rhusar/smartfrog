@@ -23,6 +23,7 @@ package org.smartfrog.projects.alpine.om.soap11;
 import nu.xom.Builder;
 import nu.xom.ParsingException;
 import nu.xom.Document;
+import nu.xom.NodeFactory;
 import org.smartfrog.projects.alpine.xmlutils.ResourceLoader;
 import org.smartfrog.projects.alpine.xmlutils.ParserHelper;
 import org.smartfrog.projects.alpine.xmlutils.CatalogHandler;
@@ -54,8 +55,10 @@ public class SoapMessageParser {
      *
      * @param loader   resource loader algorithm
      * @param validate validation logic.
+     * @param factory
      */
-    public SoapMessageParser(ResourceLoader loader, boolean validate)
+    public SoapMessageParser(ResourceLoader loader,
+                             boolean validate, NodeFactory factory)
             throws SAXException {
         resourceLoader = loader;
         //we mandate Xerces, as the others cannot handle schema so well
@@ -69,7 +72,7 @@ public class SoapMessageParser {
                 throw new SAXException(e.getMessage(), e);
             }
         }
-        builder = new Builder(xerces, validate, new SoapFactory());
+        builder = new Builder(xerces, validate, factory);
     }
 
 

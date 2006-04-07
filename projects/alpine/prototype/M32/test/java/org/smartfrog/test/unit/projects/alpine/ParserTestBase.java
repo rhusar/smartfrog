@@ -94,7 +94,7 @@ public abstract class ParserTestBase extends TestCase implements Filenames {
      */
     protected void initParser() throws SAXException {
         ResourceLoader loader = new ResourceLoader(this.getClass());
-        parser = new SoapMessageParser(loader, isParserValidating());
+        parser = new SoapMessageParser(loader, isParserValidating(), null);
     }
 
     /**

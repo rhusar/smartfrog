@@ -1,0 +1,119 @@
+/** (C) Copyright 2006 Hewlett-Packard Development Company, LP
+
+ This library is free software; you can redistribute it and/or
+ modify it under the terms of the GNU Lesser General Public
+ License as published by the Free Software Foundation; either
+ version 2.1 of the License, or (at your option) any later version.
+
+ This library is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ Lesser General Public License for more details.
+
+ You should have received a copy of the GNU Lesser General Public
+ License along with this library; if not, write to the Free Software
+ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+ For more information: www.smartfrog.org
+
+ */
+package org.smartfrog.projects.alpine.transport;
+
+import org.smartfrog.projects.alpine.wsa.AlpineEPR;
+import org.smartfrog.projects.alpine.wsa.AddressDetails;
+import org.smartfrog.projects.alpine.core.MessageContext;
+import org.smartfrog.projects.alpine.om.soap11.MessageDocument;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import nu.xom.Element;
+
+/**
+ * This represents an ongoing conversation with a single host/endpoint. Stuff like
+ * auth data can go in there, and it has a default address
+ */
+public class Session {
+
+    private AlpineEPR endpoint;
+    private String role=DEFAULT_ROLE;
+    private boolean validating=true;
+    public static final String DEFAULT_ROLE = "Client";
+    private Log log= LogFactory.getLog(Session.class);
+
+
+    public Session(AlpineEPR endpoint, String role, boolean validating) {
+        this.endpoint = endpoint;
+        this.role = role;
+        this.validating = validating;
+    }
+
+    public AlpineEPR getEndpoint() {
+        return endpoint;
+    }
+
+    public void setEndpoint(AlpineEPR endpoint) {
+        this.endpoint = endpoint;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
+    }
+
+    public boolean isValidating() {
+        return validating;
+    }
+
+    public void setValidating(boolean validating) {
+        this.validating = validating;
+    }
+
+    /**
+     * Create an outbound transmission
+     * @param action soap action
+     * @return a tx bound to the default destination
+     */
+    public Transmission createTransmission(String action) {
+        AlpineEPR destination = endpoint;
+        return createTransmission(destination, action);
+    }
+
+    /**
+     * Create an outbound transmission
+     * @param destination destination address
+     * @param action soap action
+     *
+     * @return a tx bound to the default destination
+     */
+    public Transmission createTransmission(AlpineEPR destination,
+                                           String action) {
+        MessageContext messageContext = new MessageContext(role,validating);
+        Transmission tx=new Transmission(messageContext);
+        MessageDocument request = messageContext.createRequest();
+        AddressDetails addressing = new AddressDetails();
+        addressing.setTo(destination);
+        addressing.setAction(action);
+        request.setAddressDetails(addressing);
+        return tx;
+    }
+
+    /**
+     * Create an outbound transmission
+     *
+     * @param action, set to null to use the element local name
+     * @param payload the body of the soap message
+     *
+     * @return a tx bound to the default destination
+     */
+    public Transmission createTransmission(String action, Element payload) {
+        AlpineEPR destination = endpoint;
+        if(action==null) {
+            action=payload.getLocalName();
+        }
+        Transmission tx = createTransmission(destination, action);
+        tx.getRequest().getBody().appendChild(payload);
+        return tx;
+    }
+}

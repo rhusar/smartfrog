@@ -21,6 +21,7 @@ package org.smartfrog.projects.alpine.transport;
 
 import org.smartfrog.projects.alpine.core.MessageContext;
 import org.smartfrog.projects.alpine.transport.http.HttpTransmitter;
+import org.smartfrog.projects.alpine.om.soap11.MessageDocument;
 
 import java.util.concurrent.Future;
 import java.util.concurrent.Callable;
@@ -66,11 +67,14 @@ public class Transmission implements Callable {
         return context;
     }
 
-/*
-    public void setContext(MessageContext context) {
-        this.context = context;
+
+    public MessageDocument getRequest() {
+        return context.getRequest();
     }
-*/
+
+    public MessageDocument getResponse() {
+        return context.getResponse();
+    }
 
     public ProgressFeedback getUploadFeedback() {
         return uploadFeedback;

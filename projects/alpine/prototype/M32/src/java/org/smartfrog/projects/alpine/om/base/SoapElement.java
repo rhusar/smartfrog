@@ -178,6 +178,11 @@ public class SoapElement extends Element implements ValidateXml {
         return it;
     }
 
+    public NodesIterator xpath(String path) {
+        Nodes nodes = query(path);
+        NodesIterator it = new NodesIterator(nodes);
+        return it;
+    }
     /**
      * Remove a child element; do nothing if it is absent
      * @param name qname of the element

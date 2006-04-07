@@ -25,6 +25,7 @@ import org.smartfrog.projects.alpine.om.base.SoapElement;
 import org.smartfrog.projects.alpine.xmlutils.XsdUtils;
 import nu.xom.Element;
 import nu.xom.Document;
+import nu.xom.NodeFactory;
 
 /**
  * this iteration doesnt have the envisaged chain of handlers, all we do is create soap nodes
@@ -32,6 +33,22 @@ import nu.xom.Document;
  */
 public class SoapFactory extends ExtendedNodeFactory {
 
+    private String soapns;
+
+    private NodeFactory handoff;
+
+    public SoapFactory(String namespace, NodeFactory handoff) {
+        this.soapns = namespace;
+
+        this.handoff = handoff;
+    }
+
+    /**
+     * Default ctor is bound to SOAP11 and to
+     */
+    public SoapFactory() {
+        this(Soap11Constants.URI_SOAP11, new NodeFactory());
+    }
 
     /**
      * Make a new element
@@ -42,21 +59,27 @@ public class SoapFactory extends ExtendedNodeFactory {
      */
     public Element startMakingElement(String fullname, String namespace) {
         String name = XsdUtils.extractLocalname(fullname);
-        if (Soap11Constants.ELEMENT_ENVELOPE.equals(name)) {
-            return new Envelope(name, namespace);
+
+        Element element = null;
+        if(soapns.equals(namespace)) {
+            if (Soap11Constants.ELEMENT_ENVELOPE.equals(name)) {
+                element = new Envelope(name, namespace);
+            } else if (Soap11Constants.ELEMENT_HEADER.equals(name)) {
+                element = new Header(name, namespace);
+            } else if (Soap11Constants.ELEMENT_BODY.equals(name)) {
+                element = new Body(name, namespace);
+            } else if (Soap11Constants.ELEMENT_FAULT.equals(name)) {
+                element = new Fault(name, namespace);
+            } else {
+
+                //something else in our namespace. wierd.
+                element = new SoapElement(name, namespace);
+            }
+        } else {
+            return handoff.startMakingElement(name, namespace);
         }
-        if (Soap11Constants.ELEMENT_HEADER.equals(name)) {
-            return new Header(name, namespace);
-        }
-        if (Soap11Constants.ELEMENT_BODY.equals(name)) {
-            return new Body(name, namespace);
-        }
-        if (Soap11Constants.ELEMENT_FAULT.equals(name)) {
-            return new Fault(name, namespace);
-        }
-        
-        //something else in our namespace. wierd.
-        return new SoapElement(name, namespace);
+
+        return element;
     }
 
     /**
@@ -96,6 +119,6 @@ public class SoapFactory extends ExtendedNodeFactory {
      * @return the newly created <code>Document</code>
      */
     public Document startMakingDocument() {
-        return MessageDocument.create();  
+        return MessageDocument.create();
     }
 }

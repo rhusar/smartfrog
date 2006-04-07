@@ -94,4 +94,9 @@ public interface ContextConstants {
      */
     public static final String ATTR_OWNER_ENDPOINT = "_ownerEndpoint";
 
+    /**
+     * Classname of a Xom factory. This is used when parsing messages,
+     * and lets you hand off parsing of your custom classes to a custom Xom factory
+     */
+    public static final String ATTR_XOM_FACTORY = "factory";
 }
