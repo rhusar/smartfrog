@@ -138,6 +138,12 @@ public abstract class RemoteTestBase extends TestCase  {
     protected Transmission send(MessageContext messageCtx,long timeout) throws InterruptedException, TimeoutException,
             ExecutionException, IOException  {
         Transmission tx=new Transmission(messageCtx);
+        return send(tx, timeout);
+    }
+
+    protected Transmission send(Transmission tx, long timeout) throws
+            InterruptedException, TimeoutException, IOException,
+            ExecutionException {
         getQueue().transmit(tx);
         Future<?> result = tx.getResult();
         try {

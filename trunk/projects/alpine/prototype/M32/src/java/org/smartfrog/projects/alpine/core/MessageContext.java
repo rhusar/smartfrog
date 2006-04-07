@@ -24,6 +24,7 @@ import org.smartfrog.projects.alpine.om.soap11.MessageDocument;
 import org.smartfrog.projects.alpine.om.soap11.Envelope;
 import org.smartfrog.projects.alpine.om.soap11.Body;
 import org.smartfrog.projects.alpine.om.soap11.SoapMessageParser;
+import org.smartfrog.projects.alpine.om.soap11.SoapFactory;
 import org.smartfrog.projects.alpine.om.base.SoapElement;
 import org.smartfrog.projects.alpine.om.soap12.Soap12Constants;
 import org.smartfrog.projects.alpine.xmlutils.ResourceLoader;
@@ -34,12 +35,28 @@ import org.xml.sax.SAXException;
  */
 public class MessageContext extends Context {
 
+    /**
+     * Create witha  default role, and non-validating parser.
+     */
+    public MessageContext() {
+    }
+
+    /**
+     * Create a parser in a known role
+     * @param role role to use
+     * @param validating whether to validate or not
+     */
+    public MessageContext(String role, boolean validating) {
+        this.role = role;
+        this.validating = validating;
+    }
+
     private ResourceLoader loader=new ResourceLoader();
 
     /**
-     * should responses be validated on the way out?
+     * should messages be validated when parsing them.
      */
-    private boolean validateResponses;
+    private boolean validating =false;
 
     /**
      * actor. This is used in generating faults
@@ -71,6 +88,14 @@ public class MessageContext extends Context {
 
     public void setResponse(MessageDocument response) {
         this.response = response;
+    }
+
+    public boolean isValidating() {
+        return validating;
+    }
+
+    public void setValidating(boolean validating) {
+        this.validating = validating;
     }
 
     /**
@@ -113,7 +138,7 @@ public class MessageContext extends Context {
      * @throws SAXException
      */
     public SoapMessageParser createParser() throws SAXException {
-        return new SoapMessageParser(loader, validateResponses);
+        return new SoapMessageParser(loader, validating, new SoapFactory());
     }
 
     /**

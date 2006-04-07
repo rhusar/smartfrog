@@ -51,7 +51,7 @@ public class SoapPostServlet extends ServletBase {
     /**
      * get the alpine context from the servlet context
      * ; create it if needed
-     * @return
+     * @return the context
      */
     public synchronized AlpineContext getAlpineContext() {
         return AlpineContext.getAlpineContext();
@@ -139,7 +139,6 @@ public class SoapPostServlet extends ServletBase {
                 //dispatch
                 handler.processMessage(messageContext, endpointContext);
             }
-            responseMessage = messageContext.getResponse();
         } catch (Throwable thrown) {
             getLog().info("Fault thrown ",thrown);
             FaultBridge bridge=FaultBridge.getFaultBridge(messageContext);

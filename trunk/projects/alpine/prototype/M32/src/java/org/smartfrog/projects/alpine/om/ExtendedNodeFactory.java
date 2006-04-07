@@ -31,51 +31,9 @@ import org.smartfrog.projects.alpine.xmlutils.XsdUtils;
  * This is something that can be subclassed for more interesting class creation
  *
  */
-public class ExtendedNodeFactory extends NodeFactory {
+public abstract class ExtendedNodeFactory extends NodeFactory {
 
     private final static Nodes EMPTY = new Nodes();
-
-    /**
-     * Make a new element
-     * @param fullname this comes in with a prefix: on it, which we will
-     * need to strip off
-     * @param namespace
-     * @return
-     */
-    public Element startMakingElement(String fullname, String namespace) {
-
-        XsdUtils.extractLocalname(fullname);
-        return null;
-    }
-
-    public Nodes finishMakingElement(Element element) {
-        return super.finishMakingElement(element);
-    }
-
-    /**
-     * <p/>
-     * Creates a new element in the specified namespace with the specified name.
-     * The builder calls this method to make the root element of the document.
-     * </p>
-     * <p/>
-     * <p/>
-     * Subclasses may change the name, namespace, content, or other
-     * characteristics of the element returned. The default implementation
-     * merely calls <code>startMakingElement</code>. However, when subclassing,
-     * it is often useful to be able to easily distinguish between the root
-     * element and a non-root element because the root element cannot be
-     * detached. Therefore, subclasses must not return null from this method.
-     * Doing so will cause a <code>NullPointerException</code>. </p>
-     *
-     * @param name      the qualified name of the element
-     * @param namespace the namespace URI of the element
-     *
-     * @return the new root element
-     */
-    public Element makeRootElement(String name, String namespace) {
-
-        return null;
-    }
 
 
     /**

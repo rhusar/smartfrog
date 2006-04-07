@@ -90,5 +90,13 @@ public class NodesIterator implements Iterator<Node>,
     public Iterator<Node> iterator() {
         return this;
     }
+
+    public int size() {
+        return nodes.size();
+    }
+
+    public Node get(int index) {
+        return nodes.get(index);
+    }
 }
 

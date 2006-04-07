@@ -42,7 +42,6 @@ import nu.xom.Serializer;
  */
 public class HttpBinder {
     
-    private static final boolean IS_PARSER_VALIDATING=false;
     private EndpointContext endpointContext;
     public static final String ERROR_NO_SOAPACTION = "No SOAPAction";
     public static final String ERROR_UNSUPPORTED_CONTENT = "Unsupported content type: ";
@@ -61,7 +60,7 @@ public class HttpBinder {
     public MessageDocument parseIncomingPost(MessageContext messageContext, HttpServletRequest request) throws Exception {
         validateContentType(request);
         ResourceLoader loader = new ResourceLoader(this.getClass());
-        SoapMessageParser parser = new SoapMessageParser(loader, IS_PARSER_VALIDATING);
+        SoapMessageParser parser = messageContext.createParser();
         MessageDocument message = parser.parseStream(request.getInputStream());
         bindHeadersToDocument(message,request);
         messageContext.setRequest(message);
