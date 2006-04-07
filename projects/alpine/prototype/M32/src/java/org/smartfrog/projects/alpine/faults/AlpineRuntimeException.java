@@ -28,6 +28,7 @@ import org.smartfrog.projects.alpine.om.soap11.Soap11Constants;
  * this is a runtime exception
  */
 public class AlpineRuntimeException extends RuntimeException implements SoapFaultSource {
+
     public AlpineRuntimeException(String message, Throwable cause) {
         super(message, cause);
     }
@@ -38,6 +39,14 @@ public class AlpineRuntimeException extends RuntimeException implements SoapFaul
 
     public AlpineRuntimeException(String message) {
         super(message);
+    }
+
+    /**
+     * Constructs a new runtime exception with <code>null</code> as its detail
+     * message.  The cause is not initialized, and may subsequently be
+     * initialized by a call to {@link #initCause}.
+     */
+    public AlpineRuntimeException() {
     }
 
     /**

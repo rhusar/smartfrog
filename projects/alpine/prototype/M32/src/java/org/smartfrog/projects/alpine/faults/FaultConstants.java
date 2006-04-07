@@ -101,5 +101,13 @@ public class FaultConstants {
     public static final QName QNAME_NO_SERVICE_FAULT_CODE
             = new QName(NS_URI_AXIS, "Server.NoService");
 
-    
+    /**
+     * The processing party found an invalid namespace for the SOAP Envelope element
+     */
+    public static final String FAULTCODE_VERSION_MISMATCH="VersionMismatch";
+
+    /**
+     * header not understood, yet it was marked as MustUnderstand.
+     */
+    public static final String FAULTCODE_MUST_UNDERSTAND="MustUnderstand";
 }

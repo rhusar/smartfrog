@@ -20,24 +20,27 @@
 
 package org.smartfrog.projects.alpine.core;
 
-import org.smartfrog.projects.alpine.om.soap11.MessageDocument;
-import nu.xom.Builder;
-
 /**
  * context around and endpoint
  */
 public class EndpointContext extends Context {
-    
+
     /**
      * Create a message context, filled in with stub requests and responses
      * @return the new context
-     */ 
+     */
     public MessageContext createMessageContext() {
         MessageContext messageContext = new MessageContext();
+        //propagate actor information
+
+        messageContext.put(ContextConstants.ATTR_OWNER_ENDPOINT,this);
+        messageContext.copy(this,ContextConstants.ATTR_ROLE);
+        messageContext.copy(this, ContextConstants.ATTR_SOAP_CONTENT_TYPE);
+
         messageContext.createRequest();
         messageContext.createResponse();
         return messageContext;
     }
-    
-    
+
+
 }

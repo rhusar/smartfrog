@@ -46,6 +46,7 @@ import java.util.ArrayList;
 public class SoapPostServlet extends ServletBase {
     public static final String ERROR_NO_HANDLER = "No handler class defined for the endpoint";
     public static final String TEXT_HTML = "text/html";
+    private List<String> handlers;
 
     /**
      * get the alpine context from the servlet context
@@ -123,7 +124,7 @@ public class SoapPostServlet extends ServletBase {
             requestMessage = binder.parseIncomingPost(messageContext,request);
 
             //get the handler list
-            List<String> handlers=(List<String>) endpointContext.get(ContextConstants.ATTR_HANDLERS);
+            handlers = (List<String>) endpointContext.get(ContextConstants.ATTR_HANDLERS);
             if(handlers==null) {
                 throw new AlpineRuntimeException(ERROR_NO_HANDLER);
             }
@@ -140,6 +141,7 @@ public class SoapPostServlet extends ServletBase {
             }
             responseMessage = messageContext.getResponse();
         } catch (Throwable thrown) {
+            getLog().info("Fault thrown ",thrown);
             FaultBridge bridge=FaultBridge.getFaultBridge(messageContext);
             Fault fault=bridge.extractFaultFromThrowable(thrown);
             //we have the fault; patch it in
@@ -149,8 +151,6 @@ public class SoapPostServlet extends ServletBase {
             body.appendChild(fault);
         }
         responseMessage = messageContext.getResponse();
-        response.setStatus(responseMessage.isFault()?
-                HttpServletResponse.SC_INTERNAL_SERVER_ERROR : HttpServletResponse.SC_OK);
         binder.outputResponse(messageContext, response);
     }
 

@@ -29,7 +29,9 @@ AlpineEndpoint extends Prim {
     sfClass "org.smartfrog.projects.alpine.config.smartfrog.AlpineEndpointImpl";
     alpineEndpointSchema extends Schema {
         name extends String;
+        role extends OptionalString;
         getContentType extends OptionalString;
+        soapContentType extends OptionalString;
         getMessage extends OptionalString;
         getResponseCode extends Integer;
         wsdl extends OptionalString;
@@ -40,7 +42,8 @@ AlpineEndpoint extends Prim {
     
     //information on a get
     
-    contentType "text/html; charset='utf8'";
+    getContentType "text/html; charset='utf8'";
+
     getResponseCode 200;
     /**
      * an HTML message string is derived from our name by default
@@ -54,9 +57,13 @@ AlpineEndpoint extends Prim {
      #;
      
      s1 PARENT:name;
+
      }
     
-    
+    //SOAP configuration. content type and actor/role
+    soapContentType "application/soap+xml";
+    role "Server";
+
     
  }
 

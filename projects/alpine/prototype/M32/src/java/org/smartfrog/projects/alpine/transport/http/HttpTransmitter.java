@@ -32,6 +32,7 @@ import org.smartfrog.projects.alpine.core.MessageContext;
 import org.smartfrog.projects.alpine.om.soap11.MessageDocument;
 import org.smartfrog.projects.alpine.om.soap11.SoapMessageParser;
 import org.smartfrog.projects.alpine.http.HttpConstants;
+import org.smartfrog.projects.alpine.faults.SoapException;
 import org.xml.sax.SAXException;
 
 import javax.servlet.http.HttpServletResponse;
@@ -112,38 +113,49 @@ public class HttpTransmitter {
                 throw new HttpTransportFault(ERROR_DURING_PREPARATION, ioe);
 
             }
+            InputStream responseStream = null;
             try {
                 int statusCode = httpclient.executeMethod(method);
+                SoapMessageParser parser = tx.getContext().createParser();
+                //get the content type and drop anything following a semicolon
+                String contentType = getResponseContentType(method);
+                final int semicolon = contentType.indexOf(';');
+                if(semicolon >=0) {
+                    contentType=contentType.substring(0,semicolon);
+                }
+                boolean responseIsXml = HttpConstants.CONTENT_TYPE_TEXT_XML
+                        .equals(contentType)
+                        || HttpConstants.CONTENT_TYPE_SOAP_XML.equals(contentType);
 
-
-                if (statusCode != HttpStatus.SC_OK) {
+                final boolean requestFailed = statusCode != HttpStatus.SC_OK;
+                if (requestFailed &&
+                        (!responseIsXml || statusCode!=HttpStatus.SC_INTERNAL_SERVER_ERROR)) {
                     //TODO: treat 500+text/xml response specially, as it is probably a SOAPFault
                     log.error("Method failed: " + method.getStatusLine());
                     throw new HttpTransportFault(destination,method);
                 }
-                String contentType=getResponseContentType(method);
 
-                if (!HttpConstants.CONTENT_TYPE_TEXT_XML.equals(contentType)) {
+                if (!responseIsXml) {
                     HttpTransportFault fault = new HttpTransportFault(destination, method,
                     "Wrong content type: expected "
                             + HttpConstants.CONTENT_TYPE_TEXT_XML
-                            + " but got " + contentType);
+                            + "or "
+                            + HttpConstants.CONTENT_TYPE_SOAP_XML
+                            + " but got ["
+                            + contentType
+                            +']');
                     throw fault;
                 }
-                InputStream responseStream = method.getResponseBodyAsStream();
-
-                SoapMessageParser parser=tx.getContext().createParser();
-
+                //extract the response
+                responseStream = method.getResponseBodyAsStream();
+                //parse it
                 MessageDocument response = parser.parseStream(responseStream);
+                //set our response
                 tx.getContext().setResponse(response);
-
-                // Read the response body.
-                //byte[] responseBody = method.getResponseBody();
-
-                // Turn it in to XML
-
-
-                // if it a fault, turn it into an exception.
+                // if is a fault, turn it into an exception.
+                if (requestFailed) {
+                    throw new SoapException(response);
+                }
 
 
             } catch(IOException ioe) {
@@ -153,6 +165,13 @@ public class HttpTransmitter {
             } catch (ParsingException e) {
                 throw new HttpTransportFault(destination, e);
             } finally {
+                if (responseStream != null) {
+                    try {
+                        responseStream.close();
+                    } catch (IOException e) {
+                        //ignore this.
+                    }
+                }
                 method.releaseConnection();
             }
         } finally {

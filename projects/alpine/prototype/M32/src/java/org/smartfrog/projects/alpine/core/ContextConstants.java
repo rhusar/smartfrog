@@ -49,7 +49,7 @@ public interface ContextConstants {
     /**
      * Text for a message {@value}
      */
-    public static final String ATTR_CONTENT_TYPE = "getContentType";
+    public static final String ATTR_GET_CONTENT_TYPE = "getContentType";
     /**
      * HTML content for a get {@value}
      */
@@ -77,4 +77,21 @@ public interface ContextConstants {
      * {@value}
      */
     public static final String ATTR_URL = "url";
+
+    /**
+     * Actor/role value of endpoint
+     * {@value}
+     */
+    public static final String ATTR_ROLE = "role";
+
+    /**
+     * SOAP Content type. {@value}
+     */
+    public static final String ATTR_SOAP_CONTENT_TYPE = "soapContentType";
+
+    /**
+     * owner endpoint; used in binding message contexts to endpoint contexts
+     */
+    public static final String ATTR_OWNER_ENDPOINT = "_ownerEndpoint";
+
 }
