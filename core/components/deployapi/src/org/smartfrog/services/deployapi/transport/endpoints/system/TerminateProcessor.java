@@ -27,7 +27,7 @@ import org.smartfrog.services.deployapi.binding.XomHelper;
 import org.smartfrog.services.deployapi.engine.JobRepository;
 import org.smartfrog.services.deployapi.engine.ServerInstance;
 import org.smartfrog.services.deployapi.system.Constants;
-import org.smartfrog.services.deployapi.transport.endpoints.SmartFrogAxisEndpoint;
+import org.smartfrog.services.deployapi.transport.endpoints.alpine.WsrfHandler;
 
 import java.io.IOException;
 import java.rmi.RemoteException;
@@ -42,7 +42,7 @@ public class TerminateProcessor extends SystemProcessor {
      */
     private static final Log log = LogFactory.getLog(TerminateProcessor.class);
 
-    public TerminateProcessor(SmartFrogAxisEndpoint owner) {
+    public TerminateProcessor(WsrfHandler owner) {
         super(owner);
     }
 
@@ -64,9 +64,9 @@ public class TerminateProcessor extends SystemProcessor {
      * @return the response
      * @throws java.io.IOException
      */
-    public Element process(Document request) throws IOException {
+    public Element process(Element request) throws IOException {
         if (job != null) {
-            String reason = XomHelper.getElementValue(request.getRootElement(), "api:reason");
+            String reason = XomHelper.getElementValue(request, "api:reason");
             terminate(reason);
         }
         Element response = XomHelper.apiElement(Constants.API_ELEMENT_TERMINATE_RESPONSE);

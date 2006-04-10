@@ -19,35 +19,30 @@
  */
 package org.smartfrog.services.deployapi.transport.endpoints.portal;
 
-import nu.xom.Document;
 import nu.xom.Element;
 import org.smartfrog.services.deployapi.binding.XomHelper;
 import org.smartfrog.services.deployapi.engine.Application;
-import org.smartfrog.services.deployapi.transport.endpoints.Processor;
-import org.smartfrog.services.deployapi.transport.endpoints.SmartFrogAxisEndpoint;
-
-import java.io.IOException;
+import org.smartfrog.services.deployapi.transport.endpoints.alpine.AlpineProcessor;
+import org.smartfrog.services.deployapi.transport.endpoints.alpine.WsrfHandler;
 
 /**
  * created 21-Sep-2005 10:37:53
  */
 
-public class LookupSystemProcessor extends Processor {
+public class LookupSystemProcessor extends AlpineProcessor {
 
-    public LookupSystemProcessor(SmartFrogAxisEndpoint owner) {
+    public LookupSystemProcessor(WsrfHandler owner) {
         super(owner);
     }
 
 
     /**
-     * override this for Xom-based processing
+     * Override point: process the body of a message.
      *
-     * @param request
-     * @return the response
-     * @throws java.io.IOException
+     * @param rootElement received contents of the SOAP Body
+     * @return the body of the response or null for an empty response
      */
-    public Element process(Document request) throws IOException {
-        Element rootElement = request.getRootElement();
+    public Element process(Element rootElement) {
         String resourceId=XomHelper.getElementValue(rootElement, "api:ResourceId");
         Application job = lookupJob(resourceId);
         Element address = (Element) job.getEndpointer().copy();

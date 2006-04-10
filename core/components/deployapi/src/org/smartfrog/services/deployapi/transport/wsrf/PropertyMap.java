@@ -71,7 +71,7 @@ public class PropertyMap implements WSRPResourceSource {
      * @param name
      * @return the value or null for no match
      */
-    public OMElement getProperty(QName name) {
+    public Element getProperty(QName name) {
         Property property = lookupProperty(name);
         if(property!=null) {
             return property.getValue();
@@ -85,7 +85,7 @@ public class PropertyMap implements WSRPResourceSource {
      * @param name property name
      * @param value property value
      */
-    public void addStaticProperty(QName name,OMElement value) {
+    public void addStaticProperty(QName name,Element value) {
         StaticProperty property=new StaticProperty();
         property.setName(name);
         property.setValue(value);
@@ -103,17 +103,5 @@ public class PropertyMap implements WSRPResourceSource {
         add(property);
     }
 
-    /**
-     * Add a static property
-     *
-     * @param name  property name
-     * @param value property value
-     */
-    public void addStaticProperty(QName name, Element value) {
-        StaticProperty property = new StaticProperty();
-        property.setName(name);
-        property.setValue(value);
-        add(property);
-    }
 
 }

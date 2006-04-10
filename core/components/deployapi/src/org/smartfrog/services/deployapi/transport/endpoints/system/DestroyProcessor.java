@@ -25,7 +25,7 @@ import org.smartfrog.services.deployapi.engine.JobRepository;
 import org.smartfrog.services.deployapi.engine.ServerInstance;
 import org.smartfrog.services.deployapi.system.Constants;
 import org.smartfrog.services.deployapi.system.Utils;
-import org.smartfrog.services.deployapi.transport.endpoints.SmartFrogAxisEndpoint;
+import org.smartfrog.services.deployapi.transport.endpoints.alpine.WsrfHandler;
 
 import java.io.IOException;
 
@@ -36,17 +36,17 @@ import java.io.IOException;
 public class DestroyProcessor extends SystemProcessor {
     public static final String ERROR_SYSTEM_NOT_FOUND_TO_DESTROY = "system may already have been destroyed";
 
-    public DestroyProcessor(SmartFrogAxisEndpoint owner) {
+    public DestroyProcessor(WsrfHandler owner) {
         super(owner);
     }
 
 
-    public OMElement process(OMElement request) throws IOException {
+    public Element process(Element request) throws IOException {
         jobMustExist();
         JobRepository jobs = ServerInstance.currentInstance().getJobs();
         jobs.terminate(job, "destroyed");
         Element response = new Element(Constants.WSRF_ELEMENT_DESTROY_RESPONSE,
                 Constants.WSRF_WSRL_NAMESPACE);
-        return Utils.xomToAxiom(response);
+        return response;
     }
 }

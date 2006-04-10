@@ -193,5 +193,6 @@ public class Constants extends CddlmConstants {
     public static final String SYSTEM_REFERENCE = "systemReference";
     public static final String RESOURCE_ID = "ResourceId";
 
-    
+
+    public static final String ENDPOINT_REFERENCE = "EndpointReference";
 }

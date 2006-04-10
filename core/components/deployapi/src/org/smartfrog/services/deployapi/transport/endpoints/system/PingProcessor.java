@@ -27,7 +27,7 @@ import org.apache.ws.commons.om.OMElement;
 import org.smartfrog.services.deployapi.binding.XomHelper;
 import org.smartfrog.services.deployapi.system.Constants;
 import org.smartfrog.services.deployapi.system.Utils;
-import org.smartfrog.services.deployapi.transport.endpoints.SmartFrogAxisEndpoint;
+import org.smartfrog.services.deployapi.transport.endpoints.alpine.WsrfHandler;
 
 import java.rmi.RemoteException;
 
@@ -43,20 +43,20 @@ public class PingProcessor extends SystemProcessor {
     private static final Log log = LogFactory.getLog(PingProcessor.class);
 
 
-    public PingProcessor(SmartFrogAxisEndpoint owner) {
+    public PingProcessor(WsrfHandler owner) {
         super(owner);
     }
 
-    public OMElement process(OMElement request) throws RemoteException {
+    public Element process(Element request) throws RemoteException {
         jobMustExist();
 
-        Document document = Utils.axiomToXom(request);
-        Element root = document.getRootElement();
-        Element body = XomHelper.getElement(document,
+/*
+        Element body = XomHelper.getElement(request,
                 "api:"+ Constants.API_ELEMENT_PING_REQUEST);
+*/
 
-        Element response = job.ping(document);
-        return Utils.xomToAxiom(response);
+        Element response = job.ping(request);
+        return response;
     }
 
 

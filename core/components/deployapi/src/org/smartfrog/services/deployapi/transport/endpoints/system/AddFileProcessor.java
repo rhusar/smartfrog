@@ -26,7 +26,7 @@ import org.apache.ws.commons.om.OMElement;
 import org.smartfrog.services.deployapi.binding.XomHelper;
 import org.smartfrog.services.deployapi.engine.ServerInstance;
 import org.smartfrog.services.deployapi.system.Utils;
-import org.smartfrog.services.deployapi.transport.endpoints.SmartFrogAxisEndpoint;
+import org.smartfrog.services.deployapi.transport.endpoints.alpine.WsrfHandler;
 import org.smartfrog.services.deployapi.transport.faults.FaultRaiser;
 import org.smartfrog.services.filesystem.filestore.AddedFilestore;
 import org.smartfrog.services.filesystem.filestore.FileEntry;
@@ -38,18 +38,18 @@ public class AddFileProcessor extends SystemProcessor {
     public static final String PREFIX = "file";
     public static final String SUFFIX = "bin";
 
-    public AddFileProcessor(SmartFrogAxisEndpoint owner) {
+    public AddFileProcessor(WsrfHandler owner) {
         super(owner);
     }
 
 
-    public OMElement process(OMElement request) throws IOException {
+    public Element process(Element request) throws IOException {
+        throwNotImplemented();
         jobMustExist();
         AddedFilestore filestore = ServerInstance.currentInstance()
                 .getFilestore();
-        Document document = Utils.axiomToXom(request);
-        Element root = document.getRootElement();
-        Element body = XomHelper.getElement(document,
+        Element root = request;
+        Element body = XomHelper.getElement(root,
                 "api:addFileRequest");
 
         String name = XomHelper.getElementValue(body, "api:name");
@@ -64,7 +64,9 @@ public class AddFileProcessor extends SystemProcessor {
         Element metadata = XomHelper.getElement(body, "api:metadata", true);
         FileEntry newFile = filestore.createNewFile(PREFIX, SUFFIX);
 
-        return Utils.xomToAxiom(response);
+        //TODO: save to a file
+        //TODO: create a respose
+        return response;
     }
 
 }

@@ -26,7 +26,7 @@ import org.apache.commons.logging.LogFactory;
 import org.smartfrog.services.deployapi.binding.XomHelper;
 import org.smartfrog.services.deployapi.engine.OptionPropertyMap;
 import org.smartfrog.services.deployapi.system.DeployApiConstants;
-import org.smartfrog.services.deployapi.transport.endpoints.SmartFrogAxisEndpoint;
+import org.smartfrog.services.deployapi.transport.endpoints.alpine.WsrfHandler;
 import org.smartfrog.services.deployapi.transport.faults.BaseException;
 import org.smartfrog.services.xml.java5.iterators.NodeIterator;
 
@@ -48,7 +48,7 @@ public class OptionProcessor extends SystemProcessor {
     private static final String OPTION_ATTR_NAME = "name";
     private OptionPropertyMap optionPropertyMap;
 
-    public OptionProcessor(SmartFrogAxisEndpoint owner) {
+    public OptionProcessor(WsrfHandler owner) {
         super(owner);
     }
 
@@ -62,9 +62,9 @@ public class OptionProcessor extends SystemProcessor {
      *
      * @param options
      */
-    public void process(Element options) {
+    public Element process(Element options) {
         if (options == null) {
-            return;
+            return null;
         }
         NodeIterator nodes=new NodeIterator(options);
         for(Node node:nodes) {
@@ -100,6 +100,7 @@ public class OptionProcessor extends SystemProcessor {
                 }
             }
         }
+        return null;
     }
 
     private boolean getMustUnderstand(Element option) {

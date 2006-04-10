@@ -24,6 +24,8 @@ import org.smartfrog.services.deployapi.transport.faults.BaseException;
 
 import javax.xml.namespace.QName;
 
+import nu.xom.Element;
+
 /**
  * Interface for anything that provides WSRP resource information.
  * created 22-Sep-2005 15:57:46
@@ -39,5 +41,5 @@ public interface WSRPResourceSource {
      * @return null for no match;
      * @throws BaseException if they feel like it
      */
-    OMElement getProperty(QName property);
+    Element getProperty(QName property);
 }

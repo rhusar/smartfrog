@@ -19,16 +19,16 @@
  */
 package org.smartfrog.services.deployapi.transport.endpoints.portal;
 
-import org.smartfrog.services.deployapi.transport.endpoints.Processor;
-import org.smartfrog.services.deployapi.transport.endpoints.SmartFrogAxisEndpoint;
+import org.smartfrog.services.deployapi.transport.endpoints.alpine.AlpineProcessor;
+import org.smartfrog.services.deployapi.transport.endpoints.alpine.WsrfHandler;
 
 /**
  * created 21-Sep-2005 11:51:42
  */
 
-public class ResolveProcessor extends Processor {
+public class ResolveProcessor extends AlpineProcessor {
 
-    public ResolveProcessor(SmartFrogAxisEndpoint owner) {
+    public ResolveProcessor(WsrfHandler owner) {
         super(owner);
     }
 }

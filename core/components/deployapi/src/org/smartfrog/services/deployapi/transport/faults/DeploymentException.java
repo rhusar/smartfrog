@@ -49,38 +49,5 @@ public class DeploymentException extends BaseException {
     }
 
 
-    /**
-     * overriders beware: this is called in the ctor
-     *
-     */
-/*
-    public void configureInnerFault() {
-        super.configureInnerFault();
-        if (baseFaultType instanceof DeploymentFaultType) {
-            DeploymentFaultType fault = (DeploymentFaultType) baseFaultType;
-            if (!fault.isSetStack()) {
-                StackTraceElement[] stackTrace = getStackTrace();
-                copyStackTrace(fault, stackTrace);
-            }
-            //TODO: extract
-        }
-    }
-*/
-/*
-
-    public void copyStackTrace(DeploymentFaultType fault, StackTraceElement[] stackTrace) {
-        StringListType stackList = fault.addNewStack();
-        for (StackTraceElement element : stackTrace) {
-            stackList.addItem(element.toString());
-        }
-    }
-*/
-
-
-
-    public void addTextElement(QName qname, String text) {
-        //TODO
-    }
-
 
 }

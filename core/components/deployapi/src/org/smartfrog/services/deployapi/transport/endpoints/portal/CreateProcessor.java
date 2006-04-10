@@ -19,7 +19,6 @@
  */
 package org.smartfrog.services.deployapi.transport.endpoints.portal;
 
-import nu.xom.Document;
 import nu.xom.Element;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -28,8 +27,8 @@ import org.smartfrog.services.deployapi.engine.Application;
 import org.smartfrog.services.deployapi.engine.JobRepository;
 import org.smartfrog.services.deployapi.engine.ServerInstance;
 import org.smartfrog.services.deployapi.system.Constants;
-import org.smartfrog.services.deployapi.transport.endpoints.Processor;
-import org.smartfrog.services.deployapi.transport.endpoints.SmartFrogAxisEndpoint;
+import org.smartfrog.services.deployapi.transport.endpoints.alpine.AlpineProcessor;
+import org.smartfrog.services.deployapi.transport.endpoints.alpine.WsrfHandler;
 import org.smartfrog.services.deployapi.transport.faults.BaseException;
 
 import java.util.Locale;
@@ -39,7 +38,7 @@ import java.util.Locale;
  * 4, 2004 3:58:37 PM
  */
 
-public class CreateProcessor extends Processor {
+public class CreateProcessor extends AlpineProcessor {
     /**
      * log
      */
@@ -48,24 +47,22 @@ public class CreateProcessor extends Processor {
     private Application job;
     public static final String ERROR_NO_DESCRIPTOR = "No descriptor element";
 
-    public CreateProcessor(SmartFrogAxisEndpoint owner) {
+    public CreateProcessor(WsrfHandler owner) {
         super(owner);
     }
 
 
     /**
-     * deployment
+     * Override point: process the body of a message.
      *
-     * @param request
-     * @return
+     * @param rootElement received contents of the SOAP Body
+     * @return the body of the response or null for an empty response
      */
-    public Element process(Document request) {
-
+    public Element process(Element rootElement) {
         JobRepository repository;
         repository = ServerInstance.currentInstance().getJobs();
         //hostname processing
         String hostname = Constants.LOCALHOST;
-        Element rootElement = request.getRootElement();
         Element host =
                 XomHelper.getElement(rootElement, "api:hostname", false);
         if(host!=null) {

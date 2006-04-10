@@ -23,9 +23,13 @@ import nu.xom.Document;
 import nu.xom.Element;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.smartfrog.services.deployapi.transport.endpoints.SmartFrogAxisEndpoint;
+import org.smartfrog.services.deployapi.transport.endpoints.alpine.WsrfHandler;
+import org.smartfrog.services.deployapi.transport.faults.BaseException;
+import org.smartfrog.services.deployapi.system.Constants;
+import org.ggf.cddlm.generated.api.CddlmConstants;
 
 import java.io.IOException;
+import java.rmi.RemoteException;
 
 /**
  * This class is *NOT* re-entrant. Create one for each deployment. created Aug
@@ -39,12 +43,11 @@ public class RunProcessor extends SystemProcessor {
     private static final Log log = LogFactory.getLog(RunProcessor.class);
 
 
-    public RunProcessor(SmartFrogAxisEndpoint owner) {
+    public RunProcessor(WsrfHandler owner) {
         super(owner);
     }
 
     /**
-     * override this for Xom-based processing
      *
      * @param request
      * @return the response
@@ -53,7 +56,8 @@ public class RunProcessor extends SystemProcessor {
     public Element process(Document request) throws IOException {
         jobMustExist();
 
-        Element response = job.run();
+        Element response = null;
+        response = job.run();
         return response;
     }
 
