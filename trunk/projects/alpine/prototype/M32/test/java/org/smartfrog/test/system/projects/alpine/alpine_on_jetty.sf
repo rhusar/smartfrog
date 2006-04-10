@@ -32,45 +32,8 @@ For more information: www.smartfrog.org
 #include "/org/smartfrog/services/jetty/components.sf";
 #include "/org/smartfrog/projects/alpine/config/smartfrog/components.sf"
 #include "/org/smartfrog/projects/alpine/config/smartfrog/examples.sf"
+#include "/org/smartfrog/projects/alpine/config/smartfrog/alpine_server_on_jetty.sf"
 
-AlpineServerOnJetty extends Compound {
-
-    port TBD;
-    home TBD;
-
-
-   jettyServer extends CoreJettyServer {
-
-      jettyhome LAZY PARENT:home;
-
-      port PARENT:port;
-
-      server "alpine";
-
-    }
-
-
-    listener extends JettyListener {
-        listenerPort port;
-        //serverHost host;
-        server LAZY jettyServer;
-    }
-
-    servlets extends ServletContext {
-        
-        resourceBase "./tmp";
-        contextPath "/";
-        server LAZY jettyServer;
-
-     }
-
-      alpineServlet extends AlpineServletOnJetty {
-         pathSpec "/alpine/*";
-         initOrder 5;
-         context LAZY servlets;
-      }
-
-}
 
 
 server extends AlpineServerOnJetty {
@@ -81,7 +44,7 @@ server extends AlpineServerOnJetty {
     echo extends EchoEndpoint {
         name "echoEndpoint";
         path "/echo/";
-        servlet LAZY alpineServlet;
+        servlet LAZY alpine;
     }
 
     
@@ -102,7 +65,7 @@ server extends AlpineServerOnJetty {
 sfConfig extends server {
 
 
-    port 5051;
+    port 6060;
 
     livenessEnabled false;
 }

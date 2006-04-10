@@ -120,6 +120,40 @@ public final class XsdUtils {
         return new QName(element.getNamespaceURI(), element.getLocalName());
     }
 
+    /**
+     * Resolve a xsd:qname string relative to an element.
+     * If this looks like the OMElement.resolveQName, its because I wrote both of them side-by-side
+     * @param element element to resolve from
+     * @param qname qname as prefix:localname string
+     * @param defaultToParentNameSpace flag to indicate that no prefix implies defaulting to the
+     * parent xmlns.
+     * @return the namespace or null for no match
+     */
+    public static QName resolveQName(Element element, String qname, boolean defaultToParentNameSpace) {
+    int colon = qname.indexOf(':');
+    if (colon < 0) {
+        if (defaultToParentNameSpace) {
+            //get the parent ns and use it for the child
+            String namespace = element.getNamespaceURI();
+            return new QName(element.getNamespaceURI(), qname, element.getNamespacePrefix());
+        } else {
+            //else things without no prefix are local.
+            return new QName(qname);
+        }
+    }
+        String prefix = qname.substring(0, colon);
+        String local = qname.substring(colon + 1);
+        if (local.length() == 0) {
+            //empty local, exit accordingly
+            return null;
+        }
 
+        String  namespace = element.getNamespaceURI(prefix);
+        if (namespace == null) {
+            //no matching namespace
+            return null;
+        }
+        return new QName(namespace, local, prefix);
+    }
 
 }

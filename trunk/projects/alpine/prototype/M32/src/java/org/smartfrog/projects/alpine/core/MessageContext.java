@@ -74,6 +74,13 @@ public class MessageContext extends Context {
      */
     private MessageDocument response;
 
+
+    /**
+     * This is just a bit to say whether or not a message has been processed.
+     * its there for the getCurrentMessage(), whifh
+     */
+    private boolean processed;
+
     public MessageDocument getRequest() {
         return request;
     }
@@ -90,12 +97,30 @@ public class MessageContext extends Context {
         this.response = response;
     }
 
+    /**
+     * Get the current message, be it request or response, depending upon the
+     * processed flag.
+     * @return a message. May be null if the context state is not in a consistent position.
+     */
+    public MessageDocument getCurrentMessage() {
+        return processed?response:request;
+    }
+
     public boolean isValidating() {
         return validating;
     }
 
     public void setValidating(boolean validating) {
         this.validating = validating;
+    }
+
+
+    public boolean isProcessed() {
+        return processed;
+    }
+
+    public void setProcessed(boolean processed) {
+        this.processed = processed;
     }
 
     /**

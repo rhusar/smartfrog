@@ -35,6 +35,12 @@ AddressHandler extends AlpineHandler {
   classname "org.smartfrog.projects.alpine.handlers.AddressHandler";
 }
 
+/**
+ * print the current message (Request or response) to the log, for diagnostics purposes
+ */
+LogCurrentMessageHandler extends AlpineHandler {
+  classname "org.smartfrog.projects.alpine.handlers.LogCurrentMessageHandler";
+}
 
 
  

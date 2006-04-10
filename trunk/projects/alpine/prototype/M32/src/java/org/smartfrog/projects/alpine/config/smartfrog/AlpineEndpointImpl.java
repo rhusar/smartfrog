@@ -32,6 +32,8 @@ import org.smartfrog.sfcore.prim.Liveness;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.prim.TerminationRecord;
+import org.smartfrog.sfcore.logging.Log;
+import org.smartfrog.sfcore.logging.LogFactory;
 
 import java.rmi.RemoteException;
 import java.util.Vector;
@@ -43,6 +45,7 @@ import java.util.ArrayList;
  */
 public class AlpineEndpointImpl extends PrimImpl implements AlpineEndpoint {
 
+    private Log log;
     private String name;
     private String getContentType;
     private String getMessage;
@@ -65,6 +68,7 @@ public class AlpineEndpointImpl extends PrimImpl implements AlpineEndpoint {
      */
     public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
         super.sfDeploy();
+        log = LogFactory.getOwnerLog(this);
         name = sfResolve(ATTR_NAME, "", true);
         path = sfResolve(ATTR_PATH, "", true);
         wsdlResource = sfResolve(ATTR_WSDL, "", false);
@@ -125,6 +129,11 @@ public class AlpineEndpointImpl extends PrimImpl implements AlpineEndpoint {
 
         //now register a new endpoint
         context.getEndpoints().register(path, epx);
+
+        //and tell the world
+        if(log.isInfoEnabled()) {
+            log.info("Deployed Alpine endpoint "+name+" at "+path);
+        }
     }
 
     private void copyIfSet(EndpointContext epx, String attribute)
@@ -151,6 +160,10 @@ public class AlpineEndpointImpl extends PrimImpl implements AlpineEndpoint {
         super.sfTerminateWith(status);
         AlpineContext context = AlpineContext.getAlpineContext();
         context.getEndpoints().unregister(epx);
+        if (log.isInfoEnabled()) {
+            log.info("Undeployed Alpine endpoint " + name + " at " + path);
+        }
+
     }
 
     /**

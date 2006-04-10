@@ -32,7 +32,44 @@ EchoEndpoint extends AlpineEndpoint {
     ];
 }
 
+AlpineServerOnJetty extends Compound {
 
+    port TBD;
+    home TBD;
+
+
+   jettyServer extends CoreJettyServer {
+
+      jettyhome LAZY PARENT:home;
+
+      port PARENT:port;
+
+      server "alpine";
+
+    }
+
+
+    listener extends JettyListener {
+        listenerPort port;
+        //serverHost host;
+        server LAZY jettyServer;
+    }
+
+    servlets extends ServletContext {
+
+        resourceBase "./tmp";
+        contextPath "/";
+        server LAZY jettyServer;
+
+     }
+
+      alpineServlet extends AlpineServletOnJetty {
+         pathSpec "/alpine/*";
+         initOrder 5;
+         context LAZY servlets;
+      }
+
+}
 
 
 
