@@ -1,4 +1,4 @@
-/** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
+/** (C) Copyright 2006 Hewlett-Packard Development Company, LP
 
  This library is free software; you can redistribute it and/or
  modify it under the terms of the GNU Lesser General Public
@@ -17,45 +17,46 @@
  For more information: www.smartfrog.org
 
  */
-package org.smartfrog.services.deployapi.transport.endpoints;
+package org.smartfrog.services.deployapi.transport.endpoints.alpine;
 
-import nu.xom.Document;
 import nu.xom.Element;
-import org.apache.axis2.context.MessageContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.ws.commons.om.OMElement;
+import org.smartfrog.projects.alpine.core.MessageContext;
+import org.smartfrog.projects.alpine.faults.ServerException;
+import org.smartfrog.projects.alpine.om.soap11.MessageDocument;
 import org.smartfrog.services.deployapi.engine.Application;
 import org.smartfrog.services.deployapi.engine.JobRepository;
 import org.smartfrog.services.deployapi.engine.ServerInstance;
 import org.smartfrog.services.deployapi.system.Constants;
-import org.smartfrog.services.deployapi.system.Utils;
 import org.smartfrog.services.deployapi.transport.faults.BaseException;
 import org.smartfrog.services.deployapi.transport.faults.DeploymentException;
 import org.smartfrog.services.deployapi.transport.faults.FaultRaiser;
+import org.ggf.cddlm.generated.api.CddlmConstants;
 
-import java.io.IOException;
 import java.net.URI;
+import java.io.IOException;
 
 /**
+ * This is a fork of the original endpoints.processsor class, one that works in a pure alpine mode.
  * created Aug 4, 2004 3:59:42 PM
  */
 
-public class Processor extends FaultRaiser {
-    private static final Log log = LogFactory.getLog(Processor.class);
+public abstract class AlpineProcessor extends FaultRaiser {
+    private static final Log log = LogFactory.getLog(AlpineProcessor.class);
 
-    public Processor(SmartFrogAxisEndpoint owner) {
+    public AlpineProcessor(WsrfHandler owner) {
         this.owner = owner;
     }
 
     /**
      * our owner
      */
-    private SmartFrogAxisEndpoint owner;
+    private WsrfHandler owner;
 
     private MessageContext messageContext;
 
-    public SmartFrogAxisEndpoint getOwner() {
+    public WsrfHandler getOwner() {
         return owner;
     }
 
@@ -68,21 +69,14 @@ public class Processor extends FaultRaiser {
         this.messageContext = messageContext;
     }
 
-    private static URI makeRuntimeException(String url,
-                                            Exception e) {
-        log.error("url", e);
-        throw new RuntimeException(url, e);
-    }
-
-
-
 
     /**
      * look up a job in the repository
      *
      * @param jobURI
      * @return the jobstate reference
-     * @throws BaseException if there is no such job
+     * @throws org.smartfrog.services.deployapi.transport.faults.BaseException
+     *          if there is no such job
      */
     public Application lookupJob(URI jobURI) throws BaseException {
         Application job = lookupJobNonFaulting(jobURI);
@@ -111,7 +105,8 @@ public class Processor extends FaultRaiser {
      *
      * @param resourceId
      * @return
-     * @throws DeploymentException if there is no match
+     * @throws org.smartfrog.services.deployapi.transport.faults.DeploymentException
+     *          if there is no match
      */
     protected Application lookupJob(String resourceId) {
         ServerInstance server = ServerInstance.currentInstance();
@@ -120,54 +115,53 @@ public class Processor extends FaultRaiser {
             throw new DeploymentException(Constants.F_NO_SUCH_APPLICATION);
         }
         return job;
-    }    
-
-    /**
-     * parse a message fragment and turn it into a Xom document
-     *
-     * @param element
-     * @param message
-     * @return
-     */
-/*    protected Document parseMessageFragment(MessageElement element,
-                                            final String message)
-            throws BaseFault {
-        Document doc;
-        try {
-            String subdoc = element.getAsString();
-            Builder builder = new Builder(false);
-            Reader reader = new StringReader(subdoc);
-            doc = builder.build(reader);
-            return doc;
-
-        } catch (Exception e) {
-            throw raiseNestedFault(e, message);
-        }
-    }*/
-
-
-    /**
-     * override this for AXIOM-AXIOM processing.
-     * the default hands it off to {@link #process(Document)}
-     * @param request
-     * @return the response
-     * @throws IOException
-     */
-    public OMElement process(OMElement request) throws IOException {
-        Document document = Utils.axiomToXom(request);
-        return Utils.xomToAxiom(process(document));
     }
 
+
     /**
-     * override this for Xom-based processing
+     * Process an incoming message.
+     *
      * @param request
-     * @return the response
-     * @throws IOException
+     * @param response
+     * @return the response message, with body and headers set up.
      */
-    public Element process(Document request) throws IOException {
-        throwNotImplemented();
+    public void process(MessageDocument request, MessageDocument response) {
+        Element payload = getPayload(request);
+        if (payload == null) {
+            throw new ServerException("Empty SOAP message");
+        }
+        try {
+            //process the message
+            Element body = process(payload);
+            //append the payload under the response
+            if (body != null) {
+                response.getBody().appendChild(body);
+            }
+        } catch (IOException e) {
+            throw new BaseException(CddlmConstants.F_RUNTIME_EXCEPTION, e);
+        }
+    }
+
+
+    /**
+     * Override point: process the body of a message.
+     *
+     * @param payload received contents of the SOAP Body
+     * @return the body of the response or null for an empty response
+     */
+    public Element process(Element payload) throws IOException {
+        //do nothing
         return null;
     }
 
+    /**
+     * Get the payload of a soap message -the stuff under the body
+     *
+     * @param request
+     * @return they payload or null for none
+     */
+    public Element getPayload(MessageDocument request) {
+        return request.getBody().getFirstChildElement();
+    }
 
 }

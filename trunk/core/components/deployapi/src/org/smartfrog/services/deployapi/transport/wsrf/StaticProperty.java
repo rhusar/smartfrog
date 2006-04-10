@@ -23,30 +23,30 @@ package org.smartfrog.services.deployapi.transport.wsrf;
 import nu.xom.Element;
 import org.apache.ws.commons.om.OMElement;
 import org.smartfrog.services.deployapi.system.Utils;
+import org.smartfrog.projects.alpine.om.base.SoapElement;
 
 import javax.xml.namespace.QName;
 
 /**
- * this class represents something that can provide a resource
+ * this class holds a static resource mapping, stored as a Xom Element.
  */
 public class StaticProperty implements Property {
 
     private QName name;
-    private OMElement value;
+    private Element value;
 
     public StaticProperty() {
     }
 
-    public StaticProperty(QName name, OMElement value) {
+    public StaticProperty(QName name, Element value) {
         this.name = name;
         this.value = value;
     }
 
     public StaticProperty(QName name, String value) {
         this.name = name;
-        OMElement elt=Utils.createOmElement(name.getNamespaceURI(), 
-                name.getLocalPart(), null);
-        elt.setText(value);
+        Element elt=new SoapElement(name);
+        elt.appendChild(value);
         this.value = elt;
     }
 
@@ -59,16 +59,12 @@ public class StaticProperty implements Property {
         this.name = name;
     }
 
-    public OMElement getValue() {
+    public Element getValue() {
         return value;
     }
 
-    public void setValue(OMElement value) {
+    public void setValue(Element value) {
         this.value = value;
-    }
-
-    public void setValue(Element element) {
-        setValue(Utils.xomToAxiom(element));
     }
 
 }

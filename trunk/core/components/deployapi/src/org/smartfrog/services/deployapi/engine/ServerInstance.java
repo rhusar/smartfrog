@@ -244,7 +244,7 @@ public class ServerInstance implements WSRPResourceSource {
      * @throws org.smartfrog.services.deployapi.transport.faults.BaseException
      *          if they feel like it
      */
-    public OMElement getProperty(QName property) {
+    public Element getProperty(QName property) {
         return properties.getProperty(property);
     }
 
@@ -292,9 +292,12 @@ public class ServerInstance implements WSRPResourceSource {
     }
 
 
+    /**
+     * This is a live property that can be served up
+     */
     private static class ActiveSystemsProperty implements Property {
 
-        ServerInstance owner;
+        private ServerInstance owner;
 
         public ActiveSystemsProperty(ServerInstance owner) {
             this.owner = owner;
@@ -304,13 +307,13 @@ public class ServerInstance implements WSRPResourceSource {
             return Constants.PROPERTY_PORTAL_ACTIVE_SYSTEMS;
         }
 
-        public OMElement getValue() {
+        public Element getValue() {
             Element response=XomHelper.element(Constants.PROPERTY_PORTAL_ACTIVE_SYSTEMS);
             JobRepository jobs = owner.getJobs();
             for (Application job : jobs) {
                 response.appendChild(job.getEndpointer().copy());
             }
-            return Utils.xomToAxiom(response);
+            return response;
         }
     }
 }

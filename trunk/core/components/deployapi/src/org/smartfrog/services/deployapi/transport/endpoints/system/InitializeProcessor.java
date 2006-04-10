@@ -31,7 +31,7 @@ import org.smartfrog.services.deployapi.system.Constants;
 import org.smartfrog.services.deployapi.system.DeploymentLanguage;
 import org.smartfrog.services.deployapi.system.LifecycleStateEnum;
 import org.smartfrog.services.deployapi.system.Utils;
-import org.smartfrog.services.deployapi.transport.endpoints.SmartFrogAxisEndpoint;
+import org.smartfrog.services.deployapi.transport.endpoints.alpine.WsrfHandler;
 
 import java.io.File;
 import java.io.IOException;
@@ -51,20 +51,17 @@ public class InitializeProcessor extends SystemProcessor {
     DescriptorHelper helper;
 
 
-    public InitializeProcessor(SmartFrogAxisEndpoint owner) {
+    public InitializeProcessor(WsrfHandler owner) {
         super(owner);
         helper = ServerInstance.currentInstance().getDescriptorHelper();
     }
 
-    public OMElement process(OMElement request) throws IOException {
+    public Element process(Element request) throws IOException {
         jobMustExist();
-        Document document = Utils.axiomToXom(request);
-        Element rootElement = document.getRootElement();
+        Element rootElement = request;
         helper.validateRequest(rootElement);
-
-
         Element response = initialize(rootElement);
-        return Utils.xomToAxiom(response);
+        return response;
     }
 
     public OptionProcessor getOptions() {

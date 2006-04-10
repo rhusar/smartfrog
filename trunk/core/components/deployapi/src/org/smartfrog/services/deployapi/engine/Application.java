@@ -46,6 +46,7 @@ import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLivenessException;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.TerminationRecord;
+import org.smartfrog.projects.alpine.wsa.AlpineEPR;
 
 import javax.xml.namespace.QName;
 import java.io.File;
@@ -184,8 +185,13 @@ public class Application implements WSRPResourceSource {
      * enter terminated state
      */
     private TerminationRecord terminationRecord;
+
+    /**
+     * Axis EPR
+     */
     private EndpointReference axisEpr;
 
+    private AlpineEPR alpineEPR;
 
     public Application(String id) {
         setId(id);
@@ -238,12 +244,17 @@ public class Application implements WSRPResourceSource {
         this.address = address;
         axisEpr = new EndpointReference(address);
         endpointer= EprHelper.makeAddress(address, Constants.WS_ADDRESSING_NAMESPACE);
+        alpineEPR =new AlpineEPR(address);
+        endpointer = alpineEPR.toXom(Constants.ENDPOINT_REFERENCE, Constants.WS_ADDRESSING_NAMESPACE,"wsa");
     }
-
-
 
     public EndpointReference getAxisEpr() {
         return axisEpr;
+    }
+
+
+    public AlpineEPR getAlpineEPR() {
+        return alpineEPR;
     }
 
     public Element getEndpointer() {
@@ -636,7 +647,7 @@ public class Application implements WSRPResourceSource {
      * @return null for no match;
      * @throws BaseException if they feel like it
      */
-    public OMElement getProperty(QName resource) {
+    public Element getProperty(QName resource) {
         return properties.getProperty(resource);
 
     }
@@ -669,7 +680,7 @@ public class Application implements WSRPResourceSource {
     }
 
 
-    public Element ping(Document request) {
+    public Element ping(Element request) {
         Prim target = resolvePrimNonFaulting();
         if (target == null) {
             throw new BaseException(Constants.F_LIVENESS_EXCEPTION);

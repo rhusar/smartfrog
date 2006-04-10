@@ -4,6 +4,8 @@ import nu.xom.Element;
 import org.apache.axis2.AxisFault;
 import org.ggf.cddlm.utils.FaultTemplate;
 import org.smartfrog.services.deployapi.binding.XomHelper;
+import org.smartfrog.projects.alpine.interfaces.SoapFaultSource;
+import org.smartfrog.projects.alpine.om.soap11.Fault;
 
 import javax.xml.namespace.QName;
 import java.util.ArrayList;
@@ -12,8 +14,12 @@ import java.util.GregorianCalendar;
 import java.util.List;
 
 /**
+ * This is a mostly-transport-neutral XOM-centric WSRF BaseFault. It implements {@link SoapFaultSource} so
+ * acts as a direct source of fault information in Alpine.
+ *
+ * TODO: make this a proper basefault
  */
-public class BaseException extends RuntimeException {
+public class BaseException extends RuntimeException implements SoapFaultSource {
 
 
     private QName faultCode;
@@ -106,9 +112,6 @@ public class BaseException extends RuntimeException {
         if (thrown instanceof BaseException) {
             return (BaseException) thrown;
         }
-        if (thrown instanceof AxisFault) {
-            return new DeploymentException((AxisFault) thrown);
-        }
         return new BaseException(thrown);
     }
 
@@ -151,18 +154,6 @@ public class BaseException extends RuntimeException {
     }
 
     /**
-     * Turn into an Axis Fault or otherwise serialize
-     *
-     * @return
-     */
-    public AxisFault makeAxisFault() {
-        AxisFault fault = new AxisFault(this);
-
-        fault.setFaultCode(faultCode!=null?faultCode.toString():"no-fault-code");
-        return fault;
-    }
-
-    /**
      * add some fault detail
      * @param name
      * @param detail
@@ -171,5 +162,23 @@ public class BaseException extends RuntimeException {
         Element elt= XomHelper.element(name);
         elt.appendChild(detail);
         data.add(elt);
+    }
+
+    /**
+     * Create a soap fault from ourselves.
+     * This includes fault code and actor, detail, and any nested cause
+     * @return
+     */
+    public Fault GenerateSoapFault() {
+        Fault fault=new Fault();
+        fault.setFaultCode(faultCode.toString());
+        fault.setFaultActor(faultActor);
+        if(getCause()!=null) {
+            fault.addThrowable(getCause());
+        }
+        for(Element elt:data) {
+            fault.appendToFaultDetail(elt.copy());
+        }
+        return fault;
     }
 }

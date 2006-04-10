@@ -21,16 +21,15 @@
 package org.smartfrog.services.deployapi.transport.endpoints.system;
 
 import org.smartfrog.services.deployapi.engine.Application;
-import org.smartfrog.services.deployapi.transport.endpoints.Processor;
-import org.smartfrog.services.deployapi.transport.endpoints.SmartFrogAxisEndpoint;
-import org.smartfrog.services.deployapi.transport.faults.FaultRaiser;
+import org.smartfrog.services.deployapi.transport.endpoints.alpine.AlpineProcessor;
+import org.smartfrog.services.deployapi.transport.endpoints.alpine.WsrfHandler;
 
 /**
 
  */
-public abstract class SystemProcessor extends Processor {
+public abstract class SystemProcessor extends AlpineProcessor {
 
-    public SystemProcessor(SmartFrogAxisEndpoint owner) {
+    public SystemProcessor(WsrfHandler owner) {
         super(owner);
     }
 
@@ -51,7 +50,7 @@ public abstract class SystemProcessor extends Processor {
      */
     protected void jobMustExist() {
         if(job==null) {
-            throw FaultRaiser.raiseNoSuchApplicationFault("No system found"); 
+            throw raiseNoSuchApplicationFault("No system found");
         }
     }
     

@@ -23,6 +23,7 @@ package org.smartfrog.services.deployapi.engine;
 import nu.xom.Element;
 import org.apache.ws.commons.om.OMElement;
 import static org.smartfrog.services.deployapi.binding.XomHelper.apiElement;
+import org.smartfrog.services.deployapi.binding.XomHelper;
 import org.smartfrog.services.deployapi.system.Constants;
 import org.smartfrog.services.deployapi.system.Utils;
 import org.smartfrog.services.deployapi.transport.wsrf.Property;
@@ -46,24 +47,13 @@ public class ActiveSystemsProperty implements Property {
         return name;
     }
 
-    /*
-            ActiveSystemsDocument doc=ActiveSystemsDocument.Factory.newInstance();
-        SystemReferenceListType systems = doc.addNewActiveSystems();
-        int size=jobs.size();
-        EndpointReferenceType apps[]=new EndpointReferenceType[size];
-        int counter=0;
-        for(Job job:jobs) {
-            apps[counter++]=(EndpointReferenceType)job.getEndpoint().copy();
-        }
-        systems.setSystemArray(apps);
-        return doc;
-    */
-
-    public OMElement getValue() {
+    public Element getValue() {
         Element result =apiElement("ActiveSystems");
         for (Application job : jobs) {
-         //tODO           
+            Element epr = (Element) job.getEndpointer().copy();
+            XomHelper.adopt(epr,"system");
+            result.appendChild(epr);
         }
-        return Utils.xomToAxiom(result);
+        return result;
     }
 }
