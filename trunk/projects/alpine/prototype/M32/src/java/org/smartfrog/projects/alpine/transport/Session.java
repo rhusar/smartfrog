@@ -27,6 +27,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import nu.xom.Element;
 
+import java.util.concurrent.Executor;
+
 /**
  * This represents an ongoing conversation with a single host/endpoint. Stuff like
  * auth data can go in there, and it has a default address
@@ -36,13 +38,28 @@ public class Session {
     private AlpineEPR endpoint;
     private String role=DEFAULT_ROLE;
     private boolean validating=true;
+    /**
+     * {@value}
+     */
     public static final String DEFAULT_ROLE = "Client";
-    private Log log= LogFactory.getLog(Session.class);
+    private static Log log= LogFactory.getLog(Session.class);
+    /**
+     * a queue for transmissions
+     */
+    private TransmitQueue queue;
 
 
+    /**
+     * Create a new session.
+     * @param endpoint default address
+     * @param role role for this node. Defaults to {@link #DEFAULT_ROLE}
+     * @param validating flag to set validating parser
+     */
     public Session(AlpineEPR endpoint, String role, boolean validating) {
         this.endpoint = endpoint;
-        this.role = role;
+        if(role!=null) {
+            this.role = role;
+        }
         this.validating = validating;
     }
 
@@ -69,6 +86,16 @@ public class Session {
     public void setValidating(boolean validating) {
         this.validating = validating;
     }
+
+    public TransmitQueue getQueue() {
+        return queue;
+    }
+
+    public void setQueue(TransmitQueue queue) {
+        this.queue = queue;
+    }
+
+
 
     /**
      * Create an outbound transmission
@@ -116,4 +143,37 @@ public class Session {
         tx.getRequest().getBody().appendChild(payload);
         return tx;
     }
+
+    /**
+     *
+     * Utility method to wrap up most of everything into one single operation. Create a message
+     * addressed to the default destination, with the given payload.
+     *
+     * This only works if the queue has been set via {@link #setQueue(TransmitQueue)},
+     * otherwise you get a null pointer exception.
+     *
+     * @param action soap action; leave null for it to be taken from the payload
+     * @param payload the contents of the SOAP Envelope
+     * @return the transmission, which can be waited on
+     */
+    public Transmission queue(String action,Element payload) {
+        Transmission tx=createTransmission(action,payload);
+        queue.transmit(tx);
+        return tx;
+    }
+
+    /**
+     * Utility method to wrap up most of everything into one single operation. Create a message
+     * addressed to the default destination, with the given payload.
+     * <p/>
+     * This only works if the queue has been set via {@link #setQueue(TransmitQueue)},
+     * otherwise you get a null pointer exception.
+     *
+     * @param payload the contents of the SOAP Envelope
+     * @return the transmission, which can be waited on
+     */
+    public Transmission queue(Element payload) {
+        return queue(null, payload);
+    }
+
 }

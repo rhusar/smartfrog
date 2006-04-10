@@ -25,6 +25,10 @@ import org.smartfrog.projects.alpine.om.soap11.MessageDocument;
 
 import java.util.concurrent.Future;
 import java.util.concurrent.Callable;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeoutException;
+import java.io.IOException;
 
 /**
  * This represents an async transmission. The result is the thing callers should block on.
@@ -118,5 +122,33 @@ public class Transmission implements Callable {
         HttpTransmitter transmitter=new HttpTransmitter(this);
         transmitter.transmit();
         return null;
+    }
+
+    /**
+     * Wait for a result
+     * @param timeout timeout in milliseconds
+     * @throws IOException
+     * @throws ExecutionException
+     * @throws TimeoutException
+     * @throws InterruptedException
+     */
+    public MessageDocument blockForResult(long timeout) throws IOException, ExecutionException, TimeoutException,
+            InterruptedException {
+        try {
+            result.get(timeout, TimeUnit.MILLISECONDS);
+            return getResponse();
+        } catch (ExecutionException e) {
+            Throwable cause = e.getCause();
+            //nested ioes are rethrown
+            if (cause instanceof IOException) {
+                throw (IOException) cause;
+            }
+            //runtime exceptions are stripped out and rethrown
+            if (cause instanceof RuntimeException) {
+                throw (RuntimeException) cause;
+            }
+            //anything else is sent nested.
+            throw e;
+        }
     }
 }
