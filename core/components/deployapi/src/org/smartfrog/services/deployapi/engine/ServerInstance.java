@@ -179,7 +179,6 @@ public class ServerInstance implements WSRPResourceSource {
      * @throws SmartFrogLivenessException
      */
     public void ping() throws SmartFrogLivenessException {
-
     }
 
     /**

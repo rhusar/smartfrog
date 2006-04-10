@@ -17,7 +17,7 @@
  For more information: www.smartfrog.org
 
  */
-package org.smartfrog.services.deployapi.test.system;
+package org.smartfrog.services.deployapi.test.system.axis2;
 
 import nu.xom.Element;
 import nu.xom.Node;
@@ -28,6 +28,7 @@ import org.smartfrog.services.deployapi.binding.EprHelper;
 import org.smartfrog.services.deployapi.client.PortalEndpointer;
 import org.smartfrog.services.deployapi.client.SystemEndpointer;
 import org.smartfrog.services.deployapi.system.Constants;
+import org.smartfrog.services.deployapi.test.system.axis2.ApiTestBase;
 import org.smartfrog.services.xml.java5.iterators.NodeIterator;
 
 import java.util.ArrayList;

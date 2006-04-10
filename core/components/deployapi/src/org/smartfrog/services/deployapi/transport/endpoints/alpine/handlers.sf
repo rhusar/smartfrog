@@ -31,3 +31,41 @@ SystemHandler extends AlpineHandler {
 }
 
 
+DeployApiEndpoint extends AlpineEndpoint {
+
+     getMessage ##
+      <html>
+      <head><title>Deployment Endpoint</title><head>
+      <body>This an endpoint of the HP implementation of the CDDLM Deployment system</body>
+      </html>
+     #;
+
+}
+
+
+//the portal endpoint
+PortalEndpoint extends DeployApiEndpoint {
+    name "portal";
+    path "/portal/";
+    handlers [
+      LogCurrentMessageHandler:classname,
+      AddressHandler:classname,
+      PortalHandler:classname,
+      LogCurrentMessageHandler:classname,
+      MustUnderstandChecker:classname
+    ];
+}
+
+
+//the system endpoint
+SystemEndpoint extends DeployApiEndpoint {
+    name "system";
+    path "/system/";
+    handlers [
+      LogCurrentMessageHandler:classname,
+      AddressHandler:classname,
+      SystemHandler:classname,
+      LogCurrentMessageHandler:classname,
+      MustUnderstandChecker:classname
+    ];
+}

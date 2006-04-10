@@ -19,7 +19,7 @@
  */
 
 
-package org.smartfrog.services.deployapi.test.system;
+package org.smartfrog.services.deployapi.test.system.axis2;
 
 import org.apache.axis2.AxisFault;
 import org.apache.commons.logging.Log;

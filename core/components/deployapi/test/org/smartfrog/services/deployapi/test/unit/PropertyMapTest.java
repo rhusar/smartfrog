@@ -56,7 +56,7 @@ public class PropertyMapTest extends UnitTestBase {
     }
 
     public void testAddLookupRemove() throws Exception {
-        OMElement result = map.getProperty(PROPNAME);
+        Element result = map.getProperty(PROPNAME);
         assertNull(result);
         map.addStaticProperty(PROPNAME,
                 elt);
@@ -83,12 +83,12 @@ public class PropertyMapTest extends UnitTestBase {
     public void testAddStatic() throws Exception {
         Property result = map.lookupProperty(Utils.convert(PROPNAME));
         assertNull(result);
-        OMElement e =Utils.xomToAxiom(elt);
+        Element e =elt;
         map.addStaticProperty(Utils.convert(PROPNAME),
                 e);
         result = map.lookupProperty(Utils.convert(PROPNAME));
         assertNotNull(result);
-        OMElement value=result.getValue();
+        Element value=result.getValue();
         assertSame(e,value);
         value = map.getProperty(Utils.convert(PROPNAME));
         assertSame(e, value);
@@ -103,10 +103,10 @@ public class PropertyMapTest extends UnitTestBase {
         map.addStaticProperty(Utils.convert(PROPNAME), text);
         Property result = map.lookupProperty(Utils.convert(PROPNAME));
         assertNotNull(result);
-        OMElement value=result.getValue();
-        assertEquals(text,value.getText());
+        Element value=result.getValue();
+        assertEquals(text,value.getValue());
         value = map.getProperty(Utils.convert(PROPNAME));
-        assertEquals(text, value.getText());
+        assertEquals(text, value.getValue());
     }
 
 
