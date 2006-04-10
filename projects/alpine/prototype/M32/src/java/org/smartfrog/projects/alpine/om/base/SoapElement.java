@@ -107,6 +107,22 @@ public class SoapElement extends Element implements ValidateXml {
     }
 
     /**
+     * Extract the first child element of this node
+     * @return the element or null for no child elements
+     */
+    public final Element getFirstChildElement() {
+        int c=getChildCount();
+        for(int i=0;i<c;i++) {
+            Node n=getChild(i);
+            if (n instanceof Element) {
+                return (Element) n;
+            }
+        }
+        //no match
+        return null;
+    }
+
+    /**
      * <p/>
      * Returns the first child element with the specified nqame or null
      * null. </p>
