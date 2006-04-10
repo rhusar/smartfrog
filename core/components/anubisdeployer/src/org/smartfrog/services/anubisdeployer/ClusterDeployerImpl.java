@@ -50,7 +50,7 @@ public class ClusterDeployerImpl extends PrimProcessDeployerImpl {
 
     static {
         try {
-            uniqueNameBase = "sfClusterReservation." + SFProcess.getProcessCompound().sfCompleteName();
+            uniqueNameBase = "sfClusterReservation-" + SFProcess.getProcessCompound().sfCompleteName();
         } catch (RemoteException e) {
             uniqueNameBase = "sfClusterReservation.error";
         }

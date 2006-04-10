@@ -56,8 +56,8 @@ public class ClusterCompoundImpl extends CompoundImpl implements Compound {
     public synchronized void sfDeployWith(Prim parent, Context comp) throws SmartFrogDeploymentException, RemoteException {
         super.sfDeployWith(parent, comp);
 
-        System.out.println("deployed context");
-        System.out.println(comp);
+        //System.out.println("deployed context");
+        //System.out.println(comp);
         ComponentDescription reservationInfo = null;
 
         try {
