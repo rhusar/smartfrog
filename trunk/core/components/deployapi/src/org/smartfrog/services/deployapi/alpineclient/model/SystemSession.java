@@ -19,21 +19,19 @@
  */
 package org.smartfrog.services.deployapi.alpineclient.model;
 
-import org.smartfrog.projects.alpine.transport.TransmitQueue;
+import nu.xom.Element;
 import org.smartfrog.projects.alpine.transport.Session;
+import org.smartfrog.projects.alpine.transport.TransmitQueue;
 import org.smartfrog.projects.alpine.wsa.AlpineEPR;
 import org.smartfrog.services.deployapi.binding.XomHelper;
-import org.smartfrog.services.deployapi.binding.EprHelper;
 import org.smartfrog.services.deployapi.system.Constants;
-import org.apache.axis2.AxisFault;
-import nu.xom.Element;
-import nu.xom.Document;
 
 /**
  * created 10-Apr-2006 17:08:08
  */
 
 public class SystemSession extends SubsidiarySession {
+    private String resourceId;
 
     public SystemSession(AlpineEPR endpoint, boolean validating, TransmitQueue queue) {
         super(endpoint, validating, queue);
@@ -46,12 +44,11 @@ public class SystemSession extends SubsidiarySession {
      */
     public SystemSession(Session parent, Element root) {
         super(null, parent.isValidating(), parent.getQueue());
-        String cachedResourceId = XomHelper.getElementValue(root,
+        resourceId = XomHelper.getElementValue(root,
                 "api:ResourceId");
         Element address = XomHelper.getElement(root,
                 "api:systemReference");
         AlpineEPR epr = new AlpineEPR(address, Constants.WS_ADDRESSING_NAMESPACE);
         setEndpoint(epr);
     }
-}
 }
