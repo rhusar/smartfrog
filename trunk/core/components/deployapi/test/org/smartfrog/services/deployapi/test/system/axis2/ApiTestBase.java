@@ -19,7 +19,7 @@
  */
 
 
-package org.smartfrog.services.deployapi.test.system;
+package org.smartfrog.services.deployapi.test.system.axis2;
 
 import org.smartfrog.services.deployapi.client.ConsoleOperation;
 import org.smartfrog.services.deployapi.client.Deploy;

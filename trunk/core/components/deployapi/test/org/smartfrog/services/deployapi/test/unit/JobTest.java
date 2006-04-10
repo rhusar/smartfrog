@@ -26,6 +26,7 @@ import org.smartfrog.services.deployapi.engine.JobRepository;
 import org.smartfrog.services.deployapi.system.Constants;
 import org.smartfrog.services.deployapi.system.LifecycleStateEnum;
 import org.smartfrog.services.deployapi.transport.faults.BaseException;
+import org.smartfrog.projects.alpine.wsa.AlpineEPR;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -68,13 +69,13 @@ public class JobTest extends UnitTestBase {
     }
 
     public void testMappingWorks() throws Exception {
-        EndpointReference epr = getJobEndpointer();
+        AlpineEPR epr = getJobEndpointer();
         Application job2=repository.lookupJobFromEndpointer(epr);
         assertSame(job,job2);
     }
 
-    private EndpointReference getJobEndpointer() {
-        return job.getAxisEpr();
+    private AlpineEPR getJobEndpointer() {
+        return job.getAlpineEPR();
     }
 
     public void testQueryWithSpacesWorks() throws Exception {
@@ -105,7 +106,7 @@ public class JobTest extends UnitTestBase {
     }
 
     private String getJobQuery() throws MalformedURLException {
-        EndpointReference epr = getJobEndpointer();
+        AlpineEPR epr = getJobEndpointer();
         URL url=new URL(epr.getAddress());
         return url.getQuery();
     }

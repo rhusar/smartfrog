@@ -18,51 +18,38 @@
 
  */
 
-package org.smartfrog.services.deployapi.test.system;
+package org.smartfrog.services.deployapi.test.system.axis2;
 
-import org.smartfrog.services.deployapi.client.Deploy;
+import org.smartfrog.services.deployapi.client.Endpointer;
+import org.smartfrog.services.deployapi.client.SystemEndpointer;
+import org.smartfrog.services.deployapi.client.Terminate;
+import org.smartfrog.services.deployapi.system.Constants;
+import org.smartfrog.services.deployapi.test.system.axis2.ApiTestBase;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
 
  */
-public class DeployCommandTest extends ApiTestBase {
+public class TerminateCommandTest extends ApiTestBase {
 
-    public DeployCommandTest(String name) {
+    public TerminateCommandTest(String name) {
         super(name);
     }
 
-
     public void testMain() throws Exception {
-
-        boolean b = deployResource(RESOURCE_ECHO);
-        assertTrue(b);
-
-    }
-
-    private boolean deployResource(String resource) throws
-            IOException {
-        File file =resourceToTempFile(resource);
-        List<String> args=new ArrayList<String>();
-        args.add(getBinding().toCommandLineElement());
-        args.add(file.getAbsolutePath());
-        String args2[]=toStringArray(args);
-        boolean b;
+        SystemEndpointer system=createSystem();
         try {
-            b= Deploy.innerMain(args2);
+            List<String> args=new ArrayList<String>();
+            args.add(Endpointer.URL_COMMAND+system.getURL().toString());
+            String[] args2 = toStringArray(args);
+            boolean b = Terminate.innerMain(args2);
+            assertTrue("terminate failed ",b);
+            String timestamp = system.getStringProperty(Constants.PROPERTY_SYSTEM_TERMINATED_TIME);
+            assertIsoDate(timestamp);
         } finally {
-            file.delete();
+            destroySystem(system);
         }
-        return b;
     }
-
-    public void testMainFails() throws Exception {
-
-        boolean b = deployResource(RESOURCE_FAILTODEPLOY);
-        assertFalse(b);
-    }    
 }

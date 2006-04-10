@@ -18,7 +18,7 @@
 
  */
 
-package org.smartfrog.services.deployapi.test.unit;
+package org.smartfrog.services.deployapi.test.system.axis2;
 
 import org.apache.axis2.description.AxisOperation;
 import org.smartfrog.services.deployapi.client.ApiCall;
@@ -26,7 +26,7 @@ import org.smartfrog.services.deployapi.client.ConsoleOperation;
 import org.smartfrog.services.deployapi.client.PortalEndpointer;
 import org.smartfrog.services.deployapi.client.SystemEndpointer;
 import org.smartfrog.services.deployapi.system.Constants;
-import org.smartfrog.services.deployapi.test.system.ApiTestBase;
+import org.smartfrog.services.deployapi.test.system.axis2.ApiTestBase;
 
 import java.rmi.RemoteException;
 

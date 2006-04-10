@@ -18,37 +18,52 @@
 
  */
 
-package org.smartfrog.services.deployapi.test.system;
+package org.smartfrog.services.deployapi.test.system.axis2;
 
-import org.smartfrog.services.deployapi.client.Endpointer;
-import org.smartfrog.services.deployapi.client.SystemEndpointer;
-import org.smartfrog.services.deployapi.client.Terminate;
-import org.smartfrog.services.deployapi.system.Constants;
+import org.smartfrog.services.deployapi.client.Deploy;
+import org.smartfrog.services.deployapi.test.system.axis2.ApiTestBase;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
 
  */
-public class TerminateCommandTest extends ApiTestBase {
+public class DeployCommandTest extends ApiTestBase {
 
-    public TerminateCommandTest(String name) {
+    public DeployCommandTest(String name) {
         super(name);
     }
 
+
     public void testMain() throws Exception {
-        SystemEndpointer system=createSystem();
-        try {
-            List<String> args=new ArrayList<String>();
-            args.add(Endpointer.URL_COMMAND+system.getURL().toString());
-            String[] args2 = toStringArray(args);
-            boolean b = Terminate.innerMain(args2);
-            assertTrue("terminate failed ",b);
-            String timestamp = system.getStringProperty(Constants.PROPERTY_SYSTEM_TERMINATED_TIME);
-            assertIsoDate(timestamp);
-        } finally {
-            destroySystem(system);
-        }
+
+        boolean b = deployResource(RESOURCE_ECHO);
+        assertTrue(b);
+
     }
+
+    private boolean deployResource(String resource) throws
+            IOException {
+        File file =resourceToTempFile(resource);
+        List<String> args=new ArrayList<String>();
+        args.add(getBinding().toCommandLineElement());
+        args.add(file.getAbsolutePath());
+        String args2[]=toStringArray(args);
+        boolean b;
+        try {
+            b= Deploy.innerMain(args2);
+        } finally {
+            file.delete();
+        }
+        return b;
+    }
+
+    public void testMainFails() throws Exception {
+
+        boolean b = deployResource(RESOURCE_FAILTODEPLOY);
+        assertFalse(b);
+    }    
 }
