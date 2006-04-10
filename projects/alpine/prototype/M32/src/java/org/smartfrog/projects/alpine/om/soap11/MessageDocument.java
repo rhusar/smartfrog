@@ -124,6 +124,16 @@ public class MessageDocument extends Document implements ValidateXml {
     }
 
     /**
+     * Get whatever is inside the body of a message.
+     * You cannot make any assumptions about the type of these nodes, other than they
+     * are Element or a derivative.
+     * @return the payload
+     */
+    public Element getPayload() {
+        return getBody().getFirstChildElement();
+    }
+
+    /**
      * Are we a fault. 
      * precondition: body!=null;
      * @return
