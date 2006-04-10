@@ -20,8 +20,30 @@ For more information: www.smartfrog.org
 
 #include "org/smartfrog/services/jetty/components.sf";
 #include "org/smartfrog/services/os/java/components.sf";
-#include "org/smartfrog/services/deployapi/components/deployapi.sf";
+#include "org/smartfrog/services/deployapi/components/axis2/engine.sf";
 
+ /**
+  * this adds the SOAP stack
+  */
+ DeployRuntime extends DeploymentEngine {
+
+
+
+    servletContext extends Axis2ServletContext {
+        resourceBase  PARENT:wardir;
+        contextPath "/";
+        server PARENT:server;
+    }
+
+    /*
+    **
+    * Base servlet for alpine
+    */
+    axis2Servlet extends Axis2Servlet {
+        context LAZY PARENT:servletContext;
+    }
+
+ }
 
 DeployServerOnJetty extends Compound {
 
