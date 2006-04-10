@@ -47,22 +47,19 @@ public class ClusterDisplay
     // free = 0
     // others: (index mod (maxC-1)) + 1
     int colourIndex = 1;
+    int maxColourIndex = 9;
     Integer freeColour = new Integer(0);
     Integer nextColour() {
         colourIndex++;
-        if (colourIndex > 10) colourIndex = 1;
+        if (colourIndex > maxColourIndex) colourIndex = 1;
         return new Integer(colourIndex);
     }
     // /////////////////////////////////////
-    Hashtable serviceColours = new Hashtable();
     Integer getColour(String service) {
-        //System.out.println("Service: "+service);
-        if (!serviceColours.containsKey(service)) {
-            serviceColours.put(service, nextColour());
-        }
-        //System.out.println("Service: "+service+" "+serviceColours.get(service));
-        //System.out.println("Colors: "+serviceColours);
-        return (Integer) serviceColours.get(service);
+	int hc = service.hashCode();
+	hc = hc < 0 ? -hc : hc;
+	//System.out.println("service: " + service +" code: " + ((hc % maxColourIndex) +1));
+	return new Integer((hc % maxColourIndex) +1 );
     }
     // /////////////////////////////////////
 
@@ -79,7 +76,6 @@ public class ClusterDisplay
             display.tabPane.add(clusterPane, "Cluster View", 0);
             display.tabPane.setSelectedIndex(0);
         } catch (Exception ex) {
-            ex.printStackTrace();
         }
 
     }
@@ -138,7 +134,7 @@ public class ClusterDisplay
 
                     //pull out the first one, get service and role
                     String serviceId = (String) reservations.sfAttributes().next();
-                    colour = getColour(serviceId.substring(0, serviceId.indexOf(':')));
+                    colour = getColour(serviceId.substring(0, serviceId.indexOf('.')));
 
                     role = ((ComponentDescription) ((ComponentDescription)reservations
                                .sfContext().get(serviceId))
@@ -157,8 +153,7 @@ public class ClusterDisplay
 
         try {
             clusterPane.setData(dataSet, headers);
-        } catch (Exception ex) {
-            ex.printStackTrace();
+        } catch (Exception ex1) {
         }
         //System.out.println("done updating the pane");
 

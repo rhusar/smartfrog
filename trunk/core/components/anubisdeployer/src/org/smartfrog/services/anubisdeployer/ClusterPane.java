@@ -11,8 +11,11 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.Enumeration;
 import java.util.Hashtable;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 
 import javax.swing.JFrame;
+import javax.swing.SwingUtilities;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
@@ -22,6 +25,7 @@ import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableModel;
 import java.awt.Insets;
 import java.awt.Font;
@@ -79,6 +83,27 @@ public class ClusterPane extends JPanel {
             }
         }
   }
+
+    class LocalHostCellRenderer extends DefaultTableCellRenderer implements TableCellRenderer {
+        String localhost;
+
+        public LocalHostCellRenderer() {
+	    try {
+		localhost = InetAddress.getLocalHost().getCanonicalHostName();
+	    } catch (UnknownHostException e) {
+	    }
+	}
+
+	public Component getTableCellRendererComponent( JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+	    super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+	    if (value.toString().equals(localhost)) {
+		this.setForeground(Color.BLUE);
+	    } else {
+		this.setForeground(Color.BLACK);
+	    }
+	    return this;
+	}        
+    }
 
   class ClusterCellRenderer extends JProgressBar implements TableCellRenderer {
 
@@ -194,32 +219,39 @@ public class ClusterPane extends JPanel {
     add(pane, BorderLayout.CENTER);
   }
 
-  public void setData(Object[][] dataSet, Object[] headers){
 
-      ((ClusterDataModel)((TableSorter)table.getModel()).getTableModel()).setDataVector(dataSet, headers);
-      ((TableSorter)table.getModel()).fireTableDataChanged();
-      sorter.setTableHeader(table.getTableHeader());
-      sorter.setSortingStatus(0, sorter.DESCENDING);
-      table = setTableRenderer(table.getModel());
-      org.smartfrog.services.display.TableUtilities.setColumnWidths(table,new Insets(4, 4, 4, 4),false,false);
+  Object[][] dataSetLater;
+  Object[] headersLater;
+ 
+  public synchronized void setData(Object[][] dataSet, Object[] headers){
+      dataSetLater = dataSet;
+      headersLater = headers;
+
+      SwingUtilities.invokeLater(new Runnable() { public void run() {
+	  ((ClusterDataModel)((TableSorter)table.getModel()).getTableModel()).setDataVector(dataSetLater, headersLater);
+	  sorter.setTableHeader(table.getTableHeader());
+	  sorter.setSortingStatus(0, sorter.ASCENDING);
+	  table = setTableRenderer(table.getModel());
+	  org.smartfrog.services.display.TableUtilities.setColumnWidths(table,new Insets(4, 4, 4, 4),false,false);
+      }});
   }
 
   private  JTable setTableRenderer(TableModel dm) {
     ClusterCellRenderer renderer = new ClusterCellRenderer(MIN, MAX);
     renderer.setStringPainted(true);
     renderer.setBackground(table.getBackground());
+    table.getColumnModel().getColumn(0).setCellRenderer(new LocalHostCellRenderer());
 
     // set limit value and fill color
     Color[] colors = { Color.white,
                        Color.yellow,
                        Color.red,
-                       Color.blue,
-                       Color.gray,
-                       Color.darkGray,
-                       Color.magenta,
                        Color.green,
+                       Color.magenta,
                        Color.orange,
                        Color.cyan,
+                       Color.gray,
+                       Color.blue,
                        Color.black};
 
     renderer.setColors(colors);
