@@ -43,71 +43,116 @@ import javax.xml.namespace.QName;
  * Fault constants. many of these values are from Axis' Constants file
  */
 public class FaultConstants {
-    
-    // Axis Namespaces
+
     /**
+     * This is the xmlns for axis1.x fault elements.
      * {@value}
-     */ 
+     */
     public static final String NS_URI_AXIS = "http://xml.apache.org/axis/";
-    
+
     /**
+     * XMLNS for Alpine fault details
      * {@value}
-     */ 
+     */
     public static final String NS_URI_ALPINE = "http://smartfrog.org/alpine/";
 
 
     /**
      * QName of invalid element in an element fault.
+     * {@value}
      */
     public static final QName QNAME_FAULTDETAIL_INVALID_XML = new QName(NS_URI_ALPINE, "invalidNode");
 
-    
+
     /**
      * QName of stack trace element in an axis fault detail.
+     * {@value}
      */
     public static final QName QNAME_FAULTDETAIL_STACKTRACE = new QName(NS_URI_AXIS, "stackTrace");
 
     /**
      * QName of exception Name element in an axis fault detail. Do not use - this is for pre-1.0 server->client
      * exceptions.
+     * {@value}
      */
     public static final QName QNAME_FAULTDETAIL_EXCEPTIONNAME = new QName(NS_URI_AXIS, "exceptionName");
 
     /**
      * Flag set if this was a runtime exception, rather than something thrown by the class at the end of the chain.
      * Axis' logging treats runtime exceptions more seriously.
+     * {@value}
      */
     public static final QName QNAME_FAULTDETAIL_RUNTIMEEXCEPTION = new QName(NS_URI_AXIS, "isRuntimeException");
 
     /**
      * QName of stack trace element in an axis fault detail.
+     * {@value}
      */
     public static final QName QNAME_FAULTDETAIL_HTTPERRORCODE = new QName(NS_URI_AXIS, "HttpErrorCode");
 
     /**
      * QName of a nested fault in an axis fault detail.
+     * {@value}
      */
     public static final QName QNAME_FAULTDETAIL_NESTEDFAULT = new QName(NS_URI_AXIS, "nestedFault");
 
     /**
      * QName of a hostname in an axis fault detail.
+     * {@value}
      */
     public static final QName QNAME_FAULTDETAIL_HOSTNAME = new QName(NS_URI_AXIS, "hostname");
 
     //QNames of well known faults
     /**
      * The no-service fault value.
+     * {@value}
      */
     public static final QName QNAME_NO_SERVICE_FAULT_CODE
             = new QName(NS_URI_AXIS, "Server.NoService");
 
     /**
      * The processing party found an invalid namespace for the SOAP Envelope element
+     * {@value}
      */
-    public static final String FAULTCODE_VERSION_MISMATCH="VersionMismatch";
+    public static final String FAULTCODE_VERSION_MISMATCH = "VersionMismatch";
 
     /**
      * header not understood, yet it was marked as MustUnderstand.
+     * {@value}
      */
-    public static final String FAULTCODE_MUST_UNDERSTAND="MustUnderstand";
+    public static final String FAULTCODE_MUST_UNDERSTAND = "MustUnderstand";
+
+    /**
+     * Element name of an EPR in a fault
+     * {@value}
+     */
+    public static final String ALPINE_EPR = "epr";
+    /**
+     * EPR of the fault
+     * {@value}
+     */
+    public static final QName QNAME_FAULTDETAIL_EPR = new QName(NS_URI_ALPINE, ALPINE_EPR);
+
+    /**
+     * Element name of a message in a fault
+     * {@value}
+     */
+    private static final String ALPINE_ELEMENT_RESPONSE = "response";
+    /**
+     * Element name of a request message in a fault
+     * {@value}
+     */
+    private static final String ALPINE_ELEMENT_REQUEST = "request";
+
+    /**
+     * QNAME for a request message in a fault
+     * {@value}
+     */
+    public static final QName QNAME_FAULTDETAIL_REQUEST = new QName(NS_URI_ALPINE, ALPINE_ELEMENT_REQUEST);
+
+    /**
+     * QNAME for a response message in a fault
+     * {@value}
+     */
+    public static final QName QNAME_FAULTDETAIL_RESPONSE = new QName(NS_URI_ALPINE, ALPINE_ELEMENT_RESPONSE);
 }

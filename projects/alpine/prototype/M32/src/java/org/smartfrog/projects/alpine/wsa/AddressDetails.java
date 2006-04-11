@@ -20,13 +20,13 @@
 package org.smartfrog.projects.alpine.wsa;
 
 import nu.xom.Element;
-import org.smartfrog.projects.alpine.interfaces.Validatable;
-import org.smartfrog.projects.alpine.faults.ValidationException;
-import org.smartfrog.projects.alpine.om.soap11.MessageDocument;
-import org.smartfrog.projects.alpine.om.soap11.Header;
-import org.smartfrog.projects.alpine.om.base.SoapElement;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.smartfrog.projects.alpine.faults.ValidationException;
+import org.smartfrog.projects.alpine.interfaces.Validatable;
+import org.smartfrog.projects.alpine.om.base.SoapElement;
+import org.smartfrog.projects.alpine.om.soap11.Header;
+import org.smartfrog.projects.alpine.om.soap11.MessageDocument;
 
 /*
 * <wsa:To>xs:anyURI</wsa:To> ?
@@ -43,13 +43,14 @@ import org.apache.commons.logging.LogFactory;
  * This is all the extra stuff for WS-A addressing of SOAP
  * created 23-Mar-2006 13:39:59
  * <p/>
+ *
  * @see <a href="http://www.w3.org/TR/2005/CR-ws-addr-core-20050817/">WS-A core </a>
- *  @see  <a href="http://www.w3.org/TR/2005/CR-ws-addr-soap-20050817/">WS-A SOAP binding</a>
+ * @see <a href="http://www.w3.org/TR/2005/CR-ws-addr-soap-20050817/">WS-A SOAP binding</a>
  */
 
 public class AddressDetails implements Validatable, AddressingConstants {
 
-    private static Log log = LogFactory.getLog(MessageDocument.class);
+    private static final Log log = LogFactory.getLog(MessageDocument.class);
 
     private AlpineEPR to;
 
@@ -73,7 +74,8 @@ public class AddressDetails implements Validatable, AddressingConstants {
 
     /**
      * Parse a set of address details from a message; supply the xmlns of the address expected
-     * @param message message to parse
+     *
+     * @param message   message to parse
      * @param namespace namespace of addresses
      */
     public AddressDetails(MessageDocument message, String namespace) {
@@ -189,16 +191,16 @@ public class AddressDetails implements Validatable, AddressingConstants {
         if (getAction() == null || getAction().length() == 0) {
             throw new ValidationException("Missing or empty " + WSA_ACTION + " attribute");
         }
-        if(to!=null) {
+        if (to != null) {
             to.validate();
         }
-        if(from!=null) {
+        if (from != null) {
             from.validate();
         }
-        if(replyTo!=null) {
+        if (replyTo != null) {
             replyTo.validate();
         }
-        if(faultTo!=null) {
+        if (faultTo != null) {
             faultTo.validate();
         }
 
@@ -207,6 +209,7 @@ public class AddressDetails implements Validatable, AddressingConstants {
 
     /**
      * validate everything, including that the To: address is there
+     *
      * @return
      * @throws ValidationException
      */
@@ -217,12 +220,12 @@ public class AddressDetails implements Validatable, AddressingConstants {
         }
     }
 
-        /**
-        * read everything from the document. After this is done, the extracted elements are
-        * copied; they are not live. Changes in the values are not reflected in the message contents
-        *
-        * @param message
-        */
+    /**
+     * read everything from the document. After this is done, the extracted elements are
+     * copied; they are not live. Changes in the values are not reflected in the message contents
+     *
+     * @param message
+     */
     public void read(MessageDocument message, String namespace) {
         for (Element header : message.getEnvelope().getHeaders()) {
             if (!namespace.equals(header.getNamespaceURI())) {
@@ -243,11 +246,11 @@ public class AddressDetails implements Validatable, AddressingConstants {
                 replyTo = new AlpineEPR(header, namespace);
             } else if (WSA_FAULTTO.equals(localname)) {
                 faultTo = new AlpineEPR(header, namespace);
-            } else if (WSA_REFERENCE_PARAMETERS.equals(localname)){
-                referenceParameters=(Element) header.copy();
+            } else if (WSA_REFERENCE_PARAMETERS.equals(localname)) {
+                referenceParameters = (Element) header.copy();
             } else if (WSA_RELATES_TO.equals(localname)) {
                 //TODO: RelatesTo, as and when needed
-                log.warn("Not yet implemented "+header);
+                log.warn("Not yet implemented " + header);
             }
         }
     }
@@ -269,8 +272,8 @@ public class AddressDetails implements Validatable, AddressingConstants {
                                boolean mustUnderstand) {
         validate();
         AlpineEPR dest = to;
-        if(to==null) {
-            dest=AlpineEPR.EPR_ANONYMOUS;
+        if (to == null) {
+            dest = AlpineEPR.EPR_ANONYMOUS;
         }
         maybeAdd(message, dest, WSA_TO, namespace, prefix, markReferences, mustUnderstand);
         maybeAdd(message, from, WSA_FROM, namespace, prefix, markReferences, mustUnderstand);
@@ -278,26 +281,40 @@ public class AddressDetails implements Validatable, AddressingConstants {
         maybeAdd(message, faultTo, WSA_FAULTTO, namespace, prefix, markReferences, mustUnderstand);
         final String prefixColon = prefix + ":";
         Header header = message.getEnvelope().getHeader();
-        Element actionElement = new SoapElement(prefixColon + WSA_ACTION, namespace,action);
-        header.setHeaderElement(actionElement,mustUnderstand);
+        Element actionElement = new SoapElement(prefixColon + WSA_ACTION, namespace, action);
+        header.setHeaderElement(actionElement, mustUnderstand);
     }
 
     private void maybeAdd(MessageDocument message, AlpineEPR dest, String role, String namespace, String prefix,
                           boolean markReferences, boolean mustUnderstand) {
-        if(dest!=null) {
-            dest.addressMessage(message,role,namespace,prefix,markReferences,mustUnderstand);
+        if (dest != null) {
+            dest.addressMessage(message, role, namespace, prefix, markReferences, mustUnderstand);
         }
     }
 
     /**
      * Get the destination address
+     *
      * @return
      */
     public String getDestination() {
-        if(to==null) {
+        if (to == null) {
             return null;
         } else {
             return to.getAddress();
+        }
+    }
+
+    /**
+     * Returns a string representation of the object.
+     *
+     * @return a string representation of the object.
+     */
+    public String toString() {
+        if (to == null) {
+            return "Address to unknown destination; action=" + action;
+        } else {
+            return "AddressDetails to " + to + " action=" + action;
         }
     }
 }

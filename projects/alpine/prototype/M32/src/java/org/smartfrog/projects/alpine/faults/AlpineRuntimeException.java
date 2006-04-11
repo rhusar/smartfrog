@@ -20,9 +20,19 @@
 
 package org.smartfrog.projects.alpine.faults;
 
+import nu.xom.Document;
+import nu.xom.Element;
 import org.smartfrog.projects.alpine.interfaces.SoapFaultSource;
+import org.smartfrog.projects.alpine.om.base.SoapElement;
 import org.smartfrog.projects.alpine.om.soap11.Fault;
+import org.smartfrog.projects.alpine.om.soap11.MessageDocument;
 import org.smartfrog.projects.alpine.om.soap11.Soap11Constants;
+import org.smartfrog.projects.alpine.wsa.AlpineEPR;
+import org.smartfrog.projects.alpine.xmlutils.XsdUtils;
+
+import javax.xml.namespace.QName;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * this is a runtime exception
@@ -41,6 +51,8 @@ public class AlpineRuntimeException extends RuntimeException implements SoapFaul
         super(message);
     }
 
+    private List<Element> details = new ArrayList<Element>();
+
     /**
      * Constructs a new runtime exception with <code>null</code> as its detail
      * message.  The cause is not initialized, and may subsequently be
@@ -51,23 +63,27 @@ public class AlpineRuntimeException extends RuntimeException implements SoapFaul
 
     /**
      * Create a soap fault from ourselves.
-     * subclass this to add more detail than just the message, stack trace, 
+     * subclass this to add more detail than just the message, stack trace,
      *
      * @return a fault
      */
     public Fault GenerateSoapFault() {
-        Fault fault=new Fault();
+        Fault fault = new Fault();
         fault.setFaultCode(getFaultCode());
         fault.addThrowable(this);
         addExtraDetails(fault);
+        for (Element e : details) {
+            fault.appendToFaultDetail(e.copy());
+        }
         return fault;
     }
 
     /**
      * Override point: get a fault code. the default is
      * {@link Soap11Constants#FAULTCODE_SERVER};
+     *
      * @return the string to be used in the fault code
-     */ 
+     */
     protected String getFaultCode() {
         return Soap11Constants.FAULTCODE_SERVER;
     }
@@ -75,10 +91,77 @@ public class AlpineRuntimeException extends RuntimeException implements SoapFaul
     /**
      * This is an override point, subclasses can add stuff to a fault that already
      * has been preconfigured by the base class
+     *
      * @param fault
-     */ 
+     */
     public void addExtraDetails(Fault fault) {
-        
+
     }
-    
+
+    /**
+     * add some fault detail
+     *
+     * @param detail
+     */
+    public void addDetail(Element detail) {
+        details.add(detail);
+    }
+
+    /**
+     * add a new detail element with the given text value
+     *
+     * @param name  element name
+     * @param value text to add as a child
+     */
+    public void addDetail(QName name, String value) {
+        details.add(new SoapElement(name, value));
+    }
+
+    /**
+     * Add an address to a fault. Because this is part of the error handling,
+     * we deliberately don't throw an NPE if the address is null, because it
+     * would only hide the underlying fault.
+     *
+     * @param epr the endpoint
+     */
+    public void addAddressDetails(AlpineEPR epr) {
+        if (epr != null) {
+            addDetail(epr.toXom("epr", FaultConstants.NS_URI_ALPINE, "alpine"));
+            addDetail(new SoapElement(FaultConstants.QNAME_FAULTDETAIL_HOSTNAME, epr.getAddress()));
+        }
+    }
+
+    /**
+     * Add an address to a fault. As with {@link #addAddressDetails(org.smartfrog.projects.alpine.wsa.AlpineEPR)}
+     * the call gracefully handles a null message, or missing address details.
+     *
+     * @param message message to extract the destination from.
+     */
+    public void addAddressDetails(MessageDocument message) {
+        if (message != null && message.getAddressDetails() != null) {
+            addAddressDetails(message.getAddressDetails().getTo());
+        }
+    }
+
+    /**
+     * Returns a short description of this throwable.
+     * If this <code>Throwable</code> object was created with a non-null detail
+     * message string, then the result is the concatenation of three strings:
+     * <ul>
+     * <li>The name of the actual class of this object
+     * <li>": " (a colon and a space)
+     * <li>The result of the {@link #getMessage} method for this object
+     * </ul>
+     * If this <code>Throwable</code> object was created with a <tt>null</tt>
+     * detail message string, then the name of the actual class of this object
+     * is returned.
+     *
+     * @return a string representation of this throwable.
+     */
+    public String toString() {
+
+        Fault fault = GenerateSoapFault();
+        Document doc = new Document((Element) fault.copy());
+        return super.toString() + "\n" + XsdUtils.printToString(doc) + "\n";
+    }
 }

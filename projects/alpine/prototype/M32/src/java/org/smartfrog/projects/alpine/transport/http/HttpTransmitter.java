@@ -19,33 +19,33 @@
  */
 package org.smartfrog.projects.alpine.transport.http;
 
+import nu.xom.ParsingException;
+import nu.xom.Serializer;
+import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpStatus;
-import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.RequestEntity;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.smartfrog.projects.alpine.transport.Transmission;
-import org.smartfrog.projects.alpine.wsa.AddressDetails;
 import org.smartfrog.projects.alpine.core.MessageContext;
+import org.smartfrog.projects.alpine.faults.SoapException;
+import org.smartfrog.projects.alpine.http.HttpConstants;
 import org.smartfrog.projects.alpine.om.soap11.MessageDocument;
 import org.smartfrog.projects.alpine.om.soap11.SoapMessageParser;
-import org.smartfrog.projects.alpine.http.HttpConstants;
-import org.smartfrog.projects.alpine.faults.SoapException;
+import org.smartfrog.projects.alpine.transport.Transmission;
+import org.smartfrog.projects.alpine.wsa.AddressDetails;
+import org.smartfrog.projects.alpine.wsa.AddressingConstants;
 import org.xml.sax.SAXException;
 
-import javax.servlet.http.HttpServletResponse;
 import javax.servlet.ServletOutputStream;
-import java.io.IOException;
-import java.io.File;
-import java.io.OutputStream;
-import java.io.FileOutputStream;
+import javax.servlet.http.HttpServletResponse;
 import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
-
-import nu.xom.Serializer;
-import nu.xom.ParsingException;
+import java.io.OutputStream;
 
 /**
  * Implement Http using commons-httpclient
@@ -54,7 +54,7 @@ import nu.xom.ParsingException;
 
 public class HttpTransmitter {
 
-    private static Log log= LogFactory.getLog(HttpTransmitter.class);
+    private static Log log = LogFactory.getLog(HttpTransmitter.class);
     private Transmission tx;
 
     private HttpClient httpclient;
@@ -64,47 +64,47 @@ public class HttpTransmitter {
     private final MessageContext context;
     private final MessageDocument request;
     public static final String ERROR_DURING_PREPARATION = "Failure while creating the output request." +
-           "No communication with the server took place";
+            "No communication with the server took place";
     public static final int BLOCKSIZE = 4096;
 
     public HttpTransmitter(Transmission tx) {
         this.tx = tx;
         context = tx.getContext();
         request = context.getRequest();
-        wsa=request.getAddressDetails();
+        wsa = request.getAddressDetails();
         wsa.checkToIsValid();
+        wsa.addressMessage(request, AddressingConstants.XMLNS_WSA_2005, "wsa", true, true);
         httpclient = new HttpClient();
     }
 
 
-
     public void transmit() {
         String destination = wsa.getDestination();
-        log.debug("Posting to "+destination);
-        PostMethod method= new ProgressingPostMethod(destination);
+        log.debug("Posting to " + destination);
+        PostMethod method = new ProgressingPostMethod(destination);
 
         //fill in the details
         //1. get the message into a byte array
         //2. add it
         //3. TODO: add files?
-        File outputFile=null;
-        OutputStream outToFile=null;
+        File outputFile = null;
+        OutputStream outToFile = null;
         RequestEntity re = null;
         try {
             try {
                 try {
-                    outputFile = File.createTempFile("alpine",".post");
-                    outToFile=new BufferedOutputStream(new FileOutputStream(outputFile));
+                    outputFile = File.createTempFile("alpine", ".post");
+                    outToFile = new BufferedOutputStream(new FileOutputStream(outputFile));
                     Serializer serializer = new Serializer(outToFile);
                     serializer.write(request);
                     serializer.flush();
                     outToFile.flush();
-                    re=new ProgressiveFileUploadRequestEntity(tx, request, outputFile,
+                    re = new ProgressiveFileUploadRequestEntity(tx, request, outputFile,
                             HttpConstants.CONTENT_TYPE_TEXT_XML,
                             tx.getUploadFeedback(), BLOCKSIZE);
                     method.setRequestEntity(re);
                 } finally {
-                    if(outToFile!=null) {
+                    if (outToFile != null) {
                         outToFile.close();
                     }
                 }
@@ -120,8 +120,8 @@ public class HttpTransmitter {
                 //get the content type and drop anything following a semicolon
                 String contentType = getResponseContentType(method);
                 final int semicolon = contentType.indexOf(';');
-                if(semicolon >=0) {
-                    contentType=contentType.substring(0,semicolon);
+                if (semicolon >= 0) {
+                    contentType = contentType.substring(0, semicolon);
                 }
                 boolean responseIsXml = HttpConstants.CONTENT_TYPE_TEXT_XML
                         .equals(contentType)
@@ -129,21 +129,21 @@ public class HttpTransmitter {
 
                 final boolean requestFailed = statusCode != HttpStatus.SC_OK;
                 if (requestFailed &&
-                        (!responseIsXml || statusCode!=HttpStatus.SC_INTERNAL_SERVER_ERROR)) {
+                        (!responseIsXml || statusCode != HttpStatus.SC_INTERNAL_SERVER_ERROR)) {
                     //TODO: treat 500+text/xml response specially, as it is probably a SOAPFault
                     log.error("Method failed: " + method.getStatusLine());
-                    throw new HttpTransportFault(destination,method);
+                    throw new HttpTransportFault(destination, method);
                 }
 
                 if (!responseIsXml) {
                     HttpTransportFault fault = new HttpTransportFault(destination, method,
-                    "Wrong content type: expected "
-                            + HttpConstants.CONTENT_TYPE_TEXT_XML
-                            + "or "
-                            + HttpConstants.CONTENT_TYPE_SOAP_XML
-                            + " but got ["
-                            + contentType
-                            +']');
+                            "Wrong content type: expected "
+                                    + HttpConstants.CONTENT_TYPE_TEXT_XML
+                                    + "or "
+                                    + HttpConstants.CONTENT_TYPE_SOAP_XML
+                                    + " but got ["
+                                    + contentType
+                                    + ']');
                     throw fault;
                 }
                 //extract the response
@@ -158,7 +158,7 @@ public class HttpTransmitter {
                 }
 
 
-            } catch(IOException ioe) {
+            } catch (IOException ioe) {
                 throw new HttpTransportFault(destination, ioe);
             } catch (SAXException e) {
                 throw new HttpTransportFault(destination, e);
@@ -175,7 +175,7 @@ public class HttpTransmitter {
                 method.releaseConnection();
             }
         } finally {
-            if(outputFile!=null) {
+            if (outputFile != null) {
                 outputFile.delete();
             }
         }
@@ -199,7 +199,7 @@ public class HttpTransmitter {
 
     private String getResponseContentType(PostMethod method) {
         Header content = method.getResponseHeader("Content-Type");
-        if(content==null) {
+        if (content == null) {
             return null;
         } else {
             return content.getValue();

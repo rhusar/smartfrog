@@ -20,15 +20,19 @@
 package org.smartfrog.projects.alpine.transport;
 
 import org.smartfrog.projects.alpine.core.MessageContext;
-import org.smartfrog.projects.alpine.transport.http.HttpTransmitter;
+import org.smartfrog.projects.alpine.faults.AlpineRuntimeException;
+import org.smartfrog.projects.alpine.faults.ClientException;
+import org.smartfrog.projects.alpine.faults.FaultConstants;
+import org.smartfrog.projects.alpine.faults.NetworkIOException;
+import org.smartfrog.projects.alpine.om.base.SoapElement;
 import org.smartfrog.projects.alpine.om.soap11.MessageDocument;
+import org.smartfrog.projects.alpine.transport.http.HttpTransmitter;
 
-import java.util.concurrent.Future;
-import java.util.concurrent.Callable;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeoutException;
 import java.io.IOException;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 /**
  * This represents an async transmission. The result is the thing callers should block on.
@@ -119,36 +123,70 @@ public class Transmission implements Callable {
      * @throws Exception if unable to compute a result
      */
     public Object call() throws Exception {
-        HttpTransmitter transmitter=new HttpTransmitter(this);
+        HttpTransmitter transmitter = new HttpTransmitter(this);
         transmitter.transmit();
         return null;
     }
 
     /**
      * Wait for a result
+     *
      * @param timeout timeout in milliseconds
-     * @throws IOException
-     * @throws ExecutionException
-     * @throws TimeoutException
-     * @throws InterruptedException
+     * @throws AlpineRuntimeException which contains anything else translated or nested
+     * @throws org.smartfrog.projects.alpine.faults.TimeoutException
+     *                                if there is a timeout
      */
-    public MessageDocument blockForResult(long timeout) throws IOException, ExecutionException, TimeoutException,
-            InterruptedException {
+    public MessageDocument blockForResult(long timeout) {
         try {
             result.get(timeout, TimeUnit.MILLISECONDS);
             return getResponse();
         } catch (ExecutionException e) {
             Throwable cause = e.getCause();
             //nested ioes are rethrown
-            if (cause instanceof IOException) {
-                throw (IOException) cause;
+            AlpineRuntimeException fault;
+            if (cause instanceof AlpineRuntimeException) {
+                //nested alpine runtime exceptions get their
+                //address appended and are rethrown
+                fault = (AlpineRuntimeException) cause;
+                fault.addAddressDetails(getRequest());
+                throw fault;
             }
-            //runtime exceptions are stripped out and rethrown
             if (cause instanceof RuntimeException) {
+                //runtime exceptions are stripped out and rethrown
                 throw (RuntimeException) cause;
             }
-            //anything else is sent nested.
-            throw e;
+            if (cause instanceof IOException) {
+                fault = new NetworkIOException((IOException) cause);
+            } else {
+                //anything else is sent nested.
+                fault = new ClientException(e);
+            }
+            fault.addAddressDetails(getRequest());
+            throw fault;
+        } catch (java.util.concurrent.TimeoutException timeoutException) {
+            throw org.smartfrog.projects.alpine.faults.TimeoutException.fromConcurrentTimeout(timeoutException);
+        } catch (InterruptedException e) {
+            throw new ClientException(e);
+        }
+    }
+
+
+    /**
+     * Add the requst and response messages to the fault as XML fragments. Good for diagnostics.
+     *
+     * @param fault
+     */
+    public void addMessagesToFault(AlpineRuntimeException fault) {
+        if (getRequest() != null) {
+            //add the request
+            fault.addAddressDetails(getRequest());
+            fault.addDetail(new SoapElement(FaultConstants.QNAME_FAULTDETAIL_REQUEST,
+                    getRequest().getRootElement()));
+        }
+        if (getResponse() != null) {
+            //add the response
+            fault.addDetail(new SoapElement(FaultConstants.QNAME_FAULTDETAIL_RESPONSE,
+                    getResponse().getRootElement()));
         }
     }
 }
