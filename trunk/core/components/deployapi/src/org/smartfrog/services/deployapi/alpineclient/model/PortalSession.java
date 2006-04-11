@@ -19,55 +19,88 @@
  */
 package org.smartfrog.services.deployapi.alpineclient.model;
 
-import org.smartfrog.projects.alpine.transport.Session;
-import org.smartfrog.projects.alpine.transport.TransmitQueue;
-import org.smartfrog.projects.alpine.transport.Transmission;
-import org.smartfrog.projects.alpine.wsa.AlpineEPR;
+import nu.xom.Element;
+import static org.ggf.cddlm.generated.api.CddlmConstants.API_ELEMENT_LOOKUPSYSTEM_REQUEST;
 import org.smartfrog.projects.alpine.om.soap11.MessageDocument;
-import org.smartfrog.services.deployapi.client.SystemEndpointer;
+import org.smartfrog.projects.alpine.transport.Transmission;
+import org.smartfrog.projects.alpine.transport.TransmitQueue;
+import org.smartfrog.projects.alpine.wsa.AlpineEPR;
 import org.smartfrog.services.deployapi.binding.XomHelper;
 import org.smartfrog.services.deployapi.system.Constants;
-import static org.ggf.cddlm.generated.api.CddlmConstants.API_ELEMENT_LOOKUPSYSTEM_REQUEST;
-
-import java.rmi.RemoteException;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
-import java.util.concurrent.ExecutionException;
-import java.io.IOException;
-
-import nu.xom.Element;
-import nu.xom.Document;
 
 /**
  * created 10-Apr-2006 17:07:57
  */
 
-public class PortalSession extends SubsidiarySession {
+public class PortalSession extends WsrfSession {
 
     /**
-     * Package scoped constructor.
-     * @param endpoint
-     * @param validating
-     * @param queue
-     */
+    * Package scoped constructor.
+    *
+    * @param endpoint
+    * @param validating
+    * @param queue
+    */
     public PortalSession(AlpineEPR endpoint, boolean validating, TransmitQueue queue) {
-        super(endpoint, validating,queue);
+        super(endpoint, validating, queue);
     }
 
-    public Transmission startLookupSystem(String id) {
+    public Transmission beginLookupSystem(String id) {
         Element resid = XomHelper.apiElement("ResourceId", id);
         Element request;
         request = XomHelper.apiElement(API_ELEMENT_LOOKUPSYSTEM_REQUEST, resid);
-        return queue(Constants.API_PORTAL_OPERATION_LOOKUPSYSTEM,request);
+        return queue(Constants.API_PORTAL_OPERATION_LOOKUPSYSTEM, request);
     }
 
-    public SystemSession endLookupSystem(Transmission tx) throws TimeoutException, ExecutionException, IOException,
-            InterruptedException {
-        Future<?> result = tx.getResult();
+    /**
+     * wait for something to finish. this is where any errors get raised
+     * @param tx
+     * @throws org.smartfrog.projects.alpine.faults.AlpineRuntimeException for trouble
+     * @return
+     */
+    public SystemSession endLookupSystem(Transmission tx)  {
         MessageDocument response = tx.blockForResult(getTimeout());
         Element payload = response.getPayload();
-        return new SystemSession(this,payload);
+        return new SystemSession(this, payload);
     }
+
+    /**
+     * Blocking implementation of the lookup system operation
+     * @param id system to look up
+     * @return a system
+     * @throws org.smartfrog.projects.alpine.faults.AlpineRuntimeException for trouble
+     */
+    public SystemSession lookupSystem(String id)  {
+        return endLookupSystem(beginLookupSystem(id));
+    }
+
+    /**
+     * Create a session on a remote system.
+     * @param hostname is an optional hostname for the system
+     * @return the queued transmission
+     */
+    public Transmission beginCreate(String hostname) {
+        Element request;
+        request = XomHelper.apiElement(Constants.API_ELEMENT_CREATE_REQUEST);
+        if (hostname != null) {
+            Element child = XomHelper.apiElement("hostname", hostname);
+            request.appendChild(child);
+        }
+        return queue(Constants.API_PORTAL_OPERATION_CREATE, request);
+    }
+
+    /**
+     * Wait for the creation operation to complete
+     * @param tx
+     * @return the created session
+     * @throws org.smartfrog.projects.alpine.faults.AlpineRuntimeException for trouble
+     */
+    public SystemSession endCreate(Transmission tx) {
+        //this method matches exactly the postprocessing for the lookup system
+        //call, the only difference being the localname of the response, which
+        //isn't actually checked for.
+        return endLookupSystem(tx);
+    }
+
 
 }

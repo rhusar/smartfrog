@@ -24,7 +24,6 @@ package org.smartfrog.services.deployapi.engine;
 import nu.xom.Element;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.ws.commons.om.OMElement;
 import org.smartfrog.services.deployapi.binding.DescriptorHelper;
 import org.smartfrog.services.deployapi.binding.XomHelper;
 import org.smartfrog.services.deployapi.components.DeploymentServer;
@@ -84,7 +83,7 @@ public class ServerInstance implements WSRPResourceSource {
     public static final int WORKERS = 1;
     public static final long TIMEOUT = 0;
 
-    private static Log log= LogFactory.getLog(ServerInstance.class);
+    private static final Log log= LogFactory.getLog(ServerInstance.class);
 
     private URL systemsURL;
     private static final String BUILD_TIMESTAMP = "$Date$";
@@ -196,7 +195,7 @@ public class ServerInstance implements WSRPResourceSource {
     /**
      * get the current instance; creating it if needed
      *
-     * @return
+     * @return the current instance
      */
     public static ServerInstance currentInstance() {
         if (instance == null) {
@@ -247,6 +246,7 @@ public class ServerInstance implements WSRPResourceSource {
         return properties.getProperty(property);
     }
 
+    @SuppressWarnings("deprecation")
     private Element makeStaticStatus() {
         Element status=XomHelper.element(Constants.PROPERTY_PORTAL_STATIC_PORTAL_STATUS);
         Element portal =XomHelper.apiElement("portal");

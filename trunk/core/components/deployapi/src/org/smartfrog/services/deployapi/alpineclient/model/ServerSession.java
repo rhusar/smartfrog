@@ -33,9 +33,10 @@ public class ServerSession extends Session {
 
     /**
      * Creates a client endpoint with a queue bound to the executor
-     * @param endpoint destination
+     *
+     * @param endpoint   destination
      * @param validating validating of messages?
-     * @param executor queue executor
+     * @param executor   queue executor
      */
     public ServerSession(AlpineEPR endpoint, boolean validating, Executor executor) {
         super(endpoint, null, validating);

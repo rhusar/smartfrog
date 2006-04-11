@@ -22,11 +22,11 @@ package org.smartfrog.services.deployapi.engine;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.smartfrog.projects.alpine.wsa.AlpineEPR;
 import org.smartfrog.services.deployapi.system.Constants;
 import org.smartfrog.services.deployapi.system.Utils;
 import org.smartfrog.services.deployapi.transport.faults.BaseException;
 import org.smartfrog.services.deployapi.transport.faults.FaultRaiser;
-import org.smartfrog.projects.alpine.wsa.AlpineEPR;
 
 import java.net.MalformedURLException;
 import java.net.URI;
@@ -80,7 +80,7 @@ public class JobRepository implements Iterable<Application> {
         return jobs.size();
     }
 
-    public Collection values() {
+    public Collection<Application> values() {
         return jobs.values();
     }
 
