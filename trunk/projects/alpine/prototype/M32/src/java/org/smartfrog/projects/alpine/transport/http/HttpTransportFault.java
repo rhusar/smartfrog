@@ -19,10 +19,11 @@
  */
 package org.smartfrog.projects.alpine.transport.http;
 
-import org.smartfrog.projects.alpine.faults.AlpineRuntimeException;
 import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.smartfrog.projects.alpine.faults.ClientException;
+import org.smartfrog.projects.alpine.faults.FaultConstants;
 
 import java.io.IOException;
 
@@ -30,7 +31,7 @@ import java.io.IOException;
  * created 23-Mar-2006 17:09:35
  */
 
-public class HttpTransportFault extends AlpineRuntimeException {
+public class HttpTransportFault extends ClientException {
 
     private int status;
 
@@ -63,6 +64,7 @@ public class HttpTransportFault extends AlpineRuntimeException {
         } catch (IOException e) {
             log.warn("Could not read response of fault", e);
         }
+        addDetail(FaultConstants.QNAME_FAULTDETAIL_HTTPERRORCODE, Integer.toString(status));
     }
 
     public HttpTransportFault(String message, Throwable cause) {
@@ -96,16 +98,16 @@ public class HttpTransportFault extends AlpineRuntimeException {
      */
     public String toString() {
         StringBuffer base = new StringBuffer(super.toString());
-        if(getStatus()>0) {
+        if (getStatus() > 0) {
             base.append('\n');
             base.append("Http error code: ");
             base.append(getStatus());
         }
-        if (getStatusLine()!=null) {
+        if (getStatusLine() != null) {
             base.append('\n');
             base.append(getStatusLine());
         }
-        if (getResponse()!=null) {
+        if (getResponse() != null) {
             base.append('\n');
             base.append(response);
         }

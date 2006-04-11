@@ -1,5 +1,6 @@
 /**
  * Apache2.0 licensed code from Java Development with Ant, 2nd edition
+ * i.e. Steve wrote it. 
  */
 package org.smartfrog.projects.alpine.faults;
 

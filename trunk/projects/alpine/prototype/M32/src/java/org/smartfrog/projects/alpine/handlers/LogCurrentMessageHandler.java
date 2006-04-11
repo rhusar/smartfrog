@@ -19,16 +19,12 @@
  */
 package org.smartfrog.projects.alpine.handlers;
 
-import org.smartfrog.projects.alpine.core.MessageContext;
-import org.smartfrog.projects.alpine.core.EndpointContext;
-import org.smartfrog.projects.alpine.om.soap11.MessageDocument;
-import org.smartfrog.projects.alpine.faults.ServerException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import nu.xom.Serializer;
-
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
+import org.smartfrog.projects.alpine.core.EndpointContext;
+import org.smartfrog.projects.alpine.core.MessageContext;
+import org.smartfrog.projects.alpine.om.soap11.MessageDocument;
+import org.smartfrog.projects.alpine.xmlutils.XsdUtils;
 
 /**
  * Handle a message by logging it at the info level
@@ -37,7 +33,7 @@ import java.io.IOException;
 
 public class LogCurrentMessageHandler extends HandlerBase {
 
-    Log log= LogFactory.getLog(LogCurrentMessageHandler.class);
+    private static final Log log = LogFactory.getLog(LogCurrentMessageHandler.class);
 
     /**
      * Message handler
@@ -49,29 +45,12 @@ public class LogCurrentMessageHandler extends HandlerBase {
      */
     public void processMessage(MessageContext messageContext, EndpointContext endpointContext) {
         MessageDocument currentMessage = messageContext.getCurrentMessage();
-        if(currentMessage==null) {
+        if (currentMessage == null) {
             log.error("There is no current message");
         } else {
-            ByteArrayOutputStream baos=null;
-            try {
-                baos = new ByteArrayOutputStream();
-                Serializer serializer=new Serializer(baos);
-                serializer.setMaxLength(80);
-                serializer.setIndent(2);
-                serializer.write(messageContext.getCurrentMessage());
-                serializer.flush();
-                log.info(baos.toString("UTF-8"));
-            } catch (IOException e) {
-                throw new ServerException("Unable to serialize message",e);
-            } finally {
-                if(baos!=null) {
-                    try {
-                        baos.close();
-                    } catch (IOException e) {
-
-                    }
-                }
-            }
+            final MessageDocument document = messageContext.getCurrentMessage();
+            log.info(XsdUtils.printToString(document));
         }
     }
+
 }
