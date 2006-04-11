@@ -30,7 +30,11 @@ import org.smartfrog.services.deployapi.system.Constants;
  * created 10-Apr-2006 17:08:08
  */
 
-public class SystemSession extends SubsidiarySession {
+public class SystemSession extends WsrfSession {
+
+    /**
+     * cached resource id
+     */
     private String resourceId;
 
     public SystemSession(AlpineEPR endpoint, boolean validating, TransmitQueue queue) {
@@ -39,6 +43,7 @@ public class SystemSession extends SubsidiarySession {
 
     /**
      * Build a session from a returned reference
+     *
      * @param parent
      * @param root
      */

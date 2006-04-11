@@ -21,9 +21,8 @@
 package org.smartfrog.services.deployapi.engine;
 
 import nu.xom.Element;
-import org.apache.ws.commons.om.OMElement;
-import static org.smartfrog.services.deployapi.binding.XomHelper.apiElement;
 import org.smartfrog.services.deployapi.binding.XomHelper;
+import static org.smartfrog.services.deployapi.binding.XomHelper.apiElement;
 import org.smartfrog.services.deployapi.system.Constants;
 import org.smartfrog.services.deployapi.system.Utils;
 import org.smartfrog.services.deployapi.transport.wsrf.Property;

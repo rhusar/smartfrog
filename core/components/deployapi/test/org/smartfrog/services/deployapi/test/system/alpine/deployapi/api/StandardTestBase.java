@@ -17,38 +17,33 @@
  For more information: www.smartfrog.org
 
  */
-package org.smartfrog.services.deployapi.alpineclient.model;
+package org.smartfrog.services.deployapi.test.system.alpine.deployapi.api;
 
-import org.smartfrog.projects.alpine.transport.Session;
-import org.smartfrog.projects.alpine.transport.TransmitQueue;
-import org.smartfrog.projects.alpine.wsa.AlpineEPR;
+import org.smartfrog.services.deployapi.test.system.alpine.AlpineTestBase;
 
 /**
- * Base class for commonality for {@link PortalSession} and {@link SystemSession}
- * created 10-Apr-2006 17:12:06
+ * created 11-Apr-2006 14:56:59
  */
 
-abstract class SubsidiarySession extends Session {
+public abstract class StandardTestBase extends AlpineTestBase {
+
+    protected StandardTestBase(String name) {
+        super(name);
+    }
 
     /**
-     * Default timeout in milliseconds
-     * {@value}
+     * Sets up the fixture, for example, open a network connection.
+     * This method is called before a test is executed.
      */
-    public static long  DEFAULT_TIMEOUT=30000;
-
-    protected SubsidiarySession(AlpineEPR endpoint,boolean validating, TransmitQueue queue) {
-        super(endpoint, null, validating);
-        setQueue(queue);
+    protected void setUp() throws Exception {
+        super.setUp();
     }
 
-
-    private long timeout=DEFAULT_TIMEOUT;
-
-    public long getTimeout() {
-        return timeout;
-    }
-
-    public void setTimeout(long timeout) {
-        this.timeout = timeout;
+    /**
+     * Tears down the fixture, for example, close a network connection.
+     * This method is called after a test is executed.
+     */
+    protected void tearDown() throws Exception {
+        super.tearDown();
     }
 }
