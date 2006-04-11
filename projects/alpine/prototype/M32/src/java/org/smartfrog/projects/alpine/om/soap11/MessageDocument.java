@@ -27,6 +27,7 @@ import org.smartfrog.projects.alpine.xmlutils.NodeIterator;
 import org.smartfrog.projects.alpine.interfaces.ValidateXml;
 import org.smartfrog.projects.alpine.faults.InvalidXmlException;
 import org.smartfrog.projects.alpine.wsa.AddressDetails;
+import org.smartfrog.projects.alpine.wsa.AddressingConstants;
 import org.smartfrog.projects.alpine.om.base.Attachment;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -64,7 +65,12 @@ public class MessageDocument extends Document implements ValidateXml {
      * this extracts the address information from the document
      */
     public void bindAddressing() {
-
+        addressDetails = new AddressDetails();
+        if(!addressDetails.read(this, AddressingConstants.XMLNS_WSA_2005)
+        && !addressDetails.read(this, AddressingConstants.XMLNS_WSA_2004)
+        && !addressDetails.read(this, AddressingConstants.XMLNS_WSA_2003)) {
+            log.warn("No address details found");
+        }
     }
 
     /**

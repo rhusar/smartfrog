@@ -225,8 +225,10 @@ public class AddressDetails implements Validatable, AddressingConstants {
      * copied; they are not live. Changes in the values are not reflected in the message contents
      *
      * @param message
+     * @return true if a wsa:To element in that xmlns was found.
      */
-    public void read(MessageDocument message, String namespace) {
+    public boolean read(MessageDocument message, String namespace) {
+        boolean found=false;
         for (Element header : message.getEnvelope().getHeaders()) {
             if (!namespace.equals(header.getNamespaceURI())) {
                 continue;
@@ -235,6 +237,7 @@ public class AddressDetails implements Validatable, AddressingConstants {
             String text = header.getValue();
             if (WSA_TO.equals(localname)) {
                 to = new AlpineEPR(header, namespace);
+                found=true;
                 //extract To:
             } else if (WSA_MESSAGEID.equals(localname)) {
                 messageID = text;
@@ -253,6 +256,7 @@ public class AddressDetails implements Validatable, AddressingConstants {
                 log.warn("Not yet implemented " + header);
             }
         }
+        return found;
     }
 
     /**
