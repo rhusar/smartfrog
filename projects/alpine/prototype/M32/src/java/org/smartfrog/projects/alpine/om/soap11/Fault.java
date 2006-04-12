@@ -72,7 +72,7 @@ public class Fault extends Soap11Element {
     }
 
     protected Element getFaultCodeElement() {
-        Element e=getFirstChildElement(FAULT_CODE);
+        Element e=getFirstChildElement(FAULT_CODE, getNamespaceURI());
         return e;
     }
 
@@ -82,12 +82,12 @@ public class Fault extends Soap11Element {
     }
 
     protected Element getFaultActorElement() {
-        Element e = getFirstChildElement(FAULT_ACTOR);
+        Element e = getFirstChildElement(FAULT_ACTOR, getNamespaceURI());
         return e;
     }
 
     public void setFaultCode(String value) {
-        Element newFaultCode=new Element(FAULT_CODE);
+        Element newFaultCode=new SoapElement(FAULT_CODE, getNamespaceURI());
         newFaultCode.appendChild(value);
         replace(newFaultCode);
     }
@@ -110,19 +110,18 @@ public class Fault extends Soap11Element {
     }
 
     protected Element getFaultStringElement() {
-        Element e = getFirstChildElement(FAULT_STRING);
+        Element e = getFirstChildElement(FAULT_STRING, getNamespaceURI());
         return e;
     }
     
     public void setFaultString(String value) {
-        Element elt = new Element(FAULT_STRING);
+        Element elt = new SoapElement(FAULT_STRING, getNamespaceURI());
         elt.appendChild(value);
         replace(elt);
     }
     
     public void setFaultActor(String value) {
-        Element actor = new Element(FAULT_ACTOR);
-        actor.appendChild(value);
+        Element actor = new SoapElement(FAULT_ACTOR, getNamespaceURI(),value);
         replace(actor);
     }
 
@@ -145,7 +144,7 @@ public class Fault extends Soap11Element {
     protected SoapElement demandCreateFaultDetail() {
         SoapElement faultDetail = getFaultDetail();
         if(faultDetail==null) {
-            faultDetail=new SoapElement(FAULT_DETAIL);
+            faultDetail=new SoapElement(FAULT_DETAIL, getNamespaceURI());
             appendChild(faultDetail);
         }
         return faultDetail;
@@ -156,7 +155,7 @@ public class Fault extends Soap11Element {
      * @return
      */ 
     public SoapElement getFaultDetail() {
-        return (SoapElement)getFirstChildElement(FAULT_DETAIL);
+        return (SoapElement)getFirstChildElement(FAULT_DETAIL, getNamespaceURI());
     }
 
     /**
@@ -165,7 +164,7 @@ public class Fault extends Soap11Element {
      */ 
     public void setFaultDetail(SoapElement detail) {
         if(detail==null) {
-            replace(new SoapElement(FAULT_DETAIL));
+            replace(new SoapElement(FAULT_DETAIL, getNamespaceURI()));
         } else {
             replace(detail);
         }
@@ -186,7 +185,7 @@ public class Fault extends Soap11Element {
      * @throws InvalidXmlException if needed
      */
     private void validateChildCount(String elementName) {
-        Elements elements=getChildElements(elementName);
+        Elements elements=getChildElements(elementName, getNamespaceURI());
         if(elements!=null) {
             if(elements.size()>1) {
                 throw new InvalidXmlException(this,ERROR_TOO_MANY_ELEMENTS+elementName);

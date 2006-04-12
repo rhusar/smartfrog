@@ -138,8 +138,7 @@ public class SoapElement extends Element implements ValidateXml {
      * @return iterator over the elements
      */
     public BaseElementsIterator<Element> elements(QName name) {
-        Elements childElements = getChildElements(name);
-        return new BaseElementsIterator<Element>(childElements);
+        return XsdUtils.elements(this, name);
     }
 
     /**
@@ -149,9 +148,7 @@ public class SoapElement extends Element implements ValidateXml {
      * @return
      */
     public BaseElementsIterator<Element> elements(String namespace) {
-        QName name = new QName(namespace, "");
-        Elements childElements = getChildElements(name);
-        return new BaseElementsIterator<Element>(childElements);
+        return XsdUtils.elements(this,namespace);
     }
 
     /**
