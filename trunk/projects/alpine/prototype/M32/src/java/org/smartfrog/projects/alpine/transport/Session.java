@@ -25,6 +25,7 @@ import org.smartfrog.projects.alpine.core.MessageContext;
 import org.smartfrog.projects.alpine.om.soap11.MessageDocument;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.commons.httpclient.Credentials;
 import nu.xom.Element;
 
 import java.util.concurrent.Executor;
@@ -48,6 +49,8 @@ public class Session {
      */
     private TransmitQueue queue;
 
+    private Credentials authenticationCredentials;
+    private Credentials proxyCredentials;
 
     /**
      * Create a new session.

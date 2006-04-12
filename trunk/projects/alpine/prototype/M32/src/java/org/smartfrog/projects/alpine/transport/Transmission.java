@@ -181,12 +181,12 @@ public class Transmission implements Callable {
             //add the request
             fault.addAddressDetails(getRequest());
             fault.addDetail(new SoapElement(FaultConstants.QNAME_FAULTDETAIL_REQUEST,
-                    getRequest().getRootElement()));
+                    getRequest().getRootElement().copy()));
         }
         if (getResponse() != null) {
             //add the response
             fault.addDetail(new SoapElement(FaultConstants.QNAME_FAULTDETAIL_RESPONSE,
-                    getResponse().getRootElement()));
+                    getResponse().getRootElement().copy()));
         }
     }
 }

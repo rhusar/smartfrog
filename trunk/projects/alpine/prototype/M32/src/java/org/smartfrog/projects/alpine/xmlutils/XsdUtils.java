@@ -26,6 +26,7 @@ import nu.xom.Nodes;
 import nu.xom.Serializer;
 import nu.xom.Text;
 import nu.xom.XPathContext;
+import nu.xom.Elements;
 import org.smartfrog.projects.alpine.faults.ServerException;
 
 import javax.xml.namespace.QName;
@@ -255,5 +256,39 @@ public final class XsdUtils {
                 }
             }
         }
+    }
+
+    /**
+     * Get the child elements in a given namespace
+     *
+     * @param element
+     * @param namespace name of the elements
+     * @return
+     */
+    public static BaseElementsIterator<Element> elements(Element element, String local,String namespace) {
+        Elements childElements = element.getChildElements(local, namespace);
+        return new BaseElementsIterator<Element>(childElements);
+    }
+
+    /**
+     * Get the child elements in a given namespace
+     *
+     * @param element
+     * @param namespace name of the elements
+     * @return
+     */
+    public static BaseElementsIterator<Element> elements(Element element, String namespace) {
+        return elements(element, "",namespace);
+    }
+
+    /**
+     * Get the child elements of the given name
+     *
+     * @param element
+     * @param name name of the elements
+     * @return iterator over the elements
+     */
+    public static BaseElementsIterator<Element> elements(Element element, QName name) {
+        return elements(element, name.getLocalPart(), name.getNamespaceURI());
     }
 }
