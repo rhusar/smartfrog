@@ -19,11 +19,9 @@
  */
 
 
-#include "/org/smartfrog/projects/alpine/handlers/components.sf"
-#include "/org/smartfrog/projects/alpine/config/smartfrog/alpine_server_on_jetty.sf"
 #include "/org/smartfrog/services/deployapi/transport/endpoints/alpine/handlers.sf"
 #include "/org/smartfrog/services/deployapi/components/deploymentserver.sf";
-
+#include "/org/smartfrog/projects/alpine/config/smartfrog/alpine_server_on_jetty.sf"
 
 DeployServer extends AlpineServerOnJetty {
 
@@ -41,7 +39,6 @@ DeployServer extends AlpineServerOnJetty {
      */
     engine extends DeploymentServer {
       port PARENT:port;
-      //wardir LAZY PARENT:wardir;
       server LAZY  jettyServer;
       location LAZY PARENT:location;
       host PARENT:urlhost;
