@@ -22,20 +22,18 @@ package org.smartfrog.projects.alpine.om.soap11;
 
 import nu.xom.Document;
 import nu.xom.Element;
-import nu.xom.Node;
-import org.smartfrog.projects.alpine.xmlutils.NodeIterator;
-import org.smartfrog.projects.alpine.interfaces.ValidateXml;
-import org.smartfrog.projects.alpine.faults.InvalidXmlException;
-import org.smartfrog.projects.alpine.wsa.AddressDetails;
-import org.smartfrog.projects.alpine.wsa.AddressingConstants;
-import org.smartfrog.projects.alpine.om.base.Attachment;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.smartfrog.projects.alpine.faults.InvalidXmlException;
+import org.smartfrog.projects.alpine.interfaces.ValidateXml;
+import org.smartfrog.projects.alpine.om.base.Attachment;
+import org.smartfrog.projects.alpine.wsa.AddressDetails;
+import org.smartfrog.projects.alpine.wsa.AddressingConstants;
+import org.smartfrog.projects.alpine.xmlutils.NodeIterator;
 
-import java.util.HashMap;
-import java.util.Enumeration;
-import java.util.List;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 
 /**
@@ -43,11 +41,11 @@ import java.util.ArrayList;
  */
 public class MessageDocument extends Document implements ValidateXml {
 
-    private static Log log= LogFactory.getLog(MessageDocument.class);
+    private static Log log = LogFactory.getLog(MessageDocument.class);
 
     public static final String ERROR_EMPTY_DOCUMENT = "Empty";
 
-    private HashMap<String,String> mimeHeaders=new HashMap<String, String>();
+    private HashMap<String, String> mimeHeaders = new HashMap<String, String>();
 
     private AddressDetails addressDetails;
 
@@ -57,7 +55,7 @@ public class MessageDocument extends Document implements ValidateXml {
         super(element);
     }
 
-    public MessageDocument(Document document) {
+    public MessageDocument(MessageDocument document) {
         super(document);
     }
 
@@ -66,20 +64,21 @@ public class MessageDocument extends Document implements ValidateXml {
      */
     public void bindAddressing() {
         addressDetails = new AddressDetails();
-        if(!addressDetails.read(this, AddressingConstants.XMLNS_WSA_2005)
-        && !addressDetails.read(this, AddressingConstants.XMLNS_WSA_2004)
-        && !addressDetails.read(this, AddressingConstants.XMLNS_WSA_2003)) {
+        if (!addressDetails.read(this, AddressingConstants.XMLNS_WSA_2005)
+                && !addressDetails.read(this, AddressingConstants.XMLNS_WSA_2004)
+                && !addressDetails.read(this, AddressingConstants.XMLNS_WSA_2003)) {
             log.warn("No address details found");
         }
     }
 
     /**
      * Get the address details. This will demand create it if needed.
+     *
      * @return
      */
     public AddressDetails getAddressDetails() {
-        if(addressDetails==null) {
-            addressDetails=new AddressDetails();
+        if (addressDetails == null) {
+            addressDetails = new AddressDetails();
         }
         return addressDetails;
     }
@@ -91,6 +90,7 @@ public class MessageDocument extends Document implements ValidateXml {
 
     /**
      * add a new attachment
+     *
      * @param attachment
      */
     public void addAttachment(Attachment attachment) {
@@ -99,11 +99,12 @@ public class MessageDocument extends Document implements ValidateXml {
 
     /**
      * Get the attachment list. This will demand create an empty list
+     *
      * @return the attachment list
      */
     public List<Attachment> getAttachments() {
-        if(attachments==null) {
-            attachments=new ArrayList<Attachment>();
+        if (attachments == null) {
+            attachments = new ArrayList<Attachment>();
         }
         return attachments;
     }
@@ -123,6 +124,7 @@ public class MessageDocument extends Document implements ValidateXml {
 
     /**
      * Get the body. Fails horribly if there is no envelope/body
+     *
      * @return
      */
     public Body getBody() {
@@ -133,6 +135,7 @@ public class MessageDocument extends Document implements ValidateXml {
      * Get whatever is inside the body of a message.
      * You cannot make any assumptions about the type of these nodes, other than they
      * are Element or a derivative.
+     *
      * @return the payload
      */
     public Element getPayload() {
@@ -140,17 +143,19 @@ public class MessageDocument extends Document implements ValidateXml {
     }
 
     /**
-     * Are we a fault. 
+     * Are we a fault.
      * precondition: body!=null;
+     *
      * @return
      */
     public boolean isFault() {
-        Body body= getBody();
+        Body body = getBody();
         return body.isFault();
     }
 
     /**
      * Get the fault of a message
+     *
      * @return the fault or null if there is no such fault
      */
     public Fault getFault() {
@@ -159,18 +164,17 @@ public class MessageDocument extends Document implements ValidateXml {
     }
 
 
-
     /**
      * Validate the Xml. Throw {@link InvalidXmlException} if invalid.
      */
     public void validateXml() {
-        if(getRootElement()==null) {
+        if (getRootElement() == null) {
             throw new InvalidXmlException(ERROR_EMPTY_DOCUMENT);
         }
-        if(!(getRootElement() instanceof Envelope)) {
+        if (!(getRootElement() instanceof Envelope)) {
             throw new InvalidXmlException(Soap11Constants.FAULTCODE_VERSION_MISMATCH);
         }
-        Envelope env=(Envelope) getRootElement();
+        Envelope env = (Envelope) getRootElement();
         env.validateXml();
     }
 
@@ -179,8 +183,8 @@ public class MessageDocument extends Document implements ValidateXml {
                 "http://www.xom.nu/fakeRoot"));
     }
 
-    public void putMimeHeader(String name,String value) {
-        mimeHeaders.put(name,value);
+    public void putMimeHeader(String name, String value) {
+        mimeHeaders.put(name, value);
     }
 
 

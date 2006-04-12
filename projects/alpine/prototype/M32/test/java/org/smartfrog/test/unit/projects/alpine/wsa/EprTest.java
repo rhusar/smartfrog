@@ -19,15 +19,16 @@
  */
 package org.smartfrog.test.unit.projects.alpine.wsa;
 
-import junit.framework.TestCase;
+import nu.xom.Element;
 import org.smartfrog.projects.alpine.wsa.AlpineEPR;
-import static org.smartfrog.test.unit.projects.alpine.TestHelper.*;
+import static org.smartfrog.test.unit.projects.alpine.TestHelper.assertInvalid;
+import static org.smartfrog.test.unit.projects.alpine.TestHelper.assertValid;
 
 /**
  * created 05-Apr-2006 11:33:51
  */
 
-public class EprTest extends TestCase {
+public class EprTest extends AddressingTestBase {
 
     /**
      * Constructs a test case with the given name.
@@ -37,29 +38,33 @@ public class EprTest extends TestCase {
     }
 
     public void testEmptyInvalid() throws Exception {
-        AlpineEPR epr=new AlpineEPR();
-        assertInvalid(epr);
+        assertInvalid(emptyEPR);
     }
 
     public void testEmptyEqual() throws Exception {
-        AlpineEPR epr = new AlpineEPR();
         AlpineEPR epr2 = new AlpineEPR();
-        assertEquals(epr2, epr);
+        assertEquals(emptyEPR, epr2);
+    }
+
+    public void testDifferentInequal() throws Exception {
+        assertFalse(emptyEPR.equals(epr));
     }
 
     public void testEmptyCopy() throws Exception {
-        AlpineEPR epr = new AlpineEPR();
-        AlpineEPR epr2 = new AlpineEPR(epr);
-        assertEquals(epr2, epr);
+        AlpineEPR epr2 = new AlpineEPR(emptyEPR);
+        assertEquals(epr2, emptyEPR);
         assertInvalid(epr2);
     }
 
     public void testSimpleEPR() throws Exception {
-        AlpineEPR epr = new AlpineEPR("http://example.org/ex");
         assertValid(epr);
         AlpineEPR epr2 = new AlpineEPR(epr);
-        assertEquals(epr2,epr);
+        assertEquals(epr2, epr);
+    }
 
-
+    public void testRoundTrip() throws Exception {
+        Element xom = epr.toXom();
+        AlpineEPR epr2 = new AlpineEPR(xom, null);
+        assertEquals(epr, epr2);
     }
 }

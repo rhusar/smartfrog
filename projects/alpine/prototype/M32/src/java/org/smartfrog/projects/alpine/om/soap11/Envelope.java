@@ -27,13 +27,13 @@ import org.smartfrog.projects.alpine.xmlutils.BaseElementsIterator;
 /**
  * The element name is "Envelope".
  * The element MUST be present in a SOAP message
- * The element MAY contain namespace declarations as well as additional attributes. 
- * If present, such additional attributes MUST be namespace-qualified. Similarly, 
- * the element MAY contain additional sub elements. 
+ * The element MAY contain namespace declarations as well as additional attributes.
+ * If present, such additional attributes MUST be namespace-qualified. Similarly,
+ * the element MAY contain additional sub elements.
  * If present these elements MUST be namespace-qualified and MUST follow the SOAP Body element.
  */
 public class Envelope extends Soap11Element {
-    
+
     public Envelope() {
         super(QNAME_ENVELOPE);
     }
@@ -49,7 +49,7 @@ public class Envelope extends Soap11Element {
     public Envelope(Element element) {
         super(element);
     }
-    
+
     /**
      * duplicate ourselves
      *
@@ -58,11 +58,12 @@ public class Envelope extends Soap11Element {
     protected Element shallowCopy() {
         return new Envelope(getQualifiedName(), getNamespaceURI());
     }
-    
+
     /**
      * Get the body
+     *
      * @return the body or null
-     */ 
+     */
     public Body getBody() {
         Element child = getFirstChildElement(QNAME_BODY);
         return (Body) child;
@@ -74,27 +75,27 @@ public class Envelope extends Soap11Element {
      * @return the body or null
      */
     public BaseElementsIterator<Element> getHeaders() {
-        Header header=getHeader();
-        Elements childElements = header.getChildElements();
-        return new BaseElementsIterator<Element>(childElements);
+        return getHeader().elements();
     }
 
     /**
      * Get the header. Does a demand creation of the header if needed.
+     *
      * @return the header
      */
     public Header getHeader() {
         Elements childElements = getChildElements(QNAME_HEADER);
         Header header;
-        if(childElements==null || childElements.size()==0) {
+        if (childElements == null || childElements.size() == 0) {
             //create a new, empty header where there was none
-            header=new Header();
+            header = new Header();
             //stick us at the front
-            insertChild(header,0);
+            insertChild(header, 0);
         } else {
             header = (Header) childElements.get(0);
         }
         return header;
     }
-    
+
+
 }

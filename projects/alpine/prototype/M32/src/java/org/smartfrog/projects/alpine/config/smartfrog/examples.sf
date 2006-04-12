@@ -19,7 +19,7 @@
  */
 
 
-#include "/org/smartfrog/projects/alpine/config/smartfrog/components.sf"
+
 #include "/org/smartfrog/projects/alpine/handlers/components.sf"
 
 
@@ -27,8 +27,22 @@
 EchoEndpoint extends AlpineEndpoint {
     name "echo";
     handlers [
+      EchoHandler:classname,
+      MustUnderstandChecker:classname
+    ];
+}
+
+/**
+ * A fuller example with complete logging and WS-A support
+ */
+AddressedEchoEndpoint extends AlpineEndpoint {
+    name "wsa-echo";
+    handlers [
+      LogCurrentMessageHandler:classname,
+      AddressHandler:classname,
+      EchoHandler:classname,
       MustUnderstandChecker:classname,
-      EchoHandler:classname
+      LogCurrentMessageHandler:classname
     ];
 }
 

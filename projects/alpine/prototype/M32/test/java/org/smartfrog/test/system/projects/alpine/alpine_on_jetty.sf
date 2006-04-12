@@ -47,17 +47,33 @@ server extends AlpineServerOnJetty {
         servlet LAZY alpine;
     }
 
-    
-
-    //fetch the page every so often, just to see that we are happy
-    liveness extends LivenessPage {
-        enabled PARENT:livenessEnabled;
-        host LAZY PARENT:servlets:ipaddr;
-        port PARENT:port;
-        page LAZY echo:absolutePath;
-        checkFrequency 1;
+    wsa extends AddressedEchoEndpoint {
+        path "/wsa/";
+        servlet LAZY alpine;
     }
     
+
+
+    //this isnt actually checking, it just creates the full URL
+    //at deploy time to feed into tests and things
+    liveness extends LivenessPage {
+        enabled false;
+        host LAZY PARENT:servlets:ipaddr;
+        port PARENT:port;
+        page LAZY alpine:absolutePath;
+        checkFrequency 1;
+    }
+
+    echoliveness extends liveness {
+        enabled PARENT:livenessEnabled;
+        page LAZY wsa:absolutePath;
+    }
+
+    wsaliveness extends liveness {
+        enabled PARENT:livenessEnabled;
+        page LAZY wsa:absolutePath;
+    }
+
     livenessEnabled true;
 }
 
