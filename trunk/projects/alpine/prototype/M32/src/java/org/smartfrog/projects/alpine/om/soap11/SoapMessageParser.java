@@ -21,24 +21,24 @@
 package org.smartfrog.projects.alpine.om.soap11;
 
 import nu.xom.Builder;
-import nu.xom.ParsingException;
 import nu.xom.Document;
 import nu.xom.NodeFactory;
-import org.smartfrog.projects.alpine.xmlutils.ResourceLoader;
-import org.smartfrog.projects.alpine.xmlutils.ParserHelper;
+import nu.xom.ParsingException;
 import org.smartfrog.projects.alpine.xmlutils.CatalogHandler;
+import org.smartfrog.projects.alpine.xmlutils.ParserHelper;
+import org.smartfrog.projects.alpine.xmlutils.ResourceLoader;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 
-import java.io.IOException;
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 
 /**
- 
+
  */
 public class SoapMessageParser {
-    
+
     /**
      * logic for resource loading
      */
@@ -50,7 +50,7 @@ public class SoapMessageParser {
     private Builder builder;
 
     /**
-     * create a parser; This includes creating an {@link nu.xom.Builder} with 
+     * create a parser; This includes creating an {@link nu.xom.Builder} with
      * our custom node factory
      *
      * @param loader   resource loader algorithm
@@ -71,6 +71,9 @@ public class SoapMessageParser {
             } catch (IOException e) {
                 throw new SAXException(e.getMessage(), e);
             }
+        }
+        if (factory == null) {
+            factory = new SoapFactory();
         }
         builder = new Builder(xerces, validate, factory);
     }
@@ -126,5 +129,5 @@ public class SoapMessageParser {
     public ResourceLoader getResourceLoader() {
         return resourceLoader;
     }
-    
+
 }

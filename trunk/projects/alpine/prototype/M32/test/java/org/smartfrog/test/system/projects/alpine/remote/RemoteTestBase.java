@@ -21,28 +21,30 @@
 package org.smartfrog.test.system.projects.alpine.remote;
 
 import junit.framework.TestCase;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.smartfrog.projects.alpine.core.MessageContext;
+import org.smartfrog.projects.alpine.transport.DirectExecutor;
+import org.smartfrog.projects.alpine.transport.Transmission;
+import org.smartfrog.projects.alpine.transport.TransmitQueue;
+import org.smartfrog.projects.alpine.wsa.AddressDetails;
+import org.smartfrog.projects.alpine.wsa.AlpineEPR;
 
-import java.net.URL;
+import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-import java.util.concurrent.ExecutionException;
-import java.io.IOException;
-
-import org.smartfrog.projects.alpine.wsa.AlpineEPR;
-import org.smartfrog.projects.alpine.wsa.AddressDetails;
-import org.smartfrog.projects.alpine.transport.DirectExecutor;
-import org.smartfrog.projects.alpine.transport.TransmitQueue;
-import org.smartfrog.projects.alpine.transport.Transmission;
-import org.smartfrog.projects.alpine.core.MessageContext;
-import org.smartfrog.projects.alpine.faults.AlpineRuntimeException;
 
 /**
  * Test base for remote alpine client stuff.
  */
-public abstract class RemoteTestBase extends TestCase  {
+public abstract class RemoteTestBase extends TestCase {
+
+    protected static final Log log = LogFactory.getLog(RemoteTestBase.class);
 
     protected String endpoint;
     protected URL endpointURL;
@@ -50,9 +52,21 @@ public abstract class RemoteTestBase extends TestCase  {
     protected AlpineEPR epr;
     protected TransmitQueue queue;
     protected Executor executor;
+    /**
+     * timeout. {@value}
+     */
     protected static final int TIMEOUT = 30000;
     protected MessageContext messageCtx;
     protected AddressDetails address;
+    /**
+     * path under alpine to echo {@value}
+     */
+    public static final String ECHO_PATH = "/echo/";
+
+    /**
+     * path under alpine to echo {@value}
+     */
+    public static final String WSA_PATH = "/echo/";
 
     /**
      * Constructs a test case with the given name.
@@ -62,32 +76,39 @@ public abstract class RemoteTestBase extends TestCase  {
     }
 
     /**
-    * Sets up the fixture, for example, open a network connection. This method is called before a test is executed.
-    */
+     * Sets up the fixture, for example, open a network connection. This method is called before a test is executed.
+     */
     protected void setUp() throws Exception {
-        String target =System.getProperty(getEndpointPropertyName());
-        if(target ==null) {
-            throw new Exception("No endpoint property "+getEndpointPropertyName());
+        String target = System.getProperty("endpoint");
+        if (target == null) {
+            throw new Exception("No endpoint property " + "endpoint");
         }
-
-        bindToAddress(target);
+        String path = getEndpointName();
+        bindToAddress(target + path);
         executor = createExecutor();
         queue = new TransmitQueue(executor);
     }
 
     /**
      * bind to a target; set up the endpoint, endpointURL and epr fields from the target URL
+     *
      * @param target
      * @throws MalformedURLException
      */
     protected void bindToAddress(String target) throws MalformedURLException {
-        endpoint=target;
-        endpointURL=new URL(target);
-        epr=new AlpineEPR(target);
+        log.info("Binding to " + target);
+        endpoint = target;
+        endpointURL = new URL(target);
+        epr = new AlpineEPR(target);
     }
 
-    private String getEndpointPropertyName() {
-        return "endpoint";
+    /**
+     * something subclasses must return. Defaults to {@link #ECHO_PATH}
+     *
+     * @return the path of the actual endpoint.
+     */
+    protected String getEndpointName() {
+        return ECHO_PATH;
     }
 
     public String getEndpoint() {
@@ -104,6 +125,7 @@ public abstract class RemoteTestBase extends TestCase  {
 
     /**
      * create a new executor. default impl does a direct one for ease of debug
+     *
      * @return
      */
     protected Executor createExecutor() {
@@ -120,6 +142,7 @@ public abstract class RemoteTestBase extends TestCase  {
 
     /**
      * Send a soap message (Blocking).  Wait for TIMEOUT ms before giving up
+     *
      * @param messageCtx
      * @throws InterruptedException
      */
@@ -127,17 +150,18 @@ public abstract class RemoteTestBase extends TestCase  {
             throws InterruptedException, ExecutionException,
             TimeoutException,
             IOException {
-        return send(messageCtx,TIMEOUT);
+        return send(messageCtx, TIMEOUT);
     }
 
     /**
      * Send a soap message (Blocking).  Wait for TIMEOUT ms before giving up
+     *
      * @param messageCtx
      * @throws InterruptedException
      */
-    protected Transmission send(MessageContext messageCtx,long timeout) throws InterruptedException, TimeoutException,
-            ExecutionException, IOException  {
-        Transmission tx=new Transmission(messageCtx);
+    protected Transmission send(MessageContext messageCtx, long timeout) throws InterruptedException, TimeoutException,
+            ExecutionException, IOException {
+        Transmission tx = new Transmission(messageCtx);
         return send(tx, timeout);
     }
 
@@ -149,14 +173,14 @@ public abstract class RemoteTestBase extends TestCase  {
         try {
             result.get(timeout, TimeUnit.MILLISECONDS);
         } catch (ExecutionException e) {
-            Throwable cause=e.getCause();
+            Throwable cause = e.getCause();
             //nested ioes are rethrown
-            if(cause instanceof IOException ) {
+            if (cause instanceof IOException) {
                 throw (IOException) cause;
             }
             //runtime exceptions are stripped out and rethrown
-            if(cause instanceof RuntimeException) {
-                throw (RuntimeException)cause;
+            if (cause instanceof RuntimeException) {
+                throw (RuntimeException) cause;
             }
             //anything else is sent nested.
             throw e;

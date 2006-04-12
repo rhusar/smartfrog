@@ -28,6 +28,7 @@ import nu.xom.XPathContext;
 import org.smartfrog.projects.alpine.faults.InvalidXmlException;
 import org.smartfrog.projects.alpine.interfaces.ValidateXml;
 import org.smartfrog.projects.alpine.xmlutils.AttributeIterator;
+import org.smartfrog.projects.alpine.xmlutils.BaseElementsIterator;
 import org.smartfrog.projects.alpine.xmlutils.NodeIterator;
 import org.smartfrog.projects.alpine.xmlutils.NodesIterator;
 import org.smartfrog.projects.alpine.xmlutils.XsdUtils;
@@ -119,6 +120,39 @@ public class SoapElement extends Element implements ValidateXml {
         return new AttributeIterator(this);
     }
 
+
+    /**
+     * Get the child elements
+     *
+     * @return
+     */
+    public BaseElementsIterator<Element> elements() {
+        Elements childElements = getChildElements();
+        return new BaseElementsIterator<Element>(childElements);
+    }
+
+    /**
+     * Get the child elements of the given name
+     *
+     * @param name name of the elements
+     * @return iterator over the elements
+     */
+    public BaseElementsIterator<Element> elements(QName name) {
+        Elements childElements = getChildElements(name);
+        return new BaseElementsIterator<Element>(childElements);
+    }
+
+    /**
+     * Get the child elements in a given namespace
+     *
+     * @param namespace name of the elements
+     * @return
+     */
+    public BaseElementsIterator<Element> elements(String namespace) {
+        QName name = new QName(namespace, "");
+        Elements childElements = getChildElements(name);
+        return new BaseElementsIterator<Element>(childElements);
+    }
 
     /**
      * Get the QName of an element

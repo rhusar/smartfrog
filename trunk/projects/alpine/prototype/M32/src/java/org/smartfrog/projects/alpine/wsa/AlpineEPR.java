@@ -32,6 +32,8 @@ import org.smartfrog.projects.alpine.om.soap11.Header;
 import org.smartfrog.projects.alpine.om.soap11.MessageDocument;
 import org.smartfrog.projects.alpine.xmlutils.NodeIterator;
 
+import javax.xml.namespace.QName;
+
 /*
 <wsa:EndpointReference
  xmlns:wsa="http://www.w3.org/2005/08/addressing"
@@ -253,19 +255,41 @@ public final class AlpineEPR implements Validatable, AddressingConstants, XomSou
             }
         }
         for (Node n : new NodeIterator(element)) {
-            if (n instanceof Element && namespace.equals(((Element) n).getNamespaceURI())) {
+            if (n instanceof Element) {
                 Element elt = (Element) n;
-                String text = elt.getValue();
-                String localname = elt.getLocalName();
-                if (WSA_ADDRESS.equals(localname)) {
-                    address = text;
-                } else if (WSA_REFERENCE_PARAMETERS.equals(localname)) {
-                    referenceParameters = (Element) elt.copy();
-                } else if (WSA_METADATA.equals(localname)) {
-                    metadata = (Element) elt.copy();
+                String eltNamespace = elt.getNamespaceURI();
+                if (namespace.equals(eltNamespace)) {
+                    String localname = elt.getLocalName();
+                    if (WSA_ADDRESS.equals(localname)) {
+                        address = elt.getValue();
+                    } else if (WSA_REFERENCE_PARAMETERS.equals(localname)) {
+                        referenceParameters = (Element) elt.copy();
+                    } else if (WSA_METADATA.equals(localname)) {
+                        metadata = (Element) elt.copy();
+                    }
                 }
             }
         }
+    }
+
+    /**
+     * Read in the EPR from the headers of a message, cloning bits.
+     * the namespace defines the namespace to look for.
+     *
+     * @param headers   element to start at
+     * @param namespace namespace to use
+     * @throws InvalidXmlException if there was no such message
+     */
+    public boolean readFromHeaders(Header headers, String namespace, boolean required) {
+        QName name = new QName(namespace, WSA_TO);
+        Element to = headers.getFirstChildElement(name);
+        if (to != null) {
+            address = to.getValue();
+            return true;
+        } else if (required) {
+            throw new InvalidXmlException("No address element " + name + " in the message");
+        }
+        return false;
     }
 
     /**

@@ -73,7 +73,7 @@ public class HttpTransmitter {
         request = context.getRequest();
         wsa = request.getAddressDetails();
         wsa.checkToIsValid();
-        wsa.addressMessage(request, AddressingConstants.XMLNS_WSA_2005, "wsa", true, true);
+        wsa.addressMessage(request, AddressingConstants.XMLNS_WSA_2005, "wsa", true, false);
         httpclient = new HttpClient();
     }
 

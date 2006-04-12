@@ -228,18 +228,17 @@ public class AddressDetails implements Validatable, AddressingConstants {
      * @return true if a wsa:To element in that xmlns was found.
      */
     public boolean read(MessageDocument message, String namespace) {
-        boolean found=false;
-        for (Element header : message.getEnvelope().getHeaders()) {
-            if (!namespace.equals(header.getNamespaceURI())) {
-                continue;
-            }
+        boolean found = false;
+        Header headers = message.getEnvelope().getHeader();
+        AlpineEPR epr = new AlpineEPR();
+        found = epr.readFromHeaders(headers, namespace, false);
+        if (found) {
+            to = epr;
+        }
+        for (Element header : headers.elements(namespace)) {
             String localname = header.getLocalName();
             String text = header.getValue();
-            if (WSA_TO.equals(localname)) {
-                to = new AlpineEPR(header, namespace);
-                found=true;
-                //extract To:
-            } else if (WSA_MESSAGEID.equals(localname)) {
+            if (WSA_MESSAGEID.equals(localname)) {
                 messageID = text;
             } else if (WSA_ACTION.equals(localname)) {
                 action = text;
@@ -252,8 +251,9 @@ public class AddressDetails implements Validatable, AddressingConstants {
             } else if (WSA_REFERENCE_PARAMETERS.equals(localname)) {
                 referenceParameters = (Element) header.copy();
             } else if (WSA_RELATES_TO.equals(localname)) {
-                //TODO: RelatesTo, as and when needed
-                log.warn("Not yet implemented " + header);
+                relatesTo = text;
+            } else if (WSA_MESSAGEID.equals(localname)) {
+                messageID = text;
             }
         }
         return found;
@@ -283,18 +283,49 @@ public class AddressDetails implements Validatable, AddressingConstants {
         maybeAdd(message, from, WSA_FROM, namespace, prefix, markReferences, mustUnderstand);
         maybeAdd(message, replyTo, WSA_REPLYTO, namespace, prefix, markReferences, mustUnderstand);
         maybeAdd(message, faultTo, WSA_FAULTTO, namespace, prefix, markReferences, mustUnderstand);
+        //text values
+        maybeAdd(message, messageID, WSA_MESSAGEID, namespace, prefix, mustUnderstand);
+        maybeAdd(message, action, WSA_ACTION, namespace, prefix, mustUnderstand);
+        maybeAdd(message, relatesTo, WSA_RELATES_TO, namespace, prefix, mustUnderstand);
+    }
+
+    /**
+     * Add a value if it is not null
+     *
+     * @param message
+     * @param value
+     * @param localname
+     * @param namespace
+     * @param prefix
+     * @param mustUnderstand
+     */
+    private void maybeAdd(MessageDocument message, String value, String localname, String namespace,
+                          String prefix,
+                          boolean mustUnderstand) {
         final String prefixColon = prefix + ":";
         Header header = message.getEnvelope().getHeader();
-        Element actionElement = new SoapElement(prefixColon + WSA_ACTION, namespace, action);
+        Element actionElement = new SoapElement(prefixColon + localname, namespace, value);
         header.setHeaderElement(actionElement, mustUnderstand);
     }
 
-    private void maybeAdd(MessageDocument message, AlpineEPR dest, String role, String namespace, String prefix,
+    /**
+     * add an address if it is not null
+     *
+     * @param message
+     * @param dest
+     * @param localname
+     * @param namespace
+     * @param prefix
+     * @param markReferences
+     * @param mustUnderstand
+     */
+    private void maybeAdd(MessageDocument message, AlpineEPR dest, String localname, String namespace, String prefix,
                           boolean markReferences, boolean mustUnderstand) {
         if (dest != null) {
-            dest.addressMessage(message, role, namespace, prefix, markReferences, mustUnderstand);
+            dest.addressMessage(message, localname, namespace, prefix, markReferences, mustUnderstand);
         }
     }
+
 
     /**
      * Get the destination address
@@ -320,5 +351,44 @@ public class AddressDetails implements Validatable, AddressingConstants {
         } else {
             return "AddressDetails to " + to + " action=" + action;
         }
+    }
+
+    /**
+     * Equality test test everything. It is not clever enough to know that if reference parameters
+     * are in a different order they are probably equivalent; it is not a full XML comparison
+     *
+     * @param o object to compare
+     * @return true iff the two objects are equal
+     */
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        final AddressDetails that = (AddressDetails) o;
+
+        if (action != null ? !action.equals(that.action) : that.action != null) return false;
+        if (to != null ? !to.equals(that.to) : that.to != null) return false;
+        if (faultTo != null ? !faultTo.equals(that.faultTo) : that.faultTo != null) return false;
+        if (from != null ? !from.equals(that.from) : that.from != null) return false;
+        if (messageID != null ? !messageID.equals(that.messageID) : that.messageID != null) return false;
+        if (referenceParameters != null ? !referenceParameters.equals(that.referenceParameters)
+                : that.referenceParameters != null) return false;
+        if (relatesTo != null ? !relatesTo.equals(that.relatesTo) : that.relatesTo != null) return false;
+        if (replyTo != null ? !replyTo.equals(that.replyTo) : that.replyTo != null) return false;
+
+        return true;
+    }
+
+    public int hashCode() {
+        int result;
+        result = (to != null ? to.hashCode() : 0);
+        result = 29 * result + (action != null ? action.hashCode() : 0);
+        result = 29 * result + (from != null ? from.hashCode() : 0);
+        result = 29 * result + (replyTo != null ? replyTo.hashCode() : 0);
+        result = 29 * result + (faultTo != null ? faultTo.hashCode() : 0);
+        result = 29 * result + (messageID != null ? messageID.hashCode() : 0);
+        result = 29 * result + (relatesTo != null ? relatesTo.hashCode() : 0);
+        result = 29 * result + (referenceParameters != null ? referenceParameters.hashCode() : 0);
+        return result;
     }
 }
