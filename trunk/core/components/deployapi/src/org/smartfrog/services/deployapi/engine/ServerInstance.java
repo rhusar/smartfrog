@@ -24,6 +24,8 @@ package org.smartfrog.services.deployapi.engine;
 import nu.xom.Element;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.ggf.cddlm.generated.api.CddlmConstants;
+import org.smartfrog.projects.alpine.om.base.SoapElement;
 import org.smartfrog.services.deployapi.binding.DescriptorHelper;
 import org.smartfrog.services.deployapi.binding.XomHelper;
 import org.smartfrog.services.deployapi.components.DeploymentServer;
@@ -73,17 +75,17 @@ public class ServerInstance implements WSRPResourceSource {
 
     private DescriptorHelper descriptorHelper;
 
-    private String protocol="http";
-    private String hostname=Constants.LOCALHOST;
-    private int port=5050;
-    private String path=Constants.CONTEXT_PATH +Constants.SERVICES_PATH +Constants.SYSTEM_PATH;
-    private String location="unknown";
+    private String protocol = "http";
+    private String hostname = Constants.LOCALHOST;
+    private int port = 5050;
+    private String path = Constants.CONTEXT_PATH + Constants.SERVICES_PATH + Constants.SYSTEM_PATH;
+    private String location = "unknown";
 
 
     public static final int WORKERS = 1;
     public static final long TIMEOUT = 0;
 
-    private static final Log log= LogFactory.getLog(ServerInstance.class);
+    private static final Log log = LogFactory.getLog(ServerInstance.class);
 
     private URL systemsURL;
     private static final String BUILD_TIMESTAMP = "$Date$";
@@ -91,6 +93,7 @@ public class ServerInstance implements WSRPResourceSource {
     /**
      * Create a new server instance, and bind it to be our current
      * server
+     *
      * @param owner owning prim
      * @return the object
      * @throws SmartFrogException
@@ -99,7 +102,7 @@ public class ServerInstance implements WSRPResourceSource {
     public static ServerInstance createServerInstance(Prim owner) throws
             SmartFrogException, RemoteException {
         ServerInstance serverInstance = new ServerInstance(owner);
-        instance=serverInstance;
+        instance = serverInstance;
         return instance;
     }
 
@@ -108,28 +111,28 @@ public class ServerInstance implements WSRPResourceSource {
         location = owner.sfResolve(DeploymentServer.ATTR_LOCATION,
                 location, false);
         protocol = owner.sfResolve(DeploymentServer.ATTR_PROTOCOL,
-                protocol,false);
+                protocol, false);
         hostname = owner.sfResolve(DeploymentServer.ATTR_HOSTNAME,
                 hostname, false);
-        if(hostname.length()==0) {
-            hostname=Constants.LOCALHOST;
+        if (hostname.length() == 0) {
+            hostname = Constants.LOCALHOST;
         }
         port = owner.sfResolve(DeploymentServer.ATTR_PORT,
                 port, false);
-        String ctx= owner.sfResolve(DeploymentServer.ATTR_CONTEXTPATH,
+        String ctx = owner.sfResolve(DeploymentServer.ATTR_CONTEXTPATH,
                 Constants.CONTEXT_PATH, false);
         String servicespath = owner.sfResolve(DeploymentServer.ATTR_SERVICESPATH,
                 Constants.SERVICES_PATH, false);
-        path= ctx+servicespath+Constants.SYSTEM_PATH;
-        File javatmpdir=new File(System.getProperty("java.io.tmpdir"));
+        path = ctx + servicespath + Constants.SYSTEM_PATH;
+        File javatmpdir = new File(System.getProperty("java.io.tmpdir"));
         String absolutePath = FileSystem.lookupAbsolutePath(owner,
                 DeploymentServer.ATTR_FILESTORE_DIR,
                 null,
                 javatmpdir,
                 false,
                 null);
-        if(absolutePath!=null) {
-            tempdir=new File(absolutePath);
+        if (absolutePath != null) {
+            tempdir = new File(absolutePath);
         }
         try {
             init();
@@ -139,23 +142,22 @@ public class ServerInstance implements WSRPResourceSource {
     }
 
 
-
     private void init() throws IOException {
-        systemsURL = new URL(protocol,hostname, port,path);
+        systemsURL = new URL(protocol, hostname, port, path);
         jobs = new JobRepository(systemsURL);
         workers = new ActionWorker[WORKERS];
         for (int i = 0; i < workers.length; i++) {
             workers[i] = new ActionWorker(queue, TIMEOUT);
             workers[i].start();
         }
-        if(tempdir==null) {
+        if (tempdir == null) {
             tempdir = File.createTempFile("filestore", ".dir");
             //little bit of a race condition here.
             tempdir.delete();
         }
-        descriptorHelper=new DescriptorHelper(tempdir);
+        descriptorHelper = new DescriptorHelper(tempdir);
         AddedFilestore filestore = new AddedFilestore(tempdir);
-        log.debug("Creating server instance "+toString());
+        log.debug("Creating server instance " + toString());
 
         //now create our property map
         initPropertyMap();
@@ -175,6 +177,7 @@ public class ServerInstance implements WSRPResourceSource {
 
     /**
      * liveness check
+     *
      * @throws SmartFrogLivenessException
      */
     public void ping() throws SmartFrogLivenessException {
@@ -188,6 +191,7 @@ public class ServerInstance implements WSRPResourceSource {
     public String toString() {
         return "Server @" + systemsURL + " filestore:" + tempdir;
     }
+
     public JobRepository getJobs() {
         return jobs;
     }
@@ -226,11 +230,23 @@ public class ServerInstance implements WSRPResourceSource {
     }
 
     private void initPropertyMap() {
-        properties=new PropertyMap();
+        properties = new PropertyMap();
         properties.addStaticProperty(Constants.PROPERTY_MUWS_RESOURCEID,
                 XomHelper.makeResourceId(resourceID));
         properties.addStaticProperty(Constants.PROPERTY_PORTAL_STATIC_PORTAL_STATUS,
                 makeStaticStatus());
+
+        SoapElement items = new SoapElement("ManageabilityCharacteristicsProperties",
+                CddlmConstants.MUWS_P1_NAMESPACE);
+        items.appendChild(new SoapElement(CddlmConstants.PROPERTY_MUWS_MANAGEABILITY_CAPABILITY,
+                CddlmConstants.CDL_API_PORTAL_CAPABILITY));
+        items.appendChild(new SoapElement(CddlmConstants.PROPERTY_MUWS_MANAGEABILITY_CAPABILITY,
+                CddlmConstants.MUWS_CAPABILITY_MANAGEABILITY_REFERENCES));
+        items.appendChild(new SoapElement(CddlmConstants.PROPERTY_MUWS_MANAGEABILITY_CAPABILITY,
+                CddlmConstants.MUWS_CAPABILITY_MANAGEABILITY_CHARACTERISTICS));
+
+        properties.addStaticProperty(Constants.PROPERTY_MUWS_MANAGEABILITY_CHARACTERISTICS, items);
+
         properties.add(new ActiveSystemsProperty(this));
     }
 
@@ -248,12 +264,12 @@ public class ServerInstance implements WSRPResourceSource {
 
     @SuppressWarnings("deprecation")
     private Element makeStaticStatus() {
-        Element status=XomHelper.element(Constants.PROPERTY_PORTAL_STATIC_PORTAL_STATUS);
-        Element portal =XomHelper.apiElement("portal");
+        Element status = XomHelper.element(Constants.PROPERTY_PORTAL_STATIC_PORTAL_STATUS);
+        Element portal = XomHelper.apiElement("portal");
         status.appendChild(portal);
 
         portal.appendChild(
-                XomHelper.apiElement("name",Constants.BUILD_INFO_IMPLEMENTATION_NAME));
+                XomHelper.apiElement("name", Constants.BUILD_INFO_IMPLEMENTATION_NAME));
         portal.appendChild(
                 XomHelper.apiElement("build", BUILD_TIMESTAMP));
         portal.appendChild(
@@ -266,9 +282,9 @@ public class ServerInstance implements WSRPResourceSource {
                 XomHelper.apiElement("timezoneUTCOffset", tzoffset.toString()));
 
         Element languages = XomHelper.apiElement("languages");
-        Element cdl=XomHelper.apiElement("item");
-        Element name=XomHelper.apiElement("name", Constants.BUILD_INFO_CDL_LANGUAGE);
-        Element uri= XomHelper.apiElement("uri", Constants.XML_CDL_NAMESPACE);
+        Element cdl = XomHelper.apiElement("item");
+        Element name = XomHelper.apiElement("name", Constants.BUILD_INFO_CDL_LANGUAGE);
+        Element uri = XomHelper.apiElement("uri", Constants.XML_CDL_NAMESPACE);
         cdl.appendChild(name);
         cdl.appendChild(uri);
         languages.appendChild(cdl);
@@ -280,12 +296,12 @@ public class ServerInstance implements WSRPResourceSource {
         sfrog.appendChild(uri);
         languages.appendChild(sfrog);
 
-        Element notifications=XomHelper.apiElement("notifications");
-        Element wsrf=XomHelper.apiElement("item", Constants.WSRF_WSNT_NAMESPACE);
+        Element notifications = XomHelper.apiElement("notifications");
+        Element wsrf = XomHelper.apiElement("item", Constants.WSRF_WSNT_NAMESPACE);
         notifications.appendChild(wsrf);
         status.appendChild(notifications);
 
-        Element options=XomHelper.apiElement("options");
+        Element options = XomHelper.apiElement("options");
         status.appendChild(options);
         return status;
     }
@@ -307,7 +323,7 @@ public class ServerInstance implements WSRPResourceSource {
         }
 
         public Element getValue() {
-            Element response=XomHelper.element(Constants.PROPERTY_PORTAL_ACTIVE_SYSTEMS);
+            Element response = XomHelper.element(Constants.PROPERTY_PORTAL_ACTIVE_SYSTEMS);
             JobRepository jobs = owner.getJobs();
             for (Application job : jobs) {
                 response.appendChild(job.getEndpointer().copy());

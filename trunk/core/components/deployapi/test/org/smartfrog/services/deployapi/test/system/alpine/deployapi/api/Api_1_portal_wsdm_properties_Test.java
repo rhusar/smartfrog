@@ -19,10 +19,9 @@
  */
 package org.smartfrog.services.deployapi.test.system.alpine.deployapi.api;
 
-import org.ggf.cddlm.generated.api.CddlmConstants;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import nu.xom.Element;
+import org.ggf.cddlm.generated.api.CddlmConstants;
 
 
 /**
@@ -31,7 +30,7 @@ import nu.xom.Element;
 
 public class Api_1_portal_wsdm_properties_Test extends StandardTestBase {
 
-    private static final Log log= LogFactory.getLog(Api_1_portal_wsdm_properties_Test.class);
+    private static final Log log = LogFactory.getLog(Api_1_portal_wsdm_properties_Test.class);
 
     public Api_1_portal_wsdm_properties_Test(String name) {
         super(name);
@@ -39,10 +38,35 @@ public class Api_1_portal_wsdm_properties_Test extends StandardTestBase {
 
 
     public void testResourceId() throws Exception {
-        Element result = getPortalSession().getResourceProperty(CddlmConstants.PROPERTY_MUWS_RESOURCEID);
-        final String value = result.getValue();
-        log.info("Resource ID="+value);
-        assertNotNull(value);
+        getPropertyLog(CddlmConstants.PROPERTY_MUWS_RESOURCEID);
+    }
+
+    public void testMuwsCapabilitiesExists() throws Exception {
+        getPropertyLog(CddlmConstants.PROPERTY_MUWS_MANAGEABILITY_CAPABILITY);
+    }
+
+    public void testCapabilityMuwsManageabilityReferences() throws Exception {
+        assertCapable(CddlmConstants.MUWS_CAPABILITY_MANAGEABILITY_REFERENCES);
+    }
+
+    public void testCapabilityMuwsManageabilityCharacteristics() throws Exception {
+        assertCapable(CddlmConstants.MUWS_CAPABILITY_MANAGEABILITY_CHARACTERISTICS);
+    }
+
+    public void testCapabilityPortal() throws Exception {
+        assertCapable(CddlmConstants.CDL_API_PORTAL_CAPABILITY);
+    }
+
+    public void testWsTopics() throws Exception {
+        getPropertyLog(CddlmConstants.PROPERTY_WSNT_TOPIC);
+    }
+
+    public void testWsTopicSet() throws Exception {
+        getPropertyLog(CddlmConstants.PROPERTY_WSNT_FIXED_TOPIC_SET);
+    }
+
+    public void testWsTopicDialogs() throws Exception {
+        getPropertyLog(CddlmConstants.PROPERTY_WSNT_TOPIC_EXPRESSION_DIALOGS);
     }
 
 }

@@ -20,16 +20,21 @@
 package org.smartfrog.services.deployapi.test.system.alpine;
 
 import junit.framework.TestCase;
-
-import java.net.MalformedURLException;
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ExecutorService;
-
-import org.smartfrog.projects.alpine.wsa.AlpineEPR;
+import nu.xom.Element;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.ggf.cddlm.generated.api.CddlmConstants;
 import org.smartfrog.projects.alpine.transport.DirectExecutor;
 import org.smartfrog.projects.alpine.transport.TransmitQueue;
+import org.smartfrog.projects.alpine.wsa.AlpineEPR;
 import org.smartfrog.services.deployapi.alpineclient.model.PortalSession;
+import org.smartfrog.services.deployapi.alpineclient.model.WsrfSession;
+
+import javax.xml.namespace.QName;
+import java.net.MalformedURLException;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * created 11-Apr-2006 14:57:19
@@ -37,12 +42,12 @@ import org.smartfrog.services.deployapi.alpineclient.model.PortalSession;
 
 public abstract class AlpineTestBase extends TestCase {
 
-
+    private static final Log log = LogFactory.getLog(AlpineTestBase.class);
     private AlpineEPR portalEPR;
-    private  PortalSession portalSession;
+    private PortalSession portalSession;
     public static final String ENDPOINT_PROPERTY = "endpoint";
     private boolean validating = false;
-    private boolean concurrent=false;
+    private boolean concurrent = false;
     public static final String CONCURRENT_PROPERTY = "concurrent";
     public static final String VALIDATING_PROPERTY = "validating";
 
@@ -60,16 +65,17 @@ public abstract class AlpineTestBase extends TestCase {
      */
     protected void setUp() throws Exception {
         super.setUp();
-        String target = getJunitParameter(ENDPOINT_PROPERTY,true);
+        String target = getJunitParameter(ENDPOINT_PROPERTY, true);
         bindToPortal(target);
     }
 
     /**
      * Get a junit parameter. Fail if it is missing and required=true
+     *
      * @param property property name
      * @return the property or null for not found
      */
-    protected String getJunitParameter(String property,boolean required) {
+    protected String getJunitParameter(String property, boolean required) {
         String target = System.getProperty(property);
         if (required && target == null) {
             fail("No property " + property);
@@ -95,13 +101,13 @@ public abstract class AlpineTestBase extends TestCase {
     protected void bindToPortal(String target) throws MalformedURLException {
         portalEPR = new AlpineEPR(target);
         concurrent = getBoolParameter(CONCURRENT_PROPERTY);
-        validating= getBoolParameter(VALIDATING_PROPERTY);
+        validating = getBoolParameter(VALIDATING_PROPERTY);
         final Executor executor = createExecutor();
-        portalSession=new PortalSession(portalEPR,validating, new TransmitQueue(executor));
+        portalSession = new PortalSession(portalEPR, validating, new TransmitQueue(executor));
     }
 
     private Boolean getBoolParameter(String property) {
-        return Boolean.valueOf(getJunitParameter(property,false));
+        return Boolean.valueOf(getJunitParameter(property, false));
     }
 
     public AlpineEPR getPortalEPR() {
@@ -118,10 +124,11 @@ public abstract class AlpineTestBase extends TestCase {
 
     /**
      * Override point: create the executor for this project.
+     *
      * @return a direct or concurrent executor.
      */
     protected Executor createExecutor() {
-        return concurrent?
+        return concurrent ?
                 createConcurrentExecutor() :
                 new DirectExecutor();
     }
@@ -129,10 +136,32 @@ public abstract class AlpineTestBase extends TestCase {
     /**
      * override point; create an executor for concurrent execution
      * defaults to {@link java.util.concurrent.Executors#newSingleThreadExecutor()}
+     *
      * @return a concurrent executor
      */
     protected ExecutorService createConcurrentExecutor() {
         return Executors.newSingleThreadExecutor();
     }
 
+    protected Element getProperty(QName property) {
+        Element result = getPortalSession().getResourceProperty(property);
+        final String value = result.getValue();
+        assertNotNull(value);
+        return result;
+    }
+
+    public Element getPropertyLog(QName property) {
+        Element result = getProperty(CddlmConstants.PROPERTY_MUWS_RESOURCEID);
+        log.info(property + " = " + result);
+        return result;
+    }
+
+    protected void assertCapable(String uri) {
+        Element capabilities = getMuwsCapabilities();
+        assertTrue("Missing capability " + uri, WsrfSession.hasMuwsCapability(capabilities, uri));
+    }
+
+    protected Element getMuwsCapabilities() {
+        return getProperty(CddlmConstants.PROPERTY_MUWS_MANAGEABILITY_CHARACTERISTICS);
+    }
 }

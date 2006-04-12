@@ -35,12 +35,12 @@ import org.smartfrog.services.deployapi.system.Constants;
 public class PortalSession extends WsrfSession {
 
     /**
-    * Package scoped constructor.
-    *
-    * @param endpoint
-    * @param validating
-    * @param queue
-    */
+     * Package scoped constructor.
+     *
+     * @param endpoint
+     * @param validating
+     * @param queue
+     */
     public PortalSession(AlpineEPR endpoint, boolean validating, TransmitQueue queue) {
         super(endpoint, validating, queue);
     }
@@ -54,11 +54,13 @@ public class PortalSession extends WsrfSession {
 
     /**
      * wait for something to finish. this is where any errors get raised
+     *
      * @param tx
-     * @throws org.smartfrog.projects.alpine.faults.AlpineRuntimeException for trouble
      * @return
+     * @throws org.smartfrog.projects.alpine.faults.AlpineRuntimeException
+     *          for trouble
      */
-    public SystemSession endLookupSystem(Transmission tx)  {
+    public SystemSession endLookupSystem(Transmission tx) {
         MessageDocument response = tx.blockForResult(getTimeout());
         Element payload = response.getPayload();
         return new SystemSession(this, payload);
@@ -66,16 +68,19 @@ public class PortalSession extends WsrfSession {
 
     /**
      * Blocking implementation of the lookup system operation
+     *
      * @param id system to look up
      * @return a system
-     * @throws org.smartfrog.projects.alpine.faults.AlpineRuntimeException for trouble
+     * @throws org.smartfrog.projects.alpine.faults.AlpineRuntimeException
+     *          for trouble
      */
-    public SystemSession lookupSystem(String id)  {
+    public SystemSession lookupSystem(String id) {
         return endLookupSystem(beginLookupSystem(id));
     }
 
     /**
      * Create a session on a remote system.
+     *
      * @param hostname is an optional hostname for the system
      * @return the queued transmission
      */
@@ -91,9 +96,11 @@ public class PortalSession extends WsrfSession {
 
     /**
      * Wait for the creation operation to complete
+     *
      * @param tx
      * @return the created session
-     * @throws org.smartfrog.projects.alpine.faults.AlpineRuntimeException for trouble
+     * @throws org.smartfrog.projects.alpine.faults.AlpineRuntimeException
+     *          for trouble
      */
     public SystemSession endCreate(Transmission tx) {
         //this method matches exactly the postprocessing for the lookup system

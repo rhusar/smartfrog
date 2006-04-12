@@ -1,28 +1,26 @@
 package org.smartfrog.services.deployapi.transport.endpoints.alpine;
 
+import nu.xom.Element;
+import org.apache.axis2.AxisFault;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.ws.commons.om.OMElement;
 import org.smartfrog.projects.alpine.core.Context;
 import org.smartfrog.projects.alpine.core.EndpointContext;
 import org.smartfrog.projects.alpine.core.MessageContext;
+import org.smartfrog.projects.alpine.faults.ServerException;
 import org.smartfrog.projects.alpine.handlers.HandlerBase;
 import org.smartfrog.projects.alpine.interfaces.MessageHandler;
-import org.smartfrog.projects.alpine.om.soap11.MessageDocument;
 import org.smartfrog.projects.alpine.om.base.SoapElement;
-import org.smartfrog.projects.alpine.faults.ServerException;
+import org.smartfrog.projects.alpine.om.soap11.MessageDocument;
 import org.smartfrog.projects.alpine.xmlutils.XsdUtils;
+import org.smartfrog.services.deployapi.system.Constants;
+import org.smartfrog.services.deployapi.transport.faults.BaseException;
 import org.smartfrog.services.deployapi.transport.faults.DeploymentException;
 import org.smartfrog.services.deployapi.transport.faults.FaultRaiser;
-import org.smartfrog.services.deployapi.transport.faults.BaseException;
 import org.smartfrog.services.deployapi.transport.wsrf.WSRPResourceSource;
-import org.smartfrog.services.deployapi.system.Constants;
-import org.smartfrog.sfcore.languages.sf.functions.BaseFunction;
-import org.apache.axis2.AxisFault;
-import org.apache.ws.commons.om.OMElement;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 import javax.xml.namespace.QName;
-
-import nu.xom.Element;
 
 /**
  * This is the WSRF message handler.
@@ -31,7 +29,7 @@ import nu.xom.Element;
  */
 public abstract class WsrfHandler extends HandlerBase implements MessageHandler {
 
-    private Log log= LogFactory.getLog(WsrfHandler.class);
+    private Log log = LogFactory.getLog(WsrfHandler.class);
 
     /**
      * Bind a handler to a context. This may include a SmartFrog binding, though
@@ -48,26 +46,24 @@ public abstract class WsrfHandler extends HandlerBase implements MessageHandler 
      *
      * @param messageContext
      * @param endpointContext
-     *
      * @throws org.smartfrog.projects.alpine.faults.AlpineRuntimeException
      *
      */
     public void processMessage(MessageContext messageContext,
                                EndpointContext endpointContext) {
-        process(messageContext,endpointContext);
+        process(messageContext, endpointContext);
     }
 
-        /**
-        * Message handler
-        *
-        * @param messageContext
-        * @param endpointContext
-        *
-        * @throws org.smartfrog.projects.alpine.faults.AlpineRuntimeException
-        *
-        */
+    /**
+     * Message handler
+     *
+     * @param messageContext
+     * @param endpointContext
+     * @throws org.smartfrog.projects.alpine.faults.AlpineRuntimeException
+     *
+     */
     public void process(MessageContext messageContext,
-                               EndpointContext endpointContext) {
+                        EndpointContext endpointContext) {
         MessageDocument inMessage = messageContext.getRequest();
         Element request = inMessage.getEnvelope().getBody().getFirstChildElement();
         String requestName = request.getLocalName();
@@ -122,9 +118,9 @@ public abstract class WsrfHandler extends HandlerBase implements MessageHandler 
         //step2: get the qname out of the request
         QName property;
         String value = request.getValue();
-        property = XsdUtils.resolveQName(request,value,false);
-        if(property==null) {
-            throw invalidQNameException("Unable to resolve the qname in the request "+request.getValue());
+        property = XsdUtils.resolveQName(request, value, false);
+        if (property == null) {
+            throw invalidQNameException("Unable to resolve the qname in the request " + request.getValue());
         }
         //step3: resolve it
         Element result = source.getProperty(property);
@@ -134,9 +130,9 @@ public abstract class WsrfHandler extends HandlerBase implements MessageHandler 
 
         //step4: build the response
         Element responseBody = new SoapElement(
-            "wsrf-rp:"+Constants.WSRF_RP_ELEMENT_GETRESOURCEPROPERTY_RESPONSE,
+                "wsrf-rp:" + Constants.WSRF_RP_ELEMENT_GETRESOURCEPROPERTY_RESPONSE,
                 Constants.WSRF_WSRP_NAMESPACE);
-        responseBody.appendChild(result);
+        responseBody.appendChild(result.copy());
 
         //step5: append to the new response message
         messageContext.createResponse().getBody().appendChild(responseBody);
@@ -225,7 +221,7 @@ public abstract class WsrfHandler extends HandlerBase implements MessageHandler 
      * @param processor
      * @param operation
      */
-    protected void verifyProcessorSet(AlpineProcessor processor, Element operation)  {
+    protected void verifyProcessorSet(AlpineProcessor processor, Element operation) {
         if (processor == null) {
             //if we get here: error
             String action = operation.getLocalName();
