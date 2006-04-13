@@ -64,8 +64,7 @@ public class SystemSession extends WsrfSession {
 
     public Transmission beginPing() {
         SoapElement request;
-        request = new SoapElement(QNAME_WSRF_RL_DESTROY_REQUEST);
-        XomHelper.apiElement(API_ELEMENT_PING_REQUEST);
+        request = XomHelper.apiElement(API_ELEMENT_PING_REQUEST);
         return queue(API_SYSTEM_OPERATION_PING, request);
     }
 
@@ -75,6 +74,6 @@ public class SystemSession extends WsrfSession {
     }
 
     public Element ping() {
-        return endPing(beginPing()));
+        return endPing(beginPing());
     }
 }
