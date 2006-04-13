@@ -20,6 +20,7 @@
 package org.smartfrog.sfcore.languages.cdl;
 
 import org.ggf.cddlm.generated.api.CddlmConstants;
+import static org.ggf.cddlm.generated.api.CddlmConstants.*;
 import org.smartfrog.services.xml.utils.ResourceLoader;
 import org.smartfrog.services.xml.utils.XmlConstants;
 import org.smartfrog.services.xml.utils.XmlCatalogResolver;
@@ -29,6 +30,10 @@ import org.xml.sax.XMLReader;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.Map;
+import java.util.HashMap;
+
+import nu.xom.XPathContext;
 
 /**
  * This class handles entity resolution problems. When used with XSD, file paths
@@ -49,31 +54,59 @@ public class CdlCatalog extends XmlCatalogResolver {
      * where all the WSRF files really live {@value}
      */
     public  static final String WSRF_PACKAGE = PACKAGE_BASE
-            + CddlmConstants.XML_FILENAME_WSRF_DIRECTORY;
+            + XML_FILENAME_WSRF_DIRECTORY;
 
     /**
      * where the API files really live {@value}
      */
     public static final String API_PACKAGE = PACKAGE_BASE
-            + CddlmConstants.CDL_FILENAME_XML_DIRECTORY;
+            + CDL_FILENAME_XML_DIRECTORY;
 
 
     public static final String RESOURCE_XML_CDL_XSD = API_PACKAGE +
-       CddlmConstants.CDL_FILENAME_XML_CDL;
+       CDL_FILENAME_XML_CDL;
     public static final String RESOURCE_DEPLOYAPI_XSD = API_PACKAGE +
        Constants.DEPLOY_API_SCHEMA_FILENAME;
     public static final String RESOURCE_WS_ADDR_XSD = WSRF_PACKAGE +
-       CddlmConstants.XML_FILENAME_WS_ADDRESSING;
+       XML_FILENAME_WS_ADDRESSING;
     /**
      * This maps from namespaces to resources in our classpath {@value}
      */
     private static final String CDDLM_MAPPINGS[] = {
-        CddlmConstants.XML_CDL_NAMESPACE, RESOURCE_XML_CDL_XSD,
-        CddlmConstants.CDL_API_TYPES_NAMESPACE, RESOURCE_DEPLOYAPI_XSD,
-        CddlmConstants.WS_ADDRESSING_NAMESPACE, RESOURCE_WS_ADDR_XSD,
+            XML_CDL_NAMESPACE, RESOURCE_XML_CDL_XSD,
+            CDL_API_TYPES_NAMESPACE, RESOURCE_DEPLOYAPI_XSD,
+            WS_ADDRESSING_NAMESPACE, RESOURCE_WS_ADDR_XSD,
+            WS_ADDRESSING_2004_NAMESPACE,
+                WSRF_PACKAGE +XML_FILENAME_WS_ADDRESSING_2004_08,
+            WS_ADDRESSING_2005_NAMESPACE,
+                WSRF_PACKAGE + XML_FILENAME_WS_ADDRESSING_2005_08,
+            SOAP11_NAMESPACE,
+                WSRF_PACKAGE + XML_FILENAME_SOAP_11,
+            SOAP12_NAMESPACE,
+                WSRF_PACKAGE + XML_FILENAME_SOAP_12,
+            SOAP11_NAMESPACE,
+                WSRF_PACKAGE + XML_FILENAME_SOAP_11,
     };
 
-
+    private static final String[][] names = {
+            {"xsd", "http://www.w3.org/2000/10/XMLSchema"},
+            {"wsa", WS_ADDRESSING_NAMESPACE},
+            {"wsa2003", WS_ADDRESSING_NAMESPACE},
+            {"wsa2004", WS_ADDRESSING_2004_NAMESPACE},
+            {"wsa2005", WS_ADDRESSING_2005_NAMESPACE},
+            {"api", CDL_API_TYPES_NAMESPACE},
+            {"apiw", CDL_API_WSDL_NAMESPACE},
+            {"cdl", XML_CDL_NAMESPACE},
+            {"cmp", CDL_CMP_TYPES_NAMESPACE},
+            {"cmpw", CDL_CMP_WSDL_NAMESPACE},
+            {"wsrf-bf", WSRF_WSBF_NAMESPACE},
+            {"wsrf-rl", WSRF_WSRL_NAMESPACE},
+            {"wsrf-rp", WSRF_WSRP_NAMESPACE},
+            {"wsrf-top", WSN_WST_NAMESPACE},
+            {"wsnt", WSRF_WSNT_NAMESPACE},
+            {"s12", SOAP12_NAMESPACE},
+            {"s11", SOAP11_NAMESPACE},
+    };
 
     public CdlCatalog(ResourceLoader loader) {
         super(loader);
@@ -144,6 +177,28 @@ public class CdlCatalog extends XmlCatalogResolver {
     }
 
 
+    /**
+     * Create a new XPath context for resolving things
+     * @return something that knows the standard names of the deploy api
+     */
+    public static XPathContext createXPathContext() {
+        XPathContext context=new XPathContext();
+        for(int i=0;i<names.length;i++) {
+            context.addNamespace(names[i][0],names[i][1]);
+        }
+        return context;
+    }
 
-
+    /**
+     * Get the prefix/namespace map table as a map, because
+     * XPathContext doesnt have the public accessors.
+     * @return a map that knows the standard names of the deploy api
+     */
+    public static Map<String,String> createPrefixMap() {
+        Map<String, String> map=new HashMap<String,String>();
+        for (int i = 0; i < names.length; i++) {
+            map.put(names[i][0], names[i][1]);
+        }
+        return map;
+    }
 }
