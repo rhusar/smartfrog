@@ -104,7 +104,7 @@ public class Constants extends CddlmConstants {
      * {@value}
      */
     public static final String FILE_EXTENSION_CDL = "cdl";
-    
+
     /**
      * Context for queries
      */
@@ -130,7 +130,7 @@ public class Constants extends CddlmConstants {
      * Internal errors
      */
     public static final QName QNAME_SMARTFROG_INTERNAL_FAULT
-            =new QName(SMARTFROG_NAMESPACE,"internalError");
+            = new QName(SMARTFROG_NAMESPACE, "internalError");
     /**
      * {@value}
      */
@@ -142,7 +142,7 @@ public class Constants extends CddlmConstants {
     /**
      * {@value}
      */
-    public static final String WSA_ELT_SERVICENAME= "ServiceName";
+    public static final String WSA_ELT_SERVICENAME = "ServiceName";
     /**
      * {@value}
      */

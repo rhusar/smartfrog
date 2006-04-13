@@ -22,6 +22,7 @@ package org.smartfrog.services.deployapi.transport.endpoints.alpine;
 import nu.xom.Element;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.ggf.cddlm.generated.api.CddlmConstants;
 import org.smartfrog.projects.alpine.core.MessageContext;
 import org.smartfrog.projects.alpine.faults.ServerException;
 import org.smartfrog.projects.alpine.om.soap11.MessageDocument;
@@ -32,10 +33,9 @@ import org.smartfrog.services.deployapi.system.Constants;
 import org.smartfrog.services.deployapi.transport.faults.BaseException;
 import org.smartfrog.services.deployapi.transport.faults.DeploymentException;
 import org.smartfrog.services.deployapi.transport.faults.FaultRaiser;
-import org.ggf.cddlm.generated.api.CddlmConstants;
 
-import java.net.URI;
 import java.io.IOException;
+import java.net.URI;
 
 /**
  * This is a fork of the original endpoints.processsor class, one that works in a pure alpine mode.
@@ -126,7 +126,7 @@ public abstract class AlpineProcessor extends FaultRaiser {
      * @return the response message, with body and headers set up.
      */
     public void process(MessageDocument request, MessageDocument response) {
-        Element payload = getPayload(request);
+        Element payload = request.getPayload();
         if (payload == null) {
             throw new ServerException("Empty SOAP message");
         }
@@ -152,16 +152,6 @@ public abstract class AlpineProcessor extends FaultRaiser {
     public Element process(Element payload) throws IOException {
         //do nothing
         return null;
-    }
-
-    /**
-     * Get the payload of a soap message -the stuff under the body
-     *
-     * @param request
-     * @return they payload or null for none
-     */
-    public Element getPayload(MessageDocument request) {
-        return request.getBody().getFirstChildElement();
     }
 
 }

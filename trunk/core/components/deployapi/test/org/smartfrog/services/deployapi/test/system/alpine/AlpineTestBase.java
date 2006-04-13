@@ -21,14 +21,19 @@ package org.smartfrog.services.deployapi.test.system.alpine;
 
 import junit.framework.TestCase;
 import nu.xom.Element;
+import nu.xom.Nodes;
+import nu.xom.XPathContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.ggf.cddlm.generated.api.CddlmConstants;
+import org.smartfrog.projects.alpine.om.base.SoapElement;
 import org.smartfrog.projects.alpine.transport.DirectExecutor;
 import org.smartfrog.projects.alpine.transport.TransmitQueue;
 import org.smartfrog.projects.alpine.wsa.AlpineEPR;
 import org.smartfrog.services.deployapi.alpineclient.model.PortalSession;
-import org.smartfrog.services.deployapi.alpineclient.model.WsrfSession;
+import org.smartfrog.services.deployapi.alpineclient.model.SystemSession;
+import org.smartfrog.services.deployapi.transport.wsrf.WsrfUtils;
+import org.smartfrog.sfcore.languages.cdl.CdlCatalog;
 
 import javax.xml.namespace.QName;
 import java.net.MalformedURLException;
@@ -42,14 +47,16 @@ import java.util.concurrent.Executors;
 
 public abstract class AlpineTestBase extends TestCase {
 
-    private static final Log log = LogFactory.getLog(AlpineTestBase.class);
+    protected static final Log log = LogFactory.getLog(AlpineTestBase.class);
     private AlpineEPR portalEPR;
-    private PortalSession portalSession;
+    private PortalSession portal;
+    private SystemSession system;
     public static final String ENDPOINT_PROPERTY = "endpoint";
     private boolean validating = false;
     private boolean concurrent = false;
     public static final String CONCURRENT_PROPERTY = "concurrent";
     public static final String VALIDATING_PROPERTY = "validating";
+    public XPathContext xpath;
 
 
     /**
@@ -67,7 +74,9 @@ public abstract class AlpineTestBase extends TestCase {
         super.setUp();
         String target = getJunitParameter(ENDPOINT_PROPERTY, true);
         bindToPortal(target);
+        xpath = CdlCatalog.createXPathContext();
     }
+
 
     /**
      * Get a junit parameter. Fail if it is missing and required=true
@@ -84,11 +93,13 @@ public abstract class AlpineTestBase extends TestCase {
     }
 
     /**
-     * Tears down the fixture, for example, close a network connection.
-     * This method is called after a test is executed.
+     * Destroy any system we are bonded to during teardown
      */
     protected void tearDown() throws Exception {
         super.tearDown();
+        if (system != null) {
+            system.destroy();
+        }
     }
 
 
@@ -103,7 +114,12 @@ public abstract class AlpineTestBase extends TestCase {
         concurrent = getBoolParameter(CONCURRENT_PROPERTY);
         validating = getBoolParameter(VALIDATING_PROPERTY);
         final Executor executor = createExecutor();
-        portalSession = new PortalSession(portalEPR, validating, new TransmitQueue(executor));
+        portal = new PortalSession(portalEPR, validating, new TransmitQueue(executor));
+    }
+
+
+    public static Log getLog() {
+        return log;
     }
 
     private Boolean getBoolParameter(String property) {
@@ -114,8 +130,8 @@ public abstract class AlpineTestBase extends TestCase {
         return portalEPR;
     }
 
-    public PortalSession getPortalSession() {
-        return portalSession;
+    public PortalSession getPortal() {
+        return portal;
     }
 
     public boolean isConcurrent() {
@@ -144,24 +160,54 @@ public abstract class AlpineTestBase extends TestCase {
     }
 
     protected Element getProperty(QName property) {
-        Element result = getPortalSession().getResourceProperty(property);
+        Element result = getPortal().getResourceProperty(property);
         final String value = result.getValue();
         assertNotNull(value);
         return result;
     }
 
     public Element getPropertyLog(QName property) {
-        Element result = getProperty(CddlmConstants.PROPERTY_MUWS_RESOURCEID);
-        log.info(property + " = " + result);
+        Element result = getProperty(property);
+        if (log.isInfoEnabled()) {
+            log.info(property + " = " + result);
+        }
         return result;
     }
 
     protected void assertCapable(String uri) {
         Element capabilities = getMuwsCapabilities();
-        assertTrue("Missing capability " + uri, WsrfSession.hasMuwsCapability(capabilities, uri));
+        assertTrue("Missing capability " + uri, WsrfUtils.hasMuwsCapability(capabilities, uri));
     }
 
     protected Element getMuwsCapabilities() {
         return getProperty(CddlmConstants.PROPERTY_MUWS_MANAGEABILITY_CHARACTERISTICS);
+    }
+
+    protected void assertQueryResolves(SoapElement element, String query) {
+        Nodes nodes = element.query(query, xpath);
+        assertTrue("did not resolve :" + query, nodes.size() > 0);
+    }
+
+    public SystemSession getSystem() {
+        return system;
+    }
+
+    public void setSystem(SystemSession system) {
+        this.system = system;
+    }
+
+    public XPathContext getXpath() {
+        return xpath;
+    }
+
+    public void setXpath(XPathContext xpath) {
+        this.xpath = xpath;
+    }
+
+    protected SystemSession createSystem(String hostname) {
+        SystemSession system = getPortal().create(hostname);
+        //this sets it up for cleanup on teardown
+        setSystem(system);
+        return system;
     }
 }

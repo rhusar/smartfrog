@@ -30,6 +30,7 @@ import org.smartfrog.projects.alpine.transport.Transmission;
 import org.smartfrog.projects.alpine.transport.TransmitQueue;
 import org.smartfrog.projects.alpine.wsa.AlpineEPR;
 import org.smartfrog.projects.alpine.xmlutils.XsdUtils;
+import org.smartfrog.services.deployapi.system.Constants;
 
 import javax.xml.namespace.QName;
 
@@ -57,6 +58,13 @@ public abstract class WsrfSession extends Session {
             CddlmConstants.WSRF_WSRP_NAMESPACE,
             CddlmConstants.WSRF_RP_ELEMENT_GETRESOURCEPROPERTY_RESPONSE);
 
+    public static final QName QNAME_WSRF_RL_DESTROY_REQUEST = new QName(
+            CddlmConstants.WSRF_WSRL_NAMESPACE,
+            CddlmConstants.WSRF_ELEMENT_DESTROY_REQUEST);
+    public static final QName QNAME_WSRF_RL_DESTROY_RESPONSE = new QName(
+            CddlmConstants.WSRF_WSRL_NAMESPACE,
+            CddlmConstants.WSRF_ELEMENT_DESTROY_RESPONSE);
+
     protected WsrfSession(AlpineEPR endpoint, boolean validating, TransmitQueue queue) {
         super(endpoint, null, validating);
         setQueue(queue);
@@ -72,6 +80,21 @@ public abstract class WsrfSession extends Session {
     public void setTimeout(long timeout) {
         this.timeout = timeout;
     }
+
+
+    /**
+     * Bind to an address; forces us to use the
+     * {@link Constants.WS_ADDRESSING_NAMESPACE} namespace for WSA, and
+     * mark the headers as MustUnderstand.
+     *
+     * @param endpoint
+     */
+    public void bind(AlpineEPR endpoint) {
+        super.bind(endpoint);
+        getAddress().setMustUnderstand(true);
+        getAddress().setNamespace(Constants.WS_ADDRESSING_NAMESPACE);
+    }
+
 
     /**
      * Check that there was a body in the response and that it was of the expected type.
@@ -101,8 +124,8 @@ public abstract class WsrfSession extends Session {
      * @param property
      * @return the started transmission
      */
-    public Transmission startGetResourceProperty(QName property) {
-        Element request;
+    public Transmission beginGetResourceProperty(QName property) {
+        SoapElement request;
         request = new SoapElement(QNAME_WSRF_GET_PROPERTY);
         //add the namespace
 
@@ -144,25 +167,35 @@ public abstract class WsrfSession extends Session {
      * @return
      */
     public Element getResourceProperty(QName property) {
-        return endGetResourceProperty(startGetResourceProperty(property));
+        return endGetResourceProperty(beginGetResourceProperty(property));
     }
 
     /**
-     * test for an endpoint having muws capabilities. This call does not
-     * talk to the server, it just processes the results (so is static)
+     * Destroy an endpoint
      *
-     * @param capabilities
-     * @param uri
-     * @return true iff the capability is found
+     * @return the transmission
      */
-    public static boolean hasMuwsCapability(Element capabilities, String uri) {
-        for (Element e : XsdUtils.elements(capabilities, CddlmConstants.PROPERTY_MUWS_MANAGEABILITY_CAPABILITY)) {
-            if (uri.equals(e.getValue())) {
-                return true;
-            }
-        }
-        //failure
-        return false;
+    public Transmission beginDestroy() {
+        SoapElement request;
+        request = new SoapElement(QNAME_WSRF_RL_DESTROY_REQUEST);
+        return queue(CddlmConstants.WSRF_OPERATION_DESTROY, request);
     }
 
+    /**
+     * End a destroy operation by awaiting the result, then verifying that
+     * the answer was of the right type
+     *
+     * @param tx
+     */
+    public void endDestroy(Transmission tx) {
+        tx.blockForResult(getTimeout());
+        checkResponseMessageType(tx, QNAME_WSRF_RL_DESTROY_RESPONSE);
+    }
+
+    /**
+     * Blocking destroy operation
+     */
+    public void destroy() {
+        endDestroy(beginDestroy());
+    }
 }

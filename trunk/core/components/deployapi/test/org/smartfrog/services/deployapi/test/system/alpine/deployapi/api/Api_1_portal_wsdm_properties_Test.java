@@ -19,8 +19,6 @@
  */
 package org.smartfrog.services.deployapi.test.system.alpine.deployapi.api;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.ggf.cddlm.generated.api.CddlmConstants;
 
 
@@ -30,19 +28,17 @@ import org.ggf.cddlm.generated.api.CddlmConstants;
 
 public class Api_1_portal_wsdm_properties_Test extends StandardTestBase {
 
-    private static final Log log = LogFactory.getLog(Api_1_portal_wsdm_properties_Test.class);
 
     public Api_1_portal_wsdm_properties_Test(String name) {
         super(name);
     }
-
 
     public void testResourceId() throws Exception {
         getPropertyLog(CddlmConstants.PROPERTY_MUWS_RESOURCEID);
     }
 
     public void testMuwsCapabilitiesExists() throws Exception {
-        getPropertyLog(CddlmConstants.PROPERTY_MUWS_MANAGEABILITY_CAPABILITY);
+        getPropertyLog(CddlmConstants.PROPERTY_MUWS_MANAGEABILITY_CHARACTERISTICS);
     }
 
     public void testCapabilityMuwsManageabilityReferences() throws Exception {

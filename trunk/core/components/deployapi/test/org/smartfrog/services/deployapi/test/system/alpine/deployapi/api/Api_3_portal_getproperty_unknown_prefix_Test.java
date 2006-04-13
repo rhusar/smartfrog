@@ -33,16 +33,16 @@ import javax.xml.namespace.QName;
  * created 12-Apr-2006 16:19:16
  */
 
-public class Api_3_portal_getproperty_unknown_prefix extends StandardTestBase {
+public class Api_3_portal_getproperty_unknown_prefix_Test extends StandardTestBase {
 
-    public Api_3_portal_getproperty_unknown_prefix(String name) {
+    public Api_3_portal_getproperty_unknown_prefix_Test(String name) {
         super(name);
     }
 
     public void testUnknownPrefix() throws Exception {
         try {
             QName property = new QName(CddlmConstants.CDL_API_TYPES_NAMESPACE, "unknown-property");
-            WsrfSession wsrfSession = getPortalSession();
+            WsrfSession wsrfSession = getPortal();
             Element request;
             request = new SoapElement(WsrfSession.QNAME_WSRF_GET_PROPERTY);
             request.appendChild("api2:StaticPortalStatus");

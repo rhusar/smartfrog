@@ -33,6 +33,7 @@
         location extends OptionalString;
         contextPath extends OptionalString;
         servicesPath extends OptionalString;
+        systemPath extends OptionalString;
     }
     
     sfClass "org.smartfrog.services.deployapi.components.DeploymentServerImpl";
@@ -41,6 +42,5 @@
     port 5050;
     location "unknown location";
     contextPath "/";
-    servicesPath "services/";
-       
+
  }

@@ -83,6 +83,8 @@ public class PortalSession extends WsrfSession {
      *
      * @param hostname is an optional hostname for the system
      * @return the queued transmission
+     * @throws org.smartfrog.projects.alpine.faults.AlpineRuntimeException
+     *          for trouble
      */
     public Transmission beginCreate(String hostname) {
         Element request;
@@ -101,6 +103,8 @@ public class PortalSession extends WsrfSession {
      * @return the created session
      * @throws org.smartfrog.projects.alpine.faults.AlpineRuntimeException
      *          for trouble
+     * @throws org.smartfrog.projects.alpine.faults.AlpineRuntimeException
+     *          for trouble
      */
     public SystemSession endCreate(Transmission tx) {
         //this method matches exactly the postprocessing for the lookup system
@@ -109,5 +113,16 @@ public class PortalSession extends WsrfSession {
         return endLookupSystem(tx);
     }
 
+    /**
+     * Blocking create operation
+     *
+     * @param hostname hostname, can be null
+     * @return a session
+     * @throws org.smartfrog.projects.alpine.faults.AlpineRuntimeException
+     *          for trouble
+     */
+    public SystemSession create(String hostname) {
+        return endCreate(beginCreate(hostname));
+    }
 
 }
