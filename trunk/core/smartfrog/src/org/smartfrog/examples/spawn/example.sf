@@ -24,7 +24,8 @@ For more information: www.smartfrog.org
 #include "org/smartfrog/examples/spawn/spawn.sf";
 
 /**
- * example 1: creates a component Example1 that generates a counter starting ]   * with the seed value upto 3
+ * example 1: creates a component Example1 that generates a counter starting
+ * with the seed value up to 3
  */
 
 Example1 extends Counter {
