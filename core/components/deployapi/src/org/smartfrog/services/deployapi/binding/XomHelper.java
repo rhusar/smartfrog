@@ -25,13 +25,16 @@ import nu.xom.Element;
 import nu.xom.Node;
 import nu.xom.Nodes;
 import static org.ggf.cddlm.generated.api.CddlmConstants.CDL_API_TYPES_NAMESPACE;
+import org.smartfrog.projects.alpine.om.base.SoapElement;
 import org.smartfrog.services.deployapi.system.Constants;
 import org.smartfrog.services.deployapi.transport.faults.FaultRaiser;
 import org.smartfrog.services.xml.utils.XomUtils;
 import org.smartfrog.services.xml.utils.XsdUtils;
 
-/** generic xom stuff */
-public class XomHelper extends XomUtils  {
+/**
+ * generic xom stuff
+ */
+public class XomHelper extends XomUtils {
     public static final String API = "api:";
     public static final String WSRF_RL = "wsrf-rl:";
     public static final String MUWSP1_XS = "muws-p1-xs:";
@@ -39,36 +42,39 @@ public class XomHelper extends XomUtils  {
 
     /**
      * Create a new API element with the api: prefix in the API namespace
+     *
      * @param name localname
      * @return a new element
      */
-    public static Element apiElement(String name) {
-        return new Element(API + name,
+    public static SoapElement apiElement(String name) {
+        return new SoapElement(API + name,
                 CDL_API_TYPES_NAMESPACE);
     }
 
 
     /**
      * Create a new API element
-     * @param name localname
+     *
+     * @param name  localname
      * @param value string name
      * @return
      */
-    public static Element apiElement(String name,String value) {
-        Element e=apiElement(name);
+    public static SoapElement apiElement(String name, String value) {
+        SoapElement e = apiElement(name);
         e.appendChild(value);
         return e;
     }
 
     /**
      * Create a new Api element with the specified child element
-     * @param name localname
+     *
+     * @param name  localname
      * @param child child element. May be null.
      * @return
      */
-    public static Element apiElement(String name, Element child) {
-        Element e = apiElement(name);
-        if(child!=null) {
+    public static SoapElement apiElement(String name, Element child) {
+        SoapElement e = apiElement(name);
+        if (child != null) {
             e.appendChild(child);
         }
         return e;
@@ -77,9 +83,10 @@ public class XomHelper extends XomUtils  {
 
     /**
      * Add a new API attribute to an element
+     *
      * @param element element to add to
-     * @param name attribute name
-     * @param value string value of the element
+     * @param name    attribute name
+     * @param value   string value of the element
      */
     public static void addApiAttr(Element element, String name, String value) {
         Attribute attribute = new Attribute(API + name,
@@ -90,16 +97,17 @@ public class XomHelper extends XomUtils  {
 
     /**
      * Get the value of an api attribute
-     * @param element element to look at
-     * @param name attribute name
+     *
+     * @param element  element to look at
+     * @param name     attribute name
      * @param required flag if needed
      * @return
      */
-    public static String getApiAttrValue(Element element, String name,boolean required) {
+    public static String getApiAttrValue(Element element, String name, boolean required) {
         Attribute val = element.getAttribute(name, CDL_API_TYPES_NAMESPACE);
-        if(val==null) {
-            if(required) {
-                throw FaultRaiser.raiseBadArgumentFault("No attribute api:"+name+" on "+element);
+        if (val == null) {
+            if (required) {
+                throw FaultRaiser.raiseBadArgumentFault("No attribute api:" + name + " on " + element);
             } else {
                 return null;
             }
@@ -109,44 +117,47 @@ public class XomHelper extends XomUtils  {
 
     /**
      * Get the boolean value of an attribute
+     *
      * @param element
      * @param name
      * @param required
      * @param defval
      * @return
-     * @throws org.smartfrog.services.deployapi.transport.faults.BaseException if the value doesnt map to a bool
+     * @throws org.smartfrog.services.deployapi.transport.faults.BaseException
+     *          if the value doesnt map to a bool
      */
-    public static boolean getBoolApiAttrValue(Element element, String name, boolean required,boolean defval) {
-        String val=getApiAttrValue(element,name, required);
-        if(val==null) {
+    public static boolean getBoolApiAttrValue(Element element, String name, boolean required, boolean defval) {
+        String val = getApiAttrValue(element, name, required);
+        if (val == null) {
             return defval;
         }
         return getXsdBoolValue(val);
     }
 
     /**
-     *
      * @param string value to parse
      * @return value
-     * @throws org.smartfrog.services.deployapi.transport.faults.BaseException if the value doesnt map to a bool
+     * @throws org.smartfrog.services.deployapi.transport.faults.BaseException
+     *          if the value doesnt map to a bool
      */
     public static boolean getXsdBoolValue(String string) {
-        if(XsdUtils.isXsdBooleanTrue(string)) {
+        if (XsdUtils.isXsdBooleanTrue(string)) {
             return true;
         }
-        if(XsdUtils.isXsdBooleanFalse(string)) {
+        if (XsdUtils.isXsdBooleanFalse(string)) {
             return false;
         }
-        throw FaultRaiser.raiseBadArgumentFault("Not a valid boolean value:" +string);
+        throw FaultRaiser.raiseBadArgumentFault("Not a valid boolean value:" + string);
     }
 
     /**
      * Create a MUWS resource ID element from a string ID
+     *
      * @param id new ID
      * @return the new element
      */
-    public static Element makeResourceId(String id) {
-        Element element = new Element(MUWSP1_XS +
+    public static SoapElement makeResourceId(String id) {
+        SoapElement element = new SoapElement(MUWSP1_XS +
                 Constants.PROPERTY_MUWS_RESOURCEID.getLocalPart(),
                 Constants.MUWS_P1_NAMESPACE);
         element.appendChild(id);
@@ -156,10 +167,11 @@ public class XomHelper extends XomUtils  {
 
     /**
      * Move an element into the cdl namespace
+     *
      * @param element
      * @param name
      */
-    public static void adopt(Element element,String name) {
+    public static void adopt(Element element, String name) {
         element.setLocalName(name);
         element.setNamespaceURI(CDL_API_TYPES_NAMESPACE);
         element.setNamespacePrefix("api");
@@ -193,8 +205,8 @@ public class XomHelper extends XomUtils  {
      * Get an element. Throws a BadArgument Deployment fault if it doesnt
      * resolve.
      *
-     * @param node  node to start
-     * @param query query to ask
+     * @param node     node to start
+     * @param query    query to ask
      * @param required flag to indicate a node is required or not
      * @return the element or null if not found && required==false.
      */

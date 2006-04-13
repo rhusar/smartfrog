@@ -25,7 +25,6 @@ import nu.xom.Element;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.ggf.cddlm.generated.api.CddlmConstants;
-import org.smartfrog.projects.alpine.om.base.SoapElement;
 import org.smartfrog.services.deployapi.binding.DescriptorHelper;
 import org.smartfrog.services.deployapi.binding.XomHelper;
 import org.smartfrog.services.deployapi.components.DeploymentServer;
@@ -34,6 +33,7 @@ import org.smartfrog.services.deployapi.system.Utils;
 import org.smartfrog.services.deployapi.transport.wsrf.Property;
 import org.smartfrog.services.deployapi.transport.wsrf.PropertyMap;
 import org.smartfrog.services.deployapi.transport.wsrf.WSRPResourceSource;
+import org.smartfrog.services.deployapi.transport.wsrf.WsrfUtils;
 import org.smartfrog.services.filesystem.FileSystem;
 import org.smartfrog.services.filesystem.filestore.AddedFilestore;
 import org.smartfrog.sfcore.common.SmartFrogException;
@@ -123,7 +123,9 @@ public class ServerInstance implements WSRPResourceSource {
                 Constants.CONTEXT_PATH, false);
         String servicespath = owner.sfResolve(DeploymentServer.ATTR_SERVICESPATH,
                 Constants.SERVICES_PATH, false);
-        path = ctx + servicespath + Constants.SYSTEM_PATH;
+        String systemPath = owner.sfResolve(DeploymentServer.ATTR_SYSTEM_SERVLET,
+                Constants.SYSTEM_PATH, false);
+        path = ctx + servicespath + systemPath;
         File javatmpdir = new File(System.getProperty("java.io.tmpdir"));
         String absolutePath = FileSystem.lookupAbsolutePath(owner,
                 DeploymentServer.ATTR_FILESTORE_DIR,
@@ -156,7 +158,7 @@ public class ServerInstance implements WSRPResourceSource {
             tempdir.delete();
         }
         descriptorHelper = new DescriptorHelper(tempdir);
-        AddedFilestore filestore = new AddedFilestore(tempdir);
+        filestore = new AddedFilestore(tempdir);
         log.debug("Creating server instance " + toString());
 
         //now create our property map
@@ -236,18 +238,12 @@ public class ServerInstance implements WSRPResourceSource {
         properties.addStaticProperty(Constants.PROPERTY_PORTAL_STATIC_PORTAL_STATUS,
                 makeStaticStatus());
 
-        SoapElement items = new SoapElement("ManageabilityCharacteristicsProperties",
-                CddlmConstants.MUWS_P1_NAMESPACE);
-        items.appendChild(new SoapElement(CddlmConstants.PROPERTY_MUWS_MANAGEABILITY_CAPABILITY,
-                CddlmConstants.CDL_API_PORTAL_CAPABILITY));
-        items.appendChild(new SoapElement(CddlmConstants.PROPERTY_MUWS_MANAGEABILITY_CAPABILITY,
-                CddlmConstants.MUWS_CAPABILITY_MANAGEABILITY_REFERENCES));
-        items.appendChild(new SoapElement(CddlmConstants.PROPERTY_MUWS_MANAGEABILITY_CAPABILITY,
-                CddlmConstants.MUWS_CAPABILITY_MANAGEABILITY_CHARACTERISTICS));
-
-        properties.addStaticProperty(Constants.PROPERTY_MUWS_MANAGEABILITY_CHARACTERISTICS, items);
-
+        //this is the dynamic property that lists active systems
         properties.add(new ActiveSystemsProperty(this));
+
+        WsrfUtils.addManagementCharacteristics(properties, CddlmConstants.CDL_API_PORTAL_CAPABILITY);
+
+        //the list of topics
     }
 
     /**
@@ -265,43 +261,43 @@ public class ServerInstance implements WSRPResourceSource {
     @SuppressWarnings("deprecation")
     private Element makeStaticStatus() {
         Element status = XomHelper.element(Constants.PROPERTY_PORTAL_STATIC_PORTAL_STATUS);
-        Element portal = XomHelper.apiElement("portal");
+        Element portal = XomHelper.apiElement(StatusElements.PORTAL);
         status.appendChild(portal);
 
         portal.appendChild(
-                XomHelper.apiElement("name", Constants.BUILD_INFO_IMPLEMENTATION_NAME));
+                XomHelper.apiElement(StatusElements.NAME, Constants.BUILD_INFO_IMPLEMENTATION_NAME));
         portal.appendChild(
-                XomHelper.apiElement("build", BUILD_TIMESTAMP));
+                XomHelper.apiElement(StatusElements.BUILD, BUILD_TIMESTAMP));
         portal.appendChild(
-                XomHelper.apiElement("location", location));
+                XomHelper.apiElement(StatusElements.LOCATION, location));
         portal.appendChild(
-                XomHelper.apiElement("home", Constants.BUILD_INFO_HOMEPAGE));
+                XomHelper.apiElement(StatusElements.HOME, Constants.BUILD_INFO_HOMEPAGE));
         Date now = new Date();
         BigInteger tzoffset = BigInteger.valueOf(now.getTimezoneOffset());
         portal.appendChild(
-                XomHelper.apiElement("timezoneUTCOffset", tzoffset.toString()));
+                XomHelper.apiElement(StatusElements.TIMEZONE_UTCOFFSET, tzoffset.toString()));
 
-        Element languages = XomHelper.apiElement("languages");
-        Element cdl = XomHelper.apiElement("item");
-        Element name = XomHelper.apiElement("name", Constants.BUILD_INFO_CDL_LANGUAGE);
-        Element uri = XomHelper.apiElement("uri", Constants.XML_CDL_NAMESPACE);
+        Element languages = XomHelper.apiElement(StatusElements.LANGUAGES);
+        Element cdl = XomHelper.apiElement(StatusElements.ITEM);
+        Element name = XomHelper.apiElement(StatusElements.NAME, Constants.BUILD_INFO_CDL_LANGUAGE);
+        Element uri = XomHelper.apiElement(StatusElements.URI, Constants.XML_CDL_NAMESPACE);
         cdl.appendChild(name);
         cdl.appendChild(uri);
         languages.appendChild(cdl);
         status.appendChild(languages);
-        Element sfrog = XomHelper.apiElement("item");
-        name = XomHelper.apiElement("name", Constants.BUILD_INFO_SF_LANGUAGE);
-        uri = XomHelper.apiElement("uri", Constants.SMARTFROG_NAMESPACE);
+        Element sfrog = XomHelper.apiElement(StatusElements.ITEM);
+        name = XomHelper.apiElement(StatusElements.NAME, Constants.BUILD_INFO_SF_LANGUAGE);
+        uri = XomHelper.apiElement(StatusElements.URI, Constants.SMARTFROG_NAMESPACE);
         sfrog.appendChild(name);
         sfrog.appendChild(uri);
         languages.appendChild(sfrog);
 
-        Element notifications = XomHelper.apiElement("notifications");
-        Element wsrf = XomHelper.apiElement("item", Constants.WSRF_WSNT_NAMESPACE);
+        Element notifications = XomHelper.apiElement(StatusElements.NOTIFICATIONS);
+        Element wsrf = XomHelper.apiElement(StatusElements.ITEM, Constants.WSRF_WSNT_NAMESPACE);
         notifications.appendChild(wsrf);
         status.appendChild(notifications);
 
-        Element options = XomHelper.apiElement("options");
+        Element options = XomHelper.apiElement(StatusElements.OPTIONS);
         status.appendChild(options);
         return status;
     }

@@ -24,6 +24,8 @@ import org.apache.axis2.AxisFault;
 import org.apache.axis2.addressing.EndpointReference;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.ggf.cddlm.generated.api.CddlmConstants;
+import org.smartfrog.projects.alpine.om.base.SoapElement;
 import org.smartfrog.projects.alpine.wsa.AlpineEPR;
 import org.smartfrog.services.deployapi.binding.DescriptorHelper;
 import org.smartfrog.services.deployapi.binding.EprHelper;
@@ -40,6 +42,7 @@ import static org.smartfrog.services.deployapi.transport.faults.FaultRaiser.rais
 import static org.smartfrog.services.deployapi.transport.faults.FaultRaiser.translateException;
 import org.smartfrog.services.deployapi.transport.wsrf.PropertyMap;
 import org.smartfrog.services.deployapi.transport.wsrf.WSRPResourceSource;
+import org.smartfrog.services.deployapi.transport.wsrf.WsrfUtils;
 import org.smartfrog.sfcore.common.ConfigurationDescriptor;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLivenessException;
@@ -98,7 +101,7 @@ public class Application implements WSRPResourceSource {
      * what properties are set?
      */
     private PropertyMap properties = new PropertyMap();
-    
+
     /**
      * what are we bonded to
      */
@@ -121,7 +124,6 @@ public class Application implements WSRPResourceSource {
     private Element endpointer;
 
 
-    
     /**
      * any fault
      */
@@ -143,7 +145,6 @@ public class Application implements WSRPResourceSource {
      * description string from the JSDL
      */
     private String description;
-
 
 
     /**
@@ -193,7 +194,17 @@ public class Application implements WSRPResourceSource {
 
     public Application(String id) {
         setId(id);
-        enterStateNotifying(LifecycleStateEnum.instantiated, "id="+id);
+        addInitialProperties();
+        enterStateNotifying(LifecycleStateEnum.instantiated, "id=" + id);
+    }
+
+    /**
+     * In which initial properties are set
+     */
+    private void addInitialProperties() {
+        WsrfUtils.addManagementCharacteristics(properties, CddlmConstants.CDL_API_SYSTEM_CAPABILITY);
+        properties.addStaticProperty(CddlmConstants.PROPERTY_SYSTEM_STARTED_TIME, "");
+        properties.addStaticProperty(CddlmConstants.PROPERTY_SYSTEM_TERMINATED_TIME, "");
     }
 
     /**
@@ -206,8 +217,7 @@ public class Application implements WSRPResourceSource {
         if (timestamp == null) {
             timestamp = new Date();
         }
-        Element elt = new Element(property.getLocalPart(),
-                property.getNamespaceURI());
+        SoapElement elt = new SoapElement(property);
         elt.appendChild(Utils.toIsoTime(timestamp));
         properties.addStaticProperty(property, elt);
 
@@ -241,9 +251,9 @@ public class Application implements WSRPResourceSource {
     public void setAddress(String address) {
         this.address = address;
         axisEpr = new EndpointReference(address);
-        endpointer= EprHelper.makeAddress(address, Constants.WS_ADDRESSING_NAMESPACE);
-        alpineEPR =new AlpineEPR(address);
-        endpointer = alpineEPR.toXom(Constants.ENDPOINT_REFERENCE, Constants.WS_ADDRESSING_NAMESPACE,"wsa");
+        endpointer = EprHelper.makeAddress(address, Constants.WS_ADDRESSING_NAMESPACE);
+        alpineEPR = new AlpineEPR(address);
+        endpointer = alpineEPR.toXom(Constants.ENDPOINT_REFERENCE, Constants.WS_ADDRESSING_NAMESPACE, "wsa");
     }
 
     public EndpointReference getAxisEpr() {
@@ -459,7 +469,7 @@ public class Application implements WSRPResourceSource {
     public void bind(Element requestIn, OptionProcessor options) {
         this.request = requestIn;
 
-        Element descriptor=requestIn.getFirstChildElement(DescriptorHelper.DESCRIPTOR,
+        Element descriptor = requestIn.getFirstChildElement(DescriptorHelper.DESCRIPTOR,
                 DescriptorHelper.TNS);
 
 /*
@@ -467,15 +477,15 @@ public class Application implements WSRPResourceSource {
             name = options.getName();
         }
         */
-        
-        
+
+
         if (descriptor == null) {
             throw raiseBadArgumentFault("missing deployment descriptor");
         }
 
         //extract language from descriptor
         String languageURI = descriptor.getAttributeValue(
-                DescriptorHelper.LANGUAGE,DescriptorHelper.TNS);
+                DescriptorHelper.LANGUAGE, DescriptorHelper.TNS);
         if (languageURI == null) {
             throw raiseBadArgumentFault(
                     ERROR_NO_LANGUAGE_DECLARED);
@@ -483,7 +493,7 @@ public class Application implements WSRPResourceSource {
         language = DeploymentLanguage.eval(languageURI);
 
         extension = language.getExtension();
-        
+
 
     }
 
@@ -529,7 +539,7 @@ public class Application implements WSRPResourceSource {
 
     public void deployApplication(File file) {
 
-        if(state!=LifecycleStateEnum.instantiated) {
+        if (state != LifecycleStateEnum.instantiated) {
             throw new DeploymentException(Constants.F_LIFECYCLE_EXCEPTION);
         }
         String url = file.toURI().toString();
@@ -538,7 +548,6 @@ public class Application implements WSRPResourceSource {
                 deployThroughSFSystem(hostname, getId(), url, null);
         bindToPrim(runningJobInstance);
     }
-
 
 
     public LifecycleStateEnum getState() {
@@ -574,7 +583,7 @@ public class Application implements WSRPResourceSource {
         if (!newState.equals(state)) {
             state = newState;
             QName propname = null;
-            switch(state) {
+            switch (state) {
                 case instantiated:
                     propname = Constants.PROPERTY_SYSTEM_CREATED_TIME;
                     break;
@@ -590,7 +599,7 @@ public class Application implements WSRPResourceSource {
                     propname = Constants.PROPERTY_SYSTEM_TERMINATED_TIME;
                     break;
             }
-            if(propname!=null) {
+            if (propname != null) {
                 addTimeProperty(propname,
                         null);
             }
@@ -689,7 +698,7 @@ public class Application implements WSRPResourceSource {
             //TODO: state
             return XomHelper.apiElement(Constants.API_ELEMENT_PING_RESPONSE);
         } catch (SmartFrogLivenessException e) {
-            throw new BaseException(Constants.F_LIVENESS_EXCEPTION,e);
+            throw new BaseException(Constants.F_LIVENESS_EXCEPTION, e);
         } catch (RemoteException e) {
             throw new BaseException(Constants.F_LIVENESS_EXCEPTION, e);
         }
@@ -697,15 +706,16 @@ public class Application implements WSRPResourceSource {
 
     /**
      * start turning
+     *
      * @return
      * @throws RemoteException
      * @throws BaseException
      */
-    public synchronized Element run() throws RemoteException{
+    public synchronized Element run() throws RemoteException {
         Prim target = resolvePrim();
         try {
             target.sfStart();
-            Element response=XomHelper.apiElement(Constants.API_ELEMENT_RUN_RESPONSE);
+            Element response = XomHelper.apiElement(Constants.API_ELEMENT_RUN_RESPONSE);
             return response;
         } catch (SmartFrogException e) {
             throw new BaseException(e);

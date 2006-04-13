@@ -43,6 +43,7 @@ DeployServer extends AlpineServerOnJetty {
       location LAZY PARENT:location;
       host PARENT:urlhost;
       servicesPath "alpine/";
+      systemServlet "system/";
     }
 
     portal extends PortalEndpoint {

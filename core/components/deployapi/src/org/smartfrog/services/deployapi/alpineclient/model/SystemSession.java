@@ -20,7 +20,12 @@
 package org.smartfrog.services.deployapi.alpineclient.model;
 
 import nu.xom.Element;
+import static org.ggf.cddlm.generated.api.CddlmConstants.API_ELEMENT_PING_REQUEST;
+import static org.ggf.cddlm.generated.api.CddlmConstants.API_SYSTEM_OPERATION_PING;
+import org.smartfrog.projects.alpine.om.base.SoapElement;
+import org.smartfrog.projects.alpine.om.soap11.MessageDocument;
 import org.smartfrog.projects.alpine.transport.Session;
+import org.smartfrog.projects.alpine.transport.Transmission;
 import org.smartfrog.projects.alpine.transport.TransmitQueue;
 import org.smartfrog.projects.alpine.wsa.AlpineEPR;
 import org.smartfrog.services.deployapi.binding.XomHelper;
@@ -54,6 +59,22 @@ public class SystemSession extends WsrfSession {
         Element address = XomHelper.getElement(root,
                 "api:systemReference");
         AlpineEPR epr = new AlpineEPR(address, Constants.WS_ADDRESSING_NAMESPACE);
-        setEndpoint(epr);
+        bind(epr);
+    }
+
+    public Transmission beginPing() {
+        SoapElement request;
+        request = new SoapElement(QNAME_WSRF_RL_DESTROY_REQUEST);
+        XomHelper.apiElement(API_ELEMENT_PING_REQUEST);
+        return queue(API_SYSTEM_OPERATION_PING, request);
+    }
+
+    public Element endPing(Transmission tx) {
+        MessageDocument response = tx.blockForResult(getTimeout());
+        return response.getPayload();
+    }
+
+    public Element ping() {
+        return endPing(beginPing()));
     }
 }

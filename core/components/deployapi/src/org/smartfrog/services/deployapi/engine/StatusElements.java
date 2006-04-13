@@ -1,4 +1,4 @@
-/** (C) Copyright 2005 Hewlett-Packard Development Company, LP
+/** (C) Copyright 2006 Hewlett-Packard Development Company, LP
 
  This library is free software; you can redistribute it and/or
  modify it under the terms of the GNU Lesser General Public
@@ -17,44 +17,22 @@
  For more information: www.smartfrog.org
 
  */
-
-
-
-
-#include "org/smartfrog/services/deployapi/components/axis2/axis2servletcontext.sf";
-#include "org/smartfrog/services/deployapi/components/deploymentserver.sf";
+package org.smartfrog.services.deployapi.engine;
 
 /**
- * Any extra deployapi configuration stuff goes in here
- *
+ * created 13-Apr-2006 12:32:28
  */
 
- /**
-  * core deployment engine is minimal
-  */
- DeploymentEngine extends Compound {
-
-    //port to run against
-    port 8080;
-    
-    server TBD;
-    
-    location TBD;
-    
-    urlhost TBD;
-    
-    deploymentServer extends DeploymentServer {
-         port PARENT:port;
-         location PARENT:location;
-         host PARENT:urlhost;
-         servicesPath "services/";
-
-     }
- }
-
-
-
-
-
-
-
+public class StatusElements {
+    public static final String PORTAL = "portal";
+    public static final String NAME = "name";
+    public static final String BUILD = "build";
+    public static final String LOCATION = "location";
+    public static final String HOME = "home";
+    public static final String TIMEZONE_UTCOFFSET = "timezoneUTCOffset";
+    public static final String LANGUAGES = "languages";
+    public static final String ITEM = "item";
+    public static final String URI = "uri";
+    public static final String NOTIFICATIONS = "notifications";
+    public static final String OPTIONS = "options";
+}
