@@ -24,8 +24,10 @@ For more information: www.smartfrog.org
 RComponent extends Compound{
 	sfClass "org.smartfrog.services.persistence.recoverablecomponent.RComponentImpl";
 	sfExport true;
-	wfStorageClass "bdbwoodfrog.StorageImpl";
-	wfStorageRepository "c:/tstdb/";
+	wfStorageClass "org.smartfrog.services.persistence.storage.berkelydb.StorageImpl";
+        wfStorageConfigData extends DATA {
+            wfStorageRepository "c:/tstdb/";
+        }
 }
 
 Myprim extends RComponent{
@@ -34,7 +36,7 @@ Myprim extends RComponent{
     neighbor TBD;
     token    0;
     sent     false;
-} 
+}
 
 StorageAgent extends Compound{
 	sfClass "org.smartfrog.services.persistence.storage.StorageAgentImpl";

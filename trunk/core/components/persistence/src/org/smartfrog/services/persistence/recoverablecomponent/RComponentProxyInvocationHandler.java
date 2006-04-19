@@ -34,43 +34,47 @@ public class RComponentProxyInvocationHandler implements InvocationHandler, Seri
 	Object DirectObject;
 	RComponentProxyLocator proxylocator;
 	RComponentProxyStubImpl RPPStub;
-	
-	public RComponentProxyInvocationHandler(RComponent component){
-		DirectObject = component;
-		
-		try{
-			proxylocator = component.getProxyLocator();
-		} catch (RemoteException exc){
-			throw new RuntimeException("Proxy was being remotely created!",exc);
-		}
-		
-		RPPStub = new RComponentProxyStubImpl(proxylocator); 
-	}
-	
-    static public Object sfGetProxy(RComponent obj) {
-    	
-    	Class[] objinterfvector = obj.getClass().getInterfaces();
-    	Class[] interfvector = new Class[objinterfvector.length+1];
 
-    	interfvector[0] = RComponentProxyStub.class;
-    	for (int i =0; i< objinterfvector.length; i++){
-    		interfvector[i+1] = objinterfvector[i];
-    	}
-    	
-    	return java.lang.reflect.Proxy.newProxyInstance(
-    	       obj.getClass().getClassLoader(),
-    	       interfvector,
-    	       new RComponentProxyInvocationHandler(obj));
-    }		
+    public RComponentProxyInvocationHandler(RComponent component) throws
+            StorageException, RuntimeException {
+        DirectObject = component;
+
+        try {
+            proxylocator = component.getProxyLocator();
+        } catch (RemoteException exc) {
+            throw new RuntimeException("Proxy was being remotely created!", exc);
+        } catch (StorageException ex) {
+            throw ex;
+        }
+
+        RPPStub = new RComponentProxyStubImpl(proxylocator);
+    }
+
+    static public Object sfGetProxy(RComponent obj) throws RuntimeException,
+            StorageException, IllegalArgumentException {
+
+        Class[] objinterfvector = obj.getClass().getInterfaces();
+        Class[] interfvector = new Class[objinterfvector.length + 1];
+
+        interfvector[0] = RComponentProxyStub.class;
+        for (int i = 0; i < objinterfvector.length; i++) {
+            interfvector[i + 1] = objinterfvector[i];
+        }
+
+        return java.lang.reflect.Proxy.newProxyInstance(
+                obj.getClass().getClassLoader(),
+                interfvector,
+                new RComponentProxyInvocationHandler(obj));
+    }
 
 	public Object invoke(Object proxy, Method method, Object[] args)
 			throws Throwable {
-		
+
 		Object result = null;
 		boolean finished=true;
-		
+
 		//System.out.println("\nINVOKE WAS CALLED with"+ method);
-		
+
 		try{
 			result = method.invoke(RPPStub,args);
 		} catch (InvocationTargetException exc) {
@@ -80,7 +84,7 @@ public class RComponentProxyInvocationHandler implements InvocationHandler, Seri
 		}
 
 		if( finished ) return result;
-		
+
 		try{
 				//System.out.println("Directly calling"+ DirectObject+"\n");
 				result = method.invoke(DirectObject,args);
@@ -93,7 +97,7 @@ public class RComponentProxyInvocationHandler implements InvocationHandler, Seri
 		    		Thread.sleep(RComponent.StubWait);
 		    	} catch (InterruptedException exc2){}
 
-		    	//System.out.println("Verifying "+proxylocator); 
+		    	//System.out.println("Verifying "+proxylocator);
 		    	try{
 		    		if(proxylocator.isDead())
 		    			throw new RemoteException("Component already terminated.");
@@ -106,13 +110,13 @@ public class RComponentProxyInvocationHandler implements InvocationHandler, Seri
 		    		// notice that e has not been assigned null if this exception was thrown
 		    	} catch (InvocationTargetException exc2){ // problems during the invocation
 		    		e = exc2.getTargetException();
-		    	} 
+		    	}
 
 		    	if (e == null){ // correct execution
 		    		return result;
 		    	}
 
-		    	// in any case, if sfPing and not dead, returns OK 
+		    	// in any case, if sfPing and not dead, returns OK
 		    	if (method.getName().equals("sfPing")){
 		    		return null;
 		    	}
@@ -121,10 +125,10 @@ public class RComponentProxyInvocationHandler implements InvocationHandler, Seri
 		}
 		return result;
 	}
-	
+
 	private void writeObject(java.io.ObjectOutputStream out)
     	throws IOException{
-	
+
 		if (DirectObject instanceof RemoteStub){
 			out.writeObject(DirectObject);
 		}else{
@@ -132,13 +136,13 @@ public class RComponentProxyInvocationHandler implements InvocationHandler, Seri
 		}
 		out.writeObject(proxylocator);
 	}
-	
+
 	private void readObject(java.io.ObjectInputStream in)
     	throws IOException, ClassNotFoundException{
-		
+
 		DirectObject = in.readObject();
 		proxylocator = (RComponentProxyLocator) in.readObject();
-		
+
 		RPPStub = new RComponentProxyStubImpl(proxylocator);
 	}
 }

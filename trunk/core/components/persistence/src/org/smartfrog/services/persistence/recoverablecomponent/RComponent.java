@@ -25,6 +25,8 @@ import java.rmi.RemoteException;
 
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.compound.Compound;
+import org.smartfrog.sfcore.componentdescription.ComponentDescription;
+import org.smartfrog.services.persistence.storage.StorageException;
 
 
 public interface RComponent extends Compound {
@@ -34,24 +36,23 @@ public interface RComponent extends Compound {
 	public static String WFSTATUSDIRECTORY = "WOODFROG_WFSTATUS";
 	public static String WFSTATUS_DEAD = "WOODFROG_WFDEAD";
 	public static String WFSTATUS_STARTED = "WOODFROG_WFSTARTED";
-	
+
 	public static String ATTRIBUTESDIRECTORY = "WOODFROG_SFATTRIBUTES";
 
 	public static String CHILDRENSDIRECTORY = "WOODFROG_SFCHILDREN";
-	public static String LIFECYCLECHILDREN = "WOODFROG_WFLIFECYCLECHILDREN"; 
+	public static String LIFECYCLECHILDREN = "WOODFROG_WFLIFECYCLECHILDREN";
 	public static String SFCHILDREN = "WOODFROG_WFSFCHILDREN";
 	public static String SFPARENT = "WOODFROG_WFSFPARENT";
 
 	static final String DBStubEntry = "WFSTUBENTRY";
 	static final String DBStubDirectory = "WFSTUBDIRECTORY";
-	
+
 	static final String STORAGEATTRIB = "wfStorage";
 	static final String STORAGECLASSATTRIB = "wfStorageClass";
-	static final String STORAGEREPOSITORY = "wfStorageRepository";
-	
-	
+	static final String STORAGECONFIGDATA = "wfStorageConfigData";
+
 	public void sfRecover() throws SmartFrogException, RemoteException;
 
-	public RComponentProxyLocator getProxyLocator() throws RemoteException;
-	
+	public RComponentProxyLocator getProxyLocator() throws RemoteException, StorageException;
+
 }

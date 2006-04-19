@@ -23,8 +23,10 @@ For more information: www.smartfrog.org
 
 RecoveryAgent extends Compound {
     sfClass "org.smartfrog.services.persistence.recovery.RecoveryAgent";
-	wfStorageClass "bdbwoodfrog.StorageImpl";
-    wfStorageRepository "c:/tstdb/";
+    wfStorageClass "org.smartfrog.services.persistence.storage.berkelydb.StorageImpl";
+        wfStorageConfigData extends DATA {
+            wfStorageRepository "c:/tstdb/";
+        }
 }
 
 StorageAgent extends Compound{
