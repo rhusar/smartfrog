@@ -20,18 +20,19 @@
 
 package org.smartfrog.projects.alpine.core;
 
-import org.smartfrog.projects.alpine.om.soap11.MessageDocument;
-import org.smartfrog.projects.alpine.om.soap11.Envelope;
-import org.smartfrog.projects.alpine.om.soap11.Body;
-import org.smartfrog.projects.alpine.om.soap11.SoapMessageParser;
-import org.smartfrog.projects.alpine.om.soap11.SoapFactory;
 import org.smartfrog.projects.alpine.om.base.SoapElement;
+import org.smartfrog.projects.alpine.om.soap11.Body;
+import org.smartfrog.projects.alpine.om.soap11.Envelope;
+import org.smartfrog.projects.alpine.om.soap11.MessageDocument;
+import org.smartfrog.projects.alpine.om.soap11.Soap11Constants;
+import org.smartfrog.projects.alpine.om.soap11.SoapFactory;
+import org.smartfrog.projects.alpine.om.soap11.SoapMessageParser;
 import org.smartfrog.projects.alpine.om.soap12.Soap12Constants;
 import org.smartfrog.projects.alpine.xmlutils.ResourceLoader;
 import org.xml.sax.SAXException;
 
 /**
- * This represents a message in the system. 
+ * This represents a message in the system.
  */
 public class MessageContext extends Context {
 
@@ -43,7 +44,8 @@ public class MessageContext extends Context {
 
     /**
      * Create a parser in a known role
-     * @param role role to use
+     *
+     * @param role       role to use
      * @param validating whether to validate or not
      */
     public MessageContext(String role, boolean validating) {
@@ -51,18 +53,23 @@ public class MessageContext extends Context {
         this.validating = validating;
     }
 
-    private ResourceLoader loader=new ResourceLoader();
+    private ResourceLoader loader = new ResourceLoader();
 
     /**
      * should messages be validated when parsing them.
      */
-    private boolean validating =false;
+    private boolean validating = false;
 
     /**
      * actor. This is used in generating faults
      */
 
     private String role = Soap12Constants.ROLE_ULTIMATE_RECEIVER;
+
+    /**
+     * SOAP namespace. Defaults to SOAP12
+     */
+    private String soapNamespace = Soap11Constants.URI_SOAP12;
 
     /**
      * incoming request
@@ -100,10 +107,11 @@ public class MessageContext extends Context {
     /**
      * Get the current message, be it request or response, depending upon the
      * processed flag.
+     *
      * @return a message. May be null if the context state is not in a consistent position.
      */
     public MessageDocument getCurrentMessage() {
-        return processed?response:request;
+        return processed ? response : request;
     }
 
     public boolean isValidating() {
@@ -126,6 +134,7 @@ public class MessageContext extends Context {
     /**
      * Create a new request and return it, as well as saving
      * it in the <code>request</code> attribute.
+     *
      * @return the newly created message
      */
 
@@ -138,6 +147,7 @@ public class MessageContext extends Context {
     /**
      * Create a new response and return it, as well as saving
      * it in the <code>response</code> attribute.
+     *
      * @return the newly created message
      */
     public MessageDocument createResponse() {
@@ -148,10 +158,11 @@ public class MessageContext extends Context {
 
     /**
      * Create a message with stub header and body elements
+     *
      * @return
      */
     protected Envelope createMessage() {
-        Envelope envelope=new Envelope();
+        Envelope envelope = new Envelope();
         envelope.appendChild(new Body());
         envelope.getHeader();
         return envelope;
@@ -159,15 +170,17 @@ public class MessageContext extends Context {
 
     /**
      * Create a new parser
+     *
      * @return
      * @throws SAXException
      */
     public SoapMessageParser createParser() throws SAXException {
-        return new SoapMessageParser(loader, validating, new SoapFactory());
+        return new SoapMessageParser(loader, soapNamespace, validating, new SoapFactory());
     }
 
     /**
      * Get the fault actor
+     *
      * @return
      */
     public String getRole() {
@@ -176,5 +189,13 @@ public class MessageContext extends Context {
 
     public void setRole(String role) {
         this.role = role;
+    }
+
+    public String getSoapNamespace() {
+        return soapNamespace;
+    }
+
+    public void setSoapNamespace(String soapNamespace) {
+        this.soapNamespace = soapNamespace;
     }
 }

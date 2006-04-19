@@ -70,7 +70,6 @@ public class Transmission implements Callable {
      */
     private Future<?> result;
 
-
     public MessageContext getContext() {
         return context;
     }
@@ -189,4 +188,6 @@ public class Transmission implements Callable {
                     getResponse().getRootElement().copy()));
         }
     }
+
+
 }

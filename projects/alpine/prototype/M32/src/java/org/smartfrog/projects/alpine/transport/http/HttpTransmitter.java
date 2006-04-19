@@ -35,7 +35,6 @@ import org.smartfrog.projects.alpine.om.soap11.MessageDocument;
 import org.smartfrog.projects.alpine.om.soap11.SoapMessageParser;
 import org.smartfrog.projects.alpine.transport.Transmission;
 import org.smartfrog.projects.alpine.wsa.AddressDetails;
-import org.smartfrog.projects.alpine.wsa.AddressingConstants;
 import org.xml.sax.SAXException;
 
 import javax.servlet.ServletOutputStream;
@@ -58,6 +57,7 @@ public class HttpTransmitter {
     private Transmission tx;
 
     private HttpClient httpclient;
+    private ProxySettings proxySettings;
 
 
     private AddressDetails wsa;
@@ -73,8 +73,13 @@ public class HttpTransmitter {
         request = context.getRequest();
         wsa = request.getAddressDetails();
         wsa.checkToIsValid();
-        wsa.addressMessage(request, AddressingConstants.XMLNS_WSA_2005, "wsa", true, false);
+        wsa.addressMessage(request);
+        //create a client
         httpclient = new HttpClient();
+        //proxy settings
+        proxySettings = new ProxySettings();
+        proxySettings.bindToSystemSettings();
+        proxySettings.configureClient(httpclient);
     }
 
 

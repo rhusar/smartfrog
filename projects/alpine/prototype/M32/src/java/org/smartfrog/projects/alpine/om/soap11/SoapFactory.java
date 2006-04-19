@@ -20,16 +20,15 @@
 
 package org.smartfrog.projects.alpine.om.soap11;
 
+import nu.xom.Document;
+import nu.xom.Element;
+import nu.xom.NodeFactory;
 import org.smartfrog.projects.alpine.om.ExtendedNodeFactory;
 import org.smartfrog.projects.alpine.om.base.SoapElement;
 import org.smartfrog.projects.alpine.xmlutils.XsdUtils;
-import nu.xom.Element;
-import nu.xom.Document;
-import nu.xom.NodeFactory;
 
 /**
  * this iteration doesnt have the envisaged chain of handlers, all we do is create soap nodes
- * 
  */
 public class SoapFactory extends ExtendedNodeFactory {
 
@@ -47,7 +46,7 @@ public class SoapFactory extends ExtendedNodeFactory {
      * Default ctor is bound to SOAP11 and to
      */
     public SoapFactory() {
-        this(Soap11Constants.URI_SOAP11, new NodeFactory());
+        this(Soap11Constants.URI_SOAP11, null);
     }
 
     /**
@@ -61,7 +60,7 @@ public class SoapFactory extends ExtendedNodeFactory {
         String name = XsdUtils.extractLocalname(fullname);
 
         Element element = null;
-        if(soapns.equals(namespace)) {
+        if (soapns.equals(namespace)) {
             if (Soap11Constants.ELEMENT_ENVELOPE.equals(name)) {
                 element = new Envelope(name, namespace);
             } else if (Soap11Constants.ELEMENT_HEADER.equals(name)) {
@@ -71,12 +70,15 @@ public class SoapFactory extends ExtendedNodeFactory {
             } else if (Soap11Constants.ELEMENT_FAULT.equals(name)) {
                 element = new Fault(name, namespace);
             } else {
-
                 //something else in our namespace. wierd.
                 element = new SoapElement(name, namespace);
             }
         } else {
-            return handoff.startMakingElement(name, namespace);
+            if (handoff != null) {
+                return handoff.startMakingElement(name, namespace);
+            } else {
+                return new SoapElement(name, namespace);
+            }
         }
 
         return element;

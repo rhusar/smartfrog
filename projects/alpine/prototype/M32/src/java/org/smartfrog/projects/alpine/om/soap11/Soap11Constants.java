@@ -30,28 +30,33 @@ public interface Soap11Constants {
     /**
      * {@value}
      */
-    public static final String URI_SOAP11="http://schemas.xmlsoap.org/soap/envelope/";
+    public static final String URI_SOAP11 = "http://schemas.xmlsoap.org/soap/envelope/";
 
     /**
      * {@value}
      */
-    public static final String XMLNS_SOAP="soap";
+    public static final String URI_SOAP12 = "http://www.w3.org/2003/05/soap-envelope";
+
+    /**
+     * {@value}
+     */
+    public static final String XMLNS_SOAP = "soap";
 
 
     /**
      * {@value}
      */
-    public static final String ELEMENT_ENVELOPE="Envelope";
+    public static final String ELEMENT_ENVELOPE = "Envelope";
 
     /**
      * Qname of the element
      */
-    public static final QName QNAME_ENVELOPE=new QName(URI_SOAP11,ELEMENT_ENVELOPE);
+    public static final QName QNAME_ENVELOPE = new QName(URI_SOAP11, ELEMENT_ENVELOPE);
 
     /**
      * {@value}
      */
-    public static final String ELEMENT_HEADER="Header";
+    public static final String ELEMENT_HEADER = "Header";
     /**
      * Qname of the element
      */
@@ -97,7 +102,7 @@ public interface Soap11Constants {
     public static final String FAULT_DETAIL = "detail";
 
     /**
-     * The processing party found an invalid 
+     * The processing party found an invalid
      * namespace for the SOAP Envelope element (see section 4.1.2)
      * {@value}
      */
@@ -113,14 +118,14 @@ public interface Soap11Constants {
     public static final String FAULTCODE_MUST_UNDERSTAND = "MustUnderstand";
 
     /**
-     * The Client class of errors indicate that the message was incorrectly 
+     * The Client class of errors indicate that the message was incorrectly
      * formed or did not contain the appropriate information in order to succeed.
      * {@value}
      */
     public static final String FAULTCODE_CLIENT = "Client";
     /**
-     * The Server class of errors indicate that the message could not be processed 
-     * for reasons not directly attributable to the contents of the message itself 
+     * The Server class of errors indicate that the message could not be processed
+     * for reasons not directly attributable to the contents of the message itself
      * but rather to the processing of the message.
      * {@value}
      */
@@ -145,7 +150,7 @@ public interface Soap11Constants {
      */
     public static final String ATTR_ACTOR = "actor";
     /**
-     * URI of section5 encoding. 
+     * URI of section5 encoding.
      * {@value}
      */
     public static final String ENCODING_SECTION_5 = "http://schemas.xmlsoap.org/soap/encoding/";
@@ -196,8 +201,6 @@ public interface Soap11Constants {
 
     String URI_XML_1998 = "http://www.w3.org/XML/1998/namespace";
     String URI_WSDL = "http://schemas.xmlsoap.org/wsdl/";
-
-
 
 
 }

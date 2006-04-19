@@ -67,7 +67,7 @@ public class MessageDocument extends Document implements ValidateXml {
         if (!addressDetails.read(this, AddressingConstants.XMLNS_WSA_2005)
                 && !addressDetails.read(this, AddressingConstants.XMLNS_WSA_2004)
                 && !addressDetails.read(this, AddressingConstants.XMLNS_WSA_2003)) {
-            log.warn("No address details found");
+            log.info("No address details found");
         }
     }
 

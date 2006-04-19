@@ -1,4 +1,4 @@
-/** (C) Copyright 2005 Hewlett-Packard Development Company, LP
+/** (C) Copyright 2006 Hewlett-Packard Development Company, LP
 
  This library is free software; you can redistribute it and/or
  modify it under the terms of the GNU Lesser General Public
@@ -17,19 +17,34 @@
  For more information: www.smartfrog.org
 
  */
+package org.smartfrog.test.system.projects.alpine.remote;
 
-package org.smartfrog.projects.alpine.om.soap12;
-
-import nu.xom.NodeFactory;
-import org.smartfrog.projects.alpine.om.soap11.SoapFactory;
+import org.smartfrog.projects.alpine.wsa.AddressingConstants;
 
 /**
- * TODO
+ * created 13-Apr-2006 10:27:32
  */
-public class Soap12NodeFactory extends SoapFactory {
 
-    public Soap12NodeFactory(String namespace, NodeFactory handoff) {
-        super(namespace, handoff);
+public class Wsa2003EchoTest extends EchoTest {
+
+    public Wsa2003EchoTest(String name) {
+        super(name);
+    }
+
+
+    /**
+     * Sets up the fixture, for example, open a network connection. This method is called before a test is executed.
+     */
+    protected void setUp() throws Exception {
+        super.setUp();
+        address.setNamespace(AddressingConstants.XMLNS_WSA_2003);
+    }
+
+    /**
+     * @return the path of the actual endpoint.
+     */
+    protected String getEndpointName() {
+        return WSA_PATH;
     }
 
 }

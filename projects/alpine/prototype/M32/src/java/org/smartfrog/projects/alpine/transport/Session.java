@@ -19,16 +19,14 @@
  */
 package org.smartfrog.projects.alpine.transport;
 
-import org.smartfrog.projects.alpine.wsa.AlpineEPR;
-import org.smartfrog.projects.alpine.wsa.AddressDetails;
-import org.smartfrog.projects.alpine.core.MessageContext;
-import org.smartfrog.projects.alpine.om.soap11.MessageDocument;
+import nu.xom.Element;
+import org.apache.commons.httpclient.Credentials;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.commons.httpclient.Credentials;
-import nu.xom.Element;
-
-import java.util.concurrent.Executor;
+import org.smartfrog.projects.alpine.core.MessageContext;
+import org.smartfrog.projects.alpine.om.soap11.MessageDocument;
+import org.smartfrog.projects.alpine.wsa.AddressDetails;
+import org.smartfrog.projects.alpine.wsa.AlpineEPR;
 
 /**
  * This represents an ongoing conversation with a single host/endpoint. Stuff like
@@ -37,13 +35,15 @@ import java.util.concurrent.Executor;
 public class Session {
 
     private AlpineEPR endpoint;
-    private String role=DEFAULT_ROLE;
-    private boolean validating=true;
+    private String role = DEFAULT_ROLE;
+    private boolean validating = true;
+    private AddressDetails address;
+
     /**
      * {@value}
      */
     public static final String DEFAULT_ROLE = "Client";
-    private static Log log= LogFactory.getLog(Session.class);
+    private static Log log = LogFactory.getLog(Session.class);
     /**
      * a queue for transmissions
      */
@@ -54,13 +54,14 @@ public class Session {
 
     /**
      * Create a new session.
-     * @param endpoint default address
-     * @param role role for this node. Defaults to {@link #DEFAULT_ROLE}
+     *
+     * @param endpoint   default address
+     * @param role       role for this node. Defaults to {@link #DEFAULT_ROLE}
      * @param validating flag to set validating parser
      */
     public Session(AlpineEPR endpoint, String role, boolean validating) {
-        this.endpoint = endpoint;
-        if(role!=null) {
+        bind(endpoint);
+        if (role != null) {
             this.role = role;
         }
         this.validating = validating;
@@ -70,8 +71,19 @@ public class Session {
         return endpoint;
     }
 
-    public void setEndpoint(AlpineEPR endpoint) {
+
+    public AddressDetails getAddress() {
+        return address;
+    }
+
+    /**
+     * Bind to an address; creates an AddresDetails instance that can be tweaked.
+     *
+     * @param endpoint
+     */
+    public void bind(AlpineEPR endpoint) {
         this.endpoint = endpoint;
+        address = new AddressDetails(endpoint);
     }
 
     public String getRole() {
@@ -99,28 +111,27 @@ public class Session {
     }
 
 
-
     /**
      * Create an outbound transmission
+     *
      * @param action soap action
      * @return a tx bound to the default destination
      */
     public Transmission createTransmission(String action) {
-        AlpineEPR destination = endpoint;
-        return createTransmission(destination, action);
+        return createTransmission(address, action);
     }
 
     /**
      * Create an outbound transmission
-     * @param destination destination address
-     * @param action soap action
      *
+     * @param destination destination address
+     * @param action      soap action
      * @return a tx bound to the default destination
      */
     public Transmission createTransmission(AlpineEPR destination,
                                            String action) {
-        MessageContext messageContext = new MessageContext(role,validating);
-        Transmission tx=new Transmission(messageContext);
+        MessageContext messageContext = new MessageContext(role, validating);
+        Transmission tx = new Transmission(messageContext);
         MessageDocument request = messageContext.createRequest();
         AddressDetails addressing = new AddressDetails();
         addressing.setTo(destination);
@@ -129,18 +140,32 @@ public class Session {
         return tx;
     }
 
+    public Transmission createTransmission(AddressDetails destination,
+                                           String action) {
+        AddressDetails addressing = new AddressDetails(destination);
+        addressing.setAction(action);
+        return createTransmission(addressing);
+    }
+
+    public Transmission createTransmission(AddressDetails destination) {
+        MessageContext messageContext = new MessageContext(role, validating);
+        Transmission tx = new Transmission(messageContext);
+        MessageDocument request = messageContext.createRequest();
+        request.setAddressDetails(destination);
+        return tx;
+    }
+
     /**
      * Create an outbound transmission
      *
      * @param action, set to null to use the element local name
      * @param payload the body of the soap message
-     *
      * @return a tx bound to the default destination
      */
     public Transmission createTransmission(String action, Element payload) {
         AlpineEPR destination = endpoint;
-        if(action==null) {
-            action=payload.getLocalName();
+        if (action == null) {
+            action = payload.getLocalName();
         }
         Transmission tx = createTransmission(destination, action);
         tx.getRequest().getBody().appendChild(payload);
@@ -148,19 +173,18 @@ public class Session {
     }
 
     /**
-     *
      * Utility method to wrap up most of everything into one single operation. Create a message
      * addressed to the default destination, with the given payload.
-     *
+     * <p/>
      * This only works if the queue has been set via {@link #setQueue(TransmitQueue)},
      * otherwise you get a null pointer exception.
      *
-     * @param action soap action; leave null for it to be taken from the payload
+     * @param action  soap action; leave null for it to be taken from the payload
      * @param payload the contents of the SOAP Envelope
      * @return the transmission, which can be waited on
      */
-    public Transmission queue(String action,Element payload) {
-        Transmission tx=createTransmission(action,payload);
+    public Transmission queue(String action, Element payload) {
+        Transmission tx = createTransmission(action, payload);
         queue.transmit(tx);
         return tx;
     }

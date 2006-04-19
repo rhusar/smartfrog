@@ -21,21 +21,21 @@
 package org.smartfrog.test.unit.projects.alpine;
 
 import junit.framework.TestCase;
+import nu.xom.ParsingException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.smartfrog.projects.alpine.om.soap11.SoapMessageParser;
+import org.smartfrog.projects.alpine.faults.AlpineRuntimeException;
 import org.smartfrog.projects.alpine.om.soap11.MessageDocument;
+import org.smartfrog.projects.alpine.om.soap11.Soap11Constants;
+import org.smartfrog.projects.alpine.om.soap11.SoapMessageParser;
 import org.smartfrog.projects.alpine.xmlutils.CatalogHandler;
 import org.smartfrog.projects.alpine.xmlutils.ResourceLoader;
-import org.smartfrog.projects.alpine.faults.AlpineRuntimeException;
 import org.xml.sax.SAXException;
 
 import java.io.IOException;
 
-import nu.xom.ParsingException;
-
 /**
- 
+
  */
 public abstract class ParserTestBase extends TestCase implements Filenames {
 
@@ -49,7 +49,7 @@ public abstract class ParserTestBase extends TestCase implements Filenames {
     protected ParserTestBase(String name) {
         super(name);
     }
-    
+
     /**
      * create a new catalog, using the local classloader for resolution
      *
@@ -67,16 +67,17 @@ public abstract class ParserTestBase extends TestCase implements Filenames {
 
     protected void log(String message) {
         log.info(message);
-    }    
-    
+    }
+
     /**
      * load a document
+     *
      * @param filename
      * @return
      * @throws IOException
      * @throws ParsingException
      * @throws AlpineRuntimeException
-     */ 
+     */
     protected MessageDocument load(String filename) throws IOException,
             ParsingException {
         MessageDocument doc;
@@ -85,8 +86,7 @@ public abstract class ParserTestBase extends TestCase implements Filenames {
         return doc;
     }
 
-    
-    
+
     /**
      * configure the parser
      *
@@ -94,14 +94,17 @@ public abstract class ParserTestBase extends TestCase implements Filenames {
      */
     protected void initParser() throws SAXException {
         ResourceLoader loader = new ResourceLoader(this.getClass());
-        parser = new SoapMessageParser(loader, isParserValidating(), null);
+        parser = new SoapMessageParser(loader,
+                Soap11Constants.URI_SOAP12,
+                isParserValidating(),
+                null);
     }
 
     /**
      * override point: return true if the parser should be validating
-     * 
+     *
      * @return false, by default.
-     */ 
+     */
     protected boolean isParserValidating() {
         return false;
     }
@@ -112,5 +115,5 @@ public abstract class ParserTestBase extends TestCase implements Filenames {
     protected void setUp() throws Exception {
         super.setUp();
         initParser();
-    }    
+    }
 }
