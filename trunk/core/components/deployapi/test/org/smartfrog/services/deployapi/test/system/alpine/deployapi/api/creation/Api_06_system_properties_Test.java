@@ -17,7 +17,7 @@
  For more information: www.smartfrog.org
 
  */
-package org.smartfrog.services.deployapi.test.system.alpine.deployapi.api;
+package org.smartfrog.services.deployapi.test.system.alpine.deployapi.api.creation;
 
 import nu.xom.Element;
 import static org.ggf.cddlm.generated.api.CddlmConstants.CDL_API_SYSTEM_CAPABILITY;
@@ -28,6 +28,7 @@ import static org.ggf.cddlm.generated.api.CddlmConstants.PROPERTY_SYSTEM_CREATED
 import static org.ggf.cddlm.generated.api.CddlmConstants.PROPERTY_SYSTEM_STARTED_TIME;
 import static org.ggf.cddlm.generated.api.CddlmConstants.PROPERTY_SYSTEM_TERMINATED_TIME;
 import org.smartfrog.services.deployapi.alpineclient.model.SystemSession;
+import org.smartfrog.services.deployapi.test.system.alpine.deployapi.api.StandardTestBase;
 import org.smartfrog.services.deployapi.transport.wsrf.WsrfUtils;
 
 /**
@@ -35,9 +36,9 @@ import org.smartfrog.services.deployapi.transport.wsrf.WsrfUtils;
  * Create a system , then destroy it immediately.
  */
 
-public class Api_6_system_properties_Test extends StandardTestBase {
+public class Api_06_system_properties_Test extends StandardTestBase {
 
-    public Api_6_system_properties_Test(String name) {
+    public Api_06_system_properties_Test(String name) {
         super(name);
     }
 

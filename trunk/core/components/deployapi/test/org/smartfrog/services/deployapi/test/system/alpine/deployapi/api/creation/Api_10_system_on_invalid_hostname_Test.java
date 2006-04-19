@@ -17,37 +17,32 @@
  For more information: www.smartfrog.org
 
  */
-package org.smartfrog.services.deployapi.test.system.alpine.deployapi.api;
+package org.smartfrog.services.deployapi.test.system.alpine.deployapi.api.creation;
 
-import org.smartfrog.projects.alpine.faults.AlpineRuntimeException;
-import org.smartfrog.services.deployapi.alpineclient.model.SystemSession;
+import org.smartfrog.services.deployapi.test.system.alpine.deployapi.api.StandardTestBase;
 
 /**
  * created 13-Apr-2006 13:51:02
  * Create a system , then destroy it immediately.
  */
 
-public class Api_8_system_destroy_operations_Test extends StandardTestBase {
+public class Api_10_system_on_invalid_hostname_Test extends StandardTestBase {
 
-    public Api_8_system_destroy_operations_Test(String name) {
+    public Api_10_system_on_invalid_hostname_Test(String name) {
         super(name);
     }
 
-    public void testPingSystem() throws Exception {
-        SystemSession system = createSystem(null);
-        system.ping();
+    /**
+     * Sets up the fixture, for example, open a network connection.
+     * This method is called before a test is executed.
+     */
+    protected void setUp() throws Exception {
+        super.setUp();
     }
 
-
-    public void testPingDestroyedSystem() throws Exception {
-        SystemSession system = getPortal().create(null);
-        system.destroy();
-        try {
-            system.ping();
-            fail("Expected failure");
-        } catch (AlpineRuntimeException e) {
-
-        }
+    public void testInvalidHostname() throws Exception {
+        createSystem("no-name.example.org");
+        assertNotNull(getSystem());
     }
 
 }

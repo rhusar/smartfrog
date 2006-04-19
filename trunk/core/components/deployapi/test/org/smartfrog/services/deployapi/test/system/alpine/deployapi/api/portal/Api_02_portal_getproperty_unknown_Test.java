@@ -17,11 +17,12 @@
  For more information: www.smartfrog.org
 
  */
-package org.smartfrog.services.deployapi.test.system.alpine.deployapi.api;
+package org.smartfrog.services.deployapi.test.system.alpine.deployapi.api.portal;
 
 import org.ggf.cddlm.generated.api.CddlmConstants;
 import org.smartfrog.projects.alpine.faults.SoapException;
 import org.smartfrog.projects.alpine.om.soap11.Fault;
+import org.smartfrog.services.deployapi.test.system.alpine.deployapi.api.StandardTestBase;
 
 import javax.xml.namespace.QName;
 
@@ -29,9 +30,9 @@ import javax.xml.namespace.QName;
  * created 12-Apr-2006 16:19:16
  */
 
-public class Api_2_portal_getproperty_unknown_Test extends StandardTestBase {
+public class Api_02_portal_getproperty_unknown_Test extends StandardTestBase {
 
-    public Api_2_portal_getproperty_unknown_Test(String name) {
+    public Api_02_portal_getproperty_unknown_Test(String name) {
         super(name);
     }
 

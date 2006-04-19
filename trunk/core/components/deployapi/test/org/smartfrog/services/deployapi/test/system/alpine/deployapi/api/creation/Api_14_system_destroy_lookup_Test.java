@@ -17,36 +17,40 @@
  For more information: www.smartfrog.org
 
  */
-package org.smartfrog.services.deployapi.test.system.alpine.deployapi.api;
+package org.smartfrog.services.deployapi.test.system.alpine.deployapi.api.creation;
 
-import nu.xom.Element;
 import org.ggf.cddlm.generated.api.CddlmConstants;
-import org.smartfrog.projects.alpine.faults.AlpineRuntimeException;
 import org.smartfrog.services.deployapi.alpineclient.model.SystemSession;
+import org.smartfrog.services.deployapi.test.system.alpine.deployapi.api.StandardTestBase;
 
 /**
  * created 13-Apr-2006 13:51:02
  * Create a system , then destroy it immediately.
  */
 
-public class Api_7_system_destroy_properties_Test extends StandardTestBase {
+public class Api_14_system_destroy_lookup_Test extends StandardTestBase {
+    private String resID;
 
-    public Api_7_system_destroy_properties_Test(String name) {
+    public Api_14_system_destroy_lookup_Test(String name) {
         super(name);
     }
 
+    /**
+     * Sets up the fixture, for example, open a network connection.
+     * This method is called before a test is executed.
+     */
+    protected void setUp() throws Exception {
+        super.setUp();
+        createSystem(null);
+        resID = getSystem().getResourceProperty(CddlmConstants.PROPERTY_MUWS_RESOURCEID).getValue();
+    }
 
-    public void testCreateDestroySystem() throws Exception {
-        SystemSession system = getPortal().create(null);
-        system.getResourceProperty(CddlmConstants.PROPERTY_MUWS_RESOURCEID);
-        system.getResourceProperty(CddlmConstants.PROPERTY_SYSTEM_CREATED_TIME);
-        system.destroy();
-        try {
-            Element result = system.getResourceProperty(CddlmConstants.PROPERTY_MUWS_RESOURCEID);
-            fail("Expected failure, got a system with resid " + result.getValue());
-        } catch (AlpineRuntimeException e) {
 
-        }
+    public void testLookup() throws Exception {
+        SystemSession system2 = getPortal().lookupSystem(resID);
+        assertNotNull(system2);
+        String resID2 = system2.getResourceProperty(CddlmConstants.PROPERTY_MUWS_RESOURCEID).getValue();
+        assertEquals(resID, resID2);
     }
 
 }
