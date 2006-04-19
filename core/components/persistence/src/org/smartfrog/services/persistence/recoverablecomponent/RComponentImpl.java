@@ -41,54 +41,57 @@ import org.smartfrog.sfcore.prim.TerminationRecord;
 
 import java.util.*;
 import java.io.*;
+import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 
 
-/* 
- * This class implements a Recoverable Prim component. This 
- * component has the special feature of surviving crashes and 
+/*
+ * This class implements a Recoverable Prim component. This
+ * component has the special feature of surviving crashes and
  * restarting after the transient problem that has
  * caused its failure has been solved.
  */
 public class RComponentImpl extends CompoundImpl implements RComponent, Serializable {
 
-    Storage stableLog;  
-	
+    Storage stableLog;
+
     String[] volatileEntries = {"sfHost","sfLog"};
     //String[] volatileEntries = {"sfHost","sfLog","sfProcess","sfProcessName"};
-	
+
     public RComponentImpl() throws RemoteException {
     	super();
     }
 
-    static protected Storage getNewStableStorage(String classname, String repository) throws StorageException{
+    static protected Storage getNewStableStorage(String classname, ComponentDescription configData) throws StorageException{
     	Class storageclass = null;
     	try{
     		storageclass = Class.forName(classname);
     	} catch(ClassNotFoundException cause){
-    		throw new StorageException("Storage class not found!",cause);
+    		throw new StorageException("Storage class not found! - looking for " + classname ,cause);
     	}
     	Class[] constparam = new Class[1];
-    	constparam[0] = String.class;
+    	constparam[0] = ComponentDescription.class;
     	Constructor storageconstructor = null;
     	try{
     		storageconstructor = storageclass.getConstructor(constparam);
     	} catch(NoSuchMethodException cause){
-    		throw new StorageException("Storage constructor method not found!",cause); 
+    		throw new StorageException("Storage constructor method not found!",cause);
     	}
     	Object[] params = new Object[1];
-    	params[0] = repository;
+        params[0] = configData;
 
     	try{
     		return (Storage) storageconstructor.newInstance(params);
     	} catch (Exception cause){
+                cause.printStackTrace();
     		throw new StorageException("Problems instantiating stable storage", cause);
     	}
     }
-	
-    public RComponentProxyLocator getProxyLocator() throws RemoteException{
+
+    public RComponentProxyLocator getProxyLocator() throws RemoteException,
+            StorageException {
     	return new RComponentProxyLocatorImpl(stableLog.getAgentUrl(),stableLog.getStorageRef());
     }
-	
+
     protected boolean isVolatile(String entryname) throws StorageException{
 	for (int i=0;i<volatileEntries.length; i++){
 	    if (volatileEntries[i].equals(entryname))
@@ -96,7 +99,7 @@ public class RComponentImpl extends CompoundImpl implements RComponent, Serializ
 	}
 	return false;
     }
-    
+
     protected void createEntry(String entryname, String directory) throws StorageException{
     	if(!isVolatile(entryname))
     		stableLog.createEntry(entryname, directory);
@@ -105,18 +108,18 @@ public class RComponentImpl extends CompoundImpl implements RComponent, Serializ
     protected boolean hasEntry(String entryname) throws StorageException{
     	return isVolatile(entryname) || stableLog.hasEntry(entryname);
     }
-    
+
     protected void addEntry(String entryname, Serializable value) throws StorageException{
     	if(!isVolatile(entryname))
     		stableLog.addEntry(entryname,value);
     }
-    
+
     protected void removeEntry(String entryname) throws StorageException{
     	if(!isVolatile(entryname))
     		stableLog.deleteEntry(entryname);
     }
-    
-	
+
+
     /**
      * Adds an attribute to this component under given name.
      *
@@ -132,7 +135,7 @@ public class RComponentImpl extends CompoundImpl implements RComponent, Serializ
         throws SmartFrogRuntimeException, RemoteException {
 
     	Object retvalue = super.sfAddAttribute(name,value);
-    	
+
     	try{
     	    if (!hasEntry((String)name)){
     	    	createEntry((String)name,ATTRIBUTESDIRECTORY);
@@ -142,9 +145,9 @@ public class RComponentImpl extends CompoundImpl implements RComponent, Serializ
     	} catch(StorageException exc) {
     		throw new SmartFrogRuntimeException("Error while writing attribute on stable storage",exc);
     	}
-    	
+
    		return retvalue;
-    }	
+    }
 
     /**
      * Replace named attribute in component context. If attribute is not
@@ -160,22 +163,22 @@ public class RComponentImpl extends CompoundImpl implements RComponent, Serializ
      */
     public synchronized Object sfReplaceAttribute(Object name, Object value)
         throws SmartFrogRuntimeException, RemoteException {
-	
+
     	Object retvalue = super.sfReplaceAttribute(name,value);
     	try{
     	    if (!hasEntry((String)name)){
     	    	createEntry((String)name,ATTRIBUTESDIRECTORY);
     	    }
     	    addEntry((String)name, (Serializable)value);
-            stableLog.commit();      
+            stableLog.commit();
     	} catch(StorageException exc) {
     		throw new SmartFrogRuntimeException("Error while writing attribute on stable storage",exc);
     	}
 
     	return retvalue;
     }
-    
-    
+
+
     /**
      * Removes an attribute from this component.
      *
@@ -190,7 +193,7 @@ public class RComponentImpl extends CompoundImpl implements RComponent, Serializ
     	throws SmartFrogRuntimeException, RemoteException {
 
     	Object retvalue = super.sfRemoveAttribute(name);
-    	
+
     	try{
     		if (hasEntry((String)name)){
     			removeEntry((String) name);
@@ -202,13 +205,13 @@ public class RComponentImpl extends CompoundImpl implements RComponent, Serializ
     	return retvalue;
     }
 
-    
+
     /**
      * Basically, the internal state of a Smartfrog Component is composed of
      * the following pieces:
-     * 
+     *
      * Context sfContext
-     * 
+     *
      * @throws IOException
      */
     private void saveState(Context cxt) throws StorageException, IOException {
@@ -217,13 +220,13 @@ public class RComponentImpl extends CompoundImpl implements RComponent, Serializ
     	while(attributes.hasNext()){
     		String entryname = (String) attributes.next();
     		Serializable value = (Serializable) values.next();
-	    
+
     		createEntry(entryname,ATTRIBUTESDIRECTORY);
     		addEntry(entryname,value);
     	}
     }
 
-    
+
     /**
      * Creates a new child for this component
      *
@@ -238,10 +241,10 @@ public class RComponentImpl extends CompoundImpl implements RComponent, Serializ
     		throw new RuntimeException("Error while writing to Stable Storage",cause);
     	}
     }
-    
+
 
     /**
-     * Removes a specific child 
+     * Removes a specific child
      *
      * @param target object to remove from heartbeat
      *
@@ -258,8 +261,8 @@ public class RComponentImpl extends CompoundImpl implements RComponent, Serializ
     		}
     	}
         return res;
-    }    
-    
+    }
+
     /**
      * Detatching will have to be implemented in the future making use of the sfPing mechanism
      * to ensure consistency even in the presence of failures.
@@ -268,7 +271,7 @@ public class RComponentImpl extends CompoundImpl implements RComponent, Serializ
 //    throws SmartFrogException, RemoteException {
 //    	throw new SmartFrogException("sfDetach is not possible with Recoverable components");
 //    }
-    
+
     public synchronized void sfDetachAndTerminate(TerminationRecord status) {
     	throw new RuntimeException("sfDetatchAndTerminate is not possible with Recoverable components");
     }
@@ -286,9 +289,9 @@ public class RComponentImpl extends CompoundImpl implements RComponent, Serializ
      */
     public void sfDeployWith(Prim parent, Context cxt) throws
 	SmartFrogDeploymentException, RemoteException {
-	
+
     	boolean recovering = cxt.sfContainsAttribute(STORAGEATTRIB);
-    	
+
     	try{
     		if (recovering){
     			stableLog = ((StorageRef)cxt.sfRemoveAttribute(STORAGEATTRIB)).getStorage();
@@ -297,10 +300,10 @@ public class RComponentImpl extends CompoundImpl implements RComponent, Serializ
         		stableLog.disableCommit();
     		} else {
     			String stoclass = (String)cxt.sfRemoveAttribute(STORAGECLASSATTRIB);
-    			String storep = (String)cxt.sfRemoveAttribute(STORAGEREPOSITORY);
-    			
-    			stableLog = getNewStableStorage(stoclass,storep);
-    			
+                        ComponentDescription stoconfig = (ComponentDescription)cxt.sfRemoveAttribute(STORAGECONFIGDATA);
+
+    			stableLog = getNewStableStorage(stoclass, stoconfig);
+
         		stableLog.createEntry(SFPARENT,CHILDRENSDIRECTORY);
         		stableLog.createEntry(SFCHILDREN,CHILDRENSDIRECTORY);
         		stableLog.addEntry(SFCHILDREN,sfChildren);
@@ -321,7 +324,7 @@ public class RComponentImpl extends CompoundImpl implements RComponent, Serializ
     	// it also cannot be executed at sfStart for it is necessary during recovery
     	try{
     		if(recovering){
-    			stableLog.enableCommit(); // if not recovering, this is done 
+    			stableLog.enableCommit(); // if not recovering, this is done
     			stableLog.commit();       // at sfStart()
     		}else{
     			if (sfParent==null || sfParent instanceof ProcessCompound){
@@ -333,7 +336,7 @@ public class RComponentImpl extends CompoundImpl implements RComponent, Serializ
     			}else {
     				addEntry(SFPARENT,null); // this is a "kind of" hack!!!
     			}
-    			createEntry(DBStubEntry,DBStubDirectory); 
+    			createEntry(DBStubEntry,DBStubDirectory);
     		}
     		if (sfExportRef == null){
     			System.out.println("sfExportRef is equal to null");
@@ -346,19 +349,19 @@ public class RComponentImpl extends CompoundImpl implements RComponent, Serializ
     		stableLog.addEntry(DBStubEntry, (Serializable) obj );
     		stableLog.commit(); // is executed only when recovering
     							// otherwise commit will be disabled and postponed until sfStart
-    	
+
     	} catch(StorageException cause){
     		try{stableLog.close();}catch(Exception exc){}
     		throw new SmartFrogDeploymentException(cause);
     	}
-    		
+
     }
-	 
+
     public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
     	System.out.println("Deploying");
     	super.sfDeploy();
     }
-    
+
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
     	super.sfStart();
     	try{
@@ -369,8 +372,8 @@ public class RComponentImpl extends CompoundImpl implements RComponent, Serializ
     		throw new SmartFrogException("Impossible to change status on stable storage",cause);
     	}
     }
-    
-    
+
+
     public synchronized void sfTerminateWith(TerminationRecord status) {
     	try{
     		stableLog.addEntry(WFSTATUSENTRY,WFSTATUS_DEAD);
@@ -380,15 +383,15 @@ public class RComponentImpl extends CompoundImpl implements RComponent, Serializ
     	}
     	super.sfTerminateWith(status);
     }
-    
-    
+
+
     /**
      * Extends PrimImpl's method so that now it checks whether the parent failed and,
      * if the parent is recoverable and not dead, considers it as simply remporarily absent.
      */
     protected void sfLivenessFailure(Object source, Object target,
             Throwable failure) {
-    	
+
     	if(target.equals(sfParent)){
     		if(sfParent instanceof RComponentProxyStub){
     			RComponentProxyStub RParent = (RComponentProxyStub) sfParent;
@@ -402,7 +405,7 @@ public class RComponentImpl extends CompoundImpl implements RComponent, Serializ
     	}
     	super.sfLivenessFailure(source,target,failure);
     }
-    
+
     /**
      * Method that has to be implemented by superclasses with appropriate recovery
      * actions
@@ -415,37 +418,46 @@ public class RComponentImpl extends CompoundImpl implements RComponent, Serializ
     	} catch ( StorageException cause ){
     		throw new SmartFrogException(cause);
     	}
-    }    
-    
+    }
+
     /**
-     * Implemented to provide correct equality checking. 
+     * Implemented to provide correct equality checking.
+     *
+     * If the storage references can not be handled then returns false. This case
+     * should only happen when the configuration for the storage is incorrect.
+     * !! Not sure if this is good interpretation of inequality - perhaps it
+     *    should force an exception ??
      *
      * @param o object to compare with
      *
      * @return true if equal, false if not
      */
     public boolean equals(Object o) {
-    	if (! (o instanceof RComponent)){
-    		return false;
-    	}
-    	if (o instanceof RComponentProxyStub){
-    		return RComponentProxyInvocationHandler.sfGetProxy(this).equals(o);
-    	} else {
-    		return super.equals(o);
-    	}
+        if (!(o instanceof RComponent)) {
+            return false;
+        }
+        if (o instanceof RComponentProxyStub) {
+            try {
+                return RComponentProxyInvocationHandler.sfGetProxy(this).equals(o);
+            } catch (StorageException ex) {
+                return false;
+            }
+        } else {
+            return super.equals(o);
+        }
     }
-    
+
     /**
      * Replaces the component by its dynamic proxy with recovery properties during
      * serialization.
-     *  
+     *
      * @return A new proxy object linked to this recoverable component
      * @throws ObjectStreamException in case an error occurs
      */
-    public Object writeReplace() throws ObjectStreamException {
+    public Object writeReplace() throws ObjectStreamException, StorageException {
     	return RComponentProxyInvocationHandler.sfGetProxy(this);
     }
-    
+
 }
 
 
