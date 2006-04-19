@@ -53,8 +53,8 @@ For more information: www.smartfrog.org
 	<property name="forrest.home"  location="${env.FORREST_HOME}"/>
   
 	
-	<import file="${env.FORREST_HOME}/forrest.build.xml"/>
-	<import file="${env.FORREST_HOME}/forrest.antproxy.xml"/>
+	<import file="${env.FORREST_HOME}/main/forrest.build.xml"/>
+	<import file="${env.FORREST_HOME}/main/forrest.antproxy.xml"/>
 	
 	<target name="init" depends="init-common" >
 		<echo level="verbose">Created forrest project template</echo>
@@ -117,7 +117,7 @@ For more information: www.smartfrog.org
     <!--forrest-component component="logger" /-->
     <forrest-component component="net" />
     <forrest-component component="ssh" />
-    <forrest-component component="utils" />
+    <!--forrest-component component="utils" /-->
     <forrest-component component="scripting" />
     <forrest-component component="slp" />
 	<forrest-component component="loggingservices" />
