@@ -28,10 +28,10 @@ import org.smartfrog.services.deployapi.test.system.alpine.deployapi.api.Standar
  * Create a system , then destroy it immediately.
  */
 
-public class Api_14_system_destroy_lookup_Test extends StandardTestBase {
+public class Api_14a_system_destroy_lookup_Test extends StandardTestBase {
     private String resID;
 
-    public Api_14_system_destroy_lookup_Test(String name) {
+    public Api_14a_system_destroy_lookup_Test(String name) {
         super(name);
     }
 

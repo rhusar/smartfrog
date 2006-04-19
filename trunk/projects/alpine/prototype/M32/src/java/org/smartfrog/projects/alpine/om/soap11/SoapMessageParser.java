@@ -53,11 +53,13 @@ public class SoapMessageParser {
      * create a parser; This includes creating an {@link nu.xom.Builder} with
      * our custom node factory
      *
-     * @param loader   resource loader algorithm
-     * @param validate validation logic.
+     * @param loader    resource loader algorithm
+     * @param namespace for SOAP namespaces
+     * @param validate  validation logic.
      * @param factory
      */
     public SoapMessageParser(ResourceLoader loader,
+                             String namespace,
                              boolean validate, NodeFactory factory)
             throws SAXException {
         resourceLoader = loader;
@@ -73,7 +75,7 @@ public class SoapMessageParser {
             }
         }
         if (factory == null) {
-            factory = new SoapFactory();
+            factory = new SoapFactory(namespace, null);
         }
         builder = new Builder(xerces, validate, factory);
     }

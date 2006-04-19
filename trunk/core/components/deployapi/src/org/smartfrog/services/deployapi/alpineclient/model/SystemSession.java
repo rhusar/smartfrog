@@ -46,6 +46,10 @@ public class SystemSession extends WsrfSession {
         super(endpoint, validating, queue);
     }
 
+    public SystemSession(Session parent, AlpineEPR endpoint) {
+        super(endpoint, parent.isValidating(), parent.getQueue());
+    }
+
     /**
      * Build a session from a returned reference
      *

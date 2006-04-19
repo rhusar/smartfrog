@@ -69,7 +69,31 @@ public class AddressDetails implements Validatable, AddressingConstants {
 
     private Element referenceParameters;
 
+    /**
+     * namespace of the message.
+     * Default value {@link AddressingConstants.XMLNS_WSA_2005}
+     */
+    private String namespace = AddressingConstants.XMLNS_WSA_2005;
+
+    /**
+     * Should references be marked as coming from an address? This
+     * is a requirement in later versions of WS-A, so is marked as true
+     */
+    private boolean markReferences = true;
+
+    /**
+     * Should address headers be marked mustUnderstand
+     */
+    private boolean mustUnderstand = false;
+
+    /**
+     * Create an empty address details
+     */
     public AddressDetails() {
+    }
+
+    public AddressDetails(AlpineEPR epr) {
+        setTo(epr);
     }
 
     /**
@@ -92,7 +116,9 @@ public class AddressDetails implements Validatable, AddressingConstants {
         action = that.action;
         messageID = that.messageID;
         relatesTo = that.relatesTo;
-
+        namespace = that.namespace;
+        markReferences = that.markReferences;
+        mustUnderstand = that.mustUnderstand;
 
         if (that.to != null) {
             to = that.to.clone();
@@ -109,6 +135,7 @@ public class AddressDetails implements Validatable, AddressingConstants {
         if (referenceParameters != null) {
             referenceParameters = (Element) that.referenceParameters.copy();
         }
+
 
     }
 
@@ -176,6 +203,30 @@ public class AddressDetails implements Validatable, AddressingConstants {
         this.action = action;
     }
 
+    public String getNamespace() {
+        return namespace;
+    }
+
+    public void setNamespace(String namespace) {
+        this.namespace = namespace;
+    }
+
+    public boolean isMarkReferences() {
+        return markReferences;
+    }
+
+    public void setMarkReferences(boolean markReferences) {
+        this.markReferences = markReferences;
+    }
+
+    public boolean isMustUnderstand() {
+        return mustUnderstand;
+    }
+
+    public void setMustUnderstand(boolean mustUnderstand) {
+        this.mustUnderstand = mustUnderstand;
+    }
+
     /**
      * validate an instance.
      * Return if the object is valid, thrown an exception if not.
@@ -228,6 +279,7 @@ public class AddressDetails implements Validatable, AddressingConstants {
      * @return true if a wsa:To element in that xmlns was found.
      */
     public boolean read(MessageDocument message, String namespace) {
+        this.namespace = namespace;
         boolean found = false;
         Header headers = message.getEnvelope().getHeader();
         AlpineEPR epr = new AlpineEPR();
@@ -257,6 +309,17 @@ public class AddressDetails implements Validatable, AddressingConstants {
             }
         }
         return found;
+    }
+
+    /**
+     * Add the address to a SOAP message as the To: element. This will also replace any existing headers of the same name
+     * This triggers a call to {@link #validate()} to validate the address
+     *
+     * @param message message to add to
+     */
+    public void addressMessage(MessageDocument message) {
+        addressMessage(message, namespace, "wsa", markReferences, mustUnderstand);
+
     }
 
     /**
@@ -390,5 +453,14 @@ public class AddressDetails implements Validatable, AddressingConstants {
         result = 29 * result + (relatesTo != null ? relatesTo.hashCode() : 0);
         result = 29 * result + (referenceParameters != null ? referenceParameters.hashCode() : 0);
         return result;
+    }
+
+    /**
+     * Clone operation does a deep copy.
+     *
+     * @return a cloned object
+     */
+    public Object clone() {
+        return new AddressDetails(this);
     }
 }

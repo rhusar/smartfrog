@@ -20,16 +20,17 @@
 
 package org.smartfrog.projects.alpine.om.soap11;
 
-import org.smartfrog.projects.alpine.interfaces.NamespaceNodeFactory;
-import org.smartfrog.projects.alpine.xmlutils.XsdUtils;
-import org.smartfrog.projects.alpine.om.base.SoapElement;
 import nu.xom.Element;
 import nu.xom.NodeFactory;
 import nu.xom.Nodes;
+import org.smartfrog.projects.alpine.interfaces.NamespaceNodeFactory;
+import org.smartfrog.projects.alpine.om.base.SoapElement;
+import org.smartfrog.projects.alpine.xmlutils.XsdUtils;
 
 /**
- 
+
  */
+@Deprecated
 public class Soap11NodeFactory implements NamespaceNodeFactory {
 
     /**
@@ -50,7 +51,7 @@ public class Soap11NodeFactory implements NamespaceNodeFactory {
         if (Soap11Constants.ELEMENT_FAULT.equals(name)) {
             return new Fault(name, namespace);
         }
-        
+
         return new SoapElement(name, namespace);
     }
 
