@@ -33,6 +33,7 @@ import java.util.List;
 public class ListFlatteningTest extends TestCase {
 
     public void testListFlattening() throws Exception {
+        JUnitTestSuiteImpl junit = new JUnitTestSuiteImpl();
         List l1 = new ArrayList();
         List l2 = new ArrayList();
         List l3 = new ArrayList();
@@ -46,23 +47,23 @@ public class ListFlatteningTest extends TestCase {
         flat.add("2");
         flat.add("3");
         flat.add("4");
-        List flat2 = JUnitTestSuiteImpl.flattenStringList(l2, "l2");
+        List flat2 = junit.flattenStringList(l2, "l2");
         assertEquals(flat, flat);
         assertEquals(flat, flat2);
         l2.add(new ArrayList());
         l1.add(l2);
-        List flat3 = JUnitTestSuiteImpl.flattenStringList(l1, "l1");
+        List flat3 = junit.flattenStringList(l1, "l1");
         assertEquals(flat, flat3);
         List l4 = new ArrayList();
         l4.add(l1);
         l4.add(new Integer("3"));
         try {
-            List flat4 = JUnitTestSuiteImpl.flattenStringList(l4, "l5");
+            List flat4 = junit.flattenStringList(l4, "l5");
             fail("should have thrown something");
         } catch (SmartFrogInitException e) {
             //expected
         }
-        List flat5 = JUnitTestSuiteImpl.flattenStringList(null, "flat5");
+        List flat5 = junit.flattenStringList(null, "flat5");
         assertEquals(0, flat5.size());
     }
 

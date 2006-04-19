@@ -21,6 +21,8 @@ package org.smartfrog.services.junit;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.Enumeration;
+import java.util.Properties;
 
 /**
  * created 15-Apr-2004 16:26:56
@@ -41,6 +43,18 @@ public class Utils {
             return InetAddress.getLocalHost().getHostName();
         } catch (UnknownHostException e) {
             return "localhost";
+        }
+    }
+
+    /**
+     * Apply system properties. This adds them to the current JVM, and does not unapply it afterwards
+     */
+    public static void applySysProperties(Properties properties) {
+        Enumeration propertyEnum = properties.keys();
+        while (propertyEnum.hasMoreElements()) {
+            String key = (String) propertyEnum.nextElement();
+            String value = properties.getProperty(key);
+            System.setProperty(key, value);
         }
     }
 }
