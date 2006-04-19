@@ -27,9 +27,9 @@ import org.smartfrog.sfcore.compound.CompoundImpl;
 import org.smartfrog.sfcore.logging.Log;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.TerminationRecord;
+import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.utils.ComponentHelper;
 import org.smartfrog.sfcore.utils.ShouldDetachOrTerminate;
-import org.smartfrog.sfcore.reference.Reference;
 
 import java.rmi.RemoteException;
 import java.util.Enumeration;
@@ -70,7 +70,7 @@ public class TestRunnerComponent extends CompoundImpl implements TestRunner,
      * Should we terminate after running our tests?
      * {@link ShouldDetachOrTerminate.ATTR_SHOULD_TERMINATE}
      */
-    boolean shouldTerminate=true;
+    boolean shouldTerminate = true;
 
     /**
      * if terminating, should we detach?
@@ -271,12 +271,12 @@ public class TestRunnerComponent extends CompoundImpl implements TestRunner,
             setWorker(null);
 
             //now look at our termination actions
-            if(shouldTerminate) {
+            if (shouldTerminate) {
                 TerminationRecord record;
-                if(getCachedException()==null) {
-                    record=TerminationRecord.normal(name);
+                if (getCachedException() == null) {
+                    record = TerminationRecord.normal(name);
                 } else {
-                    record= TerminationRecord.abnormal("Test failure",name,getCachedException());
+                    record = TerminationRecord.abnormal("Test failure", name, getCachedException());
                 }
                 helper.targetForTermination(record, shouldDetach, false);
             }
@@ -304,7 +304,7 @@ public class TestRunnerComponent extends CompoundImpl implements TestRunner,
                     TestSuite suiteComponent = (TestSuite) o;
                     suiteComponent.bind(getConfiguration());
                     successful &= suiteComponent.runTests();
-                    updateResultAttributes((Prim) suiteComponent);
+                    updateResultAttributes(suiteComponent);
                     //break out if the thread is interrupted
                     if (Thread.currentThread().isInterrupted()) {
                         return false;

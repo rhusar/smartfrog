@@ -21,13 +21,15 @@ package org.smartfrog.services.junit;
 
 import junit.framework.AssertionFailedError;
 import junit.framework.Test;
-import junit.framework.TestResult;
 import junit.framework.TestCase;
+import junit.framework.TestResult;
+import org.smartfrog.sfcore.common.SFMarshalledObject;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogInitException;
 import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
 import org.smartfrog.sfcore.logging.Log;
 import org.smartfrog.sfcore.prim.PrimImpl;
+import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.security.SFClassLoader;
 import org.smartfrog.sfcore.utils.ComponentHelper;
 
@@ -35,12 +37,11 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.InetAddress;
 import java.rmi.RemoteException;
-import java.util.List;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Properties;
-import java.util.ArrayList;
-
 
 
 /**
@@ -89,14 +90,16 @@ public class JUnitTestSuiteImpl extends PrimImpl implements JUnitTestSuite,
      * listener for tests; set at binding time
      */
     private TestListener listener;
-    
+
     /**
      * Error if sysproperties are uneven.
      * {@value}
-     */ 
-    public static final String ERROR_UNEVEN_PROPERTIES = "There is an unbalanced number of properties in " + ATTR_SYSPROPS;
+     */
+    public static final String ERROR_UNEVEN_PROPERTIES = "There is an unbalanced number of properties in "
+            + ATTR_SYSPROPS;
     private static final String SUITE_METHOD_NAME = "suite";
     public static final String WARN_IGNORING_REMOTE_FAULT = "Ignoring remote fault";
+    private Properties sysproperties;
 
     public JUnitTestSuiteImpl() throws RemoteException {
         helper = new ComponentHelper(this);
@@ -160,7 +163,7 @@ public class JUnitTestSuiteImpl extends PrimImpl implements JUnitTestSuite,
         readConfiguration();
     }
 
-    
+
     /**
      * read in our configuration
      *
@@ -177,36 +180,35 @@ public class JUnitTestSuiteImpl extends PrimImpl implements JUnitTestSuite,
         classes = flattenStringList(nestedClasses,
                 ATTR_CLASSES);
 
-        
         //properties. extract the list, flatten it and bind to sysproperties
         List propList = (List) sfResolve(ATTR_SYSPROPS,
                 (List) null,
                 false);
-        if(propList!=null && propList.size()>0) {
-            propList = flattenStringList(propList,ATTR_SYSPROPS);
-            String[] values=new String[0];
-            values=(String[]) propList.toArray(values);
-            int len=values.length;
-            if((len%2)!=0) {
-                StringBuffer valuesBuffer=new StringBuffer(" [");
-                for(int i=0;i<len;i++) {
+        if (propList != null && propList.size() > 0) {
+            propList = flattenStringList(propList, ATTR_SYSPROPS);
+            String[] values = new String[0];
+            values = (String[]) propList.toArray(values);
+            int len = values.length;
+            if ((len % 2) != 0) {
+                StringBuffer valuesBuffer = new StringBuffer(" [");
+                for (int i = 0; i < len; i++) {
                     valuesBuffer.append(values[i]);
                     valuesBuffer.append(' ');
                 }
                 valuesBuffer.append(']');
-                throw new SmartFrogInitException(ERROR_UNEVEN_PROPERTIES+valuesBuffer);
+                throw new SmartFrogInitException(ERROR_UNEVEN_PROPERTIES + valuesBuffer);
             }
-            
+
             // system properties
-            Properties sysproperties = configuration.getSysProperties();
-            
-            for(int i=0;i<len;i+=2) {
-                String key=values[i];
-                String value=values[i+1];
-                sysproperties.setProperty(key,value);
+            sysproperties = new Properties();
+
+            for (int i = 0; i < len; i += 2) {
+                String key = values[i];
+                String value = values[i + 1];
+                sysproperties.setProperty(key, value);
             }
         }
-            
+
         //package attribute names a package
         packageValue = sfResolve(ATTR_PACKAGE, packageValue, false);
         if (packageValue == null) {
@@ -262,8 +264,8 @@ public class JUnitTestSuiteImpl extends PrimImpl implements JUnitTestSuite,
      * @return
      * @throws SmartFrogInitException
      */
-    public static List flattenStringList(final List src, String name)
-            throws SmartFrogInitException {
+    public List flattenStringList(final List src, String name)
+            throws SmartFrogException {
         if (src == null) {
             return new ArrayList(0);
         }
@@ -271,6 +273,16 @@ public class JUnitTestSuiteImpl extends PrimImpl implements JUnitTestSuite,
         Iterator index = src.iterator();
         while (index.hasNext()) {
             Object element = index.next();
+            if (element instanceof Reference) {
+                //its a reference, resolve it then continue.
+                //here because sometimes lazy stuff was still a reference at this
+                //point in time
+                Reference ref = (Reference) element;
+                element = ref.resolve(this, 0);
+                if (element instanceof SFMarshalledObject) {
+                    element = ((SFMarshalledObject) element).get();
+                }
+            }
             if (element instanceof List) {
                 List l2 = flattenStringList((List) element, name);
                 for (Iterator i2 = l2.iterator(); i2.hasNext();) {
@@ -281,7 +293,7 @@ public class JUnitTestSuiteImpl extends PrimImpl implements JUnitTestSuite,
                         +
                         name +
                         " is not string or a list: " +
-                        element.toString());
+                        element.toString() + " class=" + element.getClass());
             } else {
                 dest.add(element);
             }
@@ -307,6 +319,11 @@ public class JUnitTestSuiteImpl extends PrimImpl implements JUnitTestSuite,
                     "TestSuite has not been configured yet");
         }
 
+        //copy any system properties over
+        if (sysproperties != null) {
+            Utils.applySysProperties(sysproperties);
+
+        }
 
         if (!getIf() || getUnless()) {
             log("Skipping test as conditions preclude it");
@@ -419,7 +436,7 @@ public class JUnitTestSuiteImpl extends PrimImpl implements JUnitTestSuite,
         try {
             // check if there is a suite method
             Method method = clazz.getMethod(SUITE_METHOD_NAME, new Class[0]);
-            return (Test) method.invoke(null, (Object[])new Class[0]);
+            return (Test) method.invoke(null, (Object[]) new Class[0]);
         } catch (NoSuchMethodException e) {
             //if not, assume that it is a testclass and do it that way
             return new junit.framework.TestSuite(clazz);
@@ -511,11 +528,12 @@ public class JUnitTestSuiteImpl extends PrimImpl implements JUnitTestSuite,
      * to the {@link #startedTests} hashtable if it is not already there,
      * and incrementing the started count in the statistics.
      * If it is there, do nothing.
+     *
      * @param test
      */
     public TestInfo onStart(Test test) {
         TestInfo info = new TestInfo(test);
-        String testname=info.getText();
+        String testname = info.getText();
         long start = registerStartTime(testname);
         info.setStartTime(start);
         return info;
@@ -524,13 +542,14 @@ public class JUnitTestSuiteImpl extends PrimImpl implements JUnitTestSuite,
     /**
      * file the start time;  if there already is one, then take that one instead.
      * Will increment the started count in the statistics if needed.
+     *
      * @param testname
      * @return timestamp of test start.
      */
     private synchronized long registerStartTime(String testname) {
-        if(!startedTests.containsKey(testname)) {
+        if (!startedTests.containsKey(testname)) {
             long start = System.currentTimeMillis();
-            startedTests.put(testname,new Long(start));
+            startedTests.put(testname, new Long(start));
             stats.incTestsStarted();
             return start;
         } else {
@@ -540,30 +559,31 @@ public class JUnitTestSuiteImpl extends PrimImpl implements JUnitTestSuite,
 
     /**
      * look up the start time
+     *
      * @param testname test name
      * @return start time
      * @throws RuntimeException if there is no key of that name
      */
     private long lookupStartTime(String testname) {
-        return ((Long)startedTests.get(testname)).longValue();
+        return ((Long) startedTests.get(testname)).longValue();
     }
 
     /**
      * call this when a test ends to set up the start and end times right.
-     * @param test test info
+     *
+     * @param test  test info
      * @param fault optional fault detail
      * @return
      */
     public synchronized TestInfo onEnd(Test test, Throwable fault) {
         long endTime = System.currentTimeMillis();
-        TestInfo testInfo=new TestInfo(test,fault);
+        TestInfo testInfo = new TestInfo(test, fault);
         //force a start entry in there
-        long startTime= registerStartTime(testInfo.getText());
+        long startTime = registerStartTime(testInfo.getText());
         testInfo.setStartTime(startTime);
         testInfo.setEndTime(endTime);
         return testInfo;
     }
 
 
-    
 }
