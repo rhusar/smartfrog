@@ -17,39 +17,38 @@
  For more information: www.smartfrog.org
 
  */
-package org.smartfrog.services.deployapi.test.system.alpine.deployapi.api;
+package org.smartfrog.services.deployapi.test.system.alpine.deployapi.api.creation;
 
-import nu.xom.Element;
-import org.ggf.cddlm.generated.api.CddlmConstants;
+import org.smartfrog.projects.alpine.faults.AlpineRuntimeException;
 import org.smartfrog.services.deployapi.alpineclient.model.SystemSession;
+import org.smartfrog.services.deployapi.test.system.alpine.deployapi.api.StandardTestBase;
 
 /**
  * created 13-Apr-2006 13:51:02
  * Create a system , then destroy it immediately.
  */
 
-public class Api_5_system_create_destroy_Test extends StandardTestBase {
+public class Api_08_system_destroy_operations_Test extends StandardTestBase {
 
-    public Api_5_system_create_destroy_Test(String name) {
+    public Api_08_system_destroy_operations_Test(String name) {
         super(name);
     }
 
-    public void testCreateDestroySystem() throws Exception {
+    public void testPingSystem() throws Exception {
+        SystemSession system = createSystem(null);
+        system.ping();
+    }
+
+
+    public void testPingDestroyedSystem() throws Exception {
         SystemSession system = getPortal().create(null);
         system.destroy();
-    }
+        try {
+            system.ping();
+            fail("Expected failure");
+        } catch (AlpineRuntimeException e) {
 
-    public void testCreateResourceIDDestroySystem() throws Exception {
-        SystemSession system = createSystem(null);
-        Element resID = system.getResourceProperty(CddlmConstants.PROPERTY_MUWS_RESOURCEID);
-        log.info("Resource ID" + resID.getValue());
-    }
-
-    public void testCreateCreatedTimeDestroySystem() throws Exception {
-        SystemSession system = createSystem(null);
-        Element time = system.getResourceProperty(CddlmConstants.PROPERTY_SYSTEM_CREATED_TIME);
-        String value = time.getValue();
-        log.info("Created time=" + value);
+        }
     }
 
 }

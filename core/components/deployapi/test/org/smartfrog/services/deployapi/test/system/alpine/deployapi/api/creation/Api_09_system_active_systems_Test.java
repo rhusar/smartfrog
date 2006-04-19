@@ -17,22 +17,24 @@
  For more information: www.smartfrog.org
 
  */
-package org.smartfrog.services.deployapi.test.system.alpine.deployapi.api;
+package org.smartfrog.services.deployapi.test.system.alpine.deployapi.api.creation;
 
 import nu.xom.Element;
-import org.ggf.cddlm.generated.api.CddlmConstants;
+import static org.ggf.cddlm.generated.api.CddlmConstants.PROPERTY_MUWS_RESOURCEID;
+import static org.ggf.cddlm.generated.api.CddlmConstants.WS_ADDRESSING_NAMESPACE;
 import org.smartfrog.projects.alpine.om.base.SoapElement;
 import org.smartfrog.projects.alpine.wsa.AlpineEPR;
 import org.smartfrog.services.deployapi.alpineclient.model.SystemSession;
-import org.smartfrog.services.deployapi.test.system.alpine.AlpineTestBase;
+import org.smartfrog.services.deployapi.test.system.alpine.deployapi.api.StandardTestBase;
 
 /**
- * created 11-Apr-2006 14:56:59
+ * created 13-Apr-2006 13:51:02
+ * Create a system , then destroy it immediately.
  */
 
-public abstract class StandardTestBase extends AlpineTestBase {
+public class Api_09_system_active_systems_Test extends StandardTestBase {
 
-    protected StandardTestBase(String name) {
+    public Api_09_system_active_systems_Test(String name) {
         super(name);
     }
 
@@ -42,31 +44,29 @@ public abstract class StandardTestBase extends AlpineTestBase {
      */
     protected void setUp() throws Exception {
         super.setUp();
+        createSystem(null);
     }
 
-    /**
-     * Tears down the fixture, for example, close a network connection.
-     * This method is called after a test is executed.
-     */
-    protected void tearDown() throws Exception {
-        super.tearDown();
-    }
-
-    protected boolean isSystemInActiveSystems(String id) {
-        SoapElement activeSystems = (SoapElement) getPortal()
-                .getResourceProperty(CddlmConstants.PROPERTY_MUWS_RESOURCEID);
+    public void testActiveSystemFound() throws Exception {
+        String resID = getSystem().getResourceProperty(PROPERTY_MUWS_RESOURCEID).getValue();
+        assertNotNull(resID);
+        assertTrue(resID.length() > 0);
+        SoapElement activeSystems = (SoapElement) getPortal().getResourceProperty(PROPERTY_MUWS_RESOURCEID);
         boolean found = false;
         for (Element e : activeSystems.elements()) {
-            AlpineEPR epr = new AlpineEPR(e, CddlmConstants.WS_ADDRESSING_NAMESPACE);
+            AlpineEPR epr = new AlpineEPR(e, WS_ADDRESSING_NAMESPACE);
             epr.validate();
             SystemSession system = new SystemSession(getPortal(), epr);
-            String newResID = system.getResourceProperty(CddlmConstants.PROPERTY_MUWS_RESOURCEID).getValue();
+            String newResID = system.getResourceProperty(PROPERTY_MUWS_RESOURCEID).getValue();
             assertNotNull(newResID);
             assertTrue(newResID.length() > 0);
-            if (newResID.equals(id)) {
+            if (newResID.equals(resID)) {
                 found = true;
             }
         }
-        return found;
+        assertTrue("Created system not found in the list of active systems", found);
+
+
     }
+
 }

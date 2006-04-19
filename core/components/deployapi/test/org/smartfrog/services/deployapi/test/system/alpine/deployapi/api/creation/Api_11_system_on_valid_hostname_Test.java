@@ -17,22 +17,18 @@
  For more information: www.smartfrog.org
 
  */
-package org.smartfrog.services.deployapi.test.system.alpine.deployapi.api;
+package org.smartfrog.services.deployapi.test.system.alpine.deployapi.api.creation;
 
-import nu.xom.Element;
-import static org.ggf.cddlm.generated.api.CddlmConstants.PROPERTY_MUWS_RESOURCEID;
-import static org.ggf.cddlm.generated.api.CddlmConstants.WS_ADDRESSING_NAMESPACE;
-import org.smartfrog.projects.alpine.om.base.SoapElement;
-import org.smartfrog.projects.alpine.wsa.AlpineEPR;
+import org.smartfrog.services.deployapi.test.system.alpine.deployapi.api.StandardTestBase;
 
 /**
  * created 13-Apr-2006 13:51:02
  * Create a system , then destroy it immediately.
  */
 
-public class Api_9_active_systems_Test extends StandardTestBase {
+public class Api_11_system_on_valid_hostname_Test extends StandardTestBase {
 
-    public Api_9_active_systems_Test(String name) {
+    public Api_11_system_on_valid_hostname_Test(String name) {
         super(name);
     }
 
@@ -42,19 +38,11 @@ public class Api_9_active_systems_Test extends StandardTestBase {
      */
     protected void setUp() throws Exception {
         super.setUp();
-        createSystem(null);
     }
 
-    public void testActiveSystemFound() throws Exception {
-        String resID = getSystem().getResourceProperty(PROPERTY_MUWS_RESOURCEID).getValue();
-        SoapElement activeSystems = (SoapElement) getPortal().getResourceProperty(PROPERTY_MUWS_RESOURCEID);
-        for (Element e : activeSystems.elements()) {
-            AlpineEPR epr = new AlpineEPR(e, WS_ADDRESSING_NAMESPACE);
-            epr.validate();
-
-        }
-
-
+    public void testValidHostname() throws Exception {
+        createSystem("localhost");
+        assertNotNull(getSystem());
     }
 
 }

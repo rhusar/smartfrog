@@ -17,22 +17,23 @@
  For more information: www.smartfrog.org
 
  */
-package org.smartfrog.services.deployapi.test.system.alpine.deployapi.api;
+package org.smartfrog.services.deployapi.test.system.alpine.deployapi.api.portal;
 
 import static org.ggf.cddlm.generated.api.CddlmConstants.CDL_API_TYPES_NAMESPACE;
 import static org.ggf.cddlm.generated.api.CddlmConstants.PROPERTY_PORTAL_STATIC_PORTAL_STATUS;
 import org.smartfrog.projects.alpine.om.base.SoapElement;
+import org.smartfrog.services.deployapi.test.system.alpine.deployapi.api.StandardTestBase;
 
 /**
  * Examine the state of a portal; including languages and notification mechanisms.
  * created 13-Apr-2006 12:25:21
  */
 
-public class Api_4_portal_getPortalState_Test extends StandardTestBase {
+public class Api_04_portal_getPortalState_Test extends StandardTestBase {
 
     private SoapElement state;
 
-    public Api_4_portal_getPortalState_Test(String name) {
+    public Api_04_portal_getPortalState_Test(String name) {
         super(name);
     }
 

@@ -17,19 +17,20 @@
  For more information: www.smartfrog.org
 
  */
-package org.smartfrog.services.deployapi.test.system.alpine.deployapi.api;
+package org.smartfrog.services.deployapi.test.system.alpine.deployapi.api.portal;
 
 import org.ggf.cddlm.generated.api.CddlmConstants;
+import org.smartfrog.services.deployapi.test.system.alpine.deployapi.api.StandardTestBase;
 
 
 /**
  * created 11-Apr-2006 15:20:57
  */
 
-public class Api_1_portal_wsdm_properties_Test extends StandardTestBase {
+public class Api_01_portal_wsdm_properties_Test extends StandardTestBase {
 
 
-    public Api_1_portal_wsdm_properties_Test(String name) {
+    public Api_01_portal_wsdm_properties_Test(String name) {
         super(name);
     }
 
