@@ -36,6 +36,16 @@ sfConfig extends Compound {
 
   ourgrid extends ourGridTests {
     basedir tempDir;
+    //enabled false;
+
+    //portal:classes SingleTestSuite:classes;
+
+    //creation:enabled false;
+
   }
 
+  nec extends NecTests {
+    basedir tempDir;
+    enabled true;
+  }
 }

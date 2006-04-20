@@ -23,23 +23,31 @@ import junit.framework.TestCase;
 import nu.xom.Element;
 import nu.xom.Nodes;
 import nu.xom.XPathContext;
+import nu.xom.ParsingException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.ggf.cddlm.generated.api.CddlmConstants;
 import org.smartfrog.projects.alpine.om.base.SoapElement;
+import org.smartfrog.projects.alpine.om.soap11.SoapMessageParser;
+import org.smartfrog.projects.alpine.om.soap11.SoapFactory;
+import org.smartfrog.projects.alpine.om.soap11.Soap11Constants;
+import org.smartfrog.projects.alpine.om.soap11.MessageDocument;
 import org.smartfrog.projects.alpine.transport.DirectExecutor;
 import org.smartfrog.projects.alpine.transport.TransmitQueue;
 import org.smartfrog.projects.alpine.wsa.AlpineEPR;
 import org.smartfrog.services.deployapi.alpineclient.model.PortalSession;
 import org.smartfrog.services.deployapi.alpineclient.model.SystemSession;
 import org.smartfrog.services.deployapi.transport.wsrf.WsrfUtils;
+import org.smartfrog.services.xml.utils.ResourceLoader;
 import org.smartfrog.sfcore.languages.cdl.CdlCatalog;
+import org.xml.sax.SAXException;
 
 import javax.xml.namespace.QName;
 import java.net.MalformedURLException;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.io.IOException;
 
 /**
  * created 11-Apr-2006 14:57:19
@@ -57,6 +65,7 @@ public abstract class AlpineTestBase extends TestCase {
     public static final String CONCURRENT_PROPERTY = "concurrent";
     public static final String VALIDATING_PROPERTY = "validating";
     public XPathContext xpath;
+    private ResourceLoader resourceLoader;
 
 
     /**
@@ -75,6 +84,8 @@ public abstract class AlpineTestBase extends TestCase {
         String target = getJunitParameter(ENDPOINT_PROPERTY, true);
         bindToPortal(target);
         xpath = CdlCatalog.createXPathContext();
+        //TODO: be more dynamic on smartfrog. But how to get our deploying prim?
+        resourceLoader = new ResourceLoader(getClass());
     }
 
 
@@ -136,6 +147,10 @@ public abstract class AlpineTestBase extends TestCase {
 
     public boolean isConcurrent() {
         return concurrent;
+    }
+
+    public ResourceLoader getResourceLoader() {
+        return resourceLoader;
     }
 
     /**
@@ -210,4 +225,15 @@ public abstract class AlpineTestBase extends TestCase {
         setSystem(system);
         return system;
     }
+
+    protected SoapMessageParser createXmlParser() throws SAXException {
+        return new SoapMessageParser(new org.smartfrog.projects.alpine.xmlutils.ResourceLoader(getClass()),
+                Soap11Constants.URI_SOAP12, false, new SoapFactory());
+    }
+
+    protected MessageDocument parseString(String xml,String uri) throws IOException, ParsingException {
+        SoapMessageParser xmlParser = createXmlParser();
+        return xmlParser.parseString(xml,uri);
+    }
+
 }

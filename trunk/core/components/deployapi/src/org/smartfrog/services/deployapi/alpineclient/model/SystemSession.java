@@ -20,8 +20,7 @@
 package org.smartfrog.services.deployapi.alpineclient.model;
 
 import nu.xom.Element;
-import static org.ggf.cddlm.generated.api.CddlmConstants.API_ELEMENT_PING_REQUEST;
-import static org.ggf.cddlm.generated.api.CddlmConstants.API_SYSTEM_OPERATION_PING;
+import static org.ggf.cddlm.generated.api.CddlmConstants.*;
 import org.smartfrog.projects.alpine.om.base.SoapElement;
 import org.smartfrog.projects.alpine.om.soap11.MessageDocument;
 import org.smartfrog.projects.alpine.transport.Session;
@@ -30,6 +29,8 @@ import org.smartfrog.projects.alpine.transport.TransmitQueue;
 import org.smartfrog.projects.alpine.wsa.AlpineEPR;
 import org.smartfrog.services.deployapi.binding.XomHelper;
 import org.smartfrog.services.deployapi.system.Constants;
+
+import java.util.List;
 
 /**
  * created 10-Apr-2006 17:08:08
@@ -79,5 +80,51 @@ public class SystemSession extends WsrfSession {
 
     public Element ping() {
         return endPing(beginPing());
+    }
+
+
+    /**
+     * Create an inline request.
+     * @param language URI of the language
+     * @param descriptor a descriptor which must not have any parent.
+     * @param options a list of options, can be null
+     * @return
+     */
+    public SoapElement createInitRequestInline(
+            String language,
+            Element descriptor, List<Element> options) {
+        SoapElement body=XomHelper.apiElement("body",descriptor);
+        SoapElement dt = XomHelper.apiElement("descriptor",body);
+        XomHelper.addApiAttr(dt, "language", language);
+        return completeInitRequest(dt, options);
+    }
+
+    /**
+     * finish off an init requset
+     * @param dt descriptor type
+     * @param options list of options, can be null
+     * @return
+     */
+    private SoapElement completeInitRequest(SoapElement dt, List<Element> options) {
+        SoapElement request;
+        request = XomHelper.apiElement(API_ELEMENT_INITALIZE_REQUEST,dt);
+        if(options!=null) {
+            //add any options
+            SoapElement ot = XomHelper.apiElement("options");
+            for(Element e:options) {
+                ot.appendChild(e);
+            }
+            request.appendChild(ot);
+        }
+        return request;
+    }
+
+
+    public SoapElement createInitRequestURL(String language,
+                                            String descriptorURL, List<Element> options) {
+        SoapElement ref = XomHelper.apiElement("reference", descriptorURL);
+        SoapElement dt = XomHelper.apiElement("descriptor", ref);
+        XomHelper.addApiAttr(dt, "language", language);
+        return completeInitRequest(dt, options);
     }
 }

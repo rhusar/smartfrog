@@ -82,17 +82,30 @@ public class XomHelper extends XomUtils {
 
 
     /**
-     * Add a new API attribute to an element
+     * Add a new API attribute to an element. This does not add the xmlns to the element, so
+     * make sure it is there already.
      *
      * @param element element to add to
      * @param name    attribute name
      * @param value   string value of the element
      */
     public static void addApiAttr(Element element, String name, String value) {
+        Attribute attribute = apiAttribute(name, value);
+        element.addAttribute(attribute);
+    }
+
+    /**
+     * Create an API attribute. This does not add the xmlns to the element, so
+     * make sure it is there already.
+     * @param name
+     * @param value
+     * @return
+     */
+    public static Attribute apiAttribute(String name, String value) {
         Attribute attribute = new Attribute(API + name,
                 CDL_API_TYPES_NAMESPACE,
                 value);
-        element.addAttribute(attribute);
+        return attribute;
     }
 
     /**

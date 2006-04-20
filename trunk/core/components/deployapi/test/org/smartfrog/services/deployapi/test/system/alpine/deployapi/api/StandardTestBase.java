@@ -54,7 +54,7 @@ public abstract class StandardTestBase extends AlpineTestBase {
 
     protected boolean isSystemInActiveSystems(String id) {
         SoapElement activeSystems = (SoapElement) getPortal()
-                .getResourceProperty(CddlmConstants.PROPERTY_MUWS_RESOURCEID);
+                .getResourceProperty(CddlmConstants.PROPERTY_PORTAL_ACTIVE_SYSTEMS);
         boolean found = false;
         for (Element e : activeSystems.elements()) {
             AlpineEPR epr = new AlpineEPR(e, CddlmConstants.WS_ADDRESSING_NAMESPACE);
