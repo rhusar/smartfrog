@@ -133,7 +133,7 @@ public class Session {
         MessageContext messageContext = new MessageContext(role, validating);
         Transmission tx = new Transmission(messageContext);
         MessageDocument request = messageContext.createRequest();
-        AddressDetails addressing = new AddressDetails();
+        AddressDetails addressing = new AddressDetails(address);
         addressing.setTo(destination);
         addressing.setAction(action);
         request.setAddressDetails(addressing);

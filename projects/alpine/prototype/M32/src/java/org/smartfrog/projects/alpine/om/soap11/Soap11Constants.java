@@ -40,7 +40,7 @@ public interface Soap11Constants {
     /**
      * {@value}
      */
-    public static final String XMLNS_SOAP = "soap";
+    public static final String PREFIX_SOAP = "soap";
 
 
     /**
