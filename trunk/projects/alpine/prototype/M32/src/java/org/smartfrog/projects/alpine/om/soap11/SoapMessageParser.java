@@ -24,6 +24,7 @@ import nu.xom.Builder;
 import nu.xom.Document;
 import nu.xom.NodeFactory;
 import nu.xom.ParsingException;
+import nu.xom.ValidityException;
 import org.smartfrog.projects.alpine.xmlutils.CatalogHandler;
 import org.smartfrog.projects.alpine.xmlutils.ParserHelper;
 import org.smartfrog.projects.alpine.xmlutils.ResourceLoader;
@@ -121,6 +122,11 @@ public class SoapMessageParser {
             ParsingException {
         InputStream in = resourceLoader.loadResource(resource);
         return parseStream(in);
+    }
+
+    public MessageDocument parseString(String xml,String uri) throws ParsingException, IOException {
+        Document doc=builder.build(xml,uri);
+        return (MessageDocument)doc;
     }
 
     /**

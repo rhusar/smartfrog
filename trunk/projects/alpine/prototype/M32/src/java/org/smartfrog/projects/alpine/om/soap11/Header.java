@@ -100,7 +100,7 @@ public class Header extends Soap11Element {
         if (attribute != null) {
             that.removeAttribute(attribute);
         }
-        Attribute mu=new Attribute(XMLNS_SOAP+":"+ATTR_MUST_UNDERSTAND, URI_SOAP11,Boolean.toString(understand));
+        Attribute mu=new Attribute(PREFIX_SOAP +":"+ATTR_MUST_UNDERSTAND, URI_SOAP11,understand?"1":"0");
         that.addAttribute(mu);
     }
 

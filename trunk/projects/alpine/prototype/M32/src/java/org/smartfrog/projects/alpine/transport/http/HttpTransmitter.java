@@ -88,6 +88,7 @@ public class HttpTransmitter {
         log.debug("Posting to " + destination);
         PostMethod method = new ProgressingPostMethod(destination);
 
+        method.addRequestHeader("SOAPAction","");
         //fill in the details
         //1. get the message into a byte array
         //2. add it

@@ -319,7 +319,6 @@ public class AddressDetails implements Validatable, AddressingConstants {
      */
     public void addressMessage(MessageDocument message) {
         addressMessage(message, namespace, "wsa", markReferences, mustUnderstand);
-
     }
 
     /**
@@ -327,29 +326,29 @@ public class AddressDetails implements Validatable, AddressingConstants {
      * This triggers a call to {@link #validate()} to validate the address
      *
      * @param message        message to add to
-     * @param namespace      which xmlns to use
+     * @param wsaNamespace      which xmlns to use
      * @param prefix         prefix for elements
-     * @param markReferences whether to mark references or not as references (the later specs require this)
-     * @param mustUnderstand should the address + actions headers be mustUnderstand=true?
+     * @param markWsaReferences whether to mark references or not as references (the later specs require this)
+     * @param markMustUnderstand should the address + actions headers be mustUnderstand=true?
      */
     public void addressMessage(MessageDocument message,
-                               String namespace,
+                               String wsaNamespace,
                                String prefix,
-                               boolean markReferences,
-                               boolean mustUnderstand) {
+                               boolean markWsaReferences,
+                               boolean markMustUnderstand) {
         validate();
         AlpineEPR dest = to;
         if (to == null) {
             dest = AlpineEPR.EPR_ANONYMOUS;
         }
-        maybeAdd(message, dest, WSA_TO, namespace, prefix, markReferences, mustUnderstand);
-        maybeAdd(message, from, WSA_FROM, namespace, prefix, markReferences, mustUnderstand);
-        maybeAdd(message, replyTo, WSA_REPLYTO, namespace, prefix, markReferences, mustUnderstand);
-        maybeAdd(message, faultTo, WSA_FAULTTO, namespace, prefix, markReferences, mustUnderstand);
+        maybeAdd(message, dest, WSA_TO, wsaNamespace, prefix, markWsaReferences, markMustUnderstand);
+        maybeAdd(message, from, WSA_FROM, wsaNamespace, prefix, markWsaReferences, markMustUnderstand);
+        maybeAdd(message, replyTo, WSA_REPLYTO, wsaNamespace, prefix, markWsaReferences, markMustUnderstand);
+        maybeAdd(message, faultTo, WSA_FAULTTO, wsaNamespace, prefix, markWsaReferences, markMustUnderstand);
         //text values
-        maybeAdd(message, messageID, WSA_MESSAGEID, namespace, prefix, mustUnderstand);
-        maybeAdd(message, action, WSA_ACTION, namespace, prefix, mustUnderstand);
-        maybeAdd(message, relatesTo, WSA_RELATES_TO, namespace, prefix, mustUnderstand);
+        maybeAdd(message, messageID, WSA_MESSAGEID, wsaNamespace, prefix, markMustUnderstand);
+        maybeAdd(message, action, WSA_ACTION, wsaNamespace, prefix, markMustUnderstand);
+        maybeAdd(message, relatesTo, WSA_RELATES_TO, wsaNamespace, prefix, markMustUnderstand);
     }
 
     /**
