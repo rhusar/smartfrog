@@ -28,13 +28,15 @@ For more information: www.smartfrog.org
 
   AlpineTestSuite extends JUnitTestSuite {
         name "alpine";
-        if true;
+        enabled true;
+        if enabled;
         //full path to the echo endpoint
         endpoint TBD;
         sysproperties [
           ["endpoint",LAZY endpoint]
         ];
   }
+
 
   PortalTestSuite extends AlpineTestSuite {
         name "portal";
@@ -46,6 +48,12 @@ For more information: www.smartfrog.org
           "Api_04_portal_getPortalState_Test"
           ];
     }
+
+  SingleTestSuite extends PortalTestSuite {
+        classes [
+          "Api_01_portal_wsdm_properties_Test"
+          ];
+  }
 
   CreationTestSuite extends AlpineTestSuite {
         name "creation";
@@ -67,30 +75,34 @@ For more information: www.smartfrog.org
 
   DeployapiTestRunner extends TestRunner {
 
-       endpoint TBD;
+    endpoint TBD;
 
-       basedir ".";
+    basedir ".";
 
-       subdir "/";
+    subdir "/";
 
-       destDir extends Mkdir {
-         dir subdir;
-         parentDir LAZY basedir;
-       }
+    enabled true;
+
+    destDir extends Mkdir {
+      dir subdir;
+      parentDir LAZY basedir;
+    }
 
 
-       listener extends ConsoleListener;
+    listener extends ConsoleListener;
 
-       xmlListener extends XmlListener {
-           outputDirectory LAZY destDir:absolutePath;
-       }
+    xmlListener extends XmlListener {
+       outputDirectory LAZY destDir:absolutePath;
+    }
 
-       creation extends PortalTestSuite {
-         endpoint LAZY PARENT:endpoint;
-       }
+    portal extends PortalTestSuite {
+      endpoint LAZY PARENT:endpoint;
+      enabled PARENT:enabled;
+    }
 
-       portal extends PortalTestSuite {
-         endpoint LAZY PARENT:endpoint;
-       }
+    creation extends CreationTestSuite {
+      endpoint LAZY PARENT:endpoint;
+      enabled PARENT:enabled;
+    }
 
-   }
+ }

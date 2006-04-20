@@ -154,7 +154,7 @@ public class Constants extends CddlmConstants {
     /**
      * {@value}
      */
-    public static final String BUILD_INFO_CDL_LANGUAGE = "CDL";
+    public static final String BUILD_INFO_CDL_LANGUAGE = "CDL-1.0";
     /**
      * {@value}
      */

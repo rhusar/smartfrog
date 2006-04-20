@@ -61,7 +61,7 @@ public class Api_04_portal_getPortalState_Test extends StandardTestBase {
     }
 
     public void testCdlSupported() throws Exception {
-        assertQueryResolves(state, "api:languages/api:item/api:name[.=\"CDL\"]");
+        assertQueryResolves(state, "api:languages/api:item/api:name[.=\"CDL-1.0\"]");
     }
 
     public void testWSNSupported() throws Exception {
