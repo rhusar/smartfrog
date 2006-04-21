@@ -21,6 +21,7 @@ package org.smartfrog.services.deployapi.test.system.alpine.deployapi.api.initia
 
 import org.smartfrog.services.deployapi.test.system.alpine.deployapi.api.StandardTestBase;
 import org.smartfrog.projects.alpine.om.soap11.SoapMessageParser;
+import org.smartfrog.projects.alpine.om.base.SoapElement;
 import org.ggf.cddlm.generated.api.CddlmConstants;
 import nu.xom.Element;
 import nu.xom.Document;
@@ -31,6 +32,7 @@ import nu.xom.Document;
  */
 
 public class Api_22_deploy_inline_Test extends StandardTestBase {
+
 
 
 
@@ -50,9 +52,9 @@ public class Api_22_deploy_inline_Test extends StandardTestBase {
     public void testInlineDeploy() throws Exception {
         SoapMessageParser parser = createXmlParser();
         Document document = parser.parseResource(CddlmConstants.INTEROP_API_TEST_DOC_1_VALID_DESCRIPTOR);
-        Element cdl=document.getRootElement();
-        cdl.detach();
-        getSystem().createInitRequestInline(CddlmConstants.XML_CDL_NAMESPACE,cdl, null);
+        Element cdl=(Element) document.getRootElement().copy();
+        SoapElement request = getDescriptorHelper().createInitRequestInline(CddlmConstants.XML_CDL_NAMESPACE, cdl, null);
+        getSystem().initialize(request);
     }
 
 }

@@ -20,6 +20,7 @@
 package org.smartfrog.services.deployapi.alpineclient.model;
 
 import nu.xom.Element;
+import nu.xom.Document;
 import static org.ggf.cddlm.generated.api.CddlmConstants.*;
 import org.smartfrog.projects.alpine.om.base.SoapElement;
 import org.smartfrog.projects.alpine.om.soap11.MessageDocument;
@@ -28,9 +29,13 @@ import org.smartfrog.projects.alpine.transport.Transmission;
 import org.smartfrog.projects.alpine.transport.TransmitQueue;
 import org.smartfrog.projects.alpine.wsa.AlpineEPR;
 import org.smartfrog.services.deployapi.binding.XomHelper;
+import static org.smartfrog.services.deployapi.binding.XomHelper.apiElement;
 import org.smartfrog.services.deployapi.system.Constants;
+import org.smartfrog.services.deployapi.system.LifecycleStateEnum;
 
 import java.util.List;
+import java.rmi.RemoteException;
+import java.io.IOException;
 
 /**
  * created 10-Apr-2006 17:08:08
@@ -84,47 +89,63 @@ public class SystemSession extends WsrfSession {
 
 
     /**
-     * Create an inline request.
-     * @param language URI of the language
-     * @param descriptor a descriptor which must not have any parent.
-     * @param options a list of options, can be null
+     * Get the lifecycle state
      * @return
+     * @throws RemoteException
      */
-    public SoapElement createInitRequestInline(
-            String language,
-            Element descriptor, List<Element> options) {
-        SoapElement body=XomHelper.apiElement("body",descriptor);
-        SoapElement dt = XomHelper.apiElement("descriptor",body);
-        XomHelper.addApiAttr(dt, "language", language);
-        return completeInitRequest(dt, options);
+    public LifecycleStateEnum getLifecycleState() throws RemoteException {
+        String value = getResourcePropertyValue(PROPERTY_SYSTEM_SYSTEM_STATE);
+        LifecycleStateEnum state =
+                LifecycleStateEnum.extract(value);
+        return state;
+    }
+
+    protected MessageDocument invokeBlocking(String operation,Element request) {
+        Transmission transmission = queue(operation, request);
+        return transmission.blockForResult(getTimeout());
+
     }
 
     /**
-     * finish off an init requset
-     * @param dt descriptor type
-     * @param options list of options, can be null
+     * make an run request
+     *
+     * @return the response
+     */
+    public MessageDocument run()  {
+        Element request;
+        request = apiElement(API_ELEMENT_RUN_REQUEST);
+        MessageDocument document = invokeBlocking(API_SYSTEM_OPERATION_RUN,
+                request);
+        return document;
+    }
+
+    /**
+     * terminate the app; it will still exist
+     *
+     * @param reason
      * @return
      */
-    private SoapElement completeInitRequest(SoapElement dt, List<Element> options) {
+    public MessageDocument terminate(String reason) {
         SoapElement request;
-        request = XomHelper.apiElement(API_ELEMENT_INITALIZE_REQUEST,dt);
-        if(options!=null) {
-            //add any options
-            SoapElement ot = XomHelper.apiElement("options");
-            for(Element e:options) {
-                ot.appendChild(e);
-            }
-            request.appendChild(ot);
+        request = apiElement(API_ELEMENT_TERMINATE_REQUEST);
+        if (reason != null) {
+            SoapElement er = apiElement("reason",reason);
+            request.appendChild(er);
         }
-        return request;
+        return invokeBlocking(API_SYSTEM_OPERATION_TERMINATE,
+                request);
+    }
+
+    /**
+     * make an init request
+     *
+     * @param request
+     * @return the response
+     */
+    public MessageDocument initialize(Element request)  {
+        return invokeBlocking(API_SYSTEM_OPERATION_INITIALIZE,
+                request);
     }
 
 
-    public SoapElement createInitRequestURL(String language,
-                                            String descriptorURL, List<Element> options) {
-        SoapElement ref = XomHelper.apiElement("reference", descriptorURL);
-        SoapElement dt = XomHelper.apiElement("descriptor", ref);
-        XomHelper.addApiAttr(dt, "language", language);
-        return completeInitRequest(dt, options);
-    }
 }

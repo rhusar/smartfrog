@@ -38,7 +38,9 @@ import org.smartfrog.projects.alpine.wsa.AlpineEPR;
 import org.smartfrog.services.deployapi.alpineclient.model.PortalSession;
 import org.smartfrog.services.deployapi.alpineclient.model.SystemSession;
 import org.smartfrog.services.deployapi.transport.wsrf.WsrfUtils;
+import org.smartfrog.services.deployapi.binding.DescriptorHelper;
 import org.smartfrog.services.xml.utils.ResourceLoader;
+import org.smartfrog.services.filesystem.FileSystem;
 import org.smartfrog.sfcore.languages.cdl.CdlCatalog;
 import org.xml.sax.SAXException;
 
@@ -48,6 +50,7 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.io.IOException;
+import java.io.File;
 
 /**
  * created 11-Apr-2006 14:57:19
@@ -66,7 +69,8 @@ public abstract class AlpineTestBase extends TestCase {
     public static final String VALIDATING_PROPERTY = "validating";
     public XPathContext xpath;
     private ResourceLoader resourceLoader;
-
+    DescriptorHelper descriptorHelper;
+    File tempdir;
 
     /**
      * Constructs a test case with the given name.
@@ -86,8 +90,21 @@ public abstract class AlpineTestBase extends TestCase {
         xpath = CdlCatalog.createXPathContext();
         //TODO: be more dynamic on smartfrog. But how to get our deploying prim?
         resourceLoader = new ResourceLoader(getClass());
+        tempdir= FileSystem.tempDir("deployapi","tmp",null);
+        descriptorHelper = new DescriptorHelper(tempdir);
     }
 
+
+    /**
+     * Destroy any system we are bonded to during teardown
+     */
+    protected void tearDown() throws Exception {
+        super.tearDown();
+        if (system != null) {
+            system.destroy();
+        }
+        FileSystem.recursiveDelete(tempdir);
+    }
 
     /**
      * Get a junit parameter. Fail if it is missing and required=true
@@ -103,15 +120,6 @@ public abstract class AlpineTestBase extends TestCase {
         return target;
     }
 
-    /**
-     * Destroy any system we are bonded to during teardown
-     */
-    protected void tearDown() throws Exception {
-        super.tearDown();
-        if (system != null) {
-            system.destroy();
-        }
-    }
 
 
     /**
@@ -151,6 +159,15 @@ public abstract class AlpineTestBase extends TestCase {
 
     public ResourceLoader getResourceLoader() {
         return resourceLoader;
+    }
+
+
+    public File getTempdir() {
+        return tempdir;
+    }
+
+    public DescriptorHelper getDescriptorHelper() {
+        return descriptorHelper;
     }
 
     /**
@@ -231,7 +248,7 @@ public abstract class AlpineTestBase extends TestCase {
                 Soap11Constants.URI_SOAP12, false, new SoapFactory());
     }
 
-    protected MessageDocument parseString(String xml,String uri) throws IOException, ParsingException {
+    protected MessageDocument parseString(String xml,String uri) throws IOException, ParsingException, SAXException {
         SoapMessageParser xmlParser = createXmlParser();
         return xmlParser.parseString(xml,uri);
     }
