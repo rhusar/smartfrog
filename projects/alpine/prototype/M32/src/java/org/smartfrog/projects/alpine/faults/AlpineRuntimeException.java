@@ -145,23 +145,14 @@ public class AlpineRuntimeException extends RuntimeException implements SoapFaul
 
     /**
      * Returns a short description of this throwable.
-     * If this <code>Throwable</code> object was created with a non-null detail
-     * message string, then the result is the concatenation of three strings:
-     * <ul>
-     * <li>The name of the actual class of this object
-     * <li>": " (a colon and a space)
-     * <li>The result of the {@link #getMessage} method for this object
-     * </ul>
-     * If this <code>Throwable</code> object was created with a <tt>null</tt>
-     * detail message string, then the name of the actual class of this object
-     * is returned.
-     *
      * @return a string representation of this throwable.
      */
-    public String toString() {
 
+    public String toString() {
         Fault fault = GenerateSoapFault();
         Document doc = new Document((Element) fault.copy());
-        return super.toString() + "\n" + XsdUtils.printToString(doc) + "\n";
+        return XsdUtils.printToString(doc) + "\n";
     }
+
+
 }
