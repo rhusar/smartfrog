@@ -1,4 +1,4 @@
-/** (C) Copyright 2005 Hewlett-Packard Development Company, LP
+/** (C) Copyright 2006 Hewlett-Packard Development Company, LP
 
  This library is free software; you can redistribute it and/or
  modify it under the terms of the GNU Lesser General Public
@@ -17,56 +17,53 @@
  For more information: www.smartfrog.org
 
  */
-
 package org.smartfrog.services.junit.test;
 
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.services.junit.TestRunner;
+import org.smartfrog.services.junit.TestListenerFactory;
 import org.smartfrog.services.junit.Statistics;
-import org.smartfrog.services.junit.listeners.BufferingListener;
+import org.smartfrog.services.junit.listeners.StatisticsTestListener;
 
 /**
- 
+ * created Nov 22, 2004 4:45:26 PM
  */
-public class SyspropsTest  extends TestRunnerTestBase {
 
-    public SyspropsTest(String name) {
+public class DeployedChainListenerTest extends TestRunnerTestBase {
+
+    public DeployedChainListenerTest(String name) {
         super(name);
     }
-    
-    public void testSyspropsWorking() throws Throwable {
-        String url;
+
+    public void testSuccess() throws Throwable {
         Prim deploy = null;
-        url = "/files/junit-sysprops.sf";
 
         int seconds = getTimeout();
         try {
-            deploy = deployExpectingSuccess(url, "localhostTest");
+            deploy = deployExpectingSuccess("/files/chain-all.sf", "ChainTest");
             TestRunner runner = (TestRunner) deploy;
             assertTrue(runner != null);
-            BufferingListener listener = null;
+            TestListenerFactory listener = null;
             listener =
-                    (BufferingListener) deploy.sfResolve(TestRunner.ATTR_LISTENER,
+                    (TestListenerFactory) deploy.sfResolve(
+                            "tests:listener",
                             listener,
                             true);
             boolean finished = spinTillFinished(runner, seconds);
             assertTrue("Test run timed out", finished);
-            assertEquals("session started",1,
-                    listener.getSessionStartCount());
-            assertEquals("session ended",1,
-                    listener.getSessionEndCount());
-            assertTrue("all tests passed", listener.testsWereSuccessful());
+
+            StatisticsTestListener statsListener=null;
+            statsListener = (StatisticsTestListener) deploy.sfResolve(
+                    "tests:statistics",
+                    statsListener,
+                    true);
+
             Statistics statistics = runner.getStatistics();
-            assertEquals("statistics.errors!=0 -is "+ statistics.getErrors(), 0, statistics.getErrors());
-            assertEquals("statistics.failures!=0",
-                    0,
-                    statistics.getFailures());
-
-
+            Statistics statistics2 = statsListener.getStatistics();
+            assertTrue("statistics don't match", statistics.isEqual(statistics2));
         } finally {
             terminateApplication(deploy);
         }
 
     }
-    
 }

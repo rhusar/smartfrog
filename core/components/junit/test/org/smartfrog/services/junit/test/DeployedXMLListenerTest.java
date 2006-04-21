@@ -43,11 +43,10 @@ public class DeployedXMLListenerTest extends TestRunnerTestBase {
         String url;
         Prim deploy = null;
         url = "/files/xml-all.sf";
-        final String appName = "XmlTest";
 
         int seconds = getTimeout();
         try {
-            deploy = deployExpectingSuccess(url, appName);
+            deploy = deployExpectingSuccess(url, "XmlTest");
             TestRunner runner = (TestRunner) deploy;
             assertTrue(runner != null);
             XmlListenerFactory listenerFactory = null;
