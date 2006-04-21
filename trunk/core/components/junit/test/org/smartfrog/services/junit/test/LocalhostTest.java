@@ -40,11 +40,10 @@ public class LocalhostTest extends TestRunnerTestBase {
         String url;
         Prim deploy = null;
         url = "/files/success.sf";
-        final String appName = "localhostTest";
 
         int seconds = getTimeout();
         try {
-            deploy = deployExpectingSuccess(url, appName);
+            deploy = deployExpectingSuccess(url, "localhostTest");
             TestRunner runner = (TestRunner) deploy;
             assertTrue(runner != null);
             BufferingListener listener = null;

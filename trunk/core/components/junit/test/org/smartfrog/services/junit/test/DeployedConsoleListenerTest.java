@@ -37,11 +37,10 @@ public class DeployedConsoleListenerTest extends TestRunnerTestBase {
         String url;
         Prim deploy = null;
         url = "/files/console-all.sf";
-        final String appName = "ConsoleTest";
 
         int seconds = getTimeout();
         try {
-            deploy = deployExpectingSuccess(url, appName);
+            deploy = deployExpectingSuccess(url, "ConsoleTest");
             TestRunner runner = (TestRunner) deploy;
             assertTrue(runner != null);
             ConsoleListenerFactory listener = null;
