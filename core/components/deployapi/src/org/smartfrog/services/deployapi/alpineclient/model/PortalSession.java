@@ -21,6 +21,7 @@ package org.smartfrog.services.deployapi.alpineclient.model;
 
 import nu.xom.Element;
 import static org.ggf.cddlm.generated.api.CddlmConstants.API_ELEMENT_LOOKUPSYSTEM_REQUEST;
+import org.ggf.cddlm.generated.api.CddlmConstants;
 import org.smartfrog.projects.alpine.om.soap11.MessageDocument;
 import org.smartfrog.projects.alpine.transport.Transmission;
 import org.smartfrog.projects.alpine.transport.TransmitQueue;
@@ -28,11 +29,20 @@ import org.smartfrog.projects.alpine.wsa.AlpineEPR;
 import org.smartfrog.services.deployapi.binding.XomHelper;
 import org.smartfrog.services.deployapi.system.Constants;
 
+import javax.xml.namespace.QName;
+
 /**
  * created 10-Apr-2006 17:07:57
  */
 
 public class PortalSession extends WsrfSession {
+    public static final QName QNAME_LOOKUP_SYSTEM_RESPONSE = new QName(
+            CddlmConstants.CDL_API_TYPES_NAMESPACE,
+            CddlmConstants.API_ELEMENT_LOOKUPSYSTEM_RESPONSE);
+
+    public static final QName QNAME_CREATE_SYSTEM_RESPONSE = new QName(
+            CddlmConstants.CDL_API_TYPES_NAMESPACE,
+            CddlmConstants.API_ELEMENT_CREATE_RESPONSE);
 
     /**
      * Package scoped constructor.
@@ -62,8 +72,11 @@ public class PortalSession extends WsrfSession {
      */
     public SystemSession endLookupSystem(Transmission tx) {
         MessageDocument response = tx.blockForResult(getTimeout());
+        checkResponseMessageType(tx, QNAME_LOOKUP_SYSTEM_RESPONSE);
         Element payload = response.getPayload();
-        return new SystemSession(this, payload);
+        //get the WSA address back
+        AlpineEPR epr=new AlpineEPR(payload,CddlmConstants.WS_ADDRESSING_NAMESPACE);
+        return new SystemSession(this, epr);
     }
 
     /**
@@ -107,10 +120,10 @@ public class PortalSession extends WsrfSession {
      *          for trouble
      */
     public SystemSession endCreate(Transmission tx) {
-        //this method matches exactly the postprocessing for the lookup system
-        //call, the only difference being the localname of the response, which
-        //isn't actually checked for.
-        return endLookupSystem(tx);
+        MessageDocument response = tx.blockForResult(getTimeout());
+        checkResponseMessageType(tx, QNAME_CREATE_SYSTEM_RESPONSE);
+        Element payload = response.getPayload();
+        return new SystemSession(this, payload);
     }
 
     /**

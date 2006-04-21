@@ -42,6 +42,7 @@ import org.smartfrog.services.deployapi.transport.faults.FaultRaiser;
 import static org.smartfrog.services.deployapi.transport.faults.FaultRaiser.checkArg;
 import static org.smartfrog.services.deployapi.transport.faults.FaultRaiser.raiseBadArgumentFault;
 import static org.smartfrog.services.deployapi.transport.faults.FaultRaiser.raiseUnsupportedLanguageFault;
+import org.smartfrog.projects.alpine.om.base.SoapElement;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -50,6 +51,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
+import java.util.List;
 
 /**
 
@@ -227,11 +229,11 @@ public class DescriptorHelper extends XomHelper {
      * @param language
      * @return
      */
-    public Element createInlineDescriptor(
+    public SoapElement createInlineDescriptor(
             Element xml,
             String language) {
-        Element descriptor = createDescriptorElement(language);
-        Element body = apiElement(BODY);
+        SoapElement descriptor = createDescriptorElement(language);
+        SoapElement body = apiElement(BODY);
         descriptor.appendChild(body);
         xml.detach();
         body.appendChild(xml);
@@ -294,34 +296,79 @@ public class DescriptorHelper extends XomHelper {
      * @param language
      * @return
      */
-    public Element createReferenceXomDescriptor(String url, String language) {
-        Element descriptor = createDescriptorElement(language);
-        String name = "reference";
-        Element reference = apiElement(name);
-        reference.appendChild(url);
+    public SoapElement createReferenceXomDescriptor(String url, String language) {
+        SoapElement descriptor = createDescriptorElement(language);
+        SoapElement reference = apiElement("reference",url);
         descriptor.appendChild(reference);
         return descriptor;
     }
 
-    private Element createDescriptorElement(String language) {
-        Element descriptor = apiElement(DESCRIPTOR);
-        String name = LANGUAGE;
-        addApiAttr(descriptor, name, language);
+    private SoapElement createDescriptorElement(String language) {
+        SoapElement descriptor = apiElement(DESCRIPTOR);
+        addApiAttr(descriptor, LANGUAGE, language);
         return descriptor;
     }
 
-    public Element createSmartFrogReferenceDescriptor(String url) {
+    public SoapElement createSmartFrogReferenceDescriptor(String url) {
         return createReferenceXomDescriptor(url, SMARTFROG_NAMESPACE);
     }
 
-    public Element createSmartFrogInlineDescriptor(File file)
+    public SoapElement createSmartFrogInlineDescriptor(File file)
             throws IOException {
         String contents = loadSmartFrogFile(file);
         return createSmartFrogInlineDescriptor(contents);
     }
 
-    public Element createSmartFrogInlineDescriptor(String contents) {
-        Element element = new Element(
+
+    /**
+     * Create an inline request.
+     *
+     * @param language   URI of the language
+     * @param descriptor a descriptor which must not have any parent.
+     * @param options    a list of options, can be null
+     * @return
+     */
+    public SoapElement createInitRequestInline(
+            String language,
+            Element descriptor, List<Element> options) {
+        SoapElement body = XomHelper.apiElement("body", descriptor);
+        SoapElement dt = XomHelper.apiElement("descriptor", body);
+        XomHelper.addApiAttr(dt, "language", language);
+        return completeInitRequest(dt, options);
+    }
+
+    /**
+     * finish off an init requset
+     *
+     * @param dt      descriptor type
+     * @param options list of options, can be null
+     * @return
+     */
+    private SoapElement completeInitRequest(SoapElement dt, List<Element> options) {
+        SoapElement request;
+        request = XomHelper.apiElement(API_ELEMENT_INITALIZE_REQUEST, dt);
+        if (options != null) {
+            //add any options
+            SoapElement ot = XomHelper.apiElement("options");
+            for (Element e : options) {
+                ot.appendChild(e);
+            }
+            request.appendChild(ot);
+        }
+        return request;
+    }
+
+
+    public SoapElement createInitRequestURL(String language,
+                                            String descriptorURL, List<Element> options) {
+        SoapElement ref = XomHelper.apiElement("reference", descriptorURL);
+        SoapElement dt = XomHelper.apiElement("descriptor", ref);
+        XomHelper.addApiAttr(dt, "language", language);
+        return completeInitRequest(dt, options);
+    }
+
+    public SoapElement createSmartFrogInlineDescriptor(String contents) {
+        SoapElement element = new SoapElement(
                 "sf:"+ SMARTFROG_ELEMENT_NAME,
                 SMARTFROG_NAMESPACE);
         Attribute version= new Attribute(
@@ -347,6 +394,7 @@ public class DescriptorHelper extends XomHelper {
             ParsingException {
         return loadInlineDescriptor(file, XML_CDL_NAMESPACE);
     }
+
 
 
     public void validateRequest(Element request) {
@@ -406,6 +454,6 @@ public class DescriptorHelper extends XomHelper {
         Element request = createInitRequest(descriptor);
         validateRequest(request);
         return request;
-    }    
+    }
 }
 

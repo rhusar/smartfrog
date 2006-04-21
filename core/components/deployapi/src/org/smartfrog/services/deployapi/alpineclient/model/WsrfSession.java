@@ -170,6 +170,14 @@ public abstract class WsrfSession extends Session {
         return endGetResourceProperty(beginGetResourceProperty(property));
     }
 
+    public String getResourcePropertyValue(QName property) {
+        Element e=getResourceProperty(property);
+        if(e==null) {
+            return null;
+        }
+        return e.getValue();
+    }
+
     /**
      * Destroy an endpoint
      *

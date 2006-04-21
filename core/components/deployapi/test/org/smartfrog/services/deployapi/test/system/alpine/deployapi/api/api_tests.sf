@@ -88,11 +88,15 @@ For more information: www.smartfrog.org
       parentDir LAZY basedir;
     }
 
-
-    listener extends ConsoleListener;
+    console extends ConsoleListener {
+    };
 
     xmlListener extends XmlListener {
        outputDirectory LAZY destDir:absolutePath;
+    }
+
+    listener extends ChainListener {
+        listeners [ LAZY console, LAZY xmlListener];
     }
 
     portal extends PortalTestSuite {
@@ -106,3 +110,4 @@ For more information: www.smartfrog.org
     }
 
  }
+

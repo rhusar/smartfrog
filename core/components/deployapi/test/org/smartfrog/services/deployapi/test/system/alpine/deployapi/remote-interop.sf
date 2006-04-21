@@ -46,6 +46,6 @@ sfConfig extends Compound {
 
   nec extends NecTests {
     basedir tempDir;
-    enabled true;
+    //enabled false;
   }
 }

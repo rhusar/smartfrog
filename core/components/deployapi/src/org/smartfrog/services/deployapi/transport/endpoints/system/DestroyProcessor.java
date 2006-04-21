@@ -44,7 +44,7 @@ public class DestroyProcessor extends SystemProcessor {
     public Element process(Element request) throws IOException {
         jobMustExist();
         JobRepository jobs = ServerInstance.currentInstance().getJobs();
-        jobs.terminate(job, "destroyed");
+        jobs.destroy(job);
         Element response = new Element(Constants.WSRF_ELEMENT_DESTROY_RESPONSE,
                 Constants.WSRF_WSRL_NAMESPACE);
         return response;
