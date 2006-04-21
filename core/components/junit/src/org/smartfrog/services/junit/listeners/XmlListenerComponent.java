@@ -78,7 +78,6 @@ public class XmlListenerComponent extends PrimImpl
             RemoteException {
         super.sfDeploy();
         log = helper.getLogger();
-
     }
 
 

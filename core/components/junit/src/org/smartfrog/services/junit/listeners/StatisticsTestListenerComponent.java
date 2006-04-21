@@ -113,4 +113,8 @@ public class StatisticsTestListenerComponent extends PrimImpl implements Statist
     public int getUnsuccessfulTests() {
         return stats.getUnsuccessfulTests();
     }
+
+    public Statistics getStatistics() {
+        return stats;
+    }
 }

@@ -20,6 +20,7 @@
 package org.smartfrog.services.junit.listeners;
 
 import org.smartfrog.services.junit.TestListenerFactory;
+import org.smartfrog.services.junit.Statistics;
 
 import java.rmi.RemoteException;
 
@@ -38,4 +39,6 @@ public interface StatisticsTestListener extends TestListenerFactory {
     int getErrors() throws RemoteException ;
 
     int getUnsuccessfulTests() throws RemoteException ;
+
+    Statistics getStatistics() throws RemoteException;
 }

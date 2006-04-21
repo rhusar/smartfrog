@@ -49,7 +49,7 @@ For more information: www.smartfrog.org
 
 TestSuiteSchema extends Schema {
     name extends String;
-    if extends OptionalBoolean;
+    enabled extends OptionalBoolean;
     unless extends OptionalBoolean;
     //list in name, value pairs [[name,value],[n2,v2]]
     sysproperties extends OptionalVector;    
@@ -142,6 +142,19 @@ StatisticsTestListener extends TestListener {
     name "StatisticsTestListener";
 }
 
+/**
+ * the chain listener takes a list of secondary listeners, and relays to all of them.
+ */
+
+ChainListenerSchema extends Schema {
+    listeners extends Vector ;
+}
+
+ChainListener extends TestListener {
+    sfClass "org.smartfrog.services.junit.listeners.ChainListenerComponent";
+    name "ChainListener";
+    chainListenerSchema extends ChainListenerSchema;
+}
 /**
  * and the test runner
  */
