@@ -28,10 +28,13 @@ import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.common.TerminatorThread;
+import org.smartfrog.sfcore.common.SFMarshalledObject;
 import org.smartfrog.sfcore.security.SFClassLoader;
 
 import java.rmi.RemoteException;
 import java.io.InputStream;
+import java.util.Vector;
+import java.util.Iterator;
 
 /**
  * Contains methods for helping components; a factoring out of common functionality.
@@ -139,8 +142,8 @@ public class ComponentHelper {
      * @param thrown Thrown fault
      */
     public void sfSelfDetachAndOrTerminate(String terminationType,
-                                            String terminationMessage,
-                                            Reference refId, Throwable thrown) {
+                                           String terminationMessage,
+                                           Reference refId, Throwable thrown) {
         /** Flag indicating detachment. */
         boolean shouldDetach = false;
         /** Flag indicating if the sfShouldDetach attribute was read. */
@@ -337,4 +340,26 @@ public class ComponentHelper {
         return implementsInterface(clazz.getSuperclass(),interfaceName);
     }
 
+    /**
+     * Copy the source vector to a new vector that has resolved all LAZY references
+     * @param vector
+     * @return a vector with all references inside resolved
+     * @throws SmartFrogResolutionException if a reference will not resolve
+     */
+    public Vector resolveVectorReferences(Vector vector) throws SmartFrogResolutionException {
+        Vector result=new Vector(vector.size());
+        Iterator it=vector.iterator();
+        while (it.hasNext()) {
+            Object element = (Object) it.next();
+            if(element instanceof Reference) {
+                Reference ref=(Reference) element;
+                element = ref.resolve(owner, 0);
+                if (element instanceof SFMarshalledObject) {
+                    element = ((SFMarshalledObject) element).get();
+                }                
+            }
+            result.add(element);
+        }
+        return result;
+    }
 }

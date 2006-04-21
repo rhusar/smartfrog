@@ -83,7 +83,7 @@ public class TempFileImpl extends FileUsingComponentImpl implements TempFile {
         //Create File content if needed
         if (text!=null) {
             String encoding = null;
-            encoding = sfResolve(ATTR_TEXT_ENCODING, (String)null, true);
+            encoding = sfResolve(ATTR_TEXT_ENCODING, encoding, true);
             Writer wout = null;
             try {
                 OutputStream fout;
