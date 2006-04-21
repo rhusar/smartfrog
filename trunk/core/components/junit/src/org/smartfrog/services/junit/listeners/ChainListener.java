@@ -21,11 +21,14 @@ package org.smartfrog.services.junit.listeners;
 
 import org.smartfrog.services.junit.TestListener;
 import org.smartfrog.services.junit.TestInfo;
+import org.smartfrog.services.junit.TestListenerFactory;
+import org.smartfrog.services.junit.TestSuite;
 import org.smartfrog.sfcore.common.SmartFrogException;
 
-import java.util.LinkedList;
 import java.util.Iterator;
 import java.util.ListIterator;
+import java.util.List;
+import java.util.ArrayList;
 import java.rmi.RemoteException;
 
 /**
@@ -33,20 +36,61 @@ import java.rmi.RemoteException;
  * created 03-Jun-2005 16:49:03
  */
 
-public class BulkListener implements TestListener {
+public class ChainListener implements TestListener {
 
-    private LinkedList endpoints=new LinkedList();
+    private List listeners =new ArrayList();
+
+
+    public ChainListener() {
+    }
+
+    public ChainListener(List factories, TestSuite suite,
+                         String hostname,
+                         String suitename,
+                         long timestamp) throws SmartFrogException, RemoteException {
+        createAndAddListeners(factories,suite,hostname,suitename,timestamp);
+    }
+
+    /**
+     * Run through every factory and create a listener from each one, adding each
+     * returned instance to the listener factory.
+     * @param factories
+     * @param suite     the test suite that is about to run. May be null,
+     *                  especially during testing.
+     * @param hostname  name of host
+     * @param suitename name of test suite
+     * @param timestamp start timestamp (UTC)
+     */
+    public void createAndAddListeners(List factories, TestSuite suite,
+                                      String hostname,
+                                      String suitename,
+                                      long timestamp) throws SmartFrogException, RemoteException {
+        //reset the list of listeners
+        listeners =new ArrayList(factories.size());
+        //run through the factories
+        Iterator it=factories.iterator();
+        while (it.hasNext()) {
+            //create and add each one to the listener list
+            TestListenerFactory factory = (TestListenerFactory) it.next();
+            TestListener listener = factory.listen(suite, hostname, suitename, timestamp);
+            addListener(listener);
+        }
+    }
 
     public synchronized void addListener(TestListener listener) {
-        endpoints.add(listener);
+        listeners.add(listener);
     }
 
     public void removeListener(TestListener listener) {
-        endpoints.remove(listener);
+        listeners.remove(listener);
     }
 
-    public ListIterator listeners() {
-        return endpoints.listIterator();
+    /**
+     * Iterator operator.
+     * @return
+     */
+    public ListIterator iterator() {
+        return listeners.listIterator();
     }
 
     /**
@@ -55,7 +99,7 @@ public class BulkListener implements TestListener {
      * called</i>
      */
     public void endSuite() throws RemoteException, SmartFrogException {
-        Iterator i=listeners();
+        Iterator i=iterator();
         while (i.hasNext()) {
             TestListener testListener = (TestListener) i.next();
             testListener.endSuite();
@@ -68,7 +112,7 @@ public class BulkListener implements TestListener {
     public void addError(TestInfo test) throws RemoteException,
             SmartFrogException {
 
-        Iterator i = listeners();
+        Iterator i = iterator();
         while (i.hasNext()) {
             TestListener testListener = (TestListener) i.next();
             testListener.addError(test);
@@ -80,7 +124,7 @@ public class BulkListener implements TestListener {
      */
     public void addFailure(TestInfo test) throws RemoteException,
             SmartFrogException {
-        Iterator i = listeners();
+        Iterator i = iterator();
         while (i.hasNext()) {
             TestListener testListener = (TestListener) i.next();
             testListener.addFailure(test);
@@ -93,7 +137,7 @@ public class BulkListener implements TestListener {
      */
     public void endTest(TestInfo test) throws RemoteException,
             SmartFrogException {
-        Iterator i = listeners();
+        Iterator i = iterator();
         while (i.hasNext()) {
             TestListener testListener = (TestListener) i.next();
             testListener.endTest(test);
@@ -105,7 +149,7 @@ public class BulkListener implements TestListener {
      */
     public void startTest(TestInfo test) throws RemoteException,
             SmartFrogException {
-        Iterator i = listeners();
+        Iterator i = iterator();
         while (i.hasNext()) {
             TestListener testListener = (TestListener) i.next();
             testListener.startTest(test);

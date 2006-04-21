@@ -164,4 +164,16 @@ public final class Statistics implements Serializable {
     public boolean isSuccessful() {
         return getUnsuccessfulTests()==0;
     }
+
+    /**
+     * check that the statistics of this instance match that of another one.
+     * @param other the other statistics
+     * @return true if all counts match
+     */
+    public boolean isEqual(Statistics other) {
+        return failures == other.failures
+                && testsRun == other.testsRun
+                && testsStarted == other.testsStarted
+                && errors == other.errors;
+    }
 }
