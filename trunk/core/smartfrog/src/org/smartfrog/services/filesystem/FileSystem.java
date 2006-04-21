@@ -137,6 +137,42 @@ public class FileSystem {
     }
 
     /**
+     * Create a temporary file. There is a very small, very very small, race condition here
+     * as we delete the temp file and recreate it as a dir. This may also be a security risk in
+     * the right hands.
+     * @param prefix prefix
+     * @param suffix suffix -include the . for a .ext style suffix
+     * @param dir parent dir; use null for java.io.tmpdir
+     * @return
+     * @throws IOException
+     */
+    public static File tempDir(String prefix,String suffix,File dir) throws IOException {
+        File file=File.createTempFile(prefix,suffix,dir);
+        file.delete();
+        file.mkdir();
+        return file;
+    }
+
+    /**
+     * recursive directory deletion. If handed a file, will delete that.
+     * @param dir directory
+     */
+    public static void recursiveDelete(File dir) {
+        if(!dir.exists()) {
+            //no-op
+            return;
+        }
+        if(dir.isDirectory()) {
+            File[] files = dir.listFiles();
+            for(int i=0;i<files.length;i++) {
+                recursiveDelete(files[i]);
+            }
+        }
+        dir.delete();
+    }
+
+
+    /**
      * This static call is a helper for any component that wants to get either
      * an absolute path or a FileIntf binding to an attribute. The attribute is
      * looked up on a component. If it is bound to anything that implements

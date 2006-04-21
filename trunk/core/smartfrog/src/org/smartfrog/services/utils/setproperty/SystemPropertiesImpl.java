@@ -29,6 +29,9 @@ import java.rmi.RemoteException;
 import java.util.Properties;
 import java.util.Vector;
 import java.util.Enumeration;
+import java.lang.reflect.Method;
+import java.lang.reflect.InvocationTargetException;
+
 import org.smartfrog.sfcore.common.Context;
 import org.smartfrog.sfcore.common.SmartFrogContextException;
 import org.smartfrog.sfcore.prim.Prim;
@@ -271,10 +274,23 @@ public class SystemPropertiesImpl extends PrimImpl implements SystemProperties {
     public void unsetProperty(String name)
             throws SmartFrogException, RemoteException {
         try {
-          // TODO: use introspection.
+          // use introspection for Java1.5 time use
+            Class clazz=System.class;
+            Class[] params={String.class};
+            Method method = clazz.getMethod("clearProperty", params);
+            Object[] args={name};
+            method.invoke(args);
+
             //   System.clearProperty(name);
         } catch (SecurityException e) {
             throw SmartFrogException.forward("clearing " + name, e);
+        } catch (NoSuchMethodException e) {
+            log.warn("This JVM doesn't support System.clearProperty; unable to unset properties");
+        } catch (InvocationTargetException e) {
+            throw SmartFrogException.forward("clearing " + name, e);
+        } catch (IllegalAccessException e) {
+            throw SmartFrogException.forward("clearing " + name, e);
         }
+
     }
 }
