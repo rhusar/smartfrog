@@ -279,7 +279,7 @@ public class SystemPropertiesImpl extends PrimImpl implements SystemProperties {
             Class[] params={String.class};
             Method method = clazz.getMethod("clearProperty", params);
             Object[] args={name};
-            method.invoke(args);
+            method.invoke(null,args);
 
             //   System.clearProperty(name);
         } catch (SecurityException e) {
