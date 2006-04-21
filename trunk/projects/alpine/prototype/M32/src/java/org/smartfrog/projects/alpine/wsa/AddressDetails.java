@@ -290,22 +290,34 @@ public class AddressDetails implements Validatable, AddressingConstants {
         for (Element header : headers.elements(namespace)) {
             String localname = header.getLocalName();
             String text = header.getValue();
+            boolean understood=false;
             if (WSA_MESSAGEID.equals(localname)) {
                 messageID = text;
+                understood=true;
             } else if (WSA_ACTION.equals(localname)) {
                 action = text;
+                understood = true;
             } else if (WSA_FROM.equals(localname)) {
                 from = new AlpineEPR(header, namespace);
+                understood = true;
             } else if (WSA_REPLYTO.equals(localname)) {
                 replyTo = new AlpineEPR(header, namespace);
+                understood = true;
             } else if (WSA_FAULTTO.equals(localname)) {
                 faultTo = new AlpineEPR(header, namespace);
+                understood = true;
             } else if (WSA_REFERENCE_PARAMETERS.equals(localname)) {
                 referenceParameters = (Element) header.copy();
+                understood = true;
             } else if (WSA_RELATES_TO.equals(localname)) {
                 relatesTo = text;
-            } else if (WSA_MESSAGEID.equals(localname)) {
-                messageID = text;
+                understood = true;
+            } else if (WSA_TO.equals(localname)) {
+                understood = true;
+            }
+            //mark headers that we understood as so, for the MustUnderstand checker.
+            if(Header.isMustUnderstand(header) && understood) {
+                Header.setMustUnderstand(header,false);
             }
         }
         return found;

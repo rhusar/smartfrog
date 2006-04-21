@@ -30,7 +30,7 @@ import org.smartfrog.projects.alpine.om.soap11.Soap11Constants;
 public class MustUnderstandFault extends SoapException {
 
     private Element header;
-    public static final String NOT_UNDERSTOOD = "A mustunderstand header was not recognised:";
+    public static final String NOT_UNDERSTOOD = "A mustUnderstand header was not understood by the endpoint :";
 
     public MustUnderstandFault(String faultActor,Element header) {
         super(Soap11Constants.FAULTCODE_MUST_UNDERSTAND,
