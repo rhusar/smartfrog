@@ -25,7 +25,7 @@
   -->
 
   <description>
-     Build file for Alpine
+     Build file for Alpine. Needs Ant1.7
   </description>
 
   <!-- override point -->
@@ -54,6 +54,14 @@
   <target name="m2" depends="m2-tasks" >
   
     <m2-libraries pathID="libraries.path">
+      <!--Required -->
+      <dependency groupID="commons-httpclient"
+          artifactID="commons-httpclient"
+          version="${commons-httpclient.version}"
+          />
+      <dependency groupID="commons-logging"
+          artifactID="commons-logging-api"
+          version="${commons-logging.version}"/>
       <dependency groupID="xerces"
         artifactID="xercesImpl"
         version="${xerces.version}"/>        
@@ -63,62 +71,58 @@
       <dependency groupID="xom"
         artifactID="xom"
         version="${xom.version}"/>
-      <dependency groupID="jaxen"
-        artifactID="jaxen"
-        version="${jaxen.version}"/>
-      <dependency groupID="commons-logging"
-        artifactID="commons-logging-api"
-        version="${commons-logging.version}"/>
+
+      <!--required at compile but not runtime-->
+      <dependency groupID="servletapi"
+          artifactID="servletapi"
+          version="${servletapi.version}"
+          scope="compile"/>
+      <!--optional -->
       <dependency groupID="log4j"
         artifactID="log4j"
         version="${log4j.version}"/>
-      <dependency groupID="org.smartfrog"
-          artifactID="sf-www"
-          version="${smartfrog.version}"
-          />
-      <dependency groupID="org.smartfrog"
-          artifactID="sf-www"
-          version="${smartfrog.version}"
-          />
-      <dependency groupID="org.smartfrog"
-        artifactID="sf-jetty"
-        version="${smartfrog.version}"
-        />        
+      <dependency groupID="jaxen"
+          artifactID="jaxen"
+          version="${jaxen.version}"/>
+      <dependency groupID="xalan"
+          artifactID="xalan"
+          version="${xalan.version}"/>
+
+      <!--optional, for smartfrog deployment-->
       <dependency groupID="org.smartfrog"
         artifactID="smartfrog"
         version="${smartfrog.version}"
-        />
-      <dependency groupID="commons-httpclient"
-          artifactID="commons-httpclient"
-          version="${commons-httpclient.version}"
-          />
+        scope="compile"/>
       <dependency groupID="org.smartfrog"
-        artifactID="sf-testharness"
-        version="${smartfrog.version}"
-        scope="compile"/>
-      <dependency groupID="xom"
-        artifactID="xom"
-        version="${xom.version}"/>
-      <dependency groupID="xalan"
-        artifactID="xalan"
-        version="2.6.0"/>
-      <dependency groupID="tomcat"
-        artifactID="servlet-api"
-        version="5.0.18"
-        scope="compile"/>
+          artifactID="sf-jetty"
+          version="${smartfrog.version}"
+          scope="test"/>
+      <dependency groupID="org.smartfrog"
+          artifactID="sf-www"
+          version="${smartfrog.version}"
+          scope="test"/>
+
+      <!--optional stuff for testing-->
+      <dependency groupID="httpunit"
+          artifactID="httpunit"
+          version="1.6"
+          scope="test"/>
       <dependency groupID="junit"
         artifactID="junit"
         version="${junit.version}"
         scope="test"/>
-      <dependency groupID="httpunit"
-        artifactID="httpunit"
-        version="1.6"
-        scope="test"/>
-      </m2-libraries>
+      <dependency groupID="org.smartfrog"
+          artifactID="sf-testharness"
+          version="${smartfrog.version}"
+          scope="test"/>
+    </m2-libraries>
   </target>  
     
   
-   <!-- inline creation of a very minimal (zero dependency) pom -->
+   <!-- inline creation of a minimal pom
+      This sets it up with all the dependencies. We strip out some unwanted baggage from
+      dependencies, like junit, dom4j and jdom. Dirty pom files stop here :)
+   -->
    <target name="m2-make-pom" depends="m2-init" unless="project.haspom">
      <echo message="Creating Pom ${target.pom}" level="verbose"/>
      <echoxml file="${target.pom}">
@@ -128,6 +132,54 @@
         <artifactId>${artifact.name}</artifactId>
         <packaging>jar</packaging>
         <version>${Version}</version>
+        <dependencies>
+          <dependency>
+            <groupId>commons-httpclient</groupId>
+            <artifactId>commons-httpclient</artifactId>
+            <version>${commons-httpclient.version}</version>
+            <exclusions>
+              <exclusion>
+                <groupId>junit</groupId>
+                <artifactId>junit</artifactId>
+              </exclusion>
+            </exclusions>
+          </dependency>
+          <dependency>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging-api</artifactId>
+            <version>${commons-logging.version}</version>
+          </dependency>
+          <dependency>
+            <groupId>xalan</groupId>
+            <artifactId>xalan</artifactId>
+            <version>${xalan.version}</version>
+          </dependency>
+          <dependency>
+            <groupId>xerces</groupId>
+            <artifactId>xercesImpl</artifactId>
+            <version>${xerces.version}</version>
+          </dependency>
+          <dependency>
+            <groupId>xerces</groupId>
+            <artifactId>xmlParserAPIs</artifactId>
+            <version>${xerces.version}</version>
+          </dependency>
+          <dependency>
+            <groupId>xom</groupId>
+            <artifactId>xom</artifactId>
+            <version>${xom.version}</version>
+            <exclusions>
+              <exclusion>
+                <groupId>dom4j</groupId>
+                <artifactId>dom4j</artifactId>
+              </exclusion>
+              <exclusion>
+                <groupId>jdom</groupId>
+                <artifactId>jdom</artifactId>
+              </exclusion>
+            </exclusions>
+          </dependency>
+        </dependencies>
       </project>
     </echoxml>
   </target>
