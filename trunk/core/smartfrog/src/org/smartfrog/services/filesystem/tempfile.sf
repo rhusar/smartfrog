@@ -74,6 +74,6 @@ TempDir extends TempFile {
 /**
  * a temporary directory that is cleaned up on exit.
  */
-TempDireWithCleanup extends TempDir {
+TempDirWithCleanup extends TempDir {
     deleteOnExit true;
 }
