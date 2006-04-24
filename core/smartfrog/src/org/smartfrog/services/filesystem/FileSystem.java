@@ -21,6 +21,7 @@ package org.smartfrog.services.filesystem;
 
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.common.MessageUtil;
+import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.utils.PlatformHelper;
@@ -158,7 +159,7 @@ public class FileSystem {
      * @param dir directory
      */
     public static void recursiveDelete(File dir) {
-        if(!dir.exists()) {
+        if(dir==null || dir.exists()) {
             //no-op
             return;
         }
@@ -603,5 +604,48 @@ public class FileSystem {
         return tail(new File(filepath), numLines);
     }
 //  End Contributed by Sanjay Dahiya
+
+    /**
+     * Create a temp file in the directory names, with the given prefix and suffix.
+     * @param prefix prefix -required.
+     * @param suffix suffix, e,g. ".ext";
+     * @param dir parent dir; can be null
+     * @return the directory.
+     * @throws org.smartfrog.sfcore.common.SmartFrogException a wrapper for any IOException.
+     */
+    public static File createTempFile(String prefix, String suffix, String dir) throws SmartFrogException {
+        File file;
+        try {
+            if (dir == null) {
+                file = File.createTempFile(prefix, suffix);
+            } else {
+                File directory = new File(dir);
+                directory.mkdirs();
+                file = File.createTempFile(prefix, suffix, directory);
+            }
+        } catch (IOException e) {
+            throw SmartFrogException.forward(e);
+        }
+        return file;
+    }
+
+    /**
+     * Create a temp directory in the directory named, with the given prefix and suffix.
+     * This is done by creating a temp file, deleting it and creating a dir of the same name.
+     * There is a fractional moment of race condition there, where bad things could happen.
+     * @param dir    parent dir; can be null
+     * @param prefix prefix -required.
+     * @param suffix suffix, e,g. ".ext";
+     * @return the directory.
+     * @throws org.smartfrog.sfcore.common.SmartFrogException
+     *          a wrapper for any IOException.
+     */
+    public static File createTempDir(String dir, String prefix, String suffix)
+            throws SmartFrogException {
+        File file=createTempFile(prefix, suffix, dir);
+        file.delete();
+        file.mkdir();
+        return file;
+    }
 
 }
