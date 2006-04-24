@@ -5,20 +5,30 @@
   <packaging>jar</packaging>
   <version>${Version}</version>
   <dependencies>
-      <dependency groupID="org.ggf"
-        artifactID="cddlm"
-        version="${cddlm.version}"/>          
-      <dependency groupID="commons-logging"
-        artifactID="commons-logging-api"
-        version="${commons-logging.version}"/>          
-      <dependency groupID="org.smartfrog"
-        artifactID="sf-xml"
-        version="${Version}"/>        
-      <dependency groupID="xom"
-        artifactID="xom"
-        version="${xom.version}"/>
-      <dependency groupID="xalan"
-        artifactID="xalan"
-        version="${xalan.version}"/>      
-  </dependencies>  
+    <dependency>
+      <groupId>org.ggf</groupId>
+      <artifactId>cddlm</artifactId>
+      <version>${cddlm.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>commons-logging</groupId>
+      <artifactId>commons-logging-api</artifactId>
+      <version>${commons-logging.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.smartfrog</groupId>
+      <artifactId>sf-xml</artifactId>
+      <version>${Version}</version>
+    </dependency>
+    <dependency>
+      <groupId>xom</groupId>
+      <artifactId>xom</artifactId>
+      <version>${xom.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>xalan</groupId>
+      <artifactId>xalan</artifactId>
+      <version>${xalan.version}</version>
+    </dependency>
+  </dependencies>
 </project>

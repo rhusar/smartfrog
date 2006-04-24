@@ -42,8 +42,6 @@ public class FileUsingComponentImpl extends PrimImpl implements FileUsingCompone
      */
     protected File file;
 
-    private Log log=sfLog();
-
     public FileUsingComponentImpl() throws RemoteException {
     }
 

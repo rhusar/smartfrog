@@ -36,6 +36,8 @@ TempFileSchema extends DeletableFileSchema {
     text extends OptionalString;
     //encoding of the optional text. Only needed when text is set
     encoding extends String;
+    //should the file be deleted
+    deleteOnExit extends OptionalBoolean;
 }
 
 /**
@@ -47,11 +49,31 @@ TempFile extends FileUsingComponent {
     prefix "temp";
     //default encoding is utf8
     encoding "UTF-8";
+    deleteOnExit false;
 }
 
 /**
  * A temp file which auto cleans up
  */
 TempFileWithCleanup extends TempFile {
+    deleteOnExit true;
+}
+
+
+
+/**
+ * a temporary directory. On exit it will delete its contents
+ */
+TempDir extends TempFile {
+    sfClass "org.smartfrog.services.filesystem.TempDirImpl";
+    prefix "tempdir";
+    suffix "";
+    deleteOnExit false;
+}
+
+/**
+ * a temporary directory that is cleaned up on exit.
+ */
+TempDireWithCleanup extends TempDir {
     deleteOnExit true;
 }
