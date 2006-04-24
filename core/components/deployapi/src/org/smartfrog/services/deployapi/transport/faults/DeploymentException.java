@@ -1,9 +1,7 @@
 package org.smartfrog.services.deployapi.transport.faults;
 
-import org.apache.axis2.AxisFault;
 import org.ggf.cddlm.utils.FaultTemplate;
 
-import javax.xml.namespace.QName;
 
 /**
  */
@@ -38,15 +36,6 @@ public class DeploymentException extends BaseException {
         super(template);
     }
 
-    /**
-     * nest an axisFault inside. Maybe we have special treatment here
-     *
-     * @param axisFault
-     * @TODO: special treatment here :)
-     */
-    public DeploymentException(AxisFault axisFault) {
-        super(axisFault);
-    }
 
 
 

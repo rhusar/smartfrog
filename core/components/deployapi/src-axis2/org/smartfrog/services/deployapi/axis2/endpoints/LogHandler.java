@@ -17,27 +17,37 @@
  For more information: www.smartfrog.org
 
  */
-package org.smartfrog.services.deployapi.transport.wsrf;
 
-import nu.xom.Element;
-import org.smartfrog.services.deployapi.transport.faults.BaseException;
+package org.smartfrog.services.deployapi.axis2.endpoints;
+
+import org.apache.axis2.AxisFault;
+import org.apache.axis2.context.MessageContext;
+import org.apache.axis2.engine.Handler;
+import org.apache.axis2.handlers.AbstractHandler;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import javax.xml.namespace.QName;
 
 /**
- * Interface for anything that provides WSRP resource information.
- * created 22-Sep-2005 15:57:46
  */
+public class LogHandler extends AbstractHandler implements Handler {
+    private Log log = LogFactory.getLog(getClass());
+    private QName name;
 
+    public QName getName() {
+        return name;
+    }
 
-public interface WSRPResourceSource {
+    public void invoke(MessageContext msgContext) throws AxisFault {
+        log.info(msgContext.getEnvelope().toString());
+    }
 
-    /**
-     * Get a property value
-     *
-     * @param property
-     * @return null for no match;
-     * @throws BaseException if they feel like it
-     */
-    Element getProperty(QName property);
+    public void revoke(MessageContext msgContext) {
+        log.info(msgContext.getEnvelope().toString());
+    }
+
+    public void setName(QName name) {
+        this.name = name;
+    }
 }

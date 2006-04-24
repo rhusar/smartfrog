@@ -19,14 +19,9 @@
  */
 package org.smartfrog.services.deployapi.transport.endpoints.system;
 
-import nu.xom.Document;
 import nu.xom.Element;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.ws.commons.om.OMElement;
-import org.smartfrog.services.deployapi.binding.XomHelper;
-import org.smartfrog.services.deployapi.system.Constants;
-import org.smartfrog.services.deployapi.system.Utils;
 import org.smartfrog.services.deployapi.transport.endpoints.alpine.WsrfHandler;
 
 import java.rmi.RemoteException;

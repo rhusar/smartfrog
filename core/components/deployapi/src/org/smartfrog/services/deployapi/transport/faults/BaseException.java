@@ -1,7 +1,6 @@
 package org.smartfrog.services.deployapi.transport.faults;
 
 import nu.xom.Element;
-import org.apache.axis2.AxisFault;
 import org.ggf.cddlm.utils.FaultTemplate;
 import org.smartfrog.services.deployapi.binding.XomHelper;
 import org.smartfrog.projects.alpine.interfaces.SoapFaultSource;

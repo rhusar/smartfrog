@@ -21,8 +21,6 @@
 package org.smartfrog.services.deployapi.transport.wsrf;
 
 import nu.xom.Element;
-import org.apache.ws.commons.om.OMElement;
-import org.smartfrog.services.deployapi.system.Utils;
 import org.smartfrog.projects.alpine.om.base.SoapElement;
 
 import javax.xml.namespace.QName;

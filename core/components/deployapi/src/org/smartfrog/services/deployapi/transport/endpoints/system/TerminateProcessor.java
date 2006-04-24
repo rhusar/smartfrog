@@ -19,7 +19,6 @@
  */
 package org.smartfrog.services.deployapi.transport.endpoints.system;
 
-import nu.xom.Document;
 import nu.xom.Element;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

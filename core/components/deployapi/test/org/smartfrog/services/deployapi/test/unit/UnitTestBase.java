@@ -20,22 +20,15 @@
 package org.smartfrog.services.deployapi.test.unit;
 
 import junit.framework.TestCase;
-import org.apache.axis2.addressing.EndpointReference;
-import org.apache.ws.commons.om.OMAttribute;
-import org.apache.ws.commons.om.OMElement;
-import org.apache.ws.commons.om.impl.builder.StAXOMBuilder;
+
 import org.smartfrog.services.deployapi.system.Constants;
 import org.smartfrog.services.deployapi.transport.faults.BaseException;
 import org.smartfrog.services.xml.utils.ResourceLoader;
 import org.smartfrog.services.xml.utils.XmlCatalogResolver;
 
 import javax.xml.namespace.QName;
-import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamReader;
-import java.io.IOException;
+
 import java.io.InputStream;
-import java.util.Iterator;
 
 /**
  * created 21-Sep-2005 14:57:51
@@ -43,17 +36,15 @@ import java.util.Iterator;
 
 public abstract class UnitTestBase extends TestCase {
     public static final String TEST_FILES_API_VALID = "org/ggf/cddlm/files/api/valid/";
-    public static final String DECLARE_TEST_NAMESPACE= "declare namespace t='"+ Constants.TEST_HELPER_NAMESPACE+"'; ";
-    public static final QName TEST_ELEMENT=new QName(Constants.TEST_HELPER_NAMESPACE,"test");
+    public static final String DECLARE_TEST_NAMESPACE = "declare namespace t='" + Constants.TEST_HELPER_NAMESPACE
+            + "'; ";
+    public static final QName TEST_ELEMENT = new QName(Constants.TEST_HELPER_NAMESPACE, "test");
     public static final QName TEST_NAME = new QName(Constants.TEST_HELPER_NAMESPACE, "name");
     public static final QName TEST_NAME_LOCAL = new QName("name");
     private XmlCatalogResolver resolver;
-    private static boolean dump=false;
-    public final static EndpointReference EPR_LOCAL_PORTAL
-            = new EndpointReference("http://localhost:5050/services/Portal/");
-    public final static EndpointReference EPR_SAMPLE_JOB
-            = new EndpointReference("http://localhost:5050/services/System/#uuid_1235678_0045");
-    public static final String DOC_CREATE = TEST_FILES_API_VALID +"api-create.xml";
+    private static boolean dump = false;
+
+    public static final String DOC_CREATE = TEST_FILES_API_VALID + "api-create.xml";
     protected static final String TESTS = "tests";
     public static final String TEST_CREATE_REQUEST_HOSTNAME = "createRequestHostname";
 
@@ -65,6 +56,7 @@ public abstract class UnitTestBase extends TestCase {
     public XmlCatalogResolver getResolver() {
         return resolver;
     }
+
     /**
      * Sets up the fixture, for example, open a network connection.
      * This method is called before a test is executed.
@@ -83,45 +75,18 @@ public abstract class UnitTestBase extends TestCase {
     }
 
 
-    public OMElement loadTestOMElement(String resource, String name) throws IOException,
-            XMLStreamException {
-        InputStream in=loadResource(resource);
-        XMLStreamReader parser = XMLInputFactory.newInstance().createXMLStreamReader(in);
-        //create the builder
-        StAXOMBuilder builder =
-                new StAXOMBuilder(parser);
-        OMElement doc = builder.getDocumentElement();
-        doc.build();
-        //now we need to locate the child with attribute "name=name";
-        Iterator childElements = doc.getChildrenWithName(TEST_ELEMENT);
-        while (childElements.hasNext()) {
-            OMElement element = (OMElement) childElements.next();
-            if(element==null) {
-                //bad things here
-                break;
-            }
-            OMAttribute attribute = element.getAttribute(TEST_NAME);
-            if (attribute == null) {
-                attribute = element.getAttribute(TEST_NAME_LOCAL);
-            }
-            if(attribute!=null && name.equals(attribute.getAttributeValue())) {
-                return element.getFirstElement();
-            }
-        }
-        fail("No node of name " + name + " found in resource " + resource);
-        return null;
-    }
 
 
     /**
      * assert that text is an iso date
+     *
      * @param text text to check
      */
     protected void assertIsoDate(String text) {
-        assertNotNull("No iso date",text);
-        assertEquals("text aint ISO:"+text,0,text.indexOf("20"));
-        assertEquals("text aint ISO :"+text, 4,text.indexOf('-') );
-        assertEquals("text aint ISO :"+text, 7,text.indexOf('-',5) );
-        assertEquals("text aint ISO :"+text, 10, text.indexOf('T', 5));
+        assertNotNull("No iso date", text);
+        assertEquals("text aint ISO:" + text, 0, text.indexOf("20"));
+        assertEquals("text aint ISO :" + text, 4, text.indexOf('-'));
+        assertEquals("text aint ISO :" + text, 7, text.indexOf('-', 5));
+        assertEquals("text aint ISO :" + text, 10, text.indexOf('T', 5));
     }
 }

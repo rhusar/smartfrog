@@ -33,7 +33,7 @@ public class ActionQueue {
     /**
      * our queue
      */
-    private List queue = new ArrayList();
+    private List<Action> queue = new ArrayList<Action>();
 
     /**
      * add a new action to the queue, notify one single object waiting wakeup
@@ -89,7 +89,7 @@ public class ActionQueue {
      */
     private synchronized Action internalPull() {
         assert !queue.isEmpty();
-        Action action = (Action) queue.remove(0);
+        Action action = queue.remove(0);
         return action;
     }
 
