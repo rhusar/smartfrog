@@ -28,7 +28,7 @@ For more information: www.smartfrog.org
 
 // Host file is mising
 
-sfConfig extends ScpSession {
+sfConfig extends ScpSessionAuthPass {
 
 
         SCP:userId "kumar";

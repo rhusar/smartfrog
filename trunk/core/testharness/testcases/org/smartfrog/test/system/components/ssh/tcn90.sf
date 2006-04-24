@@ -26,7 +26,7 @@ For more information: www.smartfrog.org
  *
  */
  // improper Tranfertype
-sfConfig extends ScpSession {
+sfConfig extends ScpSessionAuthPass {
 
         SCP:host "ebnt171.india.hp.com";
         SCP:username "kumar";
