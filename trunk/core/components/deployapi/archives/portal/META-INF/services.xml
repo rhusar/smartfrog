@@ -5,34 +5,34 @@
   <description>
     This is the portal endpoint
   </description>
-  <parameter name="ServiceClass" locked="xsd:false">org.smartfrog.services.deployapi.transport.endpoints.axis2.PortalEndpoint</parameter>
+  <parameter name="ServiceClass" locked="xsd:false">org.smartfrog.services.deployapi.axis2.endpoints.PortalEndpoint</parameter>
   <operation name="Create">
     <!-- <module ref="addressing"/> -->
-    <messageReceiver class="org.smartfrog.services.deployapi.transport.endpoints.axis2.WsrfReceiver"/>
+    <messageReceiver class="org.smartfrog.services.deployapi.axis2.endpoints.WsrfReceiver"/>
   </operation>
   <operation name="Resolve">
     <!-- <module ref="addressing"/> -->
-    <messageReceiver class="org.smartfrog.services.deployapi.transport.endpoints.axis2.WsrfReceiver"/>
+    <messageReceiver class="org.smartfrog.services.deployapi.axis2.endpoints.WsrfReceiver"/>
   </operation>
   <operation name="LookupSystem">
     <!-- <module ref="addressing"/> -->
-    <messageReceiver class="org.smartfrog.services.deployapi.transport.endpoints.axis2.WsrfReceiver"/>
+    <messageReceiver class="org.smartfrog.services.deployapi.axis2.endpoints.WsrfReceiver"/>
   </operation>
   <operation name="GetResourceProperty">
     <!-- <module ref="addressing"/> -->
-    <messageReceiver class="org.smartfrog.services.deployapi.transport.endpoints.axis2.WsrfReceiver"/>
+    <messageReceiver class="org.smartfrog.services.deployapi.axis2.endpoints.WsrfReceiver"/>
   </operation>
   <operation name="GetMultipleResourceProperties">
     <!-- <module ref="addressing"/> -->
-    <messageReceiver class="org.smartfrog.services.deployapi.transport.endpoints.axis2.WsrfReceiver"/>
+    <messageReceiver class="org.smartfrog.services.deployapi.axis2.endpoints.WsrfReceiver"/>
   </operation>
   <operation name="Subscribe">
     <!-- <module ref="addressing"/> -->
-    <messageReceiver class="org.smartfrog.services.deployapi.transport.endpoints.axis2.WsrfReceiver"/>
+    <messageReceiver class="org.smartfrog.services.deployapi.axis2.endpoints.WsrfReceiver"/>
   </operation>
   <operation name="GetCurrentMessage">
     <!-- <module ref="addressing"/> -->
-    <messageReceiver class="org.smartfrog.services.deployapi.transport.endpoints.axis2.WsrfReceiver"/>
+    <messageReceiver class="org.smartfrog.services.deployapi.axis2.endpoints.WsrfReceiver"/>
   </operation>
 </service>
   <!-- <module ref="addressing"/> -->

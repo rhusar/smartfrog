@@ -1,4 +1,4 @@
-/** (C) Copyright 2005 Hewlett-Packard Development Company, LP
+/** (C) Copyright 2004 Hewlett-Packard Development Company, LP
 
  This library is free software; you can redistribute it and/or
  modify it under the terms of the GNU Lesser General Public
@@ -17,27 +17,30 @@
  For more information: www.smartfrog.org
 
  */
-package org.smartfrog.services.deployapi.transport.wsrf;
 
-import nu.xom.Element;
-import org.smartfrog.services.deployapi.transport.faults.BaseException;
 
-import javax.xml.namespace.QName;
+package org.smartfrog.services.deployapi.axis2.client;
+
+
+import java.io.PrintWriter;
+import java.rmi.RemoteException;
 
 /**
- * Interface for anything that provides WSRP resource information.
- * created 22-Sep-2005 15:57:46
+ * Date: 02-Sep-2004
+ * Time: 20:48:02
  */
+public class Lookup extends ConsoleOperation {
 
-
-public interface WSRPResourceSource {
+    public Lookup(PortalEndpointer endpointer, PrintWriter out) {
+        super(endpointer, out);
+    }
 
     /**
-     * Get a property value
+     * execute this operation, or throw a remote exception
      *
-     * @param property
-     * @return null for no match;
-     * @throws BaseException if they feel like it
+     * @throws java.rmi.RemoteException
      */
-    Element getProperty(QName property);
+    public void execute() throws RemoteException {
+    }
+
 }

@@ -19,24 +19,11 @@
  */
 package org.smartfrog.services.deployapi.system;
 
-import nu.xom.Document;
 import nu.xom.Element;
-import org.apache.ws.commons.om.OMAbstractFactory;
-import org.apache.ws.commons.om.OMElement;
-import org.apache.ws.commons.om.OMFactory;
-import org.apache.ws.commons.om.impl.builder.StAXOMBuilder;
-import org.smartfrog.services.deployapi.binding.NuxStaxBuilder;
-import org.smartfrog.services.deployapi.binding.XomHelper;
-import org.smartfrog.services.deployapi.transport.faults.BaseException;
-import org.smartfrog.services.deployapi.transport.faults.FaultRaiser;
 
 import javax.xml.namespace.QName;
-import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamReader;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
-import java.io.ByteArrayInputStream;
 import java.io.Closeable;
 import java.io.File;
 import java.io.FileInputStream;
@@ -46,7 +33,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.nio.charset.Charset;
@@ -88,87 +74,6 @@ public class Utils {
         return "uuid_" + s;
     }
 
-    /**
-     * Create an OMElement from the QName
-     * @param qname element qname
-     * @return
-     */
-    public static OMElement createOmElement(QName qname) {
-        return createOmElement(
-                qname.getNamespaceURI(), qname.getLocalPart(),qname.getPrefix());
-    }
-
-    /**
-     * Create an om element from the infividual elements of the qname.
-     * @param namespace
-     * @param local
-     * @param prefix
-     * @return
-     */
-    public static OMElement createOmElement(String namespace,String local,String prefix) {
-        OMFactory factory = OMAbstractFactory.getOMFactory();
-        OMElement element = factory.createOMElement(local,namespace, prefix);
-        return element;
-    }
-
-    /**
-     * convert from an axiom graph to Xom. 
-     * Very efficient as it uses the StAX stuff underneath
-     * @param em
-     * @return
-     * @throws BaseException if needed 
-     */
-    public static Document axiomToXom(OMElement em)  {
-        try {
-            Document document;
-            XMLStreamReader reader = em.getXMLStreamReader();
-            NuxStaxBuilder builder=new NuxStaxBuilder();
-            document = builder.build(reader);
-            return document;
-        } catch (XMLStreamException e) {
-            throw FaultRaiser.raiseInternalError("converting object models",e);
-        }
-    }
-
-
-    /**
-     * Convert a Xom graph to Axiom. The Element is detached from its parents and placed
-     * at the base of a new doc in the process; this is not a zero-side-effect operation
-     * @param element
-     * @return an Axom equivalent
-     */
-    public static OMElement xomToAxiom(Element element)  {
-        element.detach();
-        Document document=new Document(element);
-        return xomToAxiom(document);
-    }
-
-    /**
-     *
-     * @param document
-     * @return
-     */
-    public static OMElement xomToAxiom(Document document) {
-        try {
-            byte[] buffer = XomHelper.xomToBuffer(document);
-            return loadAxiomFromBuffer(buffer);
-        } catch (IOException e) {
-            throw FaultRaiser.raiseInternalError("doc conversion error",e);
-        }
-    }
-
-    public static OMElement loadAxiomFromBuffer(byte[] buffer) {
-        ByteArrayInputStream in = new ByteArrayInputStream(buffer);
-        try {
-            XMLInputFactory inputFactory = XMLInputFactory.newInstance();
-            XMLStreamReader parser = inputFactory.createXMLStreamReader(in);
-            return parseAxiomDoc(parser);
-        } catch (XMLStreamException e) {
-            throw FaultRaiser.raiseInternalError("Parse failure",e);
-        } finally {
-            close(in);
-        }
-    }
 
     /**
      * Close any open stream; ignore any errors.
@@ -180,23 +85,6 @@ public class Utils {
         } catch (IOException e) {
             //ignore
         }
-    }
-
-    public static OMElement loadAxiomFromString(String textForm) {
-        try {
-            StringReader stringReader = new StringReader(textForm);
-            XMLInputFactory inputFactory = XMLInputFactory.newInstance();
-            XMLStreamReader parser = inputFactory.createXMLStreamReader(stringReader);
-            return parseAxiomDoc(parser);
-        } catch (XMLStreamException e) {
-            throw FaultRaiser.raiseInternalError("Parse failure:"+
-            textForm, e);
-        }
-    }
-
-    private static OMElement parseAxiomDoc(XMLStreamReader parser) {
-        StAXOMBuilder builder = new StAXOMBuilder(parser);
-        return builder.getDocumentElement();
     }
 
     /**
@@ -267,5 +155,13 @@ public class Utils {
     public static DateFormat makeIsoDateFormatter() {
         return new SimpleDateFormat(
                 "yyyy-MM-dd'T'HH:mm:ss.SSSZ");
+    }
+
+    public static Element makeAddress(String url, String namespace) {
+        Element endpoint =new Element("EndpointReference",namespace);
+        Element address =new Element(Constants.WSA_ELEMENT_ADDRESS,namespace);
+        address.appendChild(url);
+        endpoint.appendChild(address);
+        return endpoint;
     }
 }

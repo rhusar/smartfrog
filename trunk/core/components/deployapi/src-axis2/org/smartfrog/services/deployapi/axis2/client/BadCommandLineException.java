@@ -1,4 +1,4 @@
-/** (C) Copyright 2005 Hewlett-Packard Development Company, LP
+/** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
 
  This library is free software; you can redistribute it and/or
  modify it under the terms of the GNU Lesser General Public
@@ -17,27 +17,25 @@
  For more information: www.smartfrog.org
 
  */
-package org.smartfrog.services.deployapi.transport.wsrf;
-
-import nu.xom.Element;
-import org.smartfrog.services.deployapi.transport.faults.BaseException;
-
-import javax.xml.namespace.QName;
+package org.smartfrog.services.deployapi.axis2.client;
 
 /**
- * Interface for anything that provides WSRP resource information.
- * created 22-Sep-2005 15:57:46
+ * created Sep 8, 2004 4:14:09 PM
  */
 
+public class BadCommandLineException extends RuntimeException {
+    public BadCommandLineException() {
+    }
 
-public interface WSRPResourceSource {
+    public BadCommandLineException(String message) {
+        super(message);
+    }
 
-    /**
-     * Get a property value
-     *
-     * @param property
-     * @return null for no match;
-     * @throws BaseException if they feel like it
-     */
-    Element getProperty(QName property);
+    public BadCommandLineException(Throwable cause) {
+        super(cause);
+    }
+
+    public BadCommandLineException(String message, Throwable cause) {
+        super(message, cause);
+    }
 }

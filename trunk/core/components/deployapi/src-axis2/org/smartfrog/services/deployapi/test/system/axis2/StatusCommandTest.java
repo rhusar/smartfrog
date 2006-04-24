@@ -17,27 +17,25 @@
  For more information: www.smartfrog.org
 
  */
-package org.smartfrog.services.deployapi.transport.wsrf;
 
-import nu.xom.Element;
-import org.smartfrog.services.deployapi.transport.faults.BaseException;
+package org.smartfrog.services.deployapi.test.system.axis2;
 
-import javax.xml.namespace.QName;
+import org.smartfrog.services.deployapi.axis2.client.Status;
+import org.smartfrog.services.deployapi.test.system.axis2.ApiTestBase;
 
 /**
- * Interface for anything that provides WSRP resource information.
- * created 22-Sep-2005 15:57:46
+
  */
+public class StatusCommandTest extends ApiTestBase {
+
+    public StatusCommandTest(String name) {
+        super(name);
+    }
 
 
-public interface WSRPResourceSource {
+    public void testMain() throws Exception {
+       String args[]=new String[0];
+       Status.innerMain(args);
+    }
 
-    /**
-     * Get a property value
-     *
-     * @param property
-     * @return null for no match;
-     * @throws BaseException if they feel like it
-     */
-    Element getProperty(QName property);
 }

@@ -41,7 +41,7 @@
       <echo>deploying file @{file}</echo>
       <demo:java
         taskname="deploy"
-        classname="org.smartfrog.services.deployapi.client.Deploy">
+        classname="org.smartfrog.services.deployapi.axis2.client.Deploy">
         <arg value="-url:${demo.url}" />
         <arg file="@{file}" />
       </demo:java>
@@ -55,7 +55,7 @@
       <echo>terminating system @{system}</echo>
       <demo:java
         taskname="deploy"
-        classname="org.smartfrog.services.deployapi.client.Terminate">
+        classname="org.smartfrog.services.deployapi.axis2.client.Terminate">
         <arg value="-url:${system}" />
       </demo:java>
     </sequential>
@@ -66,7 +66,7 @@
     <sequential>
       <demo:java
         taskname="status"
-        classname="org.smartfrog.services.deployapi.client.Status">
+        classname="org.smartfrog.services.deployapi.axis2.client.Status">
         <arg value="-url:${demo.url}" />
       </demo:java>
     </sequential>

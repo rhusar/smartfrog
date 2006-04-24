@@ -21,7 +21,6 @@
 package org.smartfrog.services.deployapi.transport.wsrf;
 
 import nu.xom.Element;
-import org.apache.ws.commons.om.OMElement;
 
 import javax.xml.namespace.QName;
 import java.util.Hashtable;

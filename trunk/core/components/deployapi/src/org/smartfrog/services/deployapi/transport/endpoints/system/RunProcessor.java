@@ -24,12 +24,8 @@ import nu.xom.Element;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.smartfrog.services.deployapi.transport.endpoints.alpine.WsrfHandler;
-import org.smartfrog.services.deployapi.transport.faults.BaseException;
-import org.smartfrog.services.deployapi.system.Constants;
-import org.ggf.cddlm.generated.api.CddlmConstants;
 
 import java.io.IOException;
-import java.rmi.RemoteException;
 
 /**
  * This class is *NOT* re-entrant. Create one for each deployment. created Aug

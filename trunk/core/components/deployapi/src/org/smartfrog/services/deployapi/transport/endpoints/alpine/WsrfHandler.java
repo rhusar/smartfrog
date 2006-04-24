@@ -1,10 +1,8 @@
 package org.smartfrog.services.deployapi.transport.endpoints.alpine;
 
 import nu.xom.Element;
-import org.apache.axis2.AxisFault;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.ws.commons.om.OMElement;
 import org.smartfrog.projects.alpine.core.Context;
 import org.smartfrog.projects.alpine.core.EndpointContext;
 import org.smartfrog.projects.alpine.core.MessageContext;
@@ -179,19 +177,6 @@ public abstract class WsrfHandler extends HandlerBase implements MessageHandler 
         return baseException;
     }
 
-    public OMElement GetMultipleResourceProperties(org.apache.axis2.context.MessageContext message, OMElement request)
-            throws AxisFault {
-        return null;
-    }
-
-    public OMElement Subscribe(org.apache.axis2.context.MessageContext message, OMElement request) throws AxisFault {
-        return null;
-    }
-
-    public OMElement GetCurrentMessage(org.apache.axis2.context.MessageContext message, OMElement request)
-            throws AxisFault {
-        return null;
-    }
 
     /**
      * check that the namespace is ok.

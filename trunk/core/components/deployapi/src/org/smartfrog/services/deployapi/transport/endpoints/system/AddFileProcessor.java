@@ -20,12 +20,9 @@
 
 package org.smartfrog.services.deployapi.transport.endpoints.system;
 
-import nu.xom.Document;
 import nu.xom.Element;
-import org.apache.ws.commons.om.OMElement;
 import org.smartfrog.services.deployapi.binding.XomHelper;
 import org.smartfrog.services.deployapi.engine.ServerInstance;
-import org.smartfrog.services.deployapi.system.Utils;
 import org.smartfrog.services.deployapi.transport.endpoints.alpine.WsrfHandler;
 import org.smartfrog.services.deployapi.transport.faults.FaultRaiser;
 import org.smartfrog.services.filesystem.filestore.AddedFilestore;

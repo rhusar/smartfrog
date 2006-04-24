@@ -47,8 +47,8 @@
   <import file="${xml.dir}/systemtest.xml"/>
   <import file="${xml.dir}/gui.xml"/>
   
-  <!-- demo -->
-  <import file="demo.xml"/>
+  <!-- demo axis2 only -->
+  <!--<import file="demo.xml"/>-->
   
   <!-- ========================================================== -->
   <!-- ========================================================== -->
@@ -66,12 +66,11 @@
   </target>
   
   <target name="declare-compile.classpath" 
-    depends="core-libraries,axis2-libraries,smartfrog-modules-classpath,smartfrog-core-classpath,jetty-classpath">
+    depends="core-libraries,smartfrog-modules-classpath,smartfrog-core-classpath,jetty-classpath">
     <path id="compile.classpath">
       <path refid="core.classpath"/>
       <path refid="smartfrog.core.classpath"/>
       <path refid="smartfrog.modules.classpath"/>
-      <path refid="axis2.classpath"/>
     </path>
     <property name="compile.classpath.value" refid="compile.classpath"/>
     <echo level="verbose">compile.classpath=${compile.classpath.value}</echo>    
@@ -100,10 +99,11 @@
 
       </m2:dependencies>
     </presetdef>
-
   </target>
 
-  <target name="core-libraries" depends="m2-tasks">
+  <target name="ready-to-declare-classpaths" depends="init,m2-tasks,core.load-version-info" />
+
+  <target name="core-libraries" depends="ready-to-declare-classpaths">
     <m2:libraries pathID="core.classpath">
 
       <dependency groupID="org.ggf"
@@ -118,9 +118,14 @@
       <dependency groupID="log4j"
         artifactID="log4j"
         version="${log4j.version}"/>
+<!--
       <dependency groupID="junit"
         artifactID="junit"
         version="${junit.version}"/>
+-->
+      <dependency groupID="jaxen"
+          artifactID="jaxen"
+          version="${jaxen.version}"/>
       <dependency groupID="xom"
         artifactID="xom"
         version="${xom.version}"/>
@@ -131,7 +136,7 @@
   </target>
   
   <target name="smartfrog-core-classpath" 
-    depends="core.load-version-info,m2-tasks">
+    depends="ready-to-declare-classpaths">
     <m2:libraries pathID="smartfrog.core.classpath">
       <dependency groupID="org.smartfrog"
         artifactID="smartfrog"
@@ -147,35 +152,32 @@
   </target>
   
   <target name="smartfrog-modules-classpath" 
-    depends="core.load-version-info,m2-tasks">
+    depends="ready-to-declare-classpaths">
     <m2:libraries pathID="smartfrog.modules.classpath">
       <dependency groupID="org.smartfrog"
         artifactID="sf-xml"
         version="${smartfrog.version}"/>
+      <dependency groupID="org.smartfrog"
+          artifactID="sf-cdl"
+          version="${smartfrog.version}"/>
       <dependency groupID="org.smartfrog"
         artifactID="sf-www"
         version="${smartfrog.version}"/>        
       <dependency groupID="org.smartfrog"
         artifactID="sf-jetty"
         version="${smartfrog.version}"/>
-
+      <dependency groupID="org.smartfrog"
+          artifactID="sf-m32"
+          version="${smartfrog.version}"/>
     </m2:libraries>
   </target>
 
   <!-- jetty classes -->
   <target name="jetty-classpath" 
-    depends="core.load-version-info,m2-tasks">
+    depends="smartfrog-core-classpath">
     <m2:libraries  pathID="jetty.classpath">
       <dependency groupID="jetty"
         artifactID="jetty"
-        version="${jetty.version}"/>
-<!--
-      <dependency groupID="jetty"
-        artifactID="jasper-compiler"
-        version="${jetty.version}"/>
--->
-      <dependency groupID="jetty"
-        artifactID="jasper-runtime"
         version="${jetty.version}"/>
       <dependency groupID="servletapi"
         artifactID="servletapi"
@@ -183,7 +185,7 @@
     </m2:libraries >
   </target>
 
-  <target name="mail-libraries" depends="m2-tasks">
+  <target name="mail-libraries" depends="ready-to-declare-classpaths">
     <m2:libraries pathID="mail.classpath">
       <dependency groupID="javax.activation"
           artifactID="activation"
@@ -194,7 +196,7 @@
     </m2:libraries>
   </target>
 
-  <target name="stax-libraries" depends="m2-tasks">
+  <target name="stax-libraries" depends="ready-to-declare-classpaths">
     <m2:libraries pathID="stax.classpath">
       <dependency groupID="stax"
           artifactID="stax"
@@ -204,63 +206,6 @@
           version="${stax-api.version}"/>
     </m2:libraries>
   </target>
-
-
-  <target name="axis2-libraries" depends="stax-libraries,mail-libraries">
-    <m2:libraries  pathID="axis2.classpath">
-      <dependency groupID="org.apache.ws.axis2"
-          artifactID="axis2"
-          version="${axis2.version}"/>
-
-      <dependency groupID="jaxen"
-        artifactID="jaxen"
-        version="${jaxen.version}"/>
-      <dependency groupID="commons-fileupload"
-        artifactID="commons-fileupload"
-        version="${commons-fileupload.version}"/>
-      <dependency groupID="net.sf.saxon"
-        artifactID="saxon"
-        version="${saxon.version}"/>
-      <dependency groupID="junit"
-          artifactID="junit"
-          version="${junit.version}"/>
-      <dependency groupID="commons-codec"
-          artifactID="commons-codec"
-          version="${commons-codec.version}"/>
-      <dependency groupID="commons-httpclient"
-          artifactID="commons-httpclient"
-          version="${commons-httpclient.version}"/>
-    </m2:libraries >
-    </target>
-
-
-<!--
-  xfire wants mail-1.3.3_01 and not mail-1.3.3.01, so we have to exclude it
-  then ask for the other one.
--->
-    <target name="xfire-libraries" depends="stax-libraries,mail-libraries">
-      <m2:libraries pathID="axis2.classpath">
-<!--
-        <dependency groupID="org.codehaus.xfire"
-            artifactID="xfire-jaxb2"
-            version="${xfire.version}"/>
--->
-<!--        <dependency groupID="org.codehaus.xfire"
-            artifactID="xfire-spring"
-            version="${xfire.version}"/>-->
-        <dependency groupID="org.codehaus.xfire"
-            artifactID="xfire-java5"
-            version="${xfire.version}">
-          <exclusion groupId="javax.mail" artifactId="mail" />
-        </dependency>
-
-
-      </m2:libraries>
-
-    </target>
-
-
-
 
   <target name="declare-exec.classpath" depends="declare-compile.classpath" >
     <path id="exec.classpath">
@@ -318,7 +263,7 @@
         classpathref="compile.classpath"
         srcdir="${src.dir}"
         destdir="${build.classes.dir}"
-        excludes="**/engine/Job.java"
+        excludes="**/engine/Job.java,**/axis2/**"
         />
     <core:copy-useful-files src="${src.dir}" dest="${build.classes.dir}"/>
   </target>
@@ -436,44 +381,14 @@
       location="${cddlm.dir}/system-binding.wsdl"/>      
   </target>
    
-  <target name="axis2-tasks" depends="axis2-libraries" >
-    <taskdef name="codegen"
-        uri="http://ws.apache.org/axis2"
-        onerror="failall"
-        classname="org.apache.axis2.tool.ant.AntCodegenTask"
-        classpath="axis2.classpath"/>
-  </target>
-  
-  
-  <target name="wsdl2java" depends="init,declare-classpaths,specifications" >
-    <mkdir dir="${build.axis2.src.dir}"  />
-
-    <core:java
-      classname="org.apache.axis2.wsdl.WSDL2Java"
-      classpathref="compile.classpath">
-        <arg value="-o" />
-        <arg file="${build.axis2.src.dir}" />
-        <arg value="-p" />
-        <arg value="org.ggf.cddlm.generated.axis2" />
-        <arg value="-l" />
-        <arg value="java" />
-<!--         <arg value="-a" /> -->
-<!--         <arg value="-t" /> -->
-<!--         <arg value="-ss" /> -->
-<!--         <arg value="-sd" /> -->
-       <arg value="-uri" />
-       <arg file="test/files/deployapi.wsdl" /> 
-             <!-- <arg file="${system-binding.wsdl}" />  -->
-      <!--  <arg file="${deployment-api.wsdl}" /> --> 
-    </core:java>
-  </target>
-  
   <target name="prepare-libraries" depends="declare-classpaths" >
     <property name="build.temp.lib.dir" location="${build.dir}/temp/lib" />
     <mkdir dir="${build.temp.lib.dir}" />
+<!--
     <copypath destDir="${build.temp.lib.dir}" pathref="axis2.classpath">
       <flattenmapper/>
     </copypath>
+-->
     <copypath destDir="${build.temp.lib.dir}" pathref="core.classpath">
       <flattenmapper/>
     </copypath>
@@ -530,10 +445,13 @@
     </core:jar>
   </target>
 
+  <target name="unwar" depends="war"
+      description="Create the WAR file and expand it into a directory">
+    <property name="unwar.dir" location="${build.dir}/exploded" />
+    <unzip src="${target.war}" dest="${unwar.dir}" />
+  </target>
+
   
-    
-
-
   <!-- ========================================================== -->
   <!-- set up any properties for deployment -->
   <!-- ========================================================== -->
@@ -555,9 +473,6 @@
   <target name="prepare-codebase" depends="declare-classpaths" >
     <property name="build.codebase.dir" location="${build.dir}/codebase" />
     <mkdir dir="${build.codebase.dir}" />
-    <copypath destDir="${build.codebase.dir}" pathref="axis2.classpath">
-      <flattenmapper/>
-    </copypath>
     <copypath destDir="${build.codebase.dir}" pathref="core.classpath">
       <flattenmapper/>
     </copypath>

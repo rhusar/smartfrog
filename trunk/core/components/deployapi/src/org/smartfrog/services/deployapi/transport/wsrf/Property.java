@@ -1,10 +1,8 @@
 package org.smartfrog.services.deployapi.transport.wsrf;
 
-import org.apache.ws.commons.om.OMElement;
+import nu.xom.Element;
 
 import javax.xml.namespace.QName;
-
-import nu.xom.Element;
 
 /**
 

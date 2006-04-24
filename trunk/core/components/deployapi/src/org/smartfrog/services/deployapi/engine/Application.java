@@ -20,15 +20,12 @@
 package org.smartfrog.services.deployapi.engine;
 
 import nu.xom.Element;
-import org.apache.axis2.AxisFault;
-import org.apache.axis2.addressing.EndpointReference;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.ggf.cddlm.generated.api.CddlmConstants;
 import org.smartfrog.projects.alpine.om.base.SoapElement;
 import org.smartfrog.projects.alpine.wsa.AlpineEPR;
 import org.smartfrog.services.deployapi.binding.DescriptorHelper;
-import org.smartfrog.services.deployapi.binding.EprHelper;
 import org.smartfrog.services.deployapi.binding.XomHelper;
 import org.smartfrog.services.deployapi.system.Constants;
 import org.smartfrog.services.deployapi.system.DeploymentLanguage;
@@ -125,11 +122,6 @@ public class Application implements WSRPResourceSource {
 
 
     /**
-     * any fault
-     */
-    private AxisFault fault;
-
-    /**
      * a deployment descriptor
      */
 
@@ -184,11 +176,6 @@ public class Application implements WSRPResourceSource {
      * enter terminated state
      */
     private TerminationRecord terminationRecord;
-
-    /**
-     * Axis EPR
-     */
-    private EndpointReference axisEpr;
 
     private AlpineEPR alpineEPR;
 
@@ -250,16 +237,10 @@ public class Application implements WSRPResourceSource {
 
     public void setAddress(String address) {
         this.address = address;
-        axisEpr = new EndpointReference(address);
-        endpointer = EprHelper.makeAddress(address, Constants.WS_ADDRESSING_NAMESPACE);
+        endpointer = Utils.makeAddress(address, Constants.WS_ADDRESSING_NAMESPACE);
         alpineEPR = new AlpineEPR(address);
         endpointer = alpineEPR.toXom(Constants.ENDPOINT_REFERENCE, Constants.WS_ADDRESSING_NAMESPACE, "wsa");
     }
-
-    public EndpointReference getAxisEpr() {
-        return axisEpr;
-    }
-
 
     public AlpineEPR getAlpineEPR() {
         return alpineEPR;
@@ -299,15 +280,6 @@ public class Application implements WSRPResourceSource {
 
     public void setPrimReference(WeakReference<Prim> primReference) {
         this.primReference = primReference;
-    }
-
-
-    public AxisFault getFault() {
-        return fault;
-    }
-
-    public void setFault(AxisFault fault) {
-        this.fault = fault;
     }
 
     /**
