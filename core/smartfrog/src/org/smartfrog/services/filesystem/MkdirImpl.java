@@ -25,12 +25,16 @@ import org.smartfrog.sfcore.common.SmartFrogException;
 import java.io.File;
 import java.rmi.RemoteException;
 import org.smartfrog.sfcore.utils.ComponentHelper;
+import org.smartfrog.sfcore.prim.TerminationRecord;
 
 /**
+ * Component to create directories; can clean them up too.
  * created 21-Jun-2004 16:52:40
  */
 
 public class MkdirImpl extends FileUsingComponentImpl implements Mkdir {
+    private boolean delete;
+
     public MkdirImpl() throws RemoteException {
     }
 
@@ -51,17 +55,21 @@ public class MkdirImpl extends FileUsingComponentImpl implements Mkdir {
         String parent;
         parent= FileSystem.lookupAbsolutePath(this,
                 ATTR_PARENT,
-                (String) null,
-                (File) null,
+                null,
+                null,
                 false,
                 null);
         if (parent!=null) {
             parentDir=new File(parent);
         }
 
-        dir=FileSystem.lookupAbsolutePath(this,Mkdir.ATTR_DIR,(String)null,parentDir,true,null);
+        dir=FileSystem.lookupAbsolutePath(this,Mkdir.ATTR_DIR,null,parentDir,true,null);
         File directory=new File(dir);
         bind(directory);
+        //get the delete flag
+        //this is only done if the directory does not yet exist.
+        //delete is implicitly false. 
+        delete = sfResolve(ATTR_DELETE_ON_EXIT, false, false);
     }
 
     /**
@@ -73,11 +81,34 @@ public class MkdirImpl extends FileUsingComponentImpl implements Mkdir {
             RemoteException {
         super.sfStart();
         File directory=getFile();
+        if(directory.exists()) {
+            //it already exists. that may be harmless, but it warns the component to not
+            //delete the directory during termination.
+            delete=false;
+        }
         directory.mkdirs();
         if (!directory.exists() || !directory.isDirectory()) {
+            //whatever it is, don't try and delete it.
+            delete=false;
+            //raise an error.
             throw new SmartFrogDeploymentException("Failed to create directory " +
                     directory.getAbsolutePath());
         }
         new ComponentHelper(this).sfSelfDetachAndOrTerminate("normal","Mkdir "+getFile().getAbsolutePath(),this.sfCompleteNameSafe(),null);
     }
+
+
+    /**
+     * At terminate time, trigger a recursive delete of the directory if desired.
+     *
+     * @param status
+     */
+
+    public synchronized void sfTerminateWith(TerminationRecord status) {
+        super.sfTerminateWith(status);
+        if (delete) {
+            FileSystem.recursiveDelete(getFile());
+        }
+    }
+
 }

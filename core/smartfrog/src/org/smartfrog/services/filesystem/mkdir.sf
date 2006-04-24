@@ -27,6 +27,8 @@ MkdirSchema extends Schema {
 
     //parent dir may not be needed.
     parentDir extends Optional;
+
+    deleteOnExit extends Boolean;
 }
 
 /**
@@ -38,4 +40,5 @@ MkdirSchema extends Schema {
 Mkdir extends Prim {
     mkdirSchema extends MkdirSchema;
     sfClass "org.smartfrog.services.filesystem.MkdirImpl";
+    deleteOnExit false;
 }
