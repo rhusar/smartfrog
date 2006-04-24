@@ -164,8 +164,8 @@ For more information: www.smartfrog.org
       property="ssh.present"/>    
     <probe4 resource="org/smartfrog/services/comm/slp/sf/SFSlpDA.sf"
       property="slp.present"/> 
-    <!--probe4 resource="org/smartfrog/services/installer/sfInstaller.sf"
-      property="sfinstaller.present"/--> 
+    <probe4 resource="org/smartfrog/services/installer/sfInstaller.sf"
+      property="utils.present"/> 
       <!--
     <probe4 resource=""
       property=""/> 
@@ -276,11 +276,13 @@ For more information: www.smartfrog.org
               <exclude name="${componenttests}logger/**/*Test.class"
                 unless="logger.present"/>
               <exclude name="${componenttests}emailer/**/*Test.class"
-                unless="emailer.present"/>
+		      unless="emailer.present"/>
+	      <exclude name="${componenttests}ant/**/*Test.class"
+                unless="ant.present"/>
               <exclude name="${componenttests}slp/**/*Test.class"
                 unless="slp.present"/>
-              <exclude name="${componenttests}sfinstaller/**/*Test.class"
-                unless="sfinstaller.present"/>
+              <exclude name="${componenttests}utils/**/*Test.class"
+                unless="utils.present"/>
                 
             </fileset>
           </batchtest>
