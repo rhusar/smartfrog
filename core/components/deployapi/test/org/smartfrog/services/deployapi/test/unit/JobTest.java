@@ -20,7 +20,6 @@
 
 package org.smartfrog.services.deployapi.test.unit;
 
-import org.apache.axis2.addressing.EndpointReference;
 import org.smartfrog.services.deployapi.engine.Application;
 import org.smartfrog.services.deployapi.engine.JobRepository;
 import org.smartfrog.services.deployapi.system.Constants;
