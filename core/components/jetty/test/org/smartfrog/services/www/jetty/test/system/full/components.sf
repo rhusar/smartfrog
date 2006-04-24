@@ -20,7 +20,7 @@
 
 #include "org/smartfrog/components.sf";
 #include "org/smartfrog/services/jetty/components.sf";
-#include "/org/smartfrog/services/filesystem/tempfile.sf";
+#include "org/smartfrog/services/filesystem/components.sf";
 
 /**
  * This is an example of jetty component
