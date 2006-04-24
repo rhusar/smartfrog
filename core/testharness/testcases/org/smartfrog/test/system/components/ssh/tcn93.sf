@@ -27,7 +27,7 @@ For more information: www.smartfrog.org
  */
 
   // commands is mising
-  sfConfig extends SSHSession {
+  sfConfig extends SSHSessionAuthPass {
 
           SSHCmdExec:host "ebnt171.india.hp.com";
           SSHCmdExec:username "kumar";
