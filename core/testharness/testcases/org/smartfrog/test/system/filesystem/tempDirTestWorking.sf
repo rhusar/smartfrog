@@ -23,19 +23,16 @@ For more information: www.smartfrog.org
 sfConfig extends Compound {
     sfSyncTerminate true;
 
-    temp1 extends TempFile {
+    temp1 extends TempDirWithCleanup {
         deleteOnExit true;
-        prefix PARENT:prefix;
-        suffix PARENT:suffix;
-    }
-
-    assert extends Assert {
-        fileExists LAZY temp1:filename;
+        prefix "temp";
+        suffix ".dir";
     }
 
     //the filename
     filename LAZY temp1:filename;
-    prefix  "temp1";
-    //short suffix ensures we test for prefix/suffic mixup
-    suffix ".c";
+    uri LAZY temp1:uri;
+    //path LAZY temp1:absolutePath;
+
+
 }

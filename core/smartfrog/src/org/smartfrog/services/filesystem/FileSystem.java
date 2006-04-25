@@ -159,7 +159,7 @@ public class FileSystem {
      * @param dir directory
      */
     public static void recursiveDelete(File dir) {
-        if(dir==null || dir.exists()) {
+        if(dir==null || !dir.exists()) {
             //no-op
             return;
         }
@@ -607,13 +607,14 @@ public class FileSystem {
 
     /**
      * Create a temp file in the directory names, with the given prefix and suffix.
+     * Also creates any parent directories
      * @param prefix prefix -required.
      * @param suffix suffix, e,g. ".ext";
      * @param dir parent dir; can be null
      * @return the directory.
      * @throws org.smartfrog.sfcore.common.SmartFrogException a wrapper for any IOException.
      */
-    public static File createTempFile(String prefix, String suffix, String dir) throws SmartFrogException {
+    public static File createTempFile(final String prefix, final String suffix, final String dir) throws SmartFrogException {
         File file;
         try {
             if (dir == null) {
@@ -623,8 +624,16 @@ public class FileSystem {
                 directory.mkdirs();
                 file = File.createTempFile(prefix, suffix, directory);
             }
+        } catch(IllegalArgumentException e) {
+            throw new SmartFrogException("Failed to create temp file prefix=" + prefix
+                    + " suffix=" + suffix
+                    + " dir=" + dir,
+                    e);
         } catch (IOException e) {
-            throw SmartFrogException.forward(e);
+            throw new SmartFrogException("Failed to create temp file prefix="+prefix
+                    +" suffix="+suffix
+                    +" dir="+dir,
+                    e);
         }
         return file;
     }
@@ -633,18 +642,20 @@ public class FileSystem {
      * Create a temp directory in the directory named, with the given prefix and suffix.
      * This is done by creating a temp file, deleting it and creating a dir of the same name.
      * There is a fractional moment of race condition there, where bad things could happen.
-     * @param dir    parent dir; can be null
+     * @param parent    parent dir; can be null
      * @param prefix prefix -required.
      * @param suffix suffix, e,g. ".ext";
      * @return the directory.
      * @throws org.smartfrog.sfcore.common.SmartFrogException
      *          a wrapper for any IOException.
      */
-    public static File createTempDir(String dir, String prefix, String suffix)
+    public static File createTempDir(String prefix, String suffix, String parent)
             throws SmartFrogException {
-        File file=createTempFile(prefix, suffix, dir);
+        File file=createTempFile(prefix, suffix, parent);
         file.delete();
-        file.mkdir();
+        if (!file.mkdir()) {
+            throw new SmartFrogException("Failed to create directory "+file.toString());
+        }
         return file;
     }
 
