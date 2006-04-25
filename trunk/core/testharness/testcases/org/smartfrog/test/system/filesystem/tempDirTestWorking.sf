@@ -32,7 +32,7 @@ sfConfig extends Compound {
     //the filename
     filename LAZY temp1:filename;
     uri LAZY temp1:uri;
-    //path LAZY temp1:absolutePath;
+    path LAZY temp1:absolutePath;
 
 
 }

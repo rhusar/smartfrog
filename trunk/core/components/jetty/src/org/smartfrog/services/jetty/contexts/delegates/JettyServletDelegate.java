@@ -66,8 +66,19 @@ public class JettyServletDelegate
             throws SmartFrogException, RemoteException {
         this.context = context;
         this.owner = owner;
+        log = LogFactory.getOwnerLog(owner);
+        bind(owner, context);
+    }
+
+    /**
+     * Read in state, bind to the owner
+     * @param owner
+     * @param context
+     * @throws RemoteException
+     * @throws SmartFrogException
+     */
+    private void bind(Prim owner, DelegateServletContext context) throws RemoteException, SmartFrogException {
         try {
-            log = LogFactory.getOwnerLog(owner);
             name = owner.sfResolve(nameRef, name, true);
             pathSpec = owner.sfResolve(pathSpecRef, pathSpec, true);
             className = owner.sfResolve(classNameRef, className, true);
