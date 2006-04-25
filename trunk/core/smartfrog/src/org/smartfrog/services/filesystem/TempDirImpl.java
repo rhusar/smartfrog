@@ -35,8 +35,24 @@ public class TempDirImpl extends FileUsingComponentImpl implements TempFile {
     public TempDirImpl() throws RemoteException {
     }
 
+
     /**
-     * we only create the directory at startup time, even though we bond at deploy time
+     * Called after instantiation for deployment purposes. Heart monitor is
+     * started and if there is a parent the deployed component is added to the
+     * heartbeat. Subclasses can override to provide additional deployment
+     * behavior.
+     *
+     * @throws org.smartfrog.sfcore.common.SmartFrogException
+     *                                  error while deploying
+     * @throws java.rmi.RemoteException In case of network/rmi error
+     */
+    public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
+        super.sfDeploy();
+        readAttributesAndCreateDir();
+    }
+
+    /**
+     * start the component
      *
      * @throws org.smartfrog.sfcore.common.SmartFrogException
      *
@@ -44,11 +60,19 @@ public class TempDirImpl extends FileUsingComponentImpl implements TempFile {
      */
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
-        String prefix = sfResolve(TempFile.ATTR_PREFIX, "", true);
+    }
+
+    /**
+     *
+     * @throws RemoteException
+     * @throws SmartFrogException
+     */
+    private void readAttributesAndCreateDir() throws RemoteException, SmartFrogException {
+        final String prefix = sfResolve(TempFile.ATTR_PREFIX, "", true);
         if (prefix.length() == 0) {
             throw new SmartFrogException(TempFileImpl.ERROR_PREFIX_EMPTY, this);
         }
-        String suffix = sfResolve(TempFile.ATTR_SUFFIX, (String) null, false);
+        final String suffix = sfResolve(TempFile.ATTR_SUFFIX, (String) null, false);
         String dir;
         dir = FileSystem.lookupAbsolutePath(this, TempFile.ATTR_DIRECTORY, null, null, false, null);
 

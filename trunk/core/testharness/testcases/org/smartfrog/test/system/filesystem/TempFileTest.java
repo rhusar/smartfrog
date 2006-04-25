@@ -21,13 +21,10 @@ package org.smartfrog.test.system.filesystem;
 
 import org.smartfrog.test.SmartFrogTestBase;
 import org.smartfrog.sfcore.prim.Prim;
-import org.smartfrog.sfcore.common.SmartFrogLivenessException;
-import org.smartfrog.services.filesystem.FileUsingComponent;
 import org.smartfrog.services.filesystem.TempFileImpl;
 import org.smartfrog.services.filesystem.TempFile;
 
 import java.io.File;
-import java.rmi.RemoteException;
 
 /**
  * created 18-May-2004 13:28:43
@@ -65,6 +62,8 @@ public class TempFileTest extends SmartFrogTestBase {
             assertTrue("found "+prefix+" in "+filename,file.getName().indexOf(prefix)==0);
             //now verify we clean up
             assertTrue(file.exists());
+
+            String absolutePath= application.sfResolve("temp1:absolutePath", (String) null, true);
         } finally {
             terminateApplication(application);
         }
