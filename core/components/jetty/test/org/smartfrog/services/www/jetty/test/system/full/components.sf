@@ -32,24 +32,29 @@
  */
 jetty_home PROPERTY jetty.home;
 
- tempDir extends TempDirWithCleanup {
-    prefix "jetty";
- }
 
 TempDirServletContext extends JettyServletContext {
  contextPath "/";
- resourceBase LAZY tempDir:absolutePath;
+ resourceBase LAZY PROPERTY java.io.tmpdir;
 }
 
 
 TempDirServer extends CoreJettyServer {
+  sfSyncTerminate true;
+  
   jettyhome ROOT:jetty_home;
   listenerPort TBD;
   listener extends JettyListener {
     listenerPort PARENT:listenerPort;
     server LAZY PARENT;
   }
+
+   tempDir extends TempDirWithCleanup {
+      prefix "jetty";
+   }
+
   tempDirServletContext extends TempDirServletContext {
+    resourceBase LAZY tempDir:absolutePath;
     server LAZY PARENT;
   }
 }
