@@ -81,7 +81,7 @@ sfConfig  extends Compound {
     file extends textFile;
 
     xml extends XmlDocument {
-        filename LAZY file;
+        filename LAZY PARENT:file:absolutePath;
     }
 
 
