@@ -30,7 +30,6 @@ import javax.swing.table.TableColumnModel;
 /**
  * Table Utilities to handle some common table representation problems
  *
- *@deprecated    01 February 2002
  */
 public class TableUtilities {
 
