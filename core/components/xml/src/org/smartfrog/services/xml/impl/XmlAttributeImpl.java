@@ -31,7 +31,7 @@ import java.rmi.RemoteException;
 /**
  * Attributes
  */
-public abstract class XmlAttributeImpl extends SimpleXmlNode
+public class XmlAttributeImpl extends SimpleXmlNode
         implements XmlAttribute {
 
     public XmlAttributeImpl() throws RemoteException {

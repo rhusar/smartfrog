@@ -41,13 +41,14 @@ rootDoc extends XmlDocument {
 
     root extends XmlElement {
         localname "root";
+
         a1 extends XmlAttribute {
             localname "attr1";
             value PARENT:localname;
         }
         a2 extends XmlAttribute {
             namespace "urn:isbn:0-201-61981-0";
-            localname "soup";
+            localname "s:soup";
             value "warm";
         }
         /*

@@ -41,11 +41,9 @@
   <!-- ========================================================== -->
   <target name="init"
     depends="init-standard-output-dirs,use-smartfrog-tasks,use-smartfrog-testharness">
-
     <property name="deploy.sf" value="files/success.sf"/>
     <property name="default.ini" location="test/files/default.ini"/>
     <property name="default.sf" location="test/files/default.sf"/>
-
   </target>
 
   
@@ -322,5 +320,10 @@
     <antcall target="stop-daemon-if-started"/>
   </target>
 
-  <target name="all" depends="dist,test,m2-install" />
+  <target name="unzip" depends="dist">
+    <property name="target.exploded" location="${build.dir}/exploded" />
+    <unzip src="${target.jar}" dest="${target.exploded}"/>
+  </target>
+
+  <target name="all" depends="dist,unzip,test,m2-install" />
 </project>
