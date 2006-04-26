@@ -62,8 +62,8 @@ public class TempFileTest extends SmartFrogTestBase {
             assertTrue("found "+prefix+" in "+filename,file.getName().indexOf(prefix)==0);
             //now verify we clean up
             assertTrue(file.exists());
-
-            String absolutePath= application.sfResolve("temp1:absolutePath", (String) null, true);
+            Prim temp1 = application.sfResolve("temp1", (Prim) null, true);
+            String absolutePath = temp1.sfResolve("absolutePath", (String) null, true);
         } finally {
             terminateApplication(application);
         }
