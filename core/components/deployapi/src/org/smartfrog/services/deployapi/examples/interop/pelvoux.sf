@@ -17,35 +17,37 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 For more information: www.smartfrog.org
 
 */
-#include "/org/smartfrog/services/deployapi/test/system/alpine/deployapi/nec.sf"
-#include "/org/smartfrog/services/deployapi/test/system/alpine/deployapi/ourgrid.sf"
-#include "org/smartfrog/services/utils/setproperty/components.sf"
+#include "/org/smartfrog/services/deployapi/components/alpine/deployapi_on_alpine.sf"
 
-sfConfig extends Compound {
+/**
+ * this is the OB510 "pelvoux" laptop that hosts the interop test server of Alpine
+ */
+Pelvoux extends Compound {
 
-  tempDir LAZY PROPERTY java.io.tmpdir;
 
-  proxy extends SystemProperties {
-    setOnDeploy true;
-    unsetOnTerminate true;
-    properties [
-      ["http.proxyHost","web-proxy"],
-      ["http.proxyPort","8088"]
-      ];
-  }
+   homedir "/home/slo/public_html";
 
-  ourgrid extends ourGridTests {
-    basedir tempDir;
-    enabled false;
+   logDirectory extends Mkdir {
+    dir "logs";
+    parentDir homedir;
+   }
 
-    //portal:classes SingleTestSuite:classes;
+   deployapi extends DeployServer {
 
-    //creation:enabled false;
+     home homedir;
 
-  }
+     host "loughran.plus.com";
 
-  nec extends NecTests {
-    basedir tempDir;
-    //enabled false;
-  }
+     port 8080;
+
+     location "test system at Steve's house";
+
+     liveness false;
+
+   }
+
+
+}
+
+sfConfig extends Pelvoux {
 }

@@ -28,10 +28,10 @@ DeployServer extends AlpineServerOnJetty {
     home LAZY PROPERTY java.io.tmpdir;
 
     port TBD;
-    jettyhome LAZY PROPERTY java.io.tmpdir;
     //wardir TBD;
     host LAZY engine:servletContext:ipaddr;
     location "test system";
+    livenessEnabled true;
 
 
     /**
@@ -41,7 +41,7 @@ DeployServer extends AlpineServerOnJetty {
       port PARENT:port;
       server LAZY  jettyServer;
       location LAZY PARENT:location;
-      host PARENT:urlhost;
+      host PARENT:host;
       servicesPath "alpine/";
       systemServlet "system/";
     }
@@ -58,17 +58,16 @@ DeployServer extends AlpineServerOnJetty {
     //fetch the page every so often, just to see that we are happy
     liveness extends LivenessPage {
         enabled PARENT:livenessEnabled;
-        host LAZY PARENT:servlets:ipaddr;
+        host LAZY PARENT:host;
         port PARENT:port;
         page LAZY echo:absolutePath;
         checkFrequency 1;
     }
 
-    livenessEnabled true;
 }
 
 
-sfConfig extends server {
+sfConfig extends DeployServer {
 
 
     port 6061;
