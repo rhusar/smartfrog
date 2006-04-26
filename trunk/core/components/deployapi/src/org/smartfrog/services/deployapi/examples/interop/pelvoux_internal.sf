@@ -17,35 +17,15 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 For more information: www.smartfrog.org
 
 */
-#include "/org/smartfrog/services/deployapi/test/system/alpine/deployapi/nec.sf"
-#include "/org/smartfrog/services/deployapi/test/system/alpine/deployapi/ourgrid.sf"
-#include "org/smartfrog/services/utils/setproperty/components.sf"
+#include "/org/smartfrog/services/deployapi/examples/interop/pelvoux.sf"
 
-sfConfig extends Compound {
+/**
+ a variant of the pelvoux system in which the hostname is whatever this machine has as an ip address.
+ Use for staging.
+ */
+sfConfig extends Pelvoux {
 
-  tempDir LAZY PROPERTY java.io.tmpdir;
+  deployapi:host LAZY deployapi:engine:servletContext:ipaddr;
 
-  proxy extends SystemProperties {
-    setOnDeploy true;
-    unsetOnTerminate true;
-    properties [
-      ["http.proxyHost","web-proxy"],
-      ["http.proxyPort","8088"]
-      ];
-  }
-
-  ourgrid extends ourGridTests {
-    basedir tempDir;
-    enabled false;
-
-    //portal:classes SingleTestSuite:classes;
-
-    //creation:enabled false;
-
-  }
-
-  nec extends NecTests {
-    basedir tempDir;
-    //enabled false;
-  }
+  //deployapi:liveness true;
 }
