@@ -273,6 +273,9 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
                 rex.put(SmartFrogRuntimeException.SOURCE, this.sfCompleteNameSafe());
                 rex.put(SmartFrogResolutionException.DEPTH, new Integer(index));
             }
+            if ((!(rex.containsKey(SmartFrogResolutionException.REFERENCE)))) {
+                rex.put(SmartFrogResolutionException.REFERENCE,r);
+            }
             rex.appendPath(this.sfCompleteName().toString() + " ");
             throw rex;
         } catch (java.lang.StackOverflowError st){
