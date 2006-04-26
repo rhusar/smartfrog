@@ -81,6 +81,7 @@ public class ErrorMessageBundle extends ListResourceBundle
          "Failed to locate parent"},
         // Resolution Exception messages start
         { MSG_UNRESOLVED_REFERENCE , "Unresolved Reference"},
+        { MSG_UNRESOLVED_REFERENCE_IN , "Failed to resolve {0} in {1}"},
         { MSG_NOT_FOUND_REFERENCE , "Reference not found"},
         { MSG_NOT_FOUND_ATTRIBUTE , "Attribute {0} not found"},
         { MSG_REPEATED_ATTRIBUTE , "Attribute {0} already present"},

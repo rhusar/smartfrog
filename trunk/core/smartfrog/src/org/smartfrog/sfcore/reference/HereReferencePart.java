@@ -25,6 +25,11 @@ import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.logging.LogFactory;
 import org.smartfrog.sfcore.logging.LogSF;
 
+import java.util.Vector;
+import java.util.Enumeration;
+import java.rmi.RemoteException;
+import org.smartfrog.sfcore.common.MessageUtil;
+import org.smartfrog.sfcore.common.MessageKeys;
 /**
  * Implements the most basic of reference parts. This reference part knows how
  * to resolve itself to the value of a given id in a given reference resolver.
@@ -147,9 +152,16 @@ public class HereReferencePart extends ReferencePart {
             throw SmartFrogResolutionException.notFound(r, null);
         }
 
-        // if reference ask rr to resolve it (chaining)
-        if (result instanceof Reference) {
-            result = rr.sfResolve((Reference) result, 0);
+        try {
+            // if reference ask rr to resolve it (chaining)
+            if (result instanceof Reference) {
+                result = rr.sfResolve((Reference)result, 0);
+                // if vector ask rr to resolve any contained reference(chaining)
+            } else if (result instanceof Vector) {
+                result = sfResolveVector(rr, (Vector)result);
+            }
+        } catch (SmartFrogResolutionException ex) {
+            throw new SmartFrogResolutionException(r,null,null,null,ex,null);
         }
 
         // If the end we are there!
@@ -160,6 +172,7 @@ public class HereReferencePart extends ReferencePart {
         // Else forward on to result
         return forwardReference(result, r, index + 1);
     }
+
 
     /**
      * Resolves this reference part using the remote reference resolver. The
@@ -182,12 +195,16 @@ public class HereReferencePart extends ReferencePart {
             if (result == null) {
                 throw SmartFrogResolutionException.notFound(r, null);
             }
-
-            // if reference ask rr to resolve it (chaining)
-            if (result instanceof Reference) {
-                result = rr.sfResolve((Reference) result, 0);
+            try {
+                // if reference ask rr to resolve it (chaining)
+                if (result instanceof Reference) {
+                    result = rr.sfResolve((Reference)result, 0);
+                } else if (result instanceof Vector) {
+                    result = sfResolveVector(rr, (Vector)result);
+                }
+            } catch (SmartFrogResolutionException ex) {
+                throw new SmartFrogResolutionException(r,null,null,null,ex,null);
             }
-
             // If the end we are there!
             if (index == (r.size() - 1)) {
                 //Marshall!
@@ -203,6 +220,70 @@ public class HereReferencePart extends ReferencePart {
 
         } catch (Exception ex){
             throw (SmartFrogResolutionException)SmartFrogResolutionException.forward(ex);
+        }
+    }
+
+    /**
+     * Recursively resolves any internal reference in  Vector container.
+     * @param rr RemoteReferenceResolver
+     * @param vToResolve Vector
+     * @return Vector with references resolved
+     * @throws SmartFrogResolutionException SmartFrogResolutionException if failed to resolve reference
+     */
+
+    private Vector sfResolveVector(ReferenceResolver rr, Vector vToResolve) throws SmartFrogResolutionException{
+        try {
+            Vector vec = new Vector();
+            for (Enumeration e = ((Vector)vToResolve).elements();
+                 e.hasMoreElements(); ) {
+                Object value = e.nextElement();
+                if (value instanceof Reference) {
+                    value = rr.sfResolve((Reference)value, 0);
+                }
+                if (value instanceof Vector) {
+                    value = sfResolveVector(rr, (Vector)value);
+                }
+                vec.add(value);
+            }
+            return vec;
+        } catch (SmartFrogResolutionException ex) {
+          SmartFrogResolutionException rex = new SmartFrogResolutionException(ex);
+          rex.setContainer(ex.get(SmartFrogResolutionException.REFERENCE),vToResolve);
+          throw rex;        }
+    }
+    /**
+     * Recursively resolves any internal reference in  Vector container.
+     * @param rr RemoteReferenceResolver
+     * @param vToResolve Vector
+     * @return Vector with references resolved
+     * @throws SmartFrogResolutionException SmartFrogResolutionException if failed to resolve reference
+     * @throws RemoteException
+     */
+
+    private Vector sfResolveVector(RemoteReferenceResolver rr, Vector vToResolve) throws
+        SmartFrogResolutionException, RemoteException {
+        Object value = null;
+        try {
+            Vector vec = new Vector();
+            for (Enumeration e = ((Vector)vToResolve).elements();
+                 e.hasMoreElements(); ) {
+                value = e.nextElement();
+                if (value instanceof Reference) {
+                    value = rr.sfResolve((Reference)value, 0);
+                    if (value instanceof SFMarshalledObject) {
+                        value = ((SFMarshalledObject)value).get();
+                    }
+                }
+                if (value instanceof Vector) {
+                    value = sfResolveVector(rr, (Vector)value);
+                }
+                vec.add(value);
+            }
+            return vec;
+        } catch (SmartFrogResolutionException ex) {
+            SmartFrogResolutionException rex = new SmartFrogResolutionException(ex);
+            rex.setContainer(value,vToResolve);
+            throw rex;
         }
     }
 

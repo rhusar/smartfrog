@@ -102,7 +102,7 @@ public class ReferenceSystemTest extends SmartFrogTestBase {
                 "SmartFrogLifecycleException",
                 "sfDeploy",
                 "SmartFrogResolutionException",
-                "Reference not found, Unresolved Reference: HERE limit");
+                "Unresolved Reference: HERE limit");
     }
 
     public void testCaseTCN61() throws Exception {
@@ -120,7 +120,7 @@ public class ReferenceSystemTest extends SmartFrogTestBase {
                 "SmartFrogLifecycleException",
                 "sfDeploy",
                 "SmartFrogResolutionException",
-                "Reference not found, Unresolved Reference: HERE integer1");
+                "Unresolved Reference: HERE integer1");
     }
 
     public void testCaseTCN63() throws Exception {
@@ -129,7 +129,7 @@ public class ReferenceSystemTest extends SmartFrogTestBase {
                 "SmartFrogLifecycleException",
                 "sfDeploy",
                 "SmartFrogResolutionException",
-                "Reference not found, Unresolved Reference: HERE name1");
+                "Unresolved Reference: HERE name1");//@Todo check for "Reference not found";
     }
 
     public void testCaseTCP23() throws Throwable {
