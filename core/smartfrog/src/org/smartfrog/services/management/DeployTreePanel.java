@@ -27,6 +27,13 @@ import javax.swing.event.TreeSelectionListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.*;
 import java.awt.*;
+import org.smartfrog.sfcore.common.SmartFrogResolutionException;
+import org.smartfrog.sfcore.prim.Prim;
+import org.smartfrog.sfcore.componentdescription.ComponentDescription;
+import java.rmi.RemoteException;
+import javax.swing.tree.TreePath;
+import java.io.StringWriter;
+import java.io.PrintWriter;
 
 /**
  * Tree panel for SmartFrog hierarchy of components.
@@ -292,14 +299,7 @@ public class DeployTreePanel extends JPanel implements TreeSelectionListener {
     void table_mouseClicked(MouseEvent e) {
         try {
             Object value = this.table.getValueAt(this.table.getSelectedRow(), 0);
-            this.jTextArea1.setText("* Attribute: " + value.toString());
-            value = this.table.getValueAt(this.table.getSelectedRow(), 1);
-            this.jTextArea1.append("\n* Value: \n" + value.toString());
-//            //Only gets class when the value is not a reference converted to string.
-            if (!this.jTextArea1.getText().endsWith(".Reference")) {
-                this.jTextArea1.append("\n\n" + "+ Value class:" +
-                    value.getClass().toString());
-            }
+            resolveAttrib(value);
         } catch (Exception ex) {
             //ex.printStackTrace();
         }
@@ -310,4 +310,78 @@ public class DeployTreePanel extends JPanel implements TreeSelectionListener {
                 e.getY(), this);
         }
     }
+
+    /**
+     *  Resolves an Attrib  even if it is LAZY.
+     *  @param attribName  name of the attribute
+     */
+    void resolveAttrib(Object attribName) {
+      Object value;
+      StringBuffer solvedValue = new StringBuffer();
+      try {
+          Object node = getNode();
+          value = sfResolveHere(attribName, node);
+          String solvedValueClass = "class not found";
+          String stackTrace = null;
+          try {
+              Object objSolvedValue = sfResolve(attribName.toString(), node);
+              solvedValue.append(objSolvedValue.toString());
+              solvedValueClass = objSolvedValue.getClass().toString();
+          } catch (Exception ex) {
+              solvedValue.append(" Failed to resolve ("+attribName+"): "+ex.toString());
+              try {
+                  StringWriter sw = new StringWriter();
+                  PrintWriter pw = new PrintWriter(sw);
+                  ex.printStackTrace(pw);
+                  stackTrace =("\r\n"+sw.toString()+"\r\n");
+              } catch (Exception e2) {
+                  ex.printStackTrace();
+              }
+          }
+          StringBuffer text = new StringBuffer();
+          text.append("* Attribute: "+attribName);
+          text.append("\n * Value: ");
+          text.append("\n"+value.toString());
+          text.append("\n * Value resolved: \n"+solvedValue.toString());
+          text.append("\n\n"+"+ Value class:"+value.getClass().toString());
+          text.append("\n"+"+ Solved Value class:"+solvedValueClass);
+          if (stackTrace !=null) text.append("\n\n"+"+ StackTrace:"+stackTrace);
+          jTextArea1.setText(text.toString());
+      } catch (Throwable rex) {
+          String err =
+              "sfManagementConsole.deployEntry.getAttributes: error reading "+
+              attribName+" >"+rex.getMessage();
+          jTextArea1.setText(err);
+
+          //ex.printStackTrace();
+      }
+   }
+
+   private Object getNode() {
+       Object node;
+       TreePath tpath = (this.systemViewTree).getSelectionPath();
+       node = ((((DeployEntry) (tpath.getLastPathComponent())).getEntry()));
+       return node;
+   }
+
+   private Object sfResolveHere(Object attribName, Object node) throws  SmartFrogResolutionException, RemoteException {
+    Object value=null;
+    if (node instanceof Prim){
+        value = ((Prim)node).sfResolveHere(attribName);
+    } else if (node instanceof ComponentDescription){
+        value = ((ComponentDescription)node).sfResolveHere(attribName);
+    }
+    return value;
+   }
+
+   private Object sfResolve(Object attribName, Object node) throws  SmartFrogResolutionException, RemoteException {
+    Object value=null;
+    if (node instanceof Prim){
+        value = ((Prim)node).sfResolve(attribName.toString());
+    } else if (node instanceof ComponentDescription){
+        value = ((ComponentDescription)node).sfResolve(attribName.toString());
+    }
+    return value;
+   }
+
 }

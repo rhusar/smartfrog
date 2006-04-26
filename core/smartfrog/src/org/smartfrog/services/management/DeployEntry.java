@@ -307,30 +307,7 @@ public class DeployEntry implements Entry {
 
                 if (!isChild(value)) {
                     try {
-                        //Special case to show special info about the reference
-                        if (value instanceof Reference) {
-                            String solvedValueClass="class not found";
-                            try {
-                              Object objSolvedValue =null;
-                              if (entry instanceof Prim){
-                                  objSolvedValue = (((Prim) entry).sfResolve((Reference) value));
-                              } else {
-                                  objSolvedValue = (((ComponentDescription) entry).sfResolve((Reference) value));
-                              }
-                              solvedValue=objSolvedValue.toString();
-                              solvedValueClass = objSolvedValue.getClass().toString();
-                            }catch (Throwable rex) {
-                              solvedValue = " Failed to relsove!: "+rex.toString();
-                            }
-                            StringBuffer text = new StringBuffer();
-                            text.append(value.toString());
-                            text.append("\n * Value resolved: \n" + solvedValue);
-                            text.append("\n" + "+ Solved Value class:" +solvedValueClass);
-                            text.append("\n\n" + "+ Value class:" + value.getClass().toString());
-                            data[index][1] = text.toString();
-                        } else {
                             data[index][1] = value;
-                        }
                     } catch (Exception ex) {
                       System.err.println("sfManagementConsole.deployEntry.getAttributes: error reading "+ name + " >"+ex.getMessage());
                     }

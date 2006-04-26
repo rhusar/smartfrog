@@ -53,14 +53,10 @@ public class PopUpTable extends JComponent implements ActionListener {
    /** Parent panel. */
    DeployTreePanel parent = null;
 
-   /** Item for Tree popup menu - Add attribute. */
-   JMenuItem menuItemAddAttribute = new JMenuItem();
    /** Item for Tree popup menu - modify attribute. */
    JMenuItem menuItemModifyAttribute = new JMenuItem();
    /** Item for Tree popup menu - remove attribute. */
    JMenuItem menuItemRemoveAttribute = new JMenuItem();
-   /** Item for Tree popup menu - resolve attribute. */
-   JMenuItem menuItemResolveAttribute = new JMenuItem();
 
    /**
     *  Constructs PopUpTable object
@@ -77,16 +73,13 @@ public class PopUpTable extends JComponent implements ActionListener {
 
       menuItemRemoveAttribute.setText("Remove Attribute");
       menuItemModifyAttribute.setText("Add/Modify Attribute");
-      menuItemResolveAttribute.setText("Resolve LAZY Ref.");
+
 
       popupTable.add(menuItemRemoveAttribute);
       popupTable.add(menuItemModifyAttribute);
-      popupTable.add(menuItemResolveAttribute);
 
       menuItemRemoveAttribute.addActionListener(this);
       menuItemModifyAttribute.addActionListener(this);
-      menuItemResolveAttribute.addActionListener(this);
-
    }
 
 
@@ -133,19 +126,7 @@ public class PopUpTable extends JComponent implements ActionListener {
 
       path = treePath2Path(tpath);
 
-      if (source == menuItemResolveAttribute) {
-        Object name = null;
-        Object value = null;
-
-        if (row == -1) {
-           name = "";
-        } else {
-           name = (tempTable.getValueAt(row, 0));
-           //value = tempTable.getValueAt(row, 1);
-        }
-        resolveAttrib(name);
-
-      } else if (source == menuItemRemoveAttribute) {
+      if (source == menuItemRemoveAttribute) {
          if (row == -1) {
             System.out.println("No selected Cell");
 
@@ -211,6 +192,12 @@ public class PopUpTable extends JComponent implements ActionListener {
       }
    }
 
+   private Object getNode() {
+       Object node;
+       TreePath tpath = (tempTree).getSelectionPath();
+       node = ((((DeployEntry) (tpath.getLastPathComponent())).getEntry()));
+       return node;
+   }
 
    /**
     * Converts tree path to path
@@ -253,78 +240,6 @@ public class PopUpTable extends JComponent implements ActionListener {
       }
 
       return s.toString();
-   }
-
-
-   /**
-    *  Resolves an Attrib  even if it is LAZY.
-    *  @param attribName  name of the attribute
-    */
-   void resolveAttrib(Object attribName) {
-     Object value;
-     StringBuffer solvedValue = new StringBuffer();
-     try {
-         Object node = getNode();
-         value = getValue(attribName, node);
-         if (value instanceof Reference) {
-           String solvedValueClass="class not found";
-           try {
-             ( (Reference) value).setEager(true);
-             Object objSolvedValue = resolveValue((Reference) value, node);
-             solvedValue.append(objSolvedValue.toString());
-             solvedValueClass = objSolvedValue.getClass().toString();
-           } catch (Exception ex){
-              solvedValue.append(" Failed to relsove!: " + ex.toString());
-              ex.printStackTrace();
-           }
-           StringBuffer text = new StringBuffer();
-           text.append("* Attribute resolved (LAZY ref): "+attribName);
-           text.append("\n * Value: ");
-           text.append("\n"+value.toString());
-           text.append("\n * Value resolved: \n" + solvedValue.toString());
-           text.append("\n\n" + "+ Value class:" + value.getClass().toString());
-           text.append("\n" + "+ Solved Value class:" + solvedValueClass);
-
-           parent.jTextArea1.setText(text.toString());
-         }
-         else {
-           return;
-         }
-       }
-       catch (Throwable rex) {
-         String err = "sfManagementConsole.deployEntry.getAttributes: error reading " +
-             attribName + " >" + rex.getMessage();
-         parent.jTextArea1.setText(err);
-         //ex.printStackTrace();
-       }
-
-   }
-
-   private Object getNode() {
-       Object node;
-       TreePath tpath = (tempTree).getSelectionPath();
-       node = ((((DeployEntry) (tpath.getLastPathComponent())).getEntry()));
-       return node;
-   }
-
-   private Object getValue(Object attribName, Object node) throws  SmartFrogResolutionException, RemoteException {
-    Object value=null;
-    if (node instanceof Prim){
-        value = ((Prim)node).sfResolveHere(attribName);
-    } else if (node instanceof ComponentDescription){
-        value = ((ComponentDescription)node).sfResolveHere(attribName);
-    }
-    return value;
-   }
-
-   private Object resolveValue(Reference ref, Object node) throws  SmartFrogResolutionException, RemoteException {
-    Object value=null;
-    if (node instanceof Prim){
-        value = ((Prim)node).sfResolve(ref);
-    } else if (node instanceof ComponentDescription){
-        value = ((ComponentDescription)node).sfResolve(ref);
-    }
-    return value;
    }
 
    /**
