@@ -47,6 +47,8 @@ public class SmartFrogResolutionException extends SmartFrogRuntimeException
     /** Attribute name for reference value classtype in exceptioncontext. */
     public final static String REFERENCE_OBJECT_RESOLVED="referenceValueResolved";
 
+    /** Attribute name for reference container. */
+    public final static String CONTAINER_ERROR_MSG="container_error_message";
 
     /**
      * Constructs a SmartFrogResolutionException with message.
@@ -373,6 +375,16 @@ public class SmartFrogResolutionException extends SmartFrogRuntimeException
         return length;
     }
 
+    /**
+     * Adds information message about a resolve failure in a reference contained in containerObj
+     * @param containerObj Object
+     * @param failedReference Object
+     */
+    public void setContainer ( Object failedReference,Object containerObj){
+        if (!(this.containsKey(CONTAINER_ERROR_MSG))||(this.get(CONTAINER_ERROR_MSG)==null)){
+            put(CONTAINER_ERROR_MSG, MessageUtil.formatMessage(MessageKeys.MSG_UNRESOLVED_REFERENCE_IN,failedReference,containerObj));
+        }
+    }
 
     /**
      * Returns a string representation of the resolution exception.
@@ -386,26 +398,18 @@ public class SmartFrogResolutionException extends SmartFrogRuntimeException
       try {
         strb = new StringBuffer();
         strb.append (shortClassName() +":: ");
-        //strb.append ((((getMessage() == null) ? "" : getMessage())));
-        if (getMessage()==null){
-            strb.append ((getCause() == null)  ? "" : getCauseMessage(nm));
-        } else {
-            strb.append (getMessage());
-//            strb.append ((((getCause() == null) ) ? "" : (nm+"  cause: " +
-//                getCause().getMessage())));
-        }
-        strb.append(((this.containsKey(REFERENCE)&&(this.get(REFERENCE)!=null)
-            &&(((Reference)this.get(REFERENCE)).size()!=0))) ? (nm+
-                MessageUtil.formatMessage(MSG_UNRESOLVED_REFERENCE)+ ": " +
-                    get(REFERENCE)) : "" );
 
-//        strb.append((((this.containsKey(SOURCE)&&(this.get(SOURCE)!=null)
-//                            &&(((Reference)this.get(SOURCE)).size()!=0)))
-//                               ? (nm+SOURCE+  ": " + get(SOURCE)) : "" ));
+        strb.append(((this.containsKey(REFERENCE)&&(this.get(REFERENCE)!=null)
+            &&(((Reference)this.get(REFERENCE)).size()!=0))) ? (//nm+
+                MessageUtil.formatMessage(MSG_UNRESOLVED_REFERENCE)+ ": " + get(REFERENCE)) : "" );
+        String separator = nm;
+        if (strb.toString().endsWith(":: ")) {separator = "";}
+        strb.append((((this.containsKey(CONTAINER_ERROR_MSG)&&(this.get(CONTAINER_ERROR_MSG)!=null)))
+                               ? (separator+ get(CONTAINER_ERROR_MSG)) : "" ));
+
         strb.append((((this.containsKey(SOURCE)&&(this.get(SOURCE)!=null)
                              &&((this.get(SOURCE)).toString().length()!=0)))
                                ? (nm+SOURCE+  ": " + get(SOURCE)) : "" ));
-
 
         strb.append((((this.containsKey(REFERENCE_OBJECT_RESOLVED))) ?
                     (nm+REFERENCE_OBJECT_RESOLVED+  ": '" + get(REFERENCE_OBJECT_RESOLVED)+"'") : "" ));
@@ -421,12 +425,20 @@ public class SmartFrogResolutionException extends SmartFrogRuntimeException
         } else {
           if (this.sizePath()>0)
           strb.append((((this.containsKey(PATH))) ?
-                       (nm+PATH+ "("+ this.sizePath() + ")") : "" ));
+                       (nm+PATH+ "("+ this.sizePath() + ") ") : "" ));
         }
         strb.append((((this.containsKey(PRIM_CONTEXT))) ?
                     (nm+PRIM_CONTEXT+  ": " + "included") : "" ));
         strb.append((((this.containsKey(DATA))) ?
                     (nm+DATA+  ": " + get(DATA)) : ""));
+
+       //strb.append ((((getMessage() == null) ? "" : getMessage())));
+       if (getMessage()==null){
+           strb.append ((getCause() == null)  ? nm+"Cause: " : getCauseMessage(nm));
+       } else {
+           strb.append (nm+ "Cause: "+getMessage());
+        }
+
       } catch (Throwable thr) {
             thr.printStackTrace();
             //ignore

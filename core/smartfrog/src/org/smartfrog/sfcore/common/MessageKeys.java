@@ -223,6 +223,7 @@ public interface MessageKeys {
      * Message key: unresolved reference.
      */
     public static String MSG_UNRESOLVED_REFERENCE = "MSG_UNRESOLVED_REFERENCE";
+    public static String MSG_UNRESOLVED_REFERENCE_IN = "MSG_UNRESOLVED_REFERENCE_IN";
     /**
      * Message key: reference not found.
      */
