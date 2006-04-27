@@ -25,6 +25,7 @@ import org.smartfrog.services.junit.TestListener;
 import org.smartfrog.services.junit.TestSuite;
 import org.smartfrog.services.junit.data.TestInfo;
 import org.smartfrog.services.junit.data.Statistics;
+import org.smartfrog.services.junit.data.LogEntry;
 
 import java.rmi.RemoteException;
 
@@ -116,5 +117,9 @@ public class StatisticsTestListenerComponent extends PrimImpl implements Statist
 
     public Statistics getStatistics() {
         return stats;
+    }
+
+    public void log(LogEntry event) throws RemoteException, SmartFrogException {
+        //discard
     }
 }
