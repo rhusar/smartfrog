@@ -44,10 +44,13 @@ public class Api_08_system_destroy_operations_Test extends StandardTestBase {
         SystemSession system = getPortal().create(null);
         system.destroy();
         try {
-            system.ping();
+            for (int i = 1; i <= 128; i *= 2) {
+                system.ping();
+                sleep(i);
+            }
             fail("Expected failure");
         } catch (AlpineRuntimeException e) {
-
+            //expected error of some form or other
         }
     }
 

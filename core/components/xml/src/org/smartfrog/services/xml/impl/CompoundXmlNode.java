@@ -21,6 +21,8 @@ package org.smartfrog.services.xml.impl;
 
 import nu.xom.Node;
 import nu.xom.ParentNode;
+import nu.xom.Attribute;
+import nu.xom.Element;
 import org.smartfrog.services.xml.interfaces.LocalNode;
 import org.smartfrog.services.xml.interfaces.XmlNode;
 import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
@@ -76,6 +78,9 @@ public abstract class CompoundXmlNode extends CompoundImpl implements XmlNode,
         return (ParentNode) helper.getNode();
     }
 
+    public Element getParentElement() {
+        return (Element) helper.getNode();
+    }
     /**
      * get the last XML evaluated
      *
@@ -132,10 +137,13 @@ public abstract class CompoundXmlNode extends CompoundImpl implements XmlNode,
             RemoteException {
         super.sfDeploy();
 
+        //xmlify ourselves (no children)
+        toXML();
+
         //now we add our children
         addChildren();
 
-        //xmlify ourselves
+        //xmlify ourselves again
         toXML();
     }
 
@@ -156,7 +164,12 @@ public abstract class CompoundXmlNode extends CompoundImpl implements XmlNode,
      */
     public void appendChild(LocalNode node) {
         Node xomNode = node.getNode();
-        getParentNode().appendChild(xomNode);
+        if(xomNode instanceof Attribute) {
+            Attribute attribute=(Attribute) xomNode;
+            getParentElement().addAttribute(attribute);
+        } else {
+            getParentNode().appendChild(xomNode);
+        }
     }
 
     /**

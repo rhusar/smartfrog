@@ -19,13 +19,10 @@ For more information: www.smartfrog.org
 */
 #include "/org/smartfrog/services/deployapi/test/system/alpine/deployapi/nec.sf"
 #include "/org/smartfrog/services/deployapi/test/system/alpine/deployapi/ourgrid.sf"
-#include "org/smartfrog/services/utils/setproperty/components.sf"
+#include "/org/smartfrog/services/utils/setproperty/components.sf"
+#include "/org/smartfrog/services/www/livenessPage.sf"
 
-sfConfig extends Compound {
-
-  tempDir LAZY PROPERTY java.io.tmpdir;
-
-  proxy extends SystemProperties {
+  Proxy extends SystemProperties {
     setOnDeploy true;
     unsetOnTerminate true;
     properties [
@@ -34,18 +31,50 @@ sfConfig extends Compound {
       ];
   }
 
-  ourgrid extends ourGridTests {
-    basedir tempDir;
-    enabled false;
 
-    //portal:classes SingleTestSuite:classes;
+  ServerTest extends Compound {
 
-    //creation:enabled false;
+      endpoint TBD;
+      proxy extends Proxy;
+      subdir TBD;
+      enabled true;
+
+      health extends LivenessPage {
+        url endpoint;
+      }
+
+      tests extends DeployapiTestRunner {
+        enabled PARENT:enabled;
+        endpoint PARENT:endpoint;
+        subdir PARENT:subdir;
+      }
 
   }
 
-  nec extends NecTests {
-    basedir tempDir;
-    //enabled false;
+
+
+sfConfig extends Compound {
+
+  tempDir LAZY PROPERTY java.io.tmpdir;
+
+  necEnabled true;
+  ourgridEnabled true;
+  pelvouxEnabled false;
+
+  NecTest extends ServerTest {
+
+//    sfProcessName "process1";
+    subdir "nec";
+    endpoint nec_endpoint;
+    enabled necEnabled;
   }
+
+  OurgridTest extends ServerTest {
+
+//    sfProcessName "process2";
+    subdir "ourgrid";
+    endpoint ourgrid_endpoint;
+    enabled necEnabled;
+  }
+
 }

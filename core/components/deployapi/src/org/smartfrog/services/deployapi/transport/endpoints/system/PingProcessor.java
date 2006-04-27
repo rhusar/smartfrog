@@ -23,6 +23,7 @@ import nu.xom.Element;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.smartfrog.services.deployapi.transport.endpoints.alpine.WsrfHandler;
+import org.smartfrog.projects.alpine.om.base.SoapElement;
 
 import java.rmi.RemoteException;
 
@@ -42,7 +43,7 @@ public class PingProcessor extends SystemProcessor {
         super(owner);
     }
 
-    public Element process(Element request) throws RemoteException {
+    public Element process(SoapElement request) throws RemoteException {
         jobMustExist();
 
 /*

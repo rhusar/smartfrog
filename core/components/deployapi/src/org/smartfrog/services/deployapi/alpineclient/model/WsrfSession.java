@@ -98,11 +98,11 @@ public abstract class WsrfSession extends Session {
 
     /**
      * Check that there was a body in the response and that it was of the expected type.
-     *
+     * A ClientException is raised if it is the wrong type
      * @param tx           transmission containing the response and the To: address in the request
      * @param expectedType qname of the expected root element of the message
      */
-    protected void checkResponseMessageType(Transmission tx, QName expectedType) {
+    protected Element extractResponse(Transmission tx, QName expectedType) {
         MessageDocument response = tx.getResponse();
         Element payload = response.getPayload();
         AlpineRuntimeException fault = null;
@@ -116,6 +116,7 @@ public abstract class WsrfSession extends Session {
             tx.addMessagesToFault(fault);
             throw fault;
         }
+        return payload;
     }
 
     /**
@@ -148,7 +149,7 @@ public abstract class WsrfSession extends Session {
      */
     public Element endGetResourceProperty(Transmission tx) {
         tx.blockForResult(getTimeout());
-        checkResponseMessageType(tx, QNAME_WSRF_GET_PROPERTY_RESPONSE);
+        extractResponse(tx, QNAME_WSRF_GET_PROPERTY_RESPONSE);
         Element payload = tx.getResponse().getPayload();
         Element child = XsdUtils.getFirstChildElement(payload);
         if (child == null) {
@@ -197,7 +198,7 @@ public abstract class WsrfSession extends Session {
      */
     public void endDestroy(Transmission tx) {
         tx.blockForResult(getTimeout());
-        checkResponseMessageType(tx, QNAME_WSRF_RL_DESTROY_RESPONSE);
+        extractResponse(tx, QNAME_WSRF_RL_DESTROY_RESPONSE);
     }
 
     /**

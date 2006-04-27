@@ -29,6 +29,7 @@ import org.smartfrog.services.deployapi.system.Constants;
 import org.smartfrog.services.deployapi.system.DeploymentLanguage;
 import org.smartfrog.services.deployapi.system.LifecycleStateEnum;
 import org.smartfrog.services.deployapi.transport.endpoints.alpine.WsrfHandler;
+import org.smartfrog.projects.alpine.om.base.SoapElement;
 
 import java.io.File;
 import java.io.IOException;
@@ -53,7 +54,7 @@ public class InitializeProcessor extends SystemProcessor {
         helper = ServerInstance.currentInstance().getDescriptorHelper();
     }
 
-    public Element process(Element request) throws IOException {
+    public Element process(SoapElement request) throws IOException {
         jobMustExist();
         Element rootElement = request;
         helper.validateRequest(rootElement);
@@ -72,7 +73,7 @@ public class InitializeProcessor extends SystemProcessor {
         options = new OptionProcessor(getOwner());
 
         job.bind(requestIn, options);
-        Element optionSet= requestIn.getFirstChildElement("options",
+        SoapElement optionSet= (SoapElement) requestIn.getFirstChildElement("options",
                 Constants.CDL_API_TYPES_NAMESPACE);
         options.process(optionSet);
 

@@ -31,6 +31,8 @@ import org.smartfrog.services.deployapi.transport.faults.FaultRaiser;
 import org.smartfrog.services.xml.utils.XomUtils;
 import org.smartfrog.services.xml.utils.XsdUtils;
 
+import java.net.URI;
+
 /**
  * generic xom stuff
  */
@@ -63,6 +65,16 @@ public class XomHelper extends XomUtils {
         SoapElement e = apiElement(name);
         e.appendChild(value);
         return e;
+    }
+
+    /**
+     * Create an API element with a uri as the value
+     * @param name
+     * @param value
+     * @return
+     */
+    public static SoapElement apiElement(String name,URI value) {
+        return apiElement(name,value.toString());
     }
 
     /**
@@ -199,7 +211,15 @@ public class XomHelper extends XomUtils {
      * @return
      */
     public static String getElementValue(Node node, String query) {
-        return getElement(node, query).getValue();
+        return getElementValue(node, query,true);
+    }
+
+    public static String getElementValue(Node node, String query,boolean required) {
+        Element element = getElement(node, query,required);
+        if(element==null) {
+            return null;
+        }
+        return element.getValue();
     }
 
     /**
@@ -245,5 +265,39 @@ public class XomHelper extends XomUtils {
         return (Element) n;
     }
 
+    /**
+     * Create an addFile request with no metadata
+     * @param name
+     * @param mimeType
+     * @param scheme
+     * @param encodedPayload
+     * @param payloadURI
+     * @return
+     */
+    public static SoapElement addFileRequest(
+            URI name,
+            String mimeType,
+            String scheme,
+            String encodedPayload,
+            URI payloadURI) {
+
+
+        SoapElement request=apiElement("addFileRequest");
+        request.appendChild(apiElement("name",name));
+        request.appendChild(apiElement("mimetype",mimeType));
+        request.appendChild(apiElement("scheme",scheme));
+        if(payloadURI==null) {
+            if(encodedPayload==null) {
+                throw new IllegalArgumentException("Neither inline or external data specified");
+            }
+            request.appendChild(apiElement("data", encodedPayload));
+        } else {
+            if(encodedPayload!=null) {
+                throw new IllegalArgumentException("both inline and external data specified");
+            }
+            request.appendChild(apiElement("uri",payloadURI));
+        }
+        return request;
+    }
 
 }

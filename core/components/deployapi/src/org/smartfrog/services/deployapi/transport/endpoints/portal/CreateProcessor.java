@@ -30,6 +30,7 @@ import org.smartfrog.services.deployapi.system.Constants;
 import org.smartfrog.services.deployapi.transport.endpoints.alpine.AlpineProcessor;
 import org.smartfrog.services.deployapi.transport.endpoints.alpine.WsrfHandler;
 import org.smartfrog.services.deployapi.transport.faults.BaseException;
+import org.smartfrog.projects.alpine.om.base.SoapElement;
 
 import java.util.Locale;
 
@@ -58,7 +59,7 @@ public class CreateProcessor extends AlpineProcessor {
      * @param rootElement received contents of the SOAP Body
      * @return the body of the response or null for an empty response
      */
-    public Element process(Element rootElement) {
+    public Element process(SoapElement rootElement) {
         JobRepository repository;
         repository = ServerInstance.currentInstance().getJobs();
         //hostname processing

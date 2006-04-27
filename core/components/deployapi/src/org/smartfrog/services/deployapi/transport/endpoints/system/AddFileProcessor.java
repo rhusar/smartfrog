@@ -27,12 +27,15 @@ import org.smartfrog.services.deployapi.transport.endpoints.alpine.WsrfHandler;
 import org.smartfrog.services.deployapi.transport.faults.FaultRaiser;
 import org.smartfrog.services.filesystem.filestore.AddedFilestore;
 import org.smartfrog.services.filesystem.filestore.FileEntry;
+import org.smartfrog.services.xml.utils.XomUtils;
+import org.smartfrog.projects.alpine.om.base.SoapElement;
+import org.ggf.cddlm.generated.api.CddlmConstants;
 
 import java.io.IOException;
 
 /** Implement addfile operation */
 public class AddFileProcessor extends SystemProcessor {
-    public static final String PREFIX = "file";
+    public static final String FILE_SCHEMA = "file";
     public static final String SUFFIX = "bin";
 
     public AddFileProcessor(WsrfHandler owner) {
@@ -40,29 +43,42 @@ public class AddFileProcessor extends SystemProcessor {
     }
 
 
-    public Element process(Element request) throws IOException {
-        throwNotImplemented();
+    public Element process(SoapElement request) throws IOException {
         jobMustExist();
         AddedFilestore filestore = ServerInstance.currentInstance()
                 .getFilestore();
-        Element root = request;
-        Element body = XomHelper.getElement(root,
-                "api:addFileRequest");
+        Element body =request.getFirstChildElement(CddlmConstants.API_ELEMENT_ADDFILE_REQUEST,
+                CddlmConstants.CDL_API_TYPES_NAMESPACE);
 
         String name = XomHelper.getElementValue(body, "api:name");
         String schema = XomHelper.getElementValue(body,
                 "api:schema");
-        if (!(PREFIX.equals(schema))) {
+        if (!(FILE_SCHEMA.equals(schema))) {
             throw FaultRaiser.raiseNotImplementedFault("Unsupported schema type");
         }
         String mimetype = XomHelper.getElementValue(body,
                 "api:mimetype");
-        Element response = XomHelper.apiElement("addFileResponse");
         Element metadata = XomHelper.getElement(body, "api:metadata", true);
-        FileEntry newFile = filestore.createNewFile(PREFIX, SUFFIX);
+        FileEntry newFile = filestore.createNewFile(FILE_SCHEMA, SUFFIX);
+
+        String uri= XomHelper.getElementValue(body, "api:uri", false);
+        String data = XomHelper.getElementValue(body, "api:data", false);
+        if(uri==null ) {
+            if(data==null) {
+                throw FaultRaiser.raiseBadArgumentFault("Neither uri nor data supplied");
+            }
+            byte[] payload= XomUtils.base64Decode(data);
+            throwNotImplemented();
+        } else {
+            if (data != null) {
+                throw FaultRaiser.raiseBadArgumentFault("Both uri and data supplied");
+            }
+            throwNotImplemented();
+        }
 
         //TODO: save to a file
         //TODO: create a respose
+        Element response = XomHelper.apiElement("addFileResponse");
         return response;
     }
 

@@ -32,6 +32,7 @@ import org.smartfrog.services.deployapi.transport.endpoints.system.TerminateProc
 import org.smartfrog.services.deployapi.transport.endpoints.system.RunProcessor;
 import org.smartfrog.services.deployapi.transport.endpoints.system.PingProcessor;
 import org.smartfrog.services.deployapi.transport.endpoints.system.DestroyProcessor;
+import org.smartfrog.services.deployapi.transport.endpoints.system.AddFileProcessor;
 import org.smartfrog.services.deployapi.transport.wsrf.WSRPResourceSource;
 import org.smartfrog.services.deployapi.transport.faults.FaultRaiser;
 import org.smartfrog.services.deployapi.engine.Application;
@@ -122,7 +123,7 @@ public class SystemHandler extends WsrfHandler {
         }
         if (Constants.API_ELEMENT_ADDFILE_REQUEST.equals(requestName)) {
             verifyDeployApiNamespace(operation);
-            //processor = new LookupSystemProcessor(this);
+            processor = new AddFileProcessor(this);
         }
         if (Constants.API_ELEMENT_RUN_REQUEST.equals(requestName)) {
             verifyDeployApiNamespace(operation);

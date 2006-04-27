@@ -29,6 +29,7 @@ import org.smartfrog.services.deployapi.system.DeployApiConstants;
 import org.smartfrog.services.deployapi.transport.endpoints.alpine.WsrfHandler;
 import org.smartfrog.services.deployapi.transport.faults.BaseException;
 import org.smartfrog.services.xml.java5.iterators.NodeIterator;
+import org.smartfrog.projects.alpine.om.base.SoapElement;
 
 /**
  * this processor extracts options from the request. If any option is marked
@@ -62,7 +63,7 @@ public class OptionProcessor extends SystemProcessor {
      *
      * @param options
      */
-    public Element process(Element options) {
+    public Element process(SoapElement options) {
         if (options == null) {
             return null;
         }

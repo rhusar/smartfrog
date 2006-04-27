@@ -20,22 +20,22 @@
 package org.smartfrog.services.deployapi.alpineclient.model;
 
 import nu.xom.Element;
-import nu.xom.Document;
 import static org.ggf.cddlm.generated.api.CddlmConstants.*;
 import org.smartfrog.projects.alpine.om.base.SoapElement;
 import org.smartfrog.projects.alpine.om.soap11.MessageDocument;
+import org.smartfrog.projects.alpine.om.soap11.Body;
 import org.smartfrog.projects.alpine.transport.Session;
 import org.smartfrog.projects.alpine.transport.Transmission;
 import org.smartfrog.projects.alpine.transport.TransmitQueue;
 import org.smartfrog.projects.alpine.wsa.AlpineEPR;
 import org.smartfrog.services.deployapi.binding.XomHelper;
+import org.smartfrog.services.deployapi.binding.UriListType;
 import static org.smartfrog.services.deployapi.binding.XomHelper.apiElement;
 import org.smartfrog.services.deployapi.system.Constants;
 import org.smartfrog.services.deployapi.system.LifecycleStateEnum;
 
-import java.util.List;
+import javax.xml.namespace.QName;
 import java.rmi.RemoteException;
-import java.io.IOException;
 
 /**
  * created 10-Apr-2006 17:08:08
@@ -147,5 +147,16 @@ public class SystemSession extends WsrfSession {
                 request);
     }
 
+    public UriListType endAddFile(Transmission transmission) {
+        transmission.blockForResult(getTimeout());
+        Body body = transmission.getResponse().getBody();
+        Element response = extractResponse(transmission, new QName(CDL_API_TYPES_NAMESPACE, API_ELEMENT_ADDFILE_RESPONSE));
+        UriListType list=new UriListType(response);
+        return list;
+    }
+
+    public UriListType addFile(Element request) {
+        return endAddFile(queue(API_SYSTEM_OPERATION_ADDFILE,request));
+    }
 
 }
