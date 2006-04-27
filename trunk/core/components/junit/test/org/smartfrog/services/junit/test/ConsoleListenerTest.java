@@ -20,7 +20,7 @@
 package org.smartfrog.services.junit.test;
 
 import junit.framework.TestCase;
-import org.smartfrog.services.junit.TestInfo;
+import org.smartfrog.services.junit.data.TestInfo;
 import org.smartfrog.services.junit.TestListener;
 import org.smartfrog.services.junit.listeners.ConsoleListenerComponent;
 

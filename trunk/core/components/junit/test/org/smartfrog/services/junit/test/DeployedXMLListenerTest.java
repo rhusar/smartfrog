@@ -19,7 +19,7 @@
  */
 package org.smartfrog.services.junit.test;
 
-import org.smartfrog.services.junit.Statistics;
+import org.smartfrog.services.junit.data.Statistics;
 import org.smartfrog.services.junit.TestRunner;
 import org.smartfrog.services.junit.listeners.XmlListener;
 import org.smartfrog.services.junit.listeners.XmlListenerFactory;
