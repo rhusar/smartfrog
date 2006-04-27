@@ -340,26 +340,4 @@ public class ComponentHelper {
         return implementsInterface(clazz.getSuperclass(),interfaceName);
     }
 
-    /**
-     * Copy the source vector to a new vector that has resolved all LAZY references
-     * @param vector
-     * @return a vector with all references inside resolved
-     * @throws SmartFrogResolutionException if a reference will not resolve
-     */
-    public Vector resolveVectorReferences(Vector vector) throws SmartFrogResolutionException {
-        Vector result=new Vector(vector.size());
-        Iterator it=vector.iterator();
-        while (it.hasNext()) {
-            Object element = (Object) it.next();
-            if(element instanceof Reference) {
-                Reference ref=(Reference) element;
-                element = ref.resolve(owner, 0);
-                if (element instanceof SFMarshalledObject) {
-                    element = ((SFMarshalledObject) element).get();
-                }                
-            }
-            result.add(element);
-        }
-        return result;
-    }
 }
