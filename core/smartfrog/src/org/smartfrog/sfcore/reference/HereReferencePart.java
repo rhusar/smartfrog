@@ -234,8 +234,7 @@ public class HereReferencePart extends ReferencePart {
     private Vector sfResolveVector(ReferenceResolver rr, Vector vToResolve) throws SmartFrogResolutionException{
         try {
             Vector vec = new Vector();
-            for (Enumeration e = ((Vector)vToResolve).elements();
-                 e.hasMoreElements(); ) {
+            for (Enumeration e = ((Vector)vToResolve).elements(); e.hasMoreElements(); ) {
                 Object value = e.nextElement();
                 if (value instanceof Reference) {
                     value = rr.sfResolve((Reference)value, 0);
@@ -248,8 +247,9 @@ public class HereReferencePart extends ReferencePart {
             return vec;
         } catch (SmartFrogResolutionException ex) {
           SmartFrogResolutionException rex = new SmartFrogResolutionException(ex);
-          rex.setContainer(ex.get(SmartFrogResolutionException.REFERENCE),vToResolve);
-          throw rex;        }
+          rex.setContainer(value,vToResolve);
+          throw rex;
+      }
     }
     /**
      * Recursively resolves any internal reference in  Vector container.
@@ -265,8 +265,7 @@ public class HereReferencePart extends ReferencePart {
         Object value = null;
         try {
             Vector vec = new Vector();
-            for (Enumeration e = ((Vector)vToResolve).elements();
-                 e.hasMoreElements(); ) {
+            for (Enumeration e = ((Vector)vToResolve).elements();e.hasMoreElements(); ) {
                 value = e.nextElement();
                 if (value instanceof Reference) {
                     value = rr.sfResolve((Reference)value, 0);
