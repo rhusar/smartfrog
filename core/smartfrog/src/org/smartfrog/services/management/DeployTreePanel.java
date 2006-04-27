@@ -34,6 +34,7 @@ import java.rmi.RemoteException;
 import javax.swing.tree.TreePath;
 import java.io.StringWriter;
 import java.io.PrintWriter;
+import org.smartfrog.sfcore.common.ContextImpl;
 
 /**
  * Tree panel for SmartFrog hierarchy of components.
@@ -325,23 +326,29 @@ public class DeployTreePanel extends JPanel implements TreeSelectionListener {
           String stackTrace = null;
           try {
               Object objSolvedValue = sfResolve(attribName.toString(), node);
-              solvedValue.append(objSolvedValue.toString());
+              String tempString = objSolvedValue.toString();
+              try { tempString = ContextImpl.getBasicValueFor(objSolvedValue); } catch (Exception ex1){}
+              solvedValue.append(tempString);
               solvedValueClass = objSolvedValue.getClass().toString();
           } catch (Exception ex) {
-              solvedValue.append(" Failed to resolve ("+attribName+"): "+ex.toString());
+              solvedValue.append(" Failed to resolve ("+attribName+"): "+
+                                 ex.toString());
               try {
                   StringWriter sw = new StringWriter();
                   PrintWriter pw = new PrintWriter(sw);
                   ex.printStackTrace(pw);
-                  stackTrace =("\r\n"+sw.toString()+"\r\n");
+                  stackTrace = ("\r\n"+sw.toString()+"\r\n");
               } catch (Exception e2) {
                   ex.printStackTrace();
               }
           }
+          String tempString = "";
           StringBuffer text = new StringBuffer();
           text.append("* Attribute: "+attribName);
           text.append("\n * Value: ");
-          text.append("\n"+value.toString());
+          tempString = value.toString();
+          try { tempString = ContextImpl.getBasicValueFor(value); } catch (Exception ex1) { }//ignore exception }
+          text.append("\n"+tempString);
           text.append("\n * Value resolved: \n"+solvedValue.toString());
           text.append("\n\n"+"+ Value class:"+value.getClass().toString());
           text.append("\n"+"+ Solved Value class:"+solvedValueClass);
