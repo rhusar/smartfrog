@@ -149,11 +149,11 @@
             <artifactId>commons-logging-api</artifactId>
             <version>${commons-logging.version}</version>
           </dependency>
-          <dependency>
+<!--          <dependency>
             <groupId>xalan</groupId>
             <artifactId>xalan</artifactId>
             <version>${xalan.version}</version>
-          </dependency>
+          </dependency>-->
           <dependency>
             <groupId>xerces</groupId>
             <artifactId>xercesImpl</artifactId>
@@ -176,6 +176,14 @@
               <exclusion>
                 <groupId>jdom</groupId>
                 <artifactId>jdom</artifactId>
+              </exclusion>
+              <exclusion>
+                <groupId>xalan</groupId>
+                <artifactId>xalan</artifactId>
+              </exclusion>
+              <exclusion>
+                <groupId>jaxme</groupId>
+                <artifactId>jaxme</artifactId>
               </exclusion>
             </exclusions>
           </dependency>
