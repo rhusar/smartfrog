@@ -83,7 +83,6 @@ public class ChainListenerComponent extends PrimImpl implements TestListenerFact
         super.sfStart();
         Vector factoryList=null;
         factoryList=sfResolve(ATTR_LISTENERS, factoryList,true);
-        factoryList=helper.resolveVectorReferences(factoryList);
         factories=new ArrayList(factoryList.size());
         Iterator fit=factoryList.iterator();
         while (fit.hasNext()) {

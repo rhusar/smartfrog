@@ -23,15 +23,15 @@ import junit.framework.AssertionFailedError;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestResult;
-import org.smartfrog.sfcore.common.SFMarshalledObject;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogInitException;
 import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
 import org.smartfrog.sfcore.logging.Log;
 import org.smartfrog.sfcore.prim.PrimImpl;
-import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.security.SFClassLoader;
 import org.smartfrog.sfcore.utils.ComponentHelper;
+import org.smartfrog.services.junit.data.Statistics;
+import org.smartfrog.services.junit.data.TestInfo;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -45,7 +45,7 @@ import java.util.Properties;
 
 
 /**
- * Implementation of the Junit test suite component. This is where tests are
+ * Implementation of the Junit3.8.x test suite component. This is where tests are
  * actually run; we bring up Junit internally and run it here created
  * 14-May-2004 15:14:23
  */
@@ -273,16 +273,6 @@ public class JUnitTestSuiteImpl extends PrimImpl implements JUnitTestSuite,
         Iterator index = src.iterator();
         while (index.hasNext()) {
             Object element = index.next();
-            if (element instanceof Reference) {
-                //its a reference, resolve it then continue.
-                //here because sometimes lazy stuff was still a reference at this
-                //point in time
-                Reference ref = (Reference) element;
-                element = ref.resolve(this, 0);
-                if (element instanceof SFMarshalledObject) {
-                    element = ((SFMarshalledObject) element).get();
-                }
-            }
             if (element instanceof List) {
                 List l2 = flattenStringList((List) element, name);
                 for (Iterator i2 = l2.iterator(); i2.hasNext();) {
@@ -436,6 +426,8 @@ public class JUnitTestSuiteImpl extends PrimImpl implements JUnitTestSuite,
         try {
             // check if there is a suite method
             Method method = clazz.getMethod(SUITE_METHOD_NAME, new Class[0]);
+            //despite what IDEs say, there is no redundant cast here, as we don't want
+            //java1.5 to get confused.
             return (Test) method.invoke(null, (Object[]) new Class[0]);
         } catch (NoSuchMethodException e) {
             //if not, assume that it is a testclass and do it that way

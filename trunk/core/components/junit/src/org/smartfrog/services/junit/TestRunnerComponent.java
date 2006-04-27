@@ -30,6 +30,8 @@ import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.utils.ComponentHelper;
 import org.smartfrog.sfcore.utils.ShouldDetachOrTerminate;
+import org.smartfrog.services.junit.data.Statistics;
+import org.smartfrog.services.junit.data.ThrowableTraceInfo;
 
 import java.rmi.RemoteException;
 import java.util.Enumeration;

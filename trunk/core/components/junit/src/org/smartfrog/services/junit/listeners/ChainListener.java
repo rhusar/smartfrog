@@ -20,7 +20,8 @@
 package org.smartfrog.services.junit.listeners;
 
 import org.smartfrog.services.junit.TestListener;
-import org.smartfrog.services.junit.TestInfo;
+import org.smartfrog.services.junit.data.TestInfo;
+import org.smartfrog.services.junit.data.LogEntry;
 import org.smartfrog.services.junit.TestListenerFactory;
 import org.smartfrog.services.junit.TestSuite;
 import org.smartfrog.sfcore.common.SmartFrogException;
@@ -154,6 +155,15 @@ public class ChainListener implements TestListener {
             TestListener testListener = (TestListener) i.next();
             testListener.startTest(test);
         }
+    }
+
+    public void log(LogEntry event) throws RemoteException, SmartFrogException {
+        Iterator i = iterator();
+        while (i.hasNext()) {
+            TestListener testListener = (TestListener) i.next();
+            testListener.log(event);
+        }
+
     }
 
 }

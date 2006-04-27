@@ -21,8 +21,9 @@
 
 package org.smartfrog.services.junit.listeners;
 
-import org.smartfrog.services.junit.TestInfo;
-import org.smartfrog.services.junit.ThrowableTraceInfo;
+import org.smartfrog.services.junit.data.TestInfo;
+import org.smartfrog.services.junit.data.ThrowableTraceInfo;
+import org.smartfrog.services.junit.data.LogEntry;
 import org.smartfrog.sfcore.common.SmartFrogException;
 
 import java.io.BufferedOutputStream;
@@ -278,6 +279,16 @@ public class OneHostXMLListener implements XmlListener {
     public void startTest(TestInfo test) throws RemoteException,
             SmartFrogException {
         //do nothing
+    }
+
+    /**
+     * Log an event
+     * @param event
+     * @throws RemoteException
+     * @throws SmartFrogException
+     */
+    public void log(LogEntry event) throws RemoteException, SmartFrogException {
+        //TODO: process this
     }
 
     /**

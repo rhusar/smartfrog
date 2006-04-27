@@ -19,8 +19,9 @@
  */
 package org.smartfrog.services.junit;
 
-import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.services.junit.data.TestInfo;
+import org.smartfrog.services.junit.data.LogEntry;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
@@ -69,4 +70,11 @@ public interface TestListener extends Remote {
      */
     void startTest(TestInfo test) throws RemoteException, SmartFrogException;
 
+    /**
+     * Log an event
+     * @param event what happened
+     * @throws RemoteException
+     * @throws SmartFrogException
+     */
+    void log(LogEntry event) throws RemoteException, SmartFrogException;
 }
