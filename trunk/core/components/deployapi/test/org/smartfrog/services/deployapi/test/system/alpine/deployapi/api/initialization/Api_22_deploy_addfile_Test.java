@@ -20,23 +20,27 @@
 package org.smartfrog.services.deployapi.test.system.alpine.deployapi.api.initialization;
 
 import org.smartfrog.services.deployapi.test.system.alpine.deployapi.api.StandardTestBase;
+import org.smartfrog.services.deployapi.binding.XomHelper;
+import org.smartfrog.services.deployapi.binding.UriListType;
+import org.smartfrog.services.xml.utils.XomUtils;
 import org.smartfrog.projects.alpine.om.soap11.SoapMessageParser;
 import org.smartfrog.projects.alpine.om.base.SoapElement;
 import org.ggf.cddlm.generated.api.CddlmConstants;
-import nu.xom.Element;
 import nu.xom.Document;
+
+import java.net.URI;
 
 /**
  * created 13-Apr-2006 13:51:02
  * Create a system , then destroy it immediately.
  */
 
-public class Api_22_deploy_inline_Test extends StandardTestBase {
+public class Api_22_deploy_addfile_Test extends StandardTestBase {
 
 
 
 
-    public Api_22_deploy_inline_Test(String name) {
+    public Api_22_deploy_addfile_Test(String name) {
         super(name);
     }
 
@@ -52,10 +56,27 @@ public class Api_22_deploy_inline_Test extends StandardTestBase {
     public void testInlineDeploy() throws Exception {
         SoapMessageParser parser = createXmlParser();
         Document document = parser.parseResource(CddlmConstants.INTEROP_API_TEST_DOC_1_VALID_DESCRIPTOR);
-        Element cdl=(Element) document.getRootElement().copy();
-        SoapElement request = getDescriptorHelper().createInitRequestInline(CddlmConstants.XML_CDL_NAMESPACE, cdl, null);
+        //base-64 encode it
+        String  encoded= XomUtils.base64Encode(document);
+
+        SoapElement addFileRequest = XomHelper.addFileRequest(
+                new URI("http://example.org/valid-cdl.cdl"),
+                "application+xml",
+                "file",
+                encoded,
+                null
+                );
+        UriListType uris = getSystem().addFile(addFileRequest);
+        assertFalse(uris.isEmpty());
+
+        URI firstURI=uris.get(0);
+
+        SoapElement request = getDescriptorHelper().createInitRequestURL(CddlmConstants.XML_CDL_NAMESPACE,
+                firstURI.toString(),
+                null);
         getSystem().initialize(request);
         getSystem().ping();
     }
+
 
 }

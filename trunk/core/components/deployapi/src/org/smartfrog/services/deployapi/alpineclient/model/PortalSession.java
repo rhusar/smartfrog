@@ -72,7 +72,7 @@ public class PortalSession extends WsrfSession {
      */
     public SystemSession endLookupSystem(Transmission tx) {
         MessageDocument response = tx.blockForResult(getTimeout());
-        checkResponseMessageType(tx, QNAME_LOOKUP_SYSTEM_RESPONSE);
+        extractResponse(tx, QNAME_LOOKUP_SYSTEM_RESPONSE);
         Element payload = response.getPayload();
         //get the WSA address back
         AlpineEPR epr=new AlpineEPR(payload,CddlmConstants.WS_ADDRESSING_NAMESPACE);
@@ -121,7 +121,7 @@ public class PortalSession extends WsrfSession {
      */
     public SystemSession endCreate(Transmission tx) {
         MessageDocument response = tx.blockForResult(getTimeout());
-        checkResponseMessageType(tx, QNAME_CREATE_SYSTEM_RESPONSE);
+        extractResponse(tx, QNAME_CREATE_SYSTEM_RESPONSE);
         Element payload = response.getPayload();
         return new SystemSession(this, payload);
     }

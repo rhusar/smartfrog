@@ -42,11 +42,15 @@ public class Api_07_system_destroy_properties_Test extends StandardTestBase {
         system.getResourceProperty(CddlmConstants.PROPERTY_MUWS_RESOURCEID);
         system.getResourceProperty(CddlmConstants.PROPERTY_SYSTEM_CREATED_TIME);
         system.destroy();
+        Element result = null;
         try {
-            Element result = system.getResourceProperty(CddlmConstants.PROPERTY_MUWS_RESOURCEID);
+            for (int i = 1; i <= 128; i *= 2) {
+                result = system.getResourceProperty(CddlmConstants.PROPERTY_MUWS_RESOURCEID);
+                sleep(i);
+            }
             fail("Expected failure, got a system with resid " + result.getValue());
         } catch (AlpineRuntimeException e) {
-
+            //expected error of some form or other
         }
     }
 

@@ -209,4 +209,7 @@
   <target name="conditional-daemon-exit" unless="no.stop.daemon">
     <antcall target="stop-daemon-if-started"/>
   </target>
+
+
+  <target name="all" depends="m2-install,test" /> 
 </project>

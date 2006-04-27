@@ -26,6 +26,7 @@ import org.ggf.cddlm.generated.api.CddlmConstants;
 import org.smartfrog.projects.alpine.core.MessageContext;
 import org.smartfrog.projects.alpine.faults.ServerException;
 import org.smartfrog.projects.alpine.om.soap11.MessageDocument;
+import org.smartfrog.projects.alpine.om.base.SoapElement;
 import org.smartfrog.services.deployapi.engine.Application;
 import org.smartfrog.services.deployapi.engine.JobRepository;
 import org.smartfrog.services.deployapi.engine.ServerInstance;
@@ -126,7 +127,7 @@ public abstract class AlpineProcessor extends FaultRaiser {
      * @return the response message, with body and headers set up.
      */
     public void process(MessageDocument request, MessageDocument response) {
-        Element payload = request.getPayload();
+        SoapElement payload = (SoapElement) request.getPayload();
         if (payload == null) {
             throw new ServerException("Empty SOAP message");
         }
@@ -149,7 +150,7 @@ public abstract class AlpineProcessor extends FaultRaiser {
      * @param payload received contents of the SOAP Body
      * @return the body of the response or null for an empty response
      */
-    public Element process(Element payload) throws IOException {
+    public Element process(SoapElement payload) throws IOException {
         //do nothing
         return null;
     }

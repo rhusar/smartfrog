@@ -24,6 +24,7 @@ import org.smartfrog.services.deployapi.engine.JobRepository;
 import org.smartfrog.services.deployapi.engine.ServerInstance;
 import org.smartfrog.services.deployapi.system.Constants;
 import org.smartfrog.services.deployapi.transport.endpoints.alpine.WsrfHandler;
+import org.smartfrog.projects.alpine.om.base.SoapElement;
 
 import java.io.IOException;
 
@@ -39,7 +40,7 @@ public class DestroyProcessor extends SystemProcessor {
     }
 
 
-    public Element process(Element request) throws IOException {
+    public Element process(SoapElement request) throws IOException {
         jobMustExist();
         JobRepository jobs = ServerInstance.currentInstance().getJobs();
         jobs.destroy(job);

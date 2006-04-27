@@ -27,6 +27,7 @@ import org.smartfrog.services.deployapi.engine.JobRepository;
 import org.smartfrog.services.deployapi.engine.ServerInstance;
 import org.smartfrog.services.deployapi.system.Constants;
 import org.smartfrog.services.deployapi.transport.endpoints.alpine.WsrfHandler;
+import org.smartfrog.projects.alpine.om.base.SoapElement;
 
 import java.io.IOException;
 import java.rmi.RemoteException;
@@ -63,7 +64,7 @@ public class TerminateProcessor extends SystemProcessor {
      * @return the response
      * @throws java.io.IOException
      */
-    public Element process(Element request) throws IOException {
+    public Element process(SoapElement request) throws IOException {
         if (job != null) {
             String reason = XomHelper.getElementValue(request, "api:reason");
             terminate(reason);
