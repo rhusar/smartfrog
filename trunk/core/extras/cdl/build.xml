@@ -195,5 +195,7 @@ sfConfig extends DefaultCompound;
   <target name="console" 
     depends="start-daemon-if-needed,start-console"/>
   
-  
+
+  <target name="all" depends="m2-install,test" />
+
 </project>
