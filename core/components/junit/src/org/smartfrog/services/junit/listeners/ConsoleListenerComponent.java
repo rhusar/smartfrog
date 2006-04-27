@@ -19,10 +19,11 @@
  */
 package org.smartfrog.services.junit.listeners;
 
-import org.smartfrog.services.junit.TestInfo;
+import org.smartfrog.services.junit.data.TestInfo;
 import org.smartfrog.services.junit.TestListener;
 import org.smartfrog.services.junit.TestSuite;
-import org.smartfrog.services.junit.ThrowableTraceInfo;
+import org.smartfrog.services.junit.data.ThrowableTraceInfo;
+import org.smartfrog.services.junit.data.LogEntry;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.prim.TerminationRecord;
@@ -79,7 +80,7 @@ public class ConsoleListenerComponent extends PrimImpl
     }
 
 
-    public void log(String s) {
+    public void println(String s) {
         outputstream.println(s);
     }
 
@@ -95,7 +96,7 @@ public class ConsoleListenerComponent extends PrimImpl
         buffer.append(test.getHostname());
         buffer.append('\n');
         buffer.append(test.getText());
-        log(buffer.toString());
+        println(buffer.toString());
         flush();
         logTrace(test.getFault());
     }
@@ -104,11 +105,11 @@ public class ConsoleListenerComponent extends PrimImpl
         if (fault == null) {
             return;
         }
-        log(fault.getClassname());
-        log(fault.getMessage());
+        println(fault.getClassname());
+        println(fault.getMessage());
         StackTraceElement stack[] = fault.getStack();
         for (int i = 0; i < stack.length; i++) {
-            log(stack[i].toString());
+            println(stack[i].toString());
         }
         flush();
         //recurse
@@ -154,7 +155,7 @@ public class ConsoleListenerComponent extends PrimImpl
         }
 
         public void endTest(TestInfo test) throws RemoteException {
-            log("   ending " +
+            println("   ending " +
                     test.getClassname() +
                     " on " +
                     test.getHostname());
@@ -162,10 +163,14 @@ public class ConsoleListenerComponent extends PrimImpl
         }
 
         public void startTest(TestInfo test) throws RemoteException {
-            log("Starting " +
+            println("Starting " +
                     test.getClassname() +
                     " on " +
                     test.getHostname());
+        }
+
+        public void log(LogEntry event) throws RemoteException, SmartFrogException {
+            println(event.toString());
         }
     }
 }

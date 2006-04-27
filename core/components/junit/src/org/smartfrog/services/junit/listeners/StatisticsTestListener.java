@@ -20,7 +20,7 @@
 package org.smartfrog.services.junit.listeners;
 
 import org.smartfrog.services.junit.TestListenerFactory;
-import org.smartfrog.services.junit.Statistics;
+import org.smartfrog.services.junit.data.Statistics;
 
 import java.rmi.RemoteException;
 
