@@ -24,6 +24,7 @@ import java.util.Enumeration;
 
 import org.smartfrog.services.trace.Entry;
 import org.smartfrog.sfcore.common.Context;
+import org.smartfrog.sfcore.common.ContextImpl;
 import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
 import org.smartfrog.sfcore.compound.Compound;
 import org.smartfrog.sfcore.prim.Prim;
@@ -301,9 +302,13 @@ public class DeployEntry implements Entry {
             for (Enumeration e = context.keys(); e.hasMoreElements();) {
                 name="";
                 value=null;
-                solvedValue=null;
                 name = e.nextElement().toString();
                 value = context.get(name);
+                try {
+                    value = ContextImpl.getBasicValueFor(value);
+                } catch (Exception ex1) {
+                    //ignore
+                }
 
                 if (!isChild(value)) {
                     try {

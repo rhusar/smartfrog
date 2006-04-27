@@ -298,8 +298,8 @@ public class DeployTreePanel extends JPanel implements TreeSelectionListener {
      */
     void table_mouseClicked(MouseEvent e) {
         try {
-            Object value = this.table.getValueAt(this.table.getSelectedRow(), 0);
-            resolveAttrib(value);
+            Object attrib = this.table.getValueAt(this.table.getSelectedRow(), 0);
+            resolveAttrib(attrib);
         } catch (Exception ex) {
             //ex.printStackTrace();
         }
