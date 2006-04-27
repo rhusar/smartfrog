@@ -584,7 +584,7 @@ public class LogToLog4JImpl implements LogToLog4J, Log, LogMessage, LogLevel, Se
    * @param t log this cause
    */
   public void err(Object message, SmartFrogException t) {
-    err(message, t);
+    err(message, (Throwable)t);
   }
 
 }
