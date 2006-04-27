@@ -30,6 +30,7 @@ import java.io.IOException;
 
 import org.smartfrog.sfcore.common.SmartFrogContextException;
 import org.smartfrog.sfcore.languages.sf.SmartFrogCompileResolutionException;
+import java.io.PrintWriter;
 
 
 /**
@@ -389,8 +390,7 @@ public class ContextImpl extends OrderedHashtable implements Context,
      *
      * @throws IOException failure while writing
      */
-    protected void writeBasicValueOn(Writer ps, int indent, Object value)
-        throws IOException {
+    protected static void writeBasicValueOn(Writer ps, int indent, Object value) throws IOException {
         if (value instanceof String) {
             ps.write("\"" + unfixEscapes((String)value) + "\"");
         } else if (value instanceof Vector) {
@@ -404,7 +404,6 @@ public class ContextImpl extends OrderedHashtable implements Context,
                     ps.write(", ");
                 }
             }
-
             ps.write("|]");
         } else if (value instanceof Long) {
             ps.write(value.toString() + 'L');
@@ -415,7 +414,7 @@ public class ContextImpl extends OrderedHashtable implements Context,
         }
     }
 
-    private String unfixEscapes(String s) {
+    private static String unfixEscapes(String s) {
         s = s.replaceAll("\\\\", "\\\\\\\\");
         s = s.replaceAll("\n", "\\\\n");
         s = s.replaceAll("\t", "\\\\t");
@@ -426,6 +425,24 @@ public class ContextImpl extends OrderedHashtable implements Context,
     }
 
     /**
+     * Gets a given value in its String from. Recognizes descriptions, strings and
+     * vectors of basic values and turns them into string representation.
+     * Default is to turn into string using normal toString() call
+     *
+     * @param ps writer to write on
+     * @param indent indent level
+     * @param value value to stringify
+     *
+     * @throws IOException failure while writing
+     */
+    public static String getBasicValueFor (Object obj) throws IOException {
+        StringWriter sw = new StringWriter();
+        PrintWriter pw = new PrintWriter(sw);
+        writeBasicValueOn(pw,0,obj);
+        return sw.toString();
+    }
+
+    /**
      * Internal method to pad out a writer.
      *
      * @param ps writer to tab to
@@ -433,7 +450,7 @@ public class ContextImpl extends OrderedHashtable implements Context,
      *
      * @throws IOException failure while writing
      */
-    protected void tabPad(Writer ps, int amount) throws IOException {
+    protected static void tabPad(Writer ps, int amount) throws IOException {
         for (int i = 0; i < amount; i++)
             ps.write("  ");
     }
