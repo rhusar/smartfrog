@@ -92,7 +92,7 @@ public class LogToPrimImpl extends LogToStreamsImpl implements LogToPrim {
     /**
      *  Reads optional and mandatory attributes.
      *
-     * @exception  SmartFrogException error while reading attributes
+     * @exception SmartFrogResolutionException error while reading attributes
      */
     protected void readSFPrimAttributes(ComponentDescription cd) throws SmartFrogResolutionException {
         if (cd==null) return;
