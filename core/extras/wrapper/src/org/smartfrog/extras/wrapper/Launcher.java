@@ -34,8 +34,12 @@ import java.util.logging.Logger;
 /**
  * Taken from the ant launcher and reworked
  * <p/>
- * This class 1. extracts SFHOME from the command line or the environment 2.
- * executes any -lib operations 3.
+ * This class extracts SFHOME from the command line or the environment and
+ * executes any -lib operations
+ *
+ *
+ * Uniquely in the .sf code, it uses the Java1.4 logging API.
+ * This eliminates a dependency at this stage in the application's launch
  */
 public class Launcher {
     /**
@@ -82,11 +86,11 @@ public class Launcher {
             Launcher launcher = new Launcher();
             LauncherInfo info = launcher.prelaunch(args);
             WrappedEntryPoint wrappedEntryPoint = info.load();
+            wrappedEntryPoint.start();
         } catch (LaunchException e) {
             log.log(Level.SEVERE, "no launch", e);
-            System.err.println(e.getMessage());
         } catch (Throwable t) {
-            t.printStackTrace();
+            log.log(Level.SEVERE, "no launch", t);
         }
     }
 

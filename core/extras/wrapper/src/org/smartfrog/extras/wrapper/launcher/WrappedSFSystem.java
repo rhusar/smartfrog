@@ -154,8 +154,7 @@ public class WrappedSFSystem extends SFSystem implements Runnable,
     }
 
     /**
-     * Block till stopping has finished. There is no timeout, because we expect
-     * the
+     * Block till stopping has finished.
      *
      * @param seconds timeout;
      * @return true if we were successful
