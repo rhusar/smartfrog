@@ -29,7 +29,6 @@ import org.smartfrog.services.filesystem.filestore.AddedFilestore;
 import org.smartfrog.services.filesystem.filestore.FileEntry;
 import org.smartfrog.services.xml.utils.XomUtils;
 import org.smartfrog.projects.alpine.om.base.SoapElement;
-import org.ggf.cddlm.generated.api.CddlmConstants;
 
 import java.io.IOException;
 
@@ -47,22 +46,19 @@ public class AddFileProcessor extends SystemProcessor {
         jobMustExist();
         AddedFilestore filestore = ServerInstance.currentInstance()
                 .getFilestore();
-        Element body =request.getFirstChildElement(CddlmConstants.API_ELEMENT_ADDFILE_REQUEST,
-                CddlmConstants.CDL_API_TYPES_NAMESPACE);
-
-        String name = XomHelper.getElementValue(body, "api:name");
-        String schema = XomHelper.getElementValue(body,
-                "api:schema");
-        if (!(FILE_SCHEMA.equals(schema))) {
-            throw FaultRaiser.raiseNotImplementedFault("Unsupported schema type");
+        String name = XomHelper.getElementValue(request, "api:name");
+        String scheme = XomHelper.getElementValue(request,
+                "api:scheme");
+        if (!(FILE_SCHEMA.equals(scheme))) {
+            throw FaultRaiser.raiseNotImplementedFault("Unsupported scheme type");
         }
-        String mimetype = XomHelper.getElementValue(body,
+        String mimetype = XomHelper.getElementValue(request,
                 "api:mimetype");
-        Element metadata = XomHelper.getElement(body, "api:metadata", true);
+        Element metadata = XomHelper.getElement(request, "api:metadata", false);
         FileEntry newFile = filestore.createNewFile(FILE_SCHEMA, SUFFIX);
 
-        String uri= XomHelper.getElementValue(body, "api:uri", false);
-        String data = XomHelper.getElementValue(body, "api:data", false);
+        String uri= XomHelper.getElementValue(request, "api:uri", false);
+        String data = XomHelper.getElementValue(request, "api:data", false);
         if(uri==null ) {
             if(data==null) {
                 throw FaultRaiser.raiseBadArgumentFault("Neither uri nor data supplied");

@@ -104,34 +104,20 @@
   <target name="ready-to-declare-classpaths" depends="init,m2-tasks,core.load-version-info" />
 
   <target name="core-libraries" depends="ready-to-declare-classpaths">
-    <m2:libraries pathID="core.classpath">
-
-      <dependency groupID="org.ggf"
-        artifactID="cddlm"
-        version="${cddlm.version}"/>
+    <m2:libraries pathID="core.classpath" >
       <dependency groupID="commons-lang"
         artifactID="commons-lang"
-        version="${commons-lang.version}"/>
+        version="${commons-lang.version}">
+        <exclusion
+            groupId="junit"
+            artifactId="junit"/>
+      </dependency>
       <dependency groupID="commons-logging"
         artifactID="commons-logging-api"
         version="${commons-logging.version}"/>
       <dependency groupID="log4j"
         artifactID="log4j"
         version="${log4j.version}"/>
-<!--
-      <dependency groupID="junit"
-        artifactID="junit"
-        version="${junit.version}"/>
--->
-      <dependency groupID="jaxen"
-          artifactID="jaxen"
-          version="${jaxen.version}"/>
-      <dependency groupID="xom"
-        artifactID="xom"
-        version="${xom.version}"/>
-      <dependency groupID="xalan"
-        artifactID="xalan"
-        version="${xalan.version}"/>
     </m2:libraries>
   </target>
   
@@ -153,7 +139,7 @@
   
   <target name="smartfrog-modules-classpath" 
     depends="ready-to-declare-classpaths">
-    <m2:libraries pathID="smartfrog.modules.classpath">
+    <m2:libraries pathID="smartfrog.modules.classpath" verbose="true">
       <dependency groupID="org.smartfrog"
         artifactID="sf-xml"
         version="${smartfrog.version}"/>
@@ -196,16 +182,6 @@
     </m2:libraries>
   </target>
 
-  <target name="stax-libraries" depends="ready-to-declare-classpaths">
-    <m2:libraries pathID="stax.classpath">
-      <dependency groupID="stax"
-          artifactID="stax"
-          version="${stax.version}"/>
-      <dependency groupID="stax"
-          artifactID="stax-api"
-          version="${stax-api.version}"/>
-    </m2:libraries>
-  </target>
 
   <target name="declare-exec.classpath" depends="declare-compile.classpath" >
     <path id="exec.classpath">
@@ -266,31 +242,6 @@
         excludes="**/engine/Job.java,**/axis2/**"
         />
     <core:copy-useful-files src="${src.dir}" dest="${build.classes.dir}"/>
-  </target>
-
-  <target name="archives" depends="init"
-    description="create the .aar files">
-  
-    <property name="build.archives.dir" location="${build.dir}/archives" />
-    <mkdir dir="${build.archives.dir}" /> 
-    <property name="system.aar" location="${build.archives.dir}/system.aar" />
-    <property name="archives.dir" location="archives" />
-    <jar destFile="${system.aar}">
-      <fileset dir="${archives.dir}/system" includes="**/*" />
-    </jar>
-<!--
-    <property name="portal.aar" location="${build.archives.dir}/portal.aar"/>
-    <jar destFile="${portal.aar}">
-      <fileset dir="${archives.dir}/portal" includes="**/*"/>
-    </jar>
--->
-  </target>  
-
-  <target name="copy-archives" depends="archives"
-      description="copy the archives to where they can be checked in to SCM">
-    <copy todir="${services.dir}">
-      <fileset dir="${build.archives.dir}" includes="*.aar" /> 
-    </copy>
   </target>
 
   <target name="default" depends="war" />
@@ -427,7 +378,7 @@
    <target name="post-compile" depends="dist.post-compile,prepare-libraries" />
   
   <!-- make the WAR file -->
-  <target name="war" depends="post-compile,copy-archives"
+  <target name="war" depends="post-compile"
       description="Create the WAR file">
     <property name="target.war.name"  
       value="${artifact.name}-war-${artifact.version}.war" />
@@ -482,8 +433,8 @@
     <copypath destDir="${build.codebase.dir}" pathref="smartfrog.modules.classpath">
       <flattenmapper/>
     </copypath>
+    <!--now purge some junk that is creeping in that we do *not* want.-->
   </target>
-  
   <!-- ========================================================== -->
   <!-- set-->
   <!-- ========================================================== -->
@@ -531,8 +482,36 @@
       </ac:then>
     </ac:if>
   </target>
-  
-  
+
+  <target name="parse-server" depends="package-tests,init-codebase"
+      description="parse the deployment descriptor for a server">
+    <fail unless="server">Set the "server" property!</fail>
+    <property name="server.dir" location="hosts/${server}" />
+    <property name="parse.timestamp"
+        location="${build.dir}/parse-${server}.timestamp"/>
+    <property name="default.sf"
+        location="${server.dir}/default.sf"/>
+    <ac:if>
+      <not>
+        <uptodate
+            srcfile="${default.sf}"
+            targetfile="${parse.timestamp}"/>
+      </not>
+      <ac:then>
+        <sf:parse quiet="${parse.quiet}">
+          <classpath path="${target.jar}:${test.jar}"/>
+          <sysproperty key="deployapi.war.dir"
+              value="${deployapi.war.dir}"/>
+          <sysproperty key="org.smartfrog.codebase"
+              value="${codebase}"/>
+          <!-- source files -->
+          <source file="${default.sf}"/>
+        </sf:parse>
+        <!-- on success, we touch a property file to note we got it out -->
+        <touch file="${parse.timestamp}"/>
+      </ac:then>
+    </ac:if>
+  </target>
 
   <!-- ========================================================== -->
   <!-- deploy; requires a host -->
@@ -567,8 +546,90 @@
       timeout="30000"
       application="${application.name}"/>
   </target>
-    
-  
-  
-  
+
+
+  <!-- ========================================================== -->
+  <!-- installation includes the test jars as well as all the dependencies-->
+  <!-- ========================================================== -->
+  <target name="install" depends="init-codebase,dist,package-tests,m2-install">
+    <property name="install.dir" location="${smartfrog.dist.lib.dir}"/>
+    <mkdir dir="${install.dir}"/>
+    <copy todir="${install.dir}">
+      <fileset file="${target.jar}"/>
+      <fileset file="${test.jar}"/>
+      <fileset dir="${build.codebase.dir}" includes="*.jar"/>
+    </copy>
+  </target>
+
+  <!-- SCP logic from JDwA, core-chapter-08.xml -->
+
+
+  <!--
+    init file should look like
+    ssh.server=192.168.2.84
+    ssh.user=${user.name}
+    ssh.dir=SmartFrog/dist/
+    ssh.keyfile=${user.home}/.ssh/id_rsa
+    ssh.passphrase=secret
+    ssh.port=22
+    ssh.verbose=true
+
+    the secure/ dir should not be readable by group; in windows lock it down
+      -->
+  <target name="ssh-init" depends="init">
+    <fail unless="server">Set the "server" property!</fail>
+    <property name="ssh.propfile"
+        location="hosts/secure/${server}.ssh.properties"/>
+    <loadproperties srcFile="${ssh.propfile}"/>
+    <property name="tmp.dir" location="${build.dir}/tmp"/>
+    <mkdir dir="${tmp.dir}"/>
+    <presetdef name="ssh-cmd">
+      <sshexec host="${ssh.server}"
+          username="${ssh.user}"
+          passphrase="${ssh.passphrase}"
+          keyfile="${ssh.keyfile}"/>
+    </presetdef>
+    <presetdef name="ssh-cp">
+      <scp
+          passphrase="${ssh.passphrase}"
+          keyfile="${ssh.keyfile}"
+          port="${ssh.port}"
+          verbose="${ssh.verbose}">
+      </scp>
+    </presetdef>
+  </target>
+
+
+  <target name="ssh-mkdirs" depends="ssh-init">
+    <ssh-cmd command="mkdir -p ${ssh.dir}/bin"/>
+    <ssh-cmd command="mkdir -p ${ssh.dir}/lib"/>
+    <ssh-cmd failonerror="false" command="cd ${ssh.dir}/bin; ./sfStopDaemon localhost" />
+  </target>
+
+  <target name="ssh-prepare-files" depends="install">
+    <fileset id="ssh.fileset" dir="${install.dir}" includes="*.jar" />
+  </target>
+
+  <!-- insert trust="true" to turn on trust -->
+  <target name="scp-upload" depends="ssh-init,ssh-mkdirs,ssh-prepare-files">
+    <echo>SCP target is ${ssh.server}</echo>
+    <property name="ssh.path"
+        value="${ssh.user}@${ssh.server}:${ssh.dir}"/>
+    <!--copy the binaries-->
+    <ssh-cp remoteToDir="${ssh.path}/lib">
+      <fileset refid="ssh.fileset"/>
+    </ssh-cp>
+    <ssh-cp remoteToDir="${ssh.path}/bin">
+      <fileset dir="hosts/${server}" includes="default.*"/>
+    </ssh-cp>
+
+  </target>
+
+  <target name="ssh-run" depends="ssh-init">
+    <ssh-cmd command="cd ${ssh.dir}; nohup ./sfStopDaemon > log.txt &amp;"/>
+  </target>
+
+  <target name="scp" depends="scp-upload"
+      description="upload the files"/>
+
 </project>

@@ -29,7 +29,7 @@ DeployServer extends AlpineServerOnJetty {
 
     port TBD;
     //wardir TBD;
-    host LAZY engine:servletContext:ipaddr;
+    hostname LAZY engine:servletContext:ipaddr;
     location "test system";
     livenessEnabled true;
 
@@ -41,7 +41,7 @@ DeployServer extends AlpineServerOnJetty {
       port PARENT:port;
       server LAZY  jettyServer;
       location LAZY PARENT:location;
-      host PARENT:host;
+      hostname PARENT:hostname;
       servicesPath "alpine/";
       systemServlet "system/";
     }
@@ -58,7 +58,7 @@ DeployServer extends AlpineServerOnJetty {
     //fetch the page every so often, just to see that we are happy
     liveness extends LivenessPage {
         enabled PARENT:livenessEnabled;
-        host LAZY PARENT:host;
+        host LAZY PARENT:hostname;
         port PARENT:port;
         page LAZY echo:absolutePath;
         checkFrequency 1;
