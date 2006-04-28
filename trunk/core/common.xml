@@ -109,6 +109,11 @@
     <property name="dist.bin.dir" location="${dist.dir}/bin"/>
     <property name="dist.src.dir" location="${dist.dir}/src"/>
 
+    <echo level="verbose">build.classes.dir=${build.classes.dir}
+      test.classes.dir=${test.classes.dir}
+      dist.dir=${dist.dir}
+    </echo>
+
     <!-- name of a file for runtime properties 
       This is optional and allows users to define extra 
       properties for the smartfrog daemons and other runtimes-->

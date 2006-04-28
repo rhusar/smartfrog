@@ -38,18 +38,15 @@
       </sequential>
     </macrodef>
     
-    <property name="m2.artifact.name" value="project.name" />
+    <property name="m2.artifact.name" value="${artifact.name}" />
     <property name="m2.groupID" value="org.smartfrog" />
     <property name="m2.groupID.path" value="org/smartfrog" />
     <m2-makepath property="m2.subdir"
       groupIDpath="${m2.groupID.path}"
       artifactID="${m2.artifact.name}"
-      version="${component.version}" />
-<!--     <property name="m2.subdir" 
-      location="${m2.repository}/${m2.groupID.path}/${artifact.name}/${Version}" />
- -->
+      version="${artifact.version}" />
     <!-- pom setup -->
-    <property name="target.pom" location="${dist.lib.dir}/${jarfile.stub}.pom" />
+    <property name="target.pom" location="${dist.lib.dir}/${m2.artifact.name}.pom" />
     <property name="project.pom" location="project-template.pom" />
     <available property="project.haspom" file="${project.pom}" />
     <property name="m2.tasks.uri" value= "antlib:org.apache.maven.artifact.ant" />
@@ -80,7 +77,7 @@
      you need the maven2 tasks from http://maven.apache.org/maven2/ant-tasks.html
      </fail>
     <presetdef name="libraries" uri="antlib:org.apache.maven.artifact.ant">
-      <m2:dependencies>
+      <m2:dependencies verbose="true">
         <localRepository location="${m2.repository}" />
         <!-- look in SCM first -->
         <remoteRepository url="${m2.smartfrog.scm.repository.url}"
@@ -123,9 +120,9 @@
       <project>
         <modelVersion>4.0.0</modelVersion>
         <groupId>${m2.groupID}</groupId>
-        <artifactId>${artifact.name}</artifactId>
+        <artifactId>${m2.artifact.name}</artifactId>
         <packaging>jar</packaging>
-        <version>${component.version}</version>
+        <version>${artifact.version}</version>
       </project>
     </echoxml>
    
