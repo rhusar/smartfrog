@@ -20,15 +20,5 @@
       <artifactId>sf-xml</artifactId>
       <version>${Version}</version>
     </dependency>
-    <dependency>
-      <groupId>xom</groupId>
-      <artifactId>xom</artifactId>
-      <version>${xom.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>xalan</groupId>
-      <artifactId>xalan</artifactId>
-      <version>${xalan.version}</version>
-    </dependency>
   </dependencies>
 </project>

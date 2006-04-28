@@ -32,15 +32,15 @@ Pelvoux extends Compound {
     parentDir homedir;
    }
 
-   deployapi extends DeployServer {
+   alpine extends DeployServer {
 
      home homedir;
 
-     host "loughran.plus.com";
+     hostname "deployapi.iseran.com";
 
      port 8080;
 
-     location "test system at Steve's house";
+     location "Bristol, UK: (+51.4679,-2.6061)";
 
      liveness false;
 
