@@ -168,6 +168,11 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
         if (!r.getEager() && (index == 0)) {
             return r;
         }
+        /*
+        if (r.getData() && (index == 0)) {
+            return r;
+        }
+        */
         return r.resolve(this, index);
     }
 
@@ -496,29 +501,36 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
                        thr, sfCompleteName(), null, resState.unresolved());
                }
 
-           } else if ((value instanceof Reference)&&(((Reference)value).getEager())) {
-               try {
-                   result = sfResolve((Reference)value);
-                   context.put(key, result);
-                   if (result instanceof SFComponentDescription) {
-                       // need to do this as it may link to the file root!
-                       ((SFComponentDescription)result).doLinkResolve(resState);
-                   }
-               } catch (Exception resex) {
-                   resState.addUnresolved(value, sfCompleteName());
-               } catch (Throwable thr) {
-                   StringBuffer msg = new StringBuffer("Failed to resolve '");
-                   msg.append(key);
-                   msg.append(" ");
-                   msg.append(value);
-                   msg.append("'");
-                   if (thr instanceof java.lang.StackOverflowError) {
-                       msg.append(". Possible cause: cyclic reference.");
-                   }
-                   throw new SmartFrogCompileResolutionException(msg.toString(),
-                       thr, sfCompleteName(), null, resState.unresolved());
-               }
+           } else if (value instanceof Reference) {
+               Reference rv = (Reference)value;
+               if (!rv.getData() && rv.getEager()) {
+                   try {
+                       result = sfResolve((Reference) value);
 
+                       if ((result instanceof Reference) && !((Reference) result).getEager()) {
+                           ((Reference) value).setEager(false);
+                       } else {
+                           context.put(key, result);
+                           if (result instanceof SFComponentDescription) {
+                               // need to do this as it may link to the file root!
+                               ((SFComponentDescription) result).doLinkResolve(resState);
+                           }
+                       }
+                   } catch (Exception resex) {
+                       resState.addUnresolved(value, sfCompleteName());
+                   } catch (Throwable thr) {
+                       StringBuffer msg = new StringBuffer("Failed to resolve '");
+                       msg.append(key);
+                       msg.append(" ");
+                       msg.append(value);
+                       msg.append("'");
+                       if (thr instanceof StackOverflowError) {
+                           msg.append(". Possible cause: cyclic reference.");
+                       }
+                       throw new SmartFrogCompileResolutionException(msg.toString(),
+                               thr, sfCompleteName(), null, resState.unresolved());
+                   }
+               }
            }
        }
 
