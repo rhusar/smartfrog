@@ -300,24 +300,30 @@ public class DeployEntry implements Entry {
             int index = 0;
 
             for (Enumeration e = context.keys(); e.hasMoreElements();) {
-                name="";
-                value=null;
-                name = e.nextElement().toString();
-                value = context.get(name);
                 try {
-                    value = ContextImpl.getBasicValueFor(value);
-                } catch (Exception ex1) {
-                    //ignore
-                }
-
-                if (!isChild(value)) {
-                    try {
+                    name = "";
+                    value = null;
+                    name = e.nextElement().toString();
+                    value = context.get(name);
+                    if (!isChild(value)) {
+                        try {
+                            value = ContextImpl.getBasicValueFor(value);
+                        } catch (Exception ex1) { /*ignore*/ }
+                        try {
+                            data[index][0] = name;
                             data[index][1] = value;
-                    } catch (Exception ex) {
-                      System.err.println("sfManagementConsole.deployEntry.getAttributes: error reading "+ name + " >"+ex.getMessage());
+                        } catch (Exception ex) {
+                            System.err.println("sfManagementConsole.deployEntry.getAttributes: error reading "+
+                                name+" >"+ex.getMessage());
+                            data[index][0] = name;
+                            data[index][1] = "Error:"+ex.toString();
+                            index++;
+                            throw ex;
+                        }
+                        index++;
                     }
-                    data[index][0] = name;
-                    index++;
+                } catch (Exception ex1) {
+                    ex1.printStackTrace();
                 }
             }
 
@@ -327,9 +333,7 @@ public class DeployEntry implements Entry {
             //@TODO: log
             return empty;
         } catch (Exception ex) {
-            System.out.println("Error DeployEntry.getAttributes()" +
-                ex.toString());
-
+            System.err.println("Error DeployEntry.getAttributes()" +  ex.toString());
             //ex.printStackTrace();
             return empty;
         }
@@ -368,14 +372,14 @@ public class DeployEntry implements Entry {
 
                   if ((isChild(obj))) {
                     data[index][0] = name;
-
                     data[index][1] = obj2Entry(obj);
-
                     index++;
                   }
                 } catch (Exception ex1) {
-                  data[index++][0] = "Error:"+ex1.toString();
                   ex1.printStackTrace();
+                  data[index][0] = name;
+                  data[index][1] = "Error:"+ex1.toString();
+                  index++;
                 }
             }
             return data;
@@ -506,11 +510,9 @@ public class DeployEntry implements Entry {
                 obj = context.get(name);
 
                 if (!isChild(obj)) {
-                    //&& !name.toString().endsWith("URL"))
                     counter++;
                 }
             }
-
             return counter;
         } catch (Exception ex) {
             return 0;
