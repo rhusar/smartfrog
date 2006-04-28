@@ -33,6 +33,8 @@
   <!-- <property file="libraries.properties"/> -->
   <property name="javac.java.version" value="1.5"/>
   <property name="root.dir" location="../../../../core"/>
+  <property name="src.dir" location="src/java" />
+  <property name="build.classes.dir" location="build/classes"/>
 
   <property name="test.src.dir" location="test/java" />
   
@@ -142,6 +144,10 @@
                 <groupId>junit</groupId>
                 <artifactId>junit</artifactId>
               </exclusion>
+              <exclusion>
+                <groupId>commons-logging</groupId>
+                <artifactId>commons-logging</artifactId>
+              </exclusion>
             </exclusions>
           </dependency>
           <dependency>
@@ -163,6 +169,11 @@
             <groupId>xerces</groupId>
             <artifactId>xmlParserAPIs</artifactId>
             <version>${xerces.version}</version>
+          </dependency>
+          <dependency>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging-api</artifactId>
+            <version>${commons-logging.version}</version>
           </dependency>
           <dependency>
             <groupId>xom</groupId>
@@ -309,52 +320,6 @@
   <!-- ========================================================== -->
   <!-- system tests -->
   <!-- ========================================================== -->
-  <target name="system-tests0" depends="dist,compile-tests,init-codebase"
-    description="run system tests"
-    if="system.tests.enabled">
-    <parallel>
-
-      <!-- first thread runs the daemon -->
-      <sequential>
-        <antcall target="start-daemon-if-needed"/>
-      </sequential>
-
-      <!-- this is the next thread -->
-      <sequential>
-
-        <!--
-          wait ten seconds for the harness to start
-          without this the first tests will fail as there is no
-          sf daemon around
-        -->
-        <sf-waitfordaemon maxwait="10" timeoutproperty="daemon.missing"/>
-        <fail if="daemon.missing">No daemon</fail>
-        <sf-junit
-          errorProperty="test.failed"
-          failureProperty="test.failed"
-          >
-          <classpath>
-            <path refid="tests.run.classpath"/>
-            <!-- <pathelement location="${test.classes.dir}"/> -->
-          </classpath>
-          <sysproperty key="org.smartfrog.codebase" value="${codebase}"/>
-          <syspropertyset>
-            <propertyref prefix="runtime"/>
-          </syspropertyset>
-
-          <!-- #Test case isolation technique -->
-          <test name="${testcase}" if="testcase"/>
-          <batchtest todir="${test.data.dir}" unless="testcase">
-            <!-- bulk test case -->
-            <fileset dir="${test.classes.dir}">
-              <include name="org/smartfrog/services/xml/test/**/*Test.class"/>
-            </fileset>
-          </batchtest>
-        </sf-junit>
-
-      </sequential>
-    </parallel>
-  </target>
 
 
 
@@ -382,6 +347,8 @@
               refid="tests.run.classpath"/>
           <sysproperty key="test.files.dir"
               value="${test.src.dir}/files"/>
+          <sysproperty key="endpoint"
+              value="http://127.0.0.1:6060/alpine"/>
           <syspropertyset>
             <propertyref prefix="runtime"/>
           </syspropertyset>
