@@ -323,8 +323,7 @@ public class ContextImpl extends OrderedHashtable implements Context,
      *
      * @throws IOException failure while writing
      */
-    protected void writeContextOn(Writer ps, int indent, Enumeration keys)
-        throws IOException {
+    protected void writeContextOn(Writer ps, int indent, Enumeration keys) throws IOException {
         while (keys.hasMoreElements()) {
             Object key = keys.nextElement();
             Object value = get(key);
@@ -345,8 +344,7 @@ public class ContextImpl extends OrderedHashtable implements Context,
      *
      * @throws IOException failure while writing
      */
-    protected void writeKeyOn(Writer ps, int indent, Object key)
-        throws IOException {
+    protected void writeKeyOn(Writer ps, int indent, Object key) throws IOException {
         ps.write(key.toString());
     }
 
@@ -361,8 +359,7 @@ public class ContextImpl extends OrderedHashtable implements Context,
      *
      * @throws IOException failure while writing
      */
-    protected void writeValueOn(Writer ps, int indent, Object value)
-        throws IOException {
+    protected void writeValueOn(Writer ps, int indent, Object value) throws IOException {
         if (value instanceof PrettyPrinting) {
             try {
                 ((PrettyPrinting)value).writeOn(ps, indent);
@@ -395,11 +392,8 @@ public class ContextImpl extends OrderedHashtable implements Context,
             ps.write("\"" + unfixEscapes((String)value) + "\"");
         } else if (value instanceof Vector) {
             ps.write("[|");
-
-            for (Enumeration e = ((Vector) value).elements();
-                    e.hasMoreElements();) {
+            for (Enumeration e = ((Vector) value).elements(); e.hasMoreElements();) {
                 writeBasicValueOn(ps, indent, e.nextElement());
-
                 if (e.hasMoreElements()) {
                     ps.write(", ");
                 }
