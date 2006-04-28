@@ -493,7 +493,7 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
      * @throws SmartFrogResolutionException failure while resolving reference
      */
     public Object sfResolve(Reference r, int index)
-        throws SmartFrogResolutionException {
+            throws SmartFrogResolutionException {
         return r.resolve(this, index);
     }
 

@@ -25,11 +25,10 @@ import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.logging.LogFactory;
 import org.smartfrog.sfcore.logging.LogSF;
 
-import java.util.Vector;
-import java.util.Enumeration;
 import java.rmi.RemoteException;
-import org.smartfrog.sfcore.common.MessageUtil;
-import org.smartfrog.sfcore.common.MessageKeys;
+import java.util.Enumeration;
+import java.util.Vector;
+
 /**
  * Implements the most basic of reference parts. This reference part knows how
  * to resolve itself to the value of a given id in a given reference resolver.
@@ -152,9 +151,10 @@ public class HereReferencePart extends ReferencePart {
             throw SmartFrogResolutionException.notFound(r, null);
         }
 
+
         try {
             // if reference ask rr to resolve it (chaining)
-            if (result instanceof Reference) {
+            if (result instanceof Reference && !((Reference)result).getData()) {
                 result = rr.sfResolve((Reference)result, 0);
                 // if vector ask rr to resolve any contained reference(chaining)
             } else if (result instanceof Vector) {
@@ -234,7 +234,7 @@ public class HereReferencePart extends ReferencePart {
     private Vector sfResolveVector(ReferenceResolver rr, Vector vToResolve) throws SmartFrogResolutionException{
         try {
             Vector vec = new Vector();
-            for (Enumeration e = ((Vector)vToResolve).elements(); e.hasMoreElements(); ) {
+            for (Enumeration e = vToResolve.elements(); e.hasMoreElements(); ) {
                 Object value = e.nextElement();
                 if (value instanceof Reference) {
                     value = rr.sfResolve((Reference)value, 0);
@@ -265,7 +265,7 @@ public class HereReferencePart extends ReferencePart {
         Object value = null;
         try {
             Vector vec = new Vector();
-            for (Enumeration e = ((Vector)vToResolve).elements();e.hasMoreElements(); ) {
+            for (Enumeration e = vToResolve.elements();e.hasMoreElements(); ) {
                 value = e.nextElement();
                 if (value instanceof Reference) {
                     value = rr.sfResolve((Reference)value, 0);
@@ -291,7 +291,6 @@ public class HereReferencePart extends ReferencePart {
      * @return Logger implementing LogSF and Log
      */
     public LogSF sfGetProcessLog() {
-       LogSF sflog  =  LogFactory.sfGetProcessLog();
-       return sflog;
+        return LogFactory.sfGetProcessLog();
     }
 }

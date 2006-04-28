@@ -62,6 +62,8 @@ public class Reference implements Copying, Cloneable, Serializable {
 
     /** Indicator whether reference is eager or lazy. */
     protected boolean eager = true;
+    /** Indicator whether reference is data or link. */
+    protected boolean data = false;
 
     /**
      * Constructs an empty reference.
@@ -202,9 +204,32 @@ public class Reference implements Copying, Cloneable, Serializable {
      * @see #getEager
      */
     public boolean setEager(boolean eager) {
-        boolean tmp = eager;
+        boolean tmp = this.eager;
         this.eager = eager;
+        return tmp;
+    }
 
+        /**
+     * Gets the data flag for the reference.
+     *
+     * @return current data flag
+     *
+     * @see #setData
+     */
+    public boolean getData() {
+        return data;
+    }
+
+    /**
+     * Sets the data flag for the reference.
+     *
+     * @param data new data flag
+     * @return old data flag
+     * @see #getData
+     */
+    public boolean setData(boolean data) {
+        boolean tmp = this.data;
+        this.data = data;
         return tmp;
     }
 
@@ -364,12 +389,12 @@ public class Reference implements Copying, Cloneable, Serializable {
      * @return attribute found on resolving this reference
      *
      * @throws SmartFrogResolutionException reference failed to resolve
-     * @throws RemoteException In case of network/rmi error
      */
     public Object resolve(ReferenceResolver rr, int index)
         throws SmartFrogResolutionException {
         // If no elements, the rr is the requested object
-        if (size() == 0) {
+        // if it is data, then return the data
+        if (size() == 0 || getData()) {
             return rr;
         }
 
@@ -408,7 +433,9 @@ public class Reference implements Copying, Cloneable, Serializable {
      * @return String representing the reference
      */
     public String toString() {
-        String res = (eager ? "" : "LAZY ");
+        String res = "";
+        res += (eager ? "" : "LAZY ");
+        res += (data ? "DATA " : "");
 
         for (int i = 0; i < ref.size(); i++)
             res += (elementAt(i).toString(i) +
