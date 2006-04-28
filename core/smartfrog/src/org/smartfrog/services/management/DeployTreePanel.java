@@ -331,8 +331,7 @@ public class DeployTreePanel extends JPanel implements TreeSelectionListener {
               solvedValue.append(tempString);
               solvedValueClass = objSolvedValue.getClass().toString();
           } catch (Exception ex) {
-              solvedValue.append(" Failed to resolve ("+attribName+"): "+
-                                 ex.toString());
+              solvedValue.append(" Failed to resolve ("+attribName+"): "+ ex.toString());
               try {
                   StringWriter sw = new StringWriter();
                   PrintWriter pw = new PrintWriter(sw);
