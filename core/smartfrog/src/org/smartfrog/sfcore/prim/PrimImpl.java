@@ -669,7 +669,17 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
                 }
             }
         } else {
-            exportRef = sfExportRef(port);
+            //Get rootProcess port
+            Object portObjPC = SFProcess.getProcessCompound().sfResolve("sfPort",false);
+            if (portObjPC!=null) {
+              //use port used by ProcessCompound
+              port = ((Integer)portObjPC).intValue();
+              exportRef =sfExportRef(port);
+              sfAddAttribute("sfPort",new Integer(port));
+            } else {
+                // use ramdom
+                exportRef = sfExportRef(port);
+            }
         }
         return exportRef;
     }
