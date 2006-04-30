@@ -304,6 +304,50 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
         }
     }
 
+    /**
+     * Exports this  component using portObj. portObj can be a port or a vector containing a set of
+     * valid ports. If a vector is used the component tries to see if the port used by the local
+     * ProcessCompound is in the vector set and use that if so. If not tries to use the first one avaible
+     * @param portObj Object
+     * @return Object Reference to exported object
+     * @throws RemoteException
+     * @throws RemoteException
+     * @throws SmartFrogException
+     */
+    protected Object sfExport(Object portObj) throws RemoteException,
+        RemoteException, SmartFrogException {
+        Object exportRef=null;
+        int port = 0; //default value
+        if ((portObj!=null)) {
+            if (portObj instanceof Integer) {
+                port = ((Integer)portObj).intValue();
+                exportRef =sfExportRef(port);
+                sfAddAttribute("sfPort",new Integer(port));
+            } else if (portObj instanceof Vector){
+                //if not in range use vector and try
+                int size = ((Vector)(portObj)).size();
+                for (int i = 0; i<size; i++) {
+                    //get
+                    try {
+                        port = ((Integer)((Vector)(portObj)).elementAt(i)).intValue();
+                        exportRef = sfExportRef(port);
+                        sfAddAttribute("sfPort", new Integer(port));
+                        break;
+                    } catch (SmartFrogException ex) {
+                        if (i>=size-1){
+                            throw ex;
+                        }
+                    }
+                } //for
+            }
+        } else {
+            exportRef = sfExportRef(port);
+        }
+        return exportRef;
+    }
+
+
+
     protected void registerWithProcessCompound() throws RemoteException, SmartFrogException {
         //This is a ProcessCompound. Don't need to register
     }

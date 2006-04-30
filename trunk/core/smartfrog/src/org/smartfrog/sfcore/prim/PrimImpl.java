@@ -21,44 +21,42 @@ For more information: www.smartfrog.org
 package org.smartfrog.sfcore.prim;
 
 import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.rmi.NoSuchObjectException;
 import java.rmi.RemoteException;
 import java.rmi.server.RemoteStub;
 import java.util.Enumeration;
 import java.util.Iterator;
+import java.util.Vector;
 
-import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
 import org.smartfrog.sfcore.common.Context;
+import org.smartfrog.sfcore.common.ContextImpl;
+import org.smartfrog.sfcore.common.Diagnostics;
 import org.smartfrog.sfcore.common.Logger;
 import org.smartfrog.sfcore.common.MessageKeys;
 import org.smartfrog.sfcore.common.MessageUtil;
+import org.smartfrog.sfcore.common.SFMarshalledObject;
+import org.smartfrog.sfcore.common.SmartFrogContextException;
+import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
 import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLifecycleException;
 import org.smartfrog.sfcore.common.SmartFrogLivenessException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
-import org.smartfrog.sfcore.common.SmartFrogContextException;
 import org.smartfrog.sfcore.common.TerminatorThread;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
-import org.smartfrog.sfcore.processcompound.SFProcess;
-import org.smartfrog.sfcore.reference.Reference;
-import org.smartfrog.sfcore.reference.ReferencePart;
-import org.smartfrog.sfcore.security.SFGeneralSecurityException;
-import org.smartfrog.sfcore.security.SecureRemoteObject;
-
+import org.smartfrog.sfcore.componentdescription.ComponentDescriptionImpl;
 import org.smartfrog.sfcore.logging.LogFactory;
 import org.smartfrog.sfcore.logging.LogSF;
-import org.smartfrog.sfcore.utils.ComponentHelper;
-
-import org.smartfrog.sfcore.reference.RemoteReferenceResolverHelperImpl;
+import org.smartfrog.sfcore.processcompound.SFProcess;
 import org.smartfrog.sfcore.reference.HereReferencePart;
-
-import java.rmi.NoSuchObjectException;
-import java.net.UnknownHostException;
-import org.smartfrog.sfcore.common.SFMarshalledObject;
-import org.smartfrog.sfcore.componentdescription.ComponentDescriptionImpl;
-import org.smartfrog.sfcore.common.ContextImpl;
-import org.smartfrog.sfcore.common.Diagnostics;
+import org.smartfrog.sfcore.reference.Reference;
+import org.smartfrog.sfcore.reference.ReferencePart;
+import org.smartfrog.sfcore.reference.RemoteReferenceResolverHelperImpl;
+import org.smartfrog.sfcore.security.SFGeneralSecurityException;
+import org.smartfrog.sfcore.security.SecureRemoteObject;
+import org.smartfrog.sfcore.utils.ComponentHelper;
 
 /**
  * Defines the base class for all deployed components. A deployed component
@@ -583,10 +581,12 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
                 //Default value=0 = Anonymous port.
                 int port = 0;
                 Object portObj = sfResolveHere(SmartFrogCoreKeys.SF_EXPORT_PORT,false);
-                if ((portObj!=null) && (portObj instanceof Integer)){
-                    port = ((Integer)portObj).intValue();
-                }
-                sfExportRef(port);
+                Object exportRef = null;
+//                if ((portObj!=null) && (portObj instanceof Integer)){
+//                    port = ((Integer)portObj).intValue();
+//                }
+//                sfExportRef(port);
+                sfExport(portObj);
             }
 
             if (sfParent!=null) {
@@ -621,6 +621,57 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
             new TerminatorThread(this, sfex, null).quietly().run();
             throw (SmartFrogDeploymentException)SmartFrogDeploymentException.forward(sfex);
         }
+    }
+
+    /**
+     * Exports this  component using portObj. portObj can be a port or a vector containing a set of
+     * valid ports. If a vector is used the component tries to see if the port used by the local
+     * ProcessCompound is in the vector set and use that if so. If not tries to use the first one avaible
+     * @param portObj Object
+     * @return Object Reference to exported object
+     * @throws RemoteException
+     * @throws RemoteException
+     * @throws SmartFrogException
+     */
+    protected Object sfExport(Object portObj) throws RemoteException,
+        RemoteException, SmartFrogException {
+        Object exportRef=null;
+        int port = 0; //default value
+        if ((portObj!=null)) {
+            if (portObj instanceof Integer) {
+                port = ((Integer)portObj).intValue();
+                exportRef =sfExportRef(port);
+                sfAddAttribute("sfPort",new Integer(port));
+            } else if (portObj instanceof Vector){
+                //Get rootProcess port
+                Object portObjPC = SFProcess.getProcessCompound().sfResolve("sfPort",false);
+                //compare with range
+                if ((portObjPC!=null)&&(((Vector)portObj).contains(portObjPC))) {
+                    port = ((Integer)portObjPC).intValue();
+                    exportRef =sfExportRef(port);
+                    sfAddAttribute("sfPort",new Integer(port));
+                } else {
+                    //if not in range use vector and try
+                    int size = ((Vector)(portObj)).size();
+                    for (int i = 0; i<size; i++) {
+                        //get
+                        try {
+                            port = ((Integer)((Vector)(portObj)).elementAt(i)).intValue();
+                            exportRef = sfExportRef(port);
+                            sfAddAttribute("sfPort", new Integer(port));
+                            break;
+                        } catch (SmartFrogException ex) {
+                             if (i>=size-1){
+                                 throw ex;
+                             }
+                        }
+                    } //for
+                }
+            }
+        } else {
+            exportRef = sfExportRef(port);
+        }
+        return exportRef;
     }
 
     /**
