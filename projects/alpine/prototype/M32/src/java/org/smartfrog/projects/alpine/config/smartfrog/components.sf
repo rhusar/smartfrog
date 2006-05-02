@@ -67,15 +67,6 @@ AlpineEndpoint extends Prim {
     
  }
 
- /*
-  This is a handler
-  */ 
-AlpineHandler extends Prim {
-    alpineHandlerSchema extends Schema {
-        //the name of the handler class
-        classname extends String;
-    }
-}
 
 /**
  * Base servlet for alpine
@@ -94,7 +85,34 @@ AlpineServletOnJetty extends AlpineServlet  {
 }
 
 
+ /*
+  This is a handler. It is not remoted as we require access to a
+  non-remoteable method to create the right factory object.
+  */
+AlpineHandler extends Prim {
+  sfExport false;
+  sfClass "org.smartfrog.projects.alpine.config.smartfrog.AlpineHandlerImpl";
+}
 
+/**
+ * abstract template of something that instantiates handlers
+ */
+ClassFactoryHandler extends AlpineHandler {
+
+    alpineHandlerSchema extends Schema {
+        //the name of the handler class
+        classname extends String;
+    }
+}
+
+
+SharedHandler extends ClassFactoryHandler {
+  sfClass "org.smartfrog.projects.alpine.config.smartfrog.SharedHanderImpl";
+}
+
+InstanceHandler extends ClassFactoryHandler {
+  sfClass "org.smartfrog.projects.alpine.config.smartfrog.InstanceHandlerImpl";
+}
 
 
 

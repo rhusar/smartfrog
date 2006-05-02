@@ -20,14 +20,15 @@
 
 package org.smartfrog.projects.alpine.config.smartfrog;
 
+import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.prim.TerminationRecord;
-import org.smartfrog.sfcore.common.SmartFrogException;
 
 import java.rmi.RemoteException;
 
 /**
- 
+
  */
 public class AlpineHandlerImpl extends PrimImpl implements AlpineHandler {
 
@@ -53,6 +54,17 @@ public class AlpineHandlerImpl extends PrimImpl implements AlpineHandler {
      */
     public synchronized void sfTerminateWith(TerminationRecord status) {
         super.sfTerminateWith(status);
-        
+    }
+
+    /**
+     * Get the classname
+     *
+     * @return
+     * @throws org.smartfrog.sfcore.common.SmartFrogResolutionException
+     *
+     * @throws java.rmi.RemoteException
+     */
+    protected String resolveClassname() throws SmartFrogResolutionException, RemoteException {
+        return sfResolve(ATTR_CLASSNAME, "", true);
     }
 }

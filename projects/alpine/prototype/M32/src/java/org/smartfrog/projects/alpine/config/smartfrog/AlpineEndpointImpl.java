@@ -23,22 +23,24 @@ package org.smartfrog.projects.alpine.config.smartfrog;
 import org.smartfrog.projects.alpine.core.AlpineContext;
 import org.smartfrog.projects.alpine.core.ContextConstants;
 import org.smartfrog.projects.alpine.core.EndpointContext;
+import org.smartfrog.projects.alpine.handlers.InstanceHandlerFactory;
+import org.smartfrog.projects.alpine.interfaces.MessageHandlerFactory;
 import org.smartfrog.services.www.ApplicationServerContext;
 import org.smartfrog.services.www.WebApplicationHelper;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLivenessException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
+import org.smartfrog.sfcore.logging.Log;
+import org.smartfrog.sfcore.logging.LogFactory;
 import org.smartfrog.sfcore.prim.Liveness;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.prim.TerminationRecord;
-import org.smartfrog.sfcore.logging.Log;
-import org.smartfrog.sfcore.logging.LogFactory;
 
 import java.rmi.RemoteException;
-import java.util.Vector;
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Vector;
 
 /**
  * binding from smartfrog to configuring an endpoint
@@ -76,7 +78,7 @@ public class AlpineEndpointImpl extends PrimImpl implements AlpineEndpoint {
         getMessage = sfResolve(ATTR_GET_MESSAGE, "", false);
         getResponseCode = sfResolve(ATTR_GET_RESPONSECODE, 200, false);
         handlers = sfResolve(ATTR_HANDLER_LIST, handlers, true);
-        role = sfResolve(ContextConstants.ATTR_ROLE,"Server",false);
+        role = sfResolve(ContextConstants.ATTR_ROLE, "Server", false);
         Prim servlet = sfResolve(ATTR_SERVLET, (Prim) null, true);
         String servletPath = servlet.sfResolve(ApplicationServerContext.ATTR_ABSOLUTE_PATH, "", true);
         WebApplicationHelper helper = new WebApplicationHelper(this);
@@ -111,19 +113,22 @@ public class AlpineEndpointImpl extends PrimImpl implements AlpineEndpoint {
         putIfSet(epx, ContextConstants.ATTR_ROLE, role);
         copyIfSet(epx, ContextConstants.ATTR_ROLE);
 
-        //the handler list is a list of handlers
-        List handlerList = new ArrayList(handlers.size());
-        for (Object o : handlers) {
-            String classname;
-            //if its a prim, get its classname attribute
-            if (o instanceof Prim) {
-                Prim prim = (Prim) o;
-                classname = prim.sfResolve(AlpineHandler.ATTR_CLASSNAME, "", true);
+        //the handler list is a list of handler factories
+        List<MessageHandlerFactory> handlerList = new ArrayList(handlers.size());
+        for (Object handler : handlers) {
+            if (handler instanceof String) {
+                //strings are there for backwards compatiblity
+                handlerList.add(new InstanceHandlerFactory(this, handler.toString()));
+            } else if (handler instanceof NonRemotableHandlerFactory) {
+                //this is how handlers should be added.
+                NonRemotableHandlerFactory metafactory = (NonRemotableHandlerFactory) handler;
+                handlerList.add(metafactory.createFactory());
+            } else if (handler instanceof Prim) {
+                Prim prim = (Prim) handler;
+                throw new SmartFrogException("Not able to convert to a handler factory", prim);
             } else {
-                //otherwise, assume its a classname
-                classname = o.toString();
+                throw new SmartFrogException("Unknown handler type: " + handler);
             }
-            handlerList.add(classname);
         }
         epx.put(ContextConstants.ATTR_HANDLERS, handlerList);
 
@@ -131,8 +136,8 @@ public class AlpineEndpointImpl extends PrimImpl implements AlpineEndpoint {
         context.getEndpoints().register(path, epx);
 
         //and tell the world
-        if(log.isInfoEnabled()) {
-            log.info("Deployed Alpine endpoint "+name+" at "+path);
+        if (log.isInfoEnabled()) {
+            log.info("Deployed Alpine endpoint " + name + " at " + path);
         }
     }
 
@@ -140,7 +145,7 @@ public class AlpineEndpointImpl extends PrimImpl implements AlpineEndpoint {
             throws SmartFrogResolutionException,
             RemoteException {
         putIfSet(this.epx, attribute,
-                sfResolve(attribute,(String)null,false));
+                sfResolve(attribute, (String) null, false));
     }
 
     private void putIfSet(EndpointContext epx, String key, String value) {
