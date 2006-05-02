@@ -582,10 +582,7 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
                 int port = 0;
                 Object portObj = sfResolveHere(SmartFrogCoreKeys.SF_EXPORT_PORT,false);
                 Object exportRef = null;
-//                if ((portObj!=null) && (portObj instanceof Integer)){
-//                    port = ((Integer)portObj).intValue();
-//                }
-//                sfExportRef(port);
+
                 sfExport(portObj);
             }
 
