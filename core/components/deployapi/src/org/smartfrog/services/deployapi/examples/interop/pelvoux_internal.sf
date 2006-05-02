@@ -25,7 +25,7 @@ For more information: www.smartfrog.org
  */
 sfConfig extends Pelvoux {
 
-  deployapi:host LAZY deployapi:engine:servletContext:ipaddr;
+  alpine:hostname LAZY alpine:deployapi:engine:servletContext:ipaddr;
 
   //deployapi:liveness true;
 }

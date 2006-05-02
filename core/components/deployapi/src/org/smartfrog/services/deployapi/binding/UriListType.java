@@ -57,7 +57,6 @@ public class UriListType extends ArrayList<URI> {
     public void toXml(Element parent) {
         for (URI uri : this) {
             parent.appendChild(XomHelper.apiElement(ITEM, uri));
-
         }
     }
 }

@@ -146,7 +146,7 @@ public class ServerInstance implements WSRPResourceSource {
 
     private void init() throws IOException {
         systemsURL = new URL(protocol, hostname, port, path);
-        jobs = new JobRepository(systemsURL);
+        jobs = new JobRepository(systemsURL, this);
         workers = new ActionWorker[WORKERS];
         for (int i = 0; i < workers.length; i++) {
             workers[i] = new ActionWorker(queue, TIMEOUT);
