@@ -51,11 +51,13 @@ public class JobRepository implements Iterable<Application> {
     private Hashtable<String, Application> jobs = new Hashtable<String, Application>();
     private URL systemsURL;
     public static final String SEARCH_STRING = Constants.JOB_ID_PARAM + "=";
-    Log log= LogFactory.getLog(JobRepository.class);
+    private static Log log= LogFactory.getLog(JobRepository.class);
 
+    private ServerInstance engine;
 
-    public JobRepository(URL systemsURL) {
+    public JobRepository(URL systemsURL, ServerInstance owner) {
         this.systemsURL = systemsURL;
+        this.engine=owner;
     }
 
     public void clear() {
@@ -195,7 +197,7 @@ public class JobRepository implements Iterable<Application> {
 
 
     public Application createNewJob(String hostname) {
-        Application job = new Application(Utils.createNewID());
+        Application job = new Application(Utils.createNewID(),engine);
         job.setHostname(hostname);
         String id = job.getId();
         job.setName(id);

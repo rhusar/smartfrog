@@ -3,6 +3,7 @@ package org.smartfrog.services.deployapi.transport.faults;
 import nu.xom.Element;
 import org.ggf.cddlm.utils.FaultTemplate;
 import org.smartfrog.services.deployapi.binding.XomHelper;
+import org.smartfrog.services.deployapi.system.Constants;
 import org.smartfrog.projects.alpine.interfaces.SoapFaultSource;
 import org.smartfrog.projects.alpine.om.soap11.Fault;
 
@@ -68,6 +69,7 @@ public class BaseException extends RuntimeException implements SoapFaultSource {
      */
     public BaseException(String message) {
         super(message);
+        faultReason=message;
         init();
     }
 
@@ -77,6 +79,7 @@ public class BaseException extends RuntimeException implements SoapFaultSource {
      */
     public BaseException(String arg0, Throwable arg1) {
         super(arg0, arg1);
+        faultReason = arg0;
         init();
     }
 
@@ -89,8 +92,7 @@ public class BaseException extends RuntimeException implements SoapFaultSource {
      * @return the qname of the default fault code for this type of fault
      */
     protected QName getDefaultFaultCode() {
-        //TODO
-        return null;
+        return Constants.QNAME_SMARTFROG_INTERNAL_FAULT;
     }
 
 
@@ -170,6 +172,10 @@ public class BaseException extends RuntimeException implements SoapFaultSource {
      */
     public Fault GenerateSoapFault() {
         Fault fault=new Fault();
+        if (faultCode == null) {
+            initFaultCode();
+        }
+        fault.addThrowable(this);
         fault.setFaultCode(faultCode.toString());
         fault.setFaultActor(faultActor);
         if(getCause()!=null) {
@@ -178,6 +184,7 @@ public class BaseException extends RuntimeException implements SoapFaultSource {
         for(Element elt:data) {
             fault.appendToFaultDetail(elt.copy());
         }
+        fault.setFaultString(this.getFaultReason());
         return fault;
     }
 }

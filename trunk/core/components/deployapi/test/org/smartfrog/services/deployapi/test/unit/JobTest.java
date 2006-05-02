@@ -46,7 +46,7 @@ public class JobTest extends UnitTestBase {
 
     protected void setUp() throws Exception {
         super.setUp();
-        repository=new JobRepository(new URL("http://localhost:5050"));
+        repository=new JobRepository(new URL("http://localhost:5050"), null);
         job = createJob();
     }
 

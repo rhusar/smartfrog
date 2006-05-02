@@ -81,7 +81,9 @@ public class Utils {
      */
     public static void close(Closeable stream) {
         try {
-            stream.close();
+            if(stream!=null) {
+                stream.close();
+            }
         } catch (IOException e) {
             //ignore
         }
@@ -101,6 +103,16 @@ public class Utils {
             writer.write(contents);
         } finally {
             writer.close();
+        }
+    }
+
+    public static void saveToBinaryFile(File dest, byte[] data) throws IOException {
+        FileOutputStream out = null;
+        try {
+            out = new FileOutputStream(dest);
+            out.write(data);
+        } finally {
+            close(out);
         }
     }
 

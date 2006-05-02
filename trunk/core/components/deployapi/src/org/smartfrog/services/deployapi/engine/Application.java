@@ -40,6 +40,8 @@ import static org.smartfrog.services.deployapi.transport.faults.FaultRaiser.tran
 import org.smartfrog.services.deployapi.transport.wsrf.PropertyMap;
 import org.smartfrog.services.deployapi.transport.wsrf.WSRPResourceSource;
 import org.smartfrog.services.deployapi.transport.wsrf.WsrfUtils;
+import org.smartfrog.services.filesystem.filestore.AddedFilestore;
+import org.smartfrog.services.filesystem.filestore.FileEntry;
 import org.smartfrog.sfcore.common.ConfigurationDescriptor;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLivenessException;
@@ -48,11 +50,14 @@ import org.smartfrog.sfcore.prim.TerminationRecord;
 
 import javax.xml.namespace.QName;
 import java.io.File;
+import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.net.URI;
 import java.net.URL;
 import java.rmi.RemoteException;
 import java.util.Date;
+import java.util.List;
+import java.util.ArrayList;
 
 
 /**
@@ -179,8 +184,16 @@ public class Application implements WSRPResourceSource {
 
     private AlpineEPR alpineEPR;
 
-    public Application(String id) {
+    private ServerInstance owner;
+
+    /**
+     * Attached files
+     */
+    private List<FileEntry> attachments=new ArrayList<FileEntry>();
+
+    public Application(String id, ServerInstance owner) {
         setId(id);
+        this.owner=owner;
         addInitialProperties();
         enterStateNotifying(LifecycleStateEnum.instantiated, "id=" + id);
     }
@@ -498,7 +511,7 @@ public class Application implements WSRPResourceSource {
             if (result instanceof Prim) {
                 return (Prim) result;
             } else {
-                final String message = "got something not a prim back from a deployer";
+                final String message = "got something not a Prim back from a deployer";
                 log.info(message);
                 throw new BaseException(message + " " + result.toString());
             }
@@ -692,6 +705,23 @@ public class Application implements WSRPResourceSource {
         } catch (SmartFrogException e) {
             throw new BaseException(e);
         }
+    }
+
+
+    /**
+     * Create a temporary file
+     * @param extension
+     * @return
+     */
+    public FileEntry createNewTempFile(String extension) throws IOException {
+        AddedFilestore filestore = owner.getFilestore();
+        FileEntry entry = filestore.createNewFile("file", extension);
+        addAttachment(entry);
+        return entry;
+    }
+
+    public synchronized void addAttachment(FileEntry entry) {
+        attachments.add(entry);
     }
 
 

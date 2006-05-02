@@ -22,9 +22,11 @@ package org.smartfrog.services.deployapi.transport.endpoints.system;
 
 import nu.xom.Element;
 import org.smartfrog.services.deployapi.binding.XomHelper;
+import org.smartfrog.services.deployapi.binding.UriListType;
 import org.smartfrog.services.deployapi.engine.ServerInstance;
 import org.smartfrog.services.deployapi.transport.endpoints.alpine.WsrfHandler;
 import org.smartfrog.services.deployapi.transport.faults.FaultRaiser;
+import org.smartfrog.services.deployapi.system.Utils;
 import org.smartfrog.services.filesystem.filestore.AddedFilestore;
 import org.smartfrog.services.filesystem.filestore.FileEntry;
 import org.smartfrog.services.xml.utils.XomUtils;
@@ -59,22 +61,25 @@ public class AddFileProcessor extends SystemProcessor {
 
         String uri= XomHelper.getElementValue(request, "api:uri", false);
         String data = XomHelper.getElementValue(request, "api:data", false);
+        //create a respose
+        Element response = XomHelper.apiElement("addFileResponse");
+        FileEntry entry = getJob().createNewTempFile(".bin");
+        UriListType uris=new UriListType();
         if(uri==null ) {
             if(data==null) {
                 throw FaultRaiser.raiseBadArgumentFault("Neither uri nor data supplied");
             }
             byte[] payload= XomUtils.base64Decode(data);
-            throwNotImplemented();
+            Utils.saveToBinaryFile(entry.getFile(), payload);
         } else {
             if (data != null) {
                 throw FaultRaiser.raiseBadArgumentFault("Both uri and data supplied");
             }
             throwNotImplemented();
         }
-
-        //TODO: save to a file
-        //TODO: create a respose
-        Element response = XomHelper.apiElement("addFileResponse");
+        entry.setMimetype(mimetype);
+        uris.add(entry.getUri());
+        uris.toXml(response);
         return response;
     }
 

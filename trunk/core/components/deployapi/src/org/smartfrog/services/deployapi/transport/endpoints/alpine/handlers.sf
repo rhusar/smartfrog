@@ -20,14 +20,25 @@ For more information: www.smartfrog.org
 
 #include "/org/smartfrog/projects/alpine/handlers/components.sf"
 
+WsrfHandler extends InstanceHandler {
+}
 
-PortalHandler extends AlpineHandler {
+
+PortalHandler extends WsrfHandler {
   classname "org.smartfrog.services.deployapi.transport.endpoints.alpine.PortalHandler";
 }
 
-SystemHandler extends AlpineHandler {
+SystemHandler extends WsrfHandler {
   classname "org.smartfrog.services.deployapi.transport.endpoints.alpine.SystemHandler";
 }
+
+/**
+ * statisics gathering
+ */
+StatsHandler extends SharedHandler {
+  classname "org.smartfrog.services.deployapi.transport.endpoints.alpine.StatsHandler";
+}
+
 
 
 DeployApiEndpoint extends AlpineEndpoint {
@@ -47,6 +58,7 @@ PortalEndpoint extends DeployApiEndpoint {
     name "portal";
     path "/portal/";
     handlers [
+      StatsHandler:classname,
       LogCurrentMessageHandler:classname,
       AddressHandler:classname,
       PortalHandler:classname,
@@ -61,6 +73,7 @@ SystemEndpoint extends DeployApiEndpoint {
     name "system";
     path "/system/";
     handlers [
+      StatsHandler:classname,
       LogCurrentMessageHandler:classname,
       AddressHandler:classname,
       SystemHandler:classname,

@@ -53,6 +53,26 @@ public class Api_22_deploy_addfile_Test extends StandardTestBase {
         createSystem(null);
     }
 
+    public void testAddFile() throws Exception {
+        SoapMessageParser parser = createXmlParser();
+        Document document = parser.parseResource(CddlmConstants.INTEROP_API_TEST_DOC_1_VALID_DESCRIPTOR);
+        //base-64 encode it
+        String encoded = XomUtils.base64Encode(document);
+
+        SoapElement addFileRequest = XomHelper.addFileRequest(
+                new URI("http://example.org/valid-cdl.cdl"),
+                "application+xml",
+                "file",
+                encoded,
+                null
+        );
+        UriListType uris = getSystem().addFile(addFileRequest);
+        assertFalse(uris.isEmpty());
+
+        URI firstURI = uris.get(0);
+        assertNotNull(firstURI);
+    }
+
     public void testInlineDeploy() throws Exception {
         SoapMessageParser parser = createXmlParser();
         Document document = parser.parseResource(CddlmConstants.INTEROP_API_TEST_DOC_1_VALID_DESCRIPTOR);
