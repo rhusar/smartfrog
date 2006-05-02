@@ -140,6 +140,7 @@ public class SoapPostServlet extends ServletBase {
                     handler.processMessage(messageContext, endpointContext);
                 } catch (Exception thrown) {
                     //if anything happened here. the rollback begins
+                    getLog().info("Fault thrown in the handler "+handler, thrown);
                     fault = bridge.extractFaultFromThrowable(thrown);
                     for (int rollback = i; rollback >= 0; rollback--) {
                         handler = handlers.get(rollback);
@@ -152,7 +153,7 @@ public class SoapPostServlet extends ServletBase {
                 }
             }
         } catch (Exception thrown) {
-            getLog().info("Fault thrown ", thrown);
+            getLog().warn("Fault thrown outside the handler chain", thrown);
             fault = bridge.extractFaultFromThrowable(thrown);
         }
         if (fault != null) {

@@ -210,9 +210,7 @@ public class Fault extends Soap11Element {
      */ 
     public void addThrowable(Throwable thrown) {
         setFaultString(thrown.getMessage());
-        QName qname = FaultConstants.QNAME_FAULTDETAIL_EXCEPTIONNAME;
-        String text = thrown.getClass().getName();
-        addFaultDetail(qname, text);
+        addFaultDetail(FaultConstants.QNAME_FAULTDETAIL_EXCEPTIONNAME, thrown.getClass().getName());
         StackTraceElement[] stack=thrown.getStackTrace();
         StringBuffer buffer=new StringBuffer();
         for(int i=0;i<stack.length;i++) {
