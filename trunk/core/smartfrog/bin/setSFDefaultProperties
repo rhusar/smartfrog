@@ -7,7 +7,7 @@
 # -- User libs directory --
 #export SFUSERHOME="$SFHOME/mylibs"
 # -- server hostname for multihomed machines
-#export SFSEVERHOSTNAME=127.0.0.1
+#export SFSERVERHOSTNAME=127.0.0.1
 
 
 # -- default.ini and default.sf without security --
@@ -18,7 +18,7 @@ if ! test "$SFDEFAULTSF";then
    export SFDEFAULTSF=-Dorg.smartfrog.sfcore.processcompound.sfDefault.sfDefault="$SFHOME/bin/default.sf"
 fi
 
-if  test "&SFSEVERHOSTNAME";then
-   export SFRMIHOSTNAME=-Djava.rmi.server.hostname="&SFSEVERHOSTNAME"
+if  test "&SFSERVERHOSTNAME";then
+   export SFRMIHOSTNAME=-Djava.rmi.server.hostname="&SFSERVERHOSTNAME"
 fi  
 # -------------------End user properties---------------
