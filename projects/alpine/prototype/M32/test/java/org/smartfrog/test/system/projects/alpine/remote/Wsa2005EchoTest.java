@@ -25,9 +25,9 @@ import org.smartfrog.projects.alpine.wsa.AddressingConstants;
  * created 13-Apr-2006 10:27:32
  */
 
-public class Wsa2003EchoTest extends EchoTest {
+public class Wsa2005EchoTest extends EchoTest {
 
-    public Wsa2003EchoTest(String name) {
+    public Wsa2005EchoTest(String name) {
         super(name);
     }
 
@@ -37,7 +37,7 @@ public class Wsa2003EchoTest extends EchoTest {
      */
     protected void setUp() throws Exception {
         super.setUp();
-        address.setNamespace(AddressingConstants.XMLNS_WSA_2003);
+        address.setNamespace(AddressingConstants.XMLNS_WSA_2005);
         address.setMustUnderstand(true);
     }
 

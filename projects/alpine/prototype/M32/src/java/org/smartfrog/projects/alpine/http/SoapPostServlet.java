@@ -20,24 +20,24 @@
 
 package org.smartfrog.projects.alpine.http;
 
-import org.smartfrog.projects.alpine.core.EndpointContext;
-import org.smartfrog.projects.alpine.core.MessageContext;
 import org.smartfrog.projects.alpine.core.AlpineContext;
 import org.smartfrog.projects.alpine.core.ContextConstants;
-import org.smartfrog.projects.alpine.om.soap11.MessageDocument;
-import org.smartfrog.projects.alpine.om.soap11.Fault;
-import org.smartfrog.projects.alpine.om.soap11.Body;
-import org.smartfrog.projects.alpine.interfaces.MessageHandler;
-import org.smartfrog.projects.alpine.faults.FaultBridge;
+import org.smartfrog.projects.alpine.core.EndpointContext;
+import org.smartfrog.projects.alpine.core.MessageContext;
 import org.smartfrog.projects.alpine.faults.AlpineRuntimeException;
+import org.smartfrog.projects.alpine.faults.FaultBridge;
+import org.smartfrog.projects.alpine.interfaces.MessageHandler;
+import org.smartfrog.projects.alpine.om.soap11.Body;
+import org.smartfrog.projects.alpine.om.soap11.Fault;
+import org.smartfrog.projects.alpine.om.soap11.MessageDocument;
 
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.ServletException;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -51,6 +51,7 @@ public class SoapPostServlet extends ServletBase {
     /**
      * get the alpine context from the servlet context
      * ; create it if needed
+     *
      * @return the context
      */
     public synchronized AlpineContext getAlpineContext() {
@@ -59,7 +60,7 @@ public class SoapPostServlet extends ServletBase {
 
 
     public EndpointContext getContext(HttpServletRequest request) {
-        AlpineContext ctx=getAlpineContext();
+        AlpineContext ctx = getAlpineContext();
         return ctx.getEndpoints().lookup(request);
     }
 
@@ -75,18 +76,19 @@ public class SoapPostServlet extends ServletBase {
     }
 
     private String makeHtmlText(String message) {
-        return "<html><head><title>"+message+"</title></head><body>"+message+"</body></html>";
+        return "<html><head><title>" + message + "</title></head><body>" + message + "</body></html>";
     }
 
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        EndpointContext context=getContext(request);
-        if(context==null) {
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        EndpointContext context = getContext(request);
+        if (context == null) {
             report404(response);
         } else {
             PrintWriter writer = beginHttpResponse(response, HttpServletResponse.SC_OK);
-            String text=(String) context.get(ContextConstants.ATTR_GET_MESSAGE);
-            if(text==null) {
-                text=makeHtmlText("Alpine Endpoint");
+            String text = (String) context.get(ContextConstants.ATTR_GET_MESSAGE);
+            if (text == null) {
+                text = makeHtmlText("Alpine Endpoint");
             }
             writer.println(text);
             writer.flush();
@@ -104,45 +106,64 @@ public class SoapPostServlet extends ServletBase {
 
     /**
      * Post handles SOAP requests
+     *
      * @param request
      * @param response
      * @throws ServletException
      * @throws IOException
      */
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
         EndpointContext endpointContext = getContext(request);
-        if(endpointContext==null) {
+        if (endpointContext == null) {
             //nothing here; keep going
             report404(response);
             return;
         }
         MessageContext messageContext = endpointContext.createMessageContext();
         MessageDocument requestMessage = null;
-        MessageDocument responseMessage=null;
+        MessageDocument responseMessage = null;
         HttpBinder binder = new HttpBinder(endpointContext);
+        Fault fault = null;
+        FaultBridge bridge = FaultBridge.getFaultBridge(messageContext);
         try {
-            requestMessage = binder.parseIncomingPost(messageContext,request);
+            requestMessage = binder.parseIncomingPost(messageContext, request);
 
             //get the handler list
             handlers = (List<String>) endpointContext.get(ContextConstants.ATTR_HANDLERS);
-            if(handlers==null) {
+            if (handlers == null) {
                 throw new AlpineRuntimeException(ERROR_NO_HANDLER);
             }
             //instantiate all of them before starting dispatch
-            List<MessageHandler> instances=new ArrayList<MessageHandler>(handlers.size());
-            for(String classname:handlers) {
+            List<MessageHandler> instances = new ArrayList<MessageHandler>(handlers.size());
+            for (String classname : handlers) {
                 MessageHandler handler = createMessageHandler(messageContext, classname);
                 instances.add(handler);
             }
             //now go and dispatch them
-            for (MessageHandler handler : instances) {
-                //dispatch
-                handler.processMessage(messageContext, endpointContext);
+            int size = instances.size();
+            for (int i = 0; i < size; i++) {
+                MessageHandler handler = instances.get(i);
+                try {
+                    handler.processMessage(messageContext, endpointContext);
+                } catch (Exception thrown) {
+                    //if anything happened here. the rollback begins
+                    fault = bridge.extractFaultFromThrowable(thrown);
+                    for (int rollback = i; rollback >= 0; rollback--) {
+                        handler = instances.get(rollback);
+                        try {
+                            fault = handler.faultRaised(messageContext, endpointContext, fault);
+                        } catch (AlpineRuntimeException e) {
+                            getLog().warn("discarding an exception that occurred during fault rollback", e);
+                        }
+                    }
+                }
             }
-        } catch (Throwable thrown) {
-            getLog().info("Fault thrown ",thrown);
-            FaultBridge bridge=FaultBridge.getFaultBridge(messageContext);
-            Fault fault=bridge.extractFaultFromThrowable(thrown);
+        } catch (Exception thrown) {
+            getLog().info("Fault thrown ", thrown);
+            fault = bridge.extractFaultFromThrowable(thrown);
+        }
+        if (fault != null) {
             //we have the fault; patch it in
             responseMessage = messageContext.getResponse();
             Body body = responseMessage.getEnvelope().getBody();
@@ -155,6 +176,7 @@ public class SoapPostServlet extends ServletBase {
 
     /**
      * Override point: create a new handler
+     *
      * @param messageContext
      * @param classname
      * @return
@@ -162,7 +184,7 @@ public class SoapPostServlet extends ServletBase {
      * @throws IllegalAccessException
      * @throws InstantiationException
      */
-    MessageHandler createMessageHandler(MessageContext messageContext,String classname) throws ClassNotFoundException,
+    MessageHandler createMessageHandler(MessageContext messageContext, String classname) throws ClassNotFoundException,
             IllegalAccessException, InstantiationException {
         Class<MessageHandler> aClass = (Class<MessageHandler>) Class.forName(classname);
         MessageHandler handler = aClass.newInstance();

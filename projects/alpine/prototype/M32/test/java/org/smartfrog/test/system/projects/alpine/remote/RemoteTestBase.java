@@ -66,7 +66,7 @@ public abstract class RemoteTestBase extends TestCase {
     /**
      * path under alpine to echo {@value}
      */
-    public static final String WSA_PATH = "/echo/";
+    public static final String WSA_PATH = "/wsa/";
 
     /**
      * Constructs a test case with the given name.
