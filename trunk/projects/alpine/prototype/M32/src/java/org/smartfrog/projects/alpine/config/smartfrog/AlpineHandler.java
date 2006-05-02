@@ -7,5 +7,6 @@ import java.rmi.Remote;
  */
 public interface AlpineHandler extends Remote {
     public static final String ATTR_ENDPOINT = "endpoint";
-    public static final String ATTR_CLASSNAME= "classname";
+    public static final String ATTR_CLASSNAME = "classname";
+
 }

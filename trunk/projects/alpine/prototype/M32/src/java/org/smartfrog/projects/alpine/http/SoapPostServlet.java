@@ -26,7 +26,9 @@ import org.smartfrog.projects.alpine.core.EndpointContext;
 import org.smartfrog.projects.alpine.core.MessageContext;
 import org.smartfrog.projects.alpine.faults.AlpineRuntimeException;
 import org.smartfrog.projects.alpine.faults.FaultBridge;
+import org.smartfrog.projects.alpine.faults.ServerException;
 import org.smartfrog.projects.alpine.interfaces.MessageHandler;
+import org.smartfrog.projects.alpine.interfaces.MessageHandlerFactory;
 import org.smartfrog.projects.alpine.om.soap11.Body;
 import org.smartfrog.projects.alpine.om.soap11.Fault;
 import org.smartfrog.projects.alpine.om.soap11.MessageDocument;
@@ -44,9 +46,8 @@ import java.util.List;
  * This servlet handles SOAP Posted stuff
  */
 public class SoapPostServlet extends ServletBase {
-    public static final String ERROR_NO_HANDLER = "No handler class defined for the endpoint";
+    public static final String ERROR_NO_HANDLER = "No handlers defined for the endpoint";
     public static final String TEXT_HTML = "text/html";
-    private List<String> handlers;
 
     /**
      * get the alpine context from the servlet context
@@ -129,28 +130,19 @@ public class SoapPostServlet extends ServletBase {
         try {
             requestMessage = binder.parseIncomingPost(messageContext, request);
 
-            //get the handler list
-            handlers = (List<String>) endpointContext.get(ContextConstants.ATTR_HANDLERS);
-            if (handlers == null) {
-                throw new AlpineRuntimeException(ERROR_NO_HANDLER);
-            }
-            //instantiate all of them before starting dispatch
-            List<MessageHandler> instances = new ArrayList<MessageHandler>(handlers.size());
-            for (String classname : handlers) {
-                MessageHandler handler = createMessageHandler(messageContext, classname);
-                instances.add(handler);
-            }
+            //get the handlers
+            List<MessageHandler> handlers = createMessageHandlers(endpointContext);
             //now go and dispatch them
-            int size = instances.size();
+            int size = handlers.size();
             for (int i = 0; i < size; i++) {
-                MessageHandler handler = instances.get(i);
+                MessageHandler handler = handlers.get(i);
                 try {
                     handler.processMessage(messageContext, endpointContext);
                 } catch (Exception thrown) {
                     //if anything happened here. the rollback begins
                     fault = bridge.extractFaultFromThrowable(thrown);
                     for (int rollback = i; rollback >= 0; rollback--) {
-                        handler = instances.get(rollback);
+                        handler = handlers.get(rollback);
                         try {
                             fault = handler.faultRaised(messageContext, endpointContext, fault);
                         } catch (AlpineRuntimeException e) {
@@ -189,5 +181,29 @@ public class SoapPostServlet extends ServletBase {
         Class<MessageHandler> aClass = (Class<MessageHandler>) Class.forName(classname);
         MessageHandler handler = aClass.newInstance();
         return handler;
+    }
+
+    /**
+     * Go from a list of factories to a list of handlers
+     *
+     * @param endpointContext this endpoint
+     * @return the list of handlers
+     * @throws AlpineRuntimeException if there was no handler list, as defined by {@link ContextConstants.ATTR_HANDLERS}
+     *                                in the endpoint context.
+     */
+    private List<MessageHandler> createMessageHandlers(EndpointContext endpointContext) {
+        List<MessageHandlerFactory> factories = (List<MessageHandlerFactory>)
+                endpointContext.get(ContextConstants.ATTR_HANDLERS);
+        if (factories == null) {
+            throw new ServerException(ERROR_NO_HANDLER);
+        }
+        //create the instanc elist
+        List<MessageHandler> instances = new ArrayList<MessageHandler>(factories.size());
+        for (MessageHandlerFactory factory : factories) {
+            //ask each factory for an instance
+            MessageHandler handler = factory.createHandler(endpointContext);
+            instances.add(handler);
+        }
+        return instances;
     }
 }

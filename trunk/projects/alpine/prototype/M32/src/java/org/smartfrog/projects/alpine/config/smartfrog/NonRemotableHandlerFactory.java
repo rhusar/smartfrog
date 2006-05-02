@@ -1,4 +1,4 @@
-/** (C) Copyright 2005 Hewlett-Packard Development Company, LP
+/** (C) Copyright 2006 Hewlett-Packard Development Company, LP
 
  This library is free software; you can redistribute it and/or
  modify it under the terms of the GNU Lesser General Public
@@ -17,34 +17,27 @@
  For more information: www.smartfrog.org
 
  */
- 
+package org.smartfrog.projects.alpine.config.smartfrog;
 
-#include "/org/smartfrog/projects/alpine/config/smartfrog/components.sf"
+import org.smartfrog.projects.alpine.interfaces.MessageHandlerFactory;
+import org.smartfrog.sfcore.common.SmartFrogException;
 
-
-
-EchoHandler extends SharedHandler {
-  classname "org.smartfrog.projects.alpine.handlers.EchoHandler";
-}
-
-
-MustUnderstandChecker extends SharedHandler {
-  classname "org.smartfrog.projects.alpine.handlers.MustUnderstandChecker";
-}
-
-AddressHandler extends SharedHandler {
-  classname "org.smartfrog.projects.alpine.handlers.AddressHandler";
-}
+import java.rmi.RemoteException;
 
 /**
- * print the current message (Request or response) to the log, for diagnostics purposes
+ * Interface created by things that are not, repeat *not* remoteable.
+ * created 02-May-2006 13:54:09
  */
-LogCurrentMessageHandler extends SharedHandler {
-  classname "org.smartfrog.projects.alpine.handlers.LogCurrentMessageHandler";
+
+
+public interface NonRemotableHandlerFactory {
+
+    /**
+     * Get the factory that can provide message handlers
+     *
+     * @return
+     * @throws SmartFrogException
+     */
+    MessageHandlerFactory createFactory() throws SmartFrogException, RemoteException;
+
 }
-
-
- 
- 
-
- 
