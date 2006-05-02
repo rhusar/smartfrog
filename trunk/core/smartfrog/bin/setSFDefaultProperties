@@ -18,7 +18,7 @@ if ! test "$SFDEFAULTSF";then
    export SFDEFAULTSF=-Dorg.smartfrog.sfcore.processcompound.sfDefault.sfDefault="$SFHOME/bin/default.sf"
 fi
 
-if  test "&SFSERVERHOSTNAME";then
-   export SFRMIHOSTNAME=-Djava.rmi.server.hostname="&SFSERVERHOSTNAME"
+if  test "$SFSERVERHOSTNAME";then
+   export SFRMIHOSTNAME=-Djava.rmi.server.hostname="$SFSERVERHOSTNAME"
 fi  
 # -------------------End user properties---------------
