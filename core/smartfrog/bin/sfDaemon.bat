@@ -11,6 +11,8 @@ call "%SFHOME%\bin\setSFProperties"
 
 rem sfDefault files are only needed in sfDaemon and sfRun
 if defined SFDEFAULTSF  set SFCMDPARAMETERS=%SFCMDPARAMETERS% %SFDEFAULTSF%
+rem RMI server hostname only needed in sfDaemon and sfRun
+if defined SFRMIHOSTNAME  set SFCMDPARAMETERS=%SFCMDPARAMETERS% %SFRMIHOSTNAME%
 
 rem sort cmd line args into JVMARGS or CLASSARGS.
 rem JVMARGS are declared using -J token 
