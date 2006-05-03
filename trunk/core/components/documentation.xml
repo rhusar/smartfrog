@@ -112,15 +112,20 @@ For more information: www.smartfrog.org
 				 <include name="tabs.xml" />
 		</fileset>
 		</copy>	
-    <forrest-component component="emailer" />
-    <forrest-component component="jetty" />
-    <!--forrest-component component="logger" /-->
-    <forrest-component component="net" />
-    <forrest-component component="ssh" />
-    <!--forrest-component component="utils" /-->
-    <forrest-component component="scripting" />
-    <forrest-component component="slp" />
-	<forrest-component component="loggingservices" />
+	<forrest-component component="emailer" />
+	<forrest-component component="net" />
+	<forrest-component component="ssh" />
+	<forrest-component component="scripting" />
+	<forrest-component component="slp" />
+
+		
+    <!--forrest-component component="jetty" />
+
+
+    <forrest-component component="logger" />
+
+    <forrest-component component="utils" />
+	<forrest-component component="loggingservices" /-->
 
    
 	<copy todir="${comp.home}/src/documentation" overwrite="true"

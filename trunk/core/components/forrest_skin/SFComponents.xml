@@ -14,7 +14,10 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 -->
-<!DOCTYPE document PUBLIC "-//APACHE//DTD Documentation V1.3//EN" "http://forrest.apache.org/dtd/document-v13.dtd">
+
+<!DOCTYPE document PUBLIC "-//APACHE//DTD Documentation V2.0//EN" "http://forrest.apache.org/dtd/document-v20.dtd">
+
+
 <document> 
   <header> 
     <title>Document Folder for Smartfrog Components</title> 
@@ -22,21 +25,26 @@
     <abstract>Here is the List of Smartfrog Components available.
 	Each component has its own version and least compatible smartfrog core version</abstract> 
   </header> 
-	 
-	<body> 
- 	<!-- p><link href="anubis/anubis.html">Anubis Version=3.08.005 SFCore-Min-version=SmartFrog 3.08.005 </link></p -->	 
-	<!-- p><link href="anubisdeployer/anubisdeployer.html">AnubisDeployer Version=3.08.005 SFCore-Min-version=SmartFrog 3.08.005 </link></p -->	 
-    <p><link href="emailer/emailer.html">Emailer Version=3.08.005 SFCore-Min-version=SmartFrog 3.08.005 </link></p>	
-	<!-- p><link href="fun/fun.html">fun Version=3.08.005 SFCore-Min-version=SmartFrog 3.08.005 </link></p -->	 
-	<!--<p><link href="jetty/jetty.html">Jetty Version=jetty-ver SFCore-Min-version=jetty-minver </link></p>-->
-    <p><link href="net/net.html">Net Version=3.08.steve-private SFCore-Min-version=SmartFrog 3.08.steve-private </link></p>
-    <p><link href="scripting/scripting.html">Scripting Version=3.08.steve-private SFCore-Min-version=SmartFrog 3.08.steve-private </link></p>    
-    <!--p><link href="loggingservices/loggingservices.html">SFLoggingServices Version=loggingservices-ver SFCore-Min-version=loggingservices-minver </link></p -->    
-    <p><link href="slp/slp.html">Slp Version=3.08.steve-private SFCore-Min-version=SmartFrog 3.08.steve-private </link></p>    
-    <p><link href="ssh/ssh.html"> SSH Version=3.08.steve-private SFCore-Min-version=SmartFrog 3.08.steve-private </link></p>
-    <!--<p><link href="tomcat/tomcat.html"> Tomcat Version=tomcat-ver SFCore-Min-version=tomcat-minver </link></p>	     -->
-    <!-- p><link href="utils/utils.html">Utils Version=3.08.steve-private SFCore-Min-version=SmartFrog 3.08.steve-private </link></p -->
-    <!-- <p><link href="www/www.html"> www Version=www-ver SFCore-Min-version=www-minver </link></p>	     -->
+  
+  <body> 
+	  <section>
+		 	 <title>Welcome to SmartFrog Components</title> 
+        <p><a href="emailer/emailer.html">Emailer Version=3.08.005 SFCore-Min-version=SmartFrog 3.08.005 </a></p>	
+        <p><a href="net/net.html">Net Version=3.08.steve-private SFCore-Min-version=SmartFrog 3.08.steve-private </a></p>
+        <p><a href="scripting/scripting.html">Scripting Version=3.08.steve-private SFCore-Min-version=SmartFrog 3.08.steve-private </a></p>    
+	<p><a href="slp/slp.html">Slp Version=3.08.steve-private SFCore-Min-version=SmartFrog 3.08.steve-private </a></p>    
+	<p><a href="ssh/ssh.html"> SSH Version=3.08.steve-private SFCore-Min-version=SmartFrog 3.08.steve-private </a></p>
+
+
+	<!-- p><a href="fun/fun.html">fun Version=3.08.005 SFCore-Min-version=SmartFrog 3.08.005 </a></p -->	 
+	<!--<p><a href="jetty/jetty.html">Jetty Version=jetty-ver SFCore-Min-version=jetty-minver </a></p>-->
+ 	<!-- p><a href="anubis/anubis.html">Anubis Version=3.08.005 SFCore-Min-version=SmartFrog 3.08.005 </a></p -->	 
+	<!-- p><a href="anubisdeployer/anubisdeployer.html">AnubisDeployer Version=3.08.005 SFCore-Min-version=SmartFrog 3.08.005 </a></p -->	 
+        <!--p><a href="loggingservices/loggingservices.html">SFLoggingServices Version=loggingservices-ver SFCore-Min-version=loggingservices-minver </a></p -->    
+	<!--<p><a href="tomcat/tomcat.html"> Tomcat Version=tomcat-ver SFCore-Min-version=tomcat-minver </a></p>	     -->
+	<!-- p><a href="utils/utils.html">Utils Version=3.08.steve-private SFCore-Min-version=SmartFrog 3.08.steve-private </a></p -->
+	<!-- <p><link href="www/www.html"> www Version=www-ver SFCore-Min-version=www-minver </link></p>	     -->
+  </section> 
   </body> 
 
  
