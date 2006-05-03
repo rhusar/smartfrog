@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <project name="m32" default="default"
-  >
+    >
 
   <!--
   /** (C) Copyright 1998-2005 Hewlett-Packard Development Company, LP
@@ -25,7 +25,7 @@
   -->
 
   <description>
-     Build file for Alpine. Needs Ant1.7
+    Build file for Alpine. Needs Ant1.7
   </description>
 
   <!-- override point -->
@@ -33,28 +33,28 @@
   <!-- <property file="libraries.properties"/> -->
   <property name="javac.java.version" value="1.5"/>
   <property name="root.dir" location="../../../../core"/>
-  <property name="src.dir" location="src/java" />
+  <property name="src.dir" location="src/java"/>
   <property name="build.classes.dir" location="build/classes"/>
 
-  <property name="test.src.dir" location="test/java" />
-  
+  <property name="test.src.dir" location="test/java"/>
+
   <!-- Import common stuff -->
   <import file="${root.dir}/common.xml"/>
-  
-  
+
+
   <!-- ========================================================== -->
   <!-- ========================================================== -->
   <target name="init"
-    depends="init-standard-output-dirs,use-smartfrog-tasks,use-smartfrog-testharness">
+      depends="init-standard-output-dirs,use-smartfrog-tasks,use-smartfrog-testharness">
 
   </target>
 
-  
+
   <!-- import libs. may need proxy setup -->
   <!-- note that this is a very unstable corner of Ant; needs
        CVS_HEAD releases and will definitely change before long -->
-  <target name="m2" depends="m2-tasks" >
-  
+  <target name="m2" depends="m2-tasks">
+
     <m2-libraries pathID="libraries.path">
       <!--Required -->
       <dependency groupID="commons-httpclient"
@@ -65,24 +65,25 @@
           artifactID="commons-logging-api"
           version="${commons-logging.version}"/>
       <dependency groupID="xerces"
-        artifactID="xercesImpl"
-        version="${xerces.version}"/>        
+          artifactID="xercesImpl"
+          version="${xerces.version}"/>
       <dependency groupID="xerces"
-        artifactID="xmlParserAPIs"
-        version="${xerces.version}"/>
+          artifactID="xmlParserAPIs"
+          version="${xerces.version}"/>
       <dependency groupID="xom"
-        artifactID="xom"
-        version="${xom.version}"/>
+          artifactID="xom"
+          version="${xom.version}"/>
 
       <!--required at compile but not runtime-->
       <dependency groupID="servletapi"
           artifactID="servletapi"
           version="${servletapi.version}"
-          scope="compile"/>
+          />
+      <!--          scope="compile"-->
       <!--optional -->
       <dependency groupID="log4j"
-        artifactID="log4j"
-        version="${log4j.version}"/>
+          artifactID="log4j"
+          version="${log4j.version}"/>
       <dependency groupID="jaxen"
           artifactID="jaxen"
           version="${jaxen.version}"/>
@@ -92,9 +93,9 @@
 
       <!--optional, for smartfrog deployment-->
       <dependency groupID="org.smartfrog"
-        artifactID="smartfrog"
-        version="${smartfrog.version}"
-        scope="compile"/>
+          artifactID="smartfrog"
+          version="${smartfrog.version}"
+          scope="compile"/>
       <dependency groupID="org.smartfrog"
           artifactID="sf-jetty"
           version="${smartfrog.version}"
@@ -110,24 +111,24 @@
           version="1.6"
           scope="test"/>
       <dependency groupID="junit"
-        artifactID="junit"
-        version="${junit.version}"
-        scope="test"/>
+          artifactID="junit"
+          version="${junit.version}"
+          scope="test"/>
       <dependency groupID="org.smartfrog"
           artifactID="sf-testharness"
           version="${smartfrog.version}"
           scope="test"/>
     </m2-libraries>
-  </target>  
-    
-  
-   <!-- inline creation of a minimal pom
-      This sets it up with all the dependencies. We strip out some unwanted baggage from
-      dependencies, like junit, dom4j and jdom. Dirty pom files stop here :)
-   -->
-   <target name="m2-make-pom" depends="m2-init" unless="project.haspom">
-     <echo message="Creating Pom ${target.pom}" level="verbose"/>
-     <echoxml file="${target.pom}">
+  </target>
+
+
+  <!-- inline creation of a minimal pom
+     This sets it up with all the dependencies. We strip out some unwanted baggage from
+     dependencies, like junit, dom4j and jdom. Dirty pom files stop here :)
+  -->
+  <target name="m2-make-pom" depends="m2-init" unless="project.haspom">
+    <echo message="Creating Pom ${target.pom}" level="verbose"/>
+    <echoxml file="${target.pom}">
       <project>
         <modelVersion>4.0.0</modelVersion>
         <groupId>${m2.groupID}</groupId>
@@ -155,7 +156,7 @@
             <artifactId>commons-logging-api</artifactId>
             <version>${commons-logging.version}</version>
           </dependency>
-<!--          <dependency>
+          <!--          <dependency>
             <groupId>xalan</groupId>
             <artifactId>xalan</artifactId>
             <version>${xalan.version}</version>
@@ -174,6 +175,11 @@
             <groupId>commons-logging</groupId>
             <artifactId>commons-logging-api</artifactId>
             <version>${commons-logging.version}</version>
+          </dependency>
+          <dependency>
+            <groupId>servletapi</groupId>
+            <artifactId>servletapi</artifactId>
+            <version>${servletapi.version}</version>
           </dependency>
           <dependency>
             <groupId>xom</groupId>
@@ -207,57 +213,57 @@
   <!-- declare our compile time classpath -->
   <!-- ========================================================== -->
   <target name="declare-compile.classpath"
-    depends="declare-base.compile.classpath,m2">
+      depends="declare-base.compile.classpath,m2">
     <path id="compile.classpath">
       <path refid="base.compile.classpath"/>
       <path refid="libraries.path"/>
     </path>
     <property name="compile.classpath.value" refid="exec.classpath"/>
     <echo level="verbose">compile.classpath=${compile.classpath.value}</echo>
-  </target> 
-  
+  </target>
+
   <!-- this is the classpath for running the daemon -->
-  
-  <target name="declare-run.classpath" depends="init" >  
+
+  <target name="declare-run.classpath" depends="init">
     <path id="run.classpath">
-       <path refid="smartfrog.classpath"/>
+      <path refid="smartfrog.classpath"/>
     </path>
     <sf-tourl property="run.classpath.value">
       <path refid="run.classpath"/>
     </sf-tourl>
     <echo level="verbose">
-        run.classpath=
-        ${run.classpath.value}</echo>    
-  </target>  
-  
-  <target name="declare-exec.classpath" depends="declare-compile.classpath" >  
+      run.classpath=
+      ${run.classpath.value}</echo>
+  </target>
+
+  <target name="declare-exec.classpath" depends="declare-compile.classpath">
     <path id="exec.classpath">
       <path refid="compile.classpath"/>
       <pathelement location="${target.jar}"/>
-    </path>    
+    </path>
     <property name="exec.classpath.value" refid="exec.classpath"/>
     <echo level="verbose">exec.classpath=${exec.classpath.value}</echo>
-  </target>  
-  
-  <target name="declare-tests.run.classpath" depends="declare-tests.compile.classpath" >  
+  </target>
+
+  <target name="declare-tests.run.classpath" depends="declare-tests.compile.classpath">
     <path id="tests.run.classpath">
       <path refid="tests.compile.classpath"/>
       <pathelement location="${test.jar}"/>
     </path>
     <property name="tests.run.classpath.value" refid="tests.run.classpath"/>
     <echo level="verbose">tests.run.classpath=${tests.run.classpath.value}</echo>
-  </target>  
-  
+  </target>
+
   <!-- ========================================================== -->
   <!-- create a distro. 
        we want both sf-junit and the test har -->
   <!-- ========================================================== -->
   <target name="dist" depends="package,package-tests"
-    description="create a distribution">
+      description="create a distribution">
 
-  </target>    
-    
-  
+  </target>
+
+
   <!-- ========================================================== -->
   <!-- set up any properties for deployment -->
   <!-- ========================================================== -->
@@ -265,7 +271,7 @@
     <property name="deploy.host" value="localhost"/>
     <property name="application.name" value="alpine"/>
     <property name="deploy.sf"
-      value="alpine.sf"/>
+        value="alpine.sf"/>
     <property name="default.ini" location="test/files/default.ini"/>
     <property name="default.sf" location="test/files/default.sf"/>
   </target>
@@ -274,53 +280,52 @@
   <!-- setup codebase -->
   <!-- ========================================================== -->
   <target name="init-codebase" depends="init-deploy-properties,dist"
-    description="set up the codebase property">
+      description="set up the codebase property">
     <sf-tourl property="codebase">
       <fileset file="${target.jar}"/>
       <fileset file="${test.jar}"/>
-      <path refid="libraries.path" />
+      <path refid="libraries.path"/>
       <path refid="compile.classpath"/>
     </sf-tourl>
     <echo>
-        deploying to ${deploy.host}
-        codebase=${codebase}</echo>
+      deploying to ${deploy.host}
+      codebase=${codebase}</echo>
   </target>
-  
+
   <!-- ========================================================== -->
   <!-- deploy; requires a host -->
   <!-- ========================================================== -->
   <target name="deploy" depends="init-codebase,init-deploy-properties"
-    description="deploy">
+      description="deploy">
 
     <sf-deploy classpathref="run.classpath"
-      logStackTraces="true"
-      host="${deploy.host}"
-      timeout="30000"
-      >
+        logStackTraces="true"
+        host="${deploy.host}"
+        timeout="30000"
+        >
       <codebase url="${codebase}"/>
 
       <application name="${application.name}">
-              sfCodeBase PROPERTY org.smartfrog.codebase;
-              #include "/${deploy.sf}"
+        sfCodeBase PROPERTY org.smartfrog.codebase;
+        #include "/${deploy.sf}"
       </application>
     </sf-deploy>
   </target>
 
   <target name="undeploy" depends="init-deploy-properties"
-    description="deploy">
+      description="deploy">
 
     <sf-undeploy classpathref="run.classpath"
-      logStackTraces="true"
-      host="${deploy.host}"
-      timeout="30000"
-      application="${application.name}"/>
+        logStackTraces="true"
+        host="${deploy.host}"
+        timeout="30000"
+        application="${application.name}"/>
   </target>
-    
+
 
   <!-- ========================================================== -->
   <!-- system tests -->
   <!-- ========================================================== -->
-
 
 
   <!-- =================================================================== -->
@@ -371,5 +376,5 @@
   </target>
 
 
- <target name="all" depends="dist,unit-tests,installed" />
+  <target name="all" depends="dist,unit-tests,installed"/>
 </project>
