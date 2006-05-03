@@ -113,7 +113,7 @@ public class DescriptorHelper extends XomHelper {
             if (body != null) {
                 throw raiseBadArgumentFault(ERROR_BOTH_OPTIONS);
             }
-            return retrieveRemoteReference(reference.getValue());
+            return retrieveRemoteReference(reference.getValue(), extension);
         } else {
             File file = saveBodyToTempFile(body, false, extension);
             file.deleteOnExit();
@@ -142,7 +142,7 @@ public class DescriptorHelper extends XomHelper {
                 throw raiseBadArgumentFault(ERROR_BOTH_OPTIONS);
             }
             //get the file
-            File file = retrieveRemoteReference(reference.getValue());
+            File file = retrieveRemoteReference(reference.getValue(), "xml");
             //then load it inline. slick :)
             return loadInlineDescriptor(file,language.getValue());
 
@@ -208,7 +208,7 @@ public class DescriptorHelper extends XomHelper {
     }
 
 
-    public File retrieveRemoteReference(String reference) throws IOException {
+    public File retrieveRemoteReference(String reference, String extension) throws IOException {
         URL url = new URL(reference);
         String protocol = url.getProtocol();
         if (!("file".equals(protocol))) {

@@ -41,6 +41,7 @@ import java.util.Date;
 
 
 public class ActionDeploy extends ConfigurationAction {
+    public static final String KEY_LANGUAGE = "#language";
 
 
     /**
@@ -61,7 +62,7 @@ public class ActionDeploy extends ConfigurationAction {
       * @throws RemoteException In case of network/rmi error
       */
      public static Prim Deploy(String url, String appName,Prim parent, Compound target,
-         Context c, Reference deployReference) throws SmartFrogException, RemoteException {
+                               Context c, Reference deployReference) throws SmartFrogException, RemoteException {
 
         //First thing first: system gets initialized
         //Protect system if people use this as entry point
@@ -105,11 +106,17 @@ public class ActionDeploy extends ConfigurationAction {
             target = (Compound)parent;
           }
 
+        //select the language first from the context, then from the URL itself
+        String language;
+        language=(String) c.get(KEY_LANGUAGE);
+        if(language==null) {
+            language=url;
+        }
 
          try {
              ComponentDescription cd;
              try {
-                 cd = ComponentDescriptionImpl.sfComponentDescription(url,null,deployReference);
+                 cd = ComponentDescriptionImpl.sfComponentDescription(url,language,null,deployReference);
 //                 if (Logger.logStackTrace) {
                      parseTime = System.currentTimeMillis()-deployTime;
                      deployTime = System.currentTimeMillis();

@@ -114,7 +114,7 @@ public class InitializeProcessor extends SystemProcessor {
             //finishing here.
             return false;
         }
-        job.deployApplication(file);
+        job.deployApplication(file, language);
         return true;
     }
 

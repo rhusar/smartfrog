@@ -26,17 +26,19 @@ import org.ggf.cddlm.generated.api.CddlmConstants;
 
  */
 public enum DeploymentLanguage {
-    unknown("", ""),
-    smartfrog(CddlmConstants.SMARTFROG_NAMESPACE, ".sf"),
-    cdl(CddlmConstants.XML_CDL_NAMESPACE, ".cdl");
+    unknown("", "","unknown"),
+    smartfrog(CddlmConstants.SMARTFROG_NAMESPACE, ".sf","SmartFrog description"),
+    cdl(CddlmConstants.XML_CDL_NAMESPACE, ".cdl","CDDLM descriptor");
 
     private String namespace;
     private String extension;
+    private String description;
 
-    DeploymentLanguage(String namespace, String extension) {
-        this.namespace = namespace;
-        this.extension = extension;
-    }
+    DeploymentLanguage(String namespace, String extension, String description) {
+       this.namespace = namespace;
+       this.extension = extension;
+       this.description = description;
+   }
 
     public String getNamespace() {
         return namespace;
@@ -44,6 +46,10 @@ public enum DeploymentLanguage {
 
     public String getExtension() {
         return extension;
+    }
+
+    public String getDescription() {
+        return description;
     }
 
     public boolean namespaceEquals(String ns) {
@@ -75,6 +81,6 @@ public enum DeploymentLanguage {
      * @return the name of this enum constant
      */
     public String toString() {
-        return getNamespace();
+        return getDescription();
     }
 }
