@@ -19,6 +19,7 @@ For more information: www.smartfrog.org
 */
 #include "/org/smartfrog/services/deployapi/test/system/alpine/deployapi/nec.sf"
 #include "/org/smartfrog/services/deployapi/test/system/alpine/deployapi/ourgrid.sf"
+#include "/org/smartfrog/services/deployapi/test/system/alpine/deployapi/hp.sf"
 #include "/org/smartfrog/services/utils/setproperty/components.sf"
 #include "/org/smartfrog/services/www/livenessPage.sf"
 
@@ -59,7 +60,7 @@ sfConfig extends Compound {
 
   necEnabled true;
   ourgridEnabled true;
-  pelvouxEnabled false;
+  hpEnabled false;
 
   NecTest extends ServerTest {
 
@@ -74,7 +75,14 @@ sfConfig extends Compound {
 //    sfProcessName "process2";
     subdir "ourgrid";
     endpoint ourgrid_endpoint;
-    enabled necEnabled;
+    enabled ourgridEnabled;
   }
+
+  hpTest extends ServerTest {
+      subdir "hp";
+    endpoint hp_endpoint;
+    enabled hpEnabled;
+  }
+
 
 }

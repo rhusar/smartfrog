@@ -45,6 +45,7 @@ import org.smartfrog.services.filesystem.filestore.FileEntry;
 import org.smartfrog.sfcore.common.ConfigurationDescriptor;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLivenessException;
+import org.smartfrog.sfcore.common.ActionDeploy;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 
@@ -488,12 +489,13 @@ public class Application implements WSRPResourceSource {
      *
      * @param hostname
      * @param application
+     * @param language
      * @param url
      * @return
      * @
      */
     private Prim deployThroughSFSystem(String hostname, String application,
-                                       String url,
+                                       DeploymentLanguage language, String url,
                                        String subprocess) {
         try {
             ConfigurationDescriptor config = new ConfigurationDescriptor(
@@ -503,7 +505,8 @@ public class Application implements WSRPResourceSource {
             if (subprocess != null) {
                 config.setSubProcess(subprocess);
             }
-            log.info("Deploying " + url + " to " + hostname);
+            config.setContextAttribute(ActionDeploy.KEY_LANGUAGE,language.getExtension());
+            log.info("Deploying " + url + " to " + hostname+" as "+language.getDescription());
             //deploy, throwing an exception if we cannot
             Object result = config.execute(null);
             enterStateNotifying(LifecycleStateEnum.initialized, "initialized");
@@ -522,7 +525,7 @@ public class Application implements WSRPResourceSource {
     }
 
 
-    public void deployApplication(File file) {
+    public void deployApplication(File file, DeploymentLanguage language) {
 
         if (state != LifecycleStateEnum.instantiated) {
             throw new DeploymentException(Constants.F_LIFECYCLE_EXCEPTION);
@@ -530,7 +533,7 @@ public class Application implements WSRPResourceSource {
         String url = file.toURI().toString();
         Prim runningJobInstance;
         runningJobInstance =
-                deployThroughSFSystem(hostname, getId(), url, null);
+                deployThroughSFSystem(hostname, getId(), language,url, null);
         bindToPrim(runningJobInstance);
     }
 

@@ -75,7 +75,7 @@ public class DescriptorHelperTest extends UnitTestBase {
 
     private void assertRetrieveFails(String url) throws IOException {
         try {
-            File f=helper.retrieveRemoteReference(url);
+            File f=helper.retrieveRemoteReference(url, "");
             f.delete();
             fail("expected failure:"+url);
         } catch (BaseException e) {
@@ -92,7 +92,7 @@ public class DescriptorHelperTest extends UnitTestBase {
         try {
             String url = f.toURI().toString();
             assertTrue(url.endsWith(".xml"));
-            File f2=helper.retrieveRemoteReference(url);
+            File f2=helper.retrieveRemoteReference(url, "xml");
             assertEquals(f.getAbsolutePath(),f2.getAbsolutePath());
         } finally {
             f.delete();
