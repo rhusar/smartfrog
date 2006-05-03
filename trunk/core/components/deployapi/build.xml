@@ -632,4 +632,62 @@
   <target name="scp" depends="scp-upload"
       description="upload the files"/>
 
+
+  <!-- ==================================    -->
+  <!-- code to test against a specific target -->
+  <!-- ==================================    -->
+
+  <target name="prepare-interop-tests" depends="init,dist,package-tests">
+    <property name="epr.nec" value="http://cddlm.nec-labs.com:9090/cddlm/services/portal" />
+    <property name="epr.ourgrid" value="http://cddlm.lsd.ufcg.edu.br:8080/muse/services/Portal"/>
+    <property name="epr.hp" value="http://deployapi.iseran.com:8080/alpine/portal"/>
+
+    <property name="test.interop.dir" location="${build.dir}/test/interop/" />
+    <property name="test.interop.data.dir" location="${build.dir}/test/interop/data"/>
+    <property name="test.interop.reports.dir" location="${build.dir}/test/interop/reports"/>
+    <macrodef name="interop-test">
+      <attribute name="endpoint"/>
+      <sequential>
+        <mkdir dir="${test.interop.data.dir}/@{endpoint}" />
+        <core:junit
+            errorProperty="@{endpoint}.failed"
+            failureProperty="@{endpoint}.failed"
+            includeAntRuntime="true"
+            >
+          <sysproperty key="test.classes.dir"
+              value="${test.classes.dir}"/>
+          <sysproperty key="endpoint" value="epr.@{endpoint}" />
+          <!--proxy settings-->
+          <syspropertyset >
+            <propertyref prefix="http."/>
+          </syspropertyset>
+          <classpath>
+            <path refid="tests.run.classpath"/>
+          </classpath>
+          <batchtest todir="${test.interop.data.dir}/@{endpoint}" >
+            <!-- bulk test case -->
+            <fileset dir="${test.classes.dir}">
+              <include name="org/smartfrog/**/system/alpine/deployapi/api/**/*Test.class"/>
+            </fileset>
+          </batchtest>
+        </core:junit>
+        <core:test-report data="${test.interop.data.dir}/@{endpoint}"
+            reports="${test.interop.reports.dir}/@{endpoint}"/>
+      </sequential>
+    </macrodef>
+  </target>
+
+  <target name="interop-hp" depends="prepare-interop-tests">
+    <interop-test endpoint="hp" />
+  </target>
+
+  <target name="interop-nec" depends="prepare-interop-tests">
+    <interop-test endpoint="nec"/>
+  </target>
+
+  <target name="interop-ourgrid" depends="prepare-interop-tests">
+    <interop-test endpoint="ourgrid"/>
+  </target>
+
+  <target name="interop-tests" depends="interop-hp,interop-nec,interop-ourgrid" />
 </project>
