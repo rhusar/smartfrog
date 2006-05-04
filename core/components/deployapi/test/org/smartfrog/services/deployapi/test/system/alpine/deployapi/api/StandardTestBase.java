@@ -19,12 +19,22 @@
  */
 package org.smartfrog.services.deployapi.test.system.alpine.deployapi.api;
 
+import nu.xom.Document;
 import nu.xom.Element;
+import nu.xom.ParsingException;
 import org.ggf.cddlm.generated.api.CddlmConstants;
 import org.smartfrog.projects.alpine.om.base.SoapElement;
+import org.smartfrog.projects.alpine.om.soap11.SoapMessageParser;
 import org.smartfrog.projects.alpine.wsa.AlpineEPR;
 import org.smartfrog.services.deployapi.alpineclient.model.SystemSession;
+import org.smartfrog.services.deployapi.binding.XomHelper;
 import org.smartfrog.services.deployapi.test.system.alpine.AlpineTestBase;
+import org.smartfrog.services.xml.utils.XomUtils;
+import org.xml.sax.SAXException;
+
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 /**
  * created 11-Apr-2006 14:56:59
@@ -76,5 +86,38 @@ public abstract class StandardTestBase extends AlpineTestBase {
         } catch (InterruptedException e) {
             fail("Sleep interrupted");
         }
+    }
+
+    /**
+     * Create an addFile Request from the resource on the classpath.
+     *
+     * @param cdlResource resource
+     * @param name name to turn into a URI
+     * @return a request with the payload inline
+     * @throws org.xml.sax.SAXException
+     * @throws java.io.IOException
+     * @throws nu.xom.ParsingException
+     * @throws java.net.URISyntaxException
+     */
+    protected SoapElement createAddFileRequest(String cdlResource, String name) throws SAXException, IOException,
+            ParsingException, URISyntaxException {
+        Document document = loadCdlDocument(cdlResource);
+        //base-64 encode it
+        String encoded = XomUtils.base64Encode(document);
+
+        SoapElement request = XomHelper.addFileRequest(
+                new URI(name),
+                "application+xml",
+                "file",
+                encoded,
+                null
+        );
+        return request;
+    }
+
+    public Document loadCdlDocument(String cdlResource) throws SAXException, IOException, ParsingException {
+        SoapMessageParser parser = createXmlParser();
+        Document document = parser.parseResource(cdlResource);
+        return document;
     }
 }

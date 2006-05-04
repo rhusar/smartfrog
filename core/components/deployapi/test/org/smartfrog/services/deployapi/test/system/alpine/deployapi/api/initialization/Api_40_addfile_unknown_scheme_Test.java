@@ -20,22 +20,25 @@
 package org.smartfrog.services.deployapi.test.system.alpine.deployapi.api.initialization;
 
 import nu.xom.Document;
-import nu.xom.Element;
 import org.ggf.cddlm.generated.api.CddlmConstants;
+import org.smartfrog.projects.alpine.faults.AlpineRuntimeException;
 import org.smartfrog.projects.alpine.om.base.SoapElement;
+import org.smartfrog.services.deployapi.binding.UriListType;
+import org.smartfrog.services.deployapi.binding.XomHelper;
 import org.smartfrog.services.deployapi.test.system.alpine.deployapi.api.StandardTestBase;
+import org.smartfrog.services.xml.utils.XomUtils;
+
+import java.net.URI;
 
 /**
  * created 13-Apr-2006 13:51:02
  * Create a system , then destroy it immediately.
  */
 
-public class Api_22_deploy_inline_Test extends StandardTestBase {
+public class Api_40_addfile_unknown_scheme_Test extends StandardTestBase {
 
 
-
-
-    public Api_22_deploy_inline_Test(String name) {
+    public Api_40_addfile_unknown_scheme_Test(String name) {
         super(name);
     }
 
@@ -48,11 +51,25 @@ public class Api_22_deploy_inline_Test extends StandardTestBase {
         createSystem(null);
     }
 
-    public void testInlineDeploy() throws Exception {
+    public void testAddFileUnknownScheme() throws Exception {
+
         Document document = loadCdlDocument(CddlmConstants.INTEROP_API_TEST_DOC_1_VALID_DESCRIPTOR);
-        Element cdl=(Element) document.getRootElement().copy();
-        SoapElement request = getDescriptorHelper().createInitRequestInline(CddlmConstants.XML_CDL_NAMESPACE, cdl, null);
-        getSystem().initialize(request);
+        //base-64 encode it
+        String encoded = XomUtils.base64Encode(document);
+
+        SoapElement request = XomHelper.addFileRequest(
+                new URI("http://example.org/valid-cdl.cdl"),
+                "application+xml",
+                "unknown",
+                encoded,
+                null
+        );
+        try {
+            UriListType uris = getSystem().addFile(request);
+        } catch (AlpineRuntimeException e) {
+            //expected
+        }
     }
+
 
 }

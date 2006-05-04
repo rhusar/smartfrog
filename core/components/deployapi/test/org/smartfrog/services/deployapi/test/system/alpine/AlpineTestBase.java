@@ -85,10 +85,11 @@ public abstract class AlpineTestBase extends TestCase {
      */
     protected void setUp() throws Exception {
         super.setUp();
+        //TODO: be more dynamic on smartfrog and so read our settings directly.
+        // But how to get our deploying prim?
         String target = getJunitParameter(ENDPOINT_PROPERTY, true);
         bindToPortal(target);
         xpath = CdlCatalog.createXPathContext();
-        //TODO: be more dynamic on smartfrog. But how to get our deploying prim?
         resourceLoader = new ResourceLoader(getClass());
         tempdir= FileSystem.tempDir("deployapi","tmp",null);
         descriptorHelper = new DescriptorHelper(tempdir);

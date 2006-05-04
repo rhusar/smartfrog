@@ -23,19 +23,23 @@ import nu.xom.Document;
 import nu.xom.Element;
 import org.ggf.cddlm.generated.api.CddlmConstants;
 import org.smartfrog.projects.alpine.om.base.SoapElement;
+import org.smartfrog.services.deployapi.binding.XomHelper;
 import org.smartfrog.services.deployapi.test.system.alpine.deployapi.api.StandardTestBase;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * created 13-Apr-2006 13:51:02
  * Create a system , then destroy it immediately.
  */
 
-public class Api_22_deploy_inline_Test extends StandardTestBase {
+public class Api_24_unknown_options_ignored_Test extends StandardTestBase {
 
 
 
 
-    public Api_22_deploy_inline_Test(String name) {
+    public Api_24_unknown_options_ignored_Test(String name) {
         super(name);
     }
 
@@ -48,10 +52,14 @@ public class Api_22_deploy_inline_Test extends StandardTestBase {
         createSystem(null);
     }
 
-    public void testInlineDeploy() throws Exception {
+
+    public void testUnknownOptionsIgnored() throws Exception {
         Document document = loadCdlDocument(CddlmConstants.INTEROP_API_TEST_DOC_1_VALID_DESCRIPTOR);
-        Element cdl=(Element) document.getRootElement().copy();
-        SoapElement request = getDescriptorHelper().createInitRequestInline(CddlmConstants.XML_CDL_NAMESPACE, cdl, null);
+        Element cdl = (Element) document.getRootElement().copy();
+        List<Element> options=new ArrayList<Element>();
+        options.add(XomHelper.makeOption("http://example.org/1","value",false));
+        SoapElement request = getDescriptorHelper()
+                .createInitRequestInline(CddlmConstants.XML_CDL_NAMESPACE, cdl, null);
         getSystem().initialize(request);
     }
 

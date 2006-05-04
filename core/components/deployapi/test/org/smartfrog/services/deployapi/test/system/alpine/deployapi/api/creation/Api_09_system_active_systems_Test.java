@@ -20,7 +20,9 @@
 package org.smartfrog.services.deployapi.test.system.alpine.deployapi.api.creation;
 
 import nu.xom.Element;
-import static org.ggf.cddlm.generated.api.CddlmConstants.*;
+import static org.ggf.cddlm.generated.api.CddlmConstants.PROPERTY_MUWS_RESOURCEID;
+import static org.ggf.cddlm.generated.api.CddlmConstants.PROPERTY_PORTAL_ACTIVE_SYSTEMS;
+import static org.ggf.cddlm.generated.api.CddlmConstants.WS_ADDRESSING_NAMESPACE;
 import org.smartfrog.projects.alpine.om.base.SoapElement;
 import org.smartfrog.projects.alpine.wsa.AlpineEPR;
 import org.smartfrog.services.deployapi.alpineclient.model.SystemSession;

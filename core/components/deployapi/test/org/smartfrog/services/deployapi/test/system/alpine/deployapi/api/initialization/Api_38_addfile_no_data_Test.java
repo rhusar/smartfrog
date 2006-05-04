@@ -19,10 +19,11 @@
  */
 package org.smartfrog.services.deployapi.test.system.alpine.deployapi.api.initialization;
 
-import nu.xom.Document;
 import nu.xom.Element;
 import org.ggf.cddlm.generated.api.CddlmConstants;
+import org.smartfrog.projects.alpine.faults.AlpineRuntimeException;
 import org.smartfrog.projects.alpine.om.base.SoapElement;
+import org.smartfrog.services.deployapi.binding.UriListType;
 import org.smartfrog.services.deployapi.test.system.alpine.deployapi.api.StandardTestBase;
 
 /**
@@ -30,12 +31,10 @@ import org.smartfrog.services.deployapi.test.system.alpine.deployapi.api.Standar
  * Create a system , then destroy it immediately.
  */
 
-public class Api_22_deploy_inline_Test extends StandardTestBase {
+public class Api_38_addfile_no_data_Test extends StandardTestBase {
 
 
-
-
-    public Api_22_deploy_inline_Test(String name) {
+    public Api_38_addfile_no_data_Test(String name) {
         super(name);
     }
 
@@ -48,11 +47,17 @@ public class Api_22_deploy_inline_Test extends StandardTestBase {
         createSystem(null);
     }
 
-    public void testInlineDeploy() throws Exception {
-        Document document = loadCdlDocument(CddlmConstants.INTEROP_API_TEST_DOC_1_VALID_DESCRIPTOR);
-        Element cdl=(Element) document.getRootElement().copy();
-        SoapElement request = getDescriptorHelper().createInitRequestInline(CddlmConstants.XML_CDL_NAMESPACE, cdl, null);
-        getSystem().initialize(request);
+    public void testAddFileNoData() throws Exception {
+
+        SoapElement addFileRequest = createAddFileRequest(CddlmConstants.INTEROP_API_TEST_DOC_1_VALID_DESCRIPTOR,
+                "http://example.org/valid-cdl.cdl");
+        Element child = addFileRequest.getFirstChildElement("data", CddlmConstants.CDL_API_TYPES_NAMESPACE);
+        addFileRequest.removeChild(child);
+        try {
+            UriListType uris = getSystem().addFile(addFileRequest);
+        } catch (AlpineRuntimeException e) {
+            //expected
+        }
     }
 
 }

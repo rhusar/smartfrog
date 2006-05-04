@@ -637,42 +637,61 @@
   <!-- code to test against a specific target -->
   <!-- ==================================    -->
 
-  <target name="prepare-interop-tests" depends="init,dist,package-tests">
-    <property name="epr.nec" value="http://cddlm.nec-labs.com:9090/cddlm/services/portal" />
+  <target name="init-interop-tests" depends="init">
+    <property name="epr.nec" value="http://cddlm.nec-labs.com:9090/cddlm/services/portal"/>
     <property name="epr.ourgrid" value="http://cddlm.lsd.ufcg.edu.br:8080/muse/services/Portal"/>
-    <property name="epr.hp" value="http://deployapi.iseran.com:8080/alpine/portal"/>
+    <property name="epr.hp" value="http://deployapi.iseran.com:8080/alpine/portal/"/>
 
-    <property name="test.interop.dir" location="${build.dir}/test/interop/" />
+    <property name="test.interop.dir" location="${build.dir}/test/interop/"/>
     <property name="test.interop.data.dir" location="${build.dir}/test/interop/data"/>
     <property name="test.interop.reports.dir" location="${build.dir}/test/interop/reports"/>
+  </target>
+
+  <target name="prepare-interop-tests" depends="init-interop-tests,dist,package-tests">
     <macrodef name="interop-test">
       <attribute name="endpoint"/>
       <sequential>
-        <mkdir dir="${test.interop.data.dir}/@{endpoint}" />
-        <core:junit
-            errorProperty="@{endpoint}.failed"
-            failureProperty="@{endpoint}.failed"
-            includeAntRuntime="true"
-            >
-          <sysproperty key="test.classes.dir"
-              value="${test.classes.dir}"/>
-          <sysproperty key="endpoint" value="epr.@{endpoint}" />
-          <!--proxy settings-->
-          <syspropertyset >
-            <propertyref prefix="http."/>
-          </syspropertyset>
-          <classpath>
-            <path refid="tests.run.classpath"/>
-          </classpath>
-          <batchtest todir="${test.interop.data.dir}/@{endpoint}" >
-            <!-- bulk test case -->
-            <fileset dir="${test.classes.dir}">
-              <include name="org/smartfrog/**/system/alpine/deployapi/api/**/*Test.class"/>
-            </fileset>
-          </batchtest>
-        </core:junit>
-        <core:test-report data="${test.interop.data.dir}/@{endpoint}"
-            reports="${test.interop.reports.dir}/@{endpoint}"/>
+        <mkdir dir="${test.interop.data.dir}/@{endpoint}"/>
+        <waitfor maxwait="10" maxwaitunit="second"
+            timeoutproperty="@{endpoint}.timeout">
+          <http url="${epr.@{endpoint}}"/>
+        </waitfor>
+
+        <ac:if>
+          <not>
+            <isset property="@{endpoint}.timeout"/>
+          </not>
+          <ac:then>
+            <core:junit
+                errorProperty="@{endpoint}.failed"
+                failureProperty="@{endpoint}.failed"
+                includeAntRuntime="true"
+                >
+              <sysproperty key="test.classes.dir"
+                  value="${test.classes.dir}"/>
+              <sysproperty key="endpoint" value="${epr.@{endpoint}}"/>
+              <!--proxy settings-->
+              <syspropertyset>
+                <propertyref prefix="http."/>
+              </syspropertyset>
+              <classpath>
+                <path refid="tests.run.classpath"/>
+              </classpath>
+              <batchtest todir="${test.interop.data.dir}/@{endpoint}">
+                <!-- bulk test case -->
+                <fileset dir="${test.classes.dir}">
+                  <include name="org/smartfrog/**/system/alpine/deployapi/api/**/*Test.class"/>
+                </fileset>
+              </batchtest>
+            </core:junit>
+            <core:test-report data="${test.interop.data.dir}/@{endpoint}"
+                reports="${test.interop.reports.dir}/@{endpoint}"/>
+          </ac:then>
+          <ac:else>
+            <echo>Timeout: skipping endpoint @{endpoint} at ${epr.@{endpoint}} </echo>
+          </ac:else>
+        </ac:if>
+
       </sequential>
     </macrodef>
   </target>
@@ -689,5 +708,36 @@
     <interop-test endpoint="ourgrid"/>
   </target>
 
-  <target name="interop-tests" depends="interop-hp,interop-nec,interop-ourgrid" />
+  <target name="interop" depends="interop-hp,interop-nec,interop-ourgrid" />
+
+  <target name="publish-results" depends="init-interop-tests" >
+    <fail unless="publish.server">No publish.server defined</fail>
+    <fail unless="publish.user">No publish.userdefined</fail>
+    <fail unless="publish.path">No publish.path defined, e.g. /home/slo/public_html</fail>
+    <property name="publish.verbose" value="true" />
+    <presetdef name="publish-cmd">
+      <sshexec host="${publish.server}"
+          username="${publish.user}"
+          keyfile="${publish.keyfile}"/>
+    </presetdef>
+    <presetdef name="publish-cp">
+      <scp
+          passphrase=""
+          keyfile="${publish.keyfile}"
+          verbose="${publish.verbose}">
+      </scp>
+    </presetdef>
+    <publish-cmd command="mkdir -p ${publish.path}"/>
+    <publish-cmd command="rm -rf ${publish.path}/hp"/>
+    <publish-cmd command="rm -rf ${publish.path}/nec"/>
+    <publish-cmd command="rm -rf ${publish.path}/ourgrid"/>
+    <property name="publish.scp.path"
+        value="${publish.user}@${publish.server}:${publish.path}"/>
+    <publish-cp remoteToDir="${publish.scp.path}">
+      <fileset dir="${test.interop.reports.dir}" includes="**/*"/>
+    </publish-cp>
+
+  </target>
+
+  <target name="interop-all" depends="interop,publish-results"/>
 </project>
