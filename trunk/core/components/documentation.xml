@@ -124,13 +124,6 @@ For more information: www.smartfrog.org
 	<!--forrest-component component="ant" /-->
 
 
-		
-    <!--forrest-component component="jetty" />
-
-
-    <forrest-component component="logger" />
-
-    <forrest-component component="utils" /-->
 
 
    
