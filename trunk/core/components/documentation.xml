@@ -118,7 +118,8 @@ For more information: www.smartfrog.org
 	<forrest-component component="scripting" />
 	<forrest-component component="slp" />
 	<forrest-component component="anubis" />
-	<forrest-component component="anubisdeployer" />
+	<forrest-component component="loggingservices" />
+	<!--forrest-component component="anubisdeployer" /-->
 	<forrest-component component="sfinstaller" />
 	<!--forrest-component component="ant" /-->
 
@@ -129,8 +130,8 @@ For more information: www.smartfrog.org
 
     <forrest-component component="logger" />
 
-    <forrest-component component="utils" />
-	<forrest-component component="loggingservices" /-->
+    <forrest-component component="utils" /-->
+
 
    
 	<copy todir="${comp.home}/src/documentation" overwrite="true"
