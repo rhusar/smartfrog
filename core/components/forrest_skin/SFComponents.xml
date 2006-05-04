@@ -34,12 +34,12 @@
         <p><a href="scripting/scripting.html">Scripting Version=3.08.steve-private SFCore-Min-version=SmartFrog 3.08.steve-private </a></p>    
 	<p><a href="slp/slp.html">Slp Version=3.08.steve-private SFCore-Min-version=SmartFrog 3.08.steve-private </a></p>    
 	<p><a href="ssh/ssh.html"> SSH Version=3.08.steve-private SFCore-Min-version=SmartFrog 3.08.steve-private </a></p>
+ 	<p><a href="anubis/anubis.html">Anubis Version=3.08.005 SFCore-Min-version=SmartFrog 3.08.005 </a></p>	 
+	<p><a href="anubisdeployer/anubisdeployer.html">AnubisDeployer Version=3.08.005 SFCore-Min-version=SmartFrog 3.08.005 </a></p>	 
 
 
 	<!-- p><a href="fun/fun.html">fun Version=3.08.005 SFCore-Min-version=SmartFrog 3.08.005 </a></p -->	 
 	<!--<p><a href="jetty/jetty.html">Jetty Version=jetty-ver SFCore-Min-version=jetty-minver </a></p>-->
- 	<!-- p><a href="anubis/anubis.html">Anubis Version=3.08.005 SFCore-Min-version=SmartFrog 3.08.005 </a></p -->	 
-	<!-- p><a href="anubisdeployer/anubisdeployer.html">AnubisDeployer Version=3.08.005 SFCore-Min-version=SmartFrog 3.08.005 </a></p -->	 
         <!--p><a href="loggingservices/loggingservices.html">SFLoggingServices Version=loggingservices-ver SFCore-Min-version=loggingservices-minver </a></p -->    
 	<!--<p><a href="tomcat/tomcat.html"> Tomcat Version=tomcat-ver SFCore-Min-version=tomcat-minver </a></p>	     -->
 	<!-- p><a href="utils/utils.html">Utils Version=3.08.steve-private SFCore-Min-version=SmartFrog 3.08.steve-private </a></p -->

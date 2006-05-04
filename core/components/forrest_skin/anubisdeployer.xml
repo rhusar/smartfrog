@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0"?>
 <!--
   Copyright 2002-2004 The Apache Software Foundation
 
@@ -14,25 +14,27 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 -->
-<!DOCTYPE document PUBLIC "-//APACHE//DTD Documentation V2.0//EN" "http://forrest.apache.org/dtd/document-v20.dtd">
+<!--DOCTYPE document PUBLIC "-//APACHE//DTD Documentation V1.3//EN" "http://forrest.apache.org/dtd/document-v13.dtd" -->
 
+<!DOCTYPE document PUBLIC "-//APACHE//DTD Documentation V2.0//EN" "http://forrest.apache.org/dtd/document-v20.dtd">
 <document> 
   <header> 
-
-    <title>Welcome to SmartFrog  </title> 
+    <title>Document Folder for Anubis Deployer Components</title> 
+    <notice>Select a Document</notice>
+    <abstract>Document  List</abstract> 
   </header> 
-  
-<body> 
-  <section id="titlepage">
-	  <title>Smart Framework for Object Groups</title>
+
+  <body> 
+   
+	<section>
+  	 <title>Welcome to Anubis Deployer Component</title> 
+   
 	  <p>
-		  SmartFrog is a technology for describing distributed software systems as collections of cooperating components, and then activating and managing them. 
-		  It was developed at HP Labs in Bristol, in the UK. 
-		  The core SmartFrog framework is released under LGPL. 
-	</p>
+		  <a href="sfinstaller.html">Anubis Deployer Readme Document</a>
+	  </p>
+  </section>    
 	
-  </section>
-</body>
-
-
+  
+  </body> 
+ 
 </document>
