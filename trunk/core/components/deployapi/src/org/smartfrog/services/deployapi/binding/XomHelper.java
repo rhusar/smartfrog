@@ -300,4 +300,18 @@ public class XomHelper extends XomUtils {
         return request;
     }
 
+
+    public static SoapElement makeOption(String name,String value,boolean mustUnderstand) {
+        SoapElement option = makeOption(name, mustUnderstand);
+        option.addOrReplaceChild(apiElement("string",value));
+        return option;
+    }
+
+    public static SoapElement makeOption(String name, boolean mustUnderstand) {
+        SoapElement option = apiElement("option");
+        option.addAttribute(apiAttribute("name", name));
+        option.addAttribute(apiAttribute("mustUnderstand", Boolean.toString(mustUnderstand)));
+        return option;
+    }
+
 }

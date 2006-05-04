@@ -19,10 +19,11 @@
  */
 package org.smartfrog.services.deployapi.test.system.alpine.deployapi.api.initialization;
 
-import nu.xom.Document;
-import nu.xom.Element;
 import org.ggf.cddlm.generated.api.CddlmConstants;
+import org.smartfrog.projects.alpine.faults.AlpineRuntimeException;
 import org.smartfrog.projects.alpine.om.base.SoapElement;
+import org.smartfrog.services.deployapi.binding.UriListType;
+import org.smartfrog.services.deployapi.binding.XomHelper;
 import org.smartfrog.services.deployapi.test.system.alpine.deployapi.api.StandardTestBase;
 
 /**
@@ -30,12 +31,11 @@ import org.smartfrog.services.deployapi.test.system.alpine.deployapi.api.Standar
  * Create a system , then destroy it immediately.
  */
 
-public class Api_22_deploy_inline_Test extends StandardTestBase {
+public class Api_39_addfile_too_much_data_Test extends StandardTestBase {
+    public static final String URI = "http://example.org/valid-cdl.cdl";
 
 
-
-
-    public Api_22_deploy_inline_Test(String name) {
+    public Api_39_addfile_too_much_data_Test(String name) {
         super(name);
     }
 
@@ -48,11 +48,17 @@ public class Api_22_deploy_inline_Test extends StandardTestBase {
         createSystem(null);
     }
 
-    public void testInlineDeploy() throws Exception {
-        Document document = loadCdlDocument(CddlmConstants.INTEROP_API_TEST_DOC_1_VALID_DESCRIPTOR);
-        Element cdl=(Element) document.getRootElement().copy();
-        SoapElement request = getDescriptorHelper().createInitRequestInline(CddlmConstants.XML_CDL_NAMESPACE, cdl, null);
-        getSystem().initialize(request);
+    public void testAddFileTooMuchData() throws Exception {
+
+        SoapElement request = createAddFileRequest(CddlmConstants.INTEROP_API_TEST_DOC_1_VALID_DESCRIPTOR,
+                URI);
+        request.appendChild(XomHelper.apiElement("uri", URI));
+        try {
+            UriListType uris = getSystem().addFile(request);
+        } catch (AlpineRuntimeException e) {
+            //expected
+        }
     }
+
 
 }

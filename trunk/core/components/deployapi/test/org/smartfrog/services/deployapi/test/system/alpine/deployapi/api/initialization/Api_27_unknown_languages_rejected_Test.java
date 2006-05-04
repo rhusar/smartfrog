@@ -30,12 +30,12 @@ import org.smartfrog.services.deployapi.test.system.alpine.deployapi.api.Standar
  * Create a system , then destroy it immediately.
  */
 
-public class Api_22_deploy_inline_Test extends StandardTestBase {
+public class Api_27_unknown_languages_rejected_Test extends StandardTestBase {
 
 
 
 
-    public Api_22_deploy_inline_Test(String name) {
+    public Api_27_unknown_languages_rejected_Test(String name) {
         super(name);
     }
 
@@ -48,11 +48,13 @@ public class Api_22_deploy_inline_Test extends StandardTestBase {
         createSystem(null);
     }
 
-    public void testInlineDeploy() throws Exception {
+    public void testUknownLanguage() throws Exception {
         Document document = loadCdlDocument(CddlmConstants.INTEROP_API_TEST_DOC_1_VALID_DESCRIPTOR);
-        Element cdl=(Element) document.getRootElement().copy();
-        SoapElement request = getDescriptorHelper().createInitRequestInline(CddlmConstants.XML_CDL_NAMESPACE, cdl, null);
+        Element cdl = (Element) document.getRootElement().copy();
+        SoapElement request = getDescriptorHelper()
+                .createInitRequestInline("http://www.gridforum.org/namespaces/2008/02/cddlm/CDL-1.5", cdl, null);
         getSystem().initialize(request);
+        getSystem().ping();
     }
 
 }
