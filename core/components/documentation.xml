@@ -142,7 +142,11 @@ For more information: www.smartfrog.org
  	</target>
 
     <target name="generate-site" depends="prepare-docs" >
-	<antcall target="site"/>
+	    <!--antcall target="site"/-->
+	    <exec dir="${comp.home}" executable="${env.FORREST_HOME}/bin/forrest.bat">
+		 <arg line="site"/>
+	    </exec>		    
+	    
 	</target>
     
     
@@ -154,7 +158,7 @@ For more information: www.smartfrog.org
        <exclude name="test1.html"/>
        <exclude name="test2.html"/>
        <exclude name="hello.pdf"/>
-	   <exclude name="linkmap.*"/>
+	<exclude name="linkmap.*"/>
 	   
       </fileset>
     </copy>
