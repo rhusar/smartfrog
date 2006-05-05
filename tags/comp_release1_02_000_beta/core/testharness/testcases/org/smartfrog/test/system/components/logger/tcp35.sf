@@ -1,0 +1,9 @@
+#include "org/smartfrog/components.sf"
+#include "org/smartfrog/services/logger/logger.sf"
+
+Example extends Compound {
+    logger extends Logger {
+	fileLogging false;
+    }
+}
+sfConfig extends Example;

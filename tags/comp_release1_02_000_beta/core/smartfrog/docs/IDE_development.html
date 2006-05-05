@@ -1,0 +1,1610 @@
+<html xmlns:v="urn:schemas-microsoft-com:vml"
+xmlns:o="urn:schemas-microsoft-com:office:office"
+xmlns:w="urn:schemas-microsoft-com:office:word"
+xmlns="http://www.w3.org/TR/REC-html40">
+
+<head>
+<meta http-equiv=Content-Type content="text/html; charset=utf-8">
+<meta name=ProgId content=Word.Document>
+<meta name=Generator content="Microsoft Word 11">
+<meta name=Originator content="Microsoft Word 11">
+<link rel=File-List href="IDE_development_files/filelist.xml">
+<link rel=Edit-Time-Data href="IDE_development_files/editdata.mso">
+<!--[if !mso]>
+<style>
+v\:* {behavior:url(#default#VML);}
+o\:* {behavior:url(#default#VML);}
+w\:* {behavior:url(#default#VML);}
+.shape {behavior:url(#default#VML);}
+</style>
+<![endif]-->
+<title>IDE_development</title>
+<!--[if gte mso 9]><xml>
+ <o:DocumentProperties>
+  <o:Author>Administrator</o:Author>
+  <o:Template>Normal</o:Template>
+  <o:LastAuthor>Administrator</o:LastAuthor>
+  <o:Revision>2</o:Revision>
+  <o:TotalTime>0</o:TotalTime>
+  <o:Created>2006-05-02T06:49:00Z</o:Created>
+  <o:LastSaved>2006-05-02T06:49:00Z</o:LastSaved>
+  <o:Pages>1</o:Pages>
+  <o:Words>2048</o:Words>
+  <o:Characters>11675</o:Characters>
+  <o:Company>Hewlett-Packard</o:Company>
+  <o:Lines>97</o:Lines>
+  <o:Paragraphs>27</o:Paragraphs>
+  <o:CharactersWithSpaces>13696</o:CharactersWithSpaces>
+  <o:Version>11.6360</o:Version>
+ </o:DocumentProperties>
+</xml><![endif]--><!--[if gte mso 9]><xml>
+ <w:WordDocument>
+  <w:ValidateAgainstSchemas/>
+  <w:SaveIfXMLInvalid>false</w:SaveIfXMLInvalid>
+  <w:IgnoreMixedContent>false</w:IgnoreMixedContent>
+  <w:AlwaysShowPlaceholderText>false</w:AlwaysShowPlaceholderText>
+  <w:BrowserLevel>MicrosoftInternetExplorer4</w:BrowserLevel>
+ </w:WordDocument>
+</xml><![endif]--><!--[if gte mso 9]><xml>
+ <w:LatentStyles DefLockedState="false" LatentStyleCount="156">
+ </w:LatentStyles>
+</xml><![endif]-->
+<link rel=Stylesheet type="text/css" media=all href="skin/basic.css">
+<link rel=Stylesheet type="text/css" media=all href="skin/profile.css">
+<style>
+<!--
+ /* Font Definitions */
+ @font-face
+	{font-family:Wingdings;
+	panose-1:5 0 0 0 0 0 0 0 0 0;
+	mso-font-charset:2;
+	mso-generic-font-family:auto;
+	mso-font-pitch:variable;
+	mso-font-signature:0 268435456 0 0 -2147483648 0;}
+@font-face
+	{font-family:Verdana;
+	panose-1:2 11 6 4 3 5 4 4 2 4;
+	mso-font-charset:0;
+	mso-generic-font-family:swiss;
+	mso-font-pitch:variable;
+	mso-font-signature:536871559 0 0 0 415 0;}
+@font-face
+	{font-family:Georgia;
+	panose-1:2 4 5 2 5 4 5 2 3 3;
+	mso-font-charset:0;
+	mso-generic-font-family:roman;
+	mso-font-pitch:variable;
+	mso-font-signature:647 0 0 0 159 0;}
+@font-face
+	{font-family:"Trebuchet MS";
+	panose-1:2 11 6 3 2 2 2 2 2 4;
+	mso-font-charset:0;
+	mso-generic-font-family:swiss;
+	mso-font-pitch:variable;
+	mso-font-signature:7 0 0 0 19 0;}
+ /* Style Definitions */
+ p.MsoNormal, li.MsoNormal, div.MsoNormal
+	{mso-style-parent:"";
+	margin:0in;
+	margin-bottom:.0001pt;
+	line-height:normal;
+	mso-pagination:widow-orphan;
+	font-size:12.0pt;
+	font-family:"Times New Roman";
+	mso-fareast-font-family:"Times New Roman";}
+h1
+	{margin-top:0in;
+	margin-right:0in;
+	margin-bottom:12.0pt;
+	margin-left:0in;
+	line-height:normal;
+	mso-pagination:widow-orphan;
+	mso-outline-level:1;
+	font-size:17.0pt;
+	font-weight:bold;}
+h2
+	{margin-top:12.0pt;
+	margin-right:0in;
+	margin-bottom:6.0pt;
+	margin-left:0in;
+	line-height:normal;
+	mso-pagination:widow-orphan;
+	mso-outline-level:2;
+	font-size:14.5pt;
+	font-weight:bold;}
+h3
+	{margin-top:12.0pt;
+	margin-right:0in;
+	margin-bottom:6.0pt;
+	margin-left:0in;
+	line-height:normal;
+	mso-pagination:widow-orphan;
+	mso-outline-level:3;
+	font-size:12.0pt;
+	font-weight:bold;}
+h4
+	{margin-top:12.0pt;
+	margin-right:0in;
+	margin-bottom:6.0pt;
+	margin-left:0in;
+	line-height:normal;
+	mso-pagination:widow-orphan;
+	mso-outline-level:4;
+	font-size:11.0pt;
+	font-weight:bold;}
+p
+	{font-size:12.0pt;
+	font-family:"Times New Roman";
+	mso-fareast-font-family:"Times New Roman";}
+p.quote, li.quote, div.quote
+	{mso-style-name:quote;
+	font-size:12.0pt;
+	mso-fareast-font-family:"Times New Roman";}
+p.clearboth, li.clearboth, div.clearboth
+	{mso-style-name:clearboth;
+	font-size:12.0pt;
+	font-family:"Times New Roman";
+	mso-fareast-font-family:"Times New Roman";}
+p.frame, li.frame, div.frame
+	{mso-style-name:frame;
+	font-size:12.0pt;
+	font-family:"Times New Roman";
+	mso-fareast-font-family:"Times New Roman";}
+p.codefrag, li.codefrag, div.codefrag
+	{mso-style-name:codefrag;
+	font-size:13.0pt;
+	mso-fareast-font-family:"Times New Roman";}
+p.heading, li.heading, div.heading
+	{mso-style-name:heading;
+	font-size:12.0pt;
+	font-family:"Times New Roman";
+	mso-fareast-font-family:"Times New Roman";}
+p.boxed, li.boxed, div.boxed
+	{mso-style-name:boxed;
+	font-size:12.0pt;
+	font-family:"Times New Roman";
+	mso-fareast-font-family:"Times New Roman";}
+p.underlined5, li.underlined5, div.underlined5
+	{mso-style-name:underlined_5;
+	font-size:12.0pt;
+	font-family:"Times New Roman";
+	mso-fareast-font-family:"Times New Roman";}
+p.underlined10, li.underlined10, div.underlined10
+	{mso-style-name:underlined_10;
+	font-size:12.0pt;
+	font-family:"Times New Roman";
+	mso-fareast-font-family:"Times New Roman";}
+p.forresttable, li.forresttable, div.forresttable
+	{mso-style-name:forresttable;
+	font-size:12.0pt;
+	font-family:"Times New Roman";
+	mso-fareast-font-family:"Times New Roman";}
+p.highlight, li.highlight, div.highlight
+	{mso-style-name:highlight;
+	font-size:12.0pt;
+	font-family:"Times New Roman";
+	mso-fareast-font-family:"Times New Roman";}
+p.fixme, li.fixme, div.fixme
+	{mso-style-name:fixme;
+	font-size:12.0pt;
+	font-family:"Times New Roman";
+	mso-fareast-font-family:"Times New Roman";}
+p.note, li.note, div.note
+	{mso-style-name:note;
+	font-size:12.0pt;
+	font-family:"Times New Roman";
+	mso-fareast-font-family:"Times New Roman";}
+p.warning, li.warning, div.warning
+	{mso-style-name:warning;
+	font-size:12.0pt;
+	font-family:"Times New Roman";
+	mso-fareast-font-family:"Times New Roman";}
+p.code, li.code, div.code
+	{mso-style-name:code;
+	font-size:12.0pt;
+	font-family:"Times New Roman";
+	mso-fareast-font-family:"Times New Roman";}
+p.label, li.label, div.label
+	{mso-style-name:label;
+	font-size:12.0pt;
+	font-family:"Times New Roman";
+	mso-fareast-font-family:"Times New Roman";}
+p.content, li.content, div.content
+	{mso-style-name:content;
+	font-size:12.0pt;
+	font-family:"Times New Roman";
+	mso-fareast-font-family:"Times New Roman";}
+p.attribution, li.attribution, div.attribution
+	{mso-style-name:attribution;
+	font-size:12.0pt;
+	font-family:"Times New Roman";
+	mso-fareast-font-family:"Times New Roman";}
+p.menupagetitle, li.menupagetitle, div.menupagetitle
+	{mso-style-name:menupagetitle;
+	font-size:12.0pt;
+	font-family:"Times New Roman";
+	mso-fareast-font-family:"Times New Roman";}
+p.menupageitemgroup, li.menupageitemgroup, div.menupageitemgroup
+	{mso-style-name:menupageitemgroup;
+	font-size:12.0pt;
+	font-family:"Times New Roman";
+	mso-fareast-font-family:"Times New Roman";}
+p.menupageitem, li.menupageitem, div.menupageitem
+	{mso-style-name:menupageitem;
+	font-size:12.0pt;
+	font-family:"Times New Roman";
+	mso-fareast-font-family:"Times New Roman";}
+p.searchbox, li.searchbox, div.searchbox
+	{mso-style-name:searchbox;
+	font-size:12.0pt;
+	font-family:"Times New Roman";
+	mso-fareast-font-family:"Times New Roman";}
+p.current, li.current, div.current
+	{mso-style-name:current;
+	font-size:12.0pt;
+	font-family:"Times New Roman";
+	mso-fareast-font-family:"Times New Roman";}
+p.label1, li.label1, div.label1
+	{mso-style-name:label1;
+	margin-top:6.0pt;
+	margin-right:0in;
+	margin-bottom:12.0pt;
+	margin-left:0in;
+	mso-pagination:widow-orphan;
+	background:#336699;
+	font-size:12.0pt;
+	font-family:"Times New Roman";
+	mso-fareast-font-family:"Times New Roman";
+	color:white;
+	font-weight:bold;}
+p.content1, li.content1, div.content1
+	{mso-style-name:content1;
+	margin-top:6.0pt;
+	margin-right:0in;
+	margin-bottom:12.0pt;
+	margin-left:0in;
+	mso-pagination:widow-orphan;
+	background:#F0F0FF;
+	font-size:11.0pt;
+	font-family:"Times New Roman";
+	mso-fareast-font-family:"Times New Roman";
+	color:black;}
+p.label2, li.label2, div.label2
+	{mso-style-name:label2;
+	margin-top:6.0pt;
+	margin-right:0in;
+	margin-bottom:12.0pt;
+	margin-left:0in;
+	mso-pagination:widow-orphan;
+	background:#CC0000;
+	font-size:12.0pt;
+	font-family:"Times New Roman";
+	mso-fareast-font-family:"Times New Roman";
+	color:white;}
+p.content2, li.content2, div.content2
+	{mso-style-name:content2;
+	margin-top:6.0pt;
+	margin-right:0in;
+	margin-bottom:12.0pt;
+	margin-left:0in;
+	mso-pagination:widow-orphan;
+	background:#FFF0F0;
+	font-size:12.0pt;
+	font-family:"Times New Roman";
+	mso-fareast-font-family:"Times New Roman";
+	color:black;}
+p.label3, li.label3, div.label3
+	{mso-style-name:label3;
+	margin-top:6.0pt;
+	margin-right:0in;
+	margin-bottom:12.0pt;
+	margin-left:0in;
+	mso-pagination:widow-orphan;
+	background:#C6C600;
+	font-size:12.0pt;
+	font-family:"Times New Roman";
+	mso-fareast-font-family:"Times New Roman";}
+p.attribution1, li.attribution1, div.attribution1
+	{mso-style-name:attribution1;
+	margin-top:12.0pt;
+	margin-right:0in;
+	margin-bottom:12.0pt;
+	margin-left:0in;
+	text-align:right;
+	mso-pagination:widow-orphan;
+	font-size:10.0pt;
+	font-family:"Times New Roman";
+	mso-fareast-font-family:"Times New Roman";
+	font-style:italic;}
+p.current1, li.current1, div.current1
+	{mso-style-name:current1;
+	margin-top:6.0pt;
+	margin-right:0in;
+	margin-bottom:12.0pt;
+	margin-left:0in;
+	mso-pagination:widow-orphan;
+	background:#A5B6C6;
+	font-size:12.0pt;
+	font-family:"Times New Roman";
+	mso-fareast-font-family:"Times New Roman";}
+p.menupagetitle1, li.menupagetitle1, div.menupagetitle1
+	{mso-style-name:menupagetitle1;
+	margin-top:6.0pt;
+	margin-right:0in;
+	margin-bottom:12.0pt;
+	margin-left:0in;
+	mso-pagination:widow-orphan;
+	background:#A5B6C6;
+	font-size:12.0pt;
+	font-family:"Times New Roman";
+	mso-fareast-font-family:"Times New Roman";
+	color:black;}
+p.menupageitemgroup1, li.menupageitemgroup1, div.menupageitemgroup1
+	{mso-style-name:menupageitemgroup1;
+	margin-top:6.0pt;
+	margin-right:0in;
+	margin-bottom:12.0pt;
+	margin-left:0in;
+	mso-pagination:widow-orphan;
+	background:#F7F7F7;
+	font-size:12.0pt;
+	font-family:"Times New Roman";
+	mso-fareast-font-family:"Times New Roman";}
+p.menupageitem1, li.menupageitem1, div.menupageitem1
+	{mso-style-name:menupageitem1;
+	margin-top:6.0pt;
+	margin-right:0in;
+	margin-bottom:12.0pt;
+	margin-left:0in;
+	mso-pagination:widow-orphan;
+	font-size:12.0pt;
+	font-family:"Times New Roman";
+	mso-fareast-font-family:"Times New Roman";
+	color:black;}
+p.searchbox1, li.searchbox1, div.searchbox1
+	{mso-style-name:searchbox1;
+	margin-top:6.0pt;
+	margin-right:0in;
+	margin-bottom:12.0pt;
+	margin-left:0in;
+	mso-pagination:widow-orphan;
+	background:#E5E4D9;
+	font-size:12.0pt;
+	font-family:"Times New Roman";
+	mso-fareast-font-family:"Times New Roman";
+	color:black;}
+p.textbody, li.textbody, div.textbody
+	{mso-style-name:"text body";
+	font-size:12.0pt;
+	font-family:"Times New Roman";
+	mso-fareast-font-family:"Times New Roman";}
+p.p1, li.p1, div.p1
+	{mso-style-name:p1;
+	font-size:12.0pt;
+	font-family:"Times New Roman";
+	mso-fareast-font-family:"Times New Roman";}
+p.instruction, li.instruction, div.instruction
+	{mso-style-name:instruction;
+	font-size:12.0pt;
+	font-family:"Times New Roman";
+	mso-fareast-font-family:"Times New Roman";}
+p.p3, li.p3, div.p3
+	{mso-style-name:p3;
+	font-size:12.0pt;
+	font-family:"Times New Roman";
+	mso-fareast-font-family:"Times New Roman";}
+p.p4, li.p4, div.p4
+	{mso-style-name:p4;
+	font-size:12.0pt;
+	font-family:"Times New Roman";
+	mso-fareast-font-family:"Times New Roman";}
+p.p5, li.p5, div.p5
+	{mso-style-name:p5;
+	font-size:12.0pt;
+	font-family:"Times New Roman";
+	mso-fareast-font-family:"Times New Roman";}
+p.p6, li.p6, div.p6
+	{mso-style-name:p6;
+	font-size:12.0pt;
+	font-family:"Times New Roman";
+	mso-fareast-font-family:"Times New Roman";}
+p.p7, li.p7, div.p7
+	{mso-style-name:p7;
+	font-size:12.0pt;
+	font-family:"Times New Roman";
+	mso-fareast-font-family:"Times New Roman";}
+p.heading4, li.heading4, div.heading4
+	{mso-style-name:"heading 4";
+	font-size:12.0pt;
+	font-family:"Times New Roman";
+	mso-fareast-font-family:"Times New Roman";}
+p.p8, li.p8, div.p8
+	{mso-style-name:p8;
+	font-size:12.0pt;
+	font-family:"Times New Roman";
+	mso-fareast-font-family:"Times New Roman";}
+p.p9, li.p9, div.p9
+	{mso-style-name:p9;
+	font-size:12.0pt;
+	font-family:"Times New Roman";
+	mso-fareast-font-family:"Times New Roman";}
+p.p10, li.p10, div.p10
+	{mso-style-name:p10;
+	font-size:12.0pt;
+	font-family:"Times New Roman";
+	mso-fareast-font-family:"Times New Roman";}
+p.p11, li.p11, div.p11
+	{mso-style-name:p11;
+	font-size:12.0pt;
+	font-family:"Times New Roman";
+	mso-fareast-font-family:"Times New Roman";}
+p.p12, li.p12, div.p12
+	{mso-style-name:p12;
+	font-size:12.0pt;
+	font-family:"Times New Roman";
+	mso-fareast-font-family:"Times New Roman";}
+p.p13, li.p13, div.p13
+	{mso-style-name:p13;
+	font-size:12.0pt;
+	font-family:"Times New Roman";
+	mso-fareast-font-family:"Times New Roman";}
+p.codelastline, li.codelastline, div.codelastline
+	{mso-style-name:"code last line";
+	font-size:12.0pt;
+	font-family:"Times New Roman";
+	mso-fareast-font-family:"Times New Roman";}
+p.p14, li.p14, div.p14
+	{mso-style-name:p14;
+	font-size:12.0pt;
+	font-family:"Times New Roman";
+	mso-fareast-font-family:"Times New Roman";}
+p.p15, li.p15, div.p15
+	{mso-style-name:p15;
+	font-size:12.0pt;
+	font-family:"Times New Roman";
+	mso-fareast-font-family:"Times New Roman";}
+p.p16, li.p16, div.p16
+	{mso-style-name:p16;
+	font-size:12.0pt;
+	font-family:"Times New Roman";
+	mso-fareast-font-family:"Times New Roman";}
+p.heading5, li.heading5, div.heading5
+	{mso-style-name:"heading 5";
+	font-size:12.0pt;
+	font-family:"Times New Roman";
+	mso-fareast-font-family:"Times New Roman";}
+p.p17, li.p17, div.p17
+	{mso-style-name:p17;
+	font-size:12.0pt;
+	font-family:"Times New Roman";
+	mso-fareast-font-family:"Times New Roman";}
+@page Section1
+	{size:8.5in 11.0in;
+	margin:1.0in 1.25in 1.0in 1.25in;
+	mso-header-margin:.5in;
+	mso-footer-margin:.5in;
+	mso-paper-source:0;}
+div.Section1
+	{page:Section1;}
+ /* List Definitions */
+ @list l0
+	{mso-list-id:150562972;
+	mso-list-template-ids:-478520248;}
+@list l0:level1
+	{mso-level-number-format:bullet;
+	mso-level-text:;
+	mso-level-tab-stop:.5in;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	mso-ansi-font-size:10.0pt;
+	font-family:Symbol;}
+@list l1
+	{mso-list-id:329791835;
+	mso-list-template-ids:1036256104;}
+@list l1:level1
+	{mso-level-number-format:bullet;
+	mso-level-text:;
+	mso-level-tab-stop:.5in;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	mso-ansi-font-size:10.0pt;
+	font-family:Symbol;}
+@list l2
+	{mso-list-id:843865278;
+	mso-list-template-ids:2020371830;}
+@list l3
+	{mso-list-id:878130094;
+	mso-list-template-ids:-1687121194;}
+@list l3:level1
+	{mso-level-number-format:bullet;
+	mso-level-text:;
+	mso-level-tab-stop:.5in;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	mso-ansi-font-size:10.0pt;
+	font-family:Symbol;}
+@list l3:level2
+	{mso-level-number-format:bullet;
+	mso-level-text:o;
+	mso-level-tab-stop:1.0in;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	mso-ansi-font-size:10.0pt;
+	font-family:"Courier New";
+	mso-bidi-font-family:"Times New Roman";}
+@list l3:level3
+	{mso-level-number-format:bullet;
+	mso-level-text:;
+	mso-level-tab-stop:1.5in;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	mso-ansi-font-size:10.0pt;
+	font-family:Wingdings;}
+@list l4
+	{mso-list-id:952397272;
+	mso-list-template-ids:-1687897442;}
+@list l4:level1
+	{mso-level-number-format:bullet;
+	mso-level-text:;
+	mso-level-tab-stop:.5in;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	mso-ansi-font-size:10.0pt;
+	font-family:Symbol;}
+@list l5
+	{mso-list-id:1118372832;
+	mso-list-template-ids:-1484899612;}
+@list l6
+	{mso-list-id:1256598717;
+	mso-list-template-ids:-142721982;}
+@list l7
+	{mso-list-id:1338457153;
+	mso-list-template-ids:-1341516734;}
+@list l8
+	{mso-list-id:1410887178;
+	mso-list-template-ids:-1637848032;}
+@list l9
+	{mso-list-id:1429230868;
+	mso-list-template-ids:1450065002;}
+@list l9:level1
+	{mso-level-number-format:bullet;
+	mso-level-text:;
+	mso-level-tab-stop:.5in;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	mso-ansi-font-size:10.0pt;
+	font-family:Symbol;}
+@list l10
+	{mso-list-id:1438480726;
+	mso-list-template-ids:1428176394;}
+@list l10:level1
+	{mso-level-number-format:bullet;
+	mso-level-text:;
+	mso-level-tab-stop:.5in;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	mso-ansi-font-size:10.0pt;
+	font-family:Symbol;}
+@list l11
+	{mso-list-id:1853715146;
+	mso-list-template-ids:397575924;}
+@list l11:level1
+	{mso-level-number-format:bullet;
+	mso-level-text:;
+	mso-level-tab-stop:.5in;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	mso-ansi-font-size:10.0pt;
+	font-family:Symbol;}
+@list l12
+	{mso-list-id:1872448623;
+	mso-list-template-ids:185502800;}
+@list l12:level1
+	{mso-level-number-format:bullet;
+	mso-level-text:;
+	mso-level-tab-stop:.5in;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	mso-ansi-font-size:10.0pt;
+	font-family:Symbol;}
+ol
+	{margin-bottom:0in;}
+ul
+	{margin-bottom:0in;}
+-->
+</style>
+<!--[if gte mso 10]>
+<style>
+ /* Style Definitions */
+ table.MsoNormalTable
+	{mso-style-name:"Table Normal";
+	mso-tstyle-rowband-size:0;
+	mso-tstyle-colband-size:0;
+	mso-style-noshow:yes;
+	mso-style-parent:"";
+	mso-padding-alt:0in 5.4pt 0in 5.4pt;
+	mso-para-margin:0in;
+	mso-para-margin-bottom:.0001pt;
+	mso-pagination:widow-orphan;
+	font-size:10.0pt;
+	font-family:"Times New Roman";
+	mso-ansi-language:#0400;
+	mso-fareast-language:#0400;
+	mso-bidi-language:#0400;}
+</style>
+<![endif]-->
+<meta name=Forrest-version content=0.7>
+<meta name=Forrest-skin-name content=pelt>
+<link media=screen type="text/css" href="skin/screen.css" rel=stylesheet>
+<link media=print type="text/css" href="skin/print.css" rel=stylesheet>
+<link rel="shortcut icon" href="IDE_development.html">
+
+<script language="JavaScript"  src="skin/getBlank.js" type="text/javascript">
+</script>
+
+<script language="JavaScript"  src="skin/getMenu.js" type="text/javascript">
+</script>
+
+<script language="JavaScript"  src="skin/fontsize.js" type="text/javascript">
+</script>
+<!--[if gte mso 9]><xml>
+ <o:shapedefaults v:ext="edit" spidmax="2050"/>
+</xml><![endif]--><!--[if gte mso 9]><xml>
+ <o:shapelayout v:ext="edit">
+  <o:idmap v:ext="edit" data="1"/>
+ </o:shapelayout></xml><![endif]-->
+</head>
+
+<body bgcolor=white lang=EN-US link="#0F3660" vlink="#009999" style='tab-interval:
+.5in' onload="init()">
+
+<div class=Section1>
+
+<div id=top>
+
+<div>
+
+<div>
+
+<p class=MsoNormal style='background:white'><script  type="text/javascript">
+ndeSetTextSize();
+</script><script language="JavaScript"  src="skin/breadcrumbs.js" type="text/javascript">
+</script><span style='font-family:Verdana;color:black'><a
+href="http://www.SmartFrog.org/"><span style='text-decoration:none;text-underline:
+none'><img border=0 width=220 height=65 id="_x0000_i1027" src="images/group.png"
+alt=SmartFrog class=logoImage title=SmartFrog></span></a><o:p></o:p></span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal style='background:white'><span style='font-family:Verdana;
+color:black'><a href="http://www.SmartFrog.org"><span style='text-decoration:
+none;text-underline:none'><img border=0 width=32 height=32 id="_x0000_i1028"
+src="images/frog.gif" class=logoImage></span></a><o:p></o:p></span></p>
+
+</div>
+
+<ul type=disc id=tabs>
+ <li class=MsoNormal style='color:black;mso-margin-top-alt:auto;mso-margin-bottom-alt:
+     auto;mso-list:l1 level1 lfo1;tab-stops:list .5in;background:#F7F7F7'><span
+     style='font-size:8.5pt;font-family:Verdana'><a href="index.html"><span
+     style='color:black'>Home</span></a> <o:p></o:p></span></li>
+ <li class=MsoNormal style='color:black;mso-margin-top-alt:auto;mso-margin-bottom-alt:
+     auto;mso-list:l1 level1 lfo1;tab-stops:list .5in;background:#F7F7F7'><span
+     style='font-size:8.5pt;font-family:Verdana'><a href="sfcore.html"><span
+     style='color:black'>SmartFrog Core</span></a> <o:p></o:p></span></li>
+ <li class=MsoNormal style='color:black;mso-margin-top-alt:auto;mso-margin-bottom-alt:
+     auto;mso-list:l1 level1 lfo1;tab-stops:list .5in;background:#F7F7F7'><span
+     style='font-size:8.5pt;font-family:Verdana'><a href="comp.html"><span
+     style='color:black'>Components</span></a> <o:p></o:p></span></li>
+ <li class=MsoNormal style='color:black;mso-margin-top-alt:auto;mso-margin-bottom-alt:
+     auto;mso-list:l1 level1 lfo1;tab-stops:list .5in;background:#F7F7F7'><span
+     style='font-size:8.5pt;font-family:Verdana'><a href="anttasks.html"><span
+     style='color:black'>Ant Tasks</span></a> <o:p></o:p></span></li>
+ <li class=MsoNormal style='color:black;mso-margin-top-alt:auto;mso-margin-bottom-alt:
+     auto;mso-list:l1 level1 lfo1;tab-stops:list .5in;background:#F7F7F7'><span
+     style='font-size:8.5pt;font-family:Verdana'><a href="extras.html"><span
+     style='color:black'>Extras</span></a> <o:p></o:p></span></li>
+ <li class=MsoNormal style='color:black;mso-margin-top-alt:auto;mso-margin-bottom-alt:
+     auto;mso-list:l1 level1 lfo1;tab-stops:list .5in;background:#F7F7F7'><span
+     style='font-size:8.5pt;font-family:Verdana'><a href="examples.html"><span
+     style='color:black'>Examples</span></a> <o:p></o:p></span></li>
+ <li class=MsoNormal style='color:black;mso-margin-top-alt:auto;mso-margin-bottom-alt:
+     auto;mso-list:l1 level1 lfo1;tab-stops:list .5in;background:#F7F7F7'><span
+     style='font-size:8.5pt;font-family:Verdana'><a href="jdocs_index.html"><span
+     style='color:black'>Java Docs</span></a> <o:p></o:p></span></li>
+ <li class=MsoNormal style='color:black;mso-margin-top-alt:auto;mso-margin-bottom-alt:
+     auto;mso-list:l1 level1 lfo1;tab-stops:list .5in;background:#F7F7F7'><span
+     style='font-size:8.5pt;font-family:Verdana'><a href="Copyright.html"><span
+     style='color:black'>Copyright</span></a> <o:p></o:p></span></li>
+ <li class=MsoNormal style='color:black;mso-margin-top-alt:auto;mso-margin-bottom-alt:
+     auto;mso-list:l1 level1 lfo1;tab-stops:list .5in;background:#F7F7F7'><span
+     style='font-size:8.5pt;font-family:Verdana'><a href="lpgl.html"><span
+     style='color:black'>License Terms</span></a> <o:p></o:p></span></li>
+</ul>
+
+</div>
+
+</div>
+
+<div id=main>
+
+<div>
+
+<p class=MsoNormal><span style='font-size:8.5pt;font-family:Verdana;color:black'><script  type="text/javascript">
+<!--
+document.write("<text>Last Published:</text> " + document.lastModified);
+//  -->
+</script></span><span style='font-family:Verdana;color:black'>&nbsp; <o:p></o:p></span></p>
+
+</div>
+
+<div id=content>
+
+<p class=MsoNormal style='margin-bottom:6.0pt;mso-outline-level:2'><b><span
+style='font-size:18.5pt;font-family:"Trebuchet MS";color:black;mso-font-kerning:
+18.0pt'>IDE_development<o:p></o:p></span></b></p>
+
+<div id=minitoc-area>
+
+<ul style='margin-top:0in' type=disc>
+ <li class=MsoNormal style='color:black;margin-top:1.2pt;margin-bottom:1.2pt;
+     line-height:110%;mso-list:l3 level1 lfo2;tab-stops:list .5in'><span
+     style='font-size:11.5pt;line-height:110%;font-family:Georgia'><a
+     href="#Developing+SmartFrog+with+IDEs">Developing SmartFrog with IDEs</a> <o:p></o:p></span></li>
+</ul>
+
+<ul style='margin-top:0in' type=disc>
+ <ul style='margin-top:0in' type=circle>
+  <li class=MsoNormal style='color:black;margin-top:1.2pt;margin-bottom:1.2pt;
+      line-height:110%;mso-list:l3 level2 lfo2;tab-stops:list 1.0in'><span
+      style='font-size:11.5pt;line-height:110%;font-family:Georgia'><a
+      href="#Introduction">Introduction</a> <o:p></o:p></span></li>
+  <li class=MsoNormal style='color:black;margin-top:1.2pt;margin-bottom:1.2pt;
+      line-height:110%;mso-list:l3 level2 lfo2;tab-stops:list 1.0in'><span
+      style='font-size:11.5pt;line-height:110%;font-family:Georgia'><a
+      href="#All+IDEs">All IDEs</a> <o:p></o:p></span></li>
+ </ul>
+</ul>
+
+<ul style='margin-top:0in' type=disc>
+ <ul style='margin-top:0in' type=circle>
+  <ul style='margin-top:0in' type=square>
+   <li class=MsoNormal style='color:black;margin-top:1.2pt;margin-bottom:1.2pt;
+       line-height:110%;mso-list:l3 level3 lfo2;tab-stops:list 1.5in'><span
+       style='font-size:11.5pt;line-height:110%;font-family:Georgia'><a
+       href="#Before+using+the+IDE">Before using the IDE</a> <o:p></o:p></span></li>
+   <li class=MsoNormal style='color:black;margin-top:1.2pt;margin-bottom:1.2pt;
+       line-height:110%;mso-list:l3 level3 lfo2;tab-stops:list 1.5in'><span
+       style='font-size:11.5pt;line-height:110%;font-family:Georgia'><a
+       href="#Starting+SmartFrog+daemon+under+an+IDE">Starting SmartFrog daemon
+       under an IDE</a> <o:p></o:p></span></li>
+   <li class=MsoNormal style='color:black;margin-top:1.2pt;margin-bottom:1.2pt;
+       line-height:110%;mso-list:l3 level3 lfo2;tab-stops:list 1.5in'><span
+       style='font-size:11.5pt;line-height:110%;font-family:Georgia'><a
+       href="#Running+a+SmartFrog+deployment+descript">Running a SmartFrog
+       deployment descriptor under an IDE</a> <o:p></o:p></span></li>
+   <li class=MsoNormal style='color:black;margin-top:1.2pt;margin-bottom:1.2pt;
+       line-height:110%;mso-list:l3 level3 lfo2;tab-stops:list 1.5in'><span
+       style='font-size:11.5pt;line-height:110%;font-family:Georgia'><a
+       href="#Running+Unit+tests+under+an+IDE">Running Unit tests under an IDE</a>
+       <o:p></o:p></span></li>
+   <li class=MsoNormal style='color:black;margin-top:1.2pt;margin-bottom:1.2pt;
+       line-height:110%;mso-list:l3 level3 lfo2;tab-stops:list 1.5in'><span
+       style='font-size:11.5pt;line-height:110%;font-family:Georgia'><a
+       href="#Running+Ant+builds+under+the+IDE">Running Ant builds under the
+       IDE</a> <o:p></o:p></span></li>
+   <li class=MsoNormal style='color:black;margin-top:1.2pt;margin-bottom:1.2pt;
+       line-height:110%;mso-list:l3 level3 lfo2;tab-stops:list 1.5in'><span
+       style='font-size:11.5pt;line-height:110%;font-family:Georgia'><a
+       href="#Running+Ant+test+suites+under+the+IDE">Running Ant test suites
+       under the IDE</a> <o:p></o:p></span></li>
+  </ul>
+ </ul>
+</ul>
+
+<ul style='margin-top:0in' type=disc>
+ <ul style='margin-top:0in' type=circle>
+  <li class=MsoNormal style='color:black;margin-top:1.2pt;margin-bottom:1.2pt;
+      line-height:110%;mso-list:l3 level2 lfo2;tab-stops:list 1.0in'><span
+      style='font-size:11.5pt;line-height:110%;font-family:Georgia'><a
+      href="#Specific+IDEs">Specific IDEs</a> <o:p></o:p></span></li>
+ </ul>
+</ul>
+
+<ul style='margin-top:0in' type=disc>
+ <ul style='margin-top:0in' type=circle>
+  <ul style='margin-top:0in' type=square>
+   <li class=MsoNormal style='color:black;margin-top:1.2pt;margin-bottom:1.2pt;
+       line-height:110%;mso-list:l3 level3 lfo2;tab-stops:list 1.5in'><span
+       style='font-size:11.5pt;line-height:110%;font-family:Georgia'><a
+       href="#IntelliJ+IDEA+4.5.x">IntelliJ IDEA 4.5.x</a> <o:p></o:p></span></li>
+   <li class=MsoNormal style='color:black;margin-top:1.2pt;margin-bottom:1.2pt;
+       line-height:110%;mso-list:l3 level3 lfo2;tab-stops:list 1.5in'><span
+       style='font-size:11.5pt;line-height:110%;font-family:Georgia'><a
+       href="#Eclipse+3.1">Eclipse 3.1</a> <o:p></o:p></span></li>
+   <li class=MsoNormal style='color:black;margin-top:1.2pt;margin-bottom:1.2pt;
+       line-height:110%;mso-list:l3 level3 lfo2;tab-stops:list 1.5in'><span
+       style='font-size:11.5pt;line-height:110%;font-family:Georgia'><a
+       href="#JBuilder">JBuilder</a> <o:p></o:p></span></li>
+   <li class=MsoNormal style='color:black;margin-top:1.2pt;margin-bottom:1.2pt;
+       line-height:110%;mso-list:l3 level3 lfo2;tab-stops:list 1.5in'><span
+       style='font-size:11.5pt;line-height:110%;font-family:Georgia'><a
+       href="#NetBeans">NetBeans</a> <o:p></o:p></span></li>
+   <li class=MsoNormal style='color:black;margin-top:1.2pt;margin-bottom:1.2pt;
+       line-height:110%;mso-list:l3 level3 lfo2;tab-stops:list 1.5in'><span
+       style='font-size:11.5pt;line-height:110%;font-family:Georgia'><a
+       href="#jEdit+4.2">jEdit 4.2</a> <o:p></o:p></span></li>
+   <li class=MsoNormal style='color:black;margin-top:1.2pt;margin-bottom:1.2pt;
+       line-height:110%;mso-list:l3 level3 lfo2;tab-stops:list 1.5in'><span
+       style='font-size:11.5pt;line-height:110%;font-family:Georgia'><a
+       href="#Emacs">Emacs</a> <o:p></o:p></span></li>
+  </ul>
+ </ul>
+</ul>
+
+<ul style='margin-top:0in' type=disc>
+ <ul style='margin-top:0in' type=circle>
+  <li class=MsoNormal style='color:black;margin-top:1.2pt;margin-bottom:1.2pt;
+      line-height:110%;mso-list:l3 level2 lfo2;tab-stops:list 1.0in'><span
+      style='font-size:11.5pt;line-height:110%;font-family:Georgia'><a
+      href="#Dependent+Projects">Dependent Projects</a> <o:p></o:p></span></li>
+  <li class=MsoNormal style='color:black;margin-top:1.2pt;margin-bottom:1.2pt;
+      line-height:110%;mso-list:l3 level2 lfo2;tab-stops:list 1.0in'><span
+      style='font-size:11.5pt;line-height:110%;font-family:Georgia'><a
+      href="#CVS+Integration">CVS Integration</a> <o:p></o:p></span></li>
+ </ul>
+</ul>
+
+</div>
+
+<h2 style='background:#CFDCED'><a name=N1000C></a><a
+name="Developing+SmartFrog+with+IDEs"></a><span style='font-size:14.0pt;
+color:black'>Developing SmartFrog with IDEs<o:p></o:p></span></h2>
+
+<div>
+
+<h3 style='background:#CFDCED'><a name=N10011></a><a name=Introduction></a><span
+style='font-size:11.5pt;color:black'>Introduction<o:p></o:p></span></h3>
+
+<div>
+
+<div>
+
+<p class=MsoNormal><span style='font-size:11.5pt;font-family:Georgia;
+color:black'>Fixme (openoffice-common2forrest template)<o:p></o:p></span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span style='font-size:11.5pt;font-family:Georgia;
+color:black'>The previous heading is more than one level below the heading
+before it. To remove this fixme, correct the structuring of your document. <o:p></o:p></span></p>
+
+</div>
+
+</div>
+
+<p class=textbody><span style='font-size:11.5pt;line-height:120%;font-family:
+Georgia;color:black'>This document covers how to work with the SmartFrog source
+trees from inside IDEs.<o:p></o:p></span></p>
+
+<h3 style='background:#CFDCED'><a name=N1001C></a><a name="All+IDEs"></a><span
+style='font-size:11.5pt;color:black'>All IDEs<o:p></o:p></span></h3>
+
+<h4><a name=N10021></a><a name="Before+using+the+IDE"></a><span
+style='font-size:10.5pt;color:black'>Before using the IDE<o:p></o:p></span></h4>
+
+<p class=p1 style='margin-left:.5in;text-indent:-.25in;mso-list:l7 level1 lfo3;
+tab-stops:list .5in'><![if !supportLists]><span style='font-size:11.5pt;
+line-height:120%;font-family:Georgia;mso-fareast-font-family:Georgia;
+mso-bidi-font-family:Georgia;color:black'><span style='mso-list:Ignore'>1.<span
+style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span></span></span><![endif]><span
+style='font-size:11.5pt;line-height:120%;font-family:Georgia;color:black'>Run
+&quot;<span class=codeinline><span style='font-family:Georgia'>ant components</span></span>&quot;
+in the core directory, to build smartfrog.jar, the Ant tasks, and all
+non-experimental components. It is essential to build the main distribution in
+Ant, at least initially, to create Java source files matching the language
+grammar. The Ant tasks are mandatory for the testharness and component
+development.<o:p></o:p></span></p>
+
+<p class=p1 style='margin-left:.5in;text-indent:-.25in;mso-list:l7 level1 lfo3;
+tab-stops:list .5in'><![if !supportLists]><span style='font-size:11.5pt;
+line-height:120%;font-family:Georgia;mso-fareast-font-family:Georgia;
+mso-bidi-font-family:Georgia;color:black'><span style='mso-list:Ignore'>2.<span
+style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span></span></span><![endif]><span
+style='font-size:11.5pt;line-height:120%;font-family:Georgia;color:black'>Run <span
+class=codeinline><span style='font-family:Georgia'>sfDaemon</span></span> to
+bring up the standalone daemon. This helps isolate problems; it does not run
+standalone, it will not work under an IDE either. <o:p></o:p></span></p>
+
+<h4><a name=N10037></a><a name="Starting+SmartFrog+daemon+under+an+IDE"></a><span
+style='font-size:10.5pt;color:black'>Starting SmartFrog daemon under an IDE<o:p></o:p></span></h4>
+
+<p class=textbody><span style='font-size:11.5pt;line-height:120%;font-family:
+Georgia;color:black'>If you start a daemon under the IDE, it can listen for
+incoming deployment requests, such as those coming from a test case, deploying
+the relevant components on demand. <o:p></o:p></span></p>
+
+<p class=instruction style='margin-left:.5in;text-indent:-.25in;mso-list:l8 level1 lfo4;
+tab-stops:list .5in'><![if !supportLists]><span style='font-size:11.5pt;
+line-height:120%;font-family:Georgia;mso-fareast-font-family:Georgia;
+mso-bidi-font-family:Georgia;color:black'><span style='mso-list:Ignore'>1.<span
+style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span></span></span><![endif]><span
+style='font-size:11.5pt;line-height:120%;font-family:Georgia;color:black'>Set
+up the classpath to include that of all components, or write a deployment
+descriptor that includes the path to needed JARs as file: URLs<o:p></o:p></span></p>
+
+<p class=instruction style='margin-left:.5in;text-indent:-.25in;mso-list:l8 level1 lfo4;
+tab-stops:list .5in'><![if !supportLists]><span style='font-size:11.5pt;
+line-height:120%;font-family:Georgia;mso-fareast-font-family:Georgia;
+mso-bidi-font-family:Georgia;color:black'><span style='mso-list:Ignore'>2.<span
+style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span></span></span><![endif]><span
+style='font-size:11.5pt;line-height:120%;font-family:Georgia;color:black'>Create
+an executable entry point &quot;<span class=codeinline><span style='font-family:
+Georgia'>org.smartfrog.SFSystem</span></span>&quot;<o:p></o:p></span></p>
+
+<p class=instruction style='margin-left:.5in;text-indent:-.25in;mso-list:l8 level1 lfo4;
+tab-stops:list .5in'><![if !supportLists]><span style='font-size:11.5pt;
+line-height:120%;font-family:Georgia;mso-fareast-font-family:Georgia;
+mso-bidi-font-family:Georgia;color:black'><span style='mso-list:Ignore'>3.<span
+style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span></span></span><![endif]><span
+style='font-size:11.5pt;line-height:120%;font-family:Georgia;color:black'>Set
+the following JVM property:<br>
+<span class=codeinline><span style='font-family:Georgia'>-Dorg.smartfrog.sfcore.processcompound.sfProcessName=rootProcess</span></span><br>
+This tells SmartFrog to export the root process for incoming deployment
+requests. It is the key to turn SmartFrog into a daemon.<o:p></o:p></span></p>
+
+<p class=instruction style='margin-left:.5in;text-indent:-.25in;mso-list:l8 level1 lfo4;
+tab-stops:list .5in'><![if !supportLists]><span style='font-size:11.5pt;
+line-height:120%;font-family:Georgia;mso-fareast-font-family:Georgia;
+mso-bidi-font-family:Georgia;color:black'><span style='mso-list:Ignore'>4.<span
+style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span></span></span><![endif]><span
+style='font-size:11.5pt;line-height:120%;font-family:Georgia;color:black'>Set
+the following (optional) JVM options<br>
+<span class=codeinline><span style='font-family:Georgia'>-Dorg.smartfrog.logger.logStackTrace=true</span></span><br>
+<span class=codeinline><span style='font-family:Georgia'>-Dorg.smartfrog.iniFile=bin/default.ini
+</span></span><br>
+This turns stack tracing on in the logs; the second points to any
+initialisation file to load.<o:p></o:p></span></p>
+
+<p class=instruction style='margin-left:.5in;text-indent:-.25in;mso-list:l8 level1 lfo4;
+tab-stops:list .5in'><![if !supportLists]><span style='font-size:11.5pt;
+line-height:120%;font-family:Georgia;mso-fareast-font-family:Georgia;
+mso-bidi-font-family:Georgia;color:black'><span style='mso-list:Ignore'>5.<span
+style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span></span></span><![endif]><span
+style='font-size:11.5pt;line-height:120%;font-family:Georgia;color:black'>Set
+the <span class=codeinline><span style='font-family:Georgia'>-ea -esa</span></span>
+options if you want any assertions in components to be enabled<o:p></o:p></span></p>
+
+<p class=instruction style='margin-left:.5in;text-indent:-.25in;mso-list:l8 level1 lfo4;
+tab-stops:list .5in'><![if !supportLists]><span style='font-size:11.5pt;
+line-height:120%;font-family:Georgia;mso-fareast-font-family:Georgia;
+mso-bidi-font-family:Georgia;color:black'><span style='mso-list:Ignore'>6.<span
+style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span></span></span><![endif]><span
+style='font-size:11.5pt;line-height:120%;font-family:Georgia;color:black'>Set
+breakpoints on any code/data you wish to debug<o:p></o:p></span></p>
+
+<p class=instruction style='margin-left:.5in;text-indent:-.25in;mso-list:l8 level1 lfo4;
+tab-stops:list .5in'><![if !supportLists]><span style='font-size:11.5pt;
+line-height:120%;font-family:Georgia;mso-fareast-font-family:Georgia;
+mso-bidi-font-family:Georgia;color:black'><span style='mso-list:Ignore'>7.<span
+style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span></span></span><![endif]><span
+style='font-size:11.5pt;line-height:120%;font-family:Georgia;color:black'>Run
+the test case or deployment of choice. This can be from the command line, or
+from the IDE itself. <o:p></o:p></span></p>
+
+<p class=p3><span style='font-size:11.5pt;line-height:120%;font-family:Georgia;
+color:black'>Security Advisory: When running a daemon under the IDE, don't open
+the port of the daemon to the rest of your network; don't allow anyone other
+than yourself a login on the localhost. <o:p></o:p></span></p>
+
+<h4><a name=N10075></a><a name="Running+a+SmartFrog+deployment+descripto"></a><span
+style='font-size:10.5pt;color:black'>Running a SmartFrog deployment descriptor
+under an IDE<o:p></o:p></span></h4>
+
+<p class=textbody><span style='font-size:11.5pt;line-height:120%;font-family:
+Georgia;color:black'>This is the easiest way to debug a deployment. Instead of
+starting a (potentially insecure) daemon, you run a local deployment under the
+debugger.<o:p></o:p></span></p>
+
+<p class=p4 style='margin-left:.5in;text-indent:-.25in;mso-list:l2 level1 lfo5;
+tab-stops:list .5in'><![if !supportLists]><span style='font-size:11.5pt;
+line-height:120%;font-family:Georgia;mso-fareast-font-family:Georgia;
+mso-bidi-font-family:Georgia;color:black'><span style='mso-list:Ignore'>1.<span
+style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span></span></span><![endif]><span
+style='font-size:11.5pt;line-height:120%;font-family:Georgia;color:black'>Set
+up the classpath to include that of all components, or write a deployment
+descriptor that includes the path to needed JARs as file: URLs<o:p></o:p></span></p>
+
+<p class=p4 style='margin-left:.5in;text-indent:-.25in;mso-list:l2 level1 lfo5;
+tab-stops:list .5in'><![if !supportLists]><span style='font-size:11.5pt;
+line-height:120%;font-family:Georgia;mso-fareast-font-family:Georgia;
+mso-bidi-font-family:Georgia;color:black'><span style='mso-list:Ignore'>2.<span
+style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span></span></span><![endif]><span
+style='font-size:11.5pt;line-height:120%;font-family:Georgia;color:black'>Create
+an executable entry point &quot;<span class=codeinline><span style='font-family:
+Georgia'>org.smartfrog.SFSystem</span></span>&quot;<o:p></o:p></span></p>
+
+<p class=p4 style='margin-left:.5in;text-indent:-.25in;mso-list:l2 level1 lfo5;
+tab-stops:list .5in'><![if !supportLists]><span style='font-size:11.5pt;
+line-height:120%;font-family:Georgia;mso-fareast-font-family:Georgia;
+mso-bidi-font-family:Georgia;color:black'><span style='mso-list:Ignore'>3.<span
+style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span></span></span><![endif]><span
+style='font-size:11.5pt;line-height:120%;font-family:Georgia;color:black'>Set
+the following (optional) JVM options<br>
+<span class=codeinline><span style='font-family:Georgia'>-Dorg.smartfrog.logger.logStackTrace=true</span></span><br>
+<span class=codeinline><span style='font-family:Georgia'>-Dorg.smartfrog.iniFile=bin/default.ini
+</span></span><br>
+This turns stack tracing on in the logs; the second points to any
+initialisation file to load.<o:p></o:p></span></p>
+
+<p class=p4 style='margin-left:.5in;text-indent:-.25in;mso-list:l2 level1 lfo5;
+tab-stops:list .5in'><![if !supportLists]><span style='font-size:11.5pt;
+line-height:120%;font-family:Georgia;mso-fareast-font-family:Georgia;
+mso-bidi-font-family:Georgia;color:black'><span style='mso-list:Ignore'>4.<span
+style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span></span></span><![endif]><span
+style='font-size:11.5pt;line-height:120%;font-family:Georgia;color:black'>Set
+the <span class=codeinline><span style='font-family:Georgia'>-ea -esa</span></span>
+options if you want any assertions in components to be enabled<o:p></o:p></span></p>
+
+<p class=p4 style='margin-left:.5in;text-indent:-.25in;mso-list:l2 level1 lfo5;
+tab-stops:list .5in'><![if !supportLists]><span style='font-size:11.5pt;
+line-height:120%;font-family:Georgia;mso-fareast-font-family:Georgia;
+mso-bidi-font-family:Georgia;color:black'><span style='mso-list:Ignore'>5.<span
+style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span></span></span><![endif]><span
+style='font-size:11.5pt;line-height:120%;font-family:Georgia;color:black'>Set
+breakpoints on any code/data you wish to debug<o:p></o:p></span></p>
+
+<p class=p4 style='margin-left:.5in;text-indent:-.25in;mso-list:l2 level1 lfo5;
+tab-stops:list .5in'><![if !supportLists]><span style='font-size:11.5pt;
+line-height:120%;font-family:Georgia;mso-fareast-font-family:Georgia;
+mso-bidi-font-family:Georgia;color:black'><span style='mso-list:Ignore'>6.<span
+style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span></span></span><![endif]><span
+style='font-size:11.5pt;line-height:120%;font-family:Georgia;color:black'>Identify
+the descriptor you want to deploy, with the following command line entries<br>
+<span class=codeinline><span style='font-family:Georgia'>-a
+:DEPLOY:files/testDeployment.sf::: </span></span><br>
+<span class=codeinline><span style='font-family:Georgia'>-e</span></span> <o:p></o:p></span></p>
+
+<p class=textbody><span style='font-size:11.5pt;line-height:120%;font-family:
+Georgia;color:black'>This deploys the file
+&quot;./files/testDeployment.sf&quot;. You will need to set the home directory
+of the program up correctly, or use an absolute path. The -e argument tells
+SmartFrog to exit after the deployment. <o:p></o:p></span></p>
+
+<h4><a name=N100B1></a><a name="Running+Unit+tests+under+an+IDE"></a><span
+style='font-size:10.5pt;color:black'>Running Unit tests under an IDE<o:p></o:p></span></h4>
+
+<p class=textbody><span style='font-size:11.5pt;line-height:120%;font-family:
+Georgia;color:black'>If the IDE can run JUnit test suites/packages, configure
+it to run the JUnit tests of the testharness or component of choice, <span
+class=t1><span style='font-family:Georgia'>while running the daemon</span></span><span
+class=t2><span style='font-family:Georgia'>. The daemon can be hosted in the
+debugger, or running standalone. Unless the test deployment configurations
+declare the </span></span><span class=t3><span style='font-family:Georgia'>sfCodebase</span></span><span
+class=t2><span style='font-family:Georgia'> of downloadable JAR files, all the
+JAR files that the component needs must be already in the JVM of the daemon. </span></span><o:p></o:p></span></p>
+
+<p class=p3><span style='font-size:11.5pt;line-height:120%;font-family:Georgia;
+color:black'>The JUnit tests need to know the location of the directory into
+which the test classes have been compiled. This is so that it can construct
+file: URIs to the deployment descriptors in the class tree. As the Ant <span
+class=codeinline><span style='font-family:Georgia'>&lt;junit&gt;</span></span> test
+does, the JUnit instance must have the the system property <span
+class=codeinline><span style='font-family:Georgia'>test.smartfrog.classesdir</span></span>
+set to the absolute location of <span class=codeinline><span style='font-family:
+Georgia'>testharness/build/test/classes</span></span> <o:p></o:p></span></p>
+
+<p class=code><span style='font-size:11.5pt;line-height:120%;font-family:Georgia;
+color:black'>-ea -esa <br>
+-Dtest.smartfrog.classesdir=/home/slo/Projects/SmartFrog/Forge/core/testharness/build/test/classes<o:p></o:p></span></p>
+
+<h4><a name=N100D8></a><a name="Running+Ant+builds+under+the+IDE"></a><span
+style='font-size:10.5pt;color:black'>Running Ant builds under the IDE<o:p></o:p></span></h4>
+
+<p class=textbody><span style='font-size:11.5pt;line-height:120%;font-family:
+Georgia;color:black'>As modern IDEs all host Ant, you should be able to run the
+Ant build files directly from the IDE. Here are some caveats.<o:p></o:p></span></p>
+
+<p class=p5 style='margin-left:.5in;text-indent:-.25in;mso-list:l12 level1 lfo6;
+tab-stops:list .5in'><![if !supportLists]><span style='font-size:10.0pt;
+mso-bidi-font-size:11.5pt;line-height:120%;font-family:Symbol;mso-fareast-font-family:
+Symbol;mso-bidi-font-family:Symbol;color:black'><span style='mso-list:Ignore'>·<span
+style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span></span><![endif]><span style='font-size:11.5pt;line-height:120%;
+font-family:Georgia;color:black'>The IDE's version of Ant may be older than
+that which the build files or SmartFrog Ant tasks need. <o:p></o:p></span></p>
+
+<p class=p5 style='margin-left:.5in;text-indent:-.25in;mso-list:l12 level1 lfo6;
+tab-stops:list .5in'><![if !supportLists]><span style='font-size:10.0pt;
+mso-bidi-font-size:11.5pt;line-height:120%;font-family:Symbol;mso-fareast-font-family:
+Symbol;mso-bidi-font-family:Symbol;color:black'><span style='mso-list:Ignore'>·<span
+style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span></span><![endif]><span style='font-size:11.5pt;line-height:120%;
+font-family:Georgia;color:black'>You may not have all the optional JARs, such
+as JUnit or Xalan, in the IDE's own copy of Ant. These are needed for <span
+class=codeinline><span style='font-family:Georgia'>&lt;junit&gt;</span></span>
+and <span class=codeinline><span style='font-family:Georgia'>&lt;junitreport&gt;</span></span>
+respectively. If you can get the IDE to run against your existing installation,
+things are better.<o:p></o:p></span></p>
+
+<p class=p5 style='margin-left:.5in;text-indent:-.25in;mso-list:l12 level1 lfo6;
+tab-stops:list .5in'><![if !supportLists]><span style='font-size:10.0pt;
+mso-bidi-font-size:11.5pt;line-height:120%;font-family:Symbol;mso-fareast-font-family:
+Symbol;mso-bidi-font-family:Symbol;color:black'><span style='mso-list:Ignore'>·<span
+style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span></span><![endif]><span style='font-size:11.5pt;line-height:120%;
+font-family:Georgia;color:black'>The IDE Ant engine may not autoload JAR files
+in <span class=codeinline><span style='font-family:Georgia'>${user.home}/.ant/lib.</span></span>
+<o:p></o:p></span></p>
+
+<p class=p5 style='margin-left:.5in;text-indent:-.25in;mso-list:l12 level1 lfo6;
+tab-stops:list .5in'><![if !supportLists]><span style='font-size:10.0pt;
+mso-bidi-font-size:11.5pt;line-height:120%;font-family:Symbol;mso-fareast-font-family:
+Symbol;mso-bidi-font-family:Symbol;color:black'><span style='mso-list:Ignore'>·<span
+style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span></span><![endif]><span style='font-size:11.5pt;line-height:120%;
+font-family:Georgia;color:black'>The build can be (noticeably) slower. This
+appears to be related to reporting.<o:p></o:p></span></p>
+
+<h4><a name=N100FC></a><a name="Running+Ant+test+suites+under+the+IDE"></a><span
+style='font-size:10.5pt;color:black'>Running Ant test suites under the IDE<o:p></o:p></span></h4>
+
+<p class=textbody><span style='font-size:11.5pt;line-height:120%;font-family:
+Georgia;color:black'>The testharness/test target runs the SmartFrog system
+tests; some other projects have self-contained test suites. Usually you want to
+use the IDE to run a single test case/package, rather than the full system. Run
+the testharness build file, with:-<o:p></o:p></span></p>
+
+<p class=p6 style='margin-left:.5in;text-indent:-.25in;mso-list:l5 level1 lfo7;
+tab-stops:list .5in'><![if !supportLists]><span style='font-size:11.5pt;
+line-height:120%;font-family:Georgia;mso-fareast-font-family:Georgia;
+mso-bidi-font-family:Georgia;color:black'><span style='mso-list:Ignore'>1.<span
+style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span></span></span><![endif]><span
+style='font-size:11.5pt;line-height:120%;font-family:Georgia;color:black'>The
+testcase property bound to the test class you want to test<br>
+<span class=codeinline><span style='font-family:Georgia'>-Dtestcase=org.smartfrog.test.system.java.LibraryTest</span></span>
+<o:p></o:p></span></p>
+
+<p class=p6 style='margin-left:.5in;text-indent:-.25in;mso-list:l5 level1 lfo7;
+tab-stops:list .5in'><![if !supportLists]><span style='font-size:11.5pt;
+line-height:120%;font-family:Georgia;mso-fareast-font-family:Georgia;
+mso-bidi-font-family:Georgia;color:black'><span style='mso-list:Ignore'>2.<span
+style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span></span></span><![endif]><span
+style='font-size:11.5pt;line-height:120%;font-family:Georgia;color:black'>Use
+the target buildtest to compile smartfrog then compile and run the test suites,
+generating the HTML reports on failure<o:p></o:p></span></p>
+
+<p class=p6 style='margin-left:.5in;text-indent:-.25in;mso-list:l5 level1 lfo7;
+tab-stops:list .5in'><![if !supportLists]><span style='font-size:11.5pt;
+line-height:120%;font-family:Georgia;mso-fareast-font-family:Georgia;
+mso-bidi-font-family:Georgia;color:black'><span style='mso-list:Ignore'>3.<span
+style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span></span></span><![endif]><span
+style='font-size:11.5pt;line-height:120%;font-family:Georgia;color:black'>Use
+the target buildtest-noreports to omit the XSL transforms that create the HTML
+pages. This can save time when you are rerunning tests, and can read the
+failure messages that get printed to the console. <o:p></o:p></span></p>
+
+<h3 style='background:#CFDCED'><a name=N10115></a><a name="Specific+IDEs"></a><span
+style='font-size:11.5pt;color:black'>Specific IDEs<o:p></o:p></span></h3>
+
+<h4><a name=N1011A></a><a name="IntelliJ+IDEA+4.5.x"></a><span
+style='font-size:10.5pt;color:black'>IntelliJ IDEA 4.5.x<o:p></o:p></span></h4>
+
+<p class=textbody><span style='font-size:11.5pt;line-height:120%;font-family:
+Georgia;color:black'>IntelliJ IDEA works very well as the IDE for coding
+SmartFrog and components. As it supports multiple simultaneous debug sessions,
+you can debug the daemon and a unit test at the same time. It also lets you use
+an external version of Ant, which eliminates discrepancies between the IDE
+version of Ant and the command line version.<o:p></o:p></span></p>
+
+<p class=p7 style='margin-left:.5in;text-indent:-.25in;mso-list:l6 level1 lfo8;
+tab-stops:list .5in'><![if !supportLists]><span style='font-size:11.5pt;
+line-height:120%;font-family:Georgia;mso-fareast-font-family:Georgia;
+mso-bidi-font-family:Georgia;color:black'><span style='mso-list:Ignore'>1.<span
+style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span></span></span><![endif]><span
+style='font-size:11.5pt;line-height:120%;font-family:Georgia;color:black'>Create
+an empty project.<o:p></o:p></span></p>
+
+<p class=p7 style='margin-left:.5in;text-indent:-.25in;mso-list:l6 level1 lfo8;
+tab-stops:list .5in'><![if !supportLists]><span style='font-size:11.5pt;
+line-height:120%;font-family:Georgia;mso-fareast-font-family:Georgia;
+mso-bidi-font-family:Georgia;color:black'><span style='mso-list:Ignore'>2.<span
+style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span></span></span><![endif]><span
+style='font-size:11.5pt;line-height:120%;font-family:Georgia;color:black'>Add
+sub projects for smartfrog, testharness, and any components you wish to
+build/use.<o:p></o:p></span></p>
+
+<p class=p7 style='margin-left:.5in;text-indent:-.25in;mso-list:l6 level1 lfo8;
+tab-stops:list .5in'><![if !supportLists]><span style='font-size:11.5pt;
+line-height:120%;font-family:Georgia;mso-fareast-font-family:Georgia;
+mso-bidi-font-family:Georgia;color:black'><span style='mso-list:Ignore'>3.<span
+style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span></span></span><![endif]><span
+style='font-size:11.5pt;line-height:120%;font-family:Georgia;color:black'>Configure
+CVS if you have write access to the repository.<o:p></o:p></span></p>
+
+<p class=heading4><span style='font-size:11.5pt;line-height:120%;font-family:
+Georgia;color:black'>Tips<o:p></o:p></span></p>
+
+<p class=p8 style='margin-left:.5in;text-indent:-.25in;mso-list:l0 level1 lfo9;
+tab-stops:list .5in'><![if !supportLists]><span style='font-size:10.0pt;
+mso-bidi-font-size:11.5pt;line-height:120%;font-family:Symbol;mso-fareast-font-family:
+Symbol;mso-bidi-font-family:Symbol;color:black'><span style='mso-list:Ignore'>·<span
+style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span></span><![endif]><span style='font-size:11.5pt;line-height:120%;
+font-family:Georgia;color:black'>Beware of refactoring code that may be used in
+components. Only those components currently in the set of projects will be
+refactored; external components will not pick up changes. <o:p></o:p></span></p>
+
+<p class=heading4><span style='font-size:11.5pt;line-height:120%;font-family:
+Georgia;color:black'>CVS Integration<o:p></o:p></span></p>
+
+<p class=textbody><span style='font-size:11.5pt;line-height:120%;font-family:
+Georgia;color:black'>CVS works very well under IDEA, although the fact that the
+operations are blocking means that slow operations -as most CVS updates are
+against the SourceForge repository- can be slow. It is useful to have another
+client for updates and background commits. <a href="http://smartcvs.com/">SmartCVS</a>
+is a good choice; this vendor supplies the CVS code used in IDEA itself.<o:p></o:p></span></p>
+
+<h4><a name=N10142></a><a name="Eclipse+3.1"></a><span style='font-size:10.5pt;
+color:black'>Eclipse 3.1<o:p></o:p></span></h4>
+
+<p class=textbody><span style='font-size:11.5pt;line-height:120%;font-family:
+Georgia;color:black'>Eclipse 3.1M6 has been used to develop some SmartFrog
+source. <o:p></o:p></span></p>
+
+<p class=heading4><span style='font-size:11.5pt;line-height:120%;font-family:
+Georgia;color:black'>Tips<o:p></o:p></span></p>
+
+<p class=p9 style='margin-left:.5in;text-indent:-.25in;mso-list:l10 level1 lfo10;
+tab-stops:list .5in'><![if !supportLists]><span style='font-size:10.0pt;
+mso-bidi-font-size:11.5pt;line-height:120%;font-family:Symbol;mso-fareast-font-family:
+Symbol;mso-bidi-font-family:Symbol;color:black'><span style='mso-list:Ignore'>·<span
+style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span></span><![endif]><span style='font-size:11.5pt;line-height:120%;
+font-family:Georgia;color:black'>Configure the workspace to autosave everything
+before running Ant, and when working with CVS. <o:p></o:p></span></p>
+
+<p class=p9 style='margin-left:.5in;text-indent:-.25in;mso-list:l10 level1 lfo10;
+tab-stops:list .5in'><![if !supportLists]><span style='font-size:10.0pt;
+mso-bidi-font-size:11.5pt;line-height:120%;font-family:Symbol;mso-fareast-font-family:
+Symbol;mso-bidi-font-family:Symbol;color:black'><span style='mso-list:Ignore'>·<span
+style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span></span><![endif]><span style='font-size:11.5pt;line-height:120%;
+font-family:Georgia;color:black'>After doing major configuration changes, restart
+the app so as to force saving of all your settings.<o:p></o:p></span></p>
+
+<p class=heading4><span style='font-size:11.5pt;line-height:120%;font-family:
+Georgia;color:black'>Ant Integration<o:p></o:p></span></p>
+
+<p class=textbody><span style='font-size:11.5pt;line-height:120%;font-family:
+Georgia;color:black'>We have encountered problems here. Problems such as: <o:p></o:p></span></p>
+
+<p class=p10><span style='font-size:11.5pt;line-height:120%;font-family:Georgia;
+color:black'>compile-source:<o:p></o:p></span></p>
+
+<p class=p11><span style='font-size:11.5pt;line-height:120%;font-family:Georgia;
+color:black'>[echo] 1.4 build.compiler=modern javac.compiler=modern<o:p></o:p></span></p>
+
+<p class=p10><span style='font-size:11.5pt;line-height:120%;font-family:Georgia;
+color:black'>compile-rmi:<o:p></o:p></span></p>
+
+<p class=p10><span style='font-size:11.5pt;line-height:120%;font-family:Georgia;
+color:black'>[rmic] RMI Compiling 49 classes to core/smartfrog/build<o:p></o:p></span></p>
+
+<p class=p13><span style='font-size:11.5pt;line-height:120%;font-family:Georgia;
+color:black'>BUILD FAILED<o:p></o:p></span></p>
+
+<p class=p13><span style='font-size:11.5pt;line-height:120%;font-family:Georgia;
+color:black'>java.lang.UnsupportedClassVersionError: sun/rmi/rmic/Main
+(Unsupported major.minor version 49.0)<o:p></o:p></span></p>
+
+<p class=textbody><span style='font-size:11.5pt;line-height:120%;font-family:
+Georgia;color:black'>This was tracked down to Java version problems, with a
+Java1.4 runtime and a Java1.5 SDK mix. Interestingly, the same problem did not
+arise on the command line. The error was not in the IDE itself, it merely
+triggered the problem. Uninstalling the Java1.4 JRE corrected things. <o:p></o:p></span></p>
+
+<p class=textbody><span style='font-size:11.5pt;line-height:120%;font-family:
+Georgia;color:black'>The other issue is that with a different Ant runtime,
+optional files such as junit.jar and xalan.jar were not on the classpath. You
+have to edit the build.xml properties to set ANT_HOME to that of your ANT
+runtime. This will give you the Ant and extra JARs of your command line.<o:p></o:p></span></p>
+
+<p class=heading4><span style='font-size:11.5pt;line-height:120%;font-family:
+Georgia;color:black'>CVS Integration<o:p></o:p></span></p>
+
+<p class=textbody><span style='font-size:11.5pt;line-height:120%;font-family:
+Georgia;color:black'>In Window/Preferences/Team, add *.sxw and *.sxi as binary
+filetypes, and the following to the CVS Ignore list<o:p></o:p></span></p>
+
+<p class=code><span style='font-size:11.5pt;line-height:120%;font-family:Georgia;
+color:black'>build.properties<o:p></o:p></span></p>
+
+<p class=code><span style='font-size:11.5pt;line-height:120%;font-family:Georgia;
+color:black'>.classpath<o:p></o:p></span></p>
+
+<p class=codelastline><span style='font-size:11.5pt;line-height:120%;
+font-family:Georgia;color:black'>.project<o:p></o:p></span></p>
+
+<p class=textbody><span style='font-size:11.5pt;line-height:120%;font-family:
+Georgia;color:black'>This stops team synchronization trying to add personal
+files to the repository. We have found that having a &quot;.cvsignore&quot;
+file at the base of every project/component directory stops build directories
+from being synchronized. In the smartfrog project itself, care must be taken
+not to add machine-generated source to the repository; there is a special
+.cvsignore in the relevant directory to prevent this. <o:p></o:p></span></p>
+
+<p class=textbody><span style='font-size:11.5pt;line-height:120%;font-family:
+Georgia;color:black'>Overall, we currently find the 'seamless' synchronization
+feature of Eclipse 3.1, namely its willingness to add all unmanaged files to
+the repository <span class=t1><span style='font-family:Georgia'>unless
+explicitly included</span></span><span class=t2><span style='font-family:Georgia'>
+overaggressive. The biggest problem is that CVS server handles deleted
+directories very badly; if someone were ever to accidentally import the build/
+directory of a component, nobody would be able to rebuild that component until
+the SourceForge support team fielded a &quot;please delete this directory from
+CVS&quot; request. </span></span><o:p></o:p></span></p>
+
+<p class=p3><span style='font-size:11.5pt;line-height:120%;font-family:Georgia;
+color:black'>To disconnect a project from CVS, bring up the context menu on a
+project in the navigator, then select Team|CVS|disconnect, then confirm the
+disconnect, making sure that the “do not delete” option is set, so that other
+CVS tools work normally.<o:p></o:p></span></p>
+
+<h4><a name=N10194></a><a name=JBuilder></a><span style='font-size:10.5pt;
+color:black'>JBuilder<o:p></o:p></span></h4>
+
+<p class=textbody><span style='font-size:11.5pt;line-height:120%;font-family:
+Georgia;color:black'>TODO<o:p></o:p></span></p>
+
+<h4><a name=N1019C></a><a name=NetBeans></a><span style='font-size:10.5pt;
+color:black'>NetBeans<o:p></o:p></span></h4>
+
+<p class=p14><span style='font-size:11.5pt;line-height:120%;font-family:Georgia;
+color:black'>untested<o:p></o:p></span></p>
+
+<h4><a name=N101A4></a><a name="jEdit+4.2"></a><span style='font-size:10.5pt;
+color:black'>jEdit 4.2<o:p></o:p></span></h4>
+
+<p class=textbody><span style='font-size:11.5pt;line-height:120%;font-family:
+Georgia;color:black'>There is a XML syntax file describing .sf files, in the
+smartfrog/doc directory. Add this to jedit/modes then edit modes/catalog <o:p></o:p></span></p>
+
+<p class=code><span style='font-size:11.5pt;line-height:120%;font-family:Georgia;
+color:black'>&lt;MODE NAME=&quot;smartfrog&quot;
+FILE=&quot;jedit-smartfrog.xml&quot;<o:p></o:p></span></p>
+
+<p class=codelastline><span style='font-size:11.5pt;line-height:120%;
+font-family:Georgia;color:black'>FILE_NAME_GLOB=&quot;*.sf&quot;/&gt;<o:p></o:p></span></p>
+
+<p class=textbody><span style='font-size:11.5pt;line-height:120%;font-family:
+Georgia;color:black'>After restarting jEdit, .sf files will be given syntax
+highlighting.<o:p></o:p></span></p>
+
+<h4><a name=N101B5></a><a name=Emacs></a><span style='font-size:10.5pt;
+color:black'>Emacs<o:p></o:p></span></h4>
+
+<h3 style='background:#CFDCED'><a name=N101BA></a><a name="Dependent+Projects"></a><span
+style='font-size:11.5pt;color:black'>Dependent Projects<o:p></o:p></span></h3>
+
+<p class=textbody><span style='font-size:11.5pt;line-height:120%;font-family:
+Georgia;color:black'>Many IDEs work best if the source for dependent libraries
+and tools are available. We recommend having a local copy of:<o:p></o:p></span></p>
+
+<p class=p15 style='margin-left:.5in;text-indent:-.25in;mso-list:l4 level1 lfo11;
+tab-stops:list .5in'><![if !supportLists]><span style='font-size:10.0pt;
+mso-bidi-font-size:11.5pt;line-height:120%;font-family:Symbol;mso-fareast-font-family:
+Symbol;mso-bidi-font-family:Symbol;color:black'><span style='mso-list:Ignore'>·<span
+style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span></span><![endif]><span style='font-size:11.5pt;line-height:120%;
+font-family:Georgia;color:black'>JUnit - for Unit test debugging<o:p></o:p></span></p>
+
+<p class=p15 style='margin-left:.5in;text-indent:-.25in;mso-list:l4 level1 lfo11;
+tab-stops:list .5in'><![if !supportLists]><span style='font-size:10.0pt;
+mso-bidi-font-size:11.5pt;line-height:120%;font-family:Symbol;mso-fareast-font-family:
+Symbol;mso-bidi-font-family:Symbol;color:black'><span style='mso-list:Ignore'>·<span
+style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span></span><![endif]><span style='font-size:11.5pt;line-height:120%;
+font-family:Georgia;color:black'>Ant source tree -if you are working with the
+Ant tasks. Use CVS_HEAD of Ant, if you are extending the tasks, but be careful
+not to use features not in versions of Ant that the SmartFrog Ant tasks still support.
+At the time of writing, that means Ant1.6.5.<o:p></o:p></span></p>
+
+<p class=p15 style='margin-left:.5in;text-indent:-.25in;mso-list:l4 level1 lfo11;
+tab-stops:list .5in'><![if !supportLists]><span style='font-size:10.0pt;
+mso-bidi-font-size:11.5pt;line-height:120%;font-family:Symbol;mso-fareast-font-family:
+Symbol;mso-bidi-font-family:Symbol;color:black'><span style='mso-list:Ignore'>·<span
+style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span></span><![endif]><span style='font-size:11.5pt;line-height:120%;
+font-family:Georgia;color:black'>Dependent libraries of components which you
+are developing.<o:p></o:p></span></p>
+
+<h3 style='background:#CFDCED'><a name=N101CF></a><a name="CVS+Integration"></a><span
+style='font-size:11.5pt;color:black'>CVS Integration<o:p></o:p></span></h3>
+
+<p class=textbody><span style='font-size:11.5pt;line-height:120%;font-family:
+Georgia;color:black'>Developers with write access to the CVS repository can
+enable CVS integration, if their IDE supports it.<o:p></o:p></span></p>
+
+<p class=p16 style='margin-left:.5in;text-indent:-.25in;mso-list:l11 level1 lfo12;
+tab-stops:list .5in'><![if !supportLists]><span style='font-size:10.0pt;
+mso-bidi-font-size:11.5pt;line-height:120%;font-family:Symbol;mso-fareast-font-family:
+Symbol;mso-bidi-font-family:Symbol;color:black'><span style='mso-list:Ignore'>·<span
+style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span></span><![endif]><span style='font-size:11.5pt;line-height:120%;
+font-family:Georgia;color:black'>Make sure that core/.cvsignore is being
+processed, and that the IDE is not trying to aggressively synchronize all
+output in the build directory (as Eclipse Team Synchronization is wont to do).<o:p></o:p></span></p>
+
+<p class=p16 style='margin-left:.5in;text-indent:-.25in;mso-list:l11 level1 lfo12;
+tab-stops:list .5in'><![if !supportLists]><span style='font-size:10.0pt;
+mso-bidi-font-size:11.5pt;line-height:120%;font-family:Symbol;mso-fareast-font-family:
+Symbol;mso-bidi-font-family:Symbol;color:black'><span style='mso-list:Ignore'>·<span
+style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span></span><![endif]><span style='font-size:11.5pt;line-height:120%;
+font-family:Georgia;color:black'>Set the CVS compression level to high, to
+reduce the amount of communications with the server.<o:p></o:p></span></p>
+
+<p class=p16 style='margin-left:.5in;text-indent:-.25in;mso-list:l11 level1 lfo12;
+tab-stops:list .5in'><![if !supportLists]><span style='font-size:10.0pt;
+mso-bidi-font-size:11.5pt;line-height:120%;font-family:Symbol;mso-fareast-font-family:
+Symbol;mso-bidi-font-family:Symbol;color:black'><span style='mso-list:Ignore'>·<span
+style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span></span><![endif]><span style='font-size:11.5pt;line-height:120%;
+font-family:Georgia;color:black'>Do an update, clean build and test before
+checking in anything. This will reduce the risk of inadvertent collisions.<o:p></o:p></span></p>
+
+<p class=p16 style='margin-left:.5in;text-indent:-.25in;mso-list:l11 level1 lfo12;
+tab-stops:list .5in'><![if !supportLists]><span style='font-size:10.0pt;
+mso-bidi-font-size:11.5pt;line-height:120%;font-family:Symbol;mso-fareast-font-family:
+Symbol;mso-bidi-font-family:Symbol;color:black'><span style='mso-list:Ignore'>·<span
+style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span></span><![endif]><span style='font-size:11.5pt;line-height:120%;
+font-family:Georgia;color:black'>Do not check in broken code, otherwise
+CruiseControl will complain.<o:p></o:p></span></p>
+
+<p class=p16 style='margin-left:.5in;text-indent:-.25in;mso-list:l11 level1 lfo12;
+tab-stops:list .5in'><![if !supportLists]><span style='font-size:10.0pt;
+mso-bidi-font-size:11.5pt;line-height:120%;font-family:Symbol;mso-fareast-font-family:
+Symbol;mso-bidi-font-family:Symbol;color:black'><span style='mso-list:Ignore'>·<span
+style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span></span><![endif]><span style='font-size:11.5pt;line-height:120%;
+font-family:Georgia;color:black'>Avoid checking in code when cruise control is
+already broken, as you will get CC:d on the complaint mail.<o:p></o:p></span></p>
+
+<p class=p16 style='margin-left:.5in;text-indent:-.25in;mso-list:l11 level1 lfo12;
+tab-stops:list .5in'><![if !supportLists]><span style='font-size:10.0pt;
+mso-bidi-font-size:11.5pt;line-height:120%;font-family:Symbol;mso-fareast-font-family:
+Symbol;mso-bidi-font-family:Symbol;color:black'><span style='mso-list:Ignore'>·<span
+style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span></span><![endif]><span style='font-size:11.5pt;line-height:120%;
+font-family:Georgia;color:black'>Remember to check in files such as rmitargets,
+and core/common.xml, if they have changed. <o:p></o:p></span></p>
+
+<p class=p16 style='margin-left:.5in;text-indent:-.25in;mso-list:l11 level1 lfo12;
+tab-stops:list .5in'><![if !supportLists]><span style='font-size:10.0pt;
+mso-bidi-font-size:11.5pt;line-height:120%;font-family:Symbol;mso-fareast-font-family:
+Symbol;mso-bidi-font-family:Symbol;color:black'><span style='mso-list:Ignore'>·<span
+style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span></span><![endif]><span style='font-size:11.5pt;line-height:120%;
+font-family:Georgia;color:black'>There is a mailing list just for CVS checkins.
+We encourage all active developers to watch this email.<o:p></o:p></span></p>
+
+<p class=heading5><span style='font-size:11.5pt;line-height:120%;font-family:
+Georgia;color:black'>Things to Watch out for<o:p></o:p></span></p>
+
+<p class=p17 style='margin-left:.5in;text-indent:-.25in;mso-list:l9 level1 lfo13;
+tab-stops:list .5in'><![if !supportLists]><span style='font-size:10.0pt;
+mso-bidi-font-size:11.5pt;line-height:120%;font-family:Symbol;mso-fareast-font-family:
+Symbol;mso-bidi-font-family:Symbol;color:black'><span style='mso-list:Ignore'>·<span
+style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span></span><![endif]><span style='font-size:11.5pt;line-height:120%;
+font-family:Georgia;color:black'>Writing code specific to your version of Java.
+This can be Java1.5 framework features, or it can be using &quot;<span
+class=codeinline><span style='font-family:Georgia'>enum</span></span>&quot; as
+a variable name in Java1.4 applications. <o:p></o:p></span></p>
+
+<p class=p17 style='margin-left:.5in;text-indent:-.25in;mso-list:l9 level1 lfo13;
+tab-stops:list .5in'><![if !supportLists]><span style='font-size:10.0pt;
+mso-bidi-font-size:11.5pt;line-height:120%;font-family:Symbol;mso-fareast-font-family:
+Symbol;mso-bidi-font-family:Symbol;color:black'><span style='mso-list:Ignore'>·<span
+style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span></span><![endif]><span style='font-size:11.5pt;line-height:120%;
+font-family:Georgia;color:black'>Writing code against the build of a library
+set up with the IDE, not that in the lib dir of a component.<o:p></o:p></span></p>
+
+<p class=p17 style='margin-left:.5in;text-indent:-.25in;mso-list:l9 level1 lfo13;
+tab-stops:list .5in'><![if !supportLists]><span style='font-size:10.0pt;
+mso-bidi-font-size:11.5pt;line-height:120%;font-family:Symbol;mso-fareast-font-family:
+Symbol;mso-bidi-font-family:Symbol;color:black'><span style='mso-list:Ignore'>·<span
+style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span></span><![endif]><span style='font-size:11.5pt;line-height:120%;
+font-family:Georgia;color:black'>Gratuitous re-ordering of imports, comment
+layout, etc, etc. These confuse CVS and create conflicts when there should be
+none.<o:p></o:p></span></p>
+
+<p class=p17 style='margin-left:.5in;text-indent:-.25in;mso-list:l9 level1 lfo13;
+tab-stops:list .5in'><![if !supportLists]><span style='font-size:10.0pt;
+mso-bidi-font-size:11.5pt;line-height:120%;font-family:Symbol;mso-fareast-font-family:
+Symbol;mso-bidi-font-family:Symbol;color:black'><span style='mso-list:Ignore'>·<span
+style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span></span><![endif]><span style='font-size:11.5pt;line-height:120%;
+font-family:Georgia;color:black'>Not maintaining the build file of a component.
+The build file is the way to build components in production; IDE-only builds
+are for development only.<o:p></o:p></span></p>
+
+<p class=p17 style='margin-left:.5in;text-indent:-.25in;mso-list:l9 level1 lfo13;
+tab-stops:list .5in'><![if !supportLists]><span style='font-size:10.0pt;
+mso-bidi-font-size:11.5pt;line-height:120%;font-family:Symbol;mso-fareast-font-family:
+Symbol;mso-bidi-font-family:Symbol;color:black'><span style='mso-list:Ignore'>·<span
+style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span></span><![endif]><span style='font-size:11.5pt;line-height:120%;
+font-family:Georgia;color:black'>Changing the public API by accident, while
+refactoring.<o:p></o:p></span></p>
+
+<p class=p17 style='margin-left:.5in;text-indent:-.25in;mso-list:l9 level1 lfo13;
+tab-stops:list .5in'><![if !supportLists]><span style='font-size:10.0pt;
+mso-bidi-font-size:11.5pt;line-height:120%;font-family:Symbol;mso-fareast-font-family:
+Symbol;mso-bidi-font-family:Symbol;color:black'><span style='mso-list:Ignore'>·<span
+style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span></span><![endif]><span style='font-size:11.5pt;line-height:120%;
+font-family:Georgia;color:black'>Checking in code having only verified that a
+single test case/package works not the whole testharness.<o:p></o:p></span></p>
+
+<p class=p17 style='margin-left:.5in;text-indent:-.25in;mso-list:l9 level1 lfo13;
+tab-stops:list .5in'><![if !supportLists]><span style='font-size:10.0pt;
+mso-bidi-font-size:11.5pt;line-height:120%;font-family:Symbol;mso-fareast-font-family:
+Symbol;mso-bidi-font-family:Symbol;color:black'><span style='mso-list:Ignore'>·<span
+style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span></span><![endif]><span style='font-size:11.5pt;line-height:120%;
+font-family:Georgia;color:black'>Import handling replacing explicit imports
+with .* imports. Set the number of imports in a package to trigger this feature
+in an IDE to 999 to effectively disable it.<o:p></o:p></span></p>
+
+</div>
+
+</div>
+
+<div>
+
+<p class=MsoNormal><span style='font-family:Verdana;color:black'>&nbsp;<o:p></o:p></span></p>
+
+</div>
+
+</div>
+
+<div id=footer>
+
+<div>
+
+<p class=MsoNormal style='background:#A5B6C6'><span style='font-family:Verdana;
+color:black'><script  type="text/javascript">
+<!--
+document.write("<text>Last Published:</text> " + document.lastModified);
+//  -->
+</script></span><span style='font-size:8.5pt;font-family:Verdana;color:black'>Copyright
+© 2005 Hewlett Packard Company<o:p></o:p></span></p>
+
+</div>
+
+<div>
+
+<p class=MsoNormal style='background:#A5B6C6'><span style='font-size:8.5pt;
+font-family:Verdana;color:black'><a
+href="http://sourceforge.net/projects/smartfrog"><span style='text-decoration:
+none;text-underline:none'><img border=0 width=88 height=31 id="_x0000_i1031"
+src="images/sourceforge.gif" class=logoImage></span></a><o:p></o:p></span></p>
+
+</div>
+
+</div>
+
+</div>
+
+</body>
+
+</html>

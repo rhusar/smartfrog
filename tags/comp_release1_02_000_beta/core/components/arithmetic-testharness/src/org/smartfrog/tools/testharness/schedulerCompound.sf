@@ -1,0 +1,10 @@
+
+
+
+SchedulerCompound extends Compound {
+  sfClass "org.smartfrog.tools.testharness.SchedulerCompoundImpl";
+  // idempotence of sending messages guaranteed.
+  removeDuplicates "true";
+  // number of messages required to satisfy a condition.
+  numberOfAcks 1;      
+}
