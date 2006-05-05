@@ -107,13 +107,13 @@ To Be Written
   <target name="release" depends="init, initrelease, fixCRLF" description="Creates zip with release packages">
 
 <!-- ================================ -->
-    <zip destfile="releases/${Name.System}.${DSTAMP}_DIST.zip">
+    <zip destfile="releases/${Name.System}.${version}.${DSTAMP}_DIST.zip">
        <zipfileset dir="." prefix="${Name.System}">
           <include name="${dist}/**"/>
        </zipfileset>
     </zip>
 <!-- ================================ -->
-    <zip destfile="releases/${Name.System}.${DSTAMP}_ALL.zip">
+    <zip destfile="releases/${Name.System}.${version}.${DSTAMP}_ALL.zip">
        <zipfileset dir="." prefix="${Name.System}">
         <include name="bin/**"/>
         <include name="dist/**"/>
@@ -125,17 +125,17 @@ To Be Written
     </zip>
 
 
-      <tar destfile="releases/${Name.System}.${DSTAMP}_DIST.tar">
+      <tar destfile="releases/${Name.System}.${version}.${DSTAMP}_DIST.tar">
        <tarfileset dir="." prefix="${Name.System}">
           <include name="${dist}/**"/>
        </tarfileset>
     </tar>
 
-    <gzip src="releases/${Name.System}.${DSTAMP}_DIST.tar" 
+    <gzip src="releases/${Name.System}.${version}.${DSTAMP}_DIST.tar" 
 	    zipfile="releases/${Name.System}.${DSTAMP}_DIST.tar.gz"/>
     <delete file="releases/${Name.System}.${DSTAMP}_DIST.tar"/>
 
-    <sf-tar destfile="releases/${Name.System}.${DSTAMP}_ALL.tar">
+    <sf-tar destfile="releases/${Name.System}.${version}.${DSTAMP}_ALL.tar">
        <tarfileset dir="." prefix="${Name.System}">
         <include name="bin/**"/>
         <include name="dist/**"/>
@@ -146,9 +146,9 @@ To Be Written
        </tarfileset>
     </sf-tar>
 
-    <gzip src="releases/${Name.System}.${DSTAMP}_ALL.tar" 
-	    zipfile="releases/${Name.System}.${DSTAMP}_ALL.tar.gz"/>
-    <delete file="releases/${Name.System}.${DSTAMP}_ALL.tar"/>
+    <gzip src="releases/${Name.System}.${version}.${DSTAMP}_ALL.tar" 
+	    zipfile="releases/${Name.System}.${version}.${DSTAMP}_ALL.tar.gz"/>
+    <delete file="releases/${Name.System}.${version}.${DSTAMP}_ALL.tar"/>
   </target>
 </project>
 
