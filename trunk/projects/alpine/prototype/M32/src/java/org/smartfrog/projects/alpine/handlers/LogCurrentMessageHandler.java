@@ -19,8 +19,11 @@
  */
 package org.smartfrog.projects.alpine.handlers;
 
+import nu.xom.Document;
+import nu.xom.Element;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.smartfrog.projects.alpine.core.ContextConstants;
 import org.smartfrog.projects.alpine.core.EndpointContext;
 import org.smartfrog.projects.alpine.core.MessageContext;
 import org.smartfrog.projects.alpine.om.soap11.Fault;
@@ -45,6 +48,11 @@ public class LogCurrentMessageHandler extends HandlerBase {
      *
      */
     public void processMessage(MessageContext messageContext, EndpointContext endpointContext) {
+        //log the sender request
+        String address = (String) messageContext.get(ContextConstants.REQUEST_REMOTE_ADDRESS);
+        if (address != null) {
+            log.info("Message from IP address " + address);
+        }
         MessageDocument currentMessage = messageContext.getCurrentMessage();
         if (currentMessage == null) {
             log.error("There is no current message");
@@ -75,6 +83,9 @@ public class LogCurrentMessageHandler extends HandlerBase {
     public Fault faultRaised(MessageContext messageContext, EndpointContext endpointContext,
                              Fault fault) {
         log.info("Fault thrown " + fault);
+        Document doc = new Document((Element) fault.copy());
+        String contents = XsdUtils.printToString(doc) + "\n";
+        log.info(contents);
         return fault;
     }
 }

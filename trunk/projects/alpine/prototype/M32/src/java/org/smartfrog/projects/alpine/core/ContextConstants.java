@@ -38,7 +38,7 @@ public interface ContextConstants {
      * {@value}
      */
     public static final String ATTR_PATH = "path";
-            
+
     /**
      * name of the endpoint
      * {@value}
@@ -99,4 +99,9 @@ public interface ContextConstants {
      * and lets you hand off parsing of your custom classes to a custom Xom factory
      */
     public static final String ATTR_XOM_FACTORY = "factory";
+
+    /**
+     * Used in the message context to log the sender ip address
+     */
+    public static final String REQUEST_REMOTE_ADDRESS = "request.remote.address";
 }
