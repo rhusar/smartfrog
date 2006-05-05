@@ -143,9 +143,13 @@ For more information: www.smartfrog.org
 
     <target name="generate-site" depends="prepare-docs" >
 	    <!--antcall target="site"/-->
-	    <exec dir="${comp.home}" executable="${env.FORREST_HOME}/bin/forrest.bat">
-		 <arg line="site"/>
-	    </exec>		    
+<exec dir="${comp.home}" executable="${env.FORREST_HOME}/bin/forrest.bat" os="Windows 2000, Windows_NT, Windows XP">
+<arg line="site"/>
+    </exec>     
+<exec dir="${comp.home}" executable="${env.FORREST_HOME}/bin/forrest" os="Linux">
+<arg line="site"/>
+    </exec>
+	 		    
 	    
 	</target>
     
