@@ -67,6 +67,7 @@ public abstract class RemoteTestBase extends TestCase {
      * path under alpine to echo {@value}
      */
     public static final String WSA_PATH = "/wsa/";
+    public static final String ENDPOINT = "endpoint";
 
     /**
      * Constructs a test case with the given name.
@@ -79,14 +80,23 @@ public abstract class RemoteTestBase extends TestCase {
      * Sets up the fixture, for example, open a network connection. This method is called before a test is executed.
      */
     protected void setUp() throws Exception {
-        String target = System.getProperty("endpoint");
+        selectEndpoint();
+        executor = createExecutor();
+        queue = new TransmitQueue(executor);
+    }
+
+    /**
+     * ovveride point: get the endpoint and bind to it.
+     *
+     * @throws Exception
+     */
+    protected void selectEndpoint() throws Exception {
+        String target = System.getProperty(ENDPOINT);
         if (target == null) {
-            throw new Exception("No endpoint property " + "endpoint");
+            throw new Exception("No endpoint property " + ENDPOINT);
         }
         String path = getEndpointName();
         bindToAddress(target + path);
-        executor = createExecutor();
-        queue = new TransmitQueue(executor);
     }
 
     /**

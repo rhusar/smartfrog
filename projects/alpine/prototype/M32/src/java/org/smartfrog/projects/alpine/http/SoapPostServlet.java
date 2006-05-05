@@ -122,6 +122,9 @@ public class SoapPostServlet extends ServletBase {
             return;
         }
         MessageContext messageContext = endpointContext.createMessageContext();
+        //log the sender host
+        String remoteAddr = request.getRemoteAddr();
+        messageContext.put(ContextConstants.REQUEST_REMOTE_ADDRESS, remoteAddr);
         MessageDocument requestMessage = null;
         MessageDocument responseMessage = null;
         HttpBinder binder = new HttpBinder(endpointContext);
@@ -140,7 +143,7 @@ public class SoapPostServlet extends ServletBase {
                     handler.processMessage(messageContext, endpointContext);
                 } catch (Exception thrown) {
                     //if anything happened here. the rollback begins
-                    getLog().info("Fault thrown in the handler "+handler, thrown);
+                    getLog().info("Fault thrown in the handler " + handler, thrown);
                     fault = bridge.extractFaultFromThrowable(thrown);
                     for (int rollback = i; rollback >= 0; rollback--) {
                         handler = handlers.get(rollback);
