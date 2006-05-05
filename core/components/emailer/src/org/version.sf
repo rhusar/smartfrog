@@ -20,12 +20,12 @@ For more information: www.smartfrog.org
 
 Version extends {
   name "SmartFrog";
-  majorRelease "1";
-  minorRelease "00";
-  build "002"; // odd numbers are development versions
-  status "beta"; //alpha, beta, (stable), rc (release candidate)
+  majorRelease "3";
+  minorRelease "08";
+  build "007"; // odd numbers are development versions
+  status "rc"; //alpha, beta, (stable), rc (release candidate)
   copyright "(C) Copyright 1998-2005 Hewlett-Packard Development Company, LP";
-  minCoreVersion "3.04.0014_beta";
-  maxCoreVersion "3.06.000_rc1";
+  minCoreVersion "3.08.004";
+  maxCoreVersion "3.08.004";
 }
 
