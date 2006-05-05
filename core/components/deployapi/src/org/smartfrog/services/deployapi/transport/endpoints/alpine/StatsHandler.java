@@ -19,10 +19,11 @@
  */
 package org.smartfrog.services.deployapi.transport.endpoints.alpine;
 
-import org.smartfrog.projects.alpine.handlers.HandlerBase;
-import org.smartfrog.projects.alpine.core.MessageContext;
 import org.smartfrog.projects.alpine.core.EndpointContext;
+import org.smartfrog.projects.alpine.core.MessageContext;
+import org.smartfrog.projects.alpine.handlers.HandlerBase;
 import org.smartfrog.projects.alpine.om.soap11.Fault;
+import org.smartfrog.services.deployapi.engine.ServerInstance;
 
 /**
  * This class adds statistic gathering
@@ -31,9 +32,9 @@ import org.smartfrog.projects.alpine.om.soap11.Fault;
 
 public class StatsHandler extends HandlerBase {
 
-    int requests=0;
+    private int requests = 0;
 
-    int failures=0;
+    private int failures = 0;
 
     /**
      * Message handler
@@ -43,8 +44,22 @@ public class StatsHandler extends HandlerBase {
      * @throws org.smartfrog.projects.alpine.faults.AlpineRuntimeException
      *
      */
-    public synchronized void processMessage(MessageContext messageContext, EndpointContext endpointContext) {
-        requests++;
+    public void processMessage(MessageContext messageContext, EndpointContext endpointContext) {
+        incrementRequests();
+    }
+
+    private void incrementRequests() {
+        synchronized (this) {
+            requests++;
+        }
+        ServerInstance.currentInstance().incrementRequests();
+    }
+
+    private void incrementFailures() {
+        synchronized (this) {
+            failures++;
+        }
+        ServerInstance.currentInstance().incrementFailures();
     }
 
     /**
@@ -66,13 +81,13 @@ public class StatsHandler extends HandlerBase {
      *          something that went wrong during processing.
      */
     public synchronized Fault faultRaised(MessageContext messageContext, EndpointContext endpointContext, Fault fault) {
-        failures++;
+        incrementFailures();
         return super.faultRaised(messageContext, endpointContext, fault);
     }
 
-    public synchronized void reset() {
-        failures=0;
-        requests=0;
+    public synchronized void resetStatistics() {
+        failures = 0;
+        requests = 0;
     }
 
     public int getRequests() {

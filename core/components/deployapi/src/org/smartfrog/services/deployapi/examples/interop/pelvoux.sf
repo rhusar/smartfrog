@@ -46,6 +46,31 @@ Pelvoux extends Compound {
 
    }
 
+  /**
+   * Serving up of logs
+   */
+  logs extends ServletContext {
+
+      resourceBase LAZY logDirectory:absolutePath;
+      contextPath "/logs";
+      server LAZY alpine:jettyServer;
+
+
+   }
+
+  logServlets extends Compound {
+    context LAZY logs;
+    directory extends SrcDefaultServlet {
+      pathSpec "/*";
+      context LAZY PARENT:context;
+    }
+  }
+    //mime type of html pages
+    htmlPages extends MimeType {
+      extension "html";
+      type "text/html";
+      context LAZY logs;
+     }
 
 }
 
