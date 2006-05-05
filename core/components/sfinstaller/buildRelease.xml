@@ -40,6 +40,7 @@ To Be Written
 
 
   <import file="${root.dir}/components/buildRelease-template.xml"/>
+<import file="${root.dir}/common.xml"/>
 
 
 
@@ -98,9 +99,22 @@ To Be Written
   <!-- =================================================================== -->
   <!-- initrelease                                                             -->
   <!-- =================================================================== -->
-  <target name="initrelease">
-	  <mkdir dir="releases"/>
+  <target name="initrelease" depends="common.init">
+    <mkdir dir="releases"/>
+    <java classname="org.Version"
+        failonerror="true" fork="true"
+        outputproperty="version">
+      <arg value="-b"/>
+      <classpath>
+        <fileset dir="${dist.lib.dir}">
+          <include name="**/*.jar"/>
+        </fileset>
+        <fileset refid="smartfrog.lib.fileset"/>
+      </classpath>
+    </java>
   </target>
+
+  
   <!-- =================================================================== -->
   <!-- release                                                             -->
   <!-- =================================================================== -->
@@ -132,8 +146,8 @@ To Be Written
     </tar>
 
     <gzip src="releases/${Name.System}.${version}.${DSTAMP}_DIST.tar" 
-	    zipfile="releases/${Name.System}.${DSTAMP}_DIST.tar.gz"/>
-    <delete file="releases/${Name.System}.${DSTAMP}_DIST.tar"/>
+	    zipfile="releases/${Name.System}.${version}.${DSTAMP}_DIST.tar.gz"/>
+    <delete file="releases/${Name.System}.${version}.${DSTAMP}_DIST.tar"/>
 
     <sf-tar destfile="releases/${Name.System}.${version}.${DSTAMP}_ALL.tar">
        <tarfileset dir="." prefix="${Name.System}">
