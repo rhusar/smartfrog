@@ -582,7 +582,7 @@
   <!-- =================================================================== -->
   <!-- sfParse parsertargets                                                -->
   <!-- =================================================================== -->
-  <target name="sfParseTest" depends="build,jars">
+  <target name="sfParseTest" depends="build,jars" description="runs sfParser for 'parsertargets' file">
     <java classname="org.smartfrog.SFParse" failonerror="true" fork="true">
       <classpath>
         <pathelement location="${smartfrog.jar}"/>
