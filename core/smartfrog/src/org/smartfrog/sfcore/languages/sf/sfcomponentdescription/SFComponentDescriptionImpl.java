@@ -33,7 +33,7 @@ import org.smartfrog.sfcore.componentdescription.ComponentDescriptionImpl;
 import org.smartfrog.sfcore.languages.sf.Phase;
 import org.smartfrog.sfcore.languages.sf.SmartFrogCompileResolutionException;
 import org.smartfrog.sfcore.parser.Phases;
-import org.smartfrog.sfcore.parser.PhaseNames;
+import org.smartfrog.sfcore.languages.sf.PhaseNames;
 import org.smartfrog.sfcore.reference.HereReferencePart;
 import org.smartfrog.sfcore.reference.Reference;
 
@@ -728,7 +728,7 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
             phases.add(PhaseNames.SFCONFIG);
             phases.add(PhaseNames.LINK);
             phases.add(PhaseNames.FUNCTION);
-            phases.add(PhaseNames.PHASE_LIST);
+            phases.add(PhaseNames.PREDICATE);
          } else {
             context.remove("phaseList");
          }
