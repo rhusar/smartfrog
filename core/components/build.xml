@@ -585,8 +585,8 @@ For more information: www.smartfrog.org
 
 
   <target name="generatedoc" depends="init" description="Document Generation" if="env.FORREST_HOME">
-    <!--<ant antfile="documentation.xml" inheritall="false"/> -->
-    <delete dir="build"/>
+	  <ant antfile="documentation.xml" inheritall="false"/> 
+      	  <delete dir="build"/>
     <!-- Forrest build dir -->
   </target>
 
