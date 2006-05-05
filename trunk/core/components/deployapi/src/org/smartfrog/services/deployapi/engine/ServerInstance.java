@@ -88,6 +88,11 @@ public class ServerInstance implements WSRPResourceSource {
     private static final Log log = LogFactory.getLog(ServerInstance.class);
 
     private URL systemsURL;
+
+    private int requests = 0;
+
+    private int failures = 0;
+
     private static final String BUILD_TIMESTAMP = "$Date$";
 
     /**
@@ -325,6 +330,31 @@ public class ServerInstance implements WSRPResourceSource {
                 response.appendChild(job.getEndpointer().copy());
             }
             return response;
+        }
+    }
+
+    public synchronized void resetStatistics() {
+        failures = 0;
+        requests = 0;
+    }
+
+    public int getRequests() {
+        return requests;
+    }
+
+    public int getFailures() {
+        return failures;
+    }
+
+    public void incrementRequests() {
+        synchronized (this) {
+            requests++;
+        }
+    }
+
+    public void incrementFailures() {
+        synchronized (this) {
+            failures++;
         }
     }
 }
