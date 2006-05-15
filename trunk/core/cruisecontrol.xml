@@ -16,7 +16,7 @@
     </bootstrappers>
 
     <modificationset  quietperiod="120">
-    <cvs  cvsroot=":ext:smartfrog@cvs.sourceforge.net:/cvsroot/smartfrog"
+    <cvs  cvsroot=":ext:smartfrog@smartfrog.cvs.sourceforge.net:/cvsroot/smartfrog"
       localworkingcopy="."
       property="cvs.modified"
       propertyondelete="cvs.deleted"/>
