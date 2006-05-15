@@ -12,6 +12,9 @@ import org.smartfrog.sfcore.languages.csf.csfcomponentdescription.CSFComponentDe
 import org.smartfrog.sfcore.languages.csf.csfcomponentdescription.CSFComponentDescription;
 import org.smartfrog.sfcore.languages.csf.csfcomponentdescription.FreeVar;
 import org.smartfrog.sfcore.languages.csf.constraints.Constraint;
+import org.smartfrog.sfcore.languages.sf.sfreference.SFApplyReference;
+import org.smartfrog.sfcore.languages.sf.sfreference.SFReference;
+
 import org.smartfrog.sfcore.languages.sf.IncludeHandler;
 
 import org.smartfrog.sfcore.reference.ReferencePart;
@@ -22,7 +25,7 @@ import org.smartfrog.sfcore.reference.HereReferencePart;
 import org.smartfrog.sfcore.reference.RootReferencePart;
 import org.smartfrog.sfcore.reference.AttribReferencePart;
 import org.smartfrog.sfcore.reference.ThisReferencePart;
-import org.smartfrog.sfcore.reference.Reference;
+
 import org.smartfrog.sfcore.common.SFNull;
 import org.smartfrog.sfcore.common.SFByteArray;
 import java.io.InputStream;
@@ -44,7 +47,7 @@ public class DefaultParser {
   static final String andOp = "org.smartfrog.sfcore.languages.sf.functions.Conjunction";
   static final String orOp = "org.smartfrog.sfcore.languages.sf.functions.Disjunction";
 
-  static final String eqOp = "org.smartfrog.sfcore.languages.ssf.functions.EQ";
+  static final String eqOp = "org.smartfrog.sfcore.languages.sf.functions.EQ";
   static final String neOp = "org.smartfrog.sfcore.languages.sf.functions.NE";
   static final String geOp = "org.smartfrog.sfcore.languages.sf.functions.GEs";
   static final String leOp = "org.smartfrog.sfcore.languages.sf.functions.LE";
@@ -56,6 +59,7 @@ public class DefaultParser {
 
   static final String notOp = "org.smartfrog.sfcore.languages.sf.functions.Not";
   static final String ifThenElseOp = "org.smartfrog.sfcore.languages.sf.functions.IfThenElse";
+  static final String functionPhaseClass = "org.smartfrog.sfcore.languages.sf.Function";
 
 
 
@@ -210,6 +214,7 @@ TOKEN : /* reserved words */
  | <PARENT: "PARENT">
  | <HOST: "HOST">
  | <PROCESS: "PROCESS">
+ | <APPLY: "APPLY">
  | <INCLUDE: "#include">
  | <CODEBASE: "#codebase">
  | <TRUE: "true">
@@ -375,9 +380,9 @@ Vector AttributeList() :
  * Entry point for Reference parser
  */
 
-Reference Reference() :
+SFReference Reference() :
 {
-  Reference res;
+  SFReference res;
 }
 {
     res = ReferenceNoEOF() <EOF>
@@ -459,7 +464,7 @@ void Includes(Vector res) :
 Object[] Attribute() :
 {
   Object[] attribute = new Object[2];
-  Reference name = new Reference();
+  SFReference name = new SFReference();
 }
 {
   (Name(name) attribute[1]=Value()
@@ -473,7 +478,7 @@ Object[] Attribute() :
 }
 
 
-void Name(Reference res) :
+void Name(SFReference res) :
 {
   res.setEager(true);
   Token t;
@@ -577,7 +582,8 @@ Object Operator() :
         if (arity==0) {
         for (Enumeration e = v.elements(); e.hasMoreElements(); ) {
             Object attribute = e.nextElement();
-            Reference name = new Reference(ReferencePart.here("unique" + nextId++));
+            SFReference name = new SFReference();
+            name.addElement(ReferencePart.here("unique" + nextId++));
             ((CSFComponentDescription)res).sfContext().put(name, attribute);
             if (attribute instanceof CSFComponentDescription)
             ((CSFComponentDescription)attribute).setParent((CSFComponentDescription)res);
@@ -594,7 +600,8 @@ Object Operator() :
         if (a instanceof CSFComponentDescription)
             ((CSFComponentDescription)a).setParent((CSFComponentDescription)res);
         }
-        ((CSFComponentDescription)res).sfContext().put("phase.function", operator);
+        ((CSFComponentDescription)res).sfContext().put("phase.function", functionPhaseClass);
+        ((CSFComponentDescription)res).sfContext().put("sfFunctionClass", operator);
     }
     return res;
     }
@@ -618,7 +625,9 @@ Object IfThenElse() :
     if (e instanceof CSFComponentDescription)
         ((CSFComponentDescription)e).setParent((CSFComponentDescription)ifte);
 
-    ifte.sfContext().put("phase.function", ifThenElseOp);
+    ifte.sfContext().put("phase.function", functionPhaseClass);
+    ifte.sfContext().put("sfFunctionClass", ifThenElseOp);
+
     ifte.sfContext().put("if", i);
     ifte.sfContext().put("then", t);
     ifte.sfContext().put("else", e);
@@ -684,22 +693,13 @@ void DataComponent(CSFComponentDescription comp) :
 
 void BaseComponent(CSFComponentDescription comp) :
 {
-  Reference prototype = new Reference();
-  prototype.setEager(true);
+  SFReference prototype = null;
 }
 {
-  [ <NULL> | BaseReference(prototype) ]
+  [ <NULL> | prototype = LinkReference() {prototype.setEager(true);}]
   ( Constraints(comp) <SEMICOLON>| (<LBRACE> AttributesNoEOF(comp) <RBRACE>) Constraints(comp) )
   {
-      /*
-    if (protoType.size() > 0 &&
-        (protoType.firstElement() instanceof HereReferencePart)) {
-    HereReferencePart firstPart = (HereReferencePart)
-        protoType.firstElement();
-    protoType.setElementAt(firstPart.asAttribReferencePart(), 0);
-    }
-      */
-    comp.setType(prototype.size() == 0 ? null : prototype);
+    comp.setType(prototype);
   }
 }
 
@@ -721,23 +721,42 @@ void Constraints(CSFComponentDescription comp) :
     )*
 }
 
-Reference ReferenceNoEOF() :
+SFReference ReferenceNoEOF() :
 {
-  Reference res = new Reference();
-  res.setEager(true);
+  SFReference res;
+  boolean lazy = false;
 }
 {
-  [<LAZY> { res.setEager(false);}] BaseReference(res) { return res; }
-}
-
-void BaseReference(Reference ref) :
-{
-}
-{
-  ReferencePart(ref) (<REFPARTSEP> ReferencePart(ref))*
+  [<LAZY> { lazy = true; }] res = BaseReference() { if (lazy) res.setEager(false); return res; }
 }
 
-void ReferencePart(Reference ref) :
+SFReference BaseReference() :
+{
+    CSFComponentDescription comp;
+    SFReference ref;
+}
+{
+  (
+    (ref = LinkReference())
+  |
+    (<APPLY> <LBRACE> {comp = SFParser.componentFactory("default");} AttributesNoEOF(comp) <RBRACE>  {ref = new SFApplyReference(comp);})
+  ) {
+    ref.setEager(true);
+    ref.setData(false);
+    return ref;
+  }
+}
+
+SFReference LinkReference() :
+{
+    SFReference ref = new SFReference();
+}
+{
+   ReferencePart(ref) (<REFPARTSEP> ReferencePart(ref))*
+   { return ref; }
+}
+
+void ReferencePart(SFReference ref) :
 {
   Token id;
 }
@@ -778,12 +797,15 @@ Object Basic() :
           SFParser.componentFactory("default");
       for (Enumeration e = ((Vector)res).elements(); e.hasMoreElements(); ) {
           Object attribute = e.nextElement();
-          Reference name = new Reference(ReferencePart.here("unique" + nextId++));
+          SFReference name = new SFReference();
+          name.addElement(ReferencePart.here("unique" + nextId++));
           component.sfContext().put(name, attribute);
           if (attribute instanceof CSFComponentDescription)
           ((CSFComponentDescription)attribute).setParent(component);
       }
-      component.sfContext().put("phase.function", "org.smartfrog.sfcore.languages.sf.functions.Vector");
+      component.sfContext().put("phase.function", functionPhaseClass);
+      component.sfContext().put("sfFunctionClass", "org.smartfrog.sfcore.languages.sf.functions.Vector");
+
       res = component;
       })
     ) { return res; }
@@ -805,6 +827,7 @@ Object Primitive() :
           [tmp=Primitive() { ((Vector)res).addElement(tmp); }
           (<COMMA> tmp=Primitive() { ((Vector)res).addElement(tmp); })*]
       <VECTOREND>)
+   | <DATA> res = BaseReference() {((SFReference)res).setData(true);}
    | res=Var()
   ) { return res; }
 }

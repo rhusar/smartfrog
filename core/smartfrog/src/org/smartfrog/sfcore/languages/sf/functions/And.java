@@ -27,7 +27,7 @@ import org.smartfrog.sfcore.common.MessageUtil;
 /**
  * Defines the conjunction function 
  */
-public class And extends BaseOperator implements PhaseAction {
+public class And extends BaseOperator {
     /**
      * Conjoins two booleans.
      * @param a first boolean

@@ -27,6 +27,7 @@ import org.smartfrog.sfcore.common.MessageKeys;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.languages.sf.PhaseAction;
 import org.smartfrog.sfcore.languages.sf.SmartFrogCompileResolutionException;
+import org.smartfrog.sfcore.languages.sf.sfcomponentdescription.SFComponentDescription;
 import org.smartfrog.sfcore.reference.Reference;
 
 import java.util.Stack;
@@ -41,7 +42,7 @@ public abstract class BasePredicate implements PhaseAction {
     public static boolean keepPredicates = false;
 
     /** The component description. */
-    protected ComponentDescription component;
+    protected SFComponentDescription component;
 
     /** The context of the component. */
     protected Context context;
@@ -71,7 +72,7 @@ public abstract class BasePredicate implements PhaseAction {
 
 
         doPredicate();
-        ComponentDescription parent = (ComponentDescription) component.sfParent();
+        ComponentDescription parent = component.sfParent();
         Context parentContext = parent.sfContext();
         Object key = parentContext.keyFor(component);
         if (!keepPredicates) parentContext.remove(key);
@@ -80,7 +81,7 @@ public abstract class BasePredicate implements PhaseAction {
      * Sets the component.
      * @param cd component description
      */
-    public void forComponent(ComponentDescription cd, String phasename, Stack p) {
+    public void forComponent(SFComponentDescription cd, String phasename, Stack p) {
         stack = p;
         component = cd;
         phaseName = phasename;

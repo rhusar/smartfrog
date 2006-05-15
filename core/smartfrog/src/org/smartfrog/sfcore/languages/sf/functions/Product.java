@@ -29,7 +29,7 @@ import org.smartfrog.sfcore.common.MessageUtil;
  * Defines the Product function that multiplies each of its attributes 
  * with the same semantics as Java for its primitive types, failure will result in an exception.
  */
-public class Product extends BaseOperator implements PhaseAction {
+public class Product extends BaseOperator {
     /**
      * Sums two numbers.
      * @param a first number

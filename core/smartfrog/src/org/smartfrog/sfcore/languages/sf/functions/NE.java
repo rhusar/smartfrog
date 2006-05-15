@@ -26,7 +26,7 @@ import org.smartfrog.sfcore.languages.sf.PhaseAction;
  * Defines the Greater or Equals binary opeeration that compares its numeric attributes
  *  left >= right
  */
-public class NE extends BaseBinaryOperator implements PhaseAction {
+public class NE extends BaseBinaryOperator {
     /**
      * Compares two numbers.
      * @param a first object

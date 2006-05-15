@@ -197,7 +197,7 @@ public class HereReferencePart extends ReferencePart {
             }
             try {
                 // if reference ask rr to resolve it (chaining)
-                if (result instanceof Reference) {
+                if (result instanceof Reference && !((Reference)result).getData()) {
                     result = rr.sfResolve((Reference)result, 0);
                 } else if (result instanceof Vector) {
                     result = sfResolveVector(rr, (Vector)result);

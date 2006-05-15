@@ -22,6 +22,7 @@ package org.smartfrog.sfcore.languages.sf.predicates;
 
 import org.smartfrog.sfcore.languages.sf.PhaseAction;
 import org.smartfrog.sfcore.languages.sf.SmartFrogCompileResolutionException;
+import org.smartfrog.sfcore.languages.sf.sfcomponentdescription.SFComponentDescription;
 import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.reference.ReferencePart;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
@@ -38,7 +39,7 @@ public class TBD implements PhaseAction {
      public static boolean keepPredicates = false;
 
      /** The component description. */
-     protected ComponentDescription component;
+     protected SFComponentDescription component;
 
      /** The context of the component. */
      protected Context context;
@@ -62,7 +63,7 @@ public class TBD implements PhaseAction {
      * Sets the component.
      * @param cd component description
      */
-    public void forComponent(ComponentDescription cd, String phasename, Stack p) {
+    public void forComponent(SFComponentDescription cd, String phasename, Stack p) {
         stack = p;
         component = cd;
         phaseName = phasename;

@@ -26,7 +26,7 @@ import org.smartfrog.sfcore.languages.sf.PhaseAction;
 /**
  * Defines the equality binary operator. Defined using equals, not ==.
  */
-public class EQ extends BaseBinaryOperator implements PhaseAction {
+public class EQ extends BaseBinaryOperator {
     /**
      * Cpmares two objects.
      * @param a first object

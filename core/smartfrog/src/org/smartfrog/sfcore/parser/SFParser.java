@@ -26,14 +26,10 @@ import java.io.InputStream;
 import java.io.IOException;
 
 import org.smartfrog.SFSystem;
-import org.smartfrog.sfcore.common.MessageKeys;
-import org.smartfrog.sfcore.common.MessageUtil;
-import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.sfcore.common.SmartFrogCoreProperty;
-import org.smartfrog.sfcore.common.SmartFrogParseException;
-import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
+import org.smartfrog.sfcore.common.*;
 import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.security.SFClassLoader;
+import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 
 
 /**
@@ -76,7 +72,7 @@ public class SFParser implements Parser, MessageKeys {
     //
 
     /* cache the real parser for the language */
-    private StreamParser parser;
+    private StreamLanguageParser parser;
 
     /**
      * Constructor for an instance of the parser for the default language.
@@ -101,7 +97,7 @@ public class SFParser implements Parser, MessageKeys {
     }
 
     /* Constructs a parser for the given language */
-    private StreamParser getParser() throws SmartFrogException {
+    private StreamLanguageParser getParser() throws SmartFrogException {
         /**
          * Referebce to parser class.
          */
@@ -111,7 +107,7 @@ public class SFParser implements Parser, MessageKeys {
             parserClass = SFClassLoader.forName(languagesPrefix + "." +
                     theLanguage + ".SFParser");
 
-            return (StreamParser) parserClass.newInstance();
+            return (StreamLanguageParser) parserClass.newInstance();
         } catch (ClassNotFoundException cnfexcp) {
             throw new SmartFrogRuntimeException(MessageUtil.formatMessage(
                     MSG_CLASS_NOT_FOUND,
@@ -250,16 +246,17 @@ public class SFParser implements Parser, MessageKeys {
     /**
      * Parses a reference from an input stream. Used by components and
      * developers to quickly build references from a string (eg. sfResolve in
-     * Prim)
+     * Prim). It applies the ReferencePhases conversion method to Referemnce.
      *
      * @param is input stream to parse for a reference
      *
      * @return parsed reference
      *
-     * @exception SmartFrogParseException failed to parse reference
+     * @exception SmartFrogCompilationException failed to parse reference
      */
-    public Reference sfParseReference(InputStream is) throws SmartFrogParseException {
-        return parser.sfParseReference(is);
+    public Reference sfParseReference(InputStream is) throws SmartFrogCompilationException {
+        ReferencePhases rp = parser.sfParseReference(is);
+        return rp.sfAsReference();
     }
 
     /**
@@ -272,8 +269,8 @@ public class SFParser implements Parser, MessageKeys {
      *
      * @exception SmartFrogParseException failed to parse reference
      */
-    public Reference sfParseReference(String txt) throws SmartFrogParseException {
-        return parser.sfParseReference(new ByteArrayInputStream(txt.getBytes()));
+    public Reference sfParseReference(String txt) throws SmartFrogCompilationException {
+        return sfParseReference(new ByteArrayInputStream(txt.getBytes()));
     }
 
 
@@ -286,8 +283,12 @@ public class SFParser implements Parser, MessageKeys {
      *
      * @exception SmartFrogParseException failed to parse any value
      */
-    public Object sfParseAnyValue(InputStream is) throws SmartFrogParseException {
-           return parser.sfParseAnyValue(is);
+    public Object sfParseAnyValue(InputStream is) throws SmartFrogCompilationException {
+           Object o = parser.sfParseAnyValue(is);
+           if (o instanceof ReferencePhases) {
+               o = ((ReferencePhases)o).sfAsReference();
+           }
+           return o;
     }
 
     /**
@@ -299,8 +300,8 @@ public class SFParser implements Parser, MessageKeys {
      *
      * @exception SmartFrogParseException failed to parse any value
      */
-    public Object sfParseAnyValue(String txt) throws SmartFrogParseException {
-        return parser.sfParseAnyValue(new ByteArrayInputStream(txt.getBytes()));
+    public Object sfParseAnyValue(String txt) throws SmartFrogCompilationException {
+        return sfParseAnyValue(new ByteArrayInputStream(txt.getBytes()));
     }
 
 
@@ -313,9 +314,14 @@ public class SFParser implements Parser, MessageKeys {
      *
      * @exception SmartFrogParseException failed to parse primtiive value
      */
-    public Object sfParsePrimitiveValue(InputStream is) throws SmartFrogParseException {
-           return parser.sfParsePrimitiveValue(is);
+    public Object sfParsePrimitiveValue(InputStream is) throws SmartFrogCompilationException {
+           Object o = parser.sfParsePrimitiveValue(is);
+           if (o instanceof ReferencePhases) {
+               o = ((ReferencePhases)o).sfAsReference();
+           }
+           return o;
     }
+
 
 
     /**
@@ -327,10 +333,45 @@ public class SFParser implements Parser, MessageKeys {
      *
      * @exception SmartFrogParseException failed to parse primtiive value
      */
-    public Object sfParsePrimitiveValue(String txt) throws SmartFrogParseException {
-        return parser.sfParsePrimitiveValue(new ByteArrayInputStream(txt.getBytes()));
+    public Object sfParsePrimitiveValue(String txt) throws SmartFrogCompilationException {
+        return sfParsePrimitiveValue(new ByteArrayInputStream(txt.getBytes()));
     }
 
+    /**
+     * Parses a component description from an input stream.
+     * All the langauge phases will have been applied, and the conversion to ComponentDescription
+     * carried out.
+     *
+     * @param is input stream to parse for a value
+     *
+     * @return parsed component description
+     *
+     * @exception SmartFrogParseException failed to parse primtiive value
+     */
+    public ComponentDescription sfParseComponentDescription(InputStream is) throws SmartFrogCompilationException {
+        Phases p = parser.sfParse(is);
+        try {
+            p = p.sfResolvePhases();
+        } catch (SmartFrogException e) {
+            throw new SmartFrogCompilationException("Error resolving phases of component description", e);
+        }
+        return p.sfAsComponentDescription();
+    }
+
+    /**
+     * Parses a component description from a string.
+     * All the langauge phases will have been applied, and the conversion to ComponentDescription
+     * carried out.
+     *
+     * @param txt input to parse for a value
+     *
+     * @return parsed component description
+     *
+     * @exception SmartFrogParseException failed to parse primtiive value
+     */
+     public ComponentDescription sfParseComponentDescription(String txt) throws SmartFrogCompilationException {
+         return sfParseComponentDescription(new ByteArrayInputStream(txt.getBytes()));
+    }
 
    /**
       * Gets language from the URL

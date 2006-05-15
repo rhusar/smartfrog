@@ -27,7 +27,7 @@ import org.smartfrog.sfcore.common.MessageUtil;
 /**
  * Defines the disjunction function 
  */
-public class Or extends BaseOperator implements PhaseAction {
+public class Or extends BaseOperator {
     /**
      * Disjunction of two booleans.
      * @param a first boolean

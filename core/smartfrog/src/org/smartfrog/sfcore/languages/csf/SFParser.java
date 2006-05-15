@@ -29,6 +29,8 @@ import org.smartfrog.sfcore.languages.csf.csfcomponentdescription.CSFComponentDe
 import org.smartfrog.sfcore.languages.sf.IncludeHandler;
 import org.smartfrog.sfcore.parser.Phases;
 import org.smartfrog.sfcore.parser.StreamParser;
+import org.smartfrog.sfcore.parser.StreamLanguageParser;
+import org.smartfrog.sfcore.parser.ReferencePhases;
 import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.security.SFClassLoader;
 
@@ -50,7 +52,7 @@ import org.smartfrog.sfcore.common.SmartFrogException;
  * subclasses and changed since it uses the DefaultParser to parse include
  * files
  */
-public class SFParser implements StreamParser {
+public class SFParser implements StreamLanguageParser {
 
 
     /**
@@ -242,7 +244,7 @@ public class SFParser implements StreamParser {
      * @return parsed reference
      * @throws SmartFrogParseException failure while parsing reference
      */
-    public Reference sfParseReference(InputStream is) throws SmartFrogParseException {
+    public ReferencePhases sfParseReference(InputStream is) throws SmartFrogParseException {
         try {
             return (new DefaultParser(is, null)).Reference();
         } catch (ParseException pe) {

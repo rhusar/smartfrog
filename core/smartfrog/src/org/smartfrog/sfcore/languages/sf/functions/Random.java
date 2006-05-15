@@ -26,7 +26,7 @@ import org.smartfrog.sfcore.languages.sf.PhaseAction;
  * Defines the Random function that returns a random number for each 
  * invocation.
  */ 
-public class Random extends BaseFunction implements PhaseAction {
+public class Random extends BaseFunction {
     /**
      * Holder of random number.
      */

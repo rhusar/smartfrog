@@ -24,6 +24,7 @@ import java.util.Enumeration;
 
 import org.smartfrog.sfcore.languages.sf.PhaseAction;
 import org.smartfrog.sfcore.languages.sf.SmartFrogCompileResolutionException;
+import org.smartfrog.sfcore.reference.Function;
 
 /**
  * Defines the baseoperator for the operator functions.
@@ -31,7 +32,7 @@ import org.smartfrog.sfcore.languages.sf.SmartFrogCompileResolutionException;
  * and placed between all relevant attributes defined in the
  * component description
  */
-public abstract class BaseOperator extends BaseFunction implements PhaseAction {
+public abstract class BaseOperator extends BaseFunction {
 
     /**
      * The method to implement the functionality of any operator.
@@ -49,13 +50,10 @@ public abstract class BaseOperator extends BaseFunction implements PhaseAction {
 
         for (Enumeration e = context.keys(); e.hasMoreElements();) {
             Object key = e.nextElement();
-
-            if (!key.toString().startsWith("phase.function")) {
-                if (result == null) {
-                    result = context.get(key);
-                } else {
+            if (result == null) {
+                result = context.get(key);
+            } else {
                     result = doOperator(result, context.get(key));
-                }
             }
         }
 

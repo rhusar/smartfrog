@@ -28,7 +28,7 @@ import org.smartfrog.sfcore.common.MessageUtil;
  * Defines the Minus binary operator.
  * Throws an exception if either operand is missing or not a number
  */
-public class Minus extends BaseBinaryOperator implements PhaseAction {
+public class Minus extends BaseBinaryOperator {
     /**
      * Differences two numbers.
      * @param a first number

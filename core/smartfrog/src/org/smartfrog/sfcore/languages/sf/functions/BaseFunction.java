@@ -21,32 +21,15 @@ For more information: www.smartfrog.org
 package org.smartfrog.sfcore.languages.sf.functions;
 
 import org.smartfrog.sfcore.common.*;
-import org.smartfrog.sfcore.componentdescription.ComponentDescription;
+import org.smartfrog.sfcore.reference.Function;
 import org.smartfrog.sfcore.reference.Reference;
-import org.smartfrog.sfcore.languages.sf.PhaseAction;
 import org.smartfrog.sfcore.languages.sf.SmartFrogCompileResolutionException;
-
-import java.util.Stack;
+import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 
 /**
  * Defines the base function for all the functions.
  */
-public abstract class BaseFunction implements PhaseAction  {
-    /** The component description. */
-    protected ComponentDescription component;
-
-    /** The context of the component. */
-    protected Context context;
-
-    /** The name of the component for exceptions */
-    protected Reference name;
-
-    /** The path used to get to this component */
-    protected Stack path;
-
-    /** The phase in which this is being invoked */
-    protected String phaseName;
-
+public abstract class BaseFunction implements Function  {
     /**
      * The method to implement the functionality of any function.
      *
@@ -55,52 +38,23 @@ public abstract class BaseFunction implements PhaseAction  {
      * */
     protected abstract Object doFunction() throws SmartFrogCompileResolutionException;
 
+    protected Context context = null;
+    protected Reference name = null;
     /**
-     * Implementation of the phase action doit() method.
-     * Calls the (abstract) method doFunction and replaces this definition with the result.
-
+     * base implementation of a fubction method.
+     * Calls the (abstract) method doFunction.
+     * Note that it makes sure that the result has no parent if it is a component description - this will
+     * cause it to be patched into whereever it is returned.
+     * 
      * @throws SmartFrogCompileResolutionException if the doFunction method does.
      */
-    public void doit() throws SmartFrogCompileResolutionException {
-        Object o;
-        ComponentDescription origin = null;
-        if (path.size() > 0)
-            origin = (ComponentDescription) path.peek();
-        else
-            throw new SmartFrogCompileResolutionException(MessageUtil.formatMessage(MessageKeys.ROOT_COMPONENT_IS_FUNCTION));
+    public Object doit(Context context, Reference name) throws SmartFrogCompileResolutionException {
+        this.context = context;
+        this.name = name;
 
-        try {
-            o = component.sfResolve("sfFunctionResult");
-        } catch (SmartFrogResolutionException e) {
-            //remove phase attribute to avoid it being used in function - but must add it back later
-            Object phase = context.remove(phaseName);
-            o = doFunction();
-
-            try {
-                component.sfReplaceAttribute("sfFunctionResult", o);
-            } catch (SmartFrogRuntimeException e1) {
-                throw new SmartFrogCompileResolutionException("error recording function result in function", e1);
-            }
-            context.put(phaseName, phase);
-        }
-
-        ComponentDescription parent = (ComponentDescription) component.sfParent();
-        if (path.size() > 0) origin = (ComponentDescription) path.peek();
-        if (o instanceof ComponentDescription) ((ComponentDescription) o).setParent(parent);
-        Context originContext = origin.sfContext();
-        Object key = originContext.keyFor(component);
-        originContext.put(key, o);
-    }
-
-
-    /**
-     * Prime the function with the necessary data
-     */
-    public void forComponent(ComponentDescription cd, String phaseName, Stack p) {
-        path = p;
-        component = cd;
-        this.phaseName = phaseName;
-        name = cd.sfCompleteName();
-        context = cd.sfContext();
+        Object result = doFunction();
+        if (result instanceof ComponentDescription)
+            ((ComponentDescription)result).setParent(null);
+        return result;
     }
 }

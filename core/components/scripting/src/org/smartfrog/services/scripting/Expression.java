@@ -33,7 +33,7 @@ import java.util.*;
  * The result of the evaluation will be used as the function's value.
  *
  */
-public class Expression extends BaseFunction implements PhaseAction {
+public class Expression extends BaseFunction {
   static String expString = "exp";
   /** The Beanshell interpreter */
   public Interpreter interpreter = new Interpreter();

@@ -28,7 +28,7 @@ import org.smartfrog.sfcore.common.MessageUtil;
  * Defines the Sum function that sums each of its attributes
  * with the same semantics as Java for its primitive types, failure will result in an exception.
  */
-public class Sum extends BaseOperator implements PhaseAction {
+public class Sum extends BaseOperator {
     /**
      * Sums two numbers.
      * @param a first number

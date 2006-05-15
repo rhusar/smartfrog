@@ -29,7 +29,7 @@ import org.smartfrog.sfcore.languages.sf.PhaseAction;
  * Defines the UserInput function that asks the user for an input on the command
  * line. It returns the value entered.
  */
-public class UserInput extends BaseFunction implements PhaseAction {
+public class UserInput extends BaseFunction {
     /**
      * Takes user input.
      * @return The value entered by user.
@@ -40,7 +40,7 @@ public class UserInput extends BaseFunction implements PhaseAction {
         String def = "";
         String prompt = " Enter value for attribute '" +
             //@todo review keyFor in Context.
-            component.sfParent().sfAttributeKeyFor(component) + "' : ";
+            /* component.sfParent().sfAttributeKeyFor(component) + */ "' : ";
 
         if (context.containsKey("prompt")) {
             try {

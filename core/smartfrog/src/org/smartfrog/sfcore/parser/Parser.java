@@ -21,8 +21,9 @@ For more information: www.smartfrog.org
 package org.smartfrog.sfcore.parser;
 
 import org.smartfrog.sfcore.common.SmartFrogParseException;
+import org.smartfrog.sfcore.common.SmartFrogCompilationException;
 import org.smartfrog.sfcore.reference.Reference;
-
+import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 
 /**
  * Defines the main parser interface. Adds the ability to parse strings as well
@@ -66,7 +67,7 @@ public interface Parser extends StreamParser {
      *
      * @exception SmartFrogParseException failed to parse reference
      */
-    public Reference sfParseReference(String txt) throws SmartFrogParseException;
+    public Reference sfParseReference(String txt) throws SmartFrogCompilationException;
 
     /**
      * Parses any value from a string. (the meaning of "any" is language dependant)
@@ -77,7 +78,7 @@ public interface Parser extends StreamParser {
      *
      * @exception SmartFrogParseException failed to parse any value
      */
-    public Object sfParseAnyValue(String txt) throws SmartFrogParseException;
+    public Object sfParseAnyValue(String txt) throws SmartFrogCompilationException;
 
     /**
      * Parses a primitive value from a string. (the meaning of primitive is language dependant)
@@ -88,5 +89,18 @@ public interface Parser extends StreamParser {
      *
      * @exception SmartFrogParseException failed to parse primtiive value
      */
-    public Object sfParsePrimitiveValue(String txt) throws SmartFrogParseException;
+    public Object sfParsePrimitiveValue(String txt) throws SmartFrogCompilationException;
+
+        /**
+     * Parses a component description from a string.
+     * All the langauge phases will have been applied, and the conversion to ComponentDescription
+     * carried out.
+     *
+     * @param txt input to parse for a value
+     *
+     * @return parsed component description
+     *
+     * @exception SmartFrogParseException failed to parse primtiive value
+     */
+     public ComponentDescription sfParseComponentDescription(String txt) throws SmartFrogCompilationException;
 }

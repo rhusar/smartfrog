@@ -17,126 +17,130 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 For more information: www.smartfrog.org
 
 */
-
-vector extends {
-   phase.function "org.smartfrog.sfcore.languages.sf.functions.Vector";
+function extends {
+   phase.function "org.smartfrog.sfcore.languages.sf.Function";
+   sfFunctionClass "";
 }
 
-append extends {
-   phase.function "org.smartfrog.sfcore.languages.sf.functions.Append";
+vector extends function{
+   sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Vector";
 }
 
-
-
-
-
-plus extends {
-    phase.function "org.smartfrog.sfcore.languages.sf.functions.Plus";
-}
-
-
-
-
-concat extends {
-    phase.function "org.smartfrog.sfcore.languages.sf.functions.Concatenate";
-}
-
-formatString extends {
-    phase.function "org.smartfrog.sfcore.languages.sf.functions.Format";
+append extends function{
+   sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Append";
 }
 
 
 
 
 
-sum extends {
-    phase.function "org.smartfrog.sfcore.languages.sf.functions.Sum";
-}
-
-product extends {
-    phase.function "org.smartfrog.sfcore.languages.sf.functions.Product";
-}
-
-minus extends {
-    phase.function "org.smartfrog.sfcore.languages.sf.functions.Minus";
-}
-
-divide extends {
-    phase.function "org.smartfrog.sfcore.languages.sf.functions.Divide";
+plus extends function{
+    sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Plus";
 }
 
 
 
 
-and extends {
-    phase.function "org.smartfrog.sfcore.languages.sf.functions.And";
+concat extends function{
+    sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Concatenate";
 }
 
-or extends {
-    phase.function "org.smartfrog.sfcore.languages.sf.functions.Or";
-}
-
-not extends {
-    phase.function "org.smartfrog.sfcore.languages.sf.functions.Not";
-}
-
-
-GE extends {
-    phase.function "org.smartfrog.sfcore.languages.sf.functions.GE";
-}
-
-LE extends {
-    phase.function "org.smartfrog.sfcore.languages.sf.functions.LE";
-}
-
-GT extends {
-    phase.function "org.smartfrog.sfcore.languages.sf.functions.GT";
-}
-
-LT extends {
-    phase.function "org.smartfrog.sfcore.languages.sf.functions.LT";
-}
-
-EQ extends {
-    phase.function "org.smartfrog.sfcore.languages.sf.functions.EQ";
-}
-
-NE extends {
-    phase.function "org.smartfrog.sfcore.languages.sf.functions.NE";
-}
-
-
-
-ifThenElse extends {
-    phase.function "org.smartfrog.sfcore.languages.sf.functions.IfThenElse";
+formatString extends function{
+    sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Format";
 }
 
 
 
 
 
-next extends {
-    phase.function "org.smartfrog.sfcore.languages.sf.functions.Next";
+sum extends function{
+    sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Sum";
 }
 
-random extends {
-    phase.function "org.smartfrog.sfcore.languages.sf.functions.Random";
+product extends function{
+    sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Product";
 }
 
-date extends {
-    phase.function "org.smartfrog.sfcore.languages.sf.functions.Date";
+minus extends function{
+    sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Minus";
 }
 
-userinput extends {
-    phase.function "org.smartfrog.sfcore.languages.sf.functions.UserInput";
+divide extends function{
+    sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Divide";
 }
 
 
 
-ref extends {
-    phase.function "org.smartfrog.sfcore.languages.sf.functions.Ref";
+
+and extends function{
+    sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.And";
 }
 
-Ref extends {
-    phase.function "org.smartfrog.sfcore.languages.sf.functions.Ref";
+or extends function{
+    sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Or";
+}
+
+not extends function{
+    sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Not";
+}
+
+
+GE extends function{
+    sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.GE";
+}
+
+LE extends function{
+    sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.LE";
+}
+
+GT extends function{
+    sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.GT";
+}
+
+LT extends function{
+    sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.LT";
+}
+
+EQ extends function{
+    sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.EQ";
+}
+
+NE extends function{
+    sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.NE";
+}
+
+
+
+ifThenElse extends function{
+    sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.IfThenElse";
+}
+
+
+
+
+
+next extends function{
+    sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Next";
+}
+
+random extends function{
+    sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Random";
+}
+
+date extends function{
+    sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Date";
+}
+
+userinput extends function{
+    sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.UserInput";
+}
+
+
+
+ref extends function{
+    sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Ref";
+}
+
+Ref extends function{
+    sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Ref";
 }

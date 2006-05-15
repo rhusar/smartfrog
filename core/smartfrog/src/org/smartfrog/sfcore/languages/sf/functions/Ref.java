@@ -11,7 +11,7 @@ import org.smartfrog.sfcore.reference.Reference;
  * The parameter attribute is "data" and an exception will be thrown if it
  * doesn't exist or is not boolean
  */
-public class Ref extends BaseFunction implements PhaseAction {
+public class Ref extends BaseFunction {
     boolean lazy;
     String reference = "";
 
@@ -42,7 +42,7 @@ public class Ref extends BaseFunction implements PhaseAction {
 		val = r;
 	    } else {
 		r.setEager(true);
-		val = component.sfResolve(r);
+		val = null; //component.sfResolve(r);
 	    }
 	} catch (Exception e) {
 	    throw new SmartFrogCompileResolutionException("Error resolving Ref function" , e);

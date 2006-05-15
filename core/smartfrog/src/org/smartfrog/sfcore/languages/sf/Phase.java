@@ -27,6 +27,7 @@ import org.smartfrog.sfcore.common.Context;
 import org.smartfrog.sfcore.componentdescription.CDVisitor;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.security.SFClassLoader;
+import org.smartfrog.sfcore.languages.sf.sfcomponentdescription.SFComponentDescription;
 
 
 /**
@@ -60,7 +61,7 @@ public class Phase implements CDVisitor {
      * @throws SmartFrogCompileResolutionException failed to create PhaseAction
      */
     protected PhaseAction phaseAction(Object action,
-                                      ComponentDescription cd,
+                                      SFComponentDescription cd,
                                       Stack path)
             throws SmartFrogCompileResolutionException {
         try {
@@ -97,8 +98,9 @@ public class Phase implements CDVisitor {
 
                 if (sname.startsWith(phaseName)) {
                     Object value = c.get(sname);
-                    //c.remove(name);
-                    phaseAction(value, cd, path).doit();
+                    //this classcast shouldn't cause problems - but if it does, its an error anyway
+                    // maybe should be prepared to provide better error message!
+                    phaseAction(value, (SFComponentDescription)cd, path).doit();
                 }
             }
         }
