@@ -374,6 +374,12 @@ public class CdlDocument implements Names, DescriptorSource {
         parseAndApplyPhases(context, phases);
     }
 
+    /**
+     * Create the phase list for processing an import. In a debug build, this
+     * includes checking that extends was finished.
+     * @param namespace
+     * @return
+     */
     private List<ProcessingPhase> createImportPhaseList(String namespace) {
         List<ProcessingPhase> phases = new ArrayList<ProcessingPhase>(8);
         //register the protos
