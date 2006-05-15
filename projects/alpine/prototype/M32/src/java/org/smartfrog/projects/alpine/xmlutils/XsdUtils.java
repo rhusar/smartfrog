@@ -32,6 +32,8 @@ import org.smartfrog.projects.alpine.faults.ServerException;
 import javax.xml.namespace.QName;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.List;
+import java.util.ArrayList;
 
 /**
  * XML Schema helper stuff.
@@ -290,5 +292,18 @@ public final class XsdUtils {
      */
     public static BaseElementsIterator<Element> elements(Element element, QName name) {
         return elements(element, name.getLocalPart(), name.getNamespaceURI());
+    }
+
+    /**
+     * copy the nodes in the Elements type into a java5 typed list.
+     * @param in
+     * @return
+     */
+    public static List<Element> makeList(Elements in) {
+        List<Element> out=new ArrayList<Element>(in.size());
+        for(int i=0;i<in.size();i++) {
+            out.add(in.get(i));
+        }
+        return out;
     }
 }

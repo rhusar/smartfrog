@@ -67,7 +67,7 @@ public class SoapPostServlet extends ServletBase {
 
     protected void report404(HttpServletResponse response) throws ServletException {
         try {
-            PrintWriter writer = beginHttpResponse(response, HttpServletResponse.SC_NOT_FOUND);
+            PrintWriter writer = beginHtmlResponse(response, HttpServletResponse.SC_NOT_FOUND);
             writer.println(makeHtmlText("Not Found"));
             writer.flush();
             writer.close();
@@ -86,7 +86,7 @@ public class SoapPostServlet extends ServletBase {
         if (context == null) {
             report404(response);
         } else {
-            PrintWriter writer = beginHttpResponse(response, HttpServletResponse.SC_OK);
+            PrintWriter writer = beginHtmlResponse(response, HttpServletResponse.SC_OK);
             String text = (String) context.get(ContextConstants.ATTR_GET_MESSAGE);
             if (text == null) {
                 text = makeHtmlText("Alpine Endpoint");
@@ -97,7 +97,7 @@ public class SoapPostServlet extends ServletBase {
         }
     }
 
-    protected PrintWriter beginHttpResponse(HttpServletResponse response, int code) throws IOException {
+    protected PrintWriter beginHtmlResponse(HttpServletResponse response, int code) throws IOException {
         response.setStatus(code);
         response.setContentType(TEXT_HTML);
         PrintWriter writer = response.getWriter();
