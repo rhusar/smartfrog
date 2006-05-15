@@ -18,11 +18,29 @@ For more information: www.smartfrog.org
 
 */
 
+//#include "/org/smartfrog/predicates.sf"
+
 LogToLog4JImpl extends {
+
+
+/*
+   logToLog4JSchema extends Schema {
+    ignoreSetLogLevel extends OptionalBoolean;
+    setIniLog4JLoggerLevel extends OptionalBoolean;
+    //file or URL to the location of the content
+    configuratorFile extends OptionalString;
+    //a resource path
+    resource extends OptionalString;
+
+   }
+
+*/
+
    //configuratorFile ""; //Optional. If not defined will try: "log4j.configuration" system env variable
    setIniLog4JLoggerLevel false; //Optional. Don't set initial Log4J level.
    ignoreSetLogLevel false; //Optional. It will ignore any external logLevel set
 
+   loggerClass "org.smartfrog.services.logging.log4j.LogToLog4JImpl";
    //NOT SUPPORTED in new Log4J - configureAndWatch false;
    //NOT SUPPORTED in new Log4J - configureAndWatchDelay 60000L; //Default 60 secs
 }

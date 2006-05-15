@@ -20,571 +20,603 @@
 
 package org.smartfrog.services.logging.log4j;
 
+import org.apache.log4j.BasicConfigurator;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+import org.apache.log4j.PropertyConfigurator;
+import org.apache.log4j.helpers.Loader;
+import org.apache.log4j.xml.DOMConfigurator;
+import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.common.SmartFrogLogException;
+import org.smartfrog.sfcore.common.SmartFrogResolutionException;
+import org.smartfrog.sfcore.componentdescription.ComponentDescription;
+import org.smartfrog.sfcore.componentdescription.ComponentDescriptionImpl;
 import org.smartfrog.sfcore.logging.Log;
 import org.smartfrog.sfcore.logging.LogImpl;
 import org.smartfrog.sfcore.logging.LogLevel;
 import org.smartfrog.sfcore.logging.LogMessage;
-import org.smartfrog.sfcore.logging.LogLevel;
-import org.smartfrog.sfcore.logging.LogMessage;
-
-import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.sfcore.common.SmartFrogLogException;
 import org.smartfrog.sfcore.prim.TerminationRecord;
-import org.smartfrog.sfcore.componentdescription.ComponentDescription;
-import org.smartfrog.sfcore.componentdescription.ComponentDescriptionImpl;
 
+import javax.xml.parsers.FactoryConfigurationError;
 import java.io.PrintStream;
 import java.io.Serializable;
-import org.apache.log4j.Logger;
-import org.apache.log4j.Level;
-import org.smartfrog.sfcore.common.*;
-import javax.xml.parsers.*;
+import java.net.MalformedURLException;
+import java.net.URL;
 
 /**
- *
  * Logger that wraps Log4J.
- *
  */
 public class LogToLog4JImpl implements LogToLog4J, Log, LogMessage, LogLevel, Serializable {
 
-    public static final String[]LOG4J_LEVELS =
-           {"ALL","DEBUG","DEBUG","INFO","WARN","ERROR","FATAL","OFF"};
+    public static final String[] LOG4J_LEVELS =
+            {"ALL", "DEBUG", "DEBUG", "INFO", "WARN", "ERROR", "FATAL", "OFF"};
 
-   /**
-    * LogToLog4JImpl configuration description.
-    */
-   protected ComponentDescription classComponentDescription = null;
+    /**
+     * LogToLog4JImpl configuration description.
+     */
+    protected ComponentDescription classComponentDescription = null;
 
-  /** Log to this logger */
-  private transient Logger logger = null;
+    /**
+     * Log to this logger
+     */
+    private transient Logger logger = null;
 
-  /** Logger name */
-  String logName = null;
+    /**
+     * Logger name
+     */
+    String logName = null;
 
-  /** Output stream to print to. Bonded at construct time, and usually system.err unless
-   * otherwise chosen
-   */
-  protected PrintStream outstream;
+    /**
+     * Output stream to print to. Bonded at construct time, and usually system.err unless
+     * otherwise chosen
+     */
+    protected PrintStream outstream;
 
-  /** The LogToLog4J class name. */
-  private static final String clazz = LogImpl.class.getName();
-  /**
-   * URL for Log4J configuration file
-   */
-  Object configuratorURL = null;
-// Log4J 1.3 removes Configure and Wath
-//  /**
-//   * Should Log4J configuration be refreshed?
-//   */
-//  boolean configureAndWatch = false;
-//  /**
-//   * Refresh period for Log4J configuration
-//   */
-//  long configureAndWatchDelay = 60 * 1000;
-  /**
-   * Method setLogLevel should ignore any call
-   */
-  boolean ignoreSetLogLevel=false;
-  /**
-   * Should we call setLogLevel during initialization
-   */
-  boolean setIniLog4JLoggerLevel=false;
+    /**
+     * The LogToLog4J class name.
+     */
+    private static final String clazz = LogImpl.class.getName();
+    /**
+     * URL for Log4J configuration file
+     */
+    Object configuratorURL = null;
 
-  /**
-   * Construct a simple log with given name and log level
-   * and log to output level
+    /**
+     * Method setLogLevel should ignore any call
+     */
+    boolean ignoreSetLogLevel = false;
+    /**
+     * Should we call setLogLevel during initialization
+     */
+    boolean setIniLog4JLoggerLevel = false;
 
-   */
-  protected LogToLog4JImpl() {
-  }
-
-  /**
-   * Construct a simple log with given name and log level
-   * and log to output level
-   * @param name log name
-   * @param initialLogLevel level to log at
-   */
-  public LogToLog4JImpl(String name, Integer initialLogLevel) throws Exception {
-    this(name, initialLogLevel, System.out);
-  }
-
-  /**
-   * Construct a simple log with given name and log level
-   * and log to output level
-   * @param name log name
-   * @param initialLogLevel level to log at
-   * @param out output stream to log to
-   */
-
-  public LogToLog4JImpl(String name, Integer initialLogLevel, PrintStream out) throws Exception{
-    try {
-
-      assert name!=null;
-      assert initialLogLevel!=null;
-
-      setOutstream(out);
-
-      logName = name;
-      if (logger==null) {
-          logger = Logger.getLogger(name);
-      }
-      //Initial configurator to get output in case of failures
-      org.apache.log4j.BasicConfigurator.configure();
-
-      if (setIniLog4JLoggerLevel){
-          setLevel(initialLogLevel.intValue());
-      }
-      //Check Class and read configuration...including system.properties
-      try {
-          classComponentDescription = ComponentDescriptionImpl.getClassComponentDescription(this, true,null);
-          if (isTraceEnabled()&& this.getClass().toString().endsWith("LogToLog4JImpl")) {
-              trace(this.getClass().toString()+" '"+name+ "' using ComponentDescription:\n"+ classComponentDescription.toString());
-          }
-      } catch (SmartFrogException ex) {
-          if (isWarnEnabled())this.warn(ex.toString());
-          throw ex;
-      }
-
-      readSFAttributes();
-      configureLog4JLogger(configuratorURL);
-
-         //System.out.println(" Hey: initLevel: "+initialLogLevel+" : logger "+getLevel());
-
-      // Set initial log level after reading configuration to the lowest one
-      // the most verbose of the two
-      if (setIniLog4JLoggerLevel){
-          if (getLevel()>=initialLogLevel.intValue()) {
-              setLevel(initialLogLevel.intValue());
-          }
-      }
-
-         //System.out.println(" Final level: "+ getLevel());
-
-      if (isInfoEnabled()) {
-          this.info("LogToLog4JImpl logger: "+ logger.getName() +" ("+logger.getEffectiveLevel().toString()+") with configuration "+ configuratorURL+", setIniLog4JLoggerLevel: "+setIniLog4JLoggerLevel+", ignoreSetLogLevel: "+ignoreSetLogLevel );
-      }
-    } catch (Exception ex1) {
-      if (isErrorEnabled()) this.error("", ex1);
-      throw ex1;
+    /**
+     * Construct a simple log with given name and log level
+     * and log to output level
+     */
+    protected LogToLog4JImpl() {
     }
-  }
 
-  private void configureLog4JLogger(Object configuratorURL) {
+    /**
+     * Construct a simple log with given name and log level
+     * and log to output level
+     *
+     * @param name            log name
+     * @param initialLogLevel level to log at
+     */
+    public LogToLog4JImpl(String name, Integer initialLogLevel) throws Exception {
+        this(name, null, initialLogLevel, System.out);
+    }
 
-      if (configuratorURL==null) {
-          if (isErrorEnabled()) {
-              this.error("LogToLog4JImpl: Failed to find configuration. Using Log4J.BasicConfigurator");
-          }
-          return;
-      }
+    /**
+     * Construct a simple log with given name and log level
+     * and log to output level
+     *
+     * @param name                          log name
+     * @param componentComponentDescription A component description to overwrite class configuration
+     * @param initialLogLevel               level to log at
+     */
+    public LogToLog4JImpl(String name, ComponentDescription componentComponentDescription, Integer initialLogLevel)
+            throws Exception {
+        this(name, componentComponentDescription, initialLogLevel, System.out);
 
-      if (configuratorURL instanceof java.net.URL) {
-          try {
-//              if (configureAndWatch) {
-//                  if (isWarnEnabled()) {
-//                      this.warn("LogToLog4JImpl: ConfigureAndWatch not available with URL (" + configuratorURL.toString() + ")");
-//                  }
-//              }
-              if (((java.net.URL) configuratorURL).getFile().endsWith(".xml")) {
-                  //Initial configurator is removed
-                  org.apache.log4j.BasicConfigurator.resetConfiguration();
-                  org.apache.log4j.xml.DOMConfigurator.configure((java.net.URL) configuratorURL);
-                  if (isTraceEnabled()) {
-                      this.out("LogToLog4JImpl: Using Log4J.xml.DOMConfigurator with URL " + configuratorURL.toString());
-                  }
-              } else {
-                  //Initial configurator is removed
-                  org.apache.log4j.BasicConfigurator.resetConfiguration();
-                  org.apache.log4j.PropertyConfigurator.configure((java.net.URL) configuratorURL);
-                  if (isTraceEnabled()) {
-                      this.out("LogToLog4JImpl: Using Log4J.PropertyConfigurator with URL " + configuratorURL.toString());
-                  }
-              }
-          } catch (FactoryConfigurationError ex2) {
-              if (isErrorEnabled()) {
-                  this.err("", ex2);
-              }
-          }
-//      } else if (configuratorURL.getFile().endsWith(".sf")) {
-//      we don't have a sf configurator yet.
-      } else if (configuratorURL instanceof String) {
-          try {
-              if (((String) configuratorURL).endsWith(".xml")) {
-                  //Initial configurator is removed
-                  org.apache.log4j.BasicConfigurator.resetConfiguration();
-//                  if (!configureAndWatch) {
-                      org.apache.log4j.xml.DOMConfigurator.configure((String)configuratorURL);
-                      if (isTraceEnabled()) {
-                          this.out("LogToLog4JImpl: Using Log4J.xml.DOMConfigurator with " + (String) configuratorURL);
-                      }
-//                  } else {
-//                      org.apache.log4j.xml.DOMConfigurator.configureAndWatch((String) configuratorURL, configureAndWatchDelay);
-//                      if (isTraceEnabled()) {
-//                          this.out("LogToLog4JImpl: Using Log4J.xml.DOMConfigurator with " + configuratorURL + " and watch every " + configureAndWatchDelay + "ms");
-//                      }
-//                  }
-              } else {
-                  //Initial configurator is removed
-                  org.apache.log4j.BasicConfigurator.resetConfiguration();
-//                  if (!configureAndWatch) {
-                      org.apache.log4j.PropertyConfigurator.configure((String)configuratorURL);
-                      if (isTraceEnabled()) {
-                          this.out("LogToLog4JImpl: Using Log4J.PropertyConfigurator with " + configuratorURL);
-                      }
-//                  } else {
-//                      org.apache.log4j.PropertyConfigurator.configureAndWatch((String) configuratorURL, configureAndWatchDelay);
-//                      if (isTraceEnabled()) {
-//                          this.out("LogToLog4JImpl: Using Log4J.PropertyConfigurator with " + configuratorURL + " and watch every " + configureAndWatchDelay + "ms");
-//                      }
-//                  }
-              }
-          } catch (FactoryConfigurationError ex3) {
-              if (isErrorEnabled()) {
-                  this.err("", ex3);
-              }
-          }
-      } else {
-          if (isWarnEnabled()) {
-              this.warn("LogToLog4JImpl: Using Log4J.BasicConfigurator");
-          }
-      }
-  }
+    }
 
-  /**
-   *  Reads optional and mandatory attributes.
-   *
-   * @exception  SmartFrogException error while reading attributes
-   */
-  protected void readSFAttributes() throws SmartFrogException {
-    try {
-        if (classComponentDescription==null) {
+
+    /**
+     * Construct a simple log with given name and log level
+     * and log to output level
+     *
+     * @param name            log name
+     * @param initialLogLevel level to log at
+     * @param out             output stream to log to
+     */
+
+    public LogToLog4JImpl(String name, ComponentDescription componentComponentDescription, Integer initialLogLevel,
+                          PrintStream out) throws Exception {
+        try {
+
+            assert name != null;
+            assert initialLogLevel != null;
+
+            setOutstream(out);
+
+            logName = name;
+            if (logger == null) {
+                logger = Logger.getLogger(name);
+            }
+            //Initial configurator to get output in case of failures
+            BasicConfigurator.configure();
+
+            if (setIniLog4JLoggerLevel) {
+                setLevel(initialLogLevel.intValue());
+            }
+
+            //Check Class and read configuration...including system.properties
+            try {
+                classComponentDescription = ComponentDescriptionImpl.getClassComponentDescription(this, true, null);
+                if (isTraceEnabled() && this.getClass().toString().endsWith("LogToLog4JImpl")) {
+                    trace(this.getClass().toString() + " '" + name + "' using ComponentDescription:\n"
+                            + classComponentDescription.toString());
+                }
+            } catch (SmartFrogException ex) {
+                if (isWarnEnabled()) this.warn(ex.toString());
+                throw ex;
+            }
+
+            readSFAttributes(classComponentDescription);
+
+            readSFAttributes(componentComponentDescription);
+
+            configureLog4JLogger(configuratorURL);
+
+
+            // Set initial log level after reading configuration to the lowest one
+            // the most verbose of the two
+            if (setIniLog4JLoggerLevel) {
+                if (getLevel() >= initialLogLevel.intValue()) {
+                    setLevel(initialLogLevel.intValue());
+                }
+            }
+
+            //System.out.println(" Final level: "+ getLevel());
+
+            if (isInfoEnabled()) {
+                this.info("LogToLog4JImpl logger: " + logger.getName() + " (" + logger.getEffectiveLevel().toString()
+                        + ") with configuration " + configuratorURL + ", setIniLog4JLoggerLevel: "
+                        + setIniLog4JLoggerLevel + ", ignoreSetLogLevel: " + ignoreSetLogLevel);
+            }
+        } catch (Exception ex1) {
+            error("", ex1);
+            throw ex1;
+        }
+    }
+
+
+    /**
+     * Configure the logger
+     * @param configuratorURL
+     */
+
+    private void configureLog4JLogger(Object configuratorURL) {
+
+        if (configuratorURL == null) {
+            error("LogToLog4JImpl: Failed to find configuration. Using Log4J.BasicConfigurator");
             return;
         }
         try {
-            java.net.URL url = null;
-            configuratorURL = (java.net.URL)classComponentDescription.sfResolve(ATR_CONFIGURATOR_FILE, url, true);
-        } catch (SmartFrogException sex) {
-            //if it is not a URL or not present then try againg with a String attribute.
-            configuratorURL = classComponentDescription.sfResolve(ATR_CONFIGURATOR_FILE, configuratorURL, false);
+            if (configuratorURL instanceof URL) {
+                configureWithURL((URL) configuratorURL);
+            } else if (configuratorURL instanceof String) {
+                configureWithFilename((String) configuratorURL);
+            } else {
+                warn("LogToLog4JImpl: Using Log4J.BasicConfigurator");
+            }
+        } catch (FactoryConfigurationError ex3) {
+            err("", ex3);
         }
-        /**
-         * if sf attritute ATR_CONFIGURATOR_FILE not defined, it will try to use the system.property log4j.configuarion
-         */
-        if (configuratorURL==null) {
-            //Optional attributes.
-            configuratorURL = System.getProperty("log4j.configuration");
-            System.out.println("ConfiguURL4 "+configuratorURL);
-            try {
-                configuratorURL = new java.net.URL((String)configuratorURL);
-                System.out.println("ConfiguURL5 "+configuratorURL);
-            } catch (Exception ex) {
-                //ignore
-                //ex.printStackTrace();
+    }
+
+    /**
+     * bind the logger to a URL
+     *
+     * @param configuratorURL
+     * @throws FactoryConfigurationError
+     */
+    private void configureWithURL(URL configuratorURL) throws FactoryConfigurationError {
+        if (configuratorURL.getFile().endsWith(".xml")) {
+            //Initial configurator is removed
+            BasicConfigurator.resetConfiguration();
+            DOMConfigurator.configure(configuratorURL);
+            if (isTraceEnabled()) {
+                out("LogToLog4JImpl: Using Log4J.xml.DOMConfigurator with URL " + configuratorURL
+                        .toString());
+            }
+        } else {
+            //Initial configurator is removed
+            BasicConfigurator.resetConfiguration();
+            PropertyConfigurator.configure(configuratorURL);
+            if (isTraceEnabled()) {
+                out("LogToLog4JImpl: Using Log4J.PropertyConfigurator with URL " + configuratorURL
+                        .toString());
             }
         }
+    }
 
-        ignoreSetLogLevel = (classComponentDescription.sfResolve(this.ATR_INGNORE_SET_LOG_LEVEL, ignoreSetLogLevel, false));
-        setIniLog4JLoggerLevel = (classComponentDescription.sfResolve(ATR_SET_INI_LOG4J_LOGGER_LEVEL, setIniLog4JLoggerLevel, false));
+    /**
+     * configure against a string
+     * @param filename
+     * @throws FactoryConfigurationError
+     */
+    private void configureWithFilename(String filename) throws FactoryConfigurationError {
+        if (filename.endsWith(".xml")) {
+            //Initial configurator is removed
+            BasicConfigurator.resetConfiguration();
+            DOMConfigurator.configure(filename);
+            if (isTraceEnabled()) {
+                this.out("LogToLog4JImpl: Using Log4J.xml.DOMConfigurator with " + filename);
+            }
+        } else {
+            //Initial configurator is removed
+            BasicConfigurator.resetConfiguration();
+            PropertyConfigurator.configure(filename);
+            if (isTraceEnabled()) {
+                this.out("LogToLog4JImpl: Using Log4J.PropertyConfigurator with " + filename);
+            }
+        }
+    }
 
+    /**
+     * Reads optional and mandatory attributes.
+     *
+     * @param cd ComponentDescription A component description where to read configuration from
+     * @throws SmartFrogException error while reading attributes
+     */
+    protected void readSFAttributes(ComponentDescription cd) throws SmartFrogException {
         try {
-            //true so that if it is present we can issue a warning. configureAndWatch not supported in Log4J new versions.
-            boolean configureAndWatch = false;
-            String ATR_CONFIGURE_AND_WATCH = "configureAndWatch";
-            configureAndWatch = classComponentDescription.sfResolve(ATR_CONFIGURE_AND_WATCH, configureAndWatch, true);
-            if (isWarnEnabled()) {
-                this.warn(ATR_CONFIGURE_AND_WATCH + " not supported any more");
+            if (cd == null) {
+                return;
             }
-        } catch (SmartFrogResolutionException sfrex){
-            //ignore. This attributea should not be there.
+            try {
+                URL url = null;
+                configuratorURL = cd.sfResolve(ATR_CONFIGURATOR_FILE, url, true);
+            } catch (SmartFrogException sex) {
+                //if it is not a URL or not present then try againg with a String attribute.
+                configuratorURL = cd.sfResolve(ATR_CONFIGURATOR_FILE, configuratorURL, false);
+            }
+
+            //if there resource is set then it is used to provide
+            //the source of the configuration data
+            String resourceName = null;
+            resourceName = cd.sfResolve(ATR_RESOURCE, resourceName, false);
+            if (resourceName != null) {
+                //use log4J helper class to load the resource. This
+                //guarantees the same logic as for a normal classload
+                configuratorURL = Loader.getResource(resourceName);
+            }
+            /**
+             * if sf attritute ATR_CONFIGURATOR_FILE not defined, it will try to use the system.property log4j.configuarion
+             */
+            if (configuratorURL == null) {
+                //Optional attributes.
+                configuratorURL = System.getProperty("log4j.configuration");
+                if (isTraceEnabled()) {
+                    this.trace("ConfigURL (from log4j.configuration sys property): " + configuratorURL);
+                }
+                try {
+                    configuratorURL = new URL((String) configuratorURL);
+                    if (isTraceEnabled()) {
+                        this.trace("ConfigURL (from URL): " + configuratorURL);
+                    }
+                } catch (MalformedURLException ex) {
+                    //ignore
+                    //ex.printStackTrace();
+                }
+            }
+
+            ignoreSetLogLevel = (cd.sfResolve(this.ATR_IGNORE_SET_LOG_LEVEL, ignoreSetLogLevel, false));
+            setIniLog4JLoggerLevel = (cd.sfResolve(ATR_SET_INI_LOG4J_LOGGER_LEVEL, setIniLog4JLoggerLevel, false));
+
+            try {
+                //true so that if it is present we can issue a warning. configureAndWatch not supported in Log4J new versions.
+                boolean configureAndWatch = false;
+                String ATR_CONFIGURE_AND_WATCH = "configureAndWatch";
+                configureAndWatch = cd.sfResolve(ATR_CONFIGURE_AND_WATCH, configureAndWatch, true);
+                if (isWarnEnabled()) {
+                    this.warn(ATR_CONFIGURE_AND_WATCH + " not supported any more");
+                }
+                //        configureAndWatchDelay = (long)delay;
+            } catch (SmartFrogResolutionException sfrex) {
+                //ignore. This attribute should not be there.
+            }
+
+        } catch (Exception ex1) {
+            throw (SmartFrogLogException) SmartFrogLogException.forward(ex1);
         }
-
-//        double delay = Double.longBitsToDouble(configureAndWatchDelay);
-//        delay = (classComponentDescription.sfResolve(ATR_CONFIGURE_AND_WATCH_DELAY, delay, false));
-//        configureAndWatchDelay = (long)delay;
-
-    } catch (Exception ex1) {
-        throw (SmartFrogLogException)SmartFrogLogException.forward(ex1);
     }
-  }
 
-  /**
-   * set the output stream for logging. must not be null
-   * @param outstream
-   */
-  public void setOutstream(PrintStream outstream) {
-    assert (outstream != null);
-    this.outstream = outstream;
-  }
+    /**
+     * set the output stream for logging. must not be null
+     *
+     * @param outstream
+     */
+    public void setOutstream(PrintStream outstream) {
+        assert (outstream != null);
+        this.outstream = outstream;
+    }
 
-  /**
-   * <p> Set logging level. </p>
-   * It only does the change when it is different
-   *
-   * @param currentLogLevel new logging level
-   */
-  public void setLevel(int currentLogLevel) {
-    //Only do the change when it is different
-    if (ignoreSetLogLevel) return;
-    int level = getLevel();
-    if (level!=currentLogLevel){
-        //Level TRACE and DEBUG are the same in Log4J
-        if (!(((currentLogLevel==1)||(currentLogLevel==2))&& ((level==1)||(level==2)))){
-            logger.setLevel((Level) Level.toLevel(LOG4J_LEVELS[currentLogLevel]));
+    /**
+     * <p> Set logging level. </p>
+     * It only does the change when it is different
+     *
+     * @param currentLogLevel new logging level
+     */
+    public void setLevel(int currentLogLevel) {
+        //Only do the change when it is different
+        if (ignoreSetLogLevel) return;
+        int level = getLevel();
+        if (level != currentLogLevel) {
+            //Level TRACE and DEBUG are the same in Log4J
+            if (!(((currentLogLevel == 1) || (currentLogLevel == 2)) && ((level == 1) || (level == 2)))) {
+                logger.setLevel(Level.toLevel(LOG4J_LEVELS[currentLogLevel]));
+            }
         }
     }
-  }
 
-  /**
-   * <p> Get logging level. </p>
-   */
-  public int getLevel() {
-    Level levelLog4J = logger.getEffectiveLevel();
-    if (levelLog4J==null) return 0; //ALL
-    int i =0;
-    int level =0;
-    while (i<LOG4J_LEVELS.length){
-        if (((String)LOG4J_LEVELS[i]).equals(levelLog4J.toString())){
-            level=i;
-            break;
+    /**
+     * <p> Get logging level. </p>
+     */
+    public int getLevel() {
+        Level levelLog4J = logger.getEffectiveLevel();
+        if (levelLog4J == null) {
+            return 0; //ALL
         }
-        i++;
+        int i = 0;
+        int level = 0;
+        while (i < LOG4J_LEVELS.length) {
+            if (LOG4J_LEVELS[i].equals(levelLog4J.toString())) {
+                level = i;
+                break;
+            }
+            i++;
+        }
+        return level;
     }
-    return level;
-  }
 
 // -------------------------------------------------------- Log Implementation
-  protected void log(Level level, Object message, Throwable t) {
-    if (logger == null) {
-      logger = Logger.getLogger(logName);
-    }
-    logger.log(clazz, level, message, t);
-  }
 
-  /**
-   * Is the given log level currently enabled?
-   *
-   * @param logLevel is this level enabled?
-   */
-  public boolean isLevelEnabled(int logLevel) {
+    protected void log(Level level, Object message, Throwable t) {
+        if (logger == null) {
+            logger = Logger.getLogger(logName);
+        }
+        logger.log(clazz, level, message, t);
+    }
+
+    /**
+     * Is the given log level currently enabled?
+     *
+     * @param logLevel is this level enabled?
+     */
+    public boolean isLevelEnabled(int logLevel) {
 // log level are numerically ordered so can use simple numeric
 // comparison
-//System.out.println("Local: Current "+currentLogLevel+", compared "+logLevel);
-    return (logLevel >= getLevel());
+        return (logLevel >= getLevel());
 
-  }
+    }
 
 // --------------------------------------------------END -- Log Implementation
 
 
-  /**
-   * <p> Log a message with debug log level.</p>
-   */
-  public final void debug(Object message) {
-    log(Level.DEBUG, message, null);
-  }
+    /**
+     * <p> Log a message with debug log level.</p>
+     */
+    public final void debug(Object message) {
+        log(Level.DEBUG, message, null);
+    }
 
-  /**
-   * <p> Log an error with debug log level.</p>
-   */
-  public final void debug(Object message, Throwable t) {
-    log(Level.DEBUG, message, t);
-  }
+    /**
+     * <p> Log an error with debug log level.</p>
+     */
+    public final void debug(Object message, Throwable t) {
+        log(Level.DEBUG, message, t);
+    }
 
-  /**
-   * <p> Log a message with trace log level.</p>
-   */
-  public final void trace(Object message) {
-    log(Level.DEBUG, message, null);
-  }
+    /**
+     * <p> Log a message with trace log level.</p>
+     */
+    public final void trace(Object message) {
+        log(Level.DEBUG, message, null);
+    }
 
-  /**
-   * <p> Log an error with trace log level.</p>
-   */
-  public final void trace(Object message, Throwable t) {
-    log(Level.DEBUG, message, t);
-  }
+    /**
+     * <p> Log an error with trace log level.</p>
+     */
+    public final void trace(Object message, Throwable t) {
+        log(Level.DEBUG, message, t);
+    }
 
-  /**
-   * <p> Log a message with info log level.</p>
-   */
-  public final void info(Object message) {
-    log(Level.INFO, message, null);
-  }
+    /**
+     * <p> Log a message with info log level.</p>
+     */
+    public final void info(Object message) {
+        log(Level.INFO, message, null);
+    }
 
-  /**
-   * <p> Log an error with info log level.</p>
-   */
-  public final void info(Object message, Throwable t) {
-    log(Level.INFO, message, t);
-  }
+    /**
+     * <p> Log an error with info log level.</p>
+     */
+    public final void info(Object message, Throwable t) {
+        log(Level.INFO, message, t);
+    }
 
-  /**
-   * <p> Log a message with warn log level.</p>
-   */
-  public final void warn(Object message) {
-    log(Level.WARN, message, null);
-  }
+    /**
+     * <p> Log a message with warn log level.</p>
+     */
+    public final void warn(Object message) {
+        log(Level.WARN, message, null);
+    }
 
-  /**
-   * <p> Log an error with warn log level.</p>
-   */
-  public final void warn(Object message, Throwable t) {
-    log(Level.WARN, message, t);
-  }
+    /**
+     * <p> Log an error with warn log level.</p>
+     */
+    public final void warn(Object message, Throwable t) {
+        log(Level.WARN, message, t);
+    }
 
-  /**
-   * <p> Log a message with error log level.</p>
-   */
-  public final void error(Object message) {
-    log(Level.ERROR, message, null);
-  }
+    /**
+     * <p> Log a message with error log level.</p>
+     */
+    public final void error(Object message) {
+        log(Level.ERROR, message, null);
+    }
 
-  /**
-   * <p> Log an error with error log level.</p>
-   */
-  public final void error(Object message, Throwable t) {
-    log(Level.ERROR, message, t);
-  }
+    /**
+     * <p> Log an error with error log level.</p>
+     */
+    public final void error(Object message, Throwable t) {
+        log(Level.ERROR, message, t);
+    }
 
-  /**
-   * <p> Log a message with fatal log level.</p>
-   */
-  public final void fatal(Object message) {
-    log(Level.FATAL, message, null);
-  }
+    /**
+     * <p> Log a message with fatal log level.</p>
+     */
+    public final void fatal(Object message) {
+        log(Level.FATAL, message, null);
+    }
 
-  /**
-   * <p> Log an error with fatal log level.</p>
-   */
-  public final void fatal(Object message, Throwable t) {
-    log(Level.FATAL, message, t);
-  }
+    /**
+     * <p> Log an error with fatal log level.</p>
+     */
+    public final void fatal(Object message, Throwable t) {
+        log(Level.FATAL, message, t);
+    }
 
-  /**
-   * <p> Are debug messages currently enabled? </p>
-   *
-   * <p> This allows expensive operations such as <code>String</code>
-   * concatenation to be avoided when the message will be ignored by the
-   * logger. </p>
-   */
-  public final boolean isDebugEnabled() {
-    return logger.isDebugEnabled();
-  }
+    /**
+     * <p> Are debug messages currently enabled? </p>
+     * <p/>
+     * <p> This allows expensive operations such as <code>String</code>
+     * concatenation to be avoided when the message will be ignored by the
+     * logger. </p>
+     */
+    public final boolean isDebugEnabled() {
+        return logger.isDebugEnabled();
+    }
 
-  /**
-   * <p> Are error messages currently enabled? </p>
-   *
-   * <p> This allows expensive operations such as <code>String</code>
-   * concatenation to be avoided when the message will be ignored by the
-   * logger. </p>
-   */
-  public final boolean isErrorEnabled() {
+    /**
+     * <p> Are error messages currently enabled? </p>
+     * <p/>
+     * <p> This allows expensive operations such as <code>String</code>
+     * concatenation to be avoided when the message will be ignored by the
+     * logger. </p>
+     */
+    public final boolean isErrorEnabled() {
 
-    return logger.isEnabledFor(Level.ERROR);
-  }
+        return logger.isEnabledFor(Level.ERROR);
+    }
 
-  /**
-   * <p> Are fatal messages currently enabled? </p>
-   *
-   * <p> This allows expensive operations such as <code>String</code>
-   * concatenation to be avoided when the message will be ignored by the
-   * logger. </p>
-   */
-  public final boolean isFatalEnabled() {
+    /**
+     * <p> Are fatal messages currently enabled? </p>
+     * <p/>
+     * <p> This allows expensive operations such as <code>String</code>
+     * concatenation to be avoided when the message will be ignored by the
+     * logger. </p>
+     */
+    public final boolean isFatalEnabled() {
 
-    return logger.isEnabledFor(Level.FATAL);
-  }
+        return logger.isEnabledFor(Level.FATAL);
+    }
 
-  /**
-   * <p> Are info messages currently enabled? </p>
-   *
-   * <p> This allows expensive operations such as <code>String</code>
-   * concatenation to be avoided when the message will be ignored by the
-   * logger. </p>
-   */
-  public final boolean isInfoEnabled() {
-    return logger.isInfoEnabled();
-  }
+    /**
+     * <p> Are info messages currently enabled? </p>
+     * <p/>
+     * <p> This allows expensive operations such as <code>String</code>
+     * concatenation to be avoided when the message will be ignored by the
+     * logger. </p>
+     */
+    public final boolean isInfoEnabled() {
+        return logger.isInfoEnabled();
+    }
 
-  /**
-   * <p> Are trace messages currently enabled? </p>
-   *
-   * <p> This allows expensive operations such as <code>String</code>
-   * concatenation to be avoided when the message will be ignored by the
-   * logger. </p>
-   */
-  public final boolean isTraceEnabled() {
-    return logger.isDebugEnabled();
-  }
+    /**
+     * <p> Are trace messages currently enabled? </p>
+     * <p/>
+     * <p> This allows expensive operations such as <code>String</code>
+     * concatenation to be avoided when the message will be ignored by the
+     * logger. </p>
+     */
+    public final boolean isTraceEnabled() {
+        return logger.isDebugEnabled();
+    }
 
-  /**
-   * <p> Are warn messages currently enabled? </p>
-   *
-   * <p> This allows expensive operations such as <code>String</code>
-   * concatenation to be avoided when the message will be ignored by the
-   * logger. </p>
-   */
-  public final boolean isWarnEnabled() {
-    return logger.isEnabledFor(Level.WARN);
-  }
+    /**
+     * <p> Are warn messages currently enabled? </p>
+     * <p/>
+     * <p> This allows expensive operations such as <code>String</code>
+     * concatenation to be avoided when the message will be ignored by the
+     * logger. </p>
+     */
+    public final boolean isWarnEnabled() {
+        return logger.isEnabledFor(Level.WARN);
+    }
 
 // Special LogMessages interface to produce output.
-  /**
-   * <p> Log an error with message log level. </p>
-   * <p> Same as info messages but without Labels.</p>
-   *
-   * @param message log this message
-   */
-  public void out(Object message) {
-    outstream.println(message.toString());
-    this.info(message);
-  }
 
-  /**
-   * <p> Log an error with message log level. </p>
-   * <p> Same as info messages but without Labels.</p>
-   *
-   * @param message log this message
-   */
-  public void err(Object message) {
-    err(message, null);
-  }
-
-  /**
-   * <p> Log an error with message log level. </p>
-   * <p> Same as info messages but without Labels.</p>
-   *
-   * @param message log this message
-   * @param t log this cause
-   */
-  public void err(Object message, Throwable t) {
-    outstream.println(message.toString());
-    this.error(message, t);
-    if (t != null) {
-      t.printStackTrace(outstream);
+    /**
+     * <p> Log an error with message log level. </p>
+     * <p> Same as info messages but without Labels.</p>
+     *
+     * @param message log this message
+     */
+    public void out(Object message) {
+        outstream.println(message.toString());
+        this.info(message);
     }
-  }
 
-  /**
-   * <p> Log a message with message log level. </p>
-   * <p> Same as info messages but without Labels.</p>
-   *
-   * @param message log this message
-   */
-  public void err(Object message, SmartFrogException t, TerminationRecord tr) {
-    err(message, t);
-    outstream.println(tr.toString());
-  }
+    /**
+     * <p> Log an error with message log level. </p>
+     * <p> Same as info messages but without Labels.</p>
+     *
+     * @param message log this message
+     */
+    public void err(Object message) {
+        err(message, null);
+    }
 
-  /**
-   * <p> Log an error with message log level. </p>
-   * <p> Same as info messages but without Labels.</p>
-   *
-   * @param message log this message
-   * @param t log this cause
-   */
-  public void err(Object message, SmartFrogException t) {
-    err(message, (Throwable)t);
+    /**
+     * <p> Log an error with message log level. </p>
+     * <p> Same as info messages but without Labels.</p>
+     *
+     * @param message log this message
+     * @param t       log this cause
+     */
+    public void err(Object message, Throwable t) {
+        outstream.println(message.toString());
+        this.error(message, t);
+        if (t != null) {
+            t.printStackTrace(outstream);
+        }
+    }
+
+    /**
+     * <p> Log a message with message log level. </p>
+     * <p> Same as info messages but without Labels.</p>
+     *
+     * @param message log this message
+     */
+    public void err(Object message, SmartFrogException t, TerminationRecord tr) {
+        err(message, t);
+        outstream.println(tr.toString());
+    }
+
+    /**
+     * <p> Log an error with message log level. </p>
+     * <p> Same as info messages but without Labels.</p>
+     *
+     * @param message log this message
+     * @param t log this cause
+     */
+    public void err(Object message, SmartFrogException t) {
+        err(message, (Throwable)t);
   }
 
 }
