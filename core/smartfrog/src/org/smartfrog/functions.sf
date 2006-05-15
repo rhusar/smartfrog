@@ -33,7 +33,7 @@ append extends function{
 }
 
 
-concat extends {
+concat extends function {
     sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Concatenate";
 }
 
