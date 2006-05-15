@@ -30,7 +30,7 @@ import org.smartfrog.sfcore.languages.sf.PhaseAction;
  * defined using "$i" to indicate the ith parameter. The ith parameter is the
  * attribute "si".
  */ 
-public class Format extends BaseFunction implements PhaseAction {
+public class Format extends BaseFunction {
 
     /**
      * Does the formatting.

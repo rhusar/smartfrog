@@ -113,10 +113,10 @@ CD extends Compulsory {
 }
 
 OptionalReference extends Optional {
-    class "org.smartfrog.sfcore.reference.Reference";
+    class ["org.smartfrog.sfcore.reference.SFReference", "org.smartfrog.sfcore.reference.SFReference"];
 }
 
 Reference extends Compulsory {
-    class "org.smartfrog.sfcore.reference.Reference";
+    class ["org.smartfrog.sfcore.languages.sf.sfreference.SFReference", "org.smartfrog.sfcore.languages.sf.sfreference.SFApplyReference"];
 }
 

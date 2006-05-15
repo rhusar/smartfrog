@@ -26,7 +26,7 @@ import org.smartfrog.sfcore.languages.sf.PhaseAction;
  * Defines the Date function that returns a string representation of the current
  * date and time.
  */  
-public class Date extends BaseFunction implements PhaseAction {
+public class Date extends BaseFunction {
     /**
      * Interface method. Returns the date and time.
      * Currently this is in ctime() format

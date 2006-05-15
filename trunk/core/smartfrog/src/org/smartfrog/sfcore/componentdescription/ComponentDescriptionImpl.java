@@ -149,9 +149,11 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
                 sfCompleteName.addElement(ReferencePart.here(key));
             } else {
                 sfCompleteName.addElement(new HereReferencePart("*unknown*"));
+                /*
                 if (sfLog().isTraceEnabled()){
                     sfLog().trace("Internal error generating CD complete name - child not named in parent yet");
                 }
+                */
             }
 //        } //cache
         return sfCompleteName;
@@ -1093,8 +1095,8 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
             phases = newPhases;
         } else {
             phases.add("type");
+            phases.add("function");            
             phases.add("link");
-            phases.add("function");
             phases.add("predicate");
         }
         // Get componentDescription and

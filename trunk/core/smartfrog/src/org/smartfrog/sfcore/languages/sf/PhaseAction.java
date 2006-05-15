@@ -20,7 +20,7 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.sfcore.languages.sf;
 
-import org.smartfrog.sfcore.componentdescription.ComponentDescription;
+import org.smartfrog.sfcore.languages.sf.sfcomponentdescription.SFComponentDescription;
 
 import java.util.Stack;
 
@@ -41,5 +41,5 @@ public interface PhaseAction {
      *
      * @param cd a componentdescription object 
      */ 
-    public void forComponent(ComponentDescription cd, String phaseName, Stack path);
+    public void forComponent(SFComponentDescription cd, String phaseName, Stack path);
 }

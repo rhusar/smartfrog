@@ -113,6 +113,16 @@ For more information: www.smartfrog.org
   </target>
 
   <!-- =================================================================== -->
+  <!-- install components distribution                                     -->
+  <!-- =================================================================== -->
+
+  <target name="install" depends="main-dist,tasks" 
+	  description="install components distribution(s)">
+	  <antcall target="components"/>
+    <forward2 dir="${components.project}" target="install"  />
+  </target>
+  
+  <!-- =================================================================== -->
   <!-- m2 installation distribution                                        -->
   <!-- =================================================================== -->
 

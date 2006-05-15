@@ -28,7 +28,7 @@ import org.smartfrog.sfcore.common.MessageUtil;
  * Define the Less or Equals binary opeeration that compares its numeric attributes
  *  left <= right
  */
-public class LE extends BaseBinaryOperator implements PhaseAction {
+public class LE extends BaseBinaryOperator {
     /**
      * Compares two numbers.
      * @param a first number

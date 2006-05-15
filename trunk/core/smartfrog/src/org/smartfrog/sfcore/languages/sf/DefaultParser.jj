@@ -10,6 +10,9 @@ package org.smartfrog.sfcore.languages.sf;
 
 import org.smartfrog.sfcore.languages.sf.sfcomponentdescription.SFComponentDescriptionImpl;
 import org.smartfrog.sfcore.languages.sf.sfcomponentdescription.SFComponentDescription;
+import org.smartfrog.sfcore.languages.sf.sfreference.SFApplyReference;
+import org.smartfrog.sfcore.languages.sf.sfreference.SFReference;
+
 import org.smartfrog.sfcore.reference.ReferencePart;
 import org.smartfrog.sfcore.reference.HostReferencePart;
 import org.smartfrog.sfcore.reference.PropertyReferencePart;
@@ -18,7 +21,7 @@ import org.smartfrog.sfcore.reference.HereReferencePart;
 import org.smartfrog.sfcore.reference.RootReferencePart;
 import org.smartfrog.sfcore.reference.AttribReferencePart;
 import org.smartfrog.sfcore.reference.ThisReferencePart;
-import org.smartfrog.sfcore.reference.Reference;
+
 import org.smartfrog.sfcore.common.SFNull;
 import org.smartfrog.sfcore.common.SFByteArray;
 import java.io.InputStream;
@@ -52,6 +55,7 @@ public class DefaultParser {
 
   static final String notOp = "org.smartfrog.sfcore.languages.sf.functions.Not";
   static final String ifThenElseOp = "org.smartfrog.sfcore.languages.sf.functions.IfThenElse";
+  static final String functionPhaseClass = "org.smartfrog.sfcore.languages.sf.Function";
 
 
 
@@ -206,6 +210,7 @@ TOKEN : /* reserved words */
  | <PARENT: "PARENT">
  | <HOST: "HOST">
  | <PROCESS: "PROCESS">
+ | <APPLY: "APPLY">
  | <INCLUDE: "#include">
  | <CODEBASE: "#codebase">
  | <TRUE: "true">
@@ -360,9 +365,9 @@ Vector AttributeList() :
  * Entry point for Reference parser
  */
 
-Reference Reference() :
+SFReference Reference() :
 {
-  Reference res;
+  SFReference res;
 }
 {
     res = ReferenceNoEOF() <EOF>
@@ -443,7 +448,7 @@ void Includes(Vector res) :
 Object[] Attribute() :
 {
   Object[] attribute = new Object[2];
-  Reference name = new Reference();
+  SFReference name = new SFReference();
 }
 {
   (Name(name) attribute[1]=Value()
@@ -457,7 +462,7 @@ Object[] Attribute() :
 }
 
 
-void Name(Reference res) :
+void Name(SFReference res) :
 {
   res.setEager(true);
   Token t;
@@ -554,7 +559,8 @@ Object Operator() :
         if (arity==0) {
         for (Enumeration e = v.elements(); e.hasMoreElements(); ) {
             Object attribute = e.nextElement();
-            Reference name = new Reference(ReferencePart.here("unique" + nextId++));
+            SFReference name = new SFReference();
+            name.addElement(ReferencePart.here("unique" + nextId++));
             ((SFComponentDescription)res).sfContext().put(name, attribute);
             if (attribute instanceof SFComponentDescription)
             ((SFComponentDescription)attribute).setParent((SFComponentDescription)res);
@@ -571,7 +577,8 @@ Object Operator() :
         if (a instanceof SFComponentDescription)
             ((SFComponentDescription)a).setParent((SFComponentDescription)res);
         }
-        ((SFComponentDescription)res).sfContext().put("phase.function", operator);
+        ((SFComponentDescription)res).sfContext().put("phase.function", functionPhaseClass);
+        ((SFComponentDescription)res).sfContext().put("sfFunctionClass", operator);
     }
     return res;
     }
@@ -595,7 +602,9 @@ Object IfThenElse() :
     if (e instanceof SFComponentDescription)
         ((SFComponentDescription)e).setParent((SFComponentDescription)ifte);
 
-    ifte.sfContext().put("phase.function", ifThenElseOp);
+    ifte.sfContext().put("phase.function", functionPhaseClass);
+    ifte.sfContext().put("sfFunctionClass", ifThenElseOp);
+
     ifte.sfContext().put("if", i);
     ifte.sfContext().put("then", t);
     ifte.sfContext().put("else", e);
@@ -661,44 +670,53 @@ void DataComponent(SFComponentDescription comp) :
 
 void BaseComponent(SFComponentDescription comp) :
 {
-  Reference prototype = new Reference();
-  prototype.setEager(true);
+  SFReference prototype = null;
 }
 {
-  [ <NULL> | BaseReference(prototype) ]
+  [ <NULL> | prototype = LinkReference() {prototype.setEager(true);}]
   (<SEMICOLON>| (<LBRACE> AttributesNoEOF(comp) <RBRACE>) )
   {
-      /*
-    if (protoType.size() > 0 &&
-        (protoType.firstElement() instanceof HereReferencePart)) {
-    HereReferencePart firstPart = (HereReferencePart)
-        protoType.firstElement();
-    protoType.setElementAt(firstPart.asAttribReferencePart(), 0);
-    }
-      */
-    comp.setType(prototype.size() == 0 ? null : prototype);
+    comp.setType(prototype);
   }
 }
 
 
-Reference ReferenceNoEOF() :
+SFReference ReferenceNoEOF() :
 {
-  Reference res = new Reference();
-  res.setEager(true);
-  res.setData(false);
+  SFReference res;
+  boolean lazy = false;
 }
 {
-  [<LAZY> { res.setEager(false);}] BaseReference(res) { return res; }
-}
-
-void BaseReference(Reference ref) :
-{
-}
-{
-  ReferencePart(ref) (<REFPARTSEP> ReferencePart(ref))*
+  [<LAZY> { lazy = true; }] res = BaseReference() { if (lazy) res.setEager(false); return res; }
 }
 
-void ReferencePart(Reference ref) :
+SFReference BaseReference() :
+{
+    SFComponentDescription comp;
+    SFReference ref;
+}
+{
+  (
+    (ref = LinkReference())
+  |
+    (<APPLY> <LBRACE> {comp = SFParser.componentFactory("default");} AttributesNoEOF(comp) <RBRACE>  {ref = new SFApplyReference(comp);})
+  ) {
+    ref.setEager(true);
+    ref.setData(false);
+    return ref;
+  }
+}
+
+SFReference LinkReference() :
+{
+    SFReference ref = new SFReference();
+}
+{
+   ReferencePart(ref) (<REFPARTSEP> ReferencePart(ref))*
+   { return ref; }
+}
+
+void ReferencePart(SFReference ref) :
 {
   Token id;
 }
@@ -739,12 +757,15 @@ Object Basic() :
           SFParser.componentFactory("default");
       for (Enumeration e = ((Vector)res).elements(); e.hasMoreElements(); ) {
           Object attribute = e.nextElement();
-          Reference name = new Reference(ReferencePart.here("unique" + nextId++));
+          SFReference name = new SFReference();
+          name.addElement(ReferencePart.here("unique" + nextId++));
           component.sfContext().put(name, attribute);
           if (attribute instanceof SFComponentDescription)
           ((SFComponentDescription)attribute).setParent(component);
       }
-      component.sfContext().put("phase.function", "org.smartfrog.sfcore.languages.sf.functions.Vector");
+      component.sfContext().put("phase.function", functionPhaseClass);
+      component.sfContext().put("sfFunctionClass", "org.smartfrog.sfcore.languages.sf.functions.Vector");
+
       res = component;
       })
     ) { return res; }
@@ -766,7 +787,7 @@ Object Primitive() :
           [tmp=Primitive() { ((Vector)res).addElement(tmp); }
           (<COMMA> tmp=Primitive() { ((Vector)res).addElement(tmp); })*]
       <VECTOREND>)
-   | <DATA> { res = new Reference(); } BaseReference((Reference)res) {((Reference)res).setData(true);}
+   | <DATA> res = BaseReference() {((SFReference)res).setData(true);}
   ) { return res; }
 }
 

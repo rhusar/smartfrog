@@ -148,7 +148,8 @@ public class Schema extends BasePredicate implements PhaseAction {
                 Object testValue = attributes.sfResolve(new Reference(ReferencePart.here(name)));
                 String testvalueClass = testValue.getClass().getName();
 
-                if (testvalueClass.equals("org.smartfrog.sfcore.reference.Reference")) {
+                if (testvalueClass.equals("org.smartfrog.sfcore.languages.sf.sfreference.SFReference") ||
+                     testvalueClass.equals("org.smartfrog.sfcore.languages.sf.sfreference.SFApplyReference")    ) {
                     boolean condition =
                         binding.equals("lazy") ||
                         binding.equals("anyBinding") ||
@@ -199,7 +200,6 @@ public class Schema extends BasePredicate implements PhaseAction {
      * @param foundClassToValidate object which class has to be validated against
      * the predicate
      * @return if the class found is complaint with schema or not.
-     * @throws java.lang.ClassNotFoundExceptionx
      */
     protected boolean isValidClass (Object schemaClass, Object foundClassToValidate)
        throws java.lang.ClassNotFoundException, SmartFrogException {

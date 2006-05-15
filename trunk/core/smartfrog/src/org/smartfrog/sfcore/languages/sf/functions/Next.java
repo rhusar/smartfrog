@@ -26,7 +26,7 @@ import org.smartfrog.sfcore.languages.sf.PhaseAction;
  * Defines the Next function that returns a monotonically increasing value, 
  * guaranteed never to return the same number twice within a single description.
  */ 
-public class Next extends BaseFunction implements PhaseAction {
+public class Next extends BaseFunction {
     /**
      * default value of last.
      */

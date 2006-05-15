@@ -30,7 +30,7 @@ import org.smartfrog.sfcore.languages.sf.SmartFrogCompileResolutionException;
 /**
  * Defines the IfThenElse function.
  */
-public class IfThenElse extends BaseFunction implements PhaseAction, MessageKeys {
+public class IfThenElse extends BaseFunction implements MessageKeys {
 
     /**
      * The method to implement the functionality of the if-then-else function.
@@ -39,7 +39,7 @@ public class IfThenElse extends BaseFunction implements PhaseAction, MessageKeys
      * @throws SmartFrogCompileResolutionException if any of the parameters are not there or of the wrong type
      *  */
     protected Object doFunction() throws SmartFrogCompileResolutionException {
-	Object ifObj = context.get("if");
+    Object ifObj = context.get("if");
 	Object elseObj = context.get("else");
 	Object thenObj = context.get("then");
 

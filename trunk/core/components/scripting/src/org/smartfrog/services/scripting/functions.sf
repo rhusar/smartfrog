@@ -27,7 +27,8 @@ For more information: www.smartfrog.org
  */
 
 expression extends {
-    phase.function "org.smartfrog.services.scripting.Expression";
+    phase.function "org.smartfrog.sfcore.languages.sf.Function";
+    sfFunctionClass "org.smartfrog.services.scripting.Expression";
     // myvariable myvalue
     // exp "function(myvariable)" ...
 }

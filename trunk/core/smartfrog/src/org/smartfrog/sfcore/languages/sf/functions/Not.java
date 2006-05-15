@@ -29,7 +29,7 @@ import org.smartfrog.sfcore.common.MessageUtil;
  * The parameter attribute is "data" and an exception will be thrown if it
  * doesn't exist or is not boolean
  */
-public class Not extends BaseUnaryOperator implements PhaseAction {
+public class Not extends BaseUnaryOperator {
     /**
      * Negate the parameter
      * @param a a boolean

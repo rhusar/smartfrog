@@ -331,7 +331,7 @@ public interface MessageKeys {
      * * Message Key: A description has been created which has the root component as a function.
      * This is not possible for technical reasons
      */
-     public static String ROOT_COMPONENT_IS_FUNCTION = "ROOT_COMPONENT_IS_FUNCTION";
+     public static String ROOT_MUST_BE_COMPONENT = "ROOT__MUST_BE_COMPONENT_FUNCTION";
     /**
      * * Message Key: A description may not link to a component description that is being used as a predicate.
      *  Predicates must be extended to ensure a copy is taken.

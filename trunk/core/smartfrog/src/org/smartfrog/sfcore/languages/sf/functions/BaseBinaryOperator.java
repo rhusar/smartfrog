@@ -30,7 +30,7 @@ import org.smartfrog.sfcore.languages.sf.SmartFrogCompileResolutionException;
 /**
  * Defines the baseoperator for the binary operator functions.
  */
-public abstract class BaseBinaryOperator extends BaseFunction implements PhaseAction, MessageKeys {
+public abstract class BaseBinaryOperator extends BaseFunction implements MessageKeys {
 
     /**
      * The method to implement the functionality of any operator.

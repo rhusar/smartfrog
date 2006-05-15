@@ -20,14 +20,12 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.sfcore.languages.sf.functions;
 
-import org.smartfrog.sfcore.languages.sf.PhaseAction;
-
 /**
  * Defines the Concatenate function that takes each of its attribute parameters
  * and concatenates them in the order of definition after converting them to 
  * strings.
  */   
-public class Concatenate extends BaseOperator implements PhaseAction {
+public class Concatenate extends BaseOperator {
     /**
      * Applies the operator on the parameters.
      * @param a First parameter for the operation 

@@ -28,7 +28,7 @@ import org.smartfrog.sfcore.common.MessageUtil;
  * Defines the function that  divides its "left" attribute by its "right" attribute.
  * Each of its attributes mst be a number.
  */
-public class Divide extends BaseBinaryOperator implements PhaseAction {
+public class Divide extends BaseBinaryOperator {
     /**
      * Sums two numbers.
      * @param a first number

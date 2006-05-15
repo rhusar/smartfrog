@@ -29,7 +29,7 @@ import org.smartfrog.sfcore.common.MessageUtil;
  * Defines the less than binary opeeration that compares its numeric attributes
  *  left < right
  */
-public class LT extends BaseBinaryOperator implements PhaseAction {
+public class LT extends BaseBinaryOperator {
     /**
      * Compares two numbers.
      * @param a first number

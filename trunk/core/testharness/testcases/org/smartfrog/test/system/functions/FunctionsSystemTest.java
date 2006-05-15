@@ -46,7 +46,7 @@ public class FunctionsSystemTest extends SmartFrogTestBase {
                 EXCEPTION_DEPLOYMENT,
                 null,
                 EXCEPTION_RESOLUTION,
-                "Unresolved Reference, data: [True in: HERE sfConfig:throw1, True in: HERE sfConfig:throw2], source: HERE sfConfig, resolutionPhase: link]");
+                "Unresolved Reference, data: [APPLY {sfFunctionClass \"org.smartfrog.sfcore.languages.sf.functions.Random\"");
     }
 
     public void testCaseTCN32() throws Exception {

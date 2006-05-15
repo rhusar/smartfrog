@@ -29,7 +29,7 @@ import org.smartfrog.sfcore.languages.sf.SmartFrogCompileResolutionException;
  * Defines the base functionality for the unary operator functions.
  * The data on which to operate is defined to be the attribute "data".
  */
-public abstract class BaseUnaryOperator extends BaseFunction implements PhaseAction {
+public abstract class BaseUnaryOperator extends BaseFunction {
     /**
      * Name of the attribute used for unary operators
      * {@value}

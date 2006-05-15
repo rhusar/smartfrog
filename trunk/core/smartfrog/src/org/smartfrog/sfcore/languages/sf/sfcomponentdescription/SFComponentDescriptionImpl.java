@@ -32,8 +32,9 @@ import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.componentdescription.ComponentDescriptionImpl;
 import org.smartfrog.sfcore.languages.sf.Phase;
 import org.smartfrog.sfcore.languages.sf.SmartFrogCompileResolutionException;
-import org.smartfrog.sfcore.parser.Phases;
 import org.smartfrog.sfcore.languages.sf.PhaseNames;
+import org.smartfrog.sfcore.parser.Phases;
+import org.smartfrog.sfcore.parser.ReferencePhases;
 import org.smartfrog.sfcore.reference.HereReferencePart;
 import org.smartfrog.sfcore.reference.Reference;
 
@@ -513,10 +514,14 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
                            context.put(key, result);
                            if (result instanceof SFComponentDescription) {
                                // need to do this as it may link to the file root!
-                               ((SFComponentDescription) result).doLinkResolve(resState);
+                              if (((SFComponentDescription) result).sfParent() == null) {
+                                   ((SFComponentDescription) result).setParent(this);
+                              }
+                              ((SFComponentDescription) result).doLinkResolve(resState);
                            }
                        }
                    } catch (Exception resex) {
+                       resex.printStackTrace();
                        resState.addUnresolved(value, sfCompleteName());
                    } catch (Throwable thr) {
                        StringBuffer msg = new StringBuffer("Failed to resolve '");
@@ -598,9 +603,12 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
            Object key = e.nextElement();
            Object value = context.get(key);
 
-           if (value instanceof SFComponentDescription) {
-               value = ((SFComponentDescription) value).sfAsComponentDescription();
+           if (value instanceof Phases) {
+               value = ((Phases) value).sfAsComponentDescription();
                ((ComponentDescription) value).setParent(res);
+               newContext.put(key, value);
+           } else if (value instanceof ReferencePhases) {
+               value = ((ReferencePhases) value).sfAsReference();
                newContext.put(key, value);
            } else
                newContext.put(key, copyValue(value));
@@ -686,7 +694,12 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
              actOn.placeResolve();
            }
            else if (name.equals(PhaseNames.SFCONFIG)) {
-             actOn = (SFComponentDescription) sfResolve(sfConfigRef);
+             Object sfc = sfResolve(sfConfigRef);
+             if (sfc instanceof SFComponentDescription) {
+                actOn = (SFComponentDescription)sfc ;
+             } else {
+                 throw new SmartFrogCompileResolutionException(MessageUtil.formatMessage(ROOT_MUST_BE_COMPONENT, sfc.getClass().toString()));
+             }
            }
            else if (name.equals(PhaseNames.LINK)) {
              actOn.linkResolve();
@@ -725,9 +738,9 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
             phases = new Vector();
             phases.add(PhaseNames.TYPE);
             phases.add(PhaseNames.PLACE);
+            phases.add(PhaseNames.FUNCTION);
             phases.add(PhaseNames.SFCONFIG);
             phases.add(PhaseNames.LINK);
-            phases.add(PhaseNames.FUNCTION);
             phases.add(PhaseNames.PREDICATE);
          } else {
             context.remove("phaseList");

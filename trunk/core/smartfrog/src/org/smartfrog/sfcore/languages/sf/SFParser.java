@@ -27,14 +27,13 @@ import org.smartfrog.sfcore.common.SmartFrogParseException;
 import org.smartfrog.sfcore.common.SmartFrogCoreProperty;
 import org.smartfrog.sfcore.languages.sf.sfcomponentdescription.SFComponentDescription;
 import org.smartfrog.sfcore.parser.Phases;
-import org.smartfrog.sfcore.parser.StreamParser;
-import org.smartfrog.sfcore.reference.Reference;
+import org.smartfrog.sfcore.parser.StreamLanguageParser;
+import org.smartfrog.sfcore.parser.ReferencePhases;
 import org.smartfrog.sfcore.security.SFClassLoader;
 import java.lang.reflect.Constructor;
 import org.smartfrog.sfcore.common.MessageUtil;
 import org.smartfrog.sfcore.common.MessageKeys;
 import org.smartfrog.sfcore.common.SmartFrogException;
-import java.lang.reflect.InvocationTargetException;
 
 
 /**
@@ -48,7 +47,7 @@ import java.lang.reflect.InvocationTargetException;
  *  subclasses and changed since it uses the DefaultParser to parse include
  *  files
  */
-public class SFParser implements StreamParser {
+public class SFParser implements StreamLanguageParser {
 
 
    /**
@@ -193,7 +192,6 @@ public class SFParser implements StreamParser {
     *
     *@param  is                      input stream to parse
     *@param  handler                 include handler
-    *@param codebase an optional codebase where the include may be found. If null, use the default code base
     *
     *@return                         root description with parsed attributes
     *@exception  SmartFrogParseException  failure while parsing
@@ -247,7 +245,7 @@ public class SFParser implements StreamParser {
     *@return                         parsed reference
     *@exception  SmartFrogParseException  failure while parsing reference
     */
-   public Reference sfParseReference(InputStream is) throws SmartFrogParseException {
+   public ReferencePhases sfParseReference(InputStream is) throws SmartFrogParseException {
        try {
            return (new DefaultParser(is, null)).Reference();
        } catch (ParseException pe){

@@ -23,7 +23,9 @@ package org.smartfrog.sfcore.parser;
 import java.io.InputStream;
 
 import org.smartfrog.sfcore.common.SmartFrogParseException;
+import org.smartfrog.sfcore.common.SmartFrogCompilationException;
 import org.smartfrog.sfcore.reference.Reference;
+import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 
 
 /**
@@ -69,9 +71,9 @@ public interface StreamParser {
      *
      * @return parsed reference
      *
-     * @exception SmartFrogParseException failed to parse reference
+     * @exception SmartFrogCompilationException failed to parse reference
      */
-    public Reference sfParseReference(InputStream is) throws SmartFrogParseException;
+    public Reference sfParseReference(InputStream is) throws SmartFrogCompilationException;
 
     /**
      * Parses any value from an input stream. (the meaning of "any" is language dependant)
@@ -82,7 +84,7 @@ public interface StreamParser {
      *
      * @exception SmartFrogParseException failed to parse any value
      */
-    public Object sfParseAnyValue(InputStream is) throws SmartFrogParseException;
+    public Object sfParseAnyValue(InputStream is) throws SmartFrogCompilationException;
 
     /**
      * Parses a primitive value from an input stream. (the meaning of primitive is language dependant)
@@ -93,5 +95,18 @@ public interface StreamParser {
      *
      * @exception SmartFrogParseException failed to parse primtiive value
      */
-    public Object sfParsePrimitiveValue(InputStream is) throws SmartFrogParseException;
+    public Object sfParsePrimitiveValue(InputStream is) throws SmartFrogCompilationException;
+
+    /**
+     * Parses a component description from an input stream.
+     * All the langauge phases will have been applied, and the conversion to ComponentDescription
+     * carried out.
+     *
+     * @param is input stream to parse for a value
+     *
+     * @return parsed component description
+     *
+     * @exception SmartFrogParseException failed to parse primtiive value
+     */
+    public ComponentDescription sfParseComponentDescription(InputStream is) throws SmartFrogCompilationException;
 }
