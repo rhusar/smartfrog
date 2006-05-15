@@ -60,7 +60,7 @@ public class Api_25_unknown_MU_options_rejected_Test extends StandardTestBase {
         List<Element> options = new ArrayList<Element>();
         options.add(XomHelper.makeOption("http://example.org/1", "value", true));
         SoapElement request = getDescriptorHelper()
-                .createInitRequestInline(CddlmConstants.XML_CDL_NAMESPACE, cdl, null);
+                .createInitRequestInline(CddlmConstants.XML_CDL_NAMESPACE, cdl, options);
         try {
             getSystem().initialize(request);
             fail("should have failed");
@@ -71,3 +71,4 @@ public class Api_25_unknown_MU_options_rejected_Test extends StandardTestBase {
     }
 
 }
+

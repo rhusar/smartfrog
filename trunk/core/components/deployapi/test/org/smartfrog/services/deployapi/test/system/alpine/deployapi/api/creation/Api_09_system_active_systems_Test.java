@@ -49,16 +49,16 @@ public class Api_09_system_active_systems_Test extends StandardTestBase {
     }
 
     public void testActiveSystemFound() throws Exception {
-        String resID = getSystem().getResourceProperty(PROPERTY_MUWS_RESOURCEID).getValue();
+        String resID = getSystem().getResourcePropertySingle(PROPERTY_MUWS_RESOURCEID).getValue();
         assertNotNull(resID);
         assertTrue(resID.length() > 0);
-        SoapElement activeSystems = (SoapElement) getPortal().getResourceProperty(PROPERTY_PORTAL_ACTIVE_SYSTEMS);
+        SoapElement activeSystems = (SoapElement) getPortal().getResourcePropertySingle(PROPERTY_PORTAL_ACTIVE_SYSTEMS);
         boolean found = false;
         for (Element e : activeSystems.elements()) {
             AlpineEPR epr = new AlpineEPR(e, WS_ADDRESSING_NAMESPACE);
             epr.validate();
             SystemSession system = new SystemSession(getPortal(), epr);
-            String newResID = system.getResourceProperty(PROPERTY_MUWS_RESOURCEID).getValue();
+            String newResID = system.getResourcePropertySingle(PROPERTY_MUWS_RESOURCEID).getValue();
             assertNotNull(newResID);
             assertTrue(newResID.length() > 0);
             if (newResID.equals(resID)) {

@@ -32,5 +32,10 @@
       <artifactId>sf-m32</artifactId>
       <version>${artifact.version}</version>
     </dependency>
+    <dependency>
+      <groupId>org.smartfrog</groupId>
+      <artifactId>sf-loggingservices</artifactId>
+      <version>${artifact.version}</version>
+    </dependency>
   </dependencies>
 </project>

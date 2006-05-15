@@ -24,15 +24,19 @@ import static org.ggf.cddlm.generated.api.CddlmConstants.MUWS_CAPABILITY_MANAGEA
 import static org.ggf.cddlm.generated.api.CddlmConstants.MUWS_CAPABILITY_MANAGEABILITY_REFERENCES;
 import static org.ggf.cddlm.generated.api.CddlmConstants.MUWS_P1_NAMESPACE;
 import static org.ggf.cddlm.generated.api.CddlmConstants.PROPERTY_MUWS_MANAGEABILITY_CAPABILITY;
-import static org.ggf.cddlm.generated.api.CddlmConstants.PROPERTY_MUWS_MANAGEABILITY_CHARACTERISTICS;
+import org.ggf.cddlm.generated.api.CddlmConstants;
 import org.smartfrog.projects.alpine.om.base.SoapElement;
 import org.smartfrog.projects.alpine.xmlutils.XsdUtils;
 import org.smartfrog.services.xml.utils.ResourceLoader;
 import org.smartfrog.services.xml.utils.XmlCatalogResolver;
+import org.smartfrog.services.deployapi.system.Constants;
 import org.smartfrog.sfcore.languages.cdl.CdlCatalog;
 
 import javax.xml.namespace.QName;
 import java.util.Map;
+import java.util.List;
+import java.util.LinkedList;
+import java.util.ArrayList;
 
 /**
  * Where WSRF utility stuff goes
@@ -78,6 +82,11 @@ public final class WsrfUtils {
         return new QName(uri, element, prefix);
     }
 
+
+    public static String[] DEFAULT_TOPIC_DIALECTS= {
+        "http://www.ibm.com/xmlns/stdwip/web-services/WSTopics/TopicExpression/simple"
+    };
+
     /**
      * Create the list of management features
      *
@@ -86,9 +95,12 @@ public final class WsrfUtils {
      */
     public static void addManagementCharacteristics(PropertyMap props,
                                                     String capability) {
-        //the static listing of maneability charcteristics
-        SoapElement items = new SoapElement("ManageabilityCharacteristicsProperties",
+        //the static listing of manageability charcteristics
+
+        //base element of the list
+        SoapElement items = new SoapElement("muws:ManageabilityCharacteristicsProperties",
                 MUWS_P1_NAMESPACE);
+        //and a management capability for each entry
         items.appendChild(new SoapElement(PROPERTY_MUWS_MANAGEABILITY_CAPABILITY,
                 capability));
         items.appendChild(new SoapElement(PROPERTY_MUWS_MANAGEABILITY_CAPABILITY,
@@ -96,6 +108,46 @@ public final class WsrfUtils {
         items.appendChild(new SoapElement(PROPERTY_MUWS_MANAGEABILITY_CAPABILITY,
                 MUWS_CAPABILITY_MANAGEABILITY_CHARACTERISTICS));
 
-        props.addStaticProperty(PROPERTY_MUWS_MANAGEABILITY_CHARACTERISTICS, items);
+        props.addStaticProperty(PROPERTY_MUWS_MANAGEABILITY_CAPABILITY, items);
+    }
+
+
+
+    public static void addWsTopics(PropertyMap map, List<Element> topics,boolean fixed,String[] dialects) {
+        if(topics==null) {
+            topics=new LinkedList<Element>();
+        }
+        map.addStaticProperty(CddlmConstants.PROPERTY_WSNT_TOPIC,topics);
+
+        SoapElement fixedElt= new SoapElement("wsnt:FixedTopicSet",
+                CddlmConstants.WSRF_WSNT_NAMESPACE,
+                Boolean.toString(fixed));
+        map.addStaticProperty(CddlmConstants.PROPERTY_WSNT_FIXED_TOPIC_SET, fixedElt);
+
+        List<Element> topicExpressionDialects=new ArrayList(dialects.length);
+        for(int i=0;i<dialects.length;i++) {
+            topicExpressionDialects.add(new SoapElement("wsnt:TopicExpressionDialects",
+                    CddlmConstants.WSRF_WSNT_NAMESPACE,
+                    dialects[i]));
+        }
+        map.addStaticProperty(CddlmConstants.PROPERTY_WSNT_TOPIC_EXPRESSION_DIALOGS, topicExpressionDialects);
+    }
+
+
+    public static SoapElement WsRfRpElement(String name) {
+        return new SoapElement(
+                "wsrf-rp:" + name,
+                Constants.WSRF_WSRP_NAMESPACE);
+    }
+
+    /**
+     * Turn an element into a one-element list
+     * @param elt
+     * @return a list containing the element
+     */
+    public static List<Element> listify(Element elt) {
+        List<Element> list = new LinkedList<Element>();
+        list.add(elt);
+        return list;
     }
 }

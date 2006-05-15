@@ -48,6 +48,7 @@ public class OptionProcessor extends SystemProcessor {
     private static final Log log = LogFactory.getLog(OptionProcessor.class);
     private static final String OPTION_ATTR_NAME = "name";
     private OptionPropertyMap optionPropertyMap;
+    public static final String MUST_UNDERSTAND = "mustUnderstand";
 
     public OptionProcessor(WsrfHandler owner) {
         super(owner);
@@ -105,8 +106,8 @@ public class OptionProcessor extends SystemProcessor {
     }
 
     private boolean getMustUnderstand(Element option) {
-        XomHelper.getApiAttrValue(option, "mustUnderstand", false);
-        boolean mustUnderstand = XomHelper.getBoolApiAttrValue(option, "mustUnderstand", false,false);
+        XomHelper.getApiAttrValue(option, MUST_UNDERSTAND, false);
+        boolean mustUnderstand = XomHelper.getBoolApiAttrValue(option, MUST_UNDERSTAND, false,false);
         return mustUnderstand;
     }
 
@@ -226,3 +227,5 @@ public class OptionProcessor extends SystemProcessor {
         return optionPropertyMap;
     }
 }
+
+

@@ -156,6 +156,9 @@
       <dependency groupID="org.smartfrog"
           artifactID="sf-m32"
           version="${smartfrog.version}"/>
+      <dependency groupID="org.smartfrog"
+          artifactID="sf-loggingservices"
+          version="${smartfrog.version}"/>
     </m2:libraries>
   </target>
 
@@ -403,6 +406,15 @@ because javac was bailing out with some error about unzipping -->
 
 
   <!-- ========================================================== -->
+  <!-- this is an override point -->
+  <!-- dependencies and setup logic needed to run tests-->
+  <!-- ========================================================== -->
+
+  <target name="ready-to-test" depends="unittest.ready-to-test">
+    <property name="test.endpoint" value="http://localhost:8080/alpine/portal/"/>
+  </target>
+
+  <!-- ========================================================== -->
   <!-- set up any properties for deployment -->
   <!-- ========================================================== -->
 
@@ -412,6 +424,7 @@ because javac was bailing out with some error about unzipping -->
     <property name="deploy.sf" value="files/deployserver.sf"/>
     <property name="deployapi.war.dir" value="${war.dir}"/>
     <property name="parse.quiet" value="true"/>
+    <property name="test.endpoint" value="http://localhost:8080/alpine/portal/" />
   </target>
 
 
@@ -586,6 +599,7 @@ because javac was bailing out with some error about unzipping -->
     <presetdef name="ssh-cmd">
       <sshexec host="${ssh.server}"
           username="${ssh.user}"
+          port="${ssh.port}"
           passphrase="${ssh.passphrase}"
           keyfile="${ssh.keyfile}"/>
     </presetdef>
@@ -603,7 +617,6 @@ because javac was bailing out with some error about unzipping -->
   <target name="ssh-mkdirs" depends="ssh-init">
     <ssh-cmd command="mkdir -p ${ssh.dir}/bin"/>
     <ssh-cmd command="mkdir -p ${ssh.dir}/lib"/>
-    <ssh-cmd failonerror="false" command="cd ${ssh.dir}/bin; ./sfStopDaemon localhost"/>
   </target>
 
   <target name="ssh-prepare-files" depends="install">
@@ -611,7 +624,7 @@ because javac was bailing out with some error about unzipping -->
   </target>
 
   <!-- insert trust="true" to turn on trust -->
-  <target name="scp-upload" depends="ssh-init,ssh-mkdirs,ssh-prepare-files">
+  <target name="scp-upload" depends="ssh-init,ssh-mkdirs,ssh-stop,ssh-prepare-files">
     <echo>SCP target is ${ssh.server}</echo>
     <property name="ssh.path"
         value="${ssh.user}@${ssh.server}:${ssh.dir}"/>
@@ -619,14 +632,20 @@ because javac was bailing out with some error about unzipping -->
     <ssh-cp remoteToDir="${ssh.path}/lib">
       <fileset refid="ssh.fileset"/>
     </ssh-cp>
+    <property name="server.local.bin.dir" location="hosts/${server}" />
     <ssh-cp remoteToDir="${ssh.path}/bin">
-      <fileset dir="hosts/${server}" includes="default.*"/>
+      <fileset dir="${server.local.bin.dir}" includes="default.*"/>
     </ssh-cp>
 
   </target>
 
-  <target name="ssh-run" depends="ssh-init">
-    <ssh-cmd command="cd ${ssh.dir}; nohup ./sfStopDaemon > log.txt &amp;"/>
+  <target name="ssh-stop" depends="ssh-init">
+    <ssh-cmd command="cd ${ssh.dir}; nohup ./sfStopDaemon localhost &amp;"
+    failonerror="false"/>
+  </target>
+
+  <target name="ssh-start" depends="ssh-init">
+    <ssh-cmd command="cd ${ssh.dir}; nohup ./sfStartDaemon &amp;"/>
   </target>
 
   <target name="scp" depends="scp-upload"
@@ -687,6 +706,9 @@ because javac was bailing out with some error about unzipping -->
               <syspropertyset>
                 <propertyref prefix="http."/>
               </syspropertyset>
+              <syspropertyset>
+                <propertyref prefix="test."/>
+              </syspropertyset>
               <classpath>
                 <path refid="tests.run.classpath"/>
               </classpath>
@@ -709,21 +731,27 @@ because javac was bailing out with some error about unzipping -->
     </macrodef>
   </target>
 
-  <target name="interop-hp" depends="prepare-interop-tests">
+  <target name="interop-hp" depends="prepare-interop-tests"
+      description="test against hp">
     <interop-test endpoint="hp"/>
   </target>
 
-  <target name="interop-nec" depends="prepare-interop-tests">
-    <interop-test endpoint="nec"/>
+  <target name="interop-nec" depends="prepare-interop-tests"
+      description="test against nec">
+    <interop-test endpoint="nec"
+        />
   </target>
 
-  <target name="interop-ourgrid" depends="prepare-interop-tests">
+  <target name="interop-ourgrid" depends="prepare-interop-tests"
+      description="test against ourgrid">
     <interop-test endpoint="ourgrid"/>
   </target>
 
-  <target name="interop" depends="interop-hp,interop-nec,interop-ourgrid"/>
+  <target name="interop" depends="interop-hp,interop-nec,interop-ourgrid"
+      description="test all endpoints"/>
 
-  <target name="publish-results" depends="init-interop-tests">
+  <target name="publish-results" depends="init-interop-tests"
+      description="scp up the interop test results">
     <fail unless="publish.server">No publish.server defined</fail>
     <fail unless="publish.user">No publish.userdefined</fail>
     <fail unless="publish.path">No publish.path defined, e.g. /home/slo/public_html</fail>
@@ -752,5 +780,6 @@ because javac was bailing out with some error about unzipping -->
 
   </target>
 
-  <target name="interop-all" depends="interop,publish-results"/>
+  <target name="interop-all" depends="interop,publish-results"
+      description="run the interop tests and publish the results remotely"/>
 </project>

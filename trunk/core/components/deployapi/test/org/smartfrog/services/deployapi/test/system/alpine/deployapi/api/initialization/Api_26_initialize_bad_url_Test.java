@@ -20,16 +20,19 @@
 package org.smartfrog.services.deployapi.test.system.alpine.deployapi.api.initialization;
 
 import org.smartfrog.services.deployapi.test.system.alpine.deployapi.api.UnimplementedTestBase;
+import org.smartfrog.services.deployapi.test.system.alpine.deployapi.api.StandardTestBase;
+import org.smartfrog.projects.alpine.om.base.SoapElement;
+import org.smartfrog.projects.alpine.om.soap11.MessageDocument;
+import org.ggf.cddlm.generated.api.CddlmConstants;
+import nu.xom.Document;
+import nu.xom.Element;
 
 /**
  * created 13-Apr-2006 13:51:02
  * Create a system , then destroy it immediately.
  */
 
-public class Api_26_initialize_bad_url_Test extends UnimplementedTestBase {
-
-
-
+public class Api_26_initialize_bad_url_Test extends StandardTestBase {
 
     public Api_26_initialize_bad_url_Test(String name) {
         super(name);
@@ -44,5 +47,25 @@ public class Api_26_initialize_bad_url_Test extends UnimplementedTestBase {
         createSystem(null);
     }
 
+    public void testHostnameThatDoesntResolve() throws Exception {
+        assertDeploymentFails("http://noname.example.org");
+    }
 
+    public void testNonXMLFile() throws Exception {
+        assertDeploymentFails("http://www.ggf.org/");
+    }
+
+    public void testPasswordFile() throws Exception {
+        assertDeploymentFails("http://www.ggf.org/");
+    }
+
+    private void assertDeploymentFails(String url) {
+        try {
+            deployCdlURL(url);
+            fail("Expected deployment of "+url+" to fail");
+        } catch (Exception e) {
+            //success
+        }
+    }
 }
+

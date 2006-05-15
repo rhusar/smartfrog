@@ -18,6 +18,8 @@ For more information: www.smartfrog.org
 
 */
 #include "/org/smartfrog/services/deployapi/components/alpine/deployapi_on_alpine.sf"
+#include "/org/smartfrog/services/logging/log4j/logtolog4jimpl.sf"
+#include "/org/smartfrog/sfcore/logging/components.sf"
 
 /**
  * this is the OB510 "pelvoux" laptop that hosts the interop test server of Alpine
@@ -32,7 +34,19 @@ Pelvoux extends Compound {
     parentDir homedir;
    }
 
-   alpine extends DeployServer {
+
+  log extends SFLog {
+    //log against our parent
+    logFrom LAZY PARENT;
+    //now log4j kicks in
+    logTo extends LogToLog4JImpl {
+
+      resource "log4j.properties";
+
+    }
+  }
+
+  alpine extends DeployServer {
 
      home homedir;
 

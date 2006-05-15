@@ -45,8 +45,8 @@ public class Api_13_system_multiple_systems_Test extends StandardTestBase {
         super.setUp();
         createSystem(null);
         system2 = getPortal().create(null);
-        resID = getSystem().getResourceProperty(CddlmConstants.PROPERTY_MUWS_RESOURCEID).getValue();
-        resID2 = system2.getResourceProperty(CddlmConstants.PROPERTY_MUWS_RESOURCEID).getValue();
+        resID = getSystem().getResourcePropertySingle(CddlmConstants.PROPERTY_MUWS_RESOURCEID).getValue();
+        resID2 = system2.getResourcePropertySingle(CddlmConstants.PROPERTY_MUWS_RESOURCEID).getValue();
     }
 
     /**

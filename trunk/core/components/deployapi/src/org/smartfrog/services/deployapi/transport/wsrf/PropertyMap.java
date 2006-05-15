@@ -25,6 +25,7 @@ import nu.xom.Element;
 import javax.xml.namespace.QName;
 import java.util.Hashtable;
 import java.util.Map;
+import java.util.List;
 
 /**
  * A property map represents a source of live or static WSRP properties.
@@ -70,7 +71,7 @@ public class PropertyMap implements WSRPResourceSource {
      * @param name
      * @return the value or null for no match
      */
-    public Element getProperty(QName name) {
+    public List<Element> getProperty(QName name) {
         Property property = lookupProperty(name);
         if(property!=null) {
             return property.getValue();
@@ -102,5 +103,16 @@ public class PropertyMap implements WSRPResourceSource {
         add(property);
     }
 
+
+    /**
+     * Add a static property
+     *
+     * @param name  property name
+     * @param value property value
+     */
+    public void addStaticProperty(QName name, List<Element> value) {
+        StaticProperty property = new StaticProperty(name, value);
+        add(property);
+    }
 
 }

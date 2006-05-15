@@ -23,6 +23,7 @@ import nu.xom.Document;
 import nu.xom.Element;
 import org.ggf.cddlm.generated.api.CddlmConstants;
 import org.smartfrog.projects.alpine.om.base.SoapElement;
+import org.smartfrog.projects.alpine.faults.AlpineRuntimeException;
 import org.smartfrog.services.deployapi.test.system.alpine.deployapi.api.StandardTestBase;
 
 /**
@@ -48,13 +49,18 @@ public class Api_27_unknown_languages_rejected_Test extends StandardTestBase {
         createSystem(null);
     }
 
-    public void testUknownLanguage() throws Exception {
+    public void testUnknownLanguage() throws Exception {
         Document document = loadCdlDocument(CddlmConstants.INTEROP_API_TEST_DOC_1_VALID_DESCRIPTOR);
         Element cdl = (Element) document.getRootElement().copy();
         SoapElement request = getDescriptorHelper()
                 .createInitRequestInline("http://www.gridforum.org/namespaces/2008/02/cddlm/CDL-1.5", cdl, null);
-        getSystem().initialize(request);
-        getSystem().ping();
+        try {
+            getSystem().initialize(request);
+            fail("expected a fault");
+        } catch (AlpineRuntimeException e) {
+            //success
+        }
     }
 
 }
+

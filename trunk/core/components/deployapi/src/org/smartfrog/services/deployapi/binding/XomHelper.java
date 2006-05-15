@@ -25,6 +25,7 @@ import nu.xom.Element;
 import nu.xom.Node;
 import nu.xom.Nodes;
 import static org.ggf.cddlm.generated.api.CddlmConstants.CDL_API_TYPES_NAMESPACE;
+import org.ggf.cddlm.generated.api.CddlmConstants;
 import org.smartfrog.projects.alpine.om.base.SoapElement;
 import org.smartfrog.services.deployapi.system.Constants;
 import org.smartfrog.services.deployapi.transport.faults.FaultRaiser;
@@ -38,6 +39,7 @@ import java.net.URI;
  */
 public class XomHelper extends XomUtils {
     public static final String API = "api:";
+    public static final String CMP = "cmp:";
     public static final String WSRF_RL = "wsrf-rl:";
     public static final String MUWSP1_XS = "muws-p1-xs:";
     public static final String TNS = CDL_API_TYPES_NAMESPACE;
@@ -52,6 +54,7 @@ public class XomHelper extends XomUtils {
         return new SoapElement(API + name,
                 CDL_API_TYPES_NAMESPACE);
     }
+
 
 
     /**
@@ -157,6 +160,18 @@ public class XomHelper extends XomUtils {
             return defval;
         }
         return getXsdBoolValue(val);
+    }
+
+    /**
+     * Create a new API element with the api: prefix in the API namespace
+     *
+     * @param name localname
+     *
+     * @return a new element
+     */
+    public static SoapElement cmpElement(String name) {
+        return new SoapElement(CMP + name,
+                CddlmConstants.CDL_CMP_TYPES_NAMESPACE);
     }
 
     /**
@@ -315,3 +330,6 @@ public class XomHelper extends XomUtils {
     }
 
 }
+
+
+

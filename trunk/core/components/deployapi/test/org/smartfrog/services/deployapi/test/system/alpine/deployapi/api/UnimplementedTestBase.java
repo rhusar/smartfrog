@@ -24,13 +24,25 @@ package org.smartfrog.services.deployapi.test.system.alpine.deployapi.api;
  */
 
 public abstract class UnimplementedTestBase extends StandardTestBase {
+    /**
+     * {@value}
+     */
+    public static final String TEST_IMPLEMENTED = "test.implemented";
 
     public UnimplementedTestBase(String name) {
         super(name);
     }
 
+    /**
+     * raise a fault if unimplemented stuff is not excluded by setting the
+     *  test.implemented property
+     * @throws Exception
+     */
     public void testNotImplemented() throws Exception {
-        fail("This test has not been implemented, which may mean that the"
+        String implemented = getJunitParameter(TEST_IMPLEMENTED, false);
+        if(implemented==null) {
+            fail("This test has not been implemented, which may mean that the"
                 + " underlying features have not been implemented in the client");
+        }
     }
 }
