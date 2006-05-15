@@ -23,8 +23,13 @@ package org.smartfrog.services.logging.log4j;
 /**
  */
 public interface LogToLog4J {
-    /** String name for optional attribute "configuratorFile". */
+    /** String name for optional attribute {@value}. */
     final static String ATR_CONFIGURATOR_FILE = "configuratorFile";
+
+    /**
+     * Name of a resource to use
+     */
+    final static String ATR_RESOURCE = "resource";
 
 // Log4J 1.3 removes Configure and Wath
 //    /** String name for optional attribute "configureAndWatch". */
@@ -35,5 +40,5 @@ public interface LogToLog4J {
     /** String name for optional attribute "setLog4JLoggerLevel". */
     final static String ATR_SET_INI_LOG4J_LOGGER_LEVEL = "setIniLog4JLoggerLevel";
     /** String name for optional attribute "setLog4JLoggerLevel". */
-    final static String ATR_INGNORE_SET_LOG_LEVEL = "ignoreSetLogLevel";
+    final static String ATR_IGNORE_SET_LOG_LEVEL = "ignoreSetLogLevel";
 }
