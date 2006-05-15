@@ -206,6 +206,10 @@ public class Application implements WSRPResourceSource {
         WsrfUtils.addManagementCharacteristics(properties, CddlmConstants.CDL_API_SYSTEM_CAPABILITY);
         properties.addStaticProperty(CddlmConstants.PROPERTY_SYSTEM_STARTED_TIME, "");
         properties.addStaticProperty(CddlmConstants.PROPERTY_SYSTEM_TERMINATED_TIME, "");
+        properties.add(new ApplicationStateProperty(this));
+        //the list of topics
+        WsrfUtils.addWsTopics(properties, null, true, WsrfUtils.DEFAULT_TOPIC_DIALECTS);
+
     }
 
     /**
@@ -642,7 +646,7 @@ public class Application implements WSRPResourceSource {
      * @return null for no match;
      * @throws BaseException if they feel like it
      */
-    public Element getProperty(QName resource) {
+    public List<Element> getProperty(QName resource) {
         return properties.getProperty(resource);
 
     }
@@ -675,7 +679,18 @@ public class Application implements WSRPResourceSource {
     }
 
 
-    public Element ping(Element request) {
+    public SoapElement ping(Element request) {
+        //what is our current state
+        SoapElement pingBack = XomHelper.apiElement(Constants.API_ELEMENT_PING_RESPONSE);
+
+        LifecycleStateEnum state = getState();
+        SoapElement pingBody = state.toCmpState();
+        pingBack.appendChild(pingBody);
+        if(state == LifecycleStateEnum.instantiated || state == LifecycleStateEnum.terminated) {
+            //instantiated but no deployment has commened.
+            return pingBack;
+        }
+
         Prim target = resolvePrimNonFaulting();
         if (target == null) {
             throw new BaseException(Constants.F_LIVENESS_EXCEPTION);
@@ -684,7 +699,7 @@ public class Application implements WSRPResourceSource {
             //TODO: ping the app to determine its real health
             target.sfPing(null);
             //TODO: state
-            return XomHelper.apiElement(Constants.API_ELEMENT_PING_RESPONSE);
+            return pingBack;
         } catch (SmartFrogLivenessException e) {
             throw new BaseException(Constants.F_LIVENESS_EXCEPTION, e);
         } catch (RemoteException e) {
@@ -729,3 +744,6 @@ public class Application implements WSRPResourceSource {
 
 
 }
+
+
+

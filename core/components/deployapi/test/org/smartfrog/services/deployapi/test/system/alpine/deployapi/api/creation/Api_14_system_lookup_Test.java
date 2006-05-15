@@ -42,14 +42,14 @@ public class Api_14_system_lookup_Test extends StandardTestBase {
     protected void setUp() throws Exception {
         super.setUp();
         createSystem(null);
-        resID = getSystem().getResourceProperty(CddlmConstants.PROPERTY_MUWS_RESOURCEID).getValue();
+        resID = getSystem().getResourcePropertySingle(CddlmConstants.PROPERTY_MUWS_RESOURCEID).getValue();
     }
 
 
     public void testLookup() throws Exception {
         SystemSession system2 = getPortal().lookupSystem(resID);
         assertNotNull(system2);
-        String resID2 = system2.getResourceProperty(CddlmConstants.PROPERTY_MUWS_RESOURCEID).getValue();
+        String resID2 = system2.getResourcePropertySingle(CddlmConstants.PROPERTY_MUWS_RESOURCEID).getValue();
         assertEquals(resID, resID2);
     }
 

@@ -115,7 +115,14 @@ public class DescriptorHelper extends XomHelper {
             }
             return retrieveRemoteReference(reference.getValue(), extension);
         } else {
-            File file = saveBodyToTempFile(body, false, extension);
+            Elements children=body.getChildElements();
+            if(children.size()!=1) {
+                throw raiseBadArgumentFault("Invalid content in the "
+                        +BODY
+                        +" element of the deployment request");
+            }
+            Element content=children.get(0);
+            File file = saveElementToTempFile(content, false, extension);
             file.deleteOnExit();
             return file;
         }
@@ -155,16 +162,16 @@ public class DescriptorHelper extends XomHelper {
     /**
      * Save the body to a temp file
      * The body is detached in the process
-     * @param body
+     * @param element
      * @param savecopy
      * @param extension
      * @return
      * @throws IOException
      */
 
-    public File saveBodyToTempFile(Element body,
-                                   boolean savecopy,
-                                   String extension) throws
+    public File saveElementToTempFile(Element element,
+                                      boolean savecopy,
+                                      String extension) throws
             IOException {
         File tempfile = createTempFile(extension);
         FileOutputStream fileout = new FileOutputStream(tempfile);
@@ -173,11 +180,11 @@ public class DescriptorHelper extends XomHelper {
         try {
             Serializer serializer = new Serializer(out);
             if(savecopy) {
-                body=(Element) body.copy();
+                element =(Element) element.copy();
             } else {
-                body.detach();
+                element.detach();
             }
-            Document doc = new Document(body);
+            Document doc = new Document(element);
             serializer.write(doc);
             serializer.flush();
         } finally {
@@ -249,7 +256,7 @@ public class DescriptorHelper extends XomHelper {
      * @throws ParsingException
      * @throws IOException
      */
-    public Element loadInlineDescriptor(File file,
+    public SoapElement loadInlineDescriptor(File file,
                                         String language) throws
             ParsingException, IOException {
         Document document = loadDocument(file);
@@ -263,7 +270,7 @@ public class DescriptorHelper extends XomHelper {
         return document;
     }
 
-    private Element inlineDescriptorFromDocument(Document document,
+    private SoapElement inlineDescriptorFromDocument(Document document,
                                                  String language) {
         Element rootElement = detachRootElement(document);
         return createInlineDescriptor(rootElement, language);
@@ -313,6 +320,8 @@ public class DescriptorHelper extends XomHelper {
         return createReferenceXomDescriptor(url, SMARTFROG_NAMESPACE);
     }
 
+
+
     public SoapElement createSmartFrogInlineDescriptor(File file)
             throws IOException {
         String contents = loadSmartFrogFile(file);
@@ -333,7 +342,9 @@ public class DescriptorHelper extends XomHelper {
             Element descriptor, List<Element> options) {
         SoapElement body = XomHelper.apiElement("body", descriptor);
         SoapElement dt = XomHelper.apiElement("descriptor", body);
-        XomHelper.addApiAttr(dt, "language", language);
+        if(language!=null) {
+            XomHelper.addApiAttr(dt, "language", language);
+        }
         return completeInitRequest(dt, options);
     }
 
@@ -363,7 +374,9 @@ public class DescriptorHelper extends XomHelper {
                                             String descriptorURL, List<Element> options) {
         SoapElement ref = XomHelper.apiElement("reference", descriptorURL);
         SoapElement dt = XomHelper.apiElement("descriptor", ref);
-        XomHelper.addApiAttr(dt, "language", language);
+        if(language!=null) {
+            XomHelper.addApiAttr(dt, "language", language);
+        }
         return completeInitRequest(dt, options);
     }
 
@@ -386,16 +399,14 @@ public class DescriptorHelper extends XomHelper {
         return contents;
     }
 
-    public Element createCDLReferenceDescriptor(String url) {
+    public SoapElement createCDLReferenceDescriptor(String url) {
         return createReferenceXomDescriptor(url, XML_CDL_NAMESPACE);
     }
 
-    public Element createCDLInlineDescriptor(File file) throws IOException,
+    public SoapElement createCDLInlineDescriptor(File file) throws IOException,
             ParsingException {
         return loadInlineDescriptor(file, XML_CDL_NAMESPACE);
     }
-
-
 
     public void validateRequest(Element request) {
         checkArg(API_ELEMENT_INITALIZE_REQUEST.equals(request.getLocalName()),
@@ -456,4 +467,7 @@ public class DescriptorHelper extends XomHelper {
         return request;
     }
 }
+
+
+
 

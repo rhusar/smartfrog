@@ -70,11 +70,14 @@ public class CreateProcessor extends AlpineProcessor {
             hostname=host.getValue().trim()
                     .toLowerCase(Locale.ENGLISH);
         }
-        
+        //REVISIT: delete
+        /* turning this off to see what happens.
+
         if (!Constants.LOCALHOST.equals(hostname)
                 && !Constants.LOCALHOST_IPV4.equals(hostname)) {
             throw new BaseException(Constants.F_UNSUPPORTED_CREATION_HOST);
         }
+        */
 
         job = repository.createNewJob(hostname);
 
@@ -88,3 +91,5 @@ public class CreateProcessor extends AlpineProcessor {
         return response;
     }
 }
+
+

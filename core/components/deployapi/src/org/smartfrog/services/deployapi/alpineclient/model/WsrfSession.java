@@ -31,8 +31,11 @@ import org.smartfrog.projects.alpine.transport.TransmitQueue;
 import org.smartfrog.projects.alpine.wsa.AlpineEPR;
 import org.smartfrog.projects.alpine.xmlutils.XsdUtils;
 import org.smartfrog.services.deployapi.system.Constants;
+import org.smartfrog.services.deployapi.transport.wsrf.WsrfUtils;
 
 import javax.xml.namespace.QName;
+import java.util.List;
+
 
 /**
  * Base class for commonality for {@link PortalSession} and {@link SystemSession}
@@ -57,6 +60,14 @@ public abstract class WsrfSession extends Session {
     public static final QName QNAME_WSRF_GET_PROPERTY_RESPONSE = new QName(
             CddlmConstants.WSRF_WSRP_NAMESPACE,
             CddlmConstants.WSRF_RP_ELEMENT_GETRESOURCEPROPERTY_RESPONSE);
+
+    public static final QName QNAME_WSRF_GET_MULTIPLE_PROPERTIES = new QName(
+            CddlmConstants.WSRF_WSRP_NAMESPACE,
+            CddlmConstants.WSRF_RP_ELEMENT_GETMULTIPLERESOURCEPROPERTIES_REQUEST);
+
+    public static final QName QNAME_WSRF_GET_MULTIPLE_PROPERTIES_RESPONSE = new QName(
+            CddlmConstants.WSRF_WSRP_NAMESPACE,
+            CddlmConstants.WSRF_RP_ELEMENT_GETMULTIPLERESOURCEPROPERTIES_RESPONSE);
 
     public static final QName QNAME_WSRF_RL_DESTROY_REQUEST = new QName(
             CddlmConstants.WSRF_WSRL_NAMESPACE,
@@ -147,18 +158,12 @@ public abstract class WsrfSession extends Session {
      * @param tx
      * @return the contents of the response.
      */
-    public Element endGetResourceProperty(Transmission tx) {
+    public List<Element> endGetResourceProperty(Transmission tx) {
         tx.blockForResult(getTimeout());
         extractResponse(tx, QNAME_WSRF_GET_PROPERTY_RESPONSE);
         Element payload = tx.getResponse().getPayload();
-        Element child = XsdUtils.getFirstChildElement(payload);
-        if (child == null) {
-            AlpineRuntimeException fault;
-            fault = new ClientException("No child element in the response to the request");
-            tx.addMessagesToFault(fault);
-            throw fault;
-        }
-        return child;
+        List<Element> resultList=XsdUtils.makeList(payload.getChildElements());
+        return resultList;
     }
 
     /**
@@ -167,16 +172,81 @@ public abstract class WsrfSession extends Session {
      * @param property
      * @return
      */
-    public Element getResourceProperty(QName property) {
-        return endGetResourceProperty(beginGetResourceProperty(property));
+    public Element getResourcePropertySingle(QName property) {
+        Transmission tx = beginGetResourceProperty(property);
+        List<Element> elements = endGetResourceProperty(tx);
+        AlpineRuntimeException fault=null;
+        if (elements.size()==0) {
+            fault = new ClientException("No child element in the response to the request");
+        } else if (elements.size() > 1) {
+            fault = new ClientException("Too many children in response");
+        }
+        if(fault!=null) {
+            tx.addMessagesToFault(fault);
+            throw fault;
+        }
+        return elements.get(0);
     }
 
+    public List<Element> getResourcePropertyList(QName property) {
+        Transmission tx = beginGetResourceProperty(property);
+        List<Element> elements = endGetResourceProperty(tx);
+        return elements;
+    }
+
+    /**
+     * Get the text value of a resource property
+     * @param property
+     * @return
+     */
     public String getResourcePropertyValue(QName property) {
-        Element e=getResourceProperty(property);
+        Element e=getResourcePropertySingle(property);
         if(e==null) {
             return null;
         }
         return e.getValue();
+    }
+
+    /**
+     * Start a WSRF_RP GetResourceProperty request
+     *
+     * @param properties a list of properties to get
+     * @return the started transmission
+     */
+    public Transmission beginGetMultipleResourceProperties(List<QName> properties) {
+        SoapElement request;
+        request = WsrfUtils.WsRfRpElement(CddlmConstants.WSRF_RP_ELEMENT_GETMULTIPLERESOURCEPROPERTIES_REQUEST);
+
+        for(QName property:properties) {
+            //add the namespace
+            SoapElement child=WsrfUtils.WsRfRpElement("ResourceProperty");
+            String prefix = property.getPrefix();
+            if (prefix.length() == 0) {
+                prefix = PRIVATE_NAMESPACE;
+            }
+            child.addNamespaceDeclaration(prefix, property.getNamespaceURI());
+            //and the value
+            child.appendChild(prefix + ":" + property.getLocalPart());
+            //add the child to the graph
+            request.appendChild(child);
+        }
+        return queue(CddlmConstants.WSRF_OPERATION_GETRESOURCEPROPERTY, request);
+    }
+
+
+    /**
+     * end the transmission. This returns the payload, which contains the
+     * nested elements which can then be asked for by qname.
+     * @param tx
+     * @return
+     */
+    public Element endGetMultipleResourceProperties(Transmission tx) {
+        tx.blockForResult(getTimeout());
+        return extractResponse(tx, QNAME_WSRF_GET_MULTIPLE_PROPERTIES_RESPONSE);
+    }
+
+    public Element getMultipleResourceProperties(List<QName> properties) {
+        return endGetMultipleResourceProperties(beginGetMultipleResourceProperties(properties));
     }
 
     /**

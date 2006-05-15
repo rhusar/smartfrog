@@ -24,6 +24,8 @@ import nu.xom.Element;
 import org.smartfrog.projects.alpine.om.base.SoapElement;
 
 import javax.xml.namespace.QName;
+import java.util.List;
+import java.util.LinkedList;
 
 /**
  * this class holds a static resource mapping, stored as a Xom Element.
@@ -31,24 +33,27 @@ import javax.xml.namespace.QName;
 public class StaticProperty implements Property {
 
     private QName name;
-    private Element value;
+    private List<Element> value;
 
     public StaticProperty() {
     }
 
+
     public StaticProperty(QName name, Element value) {
         this.name = name;
-        this.value = value;
+        setValue(value);
     }
 
     public StaticProperty(QName name, String value) {
         this.name = name;
-        Element elt=new SoapElement(name);
-        elt.appendChild(value);
-        this.value = elt;
+        setValue(value);
     }
 
-    
+    public StaticProperty(QName name, List<Element> value) {
+        this.name = name;
+        this.value = value;
+    }
+
     public QName getName() {
         return name;
     }
@@ -57,11 +62,21 @@ public class StaticProperty implements Property {
         this.name = name;
     }
 
-    public Element getValue() {
+    public List<Element> getValue() {
         return value;
     }
 
     public void setValue(Element value) {
+        setValue(WsrfUtils.listify(value));
+    }
+
+    public void setValue(String  value) {
+        Element elt = new SoapElement(name);
+        elt.appendChild(value);
+        setValue(elt);
+    }
+
+    public void setValue(List<Element> value) {
         this.value = value;
     }
 

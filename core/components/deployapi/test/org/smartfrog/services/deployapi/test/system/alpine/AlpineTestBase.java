@@ -24,6 +24,7 @@ import nu.xom.Element;
 import nu.xom.Nodes;
 import nu.xom.XPathContext;
 import nu.xom.ParsingException;
+import nu.xom.Elements;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.ggf.cddlm.generated.api.CddlmConstants;
@@ -37,6 +38,7 @@ import org.smartfrog.projects.alpine.transport.TransmitQueue;
 import org.smartfrog.projects.alpine.wsa.AlpineEPR;
 import org.smartfrog.services.deployapi.alpineclient.model.PortalSession;
 import org.smartfrog.services.deployapi.alpineclient.model.SystemSession;
+import org.smartfrog.services.deployapi.alpineclient.model.WsrfSession;
 import org.smartfrog.services.deployapi.transport.wsrf.WsrfUtils;
 import org.smartfrog.services.deployapi.binding.DescriptorHelper;
 import org.smartfrog.services.xml.utils.ResourceLoader;
@@ -49,6 +51,7 @@ import java.net.MalformedURLException;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.List;
 import java.io.IOException;
 import java.io.File;
 
@@ -63,6 +66,7 @@ public abstract class AlpineTestBase extends TestCase {
     private PortalSession portal;
     private SystemSession system;
     public static final String ENDPOINT_PROPERTY = "endpoint";
+    public static final String TEST_ENDPOINT_PROPERTY = "test."+ENDPOINT_PROPERTY;
     private boolean validating = false;
     private boolean concurrent = false;
     public static final String CONCURRENT_PROPERTY = "concurrent";
@@ -87,7 +91,10 @@ public abstract class AlpineTestBase extends TestCase {
         super.setUp();
         //TODO: be more dynamic on smartfrog and so read our settings directly.
         // But how to get our deploying prim?
-        String target = getJunitParameter(ENDPOINT_PROPERTY, true);
+        String target = getJunitParameter(TEST_ENDPOINT_PROPERTY, false);
+        if(target==null) {
+            target = getJunitParameter(ENDPOINT_PROPERTY, true);
+        }
         bindToPortal(target);
         xpath = CdlCatalog.createXPathContext();
         resourceLoader = new ResourceLoader(getClass());
@@ -193,7 +200,7 @@ public abstract class AlpineTestBase extends TestCase {
     }
 
     protected Element getProperty(QName property) {
-        Element result = getPortal().getResourceProperty(property);
+        Element result = getPortal().getResourcePropertySingle(property);
         final String value = result.getValue();
         assertNotNull(value);
         return result;
@@ -207,13 +214,27 @@ public abstract class AlpineTestBase extends TestCase {
         return result;
     }
 
+    protected List<Element> getPropertyList(QName property) {
+        List<Element> result = getPortal().getResourcePropertyList(property);
+        return result;
+    }
+
     protected void assertCapable(String uri) {
         Element capabilities = getMuwsCapabilities();
         assertTrue("Missing capability " + uri, WsrfUtils.hasMuwsCapability(capabilities, uri));
     }
 
     protected Element getMuwsCapabilities() {
-        return getProperty(CddlmConstants.PROPERTY_MUWS_MANAGEABILITY_CHARACTERISTICS);
+        return getProperty(CddlmConstants.PROPERTY_MUWS_MANAGEABILITY_CAPABILITY);
+    }
+
+    protected Element getSystemMuwsCapabilities() {
+        return getSystem().getResourcePropertySingle(CddlmConstants.PROPERTY_MUWS_MANAGEABILITY_CAPABILITY);
+    }
+
+    protected void assertSystemCapable(String uri) {
+        Element capabilities = getSystemMuwsCapabilities();
+        assertTrue("Missing capability " + uri, WsrfUtils.hasMuwsCapability(capabilities, uri));
     }
 
     protected void assertQueryResolves(SoapElement element, String query) {
@@ -254,4 +275,20 @@ public abstract class AlpineTestBase extends TestCase {
         return xmlParser.parseString(xml,uri);
     }
 
+    public MessageDocument deployCdlURL(String url) throws Exception {
+        SoapElement request = getDescriptorHelper().createCDLReferenceDescriptor(url);
+        MessageDocument response = getSystem().initialize(request);
+        return response;
+    }
+
+    protected void assertGetMultiplePropertiesWorked(WsrfSession epr, List<QName> params) {
+        Element result = epr.getMultipleResourceProperties(params);
+        Elements elements = result.getChildElements();
+        assertEquals(params.size(), elements.size());
+        for(QName prop:params){
+            Element returned=result.getFirstChildElement(prop.getLocalPart(),prop.getNamespaceURI());
+            assertNotNull("Missing property "+prop, returned);
+        }
+    }
 }
+

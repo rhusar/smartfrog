@@ -1,6 +1,7 @@
 package org.smartfrog.services.deployapi.transport.endpoints.alpine;
 
 import nu.xom.Element;
+import nu.xom.Elements;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.smartfrog.projects.alpine.core.Context;
@@ -17,8 +18,11 @@ import org.smartfrog.services.deployapi.transport.faults.BaseException;
 import org.smartfrog.services.deployapi.transport.faults.DeploymentException;
 import org.smartfrog.services.deployapi.transport.faults.FaultRaiser;
 import org.smartfrog.services.deployapi.transport.wsrf.WSRPResourceSource;
+import org.smartfrog.services.deployapi.transport.wsrf.WsrfUtils;
+import org.smartfrog.services.xml.java5.iterators.ElementsIterator;
 
 import javax.xml.namespace.QName;
+import java.util.List;
 
 /**
  * This is the WSRF message handler.
@@ -63,7 +67,7 @@ public abstract class WsrfHandler extends HandlerBase implements MessageHandler 
     public void process(MessageContext messageContext,
                         EndpointContext endpointContext) {
         MessageDocument inMessage = messageContext.getRequest();
-        Element request = inMessage.getEnvelope().getBody().getFirstChildElement();
+        SoapElement request = inMessage.getPayload();
         String requestName = request.getLocalName();
         QName qName = XsdUtils.makeQName(request);
         log.info("received " + qName);
@@ -71,7 +75,7 @@ public abstract class WsrfHandler extends HandlerBase implements MessageHandler 
             GetResourceProperty(messageContext, request);
         }
         if (Constants.WSRF_OPERATION_GETMULTIPLERESOURCEPROPERTIES.equals(requestName)) {
-            throw FaultRaiser.raiseNotImplementedFault(qName.toString());
+            GetMultipleResourceProperties(messageContext, request);
         }
         if (Constants.WSRF_OPERATION_GETCURRENTMESSAGE
                 .equals(requestName)) {
@@ -101,36 +105,55 @@ public abstract class WsrfHandler extends HandlerBase implements MessageHandler 
     }
 
     /**
-     * Implementation of GetResourceProperty
+     * Resolve one property in a single or multiple request.
      *
      * @param messageContext
-     * @param request
+     * @param propertyRequest
      * @return
      */
-    public void GetResourceProperty(MessageContext messageContext, Element request) {
+    private List<Element> resolveOneProperty(MessageContext messageContext, Element propertyRequest) {
         //step1: get the resource source for this endpoint
         WSRPResourceSource source = retrieveResourceSource(messageContext);
         if (source == null) {
             throw new BaseException(Constants.F_WSRF_WSRP_UNKNOWN_RESOURCE);
         }
         //step2: get the qname out of the request
-        QName property;
-        String value = request.getValue();
-        property = XsdUtils.resolveQName(request, value, false);
-        if (property == null) {
-            throw invalidQNameException("Unable to resolve the qname in the request " + request.getValue());
-        }
+        QName property = extractQNameFromText(propertyRequest);
         //step3: resolve it
-        Element result = source.getProperty(property);
+        List<Element> result = source.getProperty(property);
         if (result == null) {
-            throw invalidQNameException(property.toString());
+            throw ResourceUnknownFault(property);
         }
+        return result;
+    }
+
+    private QName extractQNameFromText(Element propertyRequest) {
+        QName property;
+        String value = propertyRequest.getValue();
+        property = XsdUtils.resolveQName(propertyRequest, value, false);
+        if (property == null) {
+            throw invalidQNameException("Unable to resolve the qname in the request " + propertyRequest.getValue());
+        }
+        return property;
+    }
+
+
+    /**
+     * Implementation of GetResourceProperty
+     *
+     * @param messageContext
+     * @param request
+     * @return
+     */
+    public void GetResourceProperty(MessageContext messageContext, SoapElement request) {
+        List<Element> result = resolveOneProperty(messageContext, request);
 
         //step4: build the response
-        Element responseBody = new SoapElement(
-                "wsrf-rp:" + Constants.WSRF_RP_ELEMENT_GETRESOURCEPROPERTY_RESPONSE,
-                Constants.WSRF_WSRP_NAMESPACE);
-        responseBody.appendChild(result.copy());
+        Element responseBody = WsrfUtils
+                .WsRfRpElement(Constants.WSRF_RP_ELEMENT_GETRESOURCEPROPERTY_RESPONSE);
+        for(Element e:result) {
+            responseBody.appendChild(e.copy());
+        }
 
         //step5: append to the new response message
         messageContext.createResponse().getBody().appendChild(responseBody);
@@ -140,43 +163,58 @@ public abstract class WsrfHandler extends HandlerBase implements MessageHandler 
     }
 
     /**
-     * convert text of the form abc:local to a qname, within the context of the specified request
+     * Implementation of GetMultipleResourceProperties
      *
-     * @param text
+     * @param messageContext
      * @param request
-     * @return the qname
-     * @throws BaseException with WSRF-specific faults if things don't work.
+     * @return
      */
-    private QName textToQName(String text, Element request) {
-        if (text == null) {
-            throw invalidQNameException("");
+    public void GetMultipleResourceProperties(MessageContext messageContext, SoapElement request) {
+        //build the response
+        Element responseBody = WsrfUtils
+                .WsRfRpElement(Constants.WSRF_RP_ELEMENT_GETMULTIPLERESOURCEPROPERTIES_RESPONSE);
+
+        //iterate through elements
+        Elements requests = request.getChildElements();
+        ElementsIterator it=new ElementsIterator(requests);
+        for(Element oneRequest:it) {
+            QName propName=extractQNameFromText(oneRequest);
+            SoapElement se = new SoapElement(propName);
+            List<Element> result = resolveOneProperty(messageContext, oneRequest);
+            for(Element e:result) {
+                se.appendChild(e.copy());
+            }
+            responseBody.appendChild(se);
         }
-        text = text.trim();
-        int prefixIndex = text.indexOf(":");
-        if (prefixIndex == -1) {
-            throw invalidQNameException(text);
-        }
-        String prefix = text.substring(0, prefixIndex);
-        String local = text.substring(prefixIndex + 1);
-        if (prefix.length() == 0 || local.length() == 0) {
-            throw invalidQNameException(text);
-        }
-        String ns = request.getNamespaceURI(prefix);
-        if (ns == null) {
-            log.error("Prefix does not match to any namespace");
-            throw invalidQNameException(text);
-        }
-        QName qName = new QName(ns, local);
-        return qName;
+
+        //append to the new response message
+        messageContext.createResponse().getBody().appendChild(responseBody);
+
+        //declare ourselves as processed
+        messageContext.setProcessed(true);
     }
+
 
     private BaseException invalidQNameException(String qname) {
         log.error("Invalid QName : [" + qname + "]");
         BaseException baseException = new BaseException(Constants.F_WSRF_WSRP_INVALID_RESOURCE_PROPERTY_QNAME);
-        baseException.setFaultReason(qname);
+        baseException.setFaultReason("The qualified name is not valid in the context of this element: \""
+                +qname
+                +'"');
         return baseException;
     }
 
+    /**
+     * generate an unknown resource fault
+     * @param qname
+     * @return
+     */
+    private BaseException ResourceUnknownFault(QName qname) {
+        log.error("Unknown QName : [" + qname + "]");
+        BaseException baseException = new BaseException(Constants.F_WSRF_WSRP_UNKNOWN_RESOURCE);
+        baseException.setFaultReason("Unknown resource "+qname.toString());
+        return baseException;
+    }
 
     /**
      * check that the namespace is ok.

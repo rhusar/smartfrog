@@ -23,13 +23,11 @@ import nu.xom.Element;
 import static org.ggf.cddlm.generated.api.CddlmConstants.CDL_API_SYSTEM_CAPABILITY;
 import static org.ggf.cddlm.generated.api.CddlmConstants.MUWS_CAPABILITY_MANAGEABILITY_CHARACTERISTICS;
 import static org.ggf.cddlm.generated.api.CddlmConstants.MUWS_CAPABILITY_MANAGEABILITY_REFERENCES;
-import static org.ggf.cddlm.generated.api.CddlmConstants.PROPERTY_MUWS_MANAGEABILITY_CHARACTERISTICS;
 import static org.ggf.cddlm.generated.api.CddlmConstants.PROPERTY_SYSTEM_CREATED_TIME;
 import static org.ggf.cddlm.generated.api.CddlmConstants.PROPERTY_SYSTEM_STARTED_TIME;
 import static org.ggf.cddlm.generated.api.CddlmConstants.PROPERTY_SYSTEM_TERMINATED_TIME;
 import org.smartfrog.services.deployapi.alpineclient.model.SystemSession;
 import org.smartfrog.services.deployapi.test.system.alpine.deployapi.api.StandardTestBase;
-import org.smartfrog.services.deployapi.transport.wsrf.WsrfUtils;
 
 /**
  * created 13-Apr-2006 13:51:02
@@ -55,41 +53,34 @@ public class Api_06_system_properties_Test extends StandardTestBase {
         SystemSession system = getPortal().create(null);
         //this sets it up for cleanup on teardown
         setSystem(system);
-        Element time = system.getResourceProperty(PROPERTY_SYSTEM_CREATED_TIME);
+        Element time = system.getResourcePropertySingle(PROPERTY_SYSTEM_CREATED_TIME);
         String value = time.getValue();
         log.info("Created time=" + value);
     }
 
-    public void testMuwsCharacteristics() throws Exception {
-        Element muws = getSystem()
-                .getResourceProperty(PROPERTY_MUWS_MANAGEABILITY_CHARACTERISTICS);
+    public void testMuwsCapabilitiesFound() throws Exception {
+        Element muws = getSystemMuwsCapabilities();
     }
 
     public void testCapabilityCdlSystem() throws Exception {
-        Element muws = getSystem()
-                .getResourceProperty(PROPERTY_MUWS_MANAGEABILITY_CHARACTERISTICS);
-        WsrfUtils.hasMuwsCapability(muws, CDL_API_SYSTEM_CAPABILITY);
+        assertSystemCapable(CDL_API_SYSTEM_CAPABILITY);
     }
 
     public void testCapabilityMuwsManageabilityReferences() throws Exception {
-        Element muws = getSystem()
-                .getResourceProperty(PROPERTY_MUWS_MANAGEABILITY_CHARACTERISTICS);
-        WsrfUtils.hasMuwsCapability(muws, MUWS_CAPABILITY_MANAGEABILITY_REFERENCES);
+        assertSystemCapable(MUWS_CAPABILITY_MANAGEABILITY_REFERENCES);
     }
 
     public void testCapabilityMuwsManageabilityCharacteristics() throws Exception {
-        Element muws = getSystem()
-                .getResourceProperty(PROPERTY_MUWS_MANAGEABILITY_CHARACTERISTICS);
-        WsrfUtils.hasMuwsCapability(muws, MUWS_CAPABILITY_MANAGEABILITY_CHARACTERISTICS);
+        assertSystemCapable(MUWS_CAPABILITY_MANAGEABILITY_CHARACTERISTICS);
     }
 
     public void testStartedTimeExists() throws Exception {
-        Element time = getSystem().getResourceProperty(PROPERTY_SYSTEM_STARTED_TIME);
+        Element time = getSystem().getResourcePropertySingle(PROPERTY_SYSTEM_STARTED_TIME);
         assertNotNull(time);
     }
 
     public void testTerminatedTimeExists() throws Exception {
-        Element time = getSystem().getResourceProperty(PROPERTY_SYSTEM_TERMINATED_TIME);
+        Element time = getSystem().getResourcePropertySingle(PROPERTY_SYSTEM_TERMINATED_TIME);
         assertNotNull(time);
     }
 

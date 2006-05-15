@@ -48,7 +48,7 @@ public class Api_03_portal_getproperty_unknown_prefix_Test extends StandardTestB
             request = new SoapElement(WsrfSession.QNAME_WSRF_GET_PROPERTY);
             request.appendChild("api2:StaticPortalStatus");
             Transmission tx = wsrfSession.queue(CddlmConstants.WSRF_OPERATION_GETRESOURCEPROPERTY, request);
-            Element result = wsrfSession.endGetResourceProperty(tx);
+            wsrfSession.endGetResourceProperty(tx);
             fail("Fault not thrown");
         } catch (SoapException e) {
             Fault fault = e.getFault();

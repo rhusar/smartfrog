@@ -47,6 +47,7 @@ import java.math.BigInteger;
 import java.net.URL;
 import java.rmi.RemoteException;
 import java.util.Date;
+import java.util.List;
 
 
 /**
@@ -249,6 +250,7 @@ public class ServerInstance implements WSRPResourceSource {
         WsrfUtils.addManagementCharacteristics(properties, CddlmConstants.CDL_API_PORTAL_CAPABILITY);
 
         //the list of topics
+        WsrfUtils.addWsTopics(properties,null,true,WsrfUtils.DEFAULT_TOPIC_DIALECTS);
     }
 
     /**
@@ -259,7 +261,7 @@ public class ServerInstance implements WSRPResourceSource {
      * @throws org.smartfrog.services.deployapi.transport.faults.BaseException
      *          if they feel like it
      */
-    public Element getProperty(QName property) {
+    public List<Element> getProperty(QName property) {
         return properties.getProperty(property);
     }
 
@@ -323,13 +325,13 @@ public class ServerInstance implements WSRPResourceSource {
             return Constants.PROPERTY_PORTAL_ACTIVE_SYSTEMS;
         }
 
-        public Element getValue() {
+        public List<Element> getValue() {
             Element response = XomHelper.element(Constants.PROPERTY_PORTAL_ACTIVE_SYSTEMS);
             JobRepository jobs = owner.getJobs();
             for (Application job : jobs) {
                 response.appendChild(job.getEndpointer().copy());
             }
-            return response;
+            return WsrfUtils.listify(response);
         }
     }
 

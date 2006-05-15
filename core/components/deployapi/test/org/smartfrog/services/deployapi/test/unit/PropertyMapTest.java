@@ -29,6 +29,7 @@ import org.smartfrog.services.deployapi.transport.wsrf.PropertyMap;
 
 import javax.xml.namespace.QName;
 import java.util.Date;
+import java.util.List;
 
 /**
 
@@ -55,7 +56,7 @@ public class PropertyMapTest extends UnitTestBase {
     }
 
     public void testAddLookupRemove() throws Exception {
-        Element result = map.getProperty(PROPNAME);
+        List<Element> result = map.getProperty(PROPNAME);
         assertNull(result);
         map.addStaticProperty(PROPNAME,
                 elt);
@@ -67,44 +68,44 @@ public class PropertyMapTest extends UnitTestBase {
     }
 
     public void testAddLookupRemove2() throws Exception {
-        Property result = map.lookupProperty(Utils.convert(PROPNAME));
+        Property result = map.lookupProperty(PROPNAME);
         assertNull(result);
         map.addStaticProperty(PROPNAME,
                 elt);
-        result = map.lookupProperty(Utils.convert(PROPNAME));
+        result = map.lookupProperty(PROPNAME);
         assertNotNull(result);
         map.remove(result);
-        result = result = map.lookupProperty(Utils.convert(PROPNAME));
+        result = result = map.lookupProperty(PROPNAME);
         assertNull(result);
     }
 
 
     public void testAddStatic() throws Exception {
-        Property result = map.lookupProperty(Utils.convert(PROPNAME));
+        Property result = map.lookupProperty(PROPNAME);
         assertNull(result);
         Element e =elt;
-        map.addStaticProperty(Utils.convert(PROPNAME),
+        map.addStaticProperty(PROPNAME,
                 e);
-        result = map.lookupProperty(Utils.convert(PROPNAME));
+        result = map.lookupProperty(PROPNAME);
         assertNotNull(result);
-        Element value=result.getValue();
+        List<Element> value=result.getValue();
         assertSame(e,value);
-        value = map.getProperty(Utils.convert(PROPNAME));
+        value = map.getProperty(PROPNAME);
         assertSame(e, value);
         map.remove(result);
-        result = result = map.lookupProperty(Utils.convert(PROPNAME));
+        result = result = map.lookupProperty(PROPNAME);
         assertNull(result);
     }
 
     public void testAddTextValue() throws Exception {
         final String text = Utils.toIsoTime(new Date());
         assertIsoDate(text);
-        map.addStaticProperty(Utils.convert(PROPNAME), text);
-        Property result = map.lookupProperty(Utils.convert(PROPNAME));
+        map.addStaticProperty(PROPNAME, text);
+        Property result = map.lookupProperty(PROPNAME);
         assertNotNull(result);
-        Element value=result.getValue();
+        Element value=result.getValue().get(0);
         assertEquals(text,value.getValue());
-        value = map.getProperty(Utils.convert(PROPNAME));
+        value = map.getProperty(PROPNAME).get(0);
         assertEquals(text, value.getValue());
     }
 

@@ -42,13 +42,13 @@ public class Api_05_system_create_destroy_Test extends StandardTestBase {
 
     public void testCreateResourceIDDestroySystem() throws Exception {
         SystemSession system = createSystem(null);
-        Element resID = system.getResourceProperty(CddlmConstants.PROPERTY_MUWS_RESOURCEID);
+        Element resID = system.getResourcePropertySingle(CddlmConstants.PROPERTY_MUWS_RESOURCEID);
         log.info("Resource ID" + resID.getValue());
     }
 
     public void testCreateCreatedTimeDestroySystem() throws Exception {
         SystemSession system = createSystem(null);
-        Element time = system.getResourceProperty(CddlmConstants.PROPERTY_SYSTEM_CREATED_TIME);
+        Element time = system.getResourcePropertySingle(CddlmConstants.PROPERTY_SYSTEM_CREATED_TIME);
         String value = time.getValue();
         log.info("Created time=" + value);
     }

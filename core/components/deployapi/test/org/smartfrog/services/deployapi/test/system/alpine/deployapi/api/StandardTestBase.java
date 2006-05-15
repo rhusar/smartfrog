@@ -64,13 +64,13 @@ public abstract class StandardTestBase extends AlpineTestBase {
 
     protected boolean isSystemInActiveSystems(String id) {
         SoapElement activeSystems = (SoapElement) getPortal()
-                .getResourceProperty(CddlmConstants.PROPERTY_PORTAL_ACTIVE_SYSTEMS);
+                .getResourcePropertySingle(CddlmConstants.PROPERTY_PORTAL_ACTIVE_SYSTEMS);
         boolean found = false;
         for (Element e : activeSystems.elements()) {
             AlpineEPR epr = new AlpineEPR(e, CddlmConstants.WS_ADDRESSING_NAMESPACE);
             epr.validate();
             SystemSession system = new SystemSession(getPortal(), epr);
-            String newResID = system.getResourceProperty(CddlmConstants.PROPERTY_MUWS_RESOURCEID).getValue();
+            String newResID = system.getResourcePropertySingle(CddlmConstants.PROPERTY_MUWS_RESOURCEID).getValue();
             assertNotNull(newResID);
             assertTrue(newResID.length() > 0);
             if (newResID.equals(id)) {

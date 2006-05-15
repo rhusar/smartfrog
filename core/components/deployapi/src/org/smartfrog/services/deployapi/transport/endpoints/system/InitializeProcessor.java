@@ -95,7 +95,7 @@ public class InitializeProcessor extends SystemProcessor {
     }
 
     /** process a smartfrog deployment */
-    public boolean determineLanguageAndDeploy() throws IOException {
+    private  boolean determineLanguageAndDeploy() throws IOException {
 
         DeploymentLanguage language = job.getLanguage();
         File file=null;
@@ -135,3 +135,5 @@ public class InitializeProcessor extends SystemProcessor {
     }
 
 }
+
+

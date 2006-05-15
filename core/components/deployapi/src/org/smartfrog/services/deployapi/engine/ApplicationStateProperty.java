@@ -1,4 +1,4 @@
-/** (C) Copyright 2005 Hewlett-Packard Development Company, LP
+/** (C) Copyright 2006 Hewlett-Packard Development Company, LP
 
  This library is free software; you can redistribute it and/or
  modify it under the terms of the GNU Lesser General Public
@@ -17,41 +17,40 @@
  For more information: www.smartfrog.org
 
  */
-
 package org.smartfrog.services.deployapi.engine;
 
-import nu.xom.Element;
-import org.smartfrog.services.deployapi.binding.XomHelper;
-import static org.smartfrog.services.deployapi.binding.XomHelper.apiElement;
-import org.smartfrog.services.deployapi.system.Constants;
 import org.smartfrog.services.deployapi.transport.wsrf.Property;
 import org.smartfrog.services.deployapi.transport.wsrf.WsrfUtils;
+import org.smartfrog.services.deployapi.system.Constants;
+import org.smartfrog.services.deployapi.system.LifecycleStateEnum;
+import org.smartfrog.projects.alpine.om.base.SoapElement;
 
 import javax.xml.namespace.QName;
+
+import nu.xom.Element;
+
 import java.util.List;
 
 /**
-
+ * created 12-May-2006 13:17:11
  */
-public class ActiveSystemsProperty implements Property {
 
-    private final JobRepository jobs;
+public class ApplicationStateProperty implements Property {
 
-    public ActiveSystemsProperty(JobRepository jobs) {
-        this.jobs = jobs;
+    Application owner;
+
+    public ApplicationStateProperty(Application owner) {
+        this.owner = owner;
     }
 
     public QName getName() {
-        return Constants.PROPERTY_PORTAL_ACTIVE_SYSTEMS;
+        return Constants.PROPERTY_SYSTEM_SYSTEM_STATE;
     }
 
     public List<Element> getValue() {
-        Element result =apiElement("ActiveSystems");
-        for (Application job : jobs) {
-            Element epr = (Element) job.getEndpointer().copy();
-            XomHelper.adopt(epr,"system");
-            result.appendChild(epr);
-        }
-        return WsrfUtils.listify(result);
+        LifecycleStateEnum state = owner.getState();
+        SoapElement cmpState = state.toCmpState();
+
+        return WsrfUtils.listify(cmpState);
     }
 }

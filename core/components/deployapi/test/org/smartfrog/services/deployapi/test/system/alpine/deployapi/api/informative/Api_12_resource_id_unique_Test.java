@@ -19,15 +19,33 @@
  */
 package org.smartfrog.services.deployapi.test.system.alpine.deployapi.api.informative;
 
-import org.smartfrog.services.deployapi.test.system.alpine.deployapi.api.UnimplementedTestBase;
+import org.ggf.cddlm.generated.api.CddlmConstants;
+import org.smartfrog.services.deployapi.alpineclient.model.SystemSession;
+import org.smartfrog.services.deployapi.test.system.alpine.deployapi.api.StandardTestBase;
 
 /**
  * created 04-May-2006 13:46:55
  */
 
-public class Api_12_resource_id_unique_Test extends UnimplementedTestBase {
+public class Api_12_resource_id_unique_Test extends StandardTestBase {
 
     public Api_12_resource_id_unique_Test(String name) {
         super(name);
     }
+
+    public void testTwoSystemsHaveDifferentIDs() throws Exception {
+        createSystem(null);
+        SystemSession system2 = getPortal().create(null);
+        try {
+            String resid1 = getSystem().getResourcePropertyValue(CddlmConstants.PROPERTY_MUWS_RESOURCEID);
+            assertNotNull(resid1);
+            String resid2 = system2.getResourcePropertyValue(CddlmConstants.PROPERTY_MUWS_RESOURCEID);
+            assertNotNull(resid2);
+            assertFalse("Resource IDs are not unique",resid1.equals(resid2));
+        } finally {
+            system2.destroy();
+            //system1 takes care of itself in tearDown.
+        }
+    }
 }
+

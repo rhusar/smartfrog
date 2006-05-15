@@ -51,17 +51,6 @@ public class Utils {
     }
 
 
-    /**
-     * Turn a java qname into a ggf qualifiedname
-     *
-     * @param in
-     * @return a converted qname
-     */
-    public static QName convert(QName in) {
-        return in;
-    }
-
-
 
     /**
      * create a new uuid-style id

@@ -20,20 +20,98 @@
 
 package org.smartfrog.services.deployapi.system;
 
+import org.smartfrog.projects.alpine.om.base.SoapElement;
+import org.smartfrog.services.deployapi.binding.XomHelper;
+import org.smartfrog.services.deployapi.transport.faults.FaultRaiser;
+import org.ggf.cddlm.generated.api.CddlmConstants;
+import nu.xom.Element;
+import nu.xom.Elements;
+
 /**
- * enum of lifecycle
+ * enumeration of lifecycle states. This type maps to the cmp: LifeCycleState,
+ * which is itself an extension of the Muws state.
  */
 public enum LifecycleStateEnum {
-    undefined,
-    instantiated,
-    initialized,
-    running,
-    failed,
-    terminated;
+    undefined("UndefinedState"),
+    instantiated("InstantiatedState"),
+    initialized("InitializedState"),
+    running("RunningState"),
+    failed("FailedState"),
+    terminated("TerminatedState");
 
+    LifecycleStateEnum(String textName) {
+       this.xmlName = textName;
+   }
 
+    private final String xmlName;
 
     public static LifecycleStateEnum extract(String text) {
         return valueOf(text);
     }
+
+    /**
+     * Go from XML to types
+     * @param grandparent
+     * @return
+     * @throws
+     */
+    public static LifecycleStateEnum extract(Element grandparent) {
+        Element parent = grandparent.getFirstChildElement("State",
+                CddlmConstants.CDL_CMP_TYPES_NAMESPACE);
+        if(parent==null) {
+            throw FaultRaiser.raiseBadArgumentFault(
+                    "No elements under cmp:State element under " + grandparent);
+        }
+        Elements elements = parent.getChildElements();
+        if(elements.size()==0) {
+            throw FaultRaiser.raiseBadArgumentFault("No elements under cmp:State "+parent);
+        }
+        Element child = elements.get(0);
+        if(!CddlmConstants.CDL_CMP_TYPES_NAMESPACE.equals(child.getNamespaceURI())) {
+            throw FaultRaiser.raiseBadArgumentFault(
+                    "First state element is not in the expected namespace "+child);
+        }
+        String statename=child.getLocalName();
+        for(LifecycleStateEnum e: LifecycleStateEnum.values()) {
+            if(e.getXmlName().equals(statename)) {
+                return e;
+            }
+        }
+        throw FaultRaiser.raiseBadArgumentFault(
+                "no state found matching " + child);
+    }
+
+
+    /**
+     * Return a cmp:State element containing the local state
+     * as a direct child. The name of the local state is defined
+     * by the xmlName value of the state.
+     * @return
+     */
+    public SoapElement toCmpState() {
+        SoapElement parent = XomHelper.cmpElement("State");
+        SoapElement child = XomHelper.cmpElement(xmlName);
+        parent.appendChild(child);
+        return parent;
+    }
+
+    public String getXmlName() {
+        return xmlName;
+    }
+
+
+    /**
+     * Returns the name of this enum constant, as contained in the declaration.
+     * This method may be overridden, though it typically isn't necessary or
+     * desirable.  An enum type should override this method when a more
+     * "programmer-friendly" string form exists.
+     *
+     * @return the name of this enum constant
+     */
+    public String toString() {
+        return xmlName;
+    }
 }
+
+
+

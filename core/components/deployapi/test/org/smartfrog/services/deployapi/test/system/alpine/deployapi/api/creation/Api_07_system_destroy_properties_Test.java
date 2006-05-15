@@ -39,13 +39,13 @@ public class Api_07_system_destroy_properties_Test extends StandardTestBase {
 
     public void testCreateDestroySystem() throws Exception {
         SystemSession system = getPortal().create(null);
-        system.getResourceProperty(CddlmConstants.PROPERTY_MUWS_RESOURCEID);
-        system.getResourceProperty(CddlmConstants.PROPERTY_SYSTEM_CREATED_TIME);
+        system.getResourcePropertySingle(CddlmConstants.PROPERTY_MUWS_RESOURCEID);
+        system.getResourcePropertySingle(CddlmConstants.PROPERTY_SYSTEM_CREATED_TIME);
         system.destroy();
         Element result = null;
         try {
             for (int i = 1; i <= 128; i *= 2) {
-                result = system.getResourceProperty(CddlmConstants.PROPERTY_MUWS_RESOURCEID);
+                result = system.getResourcePropertySingle(CddlmConstants.PROPERTY_MUWS_RESOURCEID);
                 sleep(i);
             }
             fail("Expected failure, got a system with resid " + result.getValue());

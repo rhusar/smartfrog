@@ -51,13 +51,15 @@ public class AddFileProcessor extends SystemProcessor {
         String name = XomHelper.getElementValue(request, "api:name");
         String scheme = XomHelper.getElementValue(request,
                 "api:scheme");
+        if(scheme!=null) {
+            scheme.trim();
+        }
         if (!(FILE_SCHEMA.equals(scheme))) {
-            throw FaultRaiser.raiseNotImplementedFault("Unsupported scheme type");
+            throw FaultRaiser.raiseNotImplementedFault("Unsupported scheme type: "+scheme);
         }
         String mimetype = XomHelper.getElementValue(request,
                 "api:mimetype");
         Element metadata = XomHelper.getElement(request, "api:metadata", false);
-        FileEntry newFile = filestore.createNewFile(FILE_SCHEMA, SUFFIX);
 
         String uri= XomHelper.getElementValue(request, "api:uri", false);
         String data = XomHelper.getElementValue(request, "api:data", false);

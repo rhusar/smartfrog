@@ -39,7 +39,7 @@ public class Api_01_portal_wsdm_properties_Test extends StandardTestBase {
     }
 
     public void testMuwsCapabilitiesExists() throws Exception {
-        getPropertyLog(CddlmConstants.PROPERTY_MUWS_MANAGEABILITY_CHARACTERISTICS);
+        getPropertyLog(CddlmConstants.PROPERTY_MUWS_MANAGEABILITY_CAPABILITY);
     }
 
     public void testCapabilityMuwsManageabilityReferences() throws Exception {
@@ -55,7 +55,7 @@ public class Api_01_portal_wsdm_properties_Test extends StandardTestBase {
     }
 
     public void testWsTopics() throws Exception {
-        getPropertyLog(CddlmConstants.PROPERTY_WSNT_TOPIC);
+        getPropertyList(CddlmConstants.PROPERTY_WSNT_TOPIC);
     }
 
     public void testWsTopicSet() throws Exception {
