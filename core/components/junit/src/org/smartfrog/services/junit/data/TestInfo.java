@@ -24,6 +24,8 @@ import junit.framework.TestCase;
 import org.smartfrog.services.junit.Utils;
 
 import java.io.Serializable;
+import java.util.List;
+import java.util.ArrayList;
 
 /**
  * This is information about a test that is sent over the wire. created
@@ -78,6 +80,11 @@ public final class TestInfo implements Serializable, Cloneable {
      * @serial
      */
     private ThrowableTraceInfo fault;
+
+    /**
+     * an array of messages
+     */
+    private List messages=new ArrayList();
 
     /**
      * empty constructor is used during deserialization
@@ -270,5 +277,18 @@ public final class TestInfo implements Serializable, Cloneable {
      */
     public String getTitle() {
         return getClassname() + "." + getText();
+    }
+
+    public List getMessages() {
+        return messages;
+    }
+
+
+    /**
+     * add an entry to this test
+     * @param entry entry to add
+     */
+    public void log(LogEntry entry) {
+        messages.add(entry);
     }
 }
