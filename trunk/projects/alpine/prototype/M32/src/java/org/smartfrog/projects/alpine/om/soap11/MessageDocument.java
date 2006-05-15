@@ -27,6 +27,7 @@ import org.apache.commons.logging.LogFactory;
 import org.smartfrog.projects.alpine.faults.InvalidXmlException;
 import org.smartfrog.projects.alpine.interfaces.ValidateXml;
 import org.smartfrog.projects.alpine.om.base.Attachment;
+import org.smartfrog.projects.alpine.om.base.SoapElement;
 import org.smartfrog.projects.alpine.wsa.AddressDetails;
 import org.smartfrog.projects.alpine.wsa.AddressingConstants;
 import org.smartfrog.projects.alpine.xmlutils.NodeIterator;
@@ -138,8 +139,8 @@ public class MessageDocument extends Document implements ValidateXml {
      *
      * @return the payload
      */
-    public Element getPayload() {
-        return getBody().getFirstChildElement();
+    public SoapElement getPayload() {
+        return (SoapElement) getBody().getFirstChildElement();
     }
 
     /**
