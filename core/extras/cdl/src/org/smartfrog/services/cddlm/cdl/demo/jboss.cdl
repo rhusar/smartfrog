@@ -102,16 +102,16 @@
 
 
       <jboss:demoWebApp cdl:extends="demo:DeployByCopy">
-        <source cdl:ref="/source"/>
-        <destination cdl:ref="/server/deployDir"/>
+        <source cdl:ref="../source"/>
+        <destination cdl:ref="../server/deployDir"/>
       </jboss:demoWebApp>
 
 
       <liveness cdl:extends="jboss:LivenessPage">
-        <port cdl:ref="/port"/>
-        <host cdl:ref="/host"/>
+        <port cdl:ref="../port"/>
+        <host cdl:ref="../host"/>
         <protocol>http</protocol>
-        <page cdl:ref="/application"/>
+        <page cdl:ref="../application"/>
       </liveness>
 
 

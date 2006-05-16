@@ -63,8 +63,11 @@ public class StepRefRoot extends Step {
      *          if something failed.
      */
     public StepExecutionResult execute(StepExecutionResult state) throws CdlResolutionException {
+        assert state != null;
         CdlDocument owner = state.getNode().getOwner();
+        assert owner!=null;
         ParseContext parseContext = owner.getParseContext();
+        assert parseContext != null;
         PropertyList target = parseContext.prototypeResolve(refroot);
         if(target==null) {
             throw new CdlResolutionException("Unknown cdl:refroot \""+refroot.toString()+"\"");

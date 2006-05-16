@@ -35,11 +35,6 @@ import java.util.Stack;
 
 public class ExtendsContext {
 
-    /**
-     * a log
-     */
-    private Log log = ClassLogger.getLog(this);
-
     private Stack<QName> extendsStack = new Stack<QName>();
 
     public static final String ERROR_WRONG_EXIT = "runtime exception: we are not exiting what we entered";

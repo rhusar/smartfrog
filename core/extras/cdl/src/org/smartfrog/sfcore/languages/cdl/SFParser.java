@@ -22,10 +22,14 @@ package org.smartfrog.sfcore.languages.cdl;
 import org.smartfrog.services.xml.utils.ResourceLoader;
 import org.smartfrog.sfcore.languages.cdl.components.CdlComponentDescription;
 import org.smartfrog.sfcore.common.SmartFrogParseException;
+import org.smartfrog.sfcore.common.SmartFrogCompilationException;
 import org.smartfrog.sfcore.languages.cdl.dom.CdlDocument;
 import org.smartfrog.sfcore.parser.Phases;
 import org.smartfrog.sfcore.parser.StreamParser;
+import org.smartfrog.sfcore.parser.StreamLanguageParser;
+import org.smartfrog.sfcore.parser.ReferencePhases;
 import org.smartfrog.sfcore.reference.Reference;
+import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 
 import java.io.InputStream;
 
@@ -38,7 +42,7 @@ import java.io.InputStream;
  * @see org.smartfrog.sfcore.languages.sf.SFParser for the reference example
  */
 
-public class SFParser implements StreamParser {
+public class SFParser implements StreamLanguageParser {
 
     /**
      * Parses component(s) from an input stream. Returns a root component which
@@ -93,6 +97,7 @@ public class SFParser implements StreamParser {
     }
 
 
+
     /**
      * Parses a reference from an input stream. Used by components and
      * developers to quickly build references from a string (eg. sfResolve in
@@ -100,12 +105,12 @@ public class SFParser implements StreamParser {
      *
      * @param is input stream to parse for a reference
      * @return parsed reference
-     * @throws SmartFrogParseException failed to parse reference
+     * @throws org.smartfrog.sfcore.common.SmartFrogParseException
+     *          failed to parse reference
      */
-    public Reference sfParseReference(InputStream is)
-            throws SmartFrogParseException {
+    public ReferencePhases sfParseReference(InputStream is) throws SmartFrogParseException {
         //TODO
-        return null;
+        throw new SmartFrogParseException("Not implemented");
     }
 
     /**
@@ -118,7 +123,8 @@ public class SFParser implements StreamParser {
      */
     public Object sfParseAnyValue(InputStream is)
             throws SmartFrogParseException {
-        return null;
+        //TODO
+        throw new SmartFrogParseException("Not implemented");
     }
 
     /**
@@ -131,6 +137,8 @@ public class SFParser implements StreamParser {
      */
     public Object sfParsePrimitiveValue(InputStream is)
             throws SmartFrogParseException {
-        return null;
+        //TODO
+        throw new SmartFrogParseException("Not implemented");
     }
+
 }
