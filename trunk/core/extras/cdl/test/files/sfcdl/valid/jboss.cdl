@@ -21,8 +21,8 @@
   </cdl:configuration>
 
   <cdl:system>
-    <system cdl:extends="jboss:System">
-    </system>
+    <jboss cdl:extends="jboss:System">
+    </jboss>
   </cdl:system>
 
 

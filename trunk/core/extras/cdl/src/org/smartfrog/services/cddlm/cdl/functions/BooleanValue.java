@@ -22,12 +22,13 @@ package org.smartfrog.services.cddlm.cdl.functions;
 
 import org.smartfrog.sfcore.languages.sf.PhaseAction;
 import org.smartfrog.sfcore.languages.sf.SmartFrogCompileResolutionException;
+import org.smartfrog.sfcore.languages.sf.Function;
 import org.smartfrog.sfcore.languages.sf.functions.BaseUnaryOperator;
 
 /**
  
  */
-public class BooleanValue extends BaseUnaryOperator implements PhaseAction {
+public class BooleanValue extends Function implements PhaseAction {
     
     /**
      * extract the boolean value

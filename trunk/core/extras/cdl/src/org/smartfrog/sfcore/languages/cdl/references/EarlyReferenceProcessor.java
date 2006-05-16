@@ -46,6 +46,7 @@ public class EarlyReferenceProcessor implements ProcessingPhase {
     private static Log log= LogFactory.getLog(EarlyReferenceProcessor.class);
 
     DepthFirstOperationPhase stateInferrer;
+    public static final String ERROR_INCOMPLETE_RESOLUTION = "Failed to completely resolve this document";
 
     public EarlyReferenceProcessor() {
         stateInferrer=createStateInferrer();
@@ -87,16 +88,15 @@ public class EarlyReferenceProcessor implements ProcessingPhase {
      */
     public void process(CdlDocument document) throws IOException, CdlException, ParsingException {
 
-        int count=0;
         stateInferrer.process(document);
         ResolveEnum state= ResolveEnum.ResolvedUnknown;
         boolean finished;
         SystemElement system = document.getSystem();
         ResolveEnum resolvedSystem = resolveList(system);
         state = state.merge(resolvedSystem);
-        finished = state == ResolveEnum.ResolvedComplete;
+        finished = state == ResolveEnum.ResolvedComplete || state == ResolveEnum.ResolvedLazyLinksRemaining;
         if(!finished) {
-            throw new CdlResolutionException("Gave up trying to resolve this document ");
+            throw new CdlResolutionException(ERROR_INCOMPLETE_RESOLUTION);
         }
 
     }
