@@ -147,14 +147,24 @@ public class SystemSession extends WsrfSession {
                 request);
     }
 
+    /**
+     * End the add-file operation
+     * @param transmission
+     * @return
+     */
     public UriListType endAddFile(Transmission transmission) {
         transmission.blockForResult(getTimeout());
-        Body body = transmission.getResponse().getBody();
-        Element response = extractResponse(transmission, new QName(CDL_API_TYPES_NAMESPACE, API_ELEMENT_ADDFILE_RESPONSE));
+        Element response = extractResponse(transmission,
+                new QName(CDL_API_TYPES_NAMESPACE, API_ELEMENT_ADDFILE_RESPONSE));
         UriListType list=new UriListType(response);
         return list;
     }
 
+    /**
+     * submit an add file request, block until it is finished
+     * @param request
+     * @return the list of URIs
+     */
     public UriListType addFile(Element request) {
         return endAddFile(queue(API_SYSTEM_OPERATION_ADDFILE,request));
     }
