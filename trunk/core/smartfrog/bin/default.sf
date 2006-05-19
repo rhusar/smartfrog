@@ -35,6 +35,11 @@ ITS MEDIA, AND YOU HEREBY WAIVE ANY CLAIM IN THIS REGARD.
 #include "org/smartfrog/services/persistence/components.sf"
 #include "org/smartfrog/components.sf"
 
+// To enable Daemon with SmartFrog Debugger 
+// Uncoment next line to use it.
+//#include "org/smartfrog/services/sfdebugger/components.sf"
+
+
 // Default sfDaemon Display
 DefaultDisplay extends  Display {
     nameDisplay "sfDaemon Display"; // Window Title
@@ -74,6 +79,12 @@ DefaultPersistentCompound extends DefaultCompound {
     }
 }
 
+DefaultDebuggerCompound extends Compound {
+    sfProcessComponentName "sfDefault";
+    display extends DefaultDisplay;
+    trace extends TraceDebugger;
+}
+
 sfConfig extends DefaultCompound;
 
 // Alternative default compound with persitance pattern enabled
@@ -85,3 +96,7 @@ sfConfig extends DefaultCompound;
 //  stepTrace true; // Should ask for confirmation before stepping through?
 //sfConfig extends DefaultTraceDisplayCompound{ displayTrace:stepTrace true;}
 //sfConfig extends DefaultTraceCompound;
+
+// Alternative default compound with SmartFrog Debugger enabled
+// Uncoment next line to use it.
+//sfConfig extends DefaultDebuggerCompound;
