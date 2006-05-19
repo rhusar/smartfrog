@@ -19,7 +19,7 @@ For more information: www.smartfrog.org
 */
 
 
-TestLogImpl extends {
+TestListenerLogImpl extends {
 
    loggerClass "org.smartfrog.services.junit.log.TestListenerLogImpl";
 }

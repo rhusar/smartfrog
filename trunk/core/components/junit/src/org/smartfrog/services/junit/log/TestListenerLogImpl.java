@@ -20,7 +20,10 @@
 package org.smartfrog.services.junit.log;
 
 import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.prim.PrimImpl;
+import org.smartfrog.sfcore.logging.Log;
 import org.smartfrog.services.junit.LogListener;
+import org.smartfrog.services.junit.TestListener;
 import org.smartfrog.services.junit.data.LogEntry;
 
 import java.rmi.RemoteException;
@@ -83,4 +86,60 @@ public class TestListenerLogImpl extends AbstractTestLog implements TestListener
         listeners.clear();
     }
 
+    /**
+     * Subscribe a listener to the logger of a test suite
+     * @param testSuite the component running the tests
+     * @param listener the listener
+     * @return true if we subscribed; if the log was the right type.
+     * @throws SmartFrogException
+     * @throws RemoteException
+     */
+    public static boolean subscribeListener(PrimImpl testSuite, TestListener listener)
+            throws SmartFrogException, RemoteException {
+        //first, we grab our log
+        Log testlog = testSuite.sfLog();
+        return subscribeListener(testlog, listener);
+    }
+
+    /**
+     *
+     * Subscribe a listener to the logger of a test suite
+     * @param testlog the log
+     * @param listener the listener
+     * @return true if we subscribed; if the log was the right type.
+     * @throws SmartFrogException
+     * @throws RemoteException
+     */
+    public static boolean subscribeListener(Log testlog, TestListener listener)
+            throws
+            SmartFrogException, RemoteException {
+        if (testlog instanceof TestListenerLog) {
+            //this log listens for test events, so we can bond to it
+            TestListenerLog tll = (TestListenerLog) testlog;
+            tll.addLogListener(listener);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Unsubscribe a listener from a log of a component. Harmless if the
+     * log is of the wrong type, or the listener is not registered
+     * @param testSuite
+     * @param listener
+     * @throws SmartFrogException
+     * @throws RemoteException
+     */
+    public static void unsubscribeListener(PrimImpl testSuite,
+                                       TestListener listener) throws
+            SmartFrogException, RemoteException {
+        //first, we grab our log
+        Log testlog = testSuite.sfLog();
+        if (testlog instanceof TestListenerLog) {
+            //this log listens for test events, so we can bond to it
+            TestListenerLog tll = (TestListenerLog) testlog;
+            tll.removeLogListener(listener);
+        }
+    }
 }

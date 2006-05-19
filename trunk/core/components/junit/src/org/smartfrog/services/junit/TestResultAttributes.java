@@ -49,5 +49,9 @@ public interface TestResultAttributes {
      */
     String ATTR_SUCCESSFUL = "testsSuccessful";
 
+    /**
+     * Count of logged messages
+     */
+    String ATTR_LOGGED_MESSAGES = "loggedMessages";
 
 }

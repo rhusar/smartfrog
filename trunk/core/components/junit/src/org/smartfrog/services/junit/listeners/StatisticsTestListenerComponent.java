@@ -120,6 +120,6 @@ public class StatisticsTestListenerComponent extends PrimImpl implements Statist
     }
 
     public void log(LogEntry event) throws RemoteException {
-        //discard
+        stats.incLoggedMessages();
     }
 }
