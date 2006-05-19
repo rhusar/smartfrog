@@ -298,16 +298,6 @@ public class TestRunnerComponent extends CompoundImpl implements TestRunner,
      */
     public boolean executeTests() throws SmartFrogException, RemoteException {
 
-        //first, we grab our log
-        Log testlog =sfLog();
-        if(testlog instanceof TestListenerLog) {
-            //this log listens for test events, so we can bond to it
-            TestListenerLog tll=(TestListenerLog) testlog;
-            tll.addLogListener();
-        } else {
-            testlog =null;
-        }
-
         try {
             boolean successful = true;
             Enumeration e = sfChildren();

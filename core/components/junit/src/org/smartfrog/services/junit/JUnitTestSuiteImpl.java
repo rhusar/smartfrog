@@ -32,6 +32,7 @@ import org.smartfrog.sfcore.security.SFClassLoader;
 import org.smartfrog.sfcore.utils.ComponentHelper;
 import org.smartfrog.services.junit.data.Statistics;
 import org.smartfrog.services.junit.data.TestInfo;
+import org.smartfrog.services.junit.log.TestListenerLogImpl;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -325,6 +326,7 @@ public class JUnitTestSuiteImpl extends PrimImpl implements JUnitTestSuite,
         listener = listenerFactory.listen(this, hostname,
                 suitename,
                 System.currentTimeMillis());
+        TestListenerLogImpl.subscribeListener(this,listener);
 
         //reset the logs
         startedTests = new HashMap();
@@ -363,6 +365,9 @@ public class JUnitTestSuiteImpl extends PrimImpl implements JUnitTestSuite,
             //suite doesnt affect our deref
             listener = null;
             startedTests = null;
+            //unsubscribe
+            TestListenerLogImpl.unsubscribeListener(this, l);
+
             //end the suite.
             l.endSuite();
         }
