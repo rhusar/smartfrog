@@ -38,7 +38,7 @@ import java.rmi.RemoteException;
  */
 
 
-public interface TestListener extends Remote {
+public interface TestListener extends LogListener {
 
     /**
      * end this test suite. After calling this, caller should discard
@@ -70,11 +70,4 @@ public interface TestListener extends Remote {
      */
     void startTest(TestInfo test) throws RemoteException, SmartFrogException;
 
-    /**
-     * Log an event
-     * @param event what happened
-     * @throws RemoteException
-     * @throws SmartFrogException
-     */
-    void log(LogEntry event) throws RemoteException, SmartFrogException;
 }

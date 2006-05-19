@@ -157,7 +157,7 @@ public class ChainListener implements TestListener {
         }
     }
 
-    public void log(LogEntry event) throws RemoteException, SmartFrogException {
+    public void log(LogEntry event) throws RemoteException {
         Iterator i = iterator();
         while (i.hasNext()) {
             TestListener testListener = (TestListener) i.next();
