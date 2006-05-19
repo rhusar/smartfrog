@@ -19,35 +19,36 @@
  */
 package org.smartfrog.services.junit.log;
 
-import org.smartfrog.services.junit.data.LogEntry;
+import org.smartfrog.sfcore.logging.LogRemote;
+import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.services.junit.LogListener;
 
 import java.rmi.RemoteException;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
- * This is a component that can listen to log events.
- * It declares that all levels are active (which they are), and saves all
- * logged events to buffers for later examination.
- * created 27-Apr-2006 12:53:07
+ * Remote interface to something that listens for smartfrog events and yet which can be
+ * pointed at a listener or two.
+ * created 18-May-2006 15:32:57
  */
 
-public class TestLogImpl extends AbstractTestLog implements TestLog {
-
-
-    private List logEntries = new ArrayList();
-
-    public TestLogImpl() throws RemoteException {
-    }
-
+public interface TestListenerLog extends LogRemote {
 
     /**
-     * Add an entry to the buffer
-     *
-     * @param entry
+     * Add a listener to log events
+     * @param listener
+     * @throws RemoteException
      */
-    public void log(LogEntry entry) {
-        logEntries.add(entry);
-    }
+    public void addLogListener(LogListener listener) throws SmartFrogException, RemoteException;
 
+    /**
+     * Remove a log listener. Harmless if the log is not active
+     * @param listener
+     * @throws RemoteException
+     */
+    public void removeLogListener(LogListener listener) throws SmartFrogException, RemoteException;
+
+    /**
+     * Remove all listeners
+     */
+    void clearListeners() throws RemoteException;
 }

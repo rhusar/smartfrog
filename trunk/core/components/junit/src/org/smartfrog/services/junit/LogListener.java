@@ -17,16 +17,26 @@
  For more information: www.smartfrog.org
 
  */
-package org.smartfrog.services.junit.log;
+package org.smartfrog.services.junit;
+
+import org.smartfrog.services.junit.data.LogEntry;
+import org.smartfrog.sfcore.common.SmartFrogException;
 
 import java.rmi.Remote;
+import java.rmi.RemoteException;
 
 /**
- * created 27-Apr-2006 12:56:20
+ * created 18-May-2006 15:40:02
  */
 
 
-public interface TestLog extends Remote {
+public interface LogListener extends Remote {
+    /**
+     * Log an event
+     * @param event what happened
+     * @throws java.rmi.RemoteException
+     */
+    void log(LogEntry event) throws RemoteException;
 
 
 }

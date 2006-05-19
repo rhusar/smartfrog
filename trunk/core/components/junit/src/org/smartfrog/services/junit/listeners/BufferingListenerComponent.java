@@ -283,7 +283,7 @@ public class BufferingListenerComponent extends PrimImpl
             starts.add(cloned);
         }
 
-        public void log(LogEntry event) throws RemoteException, SmartFrogException {
+        public void log(LogEntry event) throws RemoteException {
             messages.add(event);
         }
     }

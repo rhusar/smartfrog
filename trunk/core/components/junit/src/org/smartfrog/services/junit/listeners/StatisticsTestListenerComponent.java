@@ -54,7 +54,7 @@ public class StatisticsTestListenerComponent extends PrimImpl implements Statist
         return this;
     }
 
-    Statistics stats=new Statistics();
+    private Statistics stats=new Statistics();
 
 
     /**
@@ -119,7 +119,7 @@ public class StatisticsTestListenerComponent extends PrimImpl implements Statist
         return stats;
     }
 
-    public void log(LogEntry event) throws RemoteException, SmartFrogException {
+    public void log(LogEntry event) throws RemoteException {
         //discard
     }
 }

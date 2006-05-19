@@ -32,6 +32,7 @@ import org.smartfrog.sfcore.utils.ComponentHelper;
 import org.smartfrog.sfcore.utils.ShouldDetachOrTerminate;
 import org.smartfrog.services.junit.data.Statistics;
 import org.smartfrog.services.junit.data.ThrowableTraceInfo;
+import org.smartfrog.services.junit.log.TestListenerLog;
 
 import java.rmi.RemoteException;
 import java.util.Enumeration;
@@ -296,6 +297,16 @@ public class TestRunnerComponent extends CompoundImpl implements TestRunner,
      * @throws RemoteException
      */
     public boolean executeTests() throws SmartFrogException, RemoteException {
+
+        //first, we grab our log
+        Log testlog =sfLog();
+        if(testlog instanceof TestListenerLog) {
+            //this log listens for test events, so we can bond to it
+            TestListenerLog tll=(TestListenerLog) testlog;
+            tll.addLogListener();
+        } else {
+            testlog =null;
+        }
 
         try {
             boolean successful = true;

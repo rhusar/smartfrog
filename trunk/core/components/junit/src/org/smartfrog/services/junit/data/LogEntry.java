@@ -38,6 +38,15 @@ public final class LogEntry implements Serializable, Cloneable {
 
     public ThrowableTraceInfo thrown;
 
+
+    /**
+     * name of the host on which the test ran
+     *
+     * @serial
+     */
+    private String hostname;
+
+        
     public LogEntry() {
     }
 
@@ -64,6 +73,7 @@ public final class LogEntry implements Serializable, Cloneable {
         this.level = that.level;
         this.text = that.text;
         this.timestamp = that.timestamp;
+        this.hostname = that.hostname;
         if (that.thrown != null) {
             this.thrown = new ThrowableTraceInfo(that.thrown);
         }
@@ -94,5 +104,13 @@ public final class LogEntry implements Serializable, Cloneable {
      */
     protected Object clone() {
         return new LogEntry(this);
+    }
+
+    public String getHostname() {
+        return hostname;
+    }
+
+    public void setHostname(String hostname) {
+        this.hostname = hostname;
     }
 }

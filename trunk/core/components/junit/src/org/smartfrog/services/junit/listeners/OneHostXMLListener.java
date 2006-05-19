@@ -287,7 +287,7 @@ public class OneHostXMLListener implements XmlListener {
      * @throws RemoteException
      * @throws SmartFrogException
      */
-    public void log(LogEntry event) throws RemoteException, SmartFrogException {
+    public void log(LogEntry event) throws RemoteException {
         //TODO: process this
     }
 

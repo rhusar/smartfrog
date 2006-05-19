@@ -169,7 +169,7 @@ public class ConsoleListenerComponent extends PrimImpl
                     test.getHostname());
         }
 
-        public void log(LogEntry event) throws RemoteException, SmartFrogException {
+        public void log(LogEntry event) throws RemoteException {
             println(event.toString());
         }
     }
