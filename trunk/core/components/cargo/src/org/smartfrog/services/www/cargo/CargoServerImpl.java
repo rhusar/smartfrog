@@ -61,6 +61,7 @@ public class CargoServerImpl extends PrimImpl implements CargoServer, Runnable {
     private String codebase;
     private Thread thread;
     private boolean started;
+    private boolean starting;
     private Log log;
 
 
@@ -131,7 +132,7 @@ public class CargoServerImpl extends PrimImpl implements CargoServer, Runnable {
      */
     public ServletContextIntf deployServletContext(Prim servlet)
             throws RemoteException, SmartFrogException {
-        throw new SmartFrogException("not supported");
+        throw new SmartFrogException("Servlet contexts are not supported");
     }
 
 
@@ -345,10 +346,16 @@ public class CargoServerImpl extends PrimImpl implements CargoServer, Runnable {
         }
     }
 
+    /**
+     * Start the component in a new thread. Synchronized.
+     * @throws SmartFrogException
+     */
     private synchronized void startInNewThread() throws SmartFrogException {
-        if (started) {
+        if (started || starting) {
             throw new SmartFrogException("We are already running!");
         }
+        //note that we are starting. The new thread moves to started when it begins.
+        starting=true;
         thread = new Thread(this);
         thread.run();
     }
@@ -367,6 +374,7 @@ public class CargoServerImpl extends PrimImpl implements CargoServer, Runnable {
         container.start();
         synchronized (this) {
             started = true;
+            starting = false;
         }
         //end of life
         thread = null;

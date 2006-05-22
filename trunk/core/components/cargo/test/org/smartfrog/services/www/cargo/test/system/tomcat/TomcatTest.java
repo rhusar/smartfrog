@@ -11,7 +11,7 @@ public class TomcatTest extends CargoTestBase {
     }
 
     public void testJBoss4() throws Throwable {
-        deployApp(FILE_BASE + "jboss/testTomcat.sf",
+        deployApp(FILE_BASE + "tomcat/testTomcat.sf",
                 "testTomcat"
         );
     }

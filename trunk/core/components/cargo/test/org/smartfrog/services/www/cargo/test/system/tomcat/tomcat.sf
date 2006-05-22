@@ -29,13 +29,13 @@ HEWLETT-PACKARD FOR ANY REASON WHATSOEVER, RELATING TO THE SOFTWARE OR
 ITS MEDIA, AND YOU HEREBY WAIVE ANY CLAIM IN THIS REGARD.
 
 */
-#include "/org/smartfrog/services/www/cargo/test/system/jboss/jboss4.sf"
+#include "/org/smartfrog/services/www/cargo/components.sf"
+#include "/org/smartfrog/services/www/cargo/test/system/testBase.sf"
 
 
-sfConfig extends AppServerWithWar {
 
-  server extends JBoss;
-
-
+Tomcat extends Tomcat5CargoServer {
+ port ServerOptions:port;
+ logging ServerOptions:logging;
+ home PROPERTY runtime.tomcat.home;
 }
-

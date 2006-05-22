@@ -29,13 +29,14 @@ HEWLETT-PACKARD FOR ANY REASON WHATSOEVER, RELATING TO THE SOFTWARE OR
 ITS MEDIA, AND YOU HEREBY WAIVE ANY CLAIM IN THIS REGARD.
 
 */
-#include "/org/smartfrog/services/www/cargo/test/system/jboss/jboss4.sf"
+#include "/org/smartfrog/services/www/cargo/components.sf"
+#include "/org/smartfrog/services/www/cargo/test/system/testBase.sf"
 
+JBoss extends JBoss4CargoServer {
+ port ServerOptions:port;
+ logging ServerOptions:logging;
 
-sfConfig extends AppServerWithWar {
-
-  server extends JBoss;
-
-
+ //set up a symlink for this if you need it
+ //needs deployment in a JVM with jboss.dir set to the jboss directory
+ home PROPERTY runtime.jboss.home;
 }
-
