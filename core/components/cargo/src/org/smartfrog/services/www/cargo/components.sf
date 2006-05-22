@@ -19,7 +19,6 @@
  */
 
 #include "org/smartfrog/components.sf"
-#include "org/smartfrog/sfcore/workflow/components.sf"
 #include "org/smartfrog/functions.sf"
 #include "org/smartfrog/predicates.sf"
 #include "org/smartfrog/services/utils/concat/components.sf"
@@ -35,6 +34,8 @@
 CargoServerSchema extends Schema {
     //name of the implementation
     configurationClass extends String;
+    //this is the classname of a container. You can paste it in for extra dynamicness, or
+    //extend one of the derivative templates in which it is already defined 
     containerClass extends String;
     logging extends String;
     home extends FilenameType;
