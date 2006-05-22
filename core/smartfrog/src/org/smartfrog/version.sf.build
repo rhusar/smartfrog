@@ -1,4 +1,4 @@
-/** (C) Copyright 1998-2005 Hewlett-Packard Development Company, LP
+/** (C) Copyright 1998-2006 Hewlett-Packard Development Company, LP
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
@@ -24,7 +24,7 @@ Version extends {
   minorRelease "@minorRelease@";
   build "@build@"; // odd numbers are development versions
   status "@status@"; //alpha, beta, (stable), rc (release candidate)
-  copyright "(C) Copyright 1998-2005 Hewlett-Packard Development Company, LP";
+  copyright "(C) Copyright 1998-2006 Hewlett-Packard Development Company, LP";
   buildDate "@buildDate@";
 }
 
