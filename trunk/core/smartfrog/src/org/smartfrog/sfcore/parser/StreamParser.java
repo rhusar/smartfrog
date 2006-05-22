@@ -99,14 +99,14 @@ public interface StreamParser {
 
     /**
      * Parses a component description from an input stream.
-     * All the langauge phases will have been applied, and the conversion to ComponentDescription
+     * All the language phases will have been applied, and the conversion to ComponentDescription
      * carried out.
      *
      * @param is input stream to parse for a value
      *
      * @return parsed component description
      *
-     * @exception SmartFrogParseException failed to parse primtiive value
+     * @exception SmartFrogParseException failed to parse primitive value
      */
     public ComponentDescription sfParseComponentDescription(InputStream is) throws SmartFrogCompilationException;
 }

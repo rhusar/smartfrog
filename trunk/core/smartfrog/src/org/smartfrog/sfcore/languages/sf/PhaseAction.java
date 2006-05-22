@@ -37,7 +37,7 @@ public interface PhaseAction {
     public void doit() throws SmartFrogCompileResolutionException;
 
     /**
-     * Sets te component and the conext.
+     * Sets the component and the context.
      *
      * @param cd a componentdescription object 
      */ 
