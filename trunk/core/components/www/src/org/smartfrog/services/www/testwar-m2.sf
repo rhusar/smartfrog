@@ -35,7 +35,10 @@ ITS MEDIA, AND YOU HEREBY WAIVE ANY CLAIM IN THIS REGARD.
 #include "/org/smartfrog/services/os/java/library.sf"
 
 /**
- * file to pull in the testwar from an m2 repository
+ * This is here for testing.
+ * It is file to pull in the testwar from a local m2 repository. It allows
+ * test deployments to be written which do not contain any hard-coded path dependencies with
+ * the www application.
  */
 
 testwarLoader extends Compound {
