@@ -50,13 +50,22 @@
   <target name="system-tests" if="system.tests.enabled" depends="init"
     description="run the system tests">
     <echo message="No system tests"/>
-  </target>  
-  
+  </target>
+
+  <!-- ========================================================== -->
+  <!-- this is an override point -->
+  <!-- ========================================================== -->
+
+  <target name="ready-to-test" depends="init,dist,package-tests"/>
+
+
   <!-- ========================================================== -->
   <!-- this is an override point -->
   <!-- unit tests : anything which does not need deployment to run-->
   <!-- ========================================================== -->
-  <target name="unit-tests" depends="init,dist,package-tests" if="unit.tests.enabled"
+
+
+  <target name="unit-tests" depends="ready-to-test" if="unit.tests.enabled"
     description="run the unit tests if unit.tests.enabled is set">
     <core:junit
       errorProperty="test.failed"
