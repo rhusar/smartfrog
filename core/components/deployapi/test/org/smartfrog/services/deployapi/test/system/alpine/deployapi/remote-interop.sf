@@ -22,6 +22,8 @@ For more information: www.smartfrog.org
 #include "/org/smartfrog/services/deployapi/test/system/alpine/deployapi/hp.sf"
 #include "/org/smartfrog/services/utils/setproperty/components.sf"
 #include "/org/smartfrog/services/www/livenessPage.sf"
+#include "/org/smartfrog/sfcore/logging/components.sf"
+#include "/org/smartfrog/sfcore/logging/logtoprimimpl.sf"
 
   Proxy extends SystemProperties {
     setOnDeploy true;
@@ -32,12 +34,12 @@ For more information: www.smartfrog.org
       ];
   }
 
-
   ServerTest extends Compound {
 
       endpoint TBD;
       proxy extends Proxy;
-      subdir TBD;
+      name TBD;
+      subdir name;
       enabled true;
 
       health extends LivenessPage {
@@ -59,29 +61,49 @@ sfConfig extends Compound {
   tempDir LAZY PROPERTY java.io.tmpdir;
 
   necEnabled true;
-  ourgridEnabled true;
+  ourgridEnabled false;
   hpEnabled false;
+
+  log extends SFLog {
+    //log against our parent
+    logFrom LAZY PARENT;
+    //log to a prim
+    logTo extends LogToPrimImpl {
+      loggerClass "org.smartfrog.sfcore.logging.LogToPrimImpl";
+      //the destination prim is defined here
+      logTo extends TestListenerLog {
+
+      }
+      //trace out what is going on
+      debug true;
+    }
+  }
+
+  testLog LAZY log:logTo:logTo;
 
   NecTest extends ServerTest {
 
 //    sfProcessName "process1";
-    subdir "nec";
+    name "nec";
     endpoint nec_endpoint;
     enabled necEnabled;
+    testLog LAZY PARENT:testLog;
   }
 
   OurgridTest extends ServerTest {
 
 //    sfProcessName "process2";
-    subdir "ourgrid";
+    name "ourgrid";
     endpoint ourgrid_endpoint;
     enabled ourgridEnabled;
+    testLog LAZY PARENT:testLog;
   }
 
   hpTest extends ServerTest {
-      subdir "hp";
+    name "hp";
     endpoint hp_endpoint;
     enabled hpEnabled;
+    testLog LAZY PARENT:testLog;
   }
 
 
