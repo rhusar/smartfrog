@@ -42,6 +42,10 @@ import java.net.URISyntaxException;
 
 public abstract class StandardTestBase extends AlpineTestBase {
 
+
+    int delay=0;
+    private static final String TEST_DELAY = "test.delay.seconds" ;
+
     protected StandardTestBase(String name) {
         super(name);
     }
@@ -52,6 +56,13 @@ public abstract class StandardTestBase extends AlpineTestBase {
      */
     protected void setUp() throws Exception {
         super.setUp();
+        String delayTime= getJunitParameter(TEST_DELAY, false);
+        if(delayTime!=null && delayTime.length()>0) {
+            delay=Integer.valueOf(delayTime);
+        }
+        if(delay>0) {
+            Thread.sleep(delay*1000);
+        }
     }
 
     /**

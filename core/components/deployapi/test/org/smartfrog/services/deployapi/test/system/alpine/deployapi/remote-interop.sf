@@ -88,6 +88,9 @@ sfConfig extends Compound {
     endpoint nec_endpoint;
     enabled necEnabled;
     testLog LAZY PARENT:testLog;
+    //add in some new properties
+    properties [ServerTest:properties,
+      ["test.delay.seconds",60]];
   }
 
   OurgridTest extends ServerTest {
