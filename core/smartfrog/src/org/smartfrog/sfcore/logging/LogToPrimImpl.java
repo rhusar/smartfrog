@@ -79,7 +79,7 @@ public class LogToPrimImpl extends LogToStreamsImpl implements LogToPrim {
 
         readSFPrimAttributes(componentComponentDescription);
 
-        String logToName = "unknowLogToName";
+        String logToName = "unknownLogToName";
 
         if (logToAttribute == null) {
            throw new SmartFrogResolutionException( "LogTo component for logging not found!");
@@ -88,6 +88,17 @@ public class LogToPrimImpl extends LogToStreamsImpl implements LogToPrim {
 //        setLevel(initialLogLevel.intValue());
     }
 
+    /**
+     * Get the destination log
+     * @return the destination for logging messages.
+     */
+    public LogRemote getLogTo() {
+        return logTo;
+    }
+
+    public void setLogTo(LogRemote logTo) {
+        this.logTo = logTo;
+    }
 
     /**
      *  Reads optional and mandatory attributes.
