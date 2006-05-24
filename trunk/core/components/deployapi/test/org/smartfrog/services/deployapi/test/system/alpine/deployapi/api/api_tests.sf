@@ -32,7 +32,7 @@ For more information: www.smartfrog.org
         if enabled;
         //full path to the echo endpoint
         endpoint TBD;
-        sysproperties [
+        properties [
           ["endpoint",LAZY endpoint]
         ];
   }
