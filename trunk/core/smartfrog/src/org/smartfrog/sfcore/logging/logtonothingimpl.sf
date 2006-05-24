@@ -22,4 +22,5 @@ For more information: www.smartfrog.org
 LogToNothingImpl extends {
     // /** send error output to normal output */
     errToOut true;
+    loggerClass "org.smartfrog.sfcore.logging.LogToNothingImpl";
 }

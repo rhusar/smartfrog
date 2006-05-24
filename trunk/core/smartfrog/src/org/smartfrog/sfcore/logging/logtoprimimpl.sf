@@ -23,5 +23,6 @@ For more information: www.smartfrog.org
 LogToPrimImpl extends  LogToStreamsImpl {
   logTo;
   tagMessage true;
+  loggerClass "org.smartfrog.sfcore.logging.LogToPrimImpl";
 //  debug false;
 }
