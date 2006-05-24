@@ -31,4 +31,5 @@ LogToFileImpl extends  LogToStreamsImpl {
   //fileNamePrefix //"prefix";
   redirectSystemOutputs false;
   append true;
+  loggerClass "org.smartfrog.sfcore.logging.LogToFileImpl";
 }

@@ -43,4 +43,6 @@ LogToStreamsImpl extends LogToNothingImpl {
 
     // /** Used to format times */
     dateFormat "yyyy/MM/dd HH:mm:ss:SSS zzz";
+
+    loggerClass "org.smartfrog.sfcore.logging.LogToStreamsImpl";
 }
