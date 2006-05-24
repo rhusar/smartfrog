@@ -20,6 +20,8 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.sfcore.logging;
 
+import java.rmi.RemoteException;
+
 
 /**
  *
@@ -35,4 +37,11 @@ public interface LogToPrim extends LogToStreams {
     final static String ATR_TAG_MESSAGE = "tagMessage";
     /** String name for optional attribute "{@value}". */
     final static String ATR_DEBUG = "debug";
+
+    /**
+     * Get the destination log
+     * @return the destination for logging messages.
+     * @throws RemoteException
+     */
+    public LogRemote getLogTo() throws RemoteException;
 }
