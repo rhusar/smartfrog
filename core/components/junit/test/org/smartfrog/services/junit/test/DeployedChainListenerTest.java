@@ -36,34 +36,30 @@ public class DeployedChainListenerTest extends TestRunnerTestBase {
     }
 
     public void testSuccess() throws Throwable {
-        Prim deploy = null;
+        Prim application = null;
 
         int seconds = getTimeout();
         try {
-            deploy = deployExpectingSuccess("/files/chain-all.sf", "ChainTest");
-            TestRunner runner = (TestRunner) deploy;
-            assertTrue(runner != null);
-            TestListenerFactory listener = null;
-            listener =
-                    (TestListenerFactory) deploy.sfResolve(
-                            "tests:listener",
-                            listener,
-                            true);
+            application = deployExpectingSuccess("/files/chain-all.sf", "ChainTest");
+
+            TestRunner runner = (TestRunner) application.sfResolve(
+                "tests",
+                (Prim)null,
+                true);
             boolean finished = spinTillFinished(runner, seconds);
             assertTrue("Test run timed out", finished);
 
             StatisticsTestListener statsListener=null;
-            statsListener = (StatisticsTestListener) deploy.sfResolve(
-                    "tests:statistics",
+            statsListener = (StatisticsTestListener) application.sfResolve(
+                    "statistics",
                     statsListener,
                     true);
 
             Statistics statistics = runner.getStatistics();
             Statistics statistics2 = statsListener.getStatistics();
-            assertTrue("statistics don't match", statistics.isEqual(statistics2));
+            assertStatisticsEqual("runner and stats listener",statistics,statistics2);
         } finally {
-            terminateApplication(deploy);
+            terminateApplication(application);
         }
-
     }
 }

@@ -33,6 +33,7 @@ import org.smartfrog.sfcore.utils.ShouldDetachOrTerminate;
 import org.smartfrog.services.junit.data.Statistics;
 import org.smartfrog.services.junit.data.ThrowableTraceInfo;
 import org.smartfrog.services.junit.log.TestListenerLog;
+import org.smartfrog.services.junit.log.TestListenerLogImpl;
 
 import java.rmi.RemoteException;
 import java.util.Enumeration;
@@ -48,7 +49,7 @@ public class TestRunnerComponent extends CompoundImpl implements TestRunner,
 
     private Log log;
     private ComponentHelper helper;
-    Reference name;
+    private Reference name;
 
     /**
      * a cached exception that is thrown on a liveness failure
@@ -73,15 +74,14 @@ public class TestRunnerComponent extends CompoundImpl implements TestRunner,
      * Should we terminate after running our tests?
      * {@link ShouldDetachOrTerminate.ATTR_SHOULD_TERMINATE}
      */
-    boolean shouldTerminate = true;
+    private boolean shouldTerminate = true;
 
     /**
      * if terminating, should we detach?
      * Should we terminate after running our tests?
      * {@link ShouldDetachOrTerminate.ATTR_SHOULD_DETACH}
      */
-    boolean shouldDetach = false;
-
+    private boolean shouldDetach = false;
 
     /**
      * thread to run the tests
@@ -185,6 +185,9 @@ public class TestRunnerComponent extends CompoundImpl implements TestRunner,
                 ShouldDetachOrTerminate.ATTR_SHOULD_TERMINATE, shouldTerminate, false);
         shouldDetach = sfResolve(
                 ShouldDetachOrTerminate.ATTR_SHOULD_DETACH, shouldDetach, false);
+
+        configuration.setTestLog((TestListenerLog) sfResolve(ATTR_TESTLOG,(Prim)null,false));
+
         validate();
         //execute the tests in all the suites attached to this class
         boolean runTests = sfResolve(ATTR_RUN_TESTS_ON_STARTUP, true, true);
@@ -349,6 +352,14 @@ public class TestRunnerComponent extends CompoundImpl implements TestRunner,
 
     public void setKeepGoing(boolean keepGoing) {
         configuration.setKeepGoing(keepGoing);
+    }
+
+    public TestListenerLog getTestLog() {
+        return configuration.getTestLog();
+    }
+
+    public void setTestLog(TestListenerLog testLog) {
+        configuration.setTestLog(testLog);
     }
 
     public RunnerConfiguration getConfiguration() {

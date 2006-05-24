@@ -16,38 +16,36 @@ public class LoggingChainListenerTest extends TestRunnerTestBase {
         super(name);
     }
 
+
     public void testSuccess() throws Throwable {
-        Prim deploy = null;
+        Prim application = null;
 
         int seconds = getTimeout();
         try {
-            deploy = deployExpectingSuccess("/files/log-chain-all.sf", "ChainTest");
-            TestRunner runner = (TestRunner) deploy;
-            assertTrue(runner != null);
-            TestListenerFactory listener = null;
-            listener =
-                    (TestListenerFactory) deploy.sfResolve(
-                            "tests:listener",
-                            listener,
-                            true);
+            application = deployExpectingSuccess("/files/log-chain-all.sf", "LogChainTest");
+
+            TestRunner runner = (TestRunner) application.sfResolve(
+                    "tests",
+                    (Prim) null,
+                    true);
             boolean finished = spinTillFinished(runner, seconds);
             assertTrue("Test run timed out", finished);
 
-            StatisticsTestListener statsListener=null;
-            statsListener = (StatisticsTestListener) deploy.sfResolve(
-                    "tests:statistics",
+            StatisticsTestListener statsListener = null;
+            statsListener = (StatisticsTestListener) application.sfResolve(
+                    "statistics",
                     statsListener,
                     true);
 
             Statistics statistics = runner.getStatistics();
             Statistics statistics2 = statsListener.getStatistics();
-            assertTrue("statistics don't match", statistics.isEqual(statistics2));
+            assertStatisticsEqual("runner and stats listener", statistics, statistics2);
             int logCount1=statistics.getLoggedMessages();
-            assertTrue("The test runner doesnt see the log", logCount1 == 0);
+            assertTrue("The test runner doesn't see the log", logCount1 == 0);
             int logCount2 = statistics2.getLoggedMessages();
-            assertTrue("Messages not logged to the stats listener", logCount2>0);
+            assertTrue("Messages were not sent to the stats listener: logCount2=="+logCount2, logCount2>0);
         } finally {
-            terminateApplication(deploy);
+            terminateApplication(application);
         }
 
     }

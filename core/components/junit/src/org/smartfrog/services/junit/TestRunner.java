@@ -42,7 +42,7 @@ public interface TestRunner extends Remote , TestResultAttributes
     /**
      * name of the keepgoing attr
      */
-    String ATTR_KEEPGOING = "keepgoing";
+    String ATTR_KEEPGOING = "keepGoing";
 
     /**
      * should deploy fail if there is an error?
@@ -59,6 +59,17 @@ public interface TestRunner extends Remote , TestResultAttributes
      * boolean: run tests on startup
      */
     String ATTR_RUN_TESTS_ON_STARTUP="runTests";
+
+     /**
+      * the test log
+      */
+    String ATTR_TESTLOG="testLog";
+
+     /**
+      * Get the listener factory
+      * @return
+      * @throws RemoteException
+      */
 
 
     TestListenerFactory getListenerFactory() throws RemoteException;

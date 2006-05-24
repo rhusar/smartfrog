@@ -22,6 +22,8 @@ package org.smartfrog.services.junit.log;
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.logging.LogLevel;
 import org.smartfrog.sfcore.logging.LogRemote;
+import org.smartfrog.sfcore.logging.Log;
+import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.services.junit.data.LogEntry;
 import org.smartfrog.services.junit.LogListener;
 
@@ -33,8 +35,10 @@ import java.rmi.RemoteException;
 
 public abstract class AbstractTestLog extends PrimImpl implements LogRemote, LogListener {
 
+
     protected AbstractTestLog() throws RemoteException {
     }
+
 
     /**
      * implement this with the log entry handling logic

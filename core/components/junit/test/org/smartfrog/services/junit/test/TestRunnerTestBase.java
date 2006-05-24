@@ -22,6 +22,7 @@
 package org.smartfrog.services.junit.test;
 
 import org.smartfrog.services.junit.TestRunner;
+import org.smartfrog.services.junit.data.Statistics;
 import org.smartfrog.test.SmartFrogTestBase;
 import org.smartfrog.test.TestHelper;
 import org.w3c.dom.Document;
@@ -30,6 +31,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.File;
 import java.rmi.RemoteException;
+import java.rmi.NoSuchObjectException;
 
 /**
  * this is a parent class for our tests, so that we can share logic about
@@ -54,15 +56,28 @@ public class TestRunnerTestBase extends SmartFrogTestBase {
         assertSystemPropertySet(CODEBASE_PROPERTY);
     }
 
+    /**
+     * Spin till a component is finished
+     * @param runner
+     * @param timeoutSeconds
+     * @return
+     * @throws InterruptedException
+     * @throws RemoteException
+     */
     protected boolean spinTillFinished(TestRunner runner,
-            int timeoutSeconds) throws InterruptedException,
+                                       int timeoutSeconds) throws InterruptedException,
             RemoteException {
 
-        do {
-            Thread.sleep(1000);
-            timeoutSeconds--;
-        } while (!runner.isFinished() && timeoutSeconds >= 0);
-        return runner.isFinished();
+        try {
+            do {
+                Thread.sleep(1000);
+                timeoutSeconds--;
+            } while (!runner.isFinished() && timeoutSeconds >= 0);
+            return runner.isFinished();
+        } catch (NoSuchObjectException e) {
+            //if the object is here it has terminated.
+            return true;
+        }
     }
 
     protected int getTimeout() {
@@ -84,4 +99,21 @@ public class TestRunnerTestBase extends SmartFrogTestBase {
         Document document = builder.parse(file);
         return document;
     }
+
+    /**
+     * assert that statistics entries are equal, fail if not.
+     * Uses {@link Statistics#isEqual(org.smartfrog.services.junit.data.Statistics)}
+     * for the comparison.
+     * @param text text to prepand to all messages
+     * @param s1 first set of stats, must not be null
+     * @param s2 second set of stats, must not be null
+     */
+    protected void assertStatisticsEqual(String text, Statistics s1,Statistics s2) {
+        assertNotNull(text +": empty statistics (first set) ",s1);
+        assertNotNull(text +": empty statistics (second set) ", s2);
+        if(!s1.isEqual(s2)) {
+            fail(text+": not equal: ["+s1+"] ["+s2+"]");
+        }
+    }
+
 }

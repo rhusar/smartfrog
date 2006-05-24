@@ -51,11 +51,11 @@ For more information: www.smartfrog.org
  */
 
 TestSuiteSchema extends Schema {
-    name extends String;
+    name extends OptionalString;
     enabled extends OptionalBoolean;
     unless extends OptionalBoolean;
     //list in name, value pairs [[name,value],[n2,v2]]
-    sysproperties extends OptionalVector;    
+    properties extends OptionalVector;
 }
 
 JUnitTestSuiteSchema extends Schema {
@@ -65,8 +65,6 @@ JUnitTestSuiteSchema extends Schema {
     //the classes in the package.
     //e.g. ["test1","subpackage.test2"]
     classes extends Vector;
-    
-
 }
 
 /**
@@ -158,6 +156,20 @@ ChainListener extends TestListener {
     name "ChainListener";
     chainListenerSchema extends ChainListenerSchema;
 }
+
+
+/**
+ * This is a component that can receive log events, via LogToPrim, and then
+ * route those log events to a test listener
+ * Use it to capture text output of logs.
+ */
+TestListenerLog extends {
+
+   sfClass "org.smartfrog.services.junit.log.TestListenerLogImpl";
+}
+
+
+
 /**
  * and the test runner
  */
@@ -168,6 +180,9 @@ TestRunnerSchema extends Schema {
     failOnError extends OptionalBoolean;
     threadPriority extends OptionalInteger;
     runTests extends Boolean;
+    //component that is a log. this also needs to be bound to the logging system.
+    //there is no autobind.
+    testLog extends OptionalCD;
 }
 
 /**
@@ -178,6 +193,7 @@ TestRunner extends Compound {
     testRunnerSchema extends TestRunnerSchema;
     listener extends ConsoleListener ;
     failOnError true;
+    keepGoing true;
     runTests true; 
 }
 

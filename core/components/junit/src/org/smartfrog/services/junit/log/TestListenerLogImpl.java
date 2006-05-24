@@ -20,8 +20,12 @@
 package org.smartfrog.services.junit.log;
 
 import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.common.SmartFrogLogException;
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.logging.Log;
+import org.smartfrog.sfcore.logging.LogToPrim;
+import org.smartfrog.sfcore.logging.LogRegistration;
+import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.services.junit.LogListener;
 import org.smartfrog.services.junit.TestListener;
 import org.smartfrog.services.junit.data.LogEntry;
@@ -40,6 +44,7 @@ public class TestListenerLogImpl extends AbstractTestLog implements TestListener
 
     List/*<LogListener>*/ listeners=new ArrayList(1);
     public static final String ERROR_DUPLICATE_ADD = "Duplicate listener registration";
+
 
     public TestListenerLogImpl() throws RemoteException {
     }
@@ -110,17 +115,50 @@ public class TestListenerLogImpl extends AbstractTestLog implements TestListener
      * @throws SmartFrogException
      * @throws RemoteException
      */
-    public static boolean subscribeListener(Log testlog, TestListener listener)
+    public static boolean subscribeListener(Object testlog, TestListener listener)
             throws
             SmartFrogException, RemoteException {
-        if (testlog instanceof TestListenerLog) {
+        TestListenerLog tll = extractTestListenerLog(testlog);
+        if (tll!=null) {
             //this log listens for test events, so we can bond to it
-            TestListenerLog tll = (TestListenerLog) testlog;
             tll.addLogListener(listener);
             return true;
         } else {
             return false;
         }
+    }
+
+    /**
+     * Get a test listener log from the log passed in. If it is the right
+     * type, it is cast, but if it is a ref to a LogToPrim logger,
+     * that log is asked for its ultimate destination.
+     * @param testlog
+     * @return
+     * @throws RemoteException
+     */
+    private static TestListenerLog extractTestListenerLog(Object testlog) throws RemoteException, SmartFrogLogException {
+        TestListenerLog testlistener = null;
+        Object target=testlog;
+        if (target instanceof LogToPrim) {
+            //this log listens for test events, so we can bond to it
+            LogToPrim ltp=(LogToPrim) target;
+            target=ltp.getLogTo();
+        } else if (target instanceof TestListenerLog) {
+            //this log listens for test events, so we can bond to it
+            testlistener = (TestListenerLog) testlog;
+        } else if (target instanceof LogRegistration) {
+            LogRegistration logreg=(LogRegistration) target;
+            Log[] logs = logreg.listRegisteredLogs();
+            for(int i=0;i<logs.length;i++) {
+                testlistener =extractTestListenerLog(logs[i]);
+                if(testlistener !=null) {
+                    break;
+                }
+            }
+
+        }
+        //at this point testlistener is either set or null
+        return testlistener;
     }
 
     /**
@@ -132,13 +170,17 @@ public class TestListenerLogImpl extends AbstractTestLog implements TestListener
      * @throws RemoteException
      */
     public static void unsubscribeListener(PrimImpl testSuite,
-                                       TestListener listener) throws
+                                           TestListener listener) throws
             SmartFrogException, RemoteException {
         //first, we grab our log
         Log testlog = testSuite.sfLog();
-        if (testlog instanceof TestListenerLog) {
-            //this log listens for test events, so we can bond to it
-            TestListenerLog tll = (TestListenerLog) testlog;
+        unsubscribeListener(testlog, listener);
+    }
+
+    public static void unsubscribeListener(Object testlog, TestListener listener) throws SmartFrogException,
+            RemoteException {
+        TestListenerLog tll = extractTestListenerLog(testlog);
+        if (tll != null) {
             tll.removeLogListener(listener);
         }
     }

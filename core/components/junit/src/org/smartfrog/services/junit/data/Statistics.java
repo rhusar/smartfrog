@@ -57,6 +57,7 @@ public final class Statistics implements Serializable, Cloneable {
         node.sfReplaceAttribute(TestResultAttributes.ATTR_ERRORS, new Integer(errors));
         node.sfReplaceAttribute(TestResultAttributes.ATTR_FAILURES, new Integer(failures));
         node.sfReplaceAttribute(TestResultAttributes.ATTR_TESTS, new Integer(testsRun));
+        node.sfReplaceAttribute(TestResultAttributes.ATTR_TESTS_STARTED, new Integer(testsStarted));
         node.sfReplaceAttribute(TestResultAttributes.ATTR_LOGGED_MESSAGES,
                 new Integer(loggedMessages));
         node.sfReplaceAttribute(TestResultAttributes.ATTR_SUCCESSFUL,
@@ -77,10 +78,10 @@ public final class Statistics implements Serializable, Cloneable {
         errors = node.sfResolve(TestResultAttributes.ATTR_ERRORS, 0, false);
         failures = node.sfResolve(TestResultAttributes.ATTR_FAILURES, 0, false);
         testsRun = node.sfResolve(TestResultAttributes.ATTR_TESTS, 0, false);
+        testsStarted = node.sfResolve(TestResultAttributes.ATTR_TESTS_STARTED, 0, false);
         loggedMessages = node.sfResolve(TestResultAttributes.ATTR_LOGGED_MESSAGES,
                 0,
                 false);
-        testsStarted = 0;
     }
 
     /**
@@ -191,27 +192,37 @@ public final class Statistics implements Serializable, Cloneable {
 
     /**
      * check that the statistics of this instance match that of another one.
-     * We ignore logged messages as they can get a bit corrupted by irrelevant events
+     * We ignore logged messages as they can get a bit corrupted by irrelevant events.
+     * Same for the number of testsStarted, which are vulnerable to race conditions
      * @param other the other statistics
      * @return true if all counts match
      */
     public boolean isEqual(Statistics other) {
         return failures == other.failures
                 && testsRun == other.testsRun
-                && testsStarted == other.testsStarted
                 && errors == other.errors;
     }
 
+
+    public String toString() {
+        String s = "Statistics: testsRun=" + testsRun
+                + " errors=" + errors
+                + " failures=" + failures
+                + " loggedMessages=" + loggedMessages
+                + " testsStarted="+testsStarted;
+        return s;
+    }
+
     /**
-     * Clone me
+     * {@inheritDoc}
      *
-     * @return
      */
     public Object clone() {
         try {
             return super.clone();
         } catch (CloneNotSupportedException e) {
-            //not possible
+            //not possible except by a subclass, and, being final,
+            //that is not possible.
             throw new RuntimeException(e);
         }
     }
