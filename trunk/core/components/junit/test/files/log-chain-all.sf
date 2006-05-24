@@ -20,6 +20,7 @@ For more information: www.smartfrog.org
 
 #include "/files/components.sf"
 #include "/org/smartfrog/sfcore/logging/components.sf"
+#include "/org/smartfrog/sfcore/logging/logtoprimimpl.sf"
 
 sfCodeBase PROPERTY org.smartfrog.codebase;
     /**
@@ -29,14 +30,21 @@ sfCodeBase PROPERTY org.smartfrog.codebase;
 
 sfConfig extends Compound {
 
-    //set up logging to log to the listeners
+
   log extends SFLog {
     //log against our parent
     logFrom LAZY PARENT;
-    //now log4j kicks in
-    logTo extends TestListenerLogImpl ;
-  }
+    //log to a prim
+    logTo extends LogToPrimImpl {
+      loggerClass "org.smartfrog.sfcore.logging.LogToPrimImpl";
+      //the destination prim is defined here
+      logTo extends TestListenerLog {
 
+      }
+      //trace out what is going on
+      debug true;
+    }
+  }
 
     console extends ConsoleListener {
     };
@@ -49,8 +57,12 @@ sfConfig extends Compound {
 
     tests extends TestAll {
 
+      //the test log
+      testLog LAZY log:logTo:logTo;
+
+
       listener extends ChainListener {
-        listeners [ LAZY console, LAZY PARENT:PARENT:statistics, LAZY buffer];
+        listeners [ LAZY console, LAZY statistics, LAZY buffer];
       }
    }
 

@@ -19,6 +19,9 @@
  */
 package org.smartfrog.services.junit;
 
+import org.smartfrog.services.junit.log.TestLog;
+import org.smartfrog.services.junit.log.TestListenerLog;
+
 import java.io.Serializable;
 import java.util.Properties;
 
@@ -38,6 +41,8 @@ public class RunnerConfiguration implements Serializable, Cloneable {
      * who listens to the tests? This is potentially remote
      */
     private TestListenerFactory listenerFactory;
+
+    private TestListenerLog testLog;
 
     /**
      * flag to identify whether the task should fail when it is time
@@ -60,9 +65,18 @@ public class RunnerConfiguration implements Serializable, Cloneable {
         this.keepGoing = keepGoing;
     }
 
+
+    public TestListenerLog getTestLog() {
+        return testLog;
+    }
+
+    public void setTestLog(TestListenerLog testLog) {
+        this.testLog = testLog;
+    }
+
     /**
      * the shallow clone copies all the simple settings, but shares the test listener.
-     *
+     * and test log. There is a deeper clone of the system properties
      * @return
      * @throws CloneNotSupportedException
      */

@@ -20,6 +20,7 @@
 package org.smartfrog.services.junit.log;
 
 import org.smartfrog.services.junit.data.LogEntry;
+import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
@@ -37,9 +38,9 @@ public class TestLogImpl extends AbstractTestLog implements TestLog {
 
     private List logEntries = new ArrayList();
 
+
     public TestLogImpl() throws RemoteException {
     }
-
 
     /**
      * Add an entry to the buffer

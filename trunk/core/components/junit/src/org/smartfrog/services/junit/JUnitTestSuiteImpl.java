@@ -28,11 +28,13 @@ import org.smartfrog.sfcore.common.SmartFrogInitException;
 import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
 import org.smartfrog.sfcore.logging.Log;
 import org.smartfrog.sfcore.prim.PrimImpl;
+import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.security.SFClassLoader;
 import org.smartfrog.sfcore.utils.ComponentHelper;
+import org.smartfrog.sfcore.processcompound.SFProcess;
 import org.smartfrog.services.junit.data.Statistics;
 import org.smartfrog.services.junit.data.TestInfo;
-import org.smartfrog.services.junit.log.TestListenerLogImpl;
+import org.smartfrog.services.junit.log.TestListenerLog;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -54,26 +56,54 @@ import java.util.Properties;
 public class JUnitTestSuiteImpl extends PrimImpl implements JUnitTestSuite,
         junit.framework.TestListener {
 
+    /**
+     * our log
+     */
     private Log log;
 
+    /**
+     * assistance
+     */
     private ComponentHelper helper;
 
+    /**
+     * List of classes to test
+     */
     private List classes;
 
+    /**
+     * Is the if= set?
+     */
     private boolean ifValue = true;
 
+    /**
+     * is the unless= test clear?
+     */
     private boolean unlessValue = false;
 
-
+    /**
+     * The package to prefix all classnames with
+     */
     private String packageValue;
 
+    /**
+     * Runner configuration data
+     */
     private RunnerConfiguration configuration;
 
+    /**
+     * Statistics about this test
+     */
     private Statistics stats = new Statistics();
 
-
+    /**
+     * our hostname
+     */
     private String hostname;
 
+    /**
+     * the name of the suite
+     */
     private String suitename;
 
     /**
@@ -93,6 +123,11 @@ public class JUnitTestSuiteImpl extends PrimImpl implements JUnitTestSuite,
     private TestListener listener;
 
     /**
+     * System properties
+     */
+    private Properties sysproperties;
+
+    /**
      * Error if sysproperties are uneven.
      * {@value}
      */
@@ -100,7 +135,6 @@ public class JUnitTestSuiteImpl extends PrimImpl implements JUnitTestSuite,
             + ATTR_SYSPROPS;
     private static final String SUITE_METHOD_NAME = "suite";
     public static final String WARN_IGNORING_REMOTE_FAULT = "Ignoring remote fault";
-    private Properties sysproperties;
 
     public JUnitTestSuiteImpl() throws RemoteException {
         helper = new ComponentHelper(this);
@@ -126,12 +160,12 @@ public class JUnitTestSuiteImpl extends PrimImpl implements JUnitTestSuite,
     /**
      * bind to the configuration. A null parameter means 'stop binding'
      *
-     * @param configuration
+     * @param runner the runner configuration to use
      * @throws java.rmi.RemoteException
      */
-    public void bind(RunnerConfiguration configuration) throws RemoteException {
+    public void bind(RunnerConfiguration runner) throws RemoteException {
         log(suitename + " binding to test runner");
-        this.configuration = configuration;
+        this.configuration = runner;
     }
 
     /**
@@ -191,6 +225,7 @@ public class JUnitTestSuiteImpl extends PrimImpl implements JUnitTestSuite,
             values = (String[]) propList.toArray(values);
             int len = values.length;
             if ((len % 2) != 0) {
+                //build up an error message with as much data as we can include
                 StringBuffer valuesBuffer = new StringBuffer(" [");
                 for (int i = 0; i < len; i++) {
                     valuesBuffer.append(values[i]);
@@ -224,8 +259,11 @@ public class JUnitTestSuiteImpl extends PrimImpl implements JUnitTestSuite,
         buildClassList();
         InetAddress host = sfDeployedHost();
         hostname = host.getHostName();
-        //name
-        suitename = sfResolve(ATTR_NAME, (String) null, true);
+        //use our short name
+        suitename = getComponentShortName();
+        //then look for an override, which is mandatory if we do not know who
+        //we are right now.
+        suitename = sfResolve(ATTR_NAME, (String) suitename, suitename==null);
         log("Running test suite " + suitename + " on host " + hostname);
     }
 
@@ -326,7 +364,10 @@ public class JUnitTestSuiteImpl extends PrimImpl implements JUnitTestSuite,
         listener = listenerFactory.listen(this, hostname,
                 suitename,
                 System.currentTimeMillis());
-        TestListenerLogImpl.subscribeListener(this,listener);
+        final TestListenerLog testLog = configuration.getTestLog();
+        if(testLog !=null) {
+            testLog.addLogListener(listener);
+        }
 
         //reset the logs
         startedTests = new HashMap();
@@ -348,11 +389,11 @@ public class JUnitTestSuiteImpl extends PrimImpl implements JUnitTestSuite,
                     throw SmartFrogException.forward(e);
                 }
                 if (Thread.currentThread().isInterrupted()) {
-                    log.debug("Interrupted test thread");
-                    return false;
+                    log.error("Interrupted test thread");
+                    failed=true;
                 }
                 updateResultAttributes(true);
-                failed = !stats.isSuccessful();
+                failed |= !stats.isSuccessful();
                 if (failed && !configuration.getKeepGoing()) {
                     return false;
                 }
@@ -366,7 +407,9 @@ public class JUnitTestSuiteImpl extends PrimImpl implements JUnitTestSuite,
             listener = null;
             startedTests = null;
             //unsubscribe
-            TestListenerLogImpl.unsubscribeListener(this, l);
+            if (testLog != null) {
+                testLog.removeLogListener(l);
+            }
 
             //end the suite.
             l.endSuite();
@@ -412,9 +455,7 @@ public class JUnitTestSuiteImpl extends PrimImpl implements JUnitTestSuite,
      */
     private Class loadTestClass(String classname)
             throws ClassNotFoundException {
-        //Class.forName(classname);
-        Class clazz = SFClassLoader.forName(classname);
-        return clazz;
+        return SFClassLoader.forName(classname);
     }
 
     /**
@@ -441,9 +482,28 @@ public class JUnitTestSuiteImpl extends PrimImpl implements JUnitTestSuite,
     }
 
     /**
+     * Get the short name of a component.
+     * @return the final name in the list, or null for no match
+     * @throws RemoteException
+     */
+    private String getComponentShortName() throws RemoteException {
+        Object key;
+        if (sfParent() == null) {
+            key = SFProcess.getProcessCompound().sfAttributeKeyFor(this);
+        } else {
+            key = sfParent().sfAttributeKeyFor(this);
+        }
+        if(key!=null) {
+            return key.toString();
+        } else {
+            return null;
+        }
+    }
+
+    /**
      * get our listener
      *
-     * @return
+     * @return the listener
      */
     public TestListener getListener() {
         return listener;
@@ -568,9 +628,9 @@ public class JUnitTestSuiteImpl extends PrimImpl implements JUnitTestSuite,
     /**
      * call this when a test ends to set up the start and end times right.
      *
-     * @param test  test info
+     * @param test  the test
      * @param fault optional fault detail
-     * @return
+     * @return the test information including start and end time.
      */
     public synchronized TestInfo onEnd(Test test, Throwable fault) {
         long endTime = System.currentTimeMillis();

@@ -38,7 +38,7 @@ public interface TestSuite extends Prim, Remote, TestResultAttributes {
     public static final String ATTR_UNLESS = "unless";
     
     //list in name, value pairs [[name,value],[n2,v2]]
-    public static final String ATTR_SYSPROPS="sysproperties";
+    public static final String ATTR_SYSPROPS="properties";
 
     //read only properties
     /**

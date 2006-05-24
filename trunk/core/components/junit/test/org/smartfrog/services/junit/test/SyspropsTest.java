@@ -55,8 +55,9 @@ public class SyspropsTest  extends TestRunnerTestBase {
                     listener.getSessionStartCount());
             assertEquals("session ended",1,
                     listener.getSessionEndCount());
-            assertTrue("all tests passed", listener.testsWereSuccessful());
             Statistics statistics = runner.getStatistics();
+            System.out.println(statistics.toString());
+            assertTrue("testsWereSuccessful() is false", listener.testsWereSuccessful());
             assertEquals("statistics.errors!=0 -is "+ statistics.getErrors(), 0, statistics.getErrors());
             assertEquals("statistics.failures!=0",
                     0,

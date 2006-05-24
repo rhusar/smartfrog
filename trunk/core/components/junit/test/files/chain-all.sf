@@ -19,6 +19,7 @@ For more information: www.smartfrog.org
 */
 
 #include "/files/components.sf"
+
 sfCodeBase PROPERTY org.smartfrog.codebase;
     /**
      * run all tests in the suite.
@@ -41,7 +42,7 @@ sfConfig extends Compound {
     tests extends TestAll {
 
       listener extends ChainListener {
-        listeners [ LAZY console, LAZY PARENT:PARENT:statistics, LAZY buffer];
+        listeners [ LAZY console, LAZY statistics, LAZY buffer];
       }
    }
 

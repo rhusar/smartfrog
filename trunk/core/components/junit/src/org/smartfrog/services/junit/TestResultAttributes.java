@@ -28,29 +28,43 @@ package org.smartfrog.services.junit;
 public interface TestResultAttributes {
     /**
      * true if the test has finished
+     * {@value}
      */
     String ATTR_FINISHED = "testsFinished";
 
     /**
      * number of tests
+     * {@value}
      */
     String ATTR_TESTS = "testsRun";
+
+    /**
+     * number of tests
+     * {@value}
+     */
+    String ATTR_TESTS_STARTED = "testsStarted";
+
     /**
      * number of failures
+     * {@value}
      */
     String ATTR_FAILURES = "testsFailed";
 
     /**
      * number of errors
+     * {@value}
      */
     String ATTR_ERRORS = "testErrors";
+
     /**
      * boolean set to true iff all tests passed
+     * {@value}
      */
     String ATTR_SUCCESSFUL = "testsSuccessful";
 
     /**
      * Count of logged messages
+     * {@value}
      */
     String ATTR_LOGGED_MESSAGES = "loggedMessages";
 
