@@ -164,11 +164,14 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
      * Actions: sfCompleteName cache is cleaned
      */
     public void sfParentageChanged() {
-////       sfCompleteName=null;
+        ////       sfCompleteName=null;
     }
 
     /**
-     * Adds an attribute to this component description under given name.
+     * Adds an attribute to this component description under given name. If the attribute
+     * value is a component description, then its prim parent is
+     * set to this.
+
      *
      * @param name name of attribute
      * @param value value of attribute
@@ -179,7 +182,21 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
      */
     public synchronized Object sfAddAttribute(Object name, Object value)
         throws SmartFrogRuntimeException {
-        return context.sfAddAttribute(name, value);
+        ComponentDescription valueParent = null;
+        try {
+            if (value instanceof ComponentDescription) {
+                //Set right parentage for ComponentDescription
+                valueParent = ((ComponentDescription)value).sfParent();
+                ((ComponentDescription)value).setParent(this);
+            }
+            return context.sfAddAttribute(name, value);
+        } catch (SmartFrogContextException ex) {
+            if (valueParent!=null){
+                ((ComponentDescription)value).setParent(valueParent);
+            }
+            //ex.init(this);
+            throw ex;
+        }
     }
 
     /**
@@ -187,18 +204,33 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
      *
      * @param name of attribute to be removed
      *
-     * @return removed attribute value if successfull or null if not
+     * @return removed attribute value if successfull or null if not. If the attribute
+     * value removed is a component description, then its parent is
+     * removed as well.
+
      *
      * @throws SmartFrogRuntimeException when name is null
      */
     public synchronized Object sfRemoveAttribute(Object name)
         throws SmartFrogRuntimeException {
-        return context.sfRemoveAttribute(name);
+        try {
+            Object value = context.sfRemoveAttribute(name);
+            if (value instanceof ComponentDescription) {
+                ((ComponentDescription)value).setParent(null);
+            }
+            return value;
+        } catch (SmartFrogContextException ex) {
+            //ex.init(this);
+            throw ex;
+        }
     }
 
     /**
      * Replace named attribute in component context. If attribute is not
-     * present it is added to the context.
+     * present it is added to the context. If the attribute
+     * value added is a component description, then its parent is
+     * set to this and/or if the one removed is a component description then
+     * its parent is reset.
      *
      * @param name of attribute to replace
      * @param value value to add or replace
@@ -209,7 +241,25 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
      */
     public synchronized Object sfReplaceAttribute(Object name, Object value)
         throws SmartFrogRuntimeException {
-        return context.sfReplaceAttribute(name, value);
+        ComponentDescription valueParent = null;
+        try {
+            if (value instanceof ComponentDescription) {
+                //Set right parentage for ComponentDescription
+                valueParent = ((ComponentDescription)value).sfParent();
+                ((ComponentDescription)value).setParent(this);
+            }
+            Object oldValue = context.sfReplaceAttribute(name, value);
+            if ((oldValue!=null) && (oldValue instanceof ComponentDescription)) {
+               ((ComponentDescription)oldValue).setParent(null);
+            }
+            return oldValue;
+        } catch (SmartFrogContextException ex) {
+            if (valueParent!=null){
+                ((ComponentDescription)value).setParent(valueParent);
+            }
+            //ex.init(this);
+            throw ex;
+        }
     }
 
 
@@ -1095,7 +1145,7 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
             phases = newPhases;
         } else {
             phases.add("type");
-            phases.add("function");            
+            phases.add("function");
             phases.add("link");
             phases.add("predicate");
         }

@@ -339,6 +339,8 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
 
     /**
      * Adds an attribute to this component under given name.
+     * If the attribute value is a ComponentDescription  then
+     * this component is set as its parent
      *
      * @param name name of attribute
      * @param value value of attribute
@@ -350,16 +352,29 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
      */
     public synchronized Object sfAddAttribute(Object name, Object value)
         throws SmartFrogRuntimeException, RemoteException {
+        Object valueParent = null;
         try {
+
+            if (value instanceof ComponentDescription) {
+                //Set right parentage for ComponentDescription
+                valueParent = ((ComponentDescription)value).sfPrimParent();
+                ((ComponentDescription)value).setPrimParent(this);
+            }
             return sfContext.sfAddAttribute(name, value);
+
         } catch (SmartFrogContextException ex) {
+            if (valueParent!=null){
+                ((ComponentDescription)value).setPrimParent((Prim)valueParent);
+            }
             ex.init(this);
             throw ex;
         }
     }
 
     /**
-     * Removes an attribute from this component.
+     * Removes an attribute from this component. If the attribute
+     * value removed is a component description, then its prim parent is
+     * removed as well.
      *
      * @param name of attribute to be removed
      *
@@ -371,7 +386,11 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
     public synchronized Object sfRemoveAttribute(Object name)
         throws SmartFrogRuntimeException, RemoteException {
         try {
-            return sfContext.sfRemoveAttribute(name);
+            Object value = sfContext.sfRemoveAttribute(name);
+            if (value instanceof ComponentDescription) {
+                ((ComponentDescription)value).setPrimParent(null);
+            }
+            return value;
         } catch (SmartFrogContextException ex) {
             ex.init(this);
             throw ex;
@@ -380,24 +399,43 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
 
     /**
      * Replace named attribute in component context. If attribute is not
-     * present it is added to the context.
+     * present it is added to the context. If the attribute
+     * value added is a component description, then its parent is
+     * set to this and/or if the one removed is a component description then
+     * its parent is reset.
      *
      * @param name of attribute to replace
      * @param value value to add or replace
      *
-     * @return the old value if present, null otherwise
+     * @return the old value if present, null otherwise. It old value
+     * was a component description, then its prim parent is reset.
      *
      * @throws SmartFrogRuntimeException when name or value are null
      * @throws RemoteException In case of Remote/nework error
      */
     public synchronized Object sfReplaceAttribute(Object name, Object value)
         throws SmartFrogRuntimeException, RemoteException {
+
+        Prim valueParent = null;
         try {
-            return sfContext.sfReplaceAttribute(name, value);
+            if (value instanceof ComponentDescription) {
+                //Set right parentage for ComponentDescription
+                valueParent = ((ComponentDescription)value).sfPrimParent();
+                ((ComponentDescription)value).setPrimParent(this);
+            }
+            Object oldValue = sfContext.sfReplaceAttribute(name, value);
+            if ((oldValue!=null) && (oldValue instanceof ComponentDescription)) {
+               ((ComponentDescription)oldValue).setPrimParent(null);
+            }
+            return oldValue;
         } catch (SmartFrogContextException ex) {
+            if (valueParent!=null){
+                ((ComponentDescription)value).setPrimParent(valueParent);
+            }
             ex.init(this);
             throw ex;
         }
+
     }
 
 
