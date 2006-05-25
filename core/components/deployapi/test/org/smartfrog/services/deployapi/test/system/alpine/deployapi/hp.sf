@@ -23,7 +23,7 @@ For more information: www.smartfrog.org
 /**
  URL to the hp endpoint
  */
-hp_endpoint "http://deployapi.iseran.com:8080/alpine/portal";
+hp_endpoint "http://deployapi.iseran.com:8080/alpine/portal/";
 
 
 HpGridTests extends DeployapiTestRunner {

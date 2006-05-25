@@ -54,7 +54,7 @@ import java.rmi.RemoteException;
  * created 24-Jan-2006 13:34:37
  */
 
-public class CdlComponentDescriptionImpl extends SFComponentDescriptionImpl implements CdlComponentDescription, Phases {
+public final class CdlComponentDescriptionImpl extends SFComponentDescriptionImpl implements CdlComponentDescription, Phases {
 
     /**
      * node name
