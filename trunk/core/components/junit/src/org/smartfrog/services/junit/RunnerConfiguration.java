@@ -49,6 +49,11 @@ public class RunnerConfiguration implements Serializable, Cloneable {
      */
     private boolean keepGoing = true;
 
+    /**
+     * timeout in seconds. less than or equal to zero meand no timeout
+     */
+    private int timeout = 0;
+
     public TestListenerFactory getListenerFactory() {
         return listenerFactory;
     }
@@ -74,6 +79,8 @@ public class RunnerConfiguration implements Serializable, Cloneable {
         this.testLog = testLog;
     }
 
+
+
     /**
      * the shallow clone copies all the simple settings, but shares the test listener.
      * and test log. There is a deeper clone of the system properties
@@ -89,7 +96,7 @@ public class RunnerConfiguration implements Serializable, Cloneable {
     /**
      * Get the local system properties
      *
-     * @return
+     * @return the system properties
      */
     public Properties getSysProperties() {
         return sysProperties;

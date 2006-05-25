@@ -101,10 +101,10 @@ public class EventQueue extends EventPrimImpl implements Prim {
     }
 
 
-    Vector messages = new Vector();
-    int messageIndex = 0;
+    private Vector messages = new Vector();
+    private int messageIndex = 0;
 
-    Hashtable registrationMessages = new Hashtable();
+    private Hashtable registrationMessages = new Hashtable();
 
 
 

@@ -167,7 +167,6 @@ public abstract class WsrfHandler extends HandlerBase implements MessageHandler 
      *
      * @param messageContext
      * @param request
-     * @return
      */
     public void GetMultipleResourceProperties(MessageContext messageContext, SoapElement request) {
         //build the response
@@ -207,7 +206,7 @@ public abstract class WsrfHandler extends HandlerBase implements MessageHandler 
     /**
      * generate an unknown resource fault
      * @param qname
-     * @return
+     * @return a new fault
      */
     private BaseException ResourceUnknownFault(QName qname) {
         log.error("Unknown QName : [" + qname + "]");
@@ -247,7 +246,6 @@ public abstract class WsrfHandler extends HandlerBase implements MessageHandler 
     protected void verifyProcessorSet(AlpineProcessor processor, Element operation) {
         if (processor == null) {
             //if we get here: error
-            String action = operation.getLocalName();
             throw new ServerException("Unknown message: " + operation);
         }
     }

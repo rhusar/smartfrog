@@ -24,26 +24,34 @@ For more information: www.smartfrog.org
 #include "/org/smartfrog/services/www/livenessPage.sf"
 #include "/org/smartfrog/sfcore/logging/components.sf"
 #include "/org/smartfrog/sfcore/logging/logtoprimimpl.sf"
+#include "/org/smartfrog/services/junit/timeouts/components.sf"
 
   Proxy extends SystemProperties {
-    setOnDeploy true;
-    unsetOnTerminate true;
+    enabled true;
+    setOnDeploy enabled;
+    unsetOnTerminate enabled;
     properties [
       ["http.proxyHost","web-proxy"],
       ["http.proxyPort","8088"]
       ];
   }
 
-  ServerTest extends Compound {
+  ServerTest extends TimeoutCompound {
 
       endpoint TBD;
-      proxy extends Proxy;
       name TBD;
+      healthURL endpoint;
+      timeout 200;
+      proxyEnabled true;
       subdir name;
       enabled true;
 
+      proxy extends Proxy {
+        enabled proxyEnabled;
+      }
+
       health extends LivenessPage {
-        url endpoint;
+        url healthURL;
       }
 
       tests extends DeployapiTestRunner {
@@ -56,13 +64,14 @@ For more information: www.smartfrog.org
 
 
 
-sfConfig extends Compound {
+fullSuite extends Compound {
 
   tempDir LAZY PROPERTY java.io.tmpdir;
 
   necEnabled true;
-  ourgridEnabled false;
-  hpEnabled false;
+  ourgridEnabled true;
+  hpEnabled true;
+  proxyEnabled true;
 
   log extends SFLog {
     //log against our parent
@@ -81,17 +90,7 @@ sfConfig extends Compound {
 
   testLog LAZY log:logTo:logTo;
 
-  NecTest extends ServerTest {
 
-//    sfProcessName "process1";
-    name "nec";
-    endpoint nec_endpoint;
-    enabled necEnabled;
-    testLog LAZY PARENT:testLog;
-    //add in some new properties
-    properties [ServerTest:properties,
-      ["test.delay.seconds",60]];
-  }
 
   OurgridTest extends ServerTest {
 
@@ -99,6 +98,7 @@ sfConfig extends Compound {
     name "ourgrid";
     endpoint ourgrid_endpoint;
     enabled ourgridEnabled;
+    proxyEnabled PARENT:proxyEnabled;
     testLog LAZY PARENT:testLog;
   }
 
@@ -106,8 +106,26 @@ sfConfig extends Compound {
     name "hp";
     endpoint hp_endpoint;
     enabled hpEnabled;
+    proxyEnabled PARENT:proxyEnabled;
     testLog LAZY PARENT:testLog;
   }
 
+  NecTest extends ServerTest {
 
+//    sfProcessName "process1";
+    name "nec";
+    endpoint nec_endpoint;
+    enabled necEnabled;
+    proxyEnabled PARENT:proxyEnabled;
+    testLog LAZY PARENT:testLog;
+    //add in some new properties
+/*
+    properties [ServerTest:properties,
+      ["test.delay.seconds",60]];
+*/
+  }
+
+}
+
+sfConfig extends fullSuite {
 }

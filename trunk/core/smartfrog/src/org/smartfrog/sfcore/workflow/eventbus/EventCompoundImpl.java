@@ -219,7 +219,7 @@ public class EventCompoundImpl extends CompoundImpl implements EventBus,
             Reference l = (Reference) rcxt.get(k);
             EventRegistration s = (EventRegistration) sfResolve(l);
             receiveFrom.addElement(s);
-            s.register((EventSink) this);
+            s.register(this);
         }
 
         if (oldNotation) {

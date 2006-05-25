@@ -61,6 +61,11 @@ public interface TestRunner extends Remote , TestResultAttributes
     String ATTR_RUN_TESTS_ON_STARTUP="runTests";
 
      /**
+      * time in seconds that a single test can take
+      */
+    String ATTR_TIMEOUT_SECONDS="timeout";
+
+     /**
       * the test log
       */
     String ATTR_TESTLOG="testLog";
