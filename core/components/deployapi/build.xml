@@ -759,12 +759,14 @@ because javac was bailing out with some error about unzipping -->
     <presetdef name="publish-cmd">
       <sshexec host="${publish.server}"
           username="${publish.user}"
+          trust="true"
           keyfile="${publish.keyfile}"/>
     </presetdef>
     <presetdef name="publish-cp">
       <scp
           passphrase=""
           keyfile="${publish.keyfile}"
+          trust="true"
           verbose="${publish.verbose}">
       </scp>
     </presetdef>
