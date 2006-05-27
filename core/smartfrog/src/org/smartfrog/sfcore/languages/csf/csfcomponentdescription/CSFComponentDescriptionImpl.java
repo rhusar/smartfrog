@@ -101,7 +101,7 @@ public class CSFComponentDescriptionImpl extends SFComponentDescriptionImpl
         CSFComponentDescription res = null;
         res = (CSFComponentDescription) clone();
         res.setType(type);
-        res.setContext((Context) context.copy());
+        res.setContext((Context) sfContext.copy());
         res.setParent(parent);
         res.setEager(eager);
 
@@ -112,7 +112,7 @@ public class CSFComponentDescriptionImpl extends SFComponentDescriptionImpl
         }
         res.setConstraints(copiedConstraints);
 
-        for (Enumeration e = context.keys(); e.hasMoreElements();) {
+        for (Enumeration e = sfContext.keys(); e.hasMoreElements();) {
             Object value = res.sfContext().get(e.nextElement());
 
             if (value instanceof CSFComponentDescription) {
@@ -188,7 +188,7 @@ public class CSFComponentDescriptionImpl extends SFComponentDescriptionImpl
      */
     public Vector sfGetPhases() {
         if (phases == null) {
-            phases = (Vector) context.get("phaseList");
+            phases = (Vector) sfContext.get("phaseList");
 
             if (phases == null) {
                 phases = new Vector();
@@ -200,7 +200,7 @@ public class CSFComponentDescriptionImpl extends SFComponentDescriptionImpl
                 phases.add("constraint");
                 phases.add("predicate");
             } else {
-                context.remove("phaseList");
+                sfContext.remove("phaseList");
             }
         }
 

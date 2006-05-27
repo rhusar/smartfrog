@@ -122,11 +122,11 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
       SFComponentDescription res = null;
       res = (SFComponentDescription) clone();
       res.setType(type);
-      res.setContext((Context) context.copy());
+      res.setContext((Context) sfContext.copy());
       res.setParent(parent);
       res.setEager(eager);
 
-      for (Enumeration e = context.keys(); e.hasMoreElements(); ) {
+      for (Enumeration e = sfContext.keys(); e.hasMoreElements(); ) {
          Object value = res.sfContext().get(e.nextElement());
 
          if (value instanceof SFComponentDescription) {
@@ -217,9 +217,9 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
       Vector removals = null;
 
       // Resolve attributes
-      for (Enumeration e = context.keys(); e.hasMoreElements(); ) {
+      for (Enumeration e = sfContext.keys(); e.hasMoreElements(); ) {
          Object key = e.nextElement();
-         Object value = context.get(key);
+         Object value = sfContext.get(key);
          try {
            // Get attribute and if key a reference try to place it in the
            // right component. Don't resolve value since it ain't mine
@@ -252,7 +252,7 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
 
       if (removals != null) {
          for (Enumeration e = removals.elements(); e.hasMoreElements(); ) {
-            context.remove(e.nextElement());
+            sfContext.remove(e.nextElement());
          }
       }
    }
@@ -341,9 +341,9 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
          return;
       }
 
-      for (Enumeration e = context.keys(); e.hasMoreElements(); ) {
+      for (Enumeration e = sfContext.keys(); e.hasMoreElements(); ) {
          Object key = e.nextElement();
-         Object value = context.get(key);
+         Object value = sfContext.get(key);
          try {
            if (value instanceof ComponentResolver) {
              // Attribute value is resolvable, ask it to resolve itself
@@ -406,12 +406,12 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
     *@param  superType  super type to copy from
     */
    protected void subtype(SFComponentDescription superType) {
-      // First copy the context of the supertype
+      // First copy the sfContext of the supertype
       Context sContext = (Context) superType.sfContext().copy();
       Object key;
       Object value;
 
-      // re-parent any descriptions in super context
+      // re-parent any descriptions in super sfContext
       for (Enumeration e = sContext.keys(); e.hasMoreElements(); ) {
          key = e.nextElement();
          value = sContext.get(key);
@@ -421,15 +421,15 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
          }
       }
 
-      // add my context
-      for (Enumeration e = context.keys(); e.hasMoreElements(); ) {
+      // add my sfContext
+      for (Enumeration e = sfContext.keys(); e.hasMoreElements(); ) {
          key = e.nextElement();
-         value = context.get(key);
+         value = sfContext.get(key);
          sContext.put(key, value);
       }
 
-      // set context
-      context = sContext;
+      // set sfContext
+      sfContext = sContext;
 
       // set supertype
       type = superType.getType();
@@ -473,10 +473,10 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
        Object value = null;
        Object result = null;
 
-       for (Enumeration e = context.keys(); e.hasMoreElements(); ) {
+       for (Enumeration e = sfContext.keys(); e.hasMoreElements(); ) {
            // Get next attribute key and value
            key = e.nextElement();
-           value = context.get(key);
+           value = sfContext.get(key);
 
            // If value is reference resolve and place result in its place
            if (value instanceof ComponentResolver) {
@@ -511,7 +511,7 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
                        if ((result instanceof Reference) && !((Reference) result).getEager()) {
                            ((Reference) value).setEager(false);
                        } else {
-                           context.put(key, result);
+                           sfContext.put(key, result);
                            if (result instanceof SFComponentDescription) {
                                // need to do this as it may link to the file root!
                               if (((SFComponentDescription) result).sfParent() == null) {
@@ -577,9 +577,9 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
     public void writeOn(Writer ps, int indent) throws IOException {
         ps.write("extends "+(getEager()?"":"LAZY ")+((getType()==null)?"":getType().toString()));
 
-        if (context.size()>0) {
+        if (sfContext.size()>0) {
             ps.write(" {\n");
-            context.writeOn(ps, indent+1);
+            sfContext.writeOn(ps, indent+1);
             tabPad(ps, indent); ps.write('}');
         } else {
             ps.write(';');
@@ -599,9 +599,9 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
        ContextImpl newContext = new ContextImpl();
        res = new ComponentDescriptionImpl(null, newContext, eager);
 
-       for (Enumeration e = context.keys(); e.hasMoreElements(); ) {
+       for (Enumeration e = sfContext.keys(); e.hasMoreElements(); ) {
            Object key = e.nextElement();
-           Object value = context.get(key);
+           Object value = sfContext.get(key);
 
            if (value instanceof Phases) {
                value = ((Phases) value).sfAsComponentDescription();
@@ -732,7 +732,7 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
     */
    public Vector sfGetPhases() {
       if (phases == null) {
-         phases = (Vector) context.get("phaseList");
+         phases = (Vector) sfContext.get("phaseList");
 
          if (phases == null) {
             phases = new Vector();
@@ -743,7 +743,7 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
             phases.add(PhaseNames.LINK);
             phases.add(PhaseNames.PREDICATE);
          } else {
-            context.remove("phaseList");
+            sfContext.remove("phaseList");
          }
       }
 
