@@ -65,7 +65,7 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
 
 
     /** Context of attributes (key value pairs). */
-    public Context context;
+    public Context sfContext;
 
     /** Parent of this description. */
     public ComponentDescription parent;
@@ -92,7 +92,7 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
      */
     public ComponentDescriptionImpl(ComponentDescription parent, Context cxt,
         boolean eager) {
-        this.context = cxt;
+        this.sfContext = cxt;
         this.parent = parent;
         this.eager = eager;
     }
@@ -189,7 +189,7 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
                 valueParent = ((ComponentDescription)value).sfParent();
                 ((ComponentDescription)value).setParent(this);
             }
-            return context.sfAddAttribute(name, value);
+            return sfContext.sfAddAttribute(name, value);
         } catch (SmartFrogContextException ex) {
             if (valueParent!=null){
                 ((ComponentDescription)value).setParent(valueParent);
@@ -214,7 +214,7 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
     public synchronized Object sfRemoveAttribute(Object name)
         throws SmartFrogRuntimeException {
         try {
-            Object value = context.sfRemoveAttribute(name);
+            Object value = sfContext.sfRemoveAttribute(name);
             if (value instanceof ComponentDescription) {
                 ((ComponentDescription)value).setParent(null);
             }
@@ -248,7 +248,7 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
                 valueParent = ((ComponentDescription)value).sfParent();
                 ((ComponentDescription)value).setParent(this);
             }
-            Object oldValue = context.sfReplaceAttribute(name, value);
+            Object oldValue = sfContext.sfReplaceAttribute(name, value);
             if ((oldValue!=null) && (oldValue instanceof ComponentDescription)) {
                ((ComponentDescription)oldValue).setParent(null);
             }
@@ -273,7 +273,7 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
 
     // perhaps this should be synchronized... but causes problems with sfCompleteName if it is
     public Object sfAttributeKeyFor(Object value) {
-        return context.sfAttributeKeyFor(value);
+        return sfContext.sfAttributeKeyFor(value);
     }
 
     /**
@@ -284,7 +284,7 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
      * @return true if context contains value, false otherwise
      */
     public boolean sfContainsValue(Object value) {
-       return context.contains(value);
+       return sfContext.contains(value);
     }
 
 
@@ -295,7 +295,7 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
      * @return true if context contains key, false otherwise
      */
     public boolean sfContainsAttribute(Object attribute) {
-       return context.containsKey(attribute);
+       return sfContext.containsKey(attribute);
     }
 
 
@@ -306,7 +306,7 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
      * @return iterator
      */
     public  Iterator sfAttributes() {
-        return context.sfAttributes();
+        return sfContext.sfAttributes();
     }
 
     /**
@@ -317,7 +317,7 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
      * @return iterator
      */
     public  Iterator sfValues() {
-      return context.sfValues();
+      return sfContext.sfValues();
     }
 
 
@@ -329,7 +329,7 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
      * @see #setContext
      */
     public Context sfContext() {
-        return context;
+        return sfContext;
     }
 
     /**
@@ -342,8 +342,8 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
      * @see #sfContext
      */
     public Context setContext(Context cxt) {
-        Context oc = context;
-        context = cxt;
+        Context oc = sfContext;
+        sfContext = cxt;
 
         return oc;
     }
@@ -461,7 +461,7 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
         throws SmartFrogResolutionException {
         Object result = null;
         try {
-            result=context.sfResolveAttribute(name);
+            result=sfContext.sfResolveAttribute(name);
         } catch (SmartFrogContextException ex) {
             throw SmartFrogResolutionException.notFound(new Reference(name)
                 , sfCompleteNameSafe());
@@ -561,11 +561,11 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
     public Object copy() {
         ComponentDescription res = null;
         res = (ComponentDescription) clone();
-        res.setContext((Context) context.copy());
+        res.setContext((Context) sfContext.copy());
         res.setParent(parent);
         res.setEager(eager);
 
-        for (Enumeration e = context.keys(); e.hasMoreElements();) {
+        for (Enumeration e = sfContext.keys(); e.hasMoreElements();) {
             Object value = res.sfContext().get(e.nextElement());
 
             if (value instanceof ComponentDescription) {
@@ -604,7 +604,7 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
         StringWriter sw = new StringWriter();
 
         try {
-            context.writeOn(sw);
+            sfContext.writeOn(sw);
         } catch (IOException ioex) {
             // ignore should not happen
         }
@@ -639,9 +639,9 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
     public void writeOn(Writer ps, int indent) throws IOException {
         ps.write("extends " + (getEager() ? "" : "LAZY "));
 
-        if (context.size() > 0) {
+        if (sfContext.size() > 0) {
             ps.write(" {\n");
-            context.writeOn(ps, indent + 1);
+            sfContext.writeOn(ps, indent + 1);
             tabPad(ps, indent);
             ps.write('}');
         } else {
@@ -726,11 +726,11 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
         }
 
          path.push(this);
-         for (Enumeration e = ((Context) context.clone()).keys();
+         for (Enumeration e = ((Context) sfContext.clone()).keys();
                 e.hasMoreElements();) {
             name = e.nextElement();
 
-            if ((value = context.get(name)) instanceof ComponentDescription) {
+            if ((value = sfContext.get(name)) instanceof ComponentDescription) {
                 if (includeLazy || ((ComponentDescription)value).getEager()) {
                     ((ComponentDescription) value).visit(action, topDown, includeLazy, path);
                 }
