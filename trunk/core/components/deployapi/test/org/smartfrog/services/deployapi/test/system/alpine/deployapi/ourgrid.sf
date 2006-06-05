@@ -40,7 +40,7 @@ Flavio Santos
 ourgrid_endpoint "http://cddlm.lsd.ufcg.edu.br:8080/muse/services/Portal";
 
 ourgrid_wsdl "http://cddlm.lsd.ufcg.edu.br:8080/muse/services/Portal?wsdl";
-ourgrid_health "http://cddlm.lsd.ufcg.edu.br:8080/muse/happyaxis.jsp"
+ourgrid_health "http://cddlm.lsd.ufcg.edu.br:8080/muse/happyaxis.jsp";
 
 ourGridTests extends DeployapiTestRunner {
   healthURL ourgrid_health;
