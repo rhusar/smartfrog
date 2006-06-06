@@ -27,6 +27,7 @@ import org.smartfrog.projects.alpine.core.MessageContext;
 import org.smartfrog.projects.alpine.om.soap11.MessageDocument;
 import org.smartfrog.projects.alpine.wsa.AddressDetails;
 import org.smartfrog.projects.alpine.wsa.AlpineEPR;
+import org.smartfrog.projects.alpine.wsa.MessageIDSource;
 
 /**
  * This represents an ongoing conversation with a single host/endpoint. Stuff like
@@ -38,6 +39,7 @@ public class Session {
     private String role = DEFAULT_ROLE;
     private boolean validating = true;
     private AddressDetails address;
+    private MessageIDSource messageIDSource;
 
     /**
      * {@value}
@@ -110,6 +112,13 @@ public class Session {
         this.queue = queue;
     }
 
+    public MessageIDSource getMessageIDSource() {
+        return messageIDSource;
+    }
+
+    public void setMessageIDSource(MessageIDSource messageIDSource) {
+        this.messageIDSource = messageIDSource;
+    }
 
     /**
      * Create an outbound transmission
@@ -130,14 +139,21 @@ public class Session {
      */
     public Transmission createTransmission(AlpineEPR destination,
                                            String action) {
-        MessageContext messageContext = new MessageContext(role, validating);
+        MessageContext messageContext = createNewMessageContext();
         Transmission tx = new Transmission(messageContext);
         MessageDocument request = messageContext.createRequest();
         AddressDetails addressing = new AddressDetails(address);
         addressing.setTo(destination);
         addressing.setAction(action);
+        if (messageIDSource != null) {
+            messageIDSource.addNewID(addressing);
+        }
         request.setAddressDetails(addressing);
         return tx;
+    }
+
+    protected MessageContext createNewMessageContext() {
+        return new MessageContext(role, validating);
     }
 
     public Transmission createTransmission(AddressDetails destination,
@@ -148,7 +164,7 @@ public class Session {
     }
 
     public Transmission createTransmission(AddressDetails destination) {
-        MessageContext messageContext = new MessageContext(role, validating);
+        MessageContext messageContext = createNewMessageContext();
         Transmission tx = new Transmission(messageContext);
         MessageDocument request = messageContext.createRequest();
         request.setAddressDetails(destination);

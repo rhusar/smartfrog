@@ -24,11 +24,14 @@ import nu.xom.Serializer;
 import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpStatus;
+import org.apache.commons.httpclient.params.HttpConnectionParams;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.RequestEntity;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.smartfrog.projects.alpine.core.MessageContext;
+import org.smartfrog.projects.alpine.core.Context;
+import org.smartfrog.projects.alpine.core.ContextConstants;
 import org.smartfrog.projects.alpine.faults.SoapException;
 import org.smartfrog.projects.alpine.http.HttpConstants;
 import org.smartfrog.projects.alpine.om.soap11.MessageDocument;
@@ -66,6 +69,7 @@ public class HttpTransmitter {
     public static final String ERROR_DURING_PREPARATION = "Failure while creating the output request." +
             "No communication with the server took place";
     public static final int BLOCKSIZE = 4096;
+    private HttpConnectionParams connectionParams;
 
     public HttpTransmitter(Transmission tx) {
         this.tx = tx;
@@ -76,12 +80,24 @@ public class HttpTransmitter {
         wsa.addressMessage(request);
         //create a client
         httpclient = new HttpClient();
+        propagateSettings(tx.getContext());
+    }
+
+
+    private void propagateSettings(Context settings) {
         //proxy settings
         proxySettings = new ProxySettings();
         proxySettings.bindToSystemSettings();
         proxySettings.configureClient(httpclient);
+        //socket options
+        connectionParams = new HttpConnectionParams();
+        Object o=settings.get(HttpConnectionParams.SO_TIMEOUT);
+        if(o!=null) {
+            int timeout=(Integer) o;
+            httpclient.setTimeout(timeout);
+            connectionParams.setSoTimeout(timeout);
+        }
     }
-
 
     public void transmit() {
         String destination = wsa.getDestination();
@@ -105,8 +121,13 @@ public class HttpTransmitter {
                     serializer.write(request);
                     serializer.flush();
                     outToFile.flush();
+                    String contentType = HttpConstants.CONTENT_TYPE_TEXT_XML;
+                    String ctxContentType = (String) tx.getContext().get(ContextConstants.ATTR_SOAP_CONTENT_TYPE);
+                    if(ctxContentType!=null) {
+                        contentType=ctxContentType;
+                    }
                     re = new ProgressiveFileUploadRequestEntity(tx, request, outputFile,
-                            HttpConstants.CONTENT_TYPE_TEXT_XML,
+                            contentType,
                             tx.getUploadFeedback(), BLOCKSIZE);
                     method.setRequestEntity(re);
                 } finally {

@@ -131,7 +131,8 @@ public class HttpBinder {
         if (semicolon >= 0) {
             contentType = contentType.substring(0, semicolon).trim();
         }
-        if (!HttpConstants.CONTENT_TYPE_TEXT_XML.equals(contentType)) {
+        if (!HttpConstants.CONTENT_TYPE_TEXT_XML.equals(contentType)
+                &&!HttpConstants.CONTENT_TYPE_SOAP_XML.equals(contentType)) {
             throw new ServerException(ERROR_UNSUPPORTED_CONTENT + contentType);
         }
     }

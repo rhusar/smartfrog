@@ -23,10 +23,12 @@ import nu.xom.Element;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.smartfrog.projects.alpine.faults.ValidationException;
+import org.smartfrog.projects.alpine.faults.AlpineRuntimeException;
 import org.smartfrog.projects.alpine.interfaces.Validatable;
 import org.smartfrog.projects.alpine.om.base.SoapElement;
 import org.smartfrog.projects.alpine.om.soap11.Header;
 import org.smartfrog.projects.alpine.om.soap11.MessageDocument;
+import org.smartfrog.projects.alpine.om.soap11.Envelope;
 
 /*
 * <wsa:To>xs:anyURI</wsa:To> ?
@@ -292,9 +294,11 @@ public class AddressDetails implements Validatable, AddressingConstants {
             String text = header.getValue();
             boolean understood=false;
             if (WSA_MESSAGEID.equals(localname)) {
+                checkNotEmpty(header, text);
                 messageID = text;
                 understood=true;
             } else if (WSA_ACTION.equals(localname)) {
+                checkNotEmpty(header, text);
                 action = text;
                 understood = true;
             } else if (WSA_FROM.equals(localname)) {
@@ -310,9 +314,11 @@ public class AddressDetails implements Validatable, AddressingConstants {
                 referenceParameters = (Element) header.copy();
                 understood = true;
             } else if (WSA_RELATES_TO.equals(localname)) {
+                checkNotEmpty(header, text);
                 relatesTo = text;
                 understood = true;
             } else if (WSA_TO.equals(localname)) {
+                //this is nt grabbed because it was pulled earlier.
                 understood = true;
             }
             //mark headers that we understood as so, for the MustUnderstand checker.
@@ -321,6 +327,12 @@ public class AddressDetails implements Validatable, AddressingConstants {
             }
         }
         return found;
+    }
+
+    private void checkNotEmpty(Element header, String text) {
+        if(text==null || text.length()==0) {
+            throw new AlpineRuntimeException("Missing content from header "+header.getQualifiedName());
+        }
     }
 
     /**
@@ -353,11 +365,16 @@ public class AddressDetails implements Validatable, AddressingConstants {
         if (to == null) {
             dest = AlpineEPR.EPR_ANONYMOUS;
         }
+        //patch in WSA prefix to the message header.
+        Envelope envelope = message.getEnvelope();
+        envelope.getHeader().addNewNamespace(prefix,wsaNamespace);
+        //and the soap prefix
+        envelope.addSoapPrefix();
         maybeAdd(message, dest, WSA_TO, wsaNamespace, prefix, markWsaReferences, markMustUnderstand);
         maybeAdd(message, from, WSA_FROM, wsaNamespace, prefix, markWsaReferences, markMustUnderstand);
         maybeAdd(message, replyTo, WSA_REPLYTO, wsaNamespace, prefix, markWsaReferences, markMustUnderstand);
         maybeAdd(message, faultTo, WSA_FAULTTO, wsaNamespace, prefix, markWsaReferences, markMustUnderstand);
-        //text values
+        //text values iain
         maybeAdd(message, messageID, WSA_MESSAGEID, wsaNamespace, prefix, markMustUnderstand);
         maybeAdd(message, action, WSA_ACTION, wsaNamespace, prefix, markMustUnderstand);
         maybeAdd(message, relatesTo, WSA_RELATES_TO, wsaNamespace, prefix, markMustUnderstand);
@@ -376,10 +393,12 @@ public class AddressDetails implements Validatable, AddressingConstants {
     private void maybeAdd(MessageDocument message, String value, String localname, String namespace,
                           String prefix,
                           boolean mustUnderstand) {
-        final String prefixColon = prefix + ":";
-        Header header = message.getEnvelope().getHeader();
-        Element actionElement = new SoapElement(prefixColon + localname, namespace, value);
-        header.setHeaderElement(actionElement, mustUnderstand);
+        if (value != null) {
+            final String prefixColon = prefix + ":";
+            Header header = message.getEnvelope().getHeader();
+            Element actionElement = new SoapElement(prefixColon + localname, namespace, value);
+            header.setHeaderElement(actionElement, mustUnderstand);
+        }
     }
 
     /**

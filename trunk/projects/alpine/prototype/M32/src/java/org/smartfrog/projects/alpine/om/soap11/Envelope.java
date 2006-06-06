@@ -22,6 +22,7 @@ package org.smartfrog.projects.alpine.om.soap11;
 
 import nu.xom.Element;
 import nu.xom.Elements;
+import nu.xom.Attribute;
 import org.smartfrog.projects.alpine.xmlutils.BaseElementsIterator;
 
 /**
@@ -97,5 +98,13 @@ public class Envelope extends Soap11Element {
         return header;
     }
 
+
+    /**
+     * Add the soap prefix if needed; this is inferred from our namespace
+     */
+    public void addSoapPrefix() {
+        String xmlns = getNamespaceURI();
+        addNewNamespace(PREFIX_SOAP, xmlns);
+    }
 
 }

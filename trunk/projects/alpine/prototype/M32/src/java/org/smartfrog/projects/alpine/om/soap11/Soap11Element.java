@@ -22,6 +22,7 @@ package org.smartfrog.projects.alpine.om.soap11;
 
 import org.smartfrog.projects.alpine.om.base.SoapElement;
 import nu.xom.Element;
+import nu.xom.Attribute;
 
 import javax.xml.namespace.QName;
 
@@ -61,6 +62,16 @@ public class Soap11Element extends SoapElement implements Soap11Constants {
     public Envelope getEnvelope() {
         return getMessageDocument().getEnvelope();
     }
-    
-    
+
+
+    /**
+     * Add a new namespace declaration if it is not there
+     * @param prefix the prefix
+     * @param xmlns the namespace
+     */
+    public void addNewNamespace(String prefix, String xmlns) {
+        if(getNamespaceURI(prefix)==null) {
+            addNamespaceDeclaration(prefix,xmlns);
+        }
+    }
 }

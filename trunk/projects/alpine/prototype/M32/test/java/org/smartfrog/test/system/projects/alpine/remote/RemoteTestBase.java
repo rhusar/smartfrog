@@ -23,6 +23,7 @@ package org.smartfrog.test.system.projects.alpine.remote;
 import junit.framework.TestCase;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.commons.httpclient.params.HttpConnectionParams;
 import org.smartfrog.projects.alpine.core.MessageContext;
 import org.smartfrog.projects.alpine.transport.DirectExecutor;
 import org.smartfrog.projects.alpine.transport.Transmission;
@@ -68,6 +69,7 @@ public abstract class RemoteTestBase extends TestCase {
      */
     public static final String WSA_PATH = "/wsa/";
     public static final String ENDPOINT = "endpoint";
+    public static final int CONNECTION_TIMEOUT_MILLISECONDS = 10000;
 
     /**
      * Constructs a test case with the given name.
@@ -203,5 +205,6 @@ public abstract class RemoteTestBase extends TestCase {
         address = new AddressDetails();
         address.setTo(getEpr());
         address.setAction(action);
+        messageCtx.put(HttpConnectionParams.SO_TIMEOUT,CONNECTION_TIMEOUT_MILLISECONDS);
     }
 }

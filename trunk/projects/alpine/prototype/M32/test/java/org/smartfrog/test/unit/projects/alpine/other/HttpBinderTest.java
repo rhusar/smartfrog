@@ -23,6 +23,7 @@ import junit.framework.TestCase;
 import org.smartfrog.projects.alpine.core.EndpointContext;
 import org.smartfrog.projects.alpine.faults.ServerException;
 import org.smartfrog.projects.alpine.http.HttpBinder;
+import org.smartfrog.projects.alpine.http.HttpConstants;
 
 /**
  * created 03-May-2006 15:56:28
@@ -59,10 +60,15 @@ public class HttpBinderTest extends TestCase {
         binder.validateContentType("text/xml; charset=UTF-8");
     }
 
+
+    public void testSOAPContent() throws Exception {
+        binder.validateContentType(HttpConstants.CONTENT_TYPE_SOAP_XML+"; charset=UTF-8");
+    }
+
     public void testHtmlContent() throws Exception {
         try {
             binder.validateContentType("text/html; charset=UTF-8");
-            //fail
+            fail("shound not have validated this");
         } catch (ServerException e) {
             //expected
         }

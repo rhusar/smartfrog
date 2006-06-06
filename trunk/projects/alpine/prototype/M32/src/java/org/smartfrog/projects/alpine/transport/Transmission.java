@@ -27,6 +27,7 @@ import org.smartfrog.projects.alpine.faults.NetworkIOException;
 import org.smartfrog.projects.alpine.om.base.SoapElement;
 import org.smartfrog.projects.alpine.om.soap11.MessageDocument;
 import org.smartfrog.projects.alpine.transport.http.HttpTransmitter;
+import org.smartfrog.projects.alpine.wsa.MessageIDSource;
 
 import java.io.IOException;
 import java.util.concurrent.Callable;
@@ -70,6 +71,7 @@ public class Transmission implements Callable {
      */
     private Future<?> result;
 
+    
     public MessageContext getContext() {
         return context;
     }
@@ -188,6 +190,9 @@ public class Transmission implements Callable {
                     getResponse().getRootElement().copy()));
         }
     }
+
+
+
 
 
 }
