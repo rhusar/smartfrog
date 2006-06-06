@@ -29,7 +29,11 @@ import org.smartfrog.projects.alpine.transport.Session;
 import org.smartfrog.projects.alpine.transport.Transmission;
 import org.smartfrog.projects.alpine.transport.TransmitQueue;
 import org.smartfrog.projects.alpine.wsa.AlpineEPR;
+import org.smartfrog.projects.alpine.wsa.MessageIDSource;
 import org.smartfrog.projects.alpine.xmlutils.XsdUtils;
+import org.smartfrog.projects.alpine.core.MessageContext;
+import org.smartfrog.projects.alpine.core.ContextConstants;
+import org.smartfrog.projects.alpine.http.HttpConstants;
 import org.smartfrog.services.deployapi.system.Constants;
 import org.smartfrog.services.deployapi.transport.wsrf.WsrfUtils;
 
@@ -78,6 +82,7 @@ public abstract class WsrfSession extends Session {
 
     protected WsrfSession(AlpineEPR endpoint, boolean validating, TransmitQueue queue) {
         super(endpoint, null, validating);
+        setMessageIDSource(new MessageIDSource());
         setQueue(queue);
     }
 
@@ -92,6 +97,11 @@ public abstract class WsrfSession extends Session {
         this.timeout = timeout;
     }
 
+    protected MessageContext createNewMessageContext() {
+        MessageContext ctx = super.createNewMessageContext();
+        ctx.put(ContextConstants.ATTR_SOAP_CONTENT_TYPE, HttpConstants.CONTENT_TYPE_SOAP_XML);
+        return ctx;
+    }
 
     /**
      * Bind to an address; forces us to use the

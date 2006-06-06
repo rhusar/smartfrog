@@ -738,8 +738,7 @@ because javac was bailing out with some error about unzipping -->
 
   <target name="interop-nec" depends="prepare-interop-tests"
       description="test against nec">
-    <interop-test endpoint="nec"
-        />
+    <interop-test endpoint="nec"  />
   </target>
 
   <target name="interop-ourgrid" depends="prepare-interop-tests"
