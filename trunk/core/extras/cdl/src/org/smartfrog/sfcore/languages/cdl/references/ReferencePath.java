@@ -59,9 +59,17 @@ public class ReferencePath implements NamespaceLookup {
     }
 
     /**
-     * a cached ref to the owner. Why? so that
+     * a cached ref to the owner. Why? so that we can do lookup there on demand
      */
     private NamespaceLookup namespaces;
+
+
+    private boolean lazy;
+
+    /**
+     * the steps in the path
+     */
+    private List<Step> steps = new ArrayList<Step>();
 
     /**
      * Build from a source
@@ -93,12 +101,6 @@ public class ReferencePath implements NamespaceLookup {
         }
     }
 
-    private boolean lazy;
-
-    /**
-     * the steps in the path
-     */
-    private List<Step> steps = new ArrayList<Step>();
 
     public List<Step> getSteps() {
         return steps;

@@ -14,7 +14,7 @@
   <cdl:system>
     <sfClass sfi:type="trimmed" cdl:ref="cmp:CommandPath"/>
     <cmp:CommandPath>org.smartfrog.services.cddlm.cdl.demo.EchoImpl</cmp:CommandPath>
-    <demo:gui sfi:type="boolean">true</demo:gui>
-    <demo:message sfi:type="trimmed">Test message to antlai &amp; julguo</demo:message>
+    <demo:gui sfi:type="boolean">false</demo:gui>
+    <demo:message sfi:type="trimmed">Test message</demo:message>
   </cdl:system>
 </cdl:cdl>

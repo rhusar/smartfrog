@@ -15,6 +15,7 @@
   <cdl:system>
     <!--<cmp:sequence cmp:lifecycle="initialization" />-->
     <echo cdl:extends="demo:echo" >
+      <demo:gui>false</demo:gui>      
       <demo:message>hello</demo:message>
     </echo>
     <run cdl:extends="demo:Run">

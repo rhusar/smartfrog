@@ -31,23 +31,43 @@ import java.rmi.RemoteException;
 
 public abstract class DeployingTestBase extends SmartFrogTestBase implements Filenames {
     public static final int SPIN_LAG = 1000;
+    public static final String FILES = "files/sfcdl/";
+    public static final String VALID= Lazy1Test.FILES + "valid/";
+    public static final String INVALID = Lazy1Test.FILES + "invalid/";
+    public static final int DEFAULT_TIMEOUT = 30;
 
     public DeployingTestBase(String name) {
         super(name);
     }
 
     protected void deployAndTerminate(String name) throws Throwable {
-        Prim prim = deployExpectingSuccess(getResourceBase() + name , name);
-        assertLivenessSuccess(prim);
-        assertLivenessSuccess(prim);
-        assertLivenessSuccess(prim);
-        assertLivenessSuccess(prim);
-        assertLivenessSuccess(prim);
-        terminateApplication(prim);
+        Prim prim=null;
+        try {
+            prim = deployExpectingSuccess(getResourceBase() + name , name);
+            assertLivenessSuccess(prim);
+            assertLivenessSuccess(prim);
+            assertLivenessSuccess(prim);
+            assertLivenessSuccess(prim);
+            assertLivenessSuccess(prim);
+        } finally {
+            terminate(prim);
+        }
     }
 
     protected String getResourceBase() {
         return CdlComponentTest.VALID_CDL_FILES;
+    }
+
+    public void terminate(Prim prim) throws RemoteException {
+        terminateWithSpin(prim,DEFAULT_TIMEOUT);
+    }
+
+    public void terminateWithSpin(Prim prim, int timeout) throws RemoteException {
+        if (prim != null) {
+            terminateApplication(prim);
+            boolean ok = spinUntilTerminated(prim, timeout);
+            assertTrue("Failed to terminate application",ok);
+        }
     }
 
     protected boolean spinUntilTerminated(Prim prim,int timeout) throws RemoteException {

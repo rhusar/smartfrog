@@ -41,7 +41,7 @@ public class CdlExecTest extends XmlTestBase {
     }
 
 
-    public void testDeployExec() throws Throwable {
+    public void NotestDeployExec() throws Throwable {
         Prim application = null;
         try {
             application = deployExpectingSuccess(EXEC_CDL, "testExec");
@@ -50,7 +50,7 @@ public class CdlExecTest extends XmlTestBase {
         }
     }
 
-    public void testDeployJBoss() throws Throwable {
+    public void NotestDeployJBoss() throws Throwable {
         Prim application = null;
         try {
             application = deployExpectingSuccess(JBOSS_CDL, "testJboss");
