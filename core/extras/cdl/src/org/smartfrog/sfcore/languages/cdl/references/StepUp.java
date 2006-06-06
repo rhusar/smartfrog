@@ -74,6 +74,5 @@ public class StepUp extends Step {
                                      Reference reference)
             throws CdlResolutionException {
         reference.addElement(ReferencePart.parent());
-
     }
 }

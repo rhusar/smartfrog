@@ -69,7 +69,7 @@ public class CdlComponentTest extends DeployingTestBase {
         deployAndTerminate(COMPOUND);
     }
 
-    public void testOpenMP3() throws Throwable {
+    public void NotestOpenMP3() throws Throwable {
         deployAndTerminate(CDL_OPEN_MP3);
     }
     
@@ -91,7 +91,7 @@ public class CdlComponentTest extends DeployingTestBase {
         //cast it
         Echo echo = (Echo) echoPrim;
         try {
-            boolean terminated = spinUntilTerminated(echoPrim, 30);
+            boolean terminated = spinUntilTerminated(echoPrim, 5);
             assertTrue("successful termination", terminated);
         } finally {
             terminateApplication(prim);

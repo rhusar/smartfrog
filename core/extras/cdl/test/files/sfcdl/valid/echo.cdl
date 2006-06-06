@@ -12,6 +12,7 @@
   </cdl:configuration>
   <cdl:system>
     <echo cdl:extends="demo:echo">
+      <demo:gui>false</demo:gui>
       <demo:message>Test message</demo:message>
     </echo>
   </cdl:system>

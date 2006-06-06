@@ -55,8 +55,5 @@ public abstract class Step {
      */
     public abstract void appendReferenceParts(NamespaceLookup namespaces,Reference reference)
             throws CdlResolutionException;
-    
-    
-    
-    
+
 }
