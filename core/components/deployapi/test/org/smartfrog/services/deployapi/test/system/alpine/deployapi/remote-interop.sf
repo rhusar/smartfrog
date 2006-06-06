@@ -45,6 +45,7 @@ For more information: www.smartfrog.org
       proxyEnabled true;
       subdir name;
       enabled true;
+      basedir "build/test/interop";
 
       proxy extends Proxy {
         enabled proxyEnabled;
@@ -55,6 +56,7 @@ For more information: www.smartfrog.org
       }
 
       tests extends DeployapiTestRunner {
+        basedir PARENT:basedir;
         enabled PARENT:enabled;
         endpoint PARENT:endpoint;
         subdir PARENT:subdir;
