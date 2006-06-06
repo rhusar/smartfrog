@@ -21,6 +21,7 @@ package org.smartfrog.projects.alpine.transport.http;
 
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.UsernamePasswordCredentials;
+import org.apache.commons.httpclient.HostConfiguration;
 
 /**
  * Class to pass java proxy settings down to the http client runtime.
@@ -115,7 +116,8 @@ public class ProxySettings {
      */
     public void configureClient(HttpClient client) {
         if (isEnabled()) {
-            client.getHostConfiguration().setProxy(proxyHost, proxyPort);
+            HostConfiguration hostConfiguration = client.getHostConfiguration();
+            hostConfiguration.setProxy(proxyHost, proxyPort);
             if (isAuthenticating()) {
                 client.getState().setProxyCredentials(proxyRealm, proxyHost,
                         new UsernamePasswordCredentials(proxyUser, proxyPassword));

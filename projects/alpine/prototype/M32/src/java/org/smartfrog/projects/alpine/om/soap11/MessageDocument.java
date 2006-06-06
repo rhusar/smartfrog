@@ -22,6 +22,7 @@ package org.smartfrog.projects.alpine.om.soap11;
 
 import nu.xom.Document;
 import nu.xom.Element;
+import nu.xom.Attribute;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.smartfrog.projects.alpine.faults.InvalidXmlException;
