@@ -23,6 +23,7 @@ import nu.xom.Element;
 import static org.ggf.cddlm.generated.api.CddlmConstants.API_ELEMENT_LOOKUPSYSTEM_REQUEST;
 import org.ggf.cddlm.generated.api.CddlmConstants;
 import org.smartfrog.projects.alpine.om.soap11.MessageDocument;
+import org.smartfrog.projects.alpine.om.base.SoapElement;
 import org.smartfrog.projects.alpine.transport.Transmission;
 import org.smartfrog.projects.alpine.transport.TransmitQueue;
 import org.smartfrog.projects.alpine.wsa.AlpineEPR;
@@ -56,10 +57,11 @@ public class PortalSession extends WsrfSession {
     }
 
     public Transmission beginLookupSystem(String id) {
-        Element resid = XomHelper.apiElement("ResourceId", id);
-        Element request;
+        SoapElement resid = XomHelper.apiElement("ResourceId", id);
+        SoapElement request;
         request = XomHelper.apiElement(API_ELEMENT_LOOKUPSYSTEM_REQUEST, resid);
-        return queue(Constants.API_PORTAL_OPERATION_LOOKUPSYSTEM, request);
+        //return queue(Constants.API_PORTAL_OPERATION_LOOKUPSYSTEM, request);
+        return queue(request);
     }
 
     /**
@@ -100,13 +102,13 @@ public class PortalSession extends WsrfSession {
      *          for trouble
      */
     public Transmission beginCreate(String hostname) {
-        Element request;
+        SoapElement request;
         request = XomHelper.apiElement(Constants.API_ELEMENT_CREATE_REQUEST);
         if (hostname != null) {
             Element child = XomHelper.apiElement("hostname", hostname);
             request.appendChild(child);
         }
-        return queue(Constants.API_PORTAL_OPERATION_CREATE, request);
+        return queue(request);
     }
 
     /**

@@ -36,6 +36,7 @@ import org.smartfrog.projects.alpine.om.soap11.MessageDocument;
 import org.smartfrog.projects.alpine.transport.DirectExecutor;
 import org.smartfrog.projects.alpine.transport.TransmitQueue;
 import org.smartfrog.projects.alpine.wsa.AlpineEPR;
+import org.smartfrog.projects.alpine.xmlutils.XsdUtils;
 import org.smartfrog.services.deployapi.alpineclient.model.PortalSession;
 import org.smartfrog.services.deployapi.alpineclient.model.SystemSession;
 import org.smartfrog.services.deployapi.alpineclient.model.WsrfSession;
@@ -219,13 +220,24 @@ public abstract class AlpineTestBase extends TestCase {
         return result;
     }
 
+    protected List<Element> getPropertyListLog(QName property) {
+        List<Element> result = getPropertyList(property);
+        if (log.isInfoEnabled()) {
+            log.info(property + " = ");
+            for(Element e:result) {
+                log.info(XsdUtils.printToString(e));
+            }
+        }
+        return result;
+    }
+
     protected void assertCapable(String uri) {
         Element capabilities = getMuwsCapabilities();
         assertTrue("Missing capability " + uri, WsrfUtils.hasMuwsCapability(capabilities, uri));
     }
 
     protected Element getMuwsCapabilities() {
-        return getProperty(CddlmConstants.PROPERTY_MUWS_MANAGEABILITY_CAPABILITY);
+        return getPropertyLog(CddlmConstants.PROPERTY_MUWS_MANAGEABILITY_CAPABILITY);
     }
 
     protected Element getSystemMuwsCapabilities() {
@@ -239,7 +251,11 @@ public abstract class AlpineTestBase extends TestCase {
 
     protected void assertQueryResolves(SoapElement element, String query) {
         Nodes nodes = element.query(query, xpath);
-        assertTrue("did not resolve :" + query, nodes.size() > 0);
+        boolean resolved = nodes.size() > 0;
+        if(!resolved) {
+            fail("did not resolve :" + query+ " in \n"
+            + XsdUtils.printToString(element));
+        }
     }
 
     public SystemSession getSystem() {

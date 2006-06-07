@@ -39,7 +39,7 @@ public class Api_01_portal_wsdm_properties_Test extends StandardTestBase {
     }
 
     public void testMuwsCapabilitiesExists() throws Exception {
-        getPropertyLog(CddlmConstants.PROPERTY_MUWS_MANAGEABILITY_CAPABILITY);
+        getPropertyListLog(CddlmConstants.PROPERTY_MUWS_MANAGEABILITY_CAPABILITY);
     }
 
     public void testCapabilityMuwsManageabilityReferences() throws Exception {
@@ -63,7 +63,7 @@ public class Api_01_portal_wsdm_properties_Test extends StandardTestBase {
     }
 
     public void testWsTopicDialogs() throws Exception {
-        getPropertyLog(CddlmConstants.PROPERTY_WSNT_TOPIC_EXPRESSION_DIALOGS);
+        getPropertyListLog(CddlmConstants.PROPERTY_WSNT_TOPIC_EXPRESSION_DIALOGS);
     }
 
 }
