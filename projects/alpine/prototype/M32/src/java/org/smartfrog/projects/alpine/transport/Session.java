@@ -25,9 +25,12 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.smartfrog.projects.alpine.core.MessageContext;
 import org.smartfrog.projects.alpine.om.soap11.MessageDocument;
+import org.smartfrog.projects.alpine.om.base.SoapElement;
 import org.smartfrog.projects.alpine.wsa.AddressDetails;
 import org.smartfrog.projects.alpine.wsa.AlpineEPR;
 import org.smartfrog.projects.alpine.wsa.MessageIDSource;
+
+import javax.xml.namespace.QName;
 
 /**
  * This represents an ongoing conversation with a single host/endpoint. Stuff like
@@ -86,6 +89,10 @@ public class Session {
     public void bind(AlpineEPR endpoint) {
         this.endpoint = endpoint;
         address = new AddressDetails(endpoint);
+    }
+
+    protected Log getLog() {
+        return log;
     }
 
     public String getRole() {
@@ -199,7 +206,7 @@ public class Session {
      * @param payload the contents of the SOAP Envelope
      * @return the transmission, which can be waited on
      */
-    public Transmission queue(String action, Element payload) {
+    public Transmission queue(String action, SoapElement payload) {
         Transmission tx = createTransmission(action, payload);
         queue.transmit(tx);
         return tx;
@@ -215,8 +222,20 @@ public class Session {
      * @param payload the contents of the SOAP Envelope
      * @return the transmission, which can be waited on
      */
-    public Transmission queue(Element payload) {
-        return queue(null, payload);
+    public Transmission queue(SoapElement payload) {
+        return queue(getSoapAction(payload), payload);
     }
 
+    /**
+     * Override point for things to get their own soapAction
+     * @param request
+     * @return
+     */
+    public String getSoapAction(QName request) {
+        return request.getNamespaceURI()+"/"+request.getLocalPart();
+    }
+
+    public String getSoapAction(SoapElement request) {
+        return getSoapAction(request.getQName());
+    }
 }

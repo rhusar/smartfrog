@@ -232,6 +232,17 @@ public final class XsdUtils {
     }
 
     /**
+     * Print an element to a string, for debug purposes
+     * This is not cheap, as the graph is duplicated and pasted into a new document.
+     * @param element the element to copy and print
+     * @return a formatted, indented, wrapped, version of the message
+     */
+    public static String printToString(Element element) {
+        Document doc = new Document((Element) element.copy());
+        return XsdUtils.printToString(doc);
+    }
+
+    /**
      * Print a document to a string, for debug purposes
      *
      * @param document
