@@ -75,7 +75,8 @@ public class SystemSession extends WsrfSession {
     public Transmission beginPing() {
         SoapElement request;
         request = XomHelper.apiElement(API_ELEMENT_PING_REQUEST);
-        return queue(API_SYSTEM_OPERATION_PING, request);
+        //return queue(API_SYSTEM_OPERATION_PING, request);
+        return queue(request);
     }
 
     public Element endPing(Transmission tx) {
@@ -100,7 +101,7 @@ public class SystemSession extends WsrfSession {
         return state;
     }
 
-    protected MessageDocument invokeBlocking(String operation,Element request) {
+    protected MessageDocument invokeBlocking(String operation,SoapElement request) {
         Transmission transmission = queue(operation, request);
         return transmission.blockForResult(getTimeout());
 
@@ -112,7 +113,7 @@ public class SystemSession extends WsrfSession {
      * @return the response
      */
     public MessageDocument run()  {
-        Element request;
+        SoapElement request;
         request = apiElement(API_ELEMENT_RUN_REQUEST);
         MessageDocument document = invokeBlocking(API_SYSTEM_OPERATION_RUN,
                 request);
@@ -142,7 +143,7 @@ public class SystemSession extends WsrfSession {
      * @param request
      * @return the response
      */
-    public MessageDocument initialize(Element request)  {
+    public MessageDocument initialize(SoapElement request)  {
         return invokeBlocking(API_SYSTEM_OPERATION_INITIALIZE,
                 request);
     }
@@ -165,8 +166,10 @@ public class SystemSession extends WsrfSession {
      * @param request
      * @return the list of URIs
      */
-    public UriListType addFile(Element request) {
-        return endAddFile(queue(API_SYSTEM_OPERATION_ADDFILE,request));
+    public UriListType addFile(SoapElement request) {
+        //Transmission transmission = queue(API_SYSTEM_OPERATION_ADDFILE, request);
+        Transmission transmission = queue(request);
+        return endAddFile(transmission);
     }
 
 }

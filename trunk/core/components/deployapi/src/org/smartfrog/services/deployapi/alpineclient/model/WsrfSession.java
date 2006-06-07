@@ -39,6 +39,7 @@ import org.smartfrog.services.deployapi.transport.wsrf.WsrfUtils;
 
 import javax.xml.namespace.QName;
 import java.util.List;
+import java.net.URI;
 
 
 /**
@@ -103,13 +104,14 @@ public abstract class WsrfSession extends Session {
         return ctx;
     }
 
+
     /**
-     * Bind to an address; forces us to use the
-     * {@link Constants.WS_ADDRESSING_NAMESPACE} namespace for WSA, and
-     * mark the headers as MustUnderstand.
-     *
-     * @param endpoint
-     */
+    * Bind to an address; forces us to use the
+    * {@link Constants.WS_ADDRESSING_NAMESPACE} namespace for WSA, and
+    * mark the headers as MustUnderstand.
+    *
+    * @param endpoint
+    */
     public void bind(AlpineEPR endpoint) {
         super.bind(endpoint);
         getAddress().setMustUnderstand(true);
@@ -158,7 +160,7 @@ public abstract class WsrfSession extends Session {
         request.addNamespaceDeclaration(prefix, property.getNamespaceURI());
         //and the value
         request.appendChild(prefix + ":" + property.getLocalPart());
-        return queue(CddlmConstants.WSRF_OPERATION_GETRESOURCEPROPERTY, request);
+        return queue(getSoapAction(request), request);
     }
 
 
@@ -193,6 +195,7 @@ public abstract class WsrfSession extends Session {
         }
         if(fault!=null) {
             tx.addMessagesToFault(fault);
+            getLog().error(fault.toString(),fault);
             throw fault;
         }
         return elements.get(0);
@@ -240,7 +243,7 @@ public abstract class WsrfSession extends Session {
             //add the child to the graph
             request.appendChild(child);
         }
-        return queue(CddlmConstants.WSRF_OPERATION_GETRESOURCEPROPERTY, request);
+        return queue(getSoapAction(request), request);
     }
 
 
@@ -267,7 +270,7 @@ public abstract class WsrfSession extends Session {
     public Transmission beginDestroy() {
         SoapElement request;
         request = new SoapElement(QNAME_WSRF_RL_DESTROY_REQUEST);
-        return queue(CddlmConstants.WSRF_OPERATION_DESTROY, request);
+        return queue(request);
     }
 
     /**

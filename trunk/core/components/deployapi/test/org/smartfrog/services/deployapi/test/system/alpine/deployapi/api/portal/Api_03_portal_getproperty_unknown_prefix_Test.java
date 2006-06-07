@@ -44,10 +44,10 @@ public class Api_03_portal_getproperty_unknown_prefix_Test extends StandardTestB
         try {
             QName property = new QName(CddlmConstants.CDL_API_TYPES_NAMESPACE, "unknown-property");
             WsrfSession wsrfSession = getPortal();
-            Element request;
+            SoapElement request;
             request = new SoapElement(WsrfSession.QNAME_WSRF_GET_PROPERTY);
             request.appendChild("api2:StaticPortalStatus");
-            Transmission tx = wsrfSession.queue(CddlmConstants.WSRF_OPERATION_GETRESOURCEPROPERTY, request);
+            Transmission tx = wsrfSession.queue(request);
             wsrfSession.endGetResourceProperty(tx);
             fail("Fault not thrown");
         } catch (SoapException e) {
