@@ -34,7 +34,7 @@ public class MessageIDSource {
 
     public MessageIDSource() {
         UUID uuid=UUID.randomUUID();
-        preamble=uuid.toString()+'-';
+        preamble="uuid:"+uuid.toString()+'-';
     }
 
     public MessageIDSource(String preamble) {

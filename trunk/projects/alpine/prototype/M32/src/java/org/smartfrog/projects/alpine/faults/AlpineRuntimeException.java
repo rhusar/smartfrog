@@ -150,8 +150,7 @@ public class AlpineRuntimeException extends RuntimeException implements SoapFaul
 
     public String toString() {
         Fault fault = GenerateSoapFault();
-        Document doc = new Document((Element) fault.copy());
-        return XsdUtils.printToString(doc) + "\n";
+        return XsdUtils.printToString(fault) + "\n";
     }
 
 
