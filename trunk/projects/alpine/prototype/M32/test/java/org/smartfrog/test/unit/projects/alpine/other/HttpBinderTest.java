@@ -53,21 +53,21 @@ public class HttpBinderTest extends TestCase {
     }
 
     public void testShortContentType() throws Exception {
-        binder.validateContentType("text/xml");
+        HttpBinder.validateContentType("text/xml");
     }
 
     public void testUTF88Content() throws Exception {
-        binder.validateContentType("text/xml; charset=UTF-8");
+        HttpBinder.validateContentType("text/xml; charset=UTF-8");
     }
 
 
     public void testSOAPContent() throws Exception {
-        binder.validateContentType(HttpConstants.CONTENT_TYPE_SOAP_XML+"; charset=UTF-8");
+        HttpBinder.validateContentType(HttpConstants.CONTENT_TYPE_SOAP_XML+"; charset=UTF-8");
     }
 
     public void testHtmlContent() throws Exception {
         try {
-            binder.validateContentType("text/html; charset=UTF-8");
+            HttpBinder.validateContentType("text/html; charset=UTF-8");
             fail("shound not have validated this");
         } catch (ServerException e) {
             //expected

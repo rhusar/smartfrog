@@ -126,15 +126,24 @@ public class HttpBinder {
         validateContentType(contentType);
     }
 
-    public void validateContentType(String contentType) {
+    public static void validateContentType(String contentType) {
+        contentType = extractBaseContentType(contentType);
+        if (isValidSoapContentType(contentType)) {
+            throw new ServerException(ERROR_UNSUPPORTED_CONTENT + contentType);
+        }
+    }
+
+    public static boolean isValidSoapContentType(String contentType) {
+        return !HttpConstants.CONTENT_TYPE_TEXT_XML.equals(contentType)
+                &&!HttpConstants.CONTENT_TYPE_SOAP_XML.equals(contentType);
+    }
+
+    public static String extractBaseContentType(String contentType) {
         int semicolon = contentType.indexOf(';');
         if (semicolon >= 0) {
             contentType = contentType.substring(0, semicolon).trim();
         }
-        if (!HttpConstants.CONTENT_TYPE_TEXT_XML.equals(contentType)
-                &&!HttpConstants.CONTENT_TYPE_SOAP_XML.equals(contentType)) {
-            throw new ServerException(ERROR_UNSUPPORTED_CONTENT + contentType);
-        }
+        return contentType;
     }
 
     public void validateSoapAction(HttpServletRequest request) {

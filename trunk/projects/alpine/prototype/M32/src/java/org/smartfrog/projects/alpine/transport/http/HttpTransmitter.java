@@ -34,6 +34,7 @@ import org.smartfrog.projects.alpine.core.Context;
 import org.smartfrog.projects.alpine.core.ContextConstants;
 import org.smartfrog.projects.alpine.faults.SoapException;
 import org.smartfrog.projects.alpine.http.HttpConstants;
+import org.smartfrog.projects.alpine.http.HttpBinder;
 import org.smartfrog.projects.alpine.om.soap11.MessageDocument;
 import org.smartfrog.projects.alpine.om.soap11.SoapMessageParser;
 import org.smartfrog.projects.alpine.transport.Transmission;
@@ -146,13 +147,8 @@ public class HttpTransmitter {
                 SoapMessageParser parser = tx.getContext().createParser();
                 //get the content type and drop anything following a semicolon
                 String contentType = getResponseContentType(method);
-                final int semicolon = contentType.indexOf(';');
-                if (semicolon >= 0) {
-                    contentType = contentType.substring(0, semicolon);
-                }
-                boolean responseIsXml = HttpConstants.CONTENT_TYPE_TEXT_XML
-                        .equals(contentType)
-                        || HttpConstants.CONTENT_TYPE_SOAP_XML.equals(contentType);
+                contentType= HttpBinder.extractBaseContentType(contentType);
+                boolean responseIsXml = HttpBinder.isValidSoapContentType(contentType);
 
                 final boolean requestFailed = statusCode != HttpStatus.SC_OK;
                 if (requestFailed &&
