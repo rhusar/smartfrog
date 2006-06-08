@@ -1,4 +1,4 @@
-/** (C) Copyright 2005 Hewlett-Packard Development Company, LP
+/** (C) Copyright 2006 Hewlett-Packard Development Company, LP
 
  This library is free software; you can redistribute it and/or
  modify it under the terms of the GNU Lesser General Public
@@ -20,27 +20,33 @@
 package org.smartfrog.services.junit.listeners;
 
 import org.smartfrog.services.junit.TestListenerFactory;
-import org.smartfrog.services.junit.data.Statistics;
 
-import java.rmi.RemoteException;
 
 /**
- * The stats listener collects statistics, and can publish them to a web page
- * created 28-Oct-2005 17:47:25
+ * created 08-Jun-2006 11:33:36
  */
 
 
-public interface StatisticsTestListener extends TestListenerFactory {
+public interface HtmlTestListenerFactory extends TestListenerFactory {
 
-    int getTestsStarted() throws RemoteException ;
+    /**
+     * Location to publish to
+     * {@value}
+     */
+    static final String ATTR_DIRECTORY = "outputDirectory";
 
-    int getTestsRun() throws RemoteException ;
+    /**
+     * frequency of publish.
+     * {@value}
+     */
+    public static final String ATTR_PUBLISH_FREQUENCY = "publishFrequency";
 
-    int getFailures() throws RemoteException ;
 
-    int getErrors() throws RemoteException ;
+    /**
+     * page title
+     * {@value}
+     */
+    public static final String ATTR_TITLE = "title";
 
-    int getUnsuccessfulTests() throws RemoteException ;
 
-    Statistics getStatistics() throws RemoteException;
 }

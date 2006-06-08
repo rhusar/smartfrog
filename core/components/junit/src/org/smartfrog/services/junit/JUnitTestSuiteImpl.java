@@ -515,6 +515,7 @@ public class JUnitTestSuiteImpl extends PrimImpl implements JUnitTestSuite,
     public void addError(Test test, Throwable throwable) {
         stats.incErrors();
         TestInfo info = onEnd(test, throwable);
+        info.setOutcome(TestInfo.OUTCOME_ERROR);
         try {
             getListener().addError(info);
         } catch (RemoteException e) {
@@ -539,6 +540,7 @@ public class JUnitTestSuiteImpl extends PrimImpl implements JUnitTestSuite,
     public void addFailure(Test test, AssertionFailedError error) {
         stats.incFailures();
         TestInfo info = onEnd(test, error);
+        info.setOutcome(TestInfo.OUTCOME_FAILURE);
         try {
             getListener().addFailure(info);
         } catch (RemoteException e) {
@@ -554,6 +556,7 @@ public class JUnitTestSuiteImpl extends PrimImpl implements JUnitTestSuite,
     public void endTest(Test test) {
         stats.incTestsRun();
         TestInfo info = onEnd(test, null);
+        info.setOutcome(TestInfo.OUTCOME_SUCCESS);
         try {
             getListener().endTest(info);
         } catch (RemoteException e) {

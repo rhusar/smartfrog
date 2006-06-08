@@ -17,7 +17,7 @@
  For more information: www.smartfrog.org
 
  */
-package org.smartfrog.services.junit.test;
+package org.smartfrog.services.junit.test.system;
 
 import org.smartfrog.services.junit.data.Statistics;
 import org.smartfrog.services.junit.TestRunner;
@@ -69,7 +69,7 @@ public class DeployedXMLListenerTest extends TestRunnerTestBase {
                     deploy.sfResolve(TEST_SUITE_COMPONENT_NAME,
                             (Prim) null,
                             true);
-            String output = tests.sfResolve(XmlListener.ATTR_XMLFILE,
+            String output = tests.sfResolve(XmlListener.ATTR_FILE,
                     "",
                     true);
             File xmlfile = new File(output);

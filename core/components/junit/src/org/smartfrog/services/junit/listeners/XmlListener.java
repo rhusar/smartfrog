@@ -36,7 +36,7 @@ public interface XmlListener extends TestListener {
     /**
      * the name of the file that is used to store the XML output of the test
      */
-    String ATTR_XMLFILE = "xmlfile";
+    String ATTR_FILE = "file";
 
     /**
      * get the filename of this

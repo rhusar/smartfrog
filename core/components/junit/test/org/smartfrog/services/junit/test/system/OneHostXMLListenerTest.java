@@ -17,7 +17,7 @@
  For more information: www.smartfrog.org
 
  */
-package org.smartfrog.services.junit.test;
+package org.smartfrog.services.junit.test.system;
 
 import org.smartfrog.services.junit.data.TestInfo;
 import org.smartfrog.services.junit.TestListener;

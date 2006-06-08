@@ -19,6 +19,8 @@
  */
 package org.smartfrog.services.junit.data;
 
+import org.smartfrog.sfcore.logging.LogLevel;
+
 import java.io.Serializable;
 
 /**
@@ -37,7 +39,6 @@ public final class LogEntry implements Serializable, Cloneable {
     public String text;
 
     public ThrowableTraceInfo thrown;
-
 
     /**
      * name of the host on which the test ran
@@ -112,5 +113,50 @@ public final class LogEntry implements Serializable, Cloneable {
 
     public void setHostname(String hostname) {
         this.hostname = hostname;
+    }
+
+    public long getTimestamp() {
+        return timestamp;
+    }
+
+    public int getLevel() {
+        return level;
+    }
+
+    public String getText() {
+        return text;
+    }
+
+    public ThrowableTraceInfo getThrown() {
+        return thrown;
+    }
+
+    /**
+     * Convert the level enumeration into text
+     * @return
+     */
+    public String levelToText() {
+        switch(level) {
+            case LOG_LEVEL_STDERR:
+                return "stderr";
+            case LOG_LEVEL_STDOUT:
+                return "stdout";
+            case LogLevel.LOG_LEVEL_DEBUG:
+                return "debug";
+            case LogLevel.LOG_LEVEL_TRACE:
+                return "trace";
+            case LogLevel.LOG_LEVEL_IGNORE:
+                return "ignore";
+            case LogLevel.LOG_LEVEL_INFO:
+                return "info";
+            case LogLevel.LOG_LEVEL_WARN:
+                return "warn";
+            case LogLevel.LOG_LEVEL_ERROR:
+                return "error";
+            case LogLevel.LOG_LEVEL_FATAL:
+                return "fatal";
+            default:
+                return "unknown";
+        }
     }
 }

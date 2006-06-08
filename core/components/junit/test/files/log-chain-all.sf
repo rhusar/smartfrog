@@ -46,13 +46,25 @@ sfConfig extends Compound {
     }
   }
 
+   outputDirectory extends TempDir {
+      dir LAZY PROPERTY java.io.tmpdir;
+   }
+
     console extends ConsoleListener {
-    };
+    }
 
     statistics extends StatisticsTestListener {
     }
 
     buffer extends BufferingListener {
+    }
+
+    xml extends XmlListener {
+        outputDirectory LAZY PARENT:outputDirectory;
+    }
+
+    html extends HtmlListener {
+        outputDirectory LAZY PARENT:outputDirectory;
     }
 
     tests extends TestAll {
@@ -62,7 +74,11 @@ sfConfig extends Compound {
 
 
       listener extends ChainListener {
-        listeners [ LAZY console, LAZY statistics, LAZY buffer];
+        listeners [ LAZY console,
+          LAZY statistics,
+          LAZY buffer,
+          LAZY xml,
+          LAZY html];
       }
    }
 

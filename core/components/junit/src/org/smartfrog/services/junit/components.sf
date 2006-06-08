@@ -33,7 +33,8 @@ For more information: www.smartfrog.org
 #include "/org/smartfrog/services/os/java/components.sf"
 //include logging
 #include "/org/smartfrog/services/junit/log/testlistenerlogimpl.sf"
-
+//listeners
+#include "/org/smartfrog/services/junit/listeners/components.sf";
 
 /**
  * the schema for tests
@@ -89,76 +90,6 @@ JUnitTestSuite extends TestSuite {
 }
 
 /**
- * this is a declaration of a test listener
- */
-
-TestListener extends Prim {
-
-   testListenerSchema extends Schema {
-       name extends String;
-   }
-}
-
-/**
- * console listener just outputs to the console
- */
-ConsoleListener extends TestListener {
-    sfClass "org.smartfrog.services.junit.listeners.ConsoleListenerComponent";
-    name "ConsoleListener";
-}
-
-/**
- * XML listener is the most complex beast
- */
-XmlListenerSchema extends Schema {
-/** output directories are compulsory and can be a path or a File ref*/
-    outputDirectory extends Compulsory ;
-    //outputFile extends Compulsory ;
-    //XML preamble: comments, XSLT references, etc.
-    preamble extends OptionalString;
-    useHostname extends Boolean;
-}
-
-XmlListener extends TestListener {
-    xmlListenerSchema extends XmlListenerSchema;
-    sfClass "org.smartfrog.services.junit.listeners.XmlListenerComponent";
-    useHostname true;
-    name "XmlListener";
-}
-
-/**
- * this is the one we use for testing. It buffers stuff and can be queried about it
- */
-BufferingListener extends TestListener {
-    sfClass "org.smartfrog.services.junit.listeners.BufferingListenerComponent";
-    name "BufferingListener";
-}
-
-
-/**
- * This component collects statistics about tests, but discards the values.
- */
-StatisticsTestListener extends TestListener {
-    sfClass "org.smartfrog.services.junit.listeners.StatisticsTestListenerComponent";
-    name "StatisticsTestListener";
-}
-
-/**
- * the chain listener takes a list of secondary listeners, and relays to all of them.
- */
-
-ChainListenerSchema extends Schema {
-    listeners extends Vector ;
-}
-
-ChainListener extends TestListener {
-    sfClass "org.smartfrog.services.junit.listeners.ChainListenerComponent";
-    name "ChainListener";
-    chainListenerSchema extends ChainListenerSchema;
-}
-
-
-/**
  * This is a component that can receive log events, via LogToPrim, and then
  * route those log events to a test listener
  * Use it to capture text output of logs.
@@ -167,8 +98,6 @@ TestListenerLog extends {
 
    sfClass "org.smartfrog.services.junit.log.TestListenerLogImpl";
 }
-
-
 
 /**
  * and the test runner
