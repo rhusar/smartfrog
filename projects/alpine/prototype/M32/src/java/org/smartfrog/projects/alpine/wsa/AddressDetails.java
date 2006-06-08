@@ -30,6 +30,9 @@ import org.smartfrog.projects.alpine.om.soap11.Header;
 import org.smartfrog.projects.alpine.om.soap11.MessageDocument;
 import org.smartfrog.projects.alpine.om.soap11.Envelope;
 
+import java.net.URI;
+import java.net.URISyntaxException;
+
 /*
 * <wsa:To>xs:anyURI</wsa:To> ?
  * <wsa:From>wsa:EndpointReferenceType</wsa:From> ?
@@ -295,11 +298,13 @@ public class AddressDetails implements Validatable, AddressingConstants {
             boolean understood=false;
             if (WSA_MESSAGEID.equals(localname)) {
                 checkNotEmpty(header, text);
+                checkValidURI(WSA_MESSAGEID, text);
                 messageID = text;
                 understood=true;
             } else if (WSA_ACTION.equals(localname)) {
                 checkNotEmpty(header, text);
                 action = text;
+                checkValidURI(WSA_ACTION, text);
                 understood = true;
             } else if (WSA_FROM.equals(localname)) {
                 from = new AlpineEPR(header, namespace);
@@ -327,6 +332,14 @@ public class AddressDetails implements Validatable, AddressingConstants {
             }
         }
         return found;
+    }
+
+    private void checkValidURI(String headerName, String text) {
+        try {
+            new URI(text);
+        } catch (URISyntaxException e) {
+            throw new AlpineRuntimeException("Invalid wsa:"+headerName +" header -it must be a URI :"+text);
+        }
     }
 
     private void checkNotEmpty(Element header, String text) {
