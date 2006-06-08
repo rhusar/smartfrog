@@ -50,28 +50,28 @@ public class OneHostXMLListener implements XmlListener {
     /**
      * file we save to
      */
-    private File destFile;
+    protected File destFile;
 
     /**
      * name of host
      */
-    private String hostname;
-    private String suitename;
-    private Date startTime;
-    private String preamble;
+    protected String hostname;
+    protected String suitename;
+    protected Date startTime;
+    protected String preamble;
 
-    private OutputStream out = null;
-    private Writer xmlFile = null;
+    protected OutputStream outstream = null;
+    protected Writer out = null;
 
 
-    private int testCount, errorCount, failureCount;
+    protected int testCount, errorCount, failureCount;
 
     /**
      * transient cache of tests.
      * We only really buffer during listening, but cache it in case wierd
      * race conditions or multiple sources complicate our lives.
      */
-    private HashMap tests;
+    protected HashMap tests;
 
     protected static final String ENCODING = "UTF8";
     protected static final String XML_DECLARATION = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n";
@@ -120,8 +120,8 @@ public class OneHostXMLListener implements XmlListener {
      * @throws Throwable
      */
     protected void finalize() throws Throwable {
+        assert outstream == null: ERROR_OUTPUT_FILE_OPEN;
         assert out == null: ERROR_OUTPUT_FILE_OPEN;
-        assert xmlFile == null: ERROR_OUTPUT_FILE_OPEN;
         super.finalize();
     }
 
@@ -133,25 +133,29 @@ public class OneHostXMLListener implements XmlListener {
     public void open() throws IOException {
         assert !isOpen(): "file is already open";
         destFile.getParentFile().mkdirs();
-        out = new BufferedOutputStream(new FileOutputStream(destFile));
-        xmlFile = new OutputStreamWriter(out, ENCODING);
+        outstream = new BufferedOutputStream(new FileOutputStream(destFile));
+        out = new OutputStreamWriter(outstream, ENCODING);
         //XML declaration whose encoding had better match
-        xmlFile.write(XML_DECLARATION);
-        xmlFile.write("\n");
+        writeDocumentHeader();
+    }
+
+    protected void writeDocumentHeader() throws IOException {
+        out.write(XML_DECLARATION);
+        out.write("\n");
         //preamble if supplied
         if (preamble != null) {
-            xmlFile.write(preamble);
-            xmlFile.write("\n");
+            out.write(preamble);
+            out.write("\n");
         }
         //write the root tag
-        xmlFile.write("<");
-        xmlFile.write(ROOT_TAG);
-        xmlFile.write(" " + ROOT_ATTRS + "\n");
-        xmlFile.write(a("hostname", hostname));
-        xmlFile.write(a("suitename", suitename));
-        xmlFile.write(a("utc", startTime.getTime()));
-        xmlFile.write(a("started", startTime.toString()));
-        xmlFile.write(">\n");
+        out.write("<");
+        out.write(ROOT_TAG);
+        out.write(" " + ROOT_ATTRS + "\n");
+        out.write(attr("hostname", hostname));
+        out.write(attr("suitename", suitename));
+        out.write(attr("utc", startTime.getTime()));
+        out.write(attr("started", startTime.toString()));
+        out.write(">\n");
     }
 
 
@@ -166,28 +170,32 @@ public class OneHostXMLListener implements XmlListener {
             return;
         }
 
-        write("summary",
-                a("tests", testCount)
-                +
-                a("failures", failureCount)
-                + a("errors", errorCount),
-                null, false);
-
-        xmlFile.write(ROOT_CLOSE);
+        writeDocumentTail();
 
         try {
-            xmlFile.close();
+            out.close();
         } catch (Exception e) {
 
         }
         try {
-            out.close();
+            outstream.close();
         } catch (IOException e) {
 
         }
-        xmlFile = null;
         out = null;
+        outstream = null;
         destFile = null;
+    }
+
+    protected void writeDocumentTail() throws IOException {
+        write("summary",
+                attr("tests", testCount)
+                +
+                attr("failures", failureCount)
+                + attr("errors", errorCount),
+                null, false);
+
+        out.write(ROOT_CLOSE);
     }
 
     /**
@@ -196,7 +204,7 @@ public class OneHostXMLListener implements XmlListener {
      * @return true iff we have an output stream and it is open
      */
     public boolean isHappy() {
-        return xmlFile != null;
+        return out != null;
     }
 
     /**
@@ -205,7 +213,7 @@ public class OneHostXMLListener implements XmlListener {
      * @return
      */
     public boolean isOpen() {
-        return xmlFile != null;
+        return out != null;
     }
 
     /**
@@ -239,7 +247,6 @@ public class OneHostXMLListener implements XmlListener {
             SmartFrogException {
         errorCount++;
         tests.put(test.getText(),test);
-        //add("error", test);
     }
 
     /**
@@ -249,7 +256,6 @@ public class OneHostXMLListener implements XmlListener {
             SmartFrogException {
         failureCount++;
         tests.put(test.getText(), test);
-//        add("failure", test);
     }
 
     /**
@@ -285,10 +291,18 @@ public class OneHostXMLListener implements XmlListener {
      * Log an event
      * @param event
      * @throws RemoteException
-     * @throws SmartFrogException
      */
     public void log(LogEntry event) throws RemoteException {
-        //TODO: process this
+        String tag="log-"+event.levelToText();
+        String attrs;
+        attrs= attr("t",event.getTimestamp())+
+                attr("h",event.getHostname());
+        try {
+            write(tag,attrs,event.getText(), true);
+        } catch (IOException e) {
+            throw new RemoteException("wrapped fault",e);
+
+        }
     }
 
     /**
@@ -304,7 +318,7 @@ public class OneHostXMLListener implements XmlListener {
         }
         String entry = toXML(tag, test);
         try {
-            xmlFile.write(entry);
+            out.write(entry);
         } catch (IOException e) {
             throw SmartFrogException.forward(e);
         }
@@ -322,8 +336,8 @@ public class OneHostXMLListener implements XmlListener {
             String attrs,
             String body,
             boolean escape) throws IOException {
-        String x = x(tag, attrs, body, escape);
-        xmlFile.write(x);
+        String x = element(tag, attrs, body, escape);
+        out.write(x);
     }
 
 
@@ -336,7 +350,7 @@ public class OneHostXMLListener implements XmlListener {
      * @param escape
      * @return
      */
-    protected String x(String tag, String attrs, String body, boolean escape) {
+    protected String element(String tag, String attrs, String body, boolean escape) {
         StringBuffer buf = new StringBuffer();
         buf.append('<');
         buf.append(tag);
@@ -369,8 +383,12 @@ public class OneHostXMLListener implements XmlListener {
      * @param value
      * @return
      */
-    protected String a(String name, String value) {
-        return name + "=\"" + escape(value, true) + "\" ";
+    protected String attr(String name, String value) {
+        if(value==null) {
+            return name+"=\"\"";
+        } else {
+            return name + "=\"" + escape(value, true) + "\" ";
+        }
     }
 
 
@@ -381,7 +399,7 @@ public class OneHostXMLListener implements XmlListener {
      * @param value
      * @return
      */
-    protected String a(String name, long value) {
+    protected String attr(String name, long value) {
         return name + "=\"" + Long.toString(value) + "\" ";
     }
 
@@ -444,13 +462,13 @@ public class OneHostXMLListener implements XmlListener {
      * @return
      */
     protected String toXML(String tag, TestInfo test) {
-        String body = x("text", null,test.getText(),true);
+        String body = element("text", null,test.getText(),true);
         if(test.getFault()!=null) {
             body=body+'\n'+toXML(test.getFault());
         }
-        String classname = a("classname", test.getClassname());
-        String duration = a("duration", Long.toString(test.getDuration()));
-        return x(tag,
+        String classname = attr("classname", test.getClassname());
+        String duration = attr("duration", Long.toString(test.getDuration()));
+        return element(tag,
                 classname + " " + duration,
                 body,
                 false);
@@ -464,35 +482,38 @@ public class OneHostXMLListener implements XmlListener {
      * @return empty string if fault is null, else an xml declaration
      */
     protected String toXML(ThrowableTraceInfo fault) {
+        String result;
         if (fault == null) {
-            return "";
+            result="";
+        } else {
+            StringBuffer buf = new StringBuffer();
+            String cause = toXML(fault.getCause());
+            String classname = element("classname", null, fault.getClassname(), true);
+            String message = element("message", null, fault.getMessage(), true);
+            String localmessage = element("localizedMessage",
+                    null,
+                    fault.getLocalizedMessage(),
+                    true);
+            StackTraceElement[] stack = fault.getStack();
+            StringBuffer stackTrace = new StringBuffer();
+            for (int i = 0; i < stack.length; i++) {
+                StackTraceElement frame = stack[i];
+                StringBuffer attrs = new StringBuffer();
+                attrs.append(attr("classname", frame.getClassName()));
+                attrs.append(attr("method", frame.getMethodName()));
+                attrs.append(attr("file", frame.getFileName()));
+                attrs.append(attr("line", Integer.toString(frame.getLineNumber())));
+                attrs.append(attr("native", Boolean.toString(frame.isNativeMethod())));
+                stackTrace.append(element("frame", attrs.toString(), null, false));
+            }
+            buf.append(classname);
+            buf.append(message);
+            buf.append(localmessage);
+            buf.append(element("stack", null, stackTrace.toString(), false));
+            buf.append(cause);
+            result=element("fault", null, buf.toString(), false);
         }
-        StringBuffer buf = new StringBuffer();
-        String cause = toXML(fault.getCause());
-        String classname = x("classname", null, fault.getClassname(), true);
-        String message = x("message", null, fault.getMessage(), true);
-        String localmessage = x("localizedMessage",
-                null,
-                fault.getLocalizedMessage(),
-                true);
-        StackTraceElement[] stack = fault.getStack();
-        StringBuffer stackTrace = new StringBuffer();
-        for (int i = 0; i < stack.length; i++) {
-            StackTraceElement frame = stack[i];
-            StringBuffer attrs = new StringBuffer();
-            attrs.append(a("classname", frame.getClassName()));
-            attrs.append(a("method", frame.getMethodName()));
-            attrs.append(a("file", frame.getFileName()));
-            attrs.append(a("line", Integer.toString(frame.getLineNumber())));
-            attrs.append(a("native", Boolean.toString(frame.isNativeMethod())));
-            stackTrace.append(x("frame", attrs.toString(), null, false));
-        }
-        buf.append(classname);
-        buf.append(message);
-        buf.append(localmessage);
-        buf.append(x("stack", null, stackTrace.toString(), false));
-        buf.append(cause);
-        return x("fault", null, buf.toString(), false);
+        return result;
     }
 
     /**
@@ -536,4 +557,26 @@ public class OneHostXMLListener implements XmlListener {
     public String getFilename() {
         return destFile.getAbsolutePath();
     }
+
+    protected void writeln(String message) throws IOException {
+        out.write(message);
+        out.write('\n');
+    }
+
+    protected void enter(String element) throws IOException {
+        enter(element,null);
+    }
+
+    protected void enter(String element,String attributes) throws IOException {
+        if(attributes!=null) {
+            writeln("<"+element+" "+attributes+">");
+        } else {
+            writeln("<"+element + ">");
+        }
+    }
+
+    protected void exit(String element) throws IOException {
+        writeln("</" + element + ">");
+    }
+
 }

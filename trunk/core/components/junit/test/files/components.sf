@@ -21,6 +21,7 @@ For more information: www.smartfrog.org
 #include "/org/smartfrog/components.sf"
 #include "/org/smartfrog/predicates.sf"
 #include "/org/smartfrog/services/junit/components.sf"
+#include "/org/smartfrog/services/filesystem/tempfile.sf"
 
 //sfCodeBase PROPERTY org.smartfrog.codebase;
 

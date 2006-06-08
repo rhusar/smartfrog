@@ -86,6 +86,13 @@ public final class TestInfo implements Serializable, Cloneable {
      */
     private List messages=new ArrayList();
 
+    private String outcome=OUTCOME_SUCCESS;
+
+    public static final String OUTCOME_SUCCESS="success";
+    public static final String OUTCOME_FAILURE = "failure";
+    public static final String OUTCOME_ERROR = "error";
+    public static final String OUTCOME_TIMEOUT = "success";
+
     /**
      * empty constructor is used during deserialization
      */
@@ -141,6 +148,7 @@ public final class TestInfo implements Serializable, Cloneable {
         }
     }
 
+
     /**
      * extract the fault(s) from a throwable
      *
@@ -149,6 +157,18 @@ public final class TestInfo implements Serializable, Cloneable {
     public void addFaultInfo(Throwable thrown) {
         assert thrown != null;
         fault = new ThrowableTraceInfo(thrown);
+    }
+
+    public String getOutcome() {
+        return outcome;
+    }
+
+    public void setOutcome(String outcome) {
+        this.outcome = outcome;
+    }
+
+    public boolean isSuccess() {
+        return OUTCOME_SUCCESS.equals(outcome);
     }
 
     public String getText() {

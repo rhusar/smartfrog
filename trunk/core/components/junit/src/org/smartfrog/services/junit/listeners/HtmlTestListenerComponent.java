@@ -1,34 +1,52 @@
+/** (C) Copyright 2006 Hewlett-Packard Development Company, LP
+
+ This library is free software; you can redistribute it and/or
+ modify it under the terms of the GNU Lesser General Public
+ License as published by the Free Software Foundation; either
+ version 2.1 of the License, or (at your option) any later version.
+
+ This library is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ Lesser General Public License for more details.
+
+ You should have received a copy of the GNU Lesser General Public
+ License along with this library; if not, write to the Free Software
+ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+ For more information: www.smartfrog.org
+
+ */
 package org.smartfrog.services.junit.listeners;
 
-import org.smartfrog.services.filesystem.FileSystem;
-import org.smartfrog.services.junit.TestListener;
-import org.smartfrog.services.junit.TestSuite;
+import org.smartfrog.sfcore.prim.PrimImpl;
+import org.smartfrog.sfcore.logging.Log;
+import org.smartfrog.sfcore.utils.ComponentHelper;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
-import org.smartfrog.sfcore.logging.Log;
-import org.smartfrog.sfcore.prim.PrimImpl;
-import org.smartfrog.sfcore.utils.ComponentHelper;
+import org.smartfrog.sfcore.common.SmartFrogInitException;
+import org.smartfrog.services.junit.TestListener;
+import org.smartfrog.services.junit.TestSuite;
+import org.smartfrog.services.filesystem.FileSystem;
 
+import java.util.HashMap;
+import java.util.Date;
+import java.rmi.RemoteException;
 import java.io.File;
 import java.io.IOException;
-import java.rmi.RemoteException;
-import java.util.Date;
-import java.util.HashMap;
 
 /**
  * This is a listener of tests
- * Implement the {@link XmlListenerFactory} interface and so provide a component
+ * Implement the {@link org.smartfrog.services.junit.listeners.XmlListenerFactory} interface and so provide a component
  * for XML logging. Note that we are only a factory; the listening is done by
- * {@link OneHostXMLListener }
+ * {@link org.smartfrog.services.junit.listeners.OneHostXMLListener }
  */
-public class XmlListenerComponent extends PrimImpl
-        implements XmlListenerFactory {
+public class HtmlTestListenerComponent extends PrimImpl
+        implements HtmlTestListenerFactory {
 
     private Log log;
     private ComponentHelper helper = new ComponentHelper(this);
     private String outputDir;
-    private String preamble;
-    private boolean useHostname;
 
     /**
      * mapping of suite to file
@@ -36,17 +54,20 @@ public class XmlListenerComponent extends PrimImpl
     private HashMap testFiles = new HashMap();
 
     /**
+     * destination directory
+     */
+    private File destDir;
+
+    /**
      * construct a base interface
      *
-     * @throws RemoteException
+     * @throws java.rmi.RemoteException
      */
-    public XmlListenerComponent() throws RemoteException {
+    public HtmlTestListenerComponent() throws RemoteException {
     }
 
     /**
-     * Can be called to start components. Subclasses should override to provide
-     * functionality Do not block in this call, but spawn off any main loops!
-     *
+     * {@inheritDoc}
      * @throws org.smartfrog.sfcore.common.SmartFrogException
      *                                  failure while starting
      * @throws java.rmi.RemoteException In case of network/rmi error
@@ -55,17 +76,14 @@ public class XmlListenerComponent extends PrimImpl
             RemoteException {
         super.sfStart();
         outputDir = lookupOutputDir();
-        preamble = sfResolve(PREAMBLE, (String) null, false);
-        useHostname = sfResolve(USE_HOSTNAME, true, true);
-        log.info("output dir is " + outputDir + "; hostname=" + useHostname);
-        log.info("preamble is " + preamble != null ? preamble : "(undefined)");
+        destDir = new File(outputDir);
+        if(!destDir.mkdirs()) {
+            throw new SmartFrogInitException("Unable to create destination directory "+destDir);
+        }
     }
 
     /**
-     * Called after instantiation for deployment purposed. Heart monitor is
-     * started and if there is a parent the deployed component is added to the
-     * heartbeat. Subclasses can override to provide additional deployment
-     * behavior.
+     * {@inheritDoc}
      *
      * @throws org.smartfrog.sfcore.common.SmartFrogException
      *                                  error while deploying
@@ -88,17 +106,12 @@ public class XmlListenerComponent extends PrimImpl
      * @return a session ID to be used in test responses
      */
     public TestListener listen(TestSuite suite, String hostname,
-            String suitename,
-            long timestamp) throws RemoteException,
+                               String suitename,
+                               long timestamp) throws RemoteException,
             SmartFrogException {
         if (suitename == null && "".equals(suitename)) {
             throw new SmartFrogException(
                     "Test suite must be named for XML exporting");
-        }
-
-        File destDir = new File(outputDir);
-        if (useHostname) {
-            destDir = new File(destDir, hostname);
         }
 
         String outputFile = suitename + ".xml";
@@ -120,11 +133,11 @@ public class XmlListenerComponent extends PrimImpl
             Date start = new Date(timestamp);
 
             OneHostXMLListener xmlLog;
-            xmlLog = new OneHostXMLListener(hostname,
+            xmlLog = new OneHostHtmlListener(hostname,
                     destFile,
                     suitename,
                     start,
-                    preamble);
+                    null);
             return xmlLog;
         } catch (IOException e) {
             throw SmartFrogException.forward("Failed to open ", e);
@@ -161,7 +174,7 @@ public class XmlListenerComponent extends PrimImpl
      *
      * @param suitename test suite
      * @return name of output file, or null for no match
-     * @throws RemoteException
+     * @throws java.rmi.RemoteException
      */
     public String lookupFilename(String suitename) throws RemoteException {
         return getMapping(suitename);
@@ -172,13 +185,13 @@ public class XmlListenerComponent extends PrimImpl
      * work out the output dir
      *
      * @return the dir that output is in
-     * @throws SmartFrogResolutionException if it is not specified
-     * @throws RemoteException
+     * @throws org.smartfrog.sfcore.common.SmartFrogResolutionException if it is not specified
+     * @throws java.rmi.RemoteException
      */
     private String lookupOutputDir() throws SmartFrogResolutionException,
             RemoteException {
         String out = FileSystem.lookupAbsolutePath(this,
-                OUTPUT_DIRECTORY,
+                ATTR_DIRECTORY,
                 null,
                 null,
                 true,

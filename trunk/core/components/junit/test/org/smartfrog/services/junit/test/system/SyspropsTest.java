@@ -1,4 +1,4 @@
-/** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
+/** (C) Copyright 2005 Hewlett-Packard Development Company, LP
 
  This library is free software; you can redistribute it and/or
  modify it under the terms of the GNU Lesser General Public
@@ -17,40 +17,51 @@
  For more information: www.smartfrog.org
 
  */
-package org.smartfrog.services.junit.test;
 
-import org.smartfrog.services.junit.TestRunner;
-import org.smartfrog.services.junit.listeners.ConsoleListenerFactory;
+package org.smartfrog.services.junit.test.system;
+
 import org.smartfrog.sfcore.prim.Prim;
+import org.smartfrog.services.junit.TestRunner;
+import org.smartfrog.services.junit.data.Statistics;
+import org.smartfrog.services.junit.listeners.BufferingListener;
 
 /**
- * created Nov 22, 2004 4:45:26 PM
+ 
  */
+public class SyspropsTest  extends TestRunnerTestBase {
 
-public class DeployedConsoleListenerTest extends TestRunnerTestBase {
-
-    public DeployedConsoleListenerTest(String name) {
+    public SyspropsTest(String name) {
         super(name);
     }
-
-    public void testSuccess() throws Throwable {
+    
+    public void testSyspropsWorking() throws Throwable {
         String url;
         Prim deploy = null;
-        url = "/files/console-all.sf";
+        url = "/files/junit-sysprops.sf";
 
         int seconds = getTimeout();
         try {
-            deploy = deployExpectingSuccess(url, "ConsoleTest");
+            deploy = deployExpectingSuccess(url, "localhostTest");
             TestRunner runner = (TestRunner) deploy;
             assertTrue(runner != null);
-            ConsoleListenerFactory listener = null;
+            BufferingListener listener = null;
             listener =
-                    (ConsoleListenerFactory) deploy.sfResolve(
-                            TestRunner.ATTR_LISTENER,
+                    (BufferingListener) deploy.sfResolve(TestRunner.ATTR_LISTENER,
                             listener,
                             true);
             boolean finished = spinTillFinished(runner, seconds);
             assertTrue("Test run timed out", finished);
+            assertEquals("session started",1,
+                    listener.getSessionStartCount());
+            assertEquals("session ended",1,
+                    listener.getSessionEndCount());
+            Statistics statistics = runner.getStatistics();
+            System.out.println(statistics.toString());
+            assertTrue("testsWereSuccessful() is false", listener.testsWereSuccessful());
+            assertEquals("statistics.errors!=0 -is "+ statistics.getErrors(), 0, statistics.getErrors());
+            assertEquals("statistics.failures!=0",
+                    0,
+                    statistics.getFailures());
 
 
         } finally {
@@ -58,4 +69,5 @@ public class DeployedConsoleListenerTest extends TestRunnerTestBase {
         }
 
     }
+    
 }
