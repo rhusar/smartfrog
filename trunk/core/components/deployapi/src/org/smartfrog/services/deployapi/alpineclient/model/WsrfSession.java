@@ -100,7 +100,7 @@ public abstract class WsrfSession extends Session {
 
     protected MessageContext createNewMessageContext() {
         MessageContext ctx = super.createNewMessageContext();
-        ctx.put(ContextConstants.ATTR_SOAP_CONTENT_TYPE, HttpConstants.CONTENT_TYPE_SOAP_XML);
+        //ctx.put(ContextConstants.ATTR_SOAP_CONTENT_TYPE, HttpConstants.CONTENT_TYPE_SOAP_XML);
         return ctx;
     }
 
