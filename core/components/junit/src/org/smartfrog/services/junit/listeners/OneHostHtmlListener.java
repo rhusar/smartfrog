@@ -35,9 +35,17 @@ import java.rmi.RemoteException;
 
 public class OneHostHtmlListener extends OneHostXMLListener {
 
-    public OneHostHtmlListener(String title, File destFile, String suitename, Date startTime, String preamble)
+    private String cssURL;
+
+    public OneHostHtmlListener(String title,
+                               File destFile,
+                               String suitename,
+                               Date startTime,
+                               String preamble,
+                               String cssURL)
             throws IOException {
         super(title, destFile, suitename, startTime, preamble);
+        this.cssURL=cssURL;
     }
 
     private String getTitle() {
@@ -61,27 +69,60 @@ public class OneHostHtmlListener extends OneHostXMLListener {
                 + " started " + startTime.toString();
         enter("head");
         write("title", null, title, true);
+        if(cssURL!=null) {
+            write("link",
+                    attr("rel","stylesheet")
+                    + attr("href", cssURL)
+                    + attr("type", "text/css"),
+                    null,
+                    false);
+        }
         exit("head");
         enter("body");
+        write("h1", null, title, true);
     }
 
     protected void writeDocumentTail() throws IOException {
-        write("summary",
-                attr("tests", testCount)
-                +
-                attr("failures", failureCount)
-                + attr("errors", errorCount),
-                null, false);
+        writeSummary();
+
 
         exit("body");
         exit("html");
     }
 
+    private void writeSummary() throws IOException {
+        enter("div",style("summary") + attr("id", "summary"));
+        write("span",style("summary-span"),"Test Summary",false);
+        enter("table", style("summary-table"));
+        enter("th");
+        write("td", null, "category", false);
+        write("td", null, "count", false);
+        exit("th");
+
+        enter("tr");
+        write("td",null,"tests",false);
+        write("td", null, Integer.toString(testCount), false);
+        exit("tr");
+
+        enter("tr");
+        write("td", null, "failures", false);
+        write("td", null, Integer.toString(failureCount), false);
+        exit("tr");
+
+        enter("tr");
+        write("td", null, "errors", false);
+        write("td", null, Integer.toString(errorCount), false);
+        exit("tr");
+
+        exit("table");
+        exit("div");
+    }
+
     public void log(LogEntry event) throws RemoteException {
 
-        String type=event.levelToText();
+        String type="log-"+event.levelToText();
         try {
-            write("pre",attr("style",type), event.getText(), true);
+            write("div",style(type), event.getText(), true);
         } catch (IOException e) {
             throw new RemoteException("wrapped fault",e);
 
@@ -99,20 +140,26 @@ public class OneHostHtmlListener extends OneHostXMLListener {
     }
 
     protected String div(String style, String attrs,String text,boolean escape) {
-        String attributes = attr("style", style);
+        String attributes = style(style);
         if(attrs!=null) {
             attributes+=attrs;
         }
         return element("div", attributes, text, escape);
     }
 
+    protected String style(String style) {
+        return attr("class", style);
+    }
+
     protected String toXML(String tag, TestInfo test) {
         StringBuffer body=new StringBuffer();
         body.append(div(test.getOutcome(),
                 test.getClassname()));
-        body.append(div("duration",
-                Long.toString(test.getDuration())));
-        body.append(div("text",test.getText()));
+        body.append(div("test-duration","duration " +
+                ""+ test.getDuration()/1000.0
+                +"s"
+                ));
+        body.append(div("test-text",test.getText()));
         if(test.getFault()!=null) {
             body.append(toXML(test.getFault()));
         }
@@ -134,18 +181,35 @@ public class OneHostHtmlListener extends OneHostXMLListener {
             result = "";
         } else {
             StringBuffer buf = new StringBuffer();
-            buf.append(div("fault", fault.getClassname()));
+            enter(buf,"div", style("faultblock"));
+            buf.append(div("fault", "Exception:"+fault.getClassname()));
             buf.append(div("fault-message", fault.getMessage()));
-            buf.append(div("fault-localizedMessage",
-                    fault.getLocalizedMessage()));
             StackTraceElement[] stack = fault.getStack();
             for (int i = 0; i < stack.length; i++) {
                 StackTraceElement frame = stack[i];
                 buf.append(div("fault-frame", frame.toString()));
             }
             buf.append(toXML(fault.getCause()));
+            exit(buf,"div");
+            buf.append("</div>\n");
             result = buf.toString();
         }
         return result;
+    }
+
+    protected void enter(StringBuffer buf, String element, String attrs) {
+        buf.append("<");
+        buf.append(element);
+        if(attrs!=null) {
+            buf.append(' ');
+            buf.append(attrs);
+        }
+        buf.append(">\n");
+    }
+
+    protected void exit(StringBuffer buf, String element) {
+        buf.append("</");
+        buf.append(element);
+        buf.append(">\n");
     }
 }

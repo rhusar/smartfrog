@@ -53,6 +53,14 @@ ConsoleListener extends TestListener {
 }
 
 /**
+ * this is the one used for testing. It buffers stuff and can be queried about it
+ */
+BufferingListener extends TestListener {
+    sfClass "org.smartfrog.services.junit.listeners.BufferingListenerComponent";
+    name "BufferingListener";
+}
+
+/**
  * XML listener is the most complex beast
  */
 XmlListenerSchema extends Schema {
@@ -61,24 +69,21 @@ XmlListenerSchema extends Schema {
     //outputFile extends Compulsory ;
     //XML preamble: comments, XSLT references, etc.
     preamble extends OptionalString;
+    indexFile extends OptionalString;
     useHostname extends Boolean;
+        /**
+     * frequency of publish.
+     */
+    publishFrequency extends OptionalInteger;
 }
 
 XmlListener extends TestListener {
     xmlListenerSchema extends XmlListenerSchema;
     sfClass "org.smartfrog.services.junit.listeners.XmlListenerComponent";
     useHostname true;
+    suffix ".xml";
     name "XmlListener";
 }
-
-/**
- * this is the one we use for testing. It buffers stuff and can be queried about it
- */
-BufferingListener extends TestListener {
-    sfClass "org.smartfrog.services.junit.listeners.BufferingListenerComponent";
-    name "BufferingListener";
-}
-
 
 /**
  * The HTML test listener
@@ -86,22 +91,12 @@ BufferingListener extends TestListener {
 
 HtmlTestListenerSchema extends Schema {
     /**
-     * Location to publish to.
-     */
-    outputDirectory extends FilenameType;
-
-    /**
      * page title
      */
-    title extends String;
-    
+    title extends OptionalString;
+    cssURL extends String;
 
-    /**
-     * frequency of publish.
-     */
-    publishFrequency extends Integer;
 }
-
 
 
 /**
@@ -110,7 +105,12 @@ HtmlTestListenerSchema extends Schema {
  */
 HtmlTestListener extends TestListener {
     sfClass "org.smartfrog.services.junit.listeners.HtmlTestListenerComponent";
-    name "StatisticsTestListener";
+    xmlListenerSchema extends XmlListenerSchema;
+    htmlTestListenerSchema extends HtmlTestListenerSchema;
+    name "HtmlTestListener";
+    useHostname true;
+    suffix ".html";
+    indexFile "index.html";
     publishFrequency 30;
     pageTitle "Test Statistics";
 }
@@ -123,8 +123,6 @@ StatisticsTestListener extends TestListener {
     sfClass "org.smartfrog.services.junit.listeners.StatisticsTestListenerComponent";
     name "StatisticsTestListener";
 }
-
-
 
 
 /**

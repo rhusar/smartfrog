@@ -19,7 +19,6 @@
  */
 package org.smartfrog.services.junit.listeners;
 
-import org.smartfrog.services.junit.TestListenerFactory;
 
 
 /**
@@ -27,26 +26,16 @@ import org.smartfrog.services.junit.TestListenerFactory;
  */
 
 
-public interface HtmlTestListenerFactory extends TestListenerFactory {
-
-    /**
-     * Location to publish to
-     * {@value}
-     */
-    static final String ATTR_DIRECTORY = "outputDirectory";
-
-    /**
-     * frequency of publish.
-     * {@value}
-     */
-    public static final String ATTR_PUBLISH_FREQUENCY = "publishFrequency";
+public interface HtmlTestListenerFactory extends XmlListenerFactory {
 
 
     /**
      * page title
      * {@value}
      */
-    public static final String ATTR_TITLE = "title";
+    String ATTR_TITLE = "title";
 
+    String ATTR_CSS_RESOURCE = "cssResource";
 
+    String ATTR_CSS_URL = "cssURL";
 }
