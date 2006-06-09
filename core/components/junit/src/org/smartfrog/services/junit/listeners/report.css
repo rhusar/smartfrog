@@ -132,9 +132,11 @@ h6 {
     margin-bottom: 2em;
 }
 
-.summary.title {
-    font-size: large;
+.summary-title {
+    font-size: x-large;
     font-weight: bold;
+    background: #a6caf0;
+    color: black;
 }
 
 .summary-table {
@@ -152,13 +154,17 @@ h6 {
 }
 
 table.summary-table  tr th {
+    font-size: large;
     font-weight: bold;
     text-align: left;
     background: #a6caf0;
+    color: black;
 }
 
 table.summary-table tr td {
+    font-size: large;
     background: #eeeee0;
+    color: black;
 }
 
 .log-debug {

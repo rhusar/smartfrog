@@ -82,9 +82,9 @@ public final class TestInfo implements Serializable, Cloneable {
     private ThrowableTraceInfo fault;
 
     /**
-     * an array of messages
+     * an array of messages, type LogEntry
      */
-    private List messages=new ArrayList();
+    private List/*<LogEntry>*/ messages=new ArrayList();
 
     private String outcome=OUTCOME_SUCCESS;
 
@@ -299,6 +299,10 @@ public final class TestInfo implements Serializable, Cloneable {
         return getClassname() + "." + getText();
     }
 
+    /**
+     * Get the list of messages, all of type LogEntry
+     * @return a list
+     */
     public List getMessages() {
         return messages;
     }
