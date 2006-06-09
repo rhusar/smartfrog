@@ -64,6 +64,10 @@ XmlTestRunner extends LocalJUnitTestRunner {
 
 }
 
+
+HtmlListener extends HtmlTestListener {
+    cssURL "file:///home/slo/Projects/SmartFrog/Forge/core/components/junit/src/org/smartfrog/services/junit/listeners/report.css";
+}
 /**
  * This is the all test suite, used in -all targets.
  */

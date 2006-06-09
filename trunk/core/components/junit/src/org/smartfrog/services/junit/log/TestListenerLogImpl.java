@@ -42,11 +42,12 @@ import java.util.Iterator;
 public class TestListenerLogImpl extends AbstractTestLog implements TestListenerLog {
 
 
-    List/*<LogListener>*/ listeners=new ArrayList(1);
+    List/*<LogListener>*/ listeners;
     public static final String ERROR_DUPLICATE_ADD = "Duplicate listener registration";
 
 
     public TestListenerLogImpl() throws RemoteException {
+        listeners = new ArrayList(1);
     }
 
     /**

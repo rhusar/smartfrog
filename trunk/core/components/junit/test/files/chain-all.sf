@@ -21,17 +21,17 @@ For more information: www.smartfrog.org
 #include "/files/components.sf"
 
 sfCodeBase PROPERTY org.smartfrog.codebase;
-    /**
-     * run all tests in the suite.
-     * output to an XML listener
-     */
 
-sfConfig extends Compound {
 
-    //buffer the results
+Chain extends Compound {
+
+   outputDirectory extends TempDir {
+      dir LAZY PROPERTY java.io.tmpdir;
+      prefix "junit-reports";
+   }
 
     console extends ConsoleListener {
-    };
+    }
 
     statistics extends StatisticsTestListener {
     }
@@ -39,11 +39,25 @@ sfConfig extends Compound {
     buffer extends BufferingListener {
     }
 
+    xml extends XmlListener {
+        outputDirectory LAZY PARENT:outputDirectory;
+    }
+
+    html extends HtmlListener {
+        outputDirectory LAZY PARENT:outputDirectory;
+    }
+
     tests extends TestAll {
 
       listener extends ChainListener {
-        listeners [ LAZY console, LAZY statistics, LAZY buffer];
+        listeners [ LAZY console,
+          LAZY statistics,
+          LAZY buffer,
+          LAZY xml,
+          LAZY html];
       }
    }
+}
 
+sfConfig extends Chain {
 }

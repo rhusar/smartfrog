@@ -58,7 +58,7 @@ public class DeployedXMLListenerTest extends TestRunnerTestBase {
             boolean finished = spinTillFinished(runner, seconds);
             assertTrue("Test run timed out", finished);
 
-            String path = listenerFactory.lookupFilename(SUITENAME);
+            String path = listenerFactory.lookupFilename(null, SUITENAME);
             assertNotNull("path of test suite " + SUITENAME, path);
 
             assertTrue("File does not exist " + path, new File(path).exists());

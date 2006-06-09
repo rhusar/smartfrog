@@ -1,4 +1,4 @@
-/** (C) Copyright 2004 Hewlett-Packard Development Company, LP
+/** (C) Copyright 2005-2006 Hewlett-Packard Development Company, LP
 
  This library is free software; you can redistribute it and/or
  modify it under the terms of the GNU Lesser General Public
@@ -33,26 +33,45 @@ public interface XmlListenerFactory extends TestListenerFactory {
 
     /**
      * name of a directory for output
+     * {@value}
      */
-    String OUTPUT_DIRECTORY = "outputDirectory";
+    String ATTR_OUTPUT_DIRECTORY = "outputDirectory";
 
     /**
      * flag to include hostname logic in file/dir choice
      */
-    String USE_HOSTNAME = "useHostname";
+    String ATTR_USE_HOSTNAME = "useHostname";
 
-    //String OUTPUT_FILE="outputFile";
+    /**
+     * {@value}
+     */
+    String INDEX_FILE="indexFile";
 
-    String PREAMBLE = "preamble";
+    /**
+     * {@value}
+     */
+    String ATTR_PREAMBLE = "preamble";
 
+
+    /**
+     * {@value}
+     */
+    String ATTR_SUFFIX = "suffix";
+    /**
+     * frequency of publish.
+     * {@value}
+     */
+    String ATTR_PUBLISH_FREQUENCY = "publishFrequency";
 
     /**
      * map from a test suite name to a filename
      *
+     * @param hostname host that the suite ran on
      * @param suitename test suite
      * @return name of output file, or null for no match
      * @throws RemoteException
      */
-    public String lookupFilename(String suitename) throws RemoteException;
+    public String lookupFilename(String hostname,
+                                 String suitename) throws RemoteException;
 
 }

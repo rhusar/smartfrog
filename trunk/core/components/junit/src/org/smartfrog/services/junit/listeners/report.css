@@ -1,0 +1,162 @@
+
+/**
+ * apache ant settings
+ */
+
+body {
+    font: normal 68% verdana, arial, helvetica;
+    color: #000000;
+}
+
+table tr td, table tr th {
+    font-size: 68%;
+}
+
+table.details tr th {
+    font-weight: bold;
+    text-align: left;
+    background: #a6caf0;
+}
+
+table.details tr td {
+    background: #eeeee0;
+}
+
+p {
+    line-height: 1.5em;
+    margin-top: 0.5em;
+    margin-bottom: 1.0em;
+}
+
+h1 {
+    margin: 0px 0px 5px;
+    font: 165% verdana, arial, helvetica
+}
+
+h2 {
+    margin-top: 1em;
+    margin-bottom: 0.5em;
+    font: bold 125% verdana, arial, helvetica
+}
+
+h3 {
+    margin-bottom: 0.5em;
+    font: bold 115% verdana, arial, helvetica
+}
+
+h4 {
+    margin-bottom: 0.5em;
+    font: bold 100% verdana, arial, helvetica
+}
+
+h5 {
+    margin-bottom: 0.5em;
+    font: bold 100% verdana, arial, helvetica
+}
+
+h6 {
+    margin-bottom: 0.5em;
+    font: bold 100% verdana, arial, helvetica
+}
+
+
+/* new types for test results*/
+
+
+/**
+ * these are the titles for the different tests
+ */
+
+.failure {
+    color: red;
+    font-weight: bold;
+    font-size: larger;
+}
+
+.success {
+    color: green;
+    font-weight: bold;
+    font-size: larger;
+}
+
+.error {
+    color: orange;
+    font-weight: bold;
+    font-size: larger;
+}
+
+
+.test-duration {
+}
+
+.fault {
+
+}
+
+.faultblock {
+
+}
+
+.fault-frame {
+  font-family : monospace;
+  font-size: x-small;
+}
+
+.fault-message {
+
+}
+
+.test-text {
+
+}
+
+
+
+.summary {
+
+}
+
+.summary-table {
+    border: solid 0px;
+}
+
+.log-stderr {
+    color: orange;
+    font-size: small;
+}
+
+.log-stdout {
+    color: blue;
+    font-size: small;
+}
+
+.log-debug {
+
+}
+
+.log-trace {
+
+}
+
+.log-ignore {
+
+}
+
+.log-info {
+
+}
+
+.log-warn {
+
+}
+
+.log-error {
+
+}
+.log-fatal {
+
+}
+
+.log-unknown {
+
+}
