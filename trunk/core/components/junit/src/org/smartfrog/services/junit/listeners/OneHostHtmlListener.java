@@ -45,7 +45,9 @@ public class OneHostHtmlListener extends OneHostXMLListener {
                                String cssURL)
             throws IOException {
         super(title, destFile, suitename, startTime, preamble);
+
         this.cssURL=cssURL;
+
     }
 
     private String getTitle() {
@@ -80,6 +82,9 @@ public class OneHostHtmlListener extends OneHostXMLListener {
         exit("head");
         enter("body");
         write("h1", null, title, true);
+        enter("div",style("toc"));
+        write("a", "href='#summary'", "summary", false);
+        exit("div");
     }
 
     protected void writeDocumentTail() throws IOException {
@@ -92,26 +97,39 @@ public class OneHostHtmlListener extends OneHostXMLListener {
 
     private void writeSummary() throws IOException {
         enter("div",style("summary") + attr("id", "summary"));
-        write("span",style("summary-span"),"Test Summary",false);
+        div("summary-title","Test Summary");
         enter("table", style("summary-table"));
-        enter("th");
-        write("td", null, "category", false);
-        write("td", null, "count", false);
-        exit("th");
 
         enter("tr");
-        write("td",null,"tests",false);
+        write("td",null,"Tests",false);
         write("td", null, Integer.toString(testCount), false);
         exit("tr");
 
         enter("tr");
-        write("td", null, "failures", false);
+        write("td", null, "Failures", false);
         write("td", null, Integer.toString(failureCount), false);
         exit("tr");
 
         enter("tr");
-        write("td", null, "errors", false);
+        write("td", null, "Errors", false);
         write("td", null, Integer.toString(errorCount), false);
+        exit("tr");
+
+
+        enter("tr");
+        write("td", null, "Started", false);
+        write("td", null, startTime.toString(), true);
+        exit("tr");
+
+        enter("tr");
+        write("td", null, "Finished", false);
+        write("td", null, startTime.toString(), true);
+        exit("tr");
+
+
+        enter("tr");
+        write("td", null, "Host", false);
+        write("td", null, hostname, true);
         exit("tr");
 
         exit("table");
@@ -153,6 +171,7 @@ public class OneHostHtmlListener extends OneHostXMLListener {
 
     protected String toXML(String tag, TestInfo test) {
         StringBuffer body=new StringBuffer();
+        enter(body,"div",style("testblock"));
         body.append(div(test.getOutcome(),
                 test.getClassname()));
         body.append(div("test-duration","duration " +
@@ -163,6 +182,7 @@ public class OneHostHtmlListener extends OneHostXMLListener {
         if(test.getFault()!=null) {
             body.append(toXML(test.getFault()));
         }
+        exit(body, "div");
         return body.toString();
     }
 
@@ -182,16 +202,38 @@ public class OneHostHtmlListener extends OneHostXMLListener {
         } else {
             StringBuffer buf = new StringBuffer();
             enter(buf,"div", style("faultblock"));
-            buf.append(div("fault", "Exception:"+fault.getClassname()));
-            buf.append(div("fault-message", fault.getMessage()));
+            enter(buf,"table",null);
+            enter(buf, "tr", null);
+            enter(buf, "td", style("fault"));
+            buf.append("Exception");
+            exit(buf,"td");
+            enter(buf, "td", style("fault"));
+            buf.append(fault.getClassname());
+            exit(buf, "td");
+            exit(buf, "tr");
+            enter(buf, "tr", null);
+            enter(buf, "td", style("fault-message"));
+            buf.append("Message");
+            exit(buf, "td");
+            enter(buf, "td", style("fault-message"));
+            buf.append(escape(fault.getMessage(),false));
+            exit(buf, "td");
+            exit(buf, "tr");
+            enter(buf, "tr", null);
+            enter(buf, "td", attr("colspan","2"));
             StackTraceElement[] stack = fault.getStack();
             for (int i = 0; i < stack.length; i++) {
                 StackTraceElement frame = stack[i];
-                buf.append(div("fault-frame", frame.toString()));
+                buf.append(div("fault-frame",
+                        escape(frame.toString(), false)));
             }
-            buf.append(toXML(fault.getCause()));
+            exit(buf, "td");
+            exit(buf, "tr");
+            exit(buf, "table");
+            if(fault.getCause()!=null && fault.getCause()!=fault) {
+                buf.append(toXML(fault.getCause()));
+            }
             exit(buf,"div");
-            buf.append("</div>\n");
             result = buf.toString();
         }
         return result;

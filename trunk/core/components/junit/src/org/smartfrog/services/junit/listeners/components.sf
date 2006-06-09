@@ -94,7 +94,10 @@ HtmlTestListenerSchema extends Schema {
      * page title
      */
     title extends OptionalString;
-    cssURL extends String;
+    /**
+     * URL To an optional CSS sheet
+     */
+    cssURL extends OptionalString;
 
 }
 

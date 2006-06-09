@@ -1,11 +1,11 @@
-
 /**
- * apache ant settings
- */
+* apache ant settings
+*/
 
 body {
     font: normal 68% verdana, arial, helvetica;
-    color: #000000;
+    color: black;
+    background: white;
 }
 
 table tr td, table tr th {
@@ -59,47 +59,62 @@ h6 {
     font: bold 100% verdana, arial, helvetica
 }
 
-
 /* new types for test results*/
 
-
 /**
- * these are the titles for the different tests
- */
+* these are the titles for the different tests
+*/
+
+.testblock {
+    border: solid 2px;
+    border-color: #6f0000;
+    display: block;
+    margin-top: 2em;
+    margin-bottom: 2em;
+}
 
 .failure {
     color: red;
     font-weight: bold;
     font-size: larger;
+    display: block;
+
 }
 
 .success {
     color: green;
     font-weight: bold;
     font-size: larger;
+    display: block;
 }
 
 .error {
     color: orange;
     font-weight: bold;
     font-size: larger;
+    display: block;
 }
-
 
 .test-duration {
 }
 
 .fault {
-
+    color: orange;
+    font-weight: bold;
 }
 
 .faultblock {
-
+    border: solid 0 px;
+    border-color: #6f0000;
+    display: block;
 }
 
 .fault-frame {
-  font-family : monospace;
-  font-size: x-small;
+    font-family: monospace;
+    font-size: x-small;
+    background-color: #ccccff;
+    color:black;
+    white-space:nowrap;
 }
 
 .fault-message {
@@ -110,10 +125,16 @@ h6 {
 
 }
 
-
-
 .summary {
+    border: solid 2px;
+    display:block;
+    margin-top: 2em;
+    margin-bottom: 2em;
+}
 
+.summary.title {
+    font-size: large;
+    font-weight: bold;
 }
 
 .summary-table {
@@ -128,6 +149,16 @@ h6 {
 .log-stdout {
     color: blue;
     font-size: small;
+}
+
+table.summary-table  tr th {
+    font-weight: bold;
+    text-align: left;
+    background: #a6caf0;
+}
+
+table.summary-table tr td {
+    background: #eeeee0;
 }
 
 .log-debug {
@@ -153,6 +184,7 @@ h6 {
 .log-error {
 
 }
+
 .log-fatal {
 
 }

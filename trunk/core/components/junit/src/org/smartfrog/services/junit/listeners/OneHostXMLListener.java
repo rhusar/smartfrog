@@ -109,7 +109,6 @@ public class OneHostXMLListener implements XmlListener {
         this.startTime = startTime;
         this.preamble = preamble;
         tests=new HashMap();
-        open();
     }
 
     /**
