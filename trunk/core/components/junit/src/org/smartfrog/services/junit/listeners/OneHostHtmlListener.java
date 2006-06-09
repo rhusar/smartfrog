@@ -26,6 +26,8 @@ import org.smartfrog.services.junit.data.ThrowableTraceInfo;
 import java.io.File;
 import java.io.IOException;
 import java.util.Date;
+import java.util.List;
+import java.util.Iterator;
 import java.rmi.RemoteException;
 
 /**
@@ -97,12 +99,27 @@ public class OneHostHtmlListener extends OneHostXMLListener {
 
     private void writeSummary() throws IOException {
         enter("div",style("summary") + attr("id", "summary"));
-        div("summary-title","Test Summary");
+        writeln(div("summary-title","Test Summary"));
         enter("table", style("summary-table"));
 
         enter("tr");
         write("td",null,"Tests",false);
         write("td", null, Integer.toString(testCount), false);
+        exit("tr");
+
+        int successes=testCount-errorCount-failureCount;
+        int percentage=0;
+        if(testCount>0) {
+            percentage = (successes*100)/testCount;
+        }
+        enter("tr");
+        write("td", null, "Successes", false);
+        write("td", null, Integer.toString(successes), false);
+        exit("tr");
+
+        enter("tr");
+        write("td", null, "Percentage Successes", false);
+        write("td", null, Integer.toString(percentage), false);
         exit("tr");
 
         enter("tr");
@@ -138,7 +155,7 @@ public class OneHostHtmlListener extends OneHostXMLListener {
 
     public void log(LogEntry event) throws RemoteException {
 
-        String type="log-"+event.levelToText();
+        String type = style(event);
         try {
             write("div",style(type), event.getText(), true);
         } catch (IOException e) {
@@ -147,8 +164,13 @@ public class OneHostHtmlListener extends OneHostXMLListener {
         }
     }
 
+    private String style(LogEntry event) {
+        String type="log-"+event.levelToText();
+        return type;
+    }
+
     /**
-     * Print a p paragraph in a style
+     * create a division; escape the text
      *
      * @param style
      * @param text
@@ -182,6 +204,15 @@ public class OneHostHtmlListener extends OneHostXMLListener {
         if(test.getFault()!=null) {
             body.append(toXML(test.getFault()));
         }
+        //now do the log
+        Iterator it=test.getMessages().iterator();
+        while (it.hasNext()) {
+            LogEntry entry = (LogEntry) it.next();
+            String log="["+entry.levelToText()+"]"
+                    +entry.getText();
+            body.append(div(style(entry),log));
+        }
+        //exit
         exit(body, "div");
         return body.toString();
     }
