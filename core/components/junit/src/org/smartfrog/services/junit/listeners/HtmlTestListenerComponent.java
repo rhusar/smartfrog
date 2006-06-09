@@ -57,7 +57,7 @@ public class HtmlTestListenerComponent extends AbstractXmlListenerComponent
     public synchronized void sfStart()
             throws SmartFrogException, RemoteException {
         super.sfStart();
-        cssURL=sfResolve(ATTR_CSS_URL,cssURL,true);
+        cssURL=sfResolve(ATTR_CSS_URL,cssURL,false);
     }
 
     /**

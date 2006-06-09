@@ -36,4 +36,25 @@ public class ThrowingTest extends TestCase {
     public void testThrowing() {
         throw new RuntimeException("This was meant to happen");
     }
+
+    public void testDoubleThrow() throws Exception{
+        try {
+            throw new Exception("nested");
+        } catch (Exception e) {
+            throw new RuntimeException("caught exception",e);
+        }
+    }
+
+    public void testTripleThrow() throws Exception {
+        try {
+            try {
+                throw new Exception("nested");
+            } catch (Exception e) {
+                throw new RuntimeException("caught exception", e);
+            }
+        } catch (RuntimeException e) {
+            throw new Exception("nested exception", e);
+        }
+    }
+
 }
