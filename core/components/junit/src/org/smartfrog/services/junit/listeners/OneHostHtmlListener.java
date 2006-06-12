@@ -26,7 +26,6 @@ import org.smartfrog.services.junit.data.ThrowableTraceInfo;
 import java.io.File;
 import java.io.IOException;
 import java.util.Date;
-import java.util.List;
 import java.util.Iterator;
 import java.rmi.RemoteException;
 
@@ -39,15 +38,19 @@ public class OneHostHtmlListener extends OneHostXMLListener {
 
     private String cssURL;
 
+    private String title;
+
     public OneHostHtmlListener(String title,
+                               String hostname,
+                               String processname,
                                File destFile,
                                String suitename,
                                Date startTime,
                                String preamble,
                                String cssURL)
             throws IOException {
-        super(title, destFile, suitename, startTime, preamble);
-
+        super(hostname, processname, suitename, destFile, startTime, preamble);
+        this.title=title;
         this.cssURL=cssURL;
 
     }

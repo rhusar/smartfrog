@@ -1,19 +1,9 @@
 package org.smartfrog.services.junit.listeners;
 
-import org.smartfrog.services.filesystem.FileSystem;
-import org.smartfrog.services.junit.TestListener;
-import org.smartfrog.services.junit.TestSuite;
-import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.sfcore.common.SmartFrogResolutionException;
-import org.smartfrog.sfcore.logging.Log;
-import org.smartfrog.sfcore.prim.PrimImpl;
-import org.smartfrog.sfcore.utils.ComponentHelper;
-
 import java.io.File;
 import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.Date;
-import java.util.HashMap;
 
 /**
  * This is a listener of tests
@@ -37,6 +27,7 @@ public class XmlListenerComponent
      * Override point; create a new XML listener
      * @param hostname
      * @param destFile
+     * @param processname
      * @param suitename
      * @param start
      * @return
@@ -44,12 +35,13 @@ public class XmlListenerComponent
      */
     protected OneHostXMLListener createNewSingleHostListener(String hostname,
                                                              File destFile,
-                                                             String suitename,
+                                                             String processname, String suitename,
                                                              Date start) throws
             IOException {
         return new OneHostXMLListener(hostname,
-                destFile,
+                processname,
                 suitename,
+                destFile,
                 start,
                 preamble);
     }

@@ -39,8 +39,15 @@ public interface XmlListenerFactory extends TestListenerFactory {
 
     /**
      * flag to include hostname logic in file/dir choice
+     * {@value}
      */
     String ATTR_USE_HOSTNAME = "useHostname";
+
+    /**
+     * flag to include process name logic in file/dir choice
+     * {@value}
+     */
+    String ATTR_USE_PROCESSNAME = "useProcessname";
 
     /**
      * {@value}

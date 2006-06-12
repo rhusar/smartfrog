@@ -42,6 +42,7 @@ public class Api_02_portal_getproperty_unknown_Test extends StandardTestBase {
             fail("Fault not thrown");
         } catch (SoapException e) {
             Fault fault = e.getFault();
+            log.info("received fault from the endpoint",e);
 /*            assertEquals(CddlmConstants.FAULT_WSRF_WSRP_INVALID_RESOURCE_PROPERTY_QNAME.toString(),
                     fault.getFaultCode());*/
         }

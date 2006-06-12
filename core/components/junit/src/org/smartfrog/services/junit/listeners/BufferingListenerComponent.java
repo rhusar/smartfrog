@@ -29,7 +29,6 @@ import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.prim.PrimImpl;
 
 import java.rmi.RemoteException;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.ArrayList;
 
@@ -204,12 +203,13 @@ public class BufferingListenerComponent extends PrimImpl
      *
      * @param suite
      * @param hostname  name of host
+     * @param processname
      * @param suitename name of test suite
      * @param timestamp start timestamp (UTC)
      * @return a listener to talk to
      */
     public TestListener listen(TestSuite suite, String hostname,
-                               String suitename,
+                               String processname, String suitename,
                                long timestamp) throws RemoteException,
             SmartFrogException {
         sessionStartCount++;

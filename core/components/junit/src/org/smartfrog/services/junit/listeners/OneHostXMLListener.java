@@ -56,6 +56,7 @@ public class OneHostXMLListener implements XmlListener {
      * name of host
      */
     protected String hostname;
+    protected String processname;
     protected String suitename;
     protected Date startTime;
     protected String preamble;
@@ -89,22 +90,23 @@ public class OneHostXMLListener implements XmlListener {
      * Listen to stuff coming from a single host. opens the file for future
      * messages
      *
-     * @param destFile  destination file
      * @param hostname  hostname of the (possibly remote system)
+     * @param processname
      * @param suitename name of the test suite
+     * @param destFile  destination file
      * @param startTime timestamp (in UTC) of the start of the tests
      * @param preamble  any text to include before the root element, like PI and
      *                  comments
      * @throws IOException if there is trouble opening the file.
      */
     public OneHostXMLListener(String hostname,
-            File destFile,
-            String suitename,
-            Date startTime,
-            String preamble) throws IOException {
+                              String processname, String suitename, File destFile,
+                              Date startTime,
+                              String preamble) throws IOException {
         //create our new directory
         this.destFile = destFile;
         this.hostname = hostname;
+        this.processname = processname;
         this.suitename = suitename;
         this.startTime = startTime;
         this.preamble = preamble;

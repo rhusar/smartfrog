@@ -65,6 +65,7 @@ public class HtmlTestListenerComponent extends AbstractXmlListenerComponent
      *
      * @param hostname
      * @param destFile
+     * @param processname
      * @param suitename
      * @param start
      *
@@ -74,11 +75,11 @@ public class HtmlTestListenerComponent extends AbstractXmlListenerComponent
      */
     protected OneHostXMLListener createNewSingleHostListener(String hostname,
                                                              File destFile,
-                                                             String suitename,
+                                                             String processname, String suitename,
                                                              Date start) throws
             IOException {
         return new OneHostHtmlListener(hostname,
-                destFile,
+                "hostname", "process", destFile,
                 suitename,
                 start,
                 preamble,

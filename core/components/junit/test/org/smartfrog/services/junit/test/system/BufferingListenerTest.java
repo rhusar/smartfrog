@@ -45,7 +45,7 @@ public class BufferingListenerTest extends TestCase {
         BufferingListener buffer = createFactory();
         TestListener listener = buffer.listen(null,
                 "localhost",
-                "testo",
+                null, "testo",
                 System.currentTimeMillis());
         TestInfo ti = new TestInfo(this);
         ti.markStartTime();
@@ -67,7 +67,7 @@ public class BufferingListenerTest extends TestCase {
     public void testFailure() throws Exception {
         BufferingListener buffer = createFactory();
         TestListener listener = buffer.listen(null, "localhost",
-                "testo",
+                null, "testo",
                 System.currentTimeMillis());
         TestInfo ti = new TestInfo(this);
         ti.markStartTime();

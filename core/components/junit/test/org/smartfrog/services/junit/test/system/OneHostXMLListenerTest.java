@@ -84,8 +84,7 @@ public class OneHostXMLListenerTest extends TestRunnerTestBase {
         }
         Date startTime = new Date(System.currentTimeMillis());
         OneHostXMLListener listener = new OneHostXMLListener("localhost",
-                file,
-                suite,
+                null, suite, file,
                 startTime,
                 null);
         return listener;
