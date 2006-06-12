@@ -24,13 +24,15 @@ package org.smartfrog.projects.alpine.http;
  * @author Jacek Kopecky
  */
 public final class HttpConstants {
-    public static final String CONTENT_TYPE_TEXT_XML = "text/xml";
-
-
-    public static final String CONTENT_TYPE_SOAP_XML= "application/soap+xml";
 
     private HttpConstants() {
     }
+
+    public static final String CONTENT_TYPE_TEXT_XML = "text/xml";
+
+
+    public static final String CONTENT_TYPE_SOAP_XML = "application/soap+xml";
+    public static final String ALPINE_VERSION = "Alpine $Id$";
 
     public static final String HEADER_PROTOCOL_10 = "HTTP/1.0";
     public static final String HEADER_PROTOCOL_11 = "HTTP/1.1";

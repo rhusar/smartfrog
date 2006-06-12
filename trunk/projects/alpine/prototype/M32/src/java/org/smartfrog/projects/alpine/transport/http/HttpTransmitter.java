@@ -106,6 +106,7 @@ public class HttpTransmitter {
         PostMethod method = new ProgressingPostMethod(destination);
 
         method.addRequestHeader("SOAPAction","");
+        method.addRequestHeader("User-Agent",HttpConstants.ALPINE_VERSION);
         //fill in the details
         //1. get the message into a byte array
         //2. add it
@@ -162,7 +163,7 @@ public class HttpTransmitter {
                     HttpTransportFault fault = new HttpTransportFault(destination, method,
                             "Wrong content type: expected "
                                     + HttpConstants.CONTENT_TYPE_TEXT_XML
-                                    + "or "
+                                    + " or "
                                     + HttpConstants.CONTENT_TYPE_SOAP_XML
                                     + " but got ["
                                     + contentType
