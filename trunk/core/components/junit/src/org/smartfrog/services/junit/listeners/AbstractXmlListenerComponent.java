@@ -50,6 +50,7 @@ public abstract class AbstractXmlListenerComponent extends PrimImpl
      */
     private HashMap testFiles = new HashMap();
     protected String suffix = ".xml";
+    private boolean useProcessname;
 
     protected AbstractXmlListenerComponent() throws RemoteException {
     }
@@ -111,6 +112,22 @@ public abstract class AbstractXmlListenerComponent extends PrimImpl
     }
 
     /**
+     * Called after instantiation for deployment purposed. Heart monitor is
+     * started and if there is a parent the deployed component is added to the
+     * heartbeat. Subclasses can override to provide additional deployment
+     * behavior.
+     *
+     * @throws org.smartfrog.sfcore.common.SmartFrogException
+     *                                  error while deploying
+     * @throws java.rmi.RemoteException In case of network/rmi error
+     */
+    public synchronized void sfDeploy() throws SmartFrogException,
+            RemoteException {
+        super.sfDeploy();
+        log = helper.getLogger();
+    }
+
+    /**
      * Can be called to start components. Subclasses should override to provide
      * functionality Do not block in this call, but spawn off any main loops!
      *
@@ -130,25 +147,13 @@ public abstract class AbstractXmlListenerComponent extends PrimImpl
         }
         preamble = sfResolve(XmlListenerFactory.ATTR_PREAMBLE, (String) null, false);
         useHostname = sfResolve(XmlListenerFactory.ATTR_USE_HOSTNAME, true, true);
+        useProcessname = sfResolve(XmlListenerFactory.ATTR_USE_PROCESSNAME, true, true);
         suffix = sfResolve(XmlListenerFactory.ATTR_SUFFIX, suffix, false);
-        log.info("output dir is " + outputDir + "; hostname=" + useHostname);
+        log.info("output dir is " + outputDir
+                + "; hostname=" + useHostname
+                +" ; useProcessname="
+                +useProcessname);
         log.info("preamble is " + preamble != null ? preamble : "(undefined)");
-    }
-
-    /**
-     * Called after instantiation for deployment purposed. Heart monitor is
-     * started and if there is a parent the deployed component is added to the
-     * heartbeat. Subclasses can override to provide additional deployment
-     * behavior.
-     *
-     * @throws org.smartfrog.sfcore.common.SmartFrogException
-     *                                  error while deploying
-     * @throws java.rmi.RemoteException In case of network/rmi error
-     */
-    public synchronized void sfDeploy() throws SmartFrogException,
-            RemoteException {
-        super.sfDeploy();
-        log = helper.getLogger();
     }
 
     /**
@@ -156,12 +161,13 @@ public abstract class AbstractXmlListenerComponent extends PrimImpl
      *
      * @param suite
      * @param hostname  name of host
+     * @param processname
      * @param suitename name of test suite
      * @param timestamp start timestamp (UTC)
      * @return a session ID to be used in test responses
      */
     public TestListener listen(TestSuite suite, String hostname,
-                               String suitename,
+                               String processname, String suitename,
                                long timestamp) throws RemoteException,
             SmartFrogException {
         if (suitename == null && "".equals(suitename)) {
@@ -173,15 +179,18 @@ public abstract class AbstractXmlListenerComponent extends PrimImpl
         if (useHostname) {
             destDir = new File(destDir, hostname);
         }
+        if (useProcessname) {
+            destDir = new File(destDir, processname);
+        }
 
         String outputFile = suitename + suffix;
         File destFile = new File(destDir, outputFile);
-        log.info("XmlFile=" + destFile);
+        log.info("Recording tests to " + destFile);
         String destpath = destFile.getAbsolutePath();
         addMapping(hostname, suitename, destpath);
         if (suite != null) {
             //set the absolute path of the file
-            log.info(
+            log.debug(
                     "Setting " +
                     XmlListener.ATTR_FILE +
                     "attribute on test suite");
@@ -193,7 +202,7 @@ public abstract class AbstractXmlListenerComponent extends PrimImpl
             Date start = new Date(timestamp);
 
             OneHostXMLListener xmlLog;
-            xmlLog = createNewSingleHostListener(hostname, destFile, suitename, start);
+            xmlLog = createNewSingleHostListener(hostname, destFile, processname, suitename, start);
             xmlLog.open();
             return xmlLog;
         } catch (IOException e) {
@@ -205,6 +214,7 @@ public abstract class AbstractXmlListenerComponent extends PrimImpl
      * Create the listener
      * @param hostname
      * @param destFile
+     * @param processname
      * @param suitename
      * @param start
      * @return
@@ -212,6 +222,7 @@ public abstract class AbstractXmlListenerComponent extends PrimImpl
      */
     protected abstract OneHostXMLListener createNewSingleHostListener(String hostname,
                                                                       File destFile,
+                                                                      String processname,
                                                                       String suitename,
                                                                       Date start) throws
             IOException;

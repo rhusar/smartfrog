@@ -27,7 +27,6 @@ import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.logging.Log;
 import org.smartfrog.sfcore.utils.ComponentHelper;
 
-import java.util.LinkedList;
 import java.util.Iterator;
 import java.util.Vector;
 import java.util.List;
@@ -98,12 +97,13 @@ public class ChainListenerComponent extends PrimImpl implements TestListenerFact
      * @param suite     the test suite that is about to run. May be null,
      *                  especially during testing.
      * @param hostname  name of host
+     * @param processname
      * @param suitename name of test suite
      * @param timestamp start timestamp (UTC)
      * @return a listener to talk to
      */
-    public TestListener listen(TestSuite suite, String hostname, String suitename, long timestamp)
+    public TestListener listen(TestSuite suite, String hostname, String processname, String suitename, long timestamp)
             throws RemoteException, SmartFrogException {
-        return new ChainListener(factories, suite, hostname,suitename,timestamp);
+        return new ChainListener(factories, suite, hostname, processname, suitename,timestamp);
     }
 }

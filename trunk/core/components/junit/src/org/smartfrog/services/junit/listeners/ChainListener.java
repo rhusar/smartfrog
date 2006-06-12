@@ -47,9 +47,9 @@ public class ChainListener implements TestListener {
 
     public ChainListener(List factories, TestSuite suite,
                          String hostname,
-                         String suitename,
+                         String processname, String suitename,
                          long timestamp) throws SmartFrogException, RemoteException {
-        createAndAddListeners(factories,suite,hostname,suitename,timestamp);
+        createAndAddListeners(factories,suite,hostname, processname, suitename,timestamp);
     }
 
     /**
@@ -59,12 +59,13 @@ public class ChainListener implements TestListener {
      * @param suite     the test suite that is about to run. May be null,
      *                  especially during testing.
      * @param hostname  name of host
+     * @param processname
      * @param suitename name of test suite
      * @param timestamp start timestamp (UTC)
      */
     public void createAndAddListeners(List factories, TestSuite suite,
                                       String hostname,
-                                      String suitename,
+                                      String processname, String suitename,
                                       long timestamp) throws SmartFrogException, RemoteException {
         //reset the list of listeners
         listeners =new ArrayList(factories.size());
@@ -73,7 +74,7 @@ public class ChainListener implements TestListener {
         while (it.hasNext()) {
             //create and add each one to the listener list
             TestListenerFactory factory = (TestListenerFactory) it.next();
-            TestListener listener = factory.listen(suite, hostname, suitename, timestamp);
+            TestListener listener = factory.listen(suite, hostname, processname, suitename, timestamp);
             addListener(listener);
         }
     }

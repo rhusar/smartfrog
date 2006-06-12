@@ -28,7 +28,6 @@ import org.smartfrog.sfcore.common.SmartFrogInitException;
 import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
 import org.smartfrog.sfcore.logging.Log;
 import org.smartfrog.sfcore.prim.PrimImpl;
-import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.security.SFClassLoader;
 import org.smartfrog.sfcore.utils.ComponentHelper;
 import org.smartfrog.sfcore.processcompound.SFProcess;
@@ -361,7 +360,10 @@ public class JUnitTestSuiteImpl extends PrimImpl implements JUnitTestSuite,
 
         //bind to our listener
         TestListenerFactory listenerFactory = configuration.getListenerFactory();
-        listener = listenerFactory.listen(this, hostname,
+
+        listener = listenerFactory.listen(this,
+                hostname,
+                sfDeployedProcessName(),
                 suitename,
                 System.currentTimeMillis());
         final TestListenerLog testLog = configuration.getTestLog();

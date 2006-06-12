@@ -121,13 +121,14 @@ public class ConsoleListenerComponent extends PrimImpl
      *
      * @param suite
      * @param hostname  name of host
+     * @param processname
      * @param suitename name of test suite
      * @param timestamp start timestamp (UTC)
      * @return a listener to talk to
      */
     public TestListener listen(TestSuite suite, String hostname,
-            String suitename,
-            long timestamp) throws RemoteException,
+                               String processname, String suitename,
+                               long timestamp) throws RemoteException,
             SmartFrogException {
         return new ConsoleTestListener();
     }

@@ -71,6 +71,7 @@ XmlListenerSchema extends Schema {
     preamble extends OptionalString;
     indexFile extends OptionalString;
     useHostname extends Boolean;
+    useProcessname extends Boolean;
         /**
      * frequency of publish.
      */
@@ -81,6 +82,7 @@ XmlListener extends TestListener {
     xmlListenerSchema extends XmlListenerSchema;
     sfClass "org.smartfrog.services.junit.listeners.XmlListenerComponent";
     useHostname true;
+    useProcessname false;
     suffix ".xml";
     name "XmlListener";
 }
@@ -106,12 +108,11 @@ HtmlTestListenerSchema extends Schema {
  * This component collects results and publishes (static) HTML pages
  * to a location
  */
-HtmlTestListener extends TestListener {
+HtmlTestListener extends XmlListener {
     sfClass "org.smartfrog.services.junit.listeners.HtmlTestListenerComponent";
     xmlListenerSchema extends XmlListenerSchema;
     htmlTestListenerSchema extends HtmlTestListenerSchema;
     name "HtmlTestListener";
-    useHostname true;
     suffix ".html";
     indexFile "index.html";
     publishFrequency 30;

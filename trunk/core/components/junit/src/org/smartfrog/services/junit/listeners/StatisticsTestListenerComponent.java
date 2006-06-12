@@ -45,11 +45,12 @@ public class StatisticsTestListenerComponent extends PrimImpl implements Statist
      * @param suite     the test suite that is about to run. May be null,
      *                  especially during testing.
      * @param hostname  name of host
+     * @param processname
      * @param suitename name of test suite
      * @param timestamp start timestamp (UTC)
      * @return a listener to talk to
      */
-    public TestListener listen(TestSuite suite, String hostname, String suitename, long timestamp)
+    public TestListener listen(TestSuite suite, String hostname, String processname, String suitename, long timestamp)
             throws RemoteException, SmartFrogException {
         return this;
     }
