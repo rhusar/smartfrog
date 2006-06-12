@@ -82,6 +82,7 @@ public class HttpBinder {
                 HttpServletResponse.SC_INTERNAL_SERVER_ERROR : HttpServletResponse.SC_OK;
         response.setStatus(responseCode);
         response.setContentType(HttpConstants.CONTENT_TYPE_SOAP_XML + "; charset=\"utf-8\"");
+        response.addHeader("Server", HttpConstants.ALPINE_VERSION);
         //PrintWriter writer = response.getWriter();
         ServletOutputStream out = response.getOutputStream();
         Serializer serializer = new Serializer(out);
@@ -128,14 +129,14 @@ public class HttpBinder {
 
     public static void validateContentType(String contentType) {
         contentType = extractBaseContentType(contentType);
-        if (isValidSoapContentType(contentType)) {
+        if (!isValidSoapContentType(contentType)) {
             throw new ServerException(ERROR_UNSUPPORTED_CONTENT + contentType);
         }
     }
 
     public static boolean isValidSoapContentType(String contentType) {
-        return !HttpConstants.CONTENT_TYPE_TEXT_XML.equals(contentType)
-                &&!HttpConstants.CONTENT_TYPE_SOAP_XML.equals(contentType);
+        return HttpConstants.CONTENT_TYPE_TEXT_XML.equals(contentType)
+                || HttpConstants.CONTENT_TYPE_SOAP_XML.equals(contentType);
     }
 
     public static String extractBaseContentType(String contentType) {
