@@ -38,7 +38,7 @@ import java.rmi.NoSuchObjectException;
  * running tests, blocking till they finish, etc. Date: 07-Jul-2004 Time:
  * 20:04:27
  */
-public class TestRunnerTestBase extends SmartFrogTestBase {
+public abstract class TestRunnerTestBase extends SmartFrogTestBase {
     public static final String CODEBASE_PROPERTY = "org.smartfrog.codebase";
     public static final String TIMEOUT_PROPERTY = "timeout";
     public static final int TIMEOUT_DEFAULT = 10;
