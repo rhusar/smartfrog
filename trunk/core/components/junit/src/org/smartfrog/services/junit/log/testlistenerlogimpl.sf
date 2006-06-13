@@ -19,7 +19,7 @@ For more information: www.smartfrog.org
 */
 
 
-TestListenerLogImpl extends {
-
+TestListenerLogImpl extends Prim {
+   sfClass "org.smartfrog.services.junit.log.TestListenerLogImpl";
    loggerClass "org.smartfrog.services.junit.log.TestListenerLogImpl";
 }
