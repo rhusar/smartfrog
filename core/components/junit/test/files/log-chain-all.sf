@@ -49,7 +49,7 @@ sfConfig extends Compound {
   chain extends Chain {
   }
 
-  chain:tests: testLog LAZY log:logTo:logTo;
+  chain:tests:testLog LAZY log:logTo:logTo;
 
 
 }
