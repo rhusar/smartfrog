@@ -87,6 +87,7 @@ public class OneHostXMLListenerTest extends TestRunnerTestBase {
                 null, suite, file,
                 startTime,
                 null);
+        listener.open();
         return listener;
     }
 
