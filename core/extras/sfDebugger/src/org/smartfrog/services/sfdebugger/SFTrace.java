@@ -34,7 +34,7 @@ import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimHook;
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.prim.TerminationRecord;
-import org.smartfrog.services.smartfrogDebugger.simpleShell;
+import org.smartfrog.services.sfdebugger.simpleShell;
 
 /**
  * Implements the debug component in SmartFrog System. It debugs the lifecycle
