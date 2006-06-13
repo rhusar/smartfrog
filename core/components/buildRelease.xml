@@ -144,7 +144,7 @@ To use: ant -f buildRelease release
 	<include name="ssh/**"/>
 	<include name="sfinstaller/**"/>
         <include name="build.xml"/>
-        <include name="buildRelease.xml"/>
+        <!--include name="buildRelease.xml"/-->
         <include name="releaseBuild.xml"/>
     <include name="${dist}/**"/>
 	<include name="${dist}/docs/**"/>
@@ -189,7 +189,7 @@ To use: ant -f buildRelease release
 	<include name="ssh/**"/>
 	<include name="sfinstaller/**"/>
         <include name="build.xml"/>
-        <include name="buildRelease.xml"/>
+        <!--include name="buildRelease.xml"/-->
         <include name="releaseBuild.xml"/>
     <include name="${dist}/**"/>
 	<include name="${dist}/docs/**"/>
