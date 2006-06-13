@@ -20,6 +20,13 @@
     <title>Welcome to SmartFrog</title> 
   </header> 
   <body> 
-       <p>This Page contains All Deocuments related to SmartFrog Framework</p>
+	  <section id="titlepage">
+	  <title>Smart Framework for Object Groups</title>
+	  <p>
+		  SmartFrog is a technology for describing distributed software systems as collections of cooperating components, and then activating and managing them. 
+		  It was developed at HP Labs in Bristol, in the UK. 
+		  The core SmartFrog framework is released under LGPL. 
+	  </p>
+  </section>
    </body>
 </document>
