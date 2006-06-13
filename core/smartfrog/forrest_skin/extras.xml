@@ -24,7 +24,7 @@
       <section id="CSFExtentions">
             <title>CSF Extentions</title>
             <p>This document describes some  extensions provided to allow experimentation with constraint resolution technologies in conjunction with the SmartFrog language. These extensions are not intended to provide the definitive SmartFrog Constraint System, but are designed to allow a wide variety of different technologies to be used for this purpose. Consequently, the extensions themselves provide very limited syntactic or semantic support, and mostly the support is in the form of free textual annotations that are then interpreted by an appropriate plug-in for the specific constraint solver in use.
-                Links to document : <a href="csfExtensions.html">HTML</a> ,  <a href="csfExtensions.pdf">PDF</a> , "<a href="http://cvs.sourceforge.net/viewcvs.py/*checkout*/smartfrog/core/smartfrog/docs/csfExtensions.pdf">CVS (Online)</a>"   </p>
+                Links to document : <a href="csfExtensions.html">HTML</a> ,  <a href="csfExtensions.pdf">PDF</a> , "<a href="http://smartfrog.cvs.sourceforge.net/*checkout*/smartfrog/core/smartfrog/docs/csfExtensions.pdf">CVS (Online)</a>"   </p>
           </section>
 
 
