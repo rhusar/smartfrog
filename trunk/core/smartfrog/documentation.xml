@@ -36,7 +36,7 @@ For more information: www.smartfrog.org
 
 
   <property environment="env" />
-   <property name="is.component" value="false"  />
+   <!--property name="is.component" value="false"  /-->
 
 
   <!--fail unless="${env.FORREST_HOME}">
@@ -45,28 +45,32 @@ For more information: www.smartfrog.org
   the environment variable FORREST_HOME set up to point to it.
   </fail-->
 
-	<property name="root.dir" location=".."  />
+	<!--property name="root.dir" location=".."  /-->
 
 	<!-- Import common stuff -->
-	<import file="${root.dir}/common.xml"/>
+	<!--import file="${root.dir}/common.xml"/-->
 
 	<property name="forrest.home"  location="${env.FORREST_HOME}"/>
-  
+      <property name="SFHOME" location="."/>
+    <property name="dist.doc.dir"  location="${SFHOME}/dist/docs"/>
+     
+	<import file="${env.FORREST_HOME}/main/forrest.build.xml"/>
+	<import file="${env.FORREST_HOME}/main/forrest.antproxy.xml"/>
 	
-	<import file="${env.FORREST_HOME}/forrest.build.xml"/>
-	<import file="${env.FORREST_HOME}/forrest.antproxy.xml"/>
-	
-	<target name="init" depends="init-common" >
+	<target name="init">
 		<echo level="verbose">Created forrest project template</echo>
-		 <property name="comp.home"  location="${smartfrog.components.dir}"/>
+		 <!--property name="comp.home"  location="${smartfrog.components.dir}"/-->
 	 <property name="xdocs.skin.dir"  location="${SFHOME}/src/documentation/content/xdocs"/>
 	 <property name="xdocs.dir"  location="${SFHOME}/src/documentation/content/xdocs/smartfrogdoc"/>
+     <property name="xdocs.examples.dir"  location="${SFHOME}/src/documentation/content/xdocs/smartfrogdoc/examples"/>
     <property name="skin.dir" location="forrest_skin" />
-    
+
+
+
   </target>
 
   <target name="copy-properties" depends="init">
-		<copy todir="${comp.home}" overwrite="true"
+		<copy todir="${SFHOME}" overwrite="true"
       file="${skin.dir}/forrest.properties" />
   </target>
   
@@ -75,14 +79,29 @@ For more information: www.smartfrog.org
 		<echo>Created forrest project template</echo>
 			</target>
 			
-  <target name="prepare-docs" depends="seedforrest,copy-properties">
+  <target name="prepare-docs" depends="seedforrest,copy-properties , init">
 		<mkdir dir="${xdocs.dir}"/>
 
 		<copy todir="${xdocs.dir}">
         <fileset dir="${skin.dir}">
 				 <include name="SFCore.xml" />
-			</fileset>
-		</copy>	
+            	 <include name="service.xml" />
+            	 <include name="extras.xml" />
+            	 <include name="examples.xml" />
+                <include name="jdocs_index.xml" />
+             <include name="copyright.*" />
+            <include name="lpgl.*" />
+            <include name="anttasks.xml" />
+             <include name="index.html" />
+            <include name="overview_html_39c627ce.gif" />
+
+            </fileset>
+           <fileset dir="${SFHOME}/dist/docs">
+               <include name="**/*" />
+      </fileset>
+
+
+        </copy>
 
 		<copy todir="${xdocs.skin.dir}" overwrite="true">
         <fileset dir="${skin.dir}">
@@ -90,9 +109,11 @@ For more information: www.smartfrog.org
 				 <include name="site.xml" />
 				 <include name="tabs.xml" />
 		</fileset>
-		</copy>	
-   
-	<copy todir="${comp.home}/src/documentation" overwrite="true"
+		</copy>
+
+
+
+    <copy todir="${SFHOME}/src/documentation" overwrite="true"
       file="${skin.dir}/skinconf.xml">
 	</copy>
     
@@ -104,16 +125,29 @@ For more information: www.smartfrog.org
 		</copy>	
 	
 		<echo level="verbose" >${SFHOME}</echo>
- 	</target>
+
+
+    
+
+     </target>
+
 
     <target name="generate-site" depends="prepare-docs" >
-	<antcall target="site"/>
+	    <!--antcall target="site"/-->
+<exec dir="${SFHOME}" executable="${env.FORREST_HOME}/bin/forrest.bat" os="Windows 2000, Windows_NT, Windows XP">
+<arg line="site"/>
+    </exec>
+<exec dir="${SFHOME}" executable="${env.FORREST_HOME}/bin/forrest" os="Linux">
+<arg line="site"/>
+    </exec>
+
+
 	</target>
-    
-    
-	<target name="copy-forrest-docs" depends="generate-site" >
+
+
+    <target name="copy-forrest-docs" depends="generate-site" >
 		<copy todir="${dist.doc.dir}">
-      <fileset dir="${comp.home}/build/site">
+      <fileset dir="${SFHOME}/build/site">
 	     <include name="**/*.*" />
        <exclude name="samples/*.*"/>
        <exclude name="test1.html"/>
@@ -125,8 +159,13 @@ For more information: www.smartfrog.org
     </copy>
 	</target>
 
-	<target name="docs" depends="copy-forrest-docs" description="Document Generation">
+
+    <target name="docs" depends="clean, generate-site" description="Document Generation">
 	</target>
+
+    <target name="clean" description="Clean Generated Documents">
+        <delete dir="${SFHOME}/src/documentation"/>
+    </target>
   
   <target name="default" depends="docs" description="Document Generation">
 	</target>
