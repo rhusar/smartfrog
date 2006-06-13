@@ -212,10 +212,20 @@
     <echo level="verbose">version=${sfversion}</echo>
     <!--property name="Version" value="${sfversion}"/-->
   </target>
+
+  <!-- =================================================================== -->
+  <!--  Generte Forrest Docs -->
+  <!-- =================================================================== -->
+
+  <target name="generatedoc" depends="init, dist, jdocs" description="Document Generation" if="env.FORREST_HOME">
+	  <ant antfile="documentation.xml" inheritall="false"/> 
+    <!-- Forrest build dir -->
+  </target>
+  
   <!-- =================================================================== -->
   <!--  Release                                                            -->
   <!-- =================================================================== -->
-  <target name="release" depends="clean, dist,jdocs" description="Creates clean new release">  </target>
+  <target name="release" depends="clean, dist,jdocs, generatedoc" description="Creates clean new release">  </target>
   <!-- =================================================================== -->
   <!--                                                                     -->
   <!-- =================================================================== -->
@@ -573,6 +583,7 @@
     <!-- remove parser source files -->
     <delete dir="${build}" failonerror="false"/>
     <delete dir="${dist.dir}" failonerror="false"/>
+    <delete dir="${src.dir}/documentation" failonerror="false"/>
   </target>
   <!-- =================================================================== -->
   <!-- a clean distribution                                               -->
