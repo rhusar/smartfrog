@@ -92,7 +92,7 @@ For more information: www.smartfrog.org
              <include name="copyright.*" />
             <include name="lpgl.*" />
             <include name="anttasks.xml" />
-             <include name="index.html" />
+             <include name="home.html" />
             <include name="overview_html_39c627ce.gif" />
 
             </fileset>
@@ -148,7 +148,7 @@ For more information: www.smartfrog.org
     <target name="copy-forrest-docs" depends="generate-site" >
 		<copy todir="${dist.doc.dir}">
       <fileset dir="${SFHOME}/build/site">
-	     <include name="**/*.*" />
+	     <include name="**/*" />
        <exclude name="samples/*.*"/>
        <exclude name="test1.html"/>
        <exclude name="test2.html"/>
@@ -160,7 +160,7 @@ For more information: www.smartfrog.org
 	</target>
 
 
-    <target name="docs" depends="clean, generate-site" description="Document Generation">
+    <target name="docs" depends="clean, copy-forrest-docs" description="Document Generation">
 	</target>
 
     <target name="clean" description="Clean Generated Documents">
