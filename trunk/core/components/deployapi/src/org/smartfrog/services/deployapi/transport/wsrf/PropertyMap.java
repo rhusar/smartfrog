@@ -85,11 +85,12 @@ public class PropertyMap implements WSRPResourceSource {
      * @param name property name
      * @param value property value
      */
-    public void addStaticProperty(QName name,Element value) {
+    public StaticProperty addStaticProperty(QName name,Element value) {
         StaticProperty property=new StaticProperty();
         property.setName(name);
         property.setValue(value);
         add(property);
+        return property;
     }
 
     /**
@@ -98,9 +99,22 @@ public class PropertyMap implements WSRPResourceSource {
      * @param name  property name
      * @param value property value
      */
-    public void addStaticProperty(QName name, String value) {
+    public StaticProperty addStaticProperty(QName name) {
+        StaticProperty property = new StaticProperty(name);
+        add(property);
+        return property;
+    }
+
+    /**
+     * Add a static property
+     *
+     * @param name  property name
+     * @param value property value
+     */
+    public StaticProperty addStaticProperty(QName name, String value) {
         StaticProperty property = new StaticProperty(name, value);
         add(property);
+        return property;
     }
 
 
@@ -110,9 +124,10 @@ public class PropertyMap implements WSRPResourceSource {
      * @param name  property name
      * @param value property value
      */
-    public void addStaticProperty(QName name, List<Element> value) {
+    public StaticProperty addStaticProperty(QName name, List<Element> value) {
         StaticProperty property = new StaticProperty(name, value);
         add(property);
+        return property;
     }
 
 }

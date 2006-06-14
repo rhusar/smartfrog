@@ -32,14 +32,11 @@ import org.smartfrog.projects.alpine.wsa.AlpineEPR;
 import org.smartfrog.projects.alpine.wsa.MessageIDSource;
 import org.smartfrog.projects.alpine.xmlutils.XsdUtils;
 import org.smartfrog.projects.alpine.core.MessageContext;
-import org.smartfrog.projects.alpine.core.ContextConstants;
-import org.smartfrog.projects.alpine.http.HttpConstants;
 import org.smartfrog.services.deployapi.system.Constants;
 import org.smartfrog.services.deployapi.transport.wsrf.WsrfUtils;
 
 import javax.xml.namespace.QName;
 import java.util.List;
-import java.net.URI;
 
 
 /**
@@ -178,18 +175,27 @@ public abstract class WsrfSession extends Session {
         return resultList;
     }
 
+    public Element getResourcePropertySingle(QName property) {
+        return getResourcePropertySingle(property,true);
+    }
+
     /**
      * blocking call to get a request property
      *
      * @param property
      * @return
      */
-    public Element getResourcePropertySingle(QName property) {
+    public Element getResourcePropertySingle(QName property,boolean required) {
         Transmission tx = beginGetResourceProperty(property);
         List<Element> elements = endGetResourceProperty(tx);
         AlpineRuntimeException fault=null;
         if (elements.size()==0) {
-            fault = new ClientException("No child element in the response to the request");
+            if(!required) {
+                return null;
+            } else {
+                fault = new ClientException("No child element in the response to the request");
+            }
+
         } else if (elements.size() > 1) {
             fault = new ClientException("Too many children in response");
         }

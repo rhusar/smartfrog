@@ -44,6 +44,7 @@ public class Api_07_system_destroy_properties_Test extends StandardTestBase {
         system.destroy();
         Element result = null;
         try {
+            //exponential backoff as we wait for a system to cease to exists
             for (int i = 1; i <= 128; i *= 2) {
                 result = system.getResourcePropertySingle(CddlmConstants.PROPERTY_MUWS_RESOURCEID);
                 sleep(i);

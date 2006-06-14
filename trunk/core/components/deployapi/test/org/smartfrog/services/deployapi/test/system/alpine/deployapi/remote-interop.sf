@@ -25,7 +25,10 @@ For more information: www.smartfrog.org
 #include "/org/smartfrog/sfcore/logging/components.sf"
 #include "/org/smartfrog/sfcore/logging/logtoprimimpl.sf"
 #include "/org/smartfrog/services/junit/timeouts/components.sf"
+/**
+ * This is the settings for the server test for steve to do the ports
 
+ */
   Proxy extends SystemProperties {
     enabled true;
     setOnDeploy enabled;
@@ -46,6 +49,7 @@ For more information: www.smartfrog.org
       subdir name;
       enabled true;
       basedir "build/test/interop";
+      cssURL 
 
       proxy extends Proxy {
         enabled proxyEnabled;
@@ -56,6 +60,7 @@ For more information: www.smartfrog.org
       }
 
       tests extends DeployapiTestRunner {
+        cssURL PARENT:cssURL;
         basedir PARENT:basedir;
         enabled PARENT:enabled;
         endpoint PARENT:endpoint;

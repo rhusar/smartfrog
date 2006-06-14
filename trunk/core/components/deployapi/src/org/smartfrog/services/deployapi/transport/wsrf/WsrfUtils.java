@@ -56,8 +56,9 @@ public final class WsrfUtils {
      * @param uri
      * @return true iff the capability is found
      */
-    public static boolean hasMuwsCapability(Element capabilities, String uri) {
-        for (Element e : XsdUtils.elements(capabilities, PROPERTY_MUWS_MANAGEABILITY_CAPABILITY)) {
+    public static boolean hasMuwsCapability(List<Element> capabilities, String uri) {
+
+        for (Element e : capabilities) {
             if (uri.equals(e.getValue())) {
                 return true;
             }
@@ -98,17 +99,16 @@ public final class WsrfUtils {
         //the static listing of manageability charcteristics
 
         //base element of the list
-        SoapElement items = new SoapElement("muws:ManageabilityCharacteristicsProperties",
-                MUWS_P1_NAMESPACE);
+        List<Element> capabilities=new ArrayList<Element>(3);
         //and a management capability for each entry
-        items.appendChild(new SoapElement(PROPERTY_MUWS_MANAGEABILITY_CAPABILITY,
+        capabilities.add(new SoapElement(PROPERTY_MUWS_MANAGEABILITY_CAPABILITY,
                 capability));
-        items.appendChild(new SoapElement(PROPERTY_MUWS_MANAGEABILITY_CAPABILITY,
+        capabilities.add(new SoapElement(PROPERTY_MUWS_MANAGEABILITY_CAPABILITY,
                 MUWS_CAPABILITY_MANAGEABILITY_REFERENCES));
-        items.appendChild(new SoapElement(PROPERTY_MUWS_MANAGEABILITY_CAPABILITY,
+        capabilities.add(new SoapElement(PROPERTY_MUWS_MANAGEABILITY_CAPABILITY,
                 MUWS_CAPABILITY_MANAGEABILITY_CHARACTERISTICS));
 
-        props.addStaticProperty(PROPERTY_MUWS_MANAGEABILITY_CAPABILITY, items);
+        props.addStaticProperty(PROPERTY_MUWS_MANAGEABILITY_CAPABILITY, capabilities);
     }
 
 
@@ -124,7 +124,7 @@ public final class WsrfUtils {
                 Boolean.toString(fixed));
         map.addStaticProperty(CddlmConstants.PROPERTY_WSNT_FIXED_TOPIC_SET, fixedElt);
 
-        List<Element> topicExpressionDialects=new ArrayList(dialects.length);
+        List<Element> topicExpressionDialects=new ArrayList<Element>(dialects.length);
         for(int i=0;i<dialects.length;i++) {
             topicExpressionDialects.add(new SoapElement("wsnt:TopicExpressionDialects",
                     CddlmConstants.WSRF_WSNT_NAMESPACE,
@@ -141,13 +141,15 @@ public final class WsrfUtils {
     }
 
     /**
-     * Turn an element into a one-element list
-     * @param elt
+     * Turn an element into a zero or one-element list
+     * @param elt can be null for an empty list
      * @return a list containing the element
      */
     public static List<Element> listify(Element elt) {
         List<Element> list = new LinkedList<Element>();
-        list.add(elt);
+        if(elt!=null) {
+            list.add(elt);
+        }
         return list;
     }
 }

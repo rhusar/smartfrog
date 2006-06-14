@@ -29,6 +29,8 @@ import static org.ggf.cddlm.generated.api.CddlmConstants.PROPERTY_SYSTEM_TERMINA
 import org.smartfrog.services.deployapi.alpineclient.model.SystemSession;
 import org.smartfrog.services.deployapi.test.system.alpine.deployapi.api.StandardTestBase;
 
+import java.util.List;
+
 /**
  * created 13-Apr-2006 13:51:02
  * Create a system , then destroy it immediately.
@@ -59,7 +61,8 @@ public class Api_06_system_properties_Test extends StandardTestBase {
     }
 
     public void testMuwsCapabilitiesFound() throws Exception {
-        Element muws = getSystemMuwsCapabilities();
+        List<Element> muws = getSystemMuwsCapabilities();
+        assertTrue("muws list length is zero",muws.size()>0);
     }
 
     public void testCapabilityCdlSystem() throws Exception {
@@ -75,13 +78,11 @@ public class Api_06_system_properties_Test extends StandardTestBase {
     }
 
     public void testStartedTimeExists() throws Exception {
-        Element time = getSystem().getResourcePropertySingle(PROPERTY_SYSTEM_STARTED_TIME);
-        assertNotNull(time);
+        Element time = getSystem().getResourcePropertySingle(PROPERTY_SYSTEM_STARTED_TIME,false);
     }
 
     public void testTerminatedTimeExists() throws Exception {
-        Element time = getSystem().getResourcePropertySingle(PROPERTY_SYSTEM_TERMINATED_TIME);
-        assertNotNull(time);
+        Element time = getSystem().getResourcePropertySingle(PROPERTY_SYSTEM_TERMINATED_TIME, false);
     }
 
 
