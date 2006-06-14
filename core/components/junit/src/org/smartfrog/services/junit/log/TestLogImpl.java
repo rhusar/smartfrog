@@ -20,7 +20,6 @@
 package org.smartfrog.services.junit.log;
 
 import org.smartfrog.services.junit.data.LogEntry;
-import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;

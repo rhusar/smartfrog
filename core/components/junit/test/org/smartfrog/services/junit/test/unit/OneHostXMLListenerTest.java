@@ -17,10 +17,11 @@
  For more information: www.smartfrog.org
 
  */
-package org.smartfrog.services.junit.test.system;
+package org.smartfrog.services.junit.test.unit;
 
-import org.smartfrog.services.junit.data.TestInfo;
 import org.smartfrog.services.junit.TestListener;
+import org.smartfrog.services.junit.test.system.TestRunnerTestBase;
+import org.smartfrog.services.junit.data.TestInfo;
 import org.smartfrog.services.junit.listeners.OneHostXMLListener;
 
 import java.io.File;
@@ -51,28 +52,37 @@ public class OneHostXMLListenerTest extends TestRunnerTestBase {
 
     public void testSimple() throws Exception {
         File file = new File(tempdir, "testSimple.xml");
-        TestListener listener = createListener(file, "simple");
+        OneHostXMLListener listener = createListener(file, "simple");
+        assertTrue("listener is not open", listener.isOpen());
         TestInfo ti = new TestInfo(this);
         ti.markStartTime();
         listener.startTest(ti);
+        assertTrue("listener is not open", listener.isOpen());
         ti.markEndTime();
         listener.endTest(ti);
+        assertTrue("listener is not open", listener.isOpen());
         listener.endSuite();
+        assertFalse("listener is not closed", listener.isOpen());
         validateXmlLog(file);
     }
 
 
     public void testError() throws Exception {
         File file = new File(tempdir, "testError.xml");
-        TestListener listener = createListener(file, "simple");
+        OneHostXMLListener listener = createListener(file, "simple");
+        assertTrue("listener is not open", listener.isOpen());
+        assertTrue("listener is not happy", listener.isHappy());
         TestInfo ti = new TestInfo(this);
         listener.startTest(ti);
+        assertTrue("listener is not open", listener.isOpen());
         Throwable t = new RuntimeException("oops", new Throwable("ne&>sted"));
         ti.addFaultInfo(t);
         listener.addError(ti);
+        assertTrue("listener is not open", listener.isOpen());
         ti.markEndTime();
         listener.endTest(ti);
         listener.endSuite();
+        assertFalse("listener is not closed", listener.isOpen());
 
         validateXmlLog(file);
     }
@@ -88,6 +98,7 @@ public class OneHostXMLListenerTest extends TestRunnerTestBase {
                 startTime,
                 null);
         listener.open();
+        assertTrue("listener is not open", listener.isOpen());
         return listener;
     }
 

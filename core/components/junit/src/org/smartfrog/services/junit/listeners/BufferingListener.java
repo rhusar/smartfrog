@@ -21,8 +21,8 @@
 
 package org.smartfrog.services.junit.listeners;
 
-import org.smartfrog.services.junit.data.TestInfo;
 import org.smartfrog.services.junit.TestListenerFactory;
+import org.smartfrog.services.junit.data.TestInfo;
 
 import java.rmi.RemoteException;
 

@@ -19,13 +19,13 @@
  */
 package org.smartfrog.services.junit.listeners;
 
-import org.smartfrog.sfcore.prim.PrimImpl;
-import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.services.junit.TestListener;
 import org.smartfrog.services.junit.TestSuite;
-import org.smartfrog.services.junit.data.TestInfo;
-import org.smartfrog.services.junit.data.Statistics;
 import org.smartfrog.services.junit.data.LogEntry;
+import org.smartfrog.services.junit.data.Statistics;
+import org.smartfrog.services.junit.data.TestInfo;
+import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.prim.PrimImpl;
 
 import java.rmi.RemoteException;
 

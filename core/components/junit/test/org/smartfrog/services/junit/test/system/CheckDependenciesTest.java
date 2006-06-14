@@ -17,27 +17,27 @@
  For more information: www.smartfrog.org
 
  */
-package org.smartfrog.services.junit.listeners;
+package org.smartfrog.services.junit.test.system;
 
-
+import org.smartfrog.sfcore.prim.Prim;
 
 /**
- * created 08-Jun-2006 11:33:36
+ * created 14-Jun-2006 17:20:15
  */
 
+public class CheckDependenciesTest extends TestRunnerTestBase {
 
-public interface HtmlTestListenerFactory extends XmlListenerFactory {
+    public CheckDependenciesTest(String name) {
+        super(name);
+    }
 
-
-    /**
-     * page title
-     * {@value}
-     */
-    String ATTR_TITLE = "title";
-
-    String ATTR_CSS_RESOURCE = "cssResource";
-
-    String ATTR_CSS_URL = "cssURL";
-
-    String ATTR_CSS_DATA = "cssData";
+    public void testDependenciesPresent() throws Throwable {
+        Prim application = null;
+        try {
+            application = deployExpectingSuccess("/files/check-dependencies.sf",
+                    "CheckDependencies");
+        } finally {
+            terminateApplication(application);
+        }
+    }
 }

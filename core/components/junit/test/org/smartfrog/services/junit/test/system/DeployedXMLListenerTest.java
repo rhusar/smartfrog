@@ -19,8 +19,8 @@
  */
 package org.smartfrog.services.junit.test.system;
 
-import org.smartfrog.services.junit.data.Statistics;
 import org.smartfrog.services.junit.TestRunner;
+import org.smartfrog.services.junit.data.Statistics;
 import org.smartfrog.services.junit.listeners.XmlListener;
 import org.smartfrog.services.junit.listeners.XmlListenerFactory;
 import org.smartfrog.sfcore.prim.Prim;

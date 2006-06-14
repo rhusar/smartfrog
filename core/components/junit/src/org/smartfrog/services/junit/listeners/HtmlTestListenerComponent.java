@@ -20,11 +20,13 @@
 package org.smartfrog.services.junit.listeners;
 
 import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.utils.ComponentHelper;
 
-import java.util.Date;
-import java.rmi.RemoteException;
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.Charset;
+import java.rmi.RemoteException;
+import java.util.Date;
 
 /**
  * This is a listener of tests
@@ -36,6 +38,9 @@ public class HtmlTestListenerComponent extends AbstractXmlListenerComponent
         implements HtmlTestListenerFactory {
 
     private String cssURL;
+    private String cssResource;
+    private String cssData;
+    ComponentHelper helper;
 
     /**
      * construct a base interface
@@ -43,6 +48,7 @@ public class HtmlTestListenerComponent extends AbstractXmlListenerComponent
      * @throws java.rmi.RemoteException
      */
     public HtmlTestListenerComponent() throws RemoteException {
+        helper=new ComponentHelper(this);
     }
 
 
@@ -58,6 +64,13 @@ public class HtmlTestListenerComponent extends AbstractXmlListenerComponent
             throws SmartFrogException, RemoteException {
         super.sfStart();
         cssURL=sfResolve(ATTR_CSS_URL,cssURL,false);
+        cssResource=sfResolve(ATTR_CSS_RESOURCE,cssResource,false);
+        if(cssResource!=null) {
+            //load in the data from the class
+            helper.loadResourceToString(cssResource, Charset.forName("UTF-8"));
+        }
+        cssData= sfResolve(ATTR_CSS_DATA, cssData, false);
+
     }
 
     /**
@@ -83,7 +96,8 @@ public class HtmlTestListenerComponent extends AbstractXmlListenerComponent
                 suitename,
                 start,
                 preamble,
-                cssURL);
+                cssURL,
+                cssData);
     }
 
 

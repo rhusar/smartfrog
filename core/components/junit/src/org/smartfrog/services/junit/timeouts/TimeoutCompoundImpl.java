@@ -1,10 +1,9 @@
 package org.smartfrog.services.junit.timeouts;
 
-import org.smartfrog.sfcore.compound.CompoundImpl;
 import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.compound.CompoundImpl;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.TerminationRecord;
-import org.smartfrog.sfcore.logging.Log;
 
 import java.rmi.RemoteException;
 import java.util.Enumeration;
