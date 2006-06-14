@@ -204,8 +204,8 @@ public class Application implements WSRPResourceSource {
      */
     private void addInitialProperties() {
         WsrfUtils.addManagementCharacteristics(properties, CddlmConstants.CDL_API_SYSTEM_CAPABILITY);
-        properties.addStaticProperty(CddlmConstants.PROPERTY_SYSTEM_STARTED_TIME, "");
-        properties.addStaticProperty(CddlmConstants.PROPERTY_SYSTEM_TERMINATED_TIME, "");
+        addNullTimeProperty(CddlmConstants.PROPERTY_SYSTEM_STARTED_TIME);
+        addNullTimeProperty(CddlmConstants.PROPERTY_SYSTEM_TERMINATED_TIME);
         properties.add(new ApplicationStateProperty(this));
         //the list of topics
         WsrfUtils.addWsTopics(properties, null, true, WsrfUtils.DEFAULT_TOPIC_DIALECTS);
@@ -225,8 +225,16 @@ public class Application implements WSRPResourceSource {
         SoapElement elt = new SoapElement(property);
         elt.appendChild(Utils.toIsoTime(timestamp));
         properties.addStaticProperty(property, elt);
-
     }
+
+    /**
+     * Add an empty time property; a minOccurs=0 type
+     * @param property
+     */
+    protected void addNullTimeProperty(QName property) {
+        properties.addStaticProperty(property);
+    }
+
 
     /**
      * Called by the garbage collector on an object when garbage collection

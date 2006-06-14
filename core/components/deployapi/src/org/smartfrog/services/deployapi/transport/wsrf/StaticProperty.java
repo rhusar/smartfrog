@@ -34,10 +34,22 @@ public class StaticProperty implements Property {
 
     private QName name;
     private List<Element> value;
+    private int minOccurs = 0;
+    private int maxOccurs = UNBOUNDED;
+    /**
+     * constant to indicate that the element is unbounded
+     */
+    public static final int UNBOUNDED = Integer.MAX_VALUE;
+
 
     public StaticProperty() {
     }
 
+
+    public StaticProperty(QName name) {
+        this.name = name;
+        setValue((Element)null);
+    }
 
     public StaticProperty(QName name, Element value) {
         this.name = name;
@@ -52,6 +64,22 @@ public class StaticProperty implements Property {
     public StaticProperty(QName name, List<Element> value) {
         this.name = name;
         this.value = value;
+    }
+
+    public int getMinOccurs() {
+        return minOccurs;
+    }
+
+    public void setMinOccurs(int minOccurs) {
+        this.minOccurs = minOccurs;
+    }
+
+    public int getMaxOccurs() {
+        return maxOccurs;
+    }
+
+    public void setMaxOccurs(int maxOccurs) {
+        this.maxOccurs = maxOccurs;
     }
 
     public QName getName() {
@@ -70,13 +98,21 @@ public class StaticProperty implements Property {
         setValue(WsrfUtils.listify(value));
     }
 
-    public void setValue(String  value) {
+    public void setValue(String value) {
         Element elt = new SoapElement(name);
         elt.appendChild(value);
         setValue(elt);
     }
 
     public void setValue(List<Element> value) {
+        int size = value.size();
+        if (size < minOccurs || size > maxOccurs) {
+            throw new IllegalArgumentException("Size of list (" + size
+                    + ") "
+                    + " is out of bounds."
+                    + " minOccurs=" + minOccurs + " ."
+                    + " maxOccurs=" + maxOccurs + ".");
+        }
         this.value = value;
     }
 

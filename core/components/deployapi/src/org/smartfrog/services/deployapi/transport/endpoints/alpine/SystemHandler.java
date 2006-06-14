@@ -149,6 +149,11 @@ public class SystemHandler extends WsrfHandler {
     }
 
 
+    /**
+     * The resource source for this message.
+     * @param message
+     * @return
+     */
     @Override
     public WSRPResourceSource retrieveResourceSource(MessageContext message) {
         Application job = lookupJob(message.getRequest());

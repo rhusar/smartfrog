@@ -200,10 +200,15 @@ public abstract class AlpineTestBase extends TestCase {
         return Executors.newSingleThreadExecutor();
     }
 
+    /**
+     * Get a property that must not be null
+     * @param property
+     * @return
+     */
     protected Element getProperty(QName property) {
         Element result = getPortal().getResourcePropertySingle(property);
         final String value = result.getValue();
-        assertNotNull(value);
+        assertNotNull("empty result value",value);
         return result;
     }
 
@@ -232,20 +237,20 @@ public abstract class AlpineTestBase extends TestCase {
     }
 
     protected void assertCapable(String uri) {
-        Element capabilities = getMuwsCapabilities();
+        List<Element> capabilities = getMuwsCapabilities();
         assertTrue("Missing capability " + uri, WsrfUtils.hasMuwsCapability(capabilities, uri));
     }
 
-    protected Element getMuwsCapabilities() {
-        return getPropertyLog(CddlmConstants.PROPERTY_MUWS_MANAGEABILITY_CAPABILITY);
+    protected List<Element> getMuwsCapabilities() {
+        return getPropertyListLog(CddlmConstants.PROPERTY_MUWS_MANAGEABILITY_CAPABILITY);
     }
 
-    protected Element getSystemMuwsCapabilities() {
-        return getSystem().getResourcePropertySingle(CddlmConstants.PROPERTY_MUWS_MANAGEABILITY_CAPABILITY);
+    protected List<Element> getSystemMuwsCapabilities() {
+        return getSystem().getResourcePropertyList(CddlmConstants.PROPERTY_MUWS_MANAGEABILITY_CAPABILITY);
     }
 
     protected void assertSystemCapable(String uri) {
-        Element capabilities = getSystemMuwsCapabilities();
+        List<Element> capabilities = getSystemMuwsCapabilities();
         assertTrue("Missing capability " + uri, WsrfUtils.hasMuwsCapability(capabilities, uri));
     }
 

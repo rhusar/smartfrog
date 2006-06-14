@@ -83,6 +83,8 @@ For more information: www.smartfrog.org
 
     enabled true;
 
+    cssURL "";
+
     destDir extends Mkdir {
       dir subdir;
       parentDir LAZY basedir;
@@ -91,12 +93,13 @@ For more information: www.smartfrog.org
     console extends ConsoleListener {
     };
 
-    xmlListener extends XmlListener {
-       outputDirectory LAZY destDir:absolutePath;
+    htmlListener extends XmlListener {
+      cssURL PARENT:cssURL; 
+      outputDirectory LAZY destDir:absolutePath;
     }
 
     listener extends ChainListener {
-        listeners [ LAZY console, LAZY xmlListener];
+        listeners [ LAZY console, LAZY htmlListener];
     }
 
     portal extends PortalTestSuite {
