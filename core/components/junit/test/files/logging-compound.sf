@@ -18,22 +18,33 @@ For more information: www.smartfrog.org
 
 */
 
-#include "/files/chain-all.sf"
-#include "/files/logging-compound.sf"
+#include "/org/smartfrog/sfcore/logging/components.sf"
+#include "/org/smartfrog/sfcore/logging/logtoprimimpl.sf"
 
-sfCodeBase PROPERTY org.smartfrog.codebase;
     /**
      * run all tests in the suite.
      * output to an XML listener
      */
 
-sfConfig extends LoggingCompound {
+LoggingCompound extends Compound {
 
 
-  chain extends Chain {
+
+  log extends SFLog {
+    //log against our parent
+    logFrom LAZY PARENT;
+    //log to a prim
+    logTo extends LogToPrimImpl {
+      loggerClass "org.smartfrog.sfcore.logging.LogToPrimImpl";
+      //the destination prim is defined here
+      logTo extends TestListenerLog {
+
+      }
+      //trace out what is going on
+      debug true;
+    }
   }
 
-  chain:tests:testLog LAZY testLog;
-
+    testLog LAZY log:logTo:logTo;
 
 }

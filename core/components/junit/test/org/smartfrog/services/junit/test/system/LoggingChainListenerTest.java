@@ -1,8 +1,12 @@
 package org.smartfrog.services.junit.test.system;
 
+import org.smartfrog.services.junit.TestListener;
 import org.smartfrog.services.junit.TestRunner;
 import org.smartfrog.services.junit.data.Statistics;
+import org.smartfrog.services.junit.listeners.BufferingListener;
+import org.smartfrog.services.junit.listeners.BufferingListenerComponent;
 import org.smartfrog.services.junit.listeners.StatisticsTestListener;
+import org.smartfrog.services.junit.log.TestListenerLog;
 import org.smartfrog.sfcore.prim.Prim;
 
 /**
@@ -15,6 +19,33 @@ public class LoggingChainListenerTest extends TestRunnerTestBase {
         super(name);
     }
 
+
+    public void testLogSetup() throws Throwable {
+        Prim application = null;
+
+        int seconds = getTimeout();
+        try {
+            application = deployExpectingSuccess("/files/logging-compound.sf",
+                    "LoggingCompound");
+
+            TestListenerLog log = (TestListenerLog) application.sfResolve(
+                    "testLog",
+                    (Prim) null,
+                    true);
+            BufferingListener factory =new BufferingListenerComponent();
+            TestListener testListener = factory.listen(null,
+                    "localhost",
+                    "ROOT",
+                    "example",
+                    0);
+            log.clearListeners();
+            log.addLogListener(testListener);
+            log.info("fact");
+        } finally {
+            terminateApplication(application);
+        }
+
+    }
 
     public void testSuccess() throws Throwable {
         Prim application = null;
