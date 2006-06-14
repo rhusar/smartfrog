@@ -28,13 +28,14 @@ import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.common.TerminatorThread;
-import org.smartfrog.sfcore.common.SFMarshalledObject;
 import org.smartfrog.sfcore.security.SFClassLoader;
+import org.smartfrog.services.filesystem.FileSystem;
 
 import java.rmi.RemoteException;
 import java.io.InputStream;
-import java.util.Vector;
-import java.util.Iterator;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.nio.charset.Charset;
 
 /**
  * Contains methods for helping components; a factoring out of common functionality.
@@ -273,6 +274,33 @@ public class ComponentHelper {
             throw new SmartFrogException("Not found: " + resourcename);
         }
         return in;
+    }
+
+    /**
+     * Load a resource into a string
+     * @param resourcename
+     * @param encoding
+     * @return
+     * @throws SmartFrogException
+     * @throws RemoteException
+     */
+    public String loadResourceToString(String resourcename, Charset encoding) throws SmartFrogException, RemoteException {
+        InputStream in= loadResource(resourcename);
+        InputStreamReader isr = null;
+        try {
+            isr=new InputStreamReader(in,encoding);
+            StringBuffer buffer=new StringBuffer();
+            int ch;
+            while((ch=isr.read())>=0) {
+                buffer.append((char)ch);
+            }
+            return buffer.toString();
+        } catch(IOException ioe) {
+            throw SmartFrogException.forward("when reading "+resourcename,ioe);
+        } finally{
+            FileSystem.close(isr);
+            FileSystem.close(in);
+        }
     }
 
     /**
