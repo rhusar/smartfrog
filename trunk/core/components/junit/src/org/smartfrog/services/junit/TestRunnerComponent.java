@@ -19,6 +19,9 @@
  */
 package org.smartfrog.services.junit;
 
+import org.smartfrog.services.junit.data.Statistics;
+import org.smartfrog.services.junit.data.ThrowableTraceInfo;
+import org.smartfrog.services.junit.log.TestListenerLog;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogInitException;
 import org.smartfrog.sfcore.common.SmartFrogLivenessException;
@@ -30,10 +33,6 @@ import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.utils.ComponentHelper;
 import org.smartfrog.sfcore.utils.ShouldDetachOrTerminate;
-import org.smartfrog.services.junit.data.Statistics;
-import org.smartfrog.services.junit.data.ThrowableTraceInfo;
-import org.smartfrog.services.junit.log.TestListenerLog;
-import org.smartfrog.services.junit.log.TestListenerLogImpl;
 
 import java.rmi.RemoteException;
 import java.util.Enumeration;

@@ -19,8 +19,8 @@
  */
 package org.smartfrog.services.junit;
 
-import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.services.junit.data.Statistics;
+import org.smartfrog.sfcore.common.SmartFrogException;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;

@@ -19,21 +19,14 @@
  */
 package org.smartfrog.services.junit.log;
 
-import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.sfcore.common.SmartFrogLogException;
-import org.smartfrog.sfcore.prim.PrimImpl;
-import org.smartfrog.sfcore.logging.Log;
-import org.smartfrog.sfcore.logging.LogToPrim;
-import org.smartfrog.sfcore.logging.LogRegistration;
-import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.services.junit.LogListener;
-import org.smartfrog.services.junit.TestListener;
 import org.smartfrog.services.junit.data.LogEntry;
+import org.smartfrog.sfcore.common.SmartFrogException;
 
 import java.rmi.RemoteException;
-import java.util.List;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 /**
  * created 18-May-2006 15:37:08

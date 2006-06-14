@@ -21,16 +21,16 @@
 
 package org.smartfrog.services.junit.listeners;
 
-import org.smartfrog.services.junit.data.TestInfo;
-import org.smartfrog.services.junit.data.LogEntry;
 import org.smartfrog.services.junit.TestListener;
 import org.smartfrog.services.junit.TestSuite;
+import org.smartfrog.services.junit.data.LogEntry;
+import org.smartfrog.services.junit.data.TestInfo;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.prim.PrimImpl;
 
 import java.rmi.RemoteException;
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This class buffers received messages Date: 27-Jun-2004 Time: 21:26:28

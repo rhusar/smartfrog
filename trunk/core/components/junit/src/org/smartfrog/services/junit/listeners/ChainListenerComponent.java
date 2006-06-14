@@ -23,15 +23,15 @@ import org.smartfrog.services.junit.TestListener;
 import org.smartfrog.services.junit.TestListenerFactory;
 import org.smartfrog.services.junit.TestSuite;
 import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.logging.Log;
+import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.utils.ComponentHelper;
 
-import java.util.Iterator;
-import java.util.Vector;
-import java.util.List;
-import java.util.ArrayList;
 import java.rmi.RemoteException;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Vector;
 
 /**
  * This is the component that

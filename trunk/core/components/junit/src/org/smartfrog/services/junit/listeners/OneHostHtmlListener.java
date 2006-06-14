@@ -25,9 +25,9 @@ import org.smartfrog.services.junit.data.ThrowableTraceInfo;
 
 import java.io.File;
 import java.io.IOException;
+import java.rmi.RemoteException;
 import java.util.Date;
 import java.util.Iterator;
-import java.rmi.RemoteException;
 
 /**
  * An extension of the OneHostXMLListener that puts out XHTML instead of XML
@@ -38,6 +38,8 @@ public class OneHostHtmlListener extends OneHostXMLListener {
 
     private String cssURL;
 
+    private String cssData;
+
     private String title;
 
     public OneHostHtmlListener(String title,
@@ -47,11 +49,12 @@ public class OneHostHtmlListener extends OneHostXMLListener {
                                String suitename,
                                Date startTime,
                                String preamble,
-                               String cssURL)
+                               String cssURL, String cssData)
             throws IOException {
         super(hostname, processname, suitename, destFile, startTime, preamble);
         this.title=title;
         this.cssURL=cssURL;
+        this.cssData=cssData;
 
     }
 
@@ -76,13 +79,22 @@ public class OneHostHtmlListener extends OneHostXMLListener {
                 + " started " + startTime.toString();
         enter("head");
         write("title", null, title, true);
-        if(cssURL!=null) {
+        if(cssURL!=null && cssURL.length()>0) {
             write("link",
                     attr("rel","stylesheet")
                     + attr("href", cssURL)
                     + attr("type", "text/css"),
                     null,
                     false);
+        } else {
+            //no url, pump out the data if it is present
+            if(cssData!=null && cssData.length()>0) {
+                write("style",
+                        attr("type", "text/css"),
+                        cssData,
+                        true);
+            }
+
         }
         exit("head");
         enter("body");

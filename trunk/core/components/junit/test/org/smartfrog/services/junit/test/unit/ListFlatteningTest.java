@@ -17,7 +17,7 @@
  For more information: www.smartfrog.org
 
  */
-package org.smartfrog.services.junit.test.system;
+package org.smartfrog.services.junit.test.unit;
 
 import junit.framework.TestCase;
 import org.smartfrog.services.junit.JUnitTestSuiteImpl;

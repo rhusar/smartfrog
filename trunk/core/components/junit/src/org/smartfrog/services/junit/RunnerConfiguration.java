@@ -19,7 +19,6 @@
  */
 package org.smartfrog.services.junit;
 
-import org.smartfrog.services.junit.log.TestLog;
 import org.smartfrog.services.junit.log.TestListenerLog;
 
 import java.io.Serializable;

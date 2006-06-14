@@ -19,9 +19,9 @@
  */
 package org.smartfrog.services.junit.log;
 
-import org.smartfrog.sfcore.logging.LogRemote;
-import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.services.junit.LogListener;
+import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.logging.LogRemote;
 
 import java.rmi.RemoteException;
 

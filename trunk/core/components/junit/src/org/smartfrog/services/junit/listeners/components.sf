@@ -98,8 +98,24 @@ HtmlTestListenerSchema extends Schema {
     title extends OptionalString;
     /**
      * URL To an optional CSS sheet
+     * This takes priority over cssResource or cssData
      */
     cssURL extends OptionalString;
+
+    /**
+     * CSS data inline in a smartfrog file.
+     * This takes priority over cssResource
+     */
+
+     cssData extends OptionalString;
+
+    /**
+     * resource name of optional CSS data file, this is pasted in inline
+     * it is also assumed to be UTF8 when read from the file, so put an @charset "UTF-8"; declaration
+     * at the top to make it clear that this is the fact
+     */
+    cssResource  extends OptionalString;
+
 
 }
 
@@ -117,7 +133,9 @@ HtmlTestListener extends XmlListener {
     indexFile "index.html";
     publishFrequency 30;
     pageTitle "Test Statistics";
+    cssResource "/org/smartfrog/services/junit/listeners/report.css";
 }
+
 
 
 /**

@@ -24,8 +24,8 @@ import junit.framework.TestCase;
 import org.smartfrog.services.junit.Utils;
 
 import java.io.Serializable;
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This is information about a test that is sent over the wire. created

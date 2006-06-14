@@ -19,13 +19,11 @@
  */
 package org.smartfrog.services.junit.log;
 
-import org.smartfrog.sfcore.prim.PrimImpl;
+import org.smartfrog.services.junit.LogListener;
+import org.smartfrog.services.junit.data.LogEntry;
 import org.smartfrog.sfcore.logging.LogLevel;
 import org.smartfrog.sfcore.logging.LogRemote;
-import org.smartfrog.sfcore.logging.Log;
-import org.smartfrog.sfcore.componentdescription.ComponentDescription;
-import org.smartfrog.services.junit.data.LogEntry;
-import org.smartfrog.services.junit.LogListener;
+import org.smartfrog.sfcore.prim.PrimImpl;
 
 import java.rmi.RemoteException;
 
