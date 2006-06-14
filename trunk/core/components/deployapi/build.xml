@@ -113,9 +113,20 @@
             groupId="junit"
             artifactId="junit"/>
       </dependency>
+      <!--get commons logging implementation, but no baggage-->
       <dependency groupID="commons-logging"
-          artifactID="commons-logging-api"
-          version="${commons-logging.version}"/>
+          artifactID="commons-logging"
+          version="${commons-logging.version}">
+        <exclusion
+            groupId="junit"
+            artifactId="junit"/>
+        <exclusion
+            groupId="logkit"
+            artifactId="logkit"/>
+        <exclusion
+            groupId="avalon-framework"
+            artifactId="avalon-framework"/>
+      </dependency>
       <dependency groupID="log4j"
           artifactID="log4j"
           version="${log4j.version}"/>
@@ -640,16 +651,16 @@ because javac was bailing out with some error about unzipping -->
   </target>
 
   <target name="ssh-stop" depends="ssh-init">
-    <ssh-cmd command="cd ${ssh.dir}; nohup ./sfStopDaemon localhost &amp;"
+    <ssh-cmd command="cd ${ssh.dir}/bin; nohup ./sfStopDaemon localhost &amp;"
     failonerror="false"/>
   </target>
 
   <target name="ssh-start" depends="ssh-init">
-    <ssh-cmd command="cd ${ssh.dir}; nohup ./sfStartDaemon &amp;"/>
+    <ssh-cmd command="cd ${ssh.dir}/bin; nohup ./sfStartDaemon &amp;"/>
   </target>
 
-  <target name="scp" depends="scp-upload"
-      description="upload the files"/>
+  <target name="upload" depends="scp-upload"
+      description="upload the files to the remote server"/>
 
 
   <!-- ==================================    -->

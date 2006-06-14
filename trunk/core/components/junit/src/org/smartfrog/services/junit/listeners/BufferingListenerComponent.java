@@ -47,11 +47,11 @@ public class BufferingListenerComponent extends PrimImpl
         messages = new ArrayList();
     }
 
-    List errors, failures, starts, ends;
+    private List errors, failures, starts, ends;
 
-    List messages;
+    private List messages;
 
-    int sessionStartCount, sessionEndCount;
+    private int sessionStartCount, sessionEndCount;
 
     /**
      * Called after instantiation for deployment purposed. Heart monitor is
@@ -196,8 +196,26 @@ public class BufferingListenerComponent extends PrimImpl
         return sessionEndCount;
     }
 
+    public List getErrors() {
+        return errors;
+    }
 
-    
+    public List getFailures() {
+        return failures;
+    }
+
+    public List getStarts() {
+        return starts;
+    }
+
+    public List getEnds() {
+        return ends;
+    }
+
+    public List getMessages() {
+        return messages;
+    }
+
     /**
      * bind to a caller
      *
