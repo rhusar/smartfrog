@@ -10,3 +10,4 @@ common.properties
 .classpath
 .project
 lib
+version.properties

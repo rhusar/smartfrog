@@ -44,7 +44,7 @@ AppServerWithWar extends AppServer {
 
 
     deployedWar extends WebApplication {
-        server LAZY PARENT:server:jettyServer;
+        server LAZY PARENT:server;
         filename LAZY warlibraries:testwar:absolutePath;
         contextPath "testwar";
     }

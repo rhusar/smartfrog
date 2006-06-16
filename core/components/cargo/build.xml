@@ -40,7 +40,7 @@
       <dependency groupID="org.smartfrog"
           artifactID="sf-www"
           version="${Version}"/>
-      <dependency groupID="cargo"
+      <dependency groupID="org.codehaus.cargo"
           artifactID="cargo-core-uberjar"
           version="${cargo.version}"/>
       <dependency groupID="ant"
