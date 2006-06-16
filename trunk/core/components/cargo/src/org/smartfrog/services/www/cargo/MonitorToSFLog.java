@@ -19,13 +19,15 @@
  */
 package org.smartfrog.services.www.cargo;
 
-import org.codehaus.cargo.util.monitor.Monitor;
+import org.codehaus.cargo.util.log.Logger;
 import org.smartfrog.sfcore.logging.Log;
+
 
 /**
  * Monitor messages from the container to the SmartFrog log
+ * In 0.7, this was a subclass of a monitor thing, but now it uses logger.
  */
-class MonitorToSFLog implements Monitor {
+class MonitorToSFLog implements Logger {
 
     private Log log;
 

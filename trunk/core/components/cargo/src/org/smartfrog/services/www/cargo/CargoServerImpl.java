@@ -23,7 +23,11 @@ package org.smartfrog.services.www.cargo;
 import org.codehaus.cargo.container.Container;
 import org.codehaus.cargo.container.LocalContainer;
 import org.codehaus.cargo.container.State;
+import org.codehaus.cargo.container.EmbeddedLocalContainer;
+import org.codehaus.cargo.container.InstalledLocalContainer;
+import org.codehaus.cargo.container.property.ServletPropertySet;
 import org.codehaus.cargo.container.configuration.Configuration;
+import org.codehaus.cargo.container.configuration.LocalConfiguration;
 import org.smartfrog.services.filesystem.FileSystem;
 import org.smartfrog.services.www.JavaEnterpriseApplication;
 import org.smartfrog.services.www.JavaWebApplication;
@@ -47,6 +51,9 @@ import java.lang.reflect.InvocationTargetException;
 import java.rmi.RemoteException;
 import java.util.Iterator;
 import java.util.Vector;
+import java.net.URL;
+import java.net.MalformedURLException;
+import java.net.URLClassLoader;
 
 
 /**
@@ -55,14 +62,14 @@ import java.util.Vector;
 public class CargoServerImpl extends PrimImpl implements CargoServer, Runnable {
 
     private LocalContainer container;
-    private Configuration configuration;
-    private File dir;
+    private LocalConfiguration configuration;
     private String containerClassname;
     private String codebase;
     private Thread thread;
     private boolean started;
     private boolean starting;
     private Log log;
+    public static final int DEFAULT_CARGO_PORT = 8080;
 
 
     public CargoServerImpl() throws RemoteException {
@@ -92,9 +99,7 @@ public class CargoServerImpl extends PrimImpl implements CargoServer, Runnable {
      *                       defined for a JavaWebApplication component.
      *                       Application-server specific attributes (both
      *                       mandatory and optional) are also permitted
-     *
      * @return an entry referring to the application
-     *
      * @throws RemoteException    on network trouble
      * @throws SmartFrogException on any other problem
      */
@@ -107,9 +112,7 @@ public class CargoServerImpl extends PrimImpl implements CargoServer, Runnable {
      * Deploy an EAR file
      *
      * @param enterpriseApplication
-     *
      * @return an entry referring to the application
-     *
      * @throws RemoteException
      * @throws SmartFrogException
      */
@@ -124,9 +127,7 @@ public class CargoServerImpl extends PrimImpl implements CargoServer, Runnable {
      * This should be called from sfDeploy. The servlet is not deployed
      *
      * @param servlet
-     *
      * @return a token referring to the application
-     *
      * @throws RemoteException    on network trouble
      * @throws SmartFrogException on any other problem
      */
@@ -149,45 +150,55 @@ public class CargoServerImpl extends PrimImpl implements CargoServer, Runnable {
             throws SmartFrogException, RemoteException {
         super.sfDeploy();
         log = LogFactory.getLog(this);
-        String dirname = FileSystem.lookupAbsolutePath(this,
-                ATTR_HOME,
-                null,
-                null,
-                true,
-                null);
         //ConfigurationFactory factory = new DefaultConfigurationFactory();
+        String home = FileSystem.lookupAbsolutePath(this, ATTR_HOME,
+                null, null, false, null);
+        File homedir=null;
+        if(home!=null) {
+            homedir = new File(home);
+        }
+
         String name = sfResolve(ATTR_CONFIGURATION_CLASS, "", true);
         codebase = sfResolve(SmartFrogCoreKeys.SF_CODE_BASE,
                 (String) null,
                 false);
-        configuration = (Configuration) createClassInstance(name);
-        dir = new File(dirname);
+        configuration = createLocalConfiguration(name,homedir);
+
         containerClassname = sfResolve(ATTR_CONTAINER_CLASS, "", true);
-        Class containerClass = loadClass(containerClassname);
-        Class signature[] = new Class[1];
-        signature[0] = Container.class;
-        Object args[] = new Object[1];
-        args[0] = configuration;
-        container = (LocalContainer) instantiate(containerClass,
-                signature,
-                args);
+        container =(LocalContainer) construct(containerClassname,
+                LocalConfiguration.class,
+                configuration);
 
         //at this point the container is instantiated
+        EmbeddedLocalContainer embedded = null;
+        InstalledLocalContainer installed = null;
 
-        //set the home
-        String home = FileSystem.lookupAbsolutePath(this, ATTR_EXTRA_CLASSPATH,
-                null, null, true, null);
-        container.setHome(home);
+        //maybe it is an embedded container
+        if (container instanceof EmbeddedLocalContainer) {
+            embedded = (EmbeddedLocalContainer) container;
+        } else if (container instanceof InstalledLocalContainer) {
+            //set the home stuff
+            installed = (InstalledLocalContainer) container;
+        }
 
         //monitoring relays to smartfrog
-        container.setMonitor(new MonitorToSFLog(log));
+        container.setLogger(new MonitorToSFLog(log));
 
-        //add any extra classpath
+/*
+        if (installed != null) {
+            //set the home
+            installed.setHome(new File(home));
+        }
+*/
+
+
+        //classpath setup
         Vector classes = null;
         classes = sfResolve(ATTR_EXTRA_CLASSPATH, classes, false);
         if (classes != null) {
             final int size = classes.size();
             String[] classArray = new String[size];
+            URL[] urlArray = new URL[size];
             Iterator classesIterator = classes.listIterator();
             for (int i = 0; i < size; i++) {
                 Object o = classesIterator.next();
@@ -199,11 +210,72 @@ public class CargoServerImpl extends PrimImpl implements CargoServer, Runnable {
                                     + pathElementFile.getAbsolutePath());
                 }
                 classArray[i] = pathElementFile.getAbsolutePath();
+                try {
+                    urlArray[i]= pathElementFile.toURL();
+                } catch (MalformedURLException e) {
+                    throw SmartFrogDeploymentException.forward(e);
+                }
             }
-            container.setExtraClasspath(classArray);
+            if (installed != null) {
+                //installed deployments get a classpath set
+                installed.setExtraClasspath(classArray);
+            } else {
+                if(embedded!=null) {
+                    //embedded deployments have a new classpath
+                    URLClassLoader loader=new URLClassLoader(urlArray);
+                    embedded.setClassLoader(loader);
+                } else {
+                    log.warn("Classpath setup is not supported with this container "+container.getClass());
+                }
+            }
+        }
+
+        //properties
+        Vector properties=null;
+        properties=sfResolve(ATTR_PROPERTIES,properties,false);
+        if(properties!=null) {
+            Iterator it=properties.iterator();
+            int count=0;
+            while (it.hasNext()) {
+                Vector tuple = (Vector) it.next();
+                if(tuple.size()!=2) {
+                    throw new SmartFrogDeploymentException("Element "
+                            +count
+                            +" in "+ATTR_PROPERTIES+"is not a two element list");
+                }
+                String propertyName =tuple.get(0).toString();
+                String value=tuple.get(1).toString();
+                setConfigurationProperty(propertyName, value);
+                count++;
+            }
         }
 
 
+        //add any direct bindings from JavaWebApplicationServer to cargo options
+
+        //the port is only set if it !=8080. This is to avoid bothering
+        //with raising warning messages for runtimes that don't support it.
+        int port=sfResolve(ATTR_PORT,DEFAULT_CARGO_PORT,false);
+        if(port!=DEFAULT_CARGO_PORT) {
+            setConfigurationProperty(ServletPropertySet.PORT,Integer.toString(port));
+        }
+
+
+        //bind the container to the config
+        container.setConfiguration(configuration);
+
+
+    }
+
+    private void setConfigurationProperty(String propertyName, String value) {
+        if(log.isDebugEnabled()) {
+            log.debug("Setting property "+propertyName +" :="+value);
+        }
+        if(!configuration.getCapability().supportsProperty(propertyName)) {
+            configuration.setProperty(propertyName, value);
+        } else {
+            log.warn("Unsupported property " + propertyName);
+        }
     }
 
 
@@ -213,18 +285,17 @@ public class CargoServerImpl extends PrimImpl implements CargoServer, Runnable {
      * @param clazz
      * @param signature
      * @param arguments
-     *
      * @return
-     *
      * @throws SmartFrogException
      */
     private Object instantiate(Class clazz,
                                Class[] signature,
                                Object[] arguments) throws SmartFrogException {
-        Object instance;
         try {
+            Object instance;
             Constructor constructor = clazz.getConstructor(signature);
             instance = constructor.newInstance(arguments);
+            return instance;
         } catch (NoSuchMethodException e) {
             throw SmartFrogException.forward(e);
 
@@ -237,7 +308,6 @@ public class CargoServerImpl extends PrimImpl implements CargoServer, Runnable {
         } catch (IllegalAccessException e) {
             throw SmartFrogException.forward(e);
         }
-        return instance;
     }
 
 
@@ -245,16 +315,33 @@ public class CargoServerImpl extends PrimImpl implements CargoServer, Runnable {
      * Create an instance of a class
      *
      * @param name
-     *
      * @return
-     *
      * @throws SmartFrogException
      */
-    private Object createClassInstance(String name) throws SmartFrogException {
+    private LocalConfiguration createLocalConfiguration(String name,File dir) throws SmartFrogException {
+        Class argclass = File.class;
+        Object arg = dir;
+        Object instance = construct(name, argclass, arg);
+        return (LocalConfiguration) instance;
+    }
+
+    /**
+     * construct something that takes one parameter
+     * @param name
+     * @param argclass
+     * @param arg
+     * @return
+     * @throws SmartFrogException
+     */
+    private Object construct(String name, Class argclass, Object arg) throws SmartFrogException {
         Object instance;
         Class clazz = loadClass(name);
-        Class signature[] = null;
-        Object arguments[] = null;
+        Class signature[] = new Class[] {
+            argclass
+        };
+        Object arguments[] = new Object[] {
+                arg
+        };
         instance = instantiate(clazz, signature, arguments);
         return instance;
     }
@@ -263,19 +350,17 @@ public class CargoServerImpl extends PrimImpl implements CargoServer, Runnable {
      * Load a class
      *
      * @param name
-     *
      * @return
-     *
      * @throws SmartFrogException
      */
     private Class loadClass(String name) throws SmartFrogException {
-        Class newclass = null;
         try {
+            Class newclass = null;
             newclass = SFClassLoader.forName(name, codebase, true);
+            return newclass;
         } catch (ClassNotFoundException e) {
             throw SmartFrogException.forward(e);
         }
-        return newclass;
     }
 
     /**
@@ -325,7 +410,6 @@ public class CargoServerImpl extends PrimImpl implements CargoServer, Runnable {
      * a non-parent would reduce the count to 0 and immediately fail.
      *
      * @param source source of call
-     *
      * @throws org.smartfrog.sfcore.common.SmartFrogLivenessException
      *                                  component is terminated
      * @throws java.rmi.RemoteException for consistency with the {@link
@@ -348,6 +432,7 @@ public class CargoServerImpl extends PrimImpl implements CargoServer, Runnable {
 
     /**
      * Start the component in a new thread. Synchronized.
+     *
      * @throws SmartFrogException
      */
     private synchronized void startInNewThread() throws SmartFrogException {
@@ -355,7 +440,7 @@ public class CargoServerImpl extends PrimImpl implements CargoServer, Runnable {
             throw new SmartFrogException("We are already running!");
         }
         //note that we are starting. The new thread moves to started when it begins.
-        starting=true;
+        starting = true;
         thread = new Thread(this);
         thread.run();
     }
@@ -371,6 +456,7 @@ public class CargoServerImpl extends PrimImpl implements CargoServer, Runnable {
      * @see Thread#run()
      */
     public void run() {
+        //now start the container
         container.start();
         synchronized (this) {
             started = true;
