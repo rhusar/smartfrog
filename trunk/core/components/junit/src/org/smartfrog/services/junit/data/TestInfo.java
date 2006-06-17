@@ -75,6 +75,13 @@ public final class TestInfo implements Serializable, Cloneable {
     private String hostname;
 
     /**
+     * name of the process on which the test ran
+     *
+     * @serial
+     */
+    private String processName;
+
+    /**
      * fault information. May be null; may contain multiple nested faults
      *
      * @serial
@@ -224,6 +231,15 @@ public final class TestInfo implements Serializable, Cloneable {
 
     public void setHostname(String hostname) {
         this.hostname = hostname;
+    }
+
+
+    public String getProcessName() {
+        return processName;
+    }
+
+    public void setProcessName(String processName) {
+        this.processName = processName;
     }
 
     public ThrowableTraceInfo getFault() {
