@@ -69,11 +69,12 @@ public final class Statistics implements Serializable, Cloneable {
      * extract test info from a Prim class
      *
      * @param node
+     * @return true if the prim thinks it has finished.
      * @throws org.smartfrog.sfcore.common.SmartFrogResolutionException
      *
      * @throws RemoteException
      */
-    public void retrieveResultAttributes(Prim node)
+    public boolean retrieveResultAttributes(Prim node)
             throws SmartFrogResolutionException, RemoteException {
         errors = node.sfResolve(TestResultAttributes.ATTR_ERRORS, 0, false);
         failures = node.sfResolve(TestResultAttributes.ATTR_FAILURES, 0, false);
@@ -82,6 +83,11 @@ public final class Statistics implements Serializable, Cloneable {
         loggedMessages = node.sfResolve(TestResultAttributes.ATTR_LOGGED_MESSAGES,
                 0,
                 false);
+        boolean finished=
+                node.sfResolve(TestResultAttributes.ATTR_FINISHED,
+                        false,
+                        false);
+        return finished;
     }
 
     /**

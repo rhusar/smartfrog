@@ -60,6 +60,19 @@ BufferingListener extends TestListener {
     name "BufferingListener";
 }
 
+
+
+XmlTestIndexSchema extends Schema {
+  outputDirectory extends FilenameType ;
+  filename extends String;
+  publishFrequency extends OptionalInteger;
+}
+
+XmlTestIndex extends Prim {
+  sfClass "org.smartfrog.services.junit.listeners.XmlTestIndexImpl";
+  xmlTestIndexSchema extends XmlTestIndexSchema;
+}
+
 /**
  * XML listener is the most complex beast
  */
@@ -72,10 +85,11 @@ XmlListenerSchema extends Schema {
     indexFile extends OptionalString;
     useHostname extends Boolean;
     useProcessname extends Boolean;
-        /**
+    /**
      * frequency of publish.
      */
     publishFrequency extends OptionalInteger;
+    index extends OptionalCD;
 }
 
 XmlListener extends TestListener {
@@ -132,10 +146,22 @@ HtmlTestListener extends XmlListener {
     suffix ".html";
     indexFile "index.html";
     publishFrequency 30;
-    pageTitle "Test Statistics";
+    title "Test Statistics";
     cssResource "/org/smartfrog/services/junit/listeners/report.css";
 }
 
+
+HtmlTestIndexSchema extends HtmlTestListenerSchema  {
+}
+
+HtmlTestIndex extends XmlTestIndex {
+    sfClass "org.smartfrog.services.junit.listeners.HtmlTestIndexImpl";
+    htmlTestIndexSchema extends HtmlTestIndexSchema ;
+    indexFile "index.html";
+    publishFrequency 30;
+    title "Test Statistics";
+    cssResource "/org/smartfrog/services/junit/listeners/report.css";
+}
 
 
 /**
