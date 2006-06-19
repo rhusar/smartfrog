@@ -22,13 +22,22 @@ package org.smartfrog.sfcore.utils;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.reference.Reference;
+import org.smartfrog.sfcore.reference.ReferencePart;
 import org.smartfrog.sfcore.logging.Log;
 import org.smartfrog.sfcore.logging.LogFactory;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.common.TerminatorThread;
+import org.smartfrog.sfcore.common.Context;
+import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
+import org.smartfrog.sfcore.common.MessageUtil;
+import org.smartfrog.sfcore.common.MessageKeys;
+import org.smartfrog.sfcore.common.ContextImpl;
 import org.smartfrog.sfcore.security.SFClassLoader;
+import org.smartfrog.sfcore.componentdescription.ComponentDescription;
+import org.smartfrog.sfcore.deployer.SFDeployer;
+import org.smartfrog.sfcore.compound.CompoundImpl;
 import org.smartfrog.services.filesystem.FileSystem;
 
 import java.rmi.RemoteException;
@@ -368,4 +377,119 @@ public class ComponentHelper {
         return implementsInterface(clazz.getSuperclass(),interfaceName);
     }
 
+    /**
+     * An low-level SmartFrog method.
+     * It deploys a compiled component and makes it an attribute of the
+     * parent compound. Also start heartbeating the deployed component
+     * if the component registers. Note that the remaining lifecycle methods must
+     * still be invoked on the created component - namely sfDeploy() and sfStart().
+     * This is primarily an internal method - the prefered method for end users is
+     * #sfCreateNewChild.
+     * <p/>
+     * Note that the remaining lifecycle methods must
+     * still be invoked on the created component - namely sfDeploy() and sfStart().
+     *
+     * @param name   name to name deployed component under in context
+     * @param parent of deployer component
+     * @param cmp    compiled component to deploy
+     * @param parms  parameters for description; can be null
+     * @return newly deployed component
+     * @throws org.smartfrog.sfcore.common.SmartFrogDeploymentException
+     *          failed to deploy compiled component
+     */
+    public Prim deployComponentDescription(Object name, Prim parent,
+                                             ComponentDescription cmp, Context parms)
+            throws SmartFrogDeploymentException {
+        Log log = getLogger();
+        if (parms == null) {
+            parms = new ContextImpl();
+        }
+        // check for attribute already named like given name
+        try {
+            Object res = ((parent == null) || (name == null)) ? null : owner.sfResolveHere(name, false);
+
+            if ((res != null) && !(res instanceof ComponentDescription)) {
+                throw new SmartFrogDeploymentException(null, parent.sfCompleteName(),
+                        name, cmp, parms, MessageUtil.
+                        formatMessage(MessageKeys.MSG_NON_REP_ATTRIB, name), null, null);
+            }
+
+            if (log.isTraceEnabled()) {
+                StringBuffer message = new StringBuffer();
+                try {
+                    message.append(completeNameSafe());
+                    message.append(" is deploying: ");
+                    if (name != null) {
+                        message.append(name);
+                    } else {
+                        message.append("no-name");
+                    }
+                    if (parent != null) {
+                        message.append(", Parent: ");
+                        message.append(parent.sfCompleteName());
+                    }
+                    message.append(", Component description: ");
+                    message.append(cmp.toString());
+                    if (parms != null) {
+                        message.append(", Params: ");
+                        message.append(parms.toString());
+                    }
+                } catch (Throwable thr) {
+                    log.trace("", thr);
+                }
+                log.trace(message.toString());
+            }
+
+            // try to deploy
+            Prim result = SFDeployer.deploy(cmp, null, parent, parms);
+
+            /**
+             *
+             * @TODO don't like this, we need to make the attribute over-write atomic with child registration (Patrick).
+             *
+             */
+            if (parent != null) {
+                if (name != null) {
+                    parent.sfReplaceAttribute(name, result);
+                    result.sfParentageChanged(); // yuk.... see todo above!
+                } else {
+                    //@TODO - Review after refactoring ProcessCompound
+                    //This should throw an excetion when a
+                    //component is registered without a name
+                    //in a processcompound, but compound should not know anything
+                    //about processcompound
+                }
+            }
+            return result;
+        } catch (SmartFrogDeploymentException dex) {
+            // It will build source recursively
+            Reference newRef = new Reference();
+            if (name == null) {
+                //@todo review methods for compDesc
+                if (cmp.sfContext().containsKey(SmartFrogCoreKeys.SF_PROCESS_COMPONENT_NAME))
+                    name = cmp.sfContext().get(SmartFrogCoreKeys.SF_PROCESS_COMPONENT_NAME);
+                try {
+                    newRef = parent.sfCompleteName();
+                } catch (Exception ex) {
+                    // LOG ex
+                    LogFactory.sfGetProcessLog().ignore("could not get complete name", ex);
+                }
+            }
+            if ((dex.get(SmartFrogDeploymentException.OBJECT_NAME)) != null) {
+                newRef.addElement(ReferencePart.here(name));
+            } else {
+                dex.add(SmartFrogDeploymentException.OBJECT_NAME, name);
+            }
+            if (dex.get(SmartFrogDeploymentException.SOURCE) != null) {
+                newRef.addElements((Reference) dex.get(SmartFrogDeploymentException.SOURCE));
+            }
+
+            if (newRef.size() != 0) {
+                dex.put(SmartFrogDeploymentException.SOURCE, newRef);
+            }
+            throw dex;
+        } catch (Throwable thr) {
+            throw (SmartFrogDeploymentException) SmartFrogDeploymentException.forward(thr);
+        }
+    }
 }
