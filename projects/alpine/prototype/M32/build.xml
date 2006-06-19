@@ -74,12 +74,12 @@
           artifactID="xom"
           version="${xom.version}"/>
 
-      <!--required at compile but not runtime-->
-      <dependency groupID="servletapi"
+      <!--required at compile but not client-side runtime-->
+      <dependency groupID="javax.servlet"
           artifactID="servletapi"
           version="${servletapi.version}"
+          scope="compile"
           />
-      <!--          scope="compile"-->
       <!--optional -->
       <dependency groupID="log4j"
           artifactID="log4j"

@@ -60,7 +60,7 @@ PropertyFileSchema extends FileUsingComponentSchema {
   required extends Boolean;
 
   //set at run time, to the *sorted* order of the keys. 
-  properties extends Optional;
+  properties extends OptionalVector;
 }
 
 LoadPropertyFile extends Prim {
