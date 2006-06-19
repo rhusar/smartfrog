@@ -11,3 +11,4 @@ common.properties
 .project
 parsertargets_report.html
 smartfrog-version.properties
+version.properties
