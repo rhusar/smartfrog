@@ -199,8 +199,9 @@ For more information: www.smartfrog.org
 	</target>
 
     <target name="clean" description="Clean Generated Documents">
-        <delete dir="${site.home}/src/documentation"/>
+        <delete dir="${site.home}/src"/>
           <delete dir="${site.home}/build"/>
+         <delete file="forrest.properties"/>
     </target>
   
   <target name="default" depends="docs" description="Document Generation">
