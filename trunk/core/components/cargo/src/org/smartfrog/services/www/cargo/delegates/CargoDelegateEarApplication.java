@@ -36,6 +36,6 @@ public class CargoDelegateEarApplication extends CargoDelegateDeployable
                 true,
                 null);
         EAR ear = new EAR(filename);
-        container.getConfiguration().addDeployable(ear);
+        queue(ear);
     }
 }

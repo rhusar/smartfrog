@@ -22,6 +22,13 @@ package org.smartfrog.services.www.cargo.test.system;
 
 import org.smartfrog.test.SmartFrogTestBase;
 import org.smartfrog.sfcore.prim.Prim;
+import org.smartfrog.sfcore.common.SmartFrogResolutionException;
+import org.smartfrog.sfcore.common.SmartFrogLivenessException;
+import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.services.www.LivenessPage;
+import org.smartfrog.services.www.cargo.CargoServer;
+
+import java.rmi.RemoteException;
 
 /**
 
@@ -31,6 +38,7 @@ public abstract class CargoTestBase extends SmartFrogTestBase {
 
     /** Node of any deployed application */
     private Prim application;
+    private CargoServer server;
 
 
 
@@ -38,6 +46,8 @@ public abstract class CargoTestBase extends SmartFrogTestBase {
     public static final String FILE_BASE = "/org/smartfrog/services/www/cargo/test/system/";
 
     public static final String CODEBASE_PROPERTY = "org.smartfrog.codebase";
+    public static final int TIMEOUT_FOR_STARTUP = 30;
+    private LivenessPage happyPage;
 
 
     public CargoTestBase(String name) {
@@ -77,9 +87,30 @@ public abstract class CargoTestBase extends SmartFrogTestBase {
         this.application = application;
     }
 
+    public CargoServer getServer() {
+        return server;
+    }
 
-    protected void deployApp(String resource,String name) throws
+    protected void deployAppServer(String resource,String name) throws
             Throwable {
         setApplication(deployExpectingSuccess(resource, name));
+        Prim serverAsPrim = application.sfResolve("server", (Prim) null, true);
+        server=(CargoServer) serverAsPrim;
+        happyPage = (LivenessPage) application.sfResolve("liveness", (Prim) null, true);
+        //allow a bit of a startup timeout here
+        long timeout = System.currentTimeMillis() + TIMEOUT_FOR_STARTUP * 1000;
+        try {
+            do {
+                serverAsPrim.sfPing(null);
+            } while (System.currentTimeMillis() < timeout);
+        } catch (java.rmi.NoSuchObjectException terminated) {
+            //we get here if the thing terminated during the run
+            throw terminated;
+        }
+        checkWebSite();
+    }
+
+    protected void checkWebSite() throws SmartFrogException, RemoteException{
+        happyPage.checkPage();
     }
 }

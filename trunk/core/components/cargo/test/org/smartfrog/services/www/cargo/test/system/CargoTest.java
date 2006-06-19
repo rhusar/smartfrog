@@ -19,8 +19,12 @@
  */
 package org.smartfrog.services.www.cargo.test.system;
 
+import org.smartfrog.sfcore.prim.Prim;
+import org.smartfrog.sfcore.common.SmartFrogLivenessException;
+
 
 public class CargoTest extends CargoTestBase {
+
     public CargoTest(String name) {
         super(name);
     }
@@ -35,12 +39,21 @@ public class CargoTest extends CargoTestBase {
     }
 
     public void testBadCargoClass() throws Throwable {
-        deployExpectingException(FILE_BASE + "testBadCargoClass.sf",
-                "testBadCargoClass",
-                EXCEPTION_LIFECYCLE,
-                "",
-                EXCEPTION_SMARTFROG,
-                "Cannot find org.codehaus.cargo.container.badConfigurationClass");
+        Prim app = deployExpectingSuccess(FILE_BASE + "testBadCargoClass.sf",
+                "testBadCargoClass");
+        long timeout = System.currentTimeMillis()+TIMEOUT_FOR_STARTUP *1000;
+        try {
+            do {
+                app.sfPing(null);
+            } while(System.currentTimeMillis()<timeout);
+        } catch (SmartFrogLivenessException e) {
+            assertFaultCauseAndTextContains(e, EXCEPTION_LIFECYCLE,null,null);
+            assertFaultCauseAndTextContains(e.getCause(), EXCEPTION_SMARTFROG,
+                    "Cannot find org.codehaus.cargo.container.badConfigurationClass", "");
+        } catch (java.rmi.NoSuchObjectException terminated) {
+            //we get here if the thing terminated during the run
+        }
+
     }
 
 

@@ -43,6 +43,7 @@
       <dependency groupID="org.codehaus.cargo"
           artifactID="cargo-core-uberjar"
           version="${cargo.version}"/>
+      <!--ant is used by cargo-->
       <dependency groupID="ant"
           artifactID="ant"
           version="${ant.m2.version}">
@@ -128,11 +129,15 @@
       <classpath path="${target.jar}:${test.jar}"/>
       <sysproperty key="org.smartfrog.codebase"
           value="${codebase}"/>
+      <syspropertyset>
+        <propertyref prefix="runtime"/>
+      </syspropertyset>
       <!-- source files -->
       <source dir="${test.src.dir}/org/smartfrog/services/www/cargo/test/"
           >
         <include name="**/test*.sf"/>
         <exclude name="**/testIncomplete.sf"/>
+        <exclude name="**/testBase.sf"/>
       </source>
     </sf-parse>
   </target>

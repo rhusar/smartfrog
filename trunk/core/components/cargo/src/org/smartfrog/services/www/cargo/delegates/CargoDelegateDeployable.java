@@ -5,6 +5,7 @@ import org.smartfrog.services.www.cargo.CargoServerImpl;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLivenessException;
 import org.smartfrog.sfcore.prim.Prim;
+import org.codehaus.cargo.container.deployable.Deployable;
 
 import java.rmi.RemoteException;
 
@@ -20,6 +21,7 @@ public abstract class CargoDelegateDeployable implements JavaWebApplication {
 
     private CargoServerImpl owner;
     private Prim application;
+    private Deployable deployable;
 
     public CargoServerImpl getOwner() {
         return owner;
@@ -32,6 +34,23 @@ public abstract class CargoDelegateDeployable implements JavaWebApplication {
     public CargoDelegateDeployable(Prim webApplication, CargoServerImpl owner) {
         this.application = webApplication;
         this.setOwner(owner);
+    }
+
+    public Deployable getDeployable() {
+        return deployable;
+    }
+
+    public void setDeployable(Deployable deployable) {
+        this.deployable = deployable;
+    }
+
+    /**
+     * Save our deployable and queue it on the server for deployment
+     * @param webapp
+     */
+    public void queue(Deployable webapp) {
+        setDeployable(deployable);
+        getOwner().addDeployable(webapp);
     }
 
     /**
@@ -67,4 +86,7 @@ public abstract class CargoDelegateDeployable implements JavaWebApplication {
     public void setOwner(CargoServerImpl owner) {
         this.owner = owner;
     }
+
+
+
 }

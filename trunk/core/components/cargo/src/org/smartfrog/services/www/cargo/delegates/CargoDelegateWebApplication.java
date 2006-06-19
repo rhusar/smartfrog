@@ -41,6 +41,6 @@ public class CargoDelegateWebApplication extends CargoDelegateDeployable
         if (context != null) {
             war.setContext(context);
         }
-        container.getConfiguration().addDeployable(war);
+        queue(war);
     }
 }

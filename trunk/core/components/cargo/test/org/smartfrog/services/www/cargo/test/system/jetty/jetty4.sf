@@ -31,12 +31,49 @@ ITS MEDIA, AND YOU HEREBY WAIVE ANY CLAIM IN THIS REGARD.
 */
 #include "/org/smartfrog/services/www/cargo/components.sf"
 #include "/org/smartfrog/services/www/cargo/test/system/testBase.sf"
+#include "/org/smartfrog/services/os/java/components.sf"
+#include "/org/smartfrog/services/os/java/library.sf"
+
+Jars extends Compound {
+
+    sfSyncTerminate true;
+
+    library extends Maven2Library {
+    }
+
+    commons-logging extends JarArtifact {
+        library LAZY PARENT:library;
+        project "commons-logging";
+    }
+
+    jetty extends JarArtifact {
+        library LAZY PARENT:library;
+        project "jetty";
+        version "4.2.12";
+    }
+
+    servletapi extends JarArtifact {
+        library LAZY PARENT:library;
+        project "javax.servlet";
+        artifact "servletapi";
+        version "2.3";
+    }
+
+    classpath [
+      LAZY commons-logging:absolutePath,
+      LAZY servletapi:absolutePath,
+      LAZY jetty:absolutePath
+      ];
+}
 
 
+Jetty4 extends Jetty4CargoServer {
+  port ServerOptions:port;
+  logging ServerOptions:logging;
 
-Tomcat extends Tomcat5CargoServer {
- port ServerOptions:port;
- logging ServerOptions:logging;
- //home PROPERTY runtime.tomcat.home;
- home LAZY HomeDir;
+  extraClasspath Jars:classpath;
+
+ //set up a symlink for this if you need it
+ //needs deployment in a JVM with jboss.dir set to the jboss directory
+ //home PROPERTY runtime.jboss.home;
 }

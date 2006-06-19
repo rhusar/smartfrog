@@ -38,5 +38,6 @@ JBoss extends JBoss4CargoServer {
 
  //set up a symlink for this if you need it
  //needs deployment in a JVM with jboss.dir set to the jboss directory
- home PROPERTY runtime.jboss.home;
+ //home PROPERTY runtime.jboss.home;
+ home LAZY HomeDir;
 }

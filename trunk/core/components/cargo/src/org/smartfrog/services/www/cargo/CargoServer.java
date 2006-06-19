@@ -49,6 +49,14 @@ public interface CargoServer extends JavaWebApplicationServer {
      */
     String ATTR_HOME = "home";
 
+
+    /**
+     * This is the temp dir used for stuff, that must be empty on startup (or things break)
+     * {@value}
+     */
+    String ATTR_CONFIG_DIR = "tempDir";
+
+
     /**
      * {@value}
      */
