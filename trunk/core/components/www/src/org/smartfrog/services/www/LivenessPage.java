@@ -19,7 +19,10 @@
  */
 package org.smartfrog.services.www;
 
+import org.smartfrog.sfcore.common.SmartFrogLivenessException;
+
 import java.rmi.Remote;
+import java.rmi.RemoteException;
 
 /**
  * Interface for liveness checking
@@ -42,4 +45,13 @@ public interface LivenessPage extends Remote {
     static final String ATTR_ENABLED = "enabled";
     static final String ATTR_QUERIES = "queries";
     static final String ATTR_MIME_TYPES = "mimeType";
+
+    /**
+     * Check the page, regardless of whether the component is enabled or not.
+     * This is the programmatic option.
+     *
+     * @throws org.smartfrog.sfcore.common.SmartFrogLivenessException
+     *
+     */
+    void checkPage() throws SmartFrogLivenessException, RemoteException;
 }

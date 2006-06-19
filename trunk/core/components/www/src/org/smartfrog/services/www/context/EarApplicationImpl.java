@@ -20,7 +20,7 @@
 package org.smartfrog.services.www.context;
 
 import org.smartfrog.services.www.ApplicationServerContext;
-import org.smartfrog.services.www.JavaWebApplication;
+import org.smartfrog.services.www.JavaEnterpriseApplication;
 import org.smartfrog.sfcore.common.SmartFrogException;
 
 import java.rmi.RemoteException;
@@ -28,7 +28,7 @@ import java.rmi.RemoteException;
 /**
  * A WAR File
  */
-public class EarApplicationImpl extends ApplicationServerContextImpl implements JavaWebApplication {
+public class EarApplicationImpl extends ApplicationServerContextImpl implements JavaEnterpriseApplication {
 
     public EarApplicationImpl() throws RemoteException {
     }
@@ -40,6 +40,7 @@ public class EarApplicationImpl extends ApplicationServerContextImpl implements 
      * @return the context
      * @throws java.rmi.RemoteException
      * @throws org.smartfrog.sfcore.common.SmartFrogException
+     *
      */
     protected ApplicationServerContext deployThisComponent() throws RemoteException, SmartFrogException {
         return getServer().deployEnterpriseApplication(this);

@@ -161,7 +161,6 @@ public class LivenessPageComponent extends PrimImpl implements LivenessPage {
      * Liveness call in to check if this component is still alive.
      *
      * @param source source of call
-     *
      * @throws org.smartfrog.sfcore.common.SmartFrogLivenessException
      *          component is terminated
      */
@@ -182,6 +181,17 @@ public class LivenessPageComponent extends PrimImpl implements LivenessPage {
             //hand off to our liveness helper class
             livenessPage.onPing();
         }
+    }
+
+
+    /**
+     * Check the page, regardless of whether the component is enabled or not.
+     * This is the programmatic option.
+     *
+     * @throws SmartFrogLivenessException
+     */
+    public void checkPage() throws SmartFrogLivenessException {
+        livenessPage.checkPage();
     }
 
     /**
