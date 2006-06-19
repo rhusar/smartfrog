@@ -209,6 +209,7 @@ public class LivenessPageChecker implements LivenessPage {
      * nothing.
      *
      * @throws org.smartfrog.sfcore.common.SmartFrogDeploymentException
+     *
      */
     public synchronized void onStart() throws SmartFrogDeploymentException {
         demandCreateURL();
@@ -232,6 +233,15 @@ public class LivenessPageChecker implements LivenessPage {
             return;
         }
 
+        checkPage();
+    }
+
+    /**
+     * check the page
+     *
+     * @throws SmartFrogLivenessException
+     */
+    public void checkPage() throws SmartFrogLivenessException {
         //set up the connection
         HttpURLConnection connection = null;
 
