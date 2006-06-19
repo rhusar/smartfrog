@@ -165,7 +165,7 @@ JBoss3CargoServer extends AbstractJBossCargoServer {
  * base class for jetty things
  */
 AbstractJettyCargoServer extends EmbeddedCargoServer {
-  supportsServletContext true;
+  //supportsServletContext true;
 }
 
 Jetty4CargoServer extends AbstractJettyCargoServer {

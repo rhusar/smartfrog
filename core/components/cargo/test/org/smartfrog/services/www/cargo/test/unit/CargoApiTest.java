@@ -22,39 +22,74 @@ package org.smartfrog.services.www.cargo.test.unit;
 import junit.framework.TestCase;
 import org.codehaus.cargo.container.jboss.JBossStandaloneLocalConfiguration;
 import org.codehaus.cargo.container.jboss.JBoss3xInstalledLocalContainer;
+import org.codehaus.cargo.container.jboss.JBoss4xInstalledLocalContainer;
 import org.codehaus.cargo.container.jetty.Jetty4xEmbeddedStandaloneLocalConfiguration;
 import org.codehaus.cargo.container.jetty.Jetty5xEmbeddedStandaloneLocalConfiguration;
 import org.codehaus.cargo.container.jetty.Jetty6xEmbeddedStandaloneLocalConfiguration;
 import org.codehaus.cargo.container.jetty.Jetty5xEmbeddedLocalContainer;
+import org.codehaus.cargo.container.jetty.Jetty4xEmbeddedLocalContainer;
 import org.codehaus.cargo.container.configuration.LocalConfiguration;
 
 import java.io.File;
 
 /**
+ * This is here mainly as a regression test of the API, to catch any changes in the
+ * stuff that we normally reflect in to
  * created 16-Jun-2006 17:06:27
  */
 
 public class CargoApiTest extends TestCase {
     private File dir;
 
+    private static boolean instantiate = false;
+
     protected void setUp() throws Exception {
         super.setUp();
         dir = new File(".");
     }
 
-    public void testJBoss() throws Exception {
-        JBossStandaloneLocalConfiguration local = new JBossStandaloneLocalConfiguration(dir);
-        if(false) {
-            JBoss3xInstalledLocalContainer container=new JBoss3xInstalledLocalContainer(local);
+    public void testJBoss3() throws Exception {
+        LocalConfiguration local = new JBossStandaloneLocalConfiguration(dir);
+        if (instantiate) {
+            JBoss3xInstalledLocalContainer container = new JBoss3xInstalledLocalContainer(local);
         }
     }
 
-    public void testJettyConfiguration() throws Exception {
-        LocalConfiguration local = new Jetty4xEmbeddedStandaloneLocalConfiguration(dir);
+    public void testJBoss4() throws Exception {
+        LocalConfiguration local = new JBossStandaloneLocalConfiguration(dir);
+        if (instantiate) {
+            JBoss4xInstalledLocalContainer container = new JBoss4xInstalledLocalContainer(local);
+        }
+    }
+
+    public void testTomcat() throws Exception {
+        LocalConfiguration local = new JBossStandaloneLocalConfiguration(dir);
+        if (instantiate) {
+            JBoss3xInstalledLocalContainer container = new JBoss3xInstalledLocalContainer(local);
+        }
+
+    }
+
+    public void testJetty5Configuration() throws Exception {
+        LocalConfiguration local;
         local = new Jetty5xEmbeddedStandaloneLocalConfiguration(dir);
+        if (instantiate) {
+            Jetty5xEmbeddedLocalContainer container = new Jetty5xEmbeddedLocalContainer(local);
+        }
+    }
+
+    public void testJetty6Configuration() throws Exception {
+        LocalConfiguration local;
         local = new Jetty6xEmbeddedStandaloneLocalConfiguration(dir);
-        if (false) {
-            Jetty5xEmbeddedLocalContainer container=new Jetty5xEmbeddedLocalContainer(local);
+        if (instantiate) {
+            Jetty5xEmbeddedLocalContainer container = new Jetty5xEmbeddedLocalContainer(local);
+        }
+    }
+
+    public void testJetty4Configuration() throws Exception {
+        LocalConfiguration local = new Jetty4xEmbeddedStandaloneLocalConfiguration(dir);
+        if (instantiate) {
+            Jetty4xEmbeddedLocalContainer container = new Jetty4xEmbeddedLocalContainer(local);
         }
     }
 

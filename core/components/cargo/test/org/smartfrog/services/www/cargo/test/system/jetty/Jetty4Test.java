@@ -17,22 +17,21 @@
  For more information: www.smartfrog.org
 
  */
-package org.smartfrog.services.www.cargo.test.system.jboss;
+package org.smartfrog.services.www.cargo.test.system.jetty;
 
 import org.smartfrog.services.www.cargo.test.system.CargoTestBase;
 
 /**
  */
-public class JBossTest extends CargoTestBase {
+public class Jetty4Test extends CargoTestBase {
 
-    public JBossTest(String name) {
+    public Jetty4Test(String name) {
         super(name);
     }
 
-    public void testJBoss4() throws Throwable {
-        deployAppServer(FILE_BASE + "jboss/testJBoss4.sf",
-                "testJBoss"
+    public void testJetty4() throws Throwable {
+        deployAppServer(FILE_BASE + "jetty/testJetty4.sf",
+                "testJetty"
         );
-
     }
 }

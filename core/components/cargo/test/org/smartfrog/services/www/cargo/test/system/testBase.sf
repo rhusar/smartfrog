@@ -42,19 +42,24 @@ ServerOptions extends Prim {
  */
 AppServerWithWar extends AppServer {
 
+  HomeDir extends TempDirWithCleanup {
+    prefix "cargo";
+  }
 
-    deployedWar extends WebApplication {
-        server LAZY PARENT:server;
-        filename LAZY warlibraries:testwar:absolutePath;
-        contextPath "testwar";
-    }
 
-    ping extends LivenessPage {
-            host LAZY server:listener:ipaddr;
-            port server:port;
-            page LAZY deployedWar:absolutePath;
-            checkFrequency 1;
-            followRedirects true;
-    }
+  deployedWar extends WebApplication {
+      server LAZY PARENT:server;
+      filename LAZY warlibraries:testwar:absolutePath;
+      contextPath "testwar";
+  }
+
+  liveness extends LivenessPage {
+          host LAZY server:listener:ipaddr;
+          port server:port;
+          page LAZY deployedWar:contextPath;
+          checkFrequency 1;
+          followRedirects true;
+          enabled false;
+  }
 
 }
