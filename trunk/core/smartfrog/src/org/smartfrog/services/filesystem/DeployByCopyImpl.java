@@ -51,7 +51,7 @@ public class DeployByCopyImpl extends CopyFileImpl implements CopyFile {
     public synchronized void sfTerminateWith(TerminationRecord status) {
         super.sfTerminateWith(status);
         if (shouldDelete && getToFile() != null) {
-            if (!getToFile().delete()) {
+            if (getToFile().exists() && !getToFile().delete()) {
                 getToFile().deleteOnExit();
             } else {
                 shouldDelete = false;
