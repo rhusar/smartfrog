@@ -379,6 +379,7 @@ public class FileSystem {
             throws IOException {
         FileChannel srcChannel = null;
         FileChannel dstChannel = null;
+        FileOutputStream destOutputStream = null;
         try {
             if (null == src) {
                 throw new IOException("No source stream");
@@ -388,12 +389,14 @@ public class FileSystem {
             }
 
             srcChannel = src.getChannel();
-            dstChannel = new FileOutputStream(dest).getChannel();
+            destOutputStream = new FileOutputStream(dest);
+            dstChannel = destOutputStream.getChannel();
             dstChannel.transferFrom(srcChannel, 0, srcChannel.size());
         } finally {
             // Close the streams
             close(srcChannel);
             close(dstChannel);
+            close(destOutputStream);
             close(src);
         }
 

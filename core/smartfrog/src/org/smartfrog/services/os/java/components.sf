@@ -75,7 +75,7 @@ JavaSchema extends Schema {
 Java extends ExecuteProgram {
     javaSchema extends JavaSchema;
     sfClass "org.smartfrog.services.os.java.RunJavaImpl";
-    processName "JVM";
+    processName "java";
     jvm "java";
     //bind the shell command to the jvm command
     shellCmd ATTRIB jvm;

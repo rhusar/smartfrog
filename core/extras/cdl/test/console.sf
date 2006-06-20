@@ -46,7 +46,7 @@ DefaultDisplay extends  Display {
     redirectStd true;             // Redirect std output and error to this wind.
     showIP false;                  // Show IP address in window title
     showSfProcess false;           // Show sfProcess name in  window title
-    terminateSFProcessOnExit false; // Terminates sfDaemon when window is closed
+    terminateSFProcessOnExit true; // Terminates sfDaemon when window is closed
 };
 
 DisplayTrace extends TraceDisplay{

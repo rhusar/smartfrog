@@ -25,23 +25,29 @@ import org.smartfrog.services.www.JavaWebApplication;
 import org.smartfrog.services.www.ServletContextIntf;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLivenessException;
+import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.logging.LogFactory;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.prim.TerminationRecord;
+import org.smartfrog.sfcore.prim.ChildMinder;
+import org.smartfrog.sfcore.prim.Liveness;
 import org.smartfrog.sfcore.utils.ComponentHelper;
+import org.smartfrog.sfcore.utils.ParentHelper;
 
 import java.io.File;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Enumeration;
 
 /**
  * created 19-Jun-2006 15:53:07
  */
 
-public class DeployByCopyServerImpl extends PrimImpl implements DeployByCopyServer, Runnable {
+public class DeployByCopyServerImpl extends PrimImpl implements DeployByCopyServer, Runnable,
+        ChildMinder {
 
     private List filesToCopy = new ArrayList();
     private File destDir;
@@ -50,6 +56,7 @@ public class DeployByCopyServerImpl extends PrimImpl implements DeployByCopyServ
     private Prim startupPrim;
     private Prim shutdownPrim;
     private ComponentHelper helper;
+    private ParentHelper childminder;
     private Thread thread;
     private Throwable caughtException;
     /**
@@ -64,16 +71,17 @@ public class DeployByCopyServerImpl extends PrimImpl implements DeployByCopyServ
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
         helper = new ComponentHelper(this);
+        childminder = new ParentHelper(this);
 
         //bind to and create the destination directory
         destDir = new File(FileSystem.lookupAbsolutePath(this, ATTR_DEPLOY_DIR,
                 null, null, false, null));
-        destDir.getParentFile().mkdirs();
+        destDir.mkdirs();
 
         //resolve deploy and start the startup prim
         startup = sfResolve(ATTR_START_COMPONENT, startup, false);
         if (startup != null) {
-            startupPrim = helper.deployComponentDescription(ATTR_START_COMPONENT,
+            startupPrim = childminder.deployComponentDescription(ATTR_START_COMPONENT,
                     this,
                     startup,
                     null);
@@ -85,7 +93,7 @@ public class DeployByCopyServerImpl extends PrimImpl implements DeployByCopyServ
         //this leaves it ready to do cleanup
         shutdown = sfResolve(ATTR_SHUTDOWN_COMPONENT, shutdown, false);
         if (shutdown != null) {
-            shutdownPrim = helper.deployComponentDescription(ATTR_SHUTDOWN_COMPONENT,
+            shutdownPrim = childminder.deployComponentDescription(ATTR_SHUTDOWN_COMPONENT,
                     this,
                     shutdown,
                     null);
@@ -176,6 +184,55 @@ public class DeployByCopyServerImpl extends PrimImpl implements DeployByCopyServ
 
     public ServletContextIntf deployServletContext(Prim servlet) throws RemoteException, SmartFrogException {
         throw new SmartFrogException("Servlet contexts are not supported");
+    }
+
+    /**
+     * Add a child.
+     *
+     * @param child child to add
+     *
+     * @throws java.rmi.RemoteException In case of Remote/nework error
+     */
+    public void sfAddChild(Liveness child) throws RemoteException {
+        childminder.sfAddChild(child);
+    }
+
+    /**
+     * Remove a child.
+     *
+     * @param child child to add
+     *
+     * @return Status of child removal
+     *
+     * @throws java.rmi.RemoteException In case of Remote/nework error
+     */
+    public boolean sfRemoveChild(Liveness child)
+            throws SmartFrogRuntimeException, RemoteException {
+        return childminder.sfRemoveChild(child);
+    }
+
+    /**
+     * Request whether implementor contains a given child.
+     *
+     * @param child child to check for
+     *
+     * @return true is child is present else false
+     *
+     * @throws java.rmi.RemoteException In case of Remote/nework error
+     */
+    public boolean sfContainsChild(Liveness child) throws RemoteException {
+        return childminder.sfContainsChild(child);
+    }
+
+    /**
+     * Gets an enumeration over the children of the implementor.
+     *
+     * @return enumeration over children
+     *
+     * @throws java.rmi.RemoteException In case of Remote/nework error
+     */
+    public Enumeration sfChildren() throws RemoteException {
+        return childminder.sfChildren();
     }
 
     /**
