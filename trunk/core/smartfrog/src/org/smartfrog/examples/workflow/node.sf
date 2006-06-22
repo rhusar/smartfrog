@@ -38,7 +38,7 @@ Node extends Compound {
 RogueNode extends Node {
     failure extends DoNothing {
         terminationType "abnormal";
-        time 4000;
+        time 10000;
     }
 }
 
