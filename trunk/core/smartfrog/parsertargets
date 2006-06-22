@@ -1,3 +1,4 @@
+bin/default.sf
 org/smartfrog/services/display/example.sf
 org/smartfrog/services/os/download/components.sf
 org/smartfrog/services/os/runshell/example.sf

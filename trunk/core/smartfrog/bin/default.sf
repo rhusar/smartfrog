@@ -35,9 +35,6 @@ ITS MEDIA, AND YOU HEREBY WAIVE ANY CLAIM IN THIS REGARD.
 #include "org/smartfrog/services/persistence/components.sf"
 #include "org/smartfrog/components.sf"
 
-// To enable Daemon with SmartFrog Debugger 
-// Uncoment next line to use it.
-//#include "org/smartfrog/services/sfdebugger/components.sf"
 
 
 // Default sfDaemon Display
@@ -79,11 +76,14 @@ DefaultPersistentCompound extends DefaultCompound {
     }
 }
 
-DefaultDebuggerCompound extends Compound {
-    sfProcessComponentName "sfDefault";
-    display extends DefaultDisplay;
-    trace extends TraceDebugger;
-}
+//  To enable Daemon with SmartFrog Debugger 
+//  Uncoment next lines to use it.
+// #include "org/smartfrog/services/sfdebugger/components.sf"
+// DefaultDebuggerCompound extends Compound {
+//    sfProcessComponentName "sfDefault";
+//    display extends DefaultDisplay;
+//    trace extends TraceDebugger;
+// }
 
 sfConfig extends DefaultCompound;
 
@@ -98,5 +98,12 @@ sfConfig extends DefaultCompound;
 //sfConfig extends DefaultTraceCompound;
 
 // Alternative default compound with SmartFrog Debugger enabled
-// Uncoment next line to use it.
+// Uncoment next lines to use it.
+// #include "org/smartfrog/services/sfdebugger/components.sf"
+// DefaultDebuggerCompound extends Compound {
+//    sfProcessComponentName "sfDefault";
+//    display extends DefaultDisplay;
+//    trace extends TraceDebugger;
+// }
+//
 //sfConfig extends DefaultDebuggerCompound;
