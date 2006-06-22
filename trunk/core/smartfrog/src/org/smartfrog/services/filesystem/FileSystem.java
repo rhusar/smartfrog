@@ -387,6 +387,9 @@ public class FileSystem {
             if (null == dest) {
                 throw new IOException("No dest file");
             }
+            if(dest.isDirectory()) {
+                throw new IOException("Cannot copy onto a directory : "+dest);
+            }
 
             srcChannel = src.getChannel();
             destOutputStream = new FileOutputStream(dest);
