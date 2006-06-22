@@ -35,6 +35,16 @@ RunShellSchema extends Schema {
     delayBetweenCmds extends OptionalInteger;
     shouldDetach extends OptionalBoolean;
     processID extends OptionalString;
+    
+    /**
+     * any arguments to the shell
+     */
+     shellArguments extends OptionalVector;
+     
+     //also, every nested element beginnng with shellCmdAtt  
+     //will be added to the list of arguments *after* the shellArguments vector 
+     //and every nested element beginnng with shellCmdAtt and ending in 'b' 
+     //will be appended to the previous argument.  
 
     /**
      * terminate on completion
