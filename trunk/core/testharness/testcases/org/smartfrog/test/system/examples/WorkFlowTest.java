@@ -24,6 +24,8 @@ package org.smartfrog.test.system.examples;
 import org.smartfrog.test.SmartFrogTestBase;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
+import org.smartfrog.sfcore.common.*;
+import java.rmi.*;
 
 /**
  * JUnit test class for test cases for "workflow" example
@@ -36,20 +38,30 @@ public class WorkFlowTest
     public WorkFlowTest(String s) {
         super(s);
     }
-    
+
     public void testCaseTCP27() throws Throwable {
         Prim application = deployExpectingSuccess(FILES+"system.sf", "system");
-        assertNotNull(application);
-	Prim h1 = (Prim)application.sfResolveHere("h1");
-	ComponentDescription cd = null;
-	cd = h1.sfResolve("nodeAction", cd, true);
+        String applicationName = "TCP27.system.tempname";
+        String diag ="";
+        Prim h1 = null;
+        try {
+          assertNotNull(application);
+          applicationName = application.sfCompleteName().toString();
+
+          diag = (((Prim)application).sfDiagnosticsReport()).toString();
+          h1 = (Prim)application.sfResolveHere("h1");
+        } catch (Exception ex) {
+            throw new SmartFrogResolutionException ("Failed TCP27. Could not find H1 in "+applicationName +"\n "+diag,ex);
+        }
+        ComponentDescription cd = null;
+        cd = h1.sfResolve("nodeAction", cd, true);
         String actual = cd.toString();
-	String expected1 = "message \"copied file from http://codeserver/webServerCode to file /tmp/default\";";
+        String expected1 = "message \"copied file from http://codeserver/webServerCode to file /tmp/default\";";
         String expected2 = "message \"copied file from http://codeserver/appServerCode to file /tmp/default\";";
         String expected3 = "message \"file /tmp/default has been removed\";";
-	assertNotNull(cd);
-	assertContains(actual,expected1);	
-	assertContains(actual,expected2);	
-	assertContains(actual,expected3);	
+        assertNotNull(cd);
+        assertContains(actual,expected1);
+        assertContains(actual,expected2);
+        assertContains(actual,expected3);
     }
 }
