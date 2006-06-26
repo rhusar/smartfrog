@@ -76,7 +76,7 @@
 
       <!--required at compile but not client-side runtime-->
       <dependency groupID="javax.servlet"
-          artifactID="servletapi"
+          artifactID="servlet-api"
           version="${servletapi.version}"
           scope="compile"
           />
