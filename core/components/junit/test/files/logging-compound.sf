@@ -48,3 +48,7 @@ LoggingCompound extends Compound {
     testLog LAZY log:logTo:logTo;
 
 }
+
+sfConfig extends LoggingCompound {
+
+}
