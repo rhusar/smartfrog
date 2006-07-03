@@ -16,6 +16,8 @@ public interface Log {
      * <p> Call this method to prevent having to perform expensive operations
      * (for example, <code>String</code> concatenation)
      * when the log level is more than debug. </p>
+     *
+     * @return boolean true if debug logging currently enabled
      */
     public boolean isDebugEnabled();
 
@@ -26,6 +28,8 @@ public interface Log {
      * <p> Call this method to prevent having to perform expensive operations
      * (for example, <code>String</code> concatenation)
      * when the log level is more than error. </p>
+     *
+     * @return boolean true if error logging currently enabled
      */
     public boolean isErrorEnabled();
 
@@ -46,6 +50,8 @@ public interface Log {
      * <p> Call this method to prevent having to perform expensive operations
      * (for example, <code>String</code> concatenation)
      * when the log level is more than info. </p>
+     *
+     * @return boolean true if info logging currently enabled
      */
     public boolean isInfoEnabled();
 
@@ -56,6 +62,8 @@ public interface Log {
      * <p> Call this method to prevent having to perform expensive operations
      * (for example, <code>String</code> concatenation)
      * when the log level is more than trace. </p>
+     *
+     * @return boolean true if trace logging currently enabled
      */
     public boolean isTraceEnabled();
 
@@ -66,6 +74,8 @@ public interface Log {
      * <p> Call this method to prevent having to perform expensive operations
      * (for example, <code>String</code> concatenation)
      * when the log level is more than warn. </p>
+     *
+     * @return boolean true if warn logging currently enabled
      */
     public boolean isWarnEnabled();
 

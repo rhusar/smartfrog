@@ -44,9 +44,6 @@ import java.util.Hashtable;
 import org.smartfrog.sfcore.common.*;
 import java.util.Vector;
 
-/**
- *
- */
 public class LogImpl implements LogSF, LogRegistration, Serializable {
 
     /** Default Log object */
@@ -247,8 +244,8 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
      * @param configurationClass Object
      * @param configurationCodeBase String
      * @param loggersConfiguration Vector
-     * @throws RemoteException
-     * @throws SmartFrogLogException
+     * @throws RemoteException in case of remote/network failure
+     * @throws SmartFrogLogException  if failed to register logger
      */
 
     private void loadStartUpLoggers(String name, Object configurationClass, String configurationCodeBase, Vector loggersConfiguration) throws RemoteException, SmartFrogLogException {
@@ -291,8 +288,8 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
      * Gets configurations (if any) for one (String) or several (Vector) for logger classes
      * @param configurationComponentDescription ComponentDescription Where to find the configuration
      * @param configurationClass Object String or Vector which configuration is to be found
-     * @param loggersConfiguration Vector default Configuration/s for configurationClass/es
-     * @throws SmartFrogResolutionException
+     * @param defaultLoggersConfiguration Vector default Configuration/s for configurationClass/es
+     * @throws SmartFrogResolutionException if failed to resolve
      */
     private Vector getLoggersConfigurationForConfigurationClass( ComponentDescription configurationComponentDescription,
         Object configurationClass, Vector defaultLoggersConfiguration) throws SmartFrogResolutionException {
@@ -327,9 +324,9 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
      * Reads configurationClass attribute for LogImpl from a componentDescription
      *
      * @param componentDescription ComponentDescription
-     * @param default configurationClass Object
+     * @param configurationClass configurationClass Object
      * @return Object (Vector or String)
-     * @throws SmartFrogResolutionException
+     * @throws SmartFrogResolutionException if failed to resolve
      */
     private Object getConfigurationClass(ComponentDescription componentDescription, Object configurationClass) throws SmartFrogResolutionException {
         if (componentDescription==null) return configurationClass;
@@ -345,10 +342,11 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
      * attribute called classname+Config this is used to overwrite the class configuration stored in
      * default classname.sf files
      * @param componentDescription ComponentDescription where to find the configuration
-     * @param default configuration Object returned if nothing is found
+     * @param configurationClass configurationClass Object
+     * @param defaultConfig configuration Object returned if nothing is found
      * @return componentdescription configuration found or default value if nothing was found or null if
      * a problem ocurred
-     * @throws SmartFrogResolutionException
+     * @throws SmartFrogResolutionException if failed to resolve
      */
     private Object getConfigurationForClass(ComponentDescription componentDescription, String configurationClass, ComponentDescription defaultConfig) throws SmartFrogResolutionException {
         if (componentDescription==null) {
@@ -362,9 +360,9 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
      * Reads configurationLevel attribute for LogImpl from a componentDescription
      *
      * @param componentDescription ComponentDescription
-     * @param default configurationLevel int
+     * @param configurationLevel int
      * @return int
-     * @throws SmartFrogResolutionException
+     * @throws SmartFrogResolutionException if failed to resolve
      */
     private int getConfigurationLevel(ComponentDescription componentDescription, int configurationLevel) throws SmartFrogResolutionException {
         if (componentDescription==null) return configurationLevel;
@@ -375,9 +373,9 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
      * Reads configurationCodeBase attribute for LogImpl from a componentDescription
      *
      * @param componentDescription ComponentDescription
-     * @param default configurationCodeBase String
+     * @param configurationCodeBase String
      * @return String
-     * @throws SmartFrogResolutionException
+     * @throws SmartFrogResolutionException  if failed to resolve
      */
     private String getConfigurationCodeBase(ComponentDescription componentDescription,String configurationCodeBase) throws SmartFrogResolutionException {
         if (componentDescription==null) return configurationCodeBase;
@@ -393,13 +391,14 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
     //LogImpl configuration
 
     /**
-     *  Dinamically loads the class that implements the selected logger
+     *  Dynamically loads the class that implements the selected logger
      * @param name String
+     * @param configuration ComponentDescription
      * @param logLevel Integer
      * @param targetClassName String
      * @param targetCodeBase String
      * @return Log logger implementing Log interface.
-     * @throws SmartFrogLogException
+     * @throws SmartFrogLogException if failed to load
      */
 
    public static Log loadLogger(String name, ComponentDescription configuration,Integer logLevel, String targetClassName , String targetCodeBase)
@@ -484,6 +483,7 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
 
     /**
      * <p> Get logging level. </p>
+     * @return int log level
      */
     public int getLevel() {
         return currentLogLevel;
@@ -493,6 +493,7 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
      * <p> Get logger level </p>
      *
      * @param logger
+     * @return int log level
      */
     public static int getLevel(Log logger) {
        if (logger.isTraceEnabled()){
@@ -515,6 +516,7 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
      * Is the given log level currently enabled?
      *
      * @param logLevel is this level enabled?
+     * @return boolean true if given log level is currently enabled
      */
     public boolean isLevelEnabled(int logLevel) {
         // log level are numerically ordered so can use simple numeric
@@ -534,6 +536,7 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
      * <p> This allows expensive operations such as <code>String</code>
      * concatenation to be avoided when the message will be ignored by the
      * logger. </p>
+     * @return boolean true if debug level is currently enabled
      */
     public final boolean isDebugEnabled() {
         return isLevelEnabled(LOG_LEVEL_DEBUG);
@@ -546,6 +549,7 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
      * <p> This allows expensive operations such as <code>String</code>
      * concatenation to be avoided when the message will be ignored by the
      * logger. </p>
+     * @return boolean true if error level is currently enabled
      */
     public final boolean isErrorEnabled() {
         return isLevelEnabled(LOG_LEVEL_ERROR);
@@ -558,6 +562,7 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
      * <p> This allows expensive operations such as <code>String</code>
      * concatenation to be avoided when the message will be ignored by the
      * logger. </p>
+     * @return boolean true if fatal level is currently enabled
      */
     public final boolean isFatalEnabled() {
         return isLevelEnabled(LOG_LEVEL_FATAL);
@@ -570,6 +575,7 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
      * <p> This allows expensive operations such as <code>String</code>
      * concatenation to be avoided when the message will be ignored by the
      * logger. </p>
+     * @return boolean true if info level is currently enabled
      */
     public final boolean isInfoEnabled() {
         return isLevelEnabled(LOG_LEVEL_INFO);
@@ -582,6 +588,7 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
      * <p> This allows expensive operations such as <code>String</code>
      * concatenation to be avoided when the message will be ignored by the
      * logger. </p>
+     * @return boolean true if trace level is currently enabled
      */
     public final boolean isTraceEnabled() {
         return isLevelEnabled(LOG_LEVEL_TRACE);
@@ -594,6 +601,7 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
      * <p> This allows expensive operations such as <code>String</code>
      * concatenation to be avoided when the message will be ignored by the
      * logger. </p>
+     * @return boolean true if warn  level is currently enabled
      */
     public final boolean isWarnEnabled() {
         return isLevelEnabled(LOG_LEVEL_WARN);
@@ -613,7 +621,13 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
          return message;
      }
 
-
+    /**
+     *
+     * Is current log level enabled?
+     *
+     * @param log  logger
+     * @return boolean
+     */
      private boolean isCurrentLevelEnabled(Log log) {
          if (currentLogLevel >=LOG_LEVEL_OFF) {
              return false;
@@ -801,6 +815,7 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
      * <p> Call this method to prevent having to perform expensive operations
      * (for example, <code>String</code> concatenation)
      * when the log level is more than ignore. </p>
+     * @return boolean
      */
     public boolean isIgnoreEnabled(){
         return isLevelEnabled(LOG_LEVEL_IGNORE);
@@ -837,6 +852,8 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
      * <p> Log a message with ignore log level. </p>
      *
      * @param message log this message
+     * @param t log this cause
+     * @param tr log this TerminationRecord
      */
     public void ignore(Object message, SmartFrogException t, TerminationRecord tr) {
         ignore(message,t);
@@ -967,6 +984,8 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
      * <p> Same as info messages but without Labels.</p>
      *
      * @param message log this message
+     * @param t log this cause
+     * @param tr log this TerminationRecord
      */
     public void err(Object message, SmartFrogException t, TerminationRecord tr){
        err(message.toString()+", TR:"+tr.toString(),(Throwable)t);
@@ -989,6 +1008,8 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
      * <p> Log a message with trace log level. </p>
      *
      * @param message log this message
+     * @param t log this cause
+     * @param tr log this TerminationRecord
      */
     public void trace(Object message, SmartFrogException t, TerminationRecord tr){
         trace(message, (Throwable)t);
@@ -1010,6 +1031,8 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
      * <p> Log a message with debug log level. </p>
      *
      * @param message log this message
+     * @param t log this cause
+     * @param tr log this TerminationRecord
      */
     public void debug(Object message, SmartFrogException t, TerminationRecord tr){
         debug(message,(Throwable)t);
@@ -1031,6 +1054,8 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
      * <p> Log a message with info log level. </p>
      *
      * @param message log this message
+     * @param t log this cause
+     * @param tr log this TerminationRecord
      */
     public void info(Object message, SmartFrogException t, TerminationRecord tr){
         info(message,(Throwable)t);
@@ -1052,6 +1077,8 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
      * <p> Log a message with warn log level. </p>
      *
      * @param message log this message
+     * @param t log this cause
+     * @param tr log this TerminationRecord
      */
     public void warn(Object message, SmartFrogException t, TerminationRecord tr){
         warn(message,(Throwable)t);
@@ -1073,6 +1100,8 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
      * <p> Log a message with error log level. </p>
      *
      * @param message log this message
+     * @param t log this cause
+     * @param tr log this TerminationRecord
      */
     public void error(Object message, SmartFrogException t, TerminationRecord tr){
         error(message,(Throwable)t);
@@ -1094,6 +1123,8 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
      * <p> Log a message with fatal log level. </p>
      *
      * @param message log this message
+     * @param t log this cause
+     * @param tr log this TerminationRecord
      */
     public void fatal(Object message, SmartFrogException t, TerminationRecord tr){
         fatal(message,(Throwable)t);
@@ -1111,7 +1142,14 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
     }
 
 
-    //Log Registration interface
+    /**
+     * Log Registration interface
+     *
+     * @param name log name
+     * @param log logger to register
+     * @throws SmartFrogLogException  if failed to register
+     * @throws RemoteException in case of remote/network error
+     */
     public void register(String name,Log log)  throws SmartFrogLogException , RemoteException{
         try {
             registeredLogs.put(logName+"."+name, log);
@@ -1120,6 +1158,14 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
         }
     }
 
+    /**
+     *  Log Registration interface
+     * @param name log name
+     * @param log logger to register
+     * @param logLevel  log level
+     * @throws RemoteException in case of remote/network error
+     * @throws SmartFrogLogException if failed to register
+     */
    public void register(String name,Log log, int logLevel)  throws RemoteException, SmartFrogLogException{
        register(name,log);
        if (currentLogLevel>=logLevel){
@@ -1127,6 +1173,13 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
        }
    }
 
+    /**
+     *  Log Deregistration interface
+     * @param name log name
+     * @return  boolean success/failure
+     * @throws SmartFrogLogException if failed to deregister
+     * @throws RemoteException in case of remote/network error
+     */
     public boolean deregister(String name)  throws SmartFrogLogException, RemoteException {
        try {
            if (registeredLogs.remove(logName+"."+name) == null) {

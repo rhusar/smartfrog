@@ -28,10 +28,33 @@ import org.smartfrog.sfcore.common.SmartFrogLogException;
 
 public interface LogRegistration extends Remote {
 
+    /**
+     * Log Registration interface
+     *
+     * @param name log name
+     * @param log logger to register
+     * @throws SmartFrogLogException  if failed to register
+     * @throws RemoteException in case of remote/network error
+     */
    public void register(String name,Log log)  throws RemoteException, SmartFrogLogException;
 
-   public void register(String name,Log log, int logLevel)  throws RemoteException, SmartFrogLogException;
+    /**
+     *  Log Registration interface
+     * @param name log name
+     * @param log logger to register
+     * @param logLevel  log level
+     * @throws RemoteException in case of remote/network error
+     * @throws SmartFrogLogException if failed to register
+     */
+    public void register(String name,Log log, int logLevel)  throws RemoteException, SmartFrogLogException;
 
+    /**
+     *  Log Deregistration interface
+     * @param name log name
+     * @return  boolean success/failure
+     * @throws SmartFrogLogException if failed to deregister
+     * @throws RemoteException in case of remote/network error
+     */
    public boolean deregister(String name)  throws RemoteException, SmartFrogLogException;
 
 }

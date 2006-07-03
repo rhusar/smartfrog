@@ -142,8 +142,8 @@ public class LogToFileImpl extends LogToStreamsImpl implements LogToFile {
 
     /**
      *  Reads optional and mandatory attributes.
-     *
-     * @exception  SmartFrogException error while reading attributes
+     * @param cd ComponentDescription A component description to read attributes from
+     * @throws SmartFrogException error while reading attributes
      */
     protected void readSFFileAttributes(ComponentDescription cd) throws SmartFrogException {
         if (cd==null) return;
@@ -171,7 +171,7 @@ public class LogToFileImpl extends LogToStreamsImpl implements LogToFile {
 
     /**
      * Creates the file using attributes.
-     *
+     * @param fileExtension  file extension
      * @return filename
      * @throws Exception error while creating file
      */
@@ -244,6 +244,11 @@ public class LogToFileImpl extends LogToStreamsImpl implements LogToFile {
         return new File( fullLogFileName.toString());
     }
 
+    /**
+     * Correct the file name
+     * @param filename file name
+     * @return  String
+     */
     private String correctFilename(String filename) {
         final int length = filename.length();
         StringBuffer buffer=new StringBuffer(length);

@@ -11,7 +11,9 @@ import org.smartfrog.sfcore.componentdescription.ComponentDescriptionImpl;
 import java.rmi.RemoteException;
 import java.util.Hashtable;
 
-
+/**
+ *  Log Factory
+ */
 public  class LogFactory {
 
     /**
@@ -53,7 +55,7 @@ public  class LogFactory {
 
     /**
      * get a named log.
-     * @param name
+     * @param name log name
      * @return a log from cache or new.
      *
      */
@@ -74,8 +76,7 @@ public  class LogFactory {
      *
      * @param clazz Class from which a log name will be derived
      *
-     * @exception SmartFrogLogException if suitable Log instance cannot be
-     * returned
+     * @return Log
      */
     public static Log getLog(Class clazz) {
         return (getLog(clazz.toString()));
@@ -85,7 +86,7 @@ public  class LogFactory {
      * Convenience method to derive a name from
      *
      * @param prim component to use
-     * @param registerWithCoreLog
+     * @param registerWithCoreLog flag to enable registration with the core
      * @return a log
      * @throws SmartFrogLogException if the prim name could not be completed, or when registration failed.
      *
@@ -129,8 +130,6 @@ public  class LogFactory {
     /**
      *  To get the sfCore logger
      * @return Logger implementing LogSF and Log
-     * @exception SmartFrogLogException if a suitable <code>Log</code>
-     *  instance cannot be returned
      */
     public static LogSF sfGetProcessLog() {
        LogSF sflog =  getLog ((String)SmartFrogCoreKeys.SF_CORE_LOG);
@@ -143,9 +142,9 @@ public  class LogFactory {
 
     /**
      * register a log with the core
-     * @param name
-     * @param log
-     * @throws SmartFrogLogException
+     * @param name log name
+     * @param log  logger to be registered
+     * @throws SmartFrogLogException if failed to register
      * @todo what happens when it changes its log level - needs to be fixed!
      */
     private static void registerWithCore(String name, LogSF log) throws SmartFrogLogException {

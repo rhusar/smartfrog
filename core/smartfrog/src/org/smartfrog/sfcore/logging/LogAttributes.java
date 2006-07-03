@@ -85,7 +85,7 @@ public interface LogAttributes {
 
     /**
      * <p> To change a property in all registered loggers </p>
-     *
+     * @param name attribute name
      * @param value new status value
      * @return if it was sucessfull applaying this attribute to any of the registered loggers
      */

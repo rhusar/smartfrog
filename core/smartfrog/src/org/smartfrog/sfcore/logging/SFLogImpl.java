@@ -33,6 +33,9 @@ import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
 import org.smartfrog.sfcore.common.*;
 
+/**
+ *  Implementation for SFLog component.
+ */
 public class SFLogImpl extends PrimImpl implements Prim, SFLog, Log {
 
     Log logTo = null;
@@ -46,7 +49,7 @@ public class SFLogImpl extends PrimImpl implements Prim, SFLog, Log {
     /**
      *  Constructor for the SFLogImpl object.
      *
-     *@exception  RemoteException In case of network/rmi error
+     *@throws  RemoteException In case of network/rmi error
      */
     public SFLogImpl() throws RemoteException {
     }
@@ -55,8 +58,8 @@ public class SFLogImpl extends PrimImpl implements Prim, SFLog, Log {
 
     /**
      *
-     * @exception  SmartFrogException In case of error in deploying
-     * @exception  RemoteException In case of network/rmi error
+     * @throws  SmartFrogException In case of error in deploying
+     * @throws RemoteException In case of network/rmi error
       */
     public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
        super.sfDeploy();
@@ -67,8 +70,8 @@ public class SFLogImpl extends PrimImpl implements Prim, SFLog, Log {
 
     /**
      *
-     * @exception  SmartFrogException In case of error while starting
-     * @exception  RemoteException In case of network/rmi error
+     * @throws  SmartFrogException In case of error while starting
+     * @throws  RemoteException In case of network/rmi error
      */
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
@@ -156,6 +159,7 @@ public class SFLogImpl extends PrimImpl implements Prim, SFLog, Log {
        * <p> Call this method to prevent having to perform expensive operations
        * (for example, <code>String</code> concatenation)
        * when the log level is more than debug. </p>
+       * @return boolean true if debug level is currently enabled
        */
       public boolean isDebugEnabled() {
           return logTo.isDebugEnabled();
@@ -168,6 +172,7 @@ public class SFLogImpl extends PrimImpl implements Prim, SFLog, Log {
        * <p> Call this method to prevent having to perform expensive operations
        * (for example, <code>String</code> concatenation)
        * when the log level is more than error. </p>
+       * @return boolean true if error level is currently enabled
        */
       public boolean isErrorEnabled(){
           return logTo.isErrorEnabled();
@@ -180,6 +185,7 @@ public class SFLogImpl extends PrimImpl implements Prim, SFLog, Log {
        * <p> Call this method to prevent having to perform expensive operations
        * (for example, <code>String</code> concatenation)
        * when the log level is more than fatal. </p>
+       * @return boolean true if fatal level is currently enabled
        */
       public boolean isFatalEnabled(){
           return logTo.isFatalEnabled();
@@ -192,6 +198,7 @@ public class SFLogImpl extends PrimImpl implements Prim, SFLog, Log {
        * <p> Call this method to prevent having to perform expensive operations
        * (for example, <code>String</code> concatenation)
        * when the log level is more than info. </p>
+       * @return boolean true if info level is currently enabled
        */
       public boolean isInfoEnabled(){
           return logTo.isInfoEnabled();
@@ -204,6 +211,7 @@ public class SFLogImpl extends PrimImpl implements Prim, SFLog, Log {
        * <p> Call this method to prevent having to perform expensive operations
        * (for example, <code>String</code> concatenation)
        * when the log level is more than trace. </p>
+       * @return boolean true if trace level is currently enabled
        */
       public boolean isTraceEnabled(){
           return logTo.isTraceEnabled();
@@ -216,6 +224,7 @@ public class SFLogImpl extends PrimImpl implements Prim, SFLog, Log {
        * <p> Call this method to prevent having to perform expensive operations
        * (for example, <code>String</code> concatenation)
        * when the log level is more than warn. </p>
+       * @return boolean true if warn level is currently enabled
        */
       public boolean isWarnEnabled(){
           return logTo.isWarnEnabled();
@@ -361,6 +370,7 @@ public class SFLogImpl extends PrimImpl implements Prim, SFLog, Log {
      *
      * @throws SmartFrogResolutionException illegal reference or reference
      * not resolvable
+     * @throws RemoteException in cae of Remote/Network error
      *
      */
     public Log sfResolve(Reference reference, Log defaultValue, boolean mandatory) throws SmartFrogResolutionException, RemoteException {
@@ -400,6 +410,7 @@ public class SFLogImpl extends PrimImpl implements Prim, SFLog, Log {
      *
      * @throws SmartFrogResolutionException illegal reference or reference
      * not resolvable
+     * @throws RemoteException in cae of Remote/Network error
      *
      */
     public Log sfResolve(String referencePart, Log defaultValue,

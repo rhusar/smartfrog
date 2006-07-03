@@ -108,19 +108,42 @@ public class SFLogRegistrationImpl extends PrimImpl implements Prim, SFLogRegist
     }
 
     // Main component action methods
-    //Log Registration interface
+
+    /**
+     * Log Registration interface
+     *
+     * @param name log name
+     * @param log logger to register
+     * @throws SmartFrogLogException  if failed to register
+     * @throws RemoteException in case of remote/network error
+     */
     public void register(String name,Log log)  throws SmartFrogLogException , RemoteException{
         if (logreg!=null) {
             logreg.register(name,log);
         }
     }
 
+   /**
+     *  Log Registration interface
+     * @param name log name
+     * @param log logger to register
+     * @param logLevel  log level
+     * @throws RemoteException in case of remote/network error
+     * @throws SmartFrogLogException if failed to register
+     */
    public void register(String name,Log log, int logLevel)  throws RemoteException, SmartFrogLogException{
        if (logreg!=null) {
            logreg.register(name,log,logLevel);
        }
    }
 
+    /**
+     *  Log Deregistration interface
+     * @param name log name
+     * @return  boolean success/failure
+     * @throws SmartFrogLogException if failed to deregister
+     * @throws RemoteException in case of remote/network error
+     */
     public boolean deregister(String name)  throws SmartFrogLogException, RemoteException {
         if (logreg!=null) {
            return logreg.deregister(name);

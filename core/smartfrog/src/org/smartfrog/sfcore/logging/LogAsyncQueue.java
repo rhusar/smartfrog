@@ -40,11 +40,22 @@ public class LogAsyncQueue {
         private Log  logImpl;
         private Method   method;
         private Object[] params;
+
+        /**
+         * Constructor
+         * @param logImpl the applicable log
+         * @param method  the method to invoke
+         * @param params  the parameters for the method
+         */
         public LogRequest(Log logImpl, Method method, Object[] params) {
             this.logImpl = logImpl;
             this.method  = method;
             this.params  = params;
         }
+
+        /**
+         * Invoke the log method
+         */
         public void invoke() {
             try {
                 if (logImpl!=null)
@@ -57,6 +68,10 @@ public class LogAsyncQueue {
             //logImpl.invoke(method, params);
         }
 
+        /**
+         * Return the string representation
+         * @return String
+         */
         public String toString() {
             String str = "LOG=" + logImpl.toString() + " METHOD=" + method.toString() + " PARAMS=[";
             str += params[0].toString();

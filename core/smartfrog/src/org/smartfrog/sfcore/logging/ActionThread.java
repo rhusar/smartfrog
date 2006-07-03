@@ -32,7 +32,7 @@ public class ActionThread implements Runnable {
    private Log[] actions;
 
    /**
-    *  Methos to invoke
+    *  Method to invoke
     */
    private Method method;
 
@@ -45,9 +45,9 @@ public class ActionThread implements Runnable {
    /**
     *  Action launched constructor and executor
     *
-    *@param  action  Description of the Parameter
-    *@param  method  Description of the Parameter
-    *@param  args    Description of the Parameter
+    *@param  action  Action object in where to invoke method in a separate thread
+    *@param  method  method to invoke
+    *@param  args    Arguments of the method to invoke
     */
    ActionThread(Log[] action, Method method, Object[] args) {
       this.actions = action;
@@ -57,12 +57,18 @@ public class ActionThread implements Runnable {
       thread.start();
    }
 
-
+    /**
+     * Run method for Action thread
+     */
    public void run() {
    }
 
 
-
+    /**
+     * Thread body launches method with arguments given from object specified
+     * @param method  method to invoke
+     * @return ActionThread
+     */
    public ActionThread executeAction(Method method){
        this.method=method;
        return executeAction();
@@ -70,6 +76,7 @@ public class ActionThread implements Runnable {
 
    /**
     *  Thread body launches method with arguments given from object specified
+    *  @return ActionThread
     */
    public ActionThread executeAction() {
       synchronized (actions) {
@@ -85,12 +92,22 @@ public class ActionThread implements Runnable {
       return this;
    }
 
-
+    /**
+     * Set the Action object
+     * @param actions Action object in where to invoke method in a separate thread
+     * @return ActionThread
+     */
    public ActionThread setAction(Log[] actions){
        this.actions = actions;
        return this;
    }
 
+    /**
+     * Set the method to invoke
+     * @param method method to invoke
+     * @param args Action object in where to invoke method in a separate thread
+     * @return ActionThread
+     */
    public ActionThread setMethod(Method method, Object[] args){
        this.method = method;
        this.args=args;
