@@ -81,7 +81,10 @@ public class DeployEntryCellRenderer extends DefaultTreeCellRenderer {
     return this;
   }
 
-  /** Returns an ImageIcon, or null if the path was invalid. */
+  /**
+   * Returns an ImageIcon, or null if the path was invalid.
+   * @return ImageIcon or null
+   */
   protected static ImageIcon createImageIcon(String path) {
     try {
       return new ImageIcon(org.smartfrog.SFSystem.getByteArrayForResource(path));

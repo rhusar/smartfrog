@@ -118,10 +118,10 @@ public class DownloadImpl extends FileUsingComponentImpl implements Download {
 
     /**
      * Simple Download
-     * @param url
-     * @param localFile
-     * @param blocksize
-     * @throws IOException
+     * @param url url to download from
+     * @param localFile local file name
+     * @param blocksize  block size to download
+     * @throws IOException   for IO error
      */
     public static void download(String url, File localFile, int blocksize)
             throws IOException {

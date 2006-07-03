@@ -31,7 +31,6 @@ import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.processcompound.ProcessCompound;
-import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
 import java.rmi.RemoteException;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 
@@ -53,7 +52,9 @@ public class DeployEntry implements Entry {
     /**
      * Constructs the DeployEntry object
      *
-     *@param  entry  object entry.
+     * @param  entry  object entry.
+     * @param showRootProcessName flag indicating to show rootprocess name
+     * @param showCDasChild flag indicating to show CD as child
      */
     public DeployEntry(Object entry, boolean showRootProcessName, boolean showCDasChild) {
         try {

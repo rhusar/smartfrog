@@ -87,7 +87,9 @@ public class DeployTreePanel extends JPanel implements TreeSelectionListener {
     /**
      * Constructs the DeployTreePanel object with root.
      *
-     *@param  root  Root of the tree.
+     * @param  root  Root of the tree.
+     * @param inRootPanel flag indicating to show in root panel
+     * @param showCDasChild flag indicating to show CD as child
      */
     public DeployTreePanel(Object root, boolean inRootPanel,boolean showCDasChild) {
         try {
@@ -166,7 +168,9 @@ public class DeployTreePanel extends JPanel implements TreeSelectionListener {
     /**
      * Initializes the tree.
      *
-     *@param  root  Root of the tree.
+     * @param  root  Root of the tree.
+     * @param inRootPanel flag indicating to show in root panel
+     * @param showCDasChild flag indicating to show CD as child
      */
     private void treeInit(Object root, boolean inRootPanel, boolean showCDasChild) {
         if (root != null) {
@@ -363,6 +367,10 @@ public class DeployTreePanel extends JPanel implements TreeSelectionListener {
       }
    }
 
+    /**
+     * Get Node
+     * @return Object
+     */
    private Object getNode() {
        Object node;
        TreePath tpath = (this.systemViewTree).getSelectionPath();
@@ -370,6 +378,14 @@ public class DeployTreePanel extends JPanel implements TreeSelectionListener {
        return node;
    }
 
+    /**
+     * Resolve an attribute
+     * @param attribName attribute name
+     * @param node Node
+     * @return Object
+     * @throws SmartFrogResolutionException error in resolving
+     * @throws RemoteException in case of remote/network error
+     */
    private Object sfResolveHere(Object attribName, Object node) throws  SmartFrogResolutionException, RemoteException {
     Object value=null;
     if (node instanceof Prim){
@@ -380,6 +396,14 @@ public class DeployTreePanel extends JPanel implements TreeSelectionListener {
     return value;
    }
 
+    /**
+     * Resolve an attribute
+     * @param attribName attribute name
+     * @param node Node
+     * @return Object
+     * @throws SmartFrogResolutionException error in resolving
+     * @throws RemoteException in case of remote/network error
+     */
    private Object sfResolve(Object attribName, Object node) throws  SmartFrogResolutionException, RemoteException {
     Object value=null;
     if (node instanceof Prim){
