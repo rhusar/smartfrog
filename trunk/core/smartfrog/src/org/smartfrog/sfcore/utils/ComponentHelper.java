@@ -22,22 +22,13 @@ package org.smartfrog.sfcore.utils;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.reference.Reference;
-import org.smartfrog.sfcore.reference.ReferencePart;
 import org.smartfrog.sfcore.logging.Log;
 import org.smartfrog.sfcore.logging.LogFactory;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.common.TerminatorThread;
-import org.smartfrog.sfcore.common.Context;
-import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
-import org.smartfrog.sfcore.common.MessageUtil;
-import org.smartfrog.sfcore.common.MessageKeys;
-import org.smartfrog.sfcore.common.ContextImpl;
 import org.smartfrog.sfcore.security.SFClassLoader;
-import org.smartfrog.sfcore.componentdescription.ComponentDescription;
-import org.smartfrog.sfcore.deployer.SFDeployer;
-import org.smartfrog.sfcore.compound.CompoundImpl;
 import org.smartfrog.services.filesystem.FileSystem;
 
 import java.rmi.RemoteException;
@@ -51,7 +42,6 @@ import java.nio.charset.Charset;
  * Component helpers must be bound to Prim classes before use.
  * created 18-May-2004 11:26:15
  */
-
 public class ComponentHelper {
 
     private Prim owner;
@@ -59,7 +49,7 @@ public class ComponentHelper {
 
     /**
      * construct a component helper and bind to a prim class
-     * @param owner
+     * @param owner  the owner to which this helper should be bound
      */
     public ComponentHelper(Prim owner) {
         this.owner = owner;
@@ -67,7 +57,7 @@ public class ComponentHelper {
 
     /**
      * return the prim that this helper is bound to
-     * @return
+     * @return Prim the owner this helper is bound to
      */
     public Prim getOwner() {
         return owner;
@@ -78,7 +68,7 @@ public class ComponentHelper {
     /**
      * get the relevant logger for this component.
      * When logging against a remote class, this is probably the classname of the proxy.
-     * @return
+     * @return  Log Logger for this component
      */
     public Log getLogger() {
         return LogFactory.getOwnerLog(owner);
@@ -86,7 +76,7 @@ public class ComponentHelper {
 
     /**
      * ignore an exception by logging it at the fine level.
-     * @param thrown
+     * @param thrown exception to be logged
      */
     public void logIgnoredException(Throwable thrown) {
         Log log=getLogger();
@@ -129,7 +119,7 @@ public class ComponentHelper {
      * Returns the complete name for any component from the root of the
      * application and does not throw any exception. If an exception is
      * thrown it will return a new empty reference.
-     *
+     * @param owner component whose completename is to be returned
      * @return reference of attribute names to this component or an empty reference
      */
     public static Reference completeNameSafe(Prim owner) {
@@ -141,7 +131,7 @@ public class ComponentHelper {
         }
     }
 
-    /**
+    /**         s
      * Method that can be invoked in any PrimImpl to trigger the detach and/or termination of a component
      * according to the values of the boolean attributes 'sfShouldDetach', 'sfShouldTerminate'
      * and 'sfShouldTerminateQuietly'
@@ -273,6 +263,7 @@ public class ComponentHelper {
      * @param resourcename name of resource on the classpath
      * @return an input stream if the resource was found and loaded
      * @throws SmartFrogException if the resource is not on the classpath
+     * @throws RemoteException in case of Remote/network error
      */
     public InputStream loadResource(String resourcename)
             throws SmartFrogException, RemoteException {
@@ -287,11 +278,11 @@ public class ComponentHelper {
 
     /**
      * Load a resource into a string
-     * @param resourcename
-     * @param encoding
-     * @return
-     * @throws SmartFrogException
-     * @throws RemoteException
+     * @param resourcename name of resource on the classpath
+     * @param encoding encoding to be used
+     * @return String if the resource was found and loaded
+     * @throws SmartFrogException if the resource is not on the classpath
+     * @throws RemoteException in case of Remote/network error
      */
     public String loadResourceToString(String resourcename, Charset encoding) throws SmartFrogException, RemoteException {
         InputStream in= loadResource(resourcename);
@@ -314,9 +305,9 @@ public class ComponentHelper {
 
     /**
      * get the codebase of a component
-     * @return
-     * @throws SmartFrogResolutionException
-     * @throws RemoteException
+     * @return String codebase of a component
+     * @throws SmartFrogResolutionException if failed to resolve
+     * @throws RemoteException in case of Remote/network error
      */
     public String getCodebase() throws SmartFrogResolutionException,
             RemoteException {
@@ -329,7 +320,7 @@ public class ComponentHelper {
      * @param interfaceName full name of interface to look for
      * @param depth 0 means dont look upwards, -1 means indefinite.
      * @return a parent or null for no match
-     * @throws java.rmi.RemoteException
+     * @throws RemoteException in case of Remote/network error
      */
     public static Prim findAncestorImplementing(Prim node, String interfaceName, int depth) throws RemoteException {
         if (depth == 0 || node == null) {
@@ -352,7 +343,7 @@ public class ComponentHelper {
      * @param interfaceName full name of interface to look for
      * @param depth 0 means dont look upwards, -1 means indefinite.
      * @return a parent or null for no match
-     * @throws RemoteException
+     * @throws RemoteException in case of Remote/network error
      */
     public Prim findAncestorImplementing(String interfaceName, int depth) throws RemoteException {
         return findAncestorImplementing(owner, interfaceName, depth);
@@ -360,9 +351,9 @@ public class ComponentHelper {
 
     /**
      * recursive search for interface inheritance
-     * @param clazz
-     * @param interfaceName
-     * @return
+     * @param clazz  Class name
+     * @param interfaceName full name of interface to look for
+     * @return boolean true is the interface is found in the recursive search
      */
     public static boolean implementsInterface(Class clazz,String interfaceName ) {
         if(clazz==null) {

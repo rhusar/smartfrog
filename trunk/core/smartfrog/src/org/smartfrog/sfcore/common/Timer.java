@@ -188,6 +188,10 @@ public class Timer implements Runnable {
         }
     }
 
+    /**
+     * Sets the name
+     * @param name  String name
+     */
     public void setName(String name){
         this.name=name;
     }

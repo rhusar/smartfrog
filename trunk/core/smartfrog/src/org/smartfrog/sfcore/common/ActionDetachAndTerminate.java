@@ -26,7 +26,9 @@ import org.smartfrog.sfcore.prim.Prim;
 
 import java.rmi.RemoteException;
 
-
+/**
+ * Detach and Terminate a component
+ */
 public class ActionDetachAndTerminate extends ConfigurationAction{
 
     /**
@@ -80,12 +82,14 @@ public class ActionDetachAndTerminate extends ConfigurationAction{
     }
 
     /**
-     /**
-      * Detach and Terminate action
-      *
-      * @param targetP       target process
-      * @param configuration
-      */
+     * Detach and Terminate action
+     *
+     * @param targetP   target where to execute the configuration command
+     * @param configuration   configuration command to be executed
+     * @return Object Reference to detached and terminated component
+     * @throws SmartFrogException  failure in some part of the process
+     * @throws RemoteException    In case of network/rmi error
+     */
      public Object execute(ProcessCompound targetP,
                            ConfigurationDescriptor configuration) throws SmartFrogException,
              RemoteException {

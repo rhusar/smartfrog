@@ -4,7 +4,7 @@ import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.compound.Compound;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
-import java.rmi.*;
+import java.rmi.RemoteException;
 import org.smartfrog.sfcore.logging.LogSF;
 import org.smartfrog.sfcore.logging.LogFactory;
 
@@ -16,7 +16,6 @@ import org.smartfrog.sfcore.logging.LogFactory;
  * Expert Group and released to the public domain. Use, modify, and
  * redistribute this code in any way without acknowledgement.
  */
-
 public class CreateNewChildThread extends Thread {
 
 /** State value representing that task is running */
@@ -58,8 +57,11 @@ public class CreateNewChildThread extends Thread {
   * Creates a <tt>CreateNewChildThread</tt> that will upon running, execute the
   * given <tt>CreateNewChild</tt>.
   * Parent cannot be null
-  *
-  * @throws NullPointerException if callable is null
+  * @param name child name
+  * @param parent parent component
+  * @param cmp component description
+  * @param parms Context
+  * @throws SmartFrogException if callable is null
   */
  public CreateNewChildThread(Object name, Prim parent, ComponentDescription cmp, Context parms) throws SmartFrogException{
     this(name,parent,cmp,parms,null);
@@ -71,7 +73,12 @@ public class CreateNewChildThread extends Thread {
   * given <tt>CreateNewChild</tt>.
   * If parent null then it will create a independent application but a deployer needs to be provided
   *
-  * @throws NullPointerException if callable is null
+  * @param name child name
+  * @param parent parent component
+  * @param cmp component description
+  * @param parms Context
+  * @param deployer deployer
+  * @throws SmartFrogException if callable is null
   */
  public CreateNewChildThread(Object name, Prim parent, ComponentDescription cmp, Context parms, Prim deployer) throws SmartFrogException{
 
@@ -107,15 +114,27 @@ public class CreateNewChildThread extends Thread {
  }
 
 
-
+    /**
+     *  Check if the state as CANCELLED
+     * @return  boolean
+     */
  public synchronized boolean isCancelled() {
      return state == CANCELLED;
  }
 
+    /**
+     * Checks if the tasks is done
+     * @return boolean
+     */
  public synchronized boolean isDone() {
      return ranOrCancelled() && runner == null;
  }
 
+    /**
+     * Cancel the thread
+     * @param mayInterruptIfRunning boolean to interrupt
+     * @return boolean
+     */
  public boolean cancel(boolean mayInterruptIfRunning) {
      synchronized (this) {
          if (ranOrCancelled()) return false;
@@ -143,6 +162,12 @@ public class CreateNewChildThread extends Thread {
      return true;
  }
 
+    /**
+     * Wait
+     * @return  Object
+     * @throws InterruptedException if interrupted
+     * @throws SmartFrogException if failed
+     */
  public synchronized Object get()
      throws InterruptedException, SmartFrogException
  {
@@ -150,6 +175,13 @@ public class CreateNewChildThread extends Thread {
      return getResult();
  }
 
+    /**
+     * Wait
+     * @param timeout timeout
+     * @return Object
+     * @throws InterruptedException if interrupted
+     * @throws SmartFrogException if failed
+     */
  public synchronized Object get(long timeout)
      throws InterruptedException, SmartFrogException
  {
@@ -268,6 +300,7 @@ public class CreateNewChildThread extends Thread {
  /**
   * Waits for the task to complete.
   * PRE: lock owned
+  * @throws InterruptedException if interrupted
   */
  private void waitFor() throws InterruptedException {
      while (!isDone()) {
@@ -279,6 +312,9 @@ public class CreateNewChildThread extends Thread {
   * Waits for the task to complete for timeout milliseconds or throw
   * TimeoutException if still not completed after that
   * PRE: lock owned
+  * @param timeout timeout
+  * @throws InterruptedException if interrupted
+  * @throws SmartFrogException if timeout is not valid
   */
  private void waitFor(long timeout) throws InterruptedException, SmartFrogException {
      if (timeout < 0) throw new SmartFrogException("IllegalArgumentException");
@@ -297,6 +333,8 @@ public class CreateNewChildThread extends Thread {
   *
   * PRE: task completed
   * PRE: lock owned
+  * @return Object
+  * @throws SmartFrogException if failed
   */
  private Object getResult() throws SmartFrogException {
      if (state == CANCELLED) {

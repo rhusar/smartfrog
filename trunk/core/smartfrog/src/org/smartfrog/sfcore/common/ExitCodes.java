@@ -72,6 +72,7 @@ public final class ExitCodes {
      * Exits from the system.
      * This is the only place in the framework where System.exit() should be used.
      * That way a subjclass can change exit behaviour (within limits)
+     * @param code int
      */
     public static void exit(int code) {
         System.exit(code);

@@ -114,6 +114,7 @@ public class SmartFrogInitException extends SmartFrogException implements Serial
      * If thr is an instance of SmartFrogInitException then the exception is returned
      * without any modification, if not a new SmartFrogInitException is created
      * with message as a paramenter
+     * @param message String message
      * @param thr throwable object to be forwarded
      * @return Throwable that is a SmartFrogInitException
      */

@@ -39,6 +39,7 @@ public class SFByteArray implements Serializable {
 
     /**
      * Return a string in canonical form representing the data
+     * @return String
      */
     public String toString() {
         return new StringBuffer().append("#HEX#").append(processArray()).append("#").toString();
@@ -46,11 +47,17 @@ public class SFByteArray implements Serializable {
 
     /**
      * return a copy of the internal array of data
+     * @return  internal array of data
      */
     public byte[] byteArray() {
         return (byte[])array.clone();
     }
 
+    /**
+     * Maps the characters
+     * @param c char
+     * @return  int
+     */
     private int mapChar(char c) {
         byte res = 0;
         switch (c) {
@@ -80,6 +87,10 @@ public class SFByteArray implements Serializable {
         return res;
     }
 
+    /**
+     *  Process the string
+     * @param s  String
+     */
     private void processString(String s) {
         array = new byte[s.length()/2] ;
         for (int i = 0; i < s.length(); i=i+2) {
@@ -92,6 +103,11 @@ public class SFByteArray implements Serializable {
     }
 
     private static char[] indexstring = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
+
+    /**
+     * Process the array
+     * @return String
+     */
     private String processArray() {
         StringBuffer s = new StringBuffer();
         for (int i = 0; i < array.length; i++) {

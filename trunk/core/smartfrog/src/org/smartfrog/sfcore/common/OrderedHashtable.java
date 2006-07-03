@@ -31,8 +31,6 @@ import java.util.Iterator;
 import java.util.Hashtable;
 import java.util.Vector;
 
-import org.smartfrog.sfcore.common.SmartFrogCoreProperty;
-
 
 /**
  * Implements a hashtable which maintains the order in which the elements were

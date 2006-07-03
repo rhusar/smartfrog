@@ -59,6 +59,10 @@ public class ParentHelper implements ChildMinder {
      */
     protected Vector lifecycleChildren = new Vector();
 
+    /**
+     * construct a parent helper and bind to a prim class
+     * @param owner he owner to which this helper should be bound
+     */
     public ParentHelper(Prim owner) {
         this.owner = owner;
         helper=new ComponentHelper(owner);
@@ -83,7 +87,7 @@ public class ParentHelper implements ChildMinder {
      * @param child child to add
      *
      * @return Status of child removal
-     *
+     * @throws SmartFrogRuntimeException if failed ro remove 
      * @throws java.rmi.RemoteException In case of Remote/nework error
      */
     public boolean sfRemoveChild(Liveness child)

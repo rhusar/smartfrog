@@ -40,6 +40,7 @@ public abstract class ConfigurationAction {
          * @param subProcess subProcess name (optional; can be null)
          * @return ProcessCompound the target process compound
          * @throws SmartFrogException In case of SmartFrog system error
+         * @throws RemoteException In case of network/rmi error
          */
         public static ProcessCompound selectTargetProcess(String host,
             String subProcess) throws SmartFrogException, RemoteException {
@@ -53,7 +54,10 @@ public abstract class ConfigurationAction {
      * This version looks up the target and notes if it was a root process or not.
      * then
      * @param targetP target process
-     * @param configuration
+     * @param configuration configuration command to be executed
+     * @return Object Reference to component
+     * @throws SmartFrogException  failure in some part of the process
+     * @throws RemoteException    In case of network/rmi error
      */
     public abstract Object execute(ProcessCompound targetP, ConfigurationDescriptor configuration)
             throws SmartFrogException, RemoteException;
@@ -64,7 +68,10 @@ public abstract class ConfigurationAction {
      * this is an optional override point, giving the overrider the option of
      * using an alternate target mapping process
      *
-     * @param configuration
+     * @param configuration   configuration command to be executed
+     * @return Object Reference to component
+     * @throws SmartFrogException  failure in some part of the process
+     * @throws RemoteException    In case of network/rmi error
      */
     public Object execute(ConfigurationDescriptor configuration) throws SmartFrogException,
             RemoteException {
@@ -78,10 +85,11 @@ public abstract class ConfigurationAction {
      * special handler for processing exceptions during termination;
      * socket failures are actually viewed as successful terminations, as they
      * are often the symptom of success.
-     * @param ex
-     * @param rootProcess
+     *
+     * @param ex RemoteException to be handled
+     * @param rootProcess  boolean indicating if the component is rootProcess  or not
      * @return boolean indiacating if action was successful or not.
-     * @throws RemoteException
+     * @throws RemoteException  In case of network/rmi error
      *
      */
     protected static boolean HandleTerminationException(RemoteException ex,

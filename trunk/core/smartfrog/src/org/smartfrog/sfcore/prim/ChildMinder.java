@@ -48,7 +48,7 @@ public interface ChildMinder extends Remote {
      * @param child child to add
      *
      * @return Status of child removal
-     *
+     * @throws SmartFrogRuntimeException if failed to remove the child
      * @throws RemoteException In case of Remote/nework error
      */
     public boolean sfRemoveChild(Liveness child) throws SmartFrogRuntimeException, RemoteException;

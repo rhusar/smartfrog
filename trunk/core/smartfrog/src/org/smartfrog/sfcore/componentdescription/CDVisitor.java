@@ -32,7 +32,7 @@ public interface CDVisitor {
      * method which is invoked on each node.
      *
      * @param node tree node on which to act
-     *
+     * @param path Stack
      * @exception Exception error thrown during action
      */
     public void actOn(ComponentDescription node, Stack path) throws Exception;

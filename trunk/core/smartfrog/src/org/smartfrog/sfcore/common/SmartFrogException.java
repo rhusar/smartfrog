@@ -94,6 +94,7 @@ public class SmartFrogException extends Exception implements Serializable {
      * If thr is an instance of SmartFrogException then the exception is returned
      * without any modification, if not a new SmartFrogException is created
      * with message as a paramenter
+     * @param message String message
      * @param thr throwable object to be forwarded
      * @return Throwable that is a SmartFrogException
      */
@@ -203,6 +204,7 @@ public class SmartFrogException extends Exception implements Serializable {
      *  Any value is converted toString().
      *
      * @param params Additional Context
+     * @return Context
      */
     public Context serializableContext(Context params){
         Context newCxt = new ContextImpl();
@@ -333,6 +335,11 @@ public class SmartFrogException extends Exception implements Serializable {
         return strb.toString();
     }
 
+    /**
+     * Get the cause message
+     * @param nm Message separator (ex. "\n");
+     * @return  cause message
+     */
     public String getCauseMessage(String nm) {
         String causeText="";
         Throwable cause = this.getCause();

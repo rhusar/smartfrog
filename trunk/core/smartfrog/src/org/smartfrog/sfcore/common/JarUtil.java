@@ -21,18 +21,14 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.sfcore.common;
 
-import java.util.List;
 import java.util.Vector;
 import java.util.zip.*;
 import java.util.Enumeration;
-import java.net.URL;
-import java.io.InputStream;
 import java.util.Hashtable;
 import java.io.IOException;
 import java.io.FileNotFoundException;
 import java.io.FileInputStream;
 import java.io.BufferedInputStream;
-import java.util.jar.*;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.io.Serializable;
@@ -229,7 +225,7 @@ public class JarUtil {
     *  initializes internal hash tables with Jar file resources.
     *
     *@param  jarFileName  The feature to be added to the JarFiles attribute
-    *@param  filter       The feature to be added to the JarFiles attribute
+    *@param  filters       The feature to be added to the JarFiles attribute
     */
    private void addJarFiles(String jarFileName, String[] filters) {
       try {
@@ -308,7 +304,7 @@ public class JarUtil {
  *  Description of the Class
  *
  *@author     julgui
- *@created    04 October 2001
+ *created    04 October 2001
  */
 class StringComparator  implements Comparator, Serializable {
 

@@ -185,6 +185,7 @@ public class SmartFrogLifecycleException extends SmartFrogRuntimeException imple
      * If thr is an instance of SmartFrogLifecycleException then the exception is returned
      * without any modification, if not a new SmartFrogException is created
      * with message as a paramenter
+     * @param message String message
      * @param thr throwable object to be forwarded
      * @return Throwable that is a SmartFrogException
      */

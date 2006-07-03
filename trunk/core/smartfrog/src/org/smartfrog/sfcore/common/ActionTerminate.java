@@ -26,7 +26,9 @@ import org.smartfrog.sfcore.prim.TerminationRecord;
 
 import java.rmi.RemoteException;
 
-
+/**
+ * Terminate a component
+ */
 public class ActionTerminate extends ConfigurationAction{
 
 
@@ -79,8 +81,11 @@ public class ActionTerminate extends ConfigurationAction{
 
     /**
       * Terminate action
-     * @param targetP       target process
-     * @param configuration
+     * @param targetP   target where to execute the configuration command
+     * @param configuration   configuration command to be executed
+     * @return Object Reference to parsed component
+     * @throws SmartFrogException  failure in some part of the process
+     * @throws RemoteException    In case of network/rmi error
      */
     public Object execute(ProcessCompound targetP,
                           ConfigurationDescriptor configuration) throws SmartFrogException,

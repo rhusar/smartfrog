@@ -39,6 +39,7 @@ public class LivenessSender extends Timer {
      *
      * @param target target for heart beats
      * @param delay wait between heartbeats (in millis)
+     * @param name String name
      */
     public LivenessSender(Liveness target, long delay, String name) {
         super(delay);
@@ -59,6 +60,7 @@ public class LivenessSender extends Timer {
         try {
             target.sfPing(this);
         } catch (Exception pingex) {
+            // ignore
         }
     }
 
@@ -67,7 +69,7 @@ public class LivenessSender extends Timer {
      * part of the liveness thread group.
      *
      * @param run interface to run on
-     *
+     * @param nameTh String name
      * @return  Thread
      */
     protected Thread createThread(Runnable run, String nameTh) {

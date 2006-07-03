@@ -36,10 +36,10 @@ public class PlatformHelper {
 
     /**
      * construct a platform helper bound to a set of settings
-     * @param fileSeparator
-     * @param fileSeparatorChar
-     * @param pathSeparator
-     * @param pathSeparatorChar
+     * @param fileSeparator file separator
+     * @param fileSeparatorChar file separator character
+     * @param pathSeparator  path separator
+     * @param pathSeparatorChar path separator character
      */
     protected PlatformHelper(String fileSeparator, char fileSeparatorChar, String pathSeparator, char pathSeparatorChar) {
         this.fileSeparator = fileSeparator;

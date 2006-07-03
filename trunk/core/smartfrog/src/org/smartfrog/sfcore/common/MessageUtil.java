@@ -39,6 +39,9 @@ public final class MessageUtil {
      */
     private static final ResourceBundle myResources = ResourceBundle.getBundle(MESSAGE_BUNDLE);
 
+    /**
+     * empty constructor
+     */
     private MessageUtil(){
     }
 

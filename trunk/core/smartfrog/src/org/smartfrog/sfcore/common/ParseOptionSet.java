@@ -178,6 +178,8 @@ public class ParseOptionSet {
 
     /**
      * Loads list from file.
+     * @param url String url
+     * @return Vector
      */
     private synchronized Vector loadListOfFiles(String url) {
       String thisLine;

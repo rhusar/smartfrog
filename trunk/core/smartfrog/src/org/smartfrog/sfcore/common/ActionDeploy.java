@@ -22,9 +22,6 @@ package org.smartfrog.sfcore.common;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.processcompound.ProcessCompound;
-import org.smartfrog.sfcore.processcompound.ProcessCompoundImpl;
-import org.smartfrog.sfcore.security.SFClassLoader;
-import org.smartfrog.sfcore.parser.SFParser;
 import org.smartfrog.sfcore.parser.Phases;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.componentdescription.ComponentDescriptionImpl;
@@ -35,11 +32,10 @@ import org.smartfrog.sfcore.compound.Compound;
 
 
 import java.rmi.RemoteException;
-import java.io.InputStream;
-import java.io.IOException;
-import java.util.Date;
 
-
+/**
+ * Deploy a component
+ */
 public class ActionDeploy extends ConfigurationAction {
     public static final String KEY_LANGUAGE = "#language";
 
@@ -56,11 +52,13 @@ public class ActionDeploy extends ConfigurationAction {
       * @param target the target process compound to request deployment
       * @param c a context of additional attributes that should be set before
       *        deployment
-      * @return Reference to deployed component
-      *
-      * @exception SmartFrogException failure in some part of the process
-      * @throws RemoteException In case of network/rmi error
-      */
+     * @param deployReference  reference to resolve in ComponentDescription.
+     *        If ref is null the whole result ComponentDescription is returned.
+     * @return Prim Reference to deployed component
+     *
+     * @throws SmartFrogException failure in some part of the process
+     * @throws RemoteException In case of network/rmi error
+     */
      public static Prim Deploy(String url, String appName,Prim parent, Compound target,
                                Context c, Reference deployReference) throws SmartFrogException, RemoteException {
 
@@ -180,8 +178,12 @@ public class ActionDeploy extends ConfigurationAction {
     /**
      * Deploy Action.
      *
-     * @param targetP
-     * @param configuration
+     * @param targetP   target where to execute the configuration command
+     * @param configuration   configuration command to be executed
+     * @return Object Reference to deployed component
+     * @throws SmartFrogException  failure in some part of the process
+     * @throws RemoteException    In case of network/rmi error
+     *
      */
     public Object execute(ProcessCompound targetP, ConfigurationDescriptor configuration)
        throws SmartFrogException, RemoteException {

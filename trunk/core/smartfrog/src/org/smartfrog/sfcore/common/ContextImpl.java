@@ -27,9 +27,6 @@ import java.util.Vector;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.io.IOException;
-
-import org.smartfrog.sfcore.common.SmartFrogContextException;
-import org.smartfrog.sfcore.languages.sf.SmartFrogCompileResolutionException;
 import java.io.PrintWriter;
 
 
@@ -408,6 +405,11 @@ public class ContextImpl extends OrderedHashtable implements Context,
         }
     }
 
+    /**
+     *  To fix escape characters in String
+     * @param s  String to be fixed
+     * @return String
+     */
     private static String unfixEscapes(String s) {
         s = s.replaceAll("\\\\", "\\\\\\\\");
         s = s.replaceAll("\n", "\\\\n");
@@ -419,14 +421,12 @@ public class ContextImpl extends OrderedHashtable implements Context,
     }
 
     /**
-     * Gets a given value in its String from. Recognizes descriptions, strings and
+     * Gets a given value in its String form. Recognizes descriptions, strings and
      * vectors of basic values and turns them into string representation.
      * Default is to turn into string using normal toString() call
      *
-     * @param ps writer to write on
-     * @param indent indent level
-     * @param value value to stringify
-     *
+     * @param obj Object to be given in String form
+     * @return String 
      * @throws IOException failure while writing
      */
     public static String getBasicValueFor (Object obj) throws IOException {

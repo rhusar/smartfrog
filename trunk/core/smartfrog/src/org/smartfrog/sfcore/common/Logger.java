@@ -59,9 +59,15 @@ public class Logger implements MessageKeys {
 
     private static boolean initialized = false;
 
+    /**
+     * empty constructor
+     */
     private Logger(){
     }
 
+    /**
+     * Init method
+     */
     public static synchronized void  init() {
         if (initialized) return;
         ComponentDescription configuration = null;
@@ -88,6 +94,10 @@ public class Logger implements MessageKeys {
         initialized = true;
     }
 
+    /**
+     * Return the intializaed status of Logger
+     * @return boolean
+     */
     public static boolean initialized(){
         return initialized;
     }
