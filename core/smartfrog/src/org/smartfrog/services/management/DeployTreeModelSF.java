@@ -66,7 +66,9 @@ public class DeployTreeModelSF implements TreeModel {
     /**
      *  Constructs the DeployTreeModelSF object with the deploy entry
      *
-     *@param  entry  deploy entry
+     * @param  entry  deploy entry
+     * @param showRootProcessName flag indicating to show rootprocess name
+     * @param showCDasChild flag indicating to show CD as child
      */
     public DeployTreeModelSF(Object entry, boolean showRootProcessName,boolean showCDasChild) {
         try {

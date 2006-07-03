@@ -42,11 +42,7 @@ import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.parser.Phases;
 import org.smartfrog.sfcore.parser.SFParser;
 import org.smartfrog.sfcore.reference.Reference;
-import org.smartfrog.sfcore.parser.StreamParser;
-import java.io.InputStream;
-import java.io.StringBufferInputStream;
-import java.io.StringReader;
-import java.io.ByteArrayInputStream;
+
 
 /**
  *  Dialog to create/add/modify attributes of a SmartFrog component
@@ -372,6 +368,12 @@ public class NewAttributeDialog extends JDialog {
         return null;
     }
 
+    /**
+     * Parse
+     * @param textToParse  text to be parsed
+     * @param language language 
+     * @return Object
+     */
     public Object parseValue(String textToParse, String language) {
         try {
             SFParser parser = new SFParser(language);

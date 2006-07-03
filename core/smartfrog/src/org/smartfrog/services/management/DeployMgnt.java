@@ -88,7 +88,9 @@ public class DeployMgnt {
     /**
      * Terminates the SF Component
      *
-     *@param  obj  Reference to SF Component
+     * @param  obj  Reference to SF Component
+     * @param type error type
+     * @param reason cause
      */
     public static void terminate(Prim obj, String type, String reason) {
         try {
@@ -103,7 +105,9 @@ public class DeployMgnt {
     /**
      * Detaches and terminates the SF Component
      *
-     *@param  obj  Reference to SF Component
+     * @param  obj  Reference to SF Component
+     * @param type error type
+     * @param reason cause
      */
     public static void dTerminate(Prim obj, String type, String reason) {
         try {

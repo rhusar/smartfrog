@@ -42,7 +42,7 @@ import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.processcompound.SFProcess;
-import org.smartfrog.services.display.WindowUtilities;
+
 import org.smartfrog.sfcore.common.ExitCodes;
 
 
@@ -119,7 +119,7 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
     *@param  width             width of the window
     *@param  positionDisplay   position  of display
     *@param  showRootProcess   boolean to enable display of root process
-    *@param  showRootProcess   boolean to enable display of CDs as children    *
+    *@param  showCDasChild   boolean to enable display of CDs as children
     *@param  hostname          host name
     *@param  port              port
     *@param  shouldSystemExit  boolean to indicate exit at close of window
@@ -223,6 +223,10 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
       return null;
    }
 
+    /**
+     * Add Frog Icon
+     * @param newDisplay Display Object
+     */
    private static void addFrogIcon(Display newDisplay) {
        String imagesPath = SFDeployDisplay.class.getPackage().getName()+".";
        imagesPath = imagesPath.replace('.', '/');
@@ -235,6 +239,7 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
     *  Prints given error string and exits system
     *
     *@param  str  string to print on out
+    * @param exitCode exit code
     */
    public static void exitWith(String str, int exitCode) {
       if (str != null) {
@@ -254,6 +259,7 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
     *      attribute
     *@param  addRootProcessPanel  The feature to be added to the ProcessesPanels
     *      attribute
+    * @param  showCDasChild   boolean to enable display of CDs as children
     *@param  hostname             The feature to be added to the ProcessesPanels
     *      attribute
     *@param  port                 The feature to be added to the ProcessesPanels

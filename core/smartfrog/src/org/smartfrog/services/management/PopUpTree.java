@@ -38,11 +38,10 @@ import java.awt.Frame;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 
 import org.smartfrog.sfcore.prim.Prim;
-import org.smartfrog.sfcore.compound.Compound;
-import java.rmi.Remote;
+
 import java.rmi.RemoteException;
 
-import java.util.Enumeration;
+
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.componentdescription.ComponentDescriptionImpl;
 
@@ -241,6 +240,10 @@ public class PopUpTree extends JComponent implements ActionListener {
 
     }
 
+    /**
+     * Get Node
+     * @return  Object
+     */
     private Object getNode() {
         TreePath tpath = ((JTree) tempComp).getPathForLocation(tempX, tempY);
         Object node = (((DeployEntry) (tpath.getLastPathComponent())).getEntry());
@@ -299,6 +302,8 @@ public class PopUpTree extends JComponent implements ActionListener {
      * Terminates the deploy management
      *
      *@param  obj  SF Component
+     * @param type error type
+     * @param reason cause
      */
     void terminate(Object obj, String type, String reason) {
         //System.out.println("Terminating: "+obj.toString());
@@ -311,7 +316,9 @@ public class PopUpTree extends JComponent implements ActionListener {
     /**
      * Detaches and terminates the deploy management
      *
-     *@param  obj  SF Component
+     * @param  obj  SF Component
+     * @param type error type
+     * @param reason cause
      */
     void dTerminate(Object obj, String type, String reason) {
         //System.out.println("Detatching and Terminating: "+obj.toString());

@@ -31,7 +31,6 @@ import javax.swing.JTree;
 import javax.swing.tree.TreePath;
 
 import org.smartfrog.sfcore.prim.Prim;
-import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.common.*;
 import java.rmi.*;
@@ -192,6 +191,10 @@ public class PopUpTable extends JComponent implements ActionListener {
       }
    }
 
+    /**
+     * Get Node
+     * @return  Object
+     */
    private Object getNode() {
        Object node;
        TreePath tpath = (tempTree).getSelectionPath();

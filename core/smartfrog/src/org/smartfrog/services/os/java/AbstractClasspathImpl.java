@@ -21,8 +21,8 @@ public abstract class AbstractClasspathImpl extends PrimImpl implements Classpat
     /**
      * set the classpath up
      * @param files a List of type File.
-     * @throws SmartFrogRuntimeException
-     * @throws RemoteException
+     * @throws SmartFrogRuntimeException error in setting classpath
+     * @throws RemoteException in case of rmi/network error
      */
     protected void setClasspathAttributes(List files) throws SmartFrogException,
             RemoteException {
@@ -60,8 +60,8 @@ public abstract class AbstractClasspathImpl extends PrimImpl implements Classpat
     /**
      * set the classpath up
      * @param files an array of files
-     * @throws SmartFrogRuntimeException
-     * @throws RemoteException
+     * @throws SmartFrogRuntimeException error in setting classpath
+     * @throws RemoteException in case of rmi/network error
      */
     protected void setClasspathAttributes(File[] files) throws SmartFrogException,
             RemoteException {
