@@ -42,22 +42,28 @@ public interface Apache extends Remote {
 
     /**
      * As the method name indicates, this simply starts the httpd daemon
+     * @throws RemoteException in case of Remote/network error
      */
     public void startDaemon() throws RemoteException;
 
     /**
      * As the method name indicates, this simply stops the httpd daemon
+     * @throws RemoteException in case of Remote/network error
      */
     public void stopDaemon() throws RemoteException;
 
     /**
      * This refreshes the httpd daemon and therfore updates the current
      * configuration. (Activates any changes))
+     * @throws RemoteException in case of Remote/network error
      */
     public void refreshDaemon() throws RemoteException;
 
     /**
      * This would be used to reset/update the configuration of Apache.
+     * @param scriptURL script url
+     * @param fileName file name
+     * @throws RemoteException in case of Remote/network error
      */
     public void refreshConfig(String scriptURL, String fileName)
         throws RemoteException;

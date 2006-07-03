@@ -36,6 +36,10 @@ import java.rmi.RemoteException;
 
 public class TextFileImpl extends SelfDeletingFileImpl implements TextFile {
 
+    /**
+     * Constructor.
+     * @throws RemoteException  In case of network/rmi error
+     */
     public TextFileImpl() throws RemoteException {
     }
 
@@ -43,8 +47,8 @@ public class TextFileImpl extends SelfDeletingFileImpl implements TextFile {
 
     /**
      * when we deploy, we write out our text stream
-     * @throws SmartFrogException
-     * @throws RemoteException
+     * @throws SmartFrogException error while starting
+     * @throws RemoteException In case of network/rmi error
      */
     public synchronized void sfStart() throws SmartFrogException,
             RemoteException {

@@ -45,6 +45,10 @@ public class LocalFilestoreImpl extends FileUsingComponentImpl
      */
     public static final String ERROR_NOT_A_DIRECTORY = "Not a directory :";
 
+    /**
+     * Constructor.
+     * @throws RemoteException In case of network/rmi error
+     */
     public LocalFilestoreImpl() throws RemoteException {
     }
 
@@ -107,8 +111,8 @@ public class LocalFilestoreImpl extends FileUsingComponentImpl
      * @param prefix prefix
      * @param suffix suffix
      * @return a file entry describing both the file and the URL
-     * @throws SmartFrogException
-     * @throws RemoteException
+     * @throws SmartFrogException error while creating file
+     * @throws RemoteException In case of network/rmi error
      */
     public FileEntry createNewFile(String prefix, String suffix)
             throws SmartFrogException, RemoteException {
@@ -128,9 +132,9 @@ public class LocalFilestoreImpl extends FileUsingComponentImpl
      * @param content  the actual content of the file content
      * @param metadata any metadata
      * @return a file entry describing both the file and the URL
-     * @throws org.smartfrog.sfcore.common.SmartFrogException
+     * @throws org.smartfrog.sfcore.common.SmartFrogException error while creating file
      *
-     * @throws java.rmi.RemoteException
+     * @throws java.rmi.RemoteException In case of network/rmi error
      */
 
     public FileEntry uploadNewFile(String prefix,
@@ -153,8 +157,8 @@ public class LocalFilestoreImpl extends FileUsingComponentImpl
      *
      * @param uri uri of entry
      * @return true if deletion worked
-     * @throws SmartFrogException
-     * @throws RemoteException
+     * @throws SmartFrogException  error while deleting
+     * @throws RemoteException  In case of network/rmi error
      */
     public boolean delete(URI uri)
             throws SmartFrogException, RemoteException {
@@ -166,8 +170,8 @@ public class LocalFilestoreImpl extends FileUsingComponentImpl
      *
      * @param uri
      * @return
-     * @throws SmartFrogException
-     * @throws RemoteException
+     * @throws SmartFrogException error while lookup
+     * @throws RemoteException In case of network/rmi error
      */
     public FileEntry lookup(URI uri)
             throws SmartFrogException, RemoteException {

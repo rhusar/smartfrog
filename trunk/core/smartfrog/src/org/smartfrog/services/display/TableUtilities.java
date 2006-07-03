@@ -33,6 +33,9 @@ import javax.swing.table.TableColumnModel;
  */
 public class TableUtilities {
 
+    /**
+     * Constructor.
+     */
     private TableUtilities(){
     }
 

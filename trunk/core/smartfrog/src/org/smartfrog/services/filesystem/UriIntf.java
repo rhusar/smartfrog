@@ -39,8 +39,8 @@ public interface UriIntf extends Remote {
     /**
      * get the URI of this file
      *
-     * @return
-     * @throws RemoteException
+     * @return URI
+     * @throws RemoteException @throws RemoteException In case of network/rmi error
      */
     URI getURI() throws RemoteException;
 }

@@ -59,13 +59,17 @@ public class FileSystem {
             "Error! File is a directory : ";
 
     // helper class only
+
+    /**
+     * Constructor
+     */
     private FileSystem() {
     }
 
     /**
      * Close a stream; do nothing if null. Ignore all thrown IOExceptions
      *
-     * @param stream
+     * @param stream inputstream to close
      */
     public static void close(InputStream stream) {
         if (stream != null) {
@@ -80,7 +84,7 @@ public class FileSystem {
     /**
      * Close a stream; do nothing if null. Ignore all thrown IOExceptions
      *
-     * @param stream
+     * @param stream output stream to close
      */
     public static void close(OutputStream stream) {
         if (stream != null) {
@@ -95,7 +99,7 @@ public class FileSystem {
     /**
      * Close a stream; do nothing if null. Ignore all thrown IOExceptions
      *
-     * @param channel
+     * @param channel writer channel to close
      */
     public static void close(Writer channel) {
         if (channel != null) {
@@ -110,7 +114,7 @@ public class FileSystem {
     /**
      * Close a reader; do nothing if null. Ignore all thrown IOExceptions
      *
-     * @param channel
+     * @param channel reader channel to close
      */
     public static void close(Reader channel) {
         if (channel != null) {
@@ -125,7 +129,7 @@ public class FileSystem {
     /**
      * Close a channel; do nothing if null. Ignore all thrown IOExceptions
      *
-     * @param channel
+     * @param channel file channel to close
      */
     public static void close(FileChannel channel) {
         if (channel != null) {
@@ -144,8 +148,8 @@ public class FileSystem {
      * @param prefix prefix
      * @param suffix suffix -include the . for a .ext style suffix
      * @param dir parent dir; use null for java.io.tmpdir
-     * @return
-     * @throws IOException
+     * @return File
+     * @throws IOException error in creating file
      */
     public static File tempDir(String prefix,String suffix,File dir) throws IOException {
         File file=File.createTempFile(prefix,suffix,dir);
@@ -194,8 +198,8 @@ public class FileSystem {
      * @param platform  a platform to use for converting filetypes. Set to null
      *                  to use the default helper for this platform.
      * @return the absolute path
-     * @throws SmartFrogResolutionException
-     * @throws RemoteException
+     * @throws SmartFrogResolutionException error in resolving
+     * @throws RemoteException In case of network/rmi error
      */
     public static String lookupAbsolutePath(Prim component,
                                             Reference attribute,
@@ -280,8 +284,8 @@ public class FileSystem {
      * @param platform  a platform to use for converting filetypes. Set to null
      *                  to use the default helper for this platform.
      * @return the resolved absolute path
-     * @throws SmartFrogResolutionException
-     * @throws RemoteException
+     * @throws SmartFrogResolutionException  error in resolving
+     * @throws RemoteException In case of network/rmi error
      */
     public static String lookupAbsolutePath(Prim component,
                                             String attribute,
@@ -305,7 +309,7 @@ public class FileSystem {
      * @param component component to resolve against
      * @return file representing the path.
      * @throws SmartFrogResolutionException If the attribute is not defined.
-     * @throws RemoteException
+     * @throws RemoteException In case of network/rmi error
      */
     public static File resolveAbsolutePath(Prim component)
             throws SmartFrogResolutionException,
@@ -326,7 +330,7 @@ public class FileSystem {
      * @param component component to resolve against
      * @return file representing the path.
      * @throws SmartFrogResolutionException If the attribute is not defined.
-     * @throws RemoteException
+     * @throws RemoteException In case of network/rmi error
      */
     private static File resolveAbsolutePath(FileUsingComponent component)
             throws SmartFrogResolutionException, RemoteException {
@@ -359,7 +363,8 @@ public class FileSystem {
      *
      * @param src  File
      * @param dest File
-     * @throws IOException
+     * @throws IOException if an I/O error occurs (may result in partially done
+     *                     work)
      */
     public static void fCopy(File src, File dest) throws IOException {
         if(src.equals(dest)) {
@@ -373,7 +378,8 @@ public class FileSystem {
      *
      * @param src  FileInputStream
      * @param dest File
-     * @throws IOException
+     * @throws IOException if an I/O error occurs (may result in partially done
+     *                     work)
      */
     public static void fCopy(FileInputStream src, File dest)
             throws IOException {
@@ -501,9 +507,10 @@ public class FileSystem {
     /**
      * Read a file fully into a string buffer.
      *
-     * @param file
-     * @return
-     * @throws IOException
+     * @param file file to read
+     * @return StringBuffer
+     * @throws IOException if an I/O error occurs (may result in partially done
+     *                     work)
      */
     public static StringBuffer readFile(File file) throws IOException {
         StringBuffer buf = new StringBuffer();
@@ -533,10 +540,11 @@ public class FileSystem {
     /**
      * Reads last (numLines) lines from end of a file.
      *
-     * @param file
-     * @param numLines
-     * @return
-     * @throws IOException
+     * @param file file to read
+     * @param numLines number of lines (last) to read
+     * @return StringBuffer
+     * @throws IOException if an I/O error occurs (may result in partially done
+     *                     work)
      */
     public static StringBuffer tail(File file, int numLines)
             throws IOException {
@@ -600,10 +608,11 @@ public class FileSystem {
     /**
      * Get the tail of a file
      *
-     * @param filepath
-     * @param numLines
-     * @return
-     * @throws IOException
+     * @param filepath file to read
+     * @param numLines number of lines (last) to read
+     * @return StringBuffer
+     * @throws IOException if an I/O error occurs (may result in partially done
+     *                     work)
      */
     public static StringBuffer tail(String filepath, int numLines) throws
             IOException {

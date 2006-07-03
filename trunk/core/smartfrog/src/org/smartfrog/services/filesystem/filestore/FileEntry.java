@@ -10,16 +10,47 @@ import java.rmi.RemoteException;
 
  */
 public interface FileEntry extends Remote {
+    /**
+     * Get File
+     * @return File
+     * @throws RemoteException  In case of network/rmi error
+     */
     File getFile() throws RemoteException;
 
+    /**
+     * Get URI
+     * @return URI
+     * @throws RemoteException  In case of network/rmi error
+     */
     URI getUri() throws RemoteException;
 
+    /**
+     * Get MIME type
+     * @return String
+     * @throws RemoteException In case of network/rmi error
+     */
     String getMimetype() throws RemoteException;
 
+
+    /**
+     * Set MIME type
+     * @param mimetype String
+     * @throws RemoteException In case of network/rmi error
+     */
     void setMimetype(String mimetype) throws RemoteException;
 
+    /**
+     * Get metadata
+     * @return Object
+     * @throws RemoteException In case of network/rmi error
+     */
     Object getMetadata() throws RemoteException;
 
+    /**
+     * Set metadata
+     * @param metadata Object
+     * @throws RemoteException In case of network/rmi error
+     */
     void setMetadata(Object metadata) throws RemoteException;
 
     /**
@@ -41,8 +72,8 @@ public interface FileEntry extends Remote {
     /**
      * Test for a file existing.
      *
-     * @return
-     * @throws RemoteException
+     * @return boolean
+     * @throws RemoteException In case of network/rmi error
      */
     boolean exists() throws RemoteException;
 
@@ -50,8 +81,9 @@ public interface FileEntry extends Remote {
     /**
      * Look up a piece of metadata
      *
-     * @param key
+     * @param key String to lookup
      * @return the object stored under there
+     * @throws RemoteException In case of network/rmi error
      */
     Object lookupMetadata(String key) throws RemoteException;
 }

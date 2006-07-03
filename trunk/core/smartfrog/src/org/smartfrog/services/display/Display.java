@@ -65,7 +65,6 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.text.Document;
 
 import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
-import org.smartfrog.sfcore.common.Context;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.common.TerminatorThread;
@@ -199,6 +198,7 @@ public class Display extends JFrame implements ActionListener, KeyListener {
     * Constructs Display object with title.
     *
     * @param  title  Title of the display window
+    * @throws Exception if failed to construct the object
     */
    public Display(String title) throws Exception{
      this.setVisible(false);

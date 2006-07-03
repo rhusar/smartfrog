@@ -37,7 +37,8 @@ public class FileUsingCompoundImpl extends CompoundImpl implements
     private File file;
 
     /**
-     * @throws RemoteException
+     * Constructor.
+     * @throws RemoteException In case of network/rmi error
      */
     public FileUsingCompoundImpl() throws RemoteException {
     }
@@ -54,7 +55,7 @@ public class FileUsingCompoundImpl extends CompoundImpl implements
     /**
      * get the URI of this file
      *
-     * @return
+     * @return URI
      */
     public URI getURI()  {
         return file.toURI();
@@ -62,7 +63,7 @@ public class FileUsingCompoundImpl extends CompoundImpl implements
 
     /**
      * get the file we are using
-     * @return
+     * @return File
      */
     public File getFile() {
         return file;
@@ -74,8 +75,8 @@ public class FileUsingCompoundImpl extends CompoundImpl implements
      * dema
      * @param mandatory flag to indicate mandatoryness
      * @param defval a default value to use if not mandatory (can be null)
-     * @throws RemoteException
-     * @throws SmartFrogRuntimeException
+     * @throws RemoteException In case of network/rmi error
+     * @throws SmartFrogRuntimeException runtime error
      */
     protected void bind(boolean mandatory,String defval) throws RemoteException, SmartFrogRuntimeException {
         String absolutePath=FileSystem.lookupAbsolutePath(this,ATTR_FILENAME, defval,null, mandatory,null);
@@ -90,8 +91,8 @@ public class FileUsingCompoundImpl extends CompoundImpl implements
      * to the absolute path, and {@value FileUsingComponent#ATTR_URI}
      * to the URI. From here on, {@link #getFile()} is valid.
      * @param absolutePath
-     * @throws SmartFrogRuntimeException
-     * @throws RemoteException
+     * @throws SmartFrogRuntimeException  runtime error
+     * @throws RemoteException In case of network/rmi error
      */
     protected void setAbsolutePath(String absolutePath)
             throws SmartFrogRuntimeException, RemoteException {
@@ -105,8 +106,8 @@ public class FileUsingCompoundImpl extends CompoundImpl implements
      * attributes. It also saves the file to the {@link #file} attribute.
      *
      * @param newfile file to bind to to
-     * @throws SmartFrogRuntimeException
-     * @throws RemoteException
+     * @throws SmartFrogRuntimeException runtime error
+     * @throws RemoteException In case of network/rmi error
      */
     public void bind(File newfile) throws SmartFrogRuntimeException,
             RemoteException {

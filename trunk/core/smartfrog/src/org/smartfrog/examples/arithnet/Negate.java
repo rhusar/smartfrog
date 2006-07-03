@@ -28,7 +28,7 @@ import java.rmi.Remote;
 public class Negate extends NetElemImpl implements Remote {
     /**
      * Constructs Negate object.
-     * @throws RemoteException if not able to construct remote oject.
+     * @throws java.rmi.RemoteException if not able to construct remote oject.
      */
     public Negate() throws java.rmi.RemoteException {
     }
@@ -37,6 +37,7 @@ public class Negate extends NetElemImpl implements Remote {
      * Negates the inp value.
      * @param from The identifier
      * @param value The integer value
+     * @return int
      */
     protected int evaluate(String from, int value) {
         return -value;

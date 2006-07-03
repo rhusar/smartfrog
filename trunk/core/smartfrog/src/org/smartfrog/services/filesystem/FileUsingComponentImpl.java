@@ -20,11 +20,10 @@
 package org.smartfrog.services.filesystem;
 
 import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
-import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimImpl;
-import org.smartfrog.sfcore.logging.Log;
+
 
 import java.io.File;
 import java.net.URI;
@@ -42,6 +41,11 @@ public class FileUsingComponentImpl extends PrimImpl implements FileUsingCompone
      */
     protected File file;
 
+    /**
+     *  Constructor .
+     *
+     *@exception  RemoteException In case of network/rmi error
+     */
     public FileUsingComponentImpl() throws RemoteException {
     }
 
@@ -85,8 +89,8 @@ public class FileUsingComponentImpl extends PrimImpl implements FileUsingCompone
      * the filename is mandatory or not
      * @param mandatory flag to indicate mandatoryness
      * @param defval a default value to use if not mandatory (can be null)
-     * @throws RemoteException
-     * @throws SmartFrogRuntimeException
+     * @throws RemoteException In case of network/rmi error
+     * @throws SmartFrogRuntimeException runtime error
      */
     protected void bind(boolean mandatory,String defval) throws RemoteException, SmartFrogRuntimeException {
         String filename = bind(this, mandatory, defval);
@@ -101,9 +105,9 @@ public class FileUsingComponentImpl extends PrimImpl implements FileUsingCompone
      * then sets the attribute {@value FileIntf#ATTR_ABSOLUTE_PATH}
      * to the absolute path, and {@value FileUsingComponent#ATTR_URI}
      * to the URI. From here on, {@link #getFile()} is valid.
-     * @param absolutePath
-     * @throws SmartFrogRuntimeException
-     * @throws RemoteException
+     * @param absolutePath absolute pat of file
+     * @throws SmartFrogRuntimeException runtime error
+     * @throws RemoteException In case of network/rmi error
      */
     protected void setAbsolutePath(String absolutePath)
             throws SmartFrogRuntimeException, RemoteException {
@@ -117,8 +121,8 @@ public class FileUsingComponentImpl extends PrimImpl implements FileUsingCompone
      * attributes. It also saves the file to the {@link #file} attribute.
      *
      * @param newfile file to bind to to
-     * @throws SmartFrogRuntimeException
-     * @throws RemoteException
+     * @throws SmartFrogRuntimeException runtime error
+     * @throws RemoteException In case of network/rmi error
      */
     public void bind(File newfile) throws SmartFrogRuntimeException,
             RemoteException {
@@ -134,8 +138,8 @@ public class FileUsingComponentImpl extends PrimImpl implements FileUsingCompone
      * @param mandatory flag to indicate mandatoryness
      * @param defval    a default value to use if not mandatory (can be null)
      * @return the absolutePath value
-     * @throws RemoteException
-     * @throws SmartFrogRuntimeException
+     * @throws RemoteException  In case of network/rmi error
+     * @throws SmartFrogRuntimeException runtime error
      */
     public static String bind(Prim component,boolean mandatory, String defval)
             throws RemoteException, SmartFrogRuntimeException {
@@ -164,8 +168,8 @@ public class FileUsingComponentImpl extends PrimImpl implements FileUsingCompone
      *
      * @param component component to configure.
      * @param newfile file to bind to to
-     * @throws SmartFrogRuntimeException
-     * @throws RemoteException
+     * @throws SmartFrogRuntimeException  runtime error
+     * @throws RemoteException  In case of network/rmi error
      */
     public static void bind(Prim component, File newfile) throws SmartFrogRuntimeException,
             RemoteException {

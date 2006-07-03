@@ -28,7 +28,7 @@ import java.rmi.Remote;
 public class Printer extends NetElemImpl implements Remote {
     /**
      * Constructs Printer object
-     * @throws RemoteException if unable to create remote object
+     * @throws java.rmi.RemoteException if unable to create remote object
      */
     public Printer() throws java.rmi.RemoteException {
     }
@@ -36,7 +36,7 @@ public class Printer extends NetElemImpl implements Remote {
      * Method from interface NetElem
      * @param from placeholder
      * @param value integer value
-     * @throws RemoteException if unable to create remote object
+     * @return int
      */
     public int evaluate(String from, int value) {
         System.out.println(name + " received value " + value);

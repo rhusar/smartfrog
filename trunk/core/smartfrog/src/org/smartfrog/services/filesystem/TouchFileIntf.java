@@ -40,7 +40,7 @@ public interface TouchFileIntf extends FileUsingComponent {
     /**
      * extract the current values of the attributes, and then
      * touch the file
-     * @throws java.rmi.RemoteException
+     * @throws java.rmi.RemoteException  In case of network/rmi error
      * @throws org.smartfrog.sfcore.common.SmartFrogException if there was a resolution problem
      */
     void touch() throws RemoteException, SmartFrogException;

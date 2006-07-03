@@ -35,6 +35,10 @@ import org.smartfrog.sfcore.utils.ComponentHelper;
 public class TouchFileImpl extends FileUsingComponentImpl implements TouchFileIntf {
     private long age=-1;
 
+    /**
+     * Constructor.
+     * @throws RemoteException  In case of network/rmi error
+     */
     public TouchFileImpl() throws RemoteException {
     }
 
@@ -48,8 +52,8 @@ public class TouchFileImpl extends FileUsingComponentImpl implements TouchFileIn
     /**
      * this is called at runtime
      *
-     * @throws SmartFrogException
-     * @throws RemoteException
+     * @throws SmartFrogException error while starting
+     * @throws RemoteException In case of network/rmi error
      */
     public synchronized void sfStart() throws SmartFrogException,
             RemoteException {
@@ -61,8 +65,8 @@ public class TouchFileImpl extends FileUsingComponentImpl implements TouchFileIn
     /**
      * extract the current values of the attributes, and then
      * touch the file
-     * @throws RemoteException
-     * @throws SmartFrogException
+     * @throws RemoteException In case of network/rmi error
+     * @throws SmartFrogException for IO error
      */
     public void touch() throws RemoteException, SmartFrogException {
         //get the file
@@ -79,7 +83,8 @@ public class TouchFileImpl extends FileUsingComponentImpl implements TouchFileIn
      *
      * @param filename file to create
      * @param age      timestamp (optional, use -1 for current time)
-     * @throws IOException
+     * @throws IOException for IO error
+     * @throws RemoteException In case of network/rmi error
      */
     public void touch(String filename, long age) throws IOException, RemoteException {
         File file = new File(filename);

@@ -46,7 +46,7 @@ public class DeployByCopyImpl extends CopyFileImpl implements CopyFile {
      * deletion fails (i.e. maybe in use), we mark it for delete on exit, then
      * keep going.
      *
-     * @param status
+     * @param status  TerminationRecord object
      */
     public synchronized void sfTerminateWith(TerminationRecord status) {
         super.sfTerminateWith(status);

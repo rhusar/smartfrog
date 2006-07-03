@@ -34,6 +34,10 @@ public class AddedFilestore {
 
     private HashMap files = new HashMap();
 
+    /**
+     * Constructor.
+     * @param directory  directory
+     */
     public AddedFilestore(File directory) {
         this.directory = directory;
         directory.mkdirs();
@@ -41,12 +45,12 @@ public class AddedFilestore {
     }
 
     /**
-     * get
+     * create new file
      *
-     * @param prefix
-     * @param suffix
-     * @return
-     * @throws IOException
+     * @param prefix file prefix
+     * @param suffix file suffix
+     * @return FileEntry
+     * @throws IOException for IO error
      */
     public FileEntry createNewFile(String prefix, String suffix)
             throws IOException {
@@ -63,7 +67,7 @@ public class AddedFilestore {
      * Delete a file in the filestore, and remove it from the list of file
      * entries
      *
-     * @param file
+     * @param file file to delete
      * @return true if deletion went ahead
      */
     public boolean delete(File file) {
@@ -87,7 +91,10 @@ public class AddedFilestore {
         }
     }
 
-
+    /**
+     * Get directory.
+     * @return File
+     */
     public File getDirectory() {
         return directory;
     }
@@ -105,7 +112,7 @@ public class AddedFilestore {
     /**
      * get an entry
      *
-     * @param file
+     * @param file file to lookup
      * @return file or null
      */
     public FileEntry lookup(File file) {

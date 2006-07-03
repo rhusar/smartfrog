@@ -41,19 +41,36 @@ public class FileEntryImpl implements FileEntry {
     //extra data
     private Hashtable data;
 
+    /**
+     * Constructor.
+     * @param file  file
+     */
     public FileEntryImpl(File file) {
         this.file = file;
         this.uri = file.toURI();
     }
 
+    /**
+     * Get File
+     * @return File
+     */
     public File getFile() {
         return file;
     }
 
+    /**
+     * Get URI
+     * @return URI
+     *
+     */
     public URI getUri() {
         return uri;
     }
 
+    /**
+     * Returns extra data
+     * @return  Hashtable
+     */
     private Hashtable data() {
         if (data == null) {
             data = new Hashtable();
@@ -64,7 +81,7 @@ public class FileEntryImpl implements FileEntry {
     /**
      * Look up a piece of metadata
      *
-     * @param key
+     * @param key String name
      * @return the object stored under there
      */
     public Object lookupMetadata(String key) {
@@ -74,25 +91,45 @@ public class FileEntryImpl implements FileEntry {
     /**
      * Add metadata to the system
      *
-     * @param key
-     * @param metadata
+     * @param key String name
+     * @param metadata value
      */
     public void addMetadata(String key, Object metadata) {
         data().put(key, metadata);
     }
 
+    /**
+     * Get MIME type
+     * @return String
+     *
+     */
     public String getMimetype() {
         return mimetype;
     }
 
+    /**
+     * Set MIME type
+     * @param mimetype String
+     *
+     */
     public void setMimetype(String mimetype) {
         this.mimetype = mimetype;
     }
 
+    /**
+     * Get metadata
+     * @return Object
+     *
+     */
     public Object getMetadata() {
         return metadata;
     }
 
+     /**
+     * Set metadata
+     * @param metadata Object
+     *
+     */
     public void setMetadata(Object metadata) {
         this.metadata = metadata;
     }
@@ -102,6 +139,11 @@ public class FileEntryImpl implements FileEntry {
         return file.getAbsolutePath();
     }
 
+    /**
+     * Compares the Object
+     * @param o Object
+     * @return boolean
+     */
     public boolean equals(Object o) {
         if (this == o) {
             return true;
@@ -119,6 +161,10 @@ public class FileEntryImpl implements FileEntry {
         return true;
     }
 
+    /**
+     * Returns the hashcode
+     * @return int
+     */
     public int hashCode() {
         return uri.hashCode();
     }
@@ -152,8 +198,8 @@ public class FileEntryImpl implements FileEntry {
     /**
      * Test for a file existing.
      *
-     * @return
-     * @throws java.rmi.RemoteException
+     * @return boolean
+     * @throws java.rmi.RemoteException  In case of network/rmi error
      */
     public boolean exists() throws RemoteException {
         return file.exists();

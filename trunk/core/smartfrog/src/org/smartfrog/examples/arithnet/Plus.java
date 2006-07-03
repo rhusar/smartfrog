@@ -36,7 +36,7 @@ public class Plus extends NetElemImpl implements Remote {
     private int rhs = 0;
     /**
      * Constructs Plus.
-     * @throws RemoteException if unable to construct the object remotely.
+     * @throws java.rmi.RemoteException if unable to construct the object remotely.
      */
     public Plus() throws java.rmi.RemoteException {
     }
