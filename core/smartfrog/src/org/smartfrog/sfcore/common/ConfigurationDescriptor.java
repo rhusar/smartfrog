@@ -37,11 +37,17 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.PrintWriter;
 
+/**
+ *  Creating a Configuration Descriptor with options
+ */
 public class ConfigurationDescriptor implements MessageKeys{
     /**
      * an enumeration of our options
      */
     public static class Action {
+        /**
+         * private Constructor
+         */
         private Action() {
         }
 
@@ -167,7 +173,7 @@ public class ConfigurationDescriptor implements MessageKeys{
 
     /**
      * To String
-     * @return
+     * @return  String
      */
     public String toString() {
         //return toString(", \n");
@@ -176,8 +182,8 @@ public class ConfigurationDescriptor implements MessageKeys{
 
     /**
      * To String
-     * @param separator
-     * @return
+     * @param separator the separator to be used
+     * @return String
      */
     public String toString(String separator){
         StringBuffer str = new StringBuffer();
@@ -232,8 +238,8 @@ public class ConfigurationDescriptor implements MessageKeys{
     }
     /**
      * Gets status message
-     * @param separator
-     * @return message
+     * @param separator  the separator to be used
+     * @return String status message
      */
     public String statusString(String separator){
           StringBuffer message = new StringBuffer();
@@ -403,7 +409,8 @@ public class ConfigurationDescriptor implements MessageKeys{
     /**
      * Generates a user friendly message for certain exceptions.
      * @param thr Exception
-     * @return message
+     * @param lineSeparator the line separartor to be used in the message
+     * @return String Exception message
      */
     private String parseException (Throwable thr, String lineSeparator){
         StringBuffer messageError = new StringBuffer();
@@ -439,7 +446,8 @@ public class ConfigurationDescriptor implements MessageKeys{
     /**
      * Generates a String for the StackTrace using lineSeparator
      * @param thr Exception
-     * @return message
+     * @param lineSeparator the line separartor to be used in the message
+     * @return String Exception message
      */
     public static String parseExceptionStackTrace(Throwable thr, String lineSeparator) {
 
@@ -514,7 +522,7 @@ public class ConfigurationDescriptor implements MessageKeys{
      *        counterEx3:DEPLOY:org/smartfrog/examples/counter/example2.sf:"testLevel1:counterToSucceed":localhost:
      *</pre>
      * @see Action
-     * @throws SmartFrogInitException
+     * @throws SmartFrogInitException  failure in some part of the process
      *
      * @todo fix this text for JavaDocs
      */
@@ -610,9 +618,9 @@ public class ConfigurationDescriptor implements MessageKeys{
     /**
      * Returns and cuts the last field from TempURL. Token marks the beginning
      * of the field. It previously removes " or '
-     * @param token
-     * @return last field from TempURL marked by token
-     * @throws java.lang.Exception
+     * @param token token marks the beginning of the field
+     * @return String last field from TempURL marked by token
+     * @throws java.lang.Exception  failure in some part of the process
      */
     private String getAndCutLastFieldTempURL( String token) throws Exception{
         String field = null;
@@ -702,7 +710,7 @@ public class ConfigurationDescriptor implements MessageKeys{
 
     /**
      * Gets defined use for final resolve of a configuration
-     * @return deployReference
+     * @return Reference deployReference
      * @see Reference
      */
     public Reference getDeployReference(){
@@ -718,6 +726,7 @@ public class ConfigurationDescriptor implements MessageKeys{
      * By default is will use 'sfConfig'.
      * @see Reference
      * @param reference
+     * @throws SmartFrogResolutionException failure in resolving
      */
     public void setDeployReference(String reference) throws SmartFrogResolutionException{
 
@@ -730,7 +739,7 @@ public class ConfigurationDescriptor implements MessageKeys{
 
     /**
      * Gets action type
-     * @return
+     * @return int action type
      */
     public int getActionType(){
         return actionType;
@@ -738,7 +747,8 @@ public class ConfigurationDescriptor implements MessageKeys{
 
     /**
      * To set all attributes for any result
-     * @param type Type of result @see Result inner class
+     * @param type Type of result
+     * @see Result inner class
      * @param message result message
      * @param thr result exception if it existed
      */
@@ -768,8 +778,8 @@ public class ConfigurationDescriptor implements MessageKeys{
      * set the action type. this also sets the {@link #action} attribute
      * to an instance of the action which is needed to do the actual execution.
      *
-     * @param type
-     * @throws SmartFrogInitException
+     * @param type action type
+     * @throws SmartFrogInitException  if the type is not valid
      */
     public void setActionType(int type) throws SmartFrogInitException {
         this.actionType = type;
@@ -803,7 +813,8 @@ public class ConfigurationDescriptor implements MessageKeys{
 
     /**
      * Sets action type.
-     * @throws SmartFrogInitException it the type is not valid
+     * @param type action type
+     * @throws SmartFrogInitException if the type is not valid
      * @see Action inner class for valid types
      */
 
@@ -818,7 +829,11 @@ public class ConfigurationDescriptor implements MessageKeys{
         throw new SmartFrogInitException("Action type unknown: " + type);
     }
 
-
+    /**
+     * Gets result type
+     * @return int result type
+     *
+     */
     public int getResultType() {
         return resultType;
     }
@@ -826,7 +841,7 @@ public class ConfigurationDescriptor implements MessageKeys{
     /**
      * Parses resultMessage and resultException and generates one
      * message.
-     * @return message
+     * @return String result message
      *
      */
     public String getResultMessage() {
@@ -869,7 +884,7 @@ public class ConfigurationDescriptor implements MessageKeys{
 
     /**
      * get the name of this component
-     * @return
+     * @return String component name
      */
     public String getName() {
         return name;
@@ -877,7 +892,7 @@ public class ConfigurationDescriptor implements MessageKeys{
 
     /**
      * get the name of resultObject only if it is a Prim. Otherways returns null
-     * @return String
+     * @return String  name of resultObject
      */
     public String getResultObjectName() {
       if ((resultObject!=null)&&(resultObject instanceof Prim)){
@@ -893,7 +908,7 @@ public class ConfigurationDescriptor implements MessageKeys{
 
     /**
      * set the name of this component
-     * @param name
+     * @param name component name
      */
     public void setName(String name) {
       if (name.trim().equals("")){
@@ -912,7 +927,7 @@ public class ConfigurationDescriptor implements MessageKeys{
 
     /**
      * Set resource to use during action.
-     * @param url
+     * @param url resource url
      */
     public void setUrl(String url) {
         // Added to avoid problems with "" in shell scripts (Unix vs Windows)
@@ -925,7 +940,7 @@ public class ConfigurationDescriptor implements MessageKeys{
 
     /**
      * host for action. May be null
-     * @return
+     * @return  String hostname
      */
     public String getHost() {
         return host;
@@ -933,7 +948,7 @@ public class ConfigurationDescriptor implements MessageKeys{
 
     /**
      * host where to apply action. Can be null and then no rootProcess is used.
-     * @param host
+     * @param host hostname
      */
     public void setHost(String host) {
         if (host==null) return;
@@ -951,7 +966,7 @@ public class ConfigurationDescriptor implements MessageKeys{
 
     /**
      * set subProcess where to apply action. Can be null.
-     * @param subProcess
+     * @param subProcess subProcess name
      */
     public void setSubProcess(String subProcess) {
         if (subProcess==null) return;
@@ -962,7 +977,7 @@ public class ConfigurationDescriptor implements MessageKeys{
     /**
      * get option hashtable. This is not a copy; it is a direct
      * accessor to the table.
-     * @return
+     * @return  Hashtable option hashtable
      */
     public Hashtable getOptions() {
         return options;
@@ -970,34 +985,63 @@ public class ConfigurationDescriptor implements MessageKeys{
 
     /**
      * option table
-     * @param options
+     * @param options option hashtable
      */
     public void setOptions(Hashtable options) {
         this.options = options;
     }
 
+    /**
+     * Adds the name to option hashtable
+     * @param name Object name
+     * @param value value
+     */
     public void setOption(Object name, Object value) {
        this.options.put(name, value);
     }
 
+    /**
+     * Gets the value from option hashtable
+     * @param name Objct name
+     * @return Object value
+     */
     public Object getOption(Object name){
        return this.options.get(name);
     }
 
+    /**
+     * Get Context
+     * @return Context
+     */
     public Context getContext (){
        return context;
     }
 
+    /**
+     * Set Context
+     * @param context Context
+     */
     public void setContext(Context context){
        this.context=context;
     }
 
+    /**
+     * Set Context attributes
+     * @param name attribute name
+     * @param value attribute value
+     * @return Context
+     */
     public Context setContextAttribute(Object name, Object value) {
         if (this.context==null) this.context=new ContextImpl();
         context.put(name,value);
         return context;
     }
 
+    /**
+     * Get Context Attribute
+     * @param name attribute name
+     * @return Object attribute value
+     */
     public Object getContextAttribute(Object name){
        if (context==null)  return null;
        return context.get(name);

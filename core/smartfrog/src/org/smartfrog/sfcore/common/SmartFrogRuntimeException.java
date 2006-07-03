@@ -146,6 +146,7 @@ public class SmartFrogRuntimeException extends SmartFrogException implements Ser
      * If thr is an instance of SmartFrogRuntimeException then the exception is returned
      * without any modification, if not a new SmartFrogRuntimeException is created
      * with message as a paramenter
+     * @param message message
      * @param thr throwable object to be forwarded
      * @return Throwable that is a SmartFrogRuntimeException
      */

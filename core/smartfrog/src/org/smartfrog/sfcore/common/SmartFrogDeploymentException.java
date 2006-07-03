@@ -182,6 +182,7 @@ public class SmartFrogDeploymentException extends SmartFrogRuntimeException impl
      * If thr is an instance of SmartFrogDeploymentException then the exception is returned
      * without any modification, if not a new SmartFrogDeploymentException is created
      * with message as a paramenter
+     * @param message String message
      * @param thr throwable object to be forwarded
      * @return Throwable that is a SmartFrogDeploymentException
      */

@@ -206,8 +206,8 @@ public class OptionSet {
     /**
      * Reads all the lines of a file an tries to parse them as SFACT.
      * It ignores empty lines or lines starting with # or double "//"
-     * @param fileURL
-     * @throws SmartFrogException
+     * @param fileURL file to be read
+     * @throws SmartFrogException if failed to read
      */
     private void readCfgDescriptorsFile(String fileURL) throws SmartFrogException{
         String line;

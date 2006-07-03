@@ -141,6 +141,7 @@ public class SmartFrogLogException extends SmartFrogException implements Seriali
      * If thr is an instance of SmartFrogLogException then the exception is returned
      * without any modification, if not a new SmartFrogLogException is created
      * with message as a paramenter
+     * @param message message
      * @param thr throwable object to be forwarded
      * @return Throwable that is a SmartFrogLogException
      */

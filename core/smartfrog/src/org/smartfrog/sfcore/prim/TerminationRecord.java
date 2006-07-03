@@ -142,7 +142,7 @@ public class TerminationRecord implements Serializable {
         //return id + "(" + errorType + ":" + description + ")";
         return "Termination Record: " +
         (((id == null) || (id.size() == 0)) ? "" : ("" + id.toString())) +
-        ((errorType == null) ? "" : (",  type: " + errorType.toString())) +
+        ((errorType == null) ? "" : (",  type: " + errorType)) +
         ((description == null) ? "" : (",  description: " + description)) +
         ((cause == null) ? "" : (",  cause: " + cause)) ;
     }

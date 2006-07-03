@@ -32,10 +32,9 @@ import org.smartfrog.sfcore.security.SFClassLoader;
 import java.util.Vector;
 import org.smartfrog.sfcore.componentdescription.ComponentDescriptionImpl;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
-import org.smartfrog.sfcore.common.MessageKeys;
 
 /**
- * Ping a component
+ * Parse a component
  */
 public class ActionParse extends ConfigurationAction implements Serializable {
     public static final String PARSE_MESSAGE = "Parse done.";
@@ -44,8 +43,11 @@ public class ActionParse extends ConfigurationAction implements Serializable {
      * this has to be implemented by subclasses; execute a configuration command
      * against a specified target
      *
-     * @param targetP
-     * @param configuration
+     * @param targetP   target where to execute the configuration command
+     * @param configuration   configuration command to be executed
+     * @return Object Reference to parsed component
+     * @throws SmartFrogException  failure in some part of the process
+     * @throws RemoteException    In case of network/rmi error
      */
     public Object execute(ProcessCompound targetP, ConfigurationDescriptor configuration)
             throws SmartFrogException,
@@ -72,7 +74,14 @@ public class ActionParse extends ConfigurationAction implements Serializable {
 
     }
 
-
+    /**
+     *  Parse a description
+     *
+     * @param description  description to be parsed
+     * @param language     language to be used for parsing
+     * @return   ComponentDescription Reference to parsed report
+     * @throws SmartFrogException   failure in some part of the process
+     */
     private  ComponentDescription parse(String description, String language) throws SmartFrogException {
         long start,finish;
         start=System.currentTimeMillis();
@@ -82,6 +91,13 @@ public class ActionParse extends ConfigurationAction implements Serializable {
         return report;
     }
 
+    /**
+     * Parse a description from String url
+     *
+     * @param fileUrl url of the description to be parsed
+     * @return   ComponentDescription Reference to parsed report
+     * @throws SmartFrogException failure in some part of the process
+     */
     private ComponentDescription parse(String fileUrl) throws SmartFrogException {
         long start,finish;
         start=System.currentTimeMillis();
@@ -91,7 +107,13 @@ public class ActionParse extends ConfigurationAction implements Serializable {
         return report;
     }
 
-
+    /**
+     * Parse a description File
+     * @param description description to be parsed
+     * @param language  language to be used fro language
+     * @return   ComponentDescription Reference to parsed report
+     * @throws SmartFrogException  failure in some part of the process
+     */
     private static ComponentDescription parseFile(String description, String language) throws SmartFrogException {
             ComponentDescription report = new ComponentDescriptionImpl(null,  new ContextImpl(), false);
             report.sfAddAttribute("description", description);
@@ -130,6 +152,12 @@ public class ActionParse extends ConfigurationAction implements Serializable {
             return report;
     }
 
+    /**
+     * Parse a description file given String url
+     * @param fileUrl url of the description to be parsed
+     * @return  ComponentDescription Reference to parsed report
+     * @throws SmartFrogException  failure in some part of the process
+     */
     private static ComponentDescription parseFile(String fileUrl) throws SmartFrogException {
         ComponentDescription report = new ComponentDescriptionImpl(null, new ContextImpl(), false);
         report.sfAddAttribute("file", fileUrl);
@@ -181,7 +209,7 @@ public class ActionParse extends ConfigurationAction implements Serializable {
     }
 
     /**
-     * Gets language grom the URL
+     * Gets language from the URL
      *
      * @param url URL passed to application
      * @return Language string

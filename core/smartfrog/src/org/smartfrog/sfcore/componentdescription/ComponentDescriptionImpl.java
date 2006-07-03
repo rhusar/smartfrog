@@ -751,7 +751,7 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
      *
      * @return process compound description default phases Resolved
      *
-     * @throws SmartFrogRuntimeException In case of SmartFrog system error
+     * @throws SmartFrogException In case of SmartFrog system error
      */
     public static ComponentDescription sfComponentDescription(String url)
         throws SmartFrogException {
@@ -770,7 +770,7 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
      *
      * @return process compound description 'phases' Resolved
      *
-     * @throws SmartFrogRuntimeException In case of SmartFrog system error
+     * @throws SmartFrogException In case of SmartFrog system error
      */
     public static ComponentDescription sfComponentDescription(String url,
                   Vector phases, Reference ref)
@@ -793,7 +793,7 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
      * @return process the selected ComponentDescription after compound
      *         description 'phases' are resolved
      *
-     * @throws SmartFrogRuntimeException In case of SmartFrog system error
+     * @throws SmartFrogException In case of SmartFrog system error
      */
     public static ComponentDescription sfComponentDescription(String url,
                   String language, Vector phases, Reference ref)
@@ -816,7 +816,7 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
      * @return process the selected ComponentDescription after compound
      *         description 'phases' are resolved
      *
-     * @throws SmartFrogRuntimeException In case of SmartFrog system error
+     * @throws SmartFrogException In case of SmartFrog system error
      */
     public static ComponentDescription sfComponentDescription(String url,
                   String language, Vector phases, Reference ref, String codebase)
@@ -1108,7 +1108,7 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
          * languageExtension provide extenstion for the language used (ex. sf by default)
          *  Takes default when vector is null. Default: type, link, function, predicate.
          * @return Component Description
-         * @throws SmartFrogException
+         * @throws SmartFrogException In case of SmartFrog system error
          */
         public static ComponentDescription getClassComponentDescription (Object obj,
           boolean addSystemProperties, Vector newPhases) throws SmartFrogException {
@@ -1124,10 +1124,10 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
      * @param obj which class Component description has to be read (or java.lang.String)
      * @param addSystemProperties to select if to add system properties
      * @param newPhases parser phases to apply to component description
-     * @ languageExtension provide extenstion for the language used (ex. sf by default)
+     * @param languageExtension provide extenstion for the language used (ex. sf by default)
      *  Takes default when vector is null. Default: type, link, function, predicate.
      * @return Component Description
-     * @throws SmartFrogException
+     * @throws SmartFrogException In case of SmartFrog system error
      */
     public static ComponentDescription getClassComponentDescription (Object obj,
           boolean addSystemProperties, Vector newPhases,String languageExtension) throws SmartFrogException {
@@ -1166,7 +1166,7 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
     /** Special method to be used only by LogFactory to initialize log in
      *  ComponentDescription.
      *  This is because LogImpl uses ComponentDescription to initialize itself.
-     *
+     *  @param newlog new log
      */
     static public void initLog(LogSF newlog){
         if (sfLog == null) {
@@ -1182,7 +1182,10 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
        return sfLog;
     }
 
-    /** Creates diagnostics report */
+    /**
+     * Creates diagnostics report
+     * @return Component description
+     */
     public ComponentDescription sfDiagnosticsReport() {
       ComponentDescription cd = null;
       try {

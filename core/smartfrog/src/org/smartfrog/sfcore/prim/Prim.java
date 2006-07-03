@@ -23,7 +23,6 @@ package org.smartfrog.sfcore.prim;
 import org.smartfrog.sfcore.common.Context;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
-import org.smartfrog.sfcore.logging.LogSF;
 import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.reference.RemoteReferenceResolver;
 import org.smartfrog.sfcore.reference.RemoteReferenceResolverHelper;
@@ -295,19 +294,28 @@ public interface Prim extends Liveness, RemoteReferenceResolver, RemoteReference
 
     /**
      * Parentage changed in component hierachy.
+     * @throws RemoteException In case of Remote/nework error
      */
     public void sfParentageChanged() throws RemoteException;
 
-    /** Returns value of flag indicating if this component has been terminated. */
+    /** Returns value of flag indicating if this component has been terminated.
+     *  @throws RemoteException In case of Remote/nework error
+     */
     public boolean sfIsTerminated() throws RemoteException;
 
-    /** Returns value of flag indicating if this component is terminating. */
+    /** Returns value of flag indicating if this component is terminating.
+     * @throws RemoteException In case of Remote/nework error
+     */
     public boolean sfIsTerminating() throws RemoteException;
 
-    /** Returns value of flag indicating if this component has been deployed. */
+    /** Returns value of flag indicating if this component has been deployed.
+     * @throws RemoteException In case of Remote/nework error
+     */
     public boolean sfIsDeployed() throws RemoteException;
 
-    /** Returns value of flag indicating if this component has been started. */
+    /** Returns value of flag indicating if this component has been started.
+     * @throws RemoteException In case of Remote/nework error
+     */
     public boolean sfIsStarted() throws RemoteException;
 
 }

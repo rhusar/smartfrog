@@ -35,6 +35,7 @@ public final class SFNull implements Serializable {
      * e.g. an RMI call results in the sole instance being obtained
      *
      * @return the instance
+     * @throws ObjectStreamException if failed
      */
     Object readResolve() throws ObjectStreamException {
 	return soleInstance;

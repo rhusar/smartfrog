@@ -128,6 +128,7 @@ public class SmartFrogLivenessException extends SmartFrogRuntimeException implem
      * If thr is an instance of SmartFrogLivenessException then the exception is returned
      * without any modification, if not a new SmartFrogLivenessException is created
      * with message as a paramenter
+     * @param message message
      * @param thr throwable object to be forwarded
      * @return Throwable that is a SmartFrogLivenessException
      */

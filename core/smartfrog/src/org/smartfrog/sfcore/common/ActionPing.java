@@ -39,8 +39,11 @@ public class ActionPing extends ConfigurationAction implements Serializable {
      * this has to be implemented by subclasses; execute a configuration command
      * against a specified target
      *
-     * @param targetP
-     * @param configuration
+     * @param targetP   target where to execute the configuration command
+     * @param configuration   configuration command to be executed
+     * @return Object Reference to parsed component
+     * @throws SmartFrogException  failure in some part of the process
+     * @throws RemoteException    In case of network/rmi error
      */
     public Object execute(ProcessCompound targetP,
                           ConfigurationDescriptor configuration)
@@ -76,9 +79,9 @@ public class ActionPing extends ConfigurationAction implements Serializable {
      * @param name name of component; if null, we assume the processcompound
      *  iself is the target
      * @param targetP process to resolve against
-     * @return time (in milliseconds) the ping took.
-     * @throws SmartFrogException
-     * @throws RemoteException
+     * @return long time (in milliseconds) the ping took.
+     * @throws SmartFrogException  failure in some part of the process
+     * @throws RemoteException    In case of network/rmi error
      */
     private long ping(String name, ProcessCompound targetP) throws SmartFrogException,
             RemoteException {

@@ -120,6 +120,7 @@ public class SmartFrogParseException extends SmartFrogCompilationException imple
      * If thr is an instance of SmartFrogParseException then the exception is returned
      * without any modification, if not a new SmartFrogParseException is created
      * with message as a paramenter
+     * @param message message
      * @param thr throwable object to be forwarded
      * @return Throwable that is a SmartFrogParseException
      */

@@ -22,7 +22,6 @@ package org.smartfrog.sfcore.componentdescription;
 
 import java.io.IOException;
 import java.io.Writer;
-import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.Stack;
 

@@ -24,7 +24,9 @@ import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.processcompound.SFProcess;
 import java.rmi.RemoteException;
 
-
+/**
+ * Detach a component
+ */
 public class ActionDetach extends ConfigurationAction{
 
     /**
@@ -32,8 +34,8 @@ public class ActionDetach extends ConfigurationAction{
       *
       * @param name name of the application
       * @param targetP the target process compound to request deployment
-      * @return Reference to detached component
-      * @exception SmartFrogException failure in some part of the process
+      * @return Prim Reference to detached component
+      * @throws SmartFrogException failure in some part of the process
       * @throws RemoteException In case of network/rmi error
       */
      public static Prim Detach(String name, ProcessCompound targetP)  throws SmartFrogException,
@@ -61,8 +63,11 @@ public class ActionDetach extends ConfigurationAction{
      * this has to be implemented by subclasses; execute a configuration command against
      * a specified target
      *
-     * @param targetP
-     * @param configuration
+     * @param targetP   target where to execute the configuration command
+     * @param configuration   configuration command to be executed
+     * @return Object Reference to detached component
+     * @throws SmartFrogException  failure in some part of the process
+     * @throws RemoteException    In case of network/rmi error
      */
     public Object execute(ProcessCompound targetP,
                           ConfigurationDescriptor configuration) throws SmartFrogException,

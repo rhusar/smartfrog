@@ -78,6 +78,8 @@ public final class Diagnostics {
      * <tt>null</tt> if an error occurs.
      *
      * Derived from Ant Diagnostics class
+     * @param dir directory
+     * @return array of files (or null for no such directory)
      */
     public static File[] listLibraries(String dir) {
         if (dir == null) {
@@ -142,7 +144,7 @@ public final class Diagnostics {
     /**
          * Print a report to the given StringBuffer.
          * @param out the StringBuffer to print the report to.
-         * @param ComponentDescription the SmartFrog component description where to extract info from.
+         * @param cd the SmartFrog component description where to extract info from.
          * Derived from Ant Diagnostics class
          */
         public static void doReport(StringBuffer out, ComponentDescription cd) {
@@ -185,7 +187,7 @@ public final class Diagnostics {
         /**
           * Report specific Prim information.
          * @param out StringBuffer
-         * @param ComponentDescription  cd
+         * @param cd  Component Description
          *
          */
         private static void doReportCD(StringBuffer out, ComponentDescription cd) {
@@ -336,7 +338,6 @@ public final class Diagnostics {
     /**
       * Report specific information to local process compound.
      * @param out StringBuffer
-     * @param prim Compound
      */
     private static void doReportProcessCompound(StringBuffer out) {
       try {
@@ -597,7 +598,7 @@ public final class Diagnostics {
     /**
      * Report locale information
      * Derived from Ant Diagnostics class
-     * @param out
+     * @param out String Buffer
      */
     private static void doReportLocale(StringBuffer out) {
         //calendar stuff.

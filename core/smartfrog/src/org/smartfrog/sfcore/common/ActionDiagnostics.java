@@ -20,26 +20,14 @@
 package org.smartfrog.sfcore.common;
 
 import org.smartfrog.sfcore.prim.Prim;
-import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.processcompound.ProcessCompound;
-import org.smartfrog.sfcore.processcompound.ProcessCompoundImpl;
-import org.smartfrog.sfcore.security.SFClassLoader;
-import org.smartfrog.sfcore.parser.SFParser;
-import org.smartfrog.sfcore.parser.Phases;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
-import org.smartfrog.sfcore.componentdescription.ComponentDescriptionImpl;
 import org.smartfrog.sfcore.reference.Reference;
-import org.smartfrog.sfcore.reference.ReferencePart;
-import org.smartfrog.sfcore.reference.HereReferencePart;
-import org.smartfrog.sfcore.compound.Compound;
-
-
 import java.rmi.RemoteException;
-import java.io.InputStream;
-import java.io.IOException;
-import java.util.Date;
 
-
+/**
+ * Implements Diagnostics Action for a component
+ */
 public class ActionDiagnostics extends ConfigurationAction {
 
 
@@ -69,8 +57,11 @@ public class ActionDiagnostics extends ConfigurationAction {
     /**
      * Deploy Action.
      *
-     * @param targetP
-     * @param configuration
+     * @param targetP   target where to execute the configuration command
+     * @param configuration   configuration command to be executed
+     * @return Object Reference to component whose Diagnostics report is generated
+     * @throws SmartFrogException  failure in some part of the process
+     * @throws RemoteException    In case of network/rmi error
      */
     public Object execute(ProcessCompound targetP, ConfigurationDescriptor configuration)
        throws SmartFrogException, RemoteException {
