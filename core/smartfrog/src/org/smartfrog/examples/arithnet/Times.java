@@ -29,9 +29,18 @@ public class Times extends NetElemImpl implements Remote {
     private int lhs = 0;
     private int rhs = 0;
 
+    /**
+     * Constructs Times.
+     * @throws java.rmi.RemoteException if unable to construct the object remotely.
+     */
     public Times() throws java.rmi.RemoteException {
     }
 
+    /**
+     * Method from NetElem interface.
+     * @param from placeholder
+     * @param value integer value
+     */
     protected int evaluate(String from, int value) {
         if (from.equals("lhs")) {
             lhs = value;

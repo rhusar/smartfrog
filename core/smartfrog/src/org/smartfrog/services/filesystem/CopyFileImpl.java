@@ -30,20 +30,34 @@ import org.smartfrog.sfcore.utils.ComponentHelper;
 import org.smartfrog.sfcore.common.*;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 
-
+/**
+ *   Implemetation for CopyFile component.
+ */
 public class CopyFileImpl extends CompoundImpl implements CopyFile, Compound {
 
 
     private File fromFile=null;
     private File toFile=null;
 
+    /**
+     * Constructor
+     * @throws RemoteException  In case of network/rmi error
+     */
     public CopyFileImpl() throws RemoteException {
     }
 
+    /**
+     * Get From file
+     * @return File
+     */
     public File getFromFile() {
         return fromFile;
     }
 
+    /**
+     * Get to file
+     * @return File
+     */
     public File getToFile() {
         return toFile;
     }
@@ -64,9 +78,9 @@ public class CopyFileImpl extends CompoundImpl implements CopyFile, Compound {
 
     /**
      * Copies file using attributes "source" and "destination" from description
-     * @throws SmartFrogException
-     * @throws RemoteException
-     * @throws SmartFrogResolutionException
+     * @throws SmartFrogException failure while copying
+     * @throws RemoteException  In case of network/rmi error
+     * @throws SmartFrogResolutionException failure while resolving
      */
     private void copyFile() throws SmartFrogException, RemoteException,
         SmartFrogResolutionException {
@@ -92,8 +106,8 @@ public class CopyFileImpl extends CompoundImpl implements CopyFile, Compound {
 
     /**
      * we only create the directory at startup time, even though we bond at deploy time
-     * @throws SmartFrogException
-     * @throws RemoteException
+     * @throws SmartFrogException failure while starting
+     * @throws RemoteException In case of network/rmi error
      */
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();

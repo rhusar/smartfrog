@@ -61,9 +61,24 @@ public class PersistentCounterImpl extends CounterImpl implements Prim, Counter,
     String checkpointFileRoot = "persistentCounter";
     File checkpointFile = null;
 
+    /**
+     * Constructor for the PersistenceCounter object.
+     * @throws RemoteException in case of remote/network error
+     */
     public PersistentCounterImpl() throws RemoteException {
     }
 
+    /**
+     *  sfDeploy: reads Counter attributes and configures counter thread
+     *  The superclass implementation of sfDeploy is called before the
+     *  component specific initialization code (reading Counter attributes
+     *  and configuring counter thread) to maintain correct behaviour of
+     *  initial deployment and starting the heartbeat monitoring of this
+     *  component.
+     *
+     * @exception  SmartFrogException In case of error in deploying
+     * @exception  RemoteException In case of network/rmi error
+     */
     public void sfDeploy() throws SmartFrogException, RemoteException {
 	super.sfDeploy();
 
@@ -112,14 +127,20 @@ public class PersistentCounterImpl extends CounterImpl implements Prim, Counter,
         super.sfTerminateWith(t);
     }
 
-
+    /**
+     * Checkpointing the state
+     * @throws FileNotFoundException error in finding the file
+     * @throws IOException error in IO
+     */
     protected synchronized void checkpointState() throws FileNotFoundException, IOException {
 	    ObjectOutputStream writer = new ObjectOutputStream(new FileOutputStream(checkpointFile));
             writer.writeInt(counter);
 	    writer.close();
     }
 
-
+    /**
+     * Run method
+     */
     public void run() {
         try {
             while (limit >= counter++) {

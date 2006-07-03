@@ -47,6 +47,7 @@ public interface Balancer extends Remote {
      * @param hostname The host name of the new server
      * @param port The port number on the new server used open the connection
      *        from the balancer
+     * @throws RemoteException in case of Remote/network error
      */
     public void addServer(String hostname, int port) throws RemoteException;
 
@@ -55,6 +56,7 @@ public interface Balancer extends Remote {
      *
      * @param hostname The host name of the new server, using the hostsPort
      *        Port
+     * @throws RemoteException in case of Remote/network error
      */
     public void addServer(String hostname) throws RemoteException;
 
@@ -62,6 +64,7 @@ public interface Balancer extends Remote {
      * Remove a server from the balancer server set.
      *
      * @param hostname The host name of the server to remove from the set
+     * @throws RemoteException in case of Remote/network error
      */
     public void removeServer(String hostname) throws RemoteException;
 }

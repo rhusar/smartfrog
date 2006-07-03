@@ -22,7 +22,6 @@ package org.smartfrog.services.filesystem;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 
-import java.io.File;
 import java.io.IOException;
 import java.rmi.RemoteException;
 import java.io.OutputStreamWriter;
@@ -40,7 +39,7 @@ public class TempFileImpl extends FileUsingComponentImpl implements TempFile {
 
     /**
      * create a temporary file instance; do no real work (yet)
-     * @throws RemoteException
+     * @throws RemoteException In case of network/rmi error
      */
     public TempFileImpl() throws RemoteException {
     }
@@ -111,7 +110,7 @@ public class TempFileImpl extends FileUsingComponentImpl implements TempFile {
     /**
      * get the filename of this file
      *
-     * @return
+     * @return String filename
      */
     public String getFilename() {
         return getFile().toString();

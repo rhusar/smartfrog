@@ -116,8 +116,8 @@ public interface FileIntf extends UriIntf, FileUsingComponent, Remote {
     /**
      * get the absolute path of this file
      *
-     * @return
-     * @throws RemoteException
+     * @return String
+     * @throws RemoteException In case of network/rmi error
      */
     public String getAbsolutePath() throws RemoteException;
 

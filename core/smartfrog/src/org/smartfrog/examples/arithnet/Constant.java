@@ -40,6 +40,8 @@ public class Constant extends NetElemImpl implements Remote {
     
     /**
      * Starts the SmartFrog component.
+     * @throws SmartFrogException error in case of starting the component
+     * @throws RemoteException in case of remote/network error
      */
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         try {

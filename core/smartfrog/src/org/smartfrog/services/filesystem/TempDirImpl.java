@@ -32,6 +32,10 @@ import java.rmi.RemoteException;
 public class TempDirImpl extends FileUsingComponentImpl implements TempFile {
     private boolean delete=false;
 
+    /**
+     * Constructor.
+     * @throws RemoteException  In case of network/rmi error
+     */
     public TempDirImpl() throws RemoteException {
     }
 
@@ -54,9 +58,9 @@ public class TempDirImpl extends FileUsingComponentImpl implements TempFile {
     /**
      * start the component
      *
-     * @throws org.smartfrog.sfcore.common.SmartFrogException
+     * @throws org.smartfrog.sfcore.common.SmartFrogException error wile starting
      *
-     * @throws java.rmi.RemoteException
+     * @throws java.rmi.RemoteException  In case of network/rmi error
      */
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
@@ -64,8 +68,8 @@ public class TempDirImpl extends FileUsingComponentImpl implements TempFile {
 
     /**
      *
-     * @throws RemoteException
-     * @throws SmartFrogException
+     * @throws RemoteException In case of network/rmi error
+     * @throws SmartFrogException error while reading attributes
      */
     private void readAttributesAndCreateDir() throws RemoteException, SmartFrogException {
         final String prefix = sfResolve(TempFile.ATTR_PREFIX, "", true);
@@ -94,7 +98,7 @@ public class TempDirImpl extends FileUsingComponentImpl implements TempFile {
 
     /**
      * At terminate time, trigger a recursive delete of the directory.
-     * @param status
+     * @param status TerminationRecord object
      */
 
     public synchronized void sfTerminateWith(TerminationRecord status) {
@@ -108,7 +112,7 @@ public class TempDirImpl extends FileUsingComponentImpl implements TempFile {
     /**
      * get the filename of this file
      *
-     * @return
+     * @return String filename
      */
     public String getFilename() {
         return getFile().toString();

@@ -22,6 +22,9 @@ package org.smartfrog.services.filesystem;
 import java.rmi.Remote;
 import org.smartfrog.sfcore.compound.Compound;
 
+/**
+ * Defines attributes for CopyFile component.
+ */
 public interface CopyFile extends Remote, Compound {
 
     /** Original file {@value} */

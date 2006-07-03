@@ -32,6 +32,9 @@ ITS MEDIA, AND YOU HEREBY WAIVE ANY CLAIM IN THIS REGARD.
 
 package org.smartfrog.examples.arraycompound;
 
+/**
+ * Defines attributes for ArrayCompound component
+ */
 public interface ArrayCompound {
     /** String name for optional attribute "parent" */
     final static String ATR_PARENT = "parent";

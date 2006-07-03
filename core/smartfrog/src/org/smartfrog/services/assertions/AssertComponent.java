@@ -33,6 +33,11 @@ import java.io.File;
 public class AssertComponent extends PrimImpl implements Assert {
     //~ Constructors -----------------------------------------------------------
 
+    /**
+     *  Constructor .
+     *
+     *@exception  RemoteException In case of network/rmi error
+     */
     public AssertComponent() throws RemoteException {
     }
 
@@ -43,8 +48,9 @@ public class AssertComponent extends PrimImpl implements Assert {
     /**
      * verify that assertions are valid.
      *
-     * @throws RemoteException
-     * @throws SmartFrogAssertionException
+     * @throws RemoteException  In case of network/rmi error
+     * @throws SmartFrogAssertionException error in verification
+     * @throws SmartFrogException error in verification
      */
     public void checkAssertions()
             throws RemoteException, SmartFrogException,
@@ -115,6 +121,13 @@ public class AssertComponent extends PrimImpl implements Assert {
 
     }
 
+    /**
+     * make an assertion if two strings are equal
+     * @param equals1 string 1
+     * @param equals2 string 2
+     * @param equalityIgnoresCase flag to ignore case while comparing
+     * @throws SmartFrogAssertionException error in assertion
+     */
     private void assertEqualStrings(String equals1, String equals2,
                                     boolean equalityIgnoresCase)
             throws SmartFrogAssertionException {
@@ -131,8 +144,8 @@ public class AssertComponent extends PrimImpl implements Assert {
     /**
      * try and resolve a reference, return null if there was some kind of failure
      * including lazy references not yet ready.
-     * @return
-     * @throws RemoteException
+     * @return Prim
+     * @throws RemoteException In case of network/rmi error
      */
     private Prim maybeResolveReference() throws RemoteException {
         Reference reference = new Reference();
@@ -154,9 +167,9 @@ public class AssertComponent extends PrimImpl implements Assert {
     /**
      * make an assertion
      *
-     * @param fact
-     * @param test
-     * @throws SmartFrogAssertionException
+     * @param fact result flag
+     * @param test  test String
+     * @throws SmartFrogAssertionException error in assertion
      */
     protected void assertTrue(boolean fact, String test)
             throws SmartFrogAssertionException {
@@ -169,8 +182,8 @@ public class AssertComponent extends PrimImpl implements Assert {
      * get the failure message.
      * This is done by attempting to resolve the message, falling back to a declared one
      * if there is no declared message, or the resolution process failed.
-     * @param test
-     * @return
+     * @param test test message
+     * @return  String
      */
     private String createAssertionMessage(String test) {
         String message = "Assertion " + test
@@ -191,7 +204,8 @@ public class AssertComponent extends PrimImpl implements Assert {
      * @param target  object to invoke
      * @param methodName name of method
      * @return the boolean value of the invocation
-     * @throws SmartFrogAssertionException
+     * @throws SmartFrogException error in evaluation
+     * @throws RemoteException In case of network/rmi error
      */
     public boolean evaluate(Object target, String methodName)
             throws SmartFrogException, RemoteException {
@@ -234,6 +248,7 @@ public class AssertComponent extends PrimImpl implements Assert {
      * @param source source of call
      * @throws org.smartfrog.sfcore.common.SmartFrogLivenessException
      *          component is terminated
+     * @throws RemoteException In case of network/rmi error
      */
     public void sfPing(Object source) throws SmartFrogLivenessException,
                                                             RemoteException {

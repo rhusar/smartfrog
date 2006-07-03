@@ -23,13 +23,14 @@ package org.smartfrog.examples.arithnet;
 import java.rmi.Remote;
 
 
+
 /**
  *  Constructs Dup Dup is basically a null operation, acting as a fan out.
  */
 public class Dup extends NetElemImpl implements Remote {
    /**
     * Constructs Dup
-    * @throws if unable to construct Dup remotely
+    * @throws java.rmi.RemoteException if unable to construct Dup remotely
     */
     public Dup() throws java.rmi.RemoteException {
     }

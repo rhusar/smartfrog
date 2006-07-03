@@ -57,6 +57,7 @@ public interface TempFile extends FileUsingComponent {
      * get the filename of this file
      *
      * @return the filename
+     * @exception  RemoteException In case of network/rmi error
      */
     String getFilename() throws RemoteException ;
 

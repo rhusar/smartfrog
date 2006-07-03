@@ -78,7 +78,8 @@ public class ArrayCompoundImpl extends CompoundImpl implements Compound, ArrayCo
      *  and configuring counter thread) to maintain correct behaviour of
      *  initial deployment and starting the heartbeat monitoring of this
      *  component
-     *@exception  Exception  Description of the Exception
+     * @throws SmartFrogException  error in deploying the component
+     * @throws RemoteException if any network and RMI error
      */
     public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
             super.sfDeploy();
@@ -92,20 +93,30 @@ public class ArrayCompoundImpl extends CompoundImpl implements Compound, ArrayCo
 
     /**
      *  sfStart: starts ArrayCompound and deploys children templates!
-     *@exception  Exception  Description of the Exception
+     * @throws SmartFrogException  error in starting the component
+     * @throws RemoteException if any network and RMI error
      */
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
         deployTemplates(hosts);
     }
 
-
+    /**
+     * Deploy the template description in hosts
+     * @param hosts Vector of hosts
+     * @throws SmartFrogException error in deploying
+     */
     private void deployTemplates (Vector hosts) throws SmartFrogException {
         for (Enumeration h = hosts.elements(); h.hasMoreElements(); ) {
             deployTemplate((String) h.nextElement());
         }
     }
 
+    /**
+     * Deploy the template description in the given host
+     * @param hostname
+     * @return boolean success or failure
+     */
     private boolean deployTemplate(String hostname) {
         Prim p = null;
         try {
@@ -141,7 +152,9 @@ public class ArrayCompoundImpl extends CompoundImpl implements Compound, ArrayCo
     /**
      *  Reads optional and mandatory attributes
      *
-     *@exception  Exception  Description of the Exception
+     * @throws SmartFrogException  error in reading the attributes
+     * @throws RemoteException if any network and RMI error
+     *
      */
     private void readSFAttributes() throws SmartFrogException, RemoteException {
         //

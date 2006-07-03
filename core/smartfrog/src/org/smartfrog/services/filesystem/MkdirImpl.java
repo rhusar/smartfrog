@@ -35,6 +35,10 @@ import org.smartfrog.sfcore.prim.TerminationRecord;
 public class MkdirImpl extends FileUsingComponentImpl implements Mkdir {
     private boolean delete;
 
+    /**
+     * Constructor.
+     * @throws RemoteException  In case of network/rmi error
+     */
     public MkdirImpl() throws RemoteException {
     }
 
@@ -74,8 +78,8 @@ public class MkdirImpl extends FileUsingComponentImpl implements Mkdir {
 
     /**
      * we only create the directory at startup time, even though we bond at deploy time
-     * @throws SmartFrogException
-     * @throws RemoteException
+     * @throws SmartFrogException  failure in starting
+     * @throws RemoteException In case of network/rmi error
      */
     public synchronized void sfStart() throws SmartFrogException,
             RemoteException {
@@ -101,7 +105,7 @@ public class MkdirImpl extends FileUsingComponentImpl implements Mkdir {
     /**
      * At terminate time, trigger a recursive delete of the directory if desired.
      *
-     * @param status
+     * @param status  TerminationRecord object
      */
 
     public synchronized void sfTerminateWith(TerminationRecord status) {

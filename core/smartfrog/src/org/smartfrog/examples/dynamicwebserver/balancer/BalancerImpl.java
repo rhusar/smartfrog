@@ -80,7 +80,7 @@ public class BalancerImpl extends PrimImpl implements Prim, Balancer, DataSource
     /**
      * Constructor for the Balancer component
      *
-     * @throws RemoteException
+     * @throws RemoteException in case of Remote/network error
      */
     public BalancerImpl() throws RemoteException {
     }
@@ -88,8 +88,9 @@ public class BalancerImpl extends PrimImpl implements Prim, Balancer, DataSource
     /**
      * Implementation of the Balancer interface
      *
-     * @param hostname DOCUMENT ME!
-     * @param port DOCUMENT ME!
+     * @param hostname The host name of the new server
+     * @param port The port number on the new server used open the connection
+     *        from the balancer
      */
     public void addServer(String hostname, int port) {
         if (!stopping) {
@@ -100,7 +101,7 @@ public class BalancerImpl extends PrimImpl implements Prim, Balancer, DataSource
     /**
      * Implementation of the Balancer interface
      *
-     * @param hostname DOCUMENT ME!
+     * @param hostname The host name of the new server
      */
     public void addServer(String hostname) {
         if (!stopping) {
@@ -111,7 +112,7 @@ public class BalancerImpl extends PrimImpl implements Prim, Balancer, DataSource
     /**
      * Implementation of the Balancer interface
      *
-     * @param hostname DOCUMENT ME!
+     * @param hostname The host name of the server to remove from the set
      */
     public void removeServer(String hostname) {
         serverSelector.removeServer(hostname);
@@ -122,6 +123,7 @@ public class BalancerImpl extends PrimImpl implements Prim, Balancer, DataSource
      *  resets the data after every request - so only suited to single requestor
      *
      * @return the number of connections since last request
+     * @throws RemoteException in case of Remote/network error
      */
     public int getData() throws RemoteException {
         int tmp = connectionCount;
@@ -178,7 +180,7 @@ public class BalancerImpl extends PrimImpl implements Prim, Balancer, DataSource
     /**
      * Used to start the component from the command line.
      *
-     * @param args
+     * @param args command line arguments
      */
     public static void main(String[] args) {
         try {
@@ -219,7 +221,7 @@ public class BalancerImpl extends PrimImpl implements Prim, Balancer, DataSource
     /**
      * Reads SF description.
      *
-     * @exception SmartFrogException error while reading
+     * @throws SmartFrogException error while reading
      * @throws RemoteException In case of network/rmi error
      */
     private void readSFAttributes() throws SmartFrogException, RemoteException {
@@ -285,9 +287,15 @@ public class BalancerImpl extends PrimImpl implements Prim, Balancer, DataSource
         private Thread thread = null;
         private volatile boolean stopRequested = false;
 
+        /**
+         * Constructor
+         */
         BalancerThread() {
         }
 
+        /**
+         * Start the thread
+         */
         void start() {
             if (thread == null) {
                 // Create writer thread.
@@ -296,6 +304,9 @@ public class BalancerImpl extends PrimImpl implements Prim, Balancer, DataSource
             }
         }
 
+        /**
+         * Stop the thread
+         */
         void stop() {
             if (thread != null) {
                 stopRequested = true;

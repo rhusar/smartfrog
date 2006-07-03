@@ -33,6 +33,10 @@ import java.rmi.RemoteException;
 public class SelfDeletingFileImpl extends FileUsingComponentImpl
         implements FileUsingComponent {
 
+    /**
+     * Constructor.
+     * @throws RemoteException  In case of network/rmi error
+     */
     public SelfDeletingFileImpl() throws RemoteException {
     }
 

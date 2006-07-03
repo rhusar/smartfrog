@@ -327,6 +327,11 @@ public class GameArena extends Canvas implements KeyListener {
         paint(g);
     }
 
+    /**
+     * Paint method.
+     *
+     * @param g the graphics object
+     */
     public void paint(Graphics g) {
         paintCanvas(g);
     }

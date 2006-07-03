@@ -65,7 +65,7 @@ public class ApacheImpl extends CompoundImpl implements Compound, Apache,
     /**
      * Standard Remotable constructor
      *
-     * @throws RemoteException
+     * @throws RemoteException in case of Remote/network error
      */
     public ApacheImpl() throws RemoteException {
     }
@@ -73,8 +73,8 @@ public class ApacheImpl extends CompoundImpl implements Compound, Apache,
     /**
      * This method retrieves the paramters from the .sf file.
      *
-     * @throws SmartFrogException DOCUMENT ME!
-     * @throws RemoteException    DOCUMENT ME!
+     * @throws SmartFrogException error in deploying the component
+     * @throws RemoteException    in case of Remote/network error
      */
     public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
         super.sfDeploy();
@@ -101,8 +101,8 @@ public class ApacheImpl extends CompoundImpl implements Compound, Apache,
     /**
      * This sets a flag that will start the httpd process running.
      *
-     * @throws SmartFrogException DOCUMENT ME!
-     * @throws RemoteException    DOCUMENT ME!
+     * @throws SmartFrogException error in starting the component
+     * @throws RemoteException    in case of Remote/network error
      */
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
@@ -115,7 +115,7 @@ public class ApacheImpl extends CompoundImpl implements Compound, Apache,
      * This shuts down Apache by requesting that the ApacheState  variable be
      * set to false.
      *
-     * @param tr DOCUMENT ME!
+     * @param tr TerminationRecord object
      */
     public synchronized void sfTerminateWith(TerminationRecord tr) {
         logger.log(name, "terminating apache - setting runstate to false");
@@ -132,7 +132,7 @@ public class ApacheImpl extends CompoundImpl implements Compound, Apache,
      * may already be running and you would end up starting too many httpd
      * processes.
      *
-     * @param newState DOCUMENT ME!
+     * @param newState new state of Apache
      */
     public synchronized void setApacheState(boolean newState) {
         logger.log(name,
@@ -150,6 +150,10 @@ public class ApacheImpl extends CompoundImpl implements Compound, Apache,
         }
     }
 
+    /**
+     * Get Apache state
+     * @return boolean
+     */
     public synchronized boolean getApacheState() {
         return apacheState;
     }
@@ -267,7 +271,7 @@ public class ApacheImpl extends CompoundImpl implements Compound, Apache,
      * This method is not used by the ApacheImpl class but would be used by a
      * Remote client.
      *
-     * @throws RemoteException DOCUMENT ME!
+     * @throws RemoteException in case of Remote/network error
      */
     public void startDaemon() throws RemoteException {
         setApacheState(true);
@@ -277,7 +281,7 @@ public class ApacheImpl extends CompoundImpl implements Compound, Apache,
      * This method is not used by the ApacheImpl class but would be used by a
      * Remote client.
      *
-     * @throws RemoteException DOCUMENT ME!
+     * @throws RemoteException in case of Remote/network error
      */
     public void stopDaemon() throws RemoteException {
         setApacheState(false);
@@ -287,7 +291,7 @@ public class ApacheImpl extends CompoundImpl implements Compound, Apache,
      * This method is not used by the ApacheImpl class but would be used by a
      * Remote client.
      *
-     * @throws RemoteException DOCUMENT ME!
+     * @throws RemoteException in case of Remote/network error
      */
     public void refreshDaemon() throws RemoteException {
         shouldRefresh = true;
@@ -298,9 +302,9 @@ public class ApacheImpl extends CompoundImpl implements Compound, Apache,
      * desired configuration of Apache and then periodically refresh Apache to
      * this state.
      *
-     * @param scriptURL DOCUMENT ME!
-     * @param fileName  DOCUMENT ME!
-     * @throws RemoteException DOCUMENT ME!
+     * @param scriptURL script url
+     * @param fileName  file name
+     * @throws RemoteException in case of Remote/network error
      */
     public void refreshConfig(String scriptURL, String fileName)
             throws RemoteException {
@@ -310,8 +314,8 @@ public class ApacheImpl extends CompoundImpl implements Compound, Apache,
      * Returns an int containing the number of threads - implementation of
      * DataSource interface
      *
-     * @return DOCUMENT ME!
-     * @throws RemoteException DOCUMENT ME!
+     * @return int
+     * @throws RemoteException in case of Remote/network error
      */
     public int getData() throws RemoteException {
         return threadCount;

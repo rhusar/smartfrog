@@ -20,6 +20,10 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.examples.dynamicwebserver.balancer;
 
+
+import java.io.IOException;
+import java.nio.channels.SocketChannel;
+
 /**
 
  * <p>
@@ -29,16 +33,18 @@ package org.smartfrog.examples.dynamicwebserver.balancer;
  * </p>
  *
  */
-import java.io.IOException;
-import java.nio.channels.SocketChannel;
-
-
 class Connection {
     private SocketChannel client; // The socket connection to the client
     private SocketChannel server; // The socket connection to the server
     private Server serverHost; // The parent Server object
     boolean terminated; // Has this connection been terminated
 
+    /**
+     * Constructor
+     * @param client  The socket connection to the client
+     * @param server  The socket connection to the server
+     * @param serverHost The parent Server object
+     */
     Connection(SocketChannel client, SocketChannel server, Server serverHost) {
         this.client = client;
         this.server = server;
@@ -47,14 +53,26 @@ class Connection {
         terminated = false;
     }
 
+    /**
+     * Get socket connection to the client
+     * @return  The socket connection to the client
+     */
     SocketChannel getClientSocket() {
         return client;
     }
 
+    /**
+     * Get socket connection to the server
+     * @return  The socket connection to the server
+     */
     SocketChannel getServerSocket() {
         return server;
     }
 
+    /**
+     * Get parent Server Object
+     * @return The parent Server object
+     */
     Server getServer() {
         return serverHost;
     }
@@ -92,10 +110,19 @@ class Connection {
         }
     }
 
+    /**
+     * Is connection closed?
+     * @return boolean
+     */
     boolean isTerminated() {
         return terminated;
     }
 
+    /**
+     * Returns textual representation.
+     *
+     * @return textual representation
+     */
     public String toString() {
         return "Connection from " + client + " to " + server;
     }

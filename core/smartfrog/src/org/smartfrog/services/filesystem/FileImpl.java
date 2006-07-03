@@ -23,11 +23,8 @@ import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLivenessException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
-import org.smartfrog.sfcore.logging.Log;
-import org.smartfrog.sfcore.prim.Prim;
-import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.utils.ComponentHelper;
-import org.smartfrog.sfcore.utils.PlatformHelper;
+
 
 import java.io.File;
 import java.rmi.RemoteException;
@@ -48,6 +45,10 @@ public class FileImpl extends FileUsingComponentImpl implements FileIntf {
     private boolean testOnLiveness;
     private boolean testOnStartup;
 
+    /**
+     * Constructor
+     * @throws RemoteException  In case of network/rmi error
+     */
     public FileImpl() throws RemoteException {
     }
 
@@ -55,8 +56,8 @@ public class FileImpl extends FileUsingComponentImpl implements FileIntf {
      * all our binding stuff. reads attributes, builds the filename, checks it,
      * updates attributes
      *
-     * @throws RemoteException
-     * @throws SmartFrogRuntimeException
+     * @throws RemoteException In case of network/rmi error
+     * @throws SmartFrogRuntimeException runtime failure
      */
     public void bind() throws RemoteException, SmartFrogRuntimeException {
 
@@ -142,6 +143,13 @@ public class FileImpl extends FileUsingComponentImpl implements FileIntf {
 
     }
 
+    /**
+     * Set attribute value
+     * @param attr attribute name
+     * @param value attriute value
+     * @throws SmartFrogRuntimeException error in setting
+     * @throws RemoteException  In case of network/rmi error
+     */
     private void setAttribute(String attr, String value)
             throws SmartFrogRuntimeException, RemoteException {
         if (sfLog().isDebugEnabled()) {
@@ -150,7 +158,13 @@ public class FileImpl extends FileUsingComponentImpl implements FileIntf {
         sfReplaceAttribute(attr, value);
     }
 
-
+    /**
+     * Set boolean value of an attribute
+     * @param attr attribute name
+     * @param flag boolean value of an attribute
+     * @throws SmartFrogRuntimeException error in setting
+     * @throws RemoteException  In case of network/rmi error
+     */
     private void setAttribute(String attr, boolean flag)
             throws SmartFrogRuntimeException, RemoteException {
         if (sfLog().isDebugEnabled()) {
@@ -162,12 +176,12 @@ public class FileImpl extends FileUsingComponentImpl implements FileIntf {
     /**
      * get a boolean value of an attribute
      *
-     * @param attr
-     * @param value
-     * @param mandatory
-     * @return
-     * @throws SmartFrogResolutionException
-     * @throws RemoteException
+     * @param attr attribute name
+     * @param value boolean value of an attribute
+     * @param mandatory flag indicating if attrbute is mandatory or optional
+     * @return boolean value
+     * @throws SmartFrogResolutionException error in resolving
+     * @throws RemoteException In case of network/rmi error
      */
     private boolean getBool(String attr, boolean value, boolean mandatory)
             throws SmartFrogResolutionException,
@@ -176,6 +190,13 @@ public class FileImpl extends FileUsingComponentImpl implements FileIntf {
         return b.booleanValue();
     }
 
+    /**
+     * Set long value of an attribute
+     * @param attr attribute name
+     * @param value long value of an attribute
+     * @throws SmartFrogRuntimeException error in setting
+     * @throws RemoteException  In case of network/rmi error
+     */
     private void setAttribute(String attr, long value)
             throws SmartFrogRuntimeException, RemoteException {
         if (sfLog().isDebugEnabled()) {
