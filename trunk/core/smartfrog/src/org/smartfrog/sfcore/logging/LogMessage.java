@@ -64,6 +64,8 @@ public interface LogMessage {
      * <p> Same as info messages but without Labels.</p>
      *
      * @param message log this message
+     * @param t log this cause
+     * @param tr log this TerminationRecord
      */
     public void err(Object message, SmartFrogException t, TerminationRecord tr);
 

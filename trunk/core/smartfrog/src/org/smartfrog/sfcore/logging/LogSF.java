@@ -64,6 +64,7 @@ public interface LogSF extends Log, LogMessage, LogLevel {
      * <p> Call this method to prevent having to perform expensive operations
      * (for example, <code>String</code> concatenation)
      * when the log level is more than ignore. </p>
+     * @return boolean true if ignore level is currently enabled
      */
     public boolean isIgnoreEnabled();
 
@@ -89,6 +90,9 @@ public interface LogSF extends Log, LogMessage, LogLevel {
      * <p> Log a message with ignore log level. </p>
      *
      * @param message log this message
+     * @param t log this cause
+     * @param tr log this TerminationRecord
+     *
      */
     public void ignore(Object message, SmartFrogException t, TerminationRecord tr);
 
@@ -106,6 +110,9 @@ public interface LogSF extends Log, LogMessage, LogLevel {
      * <p> Log a message with trace log level. </p>
      *
      * @param message log this message
+     * @param t log this cause
+     * @param tr log this TerminationRecord
+     *
      */
     public void trace(Object message, SmartFrogException t, TerminationRecord tr);
 
@@ -123,6 +130,9 @@ public interface LogSF extends Log, LogMessage, LogLevel {
      * <p> Log a message with debug log level. </p>
      *
      * @param message log this message
+     * @param t log this cause
+     * @param tr log this TerminationRecord
+     *
      */
     public void debug(Object message, SmartFrogException t, TerminationRecord tr);
 
@@ -140,6 +150,9 @@ public interface LogSF extends Log, LogMessage, LogLevel {
      * <p> Log a message with info log level. </p>
      *
      * @param message log this message
+     * @param t log this cause
+     * @param tr log this TerminationRecord
+     *
      */
     public void info(Object message, SmartFrogException t, TerminationRecord tr);
 
@@ -157,6 +170,9 @@ public interface LogSF extends Log, LogMessage, LogLevel {
      * <p> Log a message with warn log level. </p>
      *
      * @param message log this message
+     * @param t log this cause
+     * @param tr log this TerminationRecord
+     *
      */
     public void warn(Object message, SmartFrogException t, TerminationRecord tr);
 
@@ -174,6 +190,9 @@ public interface LogSF extends Log, LogMessage, LogLevel {
      * <p> Log a message with error log level. </p>
      *
      * @param message log this message
+     * @param t log this cause
+     * @param tr log this TerminationRecord
+     *
      */
     public void error(Object message, SmartFrogException t, TerminationRecord tr);
 
@@ -191,6 +210,9 @@ public interface LogSF extends Log, LogMessage, LogLevel {
      * <p> Log a message with fatal log level. </p>
      *
      * @param message log this message
+     * @param t log this cause
+     * @param tr log this TerminationRecord
+     *
      */
     public void fatal(Object message, SmartFrogException t, TerminationRecord tr);
 

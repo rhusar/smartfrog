@@ -156,6 +156,7 @@ public class LogToStreamsImpl extends LogToNothingImpl implements LogToStreams, 
      * @param name            log name
      * @param initialLogLevel level to log at
      * @param out             output stream to log to
+     * @param err             error stream to log to
      */
 
     public LogToStreamsImpl(String name, Integer initialLogLevel, PrintStream out, PrintStream err) {
@@ -170,6 +171,7 @@ public class LogToStreamsImpl extends LogToNothingImpl implements LogToStreams, 
      * @param componentComponentDescription A component description to overwrite class configuration
      * @param initialLogLevel level to log at
      * @param out             output stream to log to
+     * @param err             error stream to log to
      */
     public LogToStreamsImpl(String name,ComponentDescription componentComponentDescription, Integer initialLogLevel, PrintStream out, PrintStream err) {
         super(name, initialLogLevel, out, err);
@@ -202,7 +204,7 @@ public class LogToStreamsImpl extends LogToNothingImpl implements LogToStreams, 
 
     /**
      * Reads optional and mandatory attributes.
-     *
+     * @param cd cd ComponentDescription A component description to read attributes from
      * @throws SmartFrogException error while reading attributes
      */
     protected void readSFStreamsAttributes(ComponentDescription cd) throws SmartFrogException {
@@ -229,7 +231,7 @@ public class LogToStreamsImpl extends LogToNothingImpl implements LogToStreams, 
     /**
      * set the output stream for logging. must not be null
      *
-     * @param outstream
+     * @param outstream output stream to log to
      */
     public void setOutstream(PrintStream outstream) {
         assert(outstream != null);
@@ -239,7 +241,7 @@ public class LogToStreamsImpl extends LogToNothingImpl implements LogToStreams, 
     /**
      * set the output stream for logging. must not be null
      *
-     * @param errstream
+     * @param errstream  error stream to log to
      */
     public void setErrstream(PrintStream errstream) {
         assert(errstream != null);
@@ -258,6 +260,7 @@ public class LogToStreamsImpl extends LogToNothingImpl implements LogToStreams, 
 
     /**
      * <p> Get logging level. </p>
+     * @return int log level
      */
     public int getLevel() {
         return currentLogLevel;
@@ -297,6 +300,14 @@ public class LogToStreamsImpl extends LogToNothingImpl implements LogToStreams, 
         write(buf);
     }
 
+    /**
+     * <p>Do the logging.
+     * Uses String buffer to assemble the message.</p>
+     * @param type One of the LOG_LEVE_XXX constants defining the log level
+     * @param message The message itself (typically a String)
+     * @param t     The exception whose stack trace should be logged
+     * @return  StringBuffer
+     */
     protected StringBuffer logToText(int type, Object message, Throwable t) {
          StringBuffer buf = new StringBuffer();
         // Append date-time if so configured
@@ -403,6 +414,7 @@ public class LogToStreamsImpl extends LogToNothingImpl implements LogToStreams, 
      * Is the given log level currently enabled?
      *
      * @param logLevel is this level enabled?
+     * @return boolean true if given log level is currently enabled
      */
     public boolean isLevelEnabled(int logLevel) {
         // log level are numerically ordered so can use simple numeric
@@ -418,6 +430,7 @@ public class LogToStreamsImpl extends LogToNothingImpl implements LogToStreams, 
 
     /**
      * <p> Log a message with debug log level.</p>
+     * @param message log this message
      */
     public void debug(Object message) {
         if (isLevelEnabled(LogLevel.LOG_LEVEL_DEBUG)) {
@@ -428,6 +441,8 @@ public class LogToStreamsImpl extends LogToNothingImpl implements LogToStreams, 
 
     /**
      * <p> Log an error with debug log level.</p>
+     * @param message log this message
+     * @param t log this cause
      */
     public void debug(Object message, Throwable t) {
         if (isLevelEnabled(LogLevel.LOG_LEVEL_DEBUG)) {
@@ -438,6 +453,7 @@ public class LogToStreamsImpl extends LogToNothingImpl implements LogToStreams, 
 
     /**
      * <p> Log a message with trace log level.</p>
+     * @param message log this message
      */
     public void trace(Object message) {
         if (isLevelEnabled(LogLevel.LOG_LEVEL_TRACE)) {
@@ -448,6 +464,8 @@ public class LogToStreamsImpl extends LogToNothingImpl implements LogToStreams, 
 
     /**
      * <p> Log an error with trace log level.</p>
+     * @param message log this message
+     * @param t log this cause
      */
     public void trace(Object message, Throwable t) {
         if (isLevelEnabled(LogLevel.LOG_LEVEL_TRACE)) {
@@ -458,6 +476,7 @@ public class LogToStreamsImpl extends LogToNothingImpl implements LogToStreams, 
 
     /**
      * <p> Log a message with info log level.</p>
+     * @param message log this message
      */
     public void info(Object message) {
         if (isLevelEnabled(LogLevel.LOG_LEVEL_INFO)) {
@@ -468,6 +487,8 @@ public class LogToStreamsImpl extends LogToNothingImpl implements LogToStreams, 
 
     /**
      * <p> Log an error with info log level.</p>
+     * @param message log this message
+     * @param t log this cause
      */
     public void info(Object message, Throwable t) {
         if (isLevelEnabled(LogLevel.LOG_LEVEL_INFO)) {
@@ -478,6 +499,7 @@ public class LogToStreamsImpl extends LogToNothingImpl implements LogToStreams, 
 
     /**
      * <p> Log a message with warn log level.</p>
+     * @param message log this message
      */
     public void warn(Object message) {
         if (isLevelEnabled(LogLevel.LOG_LEVEL_WARN)) {
@@ -488,6 +510,8 @@ public class LogToStreamsImpl extends LogToNothingImpl implements LogToStreams, 
 
     /**
      * <p> Log an error with warn log level.</p>
+     * @param message log this message
+     * @param t log this cause
      */
     public void warn(Object message, Throwable t) {
         if (isLevelEnabled(LogLevel.LOG_LEVEL_WARN)) {
@@ -498,6 +522,7 @@ public class LogToStreamsImpl extends LogToNothingImpl implements LogToStreams, 
 
     /**
      * <p> Log a message with error log level.</p>
+     * @param message log this message
      */
     public void error(Object message) {
         if (isLevelEnabled(LogLevel.LOG_LEVEL_ERROR)) {
@@ -508,6 +533,8 @@ public class LogToStreamsImpl extends LogToNothingImpl implements LogToStreams, 
 
     /**
      * <p> Log an error with error log level.</p>
+     * @param message log this message
+     * @param t log this cause
      */
     public void error(Object message, Throwable t) {
         if (isLevelEnabled(LogLevel.LOG_LEVEL_ERROR)) {
@@ -518,6 +545,7 @@ public class LogToStreamsImpl extends LogToNothingImpl implements LogToStreams, 
 
     /**
      * <p> Log a message with fatal log level.</p>
+     * @param message log this message
      */
     public void fatal(Object message) {
         if (isLevelEnabled(LogLevel.LOG_LEVEL_FATAL)) {
@@ -528,6 +556,8 @@ public class LogToStreamsImpl extends LogToNothingImpl implements LogToStreams, 
 
     /**
      * <p> Log an error with fatal log level.</p>
+     * @param message log this message
+     * @param t log this cause
      */
     public void fatal(Object message, Throwable t) {
         if (isLevelEnabled(LogLevel.LOG_LEVEL_FATAL)) {
@@ -542,6 +572,7 @@ public class LogToStreamsImpl extends LogToNothingImpl implements LogToStreams, 
      * <p> This allows expensive operations such as <code>String</code>
      * concatenation to be avoided when the message will be ignored by the
      * logger. </p>
+     * @return boolean true if debug level is currently enabled
      */
     public boolean isDebugEnabled() {
 
@@ -555,6 +586,7 @@ public class LogToStreamsImpl extends LogToNothingImpl implements LogToStreams, 
      * <p> This allows expensive operations such as <code>String</code>
      * concatenation to be avoided when the message will be ignored by the
      * logger. </p>
+     * @return boolean true if error level is currently enabled
      */
     public boolean isErrorEnabled() {
 
@@ -568,6 +600,7 @@ public class LogToStreamsImpl extends LogToNothingImpl implements LogToStreams, 
      * <p> This allows expensive operations such as <code>String</code>
      * concatenation to be avoided when the message will be ignored by the
      * logger. </p>
+     * @return boolean true if fatal level is currently enabled
      */
     public boolean isFatalEnabled() {
 
@@ -581,6 +614,7 @@ public class LogToStreamsImpl extends LogToNothingImpl implements LogToStreams, 
      * <p> This allows expensive operations such as <code>String</code>
      * concatenation to be avoided when the message will be ignored by the
      * logger. </p>
+     * @return boolean true if info level is currently enabled
      */
     public boolean isInfoEnabled() {
 
@@ -593,6 +627,7 @@ public class LogToStreamsImpl extends LogToNothingImpl implements LogToStreams, 
      * <p> This allows expensive operations such as <code>String</code>
      * concatenation to be avoided when the message will be ignored by the
      * logger. </p>
+     * @return boolean true if trace level is currently enabled
      */
     public boolean isTraceEnabled() {
 
@@ -605,6 +640,7 @@ public class LogToStreamsImpl extends LogToNothingImpl implements LogToStreams, 
      * <p> This allows expensive operations such as <code>String</code>
      * concatenation to be avoided when the message will be ignored by the
      * logger. </p>
+     * @return boolean true if warn level is currently enabled
      */
     public boolean isWarnEnabled() {
 

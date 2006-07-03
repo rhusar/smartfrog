@@ -37,6 +37,9 @@ import java.io.PipedInputStream;
 import java.io.PrintStream;
 import java.lang.reflect.Method;
 
+/**
+ * Implementation for SFLogStdStream component.
+ */
 public class SFLogStdStreamImpl extends PrimImpl implements Prim, SFLogStdStream {
 
 
@@ -138,7 +141,7 @@ public class SFLogStdStreamImpl extends PrimImpl implements Prim, SFLogStdStream
 
     /**
      * Redirects system outputs to a file.
-     * @throws Exception if any io error
+     *
      */
     public void redirectOutputs(){
 

@@ -40,6 +40,8 @@ public interface LogRemote extends Remote {
      * <p> Call this method to prevent having to perform expensive operations
      * (for example, <code>String</code> concatenation)
      * when the log level is more than debug. </p>
+     * @return boolean true if debug level is currently enabled
+     * @throws RemoteException in case of remote/network error
      */
     public boolean isDebugEnabled() throws RemoteException;
 
@@ -50,6 +52,8 @@ public interface LogRemote extends Remote {
      * <p> Call this method to prevent having to perform expensive operations
      * (for example, <code>String</code> concatenation)
      * when the log level is more than error. </p>
+     * @return boolean true if error level is currently enabled
+     * @throws RemoteException in case of remote/network error
      */
     public boolean isErrorEnabled() throws RemoteException;
 
@@ -60,6 +64,8 @@ public interface LogRemote extends Remote {
      * <p> Call this method to prevent having to perform expensive operations
      * (for example, <code>String</code> concatenation)
      * when the log level is more than fatal. </p>
+     * @return boolean true if fatal level is currently enabled
+     * @throws RemoteException in case of remote/network error
      */
     public boolean isFatalEnabled() throws RemoteException;
 
@@ -70,6 +76,8 @@ public interface LogRemote extends Remote {
      * <p> Call this method to prevent having to perform expensive operations
      * (for example, <code>String</code> concatenation)
      * when the log level is more than info. </p>
+     * @return boolean true if info level is currently enabled
+     * @throws RemoteException in case of remote/network error
      */
     public boolean isInfoEnabled() throws RemoteException;
 
@@ -80,6 +88,8 @@ public interface LogRemote extends Remote {
      * <p> Call this method to prevent having to perform expensive operations
      * (for example, <code>String</code> concatenation)
      * when the log level is more than trace. </p>
+     * @return boolean true if trace level is currently enabled
+     * @throws RemoteException in case of remote/network error
      */
     public boolean isTraceEnabled() throws RemoteException;
 
@@ -90,6 +100,8 @@ public interface LogRemote extends Remote {
      * <p> Call this method to prevent having to perform expensive operations
      * (for example, <code>String</code> concatenation)
      * when the log level is more than warn. </p>
+     * @return boolean true if warn level is currently enabled
+     * @throws RemoteException in case of remote/network error
      */
     public boolean isWarnEnabled() throws RemoteException;
 
@@ -100,6 +112,7 @@ public interface LogRemote extends Remote {
      * <p> Log a message with trace log level. </p>
      *
      * @param message log this message
+     * @throws RemoteException in case of remote/network error
      */
     public void trace(Object message) throws RemoteException;
 
@@ -109,6 +122,7 @@ public interface LogRemote extends Remote {
      *
      * @param message log this message
      * @param t log this cause
+     * @throws RemoteException in case of remote/network error
      */
     public void trace(Object message, Throwable t) throws RemoteException;
 
@@ -117,6 +131,7 @@ public interface LogRemote extends Remote {
      * <p> Log a message with debug log level. </p>
      *
      * @param message log this message
+     * @throws RemoteException in case of remote/network error
      */
     public void debug(Object message) throws RemoteException;
 
@@ -126,6 +141,7 @@ public interface LogRemote extends Remote {
      *
      * @param message log this message
      * @param t log this cause
+     * @throws RemoteException in case of remote/network error
      */
     public void debug(Object message, Throwable t) throws RemoteException;
 
@@ -134,6 +150,7 @@ public interface LogRemote extends Remote {
      * <p> Log a message with info log level. </p>
      *
      * @param message log this message
+     * @throws RemoteException in case of remote/network error
      */
     public void info(Object message) throws RemoteException;
 
@@ -143,6 +160,7 @@ public interface LogRemote extends Remote {
      *
      * @param message log this message
      * @param t log this cause
+     * @throws RemoteException in case of remote/network error
      */
     public void info(Object message, Throwable t) throws RemoteException;
 
@@ -151,6 +169,7 @@ public interface LogRemote extends Remote {
      * <p> Log a message with warn log level. </p>
      *
      * @param message log this message
+     * @throws RemoteException in case of remote/network error
      */
     public void warn(Object message) throws RemoteException;
 
@@ -160,6 +179,7 @@ public interface LogRemote extends Remote {
      *
      * @param message log this message
      * @param t log this cause
+     * @throws RemoteException in case of remote/network error
      */
     public void warn(Object message, Throwable t) throws RemoteException;
 
@@ -168,6 +188,7 @@ public interface LogRemote extends Remote {
      * <p> Log a message with error log level. </p>
      *
      * @param message log this message
+     * @throws RemoteException in case of remote/network error
      */
     public void error(Object message) throws RemoteException;
 
@@ -177,6 +198,7 @@ public interface LogRemote extends Remote {
      *
      * @param message log this message
      * @param t log this cause
+     * @throws RemoteException in case of remote/network error
      */
     public void error(Object message, Throwable t) throws RemoteException;
 
@@ -185,6 +207,7 @@ public interface LogRemote extends Remote {
      * <p> Log a message with fatal log level. </p>
      *
      * @param message log this message
+     * @throws RemoteException in case of remote/network error
      */
     public void fatal(Object message) throws RemoteException;
 
@@ -194,6 +217,7 @@ public interface LogRemote extends Remote {
      *
      * @param message log this message
      * @param t log this cause
+     * @throws RemoteException in case of remote/network error
      */
     public void fatal(Object message, Throwable t) throws RemoteException;
 

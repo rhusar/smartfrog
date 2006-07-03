@@ -61,6 +61,7 @@ public interface LogLevel {
 
     /**
      * <p> Get logging level. </p>
+     * @return int log level
      */
     public int getLevel();
 
@@ -68,6 +69,7 @@ public interface LogLevel {
      * Is the given log level currently enabled?
      *
      * @param logLevel is this level enabled?
+     * @return boolean if given log currently enabled
      */
     public boolean isLevelEnabled(int logLevel);
 

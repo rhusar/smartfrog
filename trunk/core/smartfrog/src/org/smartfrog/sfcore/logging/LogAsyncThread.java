@@ -31,11 +31,18 @@ public class LogAsyncThread extends Thread {
     private LogAsyncQueue.LogRequest request;
     private LogAsyncQueue            queue;
 
+    /**
+     * Constructor
+     * @param queue queue of methods to be invoked
+     */
     public LogAsyncThread(LogAsyncQueue queue) {
         super();
         this.queue = queue;
     }
 
+    /**
+     * Run method for the thread
+     */
     public void run() {
         active = true;
         while( active ) {
@@ -49,6 +56,9 @@ public class LogAsyncThread extends Thread {
         }
     }
 
+    /**
+     * Terminate the thread
+     */
     public void terminate() {
         active = false;
         this.interrupt();

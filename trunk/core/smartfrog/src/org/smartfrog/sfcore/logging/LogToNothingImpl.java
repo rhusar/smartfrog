@@ -34,9 +34,9 @@ import java.io.PrintStream;
  */
 public class LogToNothingImpl implements LogToNothing, Log, LogMessage, LogLevel  {
 
-    //Configuration for class
+    /** Configuration for class  */
     protected ComponentDescription classComponentDescription = null;
-    //Configuration for component
+    /** Configuration for component */
     protected ComponentDescription componentComponentDescription = null;
 
     /** The name of this simple log instance */
@@ -134,10 +134,10 @@ public class LogToNothingImpl implements LogToNothing, Log, LogMessage, LogLevel
         }
     }
 
-        /**
-     *  Reads optional and mandatory attributes.
-     *
-     * @exception  SmartFrogException error while reading attributes
+    /**
+     * Reads optional and mandatory attributes.
+     * @param cd cd ComponentDescription A component description to read attributes from
+     * @throws  SmartFrogException error while reading attributes
      */
     protected void readSFNothingAttributes(ComponentDescription cd) throws SmartFrogException {
         //Optional attributes.
@@ -152,7 +152,7 @@ public class LogToNothingImpl implements LogToNothing, Log, LogMessage, LogLevel
 
     /**
      * set the output stream for logging. must not be null
-     * @param outstream
+     * @param outstream Output stream to set
      */
     public void setOutstream(PrintStream outstream) {
         assert(outstream != null);
@@ -161,7 +161,7 @@ public class LogToNothingImpl implements LogToNothing, Log, LogMessage, LogLevel
 
     /**
      * set the output stream for logging. must not be null
-     * @param errstream
+     * @param errstream Error stream to set
      */
     public void setErrstream(PrintStream errstream) {
         assert(errstream != null);
@@ -181,6 +181,7 @@ public class LogToNothingImpl implements LogToNothing, Log, LogMessage, LogLevel
 
     /**
      * <p> Get logging level. </p>
+     * @return int log level
      */
     public int getLevel() {
         return LOG_LEVEL_OFF;
@@ -193,6 +194,7 @@ public class LogToNothingImpl implements LogToNothing, Log, LogMessage, LogLevel
      * Is the given log level currently enabled?
      *
      * @param logLevel is this level enabled?
+     * @return boolean true if given log level is currently enabled
      */
     public boolean isLevelEnabled(int logLevel) {
         // log level are numerically ordered so can use simple numeric
@@ -206,6 +208,7 @@ public class LogToNothingImpl implements LogToNothing, Log, LogMessage, LogLevel
 
     /**
      * <p> Log a message with debug log level.</p>
+     * @param message log this message
      */
     public void debug(Object message) {
         return;
@@ -214,6 +217,8 @@ public class LogToNothingImpl implements LogToNothing, Log, LogMessage, LogLevel
 
     /**
      * <p> Log an error with debug log level.</p>
+     * @param message log this message
+     * @param t log this cause
      */
     public void debug(Object message, Throwable t) {
         return;
@@ -222,6 +227,7 @@ public class LogToNothingImpl implements LogToNothing, Log, LogMessage, LogLevel
 
     /**
      * <p> Log a message with trace log level.</p>
+     * @param message log this message
      */
     public void trace(Object message) {
         return;
@@ -230,6 +236,8 @@ public class LogToNothingImpl implements LogToNothing, Log, LogMessage, LogLevel
 
     /**
      * <p> Log an error with trace log level.</p>
+     * @param message log this message
+     * @param t log this cause
      */
     public void trace(Object message, Throwable t) {
         return;
@@ -238,6 +246,7 @@ public class LogToNothingImpl implements LogToNothing, Log, LogMessage, LogLevel
 
     /**
      * <p> Log a message with info log level.</p>
+     * @param message log this message
      */
     public void info(Object message) {
         return;
@@ -246,6 +255,8 @@ public class LogToNothingImpl implements LogToNothing, Log, LogMessage, LogLevel
 
     /**
      * <p> Log an error with info log level.</p>
+     * @param message log this message
+     * @param t log this cause
      */
     public void info(Object message, Throwable t) {
         return;
@@ -254,6 +265,7 @@ public class LogToNothingImpl implements LogToNothing, Log, LogMessage, LogLevel
 
     /**
      * <p> Log a message with warn log level.</p>
+     * @param message log this message
      */
     public void warn(Object message) {
         return;
@@ -262,6 +274,8 @@ public class LogToNothingImpl implements LogToNothing, Log, LogMessage, LogLevel
 
     /**
      * <p> Log an error with warn log level.</p>
+     * @param message log this message
+     * @param t log this cause
      */
     public void warn(Object message, Throwable t) {
         return;
@@ -270,6 +284,7 @@ public class LogToNothingImpl implements LogToNothing, Log, LogMessage, LogLevel
 
     /**
      * <p> Log a message with error log level.</p>
+     * @param message log this message
      */
     public void error(Object message) {
         return;
@@ -278,6 +293,8 @@ public class LogToNothingImpl implements LogToNothing, Log, LogMessage, LogLevel
 
     /**
      * <p> Log an error with error log level.</p>
+     * @param message log this message
+     * @param t log this cause
      */
     public void error(Object message, Throwable t) {
         return;
@@ -286,6 +303,7 @@ public class LogToNothingImpl implements LogToNothing, Log, LogMessage, LogLevel
 
     /**
      * <p> Log a message with fatal log level.</p>
+     * @param message log this message
      */
     public void fatal(Object message) {
         return;
@@ -294,6 +312,8 @@ public class LogToNothingImpl implements LogToNothing, Log, LogMessage, LogLevel
 
     /**
      * <p> Log an error with fatal log level.</p>
+     * @param message log this message
+     * @param t log this cause
      */
     public void fatal(Object message, Throwable t) {
         return;
@@ -306,6 +326,7 @@ public class LogToNothingImpl implements LogToNothing, Log, LogMessage, LogLevel
      * <p> This allows expensive operations such as <code>String</code>
      * concatenation to be avoided when the message will be ignored by the
      * logger. </p>
+     * @return boolean true if debug level is currently enabled
      */
     public boolean isDebugEnabled() {
         return false;
@@ -318,6 +339,7 @@ public class LogToNothingImpl implements LogToNothing, Log, LogMessage, LogLevel
      * <p> This allows expensive operations such as <code>String</code>
      * concatenation to be avoided when the message will be ignored by the
      * logger. </p>
+     * @return boolean true if error level is currently enabled
      */
     public boolean isErrorEnabled() {
         return false;
@@ -330,6 +352,7 @@ public class LogToNothingImpl implements LogToNothing, Log, LogMessage, LogLevel
      * <p> This allows expensive operations such as <code>String</code>
      * concatenation to be avoided when the message will be ignored by the
      * logger. </p>
+     * @return boolean true if fatal level is currently enabled
      */
     public boolean isFatalEnabled() {
         return false;
@@ -342,6 +365,7 @@ public class LogToNothingImpl implements LogToNothing, Log, LogMessage, LogLevel
      * <p> This allows expensive operations such as <code>String</code>
      * concatenation to be avoided when the message will be ignored by the
      * logger. </p>
+     * @return boolean true if info level is currently enabled
      */
     public boolean isInfoEnabled() {
         return false;
@@ -353,6 +377,7 @@ public class LogToNothingImpl implements LogToNothing, Log, LogMessage, LogLevel
      * <p> This allows expensive operations such as <code>String</code>
      * concatenation to be avoided when the message will be ignored by the
      * logger. </p>
+     * @return boolean true if trace level is currently enabled
      */
     public boolean isTraceEnabled() {
         return false;
@@ -364,6 +389,7 @@ public class LogToNothingImpl implements LogToNothing, Log, LogMessage, LogLevel
      * <p> This allows expensive operations such as <code>String</code>
      * concatenation to be avoided when the message will be ignored by the
      * logger. </p>
+     * @return boolean true if warn level is currently enabled
      */
     public boolean isWarnEnabled() {
         return false;
@@ -413,6 +439,8 @@ public class LogToNothingImpl implements LogToNothing, Log, LogMessage, LogLevel
      * <p> Same as info messages but without Labels.</p>
      *
      * @param message log this message
+     * @param t log this cause
+     * @param tr log this TerminationRecord
      */
     public void err(Object message, SmartFrogException t, TerminationRecord tr) {
         err(message, t);

@@ -41,7 +41,7 @@ public interface LogToPrim extends LogToStreams {
     /**
      * Get the destination log
      * @return the destination for logging messages.
-     * @throws RemoteException
+     * @throws RemoteException in case of remote/network error
      */
     public LogRemote getLogTo() throws RemoteException;
 }

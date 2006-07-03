@@ -26,7 +26,7 @@ import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
-import java.rmi.*;
+import java.rmi.RemoteException;
 import org.smartfrog.sfcore.processcompound.ProcessCompound;
 import org.smartfrog.sfcore.common.Logger;
 
@@ -60,6 +60,7 @@ public class LogToPrimImpl extends LogToStreamsImpl implements LogToPrim {
      * and log to output level
      * @param name log name
      * @param initialLogLevel level to log at
+     * @throws SmartFrogException if failed to construct the log
      */
     public LogToPrimImpl (String name, Integer initialLogLevel) throws SmartFrogException{
         this (name,null,initialLogLevel);
@@ -71,6 +72,7 @@ public class LogToPrimImpl extends LogToStreamsImpl implements LogToPrim {
      * @param name log name
      * @param componentComponentDescription A component description to overwrite class configuration
      * @param initialLogLevel level to log at
+     * @throws SmartFrogException if failed to construct the log
      */
     public LogToPrimImpl (String name, ComponentDescription componentComponentDescription, Integer initialLogLevel) throws SmartFrogException {
         super(name,initialLogLevel);
@@ -96,14 +98,18 @@ public class LogToPrimImpl extends LogToStreamsImpl implements LogToPrim {
         return logTo;
     }
 
+    /**
+     * Set the destination log
+     * @param logTo destination log to set
+     */
     public void setLogTo(LogRemote logTo) {
         this.logTo = logTo;
     }
 
     /**
      *  Reads optional and mandatory attributes.
-     *
-     * @exception SmartFrogResolutionException error while reading attributes
+     * @param cd cd ComponentDescription A component description to read attributes from
+     * @throws SmartFrogResolutionException error while reading attributes
      */
     protected void readSFPrimAttributes(ComponentDescription cd) throws SmartFrogResolutionException {
         if (cd==null) return;
@@ -118,6 +124,10 @@ public class LogToPrimImpl extends LogToStreamsImpl implements LogToPrim {
         }
     }
 
+    /**
+     * Set the log
+     * @return log
+     */
     private LogRemote logTo()  {
 
         if (logTo!=null) return logTo;
@@ -165,6 +175,7 @@ public class LogToPrimImpl extends LogToStreamsImpl implements LogToPrim {
 
     /**
      * <p> Log a message with debug log level.</p>
+     * @param message log this message
      */
     public void debug(Object message) {
         try {
@@ -178,6 +189,8 @@ public class LogToPrimImpl extends LogToStreamsImpl implements LogToPrim {
 
     /**
      * <p> Log an error with debug log level.</p>
+     * @param message log this message
+     * @param t log this cause
      */
     public void debug(Object message, Throwable t) {
         try {
@@ -189,6 +202,7 @@ public class LogToPrimImpl extends LogToStreamsImpl implements LogToPrim {
 
     /**
      * <p> Log a message with trace log level.</p>
+     * @param message log this message
      */
     public void trace(Object message) {
         try {
@@ -204,6 +218,8 @@ public class LogToPrimImpl extends LogToStreamsImpl implements LogToPrim {
 
     /**
      * <p> Log an error with trace log level.</p>
+     * @param message log this message
+     * @param t log this cause
      */
     public void trace(Object message, Throwable t) {
         try {
@@ -218,6 +234,7 @@ public class LogToPrimImpl extends LogToStreamsImpl implements LogToPrim {
 
     /**
      * <p> Log a message with info log level.</p>
+     * @param message log this message
      */
     public void info(Object message) {
         try {
@@ -235,6 +252,8 @@ public class LogToPrimImpl extends LogToStreamsImpl implements LogToPrim {
 
     /**
      * <p> Log an error with info log level.</p>
+     * @param message log this message
+     * @param t log this cause
      */
     public void info(Object message, Throwable t) {
         try {
@@ -249,6 +268,7 @@ public class LogToPrimImpl extends LogToStreamsImpl implements LogToPrim {
 
     /**
      * <p> Log a message with warn log level.</p>
+     * @param message log this message
      */
     public void warn(Object message) {
         try {
@@ -264,6 +284,8 @@ public class LogToPrimImpl extends LogToStreamsImpl implements LogToPrim {
 
     /**
      * <p> Log an error with warn log level.</p>
+     * @param message log this message
+     * @param t log this cause
      */
     public void warn(Object message, Throwable t) {
         try {
@@ -278,6 +300,7 @@ public class LogToPrimImpl extends LogToStreamsImpl implements LogToPrim {
 
     /**
      * <p> Log a message with error log level.</p>
+     * @param message log this message
      */
     public void error(Object message) {
         try {
@@ -293,6 +316,8 @@ public class LogToPrimImpl extends LogToStreamsImpl implements LogToPrim {
 
     /**
      * <p> Log an error with error log level.</p>
+     * @param message log this message
+     * @param t log this cause
      */
     public void error(Object message, Throwable t) {
         try {
@@ -307,6 +332,7 @@ public class LogToPrimImpl extends LogToStreamsImpl implements LogToPrim {
 
     /**
      * <p> Log a message with fatal log level.</p>
+     * @param message log this message
      */
     public void fatal(Object message) {
         try {
@@ -322,6 +348,8 @@ public class LogToPrimImpl extends LogToStreamsImpl implements LogToPrim {
 
     /**
      * <p> Log an error with fatal log level.</p>
+     * @param message log this message
+     * @param t log this cause
      */
     public void fatal(Object message, Throwable t) {
         try {
@@ -340,6 +368,7 @@ public class LogToPrimImpl extends LogToStreamsImpl implements LogToPrim {
      * <p> This allows expensive operations such as <code>String</code>
      * concatenation to be avoided when the message will be ignored by the
      * logger. </p>
+     * @return boolean true if debug level is currently enabled
      */
     public boolean isDebugEnabled() {
         try {
@@ -356,6 +385,7 @@ public class LogToPrimImpl extends LogToStreamsImpl implements LogToPrim {
      * <p> This allows expensive operations such as <code>String</code>
      * concatenation to be avoided when the message will be ignored by the
      * logger. </p>
+     * @return boolean true if error level is currently enabled
      */
     public boolean isErrorEnabled() {
         try {
@@ -372,6 +402,7 @@ public class LogToPrimImpl extends LogToStreamsImpl implements LogToPrim {
      * <p> This allows expensive operations such as <code>String</code>
      * concatenation to be avoided when the message will be ignored by the
      * logger. </p>
+     * @return boolean true if fatal level is currently enabled
      */
     public boolean isFatalEnabled() {
         try {
@@ -389,6 +420,7 @@ public class LogToPrimImpl extends LogToStreamsImpl implements LogToPrim {
      * <p> This allows expensive operations such as <code>String</code>
      * concatenation to be avoided when the message will be ignored by the
      * logger. </p>
+     * @return boolean true if info level is currently enabled
      */
     public boolean isInfoEnabled() {
         try {
@@ -405,6 +437,7 @@ public class LogToPrimImpl extends LogToStreamsImpl implements LogToPrim {
      * <p> This allows expensive operations such as <code>String</code>
      * concatenation to be avoided when the message will be ignored by the
      * logger. </p>
+     * @return boolean true if trace level is currently enabled
      */
     public boolean isTraceEnabled() {
         try {
@@ -421,6 +454,7 @@ public class LogToPrimImpl extends LogToStreamsImpl implements LogToPrim {
      * <p> This allows expensive operations such as <code>String</code>
      * concatenation to be avoided when the message will be ignored by the
      * logger. </p>
+     * @return boolean true if warn level is currently enabled
      */
     public boolean isWarnEnabled() {
         try {
