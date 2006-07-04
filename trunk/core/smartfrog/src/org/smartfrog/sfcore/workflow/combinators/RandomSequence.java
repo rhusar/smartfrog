@@ -25,7 +25,6 @@ import java.util.Enumeration;
 import java.util.Random;
 import java.util.Vector;
 
-import org.smartfrog.sfcore.common.Context;
 import org.smartfrog.sfcore.common.MessageUtil;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLifecycleException;
@@ -109,7 +108,7 @@ public class RandomSequence extends EventCompoundImpl implements Compound {
      * Reads the basic configuration of the component and deploys.
      *
      * @throws RemoteException In case of network/rmi error
-     * @throws SmartFrogDeploymentException In case of any error while
+     * @throws SmartFrogException In case of any error while
      *         deploying the component
      */
     public synchronized void sfDeploy() throws SmartFrogException, RemoteException {

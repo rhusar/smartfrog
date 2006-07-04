@@ -51,7 +51,7 @@ public class Attribute extends EventPrimImpl implements Prim {
      * Overrides PrimImpl.sfStart.
      *
      * @throws RemoteException In case of any network error
-     * @throws SmartFrogLifecycleException In case of any error while starting
+     * @throws SmartFrogException In case of any error while starting
      *         the component
      */
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
