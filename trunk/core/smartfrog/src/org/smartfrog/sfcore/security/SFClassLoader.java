@@ -473,7 +473,7 @@ public class SFClassLoader {
      * @param isForName
      * @param msg
      * @throws LinkageError upstream
-     * @return
+     * @return Object a wrapper object  for opHelper that adds reporting
      */
     private static Object opHelperWithReporting(String name, String codebase,
                                                 boolean isForName, String msg) {
