@@ -1,0 +1,8 @@
+
+#include "/org/smartfrog/components.sf"
+#include "/org/smartfrog/services/autoloader/components.sf"
+
+sfConfig extends Autoloader {
+     sfProcessComponentName "autoloader";
+     URLPrefix "/org/smartfrog/services/autoloader/";
+}

@@ -1,0 +1,6 @@
+
+#include "/org/smartfrog/components.sf"
+
+sfConfig extends Compound {
+     example LAZY HOST "localhost":autoloader:autoloaded;
+}
