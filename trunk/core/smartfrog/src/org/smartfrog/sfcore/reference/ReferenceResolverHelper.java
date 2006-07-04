@@ -67,7 +67,7 @@ public interface ReferenceResolverHelper {
      *
      * @throws SmartFrogResolutionException if invalid reference of reference
      * not resolvable
-     * @throws RemoteException if there is any network/rmi error
+     * @throws SmartFrogResolutionException if there is any network/rmi error
      */
     public Object sfResolve(String referencePart) throws SmartFrogResolutionException;
 
@@ -81,7 +81,7 @@ public interface ReferenceResolverHelper {
      * @return the resolved object
      * @throws SmartFrogResolutionException if invalid reference of reference
      * not resolvable
-     * @throws RemoteException if there is any network/rmi error
+     * @throws SmartFrogResolutionException if there is any network/rmi error
      */
     public Object sfResolveWithParser(String reference) throws SmartFrogResolutionException;
 
