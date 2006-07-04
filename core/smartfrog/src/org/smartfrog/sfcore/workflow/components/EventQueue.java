@@ -123,7 +123,7 @@ public class EventQueue extends EventPrimImpl implements Prim {
      * Registers an EventSink for forwarding of events.
      *
      * @param sink org.smartfrog.sfcore.workflow.eventbus.EventSink
-     * @see EventRegistration
+     * @see org.smartfrog.sfcore.workflow.eventbus.EventRegistration
      */
     synchronized public void register(EventSink sink) {
         super.register(sink);
@@ -174,7 +174,7 @@ public class EventQueue extends EventPrimImpl implements Prim {
      * Overrides PrimImpl.sfDeploy.
      *
      * @throws RemoteException In case of network/rmi error
-     * @throws SmartFrogDeploymentException In case of any error while
+     * @throws SmartFrogException In case of any error while
      *         deploying the component
      */
     public synchronized void sfDeploy() throws SmartFrogException, RemoteException {

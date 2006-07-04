@@ -61,7 +61,7 @@ public class Repeat extends EventCompoundImpl implements Compound {
      * Reads the basic configuration of the component and deploys the component.
      *
      * @throws RemoteException In case of network/rmi error
-     * @throws SmartFrogDeploymentException In case of SmartFrog system
+     * @throws SmartFrogException In case of SmartFrog system
      *         deployment error
      */
     public synchronized void sfDeploy() throws SmartFrogException, RemoteException {

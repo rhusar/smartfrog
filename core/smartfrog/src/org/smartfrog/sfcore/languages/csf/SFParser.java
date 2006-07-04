@@ -28,10 +28,10 @@ import org.smartfrog.sfcore.common.SmartFrogCoreProperty;
 import org.smartfrog.sfcore.languages.csf.csfcomponentdescription.CSFComponentDescription;
 import org.smartfrog.sfcore.languages.sf.IncludeHandler;
 import org.smartfrog.sfcore.parser.Phases;
-import org.smartfrog.sfcore.parser.StreamParser;
+
 import org.smartfrog.sfcore.parser.StreamLanguageParser;
 import org.smartfrog.sfcore.parser.ReferencePhases;
-import org.smartfrog.sfcore.reference.Reference;
+
 import org.smartfrog.sfcore.security.SFClassLoader;
 
 import java.lang.reflect.Constructor;
