@@ -9,4 +9,5 @@ sfConfig extends Compound {
     }
     example1 LAZY HOST "localhost":autoloader:autoloadTest1;
     example2 LAZY HOST "localhost":autoloader:autoloadTest2;
+    example3 LAZY HOST "localhost":autoloader:autoloadTest3;
 }
