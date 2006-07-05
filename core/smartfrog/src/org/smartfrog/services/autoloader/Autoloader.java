@@ -59,19 +59,30 @@ public class Autoloader extends CompoundImpl implements Compound {
         try {
             return super.sfResolve(name, index);
         } catch (SmartFrogResolutionException e) {
+            System.out.println("al 1");
+            if (!sfIsStarted()) throw e;
+            System.out.println("al 2");
+
             ReferencePart rp = name.elementAt(index);
             if (!(rp instanceof HereReferencePart)) throw e;
+            System.out.println("al 3");
 
             Object np = ((HereReferencePart) rp).getValue();
             if (!(np instanceof String)) throw e;
+            System.out.println("al 4");
 
             namePart = (String) np;
-            if (matchesName(namePart)) throw e;
+            if (!matchesName(namePart)) throw e;
+            System.out.println("al 5");
+
             if (validLoads != null && !validLoads.contains(namePart)) throw e;
+            System.out.println("al 6");
 
             if (sfContext.contains(namePart)) throw e;
+            System.out.println("al 7");
 
             String fullName = URLPrefix + namePart + URLPostfix + "." + language;
+            System.out.println("al 8");
 
            // construct name, and access through the class loader the resource.
            // create as new child of self
@@ -88,6 +99,8 @@ public class Autoloader extends CompoundImpl implements Compound {
                 throw new SmartFrogResolutionException("Error in autoloader: resolving " + name + " at index " + index, ex);
             }
         }
+        System.out.println("al 9");
+
         return super.sfResolve(name, index);
     }
 
