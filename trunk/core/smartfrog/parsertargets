@@ -7,6 +7,11 @@ org/smartfrog/services/trace/example.sf
 org/smartfrog/services/utils/concat/example.sf
 org/smartfrog/services/filesystem/example.sf
 
+org/smartfrog/services/autoloader/components.sf
+org/smartfrog/services/autoloader/autoloadTest1.sf
+org/smartfrog/services/autoloader/autoloadTest2.sf
+org/smartfrog/services/autoloader/test.sf
+
 org/smartfrog/examples/dynamicwebserver/sf/system.sf
 
 org/smartfrog/examples/counter/example.sf
