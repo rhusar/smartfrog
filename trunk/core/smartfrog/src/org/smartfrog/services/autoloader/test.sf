@@ -1,6 +1,12 @@
 
 #include "/org/smartfrog/components.sf"
+#include "/org/smartfrog/services/autoloader/components.sf"
 
 sfConfig extends Compound {
-     example LAZY HOST "localhost":autoloader:autoloaded;
+    autoloader extends Autoloader {
+        sfProcessComponentName "autoloader";
+        URLPrefix "/org/smartfrog/services/autoloader/";
+    }
+    example1 LAZY HOST "localhost":autoloader:autoloadTest1;
+    example2 LAZY HOST "localhost":autoloader:autoloadTest2;
 }
