@@ -5,7 +5,7 @@ Autoloader extends Prim {
 
     // here are the default parameters
     //language "sf";
-    //simpleNames  true;
+    //matches  "\\w+";
     //URLPrefix "";
     //URLPostfix "";
     //validLoads;

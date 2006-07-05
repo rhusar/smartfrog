@@ -14,10 +14,12 @@ import org.smartfrog.sfcore.parser.Phases;
 
 import java.rmi.RemoteException;
 import java.util.Vector;
+import java.util.regex.Pattern;
+import java.util.regex.Matcher;
 import java.io.InputStream;
 
 /**
- * Componentthat will autoload a .sf file to create a child component which is being de-referemced
+ * Component that will autoload a .sf file to create a child component which is being de-referemced
  * Usually used as an immediate child of the ProcessCompound, to autoload components that are expected
  * to be named in the ProcessCompound as part of the environment.
  *
@@ -29,13 +31,14 @@ public class Autoloader extends CompoundImpl implements Compound {
     final Reference prefixRef = new Reference(ReferencePart.here("URLPrefix"));
     final Reference validLoadsRef = new Reference(ReferencePart.here("validLoads"));
     final Reference postfixRef = new Reference(ReferencePart.here("URLPostfix"));
-    final Reference simpleNamesRef = new Reference(ReferencePart.here("simpleNames"));
+    final Reference matchesRef = new Reference(ReferencePart.here("matches"));
     final Reference langaugeRef = new Reference(ReferencePart.here("language"));
 
     Vector validLoads = null;
     String URLPrefix = "";
     String URLPostfix = "";
-    boolean simpleNames = true;
+    String matches = "\\w+";
+    Pattern matchesPattern;
     String language = "sf";
 
     public Autoloader() throws RemoteException {
@@ -46,14 +49,15 @@ public class Autoloader extends CompoundImpl implements Compound {
         validLoads = sfResolve(validLoadsRef, validLoads, false);
         URLPrefix = sfResolve(prefixRef, URLPrefix, false);
         URLPostfix = sfResolve(postfixRef, URLPostfix, false);
-        simpleNames = sfResolve(simpleNamesRef, simpleNames, false);
+        matches = sfResolve(matchesRef, matches, false);
+        matchesPattern = Pattern.compile(matches);
         language = sfResolve(langaugeRef, language, false);
     }
 
     public synchronized Object sfResolve(Reference name, int index) throws SmartFrogResolutionException, RemoteException {
         String namePart;
         try {
-            super.sfResolve(name, index);
+            return super.sfResolve(name, index);
         } catch (SmartFrogResolutionException e) {
             ReferencePart rp = name.elementAt(index);
             if (!(rp instanceof HereReferencePart)) throw e;
@@ -62,7 +66,8 @@ public class Autoloader extends CompoundImpl implements Compound {
             if (!(np instanceof String)) throw e;
 
             namePart = (String) np;
-            if (simpleNames && !isSimpleName(namePart)) throw e;
+            if (matchesName(namePart)) throw e;
+            if (validLoads != null && !validLoads.contains(namePart)) throw e;
 
             if (sfContext.contains(namePart)) throw e;
 
@@ -86,7 +91,8 @@ public class Autoloader extends CompoundImpl implements Compound {
         return super.sfResolve(name, index);
     }
 
-    boolean isSimpleName(String s) {
-        return true;
+    boolean matchesName(String s) {
+        Matcher m = matchesPattern.matcher(s);
+        return m.matches();
     }
 }
