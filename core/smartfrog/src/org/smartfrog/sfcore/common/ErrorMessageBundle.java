@@ -92,6 +92,7 @@ public class ErrorMessageBundle extends ListResourceBundle
         { MSG_ILLEGAL_CLASS_TYPE_EXPECTING_GOT , "Illegal ClassType. Expecting type \"[{0}]\" and got \"{1} [{2}]\""},
         // Resolution Exception messages end
         { MSG_DEPLOY_SUCCESS , "Successfully deployed: {0}"},
+        { MSG_UPDATE_SUCCESS , "Successfully updated: {0}"},            
         { MSG_TERMINATE_SUCCESS , "Successfully terminated: {0}"},
         { MSG_PING_SUCCESS , "\"{0}\" was successfully contacted in \"{1}\". {2}"},
         { MSG_DETACH_SUCCESS , "Successfully detached component: {0}"},

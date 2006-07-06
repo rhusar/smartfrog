@@ -181,9 +181,13 @@ public interface MessageKeys {
      */
     public static String MSG_REMOTE_CONNECT_ERR = "MSG_REMOTE_CONNECT_ERR";
     /**
-     * Message key: unable to connect to daemon on remote host.
+     * Message key: deployment successful.
      */
     public static String MSG_DEPLOY_SUCCESS = "MSG_DEPLOY_SUCCESS";
+    /**
+     * Message key: update successful.
+     */
+    public static String MSG_UPDATE_SUCCESS = "MSG_UPDATE_SUCCESS";
     /**
      * Message key: successful termination of components.
      */
