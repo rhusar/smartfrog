@@ -8,7 +8,7 @@ import org.smartfrog.sfcore.common.Context;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 
 /**
- * Update ijterface for a composite and its contents to match a new description
+ * Update interface for a composite and its contents to match a new description
  */
 public interface Update extends Remote {
     public void sfPrepareUpdate() throws RemoteException, SmartFrogException;
