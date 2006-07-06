@@ -23,5 +23,5 @@ public interface Update extends Remote {
 
     public void sfAbandonUpdate() throws RemoteException;
 
-    public void sfUpdateCompound(ComponentDescription desc) throws RemoteException, SmartFrogException;
+    public void sfUpdateComponent(ComponentDescription desc) throws RemoteException, SmartFrogException;
 }
