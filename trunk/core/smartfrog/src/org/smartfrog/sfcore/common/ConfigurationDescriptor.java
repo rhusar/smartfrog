@@ -67,6 +67,8 @@ public class ConfigurationDescriptor implements MessageKeys{
         final static public int PARSE = 6;
         final static public String ACT_DIAGNOSTICS = "DIAGNOSTICS";
         final static public int DIAGNOSTICS = 7;
+        final static public String ACT_UPDATE = "UPDATE";
+        final static public int UPDATE = 8;
 
         static public String[] type= {
                       ACT_DEPLOY,
@@ -76,7 +78,8 @@ public class ConfigurationDescriptor implements MessageKeys{
                       ACT_DETaTERM,
                       ACT_PING,
                       ACT_PARSE,
-                      ACT_DIAGNOSTICS};
+                      ACT_DIAGNOSTICS,
+                      ACT_UPDATE};
     }
 
 
@@ -353,6 +356,11 @@ public class ConfigurationDescriptor implements MessageKeys{
                     }
                      break;
 
+                  case ConfigurationDescriptor.Action.UPDATE: {
+                      result= MessageUtil.formatMessage(MSG_UPDATE_SUCCESS, message.toString());
+                     }
+                      break;
+
 
                 default:
                     // Unknown action.
@@ -499,7 +507,7 @@ public class ConfigurationDescriptor implements MessageKeys{
      *            ex. foo
      *            ex. "HOST localhost:foo"
      *            ex. 'HOST localhost:foo'
-     *      - ACTION: possible actions: DEPLOY, TERMINATE, DETACH, DETaTERM, PING, PARSE, DIAGNOSTICS
+     *      - ACTION: possible actions: DEPLOY, TERMINATE, DETACH, DETaTERM, PING, PARSE, DIAGNOSTICS, UPDATE
      *      - url: description used by ACTION
      *            ex. /home/sf/foo.sf
      *            ex. "c:\sf\foo.sf"
@@ -524,7 +532,7 @@ public class ConfigurationDescriptor implements MessageKeys{
      * @see Action
      * @throws SmartFrogInitException  failure in some part of the process
      *
-     * @todo fix this text for JavaDocs
+     * @TODO fix this text for JavaDocs
      */
     public ConfigurationDescriptor (String deploymentURL) throws SmartFrogInitException {
         try {
@@ -804,6 +812,9 @@ public class ConfigurationDescriptor implements MessageKeys{
                 break;
             case Action.DIAGNOSTICS:
                 action = new ActionDiagnostics();
+                break;
+            case Action.UPDATE:
+                action = new ActionUpdate();
                 break;
             default:
                 throw new SmartFrogInitException("Action type unknown");
