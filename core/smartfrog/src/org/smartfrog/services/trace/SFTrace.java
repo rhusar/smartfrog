@@ -267,13 +267,15 @@ public class SFTrace extends PrimImpl implements SFTraceIntf {
      * Prints message terminate.
      *
      * @param msg message
+     * @param teminationType termination type
      * @param terminationMsg termination message
      * @param date termination date
      */
-    private void printMsgTerminate(String msg, String terminationMsg, Date date) {
-        printMsgPhase(msg, "TERMINATED (" + terminationMsg + ")", date);
+    private void printMsgTerminate(String msg, String terminationType, String terminationMsg, Date date) {
+        printMsgPhase(msg, "TERMINATED - "+terminationType+" (" + terminationMsg + ")", date);
     }
 
+   SimpleDateFormat dateFormatter = new SimpleDateFormat("HH:mm:ss.SSS z, yyyy/MM/dd");
     /**
      * Prints message.
      *
@@ -295,8 +297,7 @@ public class SFTrace extends PrimImpl implements SFTraceIntf {
                     }
                 }
                 msg = msg + ", [" +
-                    (new SimpleDateFormat("HH:mm:ss.SSS z, yyyy/MM/dd").
-             format(date)) + "]";
+                    (dateFormatter.format(date)) + "]";
             }
 
             if (printMsgImp == null) {
@@ -383,7 +384,7 @@ public class SFTrace extends PrimImpl implements SFTraceIntf {
             } catch (RemoteException rex){
                 printMsg(rex.toString(),null);
             }
-            printMsgTerminate(getDN(prim), terminationRecord.toString(), date);
+            printMsgTerminate(getDN(prim), terminationRecord.errorType, terminationRecord.toString(), date);
         }
     }
 }
