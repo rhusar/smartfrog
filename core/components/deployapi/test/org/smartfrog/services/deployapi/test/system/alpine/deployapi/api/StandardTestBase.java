@@ -78,6 +78,8 @@ public abstract class StandardTestBase extends AlpineTestBase {
                 .getResourcePropertySingle(CddlmConstants.PROPERTY_PORTAL_ACTIVE_SYSTEMS);
         boolean found = false;
         for (Element e : activeSystems.elements()) {
+            assertEquals(CddlmConstants.ELEMENT_NAME_SYSTEM, e.getLocalName());
+            assertEquals(CddlmConstants.CDL_API_TYPES_NAMESPACE, e.getNamespaceURI());
             AlpineEPR epr = new AlpineEPR(e, CddlmConstants.WS_ADDRESSING_NAMESPACE);
             epr.validate();
             SystemSession system = new SystemSession(getPortal(), epr);

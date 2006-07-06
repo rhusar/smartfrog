@@ -263,7 +263,6 @@ public class Application implements WSRPResourceSource {
 
     public void setAddress(String address) {
         this.address = address;
-        endpointer = Utils.makeAddress(address, Constants.WS_ADDRESSING_NAMESPACE);
         alpineEPR = new AlpineEPR(address);
         endpointer = alpineEPR.toXom(Constants.ENDPOINT_REFERENCE, Constants.WS_ADDRESSING_NAMESPACE, "wsa");
     }

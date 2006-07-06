@@ -26,6 +26,7 @@ import static org.smartfrog.services.deployapi.binding.XomHelper.apiElement;
 import org.smartfrog.services.deployapi.system.Constants;
 import org.smartfrog.services.deployapi.transport.wsrf.Property;
 import org.smartfrog.services.deployapi.transport.wsrf.WsrfUtils;
+import org.ggf.cddlm.generated.api.CddlmConstants;
 
 import javax.xml.namespace.QName;
 import java.util.List;
@@ -35,10 +36,10 @@ import java.util.List;
  */
 public class ActiveSystemsProperty implements Property {
 
-    private final JobRepository jobs;
+    private ServerInstance owner;
 
-    public ActiveSystemsProperty(JobRepository jobs) {
-        this.jobs = jobs;
+    public ActiveSystemsProperty(ServerInstance owner) {
+        this.owner = owner;
     }
 
     public QName getName() {
@@ -46,12 +47,14 @@ public class ActiveSystemsProperty implements Property {
     }
 
     public List<Element> getValue() {
-        Element result =apiElement("ActiveSystems");
+        Element response = XomHelper.element(Constants.PROPERTY_PORTAL_ACTIVE_SYSTEMS);
+        JobRepository jobs = owner.getJobs();
         for (Application job : jobs) {
             Element epr = (Element) job.getEndpointer().copy();
-            XomHelper.adopt(epr,"system");
-            result.appendChild(epr);
+            XomHelper.adopt(epr, CddlmConstants.ELEMENT_NAME_SYSTEM);
+            response.appendChild(epr);
         }
-        return WsrfUtils.listify(result);
+        return WsrfUtils.listify(response);
     }
+
 }

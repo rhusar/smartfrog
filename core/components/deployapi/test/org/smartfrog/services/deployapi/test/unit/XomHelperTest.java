@@ -22,6 +22,11 @@ package org.smartfrog.services.deployapi.test.unit;
 import junit.framework.TestCase;
 import org.smartfrog.services.deployapi.binding.XomHelper;
 import org.smartfrog.services.deployapi.transport.faults.BaseException;
+import org.smartfrog.services.deployapi.system.Constants;
+import org.smartfrog.projects.alpine.wsa.AlpineEPR;
+import org.smartfrog.projects.alpine.om.base.SoapElement;
+import static org.ggf.cddlm.generated.api.CddlmConstants.CDL_API_TYPES_NAMESPACE;
+import nu.xom.Element;
 
 /**
  * created 28-Nov-2005 12:06:00
@@ -57,4 +62,12 @@ public class XomHelperTest extends TestCase {
         }
     }
 
+    public void testAdopt() throws Exception {
+        AlpineEPR alpineEPR = new AlpineEPR("http://example.org:8080");
+        SoapElement epr= alpineEPR.toXom(Constants.ENDPOINT_REFERENCE, Constants.WS_ADDRESSING_NAMESPACE, "wsa");
+        XomHelper.adopt(epr, "system");
+        assertEquals("system",epr.getLocalName());
+        assertEquals(CDL_API_TYPES_NAMESPACE, epr.getNamespaceURI());
+        assertEquals("api", epr.getNamespacePrefix());
+    }
 }

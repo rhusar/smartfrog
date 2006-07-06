@@ -23,6 +23,7 @@ import nu.xom.Element;
 import static org.ggf.cddlm.generated.api.CddlmConstants.PROPERTY_MUWS_RESOURCEID;
 import static org.ggf.cddlm.generated.api.CddlmConstants.PROPERTY_PORTAL_ACTIVE_SYSTEMS;
 import static org.ggf.cddlm.generated.api.CddlmConstants.WS_ADDRESSING_NAMESPACE;
+import org.ggf.cddlm.generated.api.CddlmConstants;
 import org.smartfrog.projects.alpine.om.base.SoapElement;
 import org.smartfrog.projects.alpine.wsa.AlpineEPR;
 import org.smartfrog.services.deployapi.alpineclient.model.SystemSession;
@@ -55,6 +56,8 @@ public class Api_09_system_active_systems_Test extends StandardTestBase {
         SoapElement activeSystems = (SoapElement) getPortal().getResourcePropertySingle(PROPERTY_PORTAL_ACTIVE_SYSTEMS);
         boolean found = false;
         for (Element e : activeSystems.elements()) {
+            assertEquals(CddlmConstants.ELEMENT_NAME_SYSTEM, e.getLocalName());
+            assertEquals(CddlmConstants.CDL_API_TYPES_NAMESPACE, e.getNamespaceURI());
             AlpineEPR epr = new AlpineEPR(e, WS_ADDRESSING_NAMESPACE);
             epr.validate();
             SystemSession system = new SystemSession(getPortal(), epr);
