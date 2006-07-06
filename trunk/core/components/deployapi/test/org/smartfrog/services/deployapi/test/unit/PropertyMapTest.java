@@ -89,9 +89,13 @@ public class PropertyMapTest extends UnitTestBase {
         result = map.lookupProperty(PROPNAME);
         assertNotNull(result);
         List<Element> value=result.getValue();
-        assertSame(e,value);
+        assertNotNull(value);
+        assertTrue(value.size()>=1);
+        assertSame(e,value.get(0));
         value = map.getProperty(PROPNAME);
-        assertSame(e, value);
+        assertNotNull(value);
+        assertTrue(value.size() >= 1);
+        assertSame(e, value.get(0));
         map.remove(result);
         result = result = map.lookupProperty(PROPNAME);
         assertNull(result);

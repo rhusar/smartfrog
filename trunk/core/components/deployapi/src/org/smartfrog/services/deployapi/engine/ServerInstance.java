@@ -309,32 +309,6 @@ public class ServerInstance implements WSRPResourceSource {
         return status;
     }
 
-
-    /**
-     * This is a live property that can be served up
-     */
-    private static class ActiveSystemsProperty implements Property {
-
-        private ServerInstance owner;
-
-        public ActiveSystemsProperty(ServerInstance owner) {
-            this.owner = owner;
-        }
-
-        public QName getName() {
-            return Constants.PROPERTY_PORTAL_ACTIVE_SYSTEMS;
-        }
-
-        public List<Element> getValue() {
-            Element response = XomHelper.element(Constants.PROPERTY_PORTAL_ACTIVE_SYSTEMS);
-            JobRepository jobs = owner.getJobs();
-            for (Application job : jobs) {
-                response.appendChild(job.getEndpointer().copy());
-            }
-            return WsrfUtils.listify(response);
-        }
-    }
-
     public synchronized void resetStatistics() {
         failures = 0;
         requests = 0;

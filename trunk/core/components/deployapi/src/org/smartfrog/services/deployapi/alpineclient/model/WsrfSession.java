@@ -175,15 +175,28 @@ public abstract class WsrfSession extends Session {
         return resultList;
     }
 
+    /**
+     * blocking call to get a request property.
+     * This call expects a single element as the reply, not a list, and will fail if
+     * less or more comes back
+     *
+     * @param property property to retrieve
+     * @return a single element 
+     * @throws ClientException if the number of children received !=1
+     */
     public Element getResourcePropertySingle(QName property) {
         return getResourcePropertySingle(property,true);
     }
 
     /**
-     * blocking call to get a request property
+     * blocking call to get a request property.
+     * This call expects a single element as the reply, not a list, and will fail if
+     * less or more comes back
      *
-     * @param property
-     * @return
+     * @param property property to retrieve
+     * @param required a flag to state whether the property is required or not
+     * @return a single element or null if none and required==false
+     * @throws ClientException if the number of children received !=1
      */
     public Element getResourcePropertySingle(QName property,boolean required) {
         Transmission tx = beginGetResourceProperty(property);
