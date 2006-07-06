@@ -1,5 +1,3 @@
-
-
 #include "/org/smartfrog/components.sf"
 #include "/org/smartfrog/sfcore/updatable/components.sf"
 
@@ -22,8 +20,6 @@ sfConfig extends UpdatableCompound {
 
     update2 extends DATA UpdatableCompound {
          //x 10;
-
-        
          foo extends UpdatableCompound { a 100; }
          baz extends UpdatableCompound { a 300; }
     }

@@ -259,7 +259,7 @@ public class UpdatableCompound extends CompoundImpl implements Update, Compound 
      * @throws java.rmi.RemoteException
      * @throws SmartFrogUpdateException
      */
-    public void sfUpdateCompound(ComponentDescription desc) throws RemoteException, SmartFrogUpdateException {
+    public void sfUpdateComponent(ComponentDescription desc) throws RemoteException, SmartFrogUpdateException {
         boolean ready;
 
         try {
@@ -269,6 +269,7 @@ public class UpdatableCompound extends CompoundImpl implements Update, Compound 
 
             System.out.println("update with");
             ready = this.sfUpdateWith(desc.sfContext());
+            if (!ready) throw new SmartFrogUpdateException("top level component must accept update", null);
             System.out.println("update with done");
         } catch (Exception e) {
             e.printStackTrace();

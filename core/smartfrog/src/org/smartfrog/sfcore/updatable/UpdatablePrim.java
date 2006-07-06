@@ -33,7 +33,7 @@ public class UpdatablePrim extends PrimImpl implements Update, Prim {
      */
     public synchronized void sfPrepareUpdate() throws RemoteException, SmartFrogException {
         // iterate over all children, preparing them for update.
-        // if an exceptino is returned, trigger an abandon downwards and retun an exception
+        // if an exception is returned, trigger an abandon downwards and retun an exception
         updateAbandoned = false;
     }
 
@@ -93,7 +93,7 @@ public class UpdatablePrim extends PrimImpl implements Update, Prim {
      * @throws org.smartfrog.sfcore.common.SmartFrogException - failure, to be treated like a normal lifecycle error, by default with termination
      */
     public synchronized void sfUpdate() throws RemoteException, SmartFrogException {
-        if (updateAbandoned) throw new SmartFrogUpdateException("updfate already abandoned");
+        if (updateAbandoned) throw new SmartFrogUpdateException("update already abandoned");
         // update context
         sfContext = newContext;
         // failure considered terminal
@@ -108,7 +108,7 @@ public class UpdatablePrim extends PrimImpl implements Update, Prim {
      */
 
     public synchronized void sfUpdateDeploy() throws RemoteException, SmartFrogException {
-        if (updateAbandoned) throw new SmartFrogUpdateException("updfate already abandoned");
+        if (updateAbandoned) throw new SmartFrogUpdateException("update already abandoned");
     }
 
     /**
@@ -118,7 +118,7 @@ public class UpdatablePrim extends PrimImpl implements Update, Prim {
      * @throws org.smartfrog.sfcore.common.SmartFrogException
      */
     public synchronized void sfUpdateStart() throws RemoteException, SmartFrogException {
-        if (updateAbandoned) throw new SmartFrogUpdateException("updfate already abandoned");
+        if (updateAbandoned) throw new SmartFrogUpdateException("update already abandoned");
     }
 
     /**
@@ -138,7 +138,7 @@ public class UpdatablePrim extends PrimImpl implements Update, Prim {
      * @throws java.rmi.RemoteException
      * @throws org.smartfrog.sfcore.common.SmartFrogUpdateException
      */
-    public void sfUpdateCompound(ComponentDescription desc) throws RemoteException, SmartFrogUpdateException {
+    public void sfUpdateComponent(ComponentDescription desc) throws RemoteException, SmartFrogUpdateException {
         boolean ready;
 
         try {
@@ -148,6 +148,7 @@ public class UpdatablePrim extends PrimImpl implements Update, Prim {
 
             System.out.println("update with");
             ready = this.sfUpdateWith(desc.sfContext());
+            if (!ready) throw new SmartFrogUpdateException("top level component must accept update", null);
             System.out.println("update with done");
         } catch (Exception e) {
             e.printStackTrace();

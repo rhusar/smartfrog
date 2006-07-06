@@ -52,7 +52,7 @@ public class Tester extends CompoundImpl implements Compound, Runnable {
                          child = (Update) sfCreateNewChild("child", template, null);
                      } else {
                          System.out.println("updating " + counter);
-                         child.sfUpdateCompound(template);
+                         child.sfUpdateComponent(template);
                      }
                  } catch (SmartFrogResolutionException e) {
                     finished = true;
