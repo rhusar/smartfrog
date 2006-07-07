@@ -129,7 +129,7 @@ public class ParserVar extends Thread {
            Runnable terminator = new Runnable() {
 	      public void run() {
             log("ReplaceVar terminated.",2);
-		      ((PrimImpl) sfObj).sfTerminateWith(termR);
+		      ((PrimImpl) sfObj).sfTerminate(termR);
 	      }
 	   };
            new Thread(terminator).start();

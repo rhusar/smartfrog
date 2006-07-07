@@ -925,7 +925,7 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
      * Deregisters component from local process compound (if ever registered)
      * @param status termination status
      */
-    public synchronized void sfTerminateWith(TerminationRecord status) {
+    protected synchronized void sfTerminateWith(TerminationRecord status) {
         //org.smartfrog.sfcore.common.Logger.log (this.sfCompleteNameSafe().toString(),status);
         if (sfLog().isTraceEnabled()){
           sfLog().trace(this.sfCompleteNameSafe().toString(),null,status);
@@ -1428,7 +1428,7 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
       ComponentDescription cd = null;
       try {
         cd = new ComponentDescriptionImpl(null,(Context)new ContextImpl(), false);
-        cd.setPrimParent(this);
+        //cd.setPrimParent(this);
         StringBuffer report = new StringBuffer();
         Diagnostics.doReport(report,this);
         cd.sfReplaceAttribute(SmartFrogCoreKeys.SF_DIAGNOSTICS_REPORT, report );
