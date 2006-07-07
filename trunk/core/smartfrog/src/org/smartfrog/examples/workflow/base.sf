@@ -37,11 +37,12 @@ For more information: www.smartfrog.org
 /**
  * The copyfile component is given a URL of a file, and the name of the file to
  * create.
- * This component issues a message stating that the file has been copied, delays * a couple of seconds, and terminates.
+ * This component issues a message stating that the file has been copied, delays
+ * * a couple of seconds, and terminates.
  */
 
 Copyfile extends DoNothing {
-    time 2;
+    time 800;
     fromURL "http://defaultHost/defaultFile"; // default URL to copy to file
     toFile "/tmp/default";                    // default name for file
 
@@ -61,7 +62,7 @@ Copyfile extends DoNothing {
  */
 
 Removefile extends DoNothing {
-    time 2000;                              // time in millisecs
+    time 500;                              // time in millisecs
     file "/tmp/default";                    // default name for file
 
     message extends concat {
@@ -77,6 +78,6 @@ Removefile extends DoNothing {
  * delays a couple of seconds, and terminates.
  */
 RunDaemon extends DoNothing {
-    time 200;
+    time 1000;
     message "echo running daemon";
 }

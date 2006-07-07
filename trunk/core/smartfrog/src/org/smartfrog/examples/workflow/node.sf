@@ -33,12 +33,12 @@ Node extends Compound {
 /**
  * To experiment with failures we can simulate a rogue node where everything
  * fails ungracefully by addding a component which terminates abnormally
- * after a very short time - say 4 seconds
+ * after a very short time - say 15 seconds
  */
 RogueNode extends Node {
     failure extends DoNothing {
         terminationType "abnormal";
-        time 10000;
+        time 15000;
     }
 }
 
@@ -52,15 +52,32 @@ ScriptPrim extends Prim { }
 /**
  * A component to notify the sys admin about the failure.
  */
-NotifySysAdmin extends ScriptPrim {
-    /**
-     * Message to be printed in lifecycle method: sfStart.
-     */
-    sfStartCode ##
-        System.out.println("Houston - we have a problem with component ");
-        System.out.println(prim.sfCompleteName());
-    #;
+//NotifySysAdmin extends ScriptPrim {
+//    /**
+//     * Message to be printed in lifecycle method: sfStart.
+//     */
+//    sfStartCode ##
+//        System.out.println("Houston - we have a problem with component ");
+//        System.out.println(prim.sfCompleteName());
+//    #;
+//}
+
+NotifySysAdmin extends DoNothing {
+        message "Houston - we have a problem with component ";
 }
+
+//NotifySuccessSysAdmin extends ScriptPrim {
+//    /**
+//     * Message to be printed in lifecycle method: sfStart.
+//     */
+//    sfStartCode ##
+//        System.out.println("\nSuccess! "+prim.sfCompleteName()+"\n");
+//    #;
+//}
+NotifySuccessSysAdmin extends DoNothing {
+        message "Success!";
+}
+
 
 ReliableNode extends Try {
     /**
@@ -78,6 +95,8 @@ ReliableNode extends Try {
         action ATTRIB nodeAction;
         retry PARENT:ATTRIB retries;
     }
+
+    normal extends LAZY NotifySuccessSysAdmin;
 
     abnormal extends LAZY NotifySysAdmin;
 }

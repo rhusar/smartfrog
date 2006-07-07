@@ -49,6 +49,7 @@ import org.smartfrog.sfcore.workflow.eventbus.EventCompoundImpl;
  * </p>
  */
 public class Retry extends EventCompoundImpl implements Compound {
+
     static Reference retryRef = new Reference("retry");
     int retry;
     int currentRetries = 0;
@@ -103,10 +104,13 @@ public class Retry extends EventCompoundImpl implements Compound {
 
                 if (!(status.errorType.equals("normal".intern()))) {
                     if (currentRetries++ < retry) {
-                        sfCreateNewChild(name+"_actionRunning"+currentRetries,(ComponentDescription) action.copy(), null);
+                        if (sfLog().isDebugEnabled()) {
+                           sfLog().debug("Retry: "+name+" "+currentRetries+" /"+retry);
+                        }
+                        sfCreateNewChild(name+"_retryActionRunning_"+currentRetries,(ComponentDescription) action.copy(), null);
                     } else {
                         if (sfLog().isDebugEnabled()) {
-                           sfLog().debug(sfCompleteNameSafe().toString()  + "terminated incorrectly: too many reties - fail ");
+                           sfLog().debug(sfCompleteNameSafe().toString()  + "terminated incorrectly: too many retries - fail ");
                         }
                         sfTerminate(TerminationRecord.abnormal("too many retries...", name));
                     }
@@ -118,7 +122,8 @@ public class Retry extends EventCompoundImpl implements Compound {
                     sfTerminate(TerminationRecord.normal(name));
                 }
             } catch (Exception e) {
-                sfTerminate(TerminationRecord.abnormal( "error in restarting next component", name));
+                if (sfLog().isErrorEnabled()) {sfLog().error("Error in restarting next component "+name,e);}
+                sfTerminate(TerminationRecord.abnormal( "Error in restarting next component ("+e.toString()+")", name));
             }
         }
     }
