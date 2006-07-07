@@ -50,7 +50,7 @@ public class DeployTest extends TaskTestBase {
     /**
      * shut down anything running
      */
-    protected void tearDown() throws Exception {
+    public void tearDown() throws Exception {
         super.tearDown();
         executeTarget("teardown");
     }
