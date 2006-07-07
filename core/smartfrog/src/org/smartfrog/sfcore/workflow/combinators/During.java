@@ -23,7 +23,6 @@ package org.smartfrog.sfcore.workflow.combinators;
 import java.rmi.RemoteException;
 
 import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.compound.Compound;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.TerminationRecord;
@@ -63,6 +62,10 @@ public class During extends EventCompoundImpl implements Compound {
      */
     Thread timer;
 
+    boolean abortTimer = false;
+
+    String name = "";
+
     /**
      * Constructs During.
      *
@@ -95,17 +98,23 @@ public class During extends EventCompoundImpl implements Compound {
      */
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
-
-        timer = new Thread(new Runnable() {
-                    public void run() {
-                        if (time > 0) {
-                            try { Thread.sleep(time); } catch (Exception e) { }
-                            sfTerminate(TerminationRecord.normal(name));
-                        }
-                    }
-                });
+        name = sfCompleteNameSafe().toString();
+        Runnable terminator = new Runnable() {
+          public void run() {
+              if (sfLog().isDebugEnabled()) { sfLog().debug("Timer set:" +time+". Going to sleep "+name);}
+              if (time > 0) {
+                try { Thread.sleep(time);  } catch (Exception ex) { if (abortTimer) return; }
+                String terminationMessage = "Timer '"+time+"' expired. Terminating "+name;
+                if (sfLog().isDebugEnabled()) { sfLog().debug(terminationMessage);}
+                sfTerminate(new TerminationRecord(TerminationRecord.NORMAL, terminationMessage , null));
+              }
+          }
+        };
+        timer = new Thread(terminator);
+        timer.setName(name+"_DuringTerminator");
         timer.start();
-        sfCreateNewChild(name+"_actionRunning", action, null);
+
+        sfCreateNewChild(name+"_duringActionRunning", action, null);
     }
 
     /**
@@ -120,7 +129,8 @@ public class During extends EventCompoundImpl implements Compound {
         if (sfContainsChild(comp)) {
             if (timer != null) {
                 try {
-                    timer.stop();
+                    abortTimer=true;
+                    timer.interrupt();;
                 } catch (Exception e) {
                 }
             }

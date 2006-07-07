@@ -81,7 +81,7 @@ public class Try extends EventCompoundImpl implements Compound {
      */
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
-        sfCreateNewChild("action", action, null);
+        sfCreateNewChild(sfCompleteNameSafe()+"_tryActionRunning", action, null);
     }
 
     /**
@@ -100,17 +100,19 @@ public class Try extends EventCompoundImpl implements Compound {
 
                 try {
                     sfRemoveChild(comp);
-
+                    if (sfLog().isDebugEnabled()){
+                        sfLog().debug("Try carrying out nextAction for status '"+status.errorType+"'");
+                    }
                     ComponentDescription nextAction = (ComponentDescription) sfResolve(status.errorType);
                     if (sfLog().isDebugEnabled()){
-                        sfLog().debug("Try carrying out \n"+nextAction+
-                                      " for status "+status.errorType);
+                        sfLog().debug("Try carrying out \n"+nextAction+" for status "+status.errorType);
                     }
-                    sfCreateNewChild(name + "_tryActionRunning", nextAction, null);
+                    sfCreateNewChild(name + "_"+status.errorType+"TryActionRunning", nextAction, null);
 
                 } catch (Exception e) {
-                    sfTerminate(TerminationRecord.abnormal(
-                            "error in starting follow-on component", name));
+                    String message = "error in starting follow-on component for '"+status.errorType+"' try action";
+                    if (sfLog().isErrorEnabled()){ sfLog().error(message,e); }
+                    sfTerminate(TerminationRecord.abnormal(message, name));
                 }
             } else {
                 sfTerminate(status);

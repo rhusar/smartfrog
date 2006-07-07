@@ -33,16 +33,15 @@ Application extends Sequence {
     message "echo default command";
     filename "/tmp/default";
     fileURL "http://defaultHost/defaultfile";
-    time 10000;                                  // default time in millisecs
+    time 20000;                                  // default time in millisecs
     sfSyncTerminate true;
 
-//    actions extends LAZY {
     a extends Copyfile {
         toFile ATTRIB filename;
         fromURL ATTRIB fileURL;
     }
     b extends During {
-    sfSyncTerminate true;
+        sfSyncTerminate true;
         time PARENT:ATTRIB time;               //avoid a loop..!
         action extends LAZY RunDaemon {
             message PARENT:ATTRIB message; //avoid a loop..!
@@ -51,7 +50,6 @@ Application extends Sequence {
     c extends Removefile {
         file ATTRIB filename;
     }
-//    }
 }
 
 /**

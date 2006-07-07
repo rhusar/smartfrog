@@ -91,8 +91,10 @@ public class Parallel extends EventCompoundImpl implements Compound {
         // let any errors be thrown and caught by SmartFrog for abnormal termination  - including empty actions
         try {
             if (!asynchCreateChild){
+                if (sfLog().isDebugEnabled()){sfLog().debug(" Parallel Synch");};
                 synchCreateChild();
             } else {
+                if (sfLog().isDebugEnabled()){sfLog().debug(" Parallel Asynch");};
                 asynchCreateChild();
             }
         } catch (Exception ex) {

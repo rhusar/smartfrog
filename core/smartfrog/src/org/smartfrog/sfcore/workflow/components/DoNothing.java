@@ -94,7 +94,7 @@ public class DoNothing extends EventPrimImpl implements Prim {
         }
 
         try {
-            message = myId + ": " + (String) sfResolve(MESSAGE);
+            message = myId + "- " + (String) sfResolve(MESSAGE);
         } catch (Exception e) {
             message = null;
         }
@@ -123,21 +123,19 @@ public class DoNothing extends EventPrimImpl implements Prim {
             }
         }
 
-        Runnable terminator = new Runnable() {
-                public void run() {
-                    try {
-                        if (time > 0) {
-                            Thread.sleep(time);
-                        }
-                    } catch (Exception ex) {
-                    }
-
-                    sfTerminate(new TerminationRecord(terminationType,  myId, null));
-                }
-            };
-
         if (!terminationType.equals("none")) {
-            new Thread(terminator).start();
+            Runnable terminator = new Runnable() {
+                    public void run() {
+                        if (sfLog().isDebugEnabled()) { sfLog().debug("Timer set:" +time+". Going to sleep "+myId);}
+                        try { if (time > 0) { Thread.sleep(time); } } catch (Exception ex) { }
+                        String terminationMessage = "Timer '"+time+"' expired . Terminating "+myId;
+                        if (sfLog().isDebugEnabled()) { sfLog().debug(terminationMessage);}
+                        sfTerminate(new TerminationRecord(terminationType, terminationMessage , null));
+                    }
+            };
+            Thread thread = new Thread(terminator);
+            thread.setName(myId+"_DoNothingTerminator");
+            thread.start();
         }
     }
 }
