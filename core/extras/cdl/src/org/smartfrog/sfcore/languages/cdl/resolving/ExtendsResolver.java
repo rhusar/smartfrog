@@ -301,7 +301,8 @@ public class ExtendsResolver {
                     //clone it
                     copiedList = (PropertyList) result.copy();
                     //pull in the attributes of the child
-                    copiedList.inheritAttributes(resolvedList);
+                    copiedList.inheritAttributes(resolvedList,
+                            Constants.POLICY_STRIP_ALL_CDL_ATTRIBUTES_FROM_MERGED_CHILDREN);
                     //then insert the children of the current list into place
                 }
                 newChildren.add(copiedList);

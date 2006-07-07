@@ -151,6 +151,9 @@ public class Constants {
 
     public static final boolean POLICY_STRIP_ATTRIBUTES_FROM_REFERENCE_DESTINATION =true;
 
+
+    public static final boolean POLICY_STRIP_ALL_CDL_ATTRIBUTES_FROM_MERGED_CHILDREN = false;
+
     /**
      * Are we a debug release, in which case there are extra tests in the phases
      * that every step worked

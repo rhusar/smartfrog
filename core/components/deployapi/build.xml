@@ -669,12 +669,16 @@ because javac was bailing out with some error about unzipping -->
 
   <target name="init-interop-tests" depends="init">
     <!-- for every endpoint there is a happy url and the actual epr-->
+    <tstamp>
+      <format property="time_t" unit="millisecond" pattern="yyyyMMddHHmmssSSS" />
+    </tstamp>
+    <property name="query" value="value=${time_t}" />
     <property name="epr.nec" value="http://cddlm.nec-labs.com:9090/cddlm/services/portal"/>
-    <property name="happy.nec" value="http://cddlm.nec-labs.com:9090/cddlm/happyaxis.jsp"/>
+    <property name="happy.nec" value="http://cddlm.nec-labs.com:9090/cddlm/happyaxis.jsp?${query}"/>
     <property name="epr.ourgrid" value="http://cddlm.lsd.ufcg.edu.br:8080/muse/services/Portal"/>
-    <property name="happy.ourgrid" value="http://cddlm.lsd.ufcg.edu.br:8080/muse/happyaxis.jsp"/>
+    <property name="happy.ourgrid" value="http://cddlm.lsd.ufcg.edu.br:8080/muse/happyaxis.jsp?${query}"/>
     <property name="epr.hp" value="http://deployapi.iseran.com:8080/alpine/portal/"/>
-    <property name="happy.hp" value="http://deployapi.iseran.com:8080/alpine/portal/"/>
+    <property name="happy.hp" value="http://deployapi.iseran.com:8080/alpine/portal/?${query}"/>
 
 
     <property name="test.interop.dir" location="${build.dir}/test/interop/"/>

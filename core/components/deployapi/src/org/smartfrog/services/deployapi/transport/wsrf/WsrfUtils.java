@@ -112,7 +112,13 @@ public final class WsrfUtils {
     }
 
 
-
+    /**
+     * Add the WS notification topics to a map
+     * @param map property map
+     * @param topics list of topics
+     * @param fixed whether they are fixed or not
+     * @param dialects list of dialects
+     */
     public static void addWsTopics(PropertyMap map, List<Element> topics,boolean fixed,String[] dialects) {
         if(topics==null) {
             topics=new LinkedList<Element>();

@@ -48,6 +48,8 @@ import org.smartfrog.sfcore.reference.Reference;
 
 import javax.xml.namespace.QName;
 import java.rmi.RemoteException;
+import java.util.List;
+import java.util.ArrayList;
 
 /**
  * This represents a template in the CDL
@@ -304,7 +306,7 @@ public class PropertyList extends DocNode implements DescriptorSource {
         //sanity check: we are merging ourselves
 //        assert extension.getQName().equals(extendsName);
         //now apply the rules of the CDL spec, section 7.2.2
-        inheritAttributes(extension);
+        inheritAttributes(extension, Constants.POLICY_STRIP_ALL_CDL_ATTRIBUTES_FROM_MERGED_CHILDREN);
         //clear our extendsname, as we are now merged. no more extending for us.
         extendsName = null;
         //strip @cdl:extends
@@ -339,14 +341,16 @@ public class PropertyList extends DocNode implements DescriptorSource {
      * merge in all attributes. public for testing
      *
      * @param extension
+     * @param excludeCDL
      */
-    public void inheritAttributes(PropertyList extension) {
+    public void inheritAttributes(PropertyList extension, boolean excludeCDL) {
         //this is where we start to work at the XOM level.
         for (Attribute extAttr : extension.attributes()) {
             String namespace = extAttr.getNamespaceURI();
             String local = extAttr.getLocalName();
-            if (!hasAttribute(namespace, local)) {
-                //no match: copy the attribute
+            boolean shouldExclude = excludeCDL && CDL_NAMESPACE.equals(namespace);
+            if (!hasAttribute(namespace, local) && !shouldExclude) {
+                //no match; no exclude: copy the attribute
                 addAttribute((Attribute) extAttr.copy());
             }
         }
@@ -468,12 +472,12 @@ public class PropertyList extends DocNode implements DescriptorSource {
             }
         } else {
             TypeMapper typeMapper = getParseContext().getTypeMapper();
-            
+
             if(typeMapper.isEmptyOptionalNode(this)) {
                 //skip out if we are nil
                 return;
             }
-            
+
             Object contents=typeMapper.map(this);
             if(contents!=null) {
                 //specially mapped things
