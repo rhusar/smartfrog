@@ -867,7 +867,7 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
      * @param t log this cause
      */
     public void ignore(Object message, SmartFrogException t){
-        ignore(message,t);
+        ignore(message,(Throwable) t);
     }
 
 
@@ -1191,6 +1191,18 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
        } catch (Exception ex) {
             throw (SmartFrogLogException)SmartFrogLogException.forward(ex);
        }
+    }
+
+    /**
+     * Get a list of all registered logs
+     *
+     * @return a list (may be of size 0 for no logs)
+     * @throws java.rmi.RemoteException
+     * @throws org.smartfrog.sfcore.common.SmartFrogLogException
+     *
+     */
+    public Log[] listRegisteredLogs() throws RemoteException, SmartFrogLogException {
+        return  (Log[]) registeredLogs.values().toArray(new Log[0]);
     }
 }
 

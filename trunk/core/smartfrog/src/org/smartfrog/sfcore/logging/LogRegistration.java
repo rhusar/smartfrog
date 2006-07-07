@@ -1,4 +1,4 @@
-/** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
+/** (C) Copyright 1998-2006 Hewlett-Packard Development Company, LP
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
@@ -25,7 +25,9 @@ import java.rmi.Remote;
 import java.rmi.RemoteException;
 import org.smartfrog.sfcore.common.SmartFrogLogException;
 
-
+/**
+ * Interface for registering and deregistering logs
+ */
 public interface LogRegistration extends Remote {
 
     /**
@@ -57,4 +59,11 @@ public interface LogRegistration extends Remote {
      */
    public boolean deregister(String name)  throws RemoteException, SmartFrogLogException;
 
+    /**
+     * Get a list of all registered logs
+     * @return a list (may be of size 0 for no logs)
+     * @throws RemoteException
+     * @throws SmartFrogLogException
+     */
+   public Log[] listRegisteredLogs() throws RemoteException, SmartFrogLogException;
 }

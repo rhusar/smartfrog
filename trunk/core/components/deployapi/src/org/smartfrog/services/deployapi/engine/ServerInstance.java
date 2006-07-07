@@ -22,6 +22,7 @@
 package org.smartfrog.services.deployapi.engine;
 
 import nu.xom.Element;
+import nu.xom.Attribute;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.ggf.cddlm.generated.api.CddlmConstants;
@@ -39,6 +40,7 @@ import org.smartfrog.services.filesystem.filestore.AddedFilestore;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLivenessException;
 import org.smartfrog.sfcore.prim.Prim;
+import org.smartfrog.projects.alpine.om.base.SoapElement;
 
 import javax.xml.namespace.QName;
 import java.io.File;
@@ -48,6 +50,7 @@ import java.net.URL;
 import java.rmi.RemoteException;
 import java.util.Date;
 import java.util.List;
+import java.util.ArrayList;
 
 
 /**
@@ -250,7 +253,18 @@ public class ServerInstance implements WSRPResourceSource {
         WsrfUtils.addManagementCharacteristics(properties, CddlmConstants.CDL_API_PORTAL_CAPABILITY);
 
         //the list of topics
-        WsrfUtils.addWsTopics(properties,null,true,WsrfUtils.DEFAULT_TOPIC_DIALECTS);
+        /*
+          <wstop:Topic name="SystemCreatedEvent"
+    messageTypes="muws-p1-xs:ManagementEvent">
+  </wstop:Topic>
+  */
+        List<Element> topics=new ArrayList<Element>();
+        SoapElement systemCreatedEvent=new SoapElement(CddlmConstants.PROPERTY_WSNT_TOPIC);
+        systemCreatedEvent.addAttribute(new Attribute("name", "SystemCreatedEvent"));
+        systemCreatedEvent.addNamespaceDeclaration("muws-p1-xs",CddlmConstants.MUWS_P1_NAMESPACE);
+        systemCreatedEvent.addAttribute(new Attribute("messageTypes", "muws-p1-xs:ManagementEvent"));
+        topics.add(systemCreatedEvent);
+        WsrfUtils.addWsTopics(properties, topics,true,WsrfUtils.DEFAULT_TOPIC_DIALECTS);
     }
 
     /**

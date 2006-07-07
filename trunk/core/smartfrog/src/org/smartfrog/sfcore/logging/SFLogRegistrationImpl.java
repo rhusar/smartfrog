@@ -150,4 +150,19 @@ public class SFLogRegistrationImpl extends PrimImpl implements Prim, SFLogRegist
         }
         return false;
     }
+
+    /**
+     * Get a list of all registered logs
+     *
+     * @return a list (may be of size 0 for no logs)
+     * @throws java.rmi.RemoteException
+     * @throws org.smartfrog.sfcore.common.SmartFrogLogException
+     *
+     */
+    public Log[] listRegisteredLogs() throws RemoteException, SmartFrogLogException {
+        if (logreg != null) {
+            return logreg.listRegisteredLogs();
+        }
+        return new Log[0];
+    }
 }
