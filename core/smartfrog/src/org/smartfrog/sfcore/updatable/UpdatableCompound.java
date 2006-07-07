@@ -19,7 +19,7 @@ import java.util.Iterator;
 
 
 /**
- * warning: hanlde in a thread that is not part of a lifecycle of another component...
+ * warning: handle in a thread that is not part of a lifecycle of another component...
  */
 public class UpdatableCompound extends CompoundImpl implements Update, Compound {
     boolean updateAbandoned = false;
@@ -31,14 +31,14 @@ public class UpdatableCompound extends CompoundImpl implements Update, Compound 
     /* flow update lifecycle */
 
     /**
-     * Inform component (and children, typically) that an updatre is about to take place.
+     * Inform component (and children, typically) that an update is about to take place.
      * Normally a component would quiesce its activity
      * @throws java.rmi.RemoteException
      * @throws org.smartfrog.sfcore.common.SmartFrogException - not OK to update
      */
     public synchronized void sfPrepareUpdate() throws RemoteException, SmartFrogException {
         // iterate over all children, preparing them for update.
-        // if an exceptino is returned, trigger an abandon downwards and retun an exception
+        // if an exception is returned, trigger an abandon downwards and return an exception
         updateAbandoned = false;
         for (Enumeration e = sfChildren(); e.hasMoreElements(); ) {
             Prim p = (Prim) e.nextElement();
@@ -65,7 +65,7 @@ public class UpdatableCompound extends CompoundImpl implements Update, Compound 
      * @throws org.smartfrog.sfcore.common.SmartFrogException - failure, not OK to update
      */
     public synchronized boolean sfUpdateWith(Context newCxt) throws RemoteException, SmartFrogException {
-        if (updateAbandoned) throw new SmartFrogUpdateException("updfate already abandoned");
+        if (updateAbandoned) throw new SmartFrogUpdateException("update already abandoned");
         // validate the description, return false if it requires termination, exception to fail
         // cache context
         // check children that exist already
@@ -107,8 +107,8 @@ public class UpdatableCompound extends CompoundImpl implements Update, Compound 
         // check children if they require termination, or will reject completely!
         for (Iterator i = newContext.sfAttributes(); i.hasNext(); ) {
             // it it is a non-lazy CD - it will be a child, so
-            //    if it exists already, recurse (if false - return false) and place name in the to updaet vector
-            //    if it does not exist, add nmme the the to be created vector
+            //    if it exists already, recurse (if false - return false) and place name in the to update vector
+            //    if it does not exist, add name to the to be created vector
             Object key = i.next();
             Object value = newContext.get(key);
             Object currentValue = sfContext().get(key);
@@ -153,7 +153,7 @@ public class UpdatableCompound extends CompoundImpl implements Update, Compound 
 
     /**
      * Carry out the context update - no roll back from this point on.
-     * Terminates children that need termianting, create and deployWith children that need to be
+     * Terminates children that need terminating, create and deployWith children that need to be
      * @throws java.rmi.RemoteException
      * @throws org.smartfrog.sfcore.common.SmartFrogException - failure, to be treated like a normal lifecycle error, by default with termination
      */
@@ -201,9 +201,9 @@ public class UpdatableCompound extends CompoundImpl implements Update, Compound 
      */
 
     public synchronized void sfUpdateDeploy() throws RemoteException, SmartFrogException {
-        if (updateAbandoned) throw new SmartFrogUpdateException("updfate already abandoned");
+        if (updateAbandoned) throw new SmartFrogUpdateException("update already abandoned");
 
-        // sfUpdateDeploy() all previously existing children, sfDeoploy() new ones
+        // sfUpdateDeploy() all previously existing children, sfDeploy() new ones
         for (Enumeration e = sfChildren.elements(); e.hasMoreElements(); ) {
             Update child = (Update) e.nextElement();
             if (childrenToUpdate.contains(child)) {
@@ -223,9 +223,9 @@ public class UpdatableCompound extends CompoundImpl implements Update, Compound 
      * @throws org.smartfrog.sfcore.common.SmartFrogException
      */
     public synchronized void sfUpdateStart() throws RemoteException, SmartFrogException {
-        if (updateAbandoned) throw new SmartFrogUpdateException("updfate already abandoned");
+        if (updateAbandoned) throw new SmartFrogUpdateException("update already abandoned");
 
-        // sfUpdateStart() all previously existing children, sfStart() nwe ones
+        // sfUpdateStart() all previously existing children, sfStart() new ones
         for (Enumeration e = sfChildren.elements(); e.hasMoreElements(); ) {
             Update child = (Update) e.nextElement();
             if (childrenToUpdate.contains(child)) {
@@ -239,7 +239,7 @@ public class UpdatableCompound extends CompoundImpl implements Update, Compound 
     }
 
     /**
-     * Can occur after prepare and check, but not afterwards to rol eback from actual update process.
+     * Can occur after prepare and check, but not afterwards to roll back from actual update process.
      * @throws java.rmi.RemoteException
      */
     public synchronized void sfAbandonUpdate() throws RemoteException {
