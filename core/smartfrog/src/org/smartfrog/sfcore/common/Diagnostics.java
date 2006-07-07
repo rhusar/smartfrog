@@ -159,8 +159,11 @@ public final class Diagnostics {
             out.append(org.smartfrog.Version.buildDate());
             out.append("\n");
 
-            header(out, "System properties");
-            doReportSystemProperties(out);
+            header(out, "System properties summary");
+            doReportSummary(out);
+
+            header(out, "Temp dir");
+            doReportTempDir(out);
 
             header(out, "ClassPath");
             doReportClassPath(out);
@@ -168,16 +171,13 @@ public final class Diagnostics {
             header(out, "CodeBase");
             doReportClassPath(out);
 
-            header(out, "System properties summary");
-            doReportSummary(out);
-
-            header(out, "Temp dir");
-            doReportTempDir(out);
-
             header(out, "Locale information");
             doReportLocale(out);
 
             doReportCD(out, cd);
+
+            header(out, "System properties");
+            doReportSystemProperties(out);
 
             header(out, org.smartfrog.Version.versionString() + " - "+org.smartfrog.Version.buildDate());
             out.append("\n");
@@ -262,8 +262,11 @@ public final class Diagnostics {
         out.append(org.smartfrog.Version.buildDate());
         out.append("\n");
 
-        header(out, "System properties");
-        doReportSystemProperties(out);
+        header(out, "System properties summary");
+        doReportSummary(out);
+
+        header(out, "Temp dir");
+        doReportTempDir(out);
 
         header(out, "ClassPath");
         doReportClassPath(out);
@@ -271,16 +274,13 @@ public final class Diagnostics {
         header(out, "CodeBase");
         doReportClassPath(out);
 
-        header(out, "System properties summary");
-        doReportSummary(out);
-
-        header(out, "Temp dir");
-        doReportTempDir(out);
-
         header(out, "Locale information");
         doReportLocale(out);
 
         doReportPrim(out, prim);
+
+        header(out, "System properties");
+        doReportSystemProperties(out);
 
         header(out, org.smartfrog.Version.versionString() + " - "+org.smartfrog.Version.buildDate());
         out.append("\n");
