@@ -14,7 +14,7 @@ import java.util.Iterator;
 
 
 /**
- * warning: hanlde in a thread that is not part of a lifecycle of another component...
+ * warning: handle in a thread that is not part of a lifecycle of another component...
  */
 public class UpdatablePrim extends PrimImpl implements Update, Prim {
     boolean updateAbandoned = false;
@@ -26,7 +26,7 @@ public class UpdatablePrim extends PrimImpl implements Update, Prim {
     /* flow update lifecycle */
 
     /**
-     * Inform component (and children, typically) that an updatre is about to take place.
+     * Inform component (and children, typically) that an update is about to take place.
      * Normally a component would quiesce its activity
      * @throws java.rmi.RemoteException
      * @throws org.smartfrog.sfcore.common.SmartFrogException - not OK to update
@@ -47,7 +47,7 @@ public class UpdatablePrim extends PrimImpl implements Update, Prim {
      * @throws org.smartfrog.sfcore.common.SmartFrogException - failure, not OK to update
      */
     public synchronized boolean sfUpdateWith(Context newCxt) throws RemoteException, SmartFrogException {
-        if (updateAbandoned) throw new SmartFrogUpdateException("updfate already abandoned");
+        if (updateAbandoned) throw new SmartFrogUpdateException("update already abandoned");
         // validate the description, return false if it requires termination, exception to fail
         // cache context
         // check children that exist already
@@ -88,7 +88,7 @@ public class UpdatablePrim extends PrimImpl implements Update, Prim {
 
     /**
      * Carry out the context update - no roll back from this point on.
-     * Terminates children that need termianting, create and deployWith children that need to be
+     * Terminates children that need terminating, create and deployWith children that need to be
      * @throws java.rmi.RemoteException
      * @throws org.smartfrog.sfcore.common.SmartFrogException - failure, to be treated like a normal lifecycle error, by default with termination
      */
@@ -122,7 +122,7 @@ public class UpdatablePrim extends PrimImpl implements Update, Prim {
     }
 
     /**
-     * Can occur after prepare and check, but not afterwards to rol eback from actual update process.
+     * Can occur after prepare and check, but not afterwards to roll back from actual update process.
      * @throws java.rmi.RemoteException
      */
     public synchronized void sfAbandonUpdate() throws RemoteException {
