@@ -58,6 +58,10 @@ import java.util.Properties;
 import java.util.TimeZone;
 import java.util.Vector;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.InetAddress;
+import java.net.*;
 
 
 /**
@@ -66,6 +70,9 @@ import org.smartfrog.sfcore.componentdescription.ComponentDescription;
  *
  */
 public final class Diagnostics {
+
+    /** {@value} */
+    public static final String SMARTFROG_URL = "http://www.smartfrog.org/";
 
     /** Utility class */
     private Diagnostics() {
@@ -164,6 +171,9 @@ public final class Diagnostics {
 
             header(out, "Temp dir");
             doReportTempDir(out);
+
+            header(out, "Network");
+            doReportNetwork(out);
 
             header(out, "ClassPath");
             doReportClassPath(out);
@@ -267,6 +277,9 @@ public final class Diagnostics {
 
         header(out, "Temp dir");
         doReportTempDir(out);
+
+        header(out, "Network");
+        doReportNetwork(out);
 
         header(out, "ClassPath");
         doReportClassPath(out);
@@ -481,9 +494,61 @@ public final class Diagnostics {
       }
 
     }
+
+
+    /**
+     * Report simple network diagnostics by default bound to {@link #SMARTFROG_URL}
+     * @param out the stream to print the report to.
+     */
+    private static void doReportNetwork(StringBuffer out) {
+       URI uri = null;
+       String uriString = SMARTFROG_URL;
+       InetAddress localhost=null;
+       InetAddress remotehost=null;
+       out.append("Local host test: ");
+       try {
+         localhost = InetAddress.getLocalHost();
+         String localhostName = localhost.getCanonicalHostName();
+         out.append("hostname '"+localhostName+"', ");
+         out.append("address '"+localhost.getHostAddress()+"', ");
+         InetAddress newLocalhost = InetAddress.getByName(localhostName);
+         if (localhost.equals(newLocalhost)){
+             out.append(" [Successful]");
+         } else {
+             out.append(" [Failed]");
+         }
+       } catch (UnknownHostException ex1) {
+           out.append("[Failed], Failed to resolve localhost ip"+", "+ex1.toString());
+       }
+
+       out.append("\n");
+       out.append("Remote host test ("+uriString+"): ");
+       try {
+           uri =new URI(uriString); // Default address, we need to add a list of them during init
+           try {
+              remotehost = InetAddress.getByName(uri.getHost());
+              String remotehostName = remotehost.getCanonicalHostName();
+              out.append("hostname '"+remotehostName+"', ");
+              out.append("address '"+remotehost.getHostAddress()+"', ");
+              InetAddress newRemotehost = InetAddress.getByName(remotehostName);
+              if (remotehost.equals(newRemotehost)){
+                 out.append(" [Successful]");
+              } else {
+                 out.append(" [Failed]");
+              }
+           } catch (UnknownHostException ex) {
+               out.append("[Failed], Failed to resolve remote hostname"+uri.getHost()+", "+ex.toString());
+           }
+       } catch (URISyntaxException e) {
+           out.append("[Failed], Broken uri for remote host: "+uriString+", "+e.toString());
+       }
+       out.append('\n');
+     }
+
+
     /**
      * Report a listing of classpath used in the current vm.
-     * @param out the stream to print the properties to.
+     * @param out the stream to print the properties report to.
      */
     private static void doReportClassPath(StringBuffer out) {
       out.append((System.getProperty("java.class.path")).replace(
