@@ -63,7 +63,7 @@ public class OptionSet {
         "              ex. \"HOST localhost:foo\"\n" +
          "             ex. 'HOST localhost:foo'\n" +
         "          - ACTION: defines the action to be taken on the named component\n"+
-        "                    possible actions: DEPLOY, TERMINATE, DETACH, DETaTERM, PING, PARSE, DIAGNOSTICS\n" +
+        "                    possible actions: DEPLOY, UPDATE, TERMINATE, DETACH, DETaTERM, PING, PARSE, DIAGNOSTICS\n" +
         "          - SFREF: SmartFrog description (if needed) to be used by ACTION\n" +
         "                   Currently only required by DEPLOY\n"+
         "              ex. /home/sf/foo.sf\n" +
