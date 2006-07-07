@@ -56,12 +56,16 @@ public abstract class TaskTestBase extends BuildFileTest {
         return result;
     }
 
-    public void setUp() {
+    public void setUp() throws Exception {
+        super.setUp();
         String basedir = getRequiredTestProperty("test.files.dir");
         String filename = getBuildFile();
         configureProject(basedir + "/" + filename);
     }
 
+    public void tearDown() throws Exception {
+        super.tearDown();
+    }
 
     /**
      * assert that some text is not in the log
