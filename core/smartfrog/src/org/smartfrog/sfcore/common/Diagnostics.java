@@ -547,7 +547,7 @@ public final class Diagnostics {
               }
            } catch (UnknownHostException ex) {
                time2=System.currentTimeMillis()-time;
-               out.append("[Failed], Failed to resolve remote hostname '"+uri.getHost()+"', , "+time2+"ms, "+ex.toString());
+               out.append("[Failed], Failed to resolve remote hostname '"+uri.getHost()+"', "+time2+"ms, "+ex.toString());
            }
        } catch (URISyntaxException e) {
            out.append("[Failed], Broken uri for remote host: '"+uriString+"', "+e.toString());
