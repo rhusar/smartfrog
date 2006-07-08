@@ -502,7 +502,9 @@ public final class Diagnostics {
      */
     private static void doReportNetwork(StringBuffer out) {
        URI uri = null;
-       String uriString = SMARTFROG_URL;
+       long time =0;
+       long time2 = 0;
+       String uriString = SMARTFROG_URL; //We need to be able to check against other hosts.
        InetAddress localhost=null;
        InetAddress remotehost=null;
        out.append("Local host test: ");
@@ -511,14 +513,17 @@ public final class Diagnostics {
          String localhostName = localhost.getCanonicalHostName();
          out.append("hostname '"+localhostName+"', ");
          out.append("address '"+localhost.getHostAddress()+"', ");
+         time=System.currentTimeMillis();
          InetAddress newLocalhost = InetAddress.getByName(localhostName);
+         time2=System.currentTimeMillis()-time;
          if (localhost.equals(newLocalhost)){
-             out.append(" [Successful]");
+             out.append(" [Successful], "+time2+"ms");
          } else {
-             out.append(" [Failed]");
+             out.append(" [Failed], "+time2+"ms");
          }
        } catch (UnknownHostException ex1) {
-           out.append("[Failed], Failed to resolve localhost ip"+", "+ex1.toString());
+           time2=System.currentTimeMillis()-time;
+           out.append("[Failed], Failed to resolve localhost ip, "+time2+"ms"+", "+ex1.toString());
        }
 
        out.append("\n");
@@ -526,21 +531,26 @@ public final class Diagnostics {
        try {
            uri =new URI(uriString); // Default address, we need to add a list of them during init
            try {
+              time=System.currentTimeMillis();
               remotehost = InetAddress.getByName(uri.getHost());
+              time2=System.currentTimeMillis()-time;
               String remotehostName = remotehost.getCanonicalHostName();
               out.append("hostname '"+remotehostName+"', ");
-              out.append("address '"+remotehost.getHostAddress()+"', ");
+              out.append("address '"+remotehost.getHostAddress()+"', "+time2+"ms, ");
+              time=System.currentTimeMillis();
               InetAddress newRemotehost = InetAddress.getByName(remotehostName);
+              time2=System.currentTimeMillis()-time;
               if (remotehost.equals(newRemotehost)){
-                 out.append(" [Successful]");
+                 out.append(" [Successful], "+time2+"ms");
               } else {
-                 out.append(" [Failed]");
+                 out.append(" [Failed], "+time2+"ms");
               }
            } catch (UnknownHostException ex) {
-               out.append("[Failed], Failed to resolve remote hostname"+uri.getHost()+", "+ex.toString());
+               time2=System.currentTimeMillis()-time;
+               out.append("[Failed], Failed to resolve remote hostname '"+uri.getHost()+"', , "+time2+"ms, "+ex.toString());
            }
        } catch (URISyntaxException e) {
-           out.append("[Failed], Broken uri for remote host: "+uriString+", "+e.toString());
+           out.append("[Failed], Broken uri for remote host: '"+uriString+"', "+e.toString());
        }
        out.append('\n');
      }
