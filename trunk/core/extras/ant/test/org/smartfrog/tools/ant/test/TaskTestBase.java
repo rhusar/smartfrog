@@ -106,7 +106,7 @@ public abstract class TaskTestBase extends BuildFileTest {
      *
      * @param text
      */
-    protected void assertLogContaining(String text) {
+    public void assertLogContaining(String text) {
         assertInLog(text);
     }
 
