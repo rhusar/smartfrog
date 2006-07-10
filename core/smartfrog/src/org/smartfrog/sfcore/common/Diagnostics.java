@@ -448,9 +448,9 @@ public final class Diagnostics {
 
         for (Enumeration keys = keysVector.elements(); keys.hasMoreElements();) {
             String key = (String) keys.nextElement();
-            String value;
+            String value = "";
             try {
-                value = System.getProperty(key);
+                if (!(key.trim().equals(""))) value = System.getProperty(key);
             } catch (SecurityException e) {
                 value = "Access to this property blocked by a security manager";
             }
