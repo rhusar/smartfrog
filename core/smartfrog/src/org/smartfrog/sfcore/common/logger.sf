@@ -22,4 +22,6 @@ Logger extends {
   logStackTrace false;
   // logLiveness false;
   // processCompoundDiagReport  false;
+  // testNetwork true;
+  //testURI [|"http://www.smartfrog.org"|];
 }
