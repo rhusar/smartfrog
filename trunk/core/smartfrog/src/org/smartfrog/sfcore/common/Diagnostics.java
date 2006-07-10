@@ -567,7 +567,7 @@ public final class Diagnostics {
               time2=System.currentTimeMillis()-time;
               String remotehostName = remotehost.getCanonicalHostName();
               out.append("hostname '"+remotehostName+"', ");
-              out.append("address '"+remotehost.getHostAddress()+"', "+time2+"ms, ");
+              out.append("ip '"+remotehost.getHostAddress()+"', "+time2+"ms, ");
               time=System.currentTimeMillis();
               InetAddress newRemotehost = InetAddress.getByName(remotehostName);
               time2=System.currentTimeMillis()-time;
