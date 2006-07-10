@@ -52,6 +52,7 @@ import java.util.Date;
 import java.util.Enumeration;
 import java.util.Properties;
 import java.util.Vector;
+import org.smartfrog.sfcore.common.Diagnostics;
 
 
 /**
@@ -516,6 +517,16 @@ public class SFSystem implements MessageKeys {
             // Init logging properties
             Logger.init();
 
+            //Test local networking: checks localhost NIC
+            if (Logger.testNetwork) {
+                StringBuffer result = new StringBuffer();
+                boolean failed = Diagnostics.doReportLocalNetwork(result);
+                if (failed) {
+                   if (sfLog().isWarnEnabled()) { sfLog().warn(result.toString()); }
+                } else {
+                    if (sfLog().isDebugEnabled()) { sfLog().debug(result.toString()); }
+                }
+            }
             alreadySystemInit = true;
         }
     }

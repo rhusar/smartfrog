@@ -24,11 +24,15 @@ package org.smartfrog.sfcore.common;
 import org.smartfrog.SFSystem;
 import org.smartfrog.sfcore.componentdescription.ComponentDescriptionImpl;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
+import java.util.Vector;
 
 /**
  * Class used to store some flags used for log reporting.
  */
 public class Logger implements MessageKeys {
+
+    /** Used as default value in diagnostics for remote host {@value} */
+    public static final String SMARTFROG_URL = "http://www.smartfrog.org/";
 
     /** Property name for Logger class
      *  Value {@value}
@@ -42,6 +46,10 @@ public class Logger implements MessageKeys {
     public final static String ATR_LOG_LIVENESS = "logLiveness";
     /** String name for optional attribute "{@value}". */
     public final static String ATR_LOG_PC_DIAG_REPORT = "processCompoundDiagReport";
+    /** String name for optional attribute "{@value}". */
+    public final static String ATR_TEST_NETWORK = "testNetwork";
+    /** String name for optional attribute "{@value}". */
+    public final static String ATR_TEST_URI = "testURI";
 
     /** Property to enable stack trace. The default value is overridden by the
      * value specified in default.ini file.
@@ -56,6 +64,16 @@ public class Logger implements MessageKeys {
     /** Property to create a sfDiagnosticsReport in every ProcessCompound
      */
     public static boolean processCompoundDiagReport = false;
+
+    /** Property to enable initial network test. The default value can be overridden by the
+     * value specified in default.ini file.
+     */
+    public static boolean testNetwork = true;
+
+    /** Property to define a list of remote hosts for remote network test . The default value can be overridden by the
+      * value specified in default.ini file. Default value {@value }
+      */
+    public static String[] testURI = {SMARTFROG_URL};
 
     private static boolean initialized = false;
 
@@ -78,6 +96,8 @@ public class Logger implements MessageKeys {
                logStackTrace = configuration.sfResolve(ATR_LOG_STACK_TRACE,logStackTrace,false);
                logLiveness = configuration.sfResolve(ATR_LOG_LIVENESS,logLiveness,false);
                processCompoundDiagReport = configuration.sfResolve(ATR_LOG_PC_DIAG_REPORT,processCompoundDiagReport,false);
+               testNetwork = configuration.sfResolve(ATR_TEST_NETWORK,testNetwork,false);
+               testURI = configuration.sfResolve(ATR_TEST_URI,testURI,false);
             }
         } catch (Exception ex){
             if (SFSystem.sfLog().isErrorEnabled()) { SFSystem.sfLog().error(ex); }

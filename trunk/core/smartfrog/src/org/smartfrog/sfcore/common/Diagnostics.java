@@ -44,6 +44,7 @@ import org.smartfrog.sfcore.compound.Compound;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.processcompound.ProcessCompound;
 import org.smartfrog.sfcore.processcompound.SFProcess;
+import org.smartfrog.sfcore.common.Logger;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -71,8 +72,6 @@ import java.net.*;
  */
 public final class Diagnostics {
 
-    /** {@value} */
-    public static final String SMARTFROG_URL = "http://www.smartfrog.org/";
 
     /** Utility class */
     private Diagnostics() {
@@ -173,7 +172,11 @@ public final class Diagnostics {
             doReportTempDir(out);
 
             header(out, "Network");
-            doReportNetwork(out);
+            doReportLocalNetwork(out);
+            out.append("\n");
+            doReportRemoteNetwork(out,Logger.testURI);
+            out.append("\n");
+
 
             header(out, "ClassPath");
             doReportClassPath(out);
@@ -279,7 +282,10 @@ public final class Diagnostics {
         doReportTempDir(out);
 
         header(out, "Network");
-        doReportNetwork(out);
+        doReportLocalNetwork(out);
+        out.append("\n");
+        doReportRemoteNetwork(out,Logger.testURI);
+        out.append("\n");
 
         header(out, "ClassPath");
         doReportClassPath(out);
@@ -299,6 +305,7 @@ public final class Diagnostics {
         out.append("\n");
 
     }
+
 
     /**
       * Report specific Prim information.
@@ -495,29 +502,29 @@ public final class Diagnostics {
 
     }
 
-
     /**
-     * Report simple network diagnostics by default bound to {@link #SMARTFROG_URL}
+     * Report simple local network diagnostics by default bound to local hostname
      * @param out the stream to print the report to.
+     * @return failed. It reports if the test failed or not.
      */
-    private static void doReportNetwork(StringBuffer out) {
+    public static boolean doReportLocalNetwork(StringBuffer out) {
+       boolean failed = true;
        URI uri = null;
        long time =0;
        long time2 = 0;
-       String uriString = SMARTFROG_URL; //We need to be able to check against other hosts.
        InetAddress localhost=null;
-       InetAddress remotehost=null;
-       out.append("Local host test: ");
+       out.append("Network test localhost: ");
        try {
          localhost = InetAddress.getLocalHost();
          String localhostName = localhost.getCanonicalHostName();
          out.append("hostname '"+localhostName+"', ");
-         out.append("address '"+localhost.getHostAddress()+"', ");
+         out.append("ip '"+localhost.getHostAddress()+"', ");
          time=System.currentTimeMillis();
          InetAddress newLocalhost = InetAddress.getByName(localhostName);
          time2=System.currentTimeMillis()-time;
          if (localhost.equals(newLocalhost)){
              out.append(" [Successful], "+time2+"ms");
+             failed = false;
          } else {
              out.append(" [Failed], "+time2+"ms");
          }
@@ -525,9 +532,33 @@ public final class Diagnostics {
            time2=System.currentTimeMillis()-time;
            out.append("[Failed], Failed to resolve localhost ip, "+time2+"ms"+", "+ex1.toString());
        }
+       return failed;
+     }
 
-       out.append("\n");
-       out.append("Remote host test ("+uriString+"): ");
+     /** * Report simple remote network diagnostics for list of URIs
+         * @param out the stream to print the report to.
+         * @parm url URI for a host to reach
+         * @return failed. It reports if the test failed or not.
+     */
+     private static void doReportRemoteNetwork(StringBuffer out, String[] listURI) {
+         for (int i=listURI.length; i>0;i--) {
+            doReportRemoteNetwork(out,listURI[i-1]);
+         }
+    }
+
+    /**
+     * Report simple remote network diagnostics by default bound to {@link #SMARTFROG_URL}
+     * @param out the stream to print the report to.
+     * @parm url URI for a host to reach
+     * @return failed. It reports if the test failed or not.
+     */
+    public static boolean doReportRemoteNetwork(StringBuffer out, String uriString) {
+       boolean failed = true;
+       URI uri = null;
+       long time =0;
+       long time2 = 0;
+       InetAddress remotehost=null;
+       out.append("Network test remotehost ("+uriString+"): ");
        try {
            uri =new URI(uriString); // Default address, we need to add a list of them during init
            try {
@@ -542,6 +573,7 @@ public final class Diagnostics {
               time2=System.currentTimeMillis()-time;
               if (remotehost.equals(newRemotehost)){
                  out.append(" [Successful], "+time2+"ms");
+                 failed = false;
               } else {
                  out.append(" [Failed], "+time2+"ms");
               }
@@ -553,6 +585,7 @@ public final class Diagnostics {
            out.append("[Failed], Broken uri for remote host: '"+uriString+"', "+e.toString());
        }
        out.append('\n');
+       return failed;
      }
 
 
