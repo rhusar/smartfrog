@@ -41,7 +41,15 @@ import org.apache.tools.ant.taskdefs.condition.IsFalse;
 import org.apache.tools.ant.taskdefs.condition.IsReference;
 
 /**
- * A sort of extension/delegate of WaitFor with two features
+ * An unsupported, potentially unstable derivative of waitfor that will 
+ * made to fail on timeout.
+ * 
+ * This task is used for SmartFrog's internal testing purposes, and for 
+ * testing components. There are no guarantees of stability over time. 
+ * 
+ * <p/>
+
+ * An extension/delegate of WaitFor with two features
  * <ol>
  * <li>Extends Task so that parallel/sequential containers can use it straight off</li>
  * <li>Throws a built exception if something failed</li>
@@ -51,6 +59,7 @@ import org.apache.tools.ant.taskdefs.condition.IsReference;
  * directly with it to those in Ant1.6. To use later stuff you need to declare the
  * ant1.7+ conditions using the xmlns:c="antlib:org.apache.tools.ant.tasks.conditions" antlib
  * declaration, then insert conditions in their new namespace.
+ *  @ant.task category="SmartFrog" name="sf-faultingwaitfor"
  */
 
 public class FaultingWaitForTask extends Task {

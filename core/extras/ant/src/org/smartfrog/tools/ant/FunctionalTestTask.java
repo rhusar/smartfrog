@@ -26,19 +26,33 @@ import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
 
 /**
- * This is an extension of junit that lets us integrate startup, a waitfor
- * condition and a shutdown sequence into the test case. It's based upon Ant's
+ * 
+ * This is an extension of &lt;junit&gt; that lets us integrate startup, a waitfor
+ * condition and a shutdown sequence into the test case. 
+ * 
+ * This task is used for SmartFrog's internal testing purposes, and for 
+ * testing components. There are no guarantees of stability over time. 
+ * 
+ * <p/>
+ * It's based upon Ant's
  * own JUnit task, and credits Cactus as showing what could be done. Apache
  * Cactus is coded around deploying to an application server; this task can
  * deploy to anything for which we have setup and teardown sequences.
  * <p/>
  * <p/>
- * This is the workflow for testing <ol> <li>The startup sequence is run to
- * completion</li> <li>In parallel, ( a) the application is started</li> <li>and
- * (b) the sequence of waitfor+tests is run.</li> <li>After the tests run, the
- * teardown operation is executed</li> <li>Any build exception thrown by testing
- * is thrown</li> </ol> <p>No matter what goes wrong, once startup has
+ * This is the workflow for testing 
+ * <ol> 
+ * <li>The startup sequence is run to
+ * completion</li> 
+ * <li>In parallel, ( a) the application is started</li> 
+ * <li>and (b) the sequence of waitfor+tests is run.</li> 
+ * <li>After the tests run, the teardown operation is executed</li>
+ * <li>Any build exception thrown by testingis thrown</li>
+ * </ol> 
+ * 
+ * <p>No matter what goes wrong, once startup has
  * succeeded, teardown gets invoked. </p>
+ * @ant.task category="SmartFrog" name="sf-functionaltest"
  */
 public class FunctionalTestTask extends Task {
 

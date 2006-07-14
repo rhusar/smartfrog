@@ -82,25 +82,37 @@
         <!-- Attribute -->
     <tr>
         <td bgcolor="#eeeeee" valign="top" align="left">
-          <font color="#000000" size="-1" face="arial,helvetica,sanserif">classpathref</font>
+          <font color="#000000" size="-1" face="arial,helvetica,sanserif">alias</font>
         </td>
         <td bgcolor="#eeeeee" valign="top" align="left">
-          <font color="#000000" size="-1" face="arial,helvetica,sanserif">a reference to the classpath to use to run smartfrog</font>
+          <font color="#000000" size="-1" face="arial,helvetica,sanserif"></font>
         </td>
         <td bgcolor="#eeeeee" valign="top" align="left">
-          <font color="#000000" size="-1" face="arial,helvetica,sanserif">Reference</font>
+          <font color="#000000" size="-1" face="arial,helvetica,sanserif">String</font>
         </td>
-        <td bgcolor="#eeeeee" valign="top" align="left" rowspan="8">
+        <td bgcolor="#eeeeee" valign="top" align="left" rowspan="18">
           <font color="#000000" size="-1" face="arial,helvetica,sanserif">Optional</font>
         </td>
     </tr>
     <!-- Attribute -->
     <tr>
         <td bgcolor="#eeeeee" valign="top" align="left">
-          <font color="#000000" size="-1" face="arial,helvetica,sanserif">includeantruntime</font>
+          <font color="#000000" size="-1" face="arial,helvetica,sanserif">destdir</font>
         </td>
         <td bgcolor="#eeeeee" valign="top" align="left">
-          <font color="#000000" size="-1" face="arial,helvetica,sanserif">If a new classpath is passed in, should the existing one (used when declaring the task) be included? If it is not, the new classpath must include smartfrog.jar. Default: false.</font>
+          <font color="#000000" size="-1" face="arial,helvetica,sanserif"></font>
+        </td>
+        <td bgcolor="#eeeeee" valign="top" align="left">
+          <font color="#000000" size="-1" face="arial,helvetica,sanserif">File</font>
+        </td>
+    </tr>
+    <!-- Attribute -->
+    <tr>
+        <td bgcolor="#eeeeee" valign="top" align="left">
+          <font color="#000000" size="-1" face="arial,helvetica,sanserif">internalsf</font>
+        </td>
+        <td bgcolor="#eeeeee" valign="top" align="left">
+          <font color="#000000" size="-1" face="arial,helvetica,sanserif"></font>
         </td>
         <td bgcolor="#eeeeee" valign="top" align="left">
           <font color="#000000" size="-1" face="arial,helvetica,sanserif">boolean</font>
@@ -112,7 +124,7 @@
           <font color="#000000" size="-1" face="arial,helvetica,sanserif">jar</font>
         </td>
         <td bgcolor="#eeeeee" valign="top" align="left">
-          <font color="#000000" size="-1" face="arial,helvetica,sanserif">name a JAR file to sign</font>
+          <font color="#000000" size="-1" face="arial,helvetica,sanserif"></font>
         </td>
         <td bgcolor="#eeeeee" valign="top" align="left">
           <font color="#000000" size="-1" face="arial,helvetica,sanserif">File</font>
@@ -121,10 +133,34 @@
     <!-- Attribute -->
     <tr>
         <td bgcolor="#eeeeee" valign="top" align="left">
+          <font color="#000000" size="-1" face="arial,helvetica,sanserif">keypass</font>
+        </td>
+        <td bgcolor="#eeeeee" valign="top" align="left">
+          <font color="#000000" size="-1" face="arial,helvetica,sanserif"></font>
+        </td>
+        <td bgcolor="#eeeeee" valign="top" align="left">
+          <font color="#000000" size="-1" face="arial,helvetica,sanserif">String</font>
+        </td>
+    </tr>
+    <!-- Attribute -->
+    <tr>
+        <td bgcolor="#eeeeee" valign="top" align="left">
+          <font color="#000000" size="-1" face="arial,helvetica,sanserif">keystore</font>
+        </td>
+        <td bgcolor="#eeeeee" valign="top" align="left">
+          <font color="#000000" size="-1" face="arial,helvetica,sanserif"></font>
+        </td>
+        <td bgcolor="#eeeeee" valign="top" align="left">
+          <font color="#000000" size="-1" face="arial,helvetica,sanserif">String</font>
+        </td>
+    </tr>
+    <!-- Attribute -->
+    <tr>
+        <td bgcolor="#eeeeee" valign="top" align="left">
           <font color="#000000" size="-1" face="arial,helvetica,sanserif">lazy</font>
         </td>
         <td bgcolor="#eeeeee" valign="top" align="left">
-          <font color="#000000" size="-1" face="arial,helvetica,sanserif">flag to control whether the presence of a signature file means a JAR is signed and so does not need resigning</font>
+          <font color="#000000" size="-1" face="arial,helvetica,sanserif"></font>
         </td>
         <td bgcolor="#eeeeee" valign="top" align="left">
           <font color="#000000" size="-1" face="arial,helvetica,sanserif">boolean</font>
@@ -136,10 +172,34 @@
           <font color="#000000" size="-1" face="arial,helvetica,sanserif">maxmemory</font>
         </td>
         <td bgcolor="#eeeeee" valign="top" align="left">
-          <font color="#000000" size="-1" face="arial,helvetica,sanserif">Set the maximum memory to be used by the jarsigner process</font>
+          <font color="#000000" size="-1" face="arial,helvetica,sanserif"></font>
         </td>
         <td bgcolor="#eeeeee" valign="top" align="left">
           <font color="#000000" size="-1" face="arial,helvetica,sanserif">String</font>
+        </td>
+    </tr>
+    <!-- Attribute -->
+    <tr>
+        <td bgcolor="#eeeeee" valign="top" align="left">
+          <font color="#000000" size="-1" face="arial,helvetica,sanserif">preservelastmodified</font>
+        </td>
+        <td bgcolor="#eeeeee" valign="top" align="left">
+          <font color="#000000" size="-1" face="arial,helvetica,sanserif"></font>
+        </td>
+        <td bgcolor="#eeeeee" valign="top" align="left">
+          <font color="#000000" size="-1" face="arial,helvetica,sanserif">boolean</font>
+        </td>
+    </tr>
+    <!-- Attribute -->
+    <tr>
+        <td bgcolor="#eeeeee" valign="top" align="left">
+          <font color="#000000" size="-1" face="arial,helvetica,sanserif">sectionsonly</font>
+        </td>
+        <td bgcolor="#eeeeee" valign="top" align="left">
+          <font color="#000000" size="-1" face="arial,helvetica,sanserif"></font>
+        </td>
+        <td bgcolor="#eeeeee" valign="top" align="left">
+          <font color="#000000" size="-1" face="arial,helvetica,sanserif">boolean</font>
         </td>
     </tr>
     <!-- Attribute -->
@@ -157,10 +217,22 @@
     <!-- Attribute -->
     <tr>
         <td bgcolor="#eeeeee" valign="top" align="left">
+          <font color="#000000" size="-1" face="arial,helvetica,sanserif">sigfile</font>
+        </td>
+        <td bgcolor="#eeeeee" valign="top" align="left">
+          <font color="#000000" size="-1" face="arial,helvetica,sanserif"></font>
+        </td>
+        <td bgcolor="#eeeeee" valign="top" align="left">
+          <font color="#000000" size="-1" face="arial,helvetica,sanserif">String</font>
+        </td>
+    </tr>
+    <!-- Attribute -->
+    <tr>
+        <td bgcolor="#eeeeee" valign="top" align="left">
           <font color="#000000" size="-1" face="arial,helvetica,sanserif">signedjar</font>
         </td>
         <td bgcolor="#eeeeee" valign="top" align="left">
-          <font color="#000000" size="-1" face="arial,helvetica,sanserif">name the jar to sign</font>
+          <font color="#000000" size="-1" face="arial,helvetica,sanserif"></font>
         </td>
         <td bgcolor="#eeeeee" valign="top" align="left">
           <font color="#000000" size="-1" face="arial,helvetica,sanserif">File</font>
@@ -169,10 +241,58 @@
     <!-- Attribute -->
     <tr>
         <td bgcolor="#eeeeee" valign="top" align="left">
+          <font color="#000000" size="-1" face="arial,helvetica,sanserif">storepass</font>
+        </td>
+        <td bgcolor="#eeeeee" valign="top" align="left">
+          <font color="#000000" size="-1" face="arial,helvetica,sanserif"></font>
+        </td>
+        <td bgcolor="#eeeeee" valign="top" align="left">
+          <font color="#000000" size="-1" face="arial,helvetica,sanserif">String</font>
+        </td>
+    </tr>
+    <!-- Attribute -->
+    <tr>
+        <td bgcolor="#eeeeee" valign="top" align="left">
+          <font color="#000000" size="-1" face="arial,helvetica,sanserif">storetype</font>
+        </td>
+        <td bgcolor="#eeeeee" valign="top" align="left">
+          <font color="#000000" size="-1" face="arial,helvetica,sanserif"></font>
+        </td>
+        <td bgcolor="#eeeeee" valign="top" align="left">
+          <font color="#000000" size="-1" face="arial,helvetica,sanserif">String</font>
+        </td>
+    </tr>
+    <!-- Attribute -->
+    <tr>
+        <td bgcolor="#eeeeee" valign="top" align="left">
+          <font color="#000000" size="-1" face="arial,helvetica,sanserif">tsacert</font>
+        </td>
+        <td bgcolor="#eeeeee" valign="top" align="left">
+          <font color="#000000" size="-1" face="arial,helvetica,sanserif"></font>
+        </td>
+        <td bgcolor="#eeeeee" valign="top" align="left">
+          <font color="#000000" size="-1" face="arial,helvetica,sanserif">String</font>
+        </td>
+    </tr>
+    <!-- Attribute -->
+    <tr>
+        <td bgcolor="#eeeeee" valign="top" align="left">
+          <font color="#000000" size="-1" face="arial,helvetica,sanserif">tsaurl</font>
+        </td>
+        <td bgcolor="#eeeeee" valign="top" align="left">
+          <font color="#000000" size="-1" face="arial,helvetica,sanserif"></font>
+        </td>
+        <td bgcolor="#eeeeee" valign="top" align="left">
+          <font color="#000000" size="-1" face="arial,helvetica,sanserif">String</font>
+        </td>
+    </tr>
+    <!-- Attribute -->
+    <tr>
+        <td bgcolor="#eeeeee" valign="top" align="left">
           <font color="#000000" size="-1" face="arial,helvetica,sanserif">verbose</font>
         </td>
         <td bgcolor="#eeeeee" valign="top" align="left">
-          <font color="#000000" size="-1" face="arial,helvetica,sanserif">enable verbose output</font>
+          <font color="#000000" size="-1" face="arial,helvetica,sanserif"></font>
         </td>
         <td bgcolor="#eeeeee" valign="top" align="left">
           <font color="#000000" size="-1" face="arial,helvetica,sanserif">boolean</font>
@@ -202,25 +322,10 @@
       <tr><td>&nbsp;</td></tr>
       <tr><td bgcolor="#828DA6">
         <font color="#ffffff" face="arial,helvetica.sanserif" size="-1">
-          <strong>classpath</strong> (org.apache.tools.ant.types.Path)</font>
-      </td></tr>
-      <tr><td><blockquote>
-        the classpath to run the parser
- <!-- Ignore -->
- <!-- Ignore -->
-
-      </blockquote></td></tr>
-    </table>
-    <!-- End Element -->
-    <!-- Start Element -->
-    <table border="0" cellspacing="0" cellpadding="2" width="100%">
-      <tr><td>&nbsp;</td></tr>
-      <tr><td bgcolor="#828DA6">
-        <font color="#ffffff" face="arial,helvetica.sanserif" size="-1">
           <strong>fileset</strong> (org.apache.tools.ant.types.FileSet)</font>
       </td></tr>
       <tr><td><blockquote>
-        a fileset of jar files to sign
+        
  <!-- Ignore -->
  <!-- Ignore -->
 
@@ -236,6 +341,21 @@
       </td></tr>
       <tr><td><blockquote>
         set a security definition
+ <!-- Ignore -->
+ <!-- Ignore -->
+
+      </blockquote></td></tr>
+    </table>
+    <!-- End Element -->
+    <!-- Start Element -->
+    <table border="0" cellspacing="0" cellpadding="2" width="100%">
+      <tr><td>&nbsp;</td></tr>
+      <tr><td bgcolor="#828DA6">
+        <font color="#ffffff" face="arial,helvetica.sanserif" size="-1">
+          <strong>path</strong> (org.apache.tools.ant.types.Path)</font>
+      </td></tr>
+      <tr><td><blockquote>
+        
  <!-- Ignore -->
  <!-- Ignore -->
 
@@ -264,7 +384,7 @@
   <tr>
     <td>
       <div align="center"><font color="#525D76" size="-1"><em>
-        Copyright &#169; 2000-2003, Apache Software Foundation
+        Copyright &#169; 2000-2005, Apache Software Foundation
       </em></font></div>
     </td>
   </tr>

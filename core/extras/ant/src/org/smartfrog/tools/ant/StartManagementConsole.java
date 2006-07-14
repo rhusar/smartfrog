@@ -21,8 +21,9 @@
 package org.smartfrog.tools.ant;
 
 /**
- * Start the management console
- */
+ * Start the SmartFrog management console
+ * @ant.task category="SmartFrog" name="sf-managementconsole" 
+ * */
 public class StartManagementConsole extends StartDaemon {
 
     /**

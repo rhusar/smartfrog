@@ -39,6 +39,9 @@ import java.util.ListIterator;
  *
  * nested filesets are supported; if present, these are turned into the
  * url with the given separator between them (default = " ").
+ * 
+ * This file is deprecated in Ant1.7, because we donated our code and tests 
+ * to them -it is now built in.
  * @ant.task category="SmartFrog" name="sf-tourl"
  */
 
