@@ -22,6 +22,7 @@ package org.smartfrog.tools.ant;
 
 /**
  * Start the smartfrog editor/management GUI
+ * @ant.task category="SmartFrog" name="sf-gui"
  */
 public class StartSmartFrogGui extends StartDaemon {
 

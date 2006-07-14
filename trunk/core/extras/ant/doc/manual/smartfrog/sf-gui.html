@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta http-equiv="Content-Language" content="en-us">
-  <title>Sf-undeploy
+  <title>Sf-gui
  Task</title>
 </head>
 
@@ -16,9 +16,9 @@
     <td>
       <table border="0" width="100%"><tr>
           <td valign="bottom">
-            <font size="+3" face="arial,helvetica,sanserif"><strong>Sf-undeploy
+            <font size="+3" face="arial,helvetica,sanserif"><strong>Sf-gui
  Task</strong></font>
-            <br><font face="arial,helvetica,sanserif">Undeploy any smartfrog application from a running daemon.</font>
+            <br><font face="arial,helvetica,sanserif">Start the smartfrog editor/management GUI</font>
           </td>
           <td>
           </td>
@@ -42,7 +42,7 @@
       </td></tr>
 
       <tr><td><blockquote>
-        Undeploy any smartfrog application from a running daemon. By default this target raises an error when the application cannot be stopped, and has a timeout set to the standard default value. {@link SmartFrogTask#DEFAULT_TIMEOUT_VALUE}.
+        Start the smartfrog editor/management GUI
       </blockquote></td></tr>
 
     </table>
@@ -97,18 +97,6 @@
     <!-- Attribute -->
     <tr>
         <td bgcolor="#eeeeee" valign="top" align="left">
-          <font color="#000000" size="-1" face="arial,helvetica,sanserif">application</font>
-        </td>
-        <td bgcolor="#eeeeee" valign="top" align="left">
-          <font color="#000000" size="-1" face="arial,helvetica,sanserif">set the app name; optional on some actions</font>
-        </td>
-        <td bgcolor="#eeeeee" valign="top" align="left">
-          <font color="#000000" size="-1" face="arial,helvetica,sanserif">String</font>
-        </td>
-    </tr>
-    <!-- Attribute -->
-    <tr>
-        <td bgcolor="#eeeeee" valign="top" align="left">
           <font color="#000000" size="-1" face="arial,helvetica,sanserif">classpathref</font>
         </td>
         <td bgcolor="#eeeeee" valign="top" align="left">
@@ -116,6 +104,18 @@
         </td>
         <td bgcolor="#eeeeee" valign="top" align="left">
           <font color="#000000" size="-1" face="arial,helvetica,sanserif">Reference</font>
+        </td>
+    </tr>
+    <!-- Attribute -->
+    <tr>
+        <td bgcolor="#eeeeee" valign="top" align="left">
+          <font color="#000000" size="-1" face="arial,helvetica,sanserif">entrypoint</font>
+        </td>
+        <td bgcolor="#eeeeee" valign="top" align="left">
+          <font color="#000000" size="-1" face="arial,helvetica,sanserif">Set the entry point of the daemon. This defaults to that of the command line</font>
+        </td>
+        <td bgcolor="#eeeeee" valign="top" align="left">
+          <font color="#000000" size="-1" face="arial,helvetica,sanserif">String</font>
         </td>
     </tr>
     <!-- Attribute -->
@@ -328,6 +328,21 @@
       <tr><td>&nbsp;</td></tr>
       <tr><td bgcolor="#828DA6">
         <font color="#ffffff" face="arial,helvetica.sanserif" size="-1">
+          <strong>codebase</strong> (org.smartfrog.tools.ant.Codebase)</font>
+      </td></tr>
+      <tr><td><blockquote>
+        Add a new codebase element to the current set. The URLs of the codebase will be visible to the deploying app.
+ <!-- Ignore -->
+ <!-- Ignore -->
+
+      </blockquote></td></tr>
+    </table>
+    <!-- End Element -->
+    <!-- Start Element -->
+    <table border="0" cellspacing="0" cellpadding="2" width="100%">
+      <tr><td>&nbsp;</td></tr>
+      <tr><td bgcolor="#828DA6">
+        <font color="#ffffff" face="arial,helvetica.sanserif" size="-1">
           <strong>propertyfile</strong> (org.smartfrog.tools.ant.PropertyFile)</font>
       </td></tr>
       <tr><td><blockquote>
@@ -362,6 +377,21 @@
       </td></tr>
       <tr><td><blockquote>
         Adds a set of properties as system properties.
+ <!-- Ignore -->
+ <!-- Ignore -->
+
+      </blockquote></td></tr>
+    </table>
+    <!-- End Element -->
+    <!-- Start Element -->
+    <table border="0" cellspacing="0" cellpadding="2" width="100%">
+      <tr><td>&nbsp;</td></tr>
+      <tr><td bgcolor="#828DA6">
+        <font color="#ffffff" face="arial,helvetica.sanserif" size="-1">
+          <strong>application</strong> (org.smartfrog.tools.ant.DeployingTaskBase.Application)</font>
+      </td></tr>
+      <tr><td><blockquote>
+        add a new application to the list.
  <!-- Ignore -->
  <!-- Ignore -->
 
