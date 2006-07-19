@@ -83,7 +83,7 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
      *  Initialized to log into the core log: SF_CORE_LOG
      *  It can be replaced using sfSetLog()
      */
-    private LogSF  sflog = null;
+    private LogSF  sfLog = LogFactory.sfGetProcessLog();;
 
     /** Static attribute that hold the lifecycle hooks for sfDeploy. */
     public static PrimHookSet sfDeployHooks = new PrimHookSet();
@@ -173,7 +173,8 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
         try {
            result = sfContext.sfResolveAttribute(name);
            try {
-               if (sfLog().isTraceEnabled()) {
+               // if sfLog() is called then a new log is created and an upcall is triggered
+               if ((sfLog!=null) && sfLog().isTraceEnabled()) {
                    sfLog().trace("sfResolved HERE '"+name.toString()+"' to '"+ result.toString()+"'");
                }
            } catch (Throwable thr) {thr.printStackTrace();} //ignore
@@ -625,6 +626,11 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
 
                 sfExport(portObj);
             }
+            //Object exported. Now we can use the right log for this component.
+            // Before this we are using SFCORE_LOG
+            //Don't ini the component log before the object is exported
+            sfLog = null;
+            sfLog(); //Ini component log after the object exported
 
             if (sfParent!=null) {
                 ((ChildMinder)sfParent).sfAddChild(this);
@@ -756,7 +762,6 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
               sfLog().ignore(ex);
             }
         }
-
     }
 
     /**
@@ -1293,8 +1298,8 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
      * @return Logger implementing LogSF and Log
      */
     public LogSF sfLog() {
-       if (sflog!=null)
-         return sflog;
+       if (sfLog!=null)
+         return sfLog;
        else {
         try {
           return sfGetApplicationLog();
@@ -1311,8 +1316,8 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
      *  @return oldlog
      */
     public synchronized LogSF sfSetLog(LogSF newlog) {
-       LogSF oldlog = sflog;
-       this.sflog = newlog;
+       LogSF oldlog = sfLog;
+       this.sfLog = newlog;
        // add attribute
        try {
            sfReplaceAttribute(SmartFrogCoreKeys.SF_APP_LOG_NAME, newlog.getLogName());
