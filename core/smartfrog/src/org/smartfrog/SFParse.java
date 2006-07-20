@@ -264,12 +264,12 @@ public class SFParse implements MessageKeys {
             // Redirect output streams
             SFSystem.setOutputStreams();
 
+
+            showVersionInfo();
             opts = new ParseOptionSet(args);
             //SFSystem.SFSystem.sfLog().out(opts.toString());
 
-            showVersionInfo();
-            // Read init properties
-            //SFSystem.readPropertiesFromIniFile();
+            showDiagnostics(opts);
 
             if (opts.errorString != null) {
                 if (opts.help) {
@@ -429,6 +429,17 @@ public class SFParse implements MessageKeys {
       st.append("<tr/>"+"\n");
       return st.toString();
     }
-
+    /**
+     * Shows diagnostics report
+     * @param opts OptionSet
+     */
+    private static void showDiagnostics(ParseOptionSet opts) {
+      if (opts.diagnostics){
+        //org.smartfrog.sfcore.common.Diagnostics.doReport(System.out);
+        StringBuffer report = new StringBuffer();
+        org.smartfrog.sfcore.common.Diagnostics.doReport(report);
+        SFSystem.sfLog().out(report.toString());
+      }
+    }
 
 }
