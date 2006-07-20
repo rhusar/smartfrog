@@ -291,7 +291,7 @@ public final class Diagnostics {
         doReportClassPath(out);
 
         header(out, "CodeBase");
-        doReportClassPath(out);
+        doReportCodeBase(out);
 
         header(out, "Locale information");
         doReportLocale(out);
