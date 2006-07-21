@@ -292,6 +292,7 @@ public final class Diagnostics {
 
         header(out, "CodeBase");
         doReportCodeBase(out);
+        out.append("\n");
 
         header(out, "Locale information");
         doReportLocale(out);
@@ -603,9 +604,13 @@ public final class Diagnostics {
      * @param out the stream to print the properties to.
      */
     private static void doReportCodeBase(StringBuffer out) {
-      out.append(""+
-         (System.getProperty(org.smartfrog.sfcore.security.SFClassLoader.SF_CODEBASE_PROPERTY)).replace(
-          System.getProperty("path.separator").charAt(0), '\n'));
+
+      String codebaseString = System.getProperty(org.smartfrog.sfcore.security.SFClassLoader.SF_CODEBASE_PROPERTY);
+      if (codebaseString!=null) {
+          out.append(""+codebaseString.replace(System.getProperty("path.separator").charAt(0), '\n'));
+      } else {
+         out.append(""+"Not defined, using default");
+      }
     }
 
     /**
