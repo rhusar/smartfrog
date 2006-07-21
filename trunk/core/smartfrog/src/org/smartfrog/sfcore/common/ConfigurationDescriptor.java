@@ -910,6 +910,7 @@ public class ConfigurationDescriptor implements MessageKeys{
         try {
           return (( (Prim) resultObject).sfCompleteName().toString());
         } catch (RemoteException ex) {
+          //Note that if the object was terminated this call will throw an exception.
           return null;
         }
       }
