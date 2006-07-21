@@ -169,9 +169,9 @@ public class SFSystem implements MessageKeys {
         }
 
         System.setProperties(sysProps);
-        if (sflog!=null) { // This method can be called before LogSystem was initialized
-            if (sfLog().isInfoEnabled()) {
-                sfLog().info("New system properties: \n"+ sysProps.toString().replace(',', '\n'));
+        if (sflog!=null) { // This method cannot be called before LogSystem was initialized
+            if (sfLog().isTraceEnabled()) {
+                sfLog().trace("New system properties: \n"+ sysProps.toString().replace(',', '\n'));
             }
         }
     }
@@ -377,7 +377,7 @@ public class SFSystem implements MessageKeys {
              cfgDesc = (ConfigurationDescriptor)items.nextElement();
              if (cfgDesc.getResultType()==ConfigurationDescriptor.Result.FAILED) {
                  somethingFailed = true;
-		 opts.exitCode =ExitCodes.EXIT_ERROR_CODE_GENERAL;
+		         opts.exitCode =ExitCodes.EXIT_ERROR_CODE_GENERAL;
              }
              sfLog().out(" - "+(cfgDesc).statusString()+"\n");
              if (sfLog().isIgnoreEnabled() && cfgDesc.resultException!=null){
