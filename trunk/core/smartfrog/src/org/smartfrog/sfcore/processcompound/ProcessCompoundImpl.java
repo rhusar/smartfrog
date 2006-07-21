@@ -1249,13 +1249,14 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
      * entry for each of these. It modifies the sfProcessName property to be
      * that required. If security is on you also pass some security related
      * properties.
-     * Any property prefixed by 'org.smartfrog.sfcore.processcompound.jvm.'+NAME+.property=value
+     * Any property prefixed by 'org.smartfrog.sfcore.processcompound.jvm.'+NAME+.property.value
      * will be added  only to the subprocess named 'NAME' as a parameter
-     * for the JVM. The parameter will be "property+value".
+     * for the JVM. The parameter will be "value", "property" is only used to name
+     * different properties in the initial command line.
      * To change the class path in a SubProcess use:
      * 'org.smartfrog.sfcore.processcompound.java.class.path.NAME'
      * Example:
-     *  org.smartfrog.sfcore.processcompound.jvm.test.-X=runpri
+     *  org.smartfrog.sfcore.processcompound.jvm.test.propertyname_A=-Xrunpri
      *  will add the property '-Xrunpri' to the processCompound named 'test'.
      *
      * @param cmd command to append to
@@ -1289,19 +1290,17 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
                     if (value == null) {
                       value = "";
                     }
-                    cmd.addElement(keyS + value.toString());
-                    //Logger.log("Added to"+name+": "+"-D"+keyS+"="+value.toString());
+                    cmd.addElement(value.toString());
                   } else {
                     //Properties to overwrite processcompound.sf attributes
-		    Object value = props.get(key);
+                    Object value = props.get(key);
                     cmd.addElement("-D" + key.toString() + "=" + value.toString());
                   }
                 } else {
-                  // Add property to name ProcessCompound
-                  cmd.addElement("-D" +
-                                 (SmartFrogCoreProperty.propBaseSFProcess
+                  //Special - Add property to name ProcessCompound
+                  cmd.addElement("-D" + (SmartFrogCoreProperty.propBaseSFProcess
                                   + SmartFrogCoreKeys.SF_PROCESS_NAME + "=") +
-                                 name.toString());
+                                    name.toString());
                 }
               }
             } catch (Exception ex) {
