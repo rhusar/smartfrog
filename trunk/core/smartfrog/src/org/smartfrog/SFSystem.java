@@ -170,8 +170,8 @@ public class SFSystem implements MessageKeys {
 
         System.setProperties(sysProps);
         if (sflog!=null) { // This method can be called before LogSystem was initialized
-            if (sfLog().isTraceEnabled()) {
-                sfLog().trace("New system properties: \n"+ sysProps.toString().replace(',', '\n'));
+            if (sfLog().isInfoEnabled()) {
+                sfLog().info("New system properties: \n"+ sysProps.toString().replace(',', '\n'));
             }
         }
     }
