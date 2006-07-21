@@ -1249,7 +1249,7 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
      * entry for each of these. It modifies the sfProcessName property to be
      * that required. If security is on you also pass some security related
      * properties.
-     * Any property prefixed by 'org.smartfrog.sfcore.processcompound.jvm.'+NAME+.property.value
+     * Any property prefixed by 'org.smartfrog.sfcore.processcompound.jvm.'+NAME+.property=value
      * will be added  only to the subprocess named 'NAME' as a parameter
      * for the JVM. The parameter will be "value", "property" is only used to name
      * different properties in the initial command line.
