@@ -55,6 +55,7 @@ import org.smartfrog.sfcore.reference.ReferencePart;
 import org.smartfrog.sfcore.security.SFSecurity;
 import org.smartfrog.sfcore.security.SFSecurityProperties;
 import org.smartfrog.sfcore.common.ExitCodes;
+import org.smartfrog.sfcore.common.JarUtil;
 
 
 
@@ -1247,12 +1248,15 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
      * iterating over the current process' properties and looking for those
      * prefixed by org.smartfrog (and not security properties) and creating an
      * entry for each of these. It modifies the sfProcessName property to be
-     * that required. If security is on you also pass some security related
+     * that required. If security is on, you also pass some security related
      * properties.
-     * Any property prefixed by 'org.smartfrog.sfcore.processcompound.jvm.'+NAME+.property=value
+     * System properties are ordered alfabetically before they are processed.
+     * Any property prefixed by
+     * 'org.smartfrog.sfcore.processcompound.jvm.'+NAME+.property=value
      * will be added  only to the subprocess named 'NAME' as a parameter
      * for the JVM. The parameter will be "value", "property" is only used to name
-     * different properties in the initial command line.
+     * different properties in the initial command line. The property name is
+     * important because all sys properties are ordered before they are processed
      * To change the class path in a SubProcess use:
      * 'org.smartfrog.sfcore.processcompound.java.class.path.NAME'
      * Example:
@@ -1267,9 +1271,16 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
     protected void addProcessDefines(Vector cmd, Object name)
         throws Exception {
         Properties props = System.getProperties();
-
-        for (Enumeration e = props.keys(); e.hasMoreElements();) {
-            String key = e.nextElement().toString();
+        //Sys properties get ordered
+        Vector keysVector = new Vector();
+        for (Enumeration keys = props.propertyNames(); keys.hasMoreElements();) {
+          keysVector.add((String) keys.nextElement());
+        }
+        // Order keys
+        keysVector= JarUtil.sort(keysVector);
+        //process keys
+        for (Enumeration keys = keysVector.elements(); keys.hasMoreElements();) {
+            String key = keys.nextElement().toString();
             try {
               if ( (key.startsWith(SmartFrogCoreProperty.propBase)) &&
                   (! (key.startsWith(SFSecurityProperties.propBaseSecurity)))) {
