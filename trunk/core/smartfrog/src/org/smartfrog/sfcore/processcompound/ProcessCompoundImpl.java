@@ -1297,7 +1297,7 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
 
                   if (key.startsWith(specialParameters)) {
                     Object value = props.get(key);
-                    String keyS = key.toString().substring(specialParameters.length());
+                    String keyS = key.substring(specialParameters.length());
                     if (value == null) {
                       value = "";
                     }
