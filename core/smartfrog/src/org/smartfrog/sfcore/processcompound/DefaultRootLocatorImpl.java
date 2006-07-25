@@ -23,8 +23,6 @@ package org.smartfrog.sfcore.processcompound;
 import java.net.InetAddress;
 import java.rmi.RemoteException;
 import java.rmi.registry.Registry;
-import java.rmi.NotBoundException;
-import java.rmi.AccessException;
 
 import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
 import org.smartfrog.sfcore.common.MessageKeys;
@@ -33,11 +31,6 @@ import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.security.SFSecurity;
-import org.smartfrog.sfcore.prim.TerminationRecord;
-import org.smartfrog.sfcore.componentdescription.ComponentDescription;
-
-
-
 
 /**
  * Defines a default root locator for SmartFrog Processes. The root locator

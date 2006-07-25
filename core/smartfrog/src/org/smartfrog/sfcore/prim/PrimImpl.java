@@ -86,16 +86,16 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
     private LogSF  sfLog = LogFactory.sfGetProcessLog();;
 
     /** Static attribute that hold the lifecycle hooks for sfDeploy. */
-    public static PrimHookSet sfDeployHooks = new PrimHookSet();
+    public static final PrimHookSet sfDeployHooks = new PrimHookSet();
 
     /** Static attribute that hold the lifecycle hooks for sfStart. */
-    public static PrimHookSet sfStartHooks = new PrimHookSet();
+    public static final PrimHookSet sfStartHooks = new PrimHookSet();
 
     /** Static attribute that hold the lifecycle hooks for sfDeployWith. */
-    public static PrimHookSet sfDeployWithHooks = new PrimHookSet();
+    public static final PrimHookSet sfDeployWithHooks = new PrimHookSet();
 
     /** Static attribute that hold the lifecycle hooks for sfTerminateWith. */
-    public static PrimHookSet sfTerminateWithHooks = new PrimHookSet();
+    public static final PrimHookSet sfTerminateWithHooks = new PrimHookSet();
 
     /** Reference used to look up sfLivenessDelay attributes. */
     protected static final Reference refLivenessDelay = new Reference(ReferencePart.attrib(
@@ -661,7 +661,7 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
                 sfLog().error(sfex);
             }
             //Logger.log(sfex);
-            new TerminatorThread(this, sfex, null).quietly().run();
+            new TerminatorThread(this, sfex, null).quietly().start();
             throw (SmartFrogDeploymentException)SmartFrogDeploymentException.forward(sfex);
         }
     }
@@ -982,6 +982,7 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
                     status.id.addElement(ReferencePart.here(
                     SFProcess.getProcessCompound().sfAttributeKeyFor(this)));
                 } catch (Exception ex2) {
+                    if (sfLog().isIgnoreEnabled()){ sfLog().ignore(ex2); }
                     //ignore
                 }
             }
@@ -992,9 +993,7 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
         } catch (Exception ex) {
             // ignore
             //Logger.logQuietly(ex);
-            if (sfLog().isIgnoreEnabled()){
-              sfLog().ignore(ex);
-            }
+            if (sfLog().isIgnoreEnabled()){ sfLog().ignore(ex); }
         }
 
         if (comp != null) {
@@ -1002,9 +1001,7 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
                 comp.sfTerminatedWith(status, this);
             } catch (Exception ex) {
                // Logger.logQuietly(ex);
-               if (sfLog().isIgnoreEnabled()){
-                 sfLog().ignore(ex);
-               }
+               if (sfLog().isIgnoreEnabled()){ sfLog().ignore(ex); }
             }
         }
 
@@ -1015,9 +1012,7 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
         } catch (NoSuchObjectException ex) {
             // @TODO: Log. Ignore.
             //Logger.logQuietly(ex);
-            if (sfLog().isIgnoreEnabled()){
-              sfLog().ignore(ex);
-            }
+            if (sfLog().isIgnoreEnabled()){ sfLog().ignore(ex); }
         }
 
         //synchronized (this) {
@@ -1078,9 +1073,7 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
             terminateNotifying(status, null);
         } catch (Exception ex) {
             //Logger.logQuietly(ex);
-            if (sfLog().isIgnoreEnabled()){
-              sfLog().ignore(ex);
-            }
+            if (sfLog().isIgnoreEnabled()){ sfLog().ignore(ex); }
         }
     }
 
@@ -1158,13 +1151,13 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
 	    } else if ((sfLivenessSender != null) &&
 		       source.equals(sfLivenessSender) &&
 		       (sfLivenessCount-- <= 0)) {
-		fail = true;
+           fail = true;
 	    }
 	}
 
 	if (fail) {
 	    if (sfLog().isDebugEnabled()) {
-		sfLog().debug("failing as parent liveness checking had counted down: in " + sfCompleteNameSafe());
+		   sfLog().debug("failing as parent liveness checking had counted down: in " + sfCompleteNameSafe());
 	    }
 	    sfLivenessFailure(this, sfParent, null);
 	}

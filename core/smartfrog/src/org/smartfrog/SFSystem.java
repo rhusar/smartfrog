@@ -398,6 +398,7 @@ public class SFSystem implements MessageKeys {
                         port = rootProcess.sfResolve(SmartFrogCoreKeys.SF_ROOT_LOCATOR_PORT, port, false);
                     }
                 } catch (Exception ex) {
+                    if (sfLog().isIgnoreEnabled()){sfLog().ignore(ex);}
                     //ignore.
                 }
                 sfLog().out(MessageUtil.formatMessage(MSG_SF_READY, "[" + name + ":"+ port+"]") + " " + new Date(System.currentTimeMillis()));
