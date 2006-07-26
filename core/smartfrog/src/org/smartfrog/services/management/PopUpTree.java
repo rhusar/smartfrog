@@ -44,7 +44,7 @@ import java.rmi.RemoteException;
 
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.componentdescription.ComponentDescriptionImpl;
-
+import org.smartfrog.services.display.WindowUtilities;
 
 
 /**
@@ -282,7 +282,6 @@ public class PopUpTree extends JComponent implements ActionListener {
 
         for (int i = 0; i < string.length(); i++) {
             thisCharacter = (char) string.charAt(i);
-
             if ((char) string.charAt(i) != ' ') {
                 s.append((char) thisCharacter);
             }
@@ -308,8 +307,14 @@ public class PopUpTree extends JComponent implements ActionListener {
     void terminate(Object obj, String type, String reason) {
         //System.out.println("Terminating: "+obj.toString());
         if (obj instanceof Prim) {
-            org.smartfrog.services.management.DeployMgnt.terminate((Prim) obj
-                                                                , type, reason);
+            String name ="";
+            try {
+                name = ((Prim)obj).sfCompleteName().toString();
+                org.smartfrog.services.management.DeployMgnt.terminate((Prim) obj, type, reason);
+            } catch (Exception ex){
+               WindowUtilities.showError(this,"Problem when trying to Terminate '"+name+"'. \n"+ex.toString());
+               ex.printStackTrace();
+            }
         }
     }
 
@@ -322,10 +327,16 @@ public class PopUpTree extends JComponent implements ActionListener {
      */
     void dTerminate(Object obj, String type, String reason) {
         //System.out.println("Detatching and Terminating: "+obj.toString());
+        String name = "";
         if (obj instanceof Prim) {
-            org.smartfrog.services.management.DeployMgnt.dTerminate((Prim) obj
-                                                                , type, reason);
-            parent.refresh();
+            try {
+                name = ((Prim)obj).sfCompleteName().toString();
+                org.smartfrog.services.management.DeployMgnt.dTerminate((Prim) obj, type, reason);
+                parent.refresh();
+            } catch (Exception ex){
+               WindowUtilities.showError(this,"Problem when trying to Detach and Terminate '"+name+"'. \n"+ex.toString());
+               ex.printStackTrace();
+            }
         }
     }
 
@@ -337,9 +348,15 @@ public class PopUpTree extends JComponent implements ActionListener {
     void detach(Object obj) {
         //System.out.println("Detatching: "+obj.toString());
         if (obj instanceof Prim) {
-            org.smartfrog.services.management.DeployMgnt.detach((Prim) obj);
-            parent.refresh();
-
+            String name ="";
+            try {
+                name = ((Prim)obj).sfCompleteName().toString();
+                org.smartfrog.services.management.DeployMgnt.detach((Prim) obj);
+                parent.refresh();
+            }catch (Exception ex){
+              WindowUtilities.showError(this,"Problem when trying to Detach and Terminate '"+name+"'. \n"+ex.toString());
+              ex.printStackTrace();
+            }
             // Refresh Console.
             // To do: automatic Refresh ;-)
         }

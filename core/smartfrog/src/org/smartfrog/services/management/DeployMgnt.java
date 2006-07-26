@@ -92,14 +92,9 @@ public class DeployMgnt {
      * @param type error type
      * @param reason cause
      */
-    public static void terminate(Prim obj, String type, String reason) {
-        try {
+    public static void terminate(Prim obj, String type, String reason) throws Exception{
             TerminationRecord tr = new TerminationRecord(type, reason, null);
             obj.sfTerminate(tr);
-        } catch (Exception ex) {
-            //@TODO: log exception message.
-            //ex.printStackTrace();
-        }
     }
 
     /**
@@ -109,13 +104,9 @@ public class DeployMgnt {
      * @param type error type
      * @param reason cause
      */
-    public static void dTerminate(Prim obj, String type, String reason) {
-        try {
-            TerminationRecord tr = new TerminationRecord(type, reason, null);
-            obj.sfDetachAndTerminate(tr);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
+    public static void dTerminate(Prim obj, String type, String reason) throws Exception {
+        TerminationRecord tr = new TerminationRecord(type, reason, null);
+        obj.sfDetachAndTerminate(tr);
     }
 
     /**
@@ -123,11 +114,7 @@ public class DeployMgnt {
      *
      *@param  obj  Reference to SF Component
      */
-    public static void detach(Prim obj) {
-        try {
-            obj.sfDetach();
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
+    public static void detach(Prim obj) throws Exception {
+        obj.sfDetach();
     }
 }
