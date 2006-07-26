@@ -1,153 +1,357 @@
-
 /** (C) Copyright 1998-2005 Hewlett-Packard Development Company, LP
+ This library is free software; you can redistribute it and/or
+ modify it under the terms of the GNU Lesser General Public
+ License as published by the Free Software Foundation; either
+ version 2.1 of the License, or (at your option) any later version.
 
-This library is free software; you can redistribute it and/or
-modify it under the terms of the GNU Lesser General Public
-License as published by the Free Software Foundation; either
-version 2.1 of the License, or (at your option) any later version.
+ This library is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ Lesser General Public License for more details.
 
-This library is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-Lesser General Public License for more details.
+ You should have received a copy of the GNU Lesser General Public
+ License along with this library; if not, write to the Free Software
+ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-You should have received a copy of the GNU Lesser General Public
-License along with this library; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ For more information: www.smartfrog.org
 
-For more information: www.smartfrog.org
-
-*/
+ */
 
 package org.smartfrog.services.persistence.recoverablecomponent;
 
-import java.rmi.*;
+import java.io.ObjectStreamException;
+import java.io.Serializable;
+import java.rmi.RemoteException;
 import java.rmi.server.RemoteObject;
-import java.lang.reflect.*;
+import java.util.Iterator;
+import java.util.Vector;
 
-import org.smartfrog.services.persistence.storage.*;
-import org.smartfrog.sfcore.prim.Liveness;
-import org.smartfrog.sfcore.prim.Prim;
-import org.smartfrog.sfcore.compound.*;
-import org.smartfrog.sfcore.processcompound.*;
+import org.smartfrog.services.persistence.model.CommitPoints;
+import org.smartfrog.services.persistence.model.PersistenceModel;
+import org.smartfrog.services.persistence.storage.Storage;
+import org.smartfrog.services.persistence.storage.StorageException;
+import org.smartfrog.services.persistence.storage.StorageRef;
 import org.smartfrog.sfcore.common.Context;
+import org.smartfrog.sfcore.common.SFNull;
+import org.smartfrog.sfcore.common.SmartFrogContextException;
 import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.common.SmartFrogLifecycleException;
+import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
-import org.smartfrog.sfcore.prim.TerminationRecord;
-
-
-
-
-import java.util.*;
-import java.io.*;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
+import org.smartfrog.sfcore.compound.CompoundImpl;
+import org.smartfrog.sfcore.prim.Liveness;
+import org.smartfrog.sfcore.prim.Prim;
+import org.smartfrog.sfcore.prim.TerminationRecord;
+import org.smartfrog.sfcore.processcompound.ProcessCompound;
 
-
-/*
- * This class implements a Recoverable Prim component. This
- * component has the special feature of surviving crashes and
- * restarting after the transient problem that has
- * caused its failure has been solved.
+/**
+ * <p>RComponentImpl implements the persistent component, with behavior that is
+ * parameterized by a defined PersistenceModel, and persistence mechanism that
+ * is implemented by a defined Storage. The component inserts control points
+ * throughout start up and termination life cycle of CompoundImpl and in its
+ * attribute manipulation methods to allow the persistence model to influence
+ * when attributes are persisted and which attributes to persist.</p>
+ *
+ * <p>By default all attributes are serialized to
+ * storage on startup and when they are added or replaced. Removed attributes
+ * are removed from storage. The persistence model influences this behavior by
+ * identifying attributes that should or should not be persisted - i.e. by
+ * providing a marking for volatile and non-volatile attributes that is checked
+ * before persisting an attribute.</p>
+ *
+ * <p>"Commit points" are added to the  begining and end of the CompoundImpl
+ * life cycle methods (i.e. before and after sfDeploy, before and after sfStart,
+ * etc.) Commits to storage are suspended at the begining of the startup life
+ * cycle (in sfDeployWith) and only applied at these commit points. Again,
+ * the persistence model  provides a marking to determine if each commit point
+ * applies, hence commit points may be skipped. The affect is that changes to
+ * attributes are committed atomically at given points in the component's life
+ * cycle.</p>
+ *
+ * <p>The last control points are found immediately prior to component
+ * initialisation in the sfDeployWith(...) method and in the new sfRecover()
+ * life cycle method. At initialisation the persistence model is given the
+ * opportunity to modify the context and implement any other initialisation
+ * task. In the sfRecover() method (called instead of sfDeploy() and sfStart()
+ * on recovery) the model is given to opportunity to determine if sfDeploy()
+ * and sfStart() should in fact be called for this recovery.</p>
+ *
+ * <p>So, component startup contists of constructing the persistence model
+ * and storage, giving the persistence model a chance to modify the context,
+ * suspending commits to storage and then performing slightly different tasks
+ * depending on whether the component is in initial deployment or recovery. On
+ * initial deployment non-volatile attributes in the context are written to
+ * storage (writes that are committed at the next applicable commit point), but
+ * on recovery they are not (the context was just read from storage!) After
+ * initialisation the component will be subject to its normal startup life cycle
+ * if in its initial deployment, or it will be subject to the recovery life cycle
+ * if it is being recovered from storage. In either case, the writes to storage
+ * will only be committed at the points specified by the persistence model.</p>
+ *
+ * <p>Othewise the RComponentImpl class does not change the behavior of the
+ * CompoundImpl class.</p>
  */
-public class RComponentImpl extends CompoundImpl implements RComponent, Serializable {
+public class RComponentImpl extends CompoundImpl implements RComponent,
+        CommitPoints, Serializable {
 
-    Storage stableLog;
 
-    String[] volatileEntries = {"sfHost","sfLog"};
-    //String[] volatileEntries = {"sfHost","sfLog","sfProcess","sfProcessName"};
+    private Storage stableLog;
+    private PersistenceModel model;
+    protected boolean sfIsRecovered = false;
 
+
+    /**
+     *
+     * @throws RemoteException
+     */
     public RComponentImpl() throws RemoteException {
-    	super();
-    }
-
-    static protected Storage getNewStableStorage(String classname, ComponentDescription configData) throws StorageException{
-    	Class storageclass = null;
-    	try{
-    		storageclass = Class.forName(classname);
-    	} catch(ClassNotFoundException cause){
-    		throw new StorageException("Storage class not found! - looking for " + classname ,cause);
-    	}
-    	Class[] constparam = new Class[1];
-    	constparam[0] = ComponentDescription.class;
-    	Constructor storageconstructor = null;
-    	try{
-    		storageconstructor = storageclass.getConstructor(constparam);
-    	} catch(NoSuchMethodException cause){
-    		throw new StorageException("Storage constructor method not found!",cause);
-    	}
-    	Object[] params = new Object[1];
-        params[0] = configData;
-
-    	try{
-    		return (Storage) storageconstructor.newInstance(params);
-    	} catch (Exception cause){
-                cause.printStackTrace();
-    		throw new StorageException("Problems instantiating stable storage", cause);
-    	}
-    }
-
-    public RComponentProxyLocator getProxyLocator() throws RemoteException,
-            StorageException {
-    	return new RComponentProxyLocatorImpl(stableLog.getAgentUrl(),stableLog.getStorageRef());
-    }
-
-    protected boolean isVolatile(String entryname) throws StorageException{
-	for (int i=0;i<volatileEntries.length; i++){
-	    if (volatileEntries[i].equals(entryname))
-		return true;
-	}
-	return false;
-    }
-
-    protected void createEntry(String entryname, String directory) throws StorageException{
-    	if(!isVolatile(entryname))
-    		stableLog.createEntry(entryname, directory);
-    }
-
-    protected boolean hasEntry(String entryname) throws StorageException{
-    	return isVolatile(entryname) || stableLog.hasEntry(entryname);
-    }
-
-    protected void addEntry(String entryname, Serializable value) throws StorageException{
-    	if(!isVolatile(entryname))
-    		stableLog.addEntry(entryname,value);
-    }
-
-    protected void removeEntry(String entryname) throws StorageException{
-    	if(!isVolatile(entryname))
-    		stableLog.deleteEntry(entryname);
+        super();
     }
 
 
     /**
-     * Adds an attribute to this component under given name.
+     * This method constructs the storage and persistence model and sets up
+     * persistence of the context prior to initializing itself. The persistence
+     * model may choose to modify the context.
+     *
+     * @param parent parent component
+     * @param cxt this component's context
+     * @throws SmartFrogDeploymentException - the component failed to deploy properly
+     * @throws RemoteException - failure in a remote call during deployment
+     */
+    public void sfDeployWith( Prim parent, Context cxt ) throws
+            SmartFrogDeploymentException, RemoteException {
+
+        try {
+            if ( isRecovery( cxt ) ) {
+
+                model = PersistenceModel.constructModel( cxt );
+                stableLog = getStorage( cxt );
+                sfStartLifecycleCommitPoints();
+                model.recoverContext( cxt );
+                sfLifecycleCommitPoint( CommitPoints.PRE_DEPLOY_WITH );
+
+                super.sfDeployWith( parent, cxt );
+
+                sfSaveExportReference();
+                sfRecoverComponentState();
+                sfLifecycleCommitPoint( CommitPoints.POST_DEPLOY_WITH );
+
+            } else {
+
+                model = PersistenceModel.constructModel( cxt );
+                stableLog = Storage.createNewStorage( cxt );
+                sfStartLifecycleCommitPoints();
+                model.initialContext( cxt );
+                saveContext( cxt );
+                sfLifecycleCommitPoint( CommitPoints.PRE_DEPLOY_WITH );
+
+                super.sfDeployWith( parent, cxt );
+
+                sfSaveExportReference();
+                sfSaveComponentState();
+                sfLifecycleCommitPoint( CommitPoints.POST_DEPLOY_WITH );
+
+            }
+        } catch ( RemoteException ex ) {
+            throw ex;
+        } catch ( SmartFrogLifecycleException ex ) {
+            throw ( SmartFrogDeploymentException ) SmartFrogDeploymentException.
+                    forward( ex );
+        } catch ( SmartFrogDeploymentException ex ) {
+            throw ex;
+        } catch ( StorageException ex ) {
+            throw ( SmartFrogDeploymentException ) SmartFrogDeploymentException.
+                    forward( ex );
+        }
+
+    }
+
+
+    /**
+     * This method adds a commit point before and after the super class
+     * sfDeploy().
+     *
+     * @throws RemoteException
+     * @throws SmartFrogException
+     */
+    public void sfDeploy() throws RemoteException, SmartFrogException {
+        sfLifecycleCommitPoint( CommitPoints.PRE_DEPLOY );
+
+        super.sfDeploy();
+
+        sfLifecycleCommitPoint( CommitPoints.POST_DEPLOY );
+    }
+
+
+    /**
+     * this method adds a commit point before and after the super class
+     * sfStart(). The end of this method marks the end of the life cycle
+     * commit points, from here on all writes to storage will commit
+     * immediately unless explicitly suspended.
+     *
+     * @throws RemoteException
+     * @throws SmartFrogException
+     */
+    public void sfStart() throws RemoteException, SmartFrogException {
+        sfLifecycleCommitPoint( CommitPoints.PRE_START );
+
+        super.sfStart();
+
+        sfLifecycleCommitPoint( CommitPoints.POST_START );
+        sfEndLifecycleCommitPoints();
+    }
+
+
+    /**
+     * This is the new recovery life cycle method. This method is called
+     * instead of sfDeploy() and sfStart() if the component is being
+     * recovered from storage. There is a commit point at the start and
+     * end of this method. The method may also call sfDeploy() and sfStart()
+     * if deemed appropriate by the persistence model. The end of this method
+     * marks the end of the life cycle commit points, from here on all writes
+     * to storage will commit immediately unless explicitly suspended.
+     *
+     * @throws RemoteException
+     * @throws SmartFrogException
+     */
+    public void sfRecover() throws RemoteException, SmartFrogException {
+
+        sfLifecycleCommitPoint( CommitPoints.PRE_RECOVER );
+
+        /**
+         * Do we need to deploy
+         */
+        if ( model.redeploy( this ) ) {
+            sfDeploy();
+        } else {
+            sfIsDeployed = true;
+        }
+
+        /**
+         * Do we need to start
+         */
+        if ( model.restart( this ) ) {
+            sfStart();
+        } else {
+            sfIsStarted = true;
+        }
+
+        sfLifecycleCommitPoint( CommitPoints.POST_RECOVER );
+        sfEndLifecycleCommitPoints();
+    }
+
+
+    /**
+     * The storage will be closed on termination. The store will be deleted
+     * in the event of normal termination.
+     *
+     * @param status TerminationRecord
+     */
+    public synchronized void sfTerminateWith( TerminationRecord status ) {
+        try {
+            /**
+             * Discard any data that has not been committed, then disable
+             * commits so that anything done by the model termination
+             * method gets done atomically.
+             */
+            abort();
+            disableCommit();
+
+            if ( model.leaveTombStone( this, status ) ) {
+                /**
+                 * if the storage is to be retained commit any changes and
+                 * close it
+                 */
+                enableCommit();
+                commit();
+                stableLog.close();
+
+            } else {
+                /**
+                 * If the storage is to be deleted just do the delete
+                 */
+                stableLog.delete();
+            }
+
+            stableLog = null;
+
+        } catch ( StorageException ex ) {
+            if( sfLog().isErrorEnabled() ) {
+                sfLog().error("Failed to write to stable storage in termination", ex);
+            }
+        }
+
+        super.sfTerminateWith( status );
+    }
+
+
+    /**
+     * Adds an attribute with the given name to this component.
      *
      * @param name name of attribute
      * @param value value of attribute
      *
      * @return added attribute if non-existent or null otherwise
      *
-     * @throws SmartFrogRuntimeException when name or value are null
-     * @throws RemoteException In case of Remote/nework error
+     * @throws SmartFrogRuntimeException - when name or value are null
+     * @throws RemoteException - In case of Remote/nework error
      */
-    public synchronized Object sfAddAttribute(Object name, Object value)
-        throws SmartFrogRuntimeException, RemoteException {
+    public synchronized Object sfAddAttribute( Object name, Object value ) throws
+            SmartFrogRuntimeException, RemoteException {
 
-    	Object retvalue = super.sfAddAttribute(name,value);
+        Object retvalue = super.sfAddAttribute( name, value );
 
-    	try{
-    	    if (!hasEntry((String)name)){
-    	    	createEntry((String)name,ATTRIBUTESDIRECTORY);
-    	    }
-    		addEntry((String)name, (Serializable)value);
-    		stableLog.commit();
-    	} catch(StorageException exc) {
-    		throw new SmartFrogRuntimeException("Error while writing attribute on stable storage",exc);
-    	}
+        try {
+            /**
+             * Do not need the same hack as replace because sfAddAttribute is
+             * not called to add a child.
+             */
 
-   		return retvalue;
+            /**
+             * Some attributes may be volatile.
+             */
+            if ( model.isVolatile( name ) ) {
+                return retvalue;
+            }
+
+            /**
+             * Legacy from the interface - this could be folded into the
+             * storage implementation and the interface reduced.
+             */
+            if ( !stableLog.hasEntry( ( String ) name ) ) {
+                stableLog.createEntry( ( String ) name, ATTRIBUTESDIRECTORY );
+            }
+
+            /**
+             * Special case for component descriptions - prim parent is not
+             * serializable, so cut it off and replace it after storing.
+             * Note that the prim parent should be this component.
+             */
+            if ( value instanceof ComponentDescription ) {
+                try {
+                    ( ( ComponentDescription ) value ).setPrimParent( null );
+                    stableLog.addEntry( ( String ) name, ( Serializable ) value );
+                    ( ( ComponentDescription ) value ).setPrimParent( this );
+                } catch ( StorageException ex ) {
+                    ( ( ComponentDescription ) value ).setPrimParent( this );
+                    throw ex;
+                }
+            } else {
+                stableLog.addEntry( ( String ) name, ( Serializable ) value );
+            }
+            commit();
+        } catch ( StorageException exc ) {
+            throw new SmartFrogRuntimeException(
+                    "Error while writing attribute on stable storage",
+                    exc );
+        }
+
+        return retvalue;
     }
+
 
     /**
      * Replace named attribute in component context. If attribute is not
@@ -161,21 +365,62 @@ public class RComponentImpl extends CompoundImpl implements RComponent, Serializ
      * @throws SmartFrogRuntimeException when name or value are null
      * @throws RemoteException In case of Remote/nework error
      */
-    public synchronized Object sfReplaceAttribute(Object name, Object value)
-        throws SmartFrogRuntimeException, RemoteException {
+    public synchronized Object sfReplaceAttribute( Object name, Object value ) throws
+            SmartFrogRuntimeException, RemoteException {
 
-    	Object retvalue = super.sfReplaceAttribute(name,value);
-    	try{
-    	    if (!hasEntry((String)name)){
-    	    	createEntry((String)name,ATTRIBUTESDIRECTORY);
-    	    }
-    	    addEntry((String)name, (Serializable)value);
-            stableLog.commit();
-    	} catch(StorageException exc) {
-    		throw new SmartFrogRuntimeException("Error while writing attribute on stable storage",exc);
-    	}
+        Object retvalue = super.sfReplaceAttribute( name, value );
 
-    	return retvalue;
+        try {
+            /**
+             * Hack to deal with sfAddChild not actually adding
+             * the attribute, so we have to check for new children here
+             * to notify the model. Ideally sfAddChild should notify the
+             * model.
+             */
+            if ( value instanceof Prim && sfChildren.contains( value ) ) {
+                sfReplaceAttribute( SFCHILDREN, sfChildren );
+                model.childAdded( this, ( Prim ) value, ( String ) name );
+            }
+            /**
+             * Some attributes may be volatile.
+             */
+            if ( model.isVolatile( ( String ) name ) ) {
+                return retvalue;
+            }
+
+            /**
+             * Legacy from the interface - this could be folded into the
+             * storage implementation and the interface reduced.
+             */
+            if ( !stableLog.hasEntry( ( String ) name ) ) {
+                stableLog.createEntry( ( String ) name, ATTRIBUTESDIRECTORY );
+            }
+
+            /**
+             * Special case for component descriptions - prim parent is not
+             * serializable, so cut it off and replace it after storing.
+             * Note that the prim parent should be this component.
+             */
+            if ( value instanceof ComponentDescription ) {
+                try {
+                    ( ( ComponentDescription ) value ).setPrimParent( null );
+                    stableLog.addEntry( ( String ) name, ( Serializable ) value );
+                    ( ( ComponentDescription ) value ).setPrimParent( this );
+                } catch ( StorageException ex ) {
+                    ( ( ComponentDescription ) value ).setPrimParent( this );
+                    throw ex;
+                }
+            } else {
+                stableLog.addEntry( ( String ) name, ( Serializable ) value );
+            }
+            commit();
+        } catch ( StorageException exc ) {
+            throw new SmartFrogRuntimeException(
+                    "Error while writing attribute on stable storage",
+                    exc );
+        }
+
+        return retvalue;
     }
 
 
@@ -189,41 +434,33 @@ public class RComponentImpl extends CompoundImpl implements RComponent, Serializ
      * @throws SmartFrogRuntimeException when name is null
      * @throws RemoteException In case of Remote/nework error
      */
-    public synchronized Object sfRemoveAttribute(Object name)
-    	throws SmartFrogRuntimeException, RemoteException {
+    public synchronized Object sfRemoveAttribute( Object name ) throws
+            SmartFrogRuntimeException, RemoteException {
 
-    	Object retvalue = super.sfRemoveAttribute(name);
+        Object retvalue = super.sfRemoveAttribute( name );
 
-    	try{
-    		if (hasEntry((String)name)){
-    			removeEntry((String) name);
-    		}
-    		stableLog.commit();
-    	} catch(StorageException exc) {
-    		throw new SmartFrogRuntimeException("Error while writing attribute on stable storage",exc);
-    	}
-    	return retvalue;
-    }
+        try {
+            /**
+             * sfRemoveAttribute does not need the same hack as replace
+             * because sfRemoveChild does call sfRemoveAttribute itself
+             */
+            if ( model.isVolatile( name ) ) {
+                return retvalue;
+            }
 
-
-    /**
-     * Basically, the internal state of a Smartfrog Component is composed of
-     * the following pieces:
-     *
-     * Context sfContext
-     *
-     * @throws IOException
-     */
-    private void saveState(Context cxt) throws StorageException, IOException {
-    	Iterator attributes = cxt.sfAttributes();
-    	Iterator values = cxt.sfValues();
-    	while(attributes.hasNext()){
-    		String entryname = (String) attributes.next();
-    		Serializable value = (Serializable) values.next();
-
-    		createEntry(entryname,ATTRIBUTESDIRECTORY);
-    		addEntry(entryname,value);
-    	}
+            /**
+             * remove the attribute entry from storage
+             */
+            if ( stableLog.hasEntry( ( String ) name ) ) {
+                stableLog.deleteEntry( ( String ) name );
+            }
+            commit();
+        } catch ( StorageException exc ) {
+            throw new SmartFrogRuntimeException(
+                    "Error while writing attribute on stable storage",
+                    exc );
+        }
+        return retvalue;
     }
 
 
@@ -232,14 +469,8 @@ public class RComponentImpl extends CompoundImpl implements RComponent, Serializ
      *
      * @param target target to heartbeat
      */
-    public void sfAddChild(Liveness target) throws RemoteException {
-    	super.sfAddChild(target);
-    	try{
-    		addEntry(SFCHILDREN,sfChildren);
-    	} catch(StorageException cause) {
-    		cause.printStackTrace();
-    		throw new RuntimeException("Error while writing to Stable Storage",cause);
-    	}
+    public void sfAddChild( Liveness target ) throws RemoteException {
+        super.sfAddChild( target );
     }
 
 
@@ -250,175 +481,318 @@ public class RComponentImpl extends CompoundImpl implements RComponent, Serializ
      *
      * @return true if child is removed successfully else false
      */
-    public boolean sfRemoveChild(Liveness target) throws SmartFrogRuntimeException, RemoteException  {
+    public boolean sfRemoveChild( Liveness target ) throws
+            SmartFrogRuntimeException, RemoteException {
 
-    	boolean res = super.sfRemoveChild(target);
-    	if (res){
-    		try{
-    			addEntry(SFCHILDREN,sfChildren);
-    		} catch(StorageException cause) {
-    			throw new RuntimeException("Error while writing to Stable Storage",cause);
-    		}
-    	}
+        Object name = sfAttributeKeyFor( target );
+        boolean res = super.sfRemoveChild( target );
+        if ( res ) {
+            sfReplaceAttribute( SFCHILDREN, sfChildren );
+            model.childRemoved( this, ( Prim ) target, ( String ) name );
+        }
         return res;
     }
 
-    /**
-     * Detatching will have to be implemented in the future making use of the sfPing mechanism
-     * to ensure consistency even in the presence of failures.
-     */
-//    public synchronized void sfDetach()
-//    throws SmartFrogException, RemoteException {
-//    	throw new SmartFrogException("sfDetach is not possible with Recoverable components");
-//    }
-
-    public synchronized void sfDetachAndTerminate(TerminationRecord status) {
-    	throw new RuntimeException("sfDetatchAndTerminate is not possible with Recoverable components");
-    }
 
     /**
-     * Private method to set up newly created component. Primitives should only
-     * override sfDeploy since this is the one which does the actual work
+     * Get the storage for this component from the context. This is provided
+     * to allow the component's storage to be passed into deployWith as
+     * an attribute of the context, when the context will already have been
+     * read from that same storage by the recovery agent.
      *
-     * @param parent parent of component
-     * @param cxt context for component
+     * @param context Context
+     * @return Storage
+     * @throws SmartFrogDeploymentException
+     */
+    protected Storage getStorage( Context context ) throws
+            SmartFrogDeploymentException {
+
+        Object obj = context.remove( RComponent.STORAGEATTRIB );
+        if ( !( obj instanceof StorageRef ) ) {
+            throw new SmartFrogDeploymentException(
+                    "Storage refrence missing in attempt to recover from context" );
+        }
+
+        Storage storage = null;
+        try {
+            storage = ( ( StorageRef ) obj ).getStorage();
+        } catch ( StorageException ex ) {
+            throw new SmartFrogDeploymentException(
+                    "Failed to dereference storage ref attempting to recover from context" );
+        }
+        return storage;
+    }
+
+
+    /**
+     * Checks for the presence of the recovery attribute.
      *
-     * @throws SmartFrogDeploymentException In case of any error while
-     *         deploying the component
-     * @throws RemoteException In case of network/rmi error
+     * @param context Context
+     * @return boolean
      */
-    public void sfDeployWith(Prim parent, Context cxt) throws
-	SmartFrogDeploymentException, RemoteException {
-
-    	boolean recovering = cxt.sfContainsAttribute(STORAGEATTRIB);
-
-    	try{
-    		if (recovering){
-    			stableLog = ((StorageRef)cxt.sfRemoveAttribute(STORAGEATTRIB)).getStorage();
-    			sfIsDeployed = true;
-    			sfIsStarted = true;
-        		stableLog.disableCommit();
-    		} else {
-    			String stoclass = (String)cxt.sfRemoveAttribute(STORAGECLASSATTRIB);
-                        ComponentDescription stoconfig = (ComponentDescription)cxt.sfRemoveAttribute(STORAGECONFIGDATA);
-
-    			stableLog = getNewStableStorage(stoclass, stoconfig);
-
-        		stableLog.createEntry(SFPARENT,CHILDRENSDIRECTORY);
-        		stableLog.createEntry(SFCHILDREN,CHILDRENSDIRECTORY);
-        		stableLog.addEntry(SFCHILDREN,sfChildren);
-    			stableLog.createEntry(WFSTATUSENTRY,WFSTATUSDIRECTORY);
-    			stableLog.addEntry(WFSTATUSENTRY,WFSTATUS_DEAD);
-        		stableLog.enableCommit();
-        		stableLog.disableCommit();
-    			saveState(cxt);
-    		}
-    	} catch (Exception cause){
-    		throw new SmartFrogDeploymentException(cause);
-    	}
-
-    	super.sfDeployWith(parent, cxt);
-
-    	// the following piece of code should be placed where it is for
-    	// it must be executed after the component has registered itself
-    	// it also cannot be executed at sfStart for it is necessary during recovery
-    	try{
-    		if(recovering){
-    			stableLog.enableCommit(); // if not recovering, this is done
-    			stableLog.commit();       // at sfStart()
-    		}else{
-    			if (sfParent==null || sfParent instanceof ProcessCompound){
-    				addEntry(SFPARENT,null);
-    			}else if (sfParent instanceof RComponent){
-    				addEntry(SFPARENT,(Serializable) sfParent);
-    			}else if( sfIsRemote(sfParent) ){
-    				addEntry(SFPARENT,(Serializable) RemoteObject.toStub(sfParent));
-    			}else {
-    				addEntry(SFPARENT,null); // this is a "kind of" hack!!!
-    			}
-    			createEntry(DBStubEntry,DBStubDirectory);
-    		}
-    		if (sfExportRef == null){
-    			System.out.println("sfExportRef is equal to null");
-    			try{
-    			sfExportRef(0);
-    			} catch(Exception exc) {}
-    		}
-    		Object obj = sfExportRef;
-
-    		stableLog.addEntry(DBStubEntry, (Serializable) obj );
-    		stableLog.commit(); // is executed only when recovering
-    							// otherwise commit will be disabled and postponed until sfStart
-
-    	} catch(StorageException cause){
-    		try{stableLog.close();}catch(Exception exc){}
-    		throw new SmartFrogDeploymentException(cause);
-    	}
-
-    }
-
-    public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
-    	System.out.println("Deploying");
-    	super.sfDeploy();
-    }
-
-    public synchronized void sfStart() throws SmartFrogException, RemoteException {
-    	super.sfStart();
-    	try{
-    		addEntry(WFSTATUSENTRY,WFSTATUS_STARTED);
-    		stableLog.enableCommit();
-    		stableLog.commit();
-    	} catch (StorageException cause){
-    		throw new SmartFrogException("Impossible to change status on stable storage",cause);
-    	}
-    }
-
-
-    public synchronized void sfTerminateWith(TerminationRecord status) {
-    	try{
-    		stableLog.addEntry(WFSTATUSENTRY,WFSTATUS_DEAD);
-    		stableLog.commit();
-    	} catch (StorageException cause) {
-    		throw new RuntimeException("Impossible to write on stable storage",cause);
-    	}
-    	super.sfTerminateWith(status);
+    protected boolean isRecovery( Context context ) {
+        return context.sfContainsAttribute( RECOVERY_ATTR );
     }
 
 
     /**
-     * Extends PrimImpl's method so that now it checks whether the parent failed and,
-     * if the parent is recoverable and not dead, considers it as simply remporarily absent.
+     * Save internal component state that will be needed to re-create
+     * the component during deployWith.
+     *
+     * @throws SmartFrogDeploymentException
      */
-    protected void sfLivenessFailure(Object source, Object target,
-            Throwable failure) {
+    protected void sfSaveComponentState() throws SmartFrogDeploymentException {
 
-    	if(target.equals(sfParent)){
-    		if(sfParent instanceof RComponentProxyStub){
-    			RComponentProxyStub RParent = (RComponentProxyStub) sfParent;
-    			if(! RParent.isDead()){
-    				synchronized(this){
-    					sfLivenessCount = sfLivenessFactor;
-    				}
-    				return;
-    			}
-    		}
-    	}
-    	super.sfLivenessFailure(source,target,failure);
+        try {
+
+            /**
+             * Save parentage if remote or recoverable (null if not)
+             */
+            if ( sfParent == null || sfParent instanceof ProcessCompound ) {
+                sfAddAttribute( SFPARENT, SFNull.get() );
+            } else if ( sfParent instanceof RComponent ) {
+                sfAddAttribute( SFPARENT, sfParent );
+            } else if ( sfIsRemote( sfParent ) ) {
+                sfAddAttribute( SFPARENT, RemoteObject.toStub( sfParent ) );
+            } else {
+                sfAddAttribute( SFPARENT, SFNull.get() ); // this is a "kind of" hack!!!
+            }
+
+            /**
+             * Save children liveness targets
+             */
+            sfAddAttribute( SFCHILDREN, sfChildren );
+
+        } catch ( RemoteException ex ) {
+            SmartFrogDeploymentException.forward( ex );
+        } catch ( SmartFrogRuntimeException ex ) {
+            SmartFrogDeploymentException.forward( ex );
+        }
+
     }
+
 
     /**
-     * Method that has to be implemented by superclasses with appropriate recovery
-     * actions
+     * Recover any internal component state that is not recreated as part of
+     * the super class deployWith.
      */
-    public synchronized void sfRecover() throws SmartFrogException, RemoteException {
-    	try{
-    		sfParent = (Prim) stableLog.getEntry(SFPARENT);
-    		sfParentageChanged();
-    		sfChildren = (Vector) stableLog.getEntry(SFCHILDREN);
-    	} catch ( StorageException cause ){
-    		throw new SmartFrogException(cause);
-    	}
+    protected void sfRecoverComponentState() throws
+            SmartFrogDeploymentException {
+
+        try {
+
+            /**
+             * recover the pargentage
+             */
+            if ( !model.isVolatile( SFPARENT ) ) {
+                Object parentObj = sfResolve( SFPARENT );
+                sfParent = ( Prim ) ( SFNull.get().equals( parentObj ) ? null :
+                                      parentObj );
+            }
+
+            /**
+             * reset the sfLog
+             */
+            try {
+                sfSetLog( sfGetApplicationLog() );
+            } catch ( RemoteException ex1 ) {
+            } catch ( SmartFrogException ex1 ) {
+            }
+
+            /**
+             * recover the children liveness targets
+             */
+            if ( !model.isVolatile( SFCHILDREN ) ) {
+                sfChildren = ( Vector ) sfResolve( SFCHILDREN );
+            }
+
+            /**
+             * Indicate parentage changed
+             */
+            sfParentageChanged();
+
+        } catch ( RemoteException ex ) {
+            SmartFrogDeploymentException.forward( ex );
+        } catch ( SmartFrogResolutionException ex ) {
+            SmartFrogDeploymentException.forward( ex );
+        }
     }
+
+
+    /**
+     * Save the export reference for this component (null if not exported)
+     */
+    protected void sfSaveExportReference() throws SmartFrogDeploymentException {
+        try {
+            if ( sfExportRef == null ) {
+                sfReplaceAttribute( RComponent.DBStubEntry, SFNull.get() );
+            } else {
+                sfReplaceAttribute( RComponent.DBStubEntry, sfExportRef );
+            }
+        } catch ( RemoteException ex ) {
+            SmartFrogDeploymentException.forward( ex );
+        } catch ( SmartFrogRuntimeException ex ) {
+            SmartFrogDeploymentException.forward( ex );
+        }
+    }
+
+
+    /**
+     * Write the non-volatile attributes of the given context to the
+     * storage. The context is assumed to be the context of this component,
+     * but it is passed in as a parameter as this method is called before
+     * the component has been initialized with the context.
+     *
+     * @param context the context
+     * @throws SmartFrogDeploymentException
+     */
+    protected void saveContext( Context context ) throws
+            SmartFrogDeploymentException {
+
+        try {
+            context.sfReplaceAttribute( RECOVERY_ATTR, "indicates context was saved" );
+            Iterator attributes = context.sfAttributes();
+            Iterator values = context.sfValues();
+            while ( attributes.hasNext() ) {
+                String entryname = ( String ) attributes.next();
+                Serializable value = ( Serializable ) values.next();
+                if ( !model.isVolatile( entryname ) ) {
+                    stableLog.createEntry( entryname, ATTRIBUTESDIRECTORY );
+                    stableLog.addEntry( entryname, value );
+                }
+            }
+        } catch ( StorageException ex ) {
+            SmartFrogDeploymentException.forward( ex );
+        } catch ( SmartFrogContextException ex ) {
+            SmartFrogDeploymentException.forward( ex );
+        }
+
+    }
+
+
+    /**
+     * enable commits - calls to commit will result in a commit
+     */
+    protected void enableCommit() {
+        stableLog.enableCommit();
+    }
+
+
+    /**
+     * disable commits - calls to commit will be ignored. This allows
+     * muliple sets of updates to become atomic by ignoring intermediary
+     * commits.
+     */
+    protected void disableCommit() {
+        stableLog.disableCommit();
+    }
+
+
+    /**
+     * commit updates - updates are made persistent in the storage
+     * @throws StorageException
+     */
+    protected void commit() throws StorageException {
+        stableLog.commit();
+    }
+
+
+    /**
+     * abort updates - updates are disguarded and revert to the last
+     * persisted values.
+     * @throws StorageException
+     */
+    protected void abort() throws StorageException {
+        stableLog.abort();
+    }
+
+
+    /**
+     * Mark the begining of life cycle startup commit points. Updates during
+     * the status life cycle are commited only at certain commit points. These
+     * commit points are vetoed by the persistence model.
+     */
+    protected void sfStartLifecycleCommitPoints() {
+        disableCommit();
+    }
+
+
+    /**
+     * Mark the end of life cycle startup commit points. Updates during
+     * the status life cycle are commited only at certain commit points. These
+     * commit points are vetoed by the persistence model. Commits are enabled
+     * after this method.
+     */
+    protected void sfEndLifecycleCommitPoints() {
+        enableCommit();
+    }
+
+
+    /**
+     * Marks a life cycle commit point. The method checks with the persistence
+     * model to see if this is one of the commit points it wants to use.
+     *
+     * @param point String
+     */
+    protected void sfLifecycleCommitPoint( String point ) throws
+            SmartFrogLifecycleException {
+        try {
+            if ( model.isCommitPoint( this, point ) ) {
+                enableCommit();
+                commit();
+                disableCommit();
+            }
+        } catch ( StorageException ex ) {
+            throw ( SmartFrogLifecycleException ) SmartFrogLifecycleException.
+                    forward(
+                            "Failed at commit point " + point, ex );
+        } catch ( Exception ex ) {
+            throw ( SmartFrogLifecycleException ) SmartFrogLifecycleException.
+                    forward(
+                            "Failed at commit point " + point, ex );
+        }
+    }
+
+
+    /**
+     * Marks an attribute as volatile, so it is not persisted.
+     * Note that if an attribute with this name has previously been
+     * persisted it will still be in stable store.
+     *
+     * @param attr Object
+     * @return boolean
+     */
+    protected boolean declareVolatile( Object attr ) throws StorageException {
+        return model.addVolatile( attr );
+    }
+
+
+    /**
+     * Marks an attribute as not volatile, so it does get persisted.
+     * Note that if an attribute with this name already exists, it will
+     * not have been persisted.
+     *
+     * @param attr Object
+     * @return boolean
+     */
+    protected boolean declareNotVolatile( Object attr ) throws StorageException {
+        return model.removeVolatile( attr );
+    }
+
+
+    /**
+     * Get the proxy locator.
+     *
+     * @return RComponentProxyLocator
+     * @throws RemoteException
+     * @throws StorageException
+     */
+    public RComponentProxyLocator getProxyLocator() throws RemoteException,
+            StorageException {
+        return new RComponentProxyLocatorImpl( stableLog.getAgentUrl(),
+                                               stableLog.getStorageRef() );
+    }
+
 
     /**
      * Implemented to provide correct equality checking.
@@ -432,20 +806,21 @@ public class RComponentImpl extends CompoundImpl implements RComponent, Serializ
      *
      * @return true if equal, false if not
      */
-    public boolean equals(Object o) {
-        if (!(o instanceof RComponent)) {
+    public boolean equals( Object obj ) {
+        if ( !( obj instanceof RComponent ) ) {
             return false;
         }
-        if (o instanceof RComponentProxyStub) {
+        if ( obj instanceof RComponentProxyStub ) {
             try {
-                return RComponentProxyInvocationHandler.sfGetProxy(this).equals(o);
-            } catch (StorageException ex) {
+                return RComponentProxyInvocationHandler.sfGetProxy( this ).equals( obj );
+            } catch ( StorageException ex ) {
                 return false;
             }
         } else {
-            return super.equals(o);
+            return super.equals( obj );
         }
     }
+
 
     /**
      * Replaces the component by its dynamic proxy with recovery properties during
@@ -455,9 +830,7 @@ public class RComponentImpl extends CompoundImpl implements RComponent, Serializ
      * @throws ObjectStreamException in case an error occurs
      */
     public Object writeReplace() throws ObjectStreamException, StorageException {
-    	return RComponentProxyInvocationHandler.sfGetProxy(this);
+        return RComponentProxyInvocationHandler.sfGetProxy( this );
     }
 
 }
-
-

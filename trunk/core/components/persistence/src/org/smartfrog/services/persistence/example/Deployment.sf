@@ -20,17 +20,22 @@ For more information: www.smartfrog.org
 
 
 #include "org/smartfrog/components.sf"
-
-RComponent extends Compound{
-	sfClass "org.smartfrog.services.persistence.recoverablecomponent.RComponentImpl";
-	sfExport true;
-	wfStorageClass "org.smartfrog.services.persistence.storage.berkelydb.StorageImpl";
-        wfStorageConfigData extends DATA {
-            wfStorageRepository "c:/tstdb/";
-        }
+#include "org/smartfrog/services/persistence/components.sf"
+// #include "org/smartfrog/services/persistence/storage/berkelydb/components.sf"
+BDBStorage extends DATA Storage {
+    wfStorageClass "org.smartfrog.services.persistence.storage.berkelydb.StorageImpl";
+    wfStorageRepository "c:/tstdb/";
 }
 
-Myprim extends RComponent{
+/**
+ * ER = Embedded Rebind (bdb storage + rebind persistence)
+ */
+ERComponent extends RComponent {
+    sfPersistenceModelConfig RebindPersistence;
+    wfStorageConfigData      BDBStorage;
+}
+
+Myprim extends ERComponent{
     sfClass "org.smartfrog.services.persistence.example.RMIServer";
     name TBD;
     neighbor TBD;
@@ -45,9 +50,9 @@ StorageAgent extends Compound{
 
 sfConfig extends Compound {
 
-relay extends RComponent{
+relay extends ERComponent{
 
-    monitor extends RComponent{
+    monitor extends ERComponent{
 		sfClass "org.smartfrog.services.persistence.example.Monitor";
 		jill LAZY PARENT:server1;
 		john LAZY PARENT:server2;
