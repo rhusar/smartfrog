@@ -1305,7 +1305,7 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
                   } else {
                     //Properties to overwrite processcompound.sf attributes
                     Object value = props.get(key);
-                    cmd.addElement("-D" + key.toString() + "=" + value.toString());
+                    cmd.addElement("-D" + key + "=" + value.toString());
                   }
                 } else {
                   //Special - Add property to name ProcessCompound

@@ -240,7 +240,7 @@ public class CreateNewChildThread extends Thread {
          setCompleted(deployer.sfCreateNewChild(name,parent,cmp,parms));
          if (sfLog().isDebugEnabled()){
              String compName = name.toString();
-             try { compName = ((Prim)result).sfCompleteName().toString(); } catch (Exception ex) {  }
+             try { compName = ((Prim)result).sfCompleteName().toString(); } catch (Exception ex) { if (sfLog().isIgnoreEnabled()) sfLog().ignore(ex);  }
              sfLog().debug("Child '"+compName+"' created");
          }
 

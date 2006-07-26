@@ -101,7 +101,7 @@ public class EventCompoundImpl extends CompoundImpl implements EventBus,
               this.actions = childCtx;
 
           } catch (Exception sfex) {
-              new TerminatorThread(this, sfex, null).quietly().run();
+              new TerminatorThread(this, sfex, null).quietly().start();
               throw (SmartFrogDeploymentException)SmartFrogDeploymentException.forward(sfex);
           }
       }
