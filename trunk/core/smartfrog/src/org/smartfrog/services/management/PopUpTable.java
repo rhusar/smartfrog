@@ -34,6 +34,7 @@ import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.common.*;
 import java.rmi.*;
+import org.smartfrog.services.display.WindowUtilities;
 
 /**
  *  Popup table UI Component.
@@ -166,7 +167,7 @@ public class PopUpTable extends JComponent implements ActionListener {
       attribute[1] = value;
 
       NewAttributeDialog attrDialog = new NewAttributeDialog(null, "Add/Modify attribute", true, attribute);
-      org.smartfrog.services.display.WindowUtilities.setPositionDisplay( this.parent.treeScrollPane, attrDialog, "C");
+      WindowUtilities.setPositionDisplay( this.parent.treeScrollPane, attrDialog, "C");
       attrDialog.show();
 
       if (attribute != null) {
@@ -185,6 +186,8 @@ public class PopUpTable extends JComponent implements ActionListener {
             //((Prim) (((DeployEntry) (tpath.getLastPathComponent())).getEntry())).sfReplaceAttribute(attribute[0],attribute[1]);
          } catch (Exception ex) {
             ex.printStackTrace();
+            WindowUtilities.showError(this,"Failed to modify '"+name+"'. \n"+ex.toString());
+
          }
 
          parent.refreshTable();
@@ -258,6 +261,7 @@ public class PopUpTable extends JComponent implements ActionListener {
             parent.refreshTable();
          } catch (Exception ex) {
             ex.printStackTrace();
+            WindowUtilities.showError(this,"Failed to remove '"+attribName+"'. \n"+ex.toString());
          }
       }
    }
@@ -277,6 +281,7 @@ public class PopUpTable extends JComponent implements ActionListener {
             parent.refreshTable();
          } catch (Exception ex) {
             ex.printStackTrace();
+            WindowUtilities.showError(this,"Failed to modify '"+attribName+"'. \n"+ex.toString());
          }
       }
    }
