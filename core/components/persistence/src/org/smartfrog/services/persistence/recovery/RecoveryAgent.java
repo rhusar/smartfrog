@@ -19,9 +19,8 @@
 
 package org.smartfrog.services.persistence.recovery;
 
-import java.io.File;
-import java.lang.reflect.Constructor;
 import java.rmi.RemoteException;
+import java.util.Vector;
 
 import org.smartfrog.services.persistence.recoverablecomponent.RComponent;
 import org.smartfrog.services.persistence.storage.Storage;
@@ -30,180 +29,191 @@ import org.smartfrog.sfcore.common.Context;
 import org.smartfrog.sfcore.common.ContextImpl;
 import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.componentdescription.ComponentDescriptionImpl;
 import org.smartfrog.sfcore.compound.Compound;
 import org.smartfrog.sfcore.compound.CompoundImpl;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.processcompound.SFProcess;
+import org.smartfrog.sfcore.prim.TerminationRecord;
 
 
 /**
- *
  * A RecoveryAgent is a Component responsible for recovering basic
- * components in the system. What it does now is to deploy the components
- * found in the stable storage directory under its own ProcessCompound.
+ * components in the system. This component scans through the stores it finds
+ * looking for components to recover. It assumes that it
+ * will fail to access a store if the component that owns that store is
+ * running.
  *
- * @todo This class is tailored for a berkley db storage implementation. It should be split into a generic class and remove the implementation specific parts.
  *
  */
 public class RecoveryAgent extends CompoundImpl implements Compound {
 
     Recoverer recoverer = null;
-    String classname = null;
     ComponentDescription configData = null;
+    Object monitor = new Object();
+    boolean terminated;
 
 
+    /**
+     * A thread that performs the recovery loop.
+     *
+     */
     private class Recoverer extends Thread {
 
         public void run() {
-            String dirname = null;
-            try {
-                dirname = (String) configData.sfResolve("wfStorageRepository");
-                System.out.println("Recovery agent using repository " + dirname);
-            } catch (Exception exc) {
-                System.out.println("No attribute wfStorageRepository found.");
-                return;
-            }
 
-            File dir = new File(dirname);
+            /**
+             * The recovery loop
+             */
+            while ( true ) {
 
-//          The recovery agent used to be inside a while loop, periodically restarted failed components.
-//
-            while (true) {
-                try {
-                    Thread.sleep(2000);
-                } catch (InterruptedException exc) {}
-
-                File[] filenames = dir.listFiles();
-
-                if (filenames == null) {
-                    continue;
-                }
-
-                for (int i = 0; i < filenames.length; i++) {
-                    if (filenames[i].isDirectory()) {
-                        try {
-                            System.out.println("***** Using repository " + dir.getAbsolutePath());
-                            Storage storage = openStorage(classname,
-                                    /* dir.getAbsolutePath(), */
-                                    filenames[i].getName(),
-                                    configData);
-                            System.out.println("Recovering " +
-                                               filenames[i].getName());
-                            if (!storage.getEntry(RComponent.WFSTATUSENTRY).
-                                equals(RComponent.WFSTATUS_DEAD)) {
-                                restoreFromStorage(storage);
-                            } else {
-                                System.out.println(filenames[i].getName() +
-                                        " has already finished.");
-                            }
-                        } catch (StorageException exc) {
-                            exc.printStackTrace();
-                            System.err.println("Component " +
-                                               filenames[i].getName() +
-                                               " is apparently running.");
-                        }
+                synchronized ( monitor ) {
+                    if ( terminated ) {
+                        return;
                     }
                 }
 
+
+                /**
+                 * Sleep a while
+                 */
+                try {
+                    Thread.sleep( 2000 );
+                } catch ( InterruptedException exc ) {}
+
+
+                /**
+                 * Get a list of all the stores
+                 */
+                Vector stores = null;
+                try {
+                    stores = Storage.getStores( configData );
+                } catch ( StorageException ex1 ) {
+                    ex1.printStackTrace();
+                    break;
+                }
+
+                /**
+                 * Try to access the stores. If a store can be accessed we
+                 * assume its component needs to be recovered - stores are
+                 * assumed to be locked by their components can can not be
+                 * accessed by others while they are alive. This is dependent
+                 * on the implementation of the store.
+                 */
+                System.out.println( "Examining stores" );
+                for ( int i = 0; i < stores.size(); i++ ) {
+                    String storeName = ( String ) stores.get( i );
+                    try {
+                        configData.sfReplaceAttribute( Storage.NAME_ATTRIB, storeName );
+                        Storage storage = Storage.createExistingStorage( configData );
+                        System.out.println( "Recovering " + storeName );
+                        if ( !storage.getEntry( RComponent.WFSTATUSENTRY ).
+                             equals( RComponent.WFSTATUS_DEAD ) ) {
+                            restoreFromStorage( storage );
+                        } else {
+                            System.out.println( storeName + " has already terminated." );
+                        }
+                    } catch ( StorageException exc ) {
+                        System.err.println( "Component " + storeName + " is apparently running." );
+                    } catch ( SmartFrogRuntimeException ex ) {
+                        System.err.println( "Component " + storeName + " is apparently running." );
+                    }
+                }
             }
         }
     }
 
-
-    static public Storage openStorage(String classname, String dbname,
-                                      Object configData) throws
-            StorageException {
-        Class storageclass = null;
-        try {
-            storageclass = Class.forName(classname);
-            System.out.println("Recovery agent is using Storage class " +
-                               classname);
-        } catch (ClassNotFoundException cause) {
-            throw new StorageException(
-                    "Storage class not found! - looking for " + classname,
-                    cause);
-        }
-        Class[] constparam = new Class[2];
-        constparam[0] = String.class;
-        constparam[1] = ComponentDescription.class;
-
-        Constructor storageconstructor = null;
-        try {
-            storageconstructor = storageclass.getConstructor(constparam);
-        } catch (NoSuchMethodException cause) {
-            throw new StorageException("Storage constructor method not found!",
-                                       cause);
-        }
-        Object[] params = new Object[2];
-        params[0] = dbname;
-        params[1] = configData;
-
-        try {
-            return (Storage) storageconstructor.newInstance(params);
-        } catch (Exception cause) {
-            throw new StorageException("Problems instantiating stable storage",
-                                       cause);
-        }
-    }
 
     public RecoveryAgent() throws RemoteException {
         super();
     }
 
-    private void restoreFromStorage(Storage storage) {
+
+    /**
+     * restoreFromStorage recovers a component from the context saved in the
+     * given store.
+     *
+     * @param storage the store containing the context
+     */
+    private void restoreFromStorage( Storage storage ) {
         try {
-            Object[] v = storage.getEntries(RComponent.ATTRIBUTESDIRECTORY);
+            Object[] v = storage.getEntries( RComponent.ATTRIBUTESDIRECTORY );
             ContextImpl cntxt = new ContextImpl();
-            for (int i = 0; i < v.length; i++) {
-                String entryname = (String) v[i];
-                cntxt.sfAddAttribute(entryname, storage.getEntry(entryname));
+            for ( int i = 0; i < v.length; i++ ) {
+                String entryname = ( String ) v[i];
+                cntxt.sfAddAttribute( entryname, storage.getEntry( entryname ) );
                 storage.commit();
             }
 
-            cntxt.sfAddAttribute(RComponent.STORAGEATTRIB,
-                                 storage.getStorageRef());
+            /**
+             * the recovered component will want its storage, but storage can
+             * not be serialized, so pass a reference instead.
+             */
+            cntxt.sfAddAttribute( RComponent.STORAGEATTRIB, storage.getStorageRef() );
             storage.close();
-            ComponentDescriptionImpl compdesc = new ComponentDescriptionImpl(null,
-                    cntxt, true);
 
-            RComponent nprim = (RComponent) SFProcess.getProcessCompound().
-                               sfDeployComponentDescription(null, null,
-                    compdesc, null);
+            /**
+             * Get the parent
+             */
+            Object parentObj = cntxt.sfResolveAttribute(RComponent.SFPARENT);
+            Prim parent = (Prim)(parentObj instanceof Prim ? parentObj : null);
+
+            /**
+             * Construct the component description from the context and
+             * deploy it.
+             */
+            ComponentDescriptionImpl compdesc = new ComponentDescriptionImpl( null, cntxt, true );
+            RComponent nprim = ( RComponent ) SFProcess.getProcessCompound().
+                               sfDeployComponentDescription( null, parent, compdesc, null );
 
             nprim.sfRecover();
-            //System.out.println(nprim.toString());
-        } catch (Exception e) {
-            e.printStackTrace();
+
+        } catch ( Exception e ) {
+            System.out.println( "Failed to complete the recovery");
         }
 
     }
 
-    public void sfDeployWith(Prim parent, Context cxt) throws
-            SmartFrogDeploymentException, RemoteException {
 
-        try {
-            classname = (String) cxt.sfRemoveAttribute(RComponent.
-                    STORAGECLASSATTRIB);
-            configData = (ComponentDescription) cxt.sfRemoveAttribute(
-                    RComponent.STORAGECONFIGDATA);
-        } catch (Exception cause) {
-            throw new SmartFrogDeploymentException(cause);
-        }
-        super.sfDeployWith(parent, cxt);
+    /**
+     * sfDeploy over-ride - get the storage configuration
+     *
+     * @throws SmartFrogException
+     * @throws RemoteException
+     */
+    public synchronized void sfDeploy() throws SmartFrogException,
+            RemoteException {
+        super.sfDeploy();
+        configData = ( ComponentDescription )sfResolve( Storage.CONFIG_DATA );
     }
 
+
+    /**
+     * sfStart over-ride - starts the recovery loop.
+     *
+     * @throws SmartFrogException
+     * @throws RemoteException
+     */
     public synchronized void sfStart() throws SmartFrogException,
             RemoteException {
         super.sfStart();
+        terminated = false;
         recoverer = new Recoverer();
         recoverer.start();
     }
 
-    public synchronized void sfDeploy() throws SmartFrogException,
-            RemoteException {
-        super.sfDeploy();
+
+    /**
+     * sfTerminateWith over-ride - stop the recovery loop
+     * @param tr TerminationRecord
+     */
+    public void sfTerminateWith( TerminationRecord tr ) {
+        synchronized ( monitor ) {
+            terminated = true;
+        }
+        super.sfTerminateWith( tr );
     }
 
 }

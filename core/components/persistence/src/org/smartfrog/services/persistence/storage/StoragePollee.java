@@ -25,7 +25,7 @@ import java.io.Serializable;
 
 public interface StoragePollee {
 
-	public Serializable pollEntry( String entryname) throws StorageException;
+	public Serializable pollEntry(String entryName) throws StorageException;
 
 	public void close() throws StorageException;
 

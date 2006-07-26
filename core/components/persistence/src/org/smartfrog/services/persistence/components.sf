@@ -19,12 +19,26 @@ For more information: www.smartfrog.org
 */
 
 #include "org/smartfrog/components.sf"
+#include "org/smartfrog/services/persistence/storage/components.sf"
 
-RComponent extends Compound{
-	sfClass             "org.smartfrog.services.persistence.recoverablecomponent.RComponentImpl";
-	sfExport            true;
-	wfStorageClass      TBD;    // StorageImpl
-	wfStorageConfigData TBD;    // extends DATA
+
+
+RedeployPersistence extends DATA {
+    sfPersistenceModelClass "org.smartfrog.services.persistence.model.RedeployPersistence";
+}
+
+
+RebindPersistence extends DATA {
+    sfPersistenceModelClass "org.smartfrog.services.persistence.model.WFOriginalPersistence";
+}
+
+
+RComponent extends Compound {
+    sfClass "org.smartfrog.services.persistence.recoverablecomponent.RComponentImpl";
+    sfExport true;
+
+    sfPersistenceModelConfig TBD;
+    wfStorageConfigData      TBD;
 }
 
 StorageAgent extends Compound{
@@ -34,7 +48,6 @@ StorageAgent extends Compound{
 
 RecoveryAgent extends Compound {
     sfClass             "org.smartfrog.services.persistence.recovery.RecoveryAgent";
-    wfStorageClass      TBD;   // StorageImpl
-    wfStorageConfigData TBD;   // extends DATA
+    wfStorageConfigData extends DATA Storage;
 }
 
