@@ -1291,15 +1291,14 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
      * @return Logger implementing LogSF and Log
      */
     public LogSF sfLog() {
-       if (sfLog!=null)
-         return sfLog;
-       else {
+       if (sfLog==null) {
         try {
-          return sfGetApplicationLog();
+          sfSetLog(sfGetApplicationLog());
         } catch (Exception ex) {
-          return sfGetCoreLog();
+          sfSetLog(sfGetCoreLog());
         }
        }
+       return sfLog;
     }
 
 
