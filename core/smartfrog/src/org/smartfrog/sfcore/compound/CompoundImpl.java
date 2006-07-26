@@ -462,7 +462,7 @@ public class CompoundImpl extends PrimImpl implements Compound {
               }
           }
       } catch (Exception sfex) {
-          new TerminatorThread(this, sfex, null).quietly().run();
+          new TerminatorThread(this, sfex, null).quietly().start();
           throw (SmartFrogDeploymentException)SmartFrogDeploymentException.forward(sfex);
       }
     }

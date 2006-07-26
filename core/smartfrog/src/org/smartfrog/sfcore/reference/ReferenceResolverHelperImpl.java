@@ -507,7 +507,7 @@ import java.io.File;
             if (referenceObj instanceof SFNull) {return null;}
 
             if (referenceObj instanceof String) {
-                return (((String) referenceObj).toString());
+                return ((String)referenceObj);
             } else {
                 illegalClassType = true;
                 throw SmartFrogResolutionException.illegalClassType(reference,
@@ -643,7 +643,7 @@ import java.io.File;
             if (referenceObj instanceof SFNull) {return null;}
 
             if (referenceObj instanceof String) {
-                return new File(((String) referenceObj).toString());
+                return new File((String) referenceObj);
             } else {
                 illegalClassType = true;
                 throw SmartFrogResolutionException.illegalClassType(reference,

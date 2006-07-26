@@ -433,14 +433,13 @@ public class Reference implements Copying, Cloneable, Serializable {
      * @return String representing the reference
      */
     public String toString() {
-        String res = "";
-        res += (eager ? "" : "LAZY ");
-        res += (data ? "DATA " : "");
-
-        for (int i = 0; i < ref.size(); i++)
-            res += (elementAt(i).toString(i) +
-            ((i < (ref.size() - 1)) ? ":" : ""));
-
-        return res;
+        StringBuffer res = new StringBuffer();
+        res.append (eager ? "" : "LAZY ");
+        res.append (data ? "DATA " : "");
+        for (int i = 0; i < ref.size(); i++){
+            res.append(elementAt(i).toString(i));
+            res.append(((i < (ref.size() - 1)) ? ":" : ""));
+        }
+        return res.toString();
     }
 }
