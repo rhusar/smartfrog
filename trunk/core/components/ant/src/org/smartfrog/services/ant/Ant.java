@@ -73,6 +73,9 @@ public interface Ant extends Remote {
      */
     String ATTR_BASEDIR = "basedir";
 
+    /** Smartfrog attribute: run Ant task in separate thread. Default: false. Value {@value}. */
+   final static String ATR_ASYNCH = "asynch";
+
     String ATTR_TASKS_RESOURCE = "tasksResource";
 
     String ATTR_TYPES_RESOURCE = "typesResource";
@@ -83,4 +86,6 @@ public interface Ant extends Remote {
     String ENV_PREFIX = "env";
 
     String ATTR_RUNTIME = "runtime";
+
+
 }

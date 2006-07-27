@@ -38,6 +38,7 @@ For more information: www.smartfrog.org
 
 
 sfConfig extends Ant {
+  asynch true;
   echoTask extends echo {
     message "hellow world!";
   }
@@ -55,7 +56,7 @@ sfConfig extends Ant {
       }
       myFilterSet extends filterset {
          myFiltersFile extends {
-           AntElement "filtersfile"; 	
+           AntElement "filtersfile";
            file "/filters.props";
          }
       }
@@ -111,7 +112,7 @@ sfConfig extends Ant {
         */
       filterMapper extends filtermapper {
         replacestring1 extends {
-          AntElement "replacestring";	
+          AntElement "replacestring";
           from "\\";
           to "/";
         }
@@ -176,7 +177,7 @@ sfConfig extends Ant {
        property "x";
        targetos "unix";
         myPath extends {
-          AntElement "path"; 	
+          AntElement "path";
           path "Aj.Java";
         } //path
 //        mapper extends {
