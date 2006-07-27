@@ -108,7 +108,13 @@ public class AntImpl extends PrimImpl implements Prim, Ant, Runnable {
      */
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
-        new Thread(this).run();
+        boolean asynch = false;
+        if ( ((boolean) sfResolve(ATR_ASYNCH, asynch , asynch))) {
+           new Thread(this).run();
+        } else {
+            exec();
+        }
+
     }
 
     /**
@@ -163,6 +169,15 @@ public class AntImpl extends PrimImpl implements Prim, Ant, Runnable {
      * @see Thread#run()
      */
     public void run() {
+        exec();
+    }
+
+    /**
+     * Executes Ant Tasks and triggers the detach and/or termination of a component
+     * according to the values of the boolean attributes 'sfShouldDetach', 'sfShouldTerminate'
+     * and 'sfShouldTerminateQuietly'
+     */
+    private void exec() {
         try {
             executeNestedAntTasks();
         } catch (RemoteException e) {

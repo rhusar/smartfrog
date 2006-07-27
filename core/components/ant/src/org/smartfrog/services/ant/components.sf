@@ -55,7 +55,8 @@ Ant extends Prim {
    logLevel "info";
    tasksResource "/org/apache/tools/ant/taskdefs/defaults.properties";
    typesResource "/org/apache/tools/ant/types/defaults.properties";
-   
+   asynch false;
+
 
 }
 
