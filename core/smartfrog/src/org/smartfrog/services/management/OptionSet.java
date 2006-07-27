@@ -72,7 +72,7 @@ public class OptionSet {
     public OptionSet(String[] args) {
         int i = 0;
 
-        while ((i < args.length) & (errorString == null)) {
+        while ((i < args.length) && (errorString == null)) {
             try {
                 if (args[i].charAt(0) == optionFlagIndicator) {
                     switch (args[i].charAt(1)) {
