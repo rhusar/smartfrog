@@ -119,7 +119,7 @@ public class DeployEntry implements Entry {
     public boolean isLeaf() {
         if ((entry instanceof Compound)
             ||(showCDasChild && (entry instanceof Prim))
-            |(showCDasChild && (entry instanceof ComponentDescription))) {
+            ||(showCDasChild && (entry instanceof ComponentDescription))) {
             //System.out.println(this.toString()+": NO Leaf");
             return false;
         } else {
