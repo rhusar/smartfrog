@@ -21,19 +21,20 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.services.shellscript;
 
-import java.util.*;
+import java.rmi.RemoteException;
+import java.util.Iterator;
+import java.util.Vector;
 
+import org.smartfrog.sfcore.common.ContextImpl;
 import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.sfcore.reference.Reference;
+import org.smartfrog.sfcore.common.SmartFrogResolutionException;
+import org.smartfrog.sfcore.common.TerminatorThread;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
+import org.smartfrog.sfcore.componentdescription.ComponentDescriptionImpl;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimImpl;
-import java.rmi.RemoteException;
 import org.smartfrog.sfcore.prim.TerminationRecord;
-import org.smartfrog.sfcore.componentdescription.ComponentDescriptionImpl;
-import org.smartfrog.sfcore.common.ContextImpl;
-import org.smartfrog.sfcore.common.TerminatorThread;
-import org.smartfrog.sfcore.common.*;
+import org.smartfrog.sfcore.reference.Reference;
 
 public class SFScriptImpl  extends PrimImpl implements Prim, SFScript, SFReadConfig {
 

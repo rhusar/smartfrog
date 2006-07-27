@@ -21,27 +21,26 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.services.shellscript;
 
-import java.util.List;
+import java.io.Serializable;
+import java.lang.reflect.InvocationTargetException;
+import java.rmi.RemoteException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
-import java.lang.reflect.InvocationTargetException;
-import java.text.SimpleDateFormat;
-import java.text.DateFormat;
-import java.rmi.RemoteException;
-import java.io.Serializable;
+import java.util.List;
+import java.util.Vector;
 
-import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
-import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.ContextImpl;
-import org.smartfrog.sfcore.componentdescription.ComponentDescriptionImpl;
-import org.smartfrog.sfcore.componentdescription.ComponentDescription;
-import org.smartfrog.sfcore.logging.LogSF;
-import org.smartfrog.sfcore.logging.LogFactory;
-
-import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
-import java.util.*;
+import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
+import org.smartfrog.sfcore.componentdescription.ComponentDescription;
+import org.smartfrog.sfcore.componentdescription.ComponentDescriptionImpl;
+import org.smartfrog.sfcore.logging.LogFactory;
+import org.smartfrog.sfcore.logging.LogSF;
+import org.smartfrog.sfcore.prim.Prim;
 
 public class ScriptExecutionImpl  implements ScriptExecution, FilterListener {
 
@@ -76,7 +75,7 @@ public class ScriptExecutionImpl  implements ScriptExecution, FilterListener {
         return code;
       }
 
-      public InvocationTargetException getException()  throws SmartFrogException {
+      public synchronized InvocationTargetException getException()  throws SmartFrogException {
         if (!resultReady) throw new SmartFrogException("Accessor should not be called before results are ready.");
         return exception;
       }
@@ -92,15 +91,16 @@ public class ScriptExecutionImpl  implements ScriptExecution, FilterListener {
       }
 
       private String tail(List list, int num) {
-        String res = "";
+        StringBuffer res = new StringBuffer("");
         List copy = new Vector(list);
         int end = copy.size();
         int start = copy.size() - num;
         if (start < 0) start = 0;
         for (int i = start ; i < end ; i++) {
-          res=res+copy.get(i)+"\n";
+          res.append(copy.get(i));
+          res.append("\n");
         }
-        return res;
+        return res.toString();
       }
 
       public ScriptResultsImpl() {
@@ -131,17 +131,17 @@ public class ScriptExecutionImpl  implements ScriptExecution, FilterListener {
      */
      public synchronized ComponentDescription waitForResults(long timeout) throws SmartFrogException {
        waitFor(timeout);
-       return this.asComponentDescription();
+       return asComponentDescription();
     }
 
-  /**
-  * wait for the results to be ready for the timeout
-  * @param timeout the maximum time to wait in milliseconds for the results: 0 don't wait, -1 wait forever
-  *
-  * @throws SmartFrogException if the results are not ready in time
-  */
+    /**
+     * wait for the results to be ready for the timeout
+     * @param timeout the maximum time to wait in milliseconds for the results: 0 don't wait, -1 wait forever
+     *
+     * @throws SmartFrogException if the results are not ready in time
+     */
 
-public synchronized void waitFor(long timeout) throws SmartFrogException {
+     public synchronized void waitFor(long timeout) throws SmartFrogException {
         try {
           if (resultReady)return;
 
@@ -166,8 +166,8 @@ public synchronized void waitFor(long timeout) throws SmartFrogException {
     }
 
 
-    public synchronized void ready(final Integer code) {
-      this.code = code;
+      public synchronized void ready(final Integer code) {
+        this.code = code;
         resultReady = true;
         notifyAll();
       }
@@ -284,7 +284,7 @@ public synchronized void waitFor(long timeout) throws SmartFrogException {
    */
   private ScriptResults closeResults(String text, boolean block, long timeout) throws SmartFrogException {
     //Clean resultSet - Terminate previous resultSet
-    ScriptResults res= this.results;
+    ScriptResults res= results;
     //Get new resultSet
     runEcho(TYPE_DONE,text);
     if (block) res.waitFor(timeout);
@@ -320,7 +320,7 @@ public synchronized void waitFor(long timeout) throws SmartFrogException {
     if (this.lock!=lock) throw new SmartFrogException( runProcess.toString() + " failed to execute '"+command.toString()+"': Wrong lock. ");
     //Close results blocking
     closeResults(command, true, -1);
-    ScriptResults res =  this.results;
+    ScriptResults res =  results;
     if (verbose) res.verbose();
     runProcess.execCommand(command);
     //Finish resulSet
@@ -357,9 +357,9 @@ public synchronized void waitFor(long timeout) throws SmartFrogException {
    *   method
    */
   public ScriptResults execute(List commands, long timeout, boolean verbose) throws SmartFrogException {
-    ScriptLock lock = this.lockShell(timeout);
+    ScriptLock lock = lockShell(timeout);
     ScriptResults result = execute (commands,lock,verbose);
-    this.releaseShell(lock);
+    releaseShell(lock);
     return result;
   }
 
@@ -377,9 +377,9 @@ public synchronized void waitFor(long timeout) throws SmartFrogException {
    *   method
    */
   public ScriptResults execute(String command, long timeout, boolean verbose) throws SmartFrogException {
-    ScriptLock lock = this.lockShell(timeout);
+    ScriptLock lock = lockShell(timeout);
     ScriptResults result = execute (command,lock,verbose);
-    this.releaseShell(lock);
+    releaseShell(lock);
     return result;
   }
 
@@ -434,7 +434,7 @@ public synchronized void waitFor(long timeout) throws SmartFrogException {
 
     //Close results blocking
     closeResults(commands.toString(), true, -1);
-    ScriptResults res =  this.results;
+    ScriptResults res =  results;
     if (verbose) res.verbose();
     if (commands==null) {
       runEcho("exec_list_commands","NO Commands to run - NULL command list");
@@ -470,11 +470,11 @@ public synchronized void waitFor(long timeout) throws SmartFrogException {
         acquire_without_blocking();
       } else if (timeout == -1) { // wait forever
         while (!acquire_without_blocking()) {
-          this.wait(Long.MAX_VALUE);
+          wait(Long.MAX_VALUE);
         }
       } else { // wait  timeout
         if (!acquire_without_blocking()) {
-          this.wait(timeout);
+          wait(timeout);
           if (!acquire_without_blocking()) {
             throw new SmartFrogException("Timeout waiting to lock Shell");
           }
@@ -576,8 +576,8 @@ public synchronized void waitFor(long timeout) throws SmartFrogException {
    * @return ScriptResults finished ScriptResult.
    */
   private ScriptResults createNewScriptResults(Integer exitCode) {
-    ScriptResults finishedResults = this.results;
-    this.results = new ScriptResultsImpl();
+    ScriptResults finishedResults = results;
+    results = new ScriptResultsImpl();
     ((ScriptResultsImpl)finishedResults).ready(exitCode);
     return finishedResults;
   }
