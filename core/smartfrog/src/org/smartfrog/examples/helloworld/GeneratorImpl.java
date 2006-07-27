@@ -48,9 +48,9 @@ import org.smartfrog.sfcore.reference.Reference;
 public class GeneratorImpl extends PrimImpl implements Prim,Runnable {
 
     /**
-     *  Any component specific declarations 
+     *  Any component specific declarations
      */
-    
+
     /** Reference to messages attribute. */
     Reference messagesRef = new Reference("messages");
     /** Reference to printer attribute. */
@@ -68,25 +68,25 @@ public class GeneratorImpl extends PrimImpl implements Prim,Runnable {
     /** Thread object. */
     Thread sender;
     /** Flag notifying the thread to terminate. */
-    boolean terminated = false; 
-     
+    boolean terminated = false;
+
     /**
      *  Constructor for the Generator object.
      *
-     *@exception  RemoteException In case of network/rmi error 
+     *@exception  RemoteException In case of network/rmi error
      */
     public GeneratorImpl() throws RemoteException {
     }
-    
+
     // LifeCycle methods
-    
+
     /**
      * sfDeploy: reads Generator attributes.
-     *   
-     * @exception  SmartFrogException In case of error while deploying 
-     * @exception  RemoteException In case of network/rmi error  
+     *
+     * @exception  SmartFrogException In case of error while deploying
+     * @exception  RemoteException In case of network/rmi error
      */
-    public synchronized void sfDeploy() throws SmartFrogException, 
+    public synchronized void sfDeploy() throws SmartFrogException,
     RemoteException {
         super.sfDeploy();
 
@@ -96,14 +96,14 @@ public class GeneratorImpl extends PrimImpl implements Prim,Runnable {
         frequency = ((Integer)sfResolve(frequencyRef)).intValue() * 1000;
         // extract int from Integer and multiple by 1000 to turn to seconds
     }
-    
+
     /**
      * sfStart: starts genrator thread.
-     * 
-     * @exception  SmartFrogException In case of error while starting  
-     * @exception  RemoteException In case of network/rmi error  
+     *
+     * @exception  SmartFrogException In case of error while starting
+     * @exception  RemoteException In case of network/rmi error
      */
-    public synchronized void sfStart() throws SmartFrogException, 
+    public synchronized void sfStart() throws SmartFrogException,
     RemoteException {
         super.sfStart();
 
@@ -111,14 +111,14 @@ public class GeneratorImpl extends PrimImpl implements Prim,Runnable {
         sender = new Thread(this);
         sender.start();
     }
-    
+
     /**
-     *  sfTerminate: terminate the thread nicely if needed could interrupt its 
-     *  sleep, but not necessary in general, since the thread initiates the 
+     *  sfTerminate: terminate the thread nicely if needed could interrupt its
+     *  sleep, but not necessary in general, since the thread initiates the
      *  termination, this will be irrelevant but to do so in case it is through
      *  error or management action.
-     *  
-     * @param  tr TerminationRecord object 
+     *
+     * @param  tr TerminationRecord object
      */
     public synchronized void sfTerminateWith(TerminationRecord tr) {
         terminated = true;
@@ -127,7 +127,7 @@ public class GeneratorImpl extends PrimImpl implements Prim,Runnable {
     }
 
     // End LifeCycle methods
- 
+
     // Main component action method
 
     /**
@@ -137,7 +137,7 @@ public class GeneratorImpl extends PrimImpl implements Prim,Runnable {
         // the body of the thread
         try {
             for (Enumeration en = messages.elements();
-                 en.hasMoreElements() & !terminated; ) {
+                 en.hasMoreElements() && !terminated; ) {
                 printer.printIt(en.nextElement().toString());
                 if (frequency > 0) Thread.sleep (frequency);
             }
