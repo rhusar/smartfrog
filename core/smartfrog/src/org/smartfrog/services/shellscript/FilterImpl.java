@@ -156,7 +156,7 @@ public class FilterImpl extends Thread {
     bufferFiller.start();
   }
 
-  public InputStream getInputStream(){
+  public synchronized InputStream getInputStream(){
       return in;
   }
 

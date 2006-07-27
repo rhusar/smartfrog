@@ -19,10 +19,11 @@
 
 package org.smartfrog.services.shellscript;
 
+import java.lang.reflect.InvocationTargetException;
+import java.util.List;
+
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
-import java.util.*;
-import java.lang.reflect.*;
 
 /**
  * Interface to the "future" object returned from submiting an execute request
@@ -58,8 +59,7 @@ public interface ScriptResults {
    *
    * @throws SmartFrogException if the results are not ready in time
    */
-  public ComponentDescription waitForResults(long timeout) throws
-      SmartFrogException;
+  public ComponentDescription waitForResults(long timeout) throws SmartFrogException;
 
   /**
    * wait for the results to be ready for the timeout
