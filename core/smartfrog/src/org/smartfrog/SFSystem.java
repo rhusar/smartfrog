@@ -580,8 +580,9 @@ public class SFSystem implements MessageKeys {
      */
     public static byte[] getByteArrayForResource(String resourceSFURL) throws SmartFrogException {
         ByteArrayOutputStream bStrm = null;
+        DataInputStream iStrm = null;
         try {
-            DataInputStream iStrm = new DataInputStream(getInputStreamForResource(resourceSFURL));
+            iStrm = new DataInputStream(getInputStreamForResource(resourceSFURL));
             byte resourceData[];
             bStrm = new ByteArrayOutputStream();
             int ch;
@@ -595,6 +596,7 @@ public class SFSystem implements MessageKeys {
           throw SmartFrogException.forward(ex);
         } finally {
           if (bStrm!=null) { try { bStrm.close();} catch (IOException swallowed) { } }
+          if (iStrm!=null) { try { iStrm.close();} catch (IOException swallowed) { } }
         }
     }
 
