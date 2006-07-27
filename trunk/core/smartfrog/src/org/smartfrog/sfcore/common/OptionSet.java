@@ -131,7 +131,7 @@ public class OptionSet {
         String url;
         String deployRef;
 
-        while ((i < args.length) & (errorString == null)) {
+        while ((i < args.length) && (errorString == null)) {
             try {
                 if (args[i].charAt(0) == optionFlagIndicator) {
                     switch (args[i].charAt(1)) {
