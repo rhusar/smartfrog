@@ -31,16 +31,13 @@ import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.common.SmartFrogLogException;
 
 /**
- * This class has to be run through RMIC compiler (add it to RMITARGETS)
+ * This class has to be run through RMIC compiler (
  */
 public class SFLogRegistrationImpl extends PrimImpl implements Prim, SFLogRegistration, LogRegistration {
 
     LogRegistration logreg = null;
 
     /**
-     *  Constructor for the Ant object.
-     *
-     *@exception  RemoteException In case of network/rmi error
      */
     public SFLogRegistrationImpl() throws RemoteException {
     }
@@ -87,8 +84,7 @@ public class SFLogRegistrationImpl extends PrimImpl implements Prim, SFLogRegist
      */
     protected void readConfiguration() throws SmartFrogException, RemoteException {
         try {
-
-            String logname = sfResolve(ATR_LOG, "", true);
+            String logname = sfResolve(ATR_LOG, "", false);
             if (!logname.equals("")){
                 LogSF logsf = LogFactory.getLog(logname);
                 if (logsf instanceof LogRegistration) {
