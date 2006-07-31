@@ -36,7 +36,7 @@ import org.smartfrog.sfcore.common.*;
 /**
  *  Implementation for SFLog component.
  */
-public class SFLogImpl extends PrimImpl implements Prim, SFLog, Log {
+public class SFPrimLogImpl extends PrimImpl implements Prim, SFPrimLog, Log {
 
     Log logTo = null;
     ComponentDescription logToCD =null;
@@ -51,7 +51,7 @@ public class SFLogImpl extends PrimImpl implements Prim, SFLog, Log {
      *
      *@throws  RemoteException In case of network/rmi error
      */
-    public SFLogImpl() throws RemoteException {
+    public SFPrimLogImpl() throws RemoteException {
     }
 
     // LifeCycle methods
