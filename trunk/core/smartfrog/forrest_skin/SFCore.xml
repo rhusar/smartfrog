@@ -17,7 +17,8 @@
   <!DOCTYPE document PUBLIC "-//APACHE//DTD Documentation V2.0//EN" "http://forrest.apache.org/dtd/document-v20.dtd">
 <document> 
   <header> 
-     <title>Document Folder for SF Core</title>
+	  <title>SmartFrog Core</title>
+	  <abstract>Here is the List of available documents for Smartfrog Core.</abstract>
   </header> 
   <body> 
 
