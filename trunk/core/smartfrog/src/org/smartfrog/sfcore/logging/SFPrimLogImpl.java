@@ -69,15 +69,6 @@ public class SFPrimLogImpl extends PrimImpl implements Prim, SFPrimLog, Log {
     }
 
     /**
-     *
-     * @throws  SmartFrogException In case of error while starting
-     * @throws  RemoteException In case of network/rmi error
-     */
-    public synchronized void sfStart() throws SmartFrogException, RemoteException {
-        super.sfStart();
-    }
-
-    /**
      * @param  t TerminationRecord object
      */
     public synchronized void sfTerminateWith(TerminationRecord t) {
@@ -114,7 +105,7 @@ public class SFPrimLogImpl extends PrimImpl implements Prim, SFPrimLog, Log {
             logTo.trace("logTo ready.");
         }
 
-        //Try to get a Prim implementing LogResgistration and if not, then get sfLog() from targeted PrimImpl.
+        //Try to get a Prim implementing LogRegistration and if not, then get sfLog() from targeted PrimImpl.
         Prim logFromPrim = (Prim)sfResolve(ATR_LOG_FROM, logFrom, false);// Register with Log if exists, if not listen only.
         if (logFromPrim !=null) {
             if (logFromPrim instanceof LogRegistration) {
