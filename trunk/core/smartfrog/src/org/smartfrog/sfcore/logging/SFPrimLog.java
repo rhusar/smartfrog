@@ -23,7 +23,7 @@ package org.smartfrog.sfcore.logging;
 /**
  * Defines the attributes for SFLog component.
  */
-public interface SFLog extends LogRemote {
+public interface SFPrimLog extends LogRemote {
     /** String name for attribute. Value {@value}. */
     final static String ATR_LOG_NAME = "logName";
 
