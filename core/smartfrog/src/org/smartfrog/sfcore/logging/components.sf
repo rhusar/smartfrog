@@ -31,7 +31,7 @@ SFLog extends Prim {
 //        example extends OptionalString;
 //    }
 
-   sfClass "org.smartfrog.sfcore.logging.SFLogImpl";
+   sfClass "org.smartfrog.sfcore.logging.SFPrimLogImpl";
    logTo extends DATA logger; //If logTo is not defined then this.sfLog() is used
    //logFrom ""; //Ref to component that implements LogRegistration;
    //logName
