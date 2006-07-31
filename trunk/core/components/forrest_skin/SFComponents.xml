@@ -20,23 +20,22 @@
 
 <document> 
   <header> 
-    <title>Document Folder for Smartfrog Components</title> 
+    <title>Smartfrog Components</title> 
     <notice>Select a Smartfrog Component from the list</notice>
-    <abstract>Here is the List of Smartfrog Components available.
-	Each component has its own version and least compatible smartfrog core version</abstract> 
+    <abstract>Here is the List of Smartfrog Components available.</abstract> 
   </header> 
   
   <body> 
 	  <section>
 		 	 <title>Welcome to SmartFrog Components</title> 
-        <p><a href="emailer/emailer.html">Emailer Version=3.08.007 SFCore-Min-version=SmartFrog 3.08.004 </a></p>	
-        <p><a href="net/net.html">Net Version=3.08.007 SFCore-Min-version=SmartFrog 3.08.004 </a></p>
-        <p><a href="scripting/scripting.html">Scripting Version=3.08.007 SFCore-Min-version=SmartFrog 3.08.004 </a></p>    
-	<p><a href="slp/slp.html">Slp Version=3.08.007 SFCore-Min-version=SmartFrog 3.08.004 </a></p>    
-	<p><a href="ssh/ssh.html"> SSH Version=3.08.007 SFCore-Min-version=SmartFrog 3.08.004 </a></p>
- 	<p><a href="anubis/anubis.html">Anubis Version=3.08.007 SFCore-Min-version=SmartFrog 3.08.004 </a></p>	 
-<p><a href="sfinstaller/sfinstaller.html">SMartFrog Installer Version=3.08.007 SFCore-Min-version=SmartFrog 3.08.004 </a></p>
-<p><a href="loggingservices/loggingservices.html">SFLoggingServices Version=3.08.007 SFCore-Min-version=SmartFrog 3.08.004</a></p>
+        <p><a href="emailer/emailer_readme.html">Emailer User Manual</a></p>		 
+        <p><a href="net/net_readme.html">Net Version User Manual</a></p>
+        <p><a href="scripting/scripting_readme.html">Scripting User Manual </a></p>    
+	<p><a href="slp/slp_readme.html">Slp User Manual</a></p>    
+	<p><a href="ssh/ssh_readme.html"> SSH User Manual</a></p>
+ 	<p><a href="anubis/AnubisUserGuide.pdf">Anubis User Manual</a></p>	 
+	<p><a href="sfinstaller/sfinstaller_readme.html">SmartFrog Installer User Manual </a></p>
+	<p><a href="loggingservices/loggingservices_readme.html">SFLoggingServices User Manual</a></p>
 
   </section> 
   </body> 
