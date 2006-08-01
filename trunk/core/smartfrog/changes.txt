@@ -1,3 +1,29 @@
+release 3_10_000
+----------------
+2006-Aug-02 Release date
+2006-July-31 Mod: SFLog renamed to SFPrimLog
+2006-July-26 Mod: sfLog() - improved cache
+2006-July-21 Fix: Any property prefixed by 'org.smartfrog.sfcore.processcompound.jvm.'+NAME+.property=value * will be added only to the subprocess named 'NAME' as a parameter * for the JVM. The parameter will be "value", "property" is only used to name * different properties in the initial command line. * Example: * org.smartfrog.sfcore.processcompound.jvm.test.propertyname_A=-Xrunpri * will add the property '-Xrunpri' to the processCompound named 'test'.
+2006-July-20 Add: New -D option to dump diag. info.
+2006-July-19 Fix: sfResolveHere() to read sfExport attribute
+2006-July-10 Add: Logger is now at: org.smartfrog.sfcore.common.Logger.
+2006-July-07 Add: New examples for workflow components
+2006-July-07 Add: Added simple network diags. report.
+2006-July-07 Mod: Improved diagnostics information
+2006-July-06 Mod: Improved workflow components 
+2006-July-05 Add: sfUpdate command line
+2006-July-05 Add: updatable prim and compound implementation
+2006-July-04 Add: Autoloader component , first version available
+2006-July-07 Fix: Updated Java docs
+2006-June-13 Mod: Updated Documentation
+2006-May-25  Mod: sfAddAttribute/sfRemoveAttribute/sfReplaceAttribute to set/reset parent when the value of the attribute is a componentdescription
+2006-May-19  Add: OpenOffice version of SmartFrog Tutorial 
+2006-May-02  Add: New env variable SFSERVERHOSTNAME to define the -Djava.rmi.sever.hostname=SFSEVERHOSTNAME property that is useful in multihomed machines. This is only used in sfDaemon shell scripts.
+2006-Apr-30  Add: New feature:sfExportPort can take a vector to restrict the ports used by SF
+2006-Apr-28  Mod: added DATA reference and lazy propagation
+2006-Apr-27  Mod: Management Console to use SF syntax in attribute values
+2006-Apr-21  Add: New TempDir component 
+
 release 3_08_004
 ----------------
 2005-Dec-16 Release date
