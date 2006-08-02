@@ -17,15 +17,13 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 For more information: www.smartfrog.org
 
 */
-
 Version extends {
   name "SmartFrog";
   majorRelease "3";
-  minorRelease "08";
-  build "007"; // odd numbers are development versions
+  minorRelease "10";
+  build "000"; // odd numbers are development versions
   status "rc"; //alpha, beta, (stable), rc (release candidate)
-  copyright "(C) Copyright 1998-2005 Hewlett-Packard Development Company, LP";
-  minCoreVersion "3.08.004";
-  maxCoreVersion "3.08.004";
+  copyright "(C) Copyright 1998-2006 Hewlett-Packard Development Company, LP";
+  minCoreVersion "3.10.000";
+  maxCoreVersion "3.10.000";
 }
-
