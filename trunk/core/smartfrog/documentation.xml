@@ -151,6 +151,7 @@ For more information: www.smartfrog.org
 	     <include name="**/*" />
 	     <exclude name="samples/*.*"/>
 	     <exclude name="smartfrogdoc/jdocs/index.html"/>
+	     <exclude name="smartfrogdoc/build.html"/>
        <exclude name="test1.html"/>
        <exclude name="test2.html"/>
        <exclude name="hello.pdf"/>
@@ -162,8 +163,11 @@ For more information: www.smartfrog.org
     </copy>
     <copy todir="${SFHOME}/dist/docs/smartfrogdoc/">
 	<fileset dir="${SFHOME}/dist/docs">
-	     <include name="jdocs/*" />
-     </fileset>
+	     <include name="jdocs/**" />
+        </fileset>
+	<fileset dir="${SFHOME}/dist/docs">
+		<include name="build.html"/>
+	</fileset>
     </copy>
 	</target>
 
