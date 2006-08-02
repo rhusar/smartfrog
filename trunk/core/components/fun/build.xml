@@ -36,4 +36,14 @@
   <!-- Import common stuff -->
   <import file="${root.dir}/common.xml"/>
 
+  <!-- ========================================================== -->
+  <!-- clean -->
+  <!-- ========================================================== -->
+
+ <target name="clean" depends="common.clean" description="clean up build ,dist and releases" >
+    <delete dir="releases"  />  
+    <delete dir="test"  /> 
+    <delete file="version.properties"/> 
+ </target>  
+
 </project>
