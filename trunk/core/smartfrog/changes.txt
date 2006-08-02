@@ -1,6 +1,6 @@
 release 3_10_000
 ----------------
-2006-Aug-02 Release date
+2006-Aug-03 Release date
 2006-July-31 Mod: SFLog renamed to SFPrimLog
 2006-July-26 Mod: sfLog() - improved cache
 2006-July-21 Fix: Any property prefixed by 'org.smartfrog.sfcore.processcompound.jvm.'+NAME+.property=value * will be added only to the subprocess named 'NAME' as a parameter * for the JVM. The parameter will be "value", "property" is only used to name * different properties in the initial command line. * Example: * org.smartfrog.sfcore.processcompound.jvm.test.propertyname_A=-Xrunpri * will add the property '-Xrunpri' to the processCompound named 'test'.
