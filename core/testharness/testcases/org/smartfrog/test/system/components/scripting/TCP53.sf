@@ -8,11 +8,11 @@ value2 6;
 value3 "Hel";
 value4 "lo";
 
-expression extends {
+/*expression extends {
 phase.function "org.smartfrog.services.scripting.Expression";
 // myvariable myvalue
 // exp "function(myvariable)" ...
-}
+}*/
 
 // Extend the template
 sum extends expression {
