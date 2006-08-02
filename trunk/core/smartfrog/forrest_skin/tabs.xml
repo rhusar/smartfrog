@@ -36,14 +36,14 @@
   <tab id="home" label="Home" dir="smartfrogdoc" indexfile="home.html"/>
 
 
-  <tab  id="SFCoreDocs" label="SmartFrog Core" dir="smartfrogdoc" indexfile="sfcore.html"> </tab>
+  <tab  id="SFCoreDocs" label="SmartFrog Core" dir="smartfrogdoc" indexfile="SFCore.html"> </tab>
   <!--tab  id="SFCompDocs" label="Components" dir="smartfrogdoc" indexfile="sfcomp.html"> </tab-->
   <tab  id="ServiceDocs" label="Services" dir="smartfrogdoc" indexfile="service.html"> </tab>
   <tab  id="AnttasksDocs" label="Ant Tasks" dir="smartfrogdoc" indexfile="anttasks.html"> </tab>
   <tab  id="Extras" label="Extras" dir="smartfrogdoc" indexfile="extras.html">  </tab>
   <tab  id="Examples" label="Examples" dir="smartfrogdoc" indexfile="examples.html">    </tab>
   <tab  id="JavaDocs" label="Java Docs" dir="smartfrogdoc" indexfile="jdocs_index.html">   </tab>
-  <tab  id="Copyright" label="Copyright" dir="smartfrogdoc" indexfile="Copyright.html">    </tab>
+  <tab  id="Copyright" label="Copyright" dir="smartfrogdoc" indexfile="copyright.html">    </tab>
   <tab  id="licenseDoc" label="License Terms" dir="smartfrogdoc" indexfile="lpgl.html">  </tab>
 
   <!-- Add new tabs here, eg:
