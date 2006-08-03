@@ -1,0 +1,63 @@
+/** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
+
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+For more information: www.smartfrog.org
+
+*/
+
+#include "org/smartfrog/sfcore/workflow/components.sf";
+
+
+
+FileTester extends EventPrim {
+    sfClass "org.smartfrog.examples.dynamicwebserver.filetester.FileTesterImpl";
+    filename;
+    //logTo;
+}
+
+
+
+FileExistsLogging extends Try {
+    ifSo extends LAZY DoNothing {time 0; message "file exists";}
+    ifNot extends LAZY DoNothing {time 0; message "file doesn't exist";}
+
+    filename;
+    logTo;
+
+    action extends LAZY FileTester {
+        filename PARENT:filename;
+        logTo PARENT:logTo;
+    }
+
+    normal LAZY ifSo;
+    abnormal LAZY ifNot;
+}
+
+
+
+FileExists extends Try {
+    ifSo extends LAZY DoNothing {time 0; message "file exists";}
+    ifNot extends LAZY DoNothing {time 0; message "file doesn't exist";}
+
+    filename;
+
+    action extends LAZY FileTester {
+        filename PARENT:filename;
+    }
+
+    normal LAZY ifSo;
+    abnormal LAZY ifNot;
+}

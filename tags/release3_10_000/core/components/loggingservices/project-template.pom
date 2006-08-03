@@ -1,0 +1,24 @@
+<project>
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.smartfrog</groupId>
+  <artifactId>sf-loggingservices</artifactId>
+  <packaging>jar</packaging>
+  <version>${Version}</version>
+  <dependencies>
+    <dependency>
+      <groupId>commons-logging</groupId>
+      <artifactId>commons-logging-api</artifactId>
+      <version>${commons-logging.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>log4j</groupId>
+      <artifactId>log4j</artifactId>
+      <version>${log4j.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.smartfrog</groupId>
+      <artifactId>smartfrog</artifactId>
+      <version>${Version}</version>
+    </dependency>    
+  </dependencies>
+</project>
