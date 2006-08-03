@@ -142,6 +142,7 @@ To Be Written
      <property name="unix-executables" value="**/*.sh,**/*.pl,**/*.py" />
      <property name="dos-executables" value="**/*.bat,**/*.cmd" />
      <property name="default" value="**/default*" />
+     <property name="smartfrogdoc" value="smartfrogdoc"/>
 
   <!-- =================================================================== -->
   <!-- FixCRLF for different platforms                                     -->
@@ -233,7 +234,8 @@ To Be Written
         <include name="${dist}/docs/skin/**"/>
         <include name="${dist}/docs/images/**"/>
         <include name="${dist}/docs/csfExtensions.pdf"/>
-        <include name="${dist}/docs/jdocs/**"/>
+	<include name="${dist}/docs/jdocs/**"/>
+	 <include name="${dist}/docs/smartfrogdoc/**"/>
        </zipfileset>
        <!--zipfileset dir="." prefix="${Name.System}.${version}">
 	  <include name="${dist}/lib/**/*-${version}.jar"/>
@@ -309,7 +311,8 @@ To Be Written
         <include name="${dist}/docs/antTasksManual/**"/>
         <include name="${dist}/docs/skin/**"/>
         <include name="${dist}/docs/images/**"/>
-        <include name="${dist}/docs/jdocs/**"/>
+	<include name="${dist}/docs/jdocs/**"/>
+	<include name="${dist}/docs/smartfrogdoc/**"/>
        </zipfileset>
        <!--zipfileset dir="." prefix="${Name.System}.${version}">
 	  <include name="${dist}/lib/**/*-${version}.jar"/>
@@ -347,7 +350,8 @@ To Be Written
         <include name="${dist}/docs/antTasksManual/**"/>
         <include name="${dist}/docs/skin/**"/>
         <include name="${dist}/docs/images/**"/>
-        <include name="${dist}/docs/jdocs/**"/>
+	<include name="${dist}/docs/jdocs/**"/>
+	<include name="${dist}/docs/smartfrogdoc/**"/>
        </tarfileset>
        <!--tarfileset dir="." prefix="${Name.System}.${version}">
 	  <include name="${dist}/lib/**/*-${version}.jar"/>
@@ -448,7 +452,8 @@ To Be Written
         <include name="${dist}/docs/antTasksManual/**"/>
         <include name="${dist}/docs/skin/**"/>
         <include name="${dist}/docs/images/**"/>
-        <include name="${dist}/docs/jdocs/**"/>
+	<include name="${dist}/docs/jdocs/**"/>
+	<include name="${dist}/docs/smartfrogdoc/**"/>
        </tarfileset>
        <!--tarfileset dir="." prefix="${Name.System}.${version}">
 	  <include name="${dist}/lib/**/*-${version}.jar"/>
