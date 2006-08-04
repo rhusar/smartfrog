@@ -431,6 +431,11 @@
         <include name="**/*"/>
       </fileset>
     </copy>
+    <copy todir="${dist.docs.dir}" failonerror="false">
+      <fileset dir="../extras/sfgui/${docs}">
+        <include name="**/*.pdf"/>
+      </fileset>  
+    </copy>  
   </target>
   <!-- =================================================================== -->
   <!--                                                                     -->
