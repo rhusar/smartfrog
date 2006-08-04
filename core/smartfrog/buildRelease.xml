@@ -228,6 +228,7 @@ To Be Written
         <include name="${dist}/docs/sfShellScript.pdf"/>
         <include name="${dist}/docs/SmartFrogTutorial.pdf"/>
         <include name="${dist}/docs/ant_tasks_for_smartfrog.pdf"/>
+        <include name="${dist}/docs/SFGuiManual.pdf"/>
         <include name="${dist}/docs/IDE_development.pdf"/>
         <include name="${dist}/docs/components/**"/>
         <include name="${dist}/docs/antTasksManual/**"/>
@@ -256,6 +257,7 @@ To Be Written
         <include name="docs/sfShellScript.pdf"/>
         <include name="docs/SmartFrogTutorial.pdf"/>
         <include name="docs/ant_tasks_for_smartfrog.pdf"/>
+        <include name="docs/SFGuiManual.pdf"/>
         <include name="docs/IDE_development.pdf"/>
         <include name="docs/components/filesystem.pdf"/>
         <include name="docs/csfExtensions.pdf"/>
@@ -304,6 +306,7 @@ To Be Written
         <include name="${dist}/docs/sfShellScript.pdf"/>
         <include name="${dist}/docs/SmartFrogTutorial.pdf"/>
         <include name="${dist}/docs/ant_tasks_for_smartfrog.pdf"/>
+        <include name="${dist}/docs/SFGuiManual.pdf"/>
         <include name="${dist}/docs/IDE_development.pdf"/>
         <include name="${dist}/docs/components/filesystem.pdf"/>
         <include name="${dist}/docs/csfExtensions.pdf"/>
@@ -343,6 +346,7 @@ To Be Written
         <include name="${dist}/docs/sfShellScript.pdf"/>
         <include name="${dist}/docs/SmartFrogTutorial.pdf"/>
         <include name="${dist}/docs/ant_tasks_for_smartfrog.pdf"/>
+        <include name="${dist}/docs/SFGuiManual.pdf"/>
         <include name="${dist}/docs/IDE_development.pdf"/>
         <include name="${dist}/docs/components/filesystem.pdf"/>
         <include name="${dist}/docs/csfExtensions.pdf"/>
@@ -382,6 +386,7 @@ To Be Written
         <include name="docs/sfShellScript.pdf"/>
         <include name="docs/SmartFrogTutorial.pdf"/>
         <include name="docs/ant_tasks_for_smartfrog.pdf"/>
+        <include name="docs/SFGuiManual.pdf"/>
         <include name="docs/IDE_development.pdf"/>
         <include name="docs/components/filesystem.pdf"/>
         <include name="docs/csfExtensions.pdf"/>
@@ -445,6 +450,7 @@ To Be Written
         <include name="${dist}/docs/sfShellScript.pdf"/>
         <include name="${dist}/docs/SmartFrogTutorial.pdf"/>
         <include name="${dist}/docs/ant_tasks_for_smartfrog.pdf"/>
+        <include name="${dist}/docs/SFGuiManual.pdf"/>
         <include name="${dist}/docs/IDE_development.pdf"/>
         <include name="${dist}/docs/components/filesystem.pdf"/>
         <include name="${dist}/docs/csfExtensions.pdf"/>
