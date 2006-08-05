@@ -744,6 +744,14 @@ because javac was bailing out with some error about unzipping -->
 
       </sequential>
     </macrodef>
+    <macrodef name="interop-report">
+      <attribute name="endpoint"/>
+      <sequential>
+          <core:test-report data="${test.interop.data.dir}/@{endpoint}"
+              reports="${test.interop.reports.dir}/@{endpoint}"/>
+  
+      </sequential>
+    </macrodef>    
   </target>
 
   <target name="interop-hp" depends="prepare-interop-tests"
@@ -761,6 +769,11 @@ because javac was bailing out with some error about unzipping -->
     <interop-test endpoint="ourgrid"/>
   </target>
 
+  <target name="interop-report-ourgrid" depends="prepare-interop-tests"
+      description="test against ourgrid">
+    <interop-report endpoint="ourgrid"/>
+  </target>
+  
   <target name="interop" depends="interop-hp,interop-nec,interop-ourgrid"
       description="test all endpoints"/>
 
