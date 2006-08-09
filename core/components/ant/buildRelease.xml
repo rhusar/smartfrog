@@ -55,7 +55,7 @@
     <zip destfile="releases/${Name.System}.${version}.${DSTAMP}_ALL.zip">
       <zipfileset dir="." prefix="${Name.System}.${version}">
         <include name="bin/**"/>
-        <!--include name="doc/ant_readme*"/-->
+        <include name="doc/ant_readme*"/>
         <include name="lib/**"/>
         <include name="src/**"/>
         <include name="build.xml"/>
@@ -80,7 +80,7 @@
         <exclude name="${dist}/classes/**"/>
       </zipfileset>
       <zipfileset dir="." prefix="${Name.System}.${version}">
-        <!--include name="${dist}/docs/ant_readme*"/-->
+        <include name="${dist}/docs/ant_readme*"/>
         <include name="${dist}/docs/jdocs/**"/>
       </zipfileset>
     </zip>
@@ -99,7 +99,7 @@
         <exclude name="${dist}/docs/**"/>
       </tarfileset>
       <tarfileset dir="." prefix="${Name.System}.${version}">
-        <!--include name="${dist}/docs/emailer_readme*"/-->
+        <include name="${dist}/docs/ant_readme*"/>
         <include name="${dist}/docs/jdocs/**"/>
       </tarfileset>
       <tarfileset dir="." mode="755" prefix="${Name.System}.${version}">
@@ -121,7 +121,7 @@
         <include name="bin/**/*.sf"/>
         <include name="bin/**/*.bat"/>
         <include name="bin/**/*.ini"/>
-        <!--include name="doc/ant_readme*"/-->
+        <include name="doc/ant_readme*"/>
         <include name="lib/**"/>
         <include name="src/**"/>
         <include name="build.xml"/>
@@ -160,7 +160,7 @@
         <exclude name="${dist}/docs/**"/>
       </tarfileset>
       <tarfileset dir="." prefix="${Name.System}.${version}">
-        <!--include name="${dist}/docs/emailer_readme*"/-->
+        <include name="${dist}/docs/ant_readme*"/>
         <include name="${dist}/docs/jdocs/**"/>
       </tarfileset>
       <tarfileset dir="." mode="755" prefix="${Name.System}.${version}">

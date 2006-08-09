@@ -289,9 +289,9 @@ Reference URL:http://ant.apache.org
 		        <include name="**/examples/**"/>
 		    </fileset>
 	         </copy>
-	<!--copy todir = "${dist.doc.dir}">
-        <fileset dir ="${doc.dir}" />
-    </copy-->  
+	<copy todir = "${dist.doc.dir}">
+             <fileset dir ="${doc.dir}" />
+        </copy>  
 	 <!--antcall target="copybins"/-->
 	  <copy tofile="${dist.dir}/build.xml" file="releaseBuild.xml"/>	
 	  <copy tofile="${dist.dir}/build.example.properties" file="build.example.properties"/>
