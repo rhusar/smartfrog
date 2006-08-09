@@ -213,7 +213,7 @@ For more information: www.smartfrog.org
   </target>
 
 
-  <target name="macros">
+  <target name="macros" depends="init">
     <macrodef name="copybuild">
       <attribute name="project" description="component to copy"/>
       <attribute name="builddir" default="${build}"/>
@@ -579,16 +579,7 @@ For more information: www.smartfrog.org
     </zip>
   </target>
 
-<!-- =================================================================== -->
-  <!--  Generte Forrest Docs -->
-  <!-- =================================================================== -->
 
-
-  <target name="generatedoc" depends="init" description="Document Generation" if="env.FORREST_HOME">
-	  <!--ant antfile="documentation.xml" inheritall="false"/--> 
-      	  <delete dir="build"/>
-    <!-- Forrest build dir -->
-  </target>
 
   <!-- =================================================================== -->
   <!-- update version                                                      -->
@@ -645,15 +636,6 @@ For more information: www.smartfrog.org
   </target>
 
 
-  <!-- =================================================================== -->
-  <!--  Release                                                            -->
-  <!-- =================================================================== -->
-  <target name="release"  depends=" verify-smartfrog,  clean, dist, updateversion, initdist, copybuild, copybins, copylibs, copydocs, copyjdocs, copycomponents, srczip,generatedoc, buildrelease "
-      description="Creates clean new release">
-    <copy tofile="${dist.dir}/build.xml" file="releaseBuild.xml"/>
-    <copy tofile="${dist.dir}/build.example.properties" file="build.example.properties"/>
-    <copy file="version.properties" todir="${dist.dir}" />
-  </target>
 
   <target name="default" depends="dist"
     description="default target creates a distribution" />
