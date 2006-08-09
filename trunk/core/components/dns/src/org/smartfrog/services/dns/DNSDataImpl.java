@@ -152,7 +152,7 @@ public class DNSDataImpl extends DNSComponentImpl implements DNSData {
             rootData.options = options;
             rootData.defaultViewName = defaultViewName;
             rootData.nameServerHostName = nameServerHostName;
-            rootData.context = context;
+            rootData.sfContext = sfContext;
         } else {
             throw new DNSModifierException("Incompatible replacement type"
                                            + root);
@@ -203,7 +203,7 @@ public class DNSDataImpl extends DNSComponentImpl implements DNSData {
         }
         // any view will do.
         if (result == null) {
-            for (Iterator iter = context.sfValues(); iter.hasNext(); ) {
+            for (Iterator iter = sfContext.sfValues(); iter.hasNext(); ) {
                 Object obj = iter.next();
                 if (obj instanceof DNSView) {
                     return (DNSView) obj;
