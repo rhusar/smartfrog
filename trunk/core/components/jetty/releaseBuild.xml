@@ -49,7 +49,7 @@ These are the meaningful targets for this build file:
  - jdocs
 -->
 
-<project  name="EmailerDist" default="help" basedir=".">
+<project  name="JettyDist" default="help" basedir=".">
   <!-- =================================================================== -->
   <!-- Initialization target                                               -->
   <!-- =================================================================== -->

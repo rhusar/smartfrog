@@ -45,7 +45,7 @@ For more information: www.smartfrog.org
      
 </description>
 
-  <property name="is.component" value="false"  />
+  <property name="is.component" value="true"  />
    <!-- override point -->
   <property file="build.properties" />
   <property name="root.dir" location="../../"  />
@@ -137,7 +137,18 @@ For more information: www.smartfrog.org
         classpathref="exec.classpath">
       </sf-parse>
     </target>
-    
+
+
+   <!-- ========================================================== -->
+  <!-- clean -->
+  <!-- ========================================================== -->
+
+ <target name="clean" depends="common.clean" description="clean up build ,dist and releases" >
+    <delete dir="releases"  />  
+    <delete dir="test"  /> 
+    <delete file="version.properties"/> 
+ </target>  
+ 
   <!-- ========================================================== -->
   <!-- this is an override, as we add a manifest -->
   <!-- create the jar -->
