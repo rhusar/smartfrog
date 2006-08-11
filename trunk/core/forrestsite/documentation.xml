@@ -157,7 +157,7 @@ For more information: www.smartfrog.org
 				 <include name="SFComponents.xml" />
 			</fileset>
 		</copy>
-
+       <forrest-component component="ant" />
       <forrest-component component="emailer" />
 	<forrest-component component="net" />
 	<forrest-component component="ssh" />
@@ -188,15 +188,27 @@ For more information: www.smartfrog.org
 <arg line="site"/>
     </exec>
 
+    </target>
 
-	</target>
+
 
 
 
 
 
     <target name="docs" depends="clean , generate-site" description="Document Generation">
-	</target>
+     <delete dir= "${site.home}/build/site/smartfrogdoc/jdocs"></delete>
+        <delete file= "${site.home}/build/site/smartfrogdoc/build.html"></delete>
+    <copy todir="${site.home}/build/site/smartfrogdoc">
+	<fileset dir="${SFHOME}/dist/docs">
+	     <include name="jdocs/**" />
+     </fileset>
+
+    <fileset dir="${SFHOME}/dist/docs">
+		<include name="build.html"/>
+	</fileset>
+    </copy>
+    </target>
 
     <target name="clean" description="Clean Generated Documents">
         <delete dir="${site.home}/src"/>
