@@ -37,10 +37,9 @@
 
 
   <tab  id="SFCoreDocs" label="SmartFrog Core" dir="smartfrogdoc" indexfile="sfcore.html"> </tab>
-   <tab id="SFComponents" label="SFComponents" dir="smartfrogdoc" indexfile="SFComponents.html"></tab>
-
-  <tab  id="ServiceDocs" label="Services" dir="smartfrogdoc" indexfile="service.html"> </tab>
-  <tab  id="AnttasksDocs" label="Ant Tasks" dir="smartfrogdoc" indexfile="anttasks.html"> </tab>
+  <tab  id="ServiceDocs" label="Core Services" dir="smartfrogdoc" indexfile="service.html"> </tab>
+  <tab id="SFComponents" label="Optional Services" dir="smartfrogdoc" indexfile="SFComponents.html"></tab>
+<tab  id="AnttasksDocs" label="Ant Tasks" dir="smartfrogdoc" indexfile="anttasks.html"> </tab>
   <tab  id="Extras" label="Extras" dir="smartfrogdoc" indexfile="extras.html">  </tab>
   <tab  id="Examples" label="Examples" dir="smartfrogdoc" indexfile="examples.html">    </tab>
   <tab  id="JavaDocs" label="Java Docs" dir="smartfrogdoc" indexfile="jdocs_index.html">   </tab>
