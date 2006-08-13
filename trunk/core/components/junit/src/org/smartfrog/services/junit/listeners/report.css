@@ -1,100 +1,12 @@
-/** (C) Copyright 2006 Hewlett-Packard Development Company, LP
-
-Disclaimer of Warranty
-
-The Software is provided "AS IS," without a warranty of any kind. ALL
-EXPRESS OR IMPLIED CONDITIONS, REPRESENTATIONS AND WARRANTIES,
-INCLUDING ANY IMPLIED WARRANTY OF MERCHANTABILITY, FITNESS FOR A
-PARTICULAR PURPOSE, OR NON-INFRINGEMENT, ARE HEREBY
-EXCLUDED. SmartFrog is not a Hewlett-Packard Product. The Software has
-not undergone complete testing and may contain errors and defects. It
-may not function properly and is subject to change or withdrawal at
-any time. The user must assume the entire risk of using the
-Software. No support or maintenance is provided with the Software by
-Hewlett-Packard. Do not install the Software if you are not accustomed
-to using experimental software.
-
-Limitation of Liability
-
-TO THE EXTENT NOT PROHIBITED BY LAW, IN NO EVENT WILL HEWLETT-PACKARD
-OR ITS LICENSORS BE LIABLE FOR ANY LOST REVENUE, PROFIT OR DATA, OR
-FOR SPECIAL, INDIRECT, CONSEQUENTIAL, INCIDENTAL OR PUNITIVE DAMAGES,
-HOWEVER CAUSED REGARDLESS OF THE THEORY OF LIABILITY, ARISING OUT OF
-OR RELATED TO THE FURNISHING, PERFORMANCE, OR USE OF THE SOFTWARE, OR
-THE INABILITY TO USE THE SOFTWARE, EVEN IF HEWLETT-PACKARD HAS BEEN
-ADVISED OF THE POSSIBILITY OF SUCH DAMAGES. FURTHERMORE, SINCE THE
-SOFTWARE IS PROVIDED WITHOUT CHARGE, YOU AGREE THAT THERE HAS BEEN NO
-BARGAIN MADE FOR ANY ASSUMPTIONS OF LIABILITY OR DAMAGES BY
-HEWLETT-PACKARD FOR ANY REASON WHATSOEVER, RELATING TO THE SOFTWARE OR
-ITS MEDIA, AND YOU HEREBY WAIVE ANY CLAIM IN THIS REGARD.
-
-*/
 
 @charset "UTF-8" ;
-
-/*
- * The Apache Software License, Version 1.1
- *
- *
- * Copyright (c) 2000-2006 The Apache Software Foundation.  All rights 
- * reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- *
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- *
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in
- *    the documentation and/or other materials provided with the
- *    distribution.
- *
- * 3. The end-user documentation included with the redistribution,
- *    if any, must include the following acknowledgment:
- *       "This product includes software developed by the
- *        Apache Software Foundation (http://www.apache.org/)."
- *    Alternately, this acknowledgment may appear in the software itself,
- *    if and wherever such third-party acknowledgments normally appear.
- *
- * 4. The names "Xerces" and "Apache Software Foundation" must
- *    not be used to endorse or promote products derived from this
- *    software without prior written permission. For written
- *    permission, please contact apache@apache.org.
- *
- * 5. Products derived from this software may not be called "Apache",
- *    nor may "Apache" appear in their name, without prior written
- *    permission of the Apache Software Foundation.
- *
- * THIS SOFTWARE IS PROVIDED ``AS IS'' AND ANY EXPRESSED OR IMPLIED
- * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
- * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED.  IN NO EVENT SHALL THE APACHE SOFTWARE FOUNDATION OR
- * ITS CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF
- * USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
- * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
- * OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
- * SUCH DAMAGE.
- * ====================================================================
- *
- * This software consists of voluntary contributions made by many
- * individuals on behalf of the Apache Software Foundation and was
- * originally based on software copyright (c) 1999, International
- * Business Machines, Inc., http://www.apache.org.  For more
- * information on the Apache Software Foundation, please see
- * <http://www.apache.org/>.
- */
-
 /**
 * apache ant settings
+ * apache license
 */
 
 body {
-    font: normal 68% verdana, arial, helvetica;
+    font: normal 68% "Bitstream Vera Sans",verdana, arial, helvetica;
     color: black;
     background: white;
 }
@@ -117,37 +29,38 @@ p {
     line-height: 1.5em;
     margin-top: 0.5em;
     margin-bottom: 1.0em;
+    
 }
 
 h1 {
     margin: 0px 0px 5px;
-    font: 165% verdana, arial, helvetica
+    font: 165% "Bitstream Vera Sans",verdana, arial, helvetica;
 }
 
 h2 {
     margin-top: 1em;
     margin-bottom: 0.5em;
-    font: bold 125% verdana, arial, helvetica
+    font: bold 125% "Bitstream Vera Sans",verdana, arial, helvetica;
 }
 
 h3 {
     margin-bottom: 0.5em;
-    font: bold 115% verdana, arial, helvetica
+    font: bold 115% "Bitstream Vera Sans",verdana, arial, helvetica;
 }
 
 h4 {
     margin-bottom: 0.5em;
-    font: bold 100% verdana, arial, helvetica
+    font: bold 100% "Bitstream Vera Sans",verdana, arial, helvetica;
 }
 
 h5 {
     margin-bottom: 0.5em;
-    font: bold 100% verdana, arial, helvetica
+    font: bold 100% "Bitstream Vera Sans",verdana, arial, helvetica;
 }
 
 h6 {
     margin-bottom: 0.5em;
-    font: bold 100% verdana, arial, helvetica
+    font: bold 100% "Bitstream Vera Sans",verdana, arial, helvetica;
 }
 
 /* new types for test results*/
@@ -209,12 +122,20 @@ h6 {
 }
 
 .fault-message {
-
+  color: orange;
+/*  font-weight: bold; */
 }
 
 .test-text {
 
 }
+
+.title {
+  margin: 0px 0px 5px;
+  font: 165% "Bitstream Vera Sans",verdana, arial, helvetica;
+  font-weight: bold;
+}
+
 
 .summary {
     border: solid 2px;
@@ -234,15 +155,6 @@ h6 {
     border: solid 0px;
 }
 
-.log-stderr {
-    color: orange;
-    font-size: small;
-}
-
-.log-stdout {
-    color: blue;
-    font-size: small;
-}
 
 table.summary-table  tr th {
     font-size: large;
@@ -257,6 +169,35 @@ table.summary-table tr td {
     background: #eeeee0;
     color: black;
 }
+
+td-success tr td{
+  font-size: large;
+  background: #eeeee0;
+  color: green;
+}
+
+td-failures tr td{
+  font-size: large;
+  background: #eeeee0;
+  color: orange;;
+}
+
+td-errors tr td{
+  font-size: large;
+  background: #eeeee0;
+  color: red;
+}
+
+.log-stderr {
+  color: orange;
+  font-size: small;
+}
+
+.log-stdout {
+  color: blue;
+  font-size: small;
+}
+
 
 .log-debug {
 

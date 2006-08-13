@@ -33,20 +33,13 @@ For more information: www.smartfrog.org
 
 sfConfig extends TestRunner {
 
-    listener extends ConsoleListener;
-
-    unused extends XmlListener {
+    listener extends HtmlListener {
         outputDirectory ".";
 
     }
 
-
     JUnitTestSuite extends TestSuite {
-        name "suite1";
-        classes ["test"];
-        excludes ["test"];
-        if true;
+        name "org.example";
+        classes ["firstTest","secondTest"];
     }
-
-
 }

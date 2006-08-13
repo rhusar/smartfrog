@@ -67,7 +67,7 @@ public class HtmlTestListenerComponent extends AbstractXmlListenerComponent
         cssResource=sfResolve(ATTR_CSS_RESOURCE,cssResource,false);
         if(cssResource!=null) {
             //load in the data from the class
-            helper.loadResourceToString(cssResource, Charset.forName("UTF-8"));
+            cssData=helper.loadResourceToString(cssResource, Charset.forName("UTF-8"));
         }
         cssData= sfResolve(ATTR_CSS_DATA, cssData, false);
 
@@ -88,16 +88,20 @@ public class HtmlTestListenerComponent extends AbstractXmlListenerComponent
      */
     protected OneHostXMLListener createNewSingleHostListener(String hostname,
                                                              File destFile,
-                                                             String processname, String suitename,
+                                                             String processname, 
+                                                             String suitename,
                                                              Date start) throws
             IOException {
-        return new OneHostHtmlListener(hostname,
-                "hostname", "process", destFile,
+        return new OneHostHtmlListener("Test",
+                hostname, 
+                processname,
+                destFile,
                 suitename,
                 start,
                 preamble,
                 cssURL,
                 cssData);
+        
     }
 
 
