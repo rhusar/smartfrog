@@ -67,12 +67,12 @@
 
   <target name="war.classpath" depends="m2-tasks,war.init">
     <m2-libraries pathID="war.classpath">
-      <dependency groupID="servletapi"
-                  artifactID="servletapi"
+      <dependency groupID="javax.servlet"
+                  artifactID="servlet-api"
                   version="${servletapi.version}"/>
     </m2-libraries>
   </target>
-  
+
   <target name="war.javac" depends="war.classpath" >
     <sf-javac srcdir="${testwar.src.dir}" destdir="${build.testwar.dir}"
         classpathref="war.classpath"/>
