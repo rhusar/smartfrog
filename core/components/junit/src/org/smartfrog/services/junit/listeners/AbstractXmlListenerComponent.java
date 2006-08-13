@@ -166,8 +166,10 @@ public abstract class AbstractXmlListenerComponent extends PrimImpl
      * @param timestamp start timestamp (UTC)
      * @return a session ID to be used in test responses
      */
-    public TestListener listen(TestSuite suite, String hostname,
-                               String processname, String suitename,
+    public TestListener listen(TestSuite suite, 
+                               String hostname,
+                               String processname,
+                               String suitename,
                                long timestamp) throws RemoteException,
             SmartFrogException {
         if (suitename == null && "".equals(suitename)) {
@@ -200,9 +202,12 @@ public abstract class AbstractXmlListenerComponent extends PrimImpl
 
         try {
             Date start = new Date(timestamp);
-
             OneHostXMLListener xmlLog;
-            xmlLog = createNewSingleHostListener(hostname, destFile, processname, suitename, start);
+            xmlLog = createNewSingleHostListener(hostname, 
+                destFile, 
+                processname, 
+                suitename, 
+                start);
             xmlLog.open();
             return xmlLog;
         } catch (IOException e) {

@@ -59,7 +59,7 @@ public class OneHostHtmlListener extends OneHostXMLListener {
     }
 
     private String getTitle() {
-        return super.hostname;
+        return title;
     }
 
     protected void writeDocumentHeader() throws IOException {
@@ -76,6 +76,7 @@ public class OneHostHtmlListener extends OneHostXMLListener {
         writeln("<html xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"en\" lang=\"en\">");
         String title = getTitle()
                 + " suite " + suitename
+                + " on " +hostname
                 + " started " + startTime.toString();
         enter("head");
         write("title", null, title, true);
@@ -98,7 +99,7 @@ public class OneHostHtmlListener extends OneHostXMLListener {
         }
         exit("head");
         enter("body");
-        write("h1", null, title, true);
+        write("h1", style("title"), title, true);
         enter("div",style("toc"));
         write("a", "href='#summary'", "summary", false);
         exit("div");
@@ -128,22 +129,22 @@ public class OneHostHtmlListener extends OneHostXMLListener {
             percentage = (successes*100)/testCount;
         }
         enter("tr");
-        write("td", null, "Successes", false);
+        write("td", style("td-success"), "Successes", false);
         write("td", null, Integer.toString(successes), false);
         exit("tr");
 
         enter("tr");
-        write("td", null, "Percentage Successes", false);
+        write("td", style("td-success"), "Percentage Successes", false);
         write("td", null, Integer.toString(percentage), false);
         exit("tr");
 
         enter("tr");
-        write("td", null, "Failures", false);
+        write("td", style("td-failures"), "Failures", false);
         write("td", null, Integer.toString(failureCount), false);
         exit("tr");
 
         enter("tr");
-        write("td", null, "Errors", false);
+        write("td", style("td-errors"), "Errors", false);
         write("td", null, Integer.toString(errorCount), false);
         exit("tr");
 
