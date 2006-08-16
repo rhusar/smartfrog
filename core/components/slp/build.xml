@@ -69,7 +69,7 @@ Reference URL:http://ant.apache.org
     <target name="init" depends="init-standard-output-dirs">
     <tstamp/>
     <property name="Name.System" value="slplib"/>
-    <property name="Name.Author" value="Copyright (C) 2004 Glenn Hisdal"/>
+    <property name="Name.Author" value="Copyright (C) 2006 Glenn Hisdal"/>
     <property name="version" value="smartfrog components"/>
     <!--property name="Version" value="1.00.000_beta"/-->
     <property name="year" value="2004"/>

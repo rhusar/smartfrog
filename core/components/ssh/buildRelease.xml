@@ -55,7 +55,7 @@ To Be Written
     <tstamp/>
 	<property name="Name.Framework" value="SmartFrog"/>
      <property name="Name.System" value="SSH"/>
-    <property name="Name.Company" value="(C) Copyright 1998-2004 Hewlett-Packard Development Company, LP"/>
+    <property name="Name.Company" value="(C) Copyright 1998-2006 Hewlett-Packard Development Company, LP"/>
     <!--property name="version" value="1.00.000_beta"/-->
     <property name="year" value="2004"/>
 

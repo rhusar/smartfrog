@@ -43,7 +43,7 @@ To Be Written
     <tstamp/>
     <property name="Name.Framework" value="SmartFrog Framework"/>
     <property name="Name.System" value="SmartFrog"/>
-    <property name="Name.Company" value="(C) Copyright 1998-2005 Hewlett-Packard Development Company, LP"/>
+    <property name="Name.Company" value="(C) Copyright 1998-2006 Hewlett-Packard Development Company, LP"/>
     <!--property name="version" value="3.04.014.beta"/-->
     <property name="year" value="2005"/>
 

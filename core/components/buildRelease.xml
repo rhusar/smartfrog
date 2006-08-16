@@ -46,7 +46,7 @@ To use: ant -f buildRelease release
     <tstamp/>
     <property name="Name.Components" value="SmartFrog Components"/>
     <property name="Name.System" value="components"/>
-    <property name="Name.Company" value="(C) Copyright 1998-2004 Hewlett-Packard Development Company, LP"/>
+    <property name="Name.Company" value="(C) Copyright 1998-2006 Hewlett-Packard Development Company, LP"/>
     <loadproperties srcFile="version.properties"/>
     <fail unless="component.version">No property component.version found in file version.properties</fail>
     <property name="version" value="${component.version}" />
