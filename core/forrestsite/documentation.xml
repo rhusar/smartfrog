@@ -168,7 +168,7 @@ For more information: www.smartfrog.org
 	<forrest-component component="sfinstaller" />
       <forrest-component component="jetty" />
       <forrest-component component="www" />
-      <forrest-component component="xml" />
+      <!--forrest-component component="xml" /-->
 
 
         <echo level="verbose" >${SFHOME}</echo>
