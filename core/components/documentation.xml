@@ -122,12 +122,15 @@ For more information: www.smartfrog.org
 	<!--forrest-component component="anubisdeployer" /-->
 	<forrest-component component="sfinstaller" />
 	<forrest-component component="ant" />
+      <forrest-component component="jetty" />
+      <forrest-component component="www" />
+      <forrest-component component="xml" />
 
 
 
 
-   
-	<copy todir="${comp.home}/src/documentation" overwrite="true"
+
+    <copy todir="${comp.home}/src/documentation" overwrite="true"
       file="${skin.dir}/skinconf.xml">
 	</copy>
     
