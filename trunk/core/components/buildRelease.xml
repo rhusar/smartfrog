@@ -77,7 +77,7 @@ To use: ant -f buildRelease release
     <property name="sfinstaller.project" location="sfinstaller" />
     <property name="sfLoggingServices.project" location="loggingservices" />
     <property name="releasetest.project" location="releasetest" />
-    <property name="xml.project" location="xml" />
+    <!--property name="xml.project" location="xml" /-->
     <property name="www.project" location="www" />
     <property name="dns.project" location="dns" />
   </target>
@@ -147,10 +147,11 @@ To use: ant -f buildRelease release
 	<include name="sfinstaller/**"/>
 	<include name="dns/**"/>
 	<include name="www/**"/>
-	<include name="xml/**"/>
+	<!--include name="xml/**"/-->
         <include name="build.xml"/>
         <!--include name="buildRelease.xml"/-->
         <include name="releaseBuild.xml"/>
+        <!--include name="version.properties"/-->
     <include name="${dist}/**"/>
 	<include name="${dist}/docs/**"/>
 	<include name="${dist}/docs/jdocs/**"/>
@@ -194,10 +195,11 @@ To use: ant -f buildRelease release
 	<include name="sfinstaller/**"/>
 	<include name="dns/**"/>
 	<include name="www/**"/>
-	<include name="xml/**"/>
+	<!--include name="xml/**"/-->
         <include name="build.xml"/>
         <!--include name="buildRelease.xml"/-->
         <include name="releaseBuild.xml"/>
+        <!--include name="version.properties"/-->
     <include name="${dist}/**"/>
 	<include name="${dist}/docs/**"/>
 	<include name="${dist}/docs/jdocs/**"/>
@@ -295,7 +297,7 @@ To use: ant -f buildRelease release
     <copyreleaseszips project="${sfinstaller.project}" />
     <copyreleaseszips project="${dns.project}" />
     <copyreleaseszips project="${www.project}" />
-    <copyreleaseszips project="${xml.project}" />
+    <!--copyreleaseszips project="${xml.project}" /-->
 
 
    <zip destfile="../releases/${Name.System}.${version}.${DSTAMP}_DIST.zip">
@@ -330,7 +332,7 @@ To use: ant -f buildRelease release
     <copyreleasestars project="${sfinstaller.project}" />
     <copyreleasestars project="${dns.project}" />
     <copyreleasestars project="${www.project}" />
-    <copyreleasestars project="${xml.project}" />
+    <!--copyreleasestars project="${xml.project}" /-->
 
 	
   <tar tarfile="../releases/${Name.System}.${version}.${DSTAMP}_DIST.tar">
