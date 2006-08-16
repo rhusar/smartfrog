@@ -37,10 +37,12 @@
 	<p><a href="ant/ant_readme.html">ANT User Manual</a></p>
 	<p><a href="sfinstaller/sfinstaller_readme.html">SmartFrog Installer User Manual </a></p>
 	<p><a href="loggingservices/loggingservices_readme.html">SFLoggingServices User Manual</a></p>
+     <p><a href="jetty/jetty_readme.html">Jetty User Manual </a></p>
+              <p><a href="xml/xml_readme.html">XML User Manual</a></p>
+          <p><a href="www/www_readme.html">WWW User Manual </a></p>
+
 
   </section> 
   </body> 
-
- 
 </document>
 
