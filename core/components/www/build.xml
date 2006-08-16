@@ -109,8 +109,31 @@
     </m2:install>
   </target>
 
+  <!-- ========================================================== -->
+  <!-- clean -->
+  <!-- ========================================================== -->
 
-  <target name="dist" depends="common.dist,m2-install,war-installed"/>
+ <target name="clean" depends="common.clean" description="clean up build ,dist and releases" >
+    <delete dir="releases"  />  
+    <delete dir="test"  /> 
+    <delete file="version.properties"/> 
+ </target>  
+ 
+ <target name="dist" depends="common.dist,m2-install,war-installed, jdocs">
+    <copy todir = "${dist.lib.dir}">
+        <fileset dir ="${lib.dir}" />
+    </copy>  
+     <copy todir = "${dist.doc.dir}">
+        <fileset dir ="${doc.dir}" />
+    </copy>   
+     <copy todir = "${dist.src.dir}">
+        <fileset dir ="${src.dir}">
+            <include name="**/examples/**"/>
+        </fileset>
+           </copy>
+     <copy tofile="${dist.dir}/build.xml" file="releaseBuild.xml"/> 
+    <copy tofile="${dist.dir}/build.example.properties" file="build.example.properties"/> 
+  </target>
 
   <target name="all" depends="dist" description="everything"/>
 
