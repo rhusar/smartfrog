@@ -58,7 +58,7 @@ Reference URL:http://ant.apache.org
   <!-- =================================================================== -->
   <target name="init" depends="init-standard-output-dirs">
     <tstamp/>
-    <property name="Name.Company" value="(C) Copyright 1998-2004 Hewlett-Packard Development Company, LP"/>
+    <property name="Name.Company" value="(C) Copyright 1998-2006 Hewlett-Packard Development Company, LP"/>
     <property name="version" value="smartfrog components"/>
     <!--property name="Version" value="1.00.000_beta"/-->
     <property name="year" value="2004"/>

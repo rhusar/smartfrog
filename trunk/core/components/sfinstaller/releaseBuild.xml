@@ -55,7 +55,7 @@ These are the meaningful targets for this build file:
   <!-- =================================================================== -->
   <target name="init">
     <property name="Name" value="SFInstaller Component"/>
-    <property name="name" value="(C) Copyright 1998-2003 Hewlett-Packard Development Company, LP"/>
+    <property name="name" value="(C) Copyright 1998-2006 Hewlett-Packard Development Company, LP"/>
     <property name="version" value="DIST"/>
     <loadproperties srcFile="version.properties"/>
     <fail unless="sf.build.version">No property sf.build.version found in file version.properties</fail>
