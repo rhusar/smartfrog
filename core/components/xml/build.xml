@@ -140,7 +140,7 @@
   </target>
 
   <target name="javac.version" depends="check-versions" if="javac.is.1.4">
-    <echo level="warn">
+    <echo level="warning">
       Using Javac version 1.4: the java 1.5 packages will be omitted.
       Do not redistribute this build.
     </echo>
@@ -174,16 +174,65 @@
     <copy-useful-files src="${src.dir}" dest="${build.classes.dir}"/>
   </target>
 
+  
+   <!-- ========================================================== -->
+  <!-- clean -->
+  <!-- ========================================================== -->
+
+ <target name="clean" depends="common.clean" description="clean up build ,dist and releases" >
+    <delete dir="releases"  />  
+    <delete dir="test"  /> 
+    <delete file="version.properties"/> 
+ </target>  
+  
+
+<!--set up javadoc-->
+  <target name="init-javadoc" depends="init,init-common">
+
+    <property name="javadoc.access" value="protected"/>
+    <property name="javadoc.author" value="false"/>
+    <property name="javadoc.version" value="true"/>
+    <property name="javadoc.use" value="true"/>
+    <property name="javadoc.windowtitle" value="${Name.System}"/>
+    <property name="javadoc.packagenames" value="org.smartfrog.*"/>
+    <property name="javadoc.header" value="${Name.System} ${Version}"/>
+    <property name="javadoc.footer" value="${Name.System} ${Version}"/>
+    <presetdef name="sf-javadoc" >
+      <javadoc packagenames="${javadoc.packagenames}"
+          author="${javadoc.author}"
+          version="${javadoc.version}"
+          use="${javadoc.use}"
+          windowtitle="${javadoc.windowtitle}"
+          header="${javadoc.header}"
+          footer="${javadoc.footer}"
+          doctitle="${Name.System}"
+          bottom="${Name.Company}"
+          source="1.5"
+          >
+      </javadoc>
+    </presetdef>
+
+  </target> 
   <!-- ========================================================== -->
   <!-- create a distro. 
        we want both sf-junit and the test har -->
   <!-- ========================================================== -->
-  <target name="dist" depends="package,package-tests"
-    description="create a distribution">
-
-  </target>    
+  <target name="dist" depends="common.dist, jdocs" description="create a distribution">
+  <copy todir = "${dist.lib.dir}">
+        <fileset dir ="${lib.dir}" />
+    </copy>  
+     <copy todir = "${dist.doc.dir}">
+        <fileset dir ="${doc.dir}" />
+    </copy>   
+     <copy todir = "${dist.src.dir}">
+        <fileset dir ="${src.dir}">
+            <include name="**/examples/**"/>
+        </fileset>
+           </copy>
+     <copy tofile="${dist.dir}/build.xml" file="releaseBuild.xml"/> 
+   <copy tofile="${dist.dir}/build.example.properties" file="build.example.properties"/>
+  </target>
     
-  
   <!-- ========================================================== -->
   <!-- parse the file -->
   <!-- ========================================================== -->
