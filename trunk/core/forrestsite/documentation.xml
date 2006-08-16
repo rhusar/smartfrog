@@ -166,6 +166,10 @@ For more information: www.smartfrog.org
 	<forrest-component component="anubis" />
 	<forrest-component component="loggingservices" />
 	<forrest-component component="sfinstaller" />
+      <forrest-component component="jetty" />
+      <forrest-component component="www" />
+      <forrest-component component="xml" />
+
 
         <echo level="verbose" >${SFHOME}</echo>
 
@@ -182,12 +186,12 @@ For more information: www.smartfrog.org
     <target name="generate-site" depends="prepare-docs" >
 	    <!--antcall target="site"/-->
         <exec dir="${site.home}" executable="${env.FORREST_HOME}/bin/forrest.bat" os="Windows 2000, Windows_NT, Windows XP">
-           <arg line="-Dforrest.jvmargs=-Djava.awt.headless=true"/>
-           <arg line="site"/>
+           <arg value="-Dforrest.jvmargs=-Djava.awt.headless=true site"/>
+
         </exec>
         <exec dir="${site.home}" executable="${env.FORREST_HOME}/bin/forrest" os="Linux">
-           <arg line="-Dforrest.jvmargs=-Djava.awt.headless=true"/>
-           <arg line="site"/>
+           <arg value="-Dforrest.jvmargs=-Djava.awt.headless=true site"/>
+           
         </exec>
     </target>
 

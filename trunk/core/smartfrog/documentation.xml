@@ -135,12 +135,12 @@ For more information: www.smartfrog.org
     <target name="generate-site" depends="prepare-docs" >
 	    <!--antcall target="site"/-->
         <exec dir="${SFHOME}" executable="${env.FORREST_HOME}/bin/forrest.bat" os="Windows 2000, Windows_NT, Windows XP">
-          <arg line="-Dforrest.jvmargs=-Djava.awt.headless=true"/> 
-          <arg line="site"/>
+           <arg value="-Dforrest.jvmargs=-Djava.awt.headless=true site"/>
+
         </exec>
         <exec dir="${SFHOME}" executable="${env.FORREST_HOME}/bin/forrest" os="Linux">
-          <arg line="-Dforrest.jvmargs=-Djava.awt.headless=true"/> 
-          <arg line="site"/>
+           <arg value="-Dforrest.jvmargs=-Djava.awt.headless=true site"/>
+          
         </exec>
 	</target>
 
