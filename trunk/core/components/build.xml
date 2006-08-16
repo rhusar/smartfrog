@@ -108,7 +108,8 @@ For more information: www.smartfrog.org
     <property name="tomcat.project" location="tomcat" />
     <property name="xml.project" location="xml" />
     <property name="www.project" location="www" />
-
+    <property name="dns.project" location="dns" />
+    
     <!--where the files for release will go-->
     <property name="bin" value="bin"/>
     <property name="lib" value="lib"/>
@@ -168,7 +169,11 @@ For more information: www.smartfrog.org
       <pathelement location="${scripting.project}"/>
       <pathelement location="${sfinstaller.project}"/>
       <pathelement location="${sfLoggingServices.project}"/>
-    <!--pathelement location="${arithmetic-testharness.project}"/-->
+      <pathelement location="${www.project}"/>
+      <pathelement location="${jetty.project}"/>
+      <pathelement location="${dns.project}"/>
+      <pathelement location="${xml.project}"/>
+      <!--pathelement location="${arithmetic-testharness.project}"/-->
       <!--pathelement location="${junit.project}"/-->
       <!--pathelement location="${cddlm.project}"/-->
       <!--pathelement location="${releasetest.project}"
@@ -430,7 +435,11 @@ For more information: www.smartfrog.org
         <pathelement path="${sfinstaller.project}/${src}"/>
         <pathelement path="${sfLoggingServices.project}/${src}"/>
         <pathelement path="${slp.project}/${src}"/>
-        <pathelement path="${ssh.project}/${src}"/>
+	<pathelement path="${ssh.project}/${src}"/>
+	<pathelement path="${dns.project}/${src}"/>
+        <pathelement path="${jetty.project}/${src}"/>
+        <pathelement path="${www.project}/${src}"/>
+        <pathelement path="${xml.project}/${src}"/>
       </sourcepath>
       <group title="SmartFrog Component Packages" packages="org.smartfrog.*"/>
     </sf-javadoc>
@@ -464,6 +473,10 @@ For more information: www.smartfrog.org
     <copybuild project="${sfLoggingServices.project}" />
     <copybuild project="${slp.project}"  />
     <copybuild project="${ssh.project}" />
+    <copybuild project="${dns.project}" />
+    <copybuild project="${jetty.project}" />
+    <copybuild project="${www.project}" />
+    <copybuild project="${xml.project}" />
 
   </target>
 
@@ -483,7 +496,10 @@ For more information: www.smartfrog.org
     <copybins project="${sfLoggingServices.project}"/>
     <copybins project="${slp.project}"  />
     <copybins project="${ssh.project}" />
-
+    <copybins project="${dns.project}" />
+    <copybins project="${jetty.project}" />
+    <copybins project="${www.project}" />
+    <copybins project="${xml.project}" />
   </target>
 
   <!-- =================================================================== -->
@@ -501,7 +517,10 @@ For more information: www.smartfrog.org
     <copylibs project="${sfLoggingServices.project}" />
     <copylibs project="${slp.project}"  />
     <copylibs project="${ssh.project}" />
-
+    <copylibs project="${dns.project}" />
+    <copylibs project="${jetty.project}" />
+    <copylibs project="${www.project}" />
+    <copylibs project="${xml.project}" />
   </target>
 
   <!-- =================================================================== -->
@@ -521,6 +540,10 @@ For more information: www.smartfrog.org
     <copycomponents project="${net.project}"  />
     <copycomponents project="${slp.project}"  />
     <copycomponents project="${ssh.project}" />
+    <copycomponents project="${dns.project}" />
+    <copycomponents project="${jetty.project}" />
+    <copycomponents project="${www.project}" />
+    <copycomponents project="${xml.project}" />
   </target>
 
   <!-- =================================================================== -->
@@ -538,6 +561,10 @@ For more information: www.smartfrog.org
     <copydocs project="${sfLoggingServices.project}" />
     <copydocs project="${slp.project}" />
     <copydocs project="${ssh.project}" />
+    <copydocs project="${dns.project}" />
+    <copydocs project="${jetty.project}" />
+    <copydocs project="${www.project}" />
+    <copydocs project="${xml.project}" />
   </target>
 
   
@@ -556,6 +583,10 @@ For more information: www.smartfrog.org
     <copyjdocs project="${sfLoggingServices.project}" name="loggingservices"/>
     <copyjdocs project="${slp.project}" name="slp"/>
     <copyjdocs project="${ssh.project}" name="ssh"/>
+    <copyjdocs project="${dns.project}" name="dns"/>
+    <copyjdocs project="${jetty.project}" name="jetty"/>
+    <copyjdocs project="${www.project}" name="www"/>
+    <copyjdocs project="${xml.project}" name="xml"/>
   </target>
   <!-- =================================================================== -->
   <!-- src.zip                                                             -->
@@ -576,6 +607,10 @@ For more information: www.smartfrog.org
       <zipfileset dir="${sfLoggingServices.project}/dist/${src}" />
       <zipfileset dir="${slp.project}/dist/${src}" />
       <zipfileset dir="${ssh.project}/dist/${src}" />
+       <zipfileset dir="${dns.project}/dist/${src}" />
+      <zipfileset dir="${jetty.project}/dist/${src}" />
+      <zipfileset dir="${www.project}/dist/${src}" />
+      <zipfileset dir="${xml.project}/dist/${src}" />
     </zip>
   </target>
 
@@ -596,6 +631,10 @@ For more information: www.smartfrog.org
     <updateversion project="${sfLoggingServices.project}" compname="sfLoggingServices"/>
     <updateversion project="${slp.project}" compname="slp"/>
     <updateversion project="${ssh.project}" compname="ssh"/>
+    <updateversion project="${dns.project}" compname="dns"/>
+    <updateversion project="${jetty.project}" compname="jetty"/>
+    <updateversion project="${www.project}" compname="www"/>
+    <updateversion project="${xml.project}" compname="xml"/>
   </target>
 
   <!--make a release of the web stuff-->
