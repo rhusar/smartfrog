@@ -85,8 +85,7 @@ To use: ant -f buildRelease release
   <!-- =================================================================== -->
   <!-- Help on usage                                                       -->
   <!-- =================================================================== -->
-  <target name="help" depends="init" description="Process">
-    <echo message=""/>
+  <target name="help" depends="init" description="Process"> 
     <echo message="-------------------------------------------------------------"/>
     <echo message="${Name.Components} Release file"/>
     <echo message="-------------------------------------------------------------"/>
@@ -147,11 +146,13 @@ To use: ant -f buildRelease release
 	<include name="sfinstaller/**"/>
 	<include name="dns/**"/>
 	<include name="www/**"/>
+	<include name="lib/**"/>
 	<!--include name="xml/**"/-->
         <include name="build.xml"/>
         <!--include name="buildRelease.xml"/-->
         <include name="releaseBuild.xml"/>
-        <!--include name="version.properties"/-->
+        <include name="version.properties"/>
+        <include name="libraries.properties"/>
     <include name="${dist}/**"/>
 	<include name="${dist}/docs/**"/>
 	<include name="${dist}/docs/jdocs/**"/>
@@ -168,10 +169,13 @@ To use: ant -f buildRelease release
 		<exclude name="**/releases/**"/>
 		<exclude name="**/build/**"/>
 		<exclude name="**/test/**"/>
-
+        <include name="anubis/**/test/**"/>
    </zipfileset>
    <zipfileset dir=".." prefix="${Name.System}.${version}">
-	<include name="**/common.xml"/>
+	   <include name="**/common.xml"/>
+	   <include name="**/extras/ant/dist/**"/>
+	   <include name="**/antbuild/repository/**"/>
+	   <exclude name="**/Cvs" />
    </zipfileset>
 
    <zipfileset dir="." prefix="${Name.System}.${version}">
@@ -195,11 +199,13 @@ To use: ant -f buildRelease release
 	<include name="sfinstaller/**"/>
 	<include name="dns/**"/>
 	<include name="www/**"/>
+	<include name="lib/**"/>
 	<!--include name="xml/**"/-->
         <include name="build.xml"/>
         <!--include name="buildRelease.xml"/-->
         <include name="releaseBuild.xml"/>
-        <!--include name="version.properties"/-->
+        <include name="version.properties"/>
+        <include name="libraries.properties"/>
     <include name="${dist}/**"/>
 	<include name="${dist}/docs/**"/>
 	<include name="${dist}/docs/jdocs/**"/>
@@ -216,9 +222,13 @@ To use: ant -f buildRelease release
 		<exclude name="**/releases/**"/>
 		<exclude name="**/build/**"/>
 		<exclude name="**/test/**"/>
+        <include name="anubis/**/test/**"/>
     </tarfileset>
     <tarfileset dir=".." prefix="${Name.System}.${version}">
 	<include name="**/common.xml"/>
+	   <include name="**/extras/ant/dist/**"/>
+	   <include name="**/antbuild/repository/**"/>
+	   <exclude name="**/Cvs" />
     </tarfileset>
 
 	 <tarfileset dir="." prefix="${Name.System}.${version}">
