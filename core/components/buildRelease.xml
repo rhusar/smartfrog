@@ -77,6 +77,9 @@ To use: ant -f buildRelease release
     <property name="sfinstaller.project" location="sfinstaller" />
     <property name="sfLoggingServices.project" location="loggingservices" />
     <property name="releasetest.project" location="releasetest" />
+    <property name="xml.project" location="xml" />
+    <property name="www.project" location="www" />
+    <property name="dns.project" location="dns" />
   </target>
 
   <!-- =================================================================== -->
@@ -135,14 +138,16 @@ To use: ant -f buildRelease release
 	<include name="anubis/**"/>
 	<include name="anubisdeployer/**"/>
 	<include name="emailer/**"/>
-	<!--include name="jetty/**"/-->
-	<!--include name="logger/**"/-->
+	<include name="jetty/**"/>
 	<include name="net/**"/>
 	<include name="scripting/**"/>
 	<include name="loggingservices/**"/>
 	<include name="slp/**"/>
 	<include name="ssh/**"/>
 	<include name="sfinstaller/**"/>
+	<include name="dns/**"/>
+	<include name="www/**"/>
+	<include name="xml/**"/>
         <include name="build.xml"/>
         <!--include name="buildRelease.xml"/-->
         <include name="releaseBuild.xml"/>
@@ -180,14 +185,16 @@ To use: ant -f buildRelease release
 	<include name="anubis/**"/>
 	<include name="anubisdeployer/**"/>
 	<include name="emailer/**"/>
-	<!--include name="jetty/**"/-->
-	<!--include name="logger/**"/-->
+	<include name="jetty/**"/>
 	<include name="net/**"/>
 	<include name="scripting/**"/>
 	<include name="loggingservices/**"/>
 	<include name="slp/**"/>
 	<include name="ssh/**"/>
 	<include name="sfinstaller/**"/>
+	<include name="dns/**"/>
+	<include name="www/**"/>
+	<include name="xml/**"/>
         <include name="build.xml"/>
         <!--include name="buildRelease.xml"/-->
         <include name="releaseBuild.xml"/>
@@ -279,14 +286,16 @@ To use: ant -f buildRelease release
     <copyreleaseszips project="${anubis.project}" />
     <copyreleaseszips project="${anubisdeployer.project}" />
     <copyreleaseszips project="${emailer.project}" />
-    <!--copyreleaseszips project="${jetty.project}" /-->
-    <!--copyreleaseszips project="${logger.project}" /-->
+    <copyreleaseszips project="${jetty.project}" />
     <copyreleaseszips project="${net.project}" />
     <copyreleaseszips project="${scripting.project}" />
     <copyreleaseszips project="${sfLoggingServices.project}"/>
     <copyreleaseszips project="${slp.project}"  />
     <copyreleaseszips project="${ssh.project}" />
     <copyreleaseszips project="${sfinstaller.project}" />
+    <copyreleaseszips project="${dns.project}" />
+    <copyreleaseszips project="${www.project}" />
+    <copyreleaseszips project="${xml.project}" />
 
 
    <zip destfile="../releases/${Name.System}.${version}.${DSTAMP}_DIST.zip">
@@ -312,14 +321,16 @@ To use: ant -f buildRelease release
     <copyreleasestars project="${anubis.project}" />
     <copyreleasestars project="${anubisdeployer.project}" />
     <copyreleasestars project="${emailer.project}" />
-    <!--copyreleasestars project="${jetty.project}" /-->
-    <!--copyreleasestars project="${logger.project}" /-->
+    <copyreleasestars project="${jetty.project}" />
     <copyreleasestars project="${net.project}" />
     <copyreleasestars project="${scripting.project}" />
     <copyreleasestars project="${sfLoggingServices.project}"/>
     <copyreleasestars project="${slp.project}"  />
     <copyreleasestars project="${ssh.project}" />
     <copyreleasestars project="${sfinstaller.project}" />
+    <copyreleasestars project="${dns.project}" />
+    <copyreleasestars project="${www.project}" />
+    <copyreleasestars project="${xml.project}" />
 
 	
   <tar tarfile="../releases/${Name.System}.${version}.${DSTAMP}_DIST.tar">
