@@ -50,6 +50,8 @@ These are the meaningful targets for this build file:
 -->
 
 <project  name="ComponentDist" default="help" basedir=".">
+
+	<property file="build.properties" />
   <!-- =================================================================== -->
   <!-- Initialization target                                               -->
   <!-- =================================================================== -->
@@ -103,13 +105,24 @@ These are the meaningful targets for this build file:
      <property name="src" value="src"/> <!-- all protected files -->
      <property name="debugmode" value="on"/> <!-- turn on compile -g -->
      <property name="jdocs" value="${dist}/${docs}/jdocs"/>
-     
+
+     <fileset id="smartfrog.lib.fileset"
+	    dir="${smartfrog.home}/dist/lib">
+      <include name="**/*.jar"/>
+    </fileset> 
+    
+    <fileset id="components.lib.fileset"
+	    dir="lib">
+      <include name="**/*.jar"/>
+    </fileset> 
   <!-- =================================================================== -->
   <!-- Initialization path (Libs needed for compiling)                     -->
   <!-- =================================================================== -->
   <path id="components.class.path">
-     <pathelement path="${classpath}"/>
-     <pathelement location="lib/**.jar"/>
+     <!--pathelement path="${classpath}"/>
+     <pathelement location="lib/**.jar"/-->
+     <fileset refid="smartfrog.lib.fileset" />
+     <fileset refid="components.lib.fileset" />
   </path>
 
   <!-- =================================================================== -->
@@ -149,9 +162,16 @@ These are the meaningful targets for this build file:
     <javac srcdir="${src}" destdir="${build}" debug="${debugmode}" compiler="javac1.4" source="1.4">
       <classpath refid="components.class.path"/>
     </javac>
-    <rmic base="${build}" includes="**/*.class">
+    <!--rmic base="${build}" includes="**/*.class">
       <classpath refid="components.class.path"/>
-    </rmic>
+    </rmic-->
+    <rmic stubversion="1.2"
+          base="${build}"
+          verify="true"
+          compiler="sun"
+          includes="**/*.class">
+           <classpath refid="components.class.path"/>
+      </rmic>
     <!--  sfExamples.jar                                               -->
     <!-- Create sfExamples.jar file -->
     <jar jarfile="${lib}/sf-components-examples.jar"
