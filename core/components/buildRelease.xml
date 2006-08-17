@@ -168,9 +168,21 @@ To use: ant -f buildRelease release
         <exclude name="**/*.*~" />
 		<exclude name="**/releases/**"/>
 		<exclude name="**/build/**"/>
-		<exclude name="**/test/**"/>
-        <include name="anubis/**/test/**"/>
-   </zipfileset>
+		<exclude name="ant/test/**"/>
+		<exclude name="anubis/test/**"/>
+		<exclude name="anubisdeployer/test/**"/>
+		<exclude name="emailer/test/**"/>
+		<exclude name="jetty/test/**"/>
+		<exclude name="net/test/**"/>
+		<exclude name="scripting/test/**"/>
+		<exclude name="loggingservices/test/**"/>
+		<exclude name="slp/test/**"/>
+		<exclude name="ssh/test/**"/>
+		<exclude name="sfinstaller/test/**"/>
+		<exclude name="dns/test/**"/>
+		<exclude name="www/test/**"/>
+	</zipfileset>
+	
    <zipfileset dir=".." prefix="${Name.System}.${version}">
 	   <include name="**/common.xml"/>
 	   <include name="**/extras/ant/dist/**"/>
@@ -221,8 +233,19 @@ To use: ant -f buildRelease release
         <exclude name="**/*.*~" />
 		<exclude name="**/releases/**"/>
 		<exclude name="**/build/**"/>
-		<exclude name="**/test/**"/>
-        <include name="anubis/**/test/**"/>
+		<exclude name="ant/test/**"/>
+		<exclude name="anubis/test/**"/>
+		<exclude name="anubisdeployer/test/**"/>
+		<exclude name="emailer/test/**"/>
+		<exclude name="jetty/test/**"/>
+		<exclude name="net/test/**"/>
+		<exclude name="scripting/test/**"/>
+		<exclude name="loggingservices/test/**"/>
+		<exclude name="slp/test/**"/>
+		<exclude name="ssh/test/**"/>
+		<exclude name="sfinstaller/test/**"/>
+		<exclude name="dns/test/**"/>
+		<exclude name="www/test/**"/>
     </tarfileset>
     <tarfileset dir=".." prefix="${Name.System}.${version}">
 	<include name="**/common.xml"/>
