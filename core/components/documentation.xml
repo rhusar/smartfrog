@@ -138,6 +138,7 @@ For more information: www.smartfrog.org
 			<fileset dir="${skin.dir}">
 				 <include name="sf.*" />
 				  <include name="frog.*" />
+				  <include name="sourceforge.*" />
 				</fileset>
 		</copy>	
 	
@@ -147,8 +148,9 @@ For more information: www.smartfrog.org
     <target name="generate-site" depends="prepare-docs" >
 	    <!--antcall target="site"/-->
         <exec dir="${comp.home}" executable="${env.FORREST_HOME}/bin/forrest.bat" os="Windows 2000, Windows_NT, Windows XP">
-           <arg value="site"/>
-           <arg value="-Dforrest.jvmargs=-Djava.awt.headless=true"/>
+	   <arg value="site"/>
+           <arg value="-Dforrest.jvmargs\=true"/>
+           <arg value="-Djava.awt.headless\=true"/>
         </exec>     
         <exec dir="${comp.home}" executable="${env.FORREST_HOME}/bin/forrest" os="Linux">
            <arg value="-Dforrest.jvmargs=-Djava.awt.headless=true"/>        
