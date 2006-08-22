@@ -55,7 +55,7 @@ which will be used to configure the chosen Forrest skin.
     Use e.g. align="center" to move the compliance links logos to 
     an alternate location default is left.
     (if the skin supports it) -->
-  <disable-compliance-links>false</disable-compliance-links>
+  <disable-compliance-links>true</disable-compliance-links>
 
   <!-- Render mailto: links unrecognisable by spam harvesters? -->
   <obfuscate-mail-links>true</obfuscate-mail-links>
@@ -84,19 +84,21 @@ which will be used to configure the chosen Forrest skin.
 
   <!-- optional host logo (e.g. sourceforge logo)
        default skin: renders it at the bottom-left corner -->
-  <host-url></host-url>
-  <host-logo></host-logo>
+  <host-url>http://sourceforge.net/projects/smartfrog</host-url>
+  <host-logo>images/sourceforge.gif</host-logo>
 
   <!-- relative url of a favicon file, normally favicon.ico -->
   <favicon-url></favicon-url>
 
   <!-- The following are used to construct a copyright statement -->
-  <year>2006</year>
+  <year>1998-2006</year>
   <vendor>Hewlett Packard Company</vendor>
   <!-- The optional copyright-link URL will be used as a link in the
     copyright statement
   <copyright-link>http://www.apache.org/licenses/</copyright-link>
   -->
+ 
+  
 
   <!-- Some skins use this to form a 'breadcrumb trail' of links.
     Use location="alt" to move the trail to an alternate location
