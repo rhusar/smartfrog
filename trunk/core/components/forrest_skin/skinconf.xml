@@ -224,7 +224,6 @@ which will be used to configure the chosen Forrest skin.
      pelt: footer: the second from bottom strip containing credit logos and published date
      pelt: feedback: the optional bottom strip containing feedback link
   -->
-<!--
     <color name="breadtrail" value="#cedfef" font="#0F3660" link="#0F3660" vlink="#0F3660" hlink="#000066"/>
     <color name="header" value="#294563"/>
     <color name="tab-selected" value="#4a6d8c" link="#0F3660" vlink="#0F3660" hlink="#000066"/>
@@ -250,10 +249,10 @@ which will be used to configure the chosen Forrest skin.
     <color name="warning" value="#990000"/>
     <color name="code" value="#CFDCED"/>
     <color name="footer" value="#cedfef"/>
--->
 
   <!-- Color group: Krysalis -->
 
+<!--
     <color name="header"    value="#FFFFFF"/>
 
     <color name="tab-selected" value="#a5b6c6" link="#000000" vlink="#000000" hlink="#000000"/>
@@ -283,6 +282,7 @@ which will be used to configure the chosen Forrest skin.
         
     <color name="footer" value="#a5b6c6"/>
 
+-->
 
   <!-- Color group: Collabnet --> 
 <!--
