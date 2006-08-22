@@ -64,7 +64,6 @@ For more information: www.smartfrog.org
     <property name="skin.dir" location="forrest_skin" />
     
 	
-	
 	<macrodef name="forrest-component">
       <attribute name="component" description="component to copy"/>
       <attribute name="includes" default="**/*" description="inclusion pattern; defaults to **/*"/>
@@ -102,7 +101,10 @@ For more information: www.smartfrog.org
 		<copy todir="${xdocs.dir}">
         <fileset dir="${skin.dir}">
 				 <include name="SFComponents.xml" />
-			</fileset>
+				 <include name="home.html" />
+				 <include name="overview_html_39c627ce.gif" />
+			 </fileset>
+			 
 		</copy>	
 
 		<copy todir="${xdocs.skin.dir}" overwrite="true">
@@ -110,7 +112,8 @@ For more information: www.smartfrog.org
 				 <include name="index.xml" />
 				 <include name="site.xml" />
 				 <include name="tabs.xml" />
-		</fileset>
+			 </fileset>
+			
 		</copy>	
 	<forrest-component component="emailer" />
 	<forrest-component component="net" />

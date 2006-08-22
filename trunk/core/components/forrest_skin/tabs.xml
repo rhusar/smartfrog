@@ -32,7 +32,7 @@
     be displayed when their parent tab is selected.    
   -->
 
-  <tab id="Home" label="Home" dir="" indexfile="index.html"/>
+  <tab id="Home" label="Home" dir="smartfrogdoc" indexfile="home.html"/>
 
   <!--tab  id="SFCore" label="SFCore" dir="smarfrogdoc/SFCore" indexfile="SFCore.html">
   </tab-->
