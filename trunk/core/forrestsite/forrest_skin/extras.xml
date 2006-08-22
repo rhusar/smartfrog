@@ -35,6 +35,18 @@
           </section>
 
 
+      <section id="EclipsePlugin">
+            <title>SmartFrog Eclipse plug-in</title>
+            <p>Ths document describes about the SmartFrog Eclipse plug-in that provides the user with one common integrated development environment (IDE) in which to develop SmartFrog description files and Java component files. The Eclipse platform offers the benefits of project management, version control, and sophisticated Java development tools for writing, compiling, testing, and debugging Java applications.
+                Links to document : <a href="Readme.html">HTML</a> , "<a href="http://smartfrog.cvs.sourceforge.net/*checkout*/smartfrog/core/extras/eclipse/smartfrog-plugin/shared/docs/Readme.html">CVS (Online)</a>"   </p>
+</section>
+
+
+      <section id="SFGui">
+            <title>SFGui</title>
+            <p>This document describes about SFGui whic is a light and simple editor to help in writing and debugging SmartFrog descriptions.
+		    Links to document : <a href="SFGuiManual.html">HTML</a> ,  <a href="SFGuiManual.pdf">PDF</a> , "<a href="http://smartfrog.cvs.sourceforge.net/*checkout*/smartfrog/core/extras/sfgui/docs/SFGuiManual.pdf">CVS (Online)</a>"   </p>
+          </section>
     	
   </body>
 </document>

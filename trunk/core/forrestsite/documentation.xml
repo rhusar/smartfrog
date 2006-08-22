@@ -174,11 +174,19 @@ For more information: www.smartfrog.org
 
         <echo level="verbose" >${SFHOME}</echo>
 
-         <copy todir="${xdocs.dir}">
+        <copy todir="${xdocs.dir}">
         <fileset dir="${ExtrasHOME}/sfDebugger/doc">
-				 <include name="sfDebugger_readme.*" />
-			</fileset>
-		</copy>
+			<include name="sfDebugger_readme.*" />
+	</fileset>
+	<fileset dir="${ExtrasHOME}/eclipse/smartfrog-plugin/shared/docs">
+			<include name="Readme.*" />
+			<include name="images/**"/>
+			<exclude name="**/CVS"/>
+	</fileset>
+	<fileset dir="${ExtrasHOME}/sfgui/docs">
+			<include name="SFGuiManual.*" />
+	</fileset>
+	</copy>
     
 
      </target>
