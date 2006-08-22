@@ -107,7 +107,7 @@ For more information: www.smartfrog.org
         <fileset dir="${SFHOME}/${skin.dir}">
 				 <include name="SFCore.xml" />
             	 <include name="service.xml" />
-            	 <exclude name="extras.xml" />
+            	 <include name="extras.xml" />
             	 <include name="examples.xml" />
                 <include name="jdocs_index.xml" />
              <include name="copyright.*" />
@@ -136,9 +136,9 @@ For more information: www.smartfrog.org
 
         </copy>
 
-     <copy todir="${xdocs.dir}" overwrite="true"
+     <!--copy todir="${xdocs.dir}" overwrite="true"
             file="${skin.dir}/extras.xml">
-          </copy>
+          </copy-->
 
 
     <copy todir="${site.home}/src/documentation" overwrite="true"
