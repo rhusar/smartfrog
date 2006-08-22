@@ -27,7 +27,7 @@
   
   <body> 
 	  <section>
-	<title>Welcome to SmartFrog Components</title>
+	<title>SmartFrog Components</title>
         <p><a href="emailer/emailer_readme.html">Emailer User Manual</a></p>		 
         <p><a href="net/net_readme.html">Net Version User Manual</a></p>
         <p><a href="scripting/scripting_readme.html">Scripting User Manual </a></p>    
