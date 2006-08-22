@@ -113,7 +113,6 @@ For more information: www.smartfrog.org
              <include name="copyright.*" />
             <include name="lpgl.*" />
             <include name="anttasks.xml" />
-             <include name="home.html" />
             <include name="overview_html_39c627ce.gif" />
 
             </fileset>
@@ -223,6 +222,9 @@ For more information: www.smartfrog.org
     <fileset dir="${SFHOME}/dist/docs">
 		<include name="build.html"/>
 	</fileset>
+	<fileset dir="${SFHOME}/forrest_skin">
+	       <include name="overview_html_39c627ce.gif" />
+        </fileset>
     </copy>
     </target>
 
