@@ -85,7 +85,7 @@ which will be used to configure the chosen Forrest skin.
   <!-- optional host logo (e.g. sourceforge logo)
        default skin: renders it at the bottom-left corner -->
   <host-url>http://sourceforge.net/projects/smartfrog</host-url>
-  <host-logo>images/sourceforge.gif</host-logo>
+  <host-logo>http://sourceforge.net/sflogo.php?group_id=87384</host-logo>
 
   <!-- relative url of a favicon file, normally favicon.ico -->
   <favicon-url></favicon-url>
