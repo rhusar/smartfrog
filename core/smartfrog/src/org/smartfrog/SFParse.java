@@ -33,11 +33,11 @@ import org.smartfrog.sfcore.common.MessageUtil;
 import org.smartfrog.sfcore.common.ParseOptionSet;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogParseException;
-import org.smartfrog.sfcore.languages.sf.predicates.BasePredicate;
 import org.smartfrog.sfcore.parser.Phases;
 import org.smartfrog.sfcore.parser.SFParser;
 import org.smartfrog.sfcore.security.SFClassLoader;
 import org.smartfrog.sfcore.common.ExitCodes;
+import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 
 /**
  * SFParse provides the utility methods to parse file descriptions and generate
@@ -95,9 +95,6 @@ public class SFParse implements MessageKeys {
         report.add("File: "+fileUrl+"\n");
         long parseTime=System.currentTimeMillis();
         try {
-            if (opts.description) {
-                BasePredicate.keepPredicates = true;
-            }
 
             String language = getLanguageFromUrl(fileUrl);
             //report.add("language: "+language);
@@ -127,7 +124,7 @@ public class SFParse implements MessageKeys {
                     try {
                         is.close();
                     } catch (IOException swallowed) {
-
+                        //
                     }
                 }
             }
@@ -138,22 +135,24 @@ public class SFParse implements MessageKeys {
             for (Enumeration e = phaseList.elements(); e.hasMoreElements(); ) {
                 phase = (String) e.nextElement();
                 try {
-                    if (phase.equals("predicate")&& (opts.description)) {
-                       top = top.sfResolvePhase("description");
-                       printDescription(top,"stdout_txt");
-                    } else {
-                        top = top.sfResolvePhase(phase);
-                        if (opts.verbose&&!opts.quiet) {
-                            printPhase(phase, top.toString());
-                        }
-                        report.add("   "+phase+" phase: OK");
+                    top = top.sfResolvePhase(phase);
+                    if (opts.verbose && !opts.quiet) {
+                        printPhase(phase, top.toString());
                     }
+                    report.add("   " + phase + " phase: OK");
                 } catch (Exception ex) {
                   //report.add("   "+ phase +" phase: "+ex.getMessage());
                   report.add("   "+ phase +" phase: FAILED!");
                   throw ex;
                 }
             }
+
+            ComponentDescription cd = top.sfAsComponentDescription();
+
+            if ((opts.description) || opts.verbose) {
+                printPhase("sfAsComponentDescription", cd.toString());
+            }
+            
             parseTime=System.currentTimeMillis()-parseTime;
             //org.smartfrog.sfcore.common.Logger.log(" * "+fileUrl +" parsed in "+ parseTime + " millisecs.");
             report .add(", parsed in "+ (parseTime) + " millisecs.");
@@ -181,7 +180,7 @@ public class SFParse implements MessageKeys {
      * @param list the list of files to be parsed
      */
     private static void parseFiles (Vector list){
-          StringBuffer strb = new StringBuffer();
+          StringBuffer strb;
           String file = "";
           Vector report= new Vector();
           //Loop through the vector
@@ -192,22 +191,24 @@ public class SFParse implements MessageKeys {
                  file = list.elementAt(i).toString();
                  //If it's not an empty line
                  if (file.trim().length() > 0) {
-                     strb.append(
-                         "-----------------------------------------------\n");
-                     strb.append("-  Parsing: " + file+"\n");
-                     strb.append(
-                         "-----------------------------------------------");
+                     strb.append("-----------------------------------------------\n")
+                             .append("-  Parsing: ")
+                             .append(file)
+                             .append("\n")
+                             .append("-----------------------------------------------");
                      if (!opts.quiet) SFSystem.sfLog().out(strb.toString());
                      report.add(parseFile(file));
                  }
              } catch (Throwable thr){
                  strb = new StringBuffer();
-                 strb.append(
-                         "-----------------------------------------------");
-                 strb.append("-  Error parsing: "+ file+"\n");
-                 strb.append("-     "+thr.getMessage()+"\n");
-                 strb.append(
-                     "-----------------------------------------------");
+                 strb.append("-----------------------------------------------")
+                         .append("-  Error parsing: ")
+                         .append(file)
+                         .append("\n")
+                         .append("-     ")
+                         .append(thr.getMessage())
+                         .append("\n")
+                         .append("-----------------------------------------------");
                  if (!opts.quiet) SFSystem.sfLog().err(strb.toString(),thr);
              }
          }
@@ -341,34 +342,6 @@ public class SFParse implements MessageKeys {
     }
 
    /**
-    * Special method to print description with a particular presentation format.
-    *
-    * @param top the phases to be printed
-    * @param format the presentation format
-    */
-   private static void printDescription(Phases top, String format) {
-       //@TODO: add different formats like html, xhtml, pdf , txt, ...
-       try {
-           if (!opts.quiet) {
-               if (opts.verbose)
-                   SFSystem.sfLog().out(
-                       "******************** component description *********************");
-               if (opts.description) {
-                   SFSystem.sfLog().out("Description of sfConfig component\n\n");
-                   top.sfResolvePhase("description");
-                   SFSystem.sfLog().out(top.sfAsComponentDescription().toString());
-               } else
-                   SFSystem.sfLog().out(top.sfAsComponentDescription().toString());
-           }
-       } catch (Exception ex) {
-           if (SFSystem.sfLog().isErrorEnabled()){
-             SFSystem.sfLog().error(ex);
-           }
-           //Logger.log(ex);
-       }
-   }
-
-   /**
     *  Prints the total parsing report.
     *
     *  @param report the report to be printed
@@ -424,7 +397,7 @@ public class SFParse implements MessageKeys {
       //SFSystem.sfLog().out("STATUS REPORT:\n");
       StringBuffer st = new StringBuffer("<tr>"+"\n");
       for (Enumeration e = report.elements(); e.hasMoreElements(); ) {
-        st.append("<td>"+e.nextElement().toString()+"<td/>"+"\n");
+          st.append("<td>").append(e.nextElement().toString()).append("<td/>\n");
       }
       st.append("<tr/>"+"\n");
       return st.toString();
