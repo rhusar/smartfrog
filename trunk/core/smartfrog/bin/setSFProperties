@@ -90,3 +90,8 @@ fi
 if test "$SFUSERCLASSPATH"; then
     export CLASSPATH=$SFUSERCLASSPATH:$CLASSPATH
 fi
+
+# CYGWIN
+if [ -f ${SHELL}.exe ]; then
+  CLASSPATH=`cygpath -pw "$CLASSPATH"`
+fi
