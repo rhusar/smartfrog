@@ -149,10 +149,10 @@ public class SFParse implements MessageKeys {
 
             ComponentDescription cd = top.sfAsComponentDescription();
 
-            if ((opts.description) || opts.verbose) {
+            if ((opts.description) || (opts.verbose && !opts.quiet)) {
                 printPhase("sfAsComponentDescription", cd.toString());
             }
-            
+
             parseTime=System.currentTimeMillis()-parseTime;
             //org.smartfrog.sfcore.common.Logger.log(" * "+fileUrl +" parsed in "+ parseTime + " millisecs.");
             report .add(", parsed in "+ (parseTime) + " millisecs.");
