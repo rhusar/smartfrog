@@ -46,7 +46,7 @@ DeployApiEndpoint extends AlpineEndpoint {
      getMessage ##
       <html>
       <head><title>Deployment Endpoint</title><head>
-      <body>This an endpoint of the HP implementation of the CDDLM Deployment system</body>
+      <body>This a demo! endpoint of the HP implementation of the CDDLM Deployment system</body>
       </html>
      #;
 
@@ -57,13 +57,13 @@ DeployApiEndpoint extends AlpineEndpoint {
 PortalEndpoint extends DeployApiEndpoint {
     name "portal";
     path "/portal/";
-    handlers [
+    handlers [ 
       StatsHandler:classname,
       LogCurrentMessageHandler:classname,
       AddressHandler:classname,
+      MustUnderstandChecker:classname,
       PortalHandler:classname,
-      LogCurrentMessageHandler:classname,
-      MustUnderstandChecker:classname
+      LogCurrentMessageHandler:classname
     ];
 }
 
