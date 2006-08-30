@@ -49,7 +49,6 @@ For more information: www.smartfrog.org
       subdir name;
       enabled true;
       basedir "build/test/interop";
-      cssURL 
 
       proxy extends Proxy {
         enabled proxyEnabled;
@@ -60,7 +59,6 @@ For more information: www.smartfrog.org
       }
 
       tests extends DeployapiTestRunner {
-        cssURL PARENT:cssURL;
         basedir PARENT:basedir;
         enabled PARENT:enabled;
         endpoint PARENT:endpoint;

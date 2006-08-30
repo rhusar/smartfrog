@@ -83,7 +83,6 @@ For more information: www.smartfrog.org
 
     enabled true;
 
-    cssURL "";
 
     destDir extends Mkdir {
       dir subdir;
@@ -94,7 +93,6 @@ For more information: www.smartfrog.org
     };
 
     htmlListener extends XmlListener {
-      cssURL PARENT:cssURL; 
       outputDirectory LAZY destDir:absolutePath;
     }
 
