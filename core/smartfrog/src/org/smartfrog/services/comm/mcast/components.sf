@@ -37,7 +37,7 @@ mCastClient extends Prim {
    /**
     * Mandatory attribute: the class for component description
     */
-   sfClass "org.smartfrog.services.comm.mcast.sfMCastClientImpl";
+   sfClass "org.smartfrog.services.comm.mcast.SFMCastClientImpl";
 
 
    /**
@@ -78,7 +78,7 @@ mCastServer extends Prim {
    /**
     * Mandatory attribute: the class for component description
     */
-   sfClass "org.smartfrog.services.comm.mcast.sfMCastServerImpl";
+   sfClass "org.smartfrog.services.comm.mcast.SFMCastServerImpl";
 
 
    /**
