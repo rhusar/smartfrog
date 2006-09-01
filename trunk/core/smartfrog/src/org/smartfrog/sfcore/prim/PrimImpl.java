@@ -175,7 +175,7 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
            try {
                // if sfLog() is called then a new log is created and an upcall is triggered
                if ((sfLog!=null) && sfLog().isTraceEnabled()) {
-                   sfLog().trace("sfResolved HERE '"+name.toString()+"' to '"+ result.toString()+"'");
+                   sfLog().trace("sfResolved HERE '"+name.toString()+"' to '"+ result.toString()+"'");                  sfLog().trace("sfResolved HERE '"+name.toString()+"' to '"+ result.toString()+"'");
                }
            } catch (Throwable thr) {thr.printStackTrace();} //ignore
 
@@ -241,7 +241,7 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
         }
         try {
             if (sfLog().isTraceEnabled()) {
-                sfLog().trace(sfCompleteNameSafe()+ " sfResolved '"+r.toString()+"' to '"+ obj.toString()+"'");
+                sfLog().trace(sfCompleteNameSafe()+" sfResolved '"+ r.toString()+"' to '"+obj.toString()+"'");
             }
         } catch (Throwable thr) {thr.printStackTrace();} //ignore
         return obj;
@@ -544,7 +544,7 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
                 // A call to sfParentageChanged after the registration happens will clean up the cache.
                 //@todo we will replace unknown with its name once we modify the interface so that the component registers itself with its parent
                 sfCompleteName.addElement(new HereReferencePart("*unknown*"));
-                if (sfLog().isTraceEnabled()){
+                if (sfLog().isTraceEnabled()) {
                     sfLog().trace("Internal error generating complete name - child not named in parent yet");
                 }
             }
@@ -626,11 +626,6 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
 
                 sfExport(portObj);
             }
-            //Object exported. Now we can use the right log for this component.
-            // Before this we are using SFCORE_LOG
-            //Don't ini the component log before the object is exported
-            sfLog = null;
-            sfLog(); //Ini component log after the object exported
 
             if (sfParent!=null) {
                 ((ChildMinder)sfParent).sfAddChild(this);
