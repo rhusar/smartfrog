@@ -17,21 +17,36 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 For more information: www.smartfrog.org
 
 */
+#include "/org/smartfrog/predicates.sf"
+
+EventSchema extends Schema {
+    sendTo  extends OptionalCD;
+    registerWith extends OptionalCD;
+}
 
 EventPrim extends Prim {
     sfClass "org.smartfrog.sfcore.workflow.eventbus.EventPrimImpl";
+    eventSchema extends EventSchema;
     sendTo  extends LAZY {}
     registerWith extends LAZY {}
-    // lazyThread "true";
-    // maxCacheLength 0;
-    // preloadEvents ["...", "...", "..."];
+}
+
+EventCompoundSchema extends EventSchema {
+    //the action to start         
+    action extends OptionalCD;
+    
+        
+    //there is an old style supported here that kicks in if there is any 
+    //child called "actions". Do not name children this way unless you want
+    //a different startup mechanism
+    actions extends Optional;
+    
 }
 
 EventCompound extends Compound {
     sfClass "org.smartfrog.sfcore.workflow.eventbus.EventCompoundImpl";
+    eventCompoundSchema extends EventCompoundSchema;
     sendTo  extends LAZY {}
     registerWith extends LAZY {}
-    // lazyThread "true";
-    // maxCacheLength 0;
-    // preloadEvents ["...", "...", "..."];
+
 }
