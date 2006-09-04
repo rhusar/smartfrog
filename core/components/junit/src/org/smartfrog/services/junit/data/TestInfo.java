@@ -73,6 +73,7 @@ public final class TestInfo implements Serializable, Cloneable {
      * @serial
      */
     private String hostname;
+    private String ipaddr;
 
     /**
      * name of the process on which the test ran
@@ -98,7 +99,8 @@ public final class TestInfo implements Serializable, Cloneable {
     public static final String OUTCOME_SUCCESS="success";
     public static final String OUTCOME_FAILURE = "failure";
     public static final String OUTCOME_ERROR = "error";
-    public static final String OUTCOME_TIMEOUT = "success";
+    public static final String OUTCOME_TIMEOUT = "timeout";
+    public static final String OUTCOME_SKIPPED = "skipped";
 
     /**
      * empty constructor is used during deserialization
@@ -134,6 +136,7 @@ public final class TestInfo implements Serializable, Cloneable {
      */
     protected void init() {
         hostname = Utils.getHostname();
+        ipaddr = Utils.getIpAddr();
     }
 
 

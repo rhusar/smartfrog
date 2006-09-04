@@ -42,8 +42,16 @@ public class Utils {
         try {
             return InetAddress.getLocalHost().getHostName();
         } catch (UnknownHostException e) {
-            return "localhost";
+            return "(unknown host)";
         }
+    }
+    
+    public static String getIpAddr() {
+        try {
+            return InetAddress.getLocalHost().getHostAddress();
+        } catch (UnknownHostException e) {
+            return "(unknown address)";
+        }   
     }
 
     /**
