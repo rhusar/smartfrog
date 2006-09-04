@@ -74,6 +74,7 @@ public class LibraryArtifactImpl extends FileUsingCompoundImpl implements Librar
     private boolean downloadIfAbsent;
     private boolean downloadAlways;
     private boolean failIfNotPresent;
+    private File copyTo;
 
     private Log log;
 
@@ -138,7 +139,7 @@ public class LibraryArtifactImpl extends FileUsingCompoundImpl implements Librar
                 failIfNotPresent,
                 true);
         classifier = sfResolve(ATTR_CLASSIFIER, classifier, false);
-
+        copyTo = FileSystem.lookupAbsoluteFile(this,ATTR_COPYTO,null,null,false,null); 
 
         //all info is fetched. So work out our filename and URL.
         //we do this through methods for override points
@@ -182,6 +183,8 @@ public class LibraryArtifactImpl extends FileUsingCompoundImpl implements Librar
                 throw new SmartFrogException(message.toString(), this);
             }
         }
+        
+        
         String message = "LibraryArtifactImpl completed. File : "+ getFile();
         if (sfLog().isDebugEnabled()) sfLog().debug(message);
 

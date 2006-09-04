@@ -1,4 +1,4 @@
-/** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
+/** (C) Copyright 2006 Hewlett-Packard Development Company, LP
 
  This library is free software; you can redistribute it and/or
  modify it under the terms of the GNU Lesser General Public
@@ -17,22 +17,17 @@
  For more information: www.smartfrog.org
 
  */
-package org.smartfrog.services.filesystem;
 
-import java.rmi.Remote;
+ #include "/org/smartfrog/functions.sf"
+ 
+ /**
+  * This is a function to convert its two args to a merged directory path
+  * File path is applied before the merger, and a directory separator applied.
+  * the type of the result is a string
+  
+  */
+ filepath extends function {
+     sfFunctionClass "org.smartfrog.services.filesystem.FilepathFunction";
+ }
+ 
 
-/**
- * created 21-Jun-2004 16:52:27
- */
-
-
-public interface Mkdir extends Remote {
-    /**
-     * new directory to create
-     */
-    String ATTR_DIR = "dir";
-    /** parent directory {@value} */
-    String ATTR_PARENT = "parentDir";
-    
-    String ATTR_CLEAN_ON_START="cleanOnStartup";
-}

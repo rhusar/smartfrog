@@ -32,4 +32,7 @@ public interface CopyFile extends Remote, Compound {
     /** new file copy {@value} */
     String ATTR_TO = "destination";
     
+    String ATTR_COPY_ON_DEPLOY=  "copyOnDeploy";
+    
+    String ATTR_OVERWRITE ="overwrite";
 }

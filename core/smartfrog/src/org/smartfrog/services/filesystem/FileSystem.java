@@ -57,6 +57,8 @@ public class FileSystem {
             "Error! File is not accessible : ";
     public static final String ERROR_FILE_IS_A_DIRECTORY =
             "Error! File is a directory : ";
+    public static final String ERROR_COPY_ONTO_DIR = "Cannot copy onto a directory : ";
+    public static final String ERROR_NO_DEST_FILE = "No dest file";
 
     // helper class only
 
@@ -176,6 +178,46 @@ public class FileSystem {
         dir.delete();
     }
 
+    /**
+     * This static call is a helper for any component that wants to get either
+     * an absolute path or a FileIntf binding to an attribute. The attribute is
+     * looked up on a component. If it is bound to anything that implements
+     * FileIntf, then that component is asked for an absolute path. if it is
+     * bound to a string, then the string is turned into an absolute path,
+     * relative to any directory named, after the string is converted into
+     * platform appropriate forward/back slashes.
+     *
+     * @param component component to look up the path from
+     * @param attribute the name of the attribute to look up
+     * @param defval    a default value. This should already be in the local
+     *                  format for the target platform, and absolute. Can be
+     *                  null. No used when mandatory is true
+     * @param baseDir   optional base directory for a relative file when
+     *                  constructing from a string
+     * @param mandatory flag that triggers the throwing of a SmartFrogResolutionException
+     *                  when things go wrong
+     * @param platform  a platform to use for converting filetypes. Set to null
+     *                  to use the default helper for this platform.
+     * @return the absolute path
+     * @throws SmartFrogResolutionException error in resolving
+     * @throws RemoteException              In case of network/rmi error
+     */
+    public static File lookupAbsoluteFile(Prim component,
+                                          String attribute,
+                                          File defval,
+                                          File baseDir,
+                                          boolean mandatory,
+                                          PlatformHelper platform)
+        throws SmartFrogResolutionException, RemoteException {
+        String resolved = lookupAbsolutePath(component,
+            attribute,
+            null,
+            baseDir,
+            mandatory,
+            platform);
+        return resolved == null ? defval : new File(resolved);
+    }
+
 
     /**
      * This static call is a helper for any component that wants to get either
@@ -201,6 +243,45 @@ public class FileSystem {
      * @throws SmartFrogResolutionException error in resolving
      * @throws RemoteException In case of network/rmi error
      */
+    public static File lookupAbsoluteFile(Prim component,
+                                            Reference attribute,
+                                            File defval,
+                                            File baseDir,
+                                            boolean mandatory,
+                                            PlatformHelper platform)
+        throws SmartFrogResolutionException, RemoteException {
+        String resolved=lookupAbsolutePath(component,
+                                attribute,
+                                null,
+                                baseDir,
+                                mandatory,
+                                platform);
+        return resolved==null?defval:new File(resolved);
+    }
+        /**
+        * This static call is a helper for any component that wants to get either
+        * an absolute path or a FileIntf binding to an attribute. The attribute is
+        * looked up on a component. If it is bound to anything that implements
+        * FileIntf, then that component is asked for an absolute path. if it is
+        * bound to a string, then the string is turned into an absolute path,
+        * relative to any directory named, after the string is converted into
+        * platform appropriate forward/back slashes.
+        *
+        * @param component component to look up the path from
+        * @param attribute the name of the attribute to look up
+        * @param defval    a default value. This should already be in the local
+        *                  format for the target platform, and absolute. Can be
+        *                  null. No used when mandatory is true
+        * @param baseDir   optional base directory for a relative file when
+        *                  constructing from a string
+        * @param mandatory flag that triggers the throwing of a SmartFrogResolutionException
+        *                  when things go wrong
+        * @param platform  a platform to use for converting filetypes. Set to null
+        *                  to use the default helper for this platform.
+        * @return the absolute path
+        * @throws SmartFrogResolutionException error in resolving
+        * @throws RemoteException In case of network/rmi error
+        */
     public static String lookupAbsolutePath(Prim component,
                                             Reference attribute,
                                             String defval,
@@ -370,7 +451,12 @@ public class FileSystem {
         if(src.equals(dest)) {
             return;
         }
-        fCopy(new FileInputStream(src), dest);
+        blockcopy(src,dest);
+/*
+        validateCopyDestination(dest);
+        FileInputStream inputStream = new FileInputStream(src);
+        fCopy(inputStream, dest);
+*/
     }
 
     /**
@@ -390,25 +476,31 @@ public class FileSystem {
             if (null == src) {
                 throw new IOException("No source stream");
             }
-            if (null == dest) {
-                throw new IOException("No dest file");
-            }
-            if(dest.isDirectory()) {
-                throw new IOException("Cannot copy onto a directory : "+dest);
-            }
+            validateCopyDestination(dest);
 
             srcChannel = src.getChannel();
             destOutputStream = new FileOutputStream(dest);
             dstChannel = destOutputStream.getChannel();
             dstChannel.transferFrom(srcChannel, 0, srcChannel.size());
+            dstChannel.force(true);
         } finally {
             // Close the streams
-            close(srcChannel);
             close(dstChannel);
             close(destOutputStream);
+            close(srcChannel);
+
             close(src);
         }
 
+    }
+
+    private static void validateCopyDestination(File dest) throws IOException {
+        if (null == dest) {
+            throw new IOException(ERROR_NO_DEST_FILE);
+        }
+        if(dest.isDirectory()) {
+            throw new IOException(ERROR_COPY_ONTO_DIR +dest);
+        }
     }
 
     /**
@@ -452,9 +544,26 @@ public class FileSystem {
     }
 
     /**
+     * copy using blocks and not channels. We have some doubts
+     * about the other API working all the time.
+     * @param src source file
+     * @param dest dest file
+     * @return the number of bytes copied
+     * @throws IOException if an I/O error occurs (may result in partially done
+     *                     work)
+     */
+    private static long blockcopy(File src,File dest) throws IOException {
+        validateCopyDestination(dest);
+        FileInputStream instream=new FileInputStream(src);
+        FileOutputStream outstream=new FileOutputStream(dest);
+        return fCopy(instream,outstream);
+    }
+    
+    /**
      * Copies an <code>InputStream</code> to an <code>OutputStream</ code> using
      * a global internal buffer for performance. Compared to {@link
      * #fCopy(InputStream, OutputStream)} this method generated no garbage, but
+     * 
      * decreases concurrency.
      *
      * All streams are closed afterwards.
