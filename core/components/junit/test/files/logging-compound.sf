@@ -18,6 +18,7 @@ For more information: www.smartfrog.org
 
 */
 
+#include "/org/smartfrog/services/junit/components.sf"
 #include "/org/smartfrog/sfcore/logging/components.sf"
 #include "/org/smartfrog/sfcore/logging/logtoprimimpl.sf"
 
