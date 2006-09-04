@@ -246,12 +246,7 @@ public class ComponentHelper {
      */
     public void targetForTermination() {
 
-        Reference name;
-        try {
-            name = owner.sfCompleteName();
-        } catch (RemoteException e) {
-            name = null;
-        }
+        Reference name= completeNameOrNull();
         TerminationRecord record = TerminationRecord.normal(name);
         targetForTermination(record, false,false);
     }
