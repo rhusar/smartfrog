@@ -40,16 +40,17 @@ import java.util.Vector;
  * 20-Apr-2004 16:11:51
  */
 public class LivenessPageChecker implements LivenessPage {
-    /**
-     * who owns us
-     */
-    private Prim owner;
 
     /**
      * size to download packets
      */
     protected static final int BLOCKSIZE = 8192;
 
+    /**
+     * path attribute
+     */
+    protected String path=null;
+    
     /**
      */
     protected String page = "/";
@@ -106,6 +107,8 @@ public class LivenessPageChecker implements LivenessPage {
 
     protected HashMap mimeTypeMap;
 
+    
+    
     /**
      * create a new liveness page
      *
@@ -115,13 +118,15 @@ public class LivenessPageChecker implements LivenessPage {
      * @param page
      * @throws RemoteException
      */
-    public LivenessPageChecker(Prim owner, String protocol, String host, int port,
-                               String page) throws RemoteException, SmartFrogDeploymentException {
+    public LivenessPageChecker(
+        String protocol,
+        String host,
+        int port,
+        String page) throws RemoteException, SmartFrogDeploymentException {
         this.page = page;
         this.protocol = protocol;
         this.host = host;
         this.port = port;
-        this.owner = owner;
         makeURL();
     }
 
@@ -131,8 +136,8 @@ public class LivenessPageChecker implements LivenessPage {
      * @param url A URL to check
      * @throws MalformedURLException if the URL is invalid
      */
-    public LivenessPageChecker(Prim owner, String url) throws MalformedURLException, SmartFrogLogException {
-        bind(owner);
+    public LivenessPageChecker(String url) throws MalformedURLException, SmartFrogLogException {
+        bind(null);
         targetURL = new URL(url);
     }
 
@@ -159,8 +164,9 @@ public class LivenessPageChecker implements LivenessPage {
      * @param owner
      */
     private void bind(Prim owner) throws SmartFrogLogException {
-        this.owner = owner;
-        log = LogFactory.getLog(owner);
+        if(owner!=null) {
+            log=LogFactory.getLog(owner);
+        }
     }
 
 
@@ -191,10 +197,24 @@ public class LivenessPageChecker implements LivenessPage {
         target.append(host);
         target.append(':');
         target.append(port);
-        if (!page.startsWith("/")) {
+        String fullpath;
+        if(path!=null) {
+            fullpath=path;
+            if (page != null) {
+                //add a page
+                if(!fullpath.endsWith("/") && !page.startsWith("/")) {
+                    //maybe a / char
+                    fullpath+="/";
+                }
+                fullpath+=page;
+            }
+        } else {
+            fullpath=page;
+        }
+        if (!fullpath.startsWith("/")) {
             target.append('/');
         }
-        target.append(page);
+        target.append(fullpath);
 
         if (queries != null) {
             target.append(queries);
@@ -244,9 +264,9 @@ public class LivenessPageChecker implements LivenessPage {
     public void checkPage() throws SmartFrogLivenessException {
         //set up the connection
         HttpURLConnection connection = null;
-
+        boolean logDebug= log != null && log.isDebugEnabled(); 
         try {
-            if (log.isDebugEnabled()) {
+            if (logDebug) {
                 log.debug("connecting to " + targetURL);
             }
             connection = (HttpURLConnection) targetURL.openConnection();
@@ -261,7 +281,7 @@ public class LivenessPageChecker implements LivenessPage {
             }
 
             String response = connection.getResponseMessage();
-            if (log.isDebugEnabled()) {
+            if (logDebug) {
                 log.debug("response=" + response);
             }
 
@@ -384,8 +404,9 @@ public class LivenessPageChecker implements LivenessPage {
      * @return a string representation of the object.
      */
     public String toString() {
-        return "LivenessCheck " + targetURL.toString() + " " + minimumResponseCode
-                + "< response <" + maximumResponseCode + "; enabled = " + enabled;
+        return targetURL.toString() + " "
+            + minimumResponseCode + "< response <" + maximumResponseCode 
+            + (enabled?"":"(disabled)");
     }
 
     /**
@@ -422,6 +443,14 @@ public class LivenessPageChecker implements LivenessPage {
      */
     public void setPage(String page) {
         this.page = page;
+    }
+
+    public String getPath() {
+        return path;
+    }
+
+    public void setPath(String path) {
+        this.path = path;
     }
 
     /**

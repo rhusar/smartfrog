@@ -37,8 +37,11 @@ For more information: www.smartfrog.org
 
  /**
   * for liveness pages you need to give either the url, or the
-  * host/port/protocol/page.
-  * if the URL is specified, the alternate set is ignored
+  * built up URL
+  * ${protocol}://${host}:${port}/[${path}]/${[page][?queries]
+  * if the URL is specified, the alternate set is ignored.
+  * If the URL is not specified, the attribute <code>url</code>
+  * is set to the full URL at startup time.
   */
  LivenessPageSchema extends Schema {
 
@@ -52,6 +55,8 @@ For more information: www.smartfrog.org
      host extends OptionalString;
      //protocol, default http
      protocol extends OptionalString;
+     path extends OptionalString;
+     
      //page
      page extends OptionalString;
      //query list of things that get turned into queries -without escaping.
@@ -97,4 +102,21 @@ For more information: www.smartfrog.org
      enabled true;
  }
 
+
+/**
+ * This is the variant for use in a workflow sequence; it blocks
+ * the sequence until the page arrives.
+ *
+ * In WaitForPage, checkFrequency becomes the time in seconds between
+ * polls on the page
+ */
+  
+  WaitForPage extends LivenessPage {
+    WaitForPageSchema extends Schema {
+      timeout extends Integer;
+    }
+    sfClass "org.smartfrog.services.www.WaitForPageImpl";
+    fetchErrorText false;
+  }
+  
 

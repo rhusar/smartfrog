@@ -89,6 +89,10 @@ public abstract class AbstractDbcDelegate implements ApplicationServerContext {
         //do nothing
         destDir = server.getDestDir();
         destFile = new File(destDir, filename);
+        server.sfLog().info("Deploying "
+                +sourceFile.getAbsolutePath()
+                +" to "
+                +destFile.getAbsolutePath());
         try {
             FileSystem.fCopy(sourceFile, destFile);
         } catch (IOException e) {
@@ -98,6 +102,7 @@ public abstract class AbstractDbcDelegate implements ApplicationServerContext {
 
     public void terminate() throws RemoteException, SmartFrogException {
         //delete the destination file
+        server.sfLog().info("undeploying "+destFile);
         if (destFile != null && destFile.exists() && !destFile.delete()) {
             destFile.deleteOnExit();
         }
