@@ -37,6 +37,7 @@ public interface LivenessPage extends Remote {
     static final String ATTR_PORT = "port";
     static final String ATTR_PROTOCOL = "protocol";
     static final String ATTR_PAGE = "page";
+    static final String ATTR_PATH = "path";
     static final String ATTR_FOLLOW_REDIRECTS = "followRedirects";
     static final String ATTR_ERROR_TEXT = "fetchErrorText";
     static final String ATTR_MINIMUM_RESPONSE_CODE = "minimumResponseCode";

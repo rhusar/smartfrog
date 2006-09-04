@@ -65,6 +65,7 @@ public class LivenessPageComponent extends PrimImpl implements LivenessPage {
      * a log
      */
     private Log log;
+    private ComponentHelper helper;
 
     /**
      * empty constructor
@@ -74,6 +75,29 @@ public class LivenessPageComponent extends PrimImpl implements LivenessPage {
     public LivenessPageComponent() throws RemoteException {
     }
 
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public LivenessPageChecker getLivenessPage() {
+        return livenessPage;
+    }
+
+    public int getCheckFrequency() {
+        return checkFrequency;
+    }
+
+    public int getNextCheck() {
+        return nextCheck;
+    }
+
+    public Log getLog() {
+        return log;
+    }
+
+    public ComponentHelper getHelper() {
+        return helper;
+    }
 
     /**
      * Called after instantiation for deployment purposed. Heart monitor is
@@ -116,6 +140,9 @@ public class LivenessPageComponent extends PrimImpl implements LivenessPage {
                     false));
             livenessPage.setProtocol(sfResolve(ATTR_PROTOCOL,
                     livenessPage.getProtocol(), false));
+            livenessPage.setPath(sfResolve(ATTR_PATH,
+                livenessPage.getPath(),
+                false));
             livenessPage.setPage(sfResolve(ATTR_PAGE,
                     livenessPage.getPage(),
                     false));
@@ -145,8 +172,13 @@ public class LivenessPageComponent extends PrimImpl implements LivenessPage {
             sfReplaceAttribute(ATTR_URL, targetURL.toString());
         }
 
-        log = new ComponentHelper(this).getLogger();
-        log.info("Checking " + toString());
+        helper = new ComponentHelper(this);
+        log = helper.getLogger();
+        log.info(getDescription() + toString());
+    }
+
+    protected String getDescription() {
+        return "Checking ";
     }
 
 
@@ -167,6 +199,17 @@ public class LivenessPageComponent extends PrimImpl implements LivenessPage {
     public void sfPing(Object source)
             throws SmartFrogLivenessException, RemoteException {
         super.sfPing(source);
+        livenessPing();
+    }
+
+    /**
+     * This is the routine called in sfPing that checks the liveness.
+     * Override it if you want different behaviour on liveness
+     * @throws RemoteException
+     * @throws SmartFrogLivenessException
+     */
+    protected void livenessPing() throws RemoteException,
+        SmartFrogLivenessException {
         try {
             updateEnabledState();
         } catch (SmartFrogResolutionException e) {
