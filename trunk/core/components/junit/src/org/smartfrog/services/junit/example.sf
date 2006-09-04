@@ -33,7 +33,7 @@ For more information: www.smartfrog.org
 
 sfConfig extends TestRunner {
 
-    listener extends HtmlListener {
+    listener extends HtmlTestListener {
         outputDirectory ".";
 
     }
