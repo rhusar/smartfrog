@@ -18,8 +18,27 @@ For more information: www.smartfrog.org
 
 */
 
+#include "/org/smartfrog/predicates.sf"
+/*
+ * Timeout is a modified compound which differs in that the single
+ * sub-component is given a certain amount of time to terminate and if it has
+ * not, the timeout combinator terminates it and itself abnormally. The
+ * sub-component may, of course, be a further combinator such as a Sequence.
+ * The timeout combinator creates its sub-componentent during the sfStart
+ * phase The Timeout combinator waits for its sub-components to terminate
+ * normally at which point it too terminates normally. If an error occurs at
+ * any point, or a sub-component terminates abnormally, or the timeout fires
+ * before its sub-component terminates, the Timeout combinator terminates
+ * abnormally.
+ */
 Timeout extends EventCompound {
     sfClass "org.smartfrog.sfcore.workflow.combinators.Timeout";
+    timeoutSchema extends Schema {
+    //timeout in milliseconds
+        time extends Integer;
+    //the action to start after the delay has finished        
+        action extends CD;
+    }
     // action ...
     time 0;
 }

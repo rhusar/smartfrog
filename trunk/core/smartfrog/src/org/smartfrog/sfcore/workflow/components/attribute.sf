@@ -18,7 +18,20 @@ For more information: www.smartfrog.org
 
 */
 
-// note that since Attribute extends EventPrim, event registrations can be given
+#include "/org/smartfrog/predicates.sf"
+
+
+/*
+ This component adds or removes an attribute from a component. 
+ note that since Attribute extends EventPrim, event registrations can be given
+ */
+
+AttributeSchema extends Schema {
+    component extends CD;
+    name extends String;
+    // not present implies remove...
+    value extends Optional;
+}
 
 Attribute extends EventPrim {
     sfClass "org.smartFrog.sfcore.workflow.components.Attribute";
