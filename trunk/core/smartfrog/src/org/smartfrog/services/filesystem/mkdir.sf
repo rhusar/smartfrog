@@ -28,7 +28,12 @@ MkdirSchema extends Schema {
     //parent dir may not be needed.
     parentDir extends Optional;
 
+    //flag to set to delete the directory on termination
+    
     deleteOnExit extends Boolean;
+    
+    //flag to set to clean the directory up on startup
+    cleanOnStartup extends Boolean;
 }
 
 /**
@@ -41,4 +46,5 @@ Mkdir extends Prim {
     mkdirSchema extends MkdirSchema;
     sfClass "org.smartfrog.services.filesystem.MkdirImpl";
     deleteOnExit false;
+    cleanOnStartup false; 
 }

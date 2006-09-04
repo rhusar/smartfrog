@@ -29,6 +29,7 @@ import org.smartfrog.sfcore.compound.CompoundImpl;
 import org.smartfrog.sfcore.utils.ComponentHelper;
 import org.smartfrog.sfcore.common.*;
 import org.smartfrog.sfcore.prim.TerminationRecord;
+import org.smartfrog.sfcore.logging.Log;
 
 /**
  *   Implemetation for CopyFile component.
@@ -38,6 +39,7 @@ public class CopyFileImpl extends CompoundImpl implements CopyFile, Compound {
 
     private File fromFile=null;
     private File toFile=null;
+    private boolean copyOnDeploy=true;
 
     /**
      * Constructor
@@ -73,8 +75,13 @@ public class CopyFileImpl extends CompoundImpl implements CopyFile, Compound {
      */
     public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
         super.sfDeploy();
-        copyFile();
+        copyOnDeploy=sfResolve(ATTR_COPY_ON_DEPLOY,copyOnDeploy,true);
+        if (copyOnDeploy) {
+            copyFile();
+        }
     }
+
+
 
     /**
      * Copies file using attributes "source" and "destination" from description
@@ -94,13 +101,28 @@ public class CopyFileImpl extends CompoundImpl implements CopyFile, Compound {
                         null);
         fromFile=new File(from);
         toFile=new File(to);
-        try {
-            FileSystem.fCopy( fromFile, toFile);
-        } catch (IOException ex) {
-            throw SmartFrogException.forward("Failed when copying "+
-                                              from +
-                                              " to "+to
-                                              ,ex);
+        //if the destination is a directory, we copy the file in there
+        //using its name as the key
+        if(toFile.isDirectory()) {
+            toFile=new File(toFile,fromFile.getName());
+        }
+        Log log=sfLog();
+        if(log.isInfoEnabled()) {
+            log.info("Copying "+fromFile.getAbsolutePath()+" to "+toFile.getAbsolutePath());
+        }
+        boolean overwrite=sfResolve(ATTR_OVERWRITE,true,true);
+        if(!overwrite && toFile.exists()) {
+            log.info("Skipping copy as the destination file exists and 'overwrite'==false");
+        } else {
+            try {
+                FileSystem.fCopy( fromFile, toFile);
+            } catch (IOException ex) {
+                throw SmartFrogException.forward("Failed when copying "
+                        +fromFile.getAbsolutePath() +
+                        " to " +
+                        toFile.getAbsolutePath()
+                        ,ex);
+            }
         }
     }
 
@@ -111,6 +133,9 @@ public class CopyFileImpl extends CompoundImpl implements CopyFile, Compound {
      */
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
+        if (!copyOnDeploy) {
+            copyFile();
+        }
         new ComponentHelper(this).sfSelfDetachAndOrTerminate(TerminationRecord.NORMAL, "Copy",sfCompleteNameSafe(),null);
     }
 

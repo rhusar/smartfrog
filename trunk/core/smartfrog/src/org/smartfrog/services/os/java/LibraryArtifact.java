@@ -95,6 +95,14 @@ public interface LibraryArtifact extends FileUsingComponent {
     String ATTR_CLASSIFIER = "classifier";
 
     /**
+     * Attribute to copy a component to. If it is a directory, 
+     * then the file gets copied as is. If is not a dir (or doesnt exist)
+     * it is taken as a filepath.
+     */
+    String ATTR_COPYTO = "copyTo";
+    
+    
+    /**
      * Create a serialized artifact to work with 
      * @return a serialized representation of the artifact's state.
      */

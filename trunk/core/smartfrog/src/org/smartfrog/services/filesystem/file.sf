@@ -73,7 +73,34 @@ FileSchema extends FileUsingComponentSchema {
 File extends Prim {
     fileSchema extends FileSchema;
     sfClass "org.smartfrog.services.filesystem.FileImpl";
-    testOnDeploy false;
+    testOnStartup false;
     testOnLiveness true;
+}
+
+/**
+ * A file or directory that must exist at startup
+ */
+
+FileOrDirMustExist extends File {
+  testOnStartup true;
+  testOnLiveness false;
+  mustExist true;
+}
+
+
+/**
+ * A file that must exist at startup
+ */
+DirMustExist extends FileOrDirMustExist {
+  mustBeDir true;
+}
+
+
+/**
+ * A directory that must exist at startup
+ */
+
+FileMustExist  extends FileOrDirMustExist {
+  mustBeFile true;
 }
 

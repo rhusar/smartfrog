@@ -28,6 +28,12 @@ CopyFileSchema extends Schema {
 
     //file is a file component.
     destination extends FilenameType;
+    
+    //should we copy at deploy time or on startup?
+    copyOnDeploy extends Boolean;
+    
+    //should any existing version of the file be overwritten if it is already there?
+    overwrite extends Boolean;
 }
 
 /**
@@ -37,5 +43,6 @@ CopyFileSchema extends Schema {
 CopyFile extends Compound {
     copySchema extends CopyFileSchema;
     sfClass "org.smartfrog.services.filesystem.CopyFileImpl";
-
+    copyOnDeploy true;
+    overwrite true; 
 }
