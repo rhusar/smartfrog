@@ -138,7 +138,9 @@ public class Sequence extends EventCompoundImpl implements Compound {
                     }
                 } else {
                     if (sfLog().isErrorEnabled()){
-                      sfLog().error(name+ "- error in previous sequenced component, aborting. "  + " parent:" + sfParent().sfCompleteName(),null,status);
+                      sfLog().error(name+ "- error in previous sequenced component, aborting. "  + " parent:" + sfParent().sfCompleteName(),
+                          SmartFrogException.forward(status.cause),
+                          status);
                     }
                     super.sfTerminatedWith(status, comp);
                 }
@@ -146,7 +148,7 @@ public class Sequence extends EventCompoundImpl implements Compound {
               if (sfLog().isErrorEnabled()) {
                 sfLog().error(name + " - error in starting next component ", e);
               }
-              TerminationRecord tr = TerminationRecord.abnormal( "error in starting next component: exception " + e, name);
+              TerminationRecord tr = TerminationRecord.abnormal( "error in starting next component: exception " + e, name,e);
               sfTerminate(tr);
             }
         }
