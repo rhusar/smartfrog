@@ -102,11 +102,11 @@ For more information: www.smartfrog.org
     <property name="releasetest.project" location="releasetest" />
     <property name="scripting.project" location="scripting" />
     <property name="sfinstaller.project" location="sfinstaller" />
-    <property name="sfLoggingServices.project" location="loggingservices" />
+    <property name="loggingservices.project" location="loggingservices" />
     <property name="slp.project" location="slp" />
     <property name="ssh.project" location="ssh" />
     <property name="tomcat.project" location="tomcat" />
-    <property name="xml.project" location="xml" >
+    <property name="xml.project" location="xml" />
     <property name="www.project" location="www" />
     <property name="dns.project" location="dns" />
     
@@ -168,9 +168,8 @@ For more information: www.smartfrog.org
       <pathelement location="${slp.project}"/>
       <pathelement location="${scripting.project}"/>
       <pathelement location="${sfinstaller.project}"/>
-      <pathelement location="${sfLoggingServices.project}"/>
+      <pathelement location="${loggingservices.project}"/>
       <pathelement location="${dns.project}"/>
-      /-->
     </path>
     
     <property name="component.path.asproperty"
@@ -459,7 +458,7 @@ For more information: www.smartfrog.org
         <pathelement path="${net.project}/${src}"/>
         <pathelement path="${scripting.project}/${src}"/>
         <pathelement path="${sfinstaller.project}/${src}"/>
-        <pathelement path="${sfLoggingServices.project}/${src}"/>
+        <pathelement path="${loggingservices.project}/${src}"/>
         <pathelement path="${slp.project}/${src}"/>
 	<pathelement path="${ssh.project}/${src}"/>
 	<pathelement path="${dns.project}/${src}"/>
@@ -496,7 +495,7 @@ For more information: www.smartfrog.org
     <copybuild project="${net.project}" />
     <copybuild project="${scripting.project}" />
     <copybuild project="${sfinstaller.project}" />
-    <copybuild project="${sfLoggingServices.project}" />
+    <copybuild project="${loggingservices.project}" />
     <copybuild project="${slp.project}"  />
     <copybuild project="${ssh.project}" />
     <copybuild project="${dns.project}" />
@@ -519,7 +518,7 @@ For more information: www.smartfrog.org
     <copybins project="${net.project}" />
     <copybins project="${scripting.project}" />
     <copybins project="${sfinstaller.project}" />
-    <copybins project="${sfLoggingServices.project}"/>
+    <copybins project="${loggingservices.project}"/>
     <copybins project="${slp.project}"  />
     <copybins project="${ssh.project}" />
     <copybins project="${dns.project}" />
@@ -540,7 +539,7 @@ For more information: www.smartfrog.org
     <copylibs project="${net.project}" />
     <copylibs project="${scripting.project}" />
     <copylibs project="${sfinstaller.project}" />
-    <copylibs project="${sfLoggingServices.project}" />
+    <copylibs project="${loggingservices.project}" />
     <copylibs project="${slp.project}"  />
     <copylibs project="${ssh.project}" />
     <copylibs project="${dns.project}" />
@@ -562,7 +561,7 @@ For more information: www.smartfrog.org
     <copycomponents project="${net.project}"  />
     <copycomponents project="${scripting.project}" />
     <copycomponents project="${sfinstaller.project}" />
-    <copycomponents project="${sfLoggingServices.project}" />
+    <copycomponents project="${loggingservices.project}" />
     <copycomponents project="${net.project}"  />
     <copycomponents project="${slp.project}"  />
     <copycomponents project="${ssh.project}" />
@@ -584,7 +583,7 @@ For more information: www.smartfrog.org
     <copydocs project="${net.project}" />
     <copydocs project="${scripting.project}" />
     <copydocs project="${sfinstaller.project}" />
-    <copydocs project="${sfLoggingServices.project}" />
+    <copydocs project="${loggingservices.project}" />
     <copydocs project="${slp.project}" />
     <copydocs project="${ssh.project}" />
     <copydocs project="${dns.project}" />
@@ -606,7 +605,7 @@ For more information: www.smartfrog.org
     <copyjdocs project="${net.project}" name="net"/>
     <copyjdocs project="${scripting.project}" name="scripting"/>
     <copyjdocs project="${sfinstaller.project}" name="sfinstaller"/>
-    <copyjdocs project="${sfLoggingServices.project}" name="loggingservices"/>
+    <copyjdocs project="${loggingservices.project}" name="loggingservices"/>
     <copyjdocs project="${slp.project}" name="slp"/>
     <copyjdocs project="${ssh.project}" name="ssh"/>
     <copyjdocs project="${dns.project}" name="dns"/>
@@ -630,7 +629,7 @@ For more information: www.smartfrog.org
       <zipfileset dir="${net.project}/dist/${src}" />
       <zipfileset dir="${scripting.project}/dist/${src}" />
       <zipfileset dir="${sfinstaller.project}/dist/${src}" />
-      <zipfileset dir="${sfLoggingServices.project}/dist/${src}" />
+      <zipfileset dir="${loggingservices.project}/dist/${src}" />
       <zipfileset dir="${slp.project}/dist/${src}" />
       <zipfileset dir="${ssh.project}/dist/${src}" />
        <zipfileset dir="${dns.project}/dist/${src}" />
@@ -654,7 +653,7 @@ For more information: www.smartfrog.org
     <updateversion project="${net.project}" compname="net"/>
     <updateversion project="${scripting.project}" compname="scripting"/>
     <updateversion project="${sfinstaller.project}" compname="sfinstaller"/>
-    <updateversion project="${sfLoggingServices.project}" compname="sfLoggingServices"/>
+    <updateversion project="${loggingservices.project}" compname="loggingservices"/>
     <updateversion project="${slp.project}" compname="slp"/>
     <updateversion project="${ssh.project}" compname="ssh"/>
     <updateversion project="${dns.project}" compname="dns"/>

@@ -788,7 +788,7 @@
   </target>
 
   <!-- ========================================================== -->
-  <!-- conditionally start the daemon if one was not found already-->
+  <!-- conditionally start the GUI if one was not found already-->
   <!-- ========================================================== -->
   <target name="start-gui"
     depends="declare-extended-smartfrog-tasks" >
@@ -1166,7 +1166,7 @@
   <!-- this is the gump entry point; it does packaging and tests -->
   <!-- ========================================================== -->
   <target name="gump"
-    depends="test,dist"
+    depends="test,dist,installed"
     description="target for gump builds"
     />
 
