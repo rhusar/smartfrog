@@ -169,19 +169,10 @@ For more information: www.smartfrog.org
       <pathelement location="${scripting.project}"/>
       <pathelement location="${sfinstaller.project}"/>
       <pathelement location="${sfLoggingServices.project}"/>
-      <pathelement location="${www.project}"/>
-      <pathelement location="${jetty.project}"/>
       <pathelement location="${dns.project}"/>
-      <!--pathelement location="${xml.project}"/-->
-      <!--pathelement location="${arithmetic-testharness.project}"/-->
-      <!--pathelement location="${junit.project}"/-->
-      <!--pathelement location="${cddlm.project}"/-->
-      <!--pathelement location="${releasetest.project}"
-      <pathelement location="${www.project}"/>
-      <pathelement location="${jetty.project}"/>
-      <pathelement location="${tomcat.project}"/>
       /-->
     </path>
+    
     <property name="component.path.asproperty"
         refid="component.path"/>
     <echo level="verbose">component.path := ${component.path.asproperty}</echo>
@@ -290,9 +281,9 @@ For more information: www.smartfrog.org
       <attribute name="includes" default="**/*"/>
 
       <sequential>
-	<mkdir dir="${comp.dist.jdocs.dir}/@{name}"/>
-	<copy todir="${comp.dist.jdocs.dir}/@{name}">
-		<fileset dir="@{project}/@{jdocdir}" includes="@{includes}"/>
+        <mkdir dir="${comp.dist.jdocs.dir}/@{name}"/>
+        <copy todir="${comp.dist.jdocs.dir}/@{name}">
+          <fileset dir="@{project}/@{jdocdir}" includes="@{includes}"/>
         </copy>
       </sequential>
     </macrodef>
@@ -347,10 +338,13 @@ For more information: www.smartfrog.org
     <delegate target="maybe-test"/>
   </target>
 
-  <target name="dist" depends="init"
-    description="build distributions of all projects">
+
+  <target name="main-dist" depends="init">
     <delegate target="maybe-dist"/>
   </target>
+  
+  <target name="dist" depends="main-dist"
+    description="build distributions of all projects"/>
 
   <target name="install" depends="init"
     description="install all projects">
@@ -372,16 +366,27 @@ For more information: www.smartfrog.org
     <delegate target="diag2"/>
   </target>
 
-
-  <target name="buildrelease" depends ="init" 
-          description="buildRelease for all components" >
+  <target name="main-buildrelease" depends="init">
     <delegateBuild target="maybe-buildrelease"/>
   </target>
 
+  <target name="buildrelease" depends ="main-buildrelease,web-buildrelease" 
+          description="buildRelease for all components" >
+  </target>
 
   <target name="web" depends="init"
       description="web components">
     <delegate target="m2-install" buildpathref="web.path"/>
+  </target>
+  
+  <target name="web-dist" depends="init"
+    description="web components distribution">
+    <delegate target="m2-install" buildpathref="web.path"/>
+  </target>
+  
+  <target name="web-buildrelease" depends="init"
+    description="web components release">
+    <delegate target="maybe-buildrelease" buildpathref="web.path"/>
   </target>
 
   <target name="xml" depends="init"
@@ -389,11 +394,32 @@ For more information: www.smartfrog.org
     <delegate target="m2-install" buildpathref="xml.path"/>
   </target>
 
+  <target name="xml-dist" depends="init"
+    description="xml distribution">
+    <delegate target="maybe-dist" buildpathref="xml.path"/>
+  </target>
+
+  <target name="xml-buildrelease" depends="init"
+    description="xml release">
+    <delegate target="maybe-buildrelease" buildpathref="xml.path"/>
+  </target>
+  
   <target name="cddlm" depends="web,m2-install,xml"
       description="CDDLM implementation components">
     <delegate target="m2-install" buildpathref="cddlm.path"/>
   </target>
-
+  
+  <target name="cddlm-dist" depends="web-dist,xml-dist"
+    description="CDDLM distribution">
+    <delegate target="maybe-dist" buildpathref="cddlm.path"/>
+  </target>
+  
+  <target name="cddlm-buildrelease" depends="web-buildrelease,xml-buildrelease"
+    description="CDDLM release">
+    <delegate target="maybe-buildrelease" buildpathref="cddlm.path"/>
+  </target>
+  
+  
 
   <!-- =================================================================== -->
   <!-- clean jdocs                                                               -->
