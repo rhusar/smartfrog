@@ -55,12 +55,17 @@
        CVS_HEAD releases and will definitely change before long -->
   <target name="m2" depends="m2-tasks">
 
-    <m2-libraries pathID="libraries.path">
+    <m2-libraries pathID="libraries.path" verbose="true">
       <!--Required -->
       <dependency groupID="commons-httpclient"
           artifactID="commons-httpclient"
           version="${commons-httpclient.version}"
-          />
+          >
+        <exclusion
+          groupId="commons-logging"
+          artifactId="commons-logging"/>
+      </dependency>
+
       <dependency groupID="commons-logging"
           artifactID="commons-logging-api"
           version="${commons-logging.version}"/>
@@ -72,9 +77,16 @@
           version="${xerces.version}"/>
       <dependency groupID="xom"
           artifactID="xom"
-          version="${xom.version}"/>
+          version="${xom.version}">
+      <exclusion
+        groupId="dom4j"
+        artifactId="dom4j"/>
+        <exclusion
+          groupId="jdom"
+          artifactId="jdom"/>
+      </dependency>
 
-      <!--required at compile but not client-side runtime-->
+    <!--required at compile but not client-side runtime-->
       <dependency groupID="javax.servlet"
           artifactID="servlet-api"
           version="${servletapi.version}"
@@ -109,7 +121,11 @@
       <dependency groupID="httpunit"
           artifactID="httpunit"
           version="1.6"
-          scope="test"/>
+          scope="test">
+        <exclusion 
+          groupId="rhino"
+          artifactId="js" />
+      </dependency>
       <dependency groupID="junit"
           artifactID="junit"
           version="${junit.version}"
