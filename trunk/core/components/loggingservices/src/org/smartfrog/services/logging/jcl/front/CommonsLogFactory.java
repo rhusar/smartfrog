@@ -19,11 +19,9 @@
  */
 package org.smartfrog.services.logging.jcl.front;
 
-import org.apache.commons.logging.LogFactory;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogConfigurationException;
 import org.apache.commons.logging.impl.LogFactoryImpl;
-import org.smartfrog.sfcore.prim.Prim;
 
 /**
  * created 09-May-2006 17:17:53
