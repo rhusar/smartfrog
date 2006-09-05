@@ -95,9 +95,9 @@ For more information: www.smartfrog.org
     <property name="cdl.project" location="${extras.dir}/cdl"/>
     <property name="deployapi.project" location="deployapi" />
     <property name="emailer.project" location="emailer" />
-    <!--property name="fun.project" location="fun"/-->
+    <property name="fun.project" location="fun"/>
     <property name="jetty.project" location="jetty" />
-    <!--property name="junit.project" location="junit" /-->
+    <property name="junit.project" location="junit" />
     <property name="net.project" location="net" />
     <property name="releasetest.project" location="releasetest" />
     <property name="scripting.project" location="scripting" />
@@ -106,7 +106,7 @@ For more information: www.smartfrog.org
     <property name="slp.project" location="slp" />
     <property name="ssh.project" location="ssh" />
     <property name="tomcat.project" location="tomcat" />
-    <!--property name="xml.project" location="xml" /-->
+    <property name="xml.project" location="xml" >
     <property name="www.project" location="www" />
     <property name="dns.project" location="dns" />
     
