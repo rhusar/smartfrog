@@ -1,4 +1,4 @@
-/** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
+/** (C) Copyright 1998-2006 Hewlett-Packard Development Company, LP
 
  This library is free software; you can redistribute it and/or
  modify it under the terms of the GNU Lesser General Public
@@ -193,13 +193,7 @@ public class Parse extends TaskBase implements SysPropertyAdder {
             } catch (IOException e) {
                 throw new BuildException("while saving to " + tempFile, e);
             } finally {
-                if (out != null) {
-                    try {
-                        out.close();
-                    } catch (Exception swallowed) {
-
-                    }
-                }
+                FileUtils.close(out);
             }
 
 
