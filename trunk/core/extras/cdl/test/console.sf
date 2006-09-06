@@ -73,5 +73,5 @@ TraceConsole extends Console {
 }
 
 
-sfConfig extends TraceDisplayConsole;
+sfConfig extends Console;
 

@@ -106,6 +106,19 @@ public class CopyFileImpl extends CompoundImpl implements CopyFile, Compound {
         if(toFile.isDirectory()) {
             toFile=new File(toFile,fromFile.getName());
         }
+        //check that the sorce file exists and fail if it is not there
+        if (!fromFile.exists()) {
+            throw new SmartFrogDeploymentException("Unable to copy "
+                +fromFile.getAbsolutePath() +
+                " to " +
+                toFile.getAbsolutePath()
+            +" as the source file does not exist");
+        }
+        if(fromFile.isDirectory()) {
+            throw new SmartFrogDeploymentException("Unable to copy the directory"
+                + fromFile.getAbsolutePath() 
+                + " as directory copy is not implemented");
+        }
         Log log=sfLog();
         if(log.isInfoEnabled()) {
             log.info("Copying "+fromFile.getAbsolutePath()+" to "+toFile.getAbsolutePath());
