@@ -112,12 +112,20 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
      */
     public void  invoke (Method method, Object[] args) {
         try {
-            if (localLog!=null)
+            if (localLog!=null) {
                 method.invoke(localLog,args);
-        }catch (Throwable thr){
-            if (localLog!=null)
-                     localLog.error("Error Invoke LogImpl",thr);
-                 else thr.printStackTrace();
+            }
+        } catch (Throwable thr){
+            if(thr instanceof InvocationTargetException) {
+                //get a sub throwable here
+                thr=thr.getCause();
+            }
+            if (localLog!=null) {
+                localLog.error("Error Invoke LogImpl",thr);
+            }
+            else {
+                thr.printStackTrace();
+            }
         }
         //Registered logs
         synchronized (registeredLogs){
@@ -130,10 +138,19 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
                         method.invoke(log, args);
                     }
                 } catch (Throwable thr) {
-                    if (log!=null) log.trace("",thr);
-                    else if (localLog!=null)
+                    if (thr instanceof InvocationTargetException) {
+                        //get a sub throwable here
+                        thr = thr.getCause();
+                    }
+                    if (log!=null) {
+                        log.trace("",thr);
+                    }
+                    else if (localLog!=null) {
                         localLog.trace("",thr);
-                    else thr.printStackTrace();
+                    }
+                    else {
+                        thr.printStackTrace();
+                    }
                 }
             }
             log=null;
