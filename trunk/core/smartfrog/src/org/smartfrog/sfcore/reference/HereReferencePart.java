@@ -155,7 +155,7 @@ public class HereReferencePart extends ReferencePart {
         try {
             // if reference ask rr to resolve it (chaining)
             if (result instanceof Reference && !((Reference)result).getData()) {
-                result = rr.sfResolve((Reference)result, 0);
+                result = rr.sfResolve((Reference)result);
                 // if vector ask rr to resolve any contained reference(chaining)
             } else if (result instanceof Vector) {
                 result = sfResolveVector(rr, (Vector)result);
@@ -198,7 +198,7 @@ public class HereReferencePart extends ReferencePart {
             try {
                 // if reference ask rr to resolve it (chaining)
                 if (result instanceof Reference && !((Reference)result).getData()) {
-                    result = rr.sfResolve((Reference)result, 0);
+                    result = rr.sfResolve((Reference)result);
                 } else if (result instanceof Vector) {
                     result = sfResolveVector(rr, (Vector)result);
                 }
