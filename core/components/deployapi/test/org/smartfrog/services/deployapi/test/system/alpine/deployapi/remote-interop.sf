@@ -85,7 +85,7 @@ fullSuite extends Compound {
     logTo extends LogToPrimImpl {
       loggerClass "org.smartfrog.sfcore.logging.LogToPrimImpl";
       //the destination prim is defined here
-      logTo extends TestListenerLog {
+      logTo extends TestListenerLogImpl {
 
       }
       //trace out what is going on

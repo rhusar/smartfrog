@@ -77,9 +77,9 @@ For more information: www.smartfrog.org
 
     endpoint TBD;
 
-    basedir ".";
+    basedir "/tmp";
 
-    subdir "/";
+    subdir "deployapi";
 
     enabled true;
 
@@ -92,7 +92,7 @@ For more information: www.smartfrog.org
     console extends ConsoleListener {
     };
 
-    htmlListener extends XmlListener {
+    htmlListener extends HtmlTestListener {
       outputDirectory LAZY destDir:absolutePath;
     }
 

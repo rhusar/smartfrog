@@ -269,7 +269,9 @@ public class TestRunnerComponent extends CompoundImpl implements TestRunner,
         } catch (SmartFrogException e) {
             catchException(e);
         } finally {
-            log.info("Completed tests");
+            boolean testFailed = getCachedException() != null;
+            log.info("Completed tests "
+                +(testFailed?"with errors ":"successfully"));
             //declare ourselves finished
             setFinished(true);
             //unset the worker field
@@ -278,11 +280,12 @@ public class TestRunnerComponent extends CompoundImpl implements TestRunner,
             //now look at our termination actions
             if (shouldTerminate) {
                 TerminationRecord record;
-                if (getCachedException() == null) {
+                if (!testFailed || !failOnError) {
                     record = TerminationRecord.normal(name);
                 } else {
                     record = TerminationRecord.abnormal("Test failure", name, getCachedException());
                 }
+                log.info("terminating test component"+record.toString());
                 helper.targetForTermination(record, shouldDetach, false);
             }
         }

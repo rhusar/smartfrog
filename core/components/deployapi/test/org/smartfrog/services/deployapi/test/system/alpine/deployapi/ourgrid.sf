@@ -19,10 +19,6 @@ For more information: www.smartfrog.org
 */
 #include "/org/smartfrog/services/deployapi/test/system/alpine/deployapi/api/api_tests.sf"
 
-/**
- * This is a test run that tests against the NEC endpoint
- */
-
 /*
 I think that the EPR is now accessible!!
 Jun, could you try it again?
@@ -42,7 +38,7 @@ ourgrid_endpoint "http://cddlm.lsd.ufcg.edu.br:8080/muse/services/Portal";
 ourgrid_wsdl "http://cddlm.lsd.ufcg.edu.br:8080/muse/services/Portal?wsdl";
 ourgrid_health "http://cddlm.lsd.ufcg.edu.br:8080/muse/happyaxis.jsp";
 
-ourGridTests extends DeployapiTestRunner {
+OurGridTests extends DeployapiTestRunner {
   healthURL ourgrid_health;
   endpoint ourgrid_endpoint;
   subdir "ourgrid";
@@ -50,5 +46,9 @@ ourGridTests extends DeployapiTestRunner {
 }
 
 
-sfConfig extends OurGridTests {
+TestPlan extends OurGridTests{
+
+}
+
+sfConfig extends TestPlan {
 }

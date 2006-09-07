@@ -18,7 +18,11 @@ For more information: www.smartfrog.org
 
 */
 
-
+/**
+ * This is a component that can receive log events, via LogToPrim, and then
+ * route those log events to a test listener
+ * Use it to capture text output of logs.
+ */
 TestListenerLogImpl extends Prim {
    sfClass "org.smartfrog.services.junit.log.TestListenerLogImpl";
    loggerClass "org.smartfrog.services.junit.log.TestListenerLogImpl";
