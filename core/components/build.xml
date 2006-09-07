@@ -137,7 +137,7 @@ For more information: www.smartfrog.org
     <!-- this is where dependency logic is imposed
          the path must be ordered such that dependent projects
          come in the path after the things they depend on
-         
+         If there is no dependency, stick it in in alphabetic order.
          
          IMPORTANT
          =========
@@ -151,6 +151,9 @@ For more information: www.smartfrog.org
          
          Without this Gump will fail. Whoever adds a new item to this
          list gets the blame and the opportunity to fix it.
+
+         Steve will be the one telling you off. Get him to patch the 
+         gump file before that happens.
          
          If you add new dependency JARs, gump also needs to be patched,
          because under gump, gump owns your classpath.
@@ -160,16 +163,16 @@ For more information: www.smartfrog.org
       <pathelement location="${ant.project}"/>
       <pathelement location="${anubis.project}"/>
       <pathelement location="${anubisdeployer.project}"/>
-      <!--pathelement location="${fun.project}"/-->
-      <pathelement location="${ssh.project}"/>
-      <!--pathelement location="${junit.project}"/-->
-      <pathelement location="${net.project}"/>
+      <pathelement location="${dns.project}"/>
       <pathelement location="${emailer.project}"/>
-      <pathelement location="${slp.project}"/>
+      <!--pathelement location="${fun.project}"/-->
+      <!--pathelement location="${junit.project}"/-->
+      <pathelement location="${loggingservices.project}"/>
+      <pathelement location="${net.project}"/>
       <pathelement location="${scripting.project}"/>
       <pathelement location="${sfinstaller.project}"/>
-      <pathelement location="${loggingservices.project}"/>
-      <pathelement location="${dns.project}"/>
+      <pathelement location="${slp.project}"/>
+      <pathelement location="${ssh.project}"/>
     </path>
     
     <property name="component.path.asproperty"
@@ -460,8 +463,8 @@ For more information: www.smartfrog.org
         <pathelement path="${sfinstaller.project}/${src}"/>
         <pathelement path="${loggingservices.project}/${src}"/>
         <pathelement path="${slp.project}/${src}"/>
-	<pathelement path="${ssh.project}/${src}"/>
-	<pathelement path="${dns.project}/${src}"/>
+        <pathelement path="${ssh.project}/${src}"/>
+        <pathelement path="${dns.project}/${src}"/>
         <pathelement path="${jetty.project}/${src}"/>
         <pathelement path="${www.project}/${src}"/>
         <!--pathelement path="${xml.project}/${src}"/-->
