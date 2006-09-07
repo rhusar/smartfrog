@@ -89,15 +89,7 @@ JUnitTestSuite extends TestSuite {
     sfClass "org.smartfrog.services.junit.JUnitTestSuiteImpl";
 }
 
-/**
- * This is a component that can receive log events, via LogToPrim, and then
- * route those log events to a test listener
- * Use it to capture text output of logs.
- */
-TestListenerLog extends {
 
-   sfClass "org.smartfrog.services.junit.log.TestListenerLogImpl";
-}
 
 /**
  * and the test runner

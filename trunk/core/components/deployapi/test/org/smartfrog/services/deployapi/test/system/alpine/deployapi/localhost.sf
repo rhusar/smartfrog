@@ -23,18 +23,19 @@ For more information: www.smartfrog.org
 /**
  URL to the hp endpoint
  */
-hp_endpoint "http://deployapi.iseran.com:8080/alpine/portal/";
+localhost_endpoint "http://127.0.0.1:5050/alpine/portal/";
 
 
-HpGridTests extends DeployapiTestRunner {
+LocalHostTests extends DeployapiTestRunner {
 
-  endpoint hp_endpoint;
-  subdir "hp";
+  endpoint localhost_endpoint;
+  subdir "localhost";
+
+}
+
+TestPlan extends LocalHostTests {
 
 }
 
-TestPlan extends HpGridTests {
-
-}
 sfConfig extends TestPlan {
 }
