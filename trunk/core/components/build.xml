@@ -388,7 +388,7 @@ For more information: www.smartfrog.org
   
   <target name="web-buildrelease" depends="init"
     description="web components release">
-    <delegate target="maybe-buildrelease" buildpathref="web.path"/>
+    <delegate target="maybe-buildrelease" buildpathref="web.path" antfile="buildRelease.xml"/>
   </target>
 
   <target name="xml" depends="init"
