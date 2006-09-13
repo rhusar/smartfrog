@@ -1,0 +1,898 @@
+<?xml version="1.0"?>
+<project name="deployapi" default="default"
+    xmlns:ac="antlib:net.sf.antcontrib"
+    xmlns:sf="antlib:org.smartfrog.tools.ant"
+    xmlns:m2="antlib:org.apache.maven.artifact.ant"
+    xmlns:core="http://smartfrog.org/build/core"
+    >
+
+  <!--
+  /** (C) Copyright 2005-2006 Hewlett-Packard Development Company, LP
+
+  This library is free software; you can redistribute it and/or
+  modify it under the terms of the GNU Lesser General Public
+  License as published by the Free Software Foundation; either
+  version 2.1 of the License, or (at your option) any later version.
+
+  This library is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+  Lesser General Public License for more details.
+
+  You should have received a copy of the GNU Lesser General Public
+  License along with this library; if not, write to the Free Software
+  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+  For more information: www.smartfrog.org
+
+  */
+  -->
+
+  <description>
+    Build file for deployment API
+  </description>
+
+
+  <!-- override point -->
+  <property file="build.properties"/>
+  <property name="javac.java.version" value="1.5"/>
+  <property name="is.component" value="false"/>
+
+  <property name="root.dir" location="../.."/>
+  <property name="antbuild.dir" location="${root.dir}/antbuild"/>
+  <property name="xml.dir" location="${antbuild.dir}/xml"/>
+
+
+  <!-- Import common stuff -->
+  <import file="${xml.dir}/systemtest.xml"/>
+  <import file="${xml.dir}/gui.xml"/>
+
+  <!-- demo axis2 only -->
+  <!--<import file="demo.xml"/>-->
+
+  <!-- ========================================================== -->
+  <!-- ========================================================== -->
+  <target name="init"
+      depends="core.init-standard-output-dirs,sftasks.smartfrog-tasks,core.core-tasks,core.artifact-names">
+    <property name="war.dir" location="war"/>
+    <property name="webinf.dir" location="${war.dir}/WEB-INF"/>
+    <property name="services.dir" location="${webinf.dir}/services"/>
+    <property name="build.axis2.dir" location="${build.dir}/axis2"/>
+    <property name="build.axis2.src.dir" location="${build.axis2.dir}/src"/>
+    <property name="target.war.name"
+        value="${artifact.name}-war-${artifact.version}.war"/>
+    <property name="target.war"
+        location="${dist.dir}/${target.war.name}"/>
+
+  </target>
+
+  <target name="declare-compile.classpath"
+      depends="core-libraries,smartfrog-modules-classpath,smartfrog-core-classpath,jetty-classpath">
+    <path id="compile.classpath">
+      <path refid="core.classpath"/>
+      <path refid="smartfrog.core.classpath"/>
+      <path refid="smartfrog.modules.classpath"/>
+    </path>
+    <property name="compile.classpath.value" refid="compile.classpath"/>
+    <echo level="verbose">compile.classpath=${compile.classpath.value}</echo>
+  </target>
+
+
+  <target name="m2-tasks" depends="m2.init-m2"
+      xmlns:m2="antlib:org.apache.maven.artifact.ant">
+    <presetdef name="lib2" uri="antlib:org.apache.maven.artifact.ant">
+      <m2:dependencies>
+        <localRepository location="${m2.repository}"/>
+        <!-- look in SCM first -->
+        <remoteRepository url="${m2.smartfrog.scm.repository.url}"
+            />
+        <remoteRepository url="${m2.smartfrog.scm.old.repository.url}"/>
+        <!-- then hit ibiblio -->
+        <remoteRepository url="${m2.ibiblio.repository}"/>
+        <!-- local M1 repository -->
+        <remoteRepository url="${m1.repository.url}"
+            layout="legacy"/>
+
+        <!-- apache M1 repository -->
+        <!--<remoteRepository url="${m1.apache.cvs.repository}" layout="legacy"/>-->
+
+        <remoteRepository url="http://dist.codehaus.org/" layout="legacy"/>
+
+      </m2:dependencies>
+    </presetdef>
+  </target>
+
+  <target name="ready-to-declare-classpaths" depends="init,m2-tasks,core.load-version-info"/>
+
+  <target name="core-libraries" depends="ready-to-declare-classpaths">
+    <m2:libraries pathID="core.classpath">
+      <dependency groupID="commons-lang"
+          artifactID="commons-lang"
+          version="${commons-lang.version}">
+        <exclusion
+            groupId="junit"
+            artifactId="junit"/>
+      </dependency>
+      <!--get commons logging implementation, but no baggage-->
+      <dependency groupID="commons-logging"
+          artifactID="commons-logging-api"
+          version="${commons-logging.version}"/>
+      <dependency groupID="log4j"
+          artifactID="log4j"
+          version="${log4j.version}"/>
+    </m2:libraries>
+  </target>
+
+  <target name="smartfrog-core-classpath"
+      depends="ready-to-declare-classpaths">
+    <m2:libraries pathID="smartfrog.core.classpath">
+      <dependency groupID="org.smartfrog"
+          artifactID="smartfrog"
+          version="${smartfrog.version}"
+          scope="compile"
+          />
+      <dependency groupID="org.smartfrog"
+          artifactID="sfServices"
+          version="${smartfrog.version}"
+          scope="compile"
+          />
+    </m2:libraries>
+  </target>
+
+  <target name="smartfrog-modules-classpath"
+      depends="ready-to-declare-classpaths">
+    <m2:libraries pathID="smartfrog.modules.classpath" verbose="true">
+      <dependency groupID="org.smartfrog"
+          artifactID="sf-xml"
+          version="${smartfrog.version}"/>
+      <dependency groupID="org.smartfrog"
+          artifactID="sf-cdl"
+          version="${smartfrog.version}"/>
+      <dependency groupID="org.smartfrog"
+          artifactID="sf-www"
+          version="${smartfrog.version}"/>
+      <dependency groupID="org.smartfrog"
+          artifactID="sf-jetty"
+          version="${smartfrog.version}"/>
+      <dependency groupID="org.smartfrog"
+          artifactID="sf-m32"
+          version="${smartfrog.version}"/>
+      <dependency groupID="org.smartfrog"
+          artifactID="sf-loggingservices"
+          version="${smartfrog.version}"/>
+    </m2:libraries>
+  </target>
+
+  <!-- jetty classes -->
+  <target name="jetty-classpath"
+      depends="smartfrog-core-classpath">
+    <m2:libraries pathID="jetty.classpath">
+      <dependency groupID="jetty"
+          artifactID="jetty"
+          version="${jetty.version}"/>
+      <dependency groupID="servletapi"
+          artifactID="servletapi"
+          version="${servletapi.version}"/>
+    </m2:libraries>
+  </target>
+
+  <target name="mail-libraries" depends="ready-to-declare-classpaths">
+    <m2:libraries pathID="mail.classpath">
+      <dependency groupID="javax.activation"
+          artifactID="activation"
+          version="${activation.version}"/>
+      <dependency groupID="javax.mail"
+          artifactID="mail"
+          version="${mail.version}"/>
+    </m2:libraries>
+  </target>
+
+
+  <target name="declare-exec.classpath" depends="declare-compile.classpath">
+    <path id="exec.classpath">
+      <pathelement location="${target.jar}"/>
+      <path refid="compile.classpath"/>
+    </path>
+    <property name="exec.classpath.value" refid="exec.classpath"/>
+    <echo level="verbose">exec.classpath=${exec.classpath.value}</echo>
+  </target>
+
+  <!-- declares the testharness and junit path -->
+
+  <target name="test-libraries" depends="m2-tasks">
+    <m2:libraries pathID="test-libraries.classpath">
+
+      <dependency groupID="org.smartfrog"
+          artifactID="sf-jetty"
+          version="${smartfrog.version}"/>
+      <dependency groupID="org.smartfrog"
+          artifactID="sf-junit"
+          version="${smartfrog.version}"/>
+      <dependency groupID="org.smartfrog"
+          artifactID="sf-testharness"
+          version="${smartfrog.version}"/>
+      <dependency groupID="junit"
+          artifactID="junit"
+          version="${junit.version}"/>
+    </m2:libraries>
+  </target>
+
+  <target name="declare-tests.compile.classpath"
+    depends="declare-exec.classpath,test-libraries">
+    <path id="tests.compile.classpath">
+      <path refid="exec.classpath"/>
+      <path refid="test-libraries.classpath"/>
+    </path>
+    <property name="tests.compile.classpath.value"
+      refid="tests.compile.classpath"/>
+    <echo level="verbose">
+      tests.compile.classpath=${tests.compile.classpath.value}</echo>
+  </target>  
+
+  <!-- ========================================================== -->
+  <!-- this is an override point -->
+  <!-- it does nothing but declare all the dependencies for compilation -->
+  <!-- anything that overrides compile can declare a dependency on this -->
+  <!-- target to get its dependencies right -->
+  <!-- ========================================================== -->
+  <target name="pre-compile"
+      depends="init,declare-classpaths,core.core-tasks">
+  </target>
+
+  <!-- ========================================================== -->
+  <!-- this is an override point -->
+  <!-- compile everything, copy useful files over-->
+  <!-- ========================================================== -->
+  <target name="compile"
+      depends="pre-compile">
+    <depend srcdir="${src.dir}"
+        destdir="${build.classes.dir}"
+        cache="${build.dir}/depends"
+        closure="yes"/>
+    <core:javac
+        classpathref="compile.classpath"
+        srcdir="${src.dir}"
+        destdir="${build.classes.dir}"
+        excludes="**/engine/Job.java,**/axis2/**"
+        />
+    <core:copy-useful-files src="${src.dir}" dest="${build.classes.dir}"/>
+  </target>
+
+  <target name="default" depends="war"/>
+
+  <target name="specifications" depends="init">
+
+    <fail unless="deployment.project.dir">
+      Need to specify the location of the sourceforge deploy project
+      deployment.project.dir
+    </fail>
+    <property name="deployment.xml.dir"
+        location="${deployment.project.dir}/xml"/>
+    <property name="cddlm.dir"
+        location="${deployment.xml.dir}/api"/>
+    <property name="cdl.dir"
+        location="${deployment.xml.dir}/cdl"/>
+    <property name="constants.xml.dir"
+        location="${cddlm.dir}"/>
+    <property name="wsrf.dir"
+        location="${deployment.xml.dir}/wsrf"/>
+    <property name="soap.dir"
+        location="${deployment.xml.dir}/wsrf"/>
+
+    <!--XML Schemas -->
+    <property name="xml-cdl.xsd"
+        location="${cddlm.dir}/xml-cdl.xsd"/>
+
+    <property name="component-model.xsd"
+        location="${cddlm.dir}/component-model.xsd"/>
+    <property name="component-model-events.xml"
+        location="${cddlm.dir}/component-model-events.xml"/>
+
+    <property name="deployment-api.xsd"
+        location="${cddlm.dir}/deployment-api.xsd"/>
+
+    <!-- ws-topics -->
+    <property name="deployment-api-portal-events.xml"
+        location="${cddlm.dir}/deployment-api-portal-events.xml"/>
+    <property name="deployment-api-system-events.xml"
+        location="${cddlm.dir}/deployment-api-system-events.xml"/>
+
+
+    <!-- WSDL -->
+    <property name="deployment-api.wsdl"
+        location="${cddlm.dir}/deployment-api.wsdl"/>
+
+    <!-- generic XML -->
+    <property name="constants.xml"
+        location="${constants.xml.dir}/constants.xml"/>
+    <property name="transform.xsl"
+        location="${transforms.dir}/createJavaConstants.xsl"/>
+
+    <!-- incoming specs -->
+    <property name="soap12.xsd"
+        location="${soap.dir}/soap12.xsd"/>
+    <property name="ws-addressing.xsd"
+        location="${soap.dir}/ws-addressing.xsd"/>
+    <property name="wsrf-rp.xsd"
+        location="${wsrf.dir}/wsrf-WS-ResourceProperties-1.2-draft-01.xsd"/>
+    <property name="wsrf-rp.wsdl"
+        location="${wsrf.dir}/wsrf-WS-ResourceProperties-1.2-draft-01.wsdl"/>
+    <property name="wsrf-rl.xsd"
+        location="${wsrf.dir}/wsrf-WS-ResourceLifetime-1.2-draft-01.xsd"/>
+    <property name="wsrf-rl.wsdl"
+        location="${wsrf.dir}/wsrf-WS-ResourceLifetime-1.2-draft-01.wsdl"/>
+
+    <property name="wsrf-n.xsd"
+        location="${wsrf.dir}/wsn-WS-BaseNotification-1.2-draft-01.xsd"/>
+    <property name="wsrf-n.wsdl"
+        location="${wsrf.dir}/wsn-WS-BaseNotification-1.2-draft-01.wsdl"/>
+    <property name="wsrf-bf.xsd"
+        location="${wsrf.dir}/wsrf-WS-BaseFaults-1.2-draft-01.xsd"/>
+    <property name="wstop.xsd"
+        location="${wsrf.dir}/wsn-WS-Topics-1.2-draft-01.xsd"/>
+
+    <property name="muws-p1.xsd"
+        location="${wsrf.dir}/wsdm-muws-part1.xsd"/>
+    <property name="muws-p2.xsd"
+        location="${wsrf.dir}/wsdm-muws-part2.xsd"/>
+    <property name="wsdm-mows.xsd"
+        location="${wsrf.dir}/wsdm-mows.xsd"/>
+
+    <property name="test-helper.xsd"
+        location="${cddlm.dir}/test-helper.xsd"/>
+    <property name="smartfrog.xsd"
+        location="${cddlm.dir}/smartfrog.xsd"/>
+    <property name="system-binding.wsdl"
+        location="${cddlm.dir}/system-binding.wsdl"/>
+  </target>
+
+  <target name="prepare-libraries" depends="declare-classpaths">
+    <property name="build.temp.lib.dir" location="${build.dir}/temp/lib"/>
+    <mkdir dir="${build.temp.lib.dir}"/>
+    <!--
+        <copypath destDir="${build.temp.lib.dir}" pathref="axis2.classpath">
+          <flattenmapper/>
+        </copypath>
+    -->
+    <copypath destDir="${build.temp.lib.dir}" pathref="core.classpath">
+      <flattenmapper/>
+    </copypath>
+  </target>
+
+  <!-- here to verify that all the downloaded jars are valid
+because javac was bailing out with some error about unzipping -->
+  <target name="validate-libraries" depends="prepare-libraries">
+    <property name="build.temp.unzip.dir" location="${build.temp.lib.dir}/unzip"/>
+    <mkdir dir="${build.temp.unzip.dir}"/>
+    <copypath destDir="${build.temp.lib.dir}" pathref="compile.classpath">
+      <flattenmapper/>
+    </copypath>
+    <copypath destDir="${build.temp.lib.dir}" pathref="tests.compile.classpath">
+      <flattenmapper/>
+    </copypath>
+
+    <ac:for param="name">
+      <path>
+        <fileset dir="${build.temp.lib.dir}" includes="*.jar"/>
+      </path>
+      <sequential>
+        <echo>@{name}</echo>
+        <exec executable="jar" dir="${build.temp.unzip.dir}" failonerror="true">
+          <arg value="-xf"/>
+          <arg value="@{name}"/>
+        </exec>
+        <!-- <unzip src="@{name}" dest="${build.temp.unzip.dir}"/> -->
+      </sequential>
+    </ac:for>
+  </target>
+
+  <!--
+    add extra actions after compilation, before making the JAR
+  -->
+  <target name="post-compile" depends="dist.post-compile,prepare-libraries"/>
+
+  <!-- make the WAR file -->
+  <target name="war" depends="post-compile"
+      description="Create the WAR file">
+    <property name="target.war.name"
+        value="${artifact.name}-war-${artifact.version}.war"/>
+    <property name="target.war"
+        location="${dist.dir}/${target.war.name}"/>
+
+
+    <core:jar destFile="${target.war}">
+      <!--  WAR file, includes WEB-INF stuff-->
+      <fileset dir="${war.dir}" includes="**/*"/>
+      <zipfileset prefix="WEB-INF/lib" dir="${build.temp.lib.dir}"
+          includes="*.jar"/>
+      <zipfileset prefix="WEB-INF/lib" file="${target.jar}"/>
+
+    </core:jar>
+  </target>
+
+  <target name="unwar" depends="war"
+      description="Create the WAR file and expand it into a directory">
+    <property name="unwar.dir" location="${build.dir}/exploded"/>
+    <unzip src="${target.war}" dest="${unwar.dir}"/>
+  </target>
+
+
+  <!-- ========================================================== -->
+  <!-- this is an override point -->
+  <!-- dependencies and setup logic needed to run tests-->
+  <!-- ========================================================== -->
+
+  <target name="ready-to-test" depends="unittest.ready-to-test">
+    <property name="test.endpoint" value="http://localhost:8080/alpine/portal/"/>
+  </target>
+
+  <!-- ========================================================== -->
+  <!-- set up any properties for deployment -->
+  <!-- ========================================================== -->
+
+  <target name="init-deploy-properties" depends="init">
+    <property name="deploy.host" value="localhost"/>
+    <property name="application.name" value="${project.name}"/>
+    <property name="deploy.sf" value="files/deployserver.sf"/>
+    <property name="deployapi.war.dir" value="${war.dir}"/>
+    <property name="parse.quiet" value="true"/>
+    <property name="test.endpoint" value="http://localhost:8080/alpine/portal/" />
+  </target>
+
+
+  <!-- we copy the files so as to
+    -eliminate duplicates and the complications that causes on a secure system
+    -put everything in one place for when we need to sign it
+    -see at a glance what is in there
+    -->
+  <target name="prepare-codebase" depends="declare-classpaths,test-libraries">
+    <property name="build.codebase.dir" location="${build.dir}/codebase"/>
+    <mkdir dir="${build.codebase.dir}"/>
+    <copypath destdir="${build.codebase.dir}" pathref="core.classpath">
+      <flattenmapper/>
+    </copypath>
+    <copypath destdir="${build.codebase.dir}" pathref="jetty.classpath">
+      <flattenmapper/>
+    </copypath>
+    <copypath destdir="${build.codebase.dir}" pathref="smartfrog.modules.classpath">
+      <flattenmapper/>
+    </copypath>
+    <copypath destdir="${build.codebase.dir}"
+      pathref="test-libraries.classpath">
+      <flattenmapper/>
+    </copypath>
+
+  </target>
+  <!-- ========================================================== -->
+  <!-- set-->
+  <!-- ========================================================== -->
+
+  <target name="init-codebase" depends="init-deploy-properties,prepare-codebase"
+      description="deploy">
+    <sf:tourl property="codebase">
+      <fileset file="${target.jar}"/>
+      <fileset file="${test.jar}"/>
+      <fileset dir="${build.codebase.dir}" includes="*.jar"/>
+    </sf:tourl>
+    <echo level="verbose">
+      deploying to ${deploy.host}
+      codebase=${codebase}</echo>
+  </target>
+
+  <!-- ========================================================== -->
+  <!-- parse the file -->
+  <!-- ========================================================== -->
+  <target name="parse" depends="package-tests,war,init-codebase"
+      description="parse the deployment descriptor">
+    <property name="warfile.timestamp"
+        location="${build.dir}/warfile.timestamp"/>
+    <ac:if>
+      <or>
+        <isset property="parse.needed"/>
+        <not>
+          <uptodate
+              srcfile="${target.war}"
+              targetfile="${warfile.timestamp}"/>
+        </not>
+      </or>
+      <ac:then>
+        <sf:parse quiet="${parse.quiet}">
+          <classpath path="${target.jar}:${test.jar}"/>
+          <sysproperty key="deployapi.war.dir"
+              value="${deployapi.war.dir}"/>
+          <sysproperty key="org.smartfrog.codebase"
+              value="${codebase}"/>
+          <!-- source files -->
+          <source file="${test.src.dir}/${deploy.sf}"/>
+        </sf:parse>
+        <!-- on success, we touch a property file to note we got it out -->
+        <touch file="${warfile.timestamp}"/>
+      </ac:then>
+    </ac:if>
+  </target>
+
+  <target name="parse-server" depends="package-tests,init-codebase"
+      description="parse the deployment descriptor for a server">
+    <fail unless="server">Set the "server" property!</fail>
+    <property name="server.dir" location="hosts/${server}"/>
+    <property name="parse.timestamp"
+        location="${build.dir}/parse-${server}.timestamp"/>
+    <property name="default.sf"
+        location="${server.dir}/default.sf"/>
+    <ac:if>
+      <not>
+        <uptodate
+            srcfile="${default.sf}"
+            targetfile="${parse.timestamp}"/>
+      </not>
+      <ac:then>
+        <sf:parse quiet="${parse.quiet}">
+          <classpath path="${target.jar}:${test.jar}"/>
+          <sysproperty key="deployapi.war.dir"
+              value="${deployapi.war.dir}"/>
+          <sysproperty key="org.smartfrog.codebase"
+              value="${codebase}"/>
+          <!-- source files -->
+          <source file="${default.sf}"/>
+        </sf:parse>
+        <!-- on success, we touch a property file to note we got it out -->
+        <touch file="${parse.timestamp}"/>
+      </ac:then>
+    </ac:if>
+  </target>
+
+  <!-- ========================================================== -->
+  <!-- deploy; requires a host -->
+  <!-- ========================================================== -->
+  <target name="deploy" depends="parse,init-codebase,init-deploy-properties,war"
+      description="deploy">
+
+    <sf:deploy classpathref="run.classpath"
+        logStackTraces="true"
+        host="${deploy.host}"
+        timeout="30000"
+        >
+      <codebase url="${codebase}"/>
+      <sysproperty key="deployapi.war.dir"
+          value="${deployapi.war.dir}"/>
+      <application name="${application.name}">
+        #include "/${deploy.sf}"
+        sfCodeBase PROPERTY org.smartfrog.codebase;
+        sfConfig extends Application {
+        sfProcessName "deployapi-subprocess";
+        }
+      </application>
+    </sf:deploy>
+  </target>
+
+  <target name="init-deploy-test"
+    depends="init-deploy-properties,init-codebase">
+    <property name="tests.package"
+      value="org/smartfrog/services/deployapi/test/system/alpine/deployapi/"/>
+    <property name="tests.sf" 
+      value="org/smartfrog/services/deployapi/test/system/alpine/deployapi/localhost.sf"/>
+    <property name="tests.name" 
+      value="${ant-project.name}-tests"/>
+    <property name="test.target" value="localhost"/>
+    <macrodef name="deploytest">
+      <attribute name="test" />
+      <sequential>
+        <sf:deploy classpathref="tests.run.classpath"
+          logStackTraces="true"
+          host="${deploy.host}"
+          timeout="30000"
+          >
+          <codebase url="${codebase}"/>
+          <sysproperty key="deployapi.war.dir"
+            value="${deployapi.war.dir}"/>
+          <application name="test-@{test}">
+            #include "${tests.package}@{test}.sf"
+            sfCodeBase PROPERTY org.smartfrog.codebase;
+          </application>
+        </sf:deploy>
+      </sequential>
+    </macrodef>
+  </target>
+
+
+  <target name="undeploy" depends="init-deploy-properties"
+    description="undeploy">
+    <sf:undeploy classpathref="run.classpath"
+      logStackTraces="true"
+      host="${deploy.host}"
+      timeout="30000"
+      application="${application.name}"/>
+  </target>
+
+  <target name="test-deploy" depends="init-deploy-test,package-tests"
+    description="deploy tests">
+    <deploytest test="${test.target}"/>
+  </target>
+
+  <target name="test-undeploy" depends="init-deploy-test"
+    description="undeploy tests"
+    xmlns:sf="antlib:org.smartfrog.tools.ant">
+    <sf:undeploy classpathref="tests.run.classpath"
+      logStackTraces="true"
+      host="${deploy.host}"
+      timeout="30000"
+      failonerror="false"
+      application="test-${test.target}"/>
+  </target>
+
+
+  <target name="test-redeploy" depends="test-undeploy,test-deploy"/>  
+
+
+  <!-- ========================================================== -->
+  <!-- installation includes the test jars as well as all the dependencies-->
+  <!-- ========================================================== -->
+  <target name="install" depends="init-codebase,dist,package-tests,m2-install">
+    <property name="install.dir" location="${smartfrog.dist.lib.dir}"/>
+    <mkdir dir="${install.dir}"/>
+    <copy todir="${install.dir}">
+      <fileset file="${target.jar}"/>
+      <!--test jar is included for extra logging-->
+      <fileset file="${test.jar}"/>
+      <fileset dir="${build.codebase.dir}" includes="*.jar"/>
+    </copy>
+  </target>
+
+  <!-- SCP logic from JDwA, core-chapter-08.xml -->
+
+
+  <!--
+    init file should look like
+    ssh.server=192.168.2.84
+    ssh.user=${user.name}
+    ssh.dir=SmartFrog/dist/
+    ssh.keyfile=${user.home}/.ssh/id_rsa
+    ssh.passphrase=secret
+    ssh.port=22
+    ssh.verbose=true
+
+    the secure/ dir should not be readable by group; in windows lock it down
+      -->
+  <target name="ssh-init" depends="init">
+    <fail unless="server">Set the "server" property!</fail>
+    <property name="ssh.propfile"
+        location="hosts/secure/${server}.ssh.properties"/>
+    <loadproperties srcFile="${ssh.propfile}"/>
+    <property name="tmp.dir" location="${build.dir}/tmp"/>
+    <mkdir dir="${tmp.dir}"/>
+    <presetdef name="ssh-cmd">
+      <sshexec host="${ssh.server}"
+          username="${ssh.user}"
+          port="${ssh.port}"
+          passphrase="${ssh.passphrase}"
+          keyfile="${ssh.keyfile}"/>
+    </presetdef>
+    <presetdef name="ssh-cp">
+      <scp
+          passphrase="${ssh.passphrase}"
+          keyfile="${ssh.keyfile}"
+          port="${ssh.port}"
+          verbose="${ssh.verbose}">
+      </scp>
+    </presetdef>
+  </target>
+
+
+  <target name="ssh-mkdirs" depends="ssh-init">
+    <ssh-cmd command="mkdir -p ${ssh.dir}/bin"/>
+    <ssh-cmd command="mkdir -p ${ssh.dir}/lib"/>
+  </target>
+
+  <target name="ssh-prepare-files" depends="install">
+    <fileset id="ssh.fileset" dir="${install.dir}" includes="*.jar"/>
+  </target>
+
+  <!-- insert trust="true" to turn on trust -->
+  <target name="scp-upload" depends="ssh-init,ssh-mkdirs,ssh-stop,ssh-prepare-files">
+    <echo>SCP target is ${ssh.server}</echo>
+    <property name="ssh.path"
+        value="${ssh.user}@${ssh.server}:${ssh.dir}"/>
+    <!--copy the binaries-->
+    <ssh-cp remoteToDir="${ssh.path}/lib">
+      <fileset refid="ssh.fileset"/>
+    </ssh-cp>
+    <property name="server.local.bin.dir" location="hosts/${server}" />
+    <ssh-cp remoteToDir="${ssh.path}/bin">
+      <fileset dir="${server.local.bin.dir}" includes="default.*"/>
+    </ssh-cp>
+
+  </target>
+
+  <target name="ssh-stop" depends="ssh-init">
+    <ssh-cmd command="cd ${ssh.dir}/bin; nohup ./sfStopDaemon localhost &amp;"
+    failonerror="false"/>
+  </target>
+
+  <target name="ssh-start" depends="ssh-init">
+    <ssh-cmd command="cd ${ssh.dir}/bin; nohup ./sfStartDaemon &amp;"/>
+  </target>
+
+  <target name="upload" depends="scp-upload"
+      description="upload the files to the remote server"/>
+
+
+  <!-- ==================================    -->
+  <!-- code to test against a specific target -->
+  <!-- ==================================    -->
+
+  <target name="init-interop-tests" depends="init">
+    <!-- for every endpoint there is a happy url and the actual epr-->
+    <tstamp>
+      <format property="time_t" unit="millisecond" pattern="yyyyMMddHHmmssSSS" />
+    </tstamp>
+    <property name="query" value="value=${time_t}" />
+    <property name="epr.nec" value="http://cddlm.nec-labs.com:9090/cddlm/services/portal"/>
+    <property name="happy.nec" value="http://cddlm.nec-labs.com:9090/cddlm/happyaxis.jsp?${query}"/>
+    <property name="epr.ourgrid" value="http://cddlm.lsd.ufcg.edu.br:8080/muse/services/Portal"/>
+    <property name="happy.ourgrid" value="http://cddlm.lsd.ufcg.edu.br:8080/muse/happyaxis.jsp?${query}"/>
+    <property name="hp.server" value="deployapi.iseran.com" />
+    <property name="epr.hp" value="http://${hp.server}:8080/alpine/portal/"/>
+    <property name="happy.hp" value="http://${hp.server}:8080/alpine/portal/?${query}"/>
+
+
+    <property name="test.interop.dir" location="${build.dir}/test/interop/"/>
+    <property name="test.interop.data.dir" location="${build.dir}/test/interop/data"/>
+    <property name="test.interop.reports.dir" location="${build.dir}/test/interop/reports"/>
+  </target>
+
+  
+  <target name="interop-status" depends="init-interop-tests" >
+    <macrodef name="interop-status">
+      <attribute name="endpoint"/>
+      <sequential>
+        <!-- spin for the happy page-->
+        <waitfor maxwait="3" maxwaitunit="second"
+          timeoutproperty="@{endpoint}.timeout">
+          <http url="${epr.@{endpoint}}"/>
+        </waitfor>
+        <ac:if>
+          <not>
+            <isset property="@{endpoint}.timeout"/>
+          </not>
+          <ac:then>
+            <echo>happy @{endpoint}</echo>
+
+          </ac:then>
+          <ac:else>
+            <echo>Timeout: skipping endpoint @{endpoint} at
+              ${epr.@{endpoint}}</echo>
+          </ac:else>
+        </ac:if>
+      </sequential>
+    </macrodef>
+    <interop-status endpoint="ourgrid"/>
+    <interop-status endpoint="nec"/>
+    <interop-status endpoint="hp"/>
+  </target>
+
+  <target name="prepare-interop-tests" depends="init-interop-tests,dist,package-tests">
+    <macrodef name="interop-test">
+      <attribute name="endpoint"/>
+      <sequential>
+        <!--create test dir-->
+        <mkdir dir="${test.interop.data.dir}/@{endpoint}"/>
+        <!-- spin for the happy page-->
+        <waitfor maxwait="10" maxwaitunit="second"
+            timeoutproperty="@{endpoint}.timeout">
+          <http url="${happy.@{endpoint}}"/>
+        </waitfor>
+
+        <!--run the tests iff the happy url worked-->
+        <ac:if>
+          <not>
+            <isset property="@{endpoint}.timeout"/>
+          </not>
+          <ac:then>
+            <core:junit
+                errorProperty="@{endpoint}.failed"
+                failureProperty="@{endpoint}.failed"
+                includeAntRuntime="true"
+                printsummary="withOutAndErr"
+                tempdir="${build.dir}"
+                >
+              <sysproperty key="test.classes.dir"
+                  value="${test.classes.dir}"/>
+              <sysproperty key="endpoint" value="${epr.@{endpoint}}"/>
+              <!--use special interop testing logging, with more tracing-->
+              <sysproperty key="log4j.configuration"
+                  value="log4j-interop.properties"/>
+              <!--proxy settings propagate from this vm-->
+              <syspropertyset>
+                <propertyref prefix="http."/>
+              </syspropertyset>
+              <syspropertyset>
+                <propertyref prefix="test."/>
+              </syspropertyset>
+              <classpath>
+                <path refid="tests.run.classpath"/>
+              </classpath>
+              <batchtest todir="${test.interop.data.dir}/@{endpoint}">
+                <!-- bulk test case -->
+                <fileset dir="${test.classes.dir}">
+                  <include name="org/smartfrog/**/system/alpine/deployapi/api/**/*Test.class"/>
+                </fileset>
+              </batchtest>
+            </core:junit>
+            <core:test-report data="${test.interop.data.dir}/@{endpoint}"
+                reports="${test.interop.reports.dir}/@{endpoint}"/>
+          </ac:then>
+          <ac:else>
+            <echo>Timeout: skipping endpoint @{endpoint} at ${epr.@{endpoint}}</echo>
+          </ac:else>
+        </ac:if>
+
+      </sequential>
+    </macrodef>
+    <macrodef name="interop-report">
+      <attribute name="endpoint"/>
+      <sequential>
+          <core:test-report data="${test.interop.data.dir}/@{endpoint}"
+              reports="${test.interop.reports.dir}/@{endpoint}"/>
+  
+      </sequential>
+    </macrodef>    
+  </target>
+
+  <target name="interop-hp" depends="prepare-interop-tests"
+      description="test against hp">
+    <interop-test endpoint="hp"/>
+  </target>
+
+  <target name="interop-nec" depends="prepare-interop-tests"
+      description="test against nec">
+    <interop-test endpoint="nec"  />
+  </target>
+
+  <target name="interop-ourgrid" depends="prepare-interop-tests"
+      description="test against ourgrid">
+    <interop-test endpoint="ourgrid"/>
+  </target>
+
+  <target name="interop-report-ourgrid" depends="prepare-interop-tests"
+      description="test against ourgrid">
+    <interop-report endpoint="ourgrid"/>
+  </target>
+  
+  <target name="interop" depends="interop-hp,interop-nec,interop-ourgrid"
+      description="test all endpoints"/>
+
+  <target name="publish-results" depends="init-interop-tests"
+      description="scp up the interop test results">
+    <fail unless="publish.server">No publish.server defined</fail>
+    <fail unless="publish.user">No publish.userdefined</fail>
+    <fail unless="publish.path">No publish.path defined, e.g. /home/slo/public_html</fail>
+    <property name="publish.verbose" value="true"/>
+    <presetdef name="publish-cmd">
+      <sshexec host="${publish.server}"
+          username="${publish.user}"
+          trust="true"
+          keyfile="${publish.keyfile}"/>
+    </presetdef>
+    <presetdef name="publish-cp">
+      <scp
+          passphrase=""
+          keyfile="${publish.keyfile}"
+          trust="true"
+          verbose="${publish.verbose}">
+      </scp>
+    </presetdef>
+    <publish-cmd command="mkdir -p ${publish.path}"/>
+    <publish-cmd command="rm -rf ${publish.path}/hp"/>
+    <publish-cmd command="rm -rf ${publish.path}/nec"/>
+    <publish-cmd command="rm -rf ${publish.path}/ourgrid"/>
+    <property name="publish.scp.path"
+        value="${publish.user}@${publish.server}:${publish.path}"/>
+    <publish-cp remoteToDir="${publish.scp.path}">
+      <fileset dir="${test.interop.reports.dir}" includes="**/*"/>
+    </publish-cp>
+
+  </target>
+
+  <target name="interop-all" depends="interop,publish-results"
+      description="run the interop tests and publish the results remotely"/>
+</project>

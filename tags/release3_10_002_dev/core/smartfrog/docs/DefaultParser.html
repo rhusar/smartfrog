@@ -1,0 +1,207 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+<HEAD>
+<TITLE>BNF for DefaultParser.jj</TITLE>
+</HEAD>
+<BODY>
+<H1 ALIGN=CENTER>BNF for DefaultParser.jj</H1>
+<H2 ALIGN=CENTER>NON-TERMINALS</H2>
+<TABLE>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod1">Attributes</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE><A HREF="#prod2">AttributesNoEOF</A> &lt;EOF&gt;</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod3">AttributeList</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE><A HREF="#prod4">AttributeListNoEOF</A> &lt;EOF&gt;</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod5">Reference</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE><A HREF="#prod6">ReferenceNoEOF</A> &lt;EOF&gt;</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod7">AnyValue</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>( <A HREF="#prod8">Component</A> | <A HREF="#prod9">SimpleValue</A> ) &lt;EOF&gt;</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod10">PrimitiveValue</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE><A HREF="#prod11">Primitive</A> &lt;EOF&gt;</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod2">AttributesNoEOF</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE><A HREF="#prod4">AttributeListNoEOF</A></TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod4">AttributeListNoEOF</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>( <A HREF="#prod12">Attribute</A> | <A HREF="#prod13">Includes</A> | &lt;SEMICOLON&gt; )*</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod13">Includes</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>( ( &lt;CODEBASE&gt; <A HREF="#prod14">String</A> )? &lt;INCLUDE&gt; <A HREF="#prod14">String</A> )</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod12">Attribute</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>( <A HREF="#prod15">Name</A> <A HREF="#prod16">Value</A> )</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod15">Name</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>( &lt;UNIQUE&gt; )</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>|</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>( ( &lt;WORD&gt; ) ( ( &lt;REFPARTSEP&gt; <A HREF="#prod15">Name</A> ) )? )</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod16">Value</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>( <A HREF="#prod8">Component</A> | <A HREF="#prod9">SimpleValue</A> &lt;SEMICOLON&gt; | &lt;SEMICOLON&gt; )</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod9">SimpleValue</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>( <A HREF="#prod6">ReferenceNoEOF</A> | <A HREF="#prod17">Basic</A> | <A HREF="#prod18">Operator</A> | <A HREF="#prod19">IfThenElse</A> )</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod18">Operator</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>&lt;OPSTART&gt; ( ( &lt;NOT&gt; <A HREF="#prod9">SimpleValue</A> ) | ( <A HREF="#prod9">SimpleValue</A> ) ( ( ( ( &lt;APPEND&gt; ) ( <A HREF="#prod9">SimpleValue</A> ) ( &lt;APPEND&gt; ( <A HREF="#prod9">SimpleValue</A> ) )* ) | ( ( &lt;CONCAT&gt; ) ( <A HREF="#prod9">SimpleValue</A> ) ( &lt;CONCAT&gt; ( <A HREF="#prod9">SimpleValue</A> ) )* ) | ( ( &lt;SUM&gt; ) ( <A HREF="#prod9">SimpleValue</A> ) ( &lt;SUM&gt; ( <A HREF="#prod9">SimpleValue</A> ) )* ) | ( ( &lt;TIMES&gt; ) ( <A HREF="#prod9">SimpleValue</A> ) ( &lt;TIMES&gt; ( <A HREF="#prod9">SimpleValue</A> ) )* ) | ( ( &lt;AND&gt; ) ( <A HREF="#prod9">SimpleValue</A> ) ( &lt;AND&gt; ( <A HREF="#prod9">SimpleValue</A> ) )* ) | ( ( &lt;OR&gt; ) ( <A HREF="#prod9">SimpleValue</A> ) ( &lt;OR&gt; ( <A HREF="#prod9">SimpleValue</A> ) )* ) | ( ( &lt;EQ&gt; ) ( <A HREF="#prod9">SimpleValue</A> ) ) | ( ( &lt;NE&gt; ) ( <A HREF="#prod9">SimpleValue</A> ) ) | ( ( &lt;GE&gt; ) ( <A HREF="#prod9">SimpleValue</A> ) ) | ( ( &lt;LE&gt; ) ( <A HREF="#prod9">SimpleValue</A> ) ) | ( ( &lt;GT&gt; ) ( <A HREF="#prod9">SimpleValue</A> ) ) | ( ( &lt;LT&gt; ) ( <A HREF="#prod9">SimpleValue</A> ) ) | ( ( &lt;MINUS&gt; ) ( <A HREF="#prod9">SimpleValue</A> ) ) | ( ( &lt;DIV&gt; ) ( <A HREF="#prod9">SimpleValue</A> ) ) ) )? ) &lt;OPEND&gt;</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod19">IfThenElse</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>&lt;IF&gt; <A HREF="#prod9">SimpleValue</A> &lt;THEN&gt; <A HREF="#prod9">SimpleValue</A> &lt;ELSE&gt; <A HREF="#prod9">SimpleValue</A> &lt;FI&gt;</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod8">Component</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>&lt;EXTENDS&gt; ( &lt;REFPARTSEP&gt; &lt;WORD&gt; )? <A HREF="#prod20">ComponentType</A></TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod20">ComponentType</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>( <A HREF="#prod21">EagerComponent</A> | <A HREF="#prod22">LazyComponent</A> | <A HREF="#prod23">DataComponent</A> )</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod21">EagerComponent</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE><A HREF="#prod24">BaseComponent</A></TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod22">LazyComponent</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>&lt;LAZY&gt; <A HREF="#prod24">BaseComponent</A></TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod23">DataComponent</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>&lt;DATA&gt; <A HREF="#prod24">BaseComponent</A></TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod24">BaseComponent</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>( &lt;NULL&gt; | <A HREF="#prod25">BaseReference</A> )? ( &lt;SEMICOLON&gt; | ( &lt;LBRACE&gt; <A HREF="#prod2">AttributesNoEOF</A> &lt;RBRACE&gt; ) )</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod6">ReferenceNoEOF</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>( &lt;LAZY&gt; )? <A HREF="#prod25">BaseReference</A></TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod25">BaseReference</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE><A HREF="#prod26">ReferencePart</A> ( &lt;REFPARTSEP&gt; <A HREF="#prod26">ReferencePart</A> )*</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod26">ReferencePart</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>( &lt;ROOT&gt; )</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>|</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>( &lt;PARENT&gt; )</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>|</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>( &lt;ATTRIB&gt; &lt;WORD&gt; )</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>|</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>( &lt;HERE&gt; &lt;WORD&gt; )</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>|</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>( &lt;THIS&gt; )</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>|</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>( &lt;PROPERTY&gt; &lt;WORD&gt; )</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>|</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>( &lt;IPROPERTY&gt; &lt;WORD&gt; )</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>|</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>( &lt;HOST&gt; ( ( &lt;WORD&gt; ) | ( &lt;STRING&gt; ) ) )</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>|</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>( &lt;PROCESS&gt; )</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>|</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>( &lt;WORD&gt; )</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod17">Basic</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>( ( <A HREF="#prod11">Primitive</A> ) | ( &lt;LBRACKET&gt; ( <A HREF="#prod9">SimpleValue</A> ( &lt;COMMA&gt; <A HREF="#prod9">SimpleValue</A> )* )? &lt;RBRACKET&gt; ) )</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod11">Primitive</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>( ( &lt;NULL&gt; ) | ( <A HREF="#prod14">String</A> ) | ( <A HREF="#prod27">Number</A> ) | ( <A HREF="#prod28">Boolean</A> ) | ( <A HREF="#prod29">ByteArray</A> ) | ( &lt;VECTORSTART&gt; ( <A HREF="#prod11">Primitive</A> ( &lt;COMMA&gt; <A HREF="#prod11">Primitive</A> )* )? &lt;VECTOREND&gt; ) )</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod27">Number</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>( &lt;DOUBLE&gt; | &lt;FLOAT&gt; | &lt;INTEGER&gt; | &lt;LONG&gt; )</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod14">String</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>( ( &lt;STRING&gt; ) | ( &lt;MULTILINESTRING&gt; ) )</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod28">Boolean</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>( &lt;TRUE&gt; | &lt;FALSE&gt; )</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod29">ByteArray</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>( ( &lt;BYTEARRAY&gt; ) )</TD>
+</TR>
+</TABLE>
+</BODY>
+</HTML>

@@ -1,0 +1,183 @@
+<html>
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+
+<head>
+<meta HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=ISO-8859-1">
+<meta HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+<meta name="GENERATOR" content="Microsoft FrontPage 5.0">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+<link REL="STYLESHEET" HREF="../../book.css" CHARSET="ISO-8859-1" TYPE="text/css">
+<title>Creating a Java class file with SmartFrog interfaces</title>
+<style type="text/css">
+<!--
+.style1 {font-family: "Courier New", Courier, mono}
+.style2 {font-family: Verdana, Arial, Helvetica, sans-serif}
+.style3 {font-family: Arial, Helvetica, sans-serif}
+-->
+</style>
+</head>
+
+<body>
+
+<h1>Creating a Java component file with SmartFrog interfaces</h1>
+
+<a name="gendesc"></a>
+<h2>General description</h2>
+
+<p>Components using the SmartFrog framework are Java applications that you want 
+to describe, activate, and manage. By using the SmartFrog component model of 
+defining interfaces that the software component must implement, you can support 
+various lifecycle operations such as creation, deployment, and termination.</p>
+<p>In the SmartFrog component hierarchy, there are two basic types of components, Prim and Compound. 
+Prim components are the most simple component type available that implement the basic SmartFrog component model. 
+Compound components are components that implement the SmartFrog component model and can contain other components as children. 
+Typically, Java applications that are Prim components 
+implement the Prim interface and extend the PrimImpl class. 
+Compound components implement the Compound interface and extend the CompoundImpl class. </p>
+<p>The SmartFrog Eclipse plug-in offers you the convenience of creating both types of Java 
+components using the same IDE in which you created your SmartFrog description 
+files. The IDE provides many specialized features for editing and running Java 
+applications.</p>
+
+<a name="howto"></a>
+<h2>How to create a Java class file with SmartFrog interfaces</h2>
+<h3>Purpose</h3>
+<p>To create a Java component file specifying SmartFrog interface APIs in your 
+application so that it can be activated and managed in the runtime environment. 
+In our example, we are creating a Prim component.</p>
+<p><strong>NOTE:</strong> In our example, we are using the <span class="style1">CounterImpl.java</span> file (with slight modifications) located <em>SmartFrog_Install_Dir</em><span class="style1">\src\org\smartfrog\examples\counter<span class="style2"> <span class="style3">directory</span>. </span></span></p>
+<h3>Procedure</h3>
+<ol>
+  <li>From the Eclipse menu bar, select <b>File</b> &gt; <b>New</b> &gt; <b>
+  Prim Component</b>. Alternatively, you can select the
+  <img src="../../images/java_prim_icon.gif"> icon from the SmartFrog Eclipse toolbar. 
+  Either method opens the following dialog where you can specify a name 
+  for your Java component file: 
+  <p><img src="../../images/java_name.gif"></p>
+  Please note that the procedure for the Compound component is the same except that 
+you would select <b>File</b> &gt; <b>New</b> &gt; <b> Compound Component</b> from the menu bar or alternatively select the <img src="../../images/java_icon.gif"> icon from the toolbar.  </li>
+  <li>
+  In the <b>Package:</b> field, you can accept the default or specify a&nbsp;package name to avoid name clashes. In our example, we are specifying the <span class="style1">org.smartfrog.examples.counter</span> package since this is the expected package for this example. In the <b>Name:</b> field, specify a name 
+  for your Java class file. In our example, we are implementing the 
+  <span class="style1">CounterImpl</span> Java file located in the 
+  <em>SmartFrog_Install_Dir</em>
+  <span class="style1">\src\org\smartfrog\examples\counter<span class="style2"> 
+  <span class="style3">directory</span></span></span>. 
+  In the bottom pane, you can specify the SmartFrog method stubs you want to include in your 
+  Java component file. The ones listed are the most common ones. </li>
+  <li>
+  Click <b>Finish</b>. This opens a skeleton Java class file in the editor pane 
+  of the GUI.
+  <p><img src="../../images/java_editor_skeleton.gif"></p>
+  </li>
+  <li>
+  At this point, you must implement the SmartFrog stub methods. For convenience, 
+  we have provided the complete implementation code for you.
+   Replace the skeleton code in the editor with the code from
+  the <a href="SF_java_example.txt" target="_blank" class="style1">CounterImpl.java</a>
+   example file.
+  This implementation file uses the value specified for the 
+  <span class="style1">limit</span> attribute in the 
+  <span class="style1">example.sf</span> file to set the <span class="style1">limit</span> variable 
+  defined in the <span class="style1">CounterImpl.java</span> file. 
+  <p>In order to resolve the <span class="style1">Counter</span> reference 
+  in the <span class="style1">CounterImpl.java</span> file, 
+  you must import the <span class="style1">Counter.java</span> file 
+  located in the
+  <em>SmartFrog_Install_Dir</em><span class="style1">\src\org\smartfrog\examples\counter</span> 
+  directory into your SmartFrog project.</p>
+To import a file into your project:
+  <ol type="a">
+<li>
+Select <strong>org.smartfrog.examples.counter</strong> in your project tree.
+</li>
+<li>Select <strong>File</strong> &gt; <strong>Import...</strong> from the menu bar.</li>
+<li>In the Import dialog, select <strong>File system</strong> and click <strong>Next</strong>. </li>
+<li> Browse to the <span class="style1">counter</span> directory ( <em>SmartFrog_Install_Dir</em><span class="style1">\src\org\smartfrog\examples\counter</span>) and click <strong>OK</strong>.</li>
+<li>In the File system dialog, check <span class="style1">Counter.java</span> in the right pane and click <strong>Finish</strong>. This imports the file into your project.</li>
+</ol>
+</li>
+ <li>
+ To see the classes contained in an imported package, place your cursor in the package name and click CTRL-Space.
+   <p>
+ <img src="../../images/java_editor_classes.gif"></p>
+ A pop-up box appears containing the classes contained in the highlighted package.
+ </li>
+ <li>
+ To generate skeleton code for additional SmartFrog methods, right-click in the Java file 
+ and select <b>Source</b> &gt; <b>Override/Implement Methods...</b> from its 
+ context method or access the <b>Override/Implement Methods...</b> option from the <b>Source</b> menu  from the SmartFrog 
+ Eclipse menu bar.
+ <p><img src="../../images/java_editor_methods.gif"></p>
+ This opens the <b>Override/Implement Methods</b> dialog, which allows you to 
+ select any additional methods you want to override or implement in your Java component 
+ file. Once you have selected the methods you want to include in the file, click
+ <b>OK</b>. The skeleton code for the selected methods is automatically 
+ generated and inserted into your Java file.</li>
+ <li>To compile your component, select <strong>Project</strong> &gt; <strong>Build Project</strong> from the menu bar. The RMI compiler has been integrated into the IDE so all the necessary skeleton and stub classes are automatically compiled. You are now ready to deploy your application as described 
+ in the <a href="test_SF_app.html">Testing a SmartFrog application</a> section. </li>
+</ol>
+<p>There are many other advanced features in the Java editor. For more information,
+see the <i>Java Development User Guide </i>in the Eclipse online help.</p>
+
+<a name="sum"></a>
+<h2>Summary</h2>
+
+<p>You can create your Java component files using the same IDE that you used to 
+create your SmartFrog description files. The files are located in the same project 
+directory structure providing good organization and easy accessibility. The Java editor in Eclipse has many specialized features that 
+allow for easy creation, modification, and compilation of Java code. </p>
+
+
+<p><img border="0" src="../../images/ngrelt.gif" alt="Related tasks" width="159" height="27" /></p>
+<ul>
+<li>
+<a href="create_SF_project.html">Creating a SmartFrog project</a>
+</li>
+<li>
+<a href="create_SF_desc.html">Creating a SmartFrog description file</a>
+</li>
+<li>
+<a href="test_SF_app.html">Testing a SmartFrog application</a></li>
+<li><a href="runconfig_SF_app.html">Creating SmartFrog run configurations</a></li>
+<li>
+  <a href="../tasks/spec_diff_install.html">Specifying SmartFrog properties</a></li>
+</ul>
+<p><img border="0" src="../../images/ngrelc.gif" alt="Related concepts" width="159" height="27" /></p>
+<ul>
+<li>
+<a href="../concepts/concepts.html">SmartFrog introduction</a></li>
+<li><a href="../concepts/concepts_goals.html">SmartFrog goals
+  </a>
+</li>
+<li>
+<a href="../concepts/concepts_approach.html"> SmartFrog approach
+</a>
+</li>
+<li>
+<a href="../concepts/concepts_framework.html">
+SmartFrog framework</a></li>
+</ul>
+<p><img src="../../images/ngrelr.gif" alt="Related reference" width="159" height="27" /></p>
+<ul><li><a href="http://www.hpl.hp.com/research/smartfrog/">SmartFrog Web site</a> </li>
+<li> <a href=
+"http://www.smartfrog.org/manuals/current/sfReference.pdf"> SmartFrog Reference Manual</a> </li>
+<li> <a href=
+"http://www.smartfrog.org/manuals/current/sfUserManual.pdf"> SmartFrog User Manual</a> </li>
+<li> <a href=
+"http://www.smartfrog.org/manuals/current/SFGuiManual.pdf"> SmartFrog GUI Quick Reference Guide (Draft)</a> </li>
+<li> <a href=
+"http://www.smartfrog.org/manuals/current/sfWorkflow.pdf"> SmartFrog Work Flow Manual (Draft)</a> </li>
+<li> <a href=
+"http://www.smartfrog.org/manuals/current/sfDynamicWebServerExample.pdf"> SmartFrog Dynamic Web Server Example</a></li>
+<li>
+<a href="http://eclipse.org">Eclipse Web site</a>
+</li>
+</ul>
+
+<p><img src="../../images/hp_copyright.gif" width="314" height="32"></p>
+
+</body>
+
+</html>
