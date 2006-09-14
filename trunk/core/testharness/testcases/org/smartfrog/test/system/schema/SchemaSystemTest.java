@@ -43,7 +43,7 @@ public class SchemaSystemTest extends SmartFrogTestBase {
                 EXCEPTION_DEPLOYMENT,
                 null,
                 EXCEPTION_RESOLUTION,
-                "error in schema(foo): wrong class found for attribute 'z (integer attribute to test types and presence)', expected: java.lang.Integer, found: java.lang.String, source: HERE sfConfig:bar:myFoo:schema, resolutionPhase: predicate]");
+		"in: HERE sfConfig:bar:myFoo attribute: schema cause: error in schema: wrong class found for attribute 'z (integer attribute to test types and presence)', expected: java.lang.Integer, found: java.lang.String");
     }
     public void testCaseTCN44() throws Exception {
         deployExpectingException(FILES+"tcn44.sf",
@@ -51,7 +51,7 @@ public class SchemaSystemTest extends SmartFrogTestBase {
                 EXCEPTION_DEPLOYMENT,
                 null,
                 EXCEPTION_RESOLUTION,
-                "error in schema(foo): non-reference value found for lazy attribute 'a', source: HERE sfConfig:bar:myFoo:schema, resolutionPhase: predicate]");
+                "in: HERE sfConfig:bar:myFoo attribute: schema cause: error in schema: non-reference value found for lazy attribute 'a'");
     }
     public void testCaseTCN45() throws Exception {
         deployExpectingException(FILES+"tcn45.sf",
@@ -67,6 +67,6 @@ public class SchemaSystemTest extends SmartFrogTestBase {
                 EXCEPTION_DEPLOYMENT,
                 null,
                 EXCEPTION_RESOLUTION,
-                "error in schema(foo): wrong class found for attribute 'x (optional integer attribute)', expected: java.lang.Integer, found: java.lang.String, source: HERE sfConfig:bar:myFoo:schema, resolutionPhase: predicate]");
+                "in: HERE sfConfig:bar:myFoo attribute: schema cause: error in schema: wrong class found for attribute 'x (optional integer attribute)', expected: java.lang.Integer, found: java.lang.String");
     }
 }

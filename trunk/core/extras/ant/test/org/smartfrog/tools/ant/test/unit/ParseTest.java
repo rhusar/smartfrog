@@ -64,8 +64,8 @@ public class ParseTest extends TaskTestBase {
 
     public void testInvalid() {
         expectExceptionWithLogContaining("testInvalid",
-                "SmartFrogCompileResolutionException",
-                "parse failure");
+                "SmartFrogTypeResolutionException",
+                "Reference not found");
     }
 
     public void testMissingFile() {
