@@ -35,8 +35,8 @@ public class Append extends BaseFunction {
      */
     protected Object doFunction() {
         Vector result = new Vector();
-        Object objValue = null;
-        Vector value = null;
+        Object objValue;
+        Vector value;
 
         for (Enumeration e = context.keys(); e.hasMoreElements();) {
             Object key = e.nextElement();
@@ -44,11 +44,8 @@ public class Append extends BaseFunction {
 
             if (objValue instanceof Vector) {
                 value = (Vector) objValue;
-
-                if (value != null) {
-                    for (Enumeration v = value.elements(); v.hasMoreElements();) {
-                        result.add(v.nextElement());
-                    }
+                for (Enumeration v = value.elements(); v.hasMoreElements();) {
+                    result.add(v.nextElement());
                 }
             }
         }

@@ -24,6 +24,7 @@ import java.util.Enumeration;
 import java.util.Stack;
 
 import org.smartfrog.sfcore.common.Context;
+import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.componentdescription.CDVisitor;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.security.SFClassLoader;
@@ -58,12 +59,12 @@ public class Phase implements CDVisitor {
      *
      * @return PhaseAction for a specific node
      *
-     * @throws SmartFrogCompileResolutionException failed to create PhaseAction
+     * @throws SmartFrogResolutionException failed to create PhaseAction
      */
     protected PhaseAction phaseAction(Object action,
                                       SFComponentDescription cd,
                                       Stack path)
-            throws SmartFrogCompileResolutionException {
+            throws SmartFrogResolutionException {
         try {
             PhaseAction p = (PhaseAction) (SFClassLoader.forName((String) action)
                     .newInstance());
@@ -76,7 +77,7 @@ public class Phase implements CDVisitor {
             } else {
               actionClass = "null";
             }
-            throw (SmartFrogCompileResolutionException)SmartFrogCompileResolutionException.forward(ex, phaseName+" ("+ actionClass + ")");
+            throw (SmartFrogResolutionException)SmartFrogResolutionException.forward(phaseName+" ("+ actionClass + ")", ex);
         }
     }
 
@@ -86,9 +87,9 @@ public class Phase implements CDVisitor {
      *
      * @param cd the component description on which to carry out the phase
      *
-     * @throws SmartFrogCompileResolutionException failed to create PhaseAction
+     * @throws org.smartfrog.sfcore.common.SmartFrogResolutionException failed to create PhaseAction
      */
-    public void actOn(ComponentDescription cd, Stack path) throws SmartFrogCompileResolutionException {
+    public void actOn(ComponentDescription cd, Stack path) throws SmartFrogResolutionException {
         Context c = cd.sfContext();
         for (Enumeration e = ((Context) c.clone()).keys(); e.hasMoreElements();) {
             Object name = e.nextElement();

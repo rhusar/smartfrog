@@ -19,7 +19,7 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.sfcore.languages.sf.sfcomponentdescription;
 
-import org.smartfrog.sfcore.languages.sf.SmartFrogCompileResolutionException;
+import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 
 /**
  *  Specifies the resolution interface to be implemented by all attributes
@@ -32,9 +32,9 @@ public interface ComponentResolver {
     *  places all attributes which have a reference (eager) as attribute name in
     *  their target component.
     *
-    * @throws  SmartFrogCompileResolutionException failed to place resolve
+    * @throws  SmartFrogResolutionException failed to place resolve
     */
-   public void placeResolve() throws SmartFrogCompileResolutionException;
+   public void placeResolve() throws SmartFrogResolutionException;
 
 
    /**
@@ -44,18 +44,18 @@ public interface ComponentResolver {
     *
     * @param  resState      resolution state
     *
-    * @throws  SmartFrogCompileResolutionException failed to place resolve
+    * @throws  SmartFrogResolutionException failed to place resolve
     */
-   public void doPlaceResolve(ResolutionState resState) throws SmartFrogCompileResolutionException;
+   public void doPlaceResolve(ResolutionState resState) throws SmartFrogResolutionException;
 
 
    /**
     *  Internal method that type resolves a parsed component. Place resolving
     *  finds all supertypes and flattens them out.
     *
-    * @throws  SmartFrogCompileResolutionException failed to type resolve
+    * @throws  SmartFrogResolutionException failed to type resolve
     */
-   public void typeResolve() throws SmartFrogCompileResolutionException;
+   public void typeResolve() throws SmartFrogResolutionException;
 
 
    /**
@@ -63,9 +63,9 @@ public interface ComponentResolver {
     *
     * @param  resState      resolution state
     *
-    * @throws  SmartFrogCompileResolutionException failed to type resolve
+    * @throws  SmartFrogResolutionException failed to type resolve
     */
-   public void doTypeResolve(ResolutionState resState) throws SmartFrogCompileResolutionException;
+   public void doTypeResolve(ResolutionState resState) throws SmartFrogResolutionException;
 
 
    /**
@@ -74,9 +74,9 @@ public interface ComponentResolver {
     *  eager reference values, resolving them, and copying the result into the
     *  target component
     *
-    * @throws  SmartFrogCompileResolutionException failed to deploy resolve
+    * @throws  SmartFrogResolutionException failed to deploy resolve
     */
-   public void linkResolve() throws SmartFrogCompileResolutionException;
+   public void linkResolve() throws SmartFrogResolutionException;
 
 
    /**
@@ -84,7 +84,7 @@ public interface ComponentResolver {
     *
     * @param  resState  resolution state
     *
-    * @throws  SmartFrogCompileResolutionException failed to deploy resolve
+    * @throws  SmartFrogResolutionException failed to deploy resolve
     */
-   public void doLinkResolve(ResolutionState resState) throws SmartFrogCompileResolutionException;
+   public void doLinkResolve(ResolutionState resState) throws SmartFrogResolutionException;
 }

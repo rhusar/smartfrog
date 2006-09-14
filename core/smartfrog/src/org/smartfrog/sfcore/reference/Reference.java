@@ -21,6 +21,7 @@ For more information: www.smartfrog.org
 package org.smartfrog.sfcore.reference;
 
 import java.io.Serializable;
+import java.io.IOException;
 import java.util.Enumeration;
 import java.util.Vector;
 
@@ -28,6 +29,8 @@ import org.smartfrog.sfcore.common.SmartFrogCoreProperty;
 import org.smartfrog.sfcore.common.Copying;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
+import org.smartfrog.sfcore.common.SFNull;
+import org.smartfrog.sfcore.common.ContextImpl;
 import org.smartfrog.sfcore.parser.SFParser;
 
 
@@ -64,6 +67,9 @@ public class Reference implements Copying, Cloneable, Serializable {
     protected boolean eager = true;
     /** Indicator whether reference is data or link. */
     protected boolean data = false;
+    /** Indicator whether reference resolution is optional(returns SFNull on failure) or compulsory(Exception on failure). */
+    protected boolean optional = false;
+    protected Object defaultValue = SFNull.get();
 
     /**
      * Constructs an empty reference.
@@ -233,6 +239,44 @@ public class Reference implements Copying, Cloneable, Serializable {
         return tmp;
     }
 
+
+    /**
+     * Gets the optional flag for the reference.
+     *
+     * @return current optional flag
+     *
+     * @see #setOptional
+     */
+    public boolean getOptional() {
+        return optional;
+    }
+
+    /**
+     * Sets the optional flag for the reference.
+     *
+     * @param optional new data flag
+     * @return old optional flag
+     * @see #getOptional
+     */
+    public boolean setOptional(boolean optional) {
+        boolean tmp = this.optional;
+        this.optional = optional;
+        return tmp;
+    }
+
+   /**
+     * Sets the default value for the reference if optional.
+     *
+     * @param value new default value
+     * @return old default value flag
+     */
+    public Object setDefaultValue (Object value) {
+        Object tmp = this.defaultValue;
+        this.defaultValue = value;
+        return tmp;
+    }
+
+
     /**
      * Checks if this and given reference are equal. Two references are
      * considered to be equal if all their reference parts are equal.
@@ -400,7 +444,12 @@ public class Reference implements Copying, Cloneable, Serializable {
 
         // Forward the resolution request to the reference part, which will
         // resolve given this reference, its index and the resolver
+        try {
         return elementAt(index).resolve(rr, this, index);
+        } catch (SmartFrogResolutionException e) {
+            if (optional) return defaultValue;
+            throw e;
+        }
     }
 
     /**
@@ -424,7 +473,12 @@ public class Reference implements Copying, Cloneable, Serializable {
 
         // Forward the resolution request to the reference part, which will
         // resolve given this reference, its index and the resolver
+        try {
         return elementAt(index).resolve(rr, this, index);
+        } catch (SmartFrogResolutionException e) {
+            if (optional) return defaultValue;
+            throw e;
+        }
     }
     /**
      * Returns string representation of the reference.
@@ -435,7 +489,20 @@ public class Reference implements Copying, Cloneable, Serializable {
     public String toString() {
         StringBuffer res = new StringBuffer();
         res.append (eager ? "" : "LAZY ");
+        if (optional) {
+            res.append("OPTIONAL ");
+            if (defaultValue != SFNull.get()) {
+                try {
+                    res.append(" (");                    
+                    res.append(ContextImpl.getBasicValueFor(defaultValue));
+                    res.append(") ");
+                } catch (IOException e) {
+                    // ignore...!
+                }
+            }
+        }
         res.append (data ? "DATA " : "");
+
         for (int i = 0; i < ref.size(); i++){
             res.append(elementAt(i).toString(i));
             res.append(((i < (ref.size() - 1)) ? ":" : ""));

@@ -103,11 +103,10 @@ public class SFApplyReference extends SFReference implements ReferencePhases {
         //     resolve all non-sf attributes, if they are links
         //     if any return s LAZY object, set self to lazy and return self, otherwise update copy
         //     and invoke function with copy of CD, return result
-        
+
         Context forFunction = new ContextImpl();
         String functionClass = null;
         Object result;
-        boolean hasLazy = false;
 
         if (getData()) return this;
 
@@ -116,24 +115,25 @@ public class SFApplyReference extends SFReference implements ReferencePhases {
         else if (rr instanceof Prim)
             comp.setPrimParent((Prim) rr);
 
+        try {
+            functionClass = (String) comp.sfResolveHere("sfFunctionClass");
+        } catch (ClassCastException e) {
+            throw new SmartFrogFunctionResolutionException("function class is not a string", e);
+        }
+
         for (Iterator v = comp.sfAttributes(); v.hasNext();) {
             Object name = v.next();
-
             String nameS = name.toString();
-            if (nameS.startsWith("sf")) {
-                if (nameS.equals("sfFunctionClass")) {
-                    try {
-                        functionClass = (String) comp.sfResolveHere("sfFunctionClass");
-                    } catch (ClassCastException e) {
-                        throw new SmartFrogResolutionException("function class is not a string", e);
-                    }
-                } //ignore all others named sf*
-            } else {
-                Object value = comp.sfResolve(new Reference(ReferencePart.here(name)));
+            if (!nameS.equals("sfFunctionClass")){
+                Object value = null;
 
-                if (value instanceof Reference && !((Reference) value).getData()) {
-                    hasLazy = true;
-                } else {
+                try {
+                    value = comp.sfResolve(new Reference(ReferencePart.here(name)));
+                } catch (java.lang.StackOverflowError e) {
+                    throw new SmartFrogFunctionResolutionException(e);
+                }
+
+                if (value != null) {
                     try {
                         comp.sfReplaceAttribute(name, value);
                         forFunction.sfAddAttribute(name, value);
@@ -145,19 +145,16 @@ public class SFApplyReference extends SFReference implements ReferencePhases {
                 }
             }
         }
+
         if (functionClass == null) {
-            throw new SmartFrogResolutionException("unknown function class ");
+            throw new SmartFrogFunctionResolutionException("unknown function class ");
         }
-        if (hasLazy) {
-            setEager(false);
-            return this;
-        } else {
-            try {
-                Function function = (Function) SFClassLoader.forName(functionClass).newInstance();
-                result = function.doit(forFunction, null);
-            } catch (Exception e) {
-                throw new SmartFrogResolutionException("failed to create or evaluate function class " + functionClass + " with data " + forFunction, e);
-            }
+
+        try {
+            Function function = (Function) SFClassLoader.forName(functionClass).newInstance();
+            result = function.doit(forFunction, null, rr);
+        } catch (Exception e) {
+            throw (SmartFrogResolutionException) SmartFrogResolutionException.forward("failed to create or evaluate function class " + functionClass + " with data " + forFunction, e);
         }
 
         return result;
@@ -191,24 +188,26 @@ public class SFApplyReference extends SFReference implements ReferencePhases {
         else if (rr instanceof Prim)
             comp.setPrimParent((Prim) rr);
 
+        try {
+            functionClass = (String) comp.sfResolveHere("sfFunctionClass");
+        } catch (ClassCastException e) {
+            throw new SmartFrogFunctionResolutionException("function class is not a string", e);
+        }
+        
         for (Iterator v = comp.sfAttributes(); v.hasNext();) {
             Object name = v.next();
 
             String nameS = name.toString();
-            if (nameS.startsWith("sf")) {
-                if (nameS.equals("sfFunctionClass")) {
-                    try {
-                        functionClass = (String) comp.sfResolveHere("sfFunctionClass");
-                    } catch (ClassCastException e) {
-                        throw new SmartFrogResolutionException("function class is not a string", e);
-                    }
-                } //ignore all others named sf*
-            } else {
-                Object value = comp.sfResolve(new Reference(ReferencePart.here(name)));
+            if (!nameS.equals("sfFunctionClass")) {
+                Object value = null;
 
-                if (value instanceof Reference && !((Reference) value).getData()) {
-                    hasLazy = true;
-                } else {
+                try {
+                    value = comp.sfResolve(new Reference(ReferencePart.here(name)));
+                } catch (java.lang.StackOverflowError e) {
+                    throw new SmartFrogFunctionResolutionException(e);
+                }
+
+                if (value != null) {
                     try {
                         comp.sfReplaceAttribute(name, value);
                         forFunction.sfAddAttribute(name, value);
@@ -220,19 +219,17 @@ public class SFApplyReference extends SFReference implements ReferencePhases {
                 }
             }
         }
+
         if (functionClass == null) {
-            throw new SmartFrogResolutionException("unknown function class ");
+            throw new SmartFrogFunctionResolutionException("unknown function class ");
         }
-        if (hasLazy) {
-            setEager(false);
-            return this;
-        } else {
-            try {
-                Function function = (Function) SFClassLoader.forName(functionClass).newInstance();
-                result = function.doit(forFunction, null);
-            } catch (Exception e) {
-                throw new SmartFrogResolutionException("failed to create or evaluate function class " + functionClass + " with data " + forFunction, e);
-            }
+
+        try {
+            Function function = (Function) SFClassLoader.forName(functionClass).newInstance();
+            result = function.doit(forFunction, null, rr);
+        } catch (Exception e) {
+            System.out.println("obtained " + e);
+            throw (SmartFrogResolutionException) SmartFrogResolutionException.forward("failed to create or evaluate function class " + functionClass + " with data " + forFunction, e);
         }
 
         return result;
@@ -254,5 +251,15 @@ public class SFApplyReference extends SFReference implements ReferencePhases {
         res += "}";
 
         return res;
+    }
+
+    /**
+     * Adds a parameter to the Context contained in the reference.
+     *
+     * @param name String representing the name of the parameter
+     * @param data the Object which is the data associated with the parameter
+     */
+    public void sfAddParameter(String name, Object data) throws SmartFrogRuntimeException {
+        comp.sfReplaceAttribute(name, data);
     }
 }

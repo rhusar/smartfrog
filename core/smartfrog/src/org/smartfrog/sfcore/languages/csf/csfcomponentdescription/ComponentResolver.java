@@ -19,7 +19,7 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.sfcore.languages.csf.csfcomponentdescription;
 
-import org.smartfrog.sfcore.languages.sf.SmartFrogCompileResolutionException;
+import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 
 /**
  *  Specifies the resolution interface to be implemented by all attributes
@@ -30,7 +30,7 @@ public interface ComponentResolver extends org.smartfrog.sfcore.languages.sf.sfc
     /**
      *  Internal method that constraint resolves a parsed component.
      *
-     * @throws  SmartFrogCompileResolutionException failed to type resolve
+     * @throws  org.smartfrog.sfcore.common.SmartFrogResolutionException failed to type resolve
      */
-    public void constraintResolve() throws SmartFrogCompileResolutionException;
+    public void constraintResolve() throws SmartFrogResolutionException;
 }

@@ -20,10 +20,12 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.sfcore.languages.sf.functions;
 
-import org.smartfrog.sfcore.common.*;
 import org.smartfrog.sfcore.reference.Function;
+import org.smartfrog.sfcore.reference.ReferenceResolver;
+import org.smartfrog.sfcore.reference.RemoteReferenceResolver;
 import org.smartfrog.sfcore.reference.Reference;
-import org.smartfrog.sfcore.languages.sf.SmartFrogCompileResolutionException;
+import org.smartfrog.sfcore.common.SmartFrogFunctionResolutionException;
+import org.smartfrog.sfcore.common.Context;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 
 /**
@@ -34,27 +36,54 @@ public abstract class BaseFunction implements Function  {
      * The method to implement the functionality of any function.
      *
      * @return the result of the function: an Object
-     * @throws SmartFrogCompileResolutionException
+     * @throws SmartFrogFunctionResolutionException
      * */
-    protected abstract Object doFunction() throws SmartFrogCompileResolutionException;
+    protected abstract Object doFunction() throws SmartFrogFunctionResolutionException;
 
     protected Context context = null;
+    protected ReferenceResolver rr = null;
+    protected RemoteReferenceResolver rrr = null;
+
     protected Reference name = null;
+
     /**
-     * base implementation of a fubction method.
+     * base implementation of a function method.
      * Calls the (abstract) method doFunction.
      * Note that it makes sure that the result has no parent if it is a component description - this will
      * cause it to be patched into whereever it is returned.
      * 
-     * @throws SmartFrogCompileResolutionException if the doFunction method does.
+     * @throws SmartFrogFunctionResolutionException if the doFunction method does.
      */
-    public Object doit(Context context, Reference name) throws SmartFrogCompileResolutionException {
+    public Object doit(Context context, Reference name, ReferenceResolver rr) throws SmartFrogFunctionResolutionException {
         this.context = context;
-        this.name = name;
+        this.rr = rr;
 
         Object result = doFunction();
-        if (result instanceof ComponentDescription)
+        if (result instanceof ComponentDescription) {
             ((ComponentDescription)result).setParent(null);
+            ((ComponentDescription)result).setPrimParent(null);
+        }
+
+        return result;
+    }
+
+    /**
+     * base implementation of a function method.
+     * Calls the (abstract) method doFunction.
+     * Note that it makes sure that the result has no parent if it is a component description - this will
+     * cause it to be patched into whereever it is returned.
+     *
+     * @throws SmartFrogFunctionResolutionException if the doFunction method does.
+     */
+    public Object doit(Context context, Reference name, RemoteReferenceResolver rr) throws SmartFrogFunctionResolutionException {
+        this.context = context;
+        this.rrr = rr;
+
+        Object result = doFunction();
+        if (result instanceof ComponentDescription) {
+            ((ComponentDescription)result).setParent(null);
+            ((ComponentDescription)result).setPrimParent(null);
+        }
         return result;
     }
 }

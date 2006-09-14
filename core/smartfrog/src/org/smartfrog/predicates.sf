@@ -30,6 +30,103 @@ ITS MEDIA, AND YOU HEREBY WAIVE ANY CLAIM IN THIS REGARD.
 
 */
 
-#include "/org/smartfrog/sfcore/languages/sf/predicates/tbd.sf"
-#include "/org/smartfrog/sfcore/languages/sf/predicates/assertions.sf"
-#include "/org/smartfrog/sfcore/languages/sf/predicates/schema.sf"
+Assertions extends {
+   phase.function "org.smartfrog.sfcore.languages.sf.ConstructAssertions";
+}
+
+Schema extends {
+   phase.function "org.smartfrog.sfcore.languages.sf.ConstructSchema";
+}
+
+SchemaElement extends Function {
+   sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.CheckSchemaElement";
+   name TBD;
+   optional false;
+   binding "anyBinding";
+   class "anyClass";
+}
+
+Compulsory extends SchemaElement {
+    optional false;
+    binding "anyBinding";
+    class "anyClass";
+}
+
+Optional extends SchemaElement {
+    optional true;
+    binding "anyBinding";
+    class "anyClass";
+}
+
+OptionalInteger extends Optional {
+    class "java.lang.Integer";
+}
+
+Integer extends Compulsory {
+    class "java.lang.Integer";
+}
+
+OptionalDouble extends Optional {
+    class ["java.lang.Double","java.lang.Float","java.lang.Long","java.lang.Integer"];
+}
+
+Double extends Compulsory {
+    class ["java.lang.Double","java.lang.Float","java.lang.Long","java.lang.Integer"];
+}
+
+OptionalLong extends Optional {
+    class ["java.lang.Long","java.lang.Integer"];
+}
+
+Long extends Compulsory {
+        class ["java.lang.Long","java.lang.Integer"];
+}
+
+OptionalFloat extends Optional {
+    class ["java.lang.Float","java.lang.Integer"];
+}
+
+Float extends Compulsory {
+    class ["java.lang.Float","java.lang.Integer"];
+}
+
+OptionalString extends Optional {
+    class "java.lang.String";
+}
+
+String extends Compulsory {
+    class "java.lang.String";
+}
+
+
+OptionalBoolean extends Optional {
+    class "java.lang.Boolean";
+}
+
+Boolean extends Compulsory {
+    class "java.lang.Boolean";
+}
+
+OptionalVector extends Optional {
+    class "java.util.Vector";
+}
+
+Vector extends Compulsory {
+    class "java.util.Vector";
+}
+
+OptionalCD extends Optional {
+    class "org.smartfrog.sfcore.componentdescription.ComponentDescription";
+}
+
+CD extends Compulsory {
+    class "org.smartfrog.sfcore.componentdescription.ComponentDescription";
+}
+
+OptionalReference extends Optional {
+    class ["org.smartfrog.sfcore.reference.SFReference", "org.smartfrog.sfcore.reference.SFReference"];
+}
+
+Reference extends Compulsory {
+    class ["org.smartfrog.sfcore.languages.sf.sfreference.SFReference", "org.smartfrog.sfcore.languages.sf.sfreference.SFApplyReference"];
+}

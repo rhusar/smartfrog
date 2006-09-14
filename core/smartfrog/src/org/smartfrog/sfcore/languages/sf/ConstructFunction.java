@@ -1,14 +1,12 @@
 package org.smartfrog.sfcore.languages.sf;
 
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
-import org.smartfrog.sfcore.reference.ApplyReference;
-import org.smartfrog.sfcore.reference.Reference;
-import org.smartfrog.sfcore.reference.ReferencePart;
 import org.smartfrog.sfcore.languages.sf.sfcomponentdescription.SFComponentDescriptionImpl;
 import org.smartfrog.sfcore.languages.sf.sfcomponentdescription.SFComponentDescription;
 import org.smartfrog.sfcore.languages.sf.sfreference.SFApplyReference;
 import org.smartfrog.sfcore.common.ContextImpl;
 import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
+import org.smartfrog.sfcore.common.SmartFrogFunctionResolutionException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 
 import java.util.Stack;
@@ -17,20 +15,23 @@ import java.util.Iterator;
 /**
  * Construct the function apply reference object, and replace self with this
  */
-public class Function implements PhaseAction {
+public class ConstructFunction implements PhaseAction {
+    final static String functionClass = "sfFunctionClass";
+    final static String functionPhase = "phase.function";
+
     // do the work
     String phaseName = null;
     SFComponentDescription cd = null;
     Stack path;
 
-    public void doit() throws SmartFrogCompileResolutionException {
+    public void doit() throws SmartFrogFunctionResolutionException {
+        //SFComponentDescription comp = new SFComponentDescriptionImpl(null, (SFComponentDescription)(cd.sfParent()), new ContextImpl(), false);
         SFComponentDescription comp = new SFComponentDescriptionImpl(null, null, new ContextImpl(), false);
-        SFApplyReference apply = new SFApplyReference(comp);
 
         try {
-            comp.sfAddAttribute("sfFunctionClass", cd.sfResolve("sfFunctionClass"));
+            comp.sfAddAttribute(functionClass, cd.sfResolve(functionClass));
         } catch (SmartFrogRuntimeException e) {
-            throw new SmartFrogCompileResolutionException("Unable to construct apply reference as sfFunctionClass is missing in phase: " + phaseName +
+            throw new SmartFrogFunctionResolutionException("Unable to construct apply reference as sfFunctionClass is missing in phase: " + phaseName +
                     " for component: " + cd.sfCompleteName(), e);
         }
 
@@ -42,7 +43,7 @@ public class Function implements PhaseAction {
             } catch (SmartFrogResolutionException e) {
                 //shouldn't happen
             }
-            if ((key.toString()).startsWith("sf") || (key.toString()).startsWith("phase.")) {
+            if ((key.toString()).equals(functionPhase)) {
                 //ignore
             } else {
                 try {
@@ -56,7 +57,7 @@ public class Function implements PhaseAction {
         ComponentDescription parent = cd.sfParent();
         if (parent != null) {
             Object name = parent.sfContext().keyFor(cd);
-            parent.sfContext().put(name, apply);
+            parent.sfContext().put(name, new SFApplyReference(comp));
         }
     }
 

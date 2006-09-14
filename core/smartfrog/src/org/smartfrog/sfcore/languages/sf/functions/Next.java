@@ -20,8 +20,6 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.sfcore.languages.sf.functions;
 
-import org.smartfrog.sfcore.languages.sf.PhaseAction;
-
 /**
  * Defines the Next function that returns a monotonically increasing value, 
  * guaranteed never to return the same number twice within a single description.

@@ -21,6 +21,9 @@ For more information: www.smartfrog.org
 package org.smartfrog.sfcore.reference;
 
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
+import org.smartfrog.sfcore.common.SFMarshalledObject;
+
+import java.util.Vector;
 
 
 /**
@@ -101,15 +104,35 @@ public class AttribReferencePart extends HereReferencePart {
      */
     public Object resolve(ReferenceResolver rr, Reference r, int index)
         throws SmartFrogResolutionException {
-        try {
-            return super.resolve(rr, r, index);
-        } catch (SmartFrogResolutionException resex) {
-            if (rr.sfResolveParent() == null) {
-                throw (SmartFrogResolutionException)SmartFrogResolutionException.forward(null,r,resex);
-            }
+        // Find here
+        Object result = rr.sfResolveHere(getValue(),false);
 
+        if (result == null) {
+            if (rr.sfResolveParent() == null) {
+                throw SmartFrogResolutionException.notFound(r, null);
+            }
             return forwardReference(rr.sfResolveParent(), r, index);
         }
+
+        try {
+            // if reference ask rr to resolve it (chaining)
+            if (result instanceof Reference && !((Reference)result).getData()) {
+                result = rr.sfResolve((Reference)result);
+                // if vector ask rr to resolve any contained reference(chaining)
+            } else if (result instanceof Vector) {
+                result = sfResolveVector(rr, (Vector)result);
+            }
+        } catch (SmartFrogResolutionException ex) {
+            throw (SmartFrogResolutionException)SmartFrogResolutionException.forward(r.toString(),ex);
+        }
+
+        // If the end we are there!
+        if (index == (r.size() - 1)) {
+            return result;
+        }
+
+        // Else forward on to result
+        return forwardReference(result, r, index + 1);
     }
 
     /**
@@ -126,18 +149,44 @@ public class AttribReferencePart extends HereReferencePart {
      */
     public Object resolve(RemoteReferenceResolver rr, Reference r, int index)
         throws SmartFrogResolutionException {
-        try {
-            return super.resolve(rr, r, index);
-        } catch (SmartFrogResolutionException resex) {
-            try {
-                if (rr.sfResolveParent() == null) {
-                    throw (SmartFrogResolutionException)SmartFrogResolutionException.forward(null,r,resex);
-                }
+         try {
+            // Find here
+            Object result = rr.sfResolveHere(getValue(),false);
 
+            if (result == null) {  //not here
+                if (rr.sfResolveParent() == null) {
+                    throw SmartFrogResolutionException.notFound(r, null);
+                }
                 return forwardReference(rr.sfResolveParent(), r, index);
-            } catch (Exception ex){
-                throw (SmartFrogResolutionException)SmartFrogResolutionException.forward(ex);
             }
+
+            //is here
+            try {
+                // if reference ask rr to resolve it (chaining)
+                if (result instanceof Reference && !((Reference)result).getData()) {
+                    result = rr.sfResolve((Reference)result);
+                } else if (result instanceof Vector) {
+                    result = sfResolveVector(rr, (Vector)result);
+                }
+            } catch (SmartFrogResolutionException ex) {
+                throw (SmartFrogResolutionException)SmartFrogResolutionException.forward(r.toString(),ex);
+            }
+
+            // If the end we are there!
+            if (index == (r.size() - 1)) {
+                //Marshall!
+                if (!(result instanceof SFMarshalledObject)) {
+                    return new SFMarshalledObject(result);
+                } else {
+                    return result;
+                }
+            }
+
+            // Else forward on to result
+            return forwardReference(result, r, index + 1);
+
+        } catch (Exception ex){
+            throw (SmartFrogResolutionException)SmartFrogResolutionException.forward(ex);
         }
     }
 }

@@ -22,7 +22,7 @@ package org.smartfrog.sfcore.languages.csf.constraints;
 
 import org.smartfrog.sfcore.languages.csf.csfcomponentdescription.CSFComponentDescription;
 import org.smartfrog.sfcore.languages.csf.csfcomponentdescription.FreeVar;
-import org.smartfrog.sfcore.languages.sf.SmartFrogCompileResolutionException;
+import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.componentdescription.CDVisitor;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 
@@ -46,15 +46,15 @@ public class NullSolver extends CoreSolver implements Solver {
      * In this case, no solving, but simply check that there are no free variables.
      *
      * @param cd the component description at the root of the tree
-     * @throws SmartFrogCompileResolutionException
+     * @throws SmartFrogResolutionException
      *
      */
-    public void solve(CSFComponentDescription cd) throws SmartFrogCompileResolutionException {
+    public void solve(CSFComponentDescription cd) throws SmartFrogResolutionException {
         top = cd;
         try {
             findUnbound();
         } catch (Exception e) {
-            throw new SmartFrogCompileResolutionException("Error updating description with variable bindings during constraint resolution", e);
+            throw new SmartFrogResolutionException("Error updating description with variable bindings during constraint resolution", e);
         }
     }
 
@@ -85,7 +85,7 @@ public class NullSolver extends CoreSolver implements Solver {
         unbounds = new Vector();
         top.visit(new NullSolver.BindingMapper(), false);
         if (unbounds.size() > 0) {
-            throw new SmartFrogCompileResolutionException("Unbound variable(s) in attribute " + unbounds);
+            throw new SmartFrogResolutionException("Unbound variable(s) in attribute " + unbounds);
         }
     }
 

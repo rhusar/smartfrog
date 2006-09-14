@@ -21,6 +21,7 @@ For more information: www.smartfrog.org
 package org.smartfrog.sfcore.languages.sf;
 
 import org.smartfrog.sfcore.languages.sf.sfcomponentdescription.SFComponentDescription;
+import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 
 import java.util.Stack;
 
@@ -31,10 +32,10 @@ public interface PhaseAction {
     /**
      * Implements the actions to be performed in a phase.
      *
-     * @throws SmartFrogCompileResolutionException failure in implementing the 
+     * @throws org.smartfrog.sfcore.common.SmartFrogResolutionException failure in implementing the
      * actions
      */ 
-    public void doit() throws SmartFrogCompileResolutionException;
+    public void doit() throws SmartFrogResolutionException;
 
     /**
      * Sets the component and the context.

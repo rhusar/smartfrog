@@ -22,9 +22,7 @@ package org.smartfrog.sfcore.languages.sf.functions;
 
 import java.util.Enumeration;
 
-import org.smartfrog.sfcore.languages.sf.PhaseAction;
-import org.smartfrog.sfcore.languages.sf.SmartFrogCompileResolutionException;
-import org.smartfrog.sfcore.reference.Function;
+import org.smartfrog.sfcore.common.SmartFrogFunctionResolutionException;
 
 /**
  * Defines the baseoperator for the operator functions.
@@ -42,10 +40,10 @@ public abstract class BaseOperator extends BaseFunction {
      *
      * @return an Object
      *  */
-    protected abstract Object doOperator(Object a, Object b) throws SmartFrogCompileResolutionException;
+    protected abstract Object doOperator(Object a, Object b) throws SmartFrogFunctionResolutionException;
 
     /** Implements the functionality of base operator. */
-    protected Object doFunction() throws SmartFrogCompileResolutionException {
+    protected Object doFunction() throws SmartFrogFunctionResolutionException {
         Object result = null;
 
         for (Enumeration e = context.keys(); e.hasMoreElements();) {

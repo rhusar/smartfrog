@@ -14,6 +14,8 @@ import org.smartfrog.sfcore.languages.csf.csfcomponentdescription.FreeVar;
 import org.smartfrog.sfcore.languages.csf.constraints.Constraint;
 import org.smartfrog.sfcore.languages.sf.sfreference.SFApplyReference;
 import org.smartfrog.sfcore.languages.sf.sfreference.SFReference;
+import org.smartfrog.sfcore.languages.sf.sfreference.SFAssertReference;
+import org.smartfrog.sfcore.languages.sf.sfreference.SFTBDReference;
 
 import org.smartfrog.sfcore.languages.sf.IncludeHandler;
 
@@ -59,8 +61,9 @@ public class DefaultParser {
 
   static final String notOp = "org.smartfrog.sfcore.languages.sf.functions.Not";
   static final String ifThenElseOp = "org.smartfrog.sfcore.languages.sf.functions.IfThenElse";
-  static final String functionPhaseClass = "org.smartfrog.sfcore.languages.sf.Function";
+  static final String functionPhaseClass = "org.smartfrog.sfcore.languages.sf.ConstructFunction";
 
+  static final String tbdOp = "org.smartfrog.sfcore.languages.sf.predicates.TBD";
 
 
   public DefaultParser(InputStream is, IncludeHandler handler) {
@@ -205,6 +208,7 @@ TOKEN : /* reserved words */
  | <EXTENDS: "extends">
  | <LAZY: "LAZY">
  | <DATA: "DATA">
+ | <OPTIONAL: "OPTIONAL">
  | <ROOT: "ROOT">
  | <ATTRIB: "ATTRIB">
  | <HERE: "HERE">
@@ -215,6 +219,7 @@ TOKEN : /* reserved words */
  | <HOST: "HOST">
  | <PROCESS: "PROCESS">
  | <APPLY: "APPLY">
+ | <ASSERT: "ASSERT">
  | <INCLUDE: "#include">
  | <CODEBASE: "#codebase">
  | <TRUE: "true">
@@ -246,13 +251,14 @@ TOKEN : /* reserved words */
  | <ELSE: "ELSE">
  | <FI: "FI">
 
+ | <TBD: "TBD">
  | <VAR: "VAR" ("/" (<DIGIT>)+ )? >
 }
 
 TOKEN :
 {
   < WORD: <LETTER> (<LETTER>|<DIGIT>|<SPECIAL>)* >
-| < #SPECIAL: [".", "_", "-", "+", "@", "#", "~", "$", "%", "^", "&", "<", ">"] >
+| < #SPECIAL: [".", "_", "-", "+", "@", "#", "~", "$", "%", "^", "&"] >
 | < #LETTER:
       [
        "\u0024",
@@ -345,9 +351,21 @@ TOKEN : /* Literals */
         <FLOAT_BASE> ["f", "F"]
       >
     | <BYTEARRAY:
-          ("#HEX#")
+          (("#HEX#")
           (["0"-"9", "a"-"f", "A"-"F", " ", "\n", "\t"])*
-          ("#")
+           ("#"))
+          |(("#DEC#")
+           (["0"-"9", " ", "\n", "\t"])*
+           ("#"))
+          |(("#OCT#")
+           (["0"-"7", " ", "\n", "\t"])*
+           ("#"))
+          |(("#BIN#")
+           (["0"-"1", " ", "\n", "\t"])*
+           ("#"))
+          |(("#B64#")
+           (["0"-"9", "a"-"f", "A"-"F", "=", "+", "/", " ", "\n", "\t"])*
+           ("#"))
        >
 }
 
@@ -727,19 +745,26 @@ SFReference ReferenceNoEOF() :
   boolean lazy = false;
 }
 {
-  [<LAZY> { lazy = true; }] res = BaseReference() { if (lazy) res.setEager(false); return res; }
+  [<LAZY> { lazy = true; }]  res = BaseReference() {res.setEager(!lazy);  return res; }
 }
 
 SFReference BaseReference() :
 {
     CSFComponentDescription comp;
     SFReference ref;
+    boolean optional = false;
+    Object defaultValue = null;
 }
 {
   (
-    (ref = LinkReference())
+    ([<OPTIONAL> [<OPSTART> defaultValue = Primitive() ")"] { optional = true; } ] ref = LinkReference()
+             { ref.setOptional(optional); if (defaultValue!=null) ref.setDefaultValue(defaultValue); })
   |
-    (<APPLY> <LBRACE> {comp = SFParser.componentFactory("default");} AttributesNoEOF(comp) <RBRACE>  {ref = new SFApplyReference(comp);})
+    (<APPLY> <LBRACE> {comp = SFParser.componentFactory("default");} AttributesNoEOF(comp) <RBRACE>
+             {ref = new SFApplyReference(comp);})
+  |
+    (<ASSERT> <LBRACE> {comp = SFParser.componentFactory("default");} AttributesNoEOF(comp) <RBRACE>
+             {ref = new SFAssertReference(comp);})
   ) {
     ref.setEager(true);
     ref.setData(false);
@@ -828,6 +853,7 @@ Object Primitive() :
           (<COMMA> tmp=Primitive() { ((Vector)res).addElement(tmp); })*]
       <VECTOREND>)
    | <DATA> res = BaseReference() {((SFReference)res).setData(true);}
+   | <TBD> {res = new SFTBDReference();}
    | res=Var()
   ) { return res; }
 }
@@ -891,12 +917,14 @@ SFByteArray ByteArray() :
 {
     Token res;
     String s;
+    String type;
 }
 {
-  (  ( res=<BYTEARRAY> { s = eliminateWhitespace(res.image.substring(5, res.image.length() - 1)); })
+  (  ( res=<BYTEARRAY> { s = eliminateWhitespace(res.image.substring(5, res.image.length() - 1));
+                         type = eliminateWhitespace(res.image.substring(1, 4)); })
   ) {
       try {
-          SFByteArray ba = new SFByteArray(s, res.beginLine, res.beginColumn);
+          SFByteArray ba = new SFByteArray(s, type, res.beginLine, res.beginColumn);
           return ba;
       } catch (Exception e) {
           throw new ParseException("error constructing binary data:" + e.toString());

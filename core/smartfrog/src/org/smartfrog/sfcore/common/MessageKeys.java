@@ -260,6 +260,18 @@ public interface MessageKeys {
      */
     public static String MSG_ILLEGAL_CLASS_TYPE_EXPECTING_GOT ="MSG_ILLEGAL_CLASS_TYPE_EXPECTING_GOT";
 
+    /**
+     * Message key: illegal classtype with added information.
+     * @see MSG_TBD_REFERENCE
+     */
+    public static String MSG_TBD_REFERENCE ="MSG_TBD_REFERENCE";
+
+    /**
+     * Message key: illegal classtype with added information.
+     * @see MSG_ASSERTION_FAILURE
+     */
+    public static String MSG_ASSERTION_FAILURE ="MSG_ASSERTION_FAILURE";
+
     // Resolution Exception Messages ends
     /**
      * Message key: unhandled exception.
