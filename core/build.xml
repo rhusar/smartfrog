@@ -68,6 +68,16 @@ For more information: www.smartfrog.org
         <forward2 dir="@{dir}" target="@{target}" inheritAll="@{inheritAll}"/>
       </sequential>
     </macrodef>
+    
+    <fail>
+     <condition>
+        <not>
+         <equal property="thisdoesnotexist"/>
+        </not>
+     </condition>
+    </fail>
+
+    
   </target>
   
   <!-- =================================================================== -->
@@ -216,7 +226,7 @@ For more information: www.smartfrog.org
   <!-- =================================================================== -->
     <target name="cvsupdate" depends="cc-init"
       description="update CVS; needs cvs on the command line">
-      <exec executable="cvs" failonerror="true">
+      <exec executable="cvs" failonerror="false">
         <arg line="-r -z7 update -dP" />
       </exec>
     </target>
