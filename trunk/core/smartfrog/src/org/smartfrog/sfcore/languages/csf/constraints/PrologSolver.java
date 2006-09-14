@@ -7,7 +7,6 @@ import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.common.SFNull;
 import org.smartfrog.sfcore.languages.csf.csfcomponentdescription.CSFComponentDescription;
 import org.smartfrog.sfcore.languages.csf.csfcomponentdescription.FreeVar;
-import org.smartfrog.sfcore.languages.sf.SmartFrogCompileResolutionException;
 import org.smartfrog.sfcore.security.SFClassLoader;
 import org.smartfrog.sfcore.reference.Reference;
 
@@ -45,10 +44,10 @@ abstract public class PrologSolver extends CoreSolver {
      * <p/>
      *
      * @param cd the component description at the root of the tree
-     * @throws org.smartfrog.sfcore.languages.sf.SmartFrogCompileResolutionException
+     * @throws org.smartfrog.sfcore.common.SmartFrogResolutionException
      *
      */
-    public void solve(CSFComponentDescription cd) throws SmartFrogCompileResolutionException {
+    public void solve(CSFComponentDescription cd) throws SmartFrogResolutionException {
         top = cd;
         System.out.println("solving");
 
@@ -60,28 +59,28 @@ abstract public class PrologSolver extends CoreSolver {
             //System.out.println(filename);
             prepareTheory(prologStream);
         } catch (Exception e) {
-            throw new SmartFrogCompileResolutionException("unable to parse base theory for constraint resolution", e);
+            throw new SmartFrogResolutionException("unable to parse base theory for constraint resolution", e);
         }
 
         // collect and process the constraints
         try {
             collectConstraints();
         } catch (Exception e) {
-            throw new SmartFrogCompileResolutionException("Error collectiong constraints during contraint resolution", e);
+            throw new SmartFrogResolutionException("Error collectiong constraints during contraint resolution", e);
         }
 
         // solve the constraints
         bindings = solveConstraints(initialBindings);
 
         if (bindings == null) {
-            throw new SmartFrogCompileResolutionException("Constraint resolution failed - probable inconsistency in constraints");
+            throw new SmartFrogResolutionException("Constraint resolution failed - probable inconsistency in constraints");
         }
 
         // map values back
         try {
             mapBindings();
         } catch (Exception e) {
-            throw new SmartFrogCompileResolutionException("Error updating description with variable bindings during constraint resolution", e);
+            throw new SmartFrogResolutionException("Error updating description with variable bindings during constraint resolution", e);
         }
     }
 
@@ -90,7 +89,7 @@ abstract public class PrologSolver extends CoreSolver {
      * to which the constraint is attached. Also deal with character escapes...
      */
     private String processReferences(ComponentDescription cd,
-                                     String pString) throws SmartFrogCompileResolutionException {
+                                     String pString) throws SmartFrogResolutionException {
         int index = 0;
         int length = pString.length();
         char refDel = referenceDelimiter();
@@ -101,7 +100,7 @@ abstract public class PrologSolver extends CoreSolver {
         while (index < length) {
             theChar = pString.charAt(index++);
             if (theChar == refDel) {
-                if (index >= length) throw new SmartFrogCompileResolutionException("reference not terminated" + fixed + "... on component " + cd.sfCompleteName());
+                if (index >= length) throw new SmartFrogResolutionException("reference not terminated" + fixed + "... on component " + cd.sfCompleteName());
 
                 theChar = pString.charAt(index++);
                 if (theChar == refDel) { // we don't have a reference
@@ -114,13 +113,13 @@ abstract public class PrologSolver extends CoreSolver {
                         StringBuffer refString = new StringBuffer();
                         while (theChar != refDel) {
                             refString.append(theChar);
-                            if (index >= length) throw new SmartFrogCompileResolutionException("reference not terminated " + fixed + "... on component " + cd.sfCompleteName());
+                            if (index >= length) throw new SmartFrogResolutionException("reference not terminated " + fixed + "... on component " + cd.sfCompleteName());
                             theChar = pString.charAt(index++);
                         }
                         ref = Reference.fromString(refString.toString());
                         //System.out.println("ref is " + ref);
                     } catch (SmartFrogResolutionException e) {
-                        throw new SmartFrogCompileResolutionException("unable to build reference at " + fixed.toString());
+                        throw new SmartFrogResolutionException("unable to build reference at " + fixed.toString());
                     }
 
                     Object o = null;
@@ -128,7 +127,7 @@ abstract public class PrologSolver extends CoreSolver {
                         o = cd.sfResolve(ref);
                         //System.out.println("found " + o);
                     } catch (SmartFrogResolutionException e) {
-                        throw new SmartFrogCompileResolutionException("unable to resolve reference " + ref.toString() + " on component " + cd.sfCompleteName());
+                        throw new SmartFrogResolutionException("unable to resolve reference " + ref.toString() + " on component " + cd.sfCompleteName());
                     }
 
                     if (o instanceof FreeVar) {
@@ -153,7 +152,7 @@ abstract public class PrologSolver extends CoreSolver {
         top.visit(new ConstraintCollector(), false);
     }
 
-    private Hashtable solveConstraints(Hashtable bindings) throws SmartFrogCompileResolutionException {
+    private Hashtable solveConstraints(Hashtable bindings) throws SmartFrogResolutionException {
         StringBuffer totalConstraint = new StringBuffer();
 
         for (Enumeration b = bindings.keys(); b.hasMoreElements();) {
@@ -178,7 +177,7 @@ abstract public class PrologSolver extends CoreSolver {
         totalConstraint.append("'done'].");
         Hashtable results = solveQuery(totalConstraint, bindings);
         if (results == null)
-            throw new SmartFrogCompileResolutionException("No solution found to constraints");
+            throw new SmartFrogResolutionException("No solution found to constraints");
         else {
             Vector resultVector = (Vector) results.get("SFVRESULT");
             //System.out.println(results);
@@ -197,7 +196,7 @@ abstract public class PrologSolver extends CoreSolver {
         allVariables = new Vector();
         top.visit(new BindingMapper(), false);
         if (allVariables.size() > 0) {
-            throw new SmartFrogCompileResolutionException("Unbound variable(s) in attribute(s) " + allVariables);
+            throw new SmartFrogResolutionException("Unbound variable(s) in attribute(s) " + allVariables);
         }
     }
 
@@ -208,7 +207,7 @@ abstract public class PrologSolver extends CoreSolver {
      * @param v the value to convert
      * @return the converted value
      */
-    public Object mapValueIn(Object v) throws SmartFrogCompileResolutionException {
+    public Object mapValueIn(Object v) throws SmartFrogResolutionException {
         if (v instanceof Number) {
             return v;
         } else if (v instanceof Boolean) {
@@ -226,7 +225,7 @@ abstract public class PrologSolver extends CoreSolver {
         } else if (v instanceof FreeVar) {
             return varNameBase + ((FreeVar) v).getId();
         } else {
-            throw new SmartFrogCompileResolutionException("unable to handle SF data in constraint: " + v);
+            throw new SmartFrogResolutionException("unable to handle SF data in constraint: " + v);
         }
     }
 
@@ -237,7 +236,7 @@ abstract public class PrologSolver extends CoreSolver {
      * @param v the value to convert
      * @return the converted value
      */
-    public Object mapValueOut(Object v) throws SmartFrogCompileResolutionException {
+    public Object mapValueOut(Object v) throws SmartFrogResolutionException {
         if (v instanceof Number) {
             return v;
         } else if (v instanceof Boolean) {
@@ -259,10 +258,10 @@ abstract public class PrologSolver extends CoreSolver {
                 int index = new Integer(ind).intValue();
                 return new FreeVar(index);
             } else {
-                throw new SmartFrogCompileResolutionException("unknown data returned from solver " + v);
+                throw new SmartFrogResolutionException("unknown data returned from solver " + v);
             }
         } else {
-            throw new SmartFrogCompileResolutionException("unknown data returned from solver " + v);
+            throw new SmartFrogResolutionException("unknown data returned from solver " + v);
         }
     }
 

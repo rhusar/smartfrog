@@ -20,9 +20,8 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.sfcore.languages.sf.functions;
 
-import org.smartfrog.sfcore.languages.sf.PhaseAction;
-import org.smartfrog.sfcore.languages.sf.SmartFrogCompileResolutionException;
 import org.smartfrog.sfcore.common.MessageUtil;
+import org.smartfrog.sfcore.common.SmartFrogFunctionResolutionException;
 
 /**
  * Defines the disjunction function 
@@ -34,16 +33,16 @@ public class Or extends BaseOperator {
      * @param b second boolean
      *
      * @return the disjunction
-     * @throws SmartFrogCompileResolutionException if the types of the attributes are not correct
+     * @throws SmartFrogFunctionResolutionException if the types of the attributes are not correct
      */
-    protected Object doOperator(Object a, Object b) throws SmartFrogCompileResolutionException {
-	if (!(a instanceof Boolean))
-	    throw new SmartFrogCompileResolutionException(MessageUtil.formatMessage("ILLEGAL_BOOLEAN_PARAMETER"), 
-							  null, name, "function", a.getClass().toString() + " (" + a + ")");
-	if (!(b instanceof Boolean))
-	    throw new SmartFrogCompileResolutionException(MessageUtil.formatMessage("ILLEGAL_BOOLEAN_PARAMETER"), 
-							  null, name, "function", b.getClass().toString() + " (" + b + ")");
+    protected Object doOperator(Object a, Object b) throws SmartFrogFunctionResolutionException {
+    if (!(a instanceof Boolean))
+        throw new SmartFrogFunctionResolutionException(MessageUtil.formatMessage("ILLEGAL_BOOLEAN_PARAMETER"),
+                              null, name, a.getClass().toString() + " (" + a + ")");
+    if (!(b instanceof Boolean))
+        throw new SmartFrogFunctionResolutionException(MessageUtil.formatMessage("ILLEGAL_BOOLEAN_PARAMETER"),
+                              null, name, b.getClass().toString() + " (" + b + ")");
 
-	return new Boolean(((Boolean) a).booleanValue() || ((Boolean) b).booleanValue());
+    return new Boolean(((Boolean) a).booleanValue() || ((Boolean) b).booleanValue());
     }
 }

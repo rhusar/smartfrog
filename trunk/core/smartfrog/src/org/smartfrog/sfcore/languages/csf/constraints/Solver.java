@@ -21,7 +21,7 @@
 package org.smartfrog.sfcore.languages.csf.constraints;
 
 import org.smartfrog.sfcore.languages.csf.csfcomponentdescription.CSFComponentDescription;
-import org.smartfrog.sfcore.languages.sf.SmartFrogCompileResolutionException;
+import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 
 /**
  * Interface that all solver plug-ins must implement in order to be used by the SmartFrog constraint
@@ -32,10 +32,10 @@ public interface Solver {
      * carry out the constraint resolution
      *
      * @param cd the top of the component tree to constraint resolve
-     * @throws SmartFrogCompileResolutionException some kind of failure occurred!
+     * @throws org.smartfrog.sfcore.common.SmartFrogResolutionException some kind of failure occurred!
      *
      */
-    public void solve(CSFComponentDescription cd) throws SmartFrogCompileResolutionException;
+    public void solve(CSFComponentDescription cd) throws SmartFrogResolutionException;
 
     /**
      * Method to show how to map a varibale into a representation appropriate for the constraint plug-in's language
@@ -52,7 +52,7 @@ public interface Solver {
      * @param v the value to convert
      * @return the converted value
      */
-    //public Object mapValueIn(Object v) throws SmartFrogCompileResolutionException;
+    //public Object mapValueIn(Object v) throws SmartFrogTypeResolutionException;
 
     /**
      * Method to convert an object returned by the solver into one suited for SF
@@ -61,7 +61,7 @@ public interface Solver {
      * @param v the value to convert
      * @return the converted value
      */
-     //public Object mapValueOut(Object v) throws SmartFrogCompileResolutionException;
+     //public Object mapValueOut(Object v) throws SmartFrogTypeResolutionException;
 
     /**
      *  Obtain the character that will be used to delimit the start and end of a SmartFrog reference within the text of

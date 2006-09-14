@@ -20,8 +20,7 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.sfcore.languages.sf.functions;
 
-import org.smartfrog.sfcore.languages.sf.PhaseAction;
-import org.smartfrog.sfcore.languages.sf.SmartFrogCompileResolutionException;
+import org.smartfrog.sfcore.common.SmartFrogFunctionResolutionException;
 import org.smartfrog.sfcore.common.MessageUtil;
 
 /**
@@ -34,54 +33,54 @@ public class Minus extends BaseBinaryOperator {
      * @param a first number
      * @param b second number
      * @return a-b
-     * @throws SmartFrogCompileResolutionException if the operands are not numbers
+     * @throws SmartFrogFunctionResolutionException if the operands are not numbers
      */
-    protected Object doOperator(Object a, Object b) throws SmartFrogCompileResolutionException {
-	if (!(a instanceof Number))
-	    throw new SmartFrogCompileResolutionException(MessageUtil.formatMessage("ILLEGAL_NUMERIC_PARAMETER"), 
-							  null, name, "function", a.getClass().toString() + " (" + a + ")");
-	if (!(b instanceof Number))
-	    throw new SmartFrogCompileResolutionException(MessageUtil.formatMessage("ILLEGAL_NUMERIC_PARAMETER"), 
-							  null, name, "function", b.getClass().toString() + " (" + b + ")");
+    protected Object doOperator(Object a, Object b) throws SmartFrogFunctionResolutionException {
+    if (!(a instanceof Number))
+        throw new SmartFrogFunctionResolutionException(MessageUtil.formatMessage("ILLEGAL_NUMERIC_PARAMETER"),
+                              null, name, a.getClass().toString() + " (" + a + ")");
+    if (!(b instanceof Number))
+        throw new SmartFrogFunctionResolutionException(MessageUtil.formatMessage("ILLEGAL_NUMERIC_PARAMETER"),
+                              null, name, b.getClass().toString() + " (" + b + ")");
 
-	if (a instanceof Double) {
-	    if (b instanceof Double)
-		return new Double(((Double) a).doubleValue() - ((Double) b).doubleValue());
-	    else if (b instanceof Float)
-		return new Double(((Double) a).doubleValue() - ((Float) b).floatValue());
-	    else if (b instanceof Long)
-		return new Double(((Double) a).doubleValue() - ((Long) b).longValue());
-	    else 
-		return new Double(((Double) a).doubleValue() - ((Integer) b).intValue());
+    if (a instanceof Double) {
+        if (b instanceof Double)
+        return new Double(((Double) a).doubleValue() - ((Double) b).doubleValue());
+        else if (b instanceof Float)
+        return new Double(((Double) a).doubleValue() - ((Float) b).floatValue());
+        else if (b instanceof Long)
+        return new Double(((Double) a).doubleValue() - ((Long) b).longValue());
+        else
+        return new Double(((Double) a).doubleValue() - ((Integer) b).intValue());
 
-	} else if (a instanceof Float) {
-	    if (b instanceof Double)
-		return new Double(((Float) a).floatValue() - ((Double) b).doubleValue());
-	    else if (b instanceof Float)
-		return new Float(((Float) a).floatValue() - ((Float) b).floatValue());
-	    else if (b instanceof Long)
-		return new Float(((Float) a).floatValue() - ((Long) b).longValue());
-	    else
-		return new Float(((Float) a).floatValue() - ((Integer) b).intValue());
+    } else if (a instanceof Float) {
+        if (b instanceof Double)
+        return new Double(((Float) a).floatValue() - ((Double) b).doubleValue());
+        else if (b instanceof Float)
+        return new Float(((Float) a).floatValue() - ((Float) b).floatValue());
+        else if (b instanceof Long)
+        return new Float(((Float) a).floatValue() - ((Long) b).longValue());
+        else
+        return new Float(((Float) a).floatValue() - ((Integer) b).intValue());
 
-	} else if (a instanceof Long) {
-	    if (b instanceof Double)
-		return new Double(((Long) a).longValue() - ((Double) b).doubleValue());
-	    else if (b instanceof Float)
-		return new Float(((Long) a).longValue() - ((Float) b).floatValue());
-	    else if (b instanceof Long)
-		return new Long(((Long) a).longValue() - ((Long) b).longValue());
-	    else 
-		return new Long(((Long) a).longValue() - ((Integer) b).intValue());
-	} else {
-	    if (b instanceof Double)
-		return new Double(((Integer) a).intValue() - ((Double) b).doubleValue());
-	    else if (b instanceof Float)
-		return new Float(((Integer) a).intValue() - ((Float) b).floatValue());
-	    else if (b instanceof Long)
-		return new Long(((Integer) a).intValue() - ((Long) b).longValue());
-	    else 
-		return new Integer(((Integer) a).intValue() - ((Integer) b).intValue());
-	}
+    } else if (a instanceof Long) {
+        if (b instanceof Double)
+        return new Double(((Long) a).longValue() - ((Double) b).doubleValue());
+        else if (b instanceof Float)
+        return new Float(((Long) a).longValue() - ((Float) b).floatValue());
+        else if (b instanceof Long)
+        return new Long(((Long) a).longValue() - ((Long) b).longValue());
+        else
+        return new Long(((Long) a).longValue() - ((Integer) b).intValue());
+    } else {
+        if (b instanceof Double)
+        return new Double(((Integer) a).intValue() - ((Double) b).doubleValue());
+        else if (b instanceof Float)
+        return new Float(((Integer) a).intValue() - ((Float) b).floatValue());
+        else if (b instanceof Long)
+        return new Long(((Integer) a).intValue() - ((Long) b).longValue());
+        else
+        return new Integer(((Integer) a).intValue() - ((Integer) b).intValue());
+    }
     }
 }

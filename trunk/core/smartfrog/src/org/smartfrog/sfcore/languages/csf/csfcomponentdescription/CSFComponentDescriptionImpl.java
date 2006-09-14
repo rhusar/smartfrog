@@ -19,25 +19,24 @@
  */
 package org.smartfrog.sfcore.languages.csf.csfcomponentdescription;
 
-import java.io.Serializable;
+import org.smartfrog.sfcore.languages.csf.constraints.Constraint;
+import org.smartfrog.sfcore.languages.csf.constraints.CoreSolver;
+import org.smartfrog.sfcore.languages.csf.constraints.Solver;
+import org.smartfrog.sfcore.languages.sf.Phase;
+import org.smartfrog.sfcore.languages.sf.sfcomponentdescription.SFComponentDescription;
+import org.smartfrog.sfcore.languages.sf.sfcomponentdescription.SFComponentDescriptionImpl;
+import org.smartfrog.sfcore.parser.Phases;
+import org.smartfrog.sfcore.reference.Reference;
+import org.smartfrog.sfcore.common.MessageKeys;
+import org.smartfrog.sfcore.common.Context;
+import org.smartfrog.sfcore.common.SmartFrogResolutionException;
+import org.smartfrog.sfcore.common.SmartFrogException;
+
 import java.io.IOException;
+import java.io.Serializable;
 import java.io.Writer;
 import java.util.Enumeration;
 import java.util.Vector;
-
-import org.smartfrog.sfcore.common.Context;
-import org.smartfrog.sfcore.common.MessageKeys;
-import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.sfcore.languages.sf.SmartFrogCompileResolutionException;
-import org.smartfrog.sfcore.languages.sf.Phase;
-import org.smartfrog.sfcore.languages.csf.constraints.Constraint;
-import org.smartfrog.sfcore.languages.csf.constraints.Solver;
-import org.smartfrog.sfcore.languages.csf.constraints.CoreSolver;
-import org.smartfrog.sfcore.languages.sf.sfcomponentdescription.SFComponentDescriptionImpl;
-import org.smartfrog.sfcore.languages.sf.sfcomponentdescription.SFComponentDescription;
-
-import org.smartfrog.sfcore.reference.Reference;
-import org.smartfrog.sfcore.parser.Phases;
 
 /**
  * Defines the context class used by Components. Context implementations
@@ -125,10 +124,10 @@ public class CSFComponentDescriptionImpl extends SFComponentDescriptionImpl
     /**
      * Internal method that constraint resolves a parsed component.
      *
-     * @throws org.smartfrog.sfcore.languages.sf.SmartFrogCompileResolutionException
+     * @throws org.smartfrog.sfcore.common.SmartFrogResolutionException
      *          failed to type resolve
      */
-    public void constraintResolve() throws SmartFrogCompileResolutionException {
+    public void constraintResolve() throws SmartFrogResolutionException {
         // if solver class - instance.solve(this);
         Solver solver = CoreSolver.solver();
         solver.solve(this);
@@ -169,7 +168,7 @@ public class CSFComponentDescriptionImpl extends SFComponentDescriptionImpl
                     actOn.visit(new Phase(name), false);
                 }
             } catch (Throwable thr) {
-                throw SmartFrogCompileResolutionException.forward(thr, name);
+                throw SmartFrogResolutionException.forward(name, thr);
             }
 
         }
@@ -194,11 +193,10 @@ public class CSFComponentDescriptionImpl extends SFComponentDescriptionImpl
                 phases = new Vector();
                 phases.add("type");
                 phases.add("place");
+                phases.add("function");
                 phases.add("sfConfig");
                 phases.add("link");
-                phases.add("function");
                 phases.add("constraint");
-                phases.add("predicate");
             } else {
                 sfContext.remove("phaseList");
             }

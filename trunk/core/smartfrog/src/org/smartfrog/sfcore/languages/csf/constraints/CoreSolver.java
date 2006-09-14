@@ -1,6 +1,6 @@
 package org.smartfrog.sfcore.languages.csf.constraints;
 
-import org.smartfrog.sfcore.languages.sf.SmartFrogCompileResolutionException;
+import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.security.SFClassLoader;
 
 /**
@@ -22,10 +22,10 @@ abstract public class CoreSolver implements Solver {
      * or, if not defined, the default NullSolver that simply checks that there are no free variables.
      *
      * @return An instance of the solver class
-     * @throws org.smartfrog.sfcore.languages.sf.SmartFrogCompileResolutionException
+     * @throws org.smartfrog.sfcore.common.SmartFrogResolutionException
      *
      */
-    public static Solver solver() throws SmartFrogCompileResolutionException {
+    public static Solver solver() throws SmartFrogResolutionException {
         if (solver == null) {
             try {
                 String classname = System.getProperty("org.smartfrog.sfcore.languages.csf.constraints.SolverClassName");
@@ -33,7 +33,7 @@ abstract public class CoreSolver implements Solver {
                 solverClass = SFClassLoader.forName(solverClassname);
                 solver = (Solver) solverClass.newInstance();
             } catch (Exception e) {
-                throw new SmartFrogCompileResolutionException("Unable to construct constraint solver", e);
+                throw new SmartFrogResolutionException("Unable to construct constraint solver", e);
             }
         }
         return solver;

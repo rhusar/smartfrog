@@ -20,8 +20,7 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.sfcore.languages.sf.functions;
 
-import org.smartfrog.sfcore.languages.sf.PhaseAction;
-import org.smartfrog.sfcore.languages.sf.SmartFrogCompileResolutionException;
+import org.smartfrog.sfcore.common.SmartFrogFunctionResolutionException;
 import org.smartfrog.sfcore.common.MessageUtil;
 
 /**
@@ -34,12 +33,12 @@ public class Not extends BaseUnaryOperator {
      * Negate the parameter
      * @param a a boolean
      * @return the negation
-     * @throws SmartFrogCompileResolutionException if the parameter is not boolean
+     * @throws org.smartfrog.sfcore.common.SmartFrogFunctionResolutionException if the parameter is not boolean
      */
-    protected Object doOperator(Object a) throws SmartFrogCompileResolutionException {
-	if (!(a instanceof Boolean))
-	    throw new SmartFrogCompileResolutionException(MessageUtil.formatMessage("ILLEGAL_BOOLEAN_PARAMETER"), 
-							  null, name, "function", a.getClass().toString() + " (" + a + ")");
-	return new Boolean(!(((Boolean) a).booleanValue()));
+    protected Object doOperator(Object a) throws SmartFrogFunctionResolutionException {
+    if (!(a instanceof Boolean))
+        throw new SmartFrogFunctionResolutionException(MessageUtil.formatMessage("ILLEGAL_BOOLEAN_PARAMETER"),
+                              null, name, a.getClass().toString() + " (" + a + ")");
+    return new Boolean(!(((Boolean) a).booleanValue()));
     }
 }

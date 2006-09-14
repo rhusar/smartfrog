@@ -20,8 +20,6 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.sfcore.languages.sf.functions;
 
-import org.smartfrog.sfcore.languages.sf.PhaseAction;
-
 /**
  * Defines the Date function that returns a string representation of the current
  * date and time.
@@ -32,7 +30,7 @@ public class Date extends BaseFunction {
      * Currently this is in ctime() format
      *  {@link java.util.Date#toString}; it will move to ISO8601/RFC3339
      * format with the next release
-     * @todo generate RFC3339 timestamps 
+     * @todo generate RFC3339 timestamps
      * @return system date
      */
     protected Object doFunction() {

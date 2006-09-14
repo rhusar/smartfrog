@@ -20,8 +20,6 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.sfcore.languages.sf.functions;
 
-import org.smartfrog.sfcore.languages.sf.PhaseAction;
-
 /**
  * Defines the Greater or Equals binary opeeration that compares its numeric attributes
  *  left >= right

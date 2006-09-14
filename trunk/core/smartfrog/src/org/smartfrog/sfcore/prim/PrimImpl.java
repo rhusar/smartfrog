@@ -53,6 +53,7 @@ import org.smartfrog.sfcore.processcompound.SFProcess;
 import org.smartfrog.sfcore.reference.HereReferencePart;
 import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.reference.ReferencePart;
+import org.smartfrog.sfcore.reference.AssertReference;
 import org.smartfrog.sfcore.reference.RemoteReferenceResolverHelperImpl;
 import org.smartfrog.sfcore.security.SFGeneralSecurityException;
 import org.smartfrog.sfcore.security.SecureRemoteObject;
@@ -1094,6 +1095,28 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
     }
 
     /**
+     * Validate all ASSERTs in the context of the Prim, returning true if OK, false if not.
+     */
+     public synchronized boolean sfValid() throws RemoteException {
+        for (Enumeration e = sfContext.keys(); e.hasMoreElements(); ){
+            Object k = e.nextElement();
+            if (sfContext.get(k) instanceof AssertReference) {
+                try {
+                    Object value = sfResolve(new Reference(ReferencePart.here(k)));
+                    if (value instanceof Boolean) {
+                        if (!((Boolean)value).booleanValue()) return false;
+                    } else {
+                        return false;
+                    }
+                } catch (SmartFrogResolutionException e1) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    /**
      * Liveness call in to check if this component is still alive. This method
      * can be overriden to check other state of a component. An example is
      * Compound where all children of the compound are checked. This basic
@@ -1125,6 +1148,14 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
 	    }
 	    throw new SmartFrogLivenessException(MessageUtil.formatMessage(COMPONENT_TERMINATED));
 	}
+
+    /*
+    try {
+        System.out.println("validated " + sfCompleteNameSafe() + ": " + sfValid());
+    } catch (Exception e) {
+        System.out.println("validated " + sfCompleteNameSafe() + ": failed with " + e);
+    }
+    */
 
 	if (source == null) {
 	    return;

@@ -20,8 +20,6 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.sfcore.languages.sf.functions;
 
-import org.smartfrog.sfcore.languages.sf.PhaseAction;
-
 /**
  * Defines the Format function that takes a format string and a set of 
  * parameters and creates a resultant string which has the values of the 

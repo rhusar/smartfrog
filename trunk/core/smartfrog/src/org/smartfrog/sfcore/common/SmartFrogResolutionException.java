@@ -342,7 +342,8 @@ public class SmartFrogResolutionException extends SmartFrogRuntimeException
         }
     }
 
-    /**
+
+      /**
      * Appends the path information.
      *
      * @param ref ref causing the illegal reference
@@ -401,7 +402,7 @@ public class SmartFrogResolutionException extends SmartFrogRuntimeException
 
         strb.append(((this.containsKey(REFERENCE)&&(this.get(REFERENCE)!=null)
             &&(((Reference)this.get(REFERENCE)).size()!=0))) ? (//nm+
-                MessageUtil.formatMessage(MSG_UNRESOLVED_REFERENCE)+ ": " + get(REFERENCE)) : "" );
+                MessageUtil.formatMessage(MSG_UNRESOLVED_REFERENCE)+ ": " +  get(REFERENCE)) : "" );
         String separator = nm;
         if (strb.toString().endsWith(":: ")) {separator = "";}
         strb.append((((this.containsKey(CONTAINER_ERROR_MSG)&&(this.get(CONTAINER_ERROR_MSG)!=null)))

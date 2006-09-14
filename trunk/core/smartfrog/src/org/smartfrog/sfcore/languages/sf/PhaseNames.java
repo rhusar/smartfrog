@@ -36,7 +36,5 @@ public class PhaseNames {
     /** {@value} */
     public static final String FUNCTION = "function";
     /** {@value} */
-    public static final String PREDICATE = "predicate";
-    /** {@value} */
     public static final String PRINT = "print";
 }

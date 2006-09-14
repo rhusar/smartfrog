@@ -31,7 +31,6 @@ import org.smartfrog.sfcore.common.*;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.componentdescription.ComponentDescriptionImpl;
 import org.smartfrog.sfcore.languages.sf.Phase;
-import org.smartfrog.sfcore.languages.sf.SmartFrogCompileResolutionException;
 import org.smartfrog.sfcore.languages.sf.PhaseNames;
 import org.smartfrog.sfcore.parser.Phases;
 import org.smartfrog.sfcore.parser.ReferencePhases;
@@ -166,9 +165,11 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
      */
     public Object sfResolve(Reference r, int index)
         throws SmartFrogResolutionException {
+        /*
         if (!r.getEager() && (index == 0)) {
             return r;
         }
+        */
         /*
         if (r.getData() && (index == 0)) {
             return r;
@@ -188,9 +189,9 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
     *  the description tree, and doing place resolution. Places attributes which
     *  have a reference as a key in the right place.
     *
-    * @throws  SmartFrogCompileResolutionException failed to place resolve
+    * @throws  SmartFrogResolutionException failed to place resolve
     */
-   public void placeResolve() throws SmartFrogCompileResolutionException {
+   public void placeResolve() throws SmartFrogResolutionException {
       ResolutionState resState = new ResolutionState();
 
       do {
@@ -198,8 +199,8 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
          doPlaceResolve(resState);
       } while (resState.moreToResolve());
       if (resState.unresolved().size() > 0) {
-         throw SmartFrogCompileResolutionException.placeResolution(null,sfCompleteName(),
-               resState.unresolved(),null);
+         throw new SmartFrogPlaceResolutionException(null, null, sfCompleteName(),
+                 resState.unresolved());
       }
    }
 
@@ -209,9 +210,9 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
     *
     * @param  resState  resolution state
     *
-    * @throws  SmartFrogCompileResolutionException failed to place resolve
+    * @throws  SmartFrogResolutionException failed to place resolve
     */
-   public void doPlaceResolve(ResolutionState resState) throws SmartFrogCompileResolutionException {
+   public void doPlaceResolve(ResolutionState resState) throws SmartFrogResolutionException {
       // Hold removals. NOT creating the vector here saves memory at the
       // expense of two null checks below.
       Vector removals = null;
@@ -230,8 +231,8 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
              }
 
              if (place( (Reference) key, value, resState)) {
-         removals.addElement(key);
-         }
+                removals.addElement(key);
+             }
            } else if (value instanceof ComponentResolver) {
              // Attribute value is resolvable, ask it to resolve itself
              ( (ComponentResolver) value).doPlaceResolve(resState);
@@ -245,8 +246,7 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
            if (thr instanceof java.lang.StackOverflowError) {
              msg.append(". Possible cause: cyclic reference.");
            }
-           throw new SmartFrogCompileResolutionException(msg.toString(), thr,
-               sfCompleteName(), null, resState.unresolved());
+           throw new SmartFrogPlaceResolutionException(msg.toString(), thr, null, sfCompleteName());
          }
       }
 
@@ -282,7 +282,7 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
       } catch (Exception rex) {
          // If we can't find the target component we leave the attribute
          // as unresolved
-         resState.addUnresolved(key, sfCompleteName());
+         resState.addUnresolved(key, sfCompleteName(), null, rex);
 
          return false;
       }
@@ -298,7 +298,7 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
          ((ComponentDescription) value).setParent(destDescription);
 
          // Remember to go and resolve the newly placed component
-         resState.addUnresolved(value, destDescription.sfCompleteName());
+         resState.addUnresolved(value, destDescription.sfCompleteName(), null, null);
       }
 
       return true;
@@ -310,9 +310,9 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
     *  the description tree, and doing type resolution. Type resolution finds
     *  the supertype and subtypes it into this component.
     *
-    * @throws  SmartFrogCompileResolutionException failed to type resolve
+    * @throws  SmartFrogResolutionException failed to type resolve
     */
-   public void typeResolve() throws SmartFrogCompileResolutionException {
+   public void typeResolve() throws SmartFrogResolutionException {
       ResolutionState resState = new ResolutionState();
 
       do {
@@ -321,10 +321,11 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
       } while (resState.moreToResolve());
 
       if (resState.unresolved().size() > 0) {
-         throw SmartFrogCompileResolutionException.typeResolution(
+         throw new SmartFrogTypeResolutionException(
                  MessageUtil.formatMessage(MSG_UNRESOLVED_REFERENCE),
+                 null,
                  sfCompleteName(),
-                 resState.unresolved(),null);
+                 resState.unresolved());
       }
    }
 
@@ -334,9 +335,9 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
     *
     * @param  resState  resolution state
     *
-    * @throws  SmartFrogCompileResolutionException failed to type resolve
+    * @throws  SmartFrogResolutionException failed to type resolve
     */
-   public void doTypeResolve(ResolutionState resState) throws SmartFrogCompileResolutionException {
+   public void doTypeResolve(ResolutionState resState) throws SmartFrogResolutionException {
       if (!resolveType(resState)) {
          return;
       }
@@ -358,8 +359,8 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
            if (thr instanceof java.lang.StackOverflowError) {
               msg.append (". Possible cause: cyclic reference.");
            }
-           throw new SmartFrogCompileResolutionException(msg.toString(), thr,
-               sfCompleteName(), null, resState.unresolved());
+           throw new SmartFrogTypeResolutionException(msg.toString(), thr,
+               sfCompleteName(), resState.unresolved());
          }
       }
    }
@@ -391,7 +392,7 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
             superTypeRef = type;
          }
       } catch (Exception excpt) {
-         resState.addUnresolved(superTypeRef, sfCompleteName());
+         resState.addUnresolved(superTypeRef, sfCompleteName(), null, excpt);
       }
 
       return superTypeRef == null;
@@ -442,9 +443,9 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
     *  If the value is an eager reference, it is resolved. The resulting value
     *  replaces the reference as the attribute value
     *
-    * @throws  SmartFrogCompileResolutionException failed to deploy resolve
+    * @throws  SmartFrogResolutionException failed to deploy resolve
     */
-   public void linkResolve() throws SmartFrogCompileResolutionException {
+   public void linkResolve() throws SmartFrogResolutionException {
       ResolutionState resState = new ResolutionState();
 
       do {
@@ -453,9 +454,9 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
       } while (resState.moreToResolve());
 
       if (resState.unresolved().size() > 0) {
-         throw SmartFrogCompileResolutionException.linkResolution(
-                 MessageUtil.formatMessage(MSG_UNRESOLVED_REFERENCE),
-                 sfCompleteName(), resState.unresolved(),null);
+         throw new SmartFrogLinkResolutionException (
+                 MessageUtil.formatMessage(MSG_UNRESOLVED_REFERENCE), null,
+                 sfCompleteName(), resState.unresolved());
       }
    }
 
@@ -465,10 +466,10 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
     *
     * @param  resState  resolution state
     *
-    * @throws  SmartFrogCompileResolutionException failed to deploy resolve
+    * @throws  SmartFrogResolutionException failed to deploy resolve
     */
    public void doLinkResolve(ResolutionState resState) throws
-       SmartFrogCompileResolutionException {
+       SmartFrogResolutionException {
        Object key = null;
        Object value = null;
        Object result = null;
@@ -483,7 +484,7 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
                    // value is deploy resolvable
                 try {
                     ((ComponentResolver)value).doLinkResolve(resState);
-                } catch (SmartFrogCompileResolutionException ex) {
+                } catch (SmartFrogResolutionException ex) {
                     throw ex;
                 } catch (Throwable thr) {
                    StringBuffer msg = new StringBuffer("Failed to resolve '");
@@ -498,31 +499,27 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
                    if (thr instanceof java.lang.StackOverflowError) {
                        msg.append(". Possible cause: cyclic reference.");
                    }
-                   throw new SmartFrogCompileResolutionException(msg.toString(),
-                       thr, sfCompleteName(), null, resState.unresolved());
+                   throw new SmartFrogLinkResolutionException(msg.toString(),
+                       thr, sfCompleteName(), resState.unresolved());
                }
 
            } else if (value instanceof Reference) {
                Reference rv = (Reference)value;
-               if (!rv.getData() && rv.getEager()) {
+               if (!rv.getData()) {
                    try {
                        result = sfResolve((Reference) value);
-
-                       if ((result instanceof Reference) && !((Reference) result).getEager()) {
-                           ((Reference) value).setEager(false);
-                       } else {
-                           sfContext.put(key, result);
-                           if (result instanceof SFComponentDescription) {
-                               // need to do this as it may link to the file root!
-                              if (((SFComponentDescription) result).sfParent() == null) {
-                                   ((SFComponentDescription) result).setParent(this);
-                              }
-                              ((SFComponentDescription) result).doLinkResolve(resState);
-                           }
+                       sfContext.put(key, result);
+                       if (result instanceof SFComponentDescription) {
+                           // need to do this as it may link to the file root!
+                          if (((SFComponentDescription) result).sfParent() == null) {
+                               ((SFComponentDescription) result).setParent(this);
+                          }
+                          ((SFComponentDescription) result).doLinkResolve(resState);
                        }
+                   } catch (SmartFrogLazyResolutionException slrex) {
+                       rv.setEager(false);
                    } catch (Exception resex) {
-                       resex.printStackTrace();
-                       resState.addUnresolved(value, sfCompleteName());
+                       resState.addUnresolved(value, sfCompleteName(), key.toString(), resex);
                    } catch (Throwable thr) {
                        StringBuffer msg = new StringBuffer("Failed to resolve '");
                        msg.append(key);
@@ -532,8 +529,8 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
                        if (thr instanceof StackOverflowError) {
                            msg.append(". Possible cause: cyclic reference.");
                        }
-                       throw new SmartFrogCompileResolutionException(msg.toString(),
-                               thr, sfCompleteName(), null, resState.unresolved());
+                       throw new SmartFrogLinkResolutionException(msg.toString(),
+                               thr, sfCompleteName(), resState.unresolved());
                    }
                }
            }
@@ -603,7 +600,9 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
            Object key = e.nextElement();
            Object value = sfContext.get(key);
 
-           if (value instanceof Phases) {
+           if (value instanceof SFTempValue) {
+               //nothing - attribute is to be removed...
+           } else if (value instanceof Phases) {
                value = ((Phases) value).sfAsComponentDescription();
                ((ComponentDescription) value).setParent(res);
                newContext.put(key, value);
@@ -621,6 +620,7 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
         if (v instanceof Number) return v;
         if (v instanceof Boolean) return v;
         if (v instanceof SFNull) return v;
+        if (v instanceof SFTempValue) return v;
         if (v instanceof String) return v;
         if (v instanceof Reference) return v;
         if (v instanceof SFByteArray) return v;
@@ -698,7 +698,7 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
              if (sfc instanceof SFComponentDescription) {
                 actOn = (SFComponentDescription)sfc ;
              } else {
-                 throw new SmartFrogCompileResolutionException(MessageUtil.formatMessage(ROOT_MUST_BE_COMPONENT, sfc.getClass().toString()));
+                 throw new SmartFrogResolutionException(MessageUtil.formatMessage(ROOT_MUST_BE_COMPONENT, sfc.getClass().toString()));
              }
            }
            else if (name.equals(PhaseNames.LINK)) {
@@ -712,7 +712,7 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
              actOn.visit(new Phase(name), false);
            }
          } catch (Throwable thr) {
-           throw SmartFrogCompileResolutionException.forward(thr, name);
+           throw SmartFrogResolutionException.forward(name, thr);
          }
 
       }
@@ -741,7 +741,6 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
             phases.add(PhaseNames.FUNCTION);
             phases.add(PhaseNames.SFCONFIG);
             phases.add(PhaseNames.LINK);
-            phases.add(PhaseNames.PREDICATE);
          } else {
             sfContext.remove("phaseList");
          }

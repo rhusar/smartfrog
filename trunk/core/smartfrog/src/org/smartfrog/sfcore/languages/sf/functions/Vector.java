@@ -35,7 +35,7 @@ public class Vector extends BaseFunction {
      */
     protected Object doFunction() {
         java.util.Vector result = new java.util.Vector();
-        Object value = null;
+        Object value;
 
         for (Enumeration e = context.keys(); e.hasMoreElements();) {
             Object key = e.nextElement();

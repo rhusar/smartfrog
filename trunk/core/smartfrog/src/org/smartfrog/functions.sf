@@ -19,25 +19,25 @@ For more information: www.smartfrog.org
 */
 
 
-function extends {
-   phase.function "org.smartfrog.sfcore.languages.sf.Function";
+Function extends {
+   phase.function "org.smartfrog.sfcore.languages.sf.ConstructFunction";
    sfFunctionClass "";
 }
 
-vector extends function{
+vector extends Function{
    sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Vector";
 }
 
-append extends function{
+append extends Function{
    sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Append";
 }
 
 
-concat extends function {
+concat extends Function {
     sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Concatenate";
 }
 
-formatString extends function{
+formatString extends Function{
     sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Format";
 }
 
@@ -45,67 +45,67 @@ formatString extends function{
 
 
 
-sum extends function{
+sum extends Function{
     sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Sum";
 }
 
 plus extends sum;
 
-product extends function{
+product extends Function{
     sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Product";
 }
 
-minus extends function{
+minus extends Function{
     sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Minus";
 }
 
-divide extends function{
+divide extends Function{
     sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Divide";
 }
 
 
 
 
-and extends function{
+and extends Function{
     sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.And";
 }
 
-or extends function{
+or extends Function{
     sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Or";
 }
 
-not extends function{
+not extends Function{
     sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Not";
 }
 
 
-GE extends function{
+GE extends Function{
     sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.GE";
 }
 
-LE extends function{
+LE extends Function{
     sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.LE";
 }
 
-GT extends function{
+GT extends Function{
     sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.GT";
 }
 
-LT extends function{
+LT extends Function{
     sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.LT";
 }
 
-EQ extends function{
+EQ extends Function{
     sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.EQ";
 }
 
-NE extends function{
+NE extends Function{
     sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.NE";
 }
 
 
 
-ifThenElse extends function{
+ifThenElse extends Function{
     sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.IfThenElse";
 }
 
@@ -113,28 +113,28 @@ ifThenElse extends function{
 
 
 
-next extends function{
+next extends Function{
     sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Next";
 }
 
-random extends function{
+random extends Function{
     sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Random";
 }
 
-date extends function{
+date extends Function{
     sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Date";
 }
 
-userinput extends function{
+userinput extends Function{
     sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.UserInput";
 }
 
 
 
-ref extends function{
+ref extends Function{
     sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Ref";
 }
 
-Ref extends function{
+Ref extends Function{
     sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Ref";
 }

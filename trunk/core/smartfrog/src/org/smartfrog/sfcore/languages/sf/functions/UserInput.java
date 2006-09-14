@@ -23,8 +23,6 @@ package org.smartfrog.sfcore.languages.sf.functions;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 
-import org.smartfrog.sfcore.languages.sf.PhaseAction;
-
 /**
  * Defines the UserInput function that asks the user for an input on the command
  * line. It returns the value entered.

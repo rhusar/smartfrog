@@ -22,8 +22,7 @@ package org.smartfrog.sfcore.languages.sf.functions;
 
 import org.smartfrog.sfcore.common.MessageUtil;
 import org.smartfrog.sfcore.common.MessageKeys;
-import org.smartfrog.sfcore.languages.sf.PhaseAction;
-import org.smartfrog.sfcore.languages.sf.SmartFrogCompileResolutionException;
+import org.smartfrog.sfcore.common.SmartFrogFunctionResolutionException;
 
 /**
  * Defines the base functionality for the unary operator functions.
@@ -33,7 +32,7 @@ public abstract class BaseUnaryOperator extends BaseFunction {
     /**
      * Name of the attribute used for unary operators
      * {@value}
-     */ 
+     */
     public static final String DATA_ATTRIBUTE = "data";
 
     /**
@@ -43,19 +42,19 @@ public abstract class BaseUnaryOperator extends BaseFunction {
      *
      * @return an Object
      *  */
-    protected abstract Object doOperator(Object a) throws SmartFrogCompileResolutionException;
+    protected abstract Object doOperator(Object a) throws SmartFrogFunctionResolutionException;
 
     /** Implements the functionality of base unary operator.
      * @return the result of applying the operator
-     * @throws SmartFrogCompileResolutionException if the attribute "data" does not exist or the  operator throws the exception
+     * @throws SmartFrogFunctionResolutionException if the attribute "data" does not exist or the  operator throws the exception
      **/
-    protected Object doFunction() throws SmartFrogCompileResolutionException {
-	Object data = context.get(DATA_ATTRIBUTE);
+    protected Object doFunction() throws SmartFrogFunctionResolutionException {
+    Object data = context.get(DATA_ATTRIBUTE);
 
-	if (data == null)
-	    throw new SmartFrogCompileResolutionException(MessageUtil.formatMessage(MessageKeys.MISSING_PARAMETER, DATA_ATTRIBUTE),
-							  null, name, "function", null);
+    if (data == null)
+        throw new SmartFrogFunctionResolutionException(MessageUtil.formatMessage(MessageKeys.MISSING_PARAMETER, DATA_ATTRIBUTE),
+                              null, name, null);
 
-	return doOperator(data);
+    return doOperator(data);
     }
 }

@@ -86,10 +86,12 @@ public class ErrorMessageBundle extends ListResourceBundle
         { MSG_NOT_FOUND_ATTRIBUTE , "Attribute {0} not found"},
         { MSG_REPEATED_ATTRIBUTE , "Attribute {0} already present"},
         { MSG_NOT_VALUE_REFERENCE , "Reference with no value"},
-        { MSG_NOT_COMPONENT_REFERENCE , "Reference is not a SmartFrog Component"},
+        { MSG_NOT_COMPONENT_REFERENCE , "Reference is referencing through an object which is not a SmartFrog Component"},
         { MSG_ILLEGAL_REFERENCE , "Illegal Reference"},
         { MSG_ILLEGAL_CLASS_TYPE , "Illegal ClassType"},
         { MSG_ILLEGAL_CLASS_TYPE_EXPECTING_GOT , "Illegal ClassType. Expecting type \"[{0}]\" and got \"{1} [{2}]\""},
+        { MSG_TBD_REFERENCE , "Failure in evaluating assertion - TBD found still undefined" },
+        { MSG_ASSERTION_FAILURE , "Failure in evaluating assertion - assertion not evaluate to true" },
         // Resolution Exception messages end
         { MSG_DEPLOY_SUCCESS , "Successfully deployed: {0}"},
         { MSG_UPDATE_SUCCESS , "Successfully updated: {0}"},            

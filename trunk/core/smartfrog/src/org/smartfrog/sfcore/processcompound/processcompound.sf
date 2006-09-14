@@ -30,7 +30,7 @@ ProcessCompoundSchema extends CompoundSchema {
 }
 
 ProcessCompound extends Compound {
-  sfPrimSchema IF sfSchema THEN ProcessCompoundSchema ELSE NULL FI;
+  sfPrimSchema extends ProcessCompoundSchema;
   sfClass "org.smartfrog.sfcore.processcompound.ProcessCompoundImpl";
   sfDeployerClass "org.smartfrog.sfcore.prim.PrimDeployerImpl";
   sfLivenessDelay 15;

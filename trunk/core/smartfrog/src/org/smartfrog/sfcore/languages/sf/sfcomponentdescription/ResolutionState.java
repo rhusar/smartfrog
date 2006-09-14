@@ -87,7 +87,7 @@ public class ResolutionState {
      * @param val unresolved object to add to state
      */
     public void addUnresolved(Object val) {
-        addUnresolved(val, null);
+        addUnresolved(val, null, "", null);
     }
 
     /**
@@ -96,9 +96,11 @@ public class ResolutionState {
      *
      * @param val value that was unresolved
      * @param source source that held the value
+     * @param attrName the name of the attribute affected
+     * @param cause the exception that caused the resolution failure
      */
-    public void addUnresolved(Object val, Reference source) {
-        UnresolvedValue unres = new UnresolvedValue(val, source);
+    public void addUnresolved(Object val, Reference source, String attrName, Exception cause) {
+        UnresolvedValue unres = new UnresolvedValue(val, source, attrName, cause);
 
         if (!unresolved.contains(unres)) {
             unresolved.addElement(unres);

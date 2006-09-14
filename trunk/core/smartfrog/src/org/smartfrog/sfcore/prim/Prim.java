@@ -318,4 +318,8 @@ public interface Prim extends Liveness, RemoteReferenceResolver, RemoteReference
      */
     public boolean sfIsStarted() throws RemoteException;
 
+    /**
+     * Validate all ASSERTs in the context of the Prim, returning true if OK, false if not.
+     */
+     public boolean sfValid() throws RemoteException;
 }

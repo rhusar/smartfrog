@@ -23,9 +23,7 @@ package org.smartfrog.sfcore.languages.sf.functions;
 
 import org.smartfrog.sfcore.common.MessageUtil;
 import org.smartfrog.sfcore.common.MessageKeys;
-
-import org.smartfrog.sfcore.languages.sf.PhaseAction;
-import org.smartfrog.sfcore.languages.sf.SmartFrogCompileResolutionException;
+import org.smartfrog.sfcore.common.SmartFrogFunctionResolutionException;
 
 /**
  * Defines the baseoperator for the binary operator functions.
@@ -40,7 +38,7 @@ public abstract class BaseBinaryOperator extends BaseFunction implements Message
      *
      * @return an Object
      *  */
-    protected abstract Object doOperator(Object a, Object b) throws SmartFrogCompileResolutionException;
+    protected abstract Object doOperator(Object a, Object b) throws SmartFrogFunctionResolutionException;
 
 
     /** Implements the functionality of base operator.
@@ -48,18 +46,18 @@ public abstract class BaseBinaryOperator extends BaseFunction implements Message
      * if these are not present it will throw an exception
      *
      * @return the result of the operation
-     * @throws SmartFrogCompileResolutionException if either of the required attributes are not present or the operation throws an exception
+     * @throws SmartFrogFunctionResolutionException if either of the required attributes are not present or the operation throws an exception
      */
-    protected Object doFunction() throws SmartFrogCompileResolutionException {
+    protected Object doFunction() throws SmartFrogFunctionResolutionException {
     Object left = context.get("left");
     Object right = context.get("right");
 
     if (left == null)
-        throw new SmartFrogCompileResolutionException(MessageUtil.formatMessage(MISSING_PARAMETER, "left"),
-                              null, name, "function", null);
+        throw new SmartFrogFunctionResolutionException(MessageUtil.formatMessage(MISSING_PARAMETER, "left"),
+                              null, name, null);
     if (right == null)
-        throw new SmartFrogCompileResolutionException(MessageUtil.formatMessage(MISSING_PARAMETER, "right"),
-                              null, name, "function", null);
+        throw new SmartFrogFunctionResolutionException(MessageUtil.formatMessage(MISSING_PARAMETER, "right"),
+                              null, name, null);
 
     return doOperator(left, right);
     }

@@ -161,7 +161,7 @@ public class HereReferencePart extends ReferencePart {
                 result = sfResolveVector(rr, (Vector)result);
             }
         } catch (SmartFrogResolutionException ex) {
-            throw new SmartFrogResolutionException(r,null,null,null,ex,null);
+            throw (SmartFrogResolutionException)SmartFrogResolutionException.forward(r.toString(),ex);
         }
 
         // If the end we are there!
@@ -203,7 +203,7 @@ public class HereReferencePart extends ReferencePart {
                     result = sfResolveVector(rr, (Vector)result);
                 }
             } catch (SmartFrogResolutionException ex) {
-                throw new SmartFrogResolutionException(r,null,null,null,ex,null);
+                throw (SmartFrogResolutionException)SmartFrogResolutionException.forward(r.toString(),ex);
             }
             // If the end we are there!
             if (index == (r.size() - 1)) {
@@ -231,7 +231,7 @@ public class HereReferencePart extends ReferencePart {
      * @throws SmartFrogResolutionException SmartFrogResolutionException if failed to resolve reference
      */
 
-    private Vector sfResolveVector(ReferenceResolver rr, Vector vToResolve) throws SmartFrogResolutionException{
+    protected Vector sfResolveVector(ReferenceResolver rr, Vector vToResolve) throws SmartFrogResolutionException{
         try {
             Vector vec = new Vector();
             for (Enumeration e = vToResolve.elements(); e.hasMoreElements(); ) {
@@ -260,7 +260,7 @@ public class HereReferencePart extends ReferencePart {
      * @throws RemoteException
      */
 
-    private Vector sfResolveVector(RemoteReferenceResolver rr, Vector vToResolve) throws
+    protected Vector sfResolveVector(RemoteReferenceResolver rr, Vector vToResolve) throws
         SmartFrogResolutionException, RemoteException {
         Object value = null;
         try {
