@@ -46,7 +46,7 @@ public class FunctionsSystemTest extends SmartFrogTestBase {
                 EXCEPTION_DEPLOYMENT,
                 null,
                 EXCEPTION_RESOLUTION,
-                "Unresolved Reference, data: [APPLY {sfFunctionClass \"org.smartfrog.sfcore.languages.sf.functions.Random\"");
+	        "SmartFrogLinkResolutionException:: , source: HERE sfConfig, data: [APPLY {sfFunctionClass \"org.smartfrog.sfcore.languages.sf.fu... in: HERE sfConfig attribute: throw1 cause: Reference not found, APPLY {sfFunctionClass \"org.smartfrog.sfcore.languages.sf.fu... in: HERE sfConfig attribute: throw2 cause: Reference not found");
     }
 
     public void testCaseTCN32() throws Exception {
@@ -55,7 +55,7 @@ public class FunctionsSystemTest extends SmartFrogTestBase {
                 EXCEPTION_DEPLOYMENT,
                 null,
                 EXCEPTION_RESOLUTION,
-                "Unresolved Reference, data: [nonExistentConcat in: HERE sfConfig:message], resolutionPhase: type]");
+                "nonExistentConcat in: HERE sfConfig:message cause: Reference not found");
     }
 
     public void testCaseTCN33() throws Throwable {

@@ -64,11 +64,44 @@ public abstract class SmartFrogTestBase extends TestCase {
      * Value: {@value}
      */
     private static final String EXCEPTION_SMARTFROG_ASSERTION = "SmartFrogAssertionException";
+
     /**
      * Text to look for in classname when seeking a resolution exception.
      * Value: {@value}
      */
     public static final String EXCEPTION_RESOLUTION = "SmartFrogResolutionException";
+
+    /**
+     * Text to look for in classname when seeking a type resolution exception.
+     * Value: {@value}
+     */
+    public static final String EXCEPTION_TYPERESOLUTION = "SmartFrogTypeResolutionException";
+
+    /**
+     * Text to look for in classname when seeking a place resolution exception.
+     * Value: {@value}
+     */
+    public static final String EXCEPTION_PLACERESOLUTION = "SmartFrogPlaceResolutionException";
+
+    /**
+     * Text to look for in classname when seeking a link resolution exception.
+     * Value: {@value}
+     */
+    public static final String EXCEPTION_LINKRESOLUTION = "SmartFrogLinkResolutionException";
+
+    /**
+     * Text to look for in classname when seeking afunction  resolution exception.
+     * Value: {@value}
+     */
+    public static final String EXCEPTION_FUNCTIONRESOLUTION = "SmartFrogFunctionResolutionException";
+
+    /**
+     * Text to look for in classname when seeking a assertion resolution exception.
+     * Value: {@value}
+     */
+    public static final String EXCEPTION_ASSERTIONRESOLUTION = "SmartFrogAssertionResolutionException";
+
+
     /**
      * Text to look for in classname when seeking a lifecycle exception.
      * Value: {@value}

@@ -52,7 +52,7 @@ public class DeadLockSystemTest extends SmartFrogTestBase {
                 EXCEPTION_DEPLOYMENT,
                 "Possible cause: cyclic reference",
                 EXCEPTION_RESOLUTION,
-                "Possible cause: cyclic reference., cause: java.lang.StackOverflowError"
+                "SmartFrogLinkResolutionException:: , source: HERE sfConfig:component1, data: [], Cause: Failed to resolve 'attr component2:attr'. Possible cause: cyclic reference. during phase link resolution"
                  );
     }
 }

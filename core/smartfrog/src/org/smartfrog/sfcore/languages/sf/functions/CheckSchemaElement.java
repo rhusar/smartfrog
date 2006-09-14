@@ -189,7 +189,7 @@ public class CheckSchemaElement extends BaseFunction {
         String description = (String) context.get("description");
         if (description == null) description = "";
 
-        String errorString = "error in schema";
+        String errorString = "error in schema: ";
         //errorString = errorString +
         //   (description.equals("") ? ": ": "(" + description + "): " ) ;
 
