@@ -106,7 +106,7 @@ public class RunTest extends TaskTestBase {
         expectBuildExceptionContaining("testStackTrace", "deploy failure",
                 "Could not run");
         assertInLog("Warning: stack trace logging enabled");
-        assertInLog("at org.smartfrog.sfcore.languages.sf.SmartFrogCompileResolutionException.typeResolution");
+        assertInLog("SmartFrogTypeResolutionException:: , data: [something_that_isntdefined in: HERE sfConfig cause: Reference not found");
     }
 
 

@@ -148,9 +148,8 @@ public abstract class TaskTestBase extends BuildFileTest {
      * @param target
      */
     protected void assertDeployFailsWithUnresolvedReference(String target) {
-        expectBuildExceptionContaining(target, "deploy failure",
-                "Could not");
-        assertInLog("Reference not found");
+        expectBuildExceptionContaining(target, "deploy failure", "Could not");
+        assertInLog("Unresolved Reference");
     }
 
     /**
