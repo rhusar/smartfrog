@@ -351,11 +351,15 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
              ( (ComponentResolver) value).doTypeResolve(resState);
            }
          } catch (Throwable thr) {
+           if (thr instanceof SmartFrogTypeResolutionException)  {
+             throw (SmartFrogResolutionException)thr;
+           }
+
            StringBuffer msg = new StringBuffer ( "Failed to resolve '");
            msg.append (key.toString());
            msg.append (" ");
            msg.append (value.toString());
-           msg.append(";'");
+           msg.append("'");
            if (thr instanceof java.lang.StackOverflowError) {
               msg.append (". Possible cause: cyclic reference.");
            }
