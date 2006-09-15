@@ -42,6 +42,7 @@
 
   <target name="classes" depends="classpath" description="Compile classes">
     <mkdir dir="${build.classes}"/> 
+    <mkdir dir="${static.dir}"/>
     <javac srcdir="${src}"
            destdir="${build.classes}"
            debug="${javac.debug}"
