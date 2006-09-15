@@ -30,25 +30,25 @@ import java.rmi.RemoteException;
 
 /**
  * Class to fail on startup, either normally or abnormally, and with or without
- * a scheduled delay. Useful for testing child-death-handling logic 
+ * a scheduled delay. Useful for testing child-death-handling logic
  * of containers and workflow.
  */
 public class FailComponent extends PrimImpl implements Fail,Runnable {
-    
+
     private boolean normal;
     private int delay=0;
     private String message;
     private boolean detach;
     private boolean notifyParent;
-    
-    
+
+
     public FailComponent() throws RemoteException {
     }
 
     /**
-     * Start up by spawning a thread to kill ourselves if 
+     * Start up by spawning a thread to kill ourselves if
      * the condition attribute is true. If it is false, do nothing
-     * 
+     *
      * @throws SmartFrogException
      * @throws RemoteException
      */
@@ -81,12 +81,11 @@ public class FailComponent extends PrimImpl implements Fail,Runnable {
         }
         TerminationRecord record;
         Reference name = this.sfCompleteNameSafe();
-        record = normal ? TerminationRecord.normal(name) :
-            TerminationRecord.abnormal(message, name);
+        record = normal ? TerminationRecord.normal(name) : TerminationRecord.abnormal(message, name);
         record.description = message;
         TerminatorThread terminator = new TerminatorThread(this, record);
-        terminator.setShouldDetach(detach);
-        terminator.setNotifyParent(notifyParent);
+        if (detach) terminator.detach();
+        if (!notifyParent) terminator.quietly();
         terminator.run();
     }
 }
