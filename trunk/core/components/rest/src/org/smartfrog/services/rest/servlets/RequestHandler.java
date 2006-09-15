@@ -350,8 +350,11 @@ public class RequestHandler extends HttpServlet
 				if (!((owner instanceof Prim) || (owner instanceof ComponentDescription)))
 					throw new InvalidURIException("The owner of the resource specified (" + path[path.length - 2] + ")" +
 							" is not a traversable SmartFrog component.");
-
-				subject = rootProcess.sfContext().get(restRequest.getTargetResourceName());
+                if (owner instanceof Prim) {
+                    subject = ((Prim)owner).sfContext().get(restRequest.getTargetResourceName());
+                } else {
+                    subject = ((ComponentDescription)owner).sfContext().get(restRequest.getTargetResourceName());
+                }
 
 				if (subject == null)
 					throw new SmartFrogResolutionException(restRequest.getTargetResourceName() + " could not be" +
