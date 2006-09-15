@@ -211,9 +211,7 @@ public class ReferenceSystemTest extends SmartFrogTestBase {
                 "tcn99",
                 "SmartFrogDeploymentException",
 		"Failed to resolve 'sfConfig extends { link extends link; };",
-                "SmartFrogResolutionException",
+		"SmartFrogTypeResolutionException",
                 "Possible cause: cyclic reference.");
     }
-
-
 }
