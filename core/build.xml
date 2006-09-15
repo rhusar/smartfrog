@@ -68,16 +68,6 @@ For more information: www.smartfrog.org
         <forward2 dir="@{dir}" target="@{target}" inheritAll="@{inheritAll}"/>
       </sequential>
     </macrodef>
-    
-    <fail>
-     <condition>
-        <not>
-         <equal property="thisdoesnotexist"/>
-        </not>
-     </condition>
-    </fail>
-
-    
   </target>
   
   <!-- =================================================================== -->
