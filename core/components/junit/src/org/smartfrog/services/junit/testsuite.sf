@@ -1,0 +1,36 @@
+
+ /**
+  * Include the core smartfrog components.
+  */
+#include "/org/smartfrog/components.sf"
+#include "/org/smartfrog/predicates.sf"
+
+
+
+/**
+ * the schema for tests
+ if: boolean
+ conditionally execute the test only when if=true
+ unless: boolean
+ conditionally execute the test only when unless=false
+ properties, [[name,value]] list of system properties
+ to pass down.
+ */
+
+TestSuiteSchema extends Schema {
+    name extends OptionalString;
+    enabled extends OptionalBoolean;
+    unless extends OptionalBoolean;
+    //list in name, value pairs [[name,value],[n2,v2]]
+    properties extends OptionalVector;
+}
+
+
+/**
+ * test suites run the tests; different frameworks can have different suites
+ */
+TestSuite extends Prim {
+    testSuiteSchema extends TestSuiteSchema;
+    if true;
+    unless false;
+}

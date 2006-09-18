@@ -138,6 +138,7 @@ public class OneHostXMLListener implements XmlListener {
         out = new OutputStreamWriter(outstream, ENCODING);
         //XML declaration whose encoding had better match
         writeDocumentHeader();
+        flush();
     }
 
     protected void writeDocumentHeader() throws IOException {
@@ -215,6 +216,14 @@ public class OneHostXMLListener implements XmlListener {
      */
     public boolean isOpen() {
         return out != null;
+    }
+
+    /**
+     * Flush the output stream
+     * @throws IOException
+     */
+    protected void flush() throws IOException {
+        out.flush();
     }
 
     /**
@@ -327,8 +336,9 @@ public class OneHostXMLListener implements XmlListener {
 
 
     /**
-     * write a tag with a string body
-     *
+     * Write a tag with a string body
+     * This triggers a flush of the file, so the
+     * file is saved as we go along. 
      * @param tag   element name
      * @param attrs attributes (can be null)
      * @param body  text body (can be null)
@@ -339,6 +349,7 @@ public class OneHostXMLListener implements XmlListener {
             boolean escape) throws IOException {
         String x = element(tag, attrs, body, escape);
         out.write(x);
+        out.flush();
     }
 
 

@@ -25,10 +25,9 @@ For more information: www.smartfrog.org
 
 
  /**
-  * Include the core smartfrog components.
+  * Include the test suite
   */
-#include "/org/smartfrog/components.sf"
-#include "/org/smartfrog/predicates.sf"
+#include "/org/smartfrog/services/junit/testsuite.sf"
 //include java components
 #include "/org/smartfrog/services/os/java/components.sf"
 //include logging
@@ -36,28 +35,10 @@ For more information: www.smartfrog.org
 //listeners
 #include "/org/smartfrog/services/junit/listeners/components.sf";
 
+
 /**
- * the schema for tests
- if: boolean
- conditionally execute the test only when if=true
- unless: boolean
- conditionally execute the test only when unless=false
- package
- name of a package that contains multiple test cases/classes.
- subpackages: boolean
- optionally search down subpackages
- excludes: String list
- list of test cases classes not to execute.
-
+ * suite and schema for junit 4
  */
-
-TestSuiteSchema extends Schema {
-    name extends OptionalString;
-    enabled extends OptionalBoolean;
-    unless extends OptionalBoolean;
-    //list in name, value pairs [[name,value],[n2,v2]]
-    properties extends OptionalVector;
-}
 
 JUnitTestSuiteSchema extends Schema {
     //the package that all classes are in
@@ -67,16 +48,6 @@ JUnitTestSuiteSchema extends Schema {
     //e.g. ["test1","subpackage.test2"]
     classes extends Vector;
 }
-
-/**
- * test suites run the tests; different frameworks can have different suites
- */
-TestSuite extends Prim {
-    testSuiteSchema extends TestSuiteSchema;
-    if true;
-    unless false;
-}
-
 
 /**
  * This is the JUnit test suite; it runs the junit tests in all classes that are in the
