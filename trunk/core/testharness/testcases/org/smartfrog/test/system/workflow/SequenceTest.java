@@ -1,4 +1,4 @@
-/** (C) Copyright 2004 Hewlett-Packard Development Company, LP
+/** (C) Copyright 2004-2006 Hewlett-Packard Development Company, LP
 
  This library is free software; you can redistribute it and/or
  modify it under the terms of the GNU Lesser General Public
@@ -23,14 +23,13 @@ package org.smartfrog.test.system.workflow;
 
 import org.smartfrog.test.SmartFrogTestBase;
 
-import java.util.Enumeration;
-
 /**
  * @author Ashish Awasthi
  * Date: 02-Jun-2004
  */
 public class SequenceTest extends SmartFrogTestBase {
-    private static final String FILES = "org/smartfrog/test/system/workflow/";
+    protected static final String FILES = "org/smartfrog/test/system/workflow/";
+
     public SequenceTest(String s) {
         super(s);
     }
@@ -44,7 +43,7 @@ public class SequenceTest extends SmartFrogTestBase {
 //                "Class not found");
         this.deployExpectingSuccess(FILES+"testSequence.sf","sequencefail");
     }
-    
+
     public void testComponentFailureInNewSequence() throws Throwable {
         //This does not apply any more. It does not throw exception,
         // it does proper termination of the component. The termination record
@@ -54,5 +53,5 @@ public class SequenceTest extends SmartFrogTestBase {
 //                "SmartFrogDeploymentException",
 //                "Class not found");
         this.deployExpectingSuccess(FILES+"testNewSequence.sf","sequencenewfail");
-    }    
+    }
 }

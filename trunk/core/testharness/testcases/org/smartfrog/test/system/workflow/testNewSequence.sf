@@ -18,11 +18,11 @@ For more information: www.smartfrog.org
 
 */
 
-#include "org/smartfrog/components.sf"
-#include "org/smartfrog/sfcore/workflow/combinators/sequence.sf"
-#include "org/smartfrog/functions.sf"
-#include "/org/smartfrog/services/os/runshell/components.sf"
-#include "/org/smartfrog/services/filesystem/components.sf"
+#include "/org/smartfrog/components.sf"
+#include "/org/smartfrog/sfcore/workflow/combinators/sequence.sf"
+#include "/org/smartfrog/functions.sf"
+#include "/org/smartfrog/services/assertions/components.sf"
+#include "/org/smartfrog/services/filesystem/touchfile.sf"
 
 /**
  * Tests the scenario where failure of one component in sequence leads to 
@@ -31,20 +31,19 @@ For more information: www.smartfrog.org
  */
 testSequence extends Sequence {
 
-//    actions extends LAZY {
         
         comp1 extends TouchFile {
             filename "comp1";
         }
 
-        comp2 extends Prim {
-            // fails and leads to sequence termination
-            sfClass "org.smartfrog.sfcore.NoClass"; 
+        comp2 extends Fail {
+          message "end of sequence";
+          normal false;
         }
+        
         comp3 extends TouchFile {
             filename "comp3";
         }
-//    }
 }
 sfConfig extends Compound {
     test extends testSequence;

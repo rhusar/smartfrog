@@ -18,45 +18,11 @@ For more information: www.smartfrog.org
 
 */
 
-/*
- this file declares a component that can set a value and will toggle it on demand
- or on deploy
- */
+#include "/org/smartfrog/test/system/workflow/delay/delaybase.sf"
 
 
-
- /**
-  * Include the core smartfrog components.
-  */
- #include "/org/smartfrog/components.sf"
- #include "/org/smartfrog/predicates.sf"
-
-BooleanValues extends Prim {
-    sfClass "org.smartfrog.test.system.assertions.BooleanValuesImpl";
-    schema extends Schema {
-
-        value extends OptionalBoolean;
-        toggle extends OptionalBoolean;
+sfConfig extends Compound {
+    test extends testSequence {
+      action:normal false;
     }
-    
-    toggle false;
-}
-
-BooleanTrue extends BooleanValues {
-  value true;
-}
-
-BooleanFalse extends BooleanValues {
-  value false;
-}
-
-/**
- * A component that toggles on start
- */
-ToggleToTrue extends BooleanFalse {
-  toggle true;
-}
-
-ToggleToFalse extends BooleanTrue {
-  toggle true;
 }

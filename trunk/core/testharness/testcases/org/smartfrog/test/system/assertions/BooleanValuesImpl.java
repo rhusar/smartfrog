@@ -23,6 +23,7 @@ package org.smartfrog.test.system.assertions;
 
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
+import org.smartfrog.sfcore.common.SmartFrogException;
 
 import java.rmi.RemoteException;
 
@@ -36,6 +37,13 @@ public class BooleanValuesImpl extends PrimImpl implements BooleanValues {
 
     public BooleanValuesImpl() throws RemoteException {
 
+    }
+
+
+    public synchronized void sfStart()
+        throws SmartFrogException, RemoteException {
+        super.sfStart();
+        boolean valuePresent=null!=sfResolve(BooleanValues.ATTR_VALUE, (Object)null, false);
     }
 
     /**
@@ -77,5 +85,12 @@ public class BooleanValuesImpl extends PrimImpl implements BooleanValues {
         throw new RuntimeException("invoked throwRuntimeException()");
     }
 
+    public boolean toggle()
+        throws RemoteException, SmartFrogException {
+        boolean current=getValue();
+        boolean next=!current;
+        sfReplaceAttribute(BooleanValues.ATTR_VALUE, Boolean.valueOf(next));
+        return next;
+    }
 
 }
