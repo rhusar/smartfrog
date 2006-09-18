@@ -32,7 +32,8 @@ EventPrim extends Prim {
 }
 
 EventCompoundSchema extends EventSchema {
-    //the action to start         
+    //the action to start. This is optional on some components,
+    //required on others
     action extends OptionalCD;
     
         
@@ -49,4 +50,14 @@ EventCompound extends Compound {
     sendTo  extends LAZY {}
     registerWith extends LAZY {}
 
+}
+
+/**
+ * A compound that must have a child component
+ * called 'action'
+ */
+ActionCompound extends EventCompound {
+  actionCompoundSchema extends Schema {
+    action extends CD;
+  }
 }

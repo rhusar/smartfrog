@@ -254,4 +254,15 @@ public class EventCompoundImpl extends CompoundImpl implements EventBus,
 
         super.sfTerminateWith(status);
     }
+
+    /**
+     * force a check for the action in, though the schema should have caught it
+     * @throws org.smartfrog.sfcore.common.SmartFrogResolutionException if the action is not defined
+     * @throws java.rmi.RemoteException for network problems
+     */
+    protected void checkActionDefined() throws SmartFrogResolutionException,
+        RemoteException {
+
+        sfResolve(actionRef, true);
+    }
 }

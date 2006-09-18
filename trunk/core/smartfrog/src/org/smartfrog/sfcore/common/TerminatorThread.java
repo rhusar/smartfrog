@@ -34,10 +34,16 @@ import org.smartfrog.sfcore.logging.LogFactory;
  * this thread.
  *
  * Example:
+ * <pre>
  *       TerminatorThread terminator = new TerminatorThread(targetComponent,
  *              excp, componentId).quietly();
  *       // start the thead
  *       terminator.start();
+ * </pre>
+ * 
+ * It can also be used for synchronous termination in a background thread,
+ * in which case the {@link #run()} method can be called directly. 
+ * That method has error handling and logging that it is hard to justyf  
  *
  */
 public class TerminatorThread extends Thread {
@@ -54,20 +60,23 @@ public class TerminatorThread extends Thread {
 
     /**
      * Boolean flag to indicate that the component should detach before
-     * terminating itself.
+     * terminating itself. Default: false.
      */
     private boolean shouldDetach    = false; //It will not detach by default
 
     /**
      * Boolean flag to indicate that the component should terminate itself
+     * Default: true
      */
     private boolean shouldTerminate  = true; //It will terminate by default
 
     /**
      * Boolean flag to indicate that the component should notify its parent
-     * before terminating itself.
+     * before terminating itself. Default: true.
+     * true implies a call to {@link Prim#sfTerminate(TerminationRecord)} ,
+     * false={@link Prim#sfTerminateQuietlyWith(TerminationRecord)}. 
      */
-    private boolean notifyParent    = true; //It will use:: true=sfTeminate(), false=sfTerminateQuietlyWith()
+    private boolean notifyParent    = true; 
 
     /**
      * Constructs the TerminatorThread object using the component reference and
@@ -87,22 +96,22 @@ public class TerminatorThread extends Thread {
      * the exception object component identifier.
      *
      * @param target of the component that has to be terminated.
-     * @param t exception that caused the termination
+     * @param thrown exception that caused the termination
      * @param compId component identifier
      */
-    public TerminatorThread(Prim target, Throwable t, Reference compId) {
+    public TerminatorThread(Prim target, Throwable thrown, Reference compId) {
         this.setName("TerminatorThread");
         this.target = target;
-        this.record = TerminationRecord.abnormal(t.toString(), compId);
+        this.record = TerminationRecord.abnormal(thrown.toString(), compId,thrown);
     }
 
     /**
-     * Utility method to create/terminate the TerminatorThread object quietly.
-     *
-     * @return TerminatorThread object
+     * Utility method to stop the TerminatorThread object from 
+     * notifying the parent object on termination.
+     * @return this
      */
     public TerminatorThread quietly(){
-        this.notifyParent =false;
+        setNotifyParent(false);
         return this;
     }
 
@@ -112,7 +121,7 @@ public class TerminatorThread extends Thread {
      * @return TerminatorThread object
      */
     public TerminatorThread detach(){
-        this.shouldDetach =true;
+        setShouldDetach(true);
         return this;
     }
 
@@ -122,14 +131,54 @@ public class TerminatorThread extends Thread {
      * @return TerminatorThread object
      */
     public TerminatorThread dontTerminate(){
-        this.shouldTerminate =false;
+        setShouldTerminate(false);
         return this;
+    }
+
+    public Prim getTarget() {
+        return target;
+    }
+
+    public void setTarget(Prim target) {
+        this.target = target;
+    }
+
+    public TerminationRecord getRecord() {
+        return record;
+    }
+
+    public void setRecord(TerminationRecord record) {
+        this.record = record;
+    }
+
+    public boolean isShouldDetach() {
+        return shouldDetach;
+    }
+
+    public void setShouldDetach(boolean shouldDetach) {
+        this.shouldDetach = shouldDetach;
+    }
+
+    public boolean isShouldTerminate() {
+        return shouldTerminate;
+    }
+
+    public void setShouldTerminate(boolean shouldTerminate) {
+        this.shouldTerminate = shouldTerminate;
+    }
+
+    public boolean isNotifyParent() {
+        return notifyParent;
+    }
+
+    public void setNotifyParent(boolean notifyParent) {
+        this.notifyParent = notifyParent;
     }
 
     /**
      * Run method used to trigger the terminatation of the component.
      */
-    public void run() {
+    public synchronized void run() {
         try {
             if (shouldDetach && shouldTerminate && notifyParent){
                 try {

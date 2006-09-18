@@ -1,4 +1,4 @@
-/** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
+/** (C) Copyright 1998-2006 Hewlett-Packard Development Company, LP
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
@@ -18,7 +18,7 @@ For more information: www.smartfrog.org
 
 */
 
-#include "/org/smartfrog/predicates.sf"
+#include "org/smartfrog/sfcore/workflow/eventbus/eventbus.sf"
 /*
  * Timeout is a modified compound which differs in that the single
  * sub-component is given a certain amount of time to terminate and if it has
@@ -31,14 +31,11 @@ For more information: www.smartfrog.org
  * before its sub-component terminates, the Timeout combinator terminates
  * abnormally.
  */
-Timeout extends EventCompound {
+Timeout extends ActionCompound {
     sfClass "org.smartfrog.sfcore.workflow.combinators.Timeout";
     timeoutSchema extends Schema {
     //timeout in milliseconds
         time extends Integer;
-    //the action to start after the delay has finished        
-        action extends CD;
     }
-    // action ...
     time 0;
 }

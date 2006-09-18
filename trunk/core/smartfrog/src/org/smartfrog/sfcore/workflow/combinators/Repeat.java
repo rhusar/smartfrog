@@ -1,4 +1,4 @@
-/** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
+/** (C) Copyright 1998-2006 Hewlett-Packard Development Company, LP
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
@@ -23,6 +23,7 @@ package org.smartfrog.sfcore.workflow.combinators;
 import java.rmi.RemoteException;
 
 import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.compound.Compound;
 import org.smartfrog.sfcore.prim.Prim;
@@ -66,6 +67,7 @@ public class Repeat extends EventCompoundImpl implements Compound {
      */
     public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
         super.sfDeploy();
+        checkActionDefined();
         repeat = ((Integer) sfResolve(retryRef)).intValue();
     }
 
@@ -78,7 +80,7 @@ public class Repeat extends EventCompoundImpl implements Compound {
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
         sfCreateNewChild(name+"_RepeatActionRunning",
-			 (ComponentDescription) action.copy(), null);
+             (ComponentDescription) action.copy(), null);
     }
 
     /**
