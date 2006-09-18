@@ -17,7 +17,9 @@
  For more information: www.smartfrog.org
 
  */
-package org.smartfrog.services.junit;
+package org.smartfrog.services.junit.junit3;
+
+import org.smartfrog.services.junit.TestSuite;
 
 /**
  * This is the junit specific test suite interface
