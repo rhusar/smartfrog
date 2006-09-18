@@ -22,6 +22,7 @@
 package org.smartfrog.test.system.assertions;
 
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
+import org.smartfrog.sfcore.common.SmartFrogException;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
@@ -37,7 +38,10 @@ public interface BooleanValues extends Remote {
     /**
      * a value attribute; boolean, of course
      */
-    public static final String ATTR_VALUE ="value";
+    String ATTR_VALUE ="value";
+    
+    String ATTR_TOGGLE = "toggle";
+    
 
     /**
      * always evaluates to true
@@ -59,6 +63,16 @@ public interface BooleanValues extends Remote {
      */
     public boolean getValue() throws RemoteException, SmartFrogResolutionException;
 
+
+    /**
+     * toggle the value from true to false
+     * @return the new value
+     *
+     * @throws RemoteException
+     */
+    public boolean toggle()
+        throws RemoteException, SmartFrogException;
+    
     /**
      * throw a runtime fault when invoking
      * @return
