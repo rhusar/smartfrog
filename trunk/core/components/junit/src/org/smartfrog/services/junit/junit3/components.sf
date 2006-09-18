@@ -18,24 +18,21 @@
 
  */
  
- /**
-  * these are the TestNG support components
-  * The primary feature is a new test suite
-  */
   
  /**
   * Include the test suite
   */
 #include "/org/smartfrog/services/junit/testsuite.sf"
   
-
-/**
- * This is the JUnit test suite; it runs the junit tests in all classes that are in the
- * package tree with the matching pattern, and/or the named class
- */
-TestNGTestSuite extends PackagedTestSuite {
-}
-
+  
+  /**
+   * This is the JUnit test suite; it runs the junit tests in all classes that are in the
+   * package tree with the matching pattern, and/or the named class
+   */
+  JUnitTestSuite extends PackagedTestSuite {
+      sfClass "org.smartfrog.services.junit.junit3.JUnitTestSuiteImpl";
+  }
+  
   
   
   

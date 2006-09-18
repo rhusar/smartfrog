@@ -1,4 +1,4 @@
-/** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
+/** (C) Copyright 2006 Hewlett-Packard Development Company, LP
 
  This library is free software; you can redistribute it and/or
  modify it under the terms of the GNU Lesser General Public
@@ -17,7 +17,7 @@
  For more information: www.smartfrog.org
 
  */
-package org.smartfrog.services.junit;
+package org.smartfrog.services.junit.junit3;
 
 import junit.framework.AssertionFailedError;
 import junit.framework.Test;
@@ -26,6 +26,11 @@ import junit.framework.TestResult;
 import org.smartfrog.services.junit.data.Statistics;
 import org.smartfrog.services.junit.data.TestInfo;
 import org.smartfrog.services.junit.log.TestListenerLog;
+import org.smartfrog.services.junit.junit3.JUnitTestSuite;
+import org.smartfrog.services.junit.RunnerConfiguration;
+import org.smartfrog.services.junit.TestListener;
+import org.smartfrog.services.junit.Utils;
+import org.smartfrog.services.junit.TestListenerFactory;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogInitException;
 import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
@@ -48,8 +53,7 @@ import java.util.Properties;
 
 /**
  * Implementation of the Junit3.8.x test suite component. This is where tests are
- * actually run; we bring up Junit internally and run it here created
- * 14-May-2004 15:14:23
+ * actually run; we bring up Junit internally and run it here.
  */
 
 public class JUnitTestSuiteImpl extends PrimImpl implements JUnitTestSuite,
