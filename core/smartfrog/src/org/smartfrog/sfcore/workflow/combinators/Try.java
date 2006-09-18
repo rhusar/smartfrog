@@ -1,4 +1,4 @@
-/** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
+/** (C) Copyright 1998-2006 Hewlett-Packard Development Company, LP
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
@@ -35,8 +35,8 @@ import org.smartfrog.sfcore.workflow.eventbus.EventCompoundImpl;
  * Try is a modified compound which differs in that its primary sub-component
  * is deployed and when it terminates, a continuation component is selected
  * depending on the termination type. A Try combinator creates its primary
- * subcomponent until it's sfStart phase. The Try combinator waits for its
- * sub-component to terminate at which point it too terminates normallyselects
+ * subcomponent in it's sfStart phase. The Try combinator waits for its
+ * sub-component to terminate at which point it too terminates, normally selecting
  * the coninutation component. When this continutation component terminates,
  * it too terminates with the same termination type.
  *
@@ -70,6 +70,7 @@ public class Try extends EventCompoundImpl implements Compound {
      */
     public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
         super.sfDeploy();
+        checkActionDefined();
     }
 
     /**

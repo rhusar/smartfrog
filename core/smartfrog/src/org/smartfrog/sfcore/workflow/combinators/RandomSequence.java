@@ -1,4 +1,4 @@
-/** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
+/** (C) Copyright 1998-2006 Hewlett-Packard Development Company, LP
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
@@ -62,6 +62,8 @@ public class RandomSequence extends EventCompoundImpl implements Compound {
     int seed;
     Random random;
     Vector actionKeysVector;
+    public static final String ATTR_SEED = "seed";
+
     /**
      * Constructs RandomSequence.
      *
@@ -113,7 +115,7 @@ public class RandomSequence extends EventCompoundImpl implements Compound {
      */
     public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
         super.sfDeploy();
-        seed = ((Integer) sfResolve("seed")).intValue();
+        seed = sfResolve(ATTR_SEED,0,true);
         random = new Random(seed);
         initActionKeys();
         name = sfCompleteNameSafe(); // returns null if any error
@@ -152,7 +154,7 @@ public class RandomSequence extends EventCompoundImpl implements Compound {
         if (sfContainsChild(comp)) {
             try {
                 if (status.errorType.equals("normal".intern())) {
-		    sfRemoveChild(comp);
+                    sfRemoveChild(comp);
                     if (actionKeysVector.size() != 0) {
                         startNextRandom();
                     } else {
@@ -163,7 +165,7 @@ public class RandomSequence extends EventCompoundImpl implements Compound {
                 }
             } catch (Exception e) {
                 sfTerminate(TerminationRecord.abnormal(
-                        "error in starting next random component", name));
+                    "error in starting next random component", name));
             }
         }
     }

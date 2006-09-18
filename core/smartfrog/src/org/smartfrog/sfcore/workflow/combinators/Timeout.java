@@ -1,4 +1,4 @@
-/** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
+/** (C) Copyright 1998-2006 Hewlett-Packard Development Company, LP
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
@@ -73,6 +73,7 @@ public class Timeout extends EventCompoundImpl implements Compound {
      */
     public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
         super.sfDeploy();
+        checkActionDefined();
         time = ((Integer) sfResolve(timeRef)).intValue();
     }
 

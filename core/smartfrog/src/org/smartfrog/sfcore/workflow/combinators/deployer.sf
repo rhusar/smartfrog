@@ -1,4 +1,4 @@
-/** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
+/** (C) Copyright 1998-2006 Hewlett-Packard Development Company, LP
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
@@ -18,7 +18,7 @@ For more information: www.smartfrog.org
 
 */
 
-#include "org/smartfrog/sfcore/workflow/combinators/run.sf"
+#include "/org/smartfrog/sfcore/workflow/combinators/run.sf"
 
 Deployer extends Run {
     sfClass "org.smartfrog.sfcore.workflow.combinators.Deployer";
