@@ -175,7 +175,7 @@ public class Parallel extends EventCompoundImpl implements Compound {
     public void sfTerminatedWith(TerminationRecord status, Prim comp) {
         if (sfContainsChild(comp)) {
             try {
-                if (!(status.errorType.equals("normal".intern()))) {
+                if (!status.isNormal()) {
                     sfTerminate(status);
                 } else {
                     sfRemoveChild(comp);

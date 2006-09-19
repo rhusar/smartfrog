@@ -89,7 +89,13 @@ public class Container extends Parallel implements Compound {
             }
             try {
                 sfRemoveChild((Prim)target);
-            } catch (Exception e) {
+            } catch (SmartFrogRuntimeException e) {
+                //ignore
+                sfLog().info("While trying to remove the child",e);
+
+            } catch (RemoteException e) {
+                //ignore
+                sfLog().info("While trying to remove the child", e);
             }
         }
     }

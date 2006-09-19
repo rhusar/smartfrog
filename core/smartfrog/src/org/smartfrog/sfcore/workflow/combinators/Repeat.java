@@ -97,7 +97,7 @@ public class Repeat extends EventCompoundImpl implements Compound {
             try {
                 sfRemoveChild(comp);
 
-                if (status.errorType.equals("normal".intern())) {
+                if (status.isNormal()) {
                     if (currentRepeats++ < repeat) {
                         sfCreateNewChild(name+"_actionRunning"+currentRepeats,
 					 (ComponentDescription) action.copy(), null);
