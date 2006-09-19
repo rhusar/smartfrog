@@ -1,0 +1,155 @@
+/** (C) Copyright 1998-2006 Hewlett-Packard Development Company, LP
+
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+For more information: www.smartfrog.org
+
+*/
+
+/*
+ a simple component to play a file on deployment
+ */
+
+
+
+ /**
+  * Include the core smartfrog components.
+  */
+#include "/org/smartfrog/components.sf"
+#include "/org/smartfrog/predicates.sf"
+
+
+JdbcBindingSchema extend Schema {
+  //driver classname. No extra loading stuff here other than SF codebase.
+  driver extends String;
+  //URL of the system
+  url extends String;
+  //username
+  username extends OptionalString;
+  //password
+  password extends OptionalString;
+  //any extra properties
+  properties extends OptionalVector;
+}
+
+
+/*
+ * This is the binding to a database. 
+ * The component does a check on sfStart() for the driver class; this
+ * should also force load it into the runtime.
+ */
+JdbcBinding extends Prim {
+  sfClass "org.smartfrog.services.database.core.JdbcBindingImpl";
+  jdbcBindingSchema extends JdbcBindingSchema;
+  
+}
+
+/**
+ * HSQLDB is good for embedding and testing
+ */
+
+HsqldbBinding extends JdbcBinding {
+  driver "org.hsqldb.jdbcDriver";
+}
+
+
+/**
+ * We don't redist MySQL as it has interesting license
+ * ramifications for non-OSS applications, though (LGPL) smartfrog
+ * is free to redist it and retain its license
+ * http://mysql.com
+ */
+ 
+MySqlBinding extends JdbcBinding {
+  driver "com.mysql.jdbc.Driver";
+}
+
+TransactionSchema extends Schema {
+  db extends Compulsory;
+  autocommit extends boolean;
+  commands extends OptionalVector;
+}
+
+
+JdbcOperation Schema extends Schema {
+  db extends Compulsory;
+}
+
+JdbcOperation extends Prim {
+  jdbcOperation extends JdbcOperation;
+}
+
+/**
+ * A transaction is a set of commands. 
+ * There is no way to ignore failures (e.g. you dont care about a DROP TABLE failing)
+ * If you want that, wrap it in something that ignores failures.
+ */
+ 
+TransactionSchema extends Schema {
+  db extends Compulsory;
+  autocommit extends boolean;
+  commands extends OptionalVector;
+}
+
+
+Transaction extends JdbcOperation {
+  transactionSchema extends TransactionSchema; 
+  autocommit false;
+}
+
+/**
+ * schema for liveness selection
+ */
+SelectionSchema extends Schema {
+ query extends String;
+ minResultSize extends OptionalInteger;
+ maxResultSize extends OptionalInteger;
+}
+
+
+
+/**
+ * make a selection, results go into results. 
+ */
+Selection extends JdbcOperation {
+  selectionSchema extends SelectionSchema;
+}
+
+
+/**
+ * this is an operation that should not fail for
+ * a liveness
+ */
+LivenessOperation extends JdbcOperation {
+    
+}
+
+
+/**
+ * This component runs selections as a liveness test, so
+ * that you can use the state of the database as a health check
+ * use the min/max result size attributes to set the min/max number
+ * of results.
+ */
+ 
+LivenessSelection extends Selection {
+  
+}
+
+
+
+
+
+
