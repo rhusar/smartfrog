@@ -20,13 +20,15 @@
 
 package org.smartfrog.services.database.core;
 
-import org.smartfrog.sfcore.prim.PrimImpl;
+import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.sfcore.security.SFClassLoader;
-import org.smartfrog.sfcore.logging.LogFactory;
 import org.smartfrog.sfcore.logging.Log;
+import org.smartfrog.sfcore.logging.LogFactory;
+import org.smartfrog.sfcore.prim.PrimImpl;
+import org.smartfrog.sfcore.security.SFClassLoader;
 
 import java.rmi.RemoteException;
+import java.util.Properties;
 import java.util.Vector;
 
 /**
@@ -44,6 +46,8 @@ public class JdbcBindingImpl extends PrimImpl implements JdbcBinding {
 
     private Vector properties;
 
+    private Properties connectionProperties;
+
     private String url;
 
     public JdbcBindingImpl() throws RemoteException {
@@ -51,7 +55,7 @@ public class JdbcBindingImpl extends PrimImpl implements JdbcBinding {
 
 
     /**
-     * Read the properties and start.
+     * Read the properties and load the driver.
      *
      * @throws SmartFrogException
      * @throws RemoteException
@@ -59,16 +63,71 @@ public class JdbcBindingImpl extends PrimImpl implements JdbcBinding {
     public synchronized void sfStart()
             throws SmartFrogException, RemoteException {
         super.sfStart();
+        Log log = LogFactory.getOwnerLog(this);
         driver = sfResolve(ATTR_DRIVER, "", true);
         url = sfResolve(ATTR_USERNAME, "", true);
         user = sfResolve(ATTR_USERNAME, "", false);
         password = sfResolve(ATTR_PASSWORD, "", false);
         properties = sfResolve(ATTR_PROPERTIES, (Vector) null, false);
-        Log log = LogFactory.getOwnerLog(this);
+
         try {
             Class aClass = SFClassLoader.forName(driver);
         } catch (ClassNotFoundException e) {
             throw new SmartFrogException("Could not load "+driver,e);
         }
+
+        connectionProperties=new Properties();
+        if(user!=null) {
+            connectionProperties.setProperty("user", user);
+        }
+
+        if (password!=null) {
+            connectionProperties.setProperty("password", password);
+        }
+
+        if(properties!=null && properties.size()!=0) {
+            throw new SmartFrogDeploymentException("Properties are not yet implemented");
+        }
+    }
+
+    /**
+     * Get the connection properties.
+     * @return the new connection information
+     */
+    public Properties createConnectionProperties() {
+        Properties connProps= (Properties) connectionProperties.clone();
+        return connProps;
+    }
+
+    /**
+     * Get the driver
+     * @return the driver
+     */
+    public String getDriver() {
+        return driver;
+    }
+
+    /**
+     * get the username
+     * @return username or null
+     */
+    public String getUser() {
+        return user;
+    }
+
+    /**
+     * get the password
+     * @return password or null
+     */
+    public String getPassword() {
+        return password;
+    }
+
+    /**
+     * get the jdbc url
+     * @return JDBC url
+     */
+    public String getUrl() {
+        return url;
     }
 }
