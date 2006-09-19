@@ -73,6 +73,11 @@ public final class TestInfo implements Serializable, Cloneable {
      * @serial
      */
     private String hostname;
+
+    /**
+     * IP Address
+     * @serial 
+     */
     private String ipaddr;
 
     /**
@@ -91,16 +96,24 @@ public final class TestInfo implements Serializable, Cloneable {
 
     /**
      * an array of messages, type LogEntry
+     * @serial
      */
     private List/*<LogEntry>*/ messages=new ArrayList();
 
+    /**
+     * The outcome of the test. This can be one of the outcomes, or
+     * something else
+     * @serial 
+     */
     private String outcome=OUTCOME_SUCCESS;
 
-    public static final String OUTCOME_SUCCESS="success";
+    public static final String OUTCOME_SUCCESS = "success";
     public static final String OUTCOME_FAILURE = "failure";
     public static final String OUTCOME_ERROR = "error";
     public static final String OUTCOME_TIMEOUT = "timeout";
     public static final String OUTCOME_SKIPPED = "skipped";
+    public static final String OUTCOME_INTERRUPTED = "interrupted";
+    public static final String OUTCOME_UNKNOWN = "unknown";
 
     /**
      * empty constructor is used during deserialization

@@ -26,6 +26,8 @@ import org.smartfrog.sfcore.prim.Prim;
 
 import java.io.Serializable;
 import java.rmi.RemoteException;
+import java.util.HashMap;
+import java.util.Iterator;
 
 /**
  * cache statistics for operations. thread safe add operations, and
@@ -40,6 +42,10 @@ public final class Statistics implements Serializable, Cloneable {
     private int testsStarted = 0;
     private int testsRun = 0;
     private int loggedMessages = 0;
+
+
+    private HashMap/*<String,Integer>*/ outcomes=new HashMap();
+
 
     /**
      * reset everything to zero
@@ -101,6 +107,12 @@ public final class Statistics implements Serializable, Cloneable {
         addTestsRun(that.getTestsRun());
         addTestsStarted(that.getTestsStarted());
         addLoggedMessages(that.getLoggedMessages());
+        //add all the outcomes
+        Iterator keys=that.outcomes.keySet().iterator();
+        while (keys.hasNext()) {
+            String outcome = (String) keys.next();
+            increment(outcome,that.getOutcome(outcome));
+        }
     }
 
     /**
@@ -115,6 +127,30 @@ public final class Statistics implements Serializable, Cloneable {
         Statistics that = new Statistics();
         that.retrieveResultAttributes(node);
         add(that);
+    }
+
+    public synchronized void increment(String outcome,int count) {
+        int value = getOutcome(outcome);
+        value += count;
+        outcomes.put(outcome, new Integer(value));
+    }
+
+    public void increment(String outcome) {
+        increment(outcome, 1);
+    }
+
+    /**
+     * Get the count for a specific outcome
+     * @param outcome
+     * @return the count or 0 for no events of that outcome found.
+     */
+    public int getOutcome(String outcome) {
+        Integer current = (Integer) outcomes.get(outcome);
+        int value = 0;
+        if (current != null) {
+            value = current.intValue();
+        }
+        return value;
     }
 
     public int getErrors() {
@@ -225,7 +261,11 @@ public final class Statistics implements Serializable, Cloneable {
      */
     public Object clone() {
         try {
-            return super.clone();
+            Statistics that = (Statistics)super.clone();
+            //there shouldn't be any need to deep clone the hash map, because
+            //the keys and values are both immutable. When an outcome is updated,
+            //a new value is assigned.
+            return that;
         } catch (CloneNotSupportedException e) {
             //not possible except by a subclass, and, being final,
             //that is not possible.
