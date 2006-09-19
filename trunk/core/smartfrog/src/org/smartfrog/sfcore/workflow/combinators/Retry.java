@@ -103,7 +103,7 @@ public class Retry extends EventCompoundImpl implements Compound {
             try {
                 sfRemoveChild(comp);
 
-                if (!(status.errorType.equals("normal".intern()))) {
+                if (!status.isNormal()) {
                     if (currentRetries++ < retry) {
                         if (sfLog().isDebugEnabled()) {
                            sfLog().debug("Retry: "+name+" "+currentRetries+" /"+retry);

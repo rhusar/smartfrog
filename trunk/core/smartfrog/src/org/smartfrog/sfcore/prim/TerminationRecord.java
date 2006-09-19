@@ -31,7 +31,7 @@ import org.smartfrog.sfcore.reference.Reference;
  * in the containment tree on termination.
  *
  */
-public class TerminationRecord implements Serializable {
+public final class TerminationRecord implements Serializable {
     /** String name for errortype normal. */
     public final static String NORMAL = "normal";
 
@@ -145,5 +145,14 @@ public class TerminationRecord implements Serializable {
         ((errorType == null) ? "" : (",  type: " + errorType)) +
         ((description == null) ? "" : (",  description: " + description)) +
         ((cause == null) ? "" : (",  cause: " + cause)) ;
+    }
+
+    /**
+     * Test for the termination being normal, by performing
+     * a case-sensitive match on the error type.
+     * @return true iff errortype == "normal";
+     */
+    public boolean isNormal() {
+        return NORMAL.equals(errorType);
     }
 }

@@ -119,7 +119,7 @@ public class Sequence extends EventCompoundImpl implements Compound {
     public void sfTerminatedWith(TerminationRecord status, Prim comp) {
         if (sfContainsChild(comp)) {
             try {
-                if (status.errorType.equals("normal".intern())) {
+                if (status.isNormal()) {
                     if (actionKeys.hasMoreElements()) {
                         sfRemoveChild(comp);
                         String componentName = (String)actionKeys.nextElement();
