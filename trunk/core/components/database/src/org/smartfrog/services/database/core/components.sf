@@ -18,9 +18,6 @@ For more information: www.smartfrog.org
 
 */
 
-/*
- a simple component to play a file on deployment
- */
 
 
 
@@ -31,36 +28,44 @@ For more information: www.smartfrog.org
 #include "/org/smartfrog/predicates.sf"
 
 
-JdbcBindingSchema extend Schema {
-  //driver classname. No extra loading stuff here other than SF codebase.
-  driver extends String;
-  //URL of the system
-  url extends String;
-  //username
-  username extends OptionalString;
-  //password
-  password extends OptionalString;
-  //any extra properties
-  properties extends OptionalVector;
-}
-
-
 /*
- * This is the binding to a database. 
+ * This is the binding to a database.
  * The component does a check on sfStart() for the driver class; this
- * should also force load it into the runtime.
+ * should also force load it into the runtime so that database-specific
+ * JBC URLs will resolve.
  */
-JdbcBinding extends Prim {
+DatabaseBinding extends Prim {
   sfClass "org.smartfrog.services.database.core.JdbcBindingImpl";
-  jdbcBindingSchema extends JdbcBindingSchema;
-  
+  jdbcBindingSchema extends Schema {
+      //driver classname. No extra loading stuff here other than SF codebase.
+      driver extends String {
+        description "the classname of the driver, which must be in the current classpath";
+      };
+      //URL of the system
+      url extends String {
+        description "URL of the jdbc connection"
+      };
+
+      username extends OptionalString {
+        description "username for the database";
+      };
+      //password
+      password extends OptionalString{
+        description "password for the database";
+      };
+      //any extra properties
+      properties extends OptionalVector {
+        description "list of name,value pairs for the JDBC connection"
+      };
+  };
+
 }
 
 /**
  * HSQLDB is good for embedding and testing
  */
 
-HsqldbBinding extends JdbcBinding {
+HsqldbBinding extends DatabaseBinding {
   driver "org.hsqldb.jdbcDriver";
 }
 
@@ -71,46 +76,45 @@ HsqldbBinding extends JdbcBinding {
  * is free to redist it and retain its license
  * http://mysql.com
  */
- 
-MySqlBinding extends JdbcBinding {
+
+MySqlBinding extends DatabaseBinding {
   driver "com.mysql.jdbc.Driver";
 }
 
-TransactionSchema extends Schema {
-  db extends Compulsory;
-  autocommit extends boolean;
-  commands extends OptionalVector;
-}
 
 
-JdbcOperation Schema extends Schema {
-  db extends Compulsory;
-}
-
-JdbcOperation extends Prim {
-  jdbcOperation extends JdbcOperation;
+/**
+ * an operation under a database
+ */
+DatabaseOperation extends Prim {
+  operationSchema extends Schema {
+    database extends Compulsory {
+    description "reference to a database";
+  };
 }
 
 /**
- * A transaction is a set of commands. 
+ * A transaction is a set of commands.
  * There is no way to ignore failures (e.g. you dont care about a DROP TABLE failing)
  * If you want that, wrap it in something that ignores failures.
  */
- 
-TransactionSchema extends Schema {
-  db extends Compulsory;
-  autocommit extends boolean;
-  commands extends OptionalVector;
-}
 
 
-Transaction extends JdbcOperation {
-  transactionSchema extends TransactionSchema; 
+TransactionCommands extends DatabaseOperation {
+  sfClass "org.smartfrog.services.database.core.TransactionCommandsImpl";
+
+  transactionSchema extends Schema {
+      autocommit extends Boolean {
+        description "should every command commit after execution";
+      }
+      commands extends OptionalVector {
+        description "a string list of commands to execute";
+      };
   autocommit false;
 }
 
 /**
- * schema for liveness selection
+ * schema for selection
  */
 SelectionSchema extends Schema {
  query extends String;
@@ -121,19 +125,23 @@ SelectionSchema extends Schema {
 
 
 /**
- * make a selection, results go into results. 
+ * make a selection, results go into results.
  */
-Selection extends JdbcOperation {
-  selectionSchema extends SelectionSchema;
+Selection extends DatabaseOperation {
+  selectionSchema extends Schema {
+     query extends String;
+     minResultSize extends OptionalInteger;
+     maxResultSize extends OptionalInteger;
+  }
 }
 
 
 /**
- * this is an operation that should not fail for
- * a liveness
+ * this is an operation that should succeed
+ * if the database is present
  */
 LivenessOperation extends JdbcOperation {
-    
+
 }
 
 
@@ -143,9 +151,9 @@ LivenessOperation extends JdbcOperation {
  * use the min/max result size attributes to set the min/max number
  * of results.
  */
- 
+
 LivenessSelection extends Selection {
-  
+
 }
 
 
