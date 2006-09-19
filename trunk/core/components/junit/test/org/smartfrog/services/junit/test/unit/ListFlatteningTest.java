@@ -20,7 +20,7 @@
 package org.smartfrog.services.junit.test.unit;
 
 import junit.framework.TestCase;
-import org.smartfrog.services.junit.JUnitTestSuiteImpl;
+import org.smartfrog.services.junit.junit3.JUnitTestSuiteImpl;
 import org.smartfrog.sfcore.common.SmartFrogInitException;
 
 import java.util.ArrayList;
