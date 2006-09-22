@@ -26,6 +26,7 @@ import org.smartfrog.sfcore.logging.Log;
 import org.smartfrog.sfcore.logging.LogFactory;
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.security.SFClassLoader;
+import org.smartfrog.sfcore.utils.ComponentHelper;
 
 import java.rmi.RemoteException;
 import java.util.Properties;
@@ -50,6 +51,7 @@ public class JdbcBindingImpl extends PrimImpl implements JdbcBinding {
 
     private String url;
 
+
     public JdbcBindingImpl() throws RemoteException {
     }
 
@@ -63,17 +65,20 @@ public class JdbcBindingImpl extends PrimImpl implements JdbcBinding {
     public synchronized void sfStart()
             throws SmartFrogException, RemoteException {
         super.sfStart();
-        Log log = LogFactory.getOwnerLog(this);
-        driver = sfResolve(ATTR_DRIVER, "", true);
+        Log log = LogFactory.getLog(this);
+
+        driver = sfResolve(ATTR_DRIVER, "", false);
         url = sfResolve(ATTR_USERNAME, "", true);
         user = sfResolve(ATTR_USERNAME, "", false);
         password = sfResolve(ATTR_PASSWORD, "", false);
         properties = sfResolve(ATTR_PROPERTIES, (Vector) null, false);
 
-        try {
-            Class aClass = SFClassLoader.forName(driver);
-        } catch (ClassNotFoundException e) {
-            throw new SmartFrogException("Could not load "+driver,e);
+        if(driver!=null) {
+            try {
+                Class aClass = SFClassLoader.forName(driver);
+            } catch (ClassNotFoundException e) {
+                throw new SmartFrogException("Could not load "+driver,e);
+            }
         }
 
         connectionProperties=new Properties();
@@ -130,4 +135,7 @@ public class JdbcBindingImpl extends PrimImpl implements JdbcBinding {
     public String getUrl() {
         return url;
     }
+
+    
+
 }

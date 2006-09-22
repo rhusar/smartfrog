@@ -30,4 +30,9 @@ public interface  JdbcOperation extends Remote {
      * {@value}
      */
     String ATTR_DATABASE="database";
+    /**
+     * "should every command commit after execution"
+     * {@value}
+     */
+    String ATTR_AUTOCOMMIT="autocommit";
 }
