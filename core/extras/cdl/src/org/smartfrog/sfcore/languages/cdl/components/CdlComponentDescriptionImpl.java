@@ -28,7 +28,6 @@ import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.languages.sf.sfcomponentdescription.SFComponentDescriptionImpl;
 import org.smartfrog.sfcore.languages.sf.sfcomponentdescription.SFComponentDescription;
 import org.smartfrog.sfcore.languages.sf.Phase;
-import org.smartfrog.sfcore.languages.sf.SmartFrogCompileResolutionException;
 import org.smartfrog.sfcore.languages.cdl.ParseContext;
 import org.smartfrog.sfcore.languages.cdl.Constants;
 import org.smartfrog.sfcore.reference.Reference;
@@ -202,7 +201,7 @@ public final class CdlComponentDescriptionImpl extends SFComponentDescriptionImp
                     actOn.visit(new Phase(name), false);
                 }
             } catch (Throwable thr) {
-                throw SmartFrogCompileResolutionException.forward(thr, name);
+                throw SmartFrogResolutionException.forward(name, thr);
             }
 
         }
