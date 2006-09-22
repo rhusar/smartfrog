@@ -26,7 +26,7 @@ For more information: www.smartfrog.org
   */
 #include "/org/smartfrog/components.sf"
 #include "/org/smartfrog/predicates.sf"
-
+#include "org/smartfrog/services/filesystem/filesystemtemplate.sf"
 
 /*
  * This is the binding to a database.
@@ -38,7 +38,7 @@ DatabaseBinding extends Prim {
   sfClass "org.smartfrog.services.database.core.JdbcBindingImpl";
   jdbcBindingSchema extends Schema {
       //driver classname. No extra loading stuff here other than SF codebase.
-      driver extends String {
+      driver extends OptionalString {
         description "the classname of the driver, which must be in the current classpath";
       };
       //URL of the system
@@ -57,6 +57,10 @@ DatabaseBinding extends Prim {
       properties extends OptionalVector {
         description "list of name,value pairs for the JDBC connection"
       };
+
+      classpath extends OptionalCD {
+        description "a classpath component describing classes needed by the JDBC driver"
+      }
   };
 
 }
@@ -89,50 +93,102 @@ MySqlBinding extends DatabaseBinding {
 DatabaseOperation extends Prim {
   operationSchema extends Schema {
     database extends Compulsory {
-    description "reference to a database";
-  };
-}
-
-/**
- * A transaction is a set of commands.
- * There is no way to ignore failures (e.g. you dont care about a DROP TABLE failing)
- * If you want that, wrap it in something that ignores failures.
- */
-
-
-TransactionCommands extends DatabaseOperation {
-  sfClass "org.smartfrog.services.database.core.TransactionCommandsImpl";
-
-  transactionSchema extends Schema {
-      autocommit extends Boolean {
+      description "reference to a database";
+    }
+    autocommit extends Boolean {
         description "should every command commit after execution";
-      }
-      commands extends OptionalVector {
-        description "a string list of commands to execute";
-      };
-  autocommit false;
-}
-
-/**
- * schema for selection
- */
-SelectionSchema extends Schema {
- query extends String;
- minResultSize extends OptionalInteger;
- maxResultSize extends OptionalInteger;
-}
-
-
-
-/**
- * make a selection, results go into results.
- */
-Selection extends DatabaseOperation {
-  selectionSchema extends Schema {
-     query extends String;
-     minResultSize extends OptionalInteger;
-     maxResultSize extends OptionalInteger;
+    }
   }
+  autocommit true;
+}
+
+
+/**
+ * A transaction is a list of commands in a file, a string, or resource.
+ * Every SQL statement must end with the delimiter, followed by a newline.
+ * delimiters in the middle of a line are treated as part of a statement.
+ * Comments are left alone, and a delimiter at the end of the comment
+
+ */
+Transaction extends DatabaseOperation {
+  transactionSchema extends Schema {
+    sql extends OptionalString {
+      description "inline commands seperated by the delimiter";
+    }
+    sqlCommands extends OptionalVector {
+        description "a list of commands to execute, each undelimited command in a separate element";
+      };
+    sqlFile extends OptionalFilenameType {
+      description "UTF-8 encoded file containing SQL commands to run";
+    }
+    sqlResource extends OptionalString {
+      description "name of UTF-8 encoded text resource containing SQL commands to run";
+    }
+    delimiter extends String {
+      description "delimiter char between SQL statements, usually ;";
+    }
+    escapeProcessing extends Boolean {
+      description "should SQL commands be escaped before execution?"
+    }
+    expectedStatementCount extends Integer {
+      description ##
+        this is primarily for internal testing, but can be used for debugging
+        statement parsing problems. It is the count of statements expected
+        after the string/file/resource is parsed. If there is a mismatch,
+        an exception is thrown. Omit or use -1 for do not care' #
+    }
+    failOnSqlError extends boolean {
+      description "should we fail on an SQL error?";
+    }
+    printResults extends boolean {
+      description "should the results be printed?"
+    }
+    printHeaders extends boolean {
+      description "should the column headers be printed?"
+    }
+  }
+
+  sfClass "org.smartfrog.services.database.core.TransactionImpl";
+  delimiter ";";
+  expectedStatementCount -1;
+  failOnSqlError true;
+  printResults true;
+  printHeaders true;
+}
+
+/**
+ * A transaction in a sequence
+ */
+SequentialTransaction extends Transaction {
+  sfTerminate true;
+}
+
+
+
+
+
+
+
+/**
+ * make a selection, results go into the results vector as a nested vector, columns becomes the vector of columns
+ */
+Selection extends Transaction {
+  selectionSchema extends Schema {
+     minResultSize extends OptionalInteger {
+      description "minimum count of the results, -1 for no minumum";
+     }
+     maxResultSize extends OptionalInteger {
+       description "maximum count of the results, -1 or for no maximum";
+     }
+  }
+}
+
+
+/**
+ * A Selection in a sequence
+ */
+SequentialSelection extends Selection {
+  sfTerminate true;
 }
 
 
@@ -140,7 +196,7 @@ Selection extends DatabaseOperation {
  * this is an operation that should succeed
  * if the database is present
  */
-LivenessOperation extends JdbcOperation {
+LivenessTransaction extends Transaction {
 
 }
 
@@ -155,9 +211,3 @@ LivenessOperation extends JdbcOperation {
 LivenessSelection extends Selection {
 
 }
-
-
-
-
-
-
