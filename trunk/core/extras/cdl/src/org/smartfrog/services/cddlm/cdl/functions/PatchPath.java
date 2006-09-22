@@ -20,10 +20,8 @@
 
 package org.smartfrog.services.cddlm.cdl.functions;
 
-import org.smartfrog.sfcore.languages.sf.PhaseAction;
-import org.smartfrog.sfcore.languages.sf.SmartFrogCompileResolutionException;
-import org.smartfrog.sfcore.languages.sf.Function;
 import org.smartfrog.sfcore.languages.sf.functions.BaseUnaryOperator;
+import org.smartfrog.sfcore.common.SmartFrogFunctionResolutionException;
 
 import java.io.File;
 
@@ -31,7 +29,10 @@ import java.io.File;
  * something to convert paths on the fly to the local filesys. 
  * Remember that conversion only takes place locally
  */
-public class PatchPath extends Function implements PhaseAction {
+public class PatchPath extends BaseUnaryOperator {
+
+
+
 
     /**
      * extract the boolean value
@@ -39,7 +40,7 @@ public class PatchPath extends Function implements PhaseAction {
      * @param a a boolean
      * @return the negation
      */
-    protected Object doOperator(Object a) throws SmartFrogCompileResolutionException {
+    protected Object doOperator(Object a) throws SmartFrogFunctionResolutionException {
         String path = a.toString();
         char local=File.separatorChar;
         if(local=='\\') {

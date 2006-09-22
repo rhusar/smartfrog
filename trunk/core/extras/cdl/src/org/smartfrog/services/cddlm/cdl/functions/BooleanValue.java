@@ -20,15 +20,12 @@
 
 package org.smartfrog.services.cddlm.cdl.functions;
 
-import org.smartfrog.sfcore.languages.sf.PhaseAction;
-import org.smartfrog.sfcore.languages.sf.SmartFrogCompileResolutionException;
-import org.smartfrog.sfcore.languages.sf.Function;
 import org.smartfrog.sfcore.languages.sf.functions.BaseUnaryOperator;
 
 /**
  
  */
-public class BooleanValue extends Function implements PhaseAction {
+public class BooleanValue extends BaseUnaryOperator {
     
     /**
      * extract the boolean value
@@ -36,7 +33,7 @@ public class BooleanValue extends Function implements PhaseAction {
      * @param a a boolean
      * @return the negation
      */
-    protected Object doOperator(Object a) throws SmartFrogCompileResolutionException {
+    protected Object doOperator(Object a)  {
         return Boolean.valueOf(a.toString());
     }    
 }

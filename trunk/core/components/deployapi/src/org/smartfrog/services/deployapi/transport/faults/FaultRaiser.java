@@ -29,7 +29,6 @@ import org.smartfrog.sfcore.common.SmartFrogLivenessException;
 import org.smartfrog.sfcore.common.SmartFrogParseException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
-import org.smartfrog.sfcore.languages.sf.SmartFrogCompileResolutionException;
 
 import javax.xml.namespace.QName;
 import java.net.MalformedURLException;
@@ -239,9 +238,6 @@ public class FaultRaiser {
         if (exception instanceof SmartFrogParseException) {
             faultCode = Constants.FAULT_DESCRIPTOR_PARSE_ERROR;
         }
-        if (exception instanceof SmartFrogCompileResolutionException) {
-            faultCode = Constants.FAULT_COMPILE_RESOLUTION_FAILURE;
-        }
         //init failure
         if (exception instanceof SmartFrogInitException) {
             faultCode = Constants.FAULT_INITIALIZATION_FAILURE;
@@ -267,7 +263,7 @@ public class FaultRaiser {
         if(context!=null) {
             Enumeration keys = context.keys();
             while (keys.hasMoreElements()) {
-                Object key = (Object) keys.nextElement();
+                Object key = keys.nextElement();
                 Object value = context.get(key);
                 String stringVal = value.toString();
                 //TODO: escape local parts that are not valid.
