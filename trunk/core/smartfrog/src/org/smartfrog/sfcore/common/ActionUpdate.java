@@ -20,16 +20,11 @@
 package org.smartfrog.sfcore.common;
 
 import org.smartfrog.sfcore.prim.Prim;
-import org.smartfrog.sfcore.prim.TerminationRecord;
+import org.smartfrog.sfcore.prim.Update;
 import org.smartfrog.sfcore.processcompound.ProcessCompound;
-import org.smartfrog.sfcore.parser.Phases;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.componentdescription.ComponentDescriptionImpl;
 import org.smartfrog.sfcore.reference.Reference;
-import org.smartfrog.sfcore.reference.ReferencePart;
-import org.smartfrog.sfcore.reference.HereReferencePart;
-import org.smartfrog.sfcore.compound.Compound;
-import org.smartfrog.sfcore.updatable.Update;
 
 
 import java.rmi.RemoteException;
