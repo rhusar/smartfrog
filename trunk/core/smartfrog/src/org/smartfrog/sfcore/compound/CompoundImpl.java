@@ -789,9 +789,9 @@ public class CompoundImpl extends PrimImpl implements Compound {
      * @throws org.smartfrog.sfcore.common.SmartFrogException - not OK to update
      */
     public synchronized void sfPrepareUpdate() throws RemoteException, SmartFrogException {
+        super.sfPrepareUpdate();
         // iterate over all children, preparing them for update.
         // if an exception is returned, trigger an abandon downwards and return an exception
-        updateAbandoned = false;
         for (Enumeration e = sfChildren(); e.hasMoreElements(); ) {
             Prim p = (Prim) e.nextElement();
             if (p instanceof Update) {
@@ -817,46 +817,19 @@ public class CompoundImpl extends PrimImpl implements Compound {
      * @throws org.smartfrog.sfcore.common.SmartFrogException - failure, not OK to update
      */
     public synchronized boolean sfUpdateWith(Context newCxt) throws RemoteException, SmartFrogException {
-        if (updateAbandoned) throw new SmartFrogUpdateException("update already abandoned");
         // validate the description, return false if it requires termination, exception to fail
         // cache context
         // check children that exist already
         //     identify those that should be terminated  (returned false)
         //     those to be updated (return true)
         // return true
-        newContext = (Context) newCxt.copy();
         childrenToTerminate = new Vector(); //Prims
         childrenToUpdate = new Vector();    //Prims
         childrenToCreate = new Vector();    // Names
 
-        // check that all sf attributes are well defined...
-        for (Iterator  i = newContext.sfAttributes(); i.hasNext(); ) {
-            String key = i.next().toString();
-            if (key.startsWith("sf")) {
-                try {
-                    Object myValue = sfResolve(key, true);
-                    if (!myValue.equals(newContext.get(key))) {
-                        return false;  // non matching sf attribute
-                    }
-                } catch (SmartFrogResolutionException e) {
-                    return false;  // there is a new sf attribute
-                } catch (RemoteException e) {
-                    sfAbandonUpdate();
-                    throw new SmartFrogUpdateException("remote error during update", e);
-                }
-            }
-        }
+        super.sfUpdateWith(newCxt);
 
-        // if they are, then make sure that all sf attributes in the current comopnent are in the
-        // new context
-        for (Iterator  i = sfContext.sfAttributes(); i.hasNext(); ) {
-            String key = i.next().toString();
-            if (key.startsWith("sf")) {
-                newContext.put(key, sfContext.get(key));
-            }
-        }
-
-        // check children if they require termination, or will reject completely!
+         // check children if they require termination, or will reject completely!
         for (Iterator i = newContext.sfAttributes(); i.hasNext(); ) {
             // it it is a non-lazy CD - it will be a child, so
             //    if it exists already, recurse (if false - return false) and place name in the to update vector
@@ -910,7 +883,7 @@ public class CompoundImpl extends PrimImpl implements Compound {
      * @throws org.smartfrog.sfcore.common.SmartFrogException - failure, to be treated like a normal lifecycle error, by default with termination
      */
     public synchronized void sfUpdate() throws RemoteException, SmartFrogException {
-        if (updateAbandoned) throw new SmartFrogUpdateException("updfate already abandoned");
+        super.sfUpdate();
 
         // detach and terminate all children  which must disappear
         for (Enumeration e = childrenToTerminate.elements(); e.hasMoreElements(); ) {
@@ -953,7 +926,7 @@ public class CompoundImpl extends PrimImpl implements Compound {
      */
 
     public synchronized void sfUpdateDeploy() throws RemoteException, SmartFrogException {
-        if (updateAbandoned) throw new SmartFrogUpdateException("update already abandoned");
+        super.sfUpdateDeploy();
 
         // sfUpdateDeploy() all previously existing children, sfDeploy() new ones
         for (Enumeration e = sfChildren.elements(); e.hasMoreElements(); ) {
@@ -975,7 +948,7 @@ public class CompoundImpl extends PrimImpl implements Compound {
      * @throws org.smartfrog.sfcore.common.SmartFrogException
      */
     public synchronized void sfUpdateStart() throws RemoteException, SmartFrogException {
-        if (updateAbandoned) throw new SmartFrogUpdateException("update already abandoned");
+        super.sfUpdateStart();
 
         // sfUpdateStart() all previously existing children, sfStart() new ones
         for (Enumeration e = sfChildren.elements(); e.hasMoreElements(); ) {

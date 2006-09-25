@@ -31,3 +31,7 @@ Compound extends Prim {
   sfClass "org.smartfrog.sfcore.compound.CompoundImpl";
   //sfSyncTerminate false;
 }
+
+UpdatableCompound extends Compound {
+     sfUpdatable true;
+}
