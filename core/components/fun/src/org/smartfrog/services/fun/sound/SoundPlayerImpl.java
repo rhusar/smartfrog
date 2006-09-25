@@ -223,13 +223,10 @@ public class SoundPlayerImpl extends FileUsingComponentImpl
             //forget about ourselves
             finished = true;
             thread = null;
-            boolean success = playbackException == null;
-            String termType = success ? TerminationRecord.NORMAL
-                    : TerminationRecord.ABNORMAL;
             ComponentHelper componentHelper = new ComponentHelper(owner);
-            componentHelper.sfSelfDetachAndOrTerminate(termType,
+            componentHelper.sfSelfDetachAndOrTerminate(null,
                     "Playback",
-                    owner.sfCompleteNameSafe(),
+                    null,
                     playbackException);
         }
 
