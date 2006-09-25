@@ -52,11 +52,23 @@ TestCompound extends ActionCompound {
     undeployAfter extends Integer {
       description "time in milliseconds to undeploy the action and assertions; use -1 for no limit";
     }
+    exitType extends OptionalString {
+      description "string which must be found in the termination errortype attribute using a case sensitive match";
+    }
+    exitText extends OptionalString {
+      description "string which must be found in the TerminationRecord.description attribute using a case sensitive match";
+    }
     startupTimeout extends Integer {
       description "time in milliseconds to trigger an exception if the component is not started; use -1 for no limit";
     }
     expectTerminate extends Boolean {
-      description "is the action component expected to terminate itself?"
+      description "is the action component expected to terminate itself?";
+    }
+    statusType extends OptionalString {
+      description "string which must be found in the termination errortype attribute using a case sensitive match";
+    }
+    statusText extends OptionalString {
+      description "string which must be found in the TerminationRecord.description attribute using a case sensitive match";
     }
     assertions extends OptionalCD {
       description ##A component that is deployed after the action component is successfully deployed,
@@ -74,16 +86,16 @@ TestCompound extends ActionCompound {
         the action will always have been terminated (cleanly or not) by the time this component is deployed.
         #;
     }
-    teardownTimeout extends Integer {
+    teardownTimeout extends OptionalInteger {
       description ##
         time in milliseconds to complain if the undeploy of the action component
         or the execution of the teardown component took too long; use -1 for no limit
         #;
     }
-    forcePing extends boolean {
+    forcePing extends Boolean {
       description "should we force a set of pings?";
     }
-    pingInterval extends Integer {
+    pingInterval extends OptionalInteger {
       description "time in milliseconds between forced pings";
     }
 
@@ -99,7 +111,7 @@ TestCompound extends ActionCompound {
   //dont expect termination
   expectTerminate false;
 
-  errorType "normal";
+  statusType "normal";
 
   forcePing false;
 }
@@ -116,22 +128,17 @@ expectDeploy extends TestCompound {
  */
 expectTerminate extends TestCompound {
   expectTerminate true;
-  errorType "normal";
+  exitType "normal";
 }
 
 /**
  * an abstract component to represent failures
  */
-FailureCompound extends TestCompound {
+FailingTestCompound extends TestCompound {
   FailureCompoundSchema extends Schema {
-    errorType extends Integer {
-      description "string which must be found in the termination errortype attribute using a case sensitive match";
-    }
-    description extends OptionalString{
-      description "string which must be found in the TerminationRecord.description attribute using a case sensitive match";
-    }
 
-    exceptions extends OptionalVector{
+
+    exceptions extends OptionalVector {
       description ##vector of tuples containing classname and error text substrings to match on,
       all down the nested exception chain. e.g.
       [["SmartFrogResolutionException","unresolved reference"]];
@@ -141,9 +148,10 @@ FailureCompound extends TestCompound {
       #
       ;
     }
+  }
 
   expectTerminate true;
-  errorType "abnormal";
+  exitType "abnormal";
 
 
 }
@@ -152,7 +160,7 @@ FailureCompound extends TestCompound {
 /**
  * This component expects failure on deployment
  */
-expectDeployFailure extends FailureCompound {
+expectDeployFailure extends FailingTestCompound {
 
 }
 
@@ -163,7 +171,7 @@ expectDeployFailure extends FailureCompound {
  * The component will run through a set of sfPings() to force this earlier than normal,
  * if forcePing==true
  */
-expectLivenessFailure extends FailureCompound {
+expectLivenessFailure extends FailingTestCompound {
 
   forcePing true;
   pingInterval 0;

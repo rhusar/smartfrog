@@ -90,8 +90,17 @@ public interface TestCompound extends Remote {
      */
     String ATTR_TEARDOWN_TIMEOUT = "teardownTimeout";
 
-    /*
+    /**
+     * string which must be found in the termination errortype attribute using a case sensitive match.
+     * {@value}
+     */
+    String ATTR_EXIT_TYPE = "exitType";
 
-    */
+    /**
+     * string which must be found in the TerminationRecord.description attribute using a case sensitive match.
+     * {@value}
+     */
+    String ATTR_EXIT_TEXT = "exitText";
+
 
 }
