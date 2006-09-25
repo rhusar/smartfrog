@@ -93,7 +93,7 @@ public class ComponentHelper {
     public Reference completeNameOrNull() {
         try {
             return owner.sfCompleteName();
-        } catch (Throwable thr) {
+        } catch (Throwable ignored) {
             return null;
         }
     }
@@ -131,92 +131,127 @@ public class ComponentHelper {
         }
     }
 
-    /**         s
+    /**
+     * Resolve an attribute without complaining if something went wrong
+     * even a remote exception.
+     * @param attribute attribute name
+     * @param defval default value
+     * @return the attribute value, or, failing that, the default value
+     */
+    private boolean resolveQuietly(String attribute,boolean defval) {
+        try {
+            return owner.sfResolve(
+                    attribute,
+                    defval,
+                    false);
+        } catch (RemoteException ex) {
+        } catch (SmartFrogResolutionException ex) {
+        }
+        return false;
+    }
+
+    /**
      * Method that can be invoked in any PrimImpl to trigger the detach and/or termination of a component
      * according to the values of the boolean attributes 'sfShouldDetach', 'sfShouldTerminate'
      * and 'sfShouldTerminateQuietly'
      * Example: new ComponentHelper(this).sfSelfDetachAndOrTerminate("normal","Copy ",this.sfCompleteNameSafe(),null);
+     * Termination is initiated in a new thread.
      * @param terminationType - termination type, system recognized types are "normal", "abnormal" and "externalReferenceDead".
-     * @param terminationMessage - description of termination
-     * @param refId Reference - id of terminating component
+     *  If this is null, then normal/abnormal is chosen based on whether thrown is null or not
+     * @param terminationMessage - description of termination. Can be null
+     * @param refId Reference - id of terminating component. If null, triggers a call to sfCompleteNameSafe.
      * @param thrown Thrown fault
+     * @see TerminationRecord
      */
     public void sfSelfDetachAndOrTerminate(String terminationType,
                                            String terminationMessage,
-                                           Reference refId, Throwable thrown) {
-        /** Flag indicating detachment. */
-        boolean shouldDetach = false;
-        /** Flag indicating if the sfShouldDetach attribute was read. */
-        boolean shouldDetachRead = false;
-        /**
-         * flag indicating termination.
-         * whenever execution ends
-         */
-        boolean shouldTerminate = true;
-        /** Flag indicating if the sfShouldTerminate attribute was read. */
-        boolean shouldTerminateRead = false;
+                                           Reference refId,
+                                           Throwable thrown) {
+        boolean shouldTerminate = resolveQuietly(
+                ShouldDetachOrTerminate.ATTR_SHOULD_TERMINATE,
+                false);
 
-        /**
-         * flag indicating termination.
-         * whenever execution ends
-         */
-        boolean shouldTerminateQuietly = false;
-        /** Flag indicating if the sfShouldTerminate attribute was read. */
-        boolean shouldTerminateQuietlyRead = false;
+        boolean shouldTerminateQuietly = resolveQuietly(
+                ShouldDetachOrTerminate.ATTR_SHOULD_TERMINATE_QUIETLY,
+                false);
 
-        try {
-            shouldTerminate = owner.sfResolve(
-                    ShouldDetachOrTerminate.ATTR_SHOULD_TERMINATE, shouldTerminate, true);
-            shouldTerminateRead = true;
-        } catch (RemoteException ex) {
-        } catch (SmartFrogResolutionException ex) {
+        boolean shouldDetach = resolveQuietly(
+                ShouldDetachOrTerminate.ATTR_SHOULD_DETACH,
+                false);
+
+        //should we terminate (either noisily or not)
+        boolean terminateRequired = shouldTerminate || shouldTerminateQuietly;
+
+        if (!terminateRequired && !shouldDetach) {
+            //bail out of no work is needed
+            return;
         }
-
-        try {
-            shouldTerminateQuietly = owner.sfResolve(ShouldDetachOrTerminate.ATTR_SHOULD_TERMINATE_QUIETLY, shouldTerminateQuietly, true);
-            shouldTerminateQuietlyRead = true;
-        } catch (RemoteException ex) {
-        } catch (SmartFrogResolutionException ex) {
+        //create a termination record if we are exitiing
+        TerminationRecord record = null;
+        if (terminateRequired) {
+            //set up a termination record
+            if (terminationType == null) {
+                //select a default termination type
+                terminationType = thrown == null ?
+                        TerminationRecord.NORMAL : TerminationRecord.ABNORMAL;
+            }
+            if (terminationMessage == null) {
+                //fill in a default termination message
+                terminationMessage = "Self Detach and\\or Termination: ";
+            }
+            if (refId == null) {
+                refId = completeNameSafe();
+            }
+            //create the new record.
+            record = new TerminationRecord(terminationType,
+                    terminationMessage,
+                    refId,
+                    thrown);
         }
-
-        try {
-            shouldDetach = owner.sfResolve(ShouldDetachOrTerminate.ATTR_SHOULD_DETACH, shouldDetach, true);
-            shouldDetachRead = true;
-        } catch (RemoteException ex) {
-        } catch (SmartFrogResolutionException ex) {
-        }
-
-        if (shouldTerminateRead) {
-            if (terminationMessage==null) {
-                terminationMessage = "Self Detatch and\\or Termination: ";
-            }
-
-            TerminationRecord termR = new TerminationRecord(terminationType,
-                                            terminationMessage,
-                                            completeNameSafe(),
-                                            thrown);
-            TerminatorThread terminator = new TerminatorThread(owner, termR);
-
-            if (shouldDetachRead&&shouldDetach) {
-                terminator.detach();
-            }
-
-            if ((shouldTerminateQuietlyRead)&&(!shouldTerminateQuietly)) {
-                terminator.quietly();
-            }
-
-            if ((shouldTerminateRead)&&(!shouldTerminate)) {
-                terminator.dontTerminate();
-            }
-
-            terminator.start();
-        } else {
-            if (shouldDetachRead) {
-                new TerminatorThread(owner, null).dontTerminate().detach().start();
-            }
-        }
+        targetForTermination(record, !terminateRequired, shouldDetach, shouldTerminateQuietly);
     }
 
+    /**
+     * This schedules a component for termination, but chooses the notification/detach attributes off
+     * the parent, namely {@link ShouldDetachOrTerminate.ATTR_SHOULD_TERMINATE_QUIETLY} and
+     * {@link ShouldDetachOrTerminate.ATTR_SHOULD_DETACH}.
+     * @param record record to send with the termination.
+     */
+    public void targetForWorkflowTermination(TerminationRecord record) {
+        boolean shouldTerminateQuietly = resolveQuietly(
+                ShouldDetachOrTerminate.ATTR_SHOULD_TERMINATE_QUIETLY,
+                false);
+
+        boolean shouldDetach = resolveQuietly(
+                ShouldDetachOrTerminate.ATTR_SHOULD_DETACH,
+                false);
+        targetForTermination(record,false,shouldDetach,shouldTerminateQuietly);
+    }
+
+    /**
+     * mark this task for termination by spawning a separate thread to do it.
+     * as {@link Prim#sfTerminate} and {@link Prim#sfStart()} are synchronized,
+     * the thread blocks until sfStart has finished.
+     *
+     * @param record  record to terminate with
+     * @param detach  detach first?
+     * @param quietly terminate quietly?
+     */
+    public void targetForTermination(TerminationRecord record, boolean dontTerminate,
+                                     boolean detach, boolean quietly) {
+
+        TerminatorThread terminator = new TerminatorThread(owner, record);
+        if (detach) {
+            terminator.detach();
+        }
+        if (quietly) {
+            terminator.quietly();
+        }
+        if (dontTerminate) {
+            terminator.dontTerminate();
+        }
+        terminator.start();
+    }
 
     /**
      * mark this task for termination by spawning a separate thread to do it.
@@ -227,15 +262,7 @@ public class ComponentHelper {
      * @param quietly terminate quietly?
      */
     public void targetForTermination(TerminationRecord record, boolean detach, boolean quietly) {
-
-        TerminatorThread terminator = new TerminatorThread(owner, record);
-        if(detach) {
-            terminator.detach();
-        }
-        if(quietly) {
-            terminator.quietly();
-        }
-        terminator.start();
+        targetForTermination(record,false,detach,quietly);
     }
 
     /**
@@ -248,7 +275,7 @@ public class ComponentHelper {
 
         Reference name= completeNameOrNull();
         TerminationRecord record = TerminationRecord.normal(name);
-        targetForTermination(record, false,false);
+        targetForTermination(record,false, false,false);
     }
 
     /**
@@ -279,22 +306,13 @@ public class ComponentHelper {
      * @throws SmartFrogException if the resource is not on the classpath
      * @throws RemoteException in case of Remote/network error
      */
-    public String loadResourceToString(String resourcename, Charset encoding) throws SmartFrogException, RemoteException {
+    public String loadResourceToString(String resourcename, Charset encoding) 
+            throws SmartFrogException, RemoteException {
         InputStream in= loadResource(resourcename);
-        InputStreamReader isr = null;
         try {
-            isr=new InputStreamReader(in,encoding);
-            StringBuffer buffer=new StringBuffer();
-            int ch;
-            while((ch=isr.read())>=0) {
-                buffer.append((char)ch);
-            }
-            return buffer.toString();
-        } catch(IOException ioe) {
+            return FileSystem.readInputStream(in, encoding).toString();
+        } catch (IOException ioe) {
             throw SmartFrogException.forward("when reading "+resourcename,ioe);
-        } finally{
-            FileSystem.close(isr);
-            FileSystem.close(in);
         }
     }
 

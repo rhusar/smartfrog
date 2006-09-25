@@ -22,8 +22,9 @@ For more information: www.smartfrog.org
 Retry extends ActionCompound {
     sfClass "org.smartfrog.sfcore.workflow.combinators.Retry";
     retrySchema extends Schema {
-    //retry interval
-        retry extends Integer;
+        retry extends Integer {
+          description "retry interval in milliseconds";
+        }
     }
     // action 
     retry 1;

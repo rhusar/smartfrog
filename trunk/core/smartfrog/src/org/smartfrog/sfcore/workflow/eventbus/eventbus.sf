@@ -58,6 +58,9 @@ EventCompound extends Compound {
  */
 ActionCompound extends EventCompound {
   actionCompoundSchema extends Schema {
-    action extends CD;
+    action extends CD {
+      description "the component to deploy as part of the workflow";
+    }
   }
 }
+

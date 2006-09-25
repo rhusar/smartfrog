@@ -138,7 +138,7 @@ public class Delay
 
     /**
      * Terminates the component. It is invoked by sub-components at
-     * termination. If normal termiantion, Delay behaviour is to terminate
+     * termination. If normal termination, Delay behaviour is to terminate
      * normally, otherwise abnormally.
      *
      * @param status termination status of sender
