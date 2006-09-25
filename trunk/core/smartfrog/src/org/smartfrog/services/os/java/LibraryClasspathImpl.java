@@ -30,7 +30,7 @@ import java.util.Vector;
 /**
  * Implement the classpath
  */
-public class LibraryClasspathImpl extends PrimImpl implements LibraryClasspath{
+public class LibraryClasspathImpl extends PrimImpl implements LibraryClasspath {
     private ComponentDescription repository;
 
     private Vector libraries;

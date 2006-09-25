@@ -126,7 +126,7 @@ public class LoadPropertyFileImpl extends FileUsingComponentImpl implements Load
         sfReplaceAttribute(ATTR_PROPERTIES,propertyList);
         helper.sfSelfDetachAndOrTerminate(TerminationRecord.NORMAL,
                 "PropertyFile",
-                sfCompleteNameSafe(),
+                null,
                 null);
 
     }

@@ -36,10 +36,13 @@ import java.io.Reader;
 import java.io.File;
 import java.rmi.RemoteException;
 import java.nio.channels.FileChannel;
+import java.nio.charset.Charset;
 import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.BufferedReader;
 import java.io.FileOutputStream;
+import java.io.InputStreamReader;
+import java.io.BufferedInputStream;
 
 /**
  * Filesystem operations
@@ -244,11 +247,11 @@ public class FileSystem {
      * @throws RemoteException In case of network/rmi error
      */
     public static File lookupAbsoluteFile(Prim component,
-                                            Reference attribute,
-                                            File defval,
-                                            File baseDir,
-                                            boolean mandatory,
-                                            PlatformHelper platform)
+                                          Reference attribute,
+                                          File defval,
+                                          File baseDir,
+                                          boolean mandatory,
+                                          PlatformHelper platform)
         throws SmartFrogResolutionException, RemoteException {
         String resolved=lookupAbsolutePath(component,
                                 attribute,
@@ -395,12 +398,28 @@ public class FileSystem {
     public static File resolveAbsolutePath(Prim component)
             throws SmartFrogResolutionException,
             RemoteException {
-        String absolutePath =
-                component.sfResolve(FileUsingComponent.ATTR_ABSOLUTE_PATH,
-                        "",
-                        true);
-        File file = new File(absolutePath);
-        return file;
+        return resolveAbsolutePath(component,  true);
+    }
+
+    /**
+     * Look up the absolutePath attribute of any component, then turn it into a
+     * file.
+     *
+     * @param component component to resolve against
+     * @param mandatory is the path mandatory
+     * @return file representing the path, or null if there was no attribute and the path is not
+     * mandatory
+     * @throws SmartFrogResolutionException If the attribute is not defined.
+     * @throws RemoteException In case of network/rmi error
+     */
+    private static File resolveAbsolutePath(Prim component,  boolean mandatory)
+            throws SmartFrogResolutionException,
+            RemoteException {
+        return lookupAbsoluteFile(component, FileUsingComponent.ATTR_ABSOLUTE_PATH,
+                null,
+                null,
+                mandatory,
+                null);
     }
 
     /**
@@ -558,7 +577,7 @@ public class FileSystem {
         FileOutputStream outstream=new FileOutputStream(dest);
         return fCopy(instream,outstream);
     }
-    
+
     /**
      * Copies an <code>InputStream</code> to an <code>OutputStream</ code> using
      * a global internal buffer for performance. Compared to {@link
@@ -645,6 +664,51 @@ public class FileSystem {
             close(reader);
         }
     }
+
+    /**
+     * Read a file in.
+     * @param file file, must not be null
+     * @param encoding Encoding, e,g. UTF-8
+     * @return a string buffer containing the read in file.
+     * @throws IOException if anything goes wrong.
+     */
+    public static StringBuffer readFile(File file, Charset encoding) throws IOException {
+        StringBuffer buf = new StringBuffer();
+        if (!file.exists() || !file.canRead()) {
+            throw new IOException(ERROR_INACCESSIBLE_FILE + file);
+        }
+        FileInputStream fileIn = new FileInputStream(file);
+        BufferedInputStream bis=new BufferedInputStream(fileIn);
+        return readInputStream(bis, encoding);
+
+    }
+
+    /**
+     * Read an input stream; turn it into a buffer.
+     * After reading everything in, the input stream is closed.
+     * @param in input stream
+     * @param encoding encoding to use
+     * @return the input stream completely loaded into memory
+     * @throws IOException if something went wrong.
+     */
+    public static StringBuffer readInputStream(InputStream in,Charset encoding) throws IOException {
+        InputStreamReader isr = null;
+        try {
+            isr = new InputStreamReader(in, encoding);
+            StringBuffer buffer = new StringBuffer();
+            int ch;
+            while ((ch = isr.read()) >= 0) {
+                buffer.append((char) ch);
+            }
+            return buffer;
+        } finally {
+            FileSystem.close(isr);
+            FileSystem.close(in);
+        }
+    }
+
+
+
 
     /**
      * Reads last (numLines) lines from end of a file.

@@ -154,9 +154,9 @@ public class SystemPropertiesImpl extends PrimImpl implements SystemProperties {
             //this is so that we have the list for termination
             loadProperties();
         }
-        new ComponentHelper(this).sfSelfDetachAndOrTerminate("normal",
+        new ComponentHelper(this).sfSelfDetachAndOrTerminate(null,
                 "SystemProperties",
-                this.sfCompleteNameSafe(),
+                null,
                 null);
 
     }

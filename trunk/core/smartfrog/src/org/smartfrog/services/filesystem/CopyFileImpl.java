@@ -146,10 +146,17 @@ public class CopyFileImpl extends CompoundImpl implements CopyFile, Compound {
      */
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
-        if (!copyOnDeploy) {
-            copyFile();
+        Throwable thrown = null;
+        try {
+            if (!copyOnDeploy) {
+                copyFile();
+            }
+        } catch (SmartFrogException e) {
+            thrown=e;
+        } catch (RemoteException e) {
+            thrown = e;
         }
-        new ComponentHelper(this).sfSelfDetachAndOrTerminate(TerminationRecord.NORMAL, "Copy",sfCompleteNameSafe(),null);
+        new ComponentHelper(this).sfSelfDetachAndOrTerminate(null, "Copy",null,thrown);
     }
 
 }

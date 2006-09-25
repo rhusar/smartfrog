@@ -89,8 +89,10 @@ public class DownloadImpl extends FileUsingComponentImpl implements Download {
                 sfLog().info(" Donwload complete. File in: "+ file);
             }
 
-            new ComponentHelper(this).sfSelfDetachAndOrTerminate("normal","Donwload completed. File in: "+ file,this.sfCompleteNameSafe(),null);
-
+            new ComponentHelper(this).sfSelfDetachAndOrTerminate(null,
+                    "Download completed. File in: "+ file,
+                    null,
+                    null);
 
         } catch (Exception e) {
             String errStr = ERROR_IN_DOWNLOAD +

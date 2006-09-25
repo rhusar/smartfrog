@@ -98,7 +98,7 @@ public class MkdirImpl extends FileUsingComponentImpl implements Mkdir {
             throw new SmartFrogDeploymentException("Failed to create directory " +
                     directory.getAbsolutePath());
         }
-        new ComponentHelper(this).sfSelfDetachAndOrTerminate("normal","Mkdir "+getFile().getAbsolutePath(),this.sfCompleteNameSafe(),null);
+        new ComponentHelper(this).sfSelfDetachAndOrTerminate(null,"Mkdir "+getFile().getAbsolutePath(),this.sfCompleteNameSafe(),null);
     }
 
 
