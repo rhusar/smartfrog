@@ -1459,8 +1459,14 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
      * @throws org.smartfrog.sfcore.common.SmartFrogException - not OK to update
      */
     public synchronized void sfPrepareUpdate() throws RemoteException, SmartFrogException {
-        // iterate over all children, preparing them for update.
-        // if an exception is returned, trigger an abandon downwards and retun an exception
+        Reference componentId = sfCompleteName();
+         if (sfIsTerminated) {
+            throw new SmartFrogUpdateException(MessageUtil.formatMessage(MSG_DEPLOY_COMP_TERMINATED, componentId.toString()));
+        }
+        boolean mayUpdate = sfResolve("sfUpdatable", false, false);
+        if (!mayUpdate) {
+            throw new SmartFrogUpdateException("Component not updatable - set sfUpdatable to true: " + componentId.toString());
+        }
         updateAbandoned = false;
     }
 
@@ -1474,7 +1480,11 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
      * @throws org.smartfrog.sfcore.common.SmartFrogException - failure, not OK to update
      */
     public synchronized boolean sfUpdateWith(Context newCxt) throws RemoteException, SmartFrogException {
-        if (updateAbandoned) throw new SmartFrogUpdateException("update already abandoned");
+        Reference componentId = sfCompleteName();
+         if (sfIsTerminated) {
+            throw new SmartFrogUpdateException(MessageUtil.formatMessage(MSG_DEPLOY_COMP_TERMINATED, componentId.toString()));
+        }
+        if (updateAbandoned) throw new SmartFrogUpdateException("update already abandoned " + componentId.toString());
         // validate the description, return false if it requires termination, exception to fail
         // cache context
         // check children that exist already
@@ -1520,7 +1530,11 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
      * @throws org.smartfrog.sfcore.common.SmartFrogException - failure, to be treated like a normal lifecycle error, by default with termination
      */
     public synchronized void sfUpdate() throws RemoteException, SmartFrogException {
-        if (updateAbandoned) throw new SmartFrogUpdateException("update already abandoned");
+        Reference componentId = sfCompleteName();
+         if (sfIsTerminated) {
+            throw new SmartFrogUpdateException(MessageUtil.formatMessage(MSG_DEPLOY_COMP_TERMINATED, componentId.toString()));
+        }
+        if (updateAbandoned) throw new SmartFrogUpdateException("update already abandoned " + componentId.toString());
         // update context
         sfContext = newContext;
         // failure considered terminal
@@ -1535,7 +1549,11 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
      */
 
     public synchronized void sfUpdateDeploy() throws RemoteException, SmartFrogException {
-        if (updateAbandoned) throw new SmartFrogUpdateException("update already abandoned");
+        Reference componentId = sfCompleteName();
+         if (sfIsTerminated) {
+            throw new SmartFrogUpdateException(MessageUtil.formatMessage(MSG_DEPLOY_COMP_TERMINATED, componentId.toString()));
+        }
+        if (updateAbandoned) throw new SmartFrogUpdateException("update already abandoned " + componentId.toString());
     }
 
     /**
@@ -1545,8 +1563,11 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
      * @throws org.smartfrog.sfcore.common.SmartFrogException
      */
     public synchronized void sfUpdateStart() throws RemoteException, SmartFrogException {
-        if (updateAbandoned) throw new SmartFrogUpdateException("update already abandoned");
-    }
+        Reference componentId = sfCompleteName();
+         if (sfIsTerminated) {
+            throw new SmartFrogUpdateException(MessageUtil.formatMessage(MSG_DEPLOY_COMP_TERMINATED, componentId.toString()));
+        }
+        if (updateAbandoned) throw new SmartFrogUpdateException("update already abandoned " + componentId.toString());    }
 
     /**
      * Can occur after prepare and check, but not afterwards to roll back from actual update process.

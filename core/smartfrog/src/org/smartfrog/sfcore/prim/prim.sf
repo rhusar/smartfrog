@@ -64,3 +64,6 @@ Prim extends NULL {
 //  sfLog "name"; //optional attribute to define a log name for a component.
 }
 
+UpdatablePrim extends Prim {
+     sfUpdatable true;
+}
