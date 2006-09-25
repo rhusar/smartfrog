@@ -233,7 +233,7 @@ public class FileImpl extends FileUsingComponentImpl implements FileIntf {
         if (testOnStartup) {
             testFileState();
         }
-        new ComponentHelper(this).sfSelfDetachAndOrTerminate("normal","File "+getFile().getAbsolutePath(),this.sfCompleteNameSafe(),null);
+        new ComponentHelper(this).sfSelfDetachAndOrTerminate(null,"File "+getFile().getAbsolutePath(),this.sfCompleteNameSafe(),null);
     }
 
     /**

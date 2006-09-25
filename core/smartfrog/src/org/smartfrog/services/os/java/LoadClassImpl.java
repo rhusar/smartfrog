@@ -112,6 +112,10 @@ public class LoadClassImpl extends PrimImpl implements LoadClass {
         if(!retain) {
             cleanup();
         }
+        new ComponentHelper(this).sfSelfDetachAndOrTerminate(null,
+                null,
+                null,
+                null);
     }
 
     /**

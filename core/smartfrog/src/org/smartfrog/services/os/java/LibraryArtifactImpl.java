@@ -188,7 +188,7 @@ public class LibraryArtifactImpl extends FileUsingCompoundImpl implements Librar
         String message = "LibraryArtifactImpl completed. File : "+ getFile();
         if (sfLog().isDebugEnabled()) sfLog().debug(message);
 
-        new ComponentHelper(this).sfSelfDetachAndOrTerminate("normal",message,this.sfCompleteNameSafe(),null);
+        new ComponentHelper(this).sfSelfDetachAndOrTerminate(null,message,null,null);
     }
 
     /**
