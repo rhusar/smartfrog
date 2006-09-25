@@ -64,7 +64,7 @@ import org.smartfrog.sfcore.utils.ComponentHelper;
  * </p>
  *
  */
-public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim, Update, MessageKeys {
+public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim, MessageKeys {
 
     /** Component Log. This log is used to from any component.
      *  Initialized to log into the core log: SF_CORE_LOG
