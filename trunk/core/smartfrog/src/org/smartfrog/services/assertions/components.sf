@@ -29,6 +29,7 @@ For more information: www.smartfrog.org
   */
  #include "/org/smartfrog/components.sf"
  #include "/org/smartfrog/predicates.sf"
+ #include "/org/smartfrog/services/assertions/testcomponents.sf"
 
 
 /**
@@ -107,7 +108,7 @@ Assert extends Prim {
 Fail extends Prim {
   sfClass "org.smartfrog.services.assertions.FailComponent";
   failSchema extends Schema {
-    //exit meddage
+    //exit message
     message extends String;
     //should the failure be a normal or abnormal termination
     normal extends Boolean;

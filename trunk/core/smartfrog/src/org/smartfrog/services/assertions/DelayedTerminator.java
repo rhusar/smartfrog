@@ -19,11 +19,11 @@
  */
 package org.smartfrog.services.assertions;
 
+import org.smartfrog.sfcore.logging.LogSF;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.TerminationRecord;
-import org.smartfrog.sfcore.logging.LogSF;
-import org.smartfrog.sfcore.utils.ComponentHelper;
 import org.smartfrog.sfcore.reference.Reference;
+import org.smartfrog.sfcore.utils.ComponentHelper;
 
 import java.lang.ref.WeakReference;
 import java.rmi.RemoteException;
@@ -43,6 +43,7 @@ public class DelayedTerminator implements Runnable {
     private LogSF log;
     private String description;
     private boolean normalTermination;
+    private boolean forcedShutdown;
 
 
     /**
@@ -94,6 +95,19 @@ public class DelayedTerminator implements Runnable {
         }
     }
 
+
+    /**
+     * Start the new thread
+     */
+    public synchronized void start() {
+        if(self!=null) {
+            if (self != null) {
+                self = new Thread(this);
+                self.start();
+            }
+        }
+    }
+
     /**
      * this is the thread that runs in the background
      */
@@ -118,9 +132,12 @@ public class DelayedTerminator implements Runnable {
             if (target == null) {
                 log.debug("Target no longer exists for " + description);
             } else {
-                TerminationRecord record = createTerminationRecord(target);
                 try {
-                    target.sfTerminate(record);
+                    if (target.sfIsStarted()) {
+                        forcedShutdown = true;
+                        TerminationRecord record = createTerminationRecord(target);
+                        target.sfTerminate(record);
+                    }
                 } catch (RemoteException e) {
                     terminationFault = e;
                 }
@@ -146,5 +163,13 @@ public class DelayedTerminator implements Runnable {
 
     private Prim getTarget() {
         return (Prim) primref.get();
+    }
+
+    /**
+     * Flag set to true if we forced system shutdown
+     * @return
+     */
+    public synchronized boolean isForcedShutdown() {
+        return forcedShutdown;
     }
 }

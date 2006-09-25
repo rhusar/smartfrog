@@ -17,14 +17,15 @@ package org.smartfrog.services.assertions;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLivenessException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
-import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.prim.Prim;
+import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.reference.Reference;
+import org.smartfrog.sfcore.utils.ComponentHelper;
 
+import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.rmi.RemoteException;
-import java.io.File;
 
 
 /**
@@ -297,5 +298,7 @@ public class AssertComponent extends PrimImpl implements Assert {
         if(checkOnStartup) {
             checkAssertions();
         }
+        //Workflow integration
+        new ComponentHelper(this).sfSelfDetachAndOrTerminate(null, "Assert", null, null);
     }
 }

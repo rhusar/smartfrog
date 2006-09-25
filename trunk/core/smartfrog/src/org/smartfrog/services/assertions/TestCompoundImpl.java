@@ -19,15 +19,16 @@
  */
 package org.smartfrog.services.assertions;
 
-import org.smartfrog.sfcore.prim.PrimImpl;
-import org.smartfrog.sfcore.prim.Prim;
-import org.smartfrog.sfcore.workflow.eventbus.EventCompoundImpl;
-import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
+import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.common.SmartFrogLivenessException;
 import org.smartfrog.sfcore.logging.LogSF;
+import org.smartfrog.sfcore.prim.Prim;
+import org.smartfrog.sfcore.prim.TerminationRecord;
+import org.smartfrog.sfcore.workflow.eventbus.EventCompoundImpl;
+import org.smartfrog.sfcore.utils.ComponentHelper;
 
 import java.rmi.RemoteException;
-import java.lang.ref.WeakReference;
 
 /**
  * created 22-Sep-2006 16:43:35
@@ -39,9 +40,20 @@ public class TestCompoundImpl extends EventCompoundImpl implements TestCompound 
     protected Prim assertions;
 
     protected static final String ACTION_RUNNING = "_actionRunning";
-    private long undeployAfter;
-    private boolean expectTerminate;
-    private DelayedTerminator actionTerminator;
+    protected long undeployAfter;
+    protected boolean expectTerminate;
+    protected DelayedTerminator actionTerminator;
+    protected Prim actionPrim;
+    protected boolean terminating=false;
+    protected String exitType;
+
+    protected String exitText;
+    /**
+     * The message of a forced shutdown. This is important, as we look for
+     * it when the component is terminated, and can use its presence to infer
+     * that the helper thread did the work.
+     */
+    public static final String FORCED_TERMINATION = "timed shutdown of test components";
 
     public TestCompoundImpl() throws RemoteException {
     }
@@ -60,24 +72,105 @@ public class TestCompoundImpl extends EventCompoundImpl implements TestCompound 
         super.sfDeploy();
         checkActionDefined();
         name = sfCompleteNameSafe();
-        teardown=sfResolve(ATTR_TEARDOWN,teardown,false);
-        if(teardown!=null) {
-            throw new SmartFrogException("Not yet supported "+ATTR_TEARDOWN);
-        }
         assertions = sfResolve(ATTR_ASSERTIONS, assertions, false);
         if (assertions != null) {
             throw new SmartFrogException("Not yet supported " + ATTR_ASSERTIONS);
         }
+        teardown = sfResolve(ATTR_TEARDOWN, teardown, false);
+        if (teardown != null) {
+            throw new SmartFrogException("Not yet supported " + ATTR_TEARDOWN);
+        }
         undeployAfter = sfResolve(ATTR_UNDEPLOY_AFTER, 0,true);
         expectTerminate = sfResolve(ATTR_EXPECT_TERMINATE,false,true);
+        exitType = sfResolve(ATTR_EXIT_TYPE,exitType,true);
+        exitText = sfResolve(ATTR_EXIT_TEXT, exitText, false);
     }
 
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
         LogSF logSF = sfLog();
-        //TODO: deploy the action under a terminator, then the assertions, finally teardown afterwards.
-        Prim child =deployAction();
-        actionTerminator = new DelayedTerminator(child, undeployAfter, sfLog(), null, !expectTerminate);
+        //deploy the action under a terminator, then the assertions, finally teardown afterwards.
+        actionPrim = deployAction();
+        actionTerminator = new DelayedTerminator(actionPrim, undeployAfter, logSF,
+                FORCED_TERMINATION,
+                !expectTerminate);
+        actionTerminator.start();
+        //Workflow integration
+
+    }
+
+    /**
+     * Ping handler. This would be the place to provide feedback w.r.t the result of the deployed action.
+     * @param source
+     * @throws SmartFrogLivenessException
+     * @throws RemoteException
+     */
+    public void sfPing(Object source) throws SmartFrogLivenessException, RemoteException {
+        super.sfPing(source);
+    }
+
+    public synchronized void sfTerminateWith(TerminationRecord status) {
+        terminating=true;
+        super.sfTerminateWith(status);
+        if (actionTerminator!=null) {
+            //shut down the action terminator if we need to. We assume the superclass
+            //terminator is already terminating the children, so there is no need
+            //to tell the action terminator to do it.
+            try {
+                actionTerminator.shutdown(false);
+            } catch (RemoteException e) {
+                sfLog().error("When shutting down the action terminator",e);
+            }
+        }
+    }
+
+    /**
+     * Called when a child terminates, either normally or abnormally.
+     * @param status
+     * @param comp
+     */
+    public void sfTerminatedWith(TerminationRecord status, Prim comp) {
+
+        if (!terminating) {
+            super.sfTerminatedWith(status,comp);
+            return;
+        }
+        if (actionPrim == comp) {
+            if (actionTerminator.isForcedShutdown() && expectTerminate == false) {
+                //this is a forced shutdown, all is well
+                sfLog().info("Graceful shutdown of test components");
+            } else {
+                //not a forced shutdown, so why did it die?
+                boolean expected = false;
+                //act on whether or not a fault was expected.
+                if (status.errorType.indexOf(exitType) >= 0) {
+                    //we have a match
+                    sfLog().debug("Exit type is as expected");
+                    expected = true;
+                    if (exitText != null) {
+                        String description = status.description;
+                        if (description == null) {
+                            description = "";
+                        }
+                        if (description.indexOf(exitText) >= 0) {
+                            expected &= true;
+                        }
+                    }
+
+                }
+                if (!expected) {
+                    String errorText = "Expected action to terminate with the status " + exitType + "\n"
+                            + "and error text " + exitText + "\n"
+                            + "but got " + status;
+                    sfLog().error(errorText);
+                    status = TerminationRecord.abnormal(errorText, status.id);
+                }
+            }
+        }
+        //TODO: start teardown, etc.
+
+        //trigger workflow termination.
+        new ComponentHelper(this).targetForWorkflowTermination(status);
     }
 
     protected Prim deployAction() throws RemoteException, SmartFrogDeploymentException {
