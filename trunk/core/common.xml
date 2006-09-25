@@ -249,11 +249,18 @@
       <available file="${ant.home}/lib/junit-3.8.1.jar" />
     </condition>
 
-    <condition property="junit.jar" value="${user.home}/.ant/lib/junit-3.8.1.jar">
-      <available file="${user.home}/.ant/lib/junit-3.8.1.jar" />
-    </condition>
+   <condition property="junit.jar" value="${ant.home}/lib/junit-3.8.2.jar">
+     <available file="${ant.home}/lib/junit-3.8.2.jar"/>
+   </condition>
 
-    <echo >In project ${project.name}</echo>
+   <condition property="junit.jar" value="${user.home}/.ant/lib/junit-3.8.1.jar">
+     <available file="${user.home}/.ant/lib/junit-3.8.1.jar" />
+   </condition>
+   <condition property="junit.jar" value="${user.home}/.ant/lib/junit-3.8.2.jar">
+     <available file="${user.home}/.ant/lib/junit-3.8.2.jar"/>
+   </condition>
+
+   <echo >In project ${project.name}</echo>
     <echo level="verbose">system.tests.enabled=${system.tests.enabled}</echo>
     <echo level="verbose">unit.tests.enabled=${unit.tests.enabled}</echo>
 
