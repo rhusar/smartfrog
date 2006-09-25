@@ -188,9 +188,9 @@ public class AntImpl extends PrimImpl implements Prim, Ant, Runnable {
         //cleanup time
         ComponentHelper helper = new ComponentHelper(this);
         helper.sfSelfDetachAndOrTerminate(
-                caughtException==null?TerminationRecord.NORMAL : TerminationRecord.ABNORMAL,
+                null,
                 "end of ant tasks",
-                helper.completeNameSafe(),
+                null,
                 caughtException
         );
     }
