@@ -10,13 +10,13 @@ import java.rmi.Remote;
 public interface ShouldDetachOrTerminate extends Remote {
 
     /**
-     * Flag indicating that the component should terminate on startup.
+     * Flag indicating that the component should terminate after doing its work.
      * {@value}
      */
     public static final String ATTR_SHOULD_TERMINATE = "sfShouldTerminate";
 
     /**
-     * Flag to indicate the component should terminate quietly on startup.
+     * Flag to indicate the component should terminate quietly after doing its work.
      * {@value}
      */
     public static final String ATTR_SHOULD_TERMINATE_QUIETLY = "sfShouldTerminateQuietly";

@@ -100,10 +100,10 @@ public class TerminatorThread extends Thread {
      * @param compId component identifier
      */
     public TerminatorThread(Prim target, Throwable thrown, Reference compId) {
-        this.setName("TerminatorThread");
-        this.target = target;
-        this.record = TerminationRecord.abnormal(thrown.toString(), compId,thrown);
+        this(target,TerminationRecord.abnormal(thrown.toString(), compId, thrown));
     }
+
+
 
     /**
      * Utility method to stop the TerminatorThread object from 
