@@ -1,9 +1,0 @@
-
-UpdatablePrim extends Prim {
-    //sfClass "org.smartfrog.sfcore.updatable.UpdatablePrim";
-}
-
-
-UpdatableCompound extends Compound {
-    sfClass "org.smartfrog.sfcore.updatable.UpdatableCompound";
-}
