@@ -1470,7 +1470,7 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
         updateAbandoned = false;
     }
 
-    Context newContext;
+    protected Context newContext;
 
     /**
      * Validate whether the component (and its children) can be updated

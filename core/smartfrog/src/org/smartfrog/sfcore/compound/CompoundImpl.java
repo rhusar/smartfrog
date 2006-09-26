@@ -804,7 +804,6 @@ public class CompoundImpl extends PrimImpl implements Compound {
         }
     }
 
-    Context newContext;
     Vector childrenToTerminate;
     Vector childrenToUpdate;
     Vector childrenToCreate;
@@ -883,7 +882,11 @@ public class CompoundImpl extends PrimImpl implements Compound {
      * @throws org.smartfrog.sfcore.common.SmartFrogException - failure, to be treated like a normal lifecycle error, by default with termination
      */
     public synchronized void sfUpdate() throws RemoteException, SmartFrogException {
-        super.sfUpdate();
+         Reference componentId = sfCompleteName();
+         if (sfIsTerminated) {
+            throw new SmartFrogUpdateException(MessageUtil.formatMessage(MSG_DEPLOY_COMP_TERMINATED, componentId.toString()));
+        }
+        if (updateAbandoned) throw new SmartFrogUpdateException("update already abandoned " + componentId.toString());
 
         // detach and terminate all children  which must disappear
         for (Enumeration e = childrenToTerminate.elements(); e.hasMoreElements(); ) {
