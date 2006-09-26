@@ -24,7 +24,9 @@
 #include "org/smartfrog/test/system/assertions/components.sf"
 #include "/org/smartfrog/sfcore/workflow/combinators/sequence.sf"
 
-
+/**
+ * Since reparenting repeat, this no longer parses
+ */
 sfConfig extends Repeat {
      repeat 1;
 }

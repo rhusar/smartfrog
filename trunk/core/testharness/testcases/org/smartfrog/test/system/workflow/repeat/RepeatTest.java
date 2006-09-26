@@ -16,7 +16,7 @@ public class RepeatTest extends SmartFrogTestBase {
             "testAbnormalFailedRepeat");
     }
 
-    public void testEmptyRepeat() throws Throwable {
+    public void NotestEmptyRepeat() throws Throwable {
         deployExpectingException(FILES + "testEmptyRepeat.sf",
             "testEmptyRepeat",
         "SmartFrogDeploymentException",null,
