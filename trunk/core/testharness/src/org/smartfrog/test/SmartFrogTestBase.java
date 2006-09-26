@@ -216,8 +216,8 @@ public abstract class SmartFrogTestBase extends TestCase {
      * must be contained, and some text to be searched for in this exception.
      * @param testURL   URL to test
      * @param appName   name of test app
-     * @param exceptionName name of the exception thrown
-     * @param searchString string which must be found in the exception message
+     * @param exceptionName name of the exception thrown (can be null)
+     * @param searchString string which must be found in the exception message (can be null)
      * @param containedExceptionName optional classname of a contained
      * exception; does not have to be the full name; a fraction will suffice.
      * @param containedExceptionText optional text in the contained fault.
@@ -279,8 +279,8 @@ public abstract class SmartFrogTestBase extends TestCase {
      * assert that something we deployed contained the name and text we wanted.
      * @param cause root cause. Can be null, if faultName and faultText are also null. It is an error if they are defined
      * and the cause is null
-     * @param faultName substring that must be in the classname of the fault
-     * @param faultText substring that must be in the text of the fault
+     * @param faultName substring that must be in the classname of the fault (can be null)
+     * @param faultText substring that must be in the text of the fault (can be null)
      * @param cfgDesc what we were deploying; the status string is extracted for reporting purposes
      */
     private void assertFaultCauseAndTextContains(Throwable cause, String faultName,
@@ -295,8 +295,8 @@ public abstract class SmartFrogTestBase extends TestCase {
      * assert that something we deployed contained the name and text we wanted.
      * @param cause root cause. Can be null, if faultName and faultText are also null. It is an error if they are defined
      * and the cause is null
-     * @param faultName substring that must be in the classname of the fault
-     * @param faultText substring that must be in the text of the fault
+     * @param faultName substring that must be in the classname of the fault (can be null)
+     * @param faultText substring that must be in the text of the fault  (can be null)
      * @param details status string for reporting purposes
      */
     protected void assertFaultCauseAndTextContains(Throwable cause, String faultName,
