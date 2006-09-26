@@ -327,6 +327,9 @@ For more information: www.smartfrog.org
   <target name="clean" depends="init, clean-dist"
       description="clean all projects">
     <delegate target="clean"/>
+    <delegate target="clean" buildpathref="web.path"/>
+    <delegate target="clean" buildpathref="xml.path"/>
+    <delegate target="clean" buildpathref="cddlm.path"/>
     <delete dir="src"/>
     <!-- Forrest releated -->
     <delete dir="build"/>
@@ -345,7 +348,7 @@ For more information: www.smartfrog.org
     <delegate target="maybe-dist"/>
   </target>
   
-  <target name="dist" depends="main-dist"
+  <target name="dist" depends="main-dist,web-dist"
     description="build distributions of all projects"/>
 
   <target name="install" depends="init"
@@ -376,17 +379,17 @@ For more information: www.smartfrog.org
           description="buildRelease for all components" >
   </target>
 
-  <target name="web" depends="init"
+  <target name="web" depends="init,m2-install"
       description="web components">
     <delegate target="m2-install" buildpathref="web.path"/>
   </target>
   
-  <target name="web-dist" depends="init"
+  <target name="web-dist" depends="main-dist"
     description="web components distribution">
     <delegate target="m2-install" buildpathref="web.path"/>
   </target>
   
-  <target name="web-buildrelease" depends="init"
+  <target name="web-buildrelease" depends="main-buildrelease"
     description="web components release">
     <delegate target="maybe-buildrelease" buildpathref="web.path" antfile="buildRelease.xml"/>
   </target>
