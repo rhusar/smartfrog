@@ -35,6 +35,7 @@ import javax.swing.Timer;
 import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
+import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.prim.TerminationRecord;
@@ -83,60 +84,60 @@ public class SFDisplay extends PrimImpl implements Prim, PrintMsgInt,
     */
    public Display display = null;
    /** Definition of component attribute - Output Stream. */
-   OutputStream dout = System.out;
+   private OutputStream dout = System.out;
    /** Definition of component attribute - Input Stream. */
-   InputStream din = System.in;
+   private InputStream din = System.in;
    /** Definition of component attribute - Print Stream. */
-   PrintStream out = System.out;
+   private PrintStream out = System.out;
    /** Definition of component attribute - nameDisplay. */
-   String nameDisplay = "";
+   private String nameDisplay = "";
    /** Definition of component attribute - positionDisplay. */
-   String positionDisplay = "C";
+   private String positionDisplay = "C";
    /** Definition of component attribute - text. */
-   String text = "";
+   private String text = "";
    /** Definition of component attribute - height. */
-   int height = 400;
+   private int height = 400;
    /** Definition of component attribute - width. */
-   int width = 500;
+   private int width = 500;
    /** Definition of component attribute - PrintnMsgInt. */
-   PrintMsgInt printMsgImp = null;
+   private PrintMsgInt printMsgImp = null;
    /** Definition of component attribute - havePrinter. */
-   boolean havePrinter = false;
+   private boolean havePrinter = false;
    /** Definition of component attribute - rdirectStd. */
-   boolean redirectStd = false;
+   private boolean redirectStd = false;
    /** Definition of component attribute - formatMsg. */
-   boolean formatMsg = false;
+   private boolean formatMsg = false;
    /** Definition of component attribute - screenEditable. */
-   boolean screenEditable = true;
+   private boolean screenEditable = true;
    /** Definition of component attribute - terminateSFProcessOnExit. */
    boolean terminateSFProcessOnExit = false;
 
    /** Should clean the screen every "cleanEveryNumSec"?. */
-   boolean autoClean = true;
+   private boolean autoClean = true;
 
    /** Default value: clean every 15 minutes. */
-   int cleanEveryNumSec = 15 * 60;
+   private int cleanEveryNumSec = 15 * 60;
 
    /** If auto clean, should save screen content? */
-   boolean autoSave = true;
+   private boolean autoSave = true;
    /** String valuse for directory. */
-   String directoryAutoSave = "./";
+   private String directoryAutoSave = "./";
    /** Flag indicating to show IP or not. */
-   boolean showIP = false;
+   private boolean showIP = false;
    /** Flag indicating to show sfPrcessName or not. */
-   boolean showSfProcessName = false;
+   private boolean showSfProcessName = false;
    /** String name for sfProcessName. */
    public String sfProcessName = null;
 
    //Keep System streams:
    /** Output stream. */
-   PrintStream sysOut;
+   private PrintStream sysOut;
    /** Error stream. */
-   PrintStream sysErr;
+   private PrintStream sysErr;
    /** Input stream. */
-   InputStream sysIn;
+   private InputStream sysIn;
    /** Timer object. */
-   Timer timerAutoClean = null;
+   private Timer timerAutoClean = null;
 
 
    /**
@@ -184,21 +185,21 @@ public class SFDisplay extends PrimImpl implements Prim, PrintMsgInt,
                display = new Display(nameDisplay, this, null);
                display.setVisible(false);
                display.setSize(width, height);
-               display.setTextScreen(this.text);
+               display.setTextScreen(text);
                setPositionDisplay(positionDisplay, display);
                display.setVisible(true);
 
                // Redirecting standard output:
                // TODO: redirect to other objects here???
-               if (this.screenEditable) {
-                  this.sysIn = System.in;
+               if (screenEditable) {
+                  sysIn = System.in;
                   din = display.getInputStream();
                   System.setIn(din);
                }
                if (redirectStd) {
                   //To preserve system streams
-                  this.sysErr = System.err;
-                  this.sysOut = System.out;
+                  sysErr = System.err;
+                  sysOut = System.out;
                   out = display.getPrintStream();
                   System.setOut(out);
                   System.setErr(out);
@@ -237,22 +238,23 @@ public class SFDisplay extends PrimImpl implements Prim, PrintMsgInt,
    /**
     *Reads attributes defined in SF description. All attributes are optional.
     *
-    *@throws Exception if fails to read the attributes
+    *@throws SmartFrogResolutionException if it fails to read an attribute
+    *@throws RemoteException if it fails to read an attribute
     */
-   private void readSFAttributes() throws Exception {
+   private void readSFAttributes() throws SmartFrogResolutionException, RemoteException {
        String attribToRead = null;
        try {
             attribToRead = NAME_DISPLAY;
-            nameDisplay = (String) sfResolve(NAME_DISPLAY, nameDisplay, false);
+            nameDisplay = sfResolve(NAME_DISPLAY, nameDisplay, false);
 
             attribToRead = REDIRECT_STD;
             redirectStd = sfResolve(REDIRECT_STD,redirectStd, false);
 
             attribToRead = POSITION_DISPLAY;
-            positionDisplay = (String) sfResolve(POSITION_DISPLAY,
+            positionDisplay = sfResolve(POSITION_DISPLAY,
                                                       positionDisplay, false);
             attribToRead = TEXT_DISPLAY;
-            text = (String) sfResolve(TEXT_DISPLAY,text, false);
+            text =  sfResolve(TEXT_DISPLAY,text, false);
 
             attribToRead = HEIGHT_DISPLAY;
             height = sfResolve(HEIGHT_DISPLAY,height, false);
@@ -268,7 +270,6 @@ public class SFDisplay extends PrimImpl implements Prim, PrintMsgInt,
 
             attribToRead = EXTERNAL_PRINTER;
             havePrinter = sfResolve(EXTERNAL_PRINTER,havePrinter, false);
-            //this.havePrinter = true;
 
             attribToRead = AUTO_CLEAN;
             autoClean = sfResolve(AUTO_CLEAN, autoClean, false);
@@ -293,26 +294,16 @@ public class SFDisplay extends PrimImpl implements Prim, PrintMsgInt,
             attribToRead = TERMINATE_SFPROCESS_ON_EXIT;
             terminateSFProcessOnExit = sfResolve(TERMINATE_SFPROCESS_ON_EXIT,
                  terminateSFProcessOnExit, false);
-        } catch (Exception e) {
+        } catch (SmartFrogResolutionException e) {
             System.err.println("Failed to read optional attribute: "
                     +attribToRead + "Exception:"+ e.getMessage());
             throw e;
-        }
+        } catch (RemoteException e) {
+           System.err.println("Failed to read optional attribute: "
+                   + attribToRead + "Exception:" + e.getMessage());
+           throw e;
+       }
    }
-
-   /**
-    * Starts the component.
-    *
-    * @throws  SmartFrogException if framework encounters error while
-    * starting the component
-    * @throws  RemoteException if any remote or network error occurs while
-    * starting the component
-    */
-   public synchronized void sfStart() throws SmartFrogException,
-   RemoteException {
-       super.sfStart();
-   }
-
 
    /**
     * Terminates the component
@@ -322,12 +313,12 @@ public class SFDisplay extends PrimImpl implements Prim, PrintMsgInt,
    public synchronized void sfTerminateWith(TerminationRecord t) {
       try {
          if (redirectStd) {
-            System.setErr(this.sysErr);
-            System.setOut(this.sysOut);
+            System.setErr(sysErr);
+            System.setOut(sysOut);
          }
 
-         if (this.screenEditable) {
-            System.setIn(this.sysIn);
+         if (screenEditable) {
+            System.setIn(sysIn);
          }
       } catch (Exception e) {
          System.setErr(sysErr);
@@ -337,9 +328,10 @@ public class SFDisplay extends PrimImpl implements Prim, PrintMsgInt,
 
       try {
          //System.out.println("Client: SFTerminate");
-         if (display != null) {
-            display.dispose();
-         }
+          if (display != null) {
+              display.dispose();
+              display = null;
+          }
       } catch (Exception e) {
       }
 
@@ -445,7 +437,7 @@ public class SFDisplay extends PrimImpl implements Prim, PrintMsgInt,
     *@return    The outputStream value
     */
    public OutputStream getOutputStream() {
-      if (this.display != null) {
+      if (display != null) {
          return display.getOutputStream();
       } else {
          return null;
@@ -471,7 +463,7 @@ public class SFDisplay extends PrimImpl implements Prim, PrintMsgInt,
     *@return    The inputStream value
     */
    public InputStream getInputStream() {
-      if (this.display != null) {
+      if (display != null) {
          return display.getInputStream();
       } else {
          return null;
