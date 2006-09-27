@@ -329,7 +329,7 @@ For more information: www.smartfrog.org
     <delegate target="clean"/>
     <delegate target="clean" buildpathref="web.path"/>
     <delegate target="clean" buildpathref="xml.path"/>
-    <delegate target="clean" buildpathref="cddlm.path"/>
+<!--    <delegate target="clean" buildpathref="cddlm.path"/>-->
     <delete dir="src"/>
     <!-- Forrest releated -->
     <delete dir="build"/>
