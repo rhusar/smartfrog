@@ -40,6 +40,8 @@ import static org.smartfrog.services.deployapi.transport.faults.FaultRaiser.tran
 import org.smartfrog.services.deployapi.transport.wsrf.PropertyMap;
 import org.smartfrog.services.deployapi.transport.wsrf.WSRPResourceSource;
 import org.smartfrog.services.deployapi.transport.wsrf.WsrfUtils;
+import org.smartfrog.services.deployapi.notifications.EventSubscriberManager;
+import org.smartfrog.services.deployapi.notifications.Event;
 import org.smartfrog.services.filesystem.filestore.AddedFilestore;
 import org.smartfrog.services.filesystem.filestore.FileEntry;
 import org.smartfrog.sfcore.common.ConfigurationDescriptor;
@@ -111,11 +113,6 @@ public class Application implements WSRPResourceSource {
     private WeakReference<Prim> primReference;
 
     /**
-     * what handles callbacks
-     */
-    private CallbackRaiser callbackRaiser;
-
-    /**
      * job info
      */
 
@@ -125,19 +122,6 @@ public class Application implements WSRPResourceSource {
      * our Xom epr
      */
     private Element endpointer;
-
-
-    /**
-     * a deployment descriptor
-     */
-
-//    private MessageElement descriptorBody;
-
-    /**
-     * CDL document; will be null for a CDL file
-     */
-//    private CdlDocument cdlDocument;
-
 
     /**
      * description string from the JSDL
@@ -156,36 +140,24 @@ public class Application implements WSRPResourceSource {
     private String stateInfo;
 
     /**
-     * type of the callback
-     */
-    private URI callbackType;
-
-    /**
-     * url for callbacks
-     */
-    private URL callbackURL;
-
-//   private NotificationInformationType callbackInformation;
-
-    /**
-     * callback sequence counter
-     */
-    private int callbackSequenceID = 0;
-
-
-    /**
-     * callback identifier
-     */
-    private String callbackIdentifier;
-
-    /**
      * enter terminated state
      */
     private TerminationRecord terminationRecord;
 
+    /**
+     * Public EPR
+     */
     private AlpineEPR alpineEPR;
 
+    /**
+     * Owner instance
+     */
     private ServerInstance owner;
+
+    /**
+     * private subscriber of events
+     */
+    private EventSubscriberManager subscribers;
 
     /**
      * Attached files
@@ -249,14 +221,6 @@ public class Application implements WSRPResourceSource {
     }
 
 
-    public String getCallbackIdentifier() {
-        return callbackIdentifier;
-    }
-
-    public void setCallbackIdentifier(String callbackIdentifier) {
-        this.callbackIdentifier = callbackIdentifier;
-    }
-
     public String getAddress() {
         return address;
     }
@@ -275,60 +239,12 @@ public class Application implements WSRPResourceSource {
         return endpointer;
     }
 
-    /**
-     * clear all callback information
-     */
-/*
-    public void clearCallbackData() {
-        callbackRaiser = null;
-        callbackIdentifier = null;
-        callbackType = null;
-        callbackURL = null;
-        callbackInformation = null;
-        resetSequenceCounter();
-    }
-
-    public NotificationInformationType getCallbackInformation() {
-        return callbackInformation;
-    }
-
-    public void setCallbackInformation(
-            NotificationInformationType callbackInformation) {
-        this.callbackInformation = callbackInformation;
-    }
-
-
-*/
     public WeakReference getPrimReference() {
         return primReference;
     }
 
     public void setPrimReference(WeakReference<Prim> primReference) {
         this.primReference = primReference;
-    }
-
-    /**
-     * get the message descriptor. may be null
-     */
-/*
-    public MessageElement getDescriptorBody() {
-        return descriptorBody;
-    }
-*/
-    public URI getCallbackType() {
-        return callbackType;
-    }
-
-    public void setCallbackType(URI callbackType) {
-        this.callbackType = callbackType;
-    }
-
-    public URL getCallbackURL() {
-        return callbackURL;
-    }
-
-    public void setCallbackURL(URL callbackURL) {
-        this.callbackURL = callbackURL;
     }
 
     public String getDescription() {
@@ -386,6 +302,9 @@ public class Application implements WSRPResourceSource {
         this.hostname = hostname;
     }
 
+    public EventSubscriberManager getSubscribers() {
+        return subscribers;
+    }
 
     public void bindToPrim(Prim prim) {
         primReference = new WeakReference<Prim>(prim);
@@ -406,8 +325,7 @@ public class Application implements WSRPResourceSource {
             throw new BaseException("application has already terminated");
             //TODO return a terminated reference
         }
-        Prim prim = weakRef;
-        return prim;
+        return weakRef;
     }
 
     /**
@@ -602,11 +520,9 @@ public class Application implements WSRPResourceSource {
                 addTimeProperty(propname,
                         null);
             }
-            if (callbackRaiser != null) {
-                callbackRaiser.raiseLifecycleEvent(this,
-                        resolvePrimNonFaulting(),
-                        null);
-            }
+            //create a notification
+            Event event=new Event(this,newState, terminationRecord);
+            subscribers.event(event);
         }
     }
 
@@ -622,25 +538,9 @@ public class Application implements WSRPResourceSource {
      */
     public synchronized void enterTerminatedStateNotifying(
             TerminationRecord record) {
-        this.terminationRecord = record;
+        terminationRecord = record;
         enterStateNotifying(LifecycleStateEnum.terminated, record.toString());
     }
-
-
-    /**
-     * get the next sequence counter; every call will be different.
-     */
-    public synchronized int getNextSequenceNumber() {
-        return ++callbackSequenceID;
-    }
-
-    /**
-     * reset the sequence ID counter
-     */
-    public synchronized void resetSequenceCounter() {
-        callbackSequenceID = 0;
-    }
-
 
     public String toString() {
         return "job ID=" + id + " address=" + address + " state=" + state.toString();
@@ -694,7 +594,7 @@ public class Application implements WSRPResourceSource {
         SoapElement pingBody = state.toCmpState();
         pingBack.appendChild(pingBody);
         if(state == LifecycleStateEnum.instantiated || state == LifecycleStateEnum.terminated) {
-            //instantiated but no deployment has commened.
+            //instantiated but no deployment has commenced.
             return pingBack;
         }
 
@@ -703,7 +603,6 @@ public class Application implements WSRPResourceSource {
             throw new BaseException(Constants.F_LIVENESS_EXCEPTION);
         }
         try {
-            //TODO: ping the app to determine its real health
             target.sfPing(null);
             //TODO: state
             return pingBack;

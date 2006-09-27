@@ -39,14 +39,29 @@ StatsHandler extends SharedHandler {
   classname "org.smartfrog.services.deployapi.transport.endpoints.alpine.StatsHandler";
 }
 
+/**
+ * The subscription service
+ */
+SubscriptionService extends SharedHandler {
+  classname "org.smartfrog.services.deployapi.transport.endpoints.alpine.SubscriptionService";
+}
 
 
 DeployApiEndpoint extends AlpineEndpoint {
+    pivotHandler TBD;
+    handlers [
+      StatsHandler:classname,
+      LogCurrentMessageHandler:classname,
+      AddressHandler:classname,
+      MustUnderstandChecker:classname,
+      pivotHandler:classname,
+      LogCurrentMessageHandler:classname
+    ];
 
      getMessage ##
       <html>
       <head><title>Deployment Endpoint</title><head>
-      <body>This a demo! endpoint of the HP implementation of the CDDLM Deployment system</body>
+      <body>This a demo endpoint of the HP implementation of the CDDLM Deployment system</body>
       </html>
      #;
 
@@ -57,14 +72,13 @@ DeployApiEndpoint extends AlpineEndpoint {
 PortalEndpoint extends DeployApiEndpoint {
     name "portal";
     path "/portal/";
-    handlers [ 
-      StatsHandler:classname,
-      LogCurrentMessageHandler:classname,
-      AddressHandler:classname,
-      MustUnderstandChecker:classname,
-      PortalHandler:classname,
-      LogCurrentMessageHandler:classname
-    ];
+    pivotHandler PortalHandler;
+     getMessage ##
+      <html>
+      <head><title>Portal Endpoint</title><head>
+      <body>This the Portal endpoint of the HP implementation of the CDDLM Deployment system</body>
+      </html>
+     #;
 }
 
 
@@ -72,12 +86,23 @@ PortalEndpoint extends DeployApiEndpoint {
 SystemEndpoint extends DeployApiEndpoint {
     name "system";
     path "/system/";
-    handlers [
-      StatsHandler:classname,
-      LogCurrentMessageHandler:classname,
-      AddressHandler:classname,
-      SystemHandler:classname,
-      LogCurrentMessageHandler:classname,
-      MustUnderstandChecker:classname
-    ];
+    pivotHandler SystemHandler;
+     getMessage ##
+      <html>
+      <head><title>System Endpoint</title><head>
+      <body>This the System endpoint of the HP implementation of the CDDLM Deployment system</body>
+      </html>
+     #;
+}
+
+SubscriptionEndpoint extends DeployApiEndpoint {
+    name "subscriptions";
+    path "/subscriptions/";
+    pivotHandler SubscriptionService;
+     getMessage ##
+      <html>
+      <head><title>SubscriptionService Endpoint</title><head>
+      <body>This the SubscriptionService endpoint of the HP implementation of the CDDLM Deployment system</body>
+      </html>
+     #;
 }

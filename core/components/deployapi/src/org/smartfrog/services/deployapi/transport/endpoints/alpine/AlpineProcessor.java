@@ -127,7 +127,7 @@ public abstract class AlpineProcessor extends FaultRaiser {
      * @return the response message, with body and headers set up.
      */
     public void process(MessageDocument request, MessageDocument response) {
-        SoapElement payload = (SoapElement) request.getPayload();
+        SoapElement payload = request.getPayload();
         if (payload == null) {
             throw new ServerException("Empty SOAP message");
         }

@@ -13,12 +13,16 @@ import org.smartfrog.projects.alpine.interfaces.MessageHandler;
 import org.smartfrog.projects.alpine.om.base.SoapElement;
 import org.smartfrog.projects.alpine.om.soap11.MessageDocument;
 import org.smartfrog.projects.alpine.xmlutils.XsdUtils;
+import org.smartfrog.projects.alpine.wsa.AlpineEPR;
+import org.smartfrog.projects.alpine.wsa.AddressDetails;
 import org.smartfrog.services.deployapi.system.Constants;
 import org.smartfrog.services.deployapi.transport.faults.BaseException;
 import org.smartfrog.services.deployapi.transport.faults.DeploymentException;
 import org.smartfrog.services.deployapi.transport.faults.FaultRaiser;
 import org.smartfrog.services.deployapi.transport.wsrf.WSRPResourceSource;
 import org.smartfrog.services.deployapi.transport.wsrf.WsrfUtils;
+import org.smartfrog.services.deployapi.transport.wsrf.NotificationSubscription;
+import org.smartfrog.services.deployapi.engine.ServerInstance;
 import org.smartfrog.services.xml.java5.iterators.ElementsIterator;
 
 import javax.xml.namespace.QName;
@@ -88,6 +92,7 @@ public abstract class WsrfHandler extends HandlerBase implements MessageHandler 
     }
 
 
+
     /**
      * Return a resource source for this message.
      *
@@ -132,7 +137,8 @@ public abstract class WsrfHandler extends HandlerBase implements MessageHandler 
         String value = propertyRequest.getValue();
         property = XsdUtils.resolveQName(propertyRequest, value, false);
         if (property == null) {
-            throw invalidQNameException("Unable to resolve the qname in the request " + propertyRequest.getValue());
+            throw invalidQNameException("Unable to resolve the qname in the request "
+                    + propertyRequest.getValue());
         }
         return property;
     }
@@ -156,10 +162,7 @@ public abstract class WsrfHandler extends HandlerBase implements MessageHandler 
         }
 
         //step5: append to the new response message
-        messageContext.createResponse().getBody().appendChild(responseBody);
-
-        //declare ourselves as processed
-        messageContext.setProcessed(true);
+        setResponse(messageContext, responseBody);
     }
 
     /**
@@ -187,6 +190,15 @@ public abstract class WsrfHandler extends HandlerBase implements MessageHandler 
         }
 
         //append to the new response message
+        setResponse(messageContext, responseBody);
+    }
+
+    /**
+     * Set the response of a message to an XML element, and mark ourselves as processed
+     * @param messageContext
+     * @param responseBody
+     */
+    public void setResponse(MessageContext messageContext, Element responseBody) {
         messageContext.createResponse().getBody().appendChild(responseBody);
 
         //declare ourselves as processed
@@ -194,7 +206,7 @@ public abstract class WsrfHandler extends HandlerBase implements MessageHandler 
     }
 
 
-    private BaseException invalidQNameException(String qname) {
+    public BaseException invalidQNameException(String qname) {
         log.error("Invalid QName : [" + qname + "]");
         BaseException baseException = new BaseException(Constants.F_WSRF_WSRP_INVALID_RESOURCE_PROPERTY_QNAME);
         baseException.setFaultReason("The qualified name is not valid in the context of this element: \""
@@ -208,7 +220,7 @@ public abstract class WsrfHandler extends HandlerBase implements MessageHandler 
      * @param qname
      * @return a new fault
      */
-    private BaseException ResourceUnknownFault(QName qname) {
+    public BaseException ResourceUnknownFault(QName qname) {
         log.error("Unknown QName : [" + qname + "]");
         BaseException baseException = new BaseException(Constants.F_WSRF_WSRP_UNKNOWN_RESOURCE);
         baseException.setFaultReason("Unknown resource "+qname.toString());
@@ -249,4 +261,59 @@ public abstract class WsrfHandler extends HandlerBase implements MessageHandler 
             throw new ServerException("Unknown message: " + operation);
         }
     }
+
+
+    /**
+     * Override point, handle a wsn subscription operation
+     *
+     * @param messageContext
+     * @param endpointContext
+     */
+    public void WSNSubscribe(MessageContext messageContext,
+                             EndpointContext endpointContext) {
+
+        SoapElement payload = messageContext.getCurrentMessage().getPayload();
+        NotificationSubscription subscription=new NotificationSubscription(payload);
+        registerSubscription(messageContext,subscription);
+        subscription.createSubscriptionURL(getServerInstance().getSubscriptionURL());
+        SoapElement subscribeResponse = subscription.createSubscribeResponse();
+        setResponse(messageContext,subscribeResponse);
+    }
+
+    /**
+     * Get the server instance for this component
+     * @return
+     */
+    public ServerInstance getServerInstance() {
+        return ServerInstance.currentInstance();
+    }
+
+
+    /**
+     * Override this for WS-Notification to work.
+     * @param messageContext current message context
+     * @param subscription
+     */
+    protected void registerSubscription(MessageContext messageContext,
+                                        NotificationSubscription subscription) {
+        throw FaultRaiser.raiseNotImplementedFault("Subscriptions to this endpoint is not supported");
+    }
+
+
+    /**
+     * Get the To: component of a (mandatory) WS-A address
+     * @param inMessage
+     * @return the address
+     * @throws org.smartfrog.projects.alpine.faults.ServerException if there is no address
+     */
+    public AlpineEPR getTo(MessageDocument inMessage) {
+        AddressDetails addressDetails = inMessage.getAddressDetails();
+        if(addressDetails==null) {
+            throw new ServerException("No WS-Addressing details in message");
+        }
+        AlpineEPR to=addressDetails.getTo();
+        return to;
+    }
+
+
 }

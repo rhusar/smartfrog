@@ -54,6 +54,10 @@ DeployServer extends AlpineServerOnJetty {
       servlet LAZY alpine;
     }
 
+    SubscriptionEndpoint extends SystemEndpoint {
+      servlet LAZY alpine;
+    }
+    //subscriptions extends
 
     //fetch the page every so often, just to see that we are happy
     liveness extends LivenessPage {

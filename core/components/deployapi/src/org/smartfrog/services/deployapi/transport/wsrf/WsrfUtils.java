@@ -85,7 +85,7 @@ public final class WsrfUtils {
 
 
     public static String[] DEFAULT_TOPIC_DIALECTS= {
-        "http://www.ibm.com/xmlns/stdwip/web-services/WSTopics/TopicExpression/simple"
+        WSNConstants.SIMPLE_DIALECT
     };
 
     /**

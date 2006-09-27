@@ -34,11 +34,13 @@ import org.smartfrog.services.deployapi.transport.endpoints.system.PingProcessor
 import org.smartfrog.services.deployapi.transport.endpoints.system.DestroyProcessor;
 import org.smartfrog.services.deployapi.transport.endpoints.system.AddFileProcessor;
 import org.smartfrog.services.deployapi.transport.wsrf.WSRPResourceSource;
+import org.smartfrog.services.deployapi.transport.wsrf.NotificationSubscription;
 import org.smartfrog.services.deployapi.transport.faults.FaultRaiser;
 import org.smartfrog.services.deployapi.engine.Application;
 import org.smartfrog.services.deployapi.engine.JobRepository;
 import org.smartfrog.services.deployapi.engine.ServerInstance;
 import org.smartfrog.services.deployapi.system.Constants;
+import org.smartfrog.services.deployapi.notifications.EventSubscriberManager;
 import nu.xom.Element;
 
 import javax.xml.namespace.QName;
@@ -95,11 +97,7 @@ public class SystemHandler extends WsrfHandler {
      */
     protected Application lookupJob(MessageDocument inMessage) {
         JobRepository jobs = ServerInstance.currentInstance().getJobs();
-        AddressDetails addressDetails = inMessage.getAddressDetails();
-        if(addressDetails==null) {
-            throw new ServerException("No WS-Addressing details in message");
-        }
-        AlpineEPR to=addressDetails.getTo();
+        AlpineEPR to = getTo(inMessage);
         Application job = jobs.lookupJobFromEndpointer(to);
         return job;
     }
@@ -156,10 +154,27 @@ public class SystemHandler extends WsrfHandler {
      */
     @Override
     public WSRPResourceSource retrieveResourceSource(MessageContext message) {
+        Application job = lookup(message);
+        return job;
+    }
+
+    private Application lookup(MessageContext message) {
         Application job = lookupJob(message.getRequest());
         if (job == null) {
             throw FaultRaiser.raiseNoSuchApplicationFault("Unknown application");
         }
         return job;
+    }
+
+    /**
+     * subscribe to the portal events
+     *
+     * @param messageContext current message context
+     * @param subscription
+     */
+    protected void registerSubscription(MessageContext messageContext,
+                                        NotificationSubscription subscription) {
+        Application app=lookup(messageContext);
+        app.getSubscribers().add(subscription);
     }
 }

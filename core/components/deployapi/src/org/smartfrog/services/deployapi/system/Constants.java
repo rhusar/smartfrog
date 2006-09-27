@@ -178,6 +178,7 @@ public class Constants extends CddlmConstants {
      * {@value}
      */
     public static final String JOB_ID_PARAM = "system";
+    public static final String SUBSCRIPTION_ID_PARAM = "id";
     public static final String CONTEXT_PATH = "/";
     /**
      * Path under the webapp where services are deployed.
@@ -190,7 +191,11 @@ public class Constants extends CddlmConstants {
      * {@value}
      */
     public static final String SYSTEM_PATH = "system";
+    /** {@value} */
+    public static final String SUBSCRIPTION_PATH = "subscription";
+    /** {@value} */
     public static final String SYSTEM_REFERENCE = "systemReference";
+    /** {@value} */
     public static final String RESOURCE_ID = "ResourceId";
 
 

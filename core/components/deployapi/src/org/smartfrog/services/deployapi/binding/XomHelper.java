@@ -40,6 +40,7 @@ import java.net.URI;
 public class XomHelper extends XomUtils {
     public static final String API = "api:";
     public static final String CMP = "cmp:";
+    public static final String WSNT = "wsnt:";
     public static final String WSRF_RL = "wsrf-rl:";
     public static final String MUWSP1_XS = "muws-p1-xs:";
     public static final String TNS = CDL_API_TYPES_NAMESPACE;
@@ -129,13 +130,27 @@ public class XomHelper extends XomUtils {
      * @param element  element to look at
      * @param name     attribute name
      * @param required flag if needed
-     * @return
+     * @return the value
+     * @throws org.smartfrog.services.deployapi.transport.faults.BaseException if  no match
      */
     public static String getApiAttrValue(Element element, String name, boolean required) {
-        Attribute val = element.getAttribute(name, CDL_API_TYPES_NAMESPACE);
+        return getAttributeValue(element, CDL_API_TYPES_NAMESPACE, name, required);
+    }
+
+    /**
+     * Get the value of any string attribute in any
+     * @param element element
+     * @param ns namespace of attribute
+     * @param name attribute name
+     * @param required required or not?
+     * @return the value
+     * @throws org.smartfrog.services.deployapi.transport.faults.BaseException if  no match and required==true
+     */
+    public static String getAttributeValue(Element element, String ns, String name, boolean required) {
+        Attribute val = element.getAttribute(name, ns);
         if (val == null) {
             if (required) {
-                throw FaultRaiser.raiseBadArgumentFault("No attribute api:" + name + " on " + element);
+                throw FaultRaiser.raiseBadArgumentFault("No attribute "+ns+"#" + name + " on " + element);
             } else {
                 return null;
             }
@@ -173,6 +188,12 @@ public class XomHelper extends XomUtils {
         return new SoapElement(CMP + name,
                 CddlmConstants.CDL_CMP_TYPES_NAMESPACE);
     }
+
+    public static SoapElement wsntElement(String name) {
+        return new SoapElement(WSNT + name,
+                CddlmConstants.WSRF_WSNT_NAMESPACE);
+    }
+
 
     /**
      * @param string value to parse
@@ -223,12 +244,21 @@ public class XomHelper extends XomUtils {
      *
      * @param node  node to start
      * @param query query to ask
-     * @return
+     * @return string value
+     * @throws org.smartfrog.services.deployapi.transport.faults.BaseException
      */
     public static String getElementValue(Node node, String query) {
         return getElementValue(node, query,true);
     }
 
+    /**
+     * Get the string valur of a node
+     * @param node
+     * @param query
+     * @param required
+     * @return string value or null
+     * @throws org.smartfrog.services.deployapi.transport.faults.BaseException
+     */
     public static String getElementValue(Node node, String query,boolean required) {
         Element element = getElement(node, query,required);
         if(element==null) {
@@ -244,6 +274,7 @@ public class XomHelper extends XomUtils {
      * @param node  node to start
      * @param query query to ask
      * @return the element
+     * @throws org.smartfrog.services.deployapi.transport.faults.BaseException
      */
     public static Element getElement(Node node, String query) {
         return getElement(node, query, true);
@@ -257,6 +288,7 @@ public class XomHelper extends XomUtils {
      * @param query    query to ask
      * @param required flag to indicate a node is required or not
      * @return the element or null if not found && required==false.
+     * @throws org.smartfrog.services.deployapi.transport.faults.BaseException
      */
     public static Element getElement(Node node,
                                      String query,

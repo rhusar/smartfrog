@@ -21,7 +21,8 @@ public interface DeploymentServer extends Remote {
 
     String ATTR_SERVICESPATH = "servicesPath";
 
-    String ATTR_SYSTEM_SERVLET = "systemServlet";
+    String ATTR_SYSTEM_PATH = "systemPath";
 
+    String ATTR_SUBSCRIPTIONS_PATAH = "subscriptionsPath";
 
 }
