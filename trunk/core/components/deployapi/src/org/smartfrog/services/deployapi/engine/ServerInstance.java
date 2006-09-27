@@ -31,10 +31,11 @@ import org.smartfrog.services.deployapi.binding.XomHelper;
 import org.smartfrog.services.deployapi.components.DeploymentServer;
 import org.smartfrog.services.deployapi.system.Constants;
 import org.smartfrog.services.deployapi.system.Utils;
-import org.smartfrog.services.deployapi.transport.wsrf.Property;
 import org.smartfrog.services.deployapi.transport.wsrf.PropertyMap;
 import org.smartfrog.services.deployapi.transport.wsrf.WSRPResourceSource;
 import org.smartfrog.services.deployapi.transport.wsrf.WsrfUtils;
+import org.smartfrog.services.deployapi.transport.endpoints.alpine.SubscriptionService;
+import org.smartfrog.services.deployapi.notifications.EventSubscriberManager;
 import org.smartfrog.services.filesystem.FileSystem;
 import org.smartfrog.services.filesystem.filestore.AddedFilestore;
 import org.smartfrog.sfcore.common.SmartFrogException;
@@ -51,6 +52,8 @@ import java.rmi.RemoteException;
 import java.util.Date;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 
 /**
@@ -75,6 +78,9 @@ public class ServerInstance implements WSRPResourceSource {
 
     private AddedFilestore filestore;
 
+
+    private EventSubscriberManager subscriptions;
+
     private File tempdir;
 
     private DescriptorHelper descriptorHelper;
@@ -83,6 +89,7 @@ public class ServerInstance implements WSRPResourceSource {
     private String hostname = Constants.LOCALHOST;
     private int port = 5050;
     private String path = Constants.CONTEXT_PATH + Constants.SERVICES_PATH + Constants.SYSTEM_PATH;
+    private String subscriptionsPath = Constants.CONTEXT_PATH + Constants.SERVICES_PATH + Constants.SUBSCRIPTION_PATH;
     private String location = "unknown";
 
 
@@ -98,6 +105,7 @@ public class ServerInstance implements WSRPResourceSource {
     private int failures = 0;
 
     private static final String BUILD_TIMESTAMP = "$Date$";
+    private URL subscriptionURL;
 
     /**
      * Create a new server instance, and bind it to be our current
@@ -132,9 +140,13 @@ public class ServerInstance implements WSRPResourceSource {
                 Constants.CONTEXT_PATH, false);
         String servicespath = owner.sfResolve(DeploymentServer.ATTR_SERVICESPATH,
                 Constants.SERVICES_PATH, false);
-        String systemPath = owner.sfResolve(DeploymentServer.ATTR_SYSTEM_SERVLET,
+        String systemPath = owner.sfResolve(DeploymentServer.ATTR_SYSTEM_PATH,
                 Constants.SYSTEM_PATH, false);
         path = ctx + servicespath + systemPath;
+        subscriptionsPath = ctx + servicespath
+                + owner.sfResolve(DeploymentServer.ATTR_SUBSCRIPTIONS_PATAH,
+                    Constants.SUBSCRIPTION_PATH, false);
+        //temp dir set up
         File javatmpdir = new File(System.getProperty("java.io.tmpdir"));
         String absolutePath = FileSystem.lookupAbsolutePath(owner,
                 DeploymentServer.ATTR_FILESTORE_DIR,
@@ -155,6 +167,7 @@ public class ServerInstance implements WSRPResourceSource {
 
     private void init() throws IOException {
         systemsURL = new URL(protocol, hostname, port, path);
+        subscriptionURL = new URL(protocol, hostname, port, subscriptionsPath);
         jobs = new JobRepository(systemsURL, this);
         workers = new ActionWorker[WORKERS];
         for (int i = 0; i < workers.length; i++) {
@@ -203,12 +216,32 @@ public class ServerInstance implements WSRPResourceSource {
         return "Server @" + systemsURL + " filestore:" + tempdir;
     }
 
+    /**
+     * Get the job repository
+     * @return
+     */
     public JobRepository getJobs() {
         return jobs;
     }
 
+    public EventSubscriberManager getSubscriptions() {
+        return subscriptions;
+    }
+
+    public String getSubscriptionsPath() {
+        return subscriptionsPath;
+    }
+
     /**
-     * get the current instance; creating it if needed
+     * Get the URL for subscriptions
+     * @return
+     */
+    public URL getSubscriptionURL() {
+        return subscriptionURL;
+    }
+
+    /**
+     * get the current instance; bailing out if none exists
      *
      * @return the current instance
      */
@@ -346,5 +379,14 @@ public class ServerInstance implements WSRPResourceSource {
         synchronized (this) {
             failures++;
         }
+    }
+
+    /**
+     * Control point for managing
+     * @return
+     */
+    public ExecutorService createEventExecutorService() {
+        return Executors.newSingleThreadExecutor();
+
     }
 }

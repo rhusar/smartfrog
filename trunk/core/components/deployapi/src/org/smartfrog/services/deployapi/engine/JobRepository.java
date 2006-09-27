@@ -25,8 +25,11 @@ import org.apache.commons.logging.LogFactory;
 import org.smartfrog.projects.alpine.wsa.AlpineEPR;
 import org.smartfrog.services.deployapi.system.Constants;
 import org.smartfrog.services.deployapi.system.Utils;
+import org.smartfrog.services.deployapi.system.LifecycleStateEnum;
 import org.smartfrog.services.deployapi.transport.faults.BaseException;
 import org.smartfrog.services.deployapi.transport.faults.FaultRaiser;
+import org.smartfrog.services.deployapi.notifications.EventSubscriberManager;
+import org.smartfrog.services.deployapi.notifications.Event;
 
 import java.net.MalformedURLException;
 import java.net.URI;
@@ -54,10 +57,12 @@ public class JobRepository implements Iterable<Application> {
     private static Log log= LogFactory.getLog(JobRepository.class);
 
     private ServerInstance engine;
+    private EventSubscriberManager subscriptions;
 
     public JobRepository(URL systemsURL, ServerInstance owner) {
         this.systemsURL = systemsURL;
         this.engine=owner;
+        subscriptions=new EventSubscriberManager(owner.createEventExecutorService());
     }
 
     public void clear() {
@@ -196,6 +201,12 @@ public class JobRepository implements Iterable<Application> {
     }
 
 
+    /**
+     * Create a new Job.
+     * This has a side effect of notifying all listeners that something has happened.
+     * @param hostname
+     * @return
+     */
     public Application createNewJob(String hostname) {
         Application job = new Application(Utils.createNewID(),engine);
         job.setHostname(hostname);
@@ -203,6 +214,9 @@ public class JobRepository implements Iterable<Application> {
         job.setName(id);
         job.setAddress(createJobAddress(id));
         add(job);
+        //and register the event
+        Event event=new Event(job, LifecycleStateEnum.instantiated, null);
+        subscriptions.event(event);
         return job;
     }
 

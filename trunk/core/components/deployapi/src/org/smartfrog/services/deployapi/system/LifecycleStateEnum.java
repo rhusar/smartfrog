@@ -23,9 +23,12 @@ package org.smartfrog.services.deployapi.system;
 import org.smartfrog.projects.alpine.om.base.SoapElement;
 import org.smartfrog.services.deployapi.binding.XomHelper;
 import org.smartfrog.services.deployapi.transport.faults.FaultRaiser;
+import org.smartfrog.sfcore.prim.Prim;
 import org.ggf.cddlm.generated.api.CddlmConstants;
 import nu.xom.Element;
 import nu.xom.Elements;
+
+import java.rmi.RemoteException;
 
 /**
  * enumeration of lifecycle states. This type maps to the cmp: LifeCycleState,
@@ -111,6 +114,29 @@ public enum LifecycleStateEnum {
     public String toString() {
         return xmlName;
     }
+
+    /**
+     * Infer the state of a prim
+     * @param prim, can be null
+     * @return the inferres state of the component
+     */
+    public static LifecycleStateEnum infer(Prim prim) throws RemoteException {
+        if(prim==null) {
+            return undefined;
+        }
+        if(prim.sfIsTerminated()) {
+            return terminated;
+        }
+        if(prim.sfIsStarted()) {
+            return running;
+        }
+        if(prim.sfIsDeployed()) {
+            return initialized;
+        }
+        //anything else? Instantiated
+        return instantiated;
+    }
+
 }
 
 

@@ -623,6 +623,7 @@ because javac was bailing out with some error about unzipping -->
 
   <target name="test-redeploy" depends="test-undeploy,test-deploy"/>  
 
+  <target name="deploy-and-test" depends="deploy,test-deploy" />
 
   <!-- ========================================================== -->
   <!-- installation includes the test jars as well as all the dependencies-->

@@ -95,7 +95,6 @@ public class CddlmCompoundImpl extends CompoundImpl
         sfDeployHooks.addHook(deploy);
         sfStartHooks.addHook(start);
         sfTerminateWithHooks.addHook(terminate);
-
     }
 
     /**

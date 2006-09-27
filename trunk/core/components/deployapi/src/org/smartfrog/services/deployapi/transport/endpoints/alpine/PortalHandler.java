@@ -20,11 +20,14 @@
 package org.smartfrog.services.deployapi.transport.endpoints.alpine;
 
 import org.smartfrog.services.deployapi.transport.wsrf.WSRPResourceSource;
+import org.smartfrog.services.deployapi.transport.wsrf.NotificationSubscription;
 import org.smartfrog.services.deployapi.transport.endpoints.portal.CreateProcessor;
 import org.smartfrog.services.deployapi.transport.endpoints.portal.ResolveProcessor;
 import org.smartfrog.services.deployapi.transport.endpoints.portal.LookupSystemProcessor;
+import org.smartfrog.services.deployapi.transport.faults.FaultRaiser;
 import org.smartfrog.services.deployapi.engine.ServerInstance;
 import org.smartfrog.services.deployapi.system.Constants;
+import org.smartfrog.services.deployapi.notifications.EventSubscriberManager;
 import org.smartfrog.projects.alpine.core.EndpointContext;
 import org.smartfrog.projects.alpine.core.MessageContext;
 import org.smartfrog.projects.alpine.om.soap11.MessageDocument;
@@ -105,6 +108,18 @@ public class PortalHandler extends WsrfHandler {
      *
      */
     public WSRPResourceSource retrieveResourceSource(MessageContext message) {
-        return ServerInstance.currentInstance();
+        return getServerInstance();
+    }
+
+    /**
+     * subscribe to the portal events
+     *
+     * @param messageContext current message context
+     * @param subscription
+     */
+    protected void registerSubscription(MessageContext messageContext,
+                                        NotificationSubscription subscription) {
+        EventSubscriberManager subscriptions = getServerInstance().getSubscriptions();
+        subscriptions.add(subscription);
     }
 }

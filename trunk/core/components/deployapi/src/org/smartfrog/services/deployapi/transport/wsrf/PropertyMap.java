@@ -97,7 +97,6 @@ public class PropertyMap implements WSRPResourceSource {
      * Add a static property
      *
      * @param name  property name
-     * @param value property value
      */
     public StaticProperty addStaticProperty(QName name) {
         StaticProperty property = new StaticProperty(name);
