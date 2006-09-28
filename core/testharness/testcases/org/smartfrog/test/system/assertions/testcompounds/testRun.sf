@@ -32,9 +32,10 @@ ITS MEDIA, AND YOU HEREBY WAIVE ANY CLAIM IN THIS REGARD.
 
 #include "/org/smartfrog/test/system/assertions/testcompounds/components.sf";
 
-sfConfig extends ExpectDeployFailure {
-    action extends FailAbnormal {
-        message "failure message";
+/**
+ * This is a big test run
+ */
+sfConfig extends ExpectTerminate {
+    action extends Sequence {
     }
-    exitText action:message;
 }

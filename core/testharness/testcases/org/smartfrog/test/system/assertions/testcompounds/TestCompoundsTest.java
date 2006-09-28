@@ -20,8 +20,10 @@
 package org.smartfrog.test.system.assertions.testcompounds;
 
 import org.smartfrog.test.SmartFrogTestBase;
-import org.smartfrog.test.system.assertions.AssertionsTest;
-import org.smartfrog.services.assertions.SmartFrogAssertionException;
+import org.smartfrog.services.assertions.TestCompoundImpl;
+import org.smartfrog.sfcore.prim.Prim;
+
+import java.rmi.RemoteException;
 
 /**
  * Date: 30-Apr-2004
@@ -31,20 +33,80 @@ public class TestCompoundsTest extends SmartFrogTestBase {
 
     private static final String FILES = "org/smartfrog/test/system/assertions/testcompounds/";
 
+
+
     public TestCompoundsTest(String name) {
         super(name);
     }
 
+    protected Prim application;
+
+    protected void tearDown() throws Exception {
+        super.tearDown();
+        terminateApplication(application);
+    }
+
     public void testEmptyCompound() throws Throwable {
-        deployExpectingSuccess(TestCompoundsTest.FILES +"testEmptyCompound.sf","testEmptyCompound");
+        application =deployExpectingSuccess(TestCompoundsTest.FILES +"testEmptyCompound.sf","testEmptyCompound");
     }
 
     public void testEmptySequence() throws Throwable {
-        deployExpectingSuccess(TestCompoundsTest.FILES + "testEmptySequence.sf", "testEmptySequence");
+        application =deployExpectingSuccess(TestCompoundsTest.FILES + "testEmptySequence.sf", "testEmptySequence");
     }
 
     public void testFailure() throws Throwable {
-        deployExpectingSuccess(TestCompoundsTest.FILES + "testFailure.sf", "testFailure");
+        application =deployExpectingSuccess(TestCompoundsTest.FILES + "testFailure.sf", "testFailure");
+    }
+
+
+    public void testUnexpectedFailure() throws Throwable {
+        deployExpectingException(TestCompoundsTest.FILES + "testUnexpectedFailure.sf",
+                "testUnexpectedFailure", null, TestCompoundImpl.TEST_FAILED_WRONG_STATUS);
+    }
+
+    public void testFailureWrongMessage() throws Throwable {
+        deployExpectingException(TestCompoundsTest.FILES + "testFailureWrongMessage.sf",
+                "testFailureWrongMessage",null, TestCompoundImpl.TEST_FAILED_WRONG_STATUS);
+    }
+
+
+    public void testFailureWrongMessage2() throws Throwable {
+        application = deployExpectingSuccess(TestCompoundsTest.FILES + "testFailureWrongMessage.sf",
+                "testFailureWrongMessage");
+/*        app.sfPing(null);
+        app.sfPing(null);
+        app.sfPing(null);
+        app.sfPing(null);
+        app.sfPing(null);
+        app.sfPing(null);*/
+        //terminateApplication(app);
+        application =null;
+
+    }
+
+    /**
+     * spin, pinging the application until it terminates successfully or not.
+     * @param ping ping every second?
+     * @param secondsToSpin number of seconds to spin
+     * @param expectNormal is a normal exit expected?
+     * @param errorText any error text to look for
+     * @param exceptionName
+     * @param exceptionText
+     */
+    public void spinUntilTerminated(Prim app,boolean ping, int secondsToSpin,
+                                    boolean expectNormal,String errorText,String exceptionName,String exceptionText)
+            throws RemoteException {
+        
+        terminateApplication(app);
+    }
+
+    public void testFailureWrongMessageNested() throws Throwable {
+        application =deployExpectingSuccess(TestCompoundsTest.FILES + "testFailureWrongMessageNested.sf",
+                "testFailureWrongMessageNested");
+    }
+
+    public void testSmartFrogException() throws Throwable {
+        application =deployExpectingSuccess(TestCompoundsTest.FILES + "testSmartFrogException.sf", "testSmartFrogException");
     }
 
 }

@@ -23,6 +23,7 @@ package org.smartfrog.test.system.assertions;
 
 import org.smartfrog.test.SmartFrogTestBase;
 import org.smartfrog.services.assertions.SmartFrogAssertionException;
+import org.smartfrog.sfcore.prim.Prim;
 
 /**
  * Date: 30-Apr-2004
@@ -36,8 +37,15 @@ public class AssertionsTest extends SmartFrogTestBase {
         super(name);
     }
 
+    protected Prim application;
+
+    protected void tearDown() throws Exception {
+        super.tearDown();
+        terminateApplication(application);
+    }
+
     public void testBasicAssertions() throws Throwable {
-        deployExpectingSuccess(FILES+"testBasicAssertions.sf","testBasicAssertions");
+        application=deployExpectingSuccess(FILES+"testBasicAssertions.sf","testBasicAssertions");
     }
 
     public void testTrueIsFalse() throws Throwable  {
@@ -65,7 +73,7 @@ public class AssertionsTest extends SmartFrogTestBase {
      * @throws Throwable
      */
     public void testEvaluatesTrue() throws Throwable {
-        deployExpectingSuccess(FILES + "testEvaluatesTrue.sf", "testEvaluatesTrue");
+        application =deployExpectingSuccess(FILES + "testEvaluatesTrue.sf", "testEvaluatesTrue");
     }
 
 
@@ -75,7 +83,7 @@ public class AssertionsTest extends SmartFrogTestBase {
      * @throws Throwable
      */
     public void testEvaluatesTrueToFalse() throws Throwable {
-        deployExpectingSuccess(FILES + "testEvaluatesTrueToFalse.sf", "testEvaluatesTrueToFalse");
+        application = deployExpectingSuccess(FILES + "testEvaluatesTrueToFalse.sf", "testEvaluatesTrueToFalse");
     }
 
 
@@ -91,15 +99,15 @@ public class AssertionsTest extends SmartFrogTestBase {
      * test that values are resolved.
      */
     public void testEvaluatesThrowsSFException() throws Throwable {
-        deployExpectingSuccess(FILES + "testEvaluatesThrowsSFException.sf", "testEvaluatesThrowsSFException");
+        application = deployExpectingSuccess(FILES + "testEvaluatesThrowsSFException.sf", "testEvaluatesThrowsSFException");
     }
 
     public void testEvaluatesThrowsRuntimeException() throws Throwable {
-        deployExpectingSuccess(FILES + "testEvaluatesThrowsRuntimeException.sf", "testEvaluatesThrowsRuntimeException");
+        application = deployExpectingSuccess(FILES + "testEvaluatesThrowsRuntimeException.sf", "testEvaluatesThrowsRuntimeException");
     }
 
     public void testAttributeFound() throws Throwable {
-        deployExpectingSuccess(FILES + "testAttributeFound.sf", "testAttributeFound");
+        application = deployExpectingSuccess(FILES + "testAttributeFound.sf", "testAttributeFound");
     }
 
     public void testAttributeNotFound() throws Throwable {
