@@ -21,7 +21,7 @@
        not to be run on public machines for
        security reasons, unless security is active-->
 
-   <target name="system-tests" depends="init,dist,package-tests"
+   <target name="system-tests" depends="init,dist,package-tests,ready-to-test"
     if="system.tests.enabled"
     description="run the unit tests if unit.tests.enabled is set">
     <core:junit
@@ -31,6 +31,10 @@
       >
       <sysproperty key="test.classes.dir"
         value="${test.classes.dir}"/>
+      <!--all properties beginning with test-->
+      <syspropertyset>
+        <propertyref prefix="test."/>
+      </syspropertyset>
       <classpath>
         <path refid="tests.run.classpath"/>
       </classpath>
