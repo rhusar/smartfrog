@@ -32,9 +32,14 @@ ITS MEDIA, AND YOU HEREBY WAIVE ANY CLAIM IN THIS REGARD.
 
 #include "/org/smartfrog/test/system/assertions/testcompounds/components.sf";
 
-sfConfig extends ExpectDeployFailure {
+sfConfig extends ExpectDeploy {
+  description "the outer test looks for the covering message";
+  action extends ExpectDeployFailure {
+    description "the inner test looks for the wrong message";
     action extends FailAbnormal {
         message "failure message";
     }
-    exitText action:message;
+    exitText "wrong message";
+  }
+  exitText "xyz";
 }

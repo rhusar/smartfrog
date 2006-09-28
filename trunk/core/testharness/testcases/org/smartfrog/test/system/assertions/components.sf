@@ -60,3 +60,4 @@ ToggleToTrue extends BooleanFalse {
 ToggleToFalse extends BooleanTrue {
   toggle true;
 }
+

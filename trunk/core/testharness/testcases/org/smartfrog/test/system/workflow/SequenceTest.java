@@ -41,7 +41,7 @@ public class SequenceTest extends SmartFrogTestBase {
 //                "sequencefail",
 //                "SmartFrogDeploymentException",
 //                "Class not found");
-        this.deployExpectingSuccess(FILES+"testSequence.sf","sequencefail");
+        terminateApplication(deployExpectingSuccess(FILES+"testSequence.sf","sequencefail"));
     }
 
     public void testComponentFailureInNewSequence() throws Throwable {
@@ -52,6 +52,6 @@ public class SequenceTest extends SmartFrogTestBase {
 //                "sequencefail",
 //                "SmartFrogDeploymentException",
 //                "Class not found");
-        this.deployExpectingSuccess(FILES+"testNewSequence.sf","sequencenewfail");
+        terminateApplication(deployExpectingSuccess(FILES+"testNewSequence.sf","sequencenewfail"));
     }
 }

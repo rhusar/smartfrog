@@ -1,6 +1,7 @@
 package org.smartfrog.test.system.workflow.repeat;
 
 import org.smartfrog.test.SmartFrogTestBase;
+import org.smartfrog.sfcore.prim.Prim;
 
 /**
  * test delays
@@ -11,8 +12,17 @@ public class RepeatTest extends SmartFrogTestBase {
     public RepeatTest(String s) {
         super(s);
     }
+
+    protected Prim application;
+
+    protected void tearDown() throws Exception {
+        super.tearDown();
+        terminateApplication(application);
+    }
+
+
     public void testAbnormalFailedRepeat() throws Throwable {
-        deployExpectingSuccess(FILES +"testAbnormalFailedRepeat.sf",
+        application=deployExpectingSuccess(FILES +"testAbnormalFailedRepeat.sf",
             "testAbnormalFailedRepeat");
     }
 
@@ -25,26 +35,18 @@ public class RepeatTest extends SmartFrogTestBase {
     }
 
     public void testNegativeRepeat() throws Throwable {
-        deployExpectingSuccess(FILES + "testNegativeRepeat.sf",
+        application =deployExpectingSuccess(FILES + "testNegativeRepeat.sf",
             "testNegativeRepeat");
     }
 
     public void testNormalFailedRepeat() throws Throwable {
-        deployExpectingSuccess(FILES + "testNormalFailedRepeat.sf",
+        application =deployExpectingSuccess(FILES + "testNormalFailedRepeat.sf",
             "testNormalFailedRepeat");
     }
 
     public void testWorkingRepeat() throws Throwable {
-        deployExpectingSuccess(FILES + "testWorkingRepeat.sf",
+        application =deployExpectingSuccess(FILES + "testWorkingRepeat.sf",
             "testWorkingRepeat");
     }
-
-
-/*
-    public void test() throws Throwable {
-        deployExpectingException(FILES +"","",
-            "","");
-    }
-*/
 
 }

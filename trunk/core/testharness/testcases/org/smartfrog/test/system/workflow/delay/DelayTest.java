@@ -21,6 +21,7 @@
 package org.smartfrog.test.system.workflow.delay;
 
 import org.smartfrog.test.SmartFrogTestBase;
+import org.smartfrog.sfcore.prim.Prim;
 
 
 /**
@@ -33,7 +34,8 @@ public class DelayTest extends SmartFrogTestBase {
         super(s);
     }
     public void testDelayNormal() throws Throwable {
-        deployExpectingSuccess(FILES +"testDelayNormal.sf","testDelayNormal");
+        Prim application=deployExpectingSuccess(FILES +"testDelayNormal.sf","testDelayNormal");
+        terminateApplication(application);
     }
 
     /**
@@ -46,5 +48,5 @@ public class DelayTest extends SmartFrogTestBase {
         deployExpectingException(FILES+"testDelayAbnormalFailure.sf","testDelayAbnormalFailure",
             "XXx","XX");
     }
-        
+
 }
