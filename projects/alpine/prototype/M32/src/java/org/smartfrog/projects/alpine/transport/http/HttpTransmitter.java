@@ -145,13 +145,18 @@ public class HttpTransmitter {
             InputStream responseStream = null;
             try {
                 int statusCode = httpclient.executeMethod(method);
-                SoapMessageParser parser = tx.getContext().createParser();
-                //get the content type and drop anything following a semicolon
-                String contentType = getResponseContentType(method);
-                contentType= HttpBinder.extractBaseContentType(contentType);
-                boolean responseIsXml = HttpBinder.isValidSoapContentType(contentType);
-
                 final boolean requestFailed = statusCode != HttpStatus.SC_OK;
+                boolean responseIsXml;
+                //get the content type and drop anything following a semicolon
+                //this can be null on an empty response
+                String contentType = getResponseContentType(method);
+                if(contentType!=null) {
+                    contentType = HttpBinder.extractBaseContentType(contentType);
+                    responseIsXml = HttpBinder.isValidSoapContentType(contentType);
+                } else {
+                    responseIsXml=false;
+                }
+
                 if (requestFailed &&
                         (!responseIsXml || statusCode != HttpStatus.SC_INTERNAL_SERVER_ERROR)) {
                     //TODO: treat 500+text/xml response specially, as it is probably a SOAPFault
@@ -159,6 +164,7 @@ public class HttpTransmitter {
                     throw new HttpTransportFault(destination, method);
                 }
 
+                //response is 200, but is it HTML?
                 if (!responseIsXml) {
                     HttpTransportFault fault = new HttpTransportFault(destination, method,
                             "Wrong content type: expected "
@@ -173,6 +179,7 @@ public class HttpTransmitter {
                 //extract the response
                 responseStream = method.getResponseBodyAsStream();
                 //parse it
+                SoapMessageParser parser = tx.getContext().createParser();
                 MessageDocument response = parser.parseStream(responseStream);
                 //set our response
                 tx.getContext().setResponse(response);

@@ -82,7 +82,7 @@ public class HttpBinder {
                 HttpServletResponse.SC_INTERNAL_SERVER_ERROR : HttpServletResponse.SC_OK;
         response.setStatus(responseCode);
         response.setContentType(HttpConstants.CONTENT_TYPE_SOAP_XML + "; charset=\"utf-8\"");
-        response.addHeader("Server", HttpConstants.ALPINE_VERSION);
+        response.setHeader("Server", HttpConstants.ALPINE_VERSION);
         //PrintWriter writer = response.getWriter();
         ServletOutputStream out = response.getOutputStream();
         Serializer serializer = new Serializer(out);
@@ -139,7 +139,15 @@ public class HttpBinder {
                 || HttpConstants.CONTENT_TYPE_SOAP_XML.equals(contentType);
     }
 
+    /**
+     * Extract teh base content type; return null for none
+     * @param contentType
+     * @return
+     */
     public static String extractBaseContentType(String contentType) {
+        if(contentType==null) {
+            return null;
+        }
         int semicolon = contentType.indexOf(';');
         if (semicolon >= 0) {
             contentType = contentType.substring(0, semicolon).trim();
