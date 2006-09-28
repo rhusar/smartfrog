@@ -54,6 +54,7 @@ public class TestCompoundImpl extends EventCompoundImpl implements TestCompound 
      * that the helper thread did the work.
      */
     public static final String FORCED_TERMINATION = "timed shutdown of test components";
+    public static final String TEST_FAILED_WRONG_STATUS = "Expected action to terminate with the status ";
 
     public TestCompoundImpl() throws RemoteException {
     }
@@ -95,7 +96,6 @@ public class TestCompoundImpl extends EventCompoundImpl implements TestCompound 
                 FORCED_TERMINATION,
                 !expectTerminate);
         actionTerminator.start();
-        //Workflow integration
 
     }
 
@@ -131,7 +131,7 @@ public class TestCompoundImpl extends EventCompoundImpl implements TestCompound 
      */
     public void sfTerminatedWith(TerminationRecord status, Prim comp) {
 
-        if (!terminating) {
+        if (terminating) {
             super.sfTerminatedWith(status,comp);
             return;
         }
@@ -152,14 +152,20 @@ public class TestCompoundImpl extends EventCompoundImpl implements TestCompound 
                         if (description == null) {
                             description = "";
                         }
+
                         if (description.indexOf(exitText) >= 0) {
                             expected &= true;
+                        } else {
+                            sfLog().debug("Exit text mismatch");
+                            expected=false;
                         }
                     }
 
+                } else {
+                    sfLog().debug("Exit type mismatch");
                 }
                 if (!expected) {
-                    String errorText = "Expected action to terminate with the status " + exitType + "\n"
+                    String errorText = TEST_FAILED_WRONG_STATUS + exitType + "\n"
                             + "and error text " + exitText + "\n"
                             + "but got " + status;
                     sfLog().error(errorText);
@@ -170,7 +176,7 @@ public class TestCompoundImpl extends EventCompoundImpl implements TestCompound 
         //TODO: start teardown, etc.
 
         //trigger workflow termination.
-        new ComponentHelper(this).targetForWorkflowTermination(status);
+        new ComponentHelper(this).sfSelfDetachAndOrTerminate(status);
     }
 
     protected Prim deployAction() throws RemoteException, SmartFrogDeploymentException {

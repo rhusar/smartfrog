@@ -162,11 +162,28 @@ public class ComponentHelper {
      * @param refId Reference - id of terminating component. If null, triggers a call to sfCompleteNameSafe.
      * @param thrown Thrown fault
      * @see TerminationRecord
+     * @return true if termination has been scheduled.
      */
-    public void sfSelfDetachAndOrTerminate(String terminationType,
+    public boolean sfSelfDetachAndOrTerminate(String terminationType,
                                            String terminationMessage,
                                            Reference refId,
                                            Throwable thrown) {
+
+        //create a termination record if we are exitiing
+        TerminationRecord record;
+        record = createTerminationRecord(terminationType, terminationMessage, refId, thrown);
+        return sfSelfDetachAndOrTerminate(record);
+    }
+
+    /**
+     * Method that can be invoked in any PrimImpl to trigger the detach and/or termination of a component
+     * according to the values of the boolean attributes 'sfShouldDetach', 'sfShouldTerminate'
+     * and 'sfShouldTerminateQuietly'
+     * @param record the pre-constructed termination record to use if termination is started
+     * @return true if termination has been scheduled.
+     */
+
+     public boolean sfSelfDetachAndOrTerminate(TerminationRecord record) {
         boolean shouldTerminate = resolveQuietly(
                 ShouldDetachOrTerminate.ATTR_SHOULD_TERMINATE,
                 false);
@@ -182,33 +199,43 @@ public class ComponentHelper {
         //should we terminate (either noisily or not)
         boolean terminateRequired = shouldTerminate || shouldTerminateQuietly;
 
-        if (!terminateRequired && !shouldDetach) {
-            //bail out of no work is needed
-            return;
+        if (terminateRequired || shouldDetach) {
+            targetForTermination(record, !terminateRequired, shouldDetach, shouldTerminateQuietly);
         }
-        //create a termination record if we are exitiing
-        TerminationRecord record = null;
-        if (terminateRequired) {
-            //set up a termination record
-            if (terminationType == null) {
-                //select a default termination type
-                terminationType = thrown == null ?
-                        TerminationRecord.NORMAL : TerminationRecord.ABNORMAL;
-            }
-            if (terminationMessage == null) {
-                //fill in a default termination message
-                terminationMessage = "Self Detach and\\or Termination: ";
-            }
-            if (refId == null) {
-                refId = completeNameSafe();
-            }
-            //create the new record.
-            record = new TerminationRecord(terminationType,
-                    terminationMessage,
-                    refId,
-                    thrown);
+        return terminateRequired;
+    }
+
+    /**
+     *
+     * @param terminationType - termination type, system recognized types are "normal", "abnormal" and "externalReferenceDead".
+     *  If this is null, then normal/abnormal is chosen based on whether thrown is null or not
+     * @param terminationMessage - description of termination. Can be null
+     * @param refId Reference - id of terminating component. If null, triggers a call to sfCompleteNameSafe.
+     * @param thrown Thrown fault
+     * @return the new termination record
+     */
+    public TerminationRecord createTerminationRecord(String terminationType, String terminationMessage,
+                                                     Reference refId, Throwable thrown) {
+        TerminationRecord record;
+        //set up a termination record
+        if (terminationType == null) {
+            //select a default termination type
+            terminationType = thrown == null ?
+                    TerminationRecord.NORMAL : TerminationRecord.ABNORMAL;
         }
-        targetForTermination(record, !terminateRequired, shouldDetach, shouldTerminateQuietly);
+        if (terminationMessage == null) {
+            //fill in a default termination message
+            terminationMessage = "Self Detach and\\or Termination: ";
+        }
+        if (refId == null) {
+            refId = completeNameSafe();
+        }
+        //create the new record.
+        record = new TerminationRecord(terminationType,
+                terminationMessage,
+                refId,
+                thrown);
+        return record;
     }
 
     /**
