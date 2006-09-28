@@ -190,38 +190,42 @@ MORE :
   < ~[] >
 }
 
+/**
+ * if you change this, dont forget to update the reference documentation
+ */
 TOKEN : /* reserved words */
 {
-   <SEMICOLON: ";">
- | <COMMA: ",">
- | <LBRACE: "{">
- | <RBRACE: "}">
- | <LBRACKET: "[">
- | <RBRACKET: "]">
- | <VECTORSTART: "[|">
- | <VECTOREND: "|]" >
- | <REFPARTSEP: ":">
- | <NULL: "NULL">
- | <UNIQUE: "--">
- | <EXTENDS: "extends">
- | <LAZY: "LAZY">
- | <DATA: "DATA">
- | <OPTIONAL: "OPTIONAL">
- | <ROOT: "ROOT">
- | <ATTRIB: "ATTRIB">
- | <HERE: "HERE">
- | <THIS: "THIS">
- | <PROPERTY: "PROPERTY">
- | <IPROPERTY: "IPROPERTY">
- | <PARENT: "PARENT">
- | <HOST: "HOST">
- | <PROCESS: "PROCESS">
- | <APPLY: "APPLY">
+   <APPLY: "APPLY">
  | <ASSERT: "ASSERT">
- | <INCLUDE: "#include">
+ | <ATTRIB: "ATTRIB">
  | <CODEBASE: "#codebase">
- | <TRUE: "true">
+ | <COMMA: ",">
+ | <DATA: "DATA">
+ | <EXTENDS: "extends">
  | <FALSE: "false">
+ | <HERE: "HERE">
+ | <HOST: "HOST">
+ | <INCLUDE: "#include">
+ | <IPROPERTY: "IPROPERTY">
+ | <LAZY: "LAZY">
+ | <LBRACE: "{">
+ | <LBRACKET: "[">
+ | <NULL: "NULL">
+ | <OPTIONAL: "OPTIONAL">
+ | <PARENT: "PARENT">
+ | <PROCESS: "PROCESS">
+ | <PROPERTY: "PROPERTY">
+ | <RBRACE: "}">
+ | <RBRACKET: "]">
+ | <REFPARTSEP: ":">
+ | <ROOT: "ROOT">
+ | <SEMICOLON: ";">
+ | <TBD: "TBD">
+ | <THIS: "THIS">
+ | <TRUE: "true">
+ | <VECTOREND: "|]" >
+ | <VECTORSTART: "[|">
+ | <UNIQUE: "--">
 
  | <OPSTART: "(">
  | <OPEND: ")">
@@ -249,7 +253,6 @@ TOKEN : /* reserved words */
  | <ELSE: "ELSE">
  | <FI: "FI">
 
- | <TBD: "TBD">
 }
 
 TOKEN :
