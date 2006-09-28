@@ -137,3 +137,41 @@ FailAbnormal extends Fail {
   normal false;
 }
  
+
+/**
+ * A component to create and throw an exception at startup time
+ * A RuntimeException, RemoteException or SmartFrog exception is thrown as is.
+ * Any other kind of exception is wrapped by a SmartFrog exception.
+ *
+ * This is clearly a test component; its aim in life is to force suprises on containers
+ * and to see how they handle such things in a replicable manner.
+ */
+ExceptionThrower extends Prim {
+  schema extends Schema {
+    classname extends String;
+
+    message extends OptionalString;
+
+    }
+  sfClass "org.smartfrog.services.assertions.ExceptionThrowerImpl";
+}
+
+NullPointerException extends ExceptionThrower {
+  classname "java.lang.NullPointerException";
+}
+
+
+SmartFrogException extends ExceptionThrower {
+  classname "org.smartfrog.sfcore.common.SmartFrogException";
+}
+
+RemoteException extends ExceptionThrower {
+  classname "java.rmi.RemoteException";
+  message "simulated remote exception";
+}
+
+FileNotFoundException extends ExceptionThrower {
+  file "";
+  classname "java.io.FileNotFoundException";
+  message ("Missing file "++file);
+}

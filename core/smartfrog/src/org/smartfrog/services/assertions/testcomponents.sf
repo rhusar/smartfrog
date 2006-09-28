@@ -49,6 +49,9 @@ ITS MEDIA, AND YOU HEREBY WAIVE ANY CLAIM IN THIS REGARD.
 
 TestCompound extends ActionCompound {
   TestCompoundSchema extends Schema {
+    description extends String {
+      description "description of the test";
+    }
     undeployAfter extends Integer {
       description "time in milliseconds to undeploy the action and assertions; use -1 for no limit";
     }
@@ -100,6 +103,10 @@ TestCompound extends ActionCompound {
     }
 
    }
+  sfClass "org.smartfrog.services.assertions.TestCompoundImpl";
+   //by default, this is a workflow component
+  sfShouldTerminate true;
+  description "";
 
   //default to one minute
   undeployAfter 60000;
@@ -119,14 +126,19 @@ TestCompound extends ActionCompound {
 /**
  * this component expects the child to deploy
  */
-expectDeploy extends TestCompound {
+ExpectDeploy extends TestCompound {
+
+}
+
+DeploySequence extends TestCompound {
 
 }
 
 /**
  * this component expects the child to terminate itself normally.
  */
-expectTerminate extends TestCompound {
+ExpectTerminate extends TestCompound {
+  description "Expect the deployed action to terminate itself normally, as a successful workflow";
   expectTerminate true;
   exitType "normal";
 }
@@ -135,32 +147,31 @@ expectTerminate extends TestCompound {
  * an abstract component to represent failures
  */
 FailingTestCompound extends TestCompound {
+
+  description "The deployment is expected to fail";
+
   FailureCompoundSchema extends Schema {
 
-
     exceptions extends OptionalVector {
-      description ##vector of tuples containing classname and error text substrings to match on,
-      all down the nested exception chain. e.g.
-      [["SmartFrogResolutionException","unresolved reference"]];
-      or
-      [["",""],["NullPointerException",""];
 
-      #
-      ;
+      description ##vector of tuples containing classname and error text substrings to match on,
+        all down the nested exception chain. e.g.
+        [["SmartFrogResolutionException","unresolved reference"]];
+        or
+        [["",""],["NullPointerException",""];
+      #;
     }
   }
 
   expectTerminate true;
   exitType "abnormal";
-
-
 }
 
 
 /**
  * This component expects failure on deployment
  */
-expectDeployFailure extends FailingTestCompound {
+ExpectDeployFailure extends FailingTestCompound {
 
 }
 
@@ -171,7 +182,7 @@ expectDeployFailure extends FailingTestCompound {
  * The component will run through a set of sfPings() to force this earlier than normal,
  * if forcePing==true
  */
-expectLivenessFailure extends FailingTestCompound {
+ExpectLivenessFailure extends FailingTestCompound {
 
   forcePing true;
   pingInterval 0;

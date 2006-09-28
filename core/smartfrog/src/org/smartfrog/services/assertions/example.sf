@@ -38,12 +38,12 @@ ITS MEDIA, AND YOU HEREBY WAIVE ANY CLAIM IN THIS REGARD.
 
 sfConfig extends Sequence {
 
-  testemptySequence extends expectTerminate {
+  testemptySequence extends ExpectTerminate {
     action extends Sequence {
     }
   }
 
-  testFailure extends expectDeployFailure {
+  testFailure extends ExpectDeployFailure {
     action extends FailAbnormal {
         message "failure message";
     }
