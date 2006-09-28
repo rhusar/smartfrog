@@ -286,7 +286,7 @@
     <property name="deploy.host" value="localhost"/>
     <property name="application.name" value="alpine"/>
     <property name="deploy.sf"
-        value="alpine.sf"/>
+        value="org/smartfrog/test/system/projects/alpine/alpine_on_jetty.sf"/>
     <property name="default.ini" location="test/files/default.ini"/>
     <property name="default.sf" location="test/files/default.sf"/>
   </target>

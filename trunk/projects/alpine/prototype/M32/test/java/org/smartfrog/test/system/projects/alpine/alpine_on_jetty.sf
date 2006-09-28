@@ -73,7 +73,7 @@ server extends AlpineServerOnJetty {
 
 sfConfig extends server {
 
-
+    
     port 6060;
 
     livenessEnabled false;

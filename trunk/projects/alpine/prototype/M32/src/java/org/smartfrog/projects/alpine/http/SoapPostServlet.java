@@ -48,6 +48,7 @@ import java.util.List;
 public class SoapPostServlet extends ServletBase {
     public static final String ERROR_NO_HANDLER = "No handlers defined for the endpoint";
     public static final String TEXT_HTML = "text/html";
+    protected static final String SERVER_INFO = "Alpine";
 
     /**
      * get the alpine context from the servlet context
@@ -100,8 +101,20 @@ public class SoapPostServlet extends ServletBase {
     protected PrintWriter beginHtmlResponse(HttpServletResponse response, int code) throws IOException {
         response.setStatus(code);
         response.setContentType(TEXT_HTML);
+        response.setHeader("Server", HttpConstants.ALPINE_VERSION);
+        turnOffCaching(response);
         PrintWriter writer = response.getWriter();
         return writer;
+    }
+
+    /**
+     * Use wherever we dont want caching on an GET.
+     * @param response
+     */
+    protected void turnOffCaching(HttpServletResponse response) {
+
+        response.setHeader("Cache-Control","no-cache");
+        response.setHeader("Pragma", "no-cache");
     }
 
 
