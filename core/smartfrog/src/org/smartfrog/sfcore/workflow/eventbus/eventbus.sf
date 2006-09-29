@@ -64,3 +64,16 @@ ActionCompound extends EventCompound {
   }
 }
 
+
+/**
+ * A compound that can have a child component
+ * called 'actions', or a list of components as direct children.
+ * It is up to the component to decide whether or not an empty list is allowed.
+ */
+ActionsCompound extends EventCompound {
+  actionsCompoundSchema extends Schema {
+    actions extends OptionalCD {
+      description "a list of components to deploy as part of the workflow";
+    }
+  }
+}

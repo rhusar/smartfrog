@@ -30,7 +30,7 @@ For more information: www.smartfrog.org
  * terminates abnormally, the Parallel combinator does too.
  *
  */
-Parallel extends EventCompound {
+Parallel extends ActionsCompound {
     sfClass "org.smartfrog.sfcore.workflow.combinators.Parallel";
     parallelSchema extends Schema {
       asynchCreateChild extends OptionalBoolean;
