@@ -21,27 +21,26 @@
 
 package org.smartfrog.services.deployapi.engine;
 
-import nu.xom.Element;
 import nu.xom.Attribute;
+import nu.xom.Element;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.ggf.cddlm.generated.api.CddlmConstants;
+import org.smartfrog.projects.alpine.om.base.SoapElement;
 import org.smartfrog.services.deployapi.binding.DescriptorHelper;
 import org.smartfrog.services.deployapi.binding.XomHelper;
 import org.smartfrog.services.deployapi.components.DeploymentServer;
+import org.smartfrog.services.deployapi.notifications.EventSubscriberManager;
 import org.smartfrog.services.deployapi.system.Constants;
 import org.smartfrog.services.deployapi.system.Utils;
 import org.smartfrog.services.deployapi.transport.wsrf.PropertyMap;
 import org.smartfrog.services.deployapi.transport.wsrf.WSRPResourceSource;
 import org.smartfrog.services.deployapi.transport.wsrf.WsrfUtils;
-import org.smartfrog.services.deployapi.transport.endpoints.alpine.SubscriptionService;
-import org.smartfrog.services.deployapi.notifications.EventSubscriberManager;
 import org.smartfrog.services.filesystem.FileSystem;
 import org.smartfrog.services.filesystem.filestore.AddedFilestore;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLivenessException;
 import org.smartfrog.sfcore.prim.Prim;
-import org.smartfrog.projects.alpine.om.base.SoapElement;
 
 import javax.xml.namespace.QName;
 import java.io.File;
@@ -49,9 +48,9 @@ import java.io.IOException;
 import java.math.BigInteger;
 import java.net.URL;
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -71,10 +70,6 @@ public class ServerInstance implements WSRPResourceSource {
     private PropertyMap properties;
 
     private JobRepository jobs;
-
-    private ActionQueue queue = new ActionQueue();
-
-    private ActionWorker workers[];
 
     private AddedFilestore filestore;
 
@@ -169,11 +164,6 @@ public class ServerInstance implements WSRPResourceSource {
         systemsURL = new URL(protocol, hostname, port, path);
         subscriptionURL = new URL(protocol, hostname, port, subscriptionsPath);
         jobs = new JobRepository(systemsURL, this);
-        workers = new ActionWorker[WORKERS];
-        for (int i = 0; i < workers.length; i++) {
-            workers[i] = new ActionWorker(queue, TIMEOUT);
-            workers[i].start();
-        }
         if (tempdir == null) {
             tempdir = File.createTempFile("filestore", ".dir");
             //little bit of a race condition here.
@@ -181,6 +171,7 @@ public class ServerInstance implements WSRPResourceSource {
         }
         descriptorHelper = new DescriptorHelper(tempdir);
         filestore = new AddedFilestore(tempdir);
+        subscriptions=new EventSubscriberManager(createEventExecutorService());
         log.debug("Creating server instance " + toString());
 
         //now create our property map
@@ -192,11 +183,9 @@ public class ServerInstance implements WSRPResourceSource {
      * request for every worker
      */
     public void terminate() throws RemoteException {
-        for (int i = 0; i < workers.length; i++) {
-            queue.push(new EndWorkerAction());
-        }
         filestore.deleteAllEntries();
         jobs.terminate();
+        subscriptions.shutdown();
     }
 
     /**
@@ -262,15 +251,6 @@ public class ServerInstance implements WSRPResourceSource {
 
     public String getResourceID() {
         return resourceID;
-    }
-
-    /**
-     * queue an action for execution
-     *
-     * @param action
-     */
-    public void queue(Action action) {
-        queue.push(action);
     }
 
     private void initPropertyMap() {

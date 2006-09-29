@@ -422,7 +422,7 @@ because javac was bailing out with some error about unzipping -->
   <!-- dependencies and setup logic needed to run tests-->
   <!-- ========================================================== -->
 
-  <target name="ready-to-test" depends="unittest.ready-to-test">
+  <target name="ready-to-test" depends="unittest.ready-to-test,init,dist,package-tests">
     <property name="test.endpoint" value="http://localhost:8080/alpine/portal/"/>
   </target>
 
@@ -559,11 +559,14 @@ because javac was bailing out with some error about unzipping -->
         #include "/${deploy.sf}"
         sfCodeBase PROPERTY org.smartfrog.codebase;
         sfConfig extends Application {
-        sfProcessName "deployapi-subprocess";
+        //sfProcessName "deployapi-subprocess";
         }
       </application>
     </sf:deploy>
   </target>
+
+
+
 
   <target name="init-deploy-test"
     depends="init-deploy-properties,init-codebase">
@@ -624,6 +627,57 @@ because javac was bailing out with some error about unzipping -->
   <target name="test-redeploy" depends="test-undeploy,test-deploy"/>  
 
   <target name="deploy-and-test" depends="deploy,test-deploy" />
+
+
+  <!-- ========================================================== -->
+  <!-- this is an override point -->
+  <!-- system tests : anything that is tested on a live daemon
+       not to be run on public machines for
+       security reasons, unless security is active-->
+
+
+  <target name="system-tests" depends="ready-to-test"
+      if="system.tests.enabled"
+      description="run the unit tests if unit.tests.enabled is set">
+    <sf-functionaltest testTimeout="600" shutdownTime="10">
+      <application>
+        <sf-startdaemon-debug failonerror="false" spawn="false"/>
+      </application>
+      <probe>
+        <socket port="${smartfrog.daemon.port}" server="localhost"/>
+      </probe>
+      <test>
+        <core:junit
+            errorProperty="test.failed"
+            failureProperty="test.failed"
+            includeAntRuntime="true"
+            >
+          <sysproperty key="test.classes.dir"
+              value="${test.classes.dir}"/>
+          <!--all properties beginning with test-->
+          <syspropertyset>
+            <propertyref prefix="test."/>
+          </syspropertyset>
+          <classpath>
+            <path refid="tests.run.classpath"/>
+          </classpath>
+          <batchtest todir="${test.data.dir}">
+            <!-- bulk test case -->
+            <fileset dir="${test.classes.dir}">
+              <include name="org/smartfrog/**/system/**/*Test.class"/>
+            </fileset>
+          </batchtest>
+        </core:junit>
+        <fail if="failure">Junit failed</fail>
+      </test>
+      <teardown>
+        <sf-stopdaemon failonerror="false"/>
+        <sf-junitreport data="${test.data.dir}"
+            reports="${test.reports.dir}"
+            />
+      </teardown>
+    </sf-functionaltest>
+  </target>
 
   <!-- ========================================================== -->
   <!-- installation includes the test jars as well as all the dependencies-->
@@ -734,6 +788,9 @@ because javac was bailing out with some error about unzipping -->
     <property name="hp.server" value="deployapi.iseran.com" />
     <property name="epr.hp" value="http://${hp.server}:8080/alpine/portal/"/>
     <property name="happy.hp" value="http://${hp.server}:8080/alpine/portal/?${query}"/>
+    <property name="localhost.server" value="localhost"/>
+    <property name="epr.localhost" value="http://${localhost.server}:8080/alpine/portal/"/>
+    <property name="happy.localhost" value="http://${localhost.server}:8080/alpine/portal/?${query}"/>
 
 
     <property name="test.interop.dir" location="${build.dir}/test/interop/"/>
@@ -819,6 +876,7 @@ because javac was bailing out with some error about unzipping -->
                 </fileset>
               </batchtest>
             </core:junit>
+            <echo>Report is in ${test.interop.reports.dir}/@{endpoint}</echo>
             <core:test-report data="${test.interop.data.dir}/@{endpoint}"
                 reports="${test.interop.reports.dir}/@{endpoint}"/>
           </ac:then>
@@ -837,6 +895,12 @@ because javac was bailing out with some error about unzipping -->
   
       </sequential>
     </macrodef>    
+  </target>
+
+
+  <target name="interop-localhost" depends="prepare-interop-tests"
+      description="test against localhost">
+    <interop-test endpoint="localhost"/>
   </target>
 
   <target name="interop-hp" depends="prepare-interop-tests"

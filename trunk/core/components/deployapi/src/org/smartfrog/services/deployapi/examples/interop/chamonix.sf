@@ -25,9 +25,7 @@ For more information: www.smartfrog.org
  */
 sfConfig extends Pelvoux {
 
- alpine:hostname LAZY alpine:deployapi:engine:servletContext:ipaddr;
-
- //alpine:hostname "chamonix.hpl.hp.com";
+ alpine:hostname "chamonix.hpl.hp.com";
 
   //deployapi:liveness true;
 }

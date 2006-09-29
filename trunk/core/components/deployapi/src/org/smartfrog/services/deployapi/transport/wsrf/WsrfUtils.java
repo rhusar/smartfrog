@@ -20,13 +20,13 @@
 package org.smartfrog.services.deployapi.transport.wsrf;
 
 import nu.xom.Element;
+import nu.xom.Attribute;
 import static org.ggf.cddlm.generated.api.CddlmConstants.MUWS_CAPABILITY_MANAGEABILITY_CHARACTERISTICS;
 import static org.ggf.cddlm.generated.api.CddlmConstants.MUWS_CAPABILITY_MANAGEABILITY_REFERENCES;
-import static org.ggf.cddlm.generated.api.CddlmConstants.MUWS_P1_NAMESPACE;
 import static org.ggf.cddlm.generated.api.CddlmConstants.PROPERTY_MUWS_MANAGEABILITY_CAPABILITY;
 import org.ggf.cddlm.generated.api.CddlmConstants;
 import org.smartfrog.projects.alpine.om.base.SoapElement;
-import org.smartfrog.projects.alpine.xmlutils.XsdUtils;
+import org.smartfrog.projects.alpine.wsa.AlpineEPR;
 import org.smartfrog.services.xml.utils.ResourceLoader;
 import org.smartfrog.services.xml.utils.XmlCatalogResolver;
 import org.smartfrog.services.deployapi.system.Constants;
@@ -146,6 +146,12 @@ public final class WsrfUtils {
                 Constants.WSRF_WSRP_NAMESPACE);
     }
 
+    public static SoapElement WsntElement(String name) {
+        return new SoapElement(
+                "wsnt:" + name,
+                Constants.WSRF_WSNT_NAMESPACE);
+    }
+
     /**
      * Turn an element into a zero or one-element list
      * @param elt can be null for an empty list
@@ -157,5 +163,60 @@ public final class WsrfUtils {
             list.add(elt);
         }
         return list;
+    }
+
+    /* create a message like
+<wsnt:Subscribe>
+<wsnt:ConsumerReference>
+wsa:endpointReference
+</wsnt: ConsumerReference>
+<wsnt:TopicExpression dialect = “xsd:anyURI”>
+{any}
+</wsnt:TopicExpression>
+<wsnt:UseNotify> xsd:boolean </wsnt:UseNotify>?
+<wsnt:Precondition> wsrp:QueryExpression </Precondition>?
+<wsnt:Selector> wsrp:QueryExpression </wsnt:Selector>?
+<wsnt:SubscriptionPolicy> {any} </wsnt:SubscriptionPolicy>?
+<wsnt:InitialTerminationTime>
+xsd:dateTime
+</wsnt:InitialTerminationTime>?
+</wsnt: Subscribe>
+*/
+
+    /**
+     * Creates a simple request. Simple topics only, obviously.
+     * @param epr callback epr
+     * @param topic topic to use
+     * @param useNotify whether to raw notify or not
+     * @param terminationTime term time (optional)
+     * @return a configured subscription
+     */
+    public static SoapElement createSubscriptionRequest(AlpineEPR epr,
+                                                 QName topic,
+                                                 boolean useNotify,
+                                                 String terminationTime) {
+        SoapElement subscribe= WsntElement(WSNConstants.SUBSCRIBE);
+        SoapElement consumer;
+        consumer = epr.toXomInNewNamespace(
+                WSNConstants.CONSUMER_REFERENCE,
+                Constants.WSRF_WSNT_NAMESPACE, "wsnt",
+                Constants.WS_ADDRESSING_NAMESPACE, "wsa");
+        subscribe.appendChild(consumer);
+        SoapElement topicElement=WsntElement(WSNConstants.TOPIC_EXPRESSION);
+        topicElement.addAttribute(new Attribute(WSNConstants.DIALECT,
+                Constants.WSRF_WSNT_NAMESPACE,
+                WSNConstants.SIMPLE_DIALECT));
+        topicElement.appendQName(topic);
+        subscribe.appendChild(topicElement);
+        SoapElement notifyElement=WsntElement(WSNConstants.USE_NOTIFY);
+        notifyElement.appendChild(Boolean.toString(useNotify));
+        subscribe.appendChild(notifyElement);
+        if(terminationTime!=null) {
+            SoapElement itt = WsntElement(WSNConstants.INITIAL_TERMINATION_TIME);
+            itt.appendChild(terminationTime);
+            subscribe.appendChild(itt);
+        }
+        return subscribe;
+
     }
 }

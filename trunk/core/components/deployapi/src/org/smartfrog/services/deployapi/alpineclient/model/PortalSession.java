@@ -60,7 +60,6 @@ public class PortalSession extends WsrfSession {
         SoapElement resid = XomHelper.apiElement("ResourceId", id);
         SoapElement request;
         request = XomHelper.apiElement(API_ELEMENT_LOOKUPSYSTEM_REQUEST, resid);
-        //return queue(Constants.API_PORTAL_OPERATION_LOOKUPSYSTEM, request);
         return queue(request);
     }
 
