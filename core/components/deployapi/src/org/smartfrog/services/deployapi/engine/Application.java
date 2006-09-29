@@ -27,6 +27,8 @@ import org.smartfrog.projects.alpine.om.base.SoapElement;
 import org.smartfrog.projects.alpine.wsa.AlpineEPR;
 import org.smartfrog.services.deployapi.binding.DescriptorHelper;
 import org.smartfrog.services.deployapi.binding.XomHelper;
+import org.smartfrog.services.deployapi.notifications.Event;
+import org.smartfrog.services.deployapi.notifications.EventSubscriberManager;
 import org.smartfrog.services.deployapi.system.Constants;
 import org.smartfrog.services.deployapi.system.DeploymentLanguage;
 import org.smartfrog.services.deployapi.system.LifecycleStateEnum;
@@ -40,14 +42,12 @@ import static org.smartfrog.services.deployapi.transport.faults.FaultRaiser.tran
 import org.smartfrog.services.deployapi.transport.wsrf.PropertyMap;
 import org.smartfrog.services.deployapi.transport.wsrf.WSRPResourceSource;
 import org.smartfrog.services.deployapi.transport.wsrf.WsrfUtils;
-import org.smartfrog.services.deployapi.notifications.EventSubscriberManager;
-import org.smartfrog.services.deployapi.notifications.Event;
 import org.smartfrog.services.filesystem.filestore.AddedFilestore;
 import org.smartfrog.services.filesystem.filestore.FileEntry;
+import org.smartfrog.sfcore.common.ActionDeploy;
 import org.smartfrog.sfcore.common.ConfigurationDescriptor;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLivenessException;
-import org.smartfrog.sfcore.common.ActionDeploy;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 
@@ -55,12 +55,10 @@ import javax.xml.namespace.QName;
 import java.io.File;
 import java.io.IOException;
 import java.lang.ref.WeakReference;
-import java.net.URI;
-import java.net.URL;
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.ArrayList;
 
 
 /**
@@ -167,6 +165,7 @@ public class Application implements WSRPResourceSource {
     public Application(String id, ServerInstance owner) {
         setId(id);
         this.owner=owner;
+        subscribers=new EventSubscriberManager(owner.createEventExecutorService());
         addInitialProperties();
         enterStateNotifying(LifecycleStateEnum.instantiated, "id=" + id);
     }

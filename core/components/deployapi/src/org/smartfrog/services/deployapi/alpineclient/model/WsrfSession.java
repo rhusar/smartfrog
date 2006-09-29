@@ -34,6 +34,7 @@ import org.smartfrog.projects.alpine.xmlutils.XsdUtils;
 import org.smartfrog.projects.alpine.core.MessageContext;
 import org.smartfrog.services.deployapi.system.Constants;
 import org.smartfrog.services.deployapi.transport.wsrf.WsrfUtils;
+import org.smartfrog.services.deployapi.transport.wsrf.WSNConstants;
 
 import javax.xml.namespace.QName;
 import java.util.List;
@@ -77,6 +78,9 @@ public abstract class WsrfSession extends Session {
     public static final QName QNAME_WSRF_RL_DESTROY_RESPONSE = new QName(
             CddlmConstants.WSRF_WSRL_NAMESPACE,
             CddlmConstants.WSRF_ELEMENT_DESTROY_RESPONSE);
+    public static final QName QNAME_WSNT_SUBSCRIBE_RESPONSE = new QName(
+            CddlmConstants.WSRF_WSNT_NAMESPACE,
+            CddlmConstants.WSNT_ELEMENT_SUBSCRIBE_RESPONSE);
 
     protected WsrfSession(AlpineEPR endpoint, boolean validating, TransmitQueue queue) {
         super(endpoint, null, validating);
@@ -308,5 +312,51 @@ public abstract class WsrfSession extends Session {
      */
     public void destroy() {
         endDestroy(beginDestroy());
+    }
+
+    /**
+     * subscribe to an endpoint
+     * @param topic qname to subscribe to
+     * @param callback epr for messages
+     * @param useNotify use notify flag
+     * @param expiryTime optional expiry time
+     * @return the transmission
+     */
+    public Transmission beginSubscribe(QName topic, String callback, boolean useNotify, String expiryTime) {
+        AlpineEPR epr=new AlpineEPR(callback);
+        SoapElement subscription=WsrfUtils.createSubscriptionRequest(epr, topic, useNotify, expiryTime);
+        return queue(subscription);
+    }
+
+    /**
+     * End the subscription, extract the EPR. This is validated
+     * @param tx
+     * @return
+     */
+    public AlpineEPR endsSubscribe(Transmission tx) {
+        tx.blockForResult(getTimeout());
+        Element payload = extractResponse(tx, QNAME_WSNT_SUBSCRIBE_RESPONSE);
+        Element address=payload.getFirstChildElement(WSNConstants.SUBSCRIPTION_REFERENCE,
+                Constants.WSRF_WSNT_NAMESPACE);
+        if(address==null) {
+            throw new AlpineRuntimeException("Missing element "+ WSNConstants.SUBSCRIPTION_REFERENCE
+                    + "in "+payload);
+        }
+        //get the WSA address back
+        AlpineEPR epr = new AlpineEPR(address, CddlmConstants.WS_ADDRESSING_NAMESPACE);
+        epr.validate();
+        return epr;
+    }
+
+    /**
+     * subscribe to an endpoint
+     * @param topic qname to subscribe to
+     * @param callback epr for messages
+     * @param useNotify use notify flag
+     * @param expiryTime optional expiry time
+     * @return the transmission
+     */
+    public AlpineEPR subscribe(QName topic, String callback, boolean useNotify, String expiryTime) {
+        return endsSubscribe(beginSubscribe(topic, callback, useNotify, expiryTime));
     }
 }

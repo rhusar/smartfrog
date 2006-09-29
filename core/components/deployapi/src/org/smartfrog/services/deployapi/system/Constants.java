@@ -190,9 +190,9 @@ public class Constants extends CddlmConstants {
      * Path under services where our systems are hosted.
      * {@value}
      */
-    public static final String SYSTEM_PATH = "system";
+    public static final String SYSTEM_PATH = "system/";
     /** {@value} */
-    public static final String SUBSCRIPTION_PATH = "subscription";
+    public static final String SUBSCRIPTION_PATH = "subscription/";
     /** {@value} */
     public static final String SYSTEM_REFERENCE = "systemReference";
     /** {@value} */

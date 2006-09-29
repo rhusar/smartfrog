@@ -30,6 +30,7 @@ import org.smartfrog.services.deployapi.notifications.EventSubscription;
 import org.smartfrog.services.deployapi.notifications.Event;
 import org.smartfrog.projects.alpine.wsa.AlpineEPR;
 import org.smartfrog.projects.alpine.om.base.SoapElement;
+import org.smartfrog.projects.alpine.faults.AlpineRuntimeException;
 
 import java.util.List;
 import java.util.UUID;
@@ -72,8 +73,6 @@ public class NotificationSubscription implements EventSubscription, WSRPResource
     private String subscriptionURL;
     private SoapElement subscriptionEndpointer;
     private AlpineEPR subscriptionEPR;
-    protected static final String SUBSCRIPTION_REFERENCE = "SubscriptionReference";
-    protected static final String SUBSCRIBE_RESPONSE = "SubscribeResponse";
 
     public NotificationSubscription() {
     }
@@ -81,6 +80,8 @@ public class NotificationSubscription implements EventSubscription, WSRPResource
     /**
      * @throws org.smartfrog.services.deployapi.transport.faults.BaseException
      * @param request incoming request
+     * @throws org.smartfrog.services.deployapi.transport.faults.BaseException
+     * @throws AlpineRuntimeException ifthere is trouble parsing/validating the address
      */
     public NotificationSubscription(Element request) {
         parse(request);
@@ -112,28 +113,12 @@ public class NotificationSubscription implements EventSubscription, WSRPResource
     }
 
     /**
-     * Returns a string representation of the object. In general, the
-     * <code>toString</code> method returns a string that
-     * "textually represents" this object. The result should
-     * be a concise but informative representation that is easy for a
-     * person to read.
-     * It is recommended that all subclasses override this method.
-     * <p/>
-     * The <code>toString</code> method for class <code>Object</code>
-     * returns a string consisting of the name of the class of which the
-     * object is an instance, the at-sign character `<code>@</code>', and
-     * the unsigned hexadecimal representation of the hash code of the
-     * object. In other words, this method returns a string equal to the
-     * value of:
-     * <blockquote>
-     * <pre>
-     * getClass().getName() + '@' + Integer.toHexString(hashCode())
-     * </pre></blockquote>
+     * Returns a string representation of the object.
      *
      * @return a string representation of the object.
      */
     public String toString() {
-        return super.toString();
+        return callback==null?"unbound notification":callback.toString();
     }
 
     private void addWsntResource(String name,Element value) {
@@ -150,8 +135,9 @@ public class NotificationSubscription implements EventSubscription, WSRPResource
                 value);
     }
     /**
-     *
+     * Parse the request
      * @throws org.smartfrog.services.deployapi.transport.faults.BaseException
+     * @throws AlpineRuntimeException ifthere is trouble parsing/validating the address
      * @param request
      */
     private void parse(Element request) {
@@ -163,6 +149,7 @@ public class NotificationSubscription implements EventSubscription, WSRPResource
         Element endref = XomHelper.getElement(request, "wsnt:"+CONSUMER_REFERENCE, true);
         addWsntResource(CONSUMER_REFERENCE,endref);
         callback = new AlpineEPR(endref, Constants.WS_ADDRESSING_NAMESPACE);
+        callback.validate();
         Element topicExpression =
                 XomHelper.getElement(request, "wsnt:"+TOPIC_EXPRESSION, true);
         String dialect =
@@ -170,7 +157,8 @@ public class NotificationSubscription implements EventSubscription, WSRPResource
         if (!dialect.equals(WSNConstants.SIMPLE_DIALECT)) {
             throw FaultRaiser.raiseBadArgumentFault("Unsupported Dialect " + dialect);
         }
-        addWsntResource(SUBSCRIPTION_POLICY, topicExpression.getValue());
+
+        addWsntResource(TOPIC_EXPRESSION, topicExpression);
         String useNotify = XomHelper.getElementValue(request, "wsnt:"+USE_NOTIFY, false);
         if (useNotify != null) {
             useNotifyMessage = XomHelper.getXsdBoolValue(useNotify);
@@ -202,10 +190,9 @@ public class NotificationSubscription implements EventSubscription, WSRPResource
    */
 
         SoapElement root = XomHelper.wsntElement(SUBSCRIBE_RESPONSE);
-        SoapElement address= subscriptionEPR.toXom(SUBSCRIPTION_REFERENCE,
+        SoapElement address= subscriptionEPR.toXomInNewNamespace(SUBSCRIPTION_REFERENCE,
+                Constants.WSRF_WSNT_NAMESPACE, "wsnt",
                 Constants.WS_ADDRESSING_NAMESPACE, "wsa");
-        address.setNamespacePrefix("wsnt");
-        address.setNamespaceURI(Constants.WSRF_WSNT_NAMESPACE);
         root.addOrReplaceChild(address);
         return root;
     }
@@ -216,7 +203,7 @@ public class NotificationSubscription implements EventSubscription, WSRPResource
         * @param event the event of interest
         */
     public void event(Event event) {
-        //TODO: callback
+        //TODO: send the event to the callback
     }
 
     public String getId() {
@@ -269,7 +256,9 @@ public class NotificationSubscription implements EventSubscription, WSRPResource
     public void setSubscriptionURL(String subscriptionURL) {
         this.subscriptionURL = subscriptionURL;
         subscriptionEPR = new AlpineEPR(subscriptionURL);
-        subscriptionEndpointer = subscriptionEPR.toXom(Constants.ENDPOINT_REFERENCE,
+        subscriptionEndpointer = subscriptionEPR.toXomInNewNamespace(
+                Constants.ENDPOINT_REFERENCE,
+                Constants.WS_ADDRESSING_NAMESPACE, "wsa",
                 Constants.WS_ADDRESSING_NAMESPACE, "wsa");
     }
 

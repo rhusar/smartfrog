@@ -19,16 +19,14 @@
  */
 package org.smartfrog.services.deployapi.engine;
 
-import org.smartfrog.services.deployapi.transport.wsrf.Property;
-import org.smartfrog.services.deployapi.transport.wsrf.WsrfUtils;
+import nu.xom.Element;
+import org.smartfrog.projects.alpine.om.base.SoapElement;
 import org.smartfrog.services.deployapi.system.Constants;
 import org.smartfrog.services.deployapi.system.LifecycleStateEnum;
-import org.smartfrog.projects.alpine.om.base.SoapElement;
+import org.smartfrog.services.deployapi.transport.wsrf.Property;
+import org.smartfrog.services.deployapi.transport.wsrf.WsrfUtils;
 
 import javax.xml.namespace.QName;
-
-import nu.xom.Element;
-
 import java.util.List;
 
 /**
