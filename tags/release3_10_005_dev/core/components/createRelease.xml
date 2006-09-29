@@ -1,0 +1,98 @@
+<?xml version="1.0"?>
+<project name="comprelease" default="release" basedir=".">
+
+<!--
+/** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
+
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+For more information: www.smartfrog.org
+
+*/
+-->
+
+
+<description>
+     Build file for components.
+     Each component supported must have the following targets in
+     its build.xml
+      maybe-dist        distribute if prereqs are met
+      maybe-test        test if prereqs are met
+      maybe-install     conditional install
+      clean             clean up the output dirs
+      m2-install        install into the local maven2 repository
+
+    The easiest way to do this is import root.dir/common.xml
+    as a common build file; it provides template operations for this process.
+
+</description>
+ <!-- ========================================================== -->
+ <!--
+    Implementation notes
+
+    This build file is cutting-edge Ant1.6 scalability at work. It is
+    not going to run on older versions, and the documentation for what
+    is in use is still sparse.
+    Best docs so far: http://otn.oracle.com/pub/articles/bodewig_ant1.6.html
+
+    <subant> is a new task that delegates the same task to any build files
+    listed in files and directores. We set up a path for this task,
+    which is ordered such that projects other components depend on
+    must build first. Then we create a preset wrapper for the process,
+    called <delegate>.
+
+    It is inevitable that not all projects will have their dependent
+    libraries in place on all machines. So each component build file must
+    have conditional targets that only do a dist or test if they are
+    present.
+
+    This has one adverse consequence: if something needs a predecessor, and
+    the predecessor wont build, the build file does not automatically stop.
+    Every build file must therefore consider the problem of the dependent
+    components being missing.
+
+  -->
+ <!-- ========================================================== -->
+   <!-- override point -->
+  <property file="build.properties" />
+
+    <import file="build.xml"/>
+
+
+    <!-- =================================================================== -->
+  <!--  Generte Forrest Docs -->
+  <!-- =================================================================== -->
+
+
+  <target name="generatedoc" depends="init" description="Document Generation" if="env.FORREST_HOME">
+	  <ant antfile="documentation.xml" inheritall="false"/>
+      	  <delete dir="build"/>
+    <!-- Forrest build dir -->
+  </target>
+
+  <!-- =================================================================== -->
+  <!--  Release                                                            -->
+  <!-- =================================================================== -->
+  <target name="release"  depends="verify-smartfrog,  clean, dist, updateversion, initdist, copybuild, copybins, copylibs, copydocs, copyjdocs, copycomponents, srczip,generatedoc, buildrelease "
+      description="Creates clean new release">
+    <copy tofile="${dist.dir}/build.xml" file="releaseBuild.xml"/>
+    <copy tofile="${dist.dir}/build.example.properties" file="build.example.properties"/>
+    <copy file="version.properties" todir="${dist.dir}" />
+  </target>
+
+
+
+
+</project>
