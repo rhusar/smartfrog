@@ -34,5 +34,6 @@ ITS MEDIA, AND YOU HEREBY WAIVE ANY CLAIM IN THIS REGARD.
 
 sfConfig extends ExpectTerminate {
     action extends Sequence {
+      noop extends Noop;
     }
 }

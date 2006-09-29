@@ -84,19 +84,49 @@ public class TestCompoundImpl extends EventCompoundImpl implements TestCompound 
         undeployAfter = sfResolve(ATTR_UNDEPLOY_AFTER, 0,true);
         expectTerminate = sfResolve(ATTR_EXPECT_TERMINATE,false,true);
         exitType = sfResolve(ATTR_EXIT_TYPE,exitType,true);
-        exitText = sfResolve(ATTR_EXIT_TEXT, exitText, false);
+        exitText = sfResolve(ATTR_EXIT_TEXT, exitText, true);
     }
 
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
         LogSF logSF = sfLog();
+        Exception exception=null;
         //deploy the action under a terminator, then the assertions, finally teardown afterwards.
-        actionPrim = deployAction();
-        actionTerminator = new DelayedTerminator(actionPrim, undeployAfter, logSF,
-                FORCED_TERMINATION,
-                !expectTerminate);
-        actionTerminator.start();
-
+        try {
+            actionPrim = deployAction();
+            actionTerminator = new DelayedTerminator(actionPrim, undeployAfter, logSF,
+                    FORCED_TERMINATION,
+                    !expectTerminate);
+            actionTerminator.start();
+        } catch (RemoteException e) {
+            if (TerminationRecord.NORMAL.equals(exitType)) {
+                throw e;
+            }
+            exception=e;
+        } catch (SmartFrogDeploymentException e) {
+            //split on normal/abnormal.
+            if(TerminationRecord.NORMAL.equals(exitType)) {
+                throw e;
+            }
+            exception = e;
+        }
+        //did we catch something during deployment?
+        if (exception!=null) {
+            //get the message and check it against expections
+            String message= exception.getMessage();
+            if(message==null) {
+                message="";
+            }
+            if (message.indexOf(exitText) < 0) {
+                throw new SmartFrogException("Wrong exitText in the fault raised at creation time\n"
+                        +"expected: '"+exitText+"'\n"
+                        +"found   : '"+message+"'\n",
+                        exception);
+            }
+            //valid exit. trigger undeploy
+            new ComponentHelper(this).sfSelfDetachAndOrTerminate(TerminationRecord.NORMAL,
+                    null,null,exception);
+        }
     }
 
     /**

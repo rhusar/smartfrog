@@ -55,10 +55,10 @@ TestCompound extends ActionCompound {
     undeployAfter extends Integer {
       description "time in milliseconds to undeploy the action and assertions; use -1 for no limit";
     }
-    exitType extends OptionalString {
+    exitType extends String {
       description "string which must be found in the termination errortype attribute using a case sensitive match";
     }
-    exitText extends OptionalString {
+    exitText extends String {
       description "string which must be found in the TerminationRecord.description attribute using a case sensitive match";
     }
     startupTimeout extends Integer {
@@ -118,7 +118,8 @@ TestCompound extends ActionCompound {
   //dont expect termination
   expectTerminate false;
 
-  statusType "normal";
+  exitType "normal";
+  exitText "";
 
   forcePing false;
 }
