@@ -295,6 +295,15 @@ public class SoapElement extends Element implements ValidateXml {
         for (Node n : new NodeIterator(that)) {
             appendChild(n.copy());
         }
+    }
+
+    /**
+     * Attach a qname to the text of a node, setting up namespaces
+     * @param qname namespace
+     */
+    public void appendQName(QName qname) {
+        addNamespaceDeclaration(qname.getPrefix(), qname.getNamespaceURI());
+        appendChild(qname.getPrefix() + ":" + qname.getLocalPart());
 
     }
 }
