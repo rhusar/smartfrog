@@ -210,19 +210,37 @@ public final class AlpineEPR implements Validatable, AddressingConstants, XomSou
      * @return an address containing all the parts of the address as children
      */
     public SoapElement toXom(String localname, String namespace, String prefix) {
-        String prefixColon = prefix + ":";
-        SoapElement root = new SoapElement(prefixColon + localname, namespace);
+        return toXomInNewNamespace(
+                localname,namespace,prefix,namespace, prefix);
+    }
+
+
+    /**
+     * Convert to a Xom graph in a namespace of choice for the toplevel node; children
+     * are in the XML ns of choice
+     * @param rootname root name
+     * @param rootNs top
+     * @param rootPrefix root prefix
+     * @param wsaNs xmlns for the WSA children
+     * @param wsaPrefix prefix for the WSA children
+     * @return
+     */
+    public SoapElement toXomInNewNamespace(String rootname,
+                                           String rootNs,String rootPrefix,
+                                           String wsaNs, String wsaPrefix) {
+        String prefixColon = wsaPrefix + ":";
+        SoapElement root = new SoapElement(rootPrefix +":"+rootname, rootNs);
         if (address != null) {
-            Element to = new SoapElement(prefixColon + WSA_ADDRESS, namespace, getAddress());
+            Element to = new SoapElement(prefixColon + WSA_ADDRESS, wsaNs, getAddress());
             root.appendChild(to);
         }
         if (referenceParameters != null) {
-            SoapElement elt = new SoapElement(prefixColon + WSA_REFERENCE_PARAMETERS, namespace);
+            SoapElement elt = new SoapElement(prefixColon + WSA_REFERENCE_PARAMETERS, wsaNs);
             elt.copyChildrenFrom(referenceParameters);
             root.appendChild(elt);
         }
         if (metadata != null) {
-            SoapElement elt = new SoapElement(prefixColon + WSA_METADATA, namespace);
+            SoapElement elt = new SoapElement(prefixColon + WSA_METADATA, wsaNs);
             elt.copyChildrenFrom(metadata);
         }
         return root;
@@ -242,10 +260,10 @@ public final class AlpineEPR implements Validatable, AddressingConstants, XomSou
      * Read in the EPR from an element, cloning bits.
      * the namespace defines the namespace to look for. If null, use the xmlns of the element passed in.
      * Other elements in the same namespace are ignored; there is no post-read validation.
-     *
+     * the WSA:Address element is trimmed, but not checked for being empty or null. Use validate() to check that
      * @param element   element to start at
      * @param namespace namespace to use
-     * @throws InvalidXmlException if there was no namespace.
+     * @throws InvalidXmlException if there was no namespace
      */
     public void read(Element element, String namespace) {
         if (namespace == null) {
@@ -262,6 +280,9 @@ public final class AlpineEPR implements Validatable, AddressingConstants, XomSou
                     String localname = elt.getLocalName();
                     if (WSA_ADDRESS.equals(localname)) {
                         address = elt.getValue();
+                        if(address!=null) {
+                            address = address.trim();
+                        }
                     } else if (WSA_REFERENCE_PARAMETERS.equals(localname)) {
                         referenceParameters = (Element) elt.copy();
                     } else if (WSA_METADATA.equals(localname)) {
@@ -270,6 +291,7 @@ public final class AlpineEPR implements Validatable, AddressingConstants, XomSou
                 }
             }
         }
+
     }
 
     /**
