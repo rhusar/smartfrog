@@ -139,4 +139,13 @@ public class PortalSession extends WsrfSession {
         return endCreate(beginCreate(hostname));
     }
 
+    /**
+     * Subscribe to the portal events (blocking call)
+     * @param callback callback URL
+     * @param useNotify notify?
+     * @return the new subscription
+     */
+    public CallbackSubscription subscribeToPortalEvents(String callback, boolean useNotify) {
+        return subscribe(Constants.PORTAL_CREATED_EVENT, callback, useNotify, null);
+    }
 }

@@ -82,10 +82,28 @@ public abstract class WsrfSession extends Session {
             CddlmConstants.WSRF_WSNT_NAMESPACE,
             CddlmConstants.WSNT_ELEMENT_SUBSCRIBE_RESPONSE);
 
+    /**
+     * construct a new session
+     * @param endpoint
+     * @param validating
+     * @param queue
+     */
     protected WsrfSession(AlpineEPR endpoint, boolean validating, TransmitQueue queue) {
         super(endpoint, null, validating);
         setMessageIDSource(new MessageIDSource());
         setQueue(queue);
+    }
+
+    /**
+     * Derive a new session from an existing session, sharing the existing
+     * transmission queue and copying role and validation flags
+     * @param parent parent endpoint
+     * @param endpoint remote endpoint (can be null)
+     */
+    protected WsrfSession(WsrfSession parent, AlpineEPR endpoint) {
+        super(endpoint, parent.getRole(), parent.isValidating());
+        setMessageIDSource(new MessageIDSource());
+        setQueue(parent.getQueue());
     }
 
 
@@ -333,19 +351,10 @@ public abstract class WsrfSession extends Session {
      * @param tx
      * @return
      */
-    public AlpineEPR endsSubscribe(Transmission tx) {
+    public CallbackSubscription endsSubscribe(Transmission tx) {
         tx.blockForResult(getTimeout());
         Element payload = extractResponse(tx, QNAME_WSNT_SUBSCRIBE_RESPONSE);
-        Element address=payload.getFirstChildElement(WSNConstants.SUBSCRIPTION_REFERENCE,
-                Constants.WSRF_WSNT_NAMESPACE);
-        if(address==null) {
-            throw new AlpineRuntimeException("Missing element "+ WSNConstants.SUBSCRIPTION_REFERENCE
-                    + "in "+payload);
-        }
-        //get the WSA address back
-        AlpineEPR epr = new AlpineEPR(address, CddlmConstants.WS_ADDRESSING_NAMESPACE);
-        epr.validate();
-        return epr;
+        return new CallbackSubscription(this,payload);
     }
 
     /**
@@ -356,7 +365,7 @@ public abstract class WsrfSession extends Session {
      * @param expiryTime optional expiry time
      * @return the transmission
      */
-    public AlpineEPR subscribe(QName topic, String callback, boolean useNotify, String expiryTime) {
+    public CallbackSubscription subscribe(QName topic, String callback, boolean useNotify, String expiryTime) {
         return endsSubscribe(beginSubscribe(topic, callback, useNotify, expiryTime));
     }
 }
