@@ -59,12 +59,12 @@ public class TestCompoundsTest extends SmartFrogTestBase {
     }
 
 
-    public void testUnexpectedFailure() throws Throwable {
+    public void NOtestUnexpectedFailure() throws Throwable {
         deployExpectingException(TestCompoundsTest.FILES + "testUnexpectedFailure.sf",
                 "testUnexpectedFailure", null, TestCompoundImpl.TEST_FAILED_WRONG_STATUS);
     }
 
-    public void testFailureWrongMessage() throws Throwable {
+    public void NOtestFailureWrongMessage() throws Throwable {
         deployExpectingException(TestCompoundsTest.FILES + "testFailureWrongMessage.sf",
                 "testFailureWrongMessage",null, TestCompoundImpl.TEST_FAILED_WRONG_STATUS);
     }
