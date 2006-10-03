@@ -60,12 +60,14 @@ public class Session {
     /**
      * Create a new session.
      *
-     * @param endpoint   default address
+     * @param endpoint   default address; can be null
      * @param role       role for this node. Defaults to {@link #DEFAULT_ROLE}
      * @param validating flag to set validating parser
      */
     public Session(AlpineEPR endpoint, String role, boolean validating) {
-        bind(endpoint);
+        if(endpoint!=null) {
+            bind(endpoint);
+        }
         if (role != null) {
             this.role = role;
         }
@@ -84,11 +86,11 @@ public class Session {
     /**
      * Bind to an address; creates an AddresDetails instance that can be tweaked.
      *
-     * @param endpoint
+     * @param epr
      */
-    public void bind(AlpineEPR endpoint) {
-        this.endpoint = endpoint;
-        address = new AddressDetails(endpoint);
+    public void bind(AlpineEPR epr) {
+        this.endpoint = epr;
+        address = new AddressDetails(epr);
     }
 
     protected Log getLog() {
@@ -229,7 +231,7 @@ public class Session {
     /**
      * Override point for things to get their own soapAction
      * @param request
-     * @return
+     * @return the soap action from the QNAme
      */
     public String getSoapAction(QName request) {
         return request.getNamespaceURI()+"/"+request.getLocalPart();
