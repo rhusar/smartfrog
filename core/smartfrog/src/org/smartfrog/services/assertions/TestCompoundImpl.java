@@ -25,8 +25,10 @@ import org.smartfrog.sfcore.common.SmartFrogLivenessException;
 import org.smartfrog.sfcore.logging.LogSF;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.TerminationRecord;
+import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.workflow.eventbus.EventCompoundImpl;
 import org.smartfrog.sfcore.utils.ComponentHelper;
+import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 
 import java.rmi.RemoteException;
 
@@ -35,14 +37,17 @@ import java.rmi.RemoteException;
  */
 
 public class TestCompoundImpl extends EventCompoundImpl implements TestCompound {
+    protected ComponentDescription teardownCD;
     protected Prim teardown;
 
-    protected Prim assertions;
+    protected ComponentDescription testsCD;
+    protected Prim tests;
 
     protected static final String ACTION_RUNNING = "_actionRunning";
     protected long undeployAfter;
     protected boolean expectTerminate;
     protected DelayedTerminator actionTerminator;
+    protected DelayedTerminator testsTerminator;
     protected Prim actionPrim;
     protected boolean terminating=false;
     protected String exitType;
@@ -73,12 +78,12 @@ public class TestCompoundImpl extends EventCompoundImpl implements TestCompound 
         super.sfDeploy();
         checkActionDefined();
         name = sfCompleteNameSafe();
-        assertions = sfResolve(ATTR_ASSERTIONS, assertions, false);
-        if (assertions != null) {
-            throw new SmartFrogException("Not yet supported " + ATTR_ASSERTIONS);
+        testsCD = sfResolve(ATTR_TESTS, testsCD, false);
+        if (testsCD != null) {
+            throw new SmartFrogException("Not yet supported " + ATTR_TESTS);
         }
-        teardown = sfResolve(ATTR_TEARDOWN, teardown, false);
-        if (teardown != null) {
+        teardownCD = sfResolve(ATTR_TEARDOWN, teardownCD, false);
+        if (teardownCD != null) {
             throw new SmartFrogException("Not yet supported " + ATTR_TEARDOWN);
         }
         undeployAfter = sfResolve(ATTR_UNDEPLOY_AFTER, 0,true);
@@ -127,6 +132,11 @@ public class TestCompoundImpl extends EventCompoundImpl implements TestCompound 
             new ComponentHelper(this).sfSelfDetachAndOrTerminate(TerminationRecord.NORMAL,
                     null,null,exception);
         }
+
+        //now deploy the tests.
+        //these are expected to pass
+
+
     }
 
     /**
@@ -137,6 +147,24 @@ public class TestCompoundImpl extends EventCompoundImpl implements TestCompound 
      */
     public void sfPing(Object source) throws SmartFrogLivenessException, RemoteException {
         super.sfPing(source);
+    }
+
+    /**
+     * Called by {@link #sfPing(Object)} to run through the list
+     * of children and ping each in turn. If any child fails,
+     * {@link #sfLivenessFailure(Object, Object, Throwable)} is called and the
+     * iteration continues.
+     * <p/>
+     * Override this method to implement different child ping behaviour.
+     */
+    protected void sfPingChildren() {
+
+        if(actionPrim!=null) {
+            sfPingChildAndTerminateOnFailure(actionPrim);
+        }
+        if (tests != null) {
+            sfPingChildAndTerminateOnFailure(tests);
+        }
     }
 
     public synchronized void sfTerminateWith(TerminationRecord status) {

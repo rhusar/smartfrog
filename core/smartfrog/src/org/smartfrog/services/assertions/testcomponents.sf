@@ -67,38 +67,43 @@ TestCompound extends ActionCompound {
     expectTerminate extends Boolean {
       description "is the action component expected to terminate itself?";
     }
-    statusType extends OptionalString {
-      description "string which must be found in the termination errortype attribute using a case sensitive match";
-    }
-    statusText extends OptionalString {
-      description "string which must be found in the TerminationRecord.description attribute using a case sensitive match";
-    }
-    assertions extends OptionalCD {
+    tests extends OptionalCD {
       description ##A component that is deployed after the action component is successfully deployed,
-      and which contains assertions to deploy.
-      The assertions are only deployed if the action deployment was successful.
-      1. If this component terminates successfully, then the test is deemed to be successful, and
-      the TestCompound terminates the tests and runs teardown.
-      2. If this component does not terminate, then it is kept running (and pinged during pings)
-      until the action terminates or the test is undeployed.
-      #;
+        and which contains tests or assertions to deploy.
+        The components is only deployed if the action deployment was successful.
+        1. If this component terminates successfully, then the test is deemed to be successful, and
+        the TestCompound terminates the tests and runs teardown.
+        2. If this component does not terminate, then it is kept running (and pinged during pings)
+        until the action terminates or the test is undeployed.
+        #;
+    }
+    testTimeout extends Integer {
+      description ##
+        time in milliseconds to trigger an exception if the tests do not finish;
+        use -1 for no limit"
+        NOT IMPLEMENTED
+        #;
     }
     teardown extends OptionalCD {
       description ##a component that is run after the tests pass/fail
         to perform teardown or post-process.
         the action will always have been terminated (cleanly or not) by the time this component is deployed.
+        NOT IMPLEMENTED
         #;
     }
     teardownTimeout extends OptionalInteger {
       description ##
         time in milliseconds to complain if the undeploy of the action component
         or the execution of the teardown component took too long; use -1 for no limit
+        NOT IMPLEMENTED
         #;
     }
     forcePing extends Boolean {
+//        NOT IMPLEMENTED
       description "should we force a set of pings?";
     }
     pingInterval extends OptionalInteger {
+//        NOT IMPLEMENTED
       description "time in milliseconds between forced pings";
     }
 

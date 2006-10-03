@@ -257,7 +257,7 @@ public class CompoundImpl extends PrimImpl implements Compound {
         RemoteException, SmartFrogDeploymentException {
         Prim comp = null;
 
-        if (parms==null)parms = new ContextImpl();
+        if (parms==null) parms = new ContextImpl();
         try {
             // This is needed so that the root component is properly named
             // when registering with the ProcessCompound
@@ -619,9 +619,8 @@ public class CompoundImpl extends PrimImpl implements Compound {
                 //Deprecated: new TerminateCall((Prim)(sfChildren.elementAt(i)), status);
                 (new TerminatorThread((Prim)(sfChildren.elementAt(i)),status).quietly()).start();
             } catch (Exception ex) {
-            //@TODO: Log
+                // ignore
                 ignoreThrowable("ignoring during termination", ex);
-            // ignore
             }
         }
     }
@@ -672,39 +671,63 @@ public class CompoundImpl extends PrimImpl implements Compound {
      * @exception SmartFrogLivenessException liveness failed
      */
     public void sfPing(Object source) throws SmartFrogLivenessException,
-                                                            RemoteException {
-	// check the timing of the parent pings
+            RemoteException {
+        // check the timing of the parent pings
         super.sfPing(source);
 
-	// return if children not to be checked
+        // return if children not to be checked
         if ((source == null) || (sfLivenessDelay == 0)) {
             return;
         }
 
         if (sfLivenessSender == null) {
-	    // don't have my own liveness sender, so check if it is my parent
-	    if (!source.equals(sfParent)) {
-		return;
-	    }
-	} else {
-	    // have own checker - its my responsibility from here on, so return if not me
-	    if (!source.equals(sfLivenessSender)) {
-		return;
-	    }
-	}
+            // don't have my own liveness sender, so check if it is my parent
+            if (!source.equals(sfParent)) {
+                return;
+            }
+        } else {
+            // have own checker - its my responsibility from here on, so return if not me
+            if (!source.equals(sfLivenessSender)) {
+                return;
+            }
+        }
 
-
-	// the following, checking children, should only happen if source is own livenes sender or
+        // the following, checking children, should only happen if the source is
+        // its own livenes sender or
         // it is the parent checking and I don't have my own check
 
-        for (Enumeration e = sfChildren(); e.hasMoreElements();) {
-            Object child = e.nextElement();
+        sfPingChildren();
+    }
 
-            try {
-                sfPingChild((Liveness) child);
-            } catch (Exception ex) {
-                sfLivenessFailure(this, child, ex);
-            }
+    /**
+     * Called by {@link #sfPing(Object)} to run through the list
+     * of children and ping each in turn. If any child fails,
+     * {@link #sfLivenessFailure(Object, Object, Throwable)} is called and the
+     * iteration continues.
+     *
+     * Override this method to implement different child ping behaviour.
+     */
+    protected void sfPingChildren() {
+        for (Enumeration e = sfChildren(); e.hasMoreElements();) {
+            Liveness child = (Liveness) e.nextElement();
+            sfPingChildAndTerminateOnFailure(child);
+        }
+    }
+
+    /**
+     * Helper method for children to use if they override
+     * {@link #sfPingChildren()}
+     * Pings a child, calls {@link #sfLivenessFailure(Object, Object, Throwable)} if
+     * an exception gets thrown
+     * @param child child component
+     */
+    protected final void sfPingChildAndTerminateOnFailure(Liveness child) {
+        try {
+            sfPingChild(child);
+        } catch (SmartFrogLivenessException ex) {
+            sfLivenessFailure(this, child, ex);
+        } catch (RemoteException ex) {
+            sfLivenessFailure(this, child, ex);
         }
     }
 
@@ -804,9 +827,9 @@ public class CompoundImpl extends PrimImpl implements Compound {
         }
     }
 
-    Vector childrenToTerminate;
-    Vector childrenToUpdate;
-    Vector childrenToCreate;
+    private Vector childrenToTerminate;
+    private Vector childrenToUpdate;
+    private Vector childrenToCreate;
 
     /**
      * Validate whether the component (and its children) can be updated
@@ -991,22 +1014,24 @@ public class CompoundImpl extends PrimImpl implements Compound {
         boolean ready;
 
         try {
-            System.out.println("preparing");
-            this.sfPrepareUpdate();
-            System.out.println("preparing done");
+            sfLog().debug("preparing");
+            sfPrepareUpdate();
+            sfLog().debug("preparing done");
 
-            System.out.println("update with");
-            ready = this.sfUpdateWith(desc.sfContext());
-            if (!ready) throw new SmartFrogUpdateException("top level component must accept update", null);
-            System.out.println("update with done");
+            sfLog().debug("update with");
+            ready = sfUpdateWith(desc.sfContext());
+            if (!ready) {
+                throw new SmartFrogUpdateException("top level component must accept update", null);
+            }
+            sfLog().debug("update with done");
         } catch (Exception e) {
-            e.printStackTrace();
+            sfLog().error(e);
             try {
-                System.out.println("abandoning");
-                this.sfAbandonUpdate();
-                System.out.println("abandoning done");
+                sfLog().debug("abandoning");
+                sfAbandonUpdate();
+                sfLog().debug("abandoning done");
             } catch (RemoteException e1) {
-                // ignore?
+                ignoreThrowable("when abandoning", e1);
             }
 
             if (e instanceof SmartFrogUpdateException)
@@ -1017,20 +1042,19 @@ public class CompoundImpl extends PrimImpl implements Compound {
 
         if (ready) {
             try {
-                System.out.println("update");
-                this.sfUpdate();
-                System.out.println("update done\nupdate deploy");
-                this.sfUpdateDeploy();
-                System.out.println("update deploy done\nupdate start");
-                this.sfUpdateStart();
-                System.out.println("update start done");
+                sfLog().debug("update");
+                sfUpdate();
+                sfLog().debug("update done\nupdate deploy");
+                sfUpdateDeploy();
+                sfLog().debug("update deploy done\nupdate start");
+                sfUpdateStart();
+                sfLog().debug("update start done");
             } catch (Exception e) {
-                System.out.println("failed");
-                e.printStackTrace();
+                sfLog().error(e);
                 try {
-                    this.sfTerminate(TerminationRecord.abnormal("fatal error in update - terminated comopnents", sfCompleteNameSafe(), e));
+                    sfTerminate(TerminationRecord.abnormal("fatal error in update - terminated comopnents", sfCompleteNameSafe(), e));
                 } catch (Exception e1) {
-                    // ignore?
+                    ignoreThrowable("when terminating",e1);
                 }
                 throw new SmartFrogUpdateException("fatal error in update, terminating application", e);
             }
