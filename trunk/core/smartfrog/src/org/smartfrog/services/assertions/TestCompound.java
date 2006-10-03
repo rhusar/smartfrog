@@ -60,7 +60,7 @@ public interface TestCompound extends Remote {
      </li></ol>
      * {@value}
      */
-    String ATTR_ASSERTIONS = "assertions";
+    String ATTR_TESTS = "tests";
 
     /**
      * a component that is run after the tests pass/fail
