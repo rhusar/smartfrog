@@ -19,10 +19,11 @@
  */
 package org.smartfrog.services.deployapi.test.system.alpine.deployapi.api.notification;
 
-import org.smartfrog.services.deployapi.system.Constants;
 import org.smartfrog.services.deployapi.test.system.alpine.deployapi.api.SubscribingTestBase;
 
 /**
+ * The client can subscribe via the portal for system creation events.
+ *
  * created 04-May-2006 13:46:55
  */
 
@@ -33,7 +34,7 @@ public class Api_15_subscribe_system_creation_Test extends SubscribingTestBase {
     }
 
     public void testSubscribe() throws Exception {
-        subscribe(Constants.PORTAL_CREATED_EVENT);
+        subscribeToSystemCreationEvent();
     }
 
 }

@@ -19,15 +19,21 @@
  */
 package org.smartfrog.services.deployapi.test.system.alpine.deployapi.api.lifecycle;
 
-import org.smartfrog.services.deployapi.test.system.alpine.deployapi.api.UnimplementedTestBase;
+import org.smartfrog.services.deployapi.test.system.alpine.deployapi.api.SubscribingTestBase;
 
 /**
  * created 04-May-2006 13:46:55
  */
 
-public class Api_31_destroy_events_Test extends UnimplementedTestBase {
+public class Api_31_destroy_events_Test extends SubscribingTestBase {
 
     public Api_31_destroy_events_Test(String name) {
         super(name);
     }
+
+    public void testSubscribe() throws Exception {
+        createSubscribedSystem(getCallbackURL());
+        failNotImplemented();
+    }
+
 }

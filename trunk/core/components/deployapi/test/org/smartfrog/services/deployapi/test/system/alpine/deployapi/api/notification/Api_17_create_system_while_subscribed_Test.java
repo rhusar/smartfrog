@@ -19,15 +19,23 @@
  */
 package org.smartfrog.services.deployapi.test.system.alpine.deployapi.api.notification;
 
-import org.smartfrog.services.deployapi.test.system.alpine.deployapi.api.UnimplementedTestBase;
+import org.smartfrog.services.deployapi.test.system.alpine.deployapi.api.SubscribingTestBase;
 
 /**
+ * While subscribed to a portal for creation events, create a system.
  * created 04-May-2006 13:46:55
  */
 
-public class Api_17_create_system_while_subscribed_Test extends UnimplementedTestBase {
+public class Api_17_create_system_while_subscribed_Test extends SubscribingTestBase {
 
     public Api_17_create_system_while_subscribed_Test(String name) {
         super(name);
     }
+
+    public void testCreate_system_while_subscribed() throws Exception {
+        subscribeToSystemCreationEvent();
+        createSystem(null);
+        failNotImplemented();
+    }
+
 }

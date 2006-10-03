@@ -20,28 +20,33 @@
 package org.smartfrog.services.deployapi.test.system.alpine.deployapi.api.notification;
 
 import org.smartfrog.services.deployapi.test.system.alpine.deployapi.api.SubscribingTestBase;
+import org.smartfrog.projects.alpine.faults.AlpineRuntimeException;
+import org.ggf.cddlm.generated.api.CddlmConstants;
+
+import javax.xml.namespace.QName;
 
 /**
  * created 04-May-2006 13:46:55
  */
 
-public class Api_18_create_system_while_subscribed_invalid_epr_Test extends SubscribingTestBase {
+public class Api_18a_subscribe_invalid_topic_data extends SubscribingTestBase {
 
-    public Api_18_create_system_while_subscribed_invalid_epr_Test(String name) {
+    public Api_18a_subscribe_invalid_topic_data(String name) {
         super(name);
     }
 
 
     public void testUnknownHost() throws Exception {
-        subscribeAndCreate("http://notifications.example.org/epr1");
-    }
-
-    public void testClosedPort() throws Exception {
-        subscribeAndCreate("http://localhost:8081/epr1");
-    }
-
-    public void test404Page() throws Exception {
-        subscribeAndCreate("http://deployment.sourceforge.net/example/epr1");
+        try {
+            subscribeToPortal(new QName(
+              CddlmConstants.PORTAL_WSNT_EVENTS,
+              "ThereIsNoSuchEventHere"));
+            fail("Expected failure");
+        } catch (Exception e) {
+            if(!(e instanceof AlpineRuntimeException)) {
+                throw e;
+            }
+        }
     }
 
 

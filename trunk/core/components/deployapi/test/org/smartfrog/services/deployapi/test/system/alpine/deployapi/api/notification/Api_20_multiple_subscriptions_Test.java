@@ -19,15 +19,40 @@
  */
 package org.smartfrog.services.deployapi.test.system.alpine.deployapi.api.notification;
 
-import org.smartfrog.services.deployapi.test.system.alpine.deployapi.api.UnimplementedTestBase;
+import org.smartfrog.services.deployapi.test.system.alpine.deployapi.api.SubscribingTestBase;
+import org.smartfrog.services.deployapi.system.Constants;
+import org.smartfrog.services.deployapi.alpineclient.model.CallbackSubscription;
 
 /**
  * created 04-May-2006 13:46:55
  */
 
-public class Api_20_multiple_subscriptions_Test extends UnimplementedTestBase {
+public class Api_20_multiple_subscriptions_Test extends SubscribingTestBase {
+    private CallbackSubscription sub2;
+    private CallbackSubscription sub1;
 
     public Api_20_multiple_subscriptions_Test(String name) {
         super(name);
+    }
+
+
+    /**
+     * unsubscribe, if needed
+     */
+    protected void tearDown() throws Exception {
+        try {
+            CallbackSubscription.unsubscribe(sub1);
+        } finally {
+            CallbackSubscription.unsubscribe(sub2);
+        }
+
+    }
+
+    public void testSubscribe() throws Exception {
+        sub1 = getPortal().subscribeToPortalEvents(getCallbackURL(), false);
+        sub2 = getPortal().subscribeToPortalEvents(getCallbackURL(), true);
+        subscribeToPortal(Constants.PORTAL_CREATED_EVENT);
+        createSystem(null);
+        failNotImplemented();
     }
 }

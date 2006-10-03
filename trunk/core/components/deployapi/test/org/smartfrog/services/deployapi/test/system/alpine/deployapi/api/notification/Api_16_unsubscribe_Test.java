@@ -19,15 +19,26 @@
  */
 package org.smartfrog.services.deployapi.test.system.alpine.deployapi.api.notification;
 
-import org.smartfrog.services.deployapi.test.system.alpine.deployapi.api.UnimplementedTestBase;
+import org.smartfrog.services.deployapi.test.system.alpine.deployapi.api.SubscribingTestBase;
 
 /**
- * created 04-May-2006 13:46:55
+ After subscribing to the portal for system creation events,
+ a &lt;wsrf:Destroy&gt; operation must unsubscribe them.
+ After unsubscribing, creating a new system must not result in an
+ event being sent to the (now unsubscribed) endpoint.
  */
 
-public class Api_16_unsubscribe_Test extends UnimplementedTestBase {
+public class Api_16_unsubscribe_Test extends SubscribingTestBase {
 
     public Api_16_unsubscribe_Test(String name) {
         super(name);
     }
+
+    public void testUnsubscribe() throws Exception {
+        subscribeToSystemCreationEvent();
+        unsubscribe();
+        createSystem(null);
+    }
+
+
 }

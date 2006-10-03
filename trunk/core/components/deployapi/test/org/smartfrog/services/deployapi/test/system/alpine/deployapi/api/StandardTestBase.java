@@ -45,6 +45,10 @@ public abstract class StandardTestBase extends AlpineTestBase {
 
     int delay=0;
     private static final String TEST_DELAY = "test.delay.seconds" ;
+    /**
+     * {@value}
+     */
+    public static final String TEST_IMPLEMENTED = "test.implemented";
 
     protected StandardTestBase(String name) {
         super(name);
@@ -132,5 +136,17 @@ public abstract class StandardTestBase extends AlpineTestBase {
         SoapMessageParser parser = createXmlParser();
         Document document = parser.parseResource(cdlResource);
         return document;
+    }
+
+    /**
+     * Throw an exception if the {@link #TEST_IMPLEMENTED} system property
+     * does not resolve
+     */
+    protected void failNotImplemented() {
+        String implemented = getJunitParameter(TEST_IMPLEMENTED, false);
+        if(implemented==null) {
+            fail("This test has not been implemented, which may mean that the"
+                + " underlying features have not been implemented in the client");
+        }
     }
 }
