@@ -23,11 +23,12 @@ For more information: www.smartfrog.org
  a variant of the pelvoux system in which the hostname is whatever this machine has as an ip address.
  Use for staging.
  */
-sfConfig extends Pelvoux {
+
+PelvouxOnLocalIPAddress extends Pelvoux {
 
  alpine:hostname LAZY alpine:deployapi:engine:servletContext:ipaddr;
 
- //alpine:hostname "chamonix.hpl.hp.com";
+}
 
-  //deployapi:liveness true;
+sfConfig extends PelvouxOnLocalIPAddress {
 }

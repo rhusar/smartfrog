@@ -52,8 +52,8 @@ public class SystemSession extends WsrfSession {
         super(endpoint, validating, queue);
     }
 
-    public SystemSession(Session parent, AlpineEPR endpoint) {
-        super(endpoint, parent.isValidating(), parent.getQueue());
+    public SystemSession(WsrfSession parent, AlpineEPR endpoint) {
+        super(parent,endpoint);
     }
 
     /**
@@ -62,8 +62,8 @@ public class SystemSession extends WsrfSession {
      * @param parent
      * @param root
      */
-    public SystemSession(Session parent, Element root) {
-        super(null, parent.isValidating(), parent.getQueue());
+    public SystemSession(WsrfSession parent, Element root) {
+        super(parent,null);
         resourceId = XomHelper.getElementValue(root,
                 "api:ResourceId");
         Element address = XomHelper.getElement(root,
@@ -170,6 +170,17 @@ public class SystemSession extends WsrfSession {
         //Transmission transmission = queue(API_SYSTEM_OPERATION_ADDFILE, request);
         Transmission transmission = queue(request);
         return endAddFile(transmission);
+    }
+
+    /**
+     * Subscribe to the lifecycle events (blocking call)
+     *
+     * @param callback  callback URL
+     * @param useNotify notify?
+     * @return the new subscription
+     */
+    public CallbackSubscription subscribeToLifecycleEvents(String callback, boolean useNotify) {
+        return subscribe(Constants.SYSTEM_LIFECYCLE_EVENT, callback, useNotify, null);
     }
 
 }
