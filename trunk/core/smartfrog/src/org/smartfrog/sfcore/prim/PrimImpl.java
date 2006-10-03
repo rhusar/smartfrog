@@ -1124,55 +1124,50 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
      * @throws RemoteException for consistency with the {@link Liveness} interface
      */
     public void sfPing(Object source) throws SmartFrogLivenessException, RemoteException {
-	if (Logger.logLiveness &&(sfLog().isTraceEnabled())) {
-	    sfLog().trace("ping received from " + source + ": in " + sfCompleteNameSafe() + ", counter " + sfLivenessCount);
-	}
+        if (Logger.logLiveness && (sfLog().isTraceEnabled())) {
+            sfLog().trace(
+                    "ping received from " + source
+                     + ": in " + sfCompleteNameSafe()
+                     + ", counter " + sfLivenessCount);
+        }
 
-	if (sfIsTerminated) {
-	    if (Logger.logLiveness &&(sfLog().isTraceEnabled())) {
-		sfLog().trace("ping returning that I am terminated : in " + sfCompleteNameSafe());
-	    }
-	    throw new SmartFrogLivenessException(MessageUtil.formatMessage(COMPONENT_TERMINATED));
-	}
+        if (sfIsTerminated) {
+            if (Logger.logLiveness && (sfLog().isTraceEnabled())) {
+                sfLog().trace("ping returning that I am terminated : in " + sfCompleteNameSafe());
+            }
+            throw new SmartFrogLivenessException(MessageUtil.formatMessage(COMPONENT_TERMINATED));
+        }
 
-    /*
-    try {
-        System.out.println("validated " + sfCompleteNameSafe() + ": " + sfValid());
-    } catch (Exception e) {
-        System.out.println("validated " + sfCompleteNameSafe() + ": failed with " + e);
-    }
-    */
+        if (source == null) {
+            return;
+        }
 
-	if (source == null) {
-	    return;
-	}
+        if (sfParent == null) {
+            // if am root - don't check counters...!
+            return;
+        }
 
-	if (sfParent == null) {
-	    // if am root - don't check counters...!
-	    return;
-	}
+        // memory model hack...
+        boolean fail = false;
+        synchronized (this) {
+            if (source.equals(sfParent)) {
+                if (Logger.logLiveness && (sfLog().isTraceEnabled())) {
+                    sfLog().trace("parent ping received - resetting counter: in " + sfCompleteNameSafe());
+                }
+                sfLivenessCount = sfLivenessFactor;
+            } else if ((sfLivenessSender != null) &&
+                    source.equals(sfLivenessSender) &&
+                    (sfLivenessCount-- <= 0)) {
+                fail = true;
+            }
+        }
 
-	// memory model hack...
-	boolean fail = false;
-	synchronized (this) {
-	    if (source.equals(sfParent)) {
-		if (Logger.logLiveness &&(sfLog().isTraceEnabled())) {
-		    sfLog().trace("parent ping received - resetting counter: in " + sfCompleteNameSafe());
-		}
-		sfLivenessCount = sfLivenessFactor;
-	    } else if ((sfLivenessSender != null) &&
-		       source.equals(sfLivenessSender) &&
-		       (sfLivenessCount-- <= 0)) {
-           fail = true;
-	    }
-	}
-
-	if (fail) {
-	    if (sfLog().isDebugEnabled()) {
-		   sfLog().debug("failing as parent liveness checking had counted down: in " + sfCompleteNameSafe());
-	    }
-	    sfLivenessFailure(this, sfParent, null);
-	}
+        if (fail) {
+            if (sfLog().isDebugEnabled()) {
+                sfLog().debug("failing as parent liveness checking had counted down: in " + sfCompleteNameSafe());
+            }
+            sfLivenessFailure(this, sfParent, null);
+        }
     }
 
     /**
