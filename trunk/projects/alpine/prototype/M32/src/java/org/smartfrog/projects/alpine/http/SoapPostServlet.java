@@ -168,6 +168,14 @@ public class SoapPostServlet extends ServletBase {
                     }
                 }
             }
+            //here we look for a non-empty response
+            if (messageContext.getResponse() == null) {
+                throw new ServerException("No response message created in handler chain");
+            }
+            if (!messageContext.isProcessed()) {
+                // a missing processed flag generates a warning, as long as there is a response.
+                getLog().warn("Message has not been marked as processed, but it contains a response");
+            }
         } catch (Exception thrown) {
             getLog().warn("Fault thrown outside the handler chain", thrown);
             fault = bridge.extractFaultFromThrowable(thrown);
@@ -175,6 +183,10 @@ public class SoapPostServlet extends ServletBase {
         if (fault != null) {
             //we have the fault; patch it in
             responseMessage = messageContext.getResponse();
+            if(responseMessage==null) {
+                //demand create a response
+                responseMessage = messageContext.createResponse();
+            }
             Body body = responseMessage.getEnvelope().getBody();
             body.removeChildren();
             body.appendChild(fault);

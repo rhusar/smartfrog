@@ -40,6 +40,12 @@ import javax.xml.namespace.QName;
  */
 public class SoapElement extends Element implements ValidateXml {
 
+    /**
+     * The prefix to use when creating a qname that has none.
+     * {@value}
+     */
+    protected static final String PREFIX = "prefix";
+
 
     public SoapElement(String name) {
         super(name);
@@ -299,11 +305,18 @@ public class SoapElement extends Element implements ValidateXml {
 
     /**
      * Attach a qname to the text of a node, setting up namespaces
-     * @param qname namespace
+     * If the qname has no prefix, we make one up with the value of
+     * {@link #PREFIX}
+     * @param qname qname to append to the text of the element
      */
     public void appendQName(QName qname) {
-        addNamespaceDeclaration(qname.getPrefix(), qname.getNamespaceURI());
-        appendChild(qname.getPrefix() + ":" + qname.getLocalPart());
+        String prefix = qname.getPrefix();
+        if(prefix.length()==0) {
+            //make up a prefix
+            prefix=PREFIX;
+        }
+        addNamespaceDeclaration(prefix, qname.getNamespaceURI());
+        appendChild(prefix + ":" + qname.getLocalPart());
 
     }
 }
