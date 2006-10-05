@@ -33,7 +33,7 @@ public class Api_31_destroy_events_Test extends SubscribingTestBase {
 
     public void testSubscribe() throws Exception {
         createSubscribedSystem(getCallbackURL());
-        failNotImplemented();
+        waitForSubscription();
     }
 
 }

@@ -26,10 +26,12 @@ import java.util.ListIterator;
 import java.util.concurrent.ExecutorService;
 
 /**
+ * something to handle all subscriptions
  * created 27-Sep-2006 11:34:52
  */
 
-public class EventSubscriberManager implements Iterable<EventSubscription>, EventSubscription {
+public class EventSubscriberManager extends AbstractEventSubscription 
+        implements Iterable<EventSubscription>, EventSubscription {
 
     private List<EventSubscription> subscriptions=new ArrayList<EventSubscription>();
 
@@ -45,6 +47,7 @@ public class EventSubscriberManager implements Iterable<EventSubscription>, Even
     }
     public void add(EventSubscription sub) {
         subscriptions.add(sub);
+        sub.setManager(this);
     }
 
     public void remove(EventSubscription sub) {

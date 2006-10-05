@@ -27,7 +27,7 @@ import org.apache.commons.logging.LogFactory;
  * created 27-Sep-2006 14:40:29
  */
 
-public class LogEvents implements EventSubscription {
+public class LogEvents extends AbstractEventSubscription implements EventSubscription {
 
     private boolean unsubscribed=false;
 
@@ -65,6 +65,7 @@ public class LogEvents implements EventSubscription {
 
     public void unsubscribe() {
         unsubscribed=true;
+        super.unsubscribe();
     }
 
     public int getEventCount() {

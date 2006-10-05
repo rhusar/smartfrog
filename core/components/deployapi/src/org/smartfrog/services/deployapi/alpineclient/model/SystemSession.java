@@ -101,12 +101,6 @@ public class SystemSession extends WsrfSession {
         return state;
     }
 
-    protected MessageDocument invokeBlocking(String operation,SoapElement request) {
-        Transmission transmission = queue(operation, request);
-        return transmission.blockForResult(getTimeout());
-
-    }
-
     /**
      * make an run request
      *

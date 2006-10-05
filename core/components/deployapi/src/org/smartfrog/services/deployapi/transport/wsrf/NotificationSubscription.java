@@ -20,6 +20,7 @@
 package org.smartfrog.services.deployapi.transport.wsrf;
 
 import nu.xom.Element;
+import nu.xom.Attribute;
 
 import javax.xml.namespace.QName;
 
@@ -28,9 +29,18 @@ import org.smartfrog.services.deployapi.system.Constants;
 import org.smartfrog.services.deployapi.transport.faults.FaultRaiser;
 import org.smartfrog.services.deployapi.notifications.EventSubscription;
 import org.smartfrog.services.deployapi.notifications.Event;
+import org.smartfrog.services.deployapi.notifications.AbstractEventSubscription;
+import org.smartfrog.services.deployapi.alpineclient.model.NotifySession;
+import org.smartfrog.services.deployapi.engine.Application;
 import org.smartfrog.projects.alpine.wsa.AlpineEPR;
 import org.smartfrog.projects.alpine.om.base.SoapElement;
 import org.smartfrog.projects.alpine.faults.AlpineRuntimeException;
+import org.smartfrog.projects.alpine.xmlutils.XsdUtils;
+import org.smartfrog.projects.alpine.transport.TransmitQueue;
+import org.smartfrog.projects.alpine.transport.DirectExecutor;
+import org.smartfrog.projects.alpine.transport.Transmission;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import java.util.List;
 import java.util.UUID;
@@ -52,17 +62,19 @@ xsd:dateTime
 </wsnt:InitialTerminationTime>?
 </wsnt: Subscribe>
 */
+
 /**
  * created 26-Sep-2006 16:35:14.
  * This represents a WSNT subscription. It contains a static WS resource properties map
  * as well as parsed data.
- *
  */
 
-public class NotificationSubscription implements EventSubscription, WSRPResourceSource,WSNConstants {
+public class NotificationSubscription extends AbstractEventSubscription
+        implements EventSubscription, WSRPResourceSource, WSNConstants {
 
+    private static Log log= LogFactory.getLog(NotificationSubscription.class);
     private PropertyMap resources = new PropertyMap();
-    private String id= UUID.randomUUID().toString();
+    private String id = UUID.randomUUID().toString();
     private QName topic;
     private AlpineEPR callback;
     private boolean useNotifyMessage;
@@ -73,14 +85,19 @@ public class NotificationSubscription implements EventSubscription, WSRPResource
     private String subscriptionURL;
     private SoapElement subscriptionEndpointer;
     private AlpineEPR subscriptionEPR;
+    private NotifySession session;
+    private int NOTIFY_TIMEOUT;
+    private AlpineRuntimeException lastError;
 
     public NotificationSubscription() {
     }
 
     /**
-     * @throws org.smartfrog.services.deployapi.transport.faults.BaseException
      * @param request incoming request
      * @throws org.smartfrog.services.deployapi.transport.faults.BaseException
+     *
+     * @throws org.smartfrog.services.deployapi.transport.faults.BaseException
+     *
      * @throws AlpineRuntimeException ifthere is trouble parsing/validating the address
      */
     public NotificationSubscription(Element request) {
@@ -90,6 +107,7 @@ public class NotificationSubscription implements EventSubscription, WSRPResource
 
     /**
      * check on ID only for equality
+     *
      * @param o
      * @return
      */
@@ -106,6 +124,7 @@ public class NotificationSubscription implements EventSubscription, WSRPResource
 
     /**
      * use ID for hash code
+     *
      * @return
      */
     public int hashCode() {
@@ -118,14 +137,14 @@ public class NotificationSubscription implements EventSubscription, WSRPResource
      * @return a string representation of the object.
      */
     public String toString() {
-        return callback==null?"unbound notification":callback.toString();
+        return callback == null ? "unbound notification" : callback.toString();
     }
 
-    private void addWsntResource(String name,Element value) {
-        if(value!=null) {
+    private void addWsntResource(String name, Element value) {
+        if (value != null) {
             resources.addStaticProperty(
-                new QName(Constants.WSRF_WSNT_NAMESPACE,name,"wsnt"),
-                value);
+                    new QName(Constants.WSRF_WSNT_NAMESPACE, name, "wsnt"),
+                    value);
         }
     }
 
@@ -134,77 +153,151 @@ public class NotificationSubscription implements EventSubscription, WSRPResource
                 new QName(Constants.WSRF_WSNT_NAMESPACE, name, "wsnt"),
                 value);
     }
+
     /**
      * Parse the request
-     * @throws org.smartfrog.services.deployapi.transport.faults.BaseException
-     * @throws AlpineRuntimeException ifthere is trouble parsing/validating the address
+     *
      * @param request
+     * @throws org.smartfrog.services.deployapi.transport.faults.BaseException
+     *
+     * @throws AlpineRuntimeException ifthere is trouble parsing/validating the address
      */
     private void parse(Element request) {
         resources.addStaticProperty(Constants.PROPERTY_MUWS_RESOURCEID,
                 XomHelper.makeResourceId(getId()));
         if (!WSNConstants.SUBSCRIBE.equals(request.getLocalName())) {
-            throw FaultRaiser.raiseBadArgumentFault("wrong element: "+request);
+            throw FaultRaiser.raiseBadArgumentFault("wrong element: " + request);
         }
-        Element endref = XomHelper.getElement(request, "wsnt:"+CONSUMER_REFERENCE, true);
-        addWsntResource(CONSUMER_REFERENCE,endref);
+        Element endref = XomHelper.getElement(request, "wsnt:" + CONSUMER_REFERENCE, true);
+        addWsntResource(CONSUMER_REFERENCE, endref);
         callback = new AlpineEPR(endref, Constants.WS_ADDRESSING_NAMESPACE);
         callback.validate();
         Element topicExpression =
-                XomHelper.getElement(request, "wsnt:"+TOPIC_EXPRESSION, true);
+                XomHelper.getElement(request, "wsnt:" + TOPIC_EXPRESSION, true);
         String dialect =
                 XomHelper.getAttributeValue(topicExpression, Constants.WSRF_WSNT_NAMESPACE, DIALECT, true);
         if (!dialect.equals(WSNConstants.SIMPLE_DIALECT)) {
             throw FaultRaiser.raiseBadArgumentFault("Unsupported Dialect " + dialect);
         }
-
         addWsntResource(TOPIC_EXPRESSION, topicExpression);
-        String useNotify = XomHelper.getElementValue(request, "wsnt:"+USE_NOTIFY, false);
+        //get the qname from the topic.
+        String qnameExpresion = topicExpression.getValue();
+        topic = XsdUtils.resolveQName(topicExpression, qnameExpresion, false);
+        String useNotify = XomHelper.getElementValue(request, "wsnt:" + USE_NOTIFY, false);
         if (useNotify != null) {
             useNotifyMessage = XomHelper.getXsdBoolValue(useNotify);
         }
-        addWsntResource(USE_NOTIFY,Boolean.toString(useNotifyMessage));
+        addWsntResource(USE_NOTIFY, Boolean.toString(useNotifyMessage));
 
-        subscriptionPolicy = XomHelper.getElement(request, "wsnt:"+SUBSCRIPTION_POLICY, false);
-        addWsntResource(SUBSCRIPTION_POLICY,subscriptionPolicy);
-        String termTime = XomHelper.getElementValue(request, "wsnt:"+INITIAL_TERMINATION_TIME, false);
+        subscriptionPolicy = XomHelper.getElement(request, "wsnt:" + SUBSCRIPTION_POLICY, false);
+        addWsntResource(SUBSCRIPTION_POLICY, subscriptionPolicy);
+        String termTime = XomHelper.getElementValue(request, "wsnt:" + INITIAL_TERMINATION_TIME, false);
         //todo: act on the term time.
+
+        //create the session
+        session = new NotifySession(callback, true, new TransmitQueue(new DirectExecutor()));
     }
+
+    /*
+        <wsnt:SubscribeResponse>
+    <wsnt:SubscriptionReference>
+    <wsa:Address> Address of Subscription Manager </wsa:Address>
+    <wsa:ReferenceProperties>
+    Subscription Identifier
+    </wsa:ReferenceProperties>
+    …
+    </wsnt:SubscriptionReference>
+    …
+    </wsnt:SubscribeResponse>
+    */
 
     /**
      * Create a subscription response, which is an EPR in a different namespace
+     *
      * @return
      */
     public SoapElement createSubscribeResponse() {
-        /*
-       <wsnt:SubscribeResponse>
-   <wsnt:SubscriptionReference>
-   <wsa:Address> Address of Subscription Manager </wsa:Address>
-   <wsa:ReferenceProperties>
-   Subscription Identifier
-   </wsa:ReferenceProperties>
-   …
-   </wsnt:SubscriptionReference>
-   …
-   </wsnt:SubscribeResponse>
-   */
-
         SoapElement root = XomHelper.wsntElement(SUBSCRIBE_RESPONSE);
-        SoapElement address= subscriptionEPR.toXomInNewNamespace(SUBSCRIPTION_REFERENCE,
+        SoapElement address = subscriptionEPR.toXomInNewNamespace(SUBSCRIPTION_REFERENCE,
                 Constants.WSRF_WSNT_NAMESPACE, "wsnt",
                 Constants.WS_ADDRESSING_NAMESPACE, "wsa");
         root.addOrReplaceChild(address);
         return root;
     }
 
-       /**
-        * Something happened to this job
-        *
-        * @param event the event of interest
-        */
+    /**
+     * Something happened to this job
+     *
+     * @param event the event of interest
+     */
     public void event(Event event) {
-        //TODO: send the event to the callback
+        //send the event to the callback
+        SoapElement request;
+        Application application = event.application;
+        SoapElement coreEvent = createMuwsManagementEvent(null, null, application.getId());
+        if (isUseNotifyMessage()) {
+            request = createNotificationMessage(subscriptionEPR, coreEvent);
+        } else {
+            request = coreEvent;
+        }
+        try {
+            session.invokeBlocking(null,request);
+        } catch (AlpineRuntimeException e) {
+            lastError = e;
+            //if anything went wrong, log and unsubscribe us.
+            log.error("Failed to post the event to "+callback,e);
+        }
     }
+
+
+    /**
+     * Create a new muws event, to which you can append data.
+     * The event is valid according to muws-p1.xsd.
+     *
+     * @param idurl  event ID URL; set to null to have one made ip
+     * @param source any source XML; again, optional.
+     * @return an event ready to be sent or to have more data appended.
+     */
+    protected SoapElement createMuwsManagementEvent(String idurl, Element source, String resourceID) {
+        SoapElement event = new SoapElement("muws-p1-xs:ManagementEvent", Constants.MUWS_P1_NAMESPACE);
+        SoapElement eventID = new SoapElement("muws-p1-xs:EventId", Constants.MUWS_P1_NAMESPACE);
+        if (idurl == null) {
+            idurl = "http://example.org/uri/" + UUID.randomUUID().toString();
+        }
+        eventID.appendChild(idurl);
+        event.appendChild(eventID);
+        SoapElement sourceComponent = new SoapElement("muws-p1-xs:SourceComponent", Constants.MUWS_P1_NAMESPACE);
+        SoapElement sourceResource = new SoapElement("muws-p1-xs:ResourceId", Constants.MUWS_P1_NAMESPACE);
+        sourceResource.appendChild(resourceID);
+        sourceComponent.appendChild(sourceResource);
+        if (source != null) {
+            sourceComponent.appendChild(source);
+        }
+        event.appendChild(sourceComponent);
+        return event;
+    }
+
+    protected SoapElement createNotificationMessage(AlpineEPR producer, Element message) {
+        SoapElement notificationMessage = new SoapElement("wsnt:NotificationMessage", Constants.WSRF_WSNT_NAMESPACE);
+        SoapElement topicElt = new SoapElement("wsnt:Topic", Constants.WSRF_WSNT_NAMESPACE);
+        topicElt.addAttribute(
+                new Attribute("wsnt:" + DIALECT, Constants.WSRF_WSNT_NAMESPACE, WSNConstants.SIMPLE_DIALECT));
+        topicElt.appendQName(topic);
+        notificationMessage.appendChild(topicElt);
+        if (producer != null) {
+            notificationMessage.appendChild(
+                    producer.toXomInNewNamespace("ProducerReference", Constants.WSRF_WSNT_NAMESPACE,
+                            "wsnt", Constants.WS_ADDRESSING_2004_NAMESPACE, "wsa2004"));
+        }
+        if (message != null) {
+            SoapElement messageElt = new SoapElement("wsnt:Message", Constants.WSRF_WSNT_NAMESPACE);
+            notificationMessage.appendChild(
+                    messageElt);
+            messageElt.appendChild(message);
+        }
+        return notificationMessage;
+    }
+
 
     public String getId() {
         return id;
@@ -217,7 +310,16 @@ public class NotificationSubscription implements EventSubscription, WSRPResource
      */
     public boolean probe() {
         //todo: expiry
-        return true;
+        return lastError!=null;
+    }
+
+
+    /**
+     * Get the last error received on a post.
+     * @return
+     */
+    public AlpineRuntimeException getLastError() {
+        return lastError;
     }
 
     public QName getTopic() {
@@ -262,6 +364,7 @@ public class NotificationSubscription implements EventSubscription, WSRPResource
                 Constants.WS_ADDRESSING_NAMESPACE, "wsa");
     }
 
+
     /**
      * Get a property value
      *
@@ -277,11 +380,12 @@ public class NotificationSubscription implements EventSubscription, WSRPResource
 
     /**
      * Create a subscription URL and set our URL to it. R
+     *
      * @param baseURL
      * @return the new URL
      */
     public String createSubscriptionURL(URL baseURL) {
-        setSubscriptionURL(baseURL+ "?" + Constants.SUBSCRIPTION_ID_PARAM + "=" + id);
+        setSubscriptionURL(baseURL + "?" + Constants.SUBSCRIPTION_ID_PARAM + "=" + id);
         return subscriptionURL;
     }
 
@@ -293,13 +397,15 @@ public class NotificationSubscription implements EventSubscription, WSRPResource
         return subscriptionEPR;
     }
 
-    private static final String SEARCH_STRING= Constants.SUBSCRIPTION_ID_PARAM + "=";
+    private static final String SEARCH_STRING = Constants.SUBSCRIPTION_ID_PARAM + "=";
 
     /**
      * Get the subscription ID from the query
+     *
      * @param query
      * @return the trimmed string containing the subscription
-     * @throws org.smartfrog.services.deployapi.transport.faults.BaseException if not found
+     * @throws org.smartfrog.services.deployapi.transport.faults.BaseException
+     *          if not found
      */
     public static String extractSubscriptionIDFromQuery(String query) {
         if (query == null) {

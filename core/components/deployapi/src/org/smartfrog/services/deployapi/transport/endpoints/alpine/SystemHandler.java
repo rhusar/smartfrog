@@ -174,7 +174,11 @@ public class SystemHandler extends WsrfHandler {
      */
     protected void registerSubscription(MessageContext messageContext,
                                         NotificationSubscription subscription) {
+        //verify the topic
+        verifyTopic(Constants.SYSTEM_LIFECYCLE_EVENT, subscription);
+        //register it per-server
         Application app=lookup(messageContext);
         app.getSubscribers().add(subscription);
+        getServerInstance().getSubscriptionStore().add(subscription);
     }
 }

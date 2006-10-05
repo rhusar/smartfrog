@@ -97,7 +97,7 @@ SystemEndpoint extends DeployApiEndpoint {
 
 SubscriptionEndpoint extends DeployApiEndpoint {
     name "subscriptions";
-    path "/subscriptions/";
+    path "/subscription/";
     pivotHandler SubscriptionService;
      getMessage ##
       <html>

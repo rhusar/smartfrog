@@ -33,7 +33,7 @@ public class Api_33_multiple_lifecycle_listeners_Test extends SubscribingTestBas
 
     public void testSubscribe() throws Exception {
         createSubscribedSystem(getCallbackURL());
-        failNotImplemented();
+        waitForSubscription();
     }
 
 }

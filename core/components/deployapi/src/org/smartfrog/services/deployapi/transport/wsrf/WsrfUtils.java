@@ -203,7 +203,7 @@ xsd:dateTime
                 Constants.WS_ADDRESSING_NAMESPACE, "wsa");
         subscribe.appendChild(consumer);
         SoapElement topicElement=WsntElement(WSNConstants.TOPIC_EXPRESSION);
-        topicElement.addAttribute(new Attribute(WSNConstants.DIALECT,
+        topicElement.addAttribute(new Attribute("wsnt:" +WSNConstants.DIALECT,
                 Constants.WSRF_WSNT_NAMESPACE,
                 WSNConstants.SIMPLE_DIALECT));
         topicElement.appendQName(topic);

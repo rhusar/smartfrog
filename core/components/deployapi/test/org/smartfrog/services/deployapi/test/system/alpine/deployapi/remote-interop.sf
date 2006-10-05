@@ -27,20 +27,7 @@ For more information: www.smartfrog.org
 #include "/org/smartfrog/services/junit/timeouts/components.sf"
 #include "/org/smartfrog/services/junit/listeners/xml/components.sf"
 #include "/org/smartfrog/services/junit/listeners/html/components.sf"
-
-/**
- * This is the settings for the server test for steve to do the ports
-
- */
-  Proxy extends SystemProperties {
-    enabled true;
-    setOnDeploy enabled;
-    unsetOnTerminate enabled;
-    properties [
-      ["http.proxyHost","web-proxy"],
-      ["http.proxyPort","8088"]
-      ];
-  }
+#include "/org/smartfrog/services/deployapi/test/system/alpine/deployapi/proxy.sf"
 
   ServerTest extends TimeoutCompound {
 

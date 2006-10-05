@@ -80,6 +80,9 @@ public abstract class SubscribingTestBase extends StandardTestBase {
         this.subscription = subscription;
     }
 
+    public void waitForSubscription() {
+        failNotImplemented();
+    }
     /**
      * unsubscribe, if needed
      */

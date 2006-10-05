@@ -19,7 +19,6 @@
  */
 package org.smartfrog.services.deployapi.notifications;
 
-import org.smartfrog.services.deployapi.engine.Application;
 
 /**
  * created 27-Sep-2006 10:41:58
@@ -40,4 +39,15 @@ public interface EventSubscription {
      * @return true if the event is still valid; false if it has expired and should be deleted
      */
     boolean probe();
+
+    /**
+     * Set the manager
+     * @param manager manager
+     */
+    void setManager(EventSubscriberManager manager);
+
+    /**
+     * Tell the component to do any cleanup, then to unset itself from the manager
+     */
+    void unsubscribe();
 }

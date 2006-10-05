@@ -34,6 +34,8 @@ import org.smartfrog.projects.alpine.om.soap11.MessageDocument;
 import org.smartfrog.projects.alpine.faults.ServerException;
 import nu.xom.Element;
 
+import javax.xml.namespace.QName;
+
 /**
  * created 10-Apr-2006 10:54:18
  */
@@ -119,7 +121,12 @@ public class PortalHandler extends WsrfHandler {
      */
     protected void registerSubscription(MessageContext messageContext,
                                         NotificationSubscription subscription) {
+        //verify the topic
+        verifyTopic(Constants.PORTAL_CREATED_EVENT, subscription);
+        //get the global subscription list
         EventSubscriberManager subscriptions = getServerInstance().getSubscriptions();
         subscriptions.add(subscription);
+        getServerInstance().getSubscriptionStore().add(subscription);
     }
+
 }
