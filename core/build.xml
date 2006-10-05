@@ -212,12 +212,12 @@ For more information: www.smartfrog.org
     </target>
 
   <!-- =================================================================== -->
-  <!-- update code from CVS. Can overwrite this file too!                  -->
+  <!-- update code from SVN. Can overwrite this file too!                  -->
   <!-- =================================================================== -->
-    <target name="cvsupdate" depends="cc-init"
-      description="update CVS; needs cvs on the command line">
-      <exec executable="cvs" failonerror="false">
-        <arg line="-r -z7 update -dP" />
+    <target name="svnupdate" depends="cc-init"
+      description="update SVN; needs SVN on the command line">
+      <exec executable="svn" failonerror="false">
+        <arg line="update" />
       </exec>
     </target>
 
@@ -225,7 +225,7 @@ For more information: www.smartfrog.org
   <!-- incremental Cruise Control build                                    -->
   <!-- =================================================================== -->
        <target name="cc-incremental"
-        depends="cvsupdate,dist,tasks"/>
+        depends="svnupdate,dist,tasks"/>
 
     <!-- =================================================================== -->
     <!-- Cruise control test suite                                           -->
@@ -237,14 +237,14 @@ For more information: www.smartfrog.org
   <!-- full clean Cruise Control build                                     -->
   <!-- =================================================================== -->
     <target name="cc-full"
-        depends="cvsupdate,clean,release,cc-incremental,cc-test, mavenReport" 
+        depends="svnupdate,clean,release,cc-incremental,cc-test, mavenReport" 
         description="cruise control full build, with checkout"/>
 
   <!-- =================================================================== -->
   <!-- full clean Cruise Control build without Checkout                    -->
   <!-- =================================================================== -->
     <target name="cc"
-        depends="clean, release, dist, tasks ,cc-test, mavenReportNoCVSUpdate" 
+        depends="clean, release, dist, tasks ,cc-test, mavenReportNoSVNUpdate" 
         description="cruise control full build, with NO checkout"/>
 
   <!-- =================================================================== -->
@@ -283,14 +283,14 @@ For more information: www.smartfrog.org
 <!-- =================================================================== -->
 <!--  Maven site:generate-->
 <!-- =================================================================== -->
-  <target name="mavenReport" depends="cvsupdate" 
+  <target name="mavenReport" depends="svnupdate" 
     description="run 'maven site:generate'" if="maven.present">
         <exec executable="maven" dir="${cruise.base.dir}">
             <arg line="site:generate" />
         </exec>
     </target>
 
-  <target name="mavenReportNoCVSUpdate"  
+  <target name="mavenReportNoSVNUpdate"  
     description="run 'maven site:generate'" if="maven.present">
         <exec executable="maven" dir="${cruise.base.dir}">
             <arg line="site:generate" />
