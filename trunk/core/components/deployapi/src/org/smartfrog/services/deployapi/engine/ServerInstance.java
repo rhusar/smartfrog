@@ -31,6 +31,7 @@ import org.smartfrog.services.deployapi.binding.DescriptorHelper;
 import org.smartfrog.services.deployapi.binding.XomHelper;
 import org.smartfrog.services.deployapi.components.DeploymentServer;
 import org.smartfrog.services.deployapi.notifications.EventSubscriberManager;
+import org.smartfrog.services.deployapi.notifications.SubscriptionServiceStore;
 import org.smartfrog.services.deployapi.system.Constants;
 import org.smartfrog.services.deployapi.system.Utils;
 import org.smartfrog.services.deployapi.transport.wsrf.PropertyMap;
@@ -74,7 +75,11 @@ public class ServerInstance implements WSRPResourceSource {
     private AddedFilestore filestore;
 
 
+    //keep all portal subscriptions
     private EventSubscriberManager subscriptions;
+
+    //weak reference store of all subscriptions
+    private SubscriptionServiceStore subscriptionStore=new SubscriptionServiceStore();
 
     private File tempdir;
 
@@ -88,9 +93,6 @@ public class ServerInstance implements WSRPResourceSource {
     private String location = "unknown";
 
 
-    public static final int WORKERS = 1;
-    public static final long TIMEOUT = 0;
-
     private static final Log log = LogFactory.getLog(ServerInstance.class);
 
     private URL systemsURL;
@@ -100,6 +102,8 @@ public class ServerInstance implements WSRPResourceSource {
     private int failures = 0;
 
     private static final String BUILD_TIMESTAMP = "$Date$";
+
+    //URL for subscriptions
     private URL subscriptionURL;
 
     /**
@@ -367,6 +371,9 @@ public class ServerInstance implements WSRPResourceSource {
      */
     public ExecutorService createEventExecutorService() {
         return Executors.newSingleThreadExecutor();
+    }
 
+    public SubscriptionServiceStore getSubscriptionStore() {
+        return subscriptionStore;
     }
 }

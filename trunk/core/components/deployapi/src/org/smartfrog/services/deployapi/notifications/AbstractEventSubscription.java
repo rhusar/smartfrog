@@ -17,23 +17,36 @@
  For more information: www.smartfrog.org
 
  */
-package org.smartfrog.services.deployapi.test.system.alpine.deployapi.api.lifecycle;
-
-import org.smartfrog.services.deployapi.test.system.alpine.deployapi.api.SubscribingTestBase;
+package org.smartfrog.services.deployapi.notifications;
 
 /**
- * created 04-May-2006 13:46:55
+ * created 05-Oct-2006 14:12:35
  */
 
-public class Api_32_failure_events_Test extends SubscribingTestBase {
+public abstract class AbstractEventSubscription implements EventSubscription {
 
-    public Api_32_failure_events_Test(String name) {
-        super(name);
+    private EventSubscriberManager manager;
+
+    /**
+     * Set the manager
+     *
+     * @param manager manager
+     */
+    public synchronized void setManager(EventSubscriberManager manager) {
+        this.manager=manager;
     }
 
-    public void testSubscribe() throws Exception {
-        createSubscribedSystem(getCallbackURL());
-        waitForSubscription();
+    public EventSubscriberManager getManager() {
+        return manager;
     }
 
+    /**
+     * Tell the component to do any cleanup, then to unset itself from the manager
+     */
+    public synchronized void unsubscribe() {
+        if(manager!=null) {
+            manager.remove(this);
+            manager=null;
+        }
+    }
 }

@@ -53,6 +53,6 @@ public class Api_20_multiple_subscriptions_Test extends SubscribingTestBase {
         sub2 = getPortal().subscribeToPortalEvents(getCallbackURL(), true);
         subscribeToPortal(Constants.PORTAL_CREATED_EVENT);
         createSystem(null);
-        failNotImplemented();
+        waitForSubscription();
     }
 }

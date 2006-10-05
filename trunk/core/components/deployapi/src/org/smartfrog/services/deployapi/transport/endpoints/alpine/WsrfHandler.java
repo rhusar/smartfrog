@@ -70,9 +70,8 @@ public abstract class WsrfHandler extends HandlerBase implements MessageHandler 
      */
     public void process(MessageContext messageContext,
                         EndpointContext endpointContext) {
-        MessageDocument inMessage = messageContext.getRequest();
-        SoapElement request = inMessage.getPayload();
-        String requestName = request.getLocalName();
+        SoapElement request = getRequest(messageContext);
+        String requestName = getRequestName(messageContext);
         QName qName = XsdUtils.makeQName(request);
         log.info("received " + qName);
         if (Constants.WSRF_OPERATION_GETRESOURCEPROPERTY.equals(requestName)) {
@@ -87,12 +86,26 @@ public abstract class WsrfHandler extends HandlerBase implements MessageHandler 
         }
         if (Constants.WSRF_OPERATION_SUBSCRIBE
                 .equals(requestName)) {
-            throw FaultRaiser.raiseNotImplementedFault(qName.toString());
+            WSNSubscribe(messageContext,endpointContext);
         }
     }
 
+    protected SoapElement getRequest(MessageContext messageContext) {
+        return messageContext.getRequest().getPayload();
+    }
 
+    protected String getRequestName(MessageContext messageContext) {
+        return messageContext.getRequest().getPayload().getLocalName();
+    }
 
+    /**
+     * Get the operation of a request
+     * @param messageContext
+     * @return qname of the node of the request
+     */
+    protected QName getRequestOperation(MessageContext messageContext) {
+        return XsdUtils.makeQName(getRequest(messageContext));
+    }
     /**
      * Return a resource source for this message.
      *
@@ -316,4 +329,10 @@ public abstract class WsrfHandler extends HandlerBase implements MessageHandler 
     }
 
 
+    protected void verifyTopic(QName expectedTopic, NotificationSubscription subscription) {
+        QName topic = subscription.getTopic();
+        if(!expectedTopic.equals(topic)) {
+            throw FaultRaiser.raiseBadArgumentFault("Unsupported topic: ["+topic+"] - expected "+expectedTopic);
+        }
+    }
 }

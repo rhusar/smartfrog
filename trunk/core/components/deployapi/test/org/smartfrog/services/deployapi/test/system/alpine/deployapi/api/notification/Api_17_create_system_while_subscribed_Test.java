@@ -35,7 +35,7 @@ public class Api_17_create_system_while_subscribed_Test extends SubscribingTestB
     public void testCreate_system_while_subscribed() throws Exception {
         subscribeToSystemCreationEvent();
         createSystem(null);
-        failNotImplemented();
+        waitForSubscription();
     }
 
 }

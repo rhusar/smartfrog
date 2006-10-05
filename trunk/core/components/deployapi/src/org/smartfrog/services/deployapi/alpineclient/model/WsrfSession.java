@@ -34,7 +34,6 @@ import org.smartfrog.projects.alpine.xmlutils.XsdUtils;
 import org.smartfrog.projects.alpine.core.MessageContext;
 import org.smartfrog.services.deployapi.system.Constants;
 import org.smartfrog.services.deployapi.transport.wsrf.WsrfUtils;
-import org.smartfrog.services.deployapi.transport.wsrf.WSNConstants;
 
 import javax.xml.namespace.QName;
 import java.util.List;
@@ -119,7 +118,6 @@ public abstract class WsrfSession extends Session {
 
     protected MessageContext createNewMessageContext() {
         MessageContext ctx = super.createNewMessageContext();
-        //ctx.put(ContextConstants.ATTR_SOAP_CONTENT_TYPE, HttpConstants.CONTENT_TYPE_SOAP_XML);
         return ctx;
     }
 
@@ -150,8 +148,7 @@ public abstract class WsrfSession extends Session {
         AlpineRuntimeException fault = null;
         if (payload == null) {
             fault = new ClientException("Empty body of SOAP message");
-        }
-        if (!XsdUtils.isNamed(payload, expectedType)) {
+        } else if (!XsdUtils.isNamed(payload, expectedType)) {
             fault = new ClientException("Wrong response message");
         }
         if (fault != null) {
@@ -351,7 +348,7 @@ public abstract class WsrfSession extends Session {
      * @param tx
      * @return
      */
-    public CallbackSubscription endsSubscribe(Transmission tx) {
+    public CallbackSubscription endSubscribe(Transmission tx) {
         tx.blockForResult(getTimeout());
         Element payload = extractResponse(tx, QNAME_WSNT_SUBSCRIBE_RESPONSE);
         return new CallbackSubscription(this,payload);
@@ -366,6 +363,11 @@ public abstract class WsrfSession extends Session {
      * @return the transmission
      */
     public CallbackSubscription subscribe(QName topic, String callback, boolean useNotify, String expiryTime) {
-        return endsSubscribe(beginSubscribe(topic, callback, useNotify, expiryTime));
+        return endSubscribe(beginSubscribe(topic, callback, useNotify, expiryTime));
+    }
+
+    public MessageDocument invokeBlocking(String operation,SoapElement request) {
+        Transmission transmission = queue(operation, request);
+        return transmission.blockForResult(getTimeout());
     }
 }

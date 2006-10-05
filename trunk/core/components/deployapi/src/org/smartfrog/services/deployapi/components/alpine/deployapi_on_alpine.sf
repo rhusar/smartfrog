@@ -54,7 +54,7 @@ DeployServer extends AlpineServerOnJetty {
       servlet LAZY alpine;
     }
 
-    SubscriptionEndpoint extends SystemEndpoint {
+    subscriptionEndpoint extends SubscriptionEndpoint {
       servlet LAZY alpine;
     }
     //subscriptions extends

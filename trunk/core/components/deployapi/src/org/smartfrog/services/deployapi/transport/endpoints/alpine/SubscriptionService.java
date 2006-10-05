@@ -23,6 +23,7 @@ import org.smartfrog.services.deployapi.transport.endpoints.alpine.WsrfHandler;
 import org.smartfrog.services.deployapi.transport.wsrf.NotificationSubscription;
 import org.smartfrog.services.deployapi.transport.wsrf.WSRPResourceSource;
 import org.smartfrog.services.deployapi.transport.faults.FaultRaiser;
+import org.smartfrog.services.deployapi.system.Constants;
 import org.smartfrog.projects.alpine.core.MessageContext;
 import org.smartfrog.projects.alpine.core.EndpointContext;
 import org.smartfrog.projects.alpine.om.soap11.MessageDocument;
@@ -32,10 +33,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import nu.xom.Element;
 
-import java.util.HashMap;
-import java.lang.ref.WeakReference;
-
 /**
+ * Endpoint to handle all subscriptions.
  * created 27-Sep-2006 13:18:32
  */
 
@@ -43,38 +42,9 @@ public class SubscriptionService extends WsrfHandler {
 
     private Log log= LogFactory.getLog(SubscriptionService.class);
 
-    /**
-     * Use a weak reference hashmap, so that when a subscription is destroyed
-     * it is automatically purged here.
-     */
-    private HashMap<String, WeakReference<NotificationSubscription>> subscriptions=new HashMap();
 
-    /**
-     * Add a subscription
-     * @param sub
-     */
-    public AlpineEPR add(NotificationSubscription sub) {
-        subscriptions.put(sub.getId(), new WeakReference<NotificationSubscription>(sub));
-        //return a new address
-        return null;
-    }
-
-    public void remove(String key) {
-        subscriptions.remove(key);
-    }
-
-    public void remove(NotificationSubscription sub) {
-        remove(sub.getId());
-    }
-
-    public NotificationSubscription lookup(String key) {
-        WeakReference<NotificationSubscription> ref = subscriptions.get(key);
-        NotificationSubscription sub = ref.get();
-        if(sub==null) {
-            log.info("Purging subscription data for "+key);
-            remove(key);
-        }
-        return sub;
+    private void remove(NotificationSubscription sub) {
+        getServerInstance().getSubscriptionStore().remove(sub.getId());
     }
 
     /*
@@ -88,21 +58,31 @@ public class SubscriptionService extends WsrfHandler {
             //exit immediately if processing took place.
             return;
         }
+        MessageDocument request = messageContext.getRequest();
 
-        MessageDocument response = messageContext.createResponse();
-        Element payload = messageContext.getRequest().getBody().getFirstChildElement();
+        Element payload = request.getBody().getFirstChildElement();
         if (payload == null) {
             throw new ServerException("Empty SOAP message");
         }
 
-
-        NotificationSubscription sub=lookupSubscription(messageContext);
-
+        AlpineEPR to = getTo(request);
+        String url = to.getAddress();
+        String id = NotificationSubscription.extractSubscriptionIDFromQuery(url);
+        NotificationSubscription sub = getServerInstance().getSubscriptionStore().lookup(id);
+        if (sub == null) {
+            FaultRaiser.raiseBadArgumentFault("No subscription at "+url);
+        }
+        String requestName = payload.getLocalName();
         //TODO: handle WSNT operations
-
-        //this is the pivot point; declare ourselves finished
-        messageContext.setProcessed(true);
-//        processor.process(request, response);
+        if (Constants.WSRF_ELEMENT_DESTROY_REQUEST.equals(requestName)) {
+            verifyNamespace(getRequest(messageContext),
+                    Constants.WSRF_WSRL_NAMESPACE);
+            //delete the entry.
+            sub.unsubscribe();
+            remove(sub);
+            setResponse(messageContext,new Element(Constants.WSRF_ELEMENT_DESTROY_RESPONSE,
+                    Constants.WSRF_WSRL_NAMESPACE));
+        }
     }
 
     /**
@@ -115,16 +95,13 @@ public class SubscriptionService extends WsrfHandler {
      *
      */
     public WSRPResourceSource retrieveResourceSource(MessageContext message) {
-        return lookupSubscription(message);
-    }
-
-    private NotificationSubscription lookupSubscription(MessageContext message) {
         MessageDocument request = message.getRequest();
         AlpineEPR to = getTo(request);
-        String id = NotificationSubscription.extractSubscriptionIDFromQuery(to.getAddress());
-        NotificationSubscription sub = lookup(id);
+        String url = to.getAddress();
+        String id = NotificationSubscription.extractSubscriptionIDFromQuery(url);
+        NotificationSubscription sub = getServerInstance().getSubscriptionStore().lookup(id);
         if (sub == null) {
-            FaultRaiser.raiseBadArgumentFault("No subscription of that address");
+            FaultRaiser.raiseBadArgumentFault("No subscription at "+url);
         }
         return sub;
     }
