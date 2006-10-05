@@ -220,7 +220,7 @@ public final class AlpineEPR implements Validatable, AddressingConstants, XomSou
      * are in the XML ns of choice
      * @param rootname root name
      * @param rootNs top
-     * @param rootPrefix root prefix
+     * @param rootPrefix root prefix without the colon
      * @param wsaNs xmlns for the WSA children
      * @param wsaPrefix prefix for the WSA children
      * @return

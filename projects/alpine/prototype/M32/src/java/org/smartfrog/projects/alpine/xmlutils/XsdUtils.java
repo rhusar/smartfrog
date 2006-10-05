@@ -151,7 +151,7 @@ public final class XsdUtils {
             if (defaultToParentNameSpace) {
                 //get the parent ns and use it for the child
                 String namespace = element.getNamespaceURI();
-                return new QName(element.getNamespaceURI(), qname, element.getNamespacePrefix());
+                return new QName(namespace, qname, element.getNamespacePrefix());
             } else {
                 //else things without no prefix are local.
                 return new QName(qname);
@@ -163,7 +163,10 @@ public final class XsdUtils {
             //empty local, exit accordingly
             return null;
         }
-
+        if(prefix.length()==0) {
+            //shortened prefix implies local
+            return new QName(local);
+        }
         String namespace = element.getNamespaceURI(prefix);
         if (namespace == null) {
             //no matching namespace
