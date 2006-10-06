@@ -46,6 +46,12 @@ SubscriptionService extends SharedHandler {
   classname "org.smartfrog.services.deployapi.transport.endpoints.alpine.SubscriptionService";
 }
 
+/**
+ * component to receive subscriptions
+ */
+SubscriptionReceiver extends SharedHandler {
+  classname "org.smartfrog.services.deployapi.transport.endpoints.alpine.SubscriptionRelay";
+}
 
 DeployApiEndpoint extends AlpineEndpoint {
     pivotHandler TBD;

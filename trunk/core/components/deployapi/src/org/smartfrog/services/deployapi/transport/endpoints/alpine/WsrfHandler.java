@@ -88,6 +88,26 @@ public abstract class WsrfHandler extends HandlerBase implements MessageHandler 
                 .equals(requestName)) {
             WSNSubscribe(messageContext,endpointContext);
         }
+        //TODO: handle WSNT operations
+        if (Constants.WSRF_ELEMENT_DESTROY_REQUEST.equals(requestName)) {
+            verifyNamespace(getRequest(messageContext),
+                    Constants.WSRF_WSRL_NAMESPACE);
+            destroy(messageContext,endpointContext);
+            setResponse(messageContext,
+                    new Element(Constants.WSRF_ELEMENT_DESTROY_RESPONSE,
+                            Constants.WSRF_WSRL_NAMESPACE));
+        }
+    }
+
+    /**
+     * Handle a destroy operation
+     * default operation is to raise a fault
+     * @param messageContext
+     * @param endpointContext
+     */
+    protected  void destroy(MessageContext messageContext,
+                         EndpointContext endpointContext) {
+        throw FaultRaiser.raiseNotImplementedFault("<wsrf:destroy/>. This endpoint is not destroyable");
     }
 
     protected SoapElement getRequest(MessageContext messageContext) {
