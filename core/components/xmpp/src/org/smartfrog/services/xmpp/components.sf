@@ -1,0 +1,126 @@
+/** (C) Copyright 2006 Hewlett-Packard Development Company, LP
+
+ This library is free software; you can redistribute it and/or
+ modify it under the terms of the GNU Lesser General Public
+ License as published by the Free Software Foundation; either
+ version 2.1 of the License, or (at your option) any later version.
+
+ This library is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ Lesser General Public License for more details.
+
+ You should have received a copy of the GNU Lesser General Public
+ License along with this library; if not, write to the Free Software
+ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+ For more information: www.smartfrog.org
+
+ */
+
+
+#include "/org/smartfrog/components.sf"
+#include "/org/smartfrog/predicates.sf"
+#include "/org/smartfrog/services/utils/setproperty/sysprops.sf"
+
+/**
+ * Xmpp support is based on smack
+ * http://www.jivesoftware.org/smack/
+
+
+ */
+
+XmppSchema extends Schema {
+    server extends String {
+        description "hostname of the server";
+    }
+    serviceName extends OptionalString {
+        description "name of the service when different from the server name";
+    }
+    login extends String {
+        description "user name for logins";
+    }
+    useTLS extends Boolean {
+        description "should a (legacy) TLS encrypted channel be used"
+    }
+    password extends String {
+        description "password for logins";
+    }
+    port extends Integer {
+        description "connection port";
+    }
+    presence extends Boolean {
+        description "should presence information be provided";
+    }
+    resource extends String {
+        description "resource for the login";
+    }
+}
+
+/**
+ * listens for new messages
+ */
+
+XmppListener extends Prim {
+    xmppSchema extends XmppSchema;
+    server TBD;
+    serviceName server;
+    port 5222;
+    resource "SmartFrog";
+    presence false;
+    useTLS false;
+}
+
+/**
+ * this component can be used in workflows; it will then terminate after sending
+ * its message.
+ * if deployed non-terminating, it can be used to send messages to either the default destination,
+ * or to any other destination specified in the request.
+ */
+
+
+XmppClientSchema extends XmppSchema {
+    destination extends OptionalString {
+        description "username for the message or any other unaddressed messages";
+    }
+    message extends OptionalString {
+        description "a message to send when this component starts"
+    }
+}
+
+XmppClient extends Prim {
+    xmppClientSchema extends XmppClientSchema;
+    port 5222;
+    resource "SmartFrog";
+    presence false;
+    sfClass "org.smartfrog.services.xmpp.XmppClientImpl";
+}
+
+/**
+ * binding to google chat
+ */
+GoogleChatClient extends XmppClient {
+    server "talk.google.com";
+    serviceName "google.com"
+}
+
+/**
+ * binding to google chat
+ */
+JabberClient extends XmppClient {
+    server "jabber.org";
+}
+
+/**
+    Note that setting the system property smack.debugEnabled to true turns debugging
+    on for all components. This system properties component can be deployed
+    to turn such debugging on. Once set, all new connections made in the
+    same process get debugged. The client creates a connection every message;
+    the listener only does so on start up.
+ */
+
+
+ XmppDebugging extends SystemProperties {
+    debug true;
+    properties ["smack.debugEnabled",debug];
+ }
