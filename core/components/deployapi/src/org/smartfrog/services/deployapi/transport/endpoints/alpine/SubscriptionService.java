@@ -58,13 +58,38 @@ public class SubscriptionService extends WsrfHandler {
             //exit immediately if processing took place.
             return;
         }
-        MessageDocument request = messageContext.getRequest();
-
-        Element payload = request.getBody().getFirstChildElement();
+        NotificationSubscription sub = getSubscription(messageContext);
+        Element payload = messageContext.getRequest().getBody().getFirstChildElement();
         if (payload == null) {
             throw new ServerException("Empty SOAP message");
         }
 
+        String requestName = payload.getLocalName();
+        //TODO: handle WSNT pause/resume operations
+
+    }
+
+
+    /**
+     * Handle a destroy operation by unsubscribing
+     *
+     * @param messageContext
+     * @param endpointContext
+     */
+    protected void destroy(MessageContext messageContext,
+                           EndpointContext endpointContext) {
+        NotificationSubscription sub = getSubscription(messageContext);
+        sub.unsubscribe();
+        remove(sub);
+    }
+
+    /**
+     * Get the subscription
+     * @param messageContext
+     * @return
+     */
+    private NotificationSubscription getSubscription(MessageContext messageContext) {
+        MessageDocument request = messageContext.getRequest();
         AlpineEPR to = getTo(request);
         String url = to.getAddress();
         String id = NotificationSubscription.extractSubscriptionIDFromQuery(url);
@@ -72,17 +97,7 @@ public class SubscriptionService extends WsrfHandler {
         if (sub == null) {
             FaultRaiser.raiseBadArgumentFault("No subscription at "+url);
         }
-        String requestName = payload.getLocalName();
-        //TODO: handle WSNT operations
-        if (Constants.WSRF_ELEMENT_DESTROY_REQUEST.equals(requestName)) {
-            verifyNamespace(getRequest(messageContext),
-                    Constants.WSRF_WSRL_NAMESPACE);
-            //delete the entry.
-            sub.unsubscribe();
-            remove(sub);
-            setResponse(messageContext,new Element(Constants.WSRF_ELEMENT_DESTROY_RESPONSE,
-                    Constants.WSRF_WSRL_NAMESPACE));
-        }
+        return sub;
     }
 
     /**
@@ -95,14 +110,7 @@ public class SubscriptionService extends WsrfHandler {
      *
      */
     public WSRPResourceSource retrieveResourceSource(MessageContext message) {
-        MessageDocument request = message.getRequest();
-        AlpineEPR to = getTo(request);
-        String url = to.getAddress();
-        String id = NotificationSubscription.extractSubscriptionIDFromQuery(url);
-        NotificationSubscription sub = getServerInstance().getSubscriptionStore().lookup(id);
-        if (sub == null) {
-            FaultRaiser.raiseBadArgumentFault("No subscription at "+url);
-        }
+        NotificationSubscription sub = getSubscription(message);
         return sub;
     }
 
