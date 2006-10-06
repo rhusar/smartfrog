@@ -225,9 +225,7 @@ public class EventCompoundImpl extends CompoundImpl implements EventBus,
         if (oldNotation) {
             actions = ((ComponentDescription)sfResolve(actionsRef,true)).sfContext();
             actionKeys = actions.keys();
-            if (sfLog().isWarnEnabled()){
-                sfLog().warn(" 'actions' workflow notation is deprecated");
-            }
+            sfLog().warn(" 'actions' workflow notation is deprecated");
         } else {
             // actions and actionKeys created during sfDeployWith
         }
