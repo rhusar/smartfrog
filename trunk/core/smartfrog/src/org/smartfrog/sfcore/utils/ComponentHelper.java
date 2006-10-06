@@ -240,8 +240,8 @@ public class ComponentHelper {
 
     /**
      * This schedules a component for termination, but chooses the notification/detach attributes off
-     * the parent, namely {@link ShouldDetachOrTerminate.ATTR_SHOULD_TERMINATE_QUIETLY} and
-     * {@link ShouldDetachOrTerminate.ATTR_SHOULD_DETACH}.
+     * the parent, namely {@link ShouldDetachOrTerminate#ATTR_SHOULD_TERMINATE_QUIETLY} and
+     * {@link ShouldDetachOrTerminate#ATTR_SHOULD_DETACH}.
      * @param record record to send with the termination.
      */
     public void targetForWorkflowTermination(TerminationRecord record) {
@@ -261,6 +261,7 @@ public class ComponentHelper {
      * the thread blocks until sfStart has finished.
      *
      * @param record  record to terminate with
+     * @param dontTerminate set to true to  not actually terminate
      * @param detach  detach first?
      * @param quietly terminate quietly?
      */
