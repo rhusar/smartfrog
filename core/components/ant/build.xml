@@ -304,7 +304,7 @@ Reference URL:http://ant.apache.org
 
 <target name="clean" depends="common.clean" description="clean up build ,dist and releases" >
     <delete dir="releases"  />  
-    <delete dir="test"  />
+    <delete dir="build"  /> 
    <delete file="version.properties"/>  
  </target>  
 
