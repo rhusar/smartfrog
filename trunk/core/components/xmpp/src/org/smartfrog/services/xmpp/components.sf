@@ -26,8 +26,10 @@
 /**
  * Xmpp support is based on smack
  * http://www.jivesoftware.org/smack/
-
-
+ *
+ * Smack 2.2.1 does not support XMPP over HTTP, and so does not proxy except
+ * through a socks proxy. It does work behind firewalls that let it make
+ * outbound connections to the port the server is on 5222.
  */
 
 XmppSchema extends Schema {
