@@ -40,10 +40,10 @@ XmppSchema extends Schema {
         description "name of the service when different from the server name";
     }
     login extends String {
-        description "user name for logins";
+        description "user name for logins, no @domain suffix";
     }
     useTLS extends Boolean {
-        description "should a (legacy) TLS encrypted channel be used"
+        description "should a (legacy) TLS encrypted channel be used";
     }
     password extends String {
         description "password for logins";
@@ -54,23 +54,33 @@ XmppSchema extends Schema {
     presence extends Boolean {
         description "should presence information be provided";
     }
+    requireEncryption extends Boolean {
+        description ##should we require an encrypted connection
+            -that is, fail if the connection negotiated is not secured
+            #;
+    }
     resource extends String {
         description "resource for the login";
     }
+}
+
+XmppComponent extends Prim {
+    xmppSchema extends XmppSchema;
+    serviceName LAZY server;
+    port 5222;
+    requireEncryption true;
+    resource "SmartFrog";
+    presence false;
+    useTLS false;
 }
 
 /**
  * listens for new messages
  */
 
-XmppListener extends Prim {
-    xmppSchema extends XmppSchema;
-    server TBD;
-    serviceName server;
-    port 5222;
-    resource "SmartFrog";
-    presence false;
-    useTLS false;
+XmppListener extends XmppComponent {
+    sfClass "org.smartfrog.services.xmpp.XmppListenerImpl";
+    presence true;
 }
 
 /**
@@ -81,21 +91,25 @@ XmppListener extends Prim {
  */
 
 
-XmppClientSchema extends XmppSchema {
-    destination extends OptionalString {
+XmppClientSchema extends Schema {
+    to extends OptionalString {
         description "username for the message or any other unaddressed messages";
     }
     message extends OptionalString {
-        description "a message to send when this component starts"
+        description "a message to send when this component starts";
     }
 }
 
-XmppClient extends Prim {
+XmppClient extends XmppComponent {
     xmppClientSchema extends XmppClientSchema;
-    port 5222;
-    resource "SmartFrog";
-    presence false;
     sfClass "org.smartfrog.services.xmpp.XmppClientImpl";
+}
+
+/**
+ * workflow variant
+ */
+XmppClientWorkflow extends XmppClient {
+    sfShouldTerminate true;
 }
 
 /**
@@ -103,14 +117,23 @@ XmppClient extends Prim {
  */
 GoogleChatClient extends XmppClient {
     server "talk.google.com";
-    serviceName "google.com"
+    serviceName "gmail.com";
 }
 
+GoogleChatClientWorkflow extends GoogleChatClient {
+    sfShouldTerminate true;
+}
+
+
 /**
- * binding to google chat
+ * binding to jabber.org
  */
 JabberClient extends XmppClient {
     server "jabber.org";
+}
+
+JabberClientWorkflow extends JabberClient {
+    sfShouldTerminate true;
 }
 
 /**
@@ -124,5 +147,13 @@ JabberClient extends XmppClient {
 
  XmppDebugging extends SystemProperties {
     debug true;
-    properties ["smack.debugEnabled",debug];
+    setOnStartup true;
+    setOnDeploy false;
+    properties [["smack.debugEnabled",debug]];
  }
+
+
+XmppDebuggingWorkflow extends XmppDebugging {
+    sfShouldTerminate true;
+    unsetOnTerminate false;
+}

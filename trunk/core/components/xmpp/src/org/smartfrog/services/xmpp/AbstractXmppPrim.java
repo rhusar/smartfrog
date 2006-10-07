@@ -34,7 +34,7 @@ public abstract class AbstractXmppPrim extends PrimImpl implements Xmpp {
 
     private String server, login, password, resource, serviceName;
     private int port;
-    private boolean presence, useTLS;
+    private boolean presence, requireEncryption,useTLS;
 
     protected AbstractXmppPrim() throws RemoteException {
     }
@@ -57,6 +57,7 @@ public abstract class AbstractXmppPrim extends PrimImpl implements Xmpp {
         password = sfResolve(ATTR_PASSWORD, password, true);
         port = sfResolve(ATTR_PORT, port, true);
         presence = sfResolve(ATTR_PRESENCE, presence, true);
+        requireEncryption = sfResolve(ATTR_REQUIRE_ENCRYPTION, requireEncryption, true);
         resource = sfResolve(ATTR_RESOURCE, resource, true);
         useTLS = sfResolve(ATTR_USE_TLS, useTLS, true);
     }
@@ -120,8 +121,8 @@ public abstract class AbstractXmppPrim extends PrimImpl implements Xmpp {
      */
     public XMPPConnection login() throws SmartFrogException {
         XMPPConnection connection = null;
-        String connectionInfo = "connecting to " + server + ":" + port +
-                " as " + login;
+        String serverInfo= server + ":" + port + " as " + login;
+        String connectionInfo = "connecting to " + serverInfo;
         sfLog().debug(connectionInfo);
         try {
             if (useTLS) {
@@ -130,6 +131,10 @@ public abstract class AbstractXmppPrim extends PrimImpl implements Xmpp {
                 connection = new XMPPConnection(server, port, serviceName);
             }
             connection.login(login, password, resource, presence);
+            //check the encryption status
+            if(requireEncryption && !connection.isSecureConnection()) {
+                throw new SmartFrogException("Failed to set up a secure connection to "+ serverInfo);
+            }
             return connection;
         } catch (XMPPException e) {
             if (connection != null) {

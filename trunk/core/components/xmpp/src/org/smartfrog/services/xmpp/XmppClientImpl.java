@@ -95,16 +95,19 @@ public class XmppClientImpl extends AbstractXmppPrim implements XmppClient {
             throw new SmartFrogRuntimeException("No recipient for XMPP message");
         }
         try {
-            XMPPConnection connection = null;
+            XMPPConnection connection;
             connection = login();
             try {
                 Message m = new Message(recipient);
                 m.setBody(text);
                 m.setType(Message.Type.NORMAL);
                 connection.sendPacket(m);
-                connection.close();
             } finally {
-                connection.close();
+                try {
+                    connection.close();
+                } catch (IllegalStateException e) {
+                    sfLog().ignore("when closing a connection",e);
+                }
             }
         } catch (IllegalStateException e) {
             //smack uses IllegalStateException for signalling problems
