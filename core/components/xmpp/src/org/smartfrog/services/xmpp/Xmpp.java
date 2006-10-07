@@ -51,7 +51,12 @@ public interface Xmpp extends Remote {
      * should presence information be provided. {@value}
      */
     String ATTR_PRESENCE = "presence";
-
+    /**
+     * should we require an encrypted connection
+     * -that is, fail if the connection negotiated is not secured.
+     * {@value}
+     */
+    String ATTR_REQUIRE_ENCRYPTION="requireEncryption";
     /**
      * resource for the login. {@value}
      */

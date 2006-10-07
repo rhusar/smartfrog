@@ -31,7 +31,7 @@ public interface XmppClient extends Xmpp {
     /**
      * username for the message or any other unaddressed messages. {@value}
      */
-    String ATTR_DESTINATION = "destination";
+    String ATTR_DESTINATION = "to";
     /**
      * a message to send when this component starts. {@value}
      */
