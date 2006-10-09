@@ -40,7 +40,7 @@ ClasspathSchema extends Schema {
 }
 
 
-Classpath extends Prim {
+Classpath extends WorkflowPrim {
     schema extends ClasspathSchema;
 }
 
@@ -76,7 +76,9 @@ LibraryClasspath extends Classpath {
      sfClass "org.smartfrog.services.os.java.LibraryClasspathImpl";
 
 }
-
+/**
+ * SFOS-13 implies this is not implemented.
+ */
 Maven2Classpath extends LibraryClasspath {
     maven2ClasspathSchema extends Maven2ClasspathSchema;
 
