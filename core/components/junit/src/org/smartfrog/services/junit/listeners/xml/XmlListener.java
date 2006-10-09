@@ -1,4 +1,4 @@
-/** (C) Copyright 2006 Hewlett-Packard Development Company, LP
+/** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
 
  This library is free software; you can redistribute it and/or
  modify it under the terms of the GNU Lesser General Public
@@ -17,27 +17,31 @@
  For more information: www.smartfrog.org
 
  */
-package org.smartfrog.services.junit.listeners;
+package org.smartfrog.services.junit.listeners.xml;
 
+import org.smartfrog.services.junit.TestListener;
 
+import java.rmi.RemoteException;
 
 /**
- * created 08-Jun-2006 11:33:36
+ * An XML listener also lets you get the name of the file, as an operation on
+ * the interface, <i>and</i> as an attribute that is added to a test suite when
+ * run. That is, every test knows the name of the test. created Nov 23, 2004
+ * 3:47:29 PM
  */
 
 
-public interface HtmlTestListenerFactory extends XmlListenerFactory {
-
+public interface XmlListener extends TestListener {
 
     /**
-     * page title
-     * {@value}
+     * the name of the file that is used to store the XML output of the test
      */
-    String ATTR_TITLE = "title";
+    String ATTR_FILE = "file";
 
-    String ATTR_CSS_RESOURCE = "cssResource";
-
-    String ATTR_CSS_URL = "cssURL";
-
-    String ATTR_CSS_DATA = "cssData";
+    /**
+     * get the filename of this
+     *
+     * @return the filename used
+     */
+    String getFilename() throws RemoteException;
 }

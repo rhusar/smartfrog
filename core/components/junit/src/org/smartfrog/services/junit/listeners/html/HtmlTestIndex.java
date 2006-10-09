@@ -1,4 +1,6 @@
-package org.smartfrog.services.junit.listeners;
+package org.smartfrog.services.junit.listeners.html;
+
+import org.smartfrog.services.junit.listeners.xml.XmlTestIndex;
 
 /**
 

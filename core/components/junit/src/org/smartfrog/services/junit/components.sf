@@ -32,7 +32,7 @@ For more information: www.smartfrog.org
 #include "/org/smartfrog/services/os/java/components.sf"
 //include logging
 #include "/org/smartfrog/services/junit/log/testlistenerlogimpl.sf"
-//listeners
+//base listeners
 #include "/org/smartfrog/services/junit/listeners/components.sf";
 
 

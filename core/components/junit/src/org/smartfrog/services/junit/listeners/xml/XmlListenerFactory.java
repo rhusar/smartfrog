@@ -19,7 +19,7 @@
  */
 
 
-package org.smartfrog.services.junit.listeners;
+package org.smartfrog.services.junit.listeners.xml;
 
 import org.smartfrog.services.junit.TestListenerFactory;
 
