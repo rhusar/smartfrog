@@ -28,6 +28,7 @@ import org.smartfrog.sfcore.compound.Compound;
 import org.smartfrog.sfcore.compound.CompoundImpl;
 import org.smartfrog.sfcore.logging.Log;
 import org.smartfrog.sfcore.prim.Prim;
+import org.smartfrog.sfcore.utils.ComponentHelper;
 
 import java.rmi.RemoteException;
 
@@ -42,6 +43,7 @@ public class SFSetPropertyImpl extends CompoundImpl implements Compound, SFSetPr
     private Object value = null;
     private boolean replace = true;
     private Log log;
+    private String finalValue;
 
     /**
      * Constructor for the SFServiceResourceManagerImpl object.
@@ -59,19 +61,19 @@ public class SFSetPropertyImpl extends CompoundImpl implements Compound, SFSetPr
      */
     public synchronized void sfDeployWith(Prim parent, Context cxt) throws SmartFrogDeploymentException, RemoteException {
         try {
-          log = this.sfGetApplicationLog();//.sfGetLog(sfResolve(SmartFrogCoreKeys.SF_APP_LOG_NAME, "", true));
-          // Mandatory attributes.
+            log = this.sfGetApplicationLog();//.sfGetLog(sfResolve(SmartFrogCoreKeys.SF_APP_LOG_NAME, "", true));
+            // Mandatory attributes.
             try {
                 name = (String) cxt.sfResolveAttribute(ATR_NAME);
                 value = cxt.sfResolveAttribute(ATR_VALUE);
             } catch (SmartFrogException e) {
                 if (log.isErrorEnabled()) {
-                    log.error("Failed to read mandatory attribute: " + e.toString(),e);
+                    log.error("Failed to read mandatory attribute: " + e.toString(), e);
                 }
                 throw e;
             }
             try {
-                replace =((Boolean) cxt.sfResolveAttribute(ATR_REPLACE)).booleanValue();
+                replace = ((Boolean) cxt.sfResolveAttribute(ATR_REPLACE)).booleanValue();
             } catch (SmartFrogContextException e) {
                 if (log.isDebugEnabled()) {
                     log.debug("Failed to read optional attribute: " + e.toString());
@@ -79,18 +81,19 @@ public class SFSetPropertyImpl extends CompoundImpl implements Compound, SFSetPr
             }
 
 
-          String oldValue = System.getProperty(name, "non defined");
+            String oldValue = System.getProperty(name, "non defined");
             if (replace) {
-                System.setProperty(name, value.toString());
+                finalValue = value.toString();
             } else {
-                System.setProperty(name, oldValue + value.toString());
+                finalValue = oldValue + value.toString();
             }
-          if (log.isDebugEnabled()) {
-            log.debug("Setting property: " + name +
-                      ", NEW VALUE: " + value.toString() +
-                      ", OLD VALUE: " + oldValue+
-                      ", VALUE READ:" + System.getProperty(name));
-          }
+            System.setProperty(name, finalValue);
+            if (log.isDebugEnabled()) {
+                log.debug("Setting property: " + name +
+                        ", NEW VALUE: " + value.toString() +
+                        ", OLD VALUE: " + oldValue +
+                        ", VALUE READ:" + System.getProperty(name));
+            }
 
         } catch (Throwable t) {
             if (log.isErrorEnabled()) {
@@ -100,5 +103,21 @@ public class SFSetPropertyImpl extends CompoundImpl implements Compound, SFSetPr
         }
         //super.sfDeploy();
         super.sfDeployWith(parent, cxt);
+    }
+
+    /**
+     * Starts the compound. This sends a synchronous sfStart to all managed
+     * components in the compound context. Any failure will cause the compound
+     * to terminate
+     *
+     * @throws org.smartfrog.sfcore.common.SmartFrogException
+     *                                  failed to start compound
+     * @throws java.rmi.RemoteException In case of Remote/nework error
+     */
+    public synchronized void sfStart() throws SmartFrogException, RemoteException {
+        super.sfStart();
+        new ComponentHelper(this).sfSelfDetachAndOrTerminate(null,
+                "set "+name+" to "+finalValue, null, null);
+
     }
 }

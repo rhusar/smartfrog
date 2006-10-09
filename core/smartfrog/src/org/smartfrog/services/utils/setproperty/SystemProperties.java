@@ -13,6 +13,7 @@ public interface SystemProperties extends Remote {
     String ATTR_PROPERTIES = "properties";
     String ATTR_SETONSTARTUP = "setOnStartup";
     String ATTR_SETONDEPLOY = "setOnDeploy";
+    String ATTR_SETONEARLYDEPLOY = "setOnEarlyDeploy";
     String ATTR_UNSETONTERMINATE = "unsetOnTerminate";
 
     /**

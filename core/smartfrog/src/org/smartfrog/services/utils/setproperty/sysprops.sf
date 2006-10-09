@@ -24,29 +24,41 @@ For more information: www.smartfrog.org
 
 /*
  * This component sets system properties in the local JVM.
- * These properties are set at startup or on deploy (you choose)
+ * These properties are set at startup, on deploy, or early deploy (you choose)
  * Any security failure is turned into a Deployment exception
  * System properties are declared as a [[name,value]] list.
+ *
  */ 
  
 SystemPropertiesSchema extends Schema {
 
     properties extends Vector;
     
-    setOnStartup extends Boolean;
+    setOnStartup extends Boolean{
+      description "should these properties be set when the component starts"
+    }
+
+    setOnEarlyDeploy extends Boolean {
+      description "should these properties be set very early on in the deploy process"
+    }
+
+    setOnDeploy extends Boolean{
+      description "should these properties be set when the component is deployed"
+    }
     
-    setOnDeploy extends Boolean;
-    
-    unsetOnTerminate extends Boolean;
+    unsetOnTerminate extends Boolean {
+      description "should these properties be unset during termination (Java1.5 only)"
+    }
 
 }
 
 
-SystemProperties extends Prim {
+SystemProperties extends WorkflowPrim {
     sfClass "org.smartfrog.services.utils.setproperty.SystemPropertiesImpl";
     systemPropertiesSchema extends SystemPropertiesSchema;
     properties [];
     setOnStartup false;
+    setOnEarlyDeploy false;
     setOnDeploy true;
     unsetOnTerminate true;
 }

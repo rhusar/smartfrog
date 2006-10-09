@@ -28,7 +28,7 @@ SetPropertySchema extends Schema {
    replace_old_value extends OptionalBoolean {description "Replace or Add at the end new value to old java system property value";}
 }
 
-SetProperty extends Compound {
+SetProperty extends WorkflowPrim {
    setPropertySchema extends SetPropertySchema;
    sfClass "org.smartfrog.services.utils.setproperty.SFSetPropertyImpl";
 }
