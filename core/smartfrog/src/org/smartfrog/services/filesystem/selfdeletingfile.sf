@@ -25,7 +25,7 @@ For more information: www.smartfrog.org
  * is deleted when the component is terminated.
  */
 
-SelfDeletingFile extends FileUsingComponent {
+SelfDeletingFile extends FileUsingWorkflowComponent {
     deletableFileSchema extends DeletableFileSchema;
     sfClass "org.smartfrog.services.filesystem.SelfDeletingFileImpl";
     deleteOnExit true;

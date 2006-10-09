@@ -31,6 +31,7 @@ import java.rmi.RemoteException;
 
 /**
  * A text file. By extending {@link SelfDeletingFileImpl}, we ensure that
+ * we can clean up or terminate after deployment.
  * created 30-Mar-2005 16:37:56
  */
 
@@ -80,6 +81,8 @@ public class TextFileImpl extends SelfDeletingFileImpl implements TextFile {
                         ioe);
             }
         }
+        //call the superclass. this may trigger deletion.
+        super.sfStart();
     }
 
 }

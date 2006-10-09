@@ -70,7 +70,7 @@ FileSchema extends FileUsingComponentSchema {
 
 }
 
-File extends Prim {
+File extends WorkflowPrim {
     fileSchema extends FileSchema;
     sfClass "org.smartfrog.services.filesystem.FileImpl";
     testOnStartup false;

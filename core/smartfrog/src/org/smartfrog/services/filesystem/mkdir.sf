@@ -42,7 +42,7 @@ MkdirSchema extends Schema {
  * deployment fails if the directory name exists and is not a directory.
  * Note: no checks for writeability are made
  */
-Mkdir extends Prim {
+Mkdir extends WorkflowPrim {
     mkdirSchema extends MkdirSchema;
     sfClass "org.smartfrog.services.filesystem.MkdirImpl";
     deleteOnExit false;

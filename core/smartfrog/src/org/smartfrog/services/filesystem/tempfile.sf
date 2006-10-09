@@ -43,7 +43,7 @@ TempFileSchema extends DeletableFileSchema {
 /**
  * the temp file component creates a temporary file on deployment.
  */
-TempFile extends FileUsingComponent {
+TempFile extends FileUsingWorkflowComponent {
     tempFileSchema extends TempFileSchema;
     sfClass "org.smartfrog.services.filesystem.TempFileImpl";
     prefix "temp";

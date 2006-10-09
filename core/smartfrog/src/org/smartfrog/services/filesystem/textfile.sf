@@ -18,8 +18,7 @@ For more information: www.smartfrog.org
 
 */
 
-#include "org/smartfrog/services/filesystem/filesystemtemplate.sf"
-
+#include "/org/smartfrog/services/filesystem/selfdeletingfile.sf"
 /**
  * A text file represents a file that is given the predefined text
  * on deployment.
@@ -35,7 +34,7 @@ TextFileSchema extends DeletableFileSchema {
 }
 
 
-TextFile extends FileUsingComponent {
+TextFile extends SelfDeletingFile {
     textFileSchema extends TextFileSchema;
     sfClass "org.smartfrog.services.filesystem.TextFileImpl";
 
