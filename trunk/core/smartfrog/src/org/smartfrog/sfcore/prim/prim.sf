@@ -67,3 +67,24 @@ Prim extends NULL {
 UpdatablePrim extends Prim {
      sfUpdatable true;
 }
+
+/**
+ * This is a component that can be asked to terminate itself after doing its work
+ * Such components fit in to workflows easily.
+ * Usually components that support these attributes default to not being self-terminating,
+ * though that may vary on a case by case basis.
+ */
+WorkflowPrimSchema extends Schema {
+  sfShouldTerminate extends OptionalBoolean {
+    description "true if a component should terminate after doing its 'work'";
+  }
+  sfShouldTerminateQuietly extends OptionalBoolean {
+    description "true if a component should terminate quietly after doing its 'work'";
+  }
+  sfShouldDetach  extends OptionalBoolean {
+    description "true if a component should detach after doing its 'work'";
+  }
+}
+WorkflowPrim extends Prim {
+  workflowPrimSchema extends WorkflowPrimSchema;
+}
