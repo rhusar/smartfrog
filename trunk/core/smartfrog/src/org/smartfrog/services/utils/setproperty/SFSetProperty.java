@@ -20,7 +20,6 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.services.utils.setproperty;
 
-import org.smartfrog.sfcore.reference.Reference;
 
 /**
  */

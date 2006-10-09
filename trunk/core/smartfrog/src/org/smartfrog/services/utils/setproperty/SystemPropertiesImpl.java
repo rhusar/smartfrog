@@ -44,6 +44,7 @@ public class SystemPropertiesImpl extends PrimImpl implements SystemProperties {
     private Properties proplist = new Properties();
     private boolean setOnStartup = false;
     private boolean setOnDeploy = false;
+    private boolean setOnEarlyDeploy = false;
     private boolean unsetOnTerminate = true;
     private Log log;
 
@@ -51,63 +52,41 @@ public class SystemPropertiesImpl extends PrimImpl implements SystemProperties {
     }
 
 
-//----------------
-
-    public synchronized void sfDeployWith(Prim parent, Context cxt) throws SmartFrogDeploymentException, RemoteException {
+    /**
+     * This is a very early deploy phases
+     * @param parent
+     * @param cxt
+     * @throws SmartFrogDeploymentException
+     * @throws RemoteException
+     */
+    public synchronized void sfDeployWith(Prim parent, Context cxt)
+            throws SmartFrogDeploymentException, RemoteException {
         try {
-          sfContext = cxt;
-          log = this.sfGetApplicationLog();//.sfGetLog(sfResolve(SmartFrogCoreKeys.SF_APP_LOG_NAME, "", true));
-//          // Mandatory attributes.
-//            try {
-//                name = (String) cxt.sfResolveAttribute(ATR_NAME);
-//                value = cxt.sfResolveAttribute(ATR_VALUE);
-//            } catch (SmartFrogException e) {
-//                if (log.isErrorEnabled()) {
-//                    log.error("Failed to read mandatory attribute: " + e.toString(),e);
-//                }
-//                throw e;
-//            }
-            // optional
-            try {
-                setOnStartup =((Boolean) cxt.sfResolveAttribute(ATTR_SETONSTARTUP)).booleanValue();
-            } catch (SmartFrogContextException e) {
-                if (log.isErrorEnabled()) {
-                    log.error("Failed to read mandatory attribute: " + e.toString(),e);
-                }
-                throw e;
-            }
-
-            try {
-                setOnDeploy =((Boolean) cxt.sfResolveAttribute(ATTR_SETONDEPLOY)).booleanValue();
-            } catch (SmartFrogContextException e) {
-                if (log.isErrorEnabled()) {
-                    log.error("Failed to read mandatory attribute: " + e.toString(),e);
-                }
-                throw e;
-            }
-
-            try {
-                unsetOnTerminate =((Boolean) cxt.sfResolveAttribute(ATTR_UNSETONTERMINATE)).booleanValue();
-            } catch (SmartFrogContextException e) {
-                if (log.isErrorEnabled()) {
-                    log.error("Failed to read mandatory attribute: " + e.toString(),e);
-                }
-                throw e;
-            }
-
-            if (setOnDeploy) {
+            sfContext = cxt;
+            log = this.sfGetApplicationLog();
+            setOnEarlyDeploy = resolveBool(cxt, ATTR_SETONEARLYDEPLOY);
+            if (setOnEarlyDeploy) {
                 loadAndSetProperties();
             }
 
-
         } catch (Throwable t) {
             if (log.isErrorEnabled()) {
-                log.error(t.getMessage(),t);
+                log.error(t.getMessage(), t);
             }
             throw new SmartFrogDeploymentException(t, this);
         }
-        //super.sfDeploy();
         super.sfDeployWith(parent, cxt);
+    }
+
+    private boolean resolveBool(Context cxt, String name) throws SmartFrogContextException {
+        try {
+            return ((Boolean) cxt.sfResolveAttribute(name)).booleanValue();
+        } catch (SmartFrogContextException e) {
+            if (log.isErrorEnabled()) {
+                log.error("Failed to read mandatory attribute: " + e.toString(),e);
+            }
+            throw e;
+        }
     }
 
 //----------------
@@ -127,14 +106,12 @@ public class SystemPropertiesImpl extends PrimImpl implements SystemProperties {
             throws SmartFrogException, RemoteException {
         super.sfDeploy();
 
-// Moved to sfDeployWith so that the properties are ready before anything is loaded.
-
-//        setOnStartup = sfResolve(ATTR_SETONSTARTUP, setOnStartup, true);
-//        setOnDeploy = sfResolve(ATTR_SETONDEPLOY, setOnDeploy, true);
-//        unsetOnTerminate = sfResolve(ATTR_UNSETONTERMINATE, unsetOnTerminate, true);
-//        if (setOnDeploy) {
-//            loadAndSetProperties();
-//        }
+        setOnStartup = sfResolve(ATTR_SETONSTARTUP, setOnStartup, true);
+        setOnDeploy = sfResolve(ATTR_SETONDEPLOY, setOnDeploy, true);
+        unsetOnTerminate = sfResolve(ATTR_UNSETONTERMINATE, unsetOnTerminate, true);
+        if (setOnDeploy) {
+            loadAndSetProperties();
+        }
     }
 
     /**
@@ -158,7 +135,6 @@ public class SystemPropertiesImpl extends PrimImpl implements SystemProperties {
                 "SystemProperties",
                 null,
                 null);
-
     }
 
     /**
