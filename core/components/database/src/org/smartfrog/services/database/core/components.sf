@@ -90,7 +90,7 @@ MySqlBinding extends DatabaseBinding {
 /**
  * an operation under a database
  */
-DatabaseOperation extends Prim {
+DatabaseOperation extends WorkflowPrim {
   operationSchema extends Schema {
     database extends Compulsory {
       description "reference to a database";

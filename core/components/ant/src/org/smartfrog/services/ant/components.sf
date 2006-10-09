@@ -23,7 +23,7 @@ For more information: www.smartfrog.org
 #include "/org/smartfrog/predicates.sf"
 #include "org/smartfrog/services/ant/types.sf"
 #include "org/smartfrog/services/ant/tasks.sf"
-Ant extends Prim {
+Ant extends WorkflowPrim {
 
 
     antSchema extends Schema {
