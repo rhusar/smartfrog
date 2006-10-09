@@ -21,6 +21,7 @@ package org.smartfrog.services.filesystem;
 
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.prim.TerminationRecord;
+import org.smartfrog.sfcore.utils.ComponentHelper;
 
 import java.io.IOException;
 import java.rmi.RemoteException;
@@ -94,7 +95,8 @@ public class TempFileImpl extends FileUsingComponentImpl implements TempFile {
         }
 
         sfReplaceAttribute(FileUsingComponent.ATTR_FILENAME, file.toString());
-
+        //maybe terminate
+        new ComponentHelper(this).sfSelfDetachAndOrTerminate(null, "Created temp file "+file, null, null);
     }
 
     /**

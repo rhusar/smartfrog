@@ -21,6 +21,7 @@ package org.smartfrog.services.filesystem;
 
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.prim.TerminationRecord;
+import org.smartfrog.sfcore.utils.ComponentHelper;
 
 import java.rmi.RemoteException;
 
@@ -53,10 +54,31 @@ public class SelfDeletingFileImpl extends FileUsingComponentImpl
     }
 
     /**
-     * delete the file if needed
+     * Can be called to start components. Subclasses should override to provide
+     * functionality Do not block in this call, but spawn off any main loops!
      *
-     * @param status termination status
+     * @throws org.smartfrog.sfcore.common.SmartFrogException
+     *                                  failure while starting
+     * @throws java.rmi.RemoteException In case of network/rmi error
      */
+    public synchronized void sfStart() throws SmartFrogException, RemoteException {
+        super.sfStart();
+        startTerminator();
+    }
+
+    /**
+     * something that is called in the {@link #sfStart()} method to start the termination
+     * process. It can be overridden, or called from an overridden sfStart method.
+     */
+    protected void startTerminator() {
+        new ComponentHelper(this).sfSelfDetachAndOrTerminate(null,"SelfDeletingFile terminating",null,null);
+    }
+
+    /**
+    * delete the file if needed
+    *
+    * @param status termination status
+    */
     public synchronized void sfTerminateWith(TerminationRecord status) {
         super.sfTerminateWith(status);
         deleteFileIfNeeded();

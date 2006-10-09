@@ -55,4 +55,9 @@ FileUsingComponent extends Prim {
     fileUsingComponentSchema extends FileUsingComponentSchema;
 }
 
+FileUsingWorkflowComponent extends WorkflowPrim {
+    fileUsingComponentSchema extends FileUsingComponentSchema;
+}
+
+
 
