@@ -3,6 +3,7 @@ package org.smartfrog.services.os.java;
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
 import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.utils.ComponentHelper;
 
 import java.rmi.RemoteException;
 import java.util.List;
@@ -15,7 +16,17 @@ import java.net.MalformedURLException;
  * This is the base class, with a helper method to set the attributes
  */
 public abstract class AbstractClasspathImpl extends PrimImpl implements Classpath {
+
     protected AbstractClasspathImpl() throws RemoteException {
+    }
+
+
+    /**
+     * something that is called in the {@link #sfStart()} method to start the termination
+     * process. It can be overridden, or called from an overridden sfStart method.
+     */
+    protected void maybeStartTerminator() {
+        new ComponentHelper(this).sfSelfDetachAndOrTerminate(null, "classpath terminating", null, null);
     }
 
     /**

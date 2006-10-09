@@ -91,7 +91,7 @@ LoadClassSchema extends Schema {
     retain extends Boolean;
 }
 
-LoadClass extends Prim {
+LoadClass extends WorkflowPrim {
     schema extends LoadClassSchema;
     sfClass "org.smartfrog.services.os.java.LoadClassImpl";
     create false;

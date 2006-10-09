@@ -56,6 +56,7 @@ public class DirectoryClasspathImpl extends AbstractClasspathImpl implements Dir
         if (!isEarly()) {
             bind();
         }
+        maybeStartTerminator();
     }
 
 

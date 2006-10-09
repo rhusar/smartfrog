@@ -204,7 +204,7 @@ Maven2Library extends Library {
  * In which case it takes that component as its repository.
  */
 
-LibraryArtifact extends FileUsingComponent {
+LibraryArtifact extends FileUsingWorkflowComponent {
     sfClass "org.smartfrog.services.os.java.LibraryArtifactImpl";
     librarySchema extends Schema {
         library extends OptionalCD;

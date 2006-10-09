@@ -50,7 +50,7 @@ public class LibraryClasspathImpl extends PrimImpl implements LibraryClasspath {
         super.sfDeploy();
         repository=sfResolve(ATTR_REPOSITORY,repository,true);
         libraries=sfResolve(ATTR_LIBRARIES,libraries,true);
-
+        //TODO, see SFOS-13.
     }
 
     /**

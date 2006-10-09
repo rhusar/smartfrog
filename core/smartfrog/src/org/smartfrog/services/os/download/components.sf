@@ -26,7 +26,7 @@ For more information: www.smartfrog.org
 #include "org/smartfrog/services/os/runshell/components.sf"
 
 
-DownloadComponent extends Prim {
+DownloadComponent extends WorkflowPrim {
 
     downloadSchema extends DeletableFileSchema  {
 
