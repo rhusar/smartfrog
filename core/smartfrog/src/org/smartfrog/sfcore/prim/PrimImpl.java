@@ -1,55 +1,24 @@
 /** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
 
- This library is free software; you can redistribute it and/or
- modify it under the terms of the GNU Lesser General Public
- License as published by the Free Software Foundation; either
- version 2.1 of the License, or (at your option) any later version.
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
 
- This library is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- Lesser General Public License for more details.
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
 
- You should have received a copy of the GNU Lesser General Public
- License along with this library; if not, write to the Free Software
- Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
- For more information: www.smartfrog.org
+For more information: www.smartfrog.org
 
- */
+*/
 
 package org.smartfrog.sfcore.prim;
-
-import org.smartfrog.sfcore.common.Context;
-import org.smartfrog.sfcore.common.ContextImpl;
-import org.smartfrog.sfcore.common.Diagnostics;
-import org.smartfrog.sfcore.common.Logger;
-import org.smartfrog.sfcore.common.MessageKeys;
-import org.smartfrog.sfcore.common.MessageUtil;
-import org.smartfrog.sfcore.common.SFMarshalledObject;
-import org.smartfrog.sfcore.common.SmartFrogContextException;
-import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
-import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
-import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.sfcore.common.SmartFrogLifecycleException;
-import org.smartfrog.sfcore.common.SmartFrogLivenessException;
-import org.smartfrog.sfcore.common.SmartFrogResolutionException;
-import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
-import org.smartfrog.sfcore.common.SmartFrogUpdateException;
-import org.smartfrog.sfcore.common.TerminatorThread;
-import org.smartfrog.sfcore.componentdescription.ComponentDescription;
-import org.smartfrog.sfcore.componentdescription.ComponentDescriptionImpl;
-import org.smartfrog.sfcore.logging.LogFactory;
-import org.smartfrog.sfcore.logging.LogSF;
-import org.smartfrog.sfcore.processcompound.SFProcess;
-import org.smartfrog.sfcore.reference.AssertReference;
-import org.smartfrog.sfcore.reference.HereReferencePart;
-import org.smartfrog.sfcore.reference.Reference;
-import org.smartfrog.sfcore.reference.ReferencePart;
-import org.smartfrog.sfcore.reference.RemoteReferenceResolverHelperImpl;
-import org.smartfrog.sfcore.security.SFGeneralSecurityException;
-import org.smartfrog.sfcore.security.SecureRemoteObject;
-import org.smartfrog.sfcore.utils.ComponentHelper;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -60,111 +29,97 @@ import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.Vector;
 
+import org.smartfrog.sfcore.common.*;
+import org.smartfrog.sfcore.common.Diagnostics;
+import org.smartfrog.sfcore.componentdescription.ComponentDescription;
+import org.smartfrog.sfcore.componentdescription.ComponentDescriptionImpl;
+import org.smartfrog.sfcore.logging.LogFactory;
+import org.smartfrog.sfcore.logging.LogSF;
+import org.smartfrog.sfcore.processcompound.SFProcess;
+import org.smartfrog.sfcore.reference.HereReferencePart;
+import org.smartfrog.sfcore.reference.Reference;
+import org.smartfrog.sfcore.reference.ReferencePart;
+import org.smartfrog.sfcore.reference.AssertReference;
+import org.smartfrog.sfcore.reference.RemoteReferenceResolverHelperImpl;
+import org.smartfrog.sfcore.security.SFGeneralSecurityException;
+import org.smartfrog.sfcore.security.SecureRemoteObject;
+import org.smartfrog.sfcore.utils.ComponentHelper;
+
 /**
  * Defines the base class for all deployed components. A deployed component
- * knows how to react to termination, deployment requests and heart beats. This
- * implementation allows subclasses to define how a deployed component is
+ * knows how to react to termination, deployment requests and heart beats.
+ * This implementation allows subclasses to define how a deployed component is
  * communicated with. The sfExport attribute is examined. If set to "true" the
  * sfExportRef method is called, which by default uses RMI to export the
  * component. Subclasses may choose to export a component another way.
- * <p/>
- * <p/>
+ *
+ * <p>
  * A liveness thread is started for a primitive if it has no parent, but is
  * expected to have children (like Compound), or if the parent is remote.
- * Liveness attribute sfLivenessDelay dictates how often (in seconds) sfPing is
- * supposed to be called. sfLivenessFactor is the multiplier for sfLivenessDelay
- * to wait until the primitive declares that there is a liveness failure. Both
- * attributes are looked up using ATTRIB in order to find out whether a parent
- * has set liveness on. </p>
+ * Liveness attribute sfLivenessDelay dictates how often (in seconds) sfPing
+ * is supposed to be called. sfLivenessFactor is the multiplier for
+ * sfLivenessDelay to wait until the primitive declares that there is a
+ * liveness failure. Both attributes are looked up using ATTRIB in order to
+ * find out whether a parent has set liveness on.
+ * </p>
+ *
  */
-public class PrimImpl extends RemoteReferenceResolverHelperImpl
-        implements Prim, MessageKeys {
+public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim, MessageKeys {
 
-    /**
-     * Component Log. This log is used to from any component. Initialized to log
-     * into the core log: SF_CORE_LOG It can be replaced using sfSetLog()
+    /** Component Log. This log is used to from any component.
+     *  Initialized to log into the core log: SF_CORE_LOG
+     *  It can be replaced using sfSetLog()
      */
-    private LogSF sfLog = LogFactory.sfGetProcessLog();
-    ;
+    private LogSF  sfLog = LogFactory.sfGetProcessLog();;
 
-    /**
-     * Static attribute that hold the lifecycle hooks for sfDeploy.
-     */
+    /** Static attribute that hold the lifecycle hooks for sfDeploy. */
     public static final PrimHookSet sfDeployHooks = new PrimHookSet();
 
-    /**
-     * Static attribute that hold the lifecycle hooks for sfStart.
-     */
+    /** Static attribute that hold the lifecycle hooks for sfStart. */
     public static final PrimHookSet sfStartHooks = new PrimHookSet();
 
-    /**
-     * Static attribute that hold the lifecycle hooks for sfDeployWith.
-     */
+    /** Static attribute that hold the lifecycle hooks for sfDeployWith. */
     public static final PrimHookSet sfDeployWithHooks = new PrimHookSet();
 
-    /**
-     * Static attribute that hold the lifecycle hooks for sfTerminateWith.
-     */
+    /** Static attribute that hold the lifecycle hooks for sfTerminateWith. */
     public static final PrimHookSet sfTerminateWithHooks = new PrimHookSet();
 
-    /**
-     * Reference used to look up sfLivenessDelay attributes.
-     */
-    protected static final Reference refLivenessDelay = new Reference(
-            ReferencePart.attrib(
-                    SmartFrogCoreKeys.SF_LIVENESS_DELAY));
+    /** Reference used to look up sfLivenessDelay attributes. */
+    protected static final Reference refLivenessDelay = new Reference(ReferencePart.attrib(
+                SmartFrogCoreKeys.SF_LIVENESS_DELAY));
 
-    /**
-     * Reference used to look up sfLivenessFactor attributes.
-     */
-    protected static final Reference refLivenessFactor = new Reference(
-            ReferencePart.attrib(
-                    SmartFrogCoreKeys.SF_LIVENESS_FACTOR));
+    /** Reference used to look up sfLivenessFactor attributes. */
+    protected static final Reference refLivenessFactor = new Reference(ReferencePart.attrib(
+                SmartFrogCoreKeys.SF_LIVENESS_FACTOR));
 
-    /**
-     * Flag indicating that this component has been terminated.
-     */
+    /** Flag indicating that this component has been terminated. */
     protected boolean sfIsTerminated = false;
 
-    /**
-     * Flag indicating that this component termination is initiated.
-     */
+    /** Flag indicating that this component termination is initiated. */
     protected boolean sfIsTerminating = false;
 
-    /**
-     * Flag indicating that this component has been deployed.
-     */
+    /** Flag indicating that this component has been deployed. */
     protected boolean sfIsDeployed = false;
 
-    /**
-     * Flag indicating that this component has been started.
-     */
+    /** Flag indicating that this component has been started. */
     protected boolean sfIsStarted = false;
 
-    /**
-     * Parent.
-     */
+    /** Parent. */
     protected Prim sfParent = null;
 
-    /**
-     * Attribute context.
-     */
+    /** Attribute context. */
     protected Context sfContext = null;
 
-    /**
-     * Timer for initiating heartbeats.
-     */
+    /** Timer for initiating heartbeats. */
     protected LivenessSender sfLivenessSender;
 
-    /**
-     * Current count for liveness, updated through sfPing.
-     */
+    /** Current count for liveness, updated through sfPing. */
     protected int sfLivenessCount;
 
     /**
      * Livneess factor. Initializer for liveness count. How many multiples of
-     * livenss delay to wait till a liveness failure of the parent is declared,
-     * Defaults to 2.
+     * livenss delay to wait till a liveness failure of the parent is
+     * declared, Defaults to 2.
      */
     protected int sfLivenessFactor = 2;
 
@@ -174,14 +129,10 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl
      */
     protected long sfLivenessDelay = 0;
 
-    /**
-     * Reference to export form of self if sfExport is true.
-     */
+    /** Reference to export form of self if sfExport is true. */
     protected Object sfExportRef = null;
 
-    /**
-     * Reference that caches cannonical name.
-     */
+    /** Reference that caches cannonical name. */
     protected Reference sfCompleteName = null;
 
 
@@ -204,28 +155,21 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl
      * @throws SmartFrogResolutionException failed to find attribute
      */
     public Object sfResolveHere(Object name)
-            throws SmartFrogResolutionException {
+        throws SmartFrogResolutionException {
         Object result = null;
         try {
-            result = sfContext.sfResolveAttribute(name);
-            try {
-                // if sfLog() is called then a new log is created and an upcall is triggered
-                if ((sfLog != null) && sfLog().isTraceEnabled()) {
-                    sfLog().trace("sfResolved HERE '" + name.toString() + "' to '" + result
-                            .toString() + "'");
-                    sfLog().trace("sfResolved HERE '" + name.toString() + "' to '" + result
-                            .toString() + "'");
-                }
-            } catch (Throwable thr) {
-                thr.printStackTrace();
-            } //ignore
+           result = sfContext.sfResolveAttribute(name);
+           try {
+               // if sfLog() is called then a new log is created and an upcall is triggered
+               if ((sfLog!=null) && sfLog().isTraceEnabled()) {
+                   sfLog().trace("sfResolved HERE '"+name.toString()+"' to '"+ result.toString()+"'");                  sfLog().trace("sfResolved HERE '"+name.toString()+"' to '"+ result.toString()+"'");
+               }
+           } catch (Throwable thr) {thr.printStackTrace();} //ignore
 
         } catch (SmartFrogContextException ex) {
             //sfCompleteName() uses sfResolveHere() and therefore it can be a problem here :-)!
             // Using the sfCompleteName cache to provide as much info a it is available.
-            throw SmartFrogResolutionException.notFound(new Reference(name),
-                    sfCompleteName,
-                    ex);
+            throw SmartFrogResolutionException.notFound(new Reference(name), sfCompleteName ,ex);
 
         }
         return result;
@@ -234,17 +178,17 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl
     /**
      * Find an attribute in this context.
      *
-     * @param name      attribute key to resolve
-     * @param mandatory boolean that indicates if this attribute must be present
-     *                  in the description. If it is mandatory and not found it
-     *                  throws a SmartFrogResolutionException
+     * @param name attribute key to resolve
+     * @param mandatory boolean that indicates if this attribute must be
+     *        present in the description. If it is mandatory and not found it
+     *        throws a SmartFrogResolutionException
      *
      * @return Object value for attribute
      *
      * @throws SmartFrogResolutionException failed to find attribute
      */
     public Object sfResolveHere(Object name, boolean mandatory)
-            throws SmartFrogResolutionException {
+        throws SmartFrogResolutionException {
         try {
             return sfResolveHere(name);
         } catch (SmartFrogResolutionException e) {
@@ -265,31 +209,28 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl
     }
 
     /**
-     * Resolves a given reference. Forwards to indexed resolve with index 0 and
-     * return resulting attribute value.
+     * Resolves a given reference. Forwards to indexed resolve with index 0
+     * and return resulting attribute value.
      *
      * @param r reference to resolve
      *
      * @return resolved reference
      *
      * @throws SmartFrogResolutionException occurred while resolving
-     * @throws RemoteException              In case of network/rmi error
+     * @throws RemoteException In case of network/rmi error
      */
     public Object sfResolve(Reference r)
-            throws SmartFrogResolutionException, RemoteException {
+        throws SmartFrogResolutionException, RemoteException {
         Object obj = sfResolve(r, 0);
-        if (obj instanceof SFMarshalledObject) {
+        if (obj instanceof SFMarshalledObject){
             //  Unmarshall!Obj.
-            obj = ((SFMarshalledObject) obj).get();
+            obj = ((SFMarshalledObject)obj).get();
         }
         try {
             if (sfLog().isTraceEnabled()) {
-                sfLog().trace(sfCompleteNameSafe() + " sfResolved '" + r.toString() + "' to '" + obj
-                        .toString() + "'");
+                sfLog().trace(sfCompleteNameSafe()+" sfResolved '"+ r.toString()+"' to '"+obj.toString()+"'");
             }
-        } catch (Throwable thr) {
-            thr.printStackTrace();
-        } //ignore
+        } catch (Throwable thr) {thr.printStackTrace();} //ignore
         return obj;
     }
 
@@ -298,42 +239,37 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl
      * Resolves given reference starting at given index. This is forwarded to
      * the reference (and on to each reference part).
      *
-     * @param r     reference to resolve
+     * @param r reference to resolve
      * @param index index in reference to start resolving
      *
      * @return resolved reference
      *
      * @throws SmartFrogResolutionException error occurred while resolving
-     * @throws RemoteException              In case of network/rmi error
+     * @throws RemoteException In case of network/rmi error
      */
     public Object sfResolve(Reference r, int index)
-            throws SmartFrogResolutionException, RemoteException {
+        throws SmartFrogResolutionException, RemoteException {
         Object obj = null;
 
         try {
             obj = r.resolve(this, index);
         } catch (SmartFrogResolutionException rex) {
             if ((!(rex.containsKey(SmartFrogRuntimeException.SOURCE)))
-                    || (rex.get(SmartFrogRuntimeException.SOURCE) == null)) {
-                rex.put(SmartFrogRuntimeException.SOURCE,
-                        this.sfCompleteNameSafe());
+                    || (rex.get(SmartFrogRuntimeException.SOURCE)== null)) {
+                rex.put(SmartFrogRuntimeException.SOURCE, this.sfCompleteNameSafe());
                 rex.put(SmartFrogResolutionException.DEPTH, new Integer(index));
             }
             if ((!(rex.containsKey(SmartFrogResolutionException.REFERENCE)))) {
-                rex.put(SmartFrogResolutionException.REFERENCE, r);
+                rex.put(SmartFrogResolutionException.REFERENCE,r);
             }
             rex.appendPath(this.sfCompleteName().toString() + " ");
             throw rex;
-        } catch (java.lang.StackOverflowError st) {
-            throw new SmartFrogResolutionException(r,
-                    this.sfCompleteNameSafe(),
-                    st.toString() + ". Possible cause: cyclic reference",
-                    null,
-                    st,
-                    this);
-        } catch (Throwable thr) {
-            throw new SmartFrogResolutionException(r, this.sfCompleteNameSafe(),
-                    null, null, thr, this);
+        } catch (java.lang.StackOverflowError st){
+            throw new SmartFrogResolutionException(r,this.sfCompleteNameSafe(),
+               st.toString() +". Possible cause: cyclic reference",null,st,this);
+        } catch (Throwable thr){
+             throw new SmartFrogResolutionException(r,this.sfCompleteNameSafe(),
+              null,null,thr,this);
         }
 
         return obj;
@@ -350,31 +286,29 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl
         try {
             String hostName = System.getProperty("java.rmi.server.hostname");
             try {
-                if (hostName != null) {
+                if (hostName!=null) {
                     return java.net.InetAddress.getByName(hostName);
                 }
             } catch (UnknownHostException ex) {
-                if (sfLog().isIgnoreEnabled()) {
-                    sfLog().ignore(MessageUtil.formatMessage(
-                            MSG_FAILED_INET_ADDRESS_LOOKUP), ex);
-                }
+               if (sfLog().isIgnoreEnabled()){
+                 sfLog().ignore(MessageUtil.formatMessage(MSG_FAILED_INET_ADDRESS_LOOKUP),ex);
+               }
 //               Logger.logQuietly(MessageUtil.formatMessage(MSG_FAILED_INET_ADDRESS_LOOKUP),ex);
             }
             return java.net.InetAddress.getLocalHost();
         } catch (Exception ex) {
 //            Logger.logQuietly(MessageUtil.formatMessage(MSG_FAILED_INET_ADDRESS_LOOKUP),ex);
-            if (sfLog().isIgnoreEnabled()) {
-                sfLog().ignore(MessageUtil.formatMessage(
-                        MSG_FAILED_INET_ADDRESS_LOOKUP), ex);
-            }
+          if (sfLog().isIgnoreEnabled()){
+            sfLog().ignore(MessageUtil.formatMessage(MSG_FAILED_INET_ADDRESS_LOOKUP),ex);
+          }
         }
         return null;
     }
 
     /**
      * Request the process in which this component is deployed, the name being
-     * that defined in the sfProcessName attribute or the string ROOT if in the
-     * root process compound.
+     * that defined in the sfProcessName attribute or the string ROOT if in
+     * the root process compound.
      *
      * @return the name of the process
      *
@@ -392,33 +326,33 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl
     }
 
     /**
-     * Adds an attribute to this component under given name. If the attribute
-     * value is a ComponentDescription  then this component is set as its
-     * parent
+     * Adds an attribute to this component under given name.
+     * If the attribute value is a ComponentDescription  then
+     * this component is set as its parent
      *
-     * @param name  name of attribute
+     * @param name name of attribute
      * @param value value of attribute
      *
      * @return added attribute if non-existent or null otherwise
      *
      * @throws SmartFrogRuntimeException when name or value are null
-     * @throws RemoteException           In case of Remote/nework error
+     * @throws RemoteException In case of Remote/nework error
      */
     public synchronized Object sfAddAttribute(Object name, Object value)
-            throws SmartFrogRuntimeException, RemoteException {
+        throws SmartFrogRuntimeException, RemoteException {
         Object valueParent = null;
         try {
 
             if (value instanceof ComponentDescription) {
                 //Set right parentage for ComponentDescription
-                valueParent = ((ComponentDescription) value).sfPrimParent();
-                ((ComponentDescription) value).setPrimParent(this);
+                valueParent = ((ComponentDescription)value).sfPrimParent();
+                ((ComponentDescription)value).setPrimParent(this);
             }
             return sfContext.sfAddAttribute(name, value);
 
         } catch (SmartFrogContextException ex) {
-            if (valueParent != null) {
-                ((ComponentDescription) value).setPrimParent((Prim) valueParent);
+            if (valueParent!=null){
+                ((ComponentDescription)value).setPrimParent((Prim)valueParent);
             }
             ex.init(this);
             throw ex;
@@ -426,22 +360,23 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl
     }
 
     /**
-     * Removes an attribute from this component. If the attribute value removed
-     * is a component description, then its prim parent is removed as well.
+     * Removes an attribute from this component. If the attribute
+     * value removed is a component description, then its prim parent is
+     * removed as well.
      *
      * @param name of attribute to be removed
      *
      * @return removed attribute value if successfull or null if not
      *
      * @throws SmartFrogRuntimeException when name is null
-     * @throws RemoteException           In case of Remote/nework error
+     * @throws RemoteException In case of Remote/nework error
      */
     public synchronized Object sfRemoveAttribute(Object name)
-            throws SmartFrogRuntimeException, RemoteException {
+        throws SmartFrogRuntimeException, RemoteException {
         try {
             Object value = sfContext.sfRemoveAttribute(name);
             if (value instanceof ComponentDescription) {
-                ((ComponentDescription) value).setPrimParent(null);
+                ((ComponentDescription)value).setPrimParent(null);
             }
             return value;
         } catch (SmartFrogContextException ex) {
@@ -451,38 +386,39 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl
     }
 
     /**
-     * Replace named attribute in component context. If attribute is not present
-     * it is added to the context. If the attribute value added is a component
-     * description, then its parent is set to this and/or if the one removed is
-     * a component description then its parent is reset.
+     * Replace named attribute in component context. If attribute is not
+     * present it is added to the context. If the attribute
+     * value added is a component description, then its parent is
+     * set to this and/or if the one removed is a component description then
+     * its parent is reset.
      *
-     * @param name  of attribute to replace
+     * @param name of attribute to replace
      * @param value value to add or replace
      *
-     * @return the old value if present, null otherwise. It old value was a
-     *         component description, then its prim parent is reset.
+     * @return the old value if present, null otherwise. It old value
+     * was a component description, then its prim parent is reset.
      *
      * @throws SmartFrogRuntimeException when name or value are null
-     * @throws RemoteException           In case of Remote/nework error
+     * @throws RemoteException In case of Remote/nework error
      */
     public synchronized Object sfReplaceAttribute(Object name, Object value)
-            throws SmartFrogRuntimeException, RemoteException {
+        throws SmartFrogRuntimeException, RemoteException {
 
         Prim valueParent = null;
         try {
             if (value instanceof ComponentDescription) {
                 //Set right parentage for ComponentDescription
-                valueParent = ((ComponentDescription) value).sfPrimParent();
-                ((ComponentDescription) value).setPrimParent(this);
+                valueParent = ((ComponentDescription)value).sfPrimParent();
+                ((ComponentDescription)value).setPrimParent(this);
             }
             Object oldValue = sfContext.sfReplaceAttribute(name, value);
-            if ((oldValue != null) && (oldValue instanceof ComponentDescription)) {
-                ((ComponentDescription) oldValue).setPrimParent(null);
+            if ((oldValue!=null) && (oldValue instanceof ComponentDescription)) {
+               ((ComponentDescription)oldValue).setPrimParent(null);
             }
             return oldValue;
         } catch (SmartFrogContextException ex) {
-            if (valueParent != null) {
-                ((ComponentDescription) value).setPrimParent(valueParent);
+            if (valueParent!=null){
+                ((ComponentDescription)value).setPrimParent(valueParent);
             }
             ex.init(this);
             throw ex;
@@ -513,50 +449,48 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl
      *
      * @throws RemoteException In case of Remote/nework error
      */
-    public boolean sfContainsValue(Object value) throws RemoteException {
-        return sfContext.contains(value);
+    public boolean sfContainsValue(Object value) throws RemoteException{
+       return sfContext.contains(value);
     }
 
 
     /**
      * Returns true if the context contains attribute.
-     *
      * @param attribute to check
      *
      * @return true if context contains attribute, false otherwise
      *
      * @throws RemoteException In case of Remote/nework error
      */
-    public boolean sfContainsAttribute(Object attribute)
-            throws RemoteException {
-        return sfContext.containsKey(attribute);
+    public boolean sfContainsAttribute(Object attribute) throws RemoteException {
+       return sfContext.containsKey(attribute);
     }
 
     /**
      * Returns an ordered iterator over the attribute names in this component.
-     * The remove operation of this Iterator won't affect the contents of this
-     * component
+     * The remove operation of this Iterator won't affect
+     * the contents of this component
      *
      * @return iterator
      *
      * @throws RemoteException In case of Remote/nework error
      */
-    public Iterator sfAttributes() throws RemoteException {
+    public  Iterator sfAttributes() throws RemoteException{
         return sfContext.sfAttributes();
     }
 
     /**
      * Returns an ordered iterator over the attibute values in this component.
-     * The remove operation of this Iterator won't affect the contents of this
-     * component
+     * The remove operation of this Iterator won't affect
+     * the contents of this component
      *
      * @return iterator
-     *
      * @throws RemoteException In case of Remote/nework error
      */
-    public Iterator sfValues() throws RemoteException {
-        return sfContext.sfValues();
+    public  Iterator sfValues() throws RemoteException{
+      return sfContext.sfValues();
     }
+
 
 
     /**
@@ -578,19 +512,19 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl
      * @throws RemoteException In case of network/rmi error
      */
     public Reference sfCompleteName() throws RemoteException {
-        if (sfCompleteName == null) {
+        if (sfCompleteName==null) {
             Reference r;
             Object key;
-            if (sfParent == null) {
+            if (sfParent==null) {
                 r = SFProcess.getProcessCompound().sfCompleteName();
                 key = SFProcess.getProcessCompound().sfAttributeKeyFor(this);
             } else {
                 r = sfParent.sfCompleteName();
                 key = sfParent.sfAttributeKeyFor(this);
             }
-            sfCompleteName = (Reference) r.clone();
+            sfCompleteName= (Reference)r.clone();
 
-            if (key != null) {
+            if (key!=null) {
                 sfCompleteName.addElement(ReferencePart.here(key));
             } else {
                 // This will happen when sfCompleteName is called before Prim is registered with its parent
@@ -598,8 +532,7 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl
                 //@todo we will replace unknown with its name once we modify the interface so that the component registers itself with its parent
                 sfCompleteName.addElement(new HereReferencePart("*unknown*"));
                 if (sfLog().isTraceEnabled()) {
-                    sfLog().trace(
-                            "Internal error generating complete name - child not named in parent yet");
+                    sfLog().trace("Internal error generating complete name - child not named in parent yet");
                 }
             }
         }
@@ -608,22 +541,22 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl
 
     /**
      * Returns the complete name for this component from the root of the
-     * application and does not throw any exception. If an exception is thrown
-     * it will return a new empty reference.
+     * application and does not throw any exception. If an exception is
+     * thrown it will return a new empty reference.
      *
-     * @return reference of attribute names to this component or an empty
-     *         reference
+     * @return reference of attribute names to this component or an empty reference
+     *
      */
     public Reference sfCompleteNameSafe() {
-        return ComponentHelper.completeNameSafe(this);
+       return ComponentHelper.completeNameSafe(this);
     }
+
 
 
     /**
      * Returns the parent of this component.
      *
      * @return parent component
-     *
      * @throws RemoteException In case of Remote/nework error
      */
     public Prim sfParent() throws RemoteException {
@@ -636,14 +569,14 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl
      * override sfDeploy since this is the one which does the actual work
      *
      * @param parent parent of component
-     * @param cxt    context for component
+     * @param cxt context for component
      *
-     * @throws SmartFrogDeploymentException In case of any error while deploying
-     *                                      the component
-     * @throws RemoteException              In case of network/rmi error
+     * @throws SmartFrogDeploymentException In case of any error while
+     *         deploying the component
+     * @throws RemoteException In case of network/rmi error
      */
     public void sfDeployWith(Prim parent, Context cxt) throws
-            SmartFrogDeploymentException, RemoteException {
+        SmartFrogDeploymentException, RemoteException {
 
         try {
             sfParent = parent;
@@ -653,56 +586,48 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl
 
             // set the prim parent link of any contained component description to this Prim
             // so that references work
-            for (Enumeration e = sfContext.keys(); e.hasMoreElements();) {
+            for (Enumeration e = sfContext.keys(); e.hasMoreElements(); ) {
                 Object value = sfContext.get(e.nextElement());
                 // Only set prim parent for LAZY descriptions. Otherwise not needed because it will be deployed.
-                if ((value instanceof ComponentDescription) && (!((ComponentDescription) value)
-                        .getEager())) {
-                    ((ComponentDescription) value).setPrimParent(this);
+                if ((value instanceof ComponentDescription) && (!((ComponentDescription)value).getEager())) {
+                    ((ComponentDescription)value).setPrimParent(this);
                 }
             }
 
             boolean es; // allow exportRef to be defined by string (backward compatability) or boolean
             Object eso = sfResolveHere(SmartFrogCoreKeys.SF_EXPORT, false);
 
-            if (eso == null) {
+            if (eso==null) {
                 es = true;
             } else if (eso instanceof String) {
-                es = Boolean.valueOf((String) eso).booleanValue();
+                es = Boolean.valueOf((String)eso).booleanValue();
             } else {
-                es = ((Boolean) eso).booleanValue();
+                es = ((Boolean)eso).booleanValue();
             }
 
             if (es) {
                 //Default value=0 = Anonymous port.
                 int port = 0;
-                Object portObj = sfResolveHere(SmartFrogCoreKeys.SF_EXPORT_PORT,
-                        false);
+                Object portObj = sfResolveHere(SmartFrogCoreKeys.SF_EXPORT_PORT,false);
                 Object exportRef = null;
 
                 sfExport(portObj);
             }
 
-            if (sfParent != null) {
-                ((ChildMinder) sfParent).sfAddChild(this);
+            if (sfParent!=null) {
+                ((ChildMinder)sfParent).sfAddChild(this);
             }
 
             registerWithProcessCompound();
 
             // Look up delay, if not there never mind looking up factor
-            sfLivenessDelay = sfResolve(refLivenessDelay,
-                    sfLivenessDelay,
-                    false);
-            sfLivenessFactor = sfResolve(refLivenessFactor,
-                    sfLivenessFactor,
-                    false);
+            sfLivenessDelay = sfResolve(refLivenessDelay, sfLivenessDelay, false);
+            sfLivenessFactor = sfResolve(refLivenessFactor, sfLivenessFactor, false);
 
             // copy in local description for efficiency when subcomponents looking up
-            sfReplaceAttribute(SmartFrogCoreKeys.SF_LIVENESS_DELAY,
-                    new Long(sfLivenessDelay));
+            sfReplaceAttribute(SmartFrogCoreKeys.SF_LIVENESS_DELAY, new Long(sfLivenessDelay));
             // copy in local description for efficiency when subcomponents looking up
-            sfReplaceAttribute(SmartFrogCoreKeys.SF_LIVENESS_FACTOR,
-                    new Integer(sfLivenessFactor));
+            sfReplaceAttribute(SmartFrogCoreKeys.SF_LIVENESS_FACTOR, new Integer(sfLivenessFactor));
 
             sfLivenessCount = sfLivenessFactor;
 
@@ -711,8 +636,7 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl
 
             // add location information attributes
             sfReplaceAttribute(SmartFrogCoreKeys.SF_HOST, sfDeployedHost());
-            sfReplaceAttribute(SmartFrogCoreKeys.SF_PROCESS,
-                    sfDeployedProcessName());
+            sfReplaceAttribute(SmartFrogCoreKeys.SF_PROCESS, sfDeployedProcessName());
 
         } catch (Exception sfex) {
             if (sfLog().isErrorEnabled()) {
@@ -720,71 +644,62 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl
             }
             //Logger.log(sfex);
             new TerminatorThread(this, sfex, null).quietly().start();
-            throw(SmartFrogDeploymentException) SmartFrogDeploymentException.forward(
-                    sfex);
+            throw (SmartFrogDeploymentException)SmartFrogDeploymentException.forward(sfex);
         }
     }
 
     /**
-     * Exports this  component using portObj. portObj can be a port or a vector
-     * containing a set of valid ports. If a vector is used the component tries
-     * to see if the port used by the local ProcessCompound is in the vector set
-     * and use that if so. If not tries to use the first one avaible
-     *
+     * Exports this  component using portObj. portObj can be a port or a vector containing a set of
+     * valid ports. If a vector is used the component tries to see if the port used by the local
+     * ProcessCompound is in the vector set and use that if so. If not tries to use the first one avaible
      * @param portObj Object
-     *
      * @return Object Reference to exported object
-     *
-     * @throws RemoteException    In case of Remote/nework error
-     * @throws SmartFrogException if failed to export
+     * @throws RemoteException In case of Remote/nework error
+     * @throws SmartFrogException  if failed to export
      */
     protected Object sfExport(Object portObj) throws RemoteException,
-            RemoteException, SmartFrogException {
-        Object exportRef = null;
+        RemoteException, SmartFrogException {
+        Object exportRef=null;
         int port = 0; //default value
-        if ((portObj != null)) {
+        if ((portObj!=null)) {
             if (portObj instanceof Integer) {
-                port = ((Integer) portObj).intValue();
-                exportRef = sfExportRef(port);
-                sfAddAttribute("sfPort", new Integer(port));
-            } else if (portObj instanceof Vector) {
+                port = ((Integer)portObj).intValue();
+                exportRef =sfExportRef(port);
+                sfAddAttribute("sfPort",new Integer(port));
+            } else if (portObj instanceof Vector){
                 //Get rootProcess port
-                Object portObjPC = SFProcess.getProcessCompound()
-                        .sfResolve("sfPort", false);
+                Object portObjPC = SFProcess.getProcessCompound().sfResolve("sfPort",false);
                 //compare with range
-                if ((portObjPC != null) && (((Vector) portObj).contains(
-                        portObjPC))) {
-                    port = ((Integer) portObjPC).intValue();
-                    exportRef = sfExportRef(port);
-                    sfAddAttribute("sfPort", new Integer(port));
+                if ((portObjPC!=null)&&(((Vector)portObj).contains(portObjPC))) {
+                    port = ((Integer)portObjPC).intValue();
+                    exportRef =sfExportRef(port);
+                    sfAddAttribute("sfPort",new Integer(port));
                 } else {
                     //if not in range use vector and try
-                    int size = ((Vector) (portObj)).size();
-                    for (int i = 0; i < size; i++) {
+                    int size = ((Vector)(portObj)).size();
+                    for (int i = 0; i<size; i++) {
                         //get
                         try {
-                            port = ((Integer) ((Vector) (portObj)).elementAt(i))
-                                    .intValue();
+                            port = ((Integer)((Vector)(portObj)).elementAt(i)).intValue();
                             exportRef = sfExportRef(port);
                             sfAddAttribute("sfPort", new Integer(port));
                             break;
                         } catch (SmartFrogException ex) {
-                            if (i >= size - 1) {
-                                throw ex;
-                            }
+                             if (i>=size-1){
+                                 throw ex;
+                             }
                         }
                     } //for
                 }
             }
         } else {
             //Get rootProcess port
-            Object portObjPC = SFProcess.getProcessCompound()
-                    .sfResolve("sfPort", false);
-            if (portObjPC != null) {
-                //use port used by ProcessCompound
-                port = ((Integer) portObjPC).intValue();
-                exportRef = sfExportRef(port);
-                sfAddAttribute("sfPort", new Integer(port));
+            Object portObjPC = SFProcess.getProcessCompound().sfResolve("sfPort",false);
+            if (portObjPC!=null) {
+              //use port used by ProcessCompound
+              port = ((Integer)portObjPC).intValue();
+              exportRef =sfExportRef(port);
+              sfAddAttribute("sfPort",new Integer(port));
             } else {
                 // use ramdom
                 exportRef = sfExportRef(port);
@@ -794,33 +709,27 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl
     }
 
     /**
-     * Registers component with local ProcessCompound only if it is root
-     * component, its parent is remote or the attribute sfProcessComponentName
-     * is defined.
-     *
-     * @throws RemoteException    In case of Remote/nework error
+     * Registers component with local ProcessCompound only if it is root component,
+     * its parent is remote or the attribute sfProcessComponentName is defined.
+     * @throws RemoteException In case of Remote/nework error
      * @throws SmartFrogException if failed to register
      */
-    protected void registerWithProcessCompound()
-            throws RemoteException, SmartFrogException {
+    protected void registerWithProcessCompound() throws RemoteException, SmartFrogException {
         //Registers component with local ProcessCompound
-        if ((sfParent == null) ||
-                sfIsRemote(sfParent) ||
-                sfContext.containsKey(SmartFrogCoreKeys.SF_PROCESS_COMPONENT_NAME)) {
+        if ((sfParent==null)||
+            sfIsRemote(sfParent)||
+            sfContext.containsKey(SmartFrogCoreKeys.SF_PROCESS_COMPONENT_NAME)) {
             try {
                 SFProcess.getProcessCompound().sfRegister(sfResolveHere(
-                        SmartFrogCoreKeys.SF_PROCESS_COMPONENT_NAME, false),
-                        this);
+                    SmartFrogCoreKeys.SF_PROCESS_COMPONENT_NAME, false), this);
             } catch (Exception ex) {
-                throw(SmartFrogDeploymentException) SmartFrogDeploymentException
-                        .forward(ex);
+                throw (SmartFrogDeploymentException)SmartFrogDeploymentException.forward (ex);
             }
         }
     }
 
     /**
-     * Deregisters this component from local ProcessCompound (if ever
-     * registered)
+     * Deregisters this component from local ProcessCompound (if ever registered)
      */
     private void deregisterWithProcessCompound() {
         //
@@ -831,22 +740,22 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl
         } catch (Exception ex) {
             // @TODO: Log. Ignore.
             //Logger.logQuietly(ex);
-            if (sfLog().isIgnoreEnabled()) {
-                sfLog().ignore(ex);
+            if (sfLog().isIgnoreEnabled()){
+              sfLog().ignore(ex);
             }
         }
     }
 
     /**
      * Export this primitive to accept remote method calls using port. If port
-     * value is 0 it will be using an anonymous port. Default implementation is
-     * to use UnicastRemoteObject. Check is done if sfExportRef is already set,
-     * in which case this is returned. <b>Note</b> that for remote methods to
-     * work equals, hashCode and toString must be implemented. This is done for
-     * PrimImpl in which case those requests are forwarded to the sfExportRef.
+     * value is 0 it will be using an anonymous port. Default
+     * implementation is to use UnicastRemoteObject. Check is done if
+     * sfExportRef is already set, in which case this is returned. <b>Note</b>
+     * that for remote methods to work equals, hashCode and toString must be
+     * implemented. This is done for PrimImpl in which case those requests are
+     * forwarded to the sfExportRef.
      *
      * @param port where to export. If 0, it will use any port available.
-     *
      * @return exported primitive
      *
      * @throws SmartFrogException failed to export primitive
@@ -854,13 +763,13 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl
     public Object sfExportRef(int port) throws SmartFrogException {
         if (sfExportRef == null) {
             try {
-                sfExportRef = SecureRemoteObject.exportObject(this, port);
+                sfExportRef = SecureRemoteObject.exportObject(this,port);
             } catch (RemoteException rex) {
                 throw new SmartFrogLifecycleException(MessageUtil.formatMessage(
-                        MSG_OBJECT_REGISTRATION_FAILED), rex);
+                    MSG_OBJECT_REGISTRATION_FAILED),rex);
             } catch (SFGeneralSecurityException sfgsex) {
                 throw new SmartFrogLifecycleException(MessageUtil.formatMessage(
-                        MSG_OBJECT_REGISTRATION_FAILED), sfgsex);
+                    MSG_OBJECT_REGISTRATION_FAILED),sfgsex);
             }
         }
 
@@ -899,12 +808,11 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl
                 sfIsRemote(sfParent)) {
             try {
                 sfLivenessSender = new LivenessSender(this,
-                        sfLivenessDelay * 1000,
-                        this.sfCompleteNameSafe().toString());
+                        sfLivenessDelay * 1000, this.sfCompleteNameSafe().toString() );
                 sfLivenessSender.start();
             } catch (Throwable t) {
                 throw new SmartFrogLivenessException(MSG_LIVENESS_START_FAILED,
-                        t, this);
+                    t, this);
             }
         }
     }
@@ -919,11 +827,11 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl
     }
 
     /**
-     * Checks whether given object is a non-local object. This implementation is
-     * RMI oriented, so checks whether the given object is a RemoteStub, which
-     * would indicate that this object is remote. Subclasses can override this
-     * (and associated sfExport method) if the underlying remote infrastructure
-     * is not RMI.
+     * Checks whether given object is a non-local object. This implementation
+     * is RMI oriented, so checks whether the given object is a RemoteStub,
+     * which would indicate that this object is remote. Subclasses can
+     * override this (and associated sfExport method) if the underlying remote
+     * infrastructure is not RMI.
      *
      * @param o object to check remoteness on
      *
@@ -940,16 +848,14 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl
      * behavior.
      *
      * @throws SmartFrogException error while deploying
-     * @throws RemoteException    In case of network/rmi error
+     * @throws RemoteException In case of network/rmi error
      */
     public synchronized void sfDeploy()
-            throws SmartFrogException, RemoteException {
+        throws SmartFrogException, RemoteException {
         this.sfSetLog(sfGetApplicationLog());
         Reference componentId = sfCompleteName();
         if (sfIsTerminated) {
-            throw new SmartFrogDeploymentException(MessageUtil.formatMessage(
-                    MSG_DEPLOY_COMP_TERMINATED,
-                    componentId.toString()),
+            throw new SmartFrogDeploymentException(MessageUtil.formatMessage(MSG_DEPLOY_COMP_TERMINATED, componentId.toString()),
                     this);
         }
         sfDeployHooks.applyHooks(this, null);
@@ -961,16 +867,15 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl
      * functionality Do not block in this call, but spawn off any main loops!
      *
      * @throws SmartFrogException failure while starting
-     * @throws RemoteException    In case of network/rmi error
+     * @throws RemoteException In case of network/rmi error
      */
     public synchronized void sfStart()
-            throws SmartFrogException, RemoteException {
+        throws SmartFrogException, RemoteException {
 
         if (sfIsTerminated) {
             throw new SmartFrogLifecycleException(MessageUtil.formatMessage(
-                    MSG_START_COMP_TERMINATED,
-                    this.sfCompleteNameSafe().toString()),
-                    this);
+                    MSG_START_COMP_TERMINATED, this.sfCompleteNameSafe().toString()),
+                this);
         }
         sfStartHooks.applyHooks(this, null);
         sfIsStarted = true;
@@ -990,11 +895,11 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl
     }
 
     /**
-     * Request this component to terminate. Termination causes the object to set
-     * the sfIsTerminated flag (so a component can not be terminated twice).
-     * Need some way of stopping this server object, so that remote stubs will
-     * fail, but does not solve the local reference problem (local objects can
-     * still call this object)
+     * Request this component to terminate. Termination causes the object to
+     * set the sfIsTerminated flag (so a component can not be terminated
+     * twice). Need some way of stopping this server object, so that remote
+     * stubs will fail, but does not solve the local reference problem (local
+     * objects can still call this object)
      *
      * @param status termination status record
      */
@@ -1005,21 +910,20 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl
     /**
      * Provides hook for subclasses to implement useful termination behavior.
      * Deregisters component from local process compound (if ever registered)
-     *
      * @param status termination status
      */
     protected synchronized void sfTerminateWith(TerminationRecord status) {
         //org.smartfrog.sfcore.common.Logger.log (this.sfCompleteNameSafe().toString(),status);
-        if (sfLog().isTraceEnabled()) {
-            sfLog().trace(this.sfCompleteNameSafe().toString(), null, status);
+        if (sfLog().isTraceEnabled()){
+          sfLog().trace(this.sfCompleteNameSafe().toString(),null,status);
         }
         try {
             sfTerminateWithHooks.applyHooks(this, status);
         } catch (Exception ex) {
             // @TODO: Log. Ignore.
             //Logger.logQuietly(ex);
-            if (sfLog().isIgnoreEnabled()) {
-                sfLog().ignore(ex);
+            if (sfLog().isIgnoreEnabled()){
+              sfLog().ignore(ex);
             }
         }
 
@@ -1034,14 +938,14 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl
      * sfTerminatedWith and calls the local hook (sfTerminateWith).
      *
      * @param status termination status
-     * @param comp   component to notify of termination
+     * @param comp component to notify of termination
      */
 
     protected void terminateNotifying(TerminationRecord status, Prim comp) {
         // Provide ID to termination record
         // Note that it uses the name of the first component terminated not the actual caller id.
 
-        // protect aganist two callers invoing this
+	    // protect aganist two callers invoing this
         //  can't synchronize of "this" as it can cause deqdlock in sync termination
         synchronized (termLock) {
             if (sfIsTerminating || sfIsTerminated) {
@@ -1058,12 +962,9 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl
                 try {
                     status.id = SFProcess.getProcessCompound().sfCompleteName();
                     status.id.addElement(ReferencePart.here(
-                            SFProcess.getProcessCompound().sfAttributeKeyFor(
-                                    this)));
+                    SFProcess.getProcessCompound().sfAttributeKeyFor(this)));
                 } catch (Exception ex2) {
-                    if (sfLog().isIgnoreEnabled()) {
-                        sfLog().ignore(ex2);
-                    }
+                    if (sfLog().isIgnoreEnabled()){ sfLog().ignore(ex2); }
                     //ignore
                 }
             }
@@ -1074,57 +975,47 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl
         } catch (Exception ex) {
             // ignore
             //Logger.logQuietly(ex);
-            if (sfLog().isIgnoreEnabled()) {
-                sfLog().ignore(ex);
-            }
+            if (sfLog().isIgnoreEnabled()){ sfLog().ignore(ex); }
         }
 
         if (comp != null) {
             try {
                 comp.sfTerminatedWith(status, this);
             } catch (Exception ex) {
-                // Logger.logQuietly(ex);
-                if (sfLog().isIgnoreEnabled()) {
-                    sfLog().ignore(ex);
-                }
+               // Logger.logQuietly(ex);
+               if (sfLog().isIgnoreEnabled()){ sfLog().ignore(ex); }
             }
         }
 
         //UnExports this component.
         // It has to be placed after comp.sfTerminatedWith(status, this);
         try {
-            org.smartfrog
-                    .sfcore
-                    .security
-                    .SecureRemoteObject
-                    .unexportObject(this, true);
+            org.smartfrog.sfcore.security.SecureRemoteObject.unexportObject(this, true);
         } catch (NoSuchObjectException ex) {
             // @TODO: Log. Ignore.
             //Logger.logQuietly(ex);
-            if (sfLog().isIgnoreEnabled()) {
-                sfLog().ignore(ex);
-            }
+            if (sfLog().isIgnoreEnabled()){ sfLog().ignore(ex); }
         }
 
         //synchronized (this) {
-        sfIsTerminated = true;
+            sfIsTerminated = true;
         //}
 
     }
 
     /**
      * Get this object to detach from its parent. Calls sfStartLivenessSender
-     * since this component might now be eligible for a liveness sender. Every
-     * detached component will be re-parented with its local ProcessCompound.The
-     * detached component will be registed using "sfProcessComponentName" value
-     * or a random name if it does not exist. It sends sfParantageChanged()
-     * notification.
+     * since this component might now be eligible for a liveness sender.
+     * Every detached component will be re-parented with its local
+     * ProcessCompound.The detached component will be registed using
+     * "sfProcessComponentName" value or a random name if it does not exist.
+     * It sends sfParantageChanged() notification.
      *
      * @throws SmartFrogException detachment failed
-     * @throws RemoteException    In case of network/rmi error
+     * @throws RemoteException In case of network/rmi error
      */
     public synchronized void sfDetach()
-            throws SmartFrogException, RemoteException {
+        throws SmartFrogException, RemoteException {
         if (sfParent == null) {
             return;
         }
@@ -1136,14 +1027,13 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl
             // root components and then it will detach!). Keep this order!)
             if (!(SFProcess.getProcessCompound().sfContainsChild(this))) {
                 //Registers with local process compound!
-                SFProcess.getProcessCompound().sfRegister(this.sfResolveHere(
-                        SmartFrogCoreKeys.SF_PROCESS_COMPONENT_NAME, false),
-                        this);
+               SFProcess.getProcessCompound().sfRegister(this.sfResolveHere(
+                   SmartFrogCoreKeys.SF_PROCESS_COMPONENT_NAME,false), this);
             }
             sfParent = null;
             sfStartLivenessSender();
             sfParentageChanged();
-        } catch (SmartFrogResolutionException ex) {
+        } catch (SmartFrogResolutionException ex){
             //@Todo: log
             //ignore
         }
@@ -1165,9 +1055,7 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl
             terminateNotifying(status, null);
         } catch (Exception ex) {
             //Logger.logQuietly(ex);
-            if (sfLog().isIgnoreEnabled()) {
-                sfLog().ignore(ex);
-            }
+            if (sfLog().isIgnoreEnabled()){ sfLog().ignore(ex); }
         }
     }
 
@@ -1176,7 +1064,7 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl
      * should implement useful behavior.
      *
      * @param status termination status
-     * @param comp   component that has terminated
+     * @param comp component that has terminated
      */
     public void sfTerminatedWith(TerminationRecord status, Prim comp) {
     }
@@ -1193,19 +1081,16 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl
     }
 
     /**
-     * Validate all ASSERTs in the context of the Prim, returning true if OK,
-     * false if not.
+     * Validate all ASSERTs in the context of the Prim, returning true if OK, false if not.
      */
-    public synchronized boolean sfValid() throws RemoteException {
-        for (Enumeration e = sfContext.keys(); e.hasMoreElements();) {
+     public synchronized boolean sfValid() throws RemoteException {
+        for (Enumeration e = sfContext.keys(); e.hasMoreElements(); ){
             Object k = e.nextElement();
             if (sfContext.get(k) instanceof AssertReference) {
                 try {
                     Object value = sfResolve(new Reference(ReferencePart.here(k)));
                     if (value instanceof Boolean) {
-                        if (!((Boolean) value).booleanValue()) {
-                            return false;
-                        }
+                        if (!((Boolean)value).booleanValue()) return false;
                     } else {
                         return false;
                     }
@@ -1220,73 +1105,74 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl
     /**
      * Liveness call in to check if this component is still alive. This method
      * can be overriden to check other state of a component. An example is
-     * Compound where all children of the compound are checked. This basic check
-     * updates the liveness count if the ping came from its parent. Otherwise
-     * (if source non-null) the liveness count is decreased by the
-     * sfLivenessFactor attribute. If the count ever reaches 0 liveness failure
-     * on tha parent has occurred and sfLivenessFailure is called with source
-     * this, and target parent. Note: the sfLivenessCount must be decreased
-     * AFTER doing the test to correctly count the number of ping opportunities
-     * that remain before invoking sfLivenessFailure. If done before then the
-     * number of missing pings is reduced by one. E.g. if sfLivenessFactor is 1
-     * then a sfPing from the parent sets sfLivenessCount to 1. The sfPing from
-     * a non-parent would reduce the count to 0 and immediately fail.
+     * Compound where all children of the compound are checked. This basic
+     * check updates the liveness count if the ping came from its parent.
+     * Otherwise (if source non-null) the liveness count is decreased by the
+     * sfLivenessFactor attribute. If the count ever reaches 0 liveness
+     * failure on tha parent has occurred and sfLivenessFailure is called with
+     * source this, and target parent. Note: the sfLivenessCount must be
+     * decreased AFTER doing the test to correctly count the number of ping
+     * opportunities that remain before invoking sfLivenessFailure. If done
+     * before then the number of missing pings is reduced by one. E.g. if
+     * sfLivenessFactor is 1 then a sfPing from the parent sets
+     * sfLivenessCount to 1. The sfPing from a non-parent would reduce the
+     * count to 0 and immediately fail.
      *
      * @param source source of call
      *
      * @throws SmartFrogLivenessException component is terminated
-     * @throws RemoteException            for consistency with the {@link
-     *                                    Liveness} interface
+     * @throws RemoteException for consistency with the {@link Liveness} interface
      */
-    public void sfPing(Object source)
-            throws SmartFrogLivenessException, RemoteException {
-        if (Logger.logLiveness && (sfLog().isTraceEnabled())) {
-            sfLog().trace(
-                    "ping received from " + source
-                            + ": in " + sfCompleteNameSafe()
-                            + ", counter " + sfLivenessCount);
-        }
+    public void sfPing(Object source) throws SmartFrogLivenessException, RemoteException {
+	if (Logger.logLiveness &&(sfLog().isTraceEnabled())) {
+	    sfLog().trace("ping received from " + source + ": in " + sfCompleteNameSafe() + ", counter " + sfLivenessCount);
+	}
 
-        if (sfIsTerminated) {
-            if (Logger.logLiveness && (sfLog().isTraceEnabled())) {
-                sfLog().trace("ping returning that I am terminated : in " + sfCompleteNameSafe());
-            }
-            throw new SmartFrogLivenessException(MessageUtil.formatMessage(
-                    COMPONENT_TERMINATED));
-        }
+	if (sfIsTerminated) {
+	    if (Logger.logLiveness &&(sfLog().isTraceEnabled())) {
+		sfLog().trace("ping returning that I am terminated : in " + sfCompleteNameSafe());
+	    }
+	    throw new SmartFrogLivenessException(MessageUtil.formatMessage(COMPONENT_TERMINATED));
+	}
 
-        if (source == null) {
-            return;
-        }
+    /*
+    try {
+        System.out.println("validated " + sfCompleteNameSafe() + ": " + sfValid());
+    } catch (Exception e) {
+        System.out.println("validated " + sfCompleteNameSafe() + ": failed with " + e);
+    }
+    */
 
-        if (sfParent == null) {
-            // if am root - don't check counters...!
-            return;
-        }
+	if (source == null) {
+	    return;
+	}
 
-        // memory model hack...
-        boolean fail = false;
-        synchronized (this) {
-            if (source.equals(sfParent)) {
-                if (Logger.logLiveness && (sfLog().isTraceEnabled())) {
-                    sfLog().trace(
-                            "parent ping received - resetting counter: in " + sfCompleteNameSafe());
-                }
-                sfLivenessCount = sfLivenessFactor;
-            } else if ((sfLivenessSender != null) &&
-                    source.equals(sfLivenessSender) &&
-                    (sfLivenessCount-- <= 0)) {
-                fail = true;
-            }
-        }
+	if (sfParent == null) {
+	    // if am root - don't check counters...!
+	    return;
+	}
 
-        if (fail) {
-            if (sfLog().isDebugEnabled()) {
-                sfLog().debug(
-                        "failing as parent liveness checking had counted down: in " + sfCompleteNameSafe());
-            }
-            sfLivenessFailure(this, sfParent, null);
-        }
+	// memory model hack...
+	boolean fail = false;
+	synchronized (this) {
+	    if (source.equals(sfParent)) {
+		if (Logger.logLiveness &&(sfLog().isTraceEnabled())) {
+		    sfLog().trace("parent ping received - resetting counter: in " + sfCompleteNameSafe());
+		}
+		sfLivenessCount = sfLivenessFactor;
+	    } else if ((sfLivenessSender != null) &&
+		       source.equals(sfLivenessSender) &&
+		       (sfLivenessCount-- <= 0)) {
+           fail = true;
+	    }
+	}
+
+	if (fail) {
+	    if (sfLog().isDebugEnabled()) {
+		   sfLog().debug("failing as parent liveness checking had counted down: in " + sfCompleteNameSafe());
+	    }
+	    sfLivenessFailure(this, sfParent, null);
+	}
     }
 
     /**
@@ -1294,12 +1180,12 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl
      * send failure record storing the name of the target of the ping (which
      * generally is one of the children or the parent of this component).
      *
-     * @param source  source of update
-     * @param target  target that update was trying to reach
+     * @param source source of update
+     * @param target target that update was trying to reach
      * @param failure error that occurred
      */
     protected void sfLivenessFailure(Object source, Object target,
-                                     Throwable failure) {
+        Throwable failure) {
         // Failed to send liveness to children, terminate by default
         Reference targetName = null;
         Reference myName = null;
@@ -1317,36 +1203,33 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl
             if (myName == null) {
                 try {
                     myName = SFProcess.getProcessCompound().sfCompleteName();
-                    myName.addElement(ReferencePart.here(SFProcess.getProcessCompound().sfAttributeKeyFor(
-                            this)));
+                    myName.addElement(ReferencePart.here(SFProcess.getProcessCompound().sfAttributeKeyFor(this)));
                 } catch (Exception ex2) {
                     //ignore
                 }
             }
         }
 
-        String failureMsg = "";
-        if (failure != null) {
-            failureMsg = " (Failure: " + failure.getMessage() + ")";
+        String failureMsg="";
+        if (failure!=null){
+          failureMsg = " (Failure: "+failure.getMessage()+")";
         }
 
         if (myName != null) {
             sfTerminate(TerminationRecord.abnormal(
-                    MessageUtil.formatMessage(LIVENESS_SEND_FAILURE_IN
-                            , myName, targetName + failureMsg),
-                    targetName,
-                    failure));
+                 MessageUtil.formatMessage(LIVENESS_SEND_FAILURE_IN
+                 ,myName,targetName + failureMsg), targetName, failure));
         } else {
             sfTerminate(TerminationRecord.abnormal(
-                    MessageUtil.formatMessage(LIVENESS_SEND_FAILURE
-                            , targetName + failureMsg), targetName, failure));
+                 MessageUtil.formatMessage(LIVENESS_SEND_FAILURE
+                 ,targetName + failureMsg), targetName, failure));
         }
     }
 
     /**
-     * Implemented to provide for remote equality checking. If the primitive was
-     * export the sfExportRef is used to compare objects, otherwise the super
-     * class (Object) is requested to check equality.
+     * Implemented to provide for remote equality checking. If the primitive
+     * was export the sfExportRef is used to compare objects, otherwise the
+     * super class (Object) is requested to check equality.
      *
      * @param o object to compare with
      *
@@ -1394,125 +1277,111 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl
      * termination of the component.
      *
      * @param targetComponent The component that encountered the error
-     * @param excp            The error that caused the termination
-     * @param componentId     Component Identifier
+     * @param excp The error that caused the termination
+     * @param componentId Component Identifier
      */
     protected void terminateComponent(Prim targetComponent, Throwable excp,
-                                      Reference componentId) {
-        TerminatorThread terminator = new TerminatorThread(targetComponent,
-                excp,
-                componentId);//.quietly();
+        Reference componentId) {
+        TerminatorThread terminator = new TerminatorThread(targetComponent, excp, componentId);//.quietly();
         // start the thead
         terminator.start();
     }
 
     /**
-     * To log into sfCore logger. This method should be used to log Core
-     * messages
-     * <p/>
-     * Types of possible logs in SF: - Core log - Application log - Component
-     * log - Using sfSetLog() - Specific log - Using sfLog attribute in
-     * component
-     * <p/>
-     * When initialized, sflog uses CoreLog, once the component enters in the
-     * sfDeploy lifecycle phase, it is changed to use the specific log if sfLog
-     * attribute is defined or if it is not defined it defaults to the core
-     * log.
+     *  To log into sfCore logger. This method should be used to log Core messages
+     *
+     * Types of possible logs in SF:
+     *  - Core log
+     *  - Application log
+     *  - Component log - Using sfSetLog()
+     *  - Specific log - Using sfLog attribute in component
+     *
+     *  When initialized, sflog uses CoreLog, once the component enters in the
+     *  sfDeploy lifecycle phase, it is changed to use the specific log if sfLog
+     *  attribute is defined or if it is not defined it defaults to the core log.
      *
      * @return Logger implementing LogSF and Log
      */
     public LogSF sfLog() {
-        if (sfLog == null) {
-            try {
-                sfSetLog(sfGetApplicationLog());
-            } catch (Exception ex) {
-                sfSetLog(sfGetCoreLog());
-            }
+       if (sfLog==null) {
+        try {
+          sfSetLog(sfGetApplicationLog());
+        } catch (Exception ex) {
+          sfSetLog(sfGetCoreLog());
         }
-        return sfLog;
+       }
+       return sfLog;
     }
 
 
     /**
-     * Method to replace logger used by components.
-     *
-     * @param newlog replacement for Prim core log
-     *
-     * @return oldlog
+     *  Method to replace logger used by components.
+     *  @param newlog replacement for Prim core log
+     *  @return oldlog
      */
     public synchronized LogSF sfSetLog(LogSF newlog) {
-        LogSF oldlog = sfLog;
-        this.sfLog = newlog;
-        // add attribute
-        try {
-            sfReplaceAttribute(SmartFrogCoreKeys.SF_APP_LOG_NAME,
-                    newlog.getLogName());
-        } catch (Exception ex) {
-            if (sfLog().isErrorEnabled()) {
-                sfLog().err(ex);
-            }
-        }
-        return oldlog;
+       LogSF oldlog = sfLog;
+       this.sfLog = newlog;
+       // add attribute
+       try {
+           sfReplaceAttribute(SmartFrogCoreKeys.SF_APP_LOG_NAME, newlog.getLogName());
+       } catch (Exception ex) {
+         if (sfLog().isErrorEnabled()){ sfLog().err(ex);}
+       }
+       return oldlog;
     }
 
 
     /**
      * To get a logger with a particular name.
-     *
      * @param name logger name
-     *
      * @return Logger implementing LogSF and Log
      */
-    public LogSF sfGetLog(String name) {
-        return LogFactory.getLog(name);
+    public LogSF sfGetLog (String name){
+       return LogFactory.getLog(name);
     }
 
     /**
-     * To get the sfCore logger
-     *
+     *  To get the sfCore logger
      * @return Logger implementing LogSF and Log
      */
     public LogSF sfGetCoreLog() {
-        return LogFactory.sfGetProcessLog();
+       return LogFactory.sfGetProcessLog();
     }
 
     /**
-     * To get application logger using ROOT name. The name used is cached in
-     * attritube {@link SmartFrogCoreKeys#SF_APP_LOG_NAME} If this attribute has
-     * been pre-set then it is used to get the application logger, otherwise
-     * ROOT cannonical name is used.
+     *  To get application logger using ROOT name.
+     *  The name used is cached in attritube {@link SmartFrogCoreKeys#SF_APP_LOG_NAME}
+     *  If this attribute has been pre-set then it is used to get the application logger,
+     *  otherwise ROOT cannonical name is used.
      *
      * @return Logger implementing LogSF and Log
-     *
      * @throws SmartFrogException if failed
-     * @throws RemoteException    In case of Remote/nework error
+     * @throws RemoteException In case of Remote/nework error
      */
-    public LogSF sfGetApplicationLog()
-            throws SmartFrogException, RemoteException {
+    public LogSF sfGetApplicationLog() throws SmartFrogException, RemoteException {
         //@todo should we use prim name and get a hierarchy of logs?
-        //this.sfResolveHere(SmartFrogCoreKeys.SF_APP_LOG_NAME,false);
-        String sfLogName = null;
+         //this.sfResolveHere(SmartFrogCoreKeys.SF_APP_LOG_NAME,false);
+        String sfLogName=null;
         try {
             // Check or sfLog attribute in component, if not initially defined
             // then it will be created during sfDeploy.
-            Object obj = sfResolve(SmartFrogCoreKeys.SF_APP_LOG_NAME, true);
+            Object obj =sfResolve(SmartFrogCoreKeys.SF_APP_LOG_NAME, true);
             if (obj instanceof Prim) {
-                sfLogName = ((Prim) obj).sfCompleteName().toString();
+                sfLogName = ((Prim)obj).sfCompleteName().toString();
             } else {
-                sfLogName = obj.toString();
+              sfLogName = obj.toString();
             }
             return sfGetLog(sfLogName);
         } catch (SmartFrogResolutionException ex) {
             //Get root Log name
             // Very expensive call
             //String sfLogName = ((Prim)sfResolveWithParser(SmartFrogCoreKeys.SF_ROOT)).sfCompleteName().toString();
-            if (sfParent() != null) {
+            if (sfParent()!=null){
                 try {
                     // Check or sfLog attribute in parent
-                    sfLogName = (sfParent().sfResolve(SmartFrogCoreKeys.SF_APP_LOG_NAME,
-                            "",
-                            true));
-                } catch (SmartFrogResolutionException rex) {
+                    sfLogName = (sfParent().sfResolve(SmartFrogCoreKeys.SF_APP_LOG_NAME,"", true));
+                } catch (SmartFrogResolutionException rex){
                     sfLogName = (this.sfCompleteName().toString());
                 }
             } else {
@@ -1525,101 +1394,78 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl
     }
 
     /**
-     * Parentage changed in component hierachy. Actions: sfCompleteName cache is
-     * cleaned
-     *
+     * Parentage changed in component hierachy.
+     * Actions: sfCompleteName cache is cleaned
      * @throws RemoteException In case of Remote/nework error
      */
-    public void sfParentageChanged() throws RemoteException {
-        sfCompleteName = null;
+    public void sfParentageChanged() throws RemoteException{
+       sfCompleteName=null;
     }
 
-    /**
-     * Returns value of flag indicating if this component has been terminated.
-     *
+    /** Returns value of flag indicating if this component has been terminated.
      * @return boolean
      */
     public boolean sfIsTerminated() {
         return sfIsTerminated;
     }
 
-    /**
-     * Returns value of flag indicating if this component is terminating.
-     *
+    /** Returns value of flag indicating if this component is terminating.
      * @return boolean
      */
     public boolean sfIsTerminating() {
         return sfIsTerminating;
     }
 
-    /**
-     * Returns value of flag indicating if this component has been deployed.
-     *
-     * @return boolean
+    /** Returns value of flag indicating if this component has been deployed.
+     *  @return boolean
      */
     public boolean sfIsDeployed() {
         return sfIsDeployed;
     }
 
-    /**
-     * Returns value of flag indicating if this component has been started.
-     *
+    /** Returns value of flag indicating if this component has been started.
      * @return boolean
      */
     public boolean sfIsStarted() {
         return sfIsStarted;
     }
 
-    /**
-     * Creates diagnostics report
-     *
+    /** Creates diagnostics report
      * @return Component description
      */
     public ComponentDescription sfDiagnosticsReport() {
-        ComponentDescription cd = null;
-        try {
-            cd = new ComponentDescriptionImpl(null,
-                    (Context) new ContextImpl(),
-                    false);
-            //cd.setPrimParent(this);
-            StringBuffer report = new StringBuffer();
-            Diagnostics.doReport(report, this);
-            cd.sfReplaceAttribute(SmartFrogCoreKeys.SF_DIAGNOSTICS_REPORT,
-                    report);
-        } catch (Throwable thr) {
-            //ignore
-            if (sfLog().isWarnEnabled()) {
-                sfLog().warn(thr);
-            }
-        }
-        return cd;
+      ComponentDescription cd = null;
+      try {
+        cd = new ComponentDescriptionImpl(null,(Context)new ContextImpl(), false);
+        //cd.setPrimParent(this);
+        StringBuffer report = new StringBuffer();
+        Diagnostics.doReport(report,this);
+        cd.sfReplaceAttribute(SmartFrogCoreKeys.SF_DIAGNOSTICS_REPORT, report );
+      } catch (Throwable thr){
+        //ignore
+        if (sfLog().isWarnEnabled()){ sfLog().warn(thr);}
+      }
+      return cd;
     }
 
 
-    /* Update lifecycle */
+   /* Update lifecycle */
     protected boolean updateAbandoned = false;
 
     /**
-     * Inform component (and children, typically) that an update is about to
-     * take place. Normally a component would quiesce its activity
-     *
+     * Inform component (and children, typically) that an update is about to take place.
+     * Normally a component would quiesce its activity
      * @throws java.rmi.RemoteException
-     * @throws org.smartfrog.sfcore.common.SmartFrogException
-     *                                  - not OK to update
+     * @throws org.smartfrog.sfcore.common.SmartFrogException - not OK to update
      */
-    public synchronized void sfPrepareUpdate()
-            throws RemoteException, SmartFrogException {
+    public synchronized void sfPrepareUpdate() throws RemoteException, SmartFrogException {
         Reference componentId = sfCompleteName();
-        if (sfIsTerminated) {
-            throw new SmartFrogUpdateException(MessageUtil.formatMessage(
-                    MSG_DEPLOY_COMP_TERMINATED,
-                    componentId.toString()));
+         if (sfIsTerminated) {
+            throw new SmartFrogUpdateException(MessageUtil.formatMessage(MSG_DEPLOY_COMP_TERMINATED, componentId.toString()));
         }
         boolean mayUpdate = sfResolve("sfUpdatable", false, false);
         if (!mayUpdate) {
-            throw new SmartFrogUpdateException(
-                    "Component not updatable - set sfUpdatable to true: " + componentId
-                            .toString());
+            throw new SmartFrogUpdateException("Component not updatable - set sfUpdatable to true: " + componentId.toString());
         }
         updateAbandoned = false;
     }
@@ -1628,28 +1474,17 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl
 
     /**
      * Validate whether the component (and its children) can be updated
-     *
      * @param newCxt - the data that will replace the original context
-     *
-     * @return true - OK to update, false - OK to terminate and redeploy,
-     *         exception - not OK to update
-     *
+     * @return true - OK to update, false - OK to terminate and redeploy, exception - not OK to update
      * @throws java.rmi.RemoteException
-     * @throws org.smartfrog.sfcore.common.SmartFrogException
-     *                                  - failure, not OK to update
+     * @throws org.smartfrog.sfcore.common.SmartFrogException - failure, not OK to update
      */
-    public synchronized boolean sfUpdateWith(Context newCxt)
-            throws RemoteException, SmartFrogException {
+    public synchronized boolean sfUpdateWith(Context newCxt) throws RemoteException, SmartFrogException {
         Reference componentId = sfCompleteName();
-        if (sfIsTerminated) {
-            throw new SmartFrogUpdateException(MessageUtil.formatMessage(
-                    MSG_DEPLOY_COMP_TERMINATED,
-                    componentId.toString()));
+         if (sfIsTerminated) {
+            throw new SmartFrogUpdateException(MessageUtil.formatMessage(MSG_DEPLOY_COMP_TERMINATED, componentId.toString()));
         }
-        if (updateAbandoned) {
-            throw new SmartFrogUpdateException("update already abandoned " + componentId
-                    .toString());
-        }
+        if (updateAbandoned) throw new SmartFrogUpdateException("update already abandoned " + componentId.toString());
         // validate the description, return false if it requires termination, exception to fail
         // cache context
         // check children that exist already
@@ -1659,7 +1494,7 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl
         newContext = (Context) newCxt.copy();
 
         // check that all sf attributes are well defined...
-        for (Iterator i = newContext.sfAttributes(); i.hasNext();) {
+        for (Iterator  i = newContext.sfAttributes(); i.hasNext(); ) {
             String key = i.next().toString();
             if (key.startsWith("sf")) {
                 try {
@@ -1671,16 +1506,14 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl
                     return false;  // there is a new sf attribute
                 } catch (RemoteException e) {
                     sfAbandonUpdate();
-                    throw new SmartFrogUpdateException(
-                            "remote error during update",
-                            e);
+                    throw new SmartFrogUpdateException("remote error during update", e);
                 }
             }
         }
 
         // if they are, then make sure that all sf attributes in the current comopnent are in the
         // new context
-        for (Iterator i = sfContext.sfAttributes(); i.hasNext();) {
+        for (Iterator  i = sfContext.sfAttributes(); i.hasNext(); ) {
             String key = i.next().toString();
             if (key.startsWith("sf")) {
                 newContext.put(key, sfContext.get(key));
@@ -1692,27 +1525,16 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl
 
     /**
      * Carry out the context update - no roll back from this point on.
-     * Terminates children that need terminating, create and deployWith children
-     * that need to be
-     *
+     * Terminates children that need terminating, create and deployWith children that need to be
      * @throws java.rmi.RemoteException
-     * @throws org.smartfrog.sfcore.common.SmartFrogException
-     *                                  - failure, to be treated like a normal
-     *                                  lifecycle error, by default with
-     *                                  termination
+     * @throws org.smartfrog.sfcore.common.SmartFrogException - failure, to be treated like a normal lifecycle error, by default with termination
      */
-    public synchronized void sfUpdate()
-            throws RemoteException, SmartFrogException {
+    public synchronized void sfUpdate() throws RemoteException, SmartFrogException {
         Reference componentId = sfCompleteName();
-        if (sfIsTerminated) {
-            throw new SmartFrogUpdateException(MessageUtil.formatMessage(
-                    MSG_DEPLOY_COMP_TERMINATED,
-                    componentId.toString()));
+         if (sfIsTerminated) {
+            throw new SmartFrogUpdateException(MessageUtil.formatMessage(MSG_DEPLOY_COMP_TERMINATED, componentId.toString()));
         }
-        if (updateAbandoned) {
-            throw new SmartFrogUpdateException("update already abandoned " + componentId
-                    .toString());
-        }
+        if (updateAbandoned) throw new SmartFrogUpdateException("update already abandoned " + componentId.toString());
         // update context
         sfContext = newContext;
         // failure considered terminal
@@ -1720,77 +1542,51 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl
 
 
     /**
-     * Next phase of start-up after update - includes calling sfDeply on new
-     * children Errors are considered terminal unless behaviour overridden.
-     *
+     * Next phase of start-up after update - includes calling sfDeply on new children
+     * Errors are considered terminal unless behaviour overridden.
      * @throws java.rmi.RemoteException
      * @throws org.smartfrog.sfcore.common.SmartFrogException
-     *
      */
 
-    public synchronized void sfUpdateDeploy()
-            throws RemoteException, SmartFrogException {
+    public synchronized void sfUpdateDeploy() throws RemoteException, SmartFrogException {
         Reference componentId = sfCompleteName();
-        if (sfIsTerminated) {
-            throw new SmartFrogUpdateException(MessageUtil.formatMessage(
-                    MSG_DEPLOY_COMP_TERMINATED,
-                    componentId.toString()));
+         if (sfIsTerminated) {
+            throw new SmartFrogUpdateException(MessageUtil.formatMessage(MSG_DEPLOY_COMP_TERMINATED, componentId.toString()));
         }
-        if (updateAbandoned) {
-            throw new SmartFrogUpdateException("update already abandoned " + componentId
-                    .toString());
-        }
+        if (updateAbandoned) throw new SmartFrogUpdateException("update already abandoned " + componentId.toString());
     }
 
     /**
-     * Final phase of startup after update - includes calling sfStart on new
-     * children Errors are considered terminal unless behaviour overridden.
-     *
+     * Final phase of startup after update - includes calling sfStart on new children
+     * Errors are considered terminal unless behaviour overridden.
      * @throws java.rmi.RemoteException
      * @throws org.smartfrog.sfcore.common.SmartFrogException
-     *
      */
-    public synchronized void sfUpdateStart()
-            throws RemoteException, SmartFrogException {
+    public synchronized void sfUpdateStart() throws RemoteException, SmartFrogException {
         Reference componentId = sfCompleteName();
-        if (sfIsTerminated) {
-            throw new SmartFrogUpdateException(MessageUtil.formatMessage(
-                    MSG_DEPLOY_COMP_TERMINATED,
-                    componentId.toString()));
+         if (sfIsTerminated) {
+            throw new SmartFrogUpdateException(MessageUtil.formatMessage(MSG_DEPLOY_COMP_TERMINATED, componentId.toString()));
         }
-        if (updateAbandoned) {
-            throw new SmartFrogUpdateException("update already abandoned " + componentId
-                    .toString());
-        }
-    }
+        if (updateAbandoned) throw new SmartFrogUpdateException("update already abandoned " + componentId.toString());    }
 
     /**
-     * Can occur after prepare and check, but not afterwards to roll back from
-     * actual update process.
-     *
+     * Can occur after prepare and check, but not afterwards to roll back from actual update process.
      * @throws java.rmi.RemoteException
      */
     public synchronized void sfAbandonUpdate() throws RemoteException {
         // notify all children of the abandon, ignoring all errors?
         // only occurs after failure of prepare or updatewith, future failure considered fatal
-        if (updateAbandoned) {
-            return;
-        }
+        if (updateAbandoned) return;
         updateAbandoned = true;
     }
 
     /**
-     * Control of complete update process for a component, running through all
-     * the above phases.
-     *
+     * Control of complete update process for a component, running through all the above phases.
      * @param desc
-     *
      * @throws java.rmi.RemoteException
      * @throws org.smartfrog.sfcore.common.SmartFrogUpdateException
-     *
      */
-    public void sfUpdateComponent(ComponentDescription desc)
-            throws RemoteException, SmartFrogUpdateException {
+    public void sfUpdateComponent(ComponentDescription desc) throws RemoteException, SmartFrogUpdateException {
         boolean ready;
 
         try {
@@ -1800,11 +1596,7 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl
 
             System.out.println("update with");
             ready = this.sfUpdateWith(desc.sfContext());
-            if (!ready) {
-                throw new SmartFrogUpdateException(
-                        "top level component must accept update",
-                        null);
-            }
+            if (!ready) throw new SmartFrogUpdateException("top level component must accept update", null);
             System.out.println("update with done");
         } catch (Exception e) {
             e.printStackTrace();
@@ -1816,12 +1608,10 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl
                 // ignore?
             }
 
-            if (e instanceof SmartFrogUpdateException) {
-                throw(SmartFrogUpdateException) e;
-            } else {
-                throw new SmartFrogUpdateException("error in update, abandoning",
-                        e);
-            }
+            if (e instanceof SmartFrogUpdateException)
+                throw (SmartFrogUpdateException) e;
+            else
+                throw new SmartFrogUpdateException("error in update, abandoning", e);
         }
 
         if (ready) {
@@ -1837,16 +1627,11 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl
                 System.out.println("failed");
                 e.printStackTrace();
                 try {
-                    this.sfTerminate(TerminationRecord.abnormal(
-                            "fatal error in update - terminated comopnents",
-                            sfCompleteNameSafe(),
-                            e));
+                    this.sfTerminate(TerminationRecord.abnormal("fatal error in update - terminated comopnents", sfCompleteNameSafe(), e));
                 } catch (Exception e1) {
                     // ignore?
                 }
-                throw new SmartFrogUpdateException(
-                        "fatal error in update, terminating application",
-                        e);
+                throw new SmartFrogUpdateException("fatal error in update, terminating application", e);
             }
         }
     }
