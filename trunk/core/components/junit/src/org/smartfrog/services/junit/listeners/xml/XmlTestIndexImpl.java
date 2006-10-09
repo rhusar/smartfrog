@@ -18,7 +18,7 @@
 
  */
 
-package org.smartfrog.services.junit.listeners;
+package org.smartfrog.services.junit.listeners.xml;
 
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.common.SmartFrogException;
@@ -27,6 +27,7 @@ import org.smartfrog.sfcore.logging.Log;
 import org.smartfrog.sfcore.utils.ComponentHelper;
 import org.smartfrog.services.junit.TestSuite;
 import org.smartfrog.services.junit.TestListener;
+import org.smartfrog.services.junit.listeners.xml.XmlTestIndex;
 import org.smartfrog.services.junit.data.Statistics;
 import org.smartfrog.services.filesystem.FileSystem;
 

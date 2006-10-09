@@ -18,11 +18,14 @@
 
  */
 
-package org.smartfrog.services.junit.listeners;
+package org.smartfrog.services.junit.listeners.xml;
 
 import org.smartfrog.services.filesystem.FileSystem;
 import org.smartfrog.services.junit.TestListener;
 import org.smartfrog.services.junit.TestSuite;
+import org.smartfrog.services.junit.listeners.xml.XmlListener;
+import org.smartfrog.services.junit.listeners.xml.XmlListenerFactory;
+import org.smartfrog.services.junit.listeners.html.OneHostXMLListener;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogInitException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;

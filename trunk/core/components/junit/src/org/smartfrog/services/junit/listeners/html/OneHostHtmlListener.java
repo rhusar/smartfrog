@@ -17,7 +17,7 @@
  For more information: www.smartfrog.org
 
  */
-package org.smartfrog.services.junit.listeners;
+package org.smartfrog.services.junit.listeners.html;
 
 import org.smartfrog.services.junit.data.LogEntry;
 import org.smartfrog.services.junit.data.TestInfo;

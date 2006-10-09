@@ -19,11 +19,12 @@
  */
 
 
-package org.smartfrog.services.junit.listeners;
+package org.smartfrog.services.junit.listeners.html;
 
 import org.smartfrog.services.junit.data.LogEntry;
 import org.smartfrog.services.junit.data.TestInfo;
 import org.smartfrog.services.junit.data.ThrowableTraceInfo;
+import org.smartfrog.services.junit.listeners.xml.XmlListener;
 import org.smartfrog.sfcore.common.SmartFrogException;
 
 import java.io.BufferedOutputStream;

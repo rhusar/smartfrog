@@ -17,10 +17,11 @@
  For more information: www.smartfrog.org
 
  */
-package org.smartfrog.services.junit.listeners;
+package org.smartfrog.services.junit.listeners.html;
 
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.utils.ComponentHelper;
+import org.smartfrog.services.junit.listeners.xml.AbstractXmlListenerComponent;
 
 import java.io.File;
 import java.io.IOException;
@@ -30,9 +31,9 @@ import java.util.Date;
 
 /**
  * This is a listener of tests
- * Implement the {@link org.smartfrog.services.junit.listeners.XmlListenerFactory} interface and so provide a component
+ * Implement the {@link org.smartfrog.services.junit.listeners.xml.XmlListenerFactory} interface and so provide a component
  * for XML logging. Note that we are only a factory; the listening is done by
- * {@link org.smartfrog.services.junit.listeners.OneHostXMLListener }
+ * {@link org.smartfrog.services.junit.listeners.html.OneHostXMLListener }
  */
 public class HtmlTestListenerComponent extends AbstractXmlListenerComponent
         implements HtmlTestListenerFactory {

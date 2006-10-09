@@ -20,8 +20,8 @@
 package org.smartfrog.services.junit.test.system;
 
 import org.smartfrog.services.junit.TestRunner;
-import org.smartfrog.services.junit.listeners.HtmlTestListenerFactory;
-import org.smartfrog.services.junit.listeners.XmlListener;
+import org.smartfrog.services.junit.listeners.html.HtmlTestListenerFactory;
+import org.smartfrog.services.junit.listeners.xml.XmlListener;
 import org.smartfrog.sfcore.prim.Prim;
 
 import java.io.File;

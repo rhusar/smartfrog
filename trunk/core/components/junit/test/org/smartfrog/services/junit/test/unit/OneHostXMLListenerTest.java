@@ -19,10 +19,9 @@
  */
 package org.smartfrog.services.junit.test.unit;
 
-import org.smartfrog.services.junit.TestListener;
 import org.smartfrog.services.junit.test.system.TestRunnerTestBase;
 import org.smartfrog.services.junit.data.TestInfo;
-import org.smartfrog.services.junit.listeners.OneHostXMLListener;
+import org.smartfrog.services.junit.listeners.html.OneHostXMLListener;
 
 import java.io.File;
 import java.io.IOException;
