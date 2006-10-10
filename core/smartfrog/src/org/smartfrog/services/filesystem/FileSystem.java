@@ -43,6 +43,11 @@ import java.io.BufferedReader;
 import java.io.FileOutputStream;
 import java.io.InputStreamReader;
 import java.io.BufferedInputStream;
+import java.net.URL;
+import java.util.ListIterator;
+import java.util.List;
+import java.net.MalformedURLException;
+import java.util.ArrayList;
 
 /**
  * Filesystem operations
@@ -437,6 +442,62 @@ public class FileSystem {
         return resolveAbsolutePath((Prim) component);
     }
 
+
+    /**
+     * Recursive directory scanner for files with particular extensions. Search criteria expressed
+     * with a regular expression.
+     * @param dir File directory to start scanning
+     * @param filePaths List
+     * @param extensionsRegex String Regular expresion that matches the end of the filename searched
+     * @param recursive boolean Should it scan subdirectories
+     * @throws IOException Thrown when dir is not a directory.
+     */
+
+    public static List scanDir(File dir, List filePaths, String extensionsRegex, boolean recursive) throws IOException {
+        if (!dir.isDirectory()) throw new IOException(dir + " is not a directory.");
+        File[] files = dir.listFiles();
+        for (int i = 0; i < files.length; i++) {
+            if (files[i].isDirectory())
+                if (recursive) {scanDir (files[i], filePaths, extensionsRegex, recursive);}
+            else {
+                String path = files[i].getCanonicalPath();
+                if (path.matches(extensionsRegex)) filePaths.add(path);
+            }
+        }
+        return filePaths;
+    }
+
+    /**
+     * Converts a list of paths into a list of file urls for the form:
+     * file://dir/file.ext
+     * @param filePaths List
+     * @return List of  File.getCanonicalPath() strings
+     * @throws MalformedURLException
+     */
+    public List toFileURLs (List filePaths) throws MalformedURLException {
+      List urls = new ArrayList();
+      ListIterator it = filePaths.listIterator();
+      while (it.hasNext()) {
+          urls.add(toFileURL(it.next().toString()));
+      }
+
+      return urls;
+    }
+
+    /**
+     * Converts a file path into a list of file urls for the form:
+     * file://dir/file.ext
+     * @param path String ( File.getCanonicalPath())
+     * @return URL
+     * @throws MalformedURLException
+     */
+    public static URL toFileURL(String path) throws MalformedURLException {
+        path = path.replace(File.separatorChar, '/');
+        if (!path.startsWith("/")) { path = "/" + path;}
+        return new URL("file://" + path);
+    }
+
+
     // Contributed by Sanjay Dahiya
 
     public static final int BUF_SIZE = 50000;
@@ -582,7 +643,7 @@ public class FileSystem {
      * Copies an <code>InputStream</code> to an <code>OutputStream</ code> using
      * a global internal buffer for performance. Compared to {@link
      * #fCopy(InputStream, OutputStream)} this method generated no garbage, but
-     * 
+     *
      * decreases concurrency.
      *
      * All streams are closed afterwards.
