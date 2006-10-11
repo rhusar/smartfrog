@@ -35,19 +35,19 @@ SystemPropertiesSchema extends Schema {
     properties extends Vector;
     
     setOnStartup extends Boolean{
-      description "should these properties be set when the component starts"
+      description "should these properties be set when the component starts";
     }
 
     setOnEarlyDeploy extends Boolean {
-      description "should these properties be set very early on in the deploy process"
+      description "should these properties be set very early on in the deploy process";
     }
 
     setOnDeploy extends Boolean{
-      description "should these properties be set when the component is deployed"
+      description "should these properties be set when the component is deployed";
     }
     
     unsetOnTerminate extends Boolean {
-      description "should these properties be unset during termination (Java1.5 only)"
+      description "should these properties be unset during termination (Java1.5 only)";
     }
 
 }
