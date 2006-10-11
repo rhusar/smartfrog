@@ -9,5 +9,5 @@ if defined SFHOME goto continue1
 
 call "%SFHOME%\bin\setSFProperties"
 
-%SFJVM% org.smartfrog.services.management.SFDeployDisplay %1 %2 %3 %4 %5 %6 %7 %8
+%SFJVM% %SFCMDPARAMETERS% org.smartfrog.services.management.SFDeployDisplay %1 %2 %3 %4 %5 %6 %7 %8
 endlocal
