@@ -48,8 +48,8 @@ import org.smartfrog.sfcore.workflow.eventbus.EventCompoundImpl;
  */
 public class Try extends EventCompoundImpl implements Compound {
 
-    int currentRetries = 0;
-    boolean primary = true;
+    private int currentRetries = 0;
+    private boolean primary = true;
 
     /**
      * Constructs Try.
@@ -85,39 +85,51 @@ public class Try extends EventCompoundImpl implements Compound {
         sfCreateNewChild(sfCompleteNameSafe()+"_tryActionRunning", action, null);
     }
 
+
     /**
-     * Terminates the component. It is invoked by sub-components on
-     * termination. If it is the primary, find the follow-on component and
-     * deploy. If it is not the primary, terminate propagating the termination
-     * type.
-     *
-     * @param status termination status of sender
-     * @param comp sender of termination
+     * Handle child termination.
+     * Try behaviour for the primary child termination is
+     * <ol>
+     * <li> find the follow-on component and deploy</li>
+     * <li> If starting the next component raised an error, terminate abnormally</li>
+     * </ol>
+     * Abnormal child terminations are relayed up.
+     * @param status exit record of the component
+     * @param comp child component that is terminating
+     * @return true whenever a child component is not started
      */
-    public void sfTerminatedWith(TerminationRecord status, Prim comp) {
-        if (sfContainsChild(comp)) {
-            if (primary) {
-                primary = false; // next call is not from the primary.
+    protected boolean onChildTerminated(TerminationRecord status, Prim comp) {
+        //get and reset the primary flag in a thread safe manner. 
+        boolean isPrimary;
+        synchronized(this) {
+            isPrimary=primary;
+            primary=false;
+        }
+        if (isPrimary) {
 
-                try {
-                    sfRemoveChild(comp);
-                    if (sfLog().isDebugEnabled()){
-                        sfLog().debug("Try carrying out nextAction for status '"+status.errorType+"'");
-                    }
-                    ComponentDescription nextAction = (ComponentDescription) sfResolve(status.errorType);
-                    if (sfLog().isDebugEnabled()){
-                        sfLog().debug("Try carrying out \n"+nextAction+" for status "+status.errorType);
-                    }
-                    sfCreateNewChild(name + "_"+status.errorType+"TryActionRunning", nextAction, null);
-
-                } catch (Exception e) {
-                    String message = "error in starting follow-on component for '"+status.errorType+"' try action";
-                    if (sfLog().isErrorEnabled()){ sfLog().error(message,e); }
-                    sfTerminate(TerminationRecord.abnormal(message, name));
+            try {
+                sfRemoveChild(comp);
+                if (sfLog().isDebugEnabled()) {
+                    sfLog().debug("Try carrying out nextAction for status '" + status.errorType + "'");
                 }
-            } else {
-                sfTerminate(status);
+                ComponentDescription nextAction = (ComponentDescription) sfResolve(status.errorType);
+                if (sfLog().isDebugEnabled()) {
+                    sfLog().debug("Try carrying out \n" + nextAction + " for status " + status.errorType);
+                }
+                sfCreateNewChild(name + "_" + status.errorType + "TryActionRunning", nextAction, null);
+                return false;
+
+            } catch (Exception e) {
+                String message = "error in starting follow-on component for '" + status.errorType + "' try action";
+                if (sfLog().isErrorEnabled()) {
+                    sfLog().error(message, e);
+                }
+                sfTerminate(TerminationRecord.abnormal(message, name));
+                return false;
             }
+        } else {
+            //not the primary
+            return true;
         }
     }
 }

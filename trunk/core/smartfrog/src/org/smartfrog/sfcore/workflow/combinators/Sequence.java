@@ -106,51 +106,66 @@ public class Sequence extends EventCompoundImpl implements Compound {
             }
     }
 
+
     /**
-     * Terminates the component. It is invoked by sub-components on
-     * termination. If normal termiantion, Sequence
-     * behaviour is to start the next component if it is the last - terminate
-     * normally. if an erroneous termination - terminate immediately passing
-     * on the error
-     *
-     * @param status termination status of sender
-     * @param comp sender of termination
+     * Handle child termination.
+     * Sequence behaviour for a normal child termination is
+     * <ol>
+     * <li> to start the next component.</li>
+     * <li> if it is the last - terminate normally. </li>
+     * <li> If starting the next component raised an error, terminate abnormally</li>
+     * </ol>
+     * Abnormal child terminations are relayed up.
+     * @param status exit record of the component
+     * @param comp child component that is terminating
+     * @return true whenever a child component is not started
      */
-    public void sfTerminatedWith(TerminationRecord status, Prim comp) {
-        if (sfContainsChild(comp)) {
-            try {
-                if (status.isNormal()) {
-                    if (actionKeys.hasMoreElements()) {
-                        sfRemoveChild(comp);
-                        String componentName = (String)actionKeys.nextElement();
-                        if (sfLog().isDebugEnabled()){
-                            sfLog().debug( "starting next component '"+componentName+"' in sequence "+ name.toString());
-                        }
-                        ComponentDescription act = (ComponentDescription) actions.get(componentName);
-                        sfCreateNewChild(componentName, act, null);
-                    } else {
-                        // Sequence terminates if there are no more sub-components
-                        //log message
-                        if (sfLog().isDebugEnabled()){
-                            sfLog().debug("no more components for sequence "+ name.toString());
-                        }
-                        sfTerminate(TerminationRecord.normal(name));
+    protected boolean onChildTerminated(TerminationRecord status, Prim comp) {
+        boolean forward = true;
+        if (status.isNormal()) {
+
+            if (actionKeys.hasMoreElements()) {
+                try {
+                    sfRemoveChild(comp);
+                    String componentName = (String) actionKeys.nextElement();
+                    if (sfLog().isDebugEnabled()) {
+                        sfLog().debug(
+                                "starting next component '" + componentName + "' in sequence " + name.toString());
                     }
-                } else {
-                    if (sfLog().isErrorEnabled()){
-                      sfLog().error(name+ "- error in previous sequenced component, aborting. "  + " parent:" + sfParent().sfCompleteName(),
-                          SmartFrogException.forward(status.cause),
-                          status);
+                    ComponentDescription act = (ComponentDescription) actions.get(componentName);
+                    sfCreateNewChild(componentName, act, null);
+                    //do not forward the event
+                    forward = false;
+                } catch (Exception e) {
+                    //oops, something went wrong
+                    if (sfLog().isErrorEnabled()) {
+                        sfLog().error(name + " - error in starting next component ", e);
                     }
-                    super.sfTerminatedWith(status, comp);
+                    TerminationRecord tr = TerminationRecord
+                            .abnormal("error in starting next component: exception " + e, name, e);
+                    sfTerminate(tr);
+                    //we've triggered an abnormal shutdown, so no forwarding of the earlier event
+                    forward = false;
                 }
-            } catch (Exception e) {
-              if (sfLog().isErrorEnabled()) {
-                sfLog().error(name + " - error in starting next component ", e);
-              }
-              TerminationRecord tr = TerminationRecord.abnormal( "error in starting next component: exception " + e, name,e);
-              sfTerminate(tr);
+
+            } else {
+                // Sequence terminates if there are no more sub-components
+                //log message
+                if (sfLog().isDebugEnabled()) {
+                    sfLog().debug("no more components for sequence " + name.toString());
+                }
+                forward = true;
             }
+        } else {
+            //abnormal terminations
+            if (sfLog().isErrorEnabled()) {
+                sfLog().error(name + "- error in previous sequenced component, aborting. ",
+                        SmartFrogException.forward(status.cause),
+                        status);
+            }
+            forward = true;
         }
+        return forward;
     }
+
 }

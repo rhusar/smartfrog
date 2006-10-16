@@ -25,8 +25,8 @@ import org.smartfrog.sfcore.common.SmartFrogLivenessException;
 import org.smartfrog.sfcore.logging.LogSF;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.TerminationRecord;
-import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.workflow.eventbus.EventCompoundImpl;
+import org.smartfrog.sfcore.workflow.combinators.DelayedTerminator;
 import org.smartfrog.sfcore.utils.ComponentHelper;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 
@@ -37,22 +37,23 @@ import java.rmi.RemoteException;
  */
 
 public class TestCompoundImpl extends EventCompoundImpl implements TestCompound {
-    protected ComponentDescription teardownCD;
-    protected Prim teardown;
+    private ComponentDescription teardownCD;
+    private Prim teardown;
 
-    protected ComponentDescription testsCD;
-    protected Prim tests;
+    private ComponentDescription tests;
+    private Prim testsPrim;
 
     protected static final String ACTION_RUNNING = "_actionRunning";
-    protected long undeployAfter;
-    protected boolean expectTerminate;
-    protected DelayedTerminator actionTerminator;
-    protected DelayedTerminator testsTerminator;
-    protected Prim actionPrim;
-    protected boolean terminating=false;
-    protected String exitType;
+    protected static final String TESTS_RUNNING = "_testsRunning";
+    private long undeployAfter;
+    private long testTimeout;
+    private boolean expectTerminate;
+    private DelayedTerminator actionTerminator;
+    private DelayedTerminator testsTerminator;
+    private Prim actionPrim;
+    private String exitType;
 
-    protected String exitText;
+    private String exitText;
     /**
      * The message of a forced shutdown. This is important, as we look for
      * it when the component is terminated, and can use its presence to infer
@@ -78,15 +79,13 @@ public class TestCompoundImpl extends EventCompoundImpl implements TestCompound 
         super.sfDeploy();
         checkActionDefined();
         name = sfCompleteNameSafe();
-        testsCD = sfResolve(ATTR_TESTS, testsCD, false);
-        if (testsCD != null) {
-            throw new SmartFrogException("Not yet supported " + ATTR_TESTS);
-        }
+        tests = sfResolve(ATTR_TESTS, tests, false);
+        testTimeout = sfResolve(ATTR_TEST_TIMEOUT, 0L, true);
         teardownCD = sfResolve(ATTR_TEARDOWN, teardownCD, false);
         if (teardownCD != null) {
             throw new SmartFrogException("Not yet supported " + ATTR_TEARDOWN);
         }
-        undeployAfter = sfResolve(ATTR_UNDEPLOY_AFTER, 0,true);
+        undeployAfter = sfResolve(ATTR_UNDEPLOY_AFTER, 0L,true);
         expectTerminate = sfResolve(ATTR_EXPECT_TERMINATE,false,true);
         exitType = sfResolve(ATTR_EXIT_TYPE,exitType,true);
         exitText = sfResolve(ATTR_EXIT_TEXT, exitText, true);
@@ -134,9 +133,15 @@ public class TestCompoundImpl extends EventCompoundImpl implements TestCompound 
         }
 
         //now deploy the tests.
-        //these are expected to pass
+        //any failure in tests is something to report, as is any failure of the tests to finish.
 
-
+        if(tests !=null) {
+            testsPrim = sfCreateNewChild(TESTS_RUNNING, tests, null);
+            //the test terminator reports a termination as a failure
+            testsTerminator = new DelayedTerminator(testsPrim, testTimeout, logSF,
+                    FORCED_TERMINATION,
+                    false);
+        }
     }
 
     /**
@@ -162,37 +167,51 @@ public class TestCompoundImpl extends EventCompoundImpl implements TestCompound 
         if(actionPrim!=null) {
             sfPingChildAndTerminateOnFailure(actionPrim);
         }
-        if (tests != null) {
-            sfPingChildAndTerminateOnFailure(tests);
+        if (testsPrim != null) {
+            sfPingChildAndTerminateOnFailure(testsPrim);
         }
     }
 
     public synchronized void sfTerminateWith(TerminationRecord status) {
-        terminating=true;
         super.sfTerminateWith(status);
-        if (actionTerminator!=null) {
-            //shut down the action terminator if we need to. We assume the superclass
-            //terminator is already terminating the children, so there is no need
-            //to tell the action terminator to do it.
-            try {
-                actionTerminator.shutdown(false);
-            } catch (RemoteException e) {
-                sfLog().error("When shutting down the action terminator",e);
-            }
-        }
+        shutdown(actionTerminator);
+        shutdown(testsTerminator);
     }
 
     /**
-     * Called when a child terminates, either normally or abnormally.
-     * @param status
-     * @param comp
+     * shut down the action terminator if we need to. We assume the superclass
+     * terminator is already terminating the children, so there is no need
+     * to tell the action terminator to do it. Therefore, this should only be called
+     * from sfTerminateWith
+     *
+     * @param terminator
      */
-    public void sfTerminatedWith(TerminationRecord status, Prim comp) {
-
-        if (terminating) {
-            super.sfTerminatedWith(status,comp);
-            return;
+    private void shutdown(DelayedTerminator terminator) {
+        if (terminator !=null) {
+                terminator.shutdown(false);
         }
+    }
+
+
+    /**
+     * This is an override point; it is where subclasses get to change their workflow
+     * depending on what happens underneath.
+     * It is only called outside of component termination, i.e. when {@link #isWorkflowTerminating()} is
+     * false, and when the comp parameter is a child, that is <code>sfContainsChild(comp)</code> holds.
+     * If the the method returns true, the event is forwarded up the object heirarchy, which
+     * will eventually trigger a component termination.
+     * <p/>
+     * Always return false if you start new components from this method!
+     * </p>
+     *
+     * @param status exit record of the component
+     * @param comp   child component that is terminating
+     * @return true if the termination event is to be forwarded up the chain.
+     */
+    protected boolean onChildTerminated(TerminationRecord status, Prim comp) {
+        boolean forward=true;
+        boolean tearDownTime=false;
+        TerminationRecord error=null;
         if (actionPrim == comp) {
             if (actionTerminator.isForcedShutdown() && expectTerminate == false) {
                 //this is a forced shutdown, all is well
@@ -227,15 +246,45 @@ public class TestCompoundImpl extends EventCompoundImpl implements TestCompound 
                             + "and error text " + exitText + "\n"
                             + "but got " + status;
                     sfLog().error(errorText);
-                    status = TerminationRecord.abnormal(errorText, status.id);
+                    error = TerminationRecord.abnormal(errorText, status.id);
                 }
             }
+            tearDownTime=true;
+        } else if(comp == testsPrim) {
+            //tests are terminating.
+            //it is an error if these terminated abnormally, for any reason at all.
+            //that is: test failure triggers an undeployment.
+            //There is no need to check this, because its implicit.
+            if(!status.isNormal()) {
+                sfLog().info("Tests have failed");
+            }
+            tearDownTime=true;
         }
-        //TODO: start teardown, etc.
 
-        //trigger workflow termination.
-        new ComponentHelper(this).sfSelfDetachAndOrTerminate(status);
+        //start teardown, etc.
+        //kicks in on normal abnormal ter
+        if(tearDownTime && teardownCD!=null) {
+            try {
+                sfCreateNewChild(name + "_teardownRunning", teardownCD, null);
+                forward = false;
+            } catch (Exception e) {
+                error = TerminationRecord.abnormal("failed to start teardown",
+                        name,e);
+            }
+        }
+
+        //if the error record is non null, terminate ourselves with the new record
+        if (error != null) {
+            sfTerminate(error);
+            //dont forward, as we are terminating with an error
+            forward = false;
+        }
+        //trigger termination.
+        return forward;
     }
+
+
+
 
     protected Prim deployAction() throws RemoteException, SmartFrogDeploymentException {
         Prim child = sfCreateNewChild(ACTION_RUNNING, action, null);

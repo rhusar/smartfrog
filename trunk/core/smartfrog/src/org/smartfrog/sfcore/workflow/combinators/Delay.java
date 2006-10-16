@@ -46,43 +46,34 @@ import org.smartfrog.sfcore.workflow.eventbus.EventCompoundImpl;
  * may be passed to Delay.
  * </p>
  */
-public class Delay
-    extends EventCompoundImpl implements Compound {
+public class Delay extends EventCompoundImpl implements Compound, Runnable {
     protected static final String ATTR_TIME = "time";
     /**
      * Reference for attribute time
      */
     static Reference timeRef = new Reference(ATTR_TIME);
-    /**
-     * ComponentDescription
-     */
-    ComponentDescription action;
 
     /**
      * Time taken.
      */
-    int time;
-    /**
-     * Name of the component.
-     */
-    Reference name;
+    private int time;
 
     /**
      * Timer thread.
      */
-    Thread timer;
+    private volatile Thread timer;
 
     /**
      * Indication that the component has been terminated before the time fires
      */
-    private boolean terminated = false;
+    private volatile boolean terminated = false;
 
     /**
      * Constructs Delay object.
      *
      * @throws java.rmi.RemoteException In case of RMI or network failure.
      */
-    public Delay() throws java.rmi.RemoteException {
+    public Delay() throws RemoteException {
         super();
     }
 
@@ -99,7 +90,6 @@ public class Delay
         super.sfDeploy();
         checkActionDefined();
         time = ((Integer)sfResolve(timeRef)).intValue();
-        name = sfCompleteNameSafe();
     }
 
     /**
@@ -112,50 +102,68 @@ public class Delay
     public synchronized void sfStart() throws SmartFrogException,
         RemoteException {
         super.sfStart();
-        timer = new Thread(new Runnable() {
-            public void run() {
-                if (time>0) {
-                    try {
-                        Thread.sleep(time);
-                    } catch (Exception e) {
-                        // ignore
-                    }
-                    if (!terminated) {
-                        try {
-                            synchronized (this) {
-                                (Delay.this).sfCreateNewChild(name+"_actionRunning", action, null);
-                            }
-                        } catch (Exception e) {
-                            (Delay.this).sfTerminate(TerminationRecord.abnormal(
-                                "error in launching delayed component", null));
-                        }
-                    }
-                }
-            }
-        });
+        timer = new Thread(this);
         timer.start();
     }
 
+
     /**
-     * Terminates the component. It is invoked by sub-components at
-     * termination. If normal termination, Delay behaviour is to terminate
-     * normally, otherwise abnormally.
+     * If normal termination, Parallel behaviour is to terminate
+     * that component but leave the others running if it is the last -
+     * terminate normally. if an erroneous termination -
+     * terminate immediately passing on the error
      *
-     * @param status termination status of sender
-     * @param comp sender of termination
+     *
+     * @param status exit record of the component
+     * @param comp   child component that is terminating
+     * @return true if the termination event is to be forwarded up the chain.
      */
-    public synchronized void sfTerminatedWith(TerminationRecord status,
-                                              Prim comp) {
-        if (sfContainsChild(comp)) {
-            if (timer!=null) {
+    protected boolean onChildTerminated(TerminationRecord status, Prim comp) {
+        killTimer();
+        return true;
+    }
+
+    /**
+     * kill the timer.
+     */
+    private void killTimer() {
+        //copy
+        Thread t;
+        //copy so that even if the timer nulls itself during termination, the cached reference is
+        //still held.
+        t = timer;
+        if (t!=null) {
+            terminated = true;
+            t.interrupt();
+        }
+    }
+    
+
+    /**
+     * This routine runs in the background thread; it sleeps until its time is up
+     */
+    public void run() {
+        try {
+            if (time > 0) {
                 try {
-                    terminated = true;
-                    timer.interrupt();
-                } catch (Exception e) {
-                    //ignore
+                    Thread.sleep(time);
+                } catch (InterruptedException ignored) {
+                    // ignore
                 }
             }
-            sfTerminate(status);
+            synchronized (this) {
+                if (!terminated && !isWorkflowTerminating()) {
+                    try {
+                        sfCreateNewChild(name + "_actionRunning", action, null);
+                    } catch (Exception e) {
+                        sfTerminate(TerminationRecord.abnormal(
+                                "error in launching delayed component", name, e));
+                    }
+                }
+            }
+        } finally {
+            //now, cease to exit.
+            timer = null;
         }
     }
 }

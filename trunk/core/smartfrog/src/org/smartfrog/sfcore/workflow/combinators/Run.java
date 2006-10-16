@@ -72,13 +72,13 @@ public class Run extends EventCompoundImpl implements Compound {
      String name for attribute. Value {@value} or parent.*/
     final static String ATTR_DEPLOYER = "newComponentDeployer";
 
-    Compound parent=null;
+    private Compound parent=null;
 
-    String newComponentName=null;
+    private String newComponentName=null;
 
-    Compound newComponentDeployer = null;
+    private Compound newComponentDeployer = null;
 
-    ComponentDescription newComponentCD = null;
+    private ComponentDescription newComponentCD = null;
 
     /**
      * Constructs Run.

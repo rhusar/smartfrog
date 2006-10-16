@@ -30,6 +30,7 @@ import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.compound.Compound;
 import org.smartfrog.sfcore.compound.CompoundImpl;
 import org.smartfrog.sfcore.prim.TerminationRecord;
+import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.common.TerminatorThread;
 import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
@@ -235,10 +236,83 @@ public class EventCompoundImpl extends CompoundImpl implements EventBus,
     }
 
     /**
-     * Deregisters from all current registrations.
+     * Handle notifications of termination
      *
-     * @param status Termination  Record
+     * @param status termination status of sender
+     * @param comp sender of termination
      */
+    public void sfTerminatedWith(TerminationRecord status, Prim comp) {
+        boolean forward;
+        if (isWorkflowTerminating()) {
+            //during termination, always forward
+            forward = onWorkflowTerminating(status, comp);
+        } else {
+            //check to see what the subclass wants
+            if (sfContainsChild(comp)) {
+                forward = onChildTerminated(status, comp);
+            } else {
+                forward = onNonChildTerminated(status, comp);
+            }
+        }
+        if (forward) {
+            super.sfTerminatedWith(status, comp);
+        }
+    }
+
+    /**
+     * This is an override point to handle full component terminations.
+     * It is only called during component termination, i.e. when {@link #isWorkflowTerminating()} is
+     * true.
+     * <p>
+     * Normally this should return true. If it returns false, then the termination process may
+     * not go through cleanly.
+     * </p>
+     * @param status exit record of the component
+     * @param comp child component that is terminating
+     * @return true if the termination event is to be forwarded up the chain.
+     */
+
+    protected boolean onWorkflowTerminating(TerminationRecord status, Prim comp) {
+        return true;
+    }
+
+    /**
+    * This is an override point; it is where subclasses get to change their workflow
+    * depending on what happens underneath.
+    * It is only called outside of component termination, i.e. when {@link #isWorkflowTerminating()} is
+    * false, and when the comp parameter is a child, that is <code>sfContainsChild(comp)</code> holds.
+    * If the the method returns true, the event is forwarded up the object heirarchy, which
+    * will eventually trigger a component termination.
+    * <p>
+    * Always return false if you start new components from this method!
+    * </p>
+    * @param status exit record of the component
+    * @param comp child component that is terminating
+    * @return true if the termination event is to be forwarded up the chain.
+    */
+    protected boolean onChildTerminated(TerminationRecord status, Prim comp) {
+        return true;
+    }
+
+    /**
+     * This is an override point; it is where subclasses get to change their workflow
+     * depending on what happens underneath.
+     * It is only called outside of component termination, i.e. when {@link #isWorkflowTerminating()} is
+     * false, and when <code>sfContainsChild(comp)</code> is false.
+     * It is not normally overridden, but is there to provide complete coverage.
+     * @param status exit record of the component
+     * @param comp   non-child component that is terminating
+     * @return true if the termination event is to be forwarded up the chain.
+     */
+    protected boolean onNonChildTerminated(TerminationRecord status, Prim comp) {
+        return true;
+    }
+
+    /**
+    * Deregisters from all current registrations.
+    *
+    * @param status Termination  Record
+    */
     public synchronized void sfTerminateWith(TerminationRecord status) {
         /* unregister from all remote registrations */
         for (Enumeration e = receiveFrom.elements(); e.hasMoreElements();) {
@@ -262,5 +336,13 @@ public class EventCompoundImpl extends CompoundImpl implements EventBus,
         RemoteException {
 
         sfResolve(actionRef, true);
+    }
+
+    /**
+     * A synchronized check for termination
+     * @return true iff the workflow component is terminating or is already terminated
+     */
+    protected synchronized boolean isWorkflowTerminating() {
+        return sfIsTerminated() || sfIsTerminating();
     }
 }

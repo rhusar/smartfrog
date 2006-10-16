@@ -1,0 +1,195 @@
+/** (C) Copyright 2006 Hewlett-Packard Development Company, LP
+
+ This library is free software; you can redistribute it and/or
+ modify it under the terms of the GNU Lesser General Public
+ License as published by the Free Software Foundation; either
+ version 2.1 of the License, or (at your option) any later version.
+
+ This library is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ Lesser General Public License for more details.
+
+ You should have received a copy of the GNU Lesser General Public
+ License along with this library; if not, write to the Free Software
+ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+ For more information: www.smartfrog.org
+
+ */
+package org.smartfrog.services.assertions;
+
+import org.smartfrog.sfcore.prim.TerminationRecord;
+import org.smartfrog.sfcore.prim.Prim;
+import org.smartfrog.sfcore.workflow.eventbus.EventCompoundImpl;
+import org.smartfrog.sfcore.workflow.combinators.DelayedTerminator;
+import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
+import org.smartfrog.sfcore.utils.ComponentHelper;
+
+import java.rmi.RemoteException;
+
+/**
+ * created 13-Oct-2006 16:46:44
+ */
+
+public class TestBlockImpl extends EventCompoundImpl implements TestBlock {
+
+
+    private volatile boolean finished=false;
+    private volatile boolean failed = false;
+    private volatile boolean succeeded = false;
+    private volatile boolean forcedTimeout = false;
+    private volatile TerminationRecord status;
+    private DelayedTerminator actionTerminator;
+    private volatile Prim child;
+    public static final String ERROR_STARTUP_FAILURE = "Failed to start up action";
+
+    public TestBlockImpl() throws RemoteException {
+    }
+
+    /**
+     * Return true iff the component is finished.
+     * Spin on this, with a (delay) between calls
+     *
+     * @return
+     */
+    public boolean isFinished() {
+        return finished;
+    }
+
+    /**
+     * @return true only if the test has finished and failed
+     */
+    public boolean isFailed() {
+        return failed;
+    }
+
+    /**
+     * @return true iff the test succeeded
+     */
+
+    public boolean isSucceeded() {
+        return succeeded;
+    }
+
+    /**
+     * Get the exit record
+     *
+     * @return the exit record, will be null for an unfinished child
+     */
+    public TerminationRecord getStatus() {
+        return status;
+    }
+
+    /**
+     * return the current action
+     * @return the child component. this will be null after termination.
+     */
+    public Prim getAction() {
+        return child;
+    }
+
+
+    /**
+     * Registers components referenced in the SendTo sub-component registers
+     * itself with components referenced in the RegisterWith sub-component.
+     *
+     * @throws java.rmi.RemoteException In case of network/rmi error
+     * @throws org.smartfrog.sfcore.common.SmartFrogDeploymentException
+     *                                  In case of any error while
+     *                                  deploying the component
+     */
+    public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
+        super.sfDeploy();
+        checkActionDefined();
+    }
+
+
+    /**
+     * Starts the compound. This sends a synchronous sfStart to all managed
+     * components in the compound context. Any failure will cause the compound
+     * to terminate
+     *
+     * @throws org.smartfrog.sfcore.common.SmartFrogException
+     *                                  failed to start compound
+     * @throws java.rmi.RemoteException In case of Remote/nework error
+     */
+    public synchronized void sfStart() throws SmartFrogException, RemoteException {
+        super.sfStart();
+        long timeout = sfResolve(ATTR_TIMEOUT,0L,true);
+        try {
+            child=sfCreateNewChild(ACTION,action, null);
+            if(timeout>0) {
+                actionTerminator=new DelayedTerminator(child, timeout, sfLog(),"timeout",false );
+            }
+        } catch (RemoteException e) {
+            startupException(e);
+        } catch (SmartFrogDeploymentException e) {
+            startupException(e);
+        }
+    }
+
+    /**
+     * turn a startup exception into a cleaner exit
+     * @param e exception
+     */
+    private void startupException(Exception e) {
+        //this is called if we failed during startup
+        TerminationRecord fault = TerminationRecord.abnormal(ERROR_STARTUP_FAILURE, name, e);
+        end(fault);
+    }
+
+    /**
+     * log the end of the event. This may trigger workflow termination.
+     * does nothing if finished==true.
+     * @param record
+     */
+    private synchronized void end(TerminationRecord record) {
+        if(finished) {
+            //non-reentrant
+            return;
+        }
+        finished=true;
+        status = record;
+        succeeded=record.isNormal();
+        failed=!succeeded;
+        if(actionTerminator!=null) {
+            //test to see if the terminator caused the shutdown
+            forcedTimeout = actionTerminator.isForcedShutdown();
+            //and terminate it quietly too.
+            actionTerminator.shutdown(false);
+            actionTerminator = null;
+        }
+        //this can trigger a shutdown if we want it
+        new ComponentHelper(this).sfSelfDetachAndOrTerminate(record);
+    }
+
+
+    /**
+     * This is an override point; it is where subclasses get to change their workflow
+     * depending on what happens underneath.
+     * It is only called outside of component termination, i.e. when {@link #isWorkflowTerminating()} is
+     * false, and when the comp parameter is a child, that is <code>sfContainsChild(comp)</code> holds.
+     * If the the method returns true, the event is forwarded up the object heirarchy, which
+     * will eventually trigger a component termination.
+     * <p/>
+     * Always return false if you start new components from this method!
+     * </p>
+     *
+     * @param status exit record of the component
+     * @param comp   child component that is terminating
+     * @return true if the termination event is to be forwarded up the chain.
+     */
+    protected boolean onChildTerminated(TerminationRecord status, Prim comp) {
+        if(comp==child) {
+            //this is the action terminating, so log the closure and continue
+            end(status);
+            return false;
+        } else {
+            //something unknown
+            return true;
+        }
+    }
+
+}

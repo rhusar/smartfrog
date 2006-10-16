@@ -47,23 +47,24 @@ public class FireBreak extends Parallel implements Compound {
     }
 
 
+
     /**
-     * It is invoked by sub-components at termination.
      * It simply detaches itself from its parent and then terminates
      *
-     * @param status termination status of sender
-     * @param comp sender of termination
+     *
+     * @param status exit record of the component
+     * @param comp   child component that is terminating
+     * @return true if the termination event is to be forwarded up the chain.
      */
-    public void sfTerminatedWith(TerminationRecord status, Prim comp) {
-        if (sfContainsChild(comp)) {
-            try {
-                sfDetachAndTerminate(status);
-            } catch (Exception e) {
-                if (sfLog().isErrorEnabled()) {
-                    sfLog().error(this.sfCompleteNameSafe()+ " - error handling child termination ", e);
-                }
+    protected boolean onChildTerminated(TerminationRecord status, Prim comp) {
+        try {
+            sfDetachAndTerminate(status);
+        } catch (Exception e) {
+            if (sfLog().isErrorEnabled()) {
+                sfLog().error(sfCompleteNameSafe() + " - error handling child termination ", e);
             }
         }
+        return false;
     }
 
 
@@ -84,7 +85,7 @@ public class FireBreak extends Parallel implements Compound {
         } else {
             try {
                 sfDetachAndTerminate(TerminationRecord.abnormal("liveness error", sfCompleteNameSafe(), failure));
-            } catch (Exception e) {
+            } catch (Exception ignored) {
             }
         }
     }

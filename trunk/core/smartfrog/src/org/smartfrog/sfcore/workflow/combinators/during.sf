@@ -21,6 +21,17 @@ For more information: www.smartfrog.org
 
 During extends ActionCompound {
     sfClass "org.smartfrog.sfcore.workflow.combinators.During";
-    // action ...
+    duringSchema extends Schema {
+      time extends Integer {
+        description  ##time in milliseconds to delay terminating the component.
+          If less than zero, is set to MAX_INT.
+          If zero, there is no delay #;
+        }
+    }
+
+    /**
+     * initial time is zero
+    */
+
     time 0;
 }

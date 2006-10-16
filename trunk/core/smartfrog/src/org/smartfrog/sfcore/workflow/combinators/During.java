@@ -57,15 +57,12 @@ public class During extends EventCompoundImpl implements Compound {
     /**
      * Time taken.
      */
-    int time;
+    private int time;
+
     /**
-     * Timer thread.
+     * Terminator thread
      */
-    Thread timer;
-
-    boolean abortTimer = false;
-
-    String name = "";
+    private DelayedTerminator terminator;
 
     /**
      * Constructs During.
@@ -100,44 +97,77 @@ public class During extends EventCompoundImpl implements Compound {
      */
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
-        name = sfCompleteNameSafe().toString();
-        Runnable terminator = new Runnable() {
-          public void run() {
-              if (sfLog().isDebugEnabled()) { sfLog().debug("Timer set:" +time+". Going to sleep "+name);}
-              if (time > 0) {
-                try { Thread.sleep(time);  } catch (Exception ex) { if (abortTimer) return; }
-                String terminationMessage = "Timer '"+time+"' expired. Terminating "+name;
-                if (sfLog().isDebugEnabled()) { sfLog().debug(terminationMessage);}
-                sfTerminate(new TerminationRecord(TerminationRecord.NORMAL, terminationMessage , null));
-              }
-          }
-        };
-        timer = new Thread(terminator);
-        timer.setName(name+"_DuringTerminator");
-        timer.start();
-
+        terminator=new DelayedTerminator(this,time,sfLog(), name + "_DuringTerminator",true);
+        terminator.start();
         sfCreateNewChild(name+"_duringActionRunning", action, null);
     }
 
-    /**
-     * Terminates the component. This is invoked by sub-components on
-     * termination. If normal termiantion, Timeout behaviour is to terminate
-     * normally, otherwise abnormally.
-     *
-     * @param status termination status of sender
-     * @param comp sender of termination
-     */
-    public void sfTerminatedWith(TerminationRecord status, Prim comp) {
-        if (sfContainsChild(comp)) {
-            if (timer != null) {
-                try {
-                    abortTimer=true;
-                    timer.interrupt();;
-                } catch (Exception e) {
-                }
-            }
 
-            sfTerminate(status);
+    /**
+     * Deregisters from all current registrations.
+     *
+     * @param status Termination  Record
+     */
+    public synchronized void sfTerminateWith(TerminationRecord status) {
+        super.sfTerminateWith(status);
+        killTimer();
+    }
+
+    /**
+     * Kill the timer if it is running. does nothing otherwise
+     */
+    private synchronized void killTimer() {
+        if (terminator != null) {
+            terminator.shutdown(false);
         }
     }
+
+
+    /**
+     * This is an override point; it is where subclasses get to change their workflow
+     * depending on what happens underneath.
+     * It is only called outside of component termination, i.e. when {@link #isWorkflowTerminating()} is
+     * false, and when the comp parameter is a child, that is <code>sfContainsChild(comp)</code> holds.
+     * If the the method returns true, the event is forwarded up the object heirarchy, which
+     * will eventually trigger a component termination.
+     * <p/>
+     * Always return false if you start new components from this method!
+     * </p>
+     *
+     * @param status exit record of the component
+     * @param comp   child component that is terminating
+     * @return true if the termination event is to be forwarded up the chain.
+     */
+    protected boolean onChildTerminated(TerminationRecord status, Prim comp) {
+        killTimer();
+        return true;
+    }
+
+/* this is the old runnable factored out to show what the logic was.
+   as of 3.10.0 it was broken to the extent that if time<= 0, the terminator
+   would not terminate the component.
+
+    private class DuringRunnable implements Runnable {
+
+        public void run() {
+            if (sfLog().isDebugEnabled()) {
+                sfLog().debug("Timer set:" + time + ". Going to sleep " + name);
+            }
+            if (time > 0) {
+                try {
+                    Thread.sleep(time);
+                } catch (InterruptedException e) {
+                    if (abortTimer) {
+                        return;
+                    }
+                }
+                String terminationMessage = "Timer '" + time + "' expired. Terminating " + name;
+                if (sfLog().isDebugEnabled()) {
+                    sfLog().debug(terminationMessage);
+                }
+                sfTerminate(new TerminationRecord(TerminationRecord.NORMAL, terminationMessage, null));
+            }
+        }
+    }
+    */
 }
