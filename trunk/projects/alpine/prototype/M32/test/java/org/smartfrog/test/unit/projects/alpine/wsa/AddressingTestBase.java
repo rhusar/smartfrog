@@ -32,7 +32,7 @@ import org.smartfrog.projects.alpine.wsa.AlpineEPR;
 public abstract class AddressingTestBase extends TestCase {
     protected AddressDetails details;
     public static final String ACTION = "action";
-    public static final String TO_URL = "http://example.org/ex";
+    public static final String TO_URL = "http://example.org/ex?name1=value1&name2=value2";
     protected AlpineEPR epr;
     protected SoapElement referenceParameters;
     protected MessageContext messageContext;
