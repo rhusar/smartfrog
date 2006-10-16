@@ -50,10 +50,10 @@ import org.smartfrog.sfcore.workflow.eventbus.EventCompoundImpl;
  * </p>
  */
 public class Timeout extends EventCompoundImpl implements Compound {
-    static Reference timeRef = new Reference("time");
-    int time;
-    Thread timer;
-    boolean terminated = false;
+    private static Reference timeRef = new Reference("time");
+    private int time;
+    private Thread timer;
+    private boolean terminated = false;
 
     /**
      * Constructs Timeout.
@@ -124,7 +124,8 @@ public class Timeout extends EventCompoundImpl implements Compound {
                 } catch (Exception e) {
                 }
             }
-            sfTerminate(status);
         }
+        //relay up to the super class
+        super.sfTerminatedWith(status, comp);
     }
 }

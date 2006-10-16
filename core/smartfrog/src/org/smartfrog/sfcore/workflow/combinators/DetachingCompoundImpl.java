@@ -43,29 +43,19 @@ public class DetachingCompoundImpl extends CompoundImpl implements DetachingComp
     /**
      * Name of the component.
      */
-    Reference name = null;
+    private Reference name = null;
     /**
      * Set to true if you want the compound to detach its children on start
      */
-    boolean detachDownwards;
+    private boolean detachDownwards;
     /**
      * Set to true if you want the compound to detach itself on start
      */
-    boolean detachUpwards;
+    private boolean detachUpwards;
     /**
-     * Set to true if you want the compound to terminate at the end of the
+     * Set to true if you want the compound to terminate at the end of the run
      */
-    boolean autoDestruct;
-    /**
-     * Flag to indicate terminate is called.
-     */
-    boolean terminateCalled = false;
-    /**
-     * A thread for lifecycle operations during the start phase
-     */
-    Thread detacher;
-
-    //  boolean normalDeath = true;
+    private boolean autoDestruct;
     /**
      * Constructs DetachingCompoundImpl.
      * @throws RemoteException if there is any network or RMI error
@@ -108,65 +98,70 @@ public class DetachingCompoundImpl extends CompoundImpl implements DetachingComp
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         try {
             super.sfStart();
-            detacher = new Thread(new Runnable() {
-                        public void run() {
-                            // detach this compound
-                            if (detachUpwards) {
-                                try {
-                                    sfDetach();
-                                } catch (SmartFrogException dex) {
-                                    sfTerminate(TerminationRecord.abnormal(
-                                            "DetachingCompound failed to detach ",
-                                            null));
-
-                                    return;
-                                } catch (RemoteException rex) {
-                                    sfTerminate(TerminationRecord.abnormal(
-                                            "DetachingCompound failed to detach due to remote exception",
-                                            null));
-
-                                    return;
-                                }
-                            }
-
-                            if (detachDownwards) {
-                                // detach all children
-                                for (Enumeration e = sfChildren();
-                                        e.hasMoreElements();) {
-                                    try {
-                                        ((Prim) e.nextElement()).sfDetach();
-                                    } catch (SmartFrogException remex) {
-                                        sfTerminate(TerminationRecord.abnormal(
-                                                "DetachingCompound failed to detach children",
-                                                null));
-
-                                        return;
-                                    } catch (RemoteException rex) {
-                                        sfTerminate(TerminationRecord.abnormal(
-                                                "DetachingCompound failed to detach children due to remote exception",
-                                                null));
-
-                                        return;
-                                    }
-                                }
-
-                                if (autoDestruct) {
-                                    try {
-                                        name = sfCompleteName();
-                                    } catch (Exception e) {
-                                    }
-
-                                    sfTerminate(TerminationRecord.normal(name));
-                                }
-                            }
-                        }
-                    });
+            Thread detacher = new Thread(new Detacher());
 
             if (detachDownwards || detachUpwards || autoDestruct) {
                 detacher.start();
             }
         } catch (Throwable t) { // catch throwable as user code is involved
              throw SmartFrogLifecycleException.sfDeploy("",t , this);
+        }
+    }
+
+    /**
+     * Non-static inner class to handle detachment
+     */
+    private class Detacher implements Runnable {
+        public void run() {
+            // detach this compound
+            if (detachUpwards) {
+                try {
+                    sfDetach();
+                } catch (SmartFrogException dex) {
+                    sfTerminate(TerminationRecord.abnormal(
+                            "DetachingCompound failed to detach ",
+                            null));
+
+                    return;
+                } catch (RemoteException rex) {
+                    sfTerminate(TerminationRecord.abnormal(
+                            "DetachingCompound failed to detach due to remote exception",
+                            null));
+
+                    return;
+                }
+            }
+
+            if (detachDownwards) {
+                // detach all children
+                for (Enumeration e = sfChildren();
+                        e.hasMoreElements();) {
+                    try {
+                        ((Prim) e.nextElement()).sfDetach();
+                    } catch (SmartFrogException remex) {
+                        sfTerminate(TerminationRecord.abnormal(
+                                "DetachingCompound failed to detach children",
+                                null));
+
+                        return;
+                    } catch (RemoteException rex) {
+                        sfTerminate(TerminationRecord.abnormal(
+                                "DetachingCompound failed to detach children due to remote exception",
+                                null));
+
+                        return;
+                    }
+                }
+
+                if (autoDestruct) {
+                    try {
+                        name = sfCompleteName();
+                    } catch (Exception e) {
+                    }
+
+                    sfTerminate(TerminationRecord.normal(name));
+                }
+            }
         }
     }
 }

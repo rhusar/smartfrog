@@ -45,9 +45,9 @@ import org.smartfrog.sfcore.workflow.eventbus.EventCompoundImpl;
  * details of the attributes which may be passed to Repeat.
  */
 public class Repeat extends EventCompoundImpl implements Compound {
-    static Reference retryRef = new Reference("repeat");
-    int repeat;
-    int currentRepeats = 1;
+    private static Reference retryRef = new Reference("repeat");
+    private int repeat;
+    private int currentRepeats = 1;
 
     /**
      * Constructs Repeat.
@@ -83,37 +83,32 @@ public class Repeat extends EventCompoundImpl implements Compound {
              (ComponentDescription) action.copy(), null);
     }
 
-    /**
-     * Terminates the component. It is invoked by sub-component on
-     * termination. If abnormal termination, Repeat
-     * behaviour is to terminate abnormally. On normal termination - repeat
-     * unless some count is reached, in which case terminate normally.
-     *
-     * @param status termination status of sender
-     * @param comp sender of termination
-     */
-    public void sfTerminatedWith(TerminationRecord status, Prim comp) {
-        if (sfContainsChild(comp)) {
+
+        /**
+         * If abnormal termination, Repeat
+         * behaviour is to terminate abnormally. On normal termination - repeat
+         * unless some count is reached, in which case terminate normally.
+         *
+         * @param status exit record of the component
+         * @param comp   child component that is terminating
+         * @return true if the termination event is to be forwarded up the chain.
+         */
+        protected boolean onChildTerminated(TerminationRecord status, Prim comp) {
+            boolean forward = true;
             try {
                 sfRemoveChild(comp);
-
                 if (status.isNormal()) {
                     if (currentRepeats++ < repeat) {
-                        sfCreateNewChild(name+"_actionRunning"+currentRepeats,
-					 (ComponentDescription) action.copy(), null);
-                    } else {
-                        //System.out.println("terminated correctly: reached number of repeat " + name.toString());
-                        sfTerminate(TerminationRecord.normal(name));
+                        sfCreateNewChild(name + "_actionRunning" + currentRepeats,
+                                (ComponentDescription) action.copy(), null);
+                        forward = false;
                     }
-                } else {
-                    //System.out.println("terminated incorrectly - failed" + name.toString());
-                    sfTerminate(TerminationRecord.abnormal(
-                            "sub-component abnormal failure", name));
                 }
             } catch (Exception e) {
                 sfTerminate(TerminationRecord.abnormal(
                         "error in restarting next component", name));
+                forward = false;
             }
+            return forward;
         }
-    }
 }

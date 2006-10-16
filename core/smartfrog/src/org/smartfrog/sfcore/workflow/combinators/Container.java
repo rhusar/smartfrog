@@ -47,8 +47,8 @@ public class Container extends Parallel implements Compound {
      * @throws java.rmi.RemoteException In case of network or RMI failure.
      */
     public Container() throws java.rmi.RemoteException {
-        super();
     }
+
 
     /**
      * It is invoked by sub-components at
@@ -57,17 +57,28 @@ public class Container extends Parallel implements Compound {
      * @param status termination status of sender
      * @param comp sender of termination
      */
-    public void sfTerminatedWith(TerminationRecord status, Prim comp) {
-        if (sfContainsChild(comp)) {
-            try {
-                sfRemoveChild(comp);
-            } catch (Exception e) {
-                if (sfLog().isErrorEnabled()) {
-                    sfLog().error(this.sfCompleteNameSafe()+ " - error handling child termination ", e);
-                }
+    /**
+     * If normal termination, Parallel behaviour is to terminate
+     * that component but leave the others running if it is the last -
+     * terminate normally. if an erroneous termination -
+     * terminate immediately passing on the error
+     *
+     *
+     * @param status exit record of the component
+     * @param comp   child component that is terminating
+     * @return true if the termination event is to be forwarded up the chain.
+     */
+    protected boolean onChildTerminated(TerminationRecord status, Prim comp) {
+        try {
+            sfRemoveChild(comp);
+        } catch (Exception e) {
+            if (sfLog().isErrorEnabled()) {
+                sfLog().error(this.sfCompleteNameSafe() + " - error handling child termination ", e);
             }
         }
+        return false;
     }
+
 
     /**
      * Handle ping failures. Default behavior is to terminate with a liveness

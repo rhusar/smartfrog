@@ -23,6 +23,7 @@ package org.smartfrog.sfcore.workflow.combinators;
 import java.rmi.RemoteException;
 import java.util.Enumeration;
 import java.util.Vector;
+import java.util.NoSuchElementException;
 
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
@@ -53,10 +54,10 @@ import org.smartfrog.sfcore.workflow.eventbus.EventCompoundImpl;
  */
 public class Parallel extends EventCompoundImpl implements Compound {
 
-    static Reference asynchCreateChildRef = new Reference ("asynchCreateChild");
+    private static Reference asynchCreateChildRef = new Reference ("asynchCreateChild");
 
-    boolean asynchCreateChild=false;
-    Vector asynchChildren = null;
+    private boolean asynchCreateChild=false;
+    private Vector asynchChildren = null;
 
     /**
      * Constructs Parallel.
@@ -99,7 +100,7 @@ public class Parallel extends EventCompoundImpl implements Compound {
             }
         } catch (Exception ex) {
             if (sfLog().isErrorEnabled()){
-              sfLog().error(this.sfCompleteNameSafe()+" - Failed to start sub-components ",ex);
+              sfLog().error(sfCompleteNameSafe()+" - Failed to start sub-components ",ex);
             }
             sfTerminate(TerminationRecord.abnormal("Failed to start sub-components " + ex, name));
         }
@@ -108,8 +109,7 @@ public class Parallel extends EventCompoundImpl implements Compound {
 
 
 
-    protected void asynchCreateChild() throws SmartFrogDeploymentException,
-            RemoteException, SmartFrogRuntimeException, SmartFrogException {
+    protected void asynchCreateChild() throws RemoteException, SmartFrogException {
             asynchChildren = new Vector();
             actionKeys = actions.keys();
             try {
@@ -122,24 +122,23 @@ public class Parallel extends EventCompoundImpl implements Compound {
                     thread.start();
                     if (sfLog().isDebugEnabled()) sfLog().debug("Creating "+key);
                 }
-            } catch (java.util.NoSuchElementException nex){
+            } catch (NoSuchElementException ignored){
                throw new SmartFrogRuntimeException ("Found no children to deploy",this);
             }
     }
 
 
 
-    protected void synchCreateChild() throws SmartFrogDeploymentException,
-        RemoteException, SmartFrogRuntimeException, SmartFrogException {
+    protected void synchCreateChild() throws RemoteException, SmartFrogException {
         actionKeys = actions.keys();
         try {
             while (actionKeys.hasMoreElements()) {
                 Object key = actionKeys.nextElement();
                 ComponentDescription act = (ComponentDescription) actions.get(key);
-                Prim comp = sfDeployComponentDescription(key, this, act, null);
+                sfDeployComponentDescription(key, this, act, null);
                 if (sfLog().isDebugEnabled()) sfLog().debug("Creating "+key);
             }
-        } catch (java.util.NoSuchElementException nex){
+        } catch (NoSuchElementException ignored){
            throw new SmartFrogRuntimeException ("Found no children to deploy",this);
         }
 
@@ -162,35 +161,34 @@ public class Parallel extends EventCompoundImpl implements Compound {
         }
     }
 
+
+
     /**
-     * Terminates the component. It is invoked by sub-components at
-     * termination. If normal termination, Parallel behaviour is to terminate
+     * If normal termination, Parallel behaviour is to terminate
      * that component but leave the others running if it is the last -
      * terminate normally. if an erroneous termination -
      * terminate immediately passing on the error
      *
-     * @param status termination status of sender
-     * @param comp sender of termination
+     *
+     * @param status exit record of the component
+     * @param comp   child component that is terminating
+     * @return true if the termination event is to be forwarded up the chain.
      */
-    public void sfTerminatedWith(TerminationRecord status, Prim comp) {
-        if (sfContainsChild(comp)) {
+    protected boolean onChildTerminated(TerminationRecord status, Prim comp) {
+        boolean forward = true;
+        if (status.isNormal()) {
             try {
-                if (!status.isNormal()) {
-                    sfTerminate(status);
-                } else {
-                    sfRemoveChild(comp);
-                }
-
-                if (!sfChildren().hasMoreElements()) {
-                    sfTerminate(TerminationRecord.normal(name));
-                }
+                sfRemoveChild(comp);
+                forward = !sfChildren().hasMoreElements();
             } catch (Exception e) {
-              if (sfLog().isErrorEnabled()){
-                sfLog().error(this.sfCompleteNameSafe()+" - error handling child termination ",e );
-              }
-              sfTerminate(TerminationRecord.abnormal("error handling child termination " + e, name));
+                if (sfLog().isErrorEnabled()) {
+                    sfLog().error(sfCompleteNameSafe() + " - error handling child termination ", e);
+                }
+                sfTerminate(TerminationRecord.abnormal("error handling child termination " + e, name));
+                forward = false;
             }
         }
+        return forward;
     }
 
     /**
@@ -206,7 +204,7 @@ public class Parallel extends EventCompoundImpl implements Compound {
                 CreateNewChildThread t = (CreateNewChildThread)e.nextElement();
                 try {
                     t.cancel(true);
-                } catch (Exception ex1) {
+                } catch (Exception ignored) {
                 }
             }
         }

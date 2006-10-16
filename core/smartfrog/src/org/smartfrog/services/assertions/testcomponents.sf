@@ -31,21 +31,20 @@ ITS MEDIA, AND YOU HEREBY WAIVE ANY CLAIM IN THIS REGARD.
 */
 
 
+ /**
+  * Include the core smartfrog components.
+  */
+#include "/org/smartfrog/sfcore/workflow/combinators/sequence.sf"
+
 
 
 /*
  this file declares components that can act as test deployers.
 
- 1. The tests are all workflow compoundsl they run a test, then assertions
+ This isthe
 
  */
 
-
-
- /**
-  * Include the core smartfrog components.
-  */
-#include "/org/smartfrog/sfcore/workflow/combinators/sequence.sf"
 
 TestCompound extends ActionCompound {
   TestCompoundSchema extends Schema {
@@ -81,7 +80,6 @@ TestCompound extends ActionCompound {
       description ##
         time in milliseconds to trigger an exception if the tests do not finish;
         use -1 for no limit"
-        NOT IMPLEMENTED
         #;
     }
     teardown extends OptionalCD {
@@ -115,6 +113,8 @@ TestCompound extends ActionCompound {
 
   //default to one minute
   undeployAfter 60000;
+  //no delay by default
+  testTimeout -1;
   //default to one minute
   startupTimeout 60000;
   //default to one minute

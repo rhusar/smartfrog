@@ -50,9 +50,9 @@ import org.smartfrog.sfcore.workflow.eventbus.EventCompoundImpl;
  */
 public class Retry extends EventCompoundImpl implements Compound {
 
-    static Reference retryRef = new Reference("retry");
-    int retry;
-    int currentRetries = 0;
+    private static Reference retryRef = new Reference("retry");
+    private int retry;
+    private int currentRetries = 0;
 
     /**
      * Constructs Retry.
@@ -89,43 +89,51 @@ public class Retry extends EventCompoundImpl implements Compound {
         sfCreateNewChild(name+"_retryActionRunning", (ComponentDescription) action.copy(), null);
     }
 
+
     /**
-     * Terminates the component. This is invoked by sub-components on
-     * termination. If normal termination, Retry behaviour is to terminate
+     * If normal termination, Retry behaviour is to terminate
      * normally. If an abnormal termination - retry unless some limit is
      * reached, in which case terminate abnormally.
 
-     * @param status termination status of sender
-     * @param comp sender of termination
+     * @param status exit record of the component
+     * @param comp   child component that is terminating
+     * @return true if the termination event is to be forwarded up the chain.
      */
-    public void sfTerminatedWith(TerminationRecord status, Prim comp) {
-        if (sfContainsChild(comp)) {
-            try {
-                sfRemoveChild(comp);
+    protected boolean onChildTerminated(TerminationRecord status, Prim comp) {
+        boolean forward = true;
+        try {
+            sfRemoveChild(comp);
 
-                if (!status.isNormal()) {
-                    if (currentRetries++ < retry) {
-                        if (sfLog().isDebugEnabled()) {
-                           sfLog().debug("Retry: "+name+" "+currentRetries+" /"+retry);
-                        }
-                        sfCreateNewChild(name+"_retryActionRunning_"+currentRetries,(ComponentDescription) action.copy(), null);
-                    } else {
-                        if (sfLog().isDebugEnabled()) {
-                           sfLog().debug(sfCompleteNameSafe().toString()  + "terminated incorrectly: too many retries - fail ");
-                        }
-                        sfTerminate(TerminationRecord.abnormal("too many retries...", name));
+            if (!status.isNormal()) {
+                if (currentRetries++ < retry) {
+                    if (sfLog().isDebugEnabled()) {
+                        sfLog().debug("Retry: " + name + " " + currentRetries + " /" + retry);
                     }
+                    sfCreateNewChild(name + "_retryActionRunning_" + currentRetries,
+                            (ComponentDescription) action.copy(), null);
+                    forward = false;
                 } else {
                     if (sfLog().isDebugEnabled()) {
-                        sfLog().debug(sfCompleteNameSafe().toString()  + "terminated correctly - no need to retry  ");
+                        sfLog().debug(
+                                sfCompleteNameSafe().toString() + "terminated incorrectly: too many retries - fail ");
                     }
-
-                    sfTerminate(TerminationRecord.normal(name));
+                    sfTerminate(TerminationRecord.abnormal("too many retries...", name));
+                    forward = false;
                 }
-            } catch (Exception e) {
-                if (sfLog().isErrorEnabled()) {sfLog().error("Error in restarting next component "+name,e);}
-                sfTerminate(TerminationRecord.abnormal( "Error in restarting next component ("+e.toString()+")", name));
+            } else {
+                if (sfLog().isDebugEnabled()) {
+                    sfLog().debug(sfCompleteNameSafe().toString() + "terminated correctly - no need to retry  ");
+                }
+
+
             }
+        } catch (Exception e) {
+            if (sfLog().isErrorEnabled()) {
+                sfLog().error("Error in restarting next component " + name, e);
+            }
+            sfTerminate(TerminationRecord.abnormal("Error in restarting next component (" + e.toString() + ")", name));
+            forward = false;
         }
+        return forward;
     }
 }

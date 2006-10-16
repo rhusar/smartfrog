@@ -63,6 +63,13 @@ public interface TestCompound extends Remote {
     String ATTR_TESTS = "tests";
 
     /**
+     * Time in milliseconds for the tests to successfully finish, use -1 for no limit.
+     * If this is set, then the tests are deemed to have failed if they have not finished
+     * by the time the tests are forcibly terminated
+     */
+    String ATTR_TEST_TIMEOUT = "testTimeout";
+
+    /**
      * a component that is run after the tests pass/fail
      to perform teardown or post-process.
      the action will always have been terminated (cleanly or not)

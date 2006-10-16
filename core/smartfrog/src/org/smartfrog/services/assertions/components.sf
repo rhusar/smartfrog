@@ -30,6 +30,7 @@ For more information: www.smartfrog.org
  #include "/org/smartfrog/components.sf"
  #include "/org/smartfrog/predicates.sf"
  #include "/org/smartfrog/services/assertions/testcomponents.sf"
+ #include "/org/smartfrog/services/assertions/testblock.sf"
 
 
 /**
@@ -79,7 +80,7 @@ AssertSchema extends Schema {
  * the assert component can be used to declare invariants which
  * must hold for the system to be valid
  */
-Assert extends Prim {
+Assert extends WorkflowPrim {
     assertSchema extends Schema;
     sfClass "org.smartfrog.services.assertions.AssertComponent";
     isTrue true;
@@ -88,8 +89,6 @@ Assert extends Prim {
     checkOnLiveness true;
     equalityIgnoresCase false;
 }
-
-
 
 
 /**

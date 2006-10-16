@@ -17,7 +17,7 @@
  For more information: www.smartfrog.org
 
  */
-package org.smartfrog.services.assertions;
+package org.smartfrog.sfcore.workflow.combinators;
 
 import org.smartfrog.sfcore.logging.LogSF;
 import org.smartfrog.sfcore.prim.Prim;
@@ -30,25 +30,27 @@ import java.rmi.RemoteException;
 
 /**
  * Component to shut down a task after a delay.
- * We retain a (weak) reference to a prim. The component can go off teh graph
- * and we can still find it, but we dont preclude distributed GC taking place and killing the reference.
+ * We retain a (weak) reference to a prim. The component can go off the graph
+ * and we can still find it, but we don't preclude distributed GC taking place and killing the reference.
+ * This stops accidental retention of a terminator thread from keeping the prim around.
  */
 public class DelayedTerminator implements Runnable {
     private long time;
     private WeakReference/*<Prim>*/ primref;
     private Throwable terminationFault;
-    private Thread self;
-    private boolean shutdown;
-    private boolean shouldTerminate = true;
+    private volatile Thread self;
+    private volatile boolean shutdown;
+    private volatile boolean shouldTerminate = true;
     private LogSF log;
     private String description;
-    private boolean normalTermination;
-    private boolean forcedShutdown;
+    private volatile boolean normalTermination;
+    private volatile boolean forcedShutdown;
+    private String name;
 
 
     /**
      * Create a delayed time.
-     * If the time is -1, then the wait is for {@link Long.MAX_VALUE}, otherwise it
+     * If the time is -1, then the wait is for {@link Long#MAX_VALUE}, otherwise it
      * is for as many milliseconds as needed.
      * @param prim
      * @param time
@@ -61,7 +63,7 @@ public class DelayedTerminator implements Runnable {
             time=Long.MAX_VALUE;
         }
         this.time = time;
-        this.primref = new WeakReference/*<Prim>*/(prim);
+        primref = new WeakReference/*<Prim>*/(prim);
         this.log = log;
         if (description == null) {
             this.description = "Terminate "
@@ -82,15 +84,30 @@ public class DelayedTerminator implements Runnable {
     }
 
 
+    public boolean isNormalTermination() {
+        return normalTermination;
+    }
+
+    public void setNormalTermination(boolean normalTermination) {
+        this.normalTermination = normalTermination;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
     /**
      * Call from the owner to shut down the target.
-     * @param shouldTerminate
-     * @return
+     * @param terminateTarget should we terminate the child?
      */
-    public synchronized void shutdown(boolean shouldTerminate) throws RemoteException {
+    public synchronized void shutdown(boolean terminateTarget) {
         if (self != null) {
             shutdown = true;
-            shouldTerminate = true;
+            this.shouldTerminate = terminateTarget;
             self.interrupt();
         }
     }
@@ -103,6 +120,9 @@ public class DelayedTerminator implements Runnable {
         if(self!=null) {
             if (self != null) {
                 self = new Thread(this);
+                if(name!=null) {
+                    self.setName(name);
+                }
                 self.start();
             }
         }
@@ -120,34 +140,36 @@ public class DelayedTerminator implements Runnable {
             log.debug("Interrupted " + description);
         }
 
-        if (shutdown == true) {
-
-            //initiated shutdown
-            log.debug("initiated shutdown " + description);
-        }
-
-        if (shouldTerminate) {
-            //termination time
-            Prim target = getTarget();
-            if (target == null) {
-                log.debug("Target no longer exists for " + description);
-            } else {
-                try {
-                    if (target.sfIsStarted()) {
-                        forcedShutdown = true;
-                        TerminationRecord record = createTerminationRecord(target);
-                        target.sfTerminate(record);
-                    }
-                } catch (RemoteException e) {
-                    terminationFault = e;
-                }
-            }
-        }
-
         synchronized (this) {
-            //cease to exist
-            self = null;
-            primref = null;
+            try {
+                if (shutdown == true) {
+
+                    //initiated shutdown
+                    log.debug("initiated shutdown " + description);
+                }
+
+                if (shouldTerminate) {
+                    //termination time
+                    Prim target = getTarget();
+                    if (target == null) {
+                        log.debug("Target no longer exists for " + description);
+                    } else {
+                        try {
+                            if (target.sfIsStarted()) {
+                                forcedShutdown = true;
+                                TerminationRecord record = createTerminationRecord(target);
+                                target.sfTerminate(record);
+                            }
+                        } catch (RemoteException e) {
+                            terminationFault = e;
+                        }
+                    }
+                }
+            } finally {
+                //cease to exist
+                self = null;
+                primref = null;
+            }
         }
 
     }
@@ -167,7 +189,7 @@ public class DelayedTerminator implements Runnable {
 
     /**
      * Flag set to true if we forced system shutdown
-     * @return
+     * @return whether system was forced
      */
     public synchronized boolean isForcedShutdown() {
         return forcedShutdown;

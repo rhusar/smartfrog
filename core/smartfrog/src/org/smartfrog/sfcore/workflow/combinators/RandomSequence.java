@@ -58,10 +58,10 @@ import org.smartfrog.sfcore.workflow.eventbus.EventCompoundImpl;
  *
  */
 public class RandomSequence extends EventCompoundImpl implements Compound {
-    boolean loop;
-    int seed;
-    Random random;
-    Vector actionKeysVector;
+    private boolean loop;
+    private int seed;
+    private Random random;
+    private Vector actionKeysVector;
     public static final String ATTR_SEED = "seed";
 
     /**
@@ -140,33 +140,32 @@ public class RandomSequence extends EventCompoundImpl implements Compound {
         }
     }
 
+
     /**
-     * Terminates the component. It is invoked by sub-components on
-     * termination. If normal termination, RandomSequence behaviour is to
+     * If normal termination, RandomSequence behaviour is to
      * start a random component in the actions if it is the last - terminate
      * normally. if an erroneous termination - terminate immediately passing
      * on the error
      *
-     * @param status termination status of sender
-     * @param comp sender of termination
+     * @param status exit record of the component
+     * @param comp   child component that is terminating
+     * @return true if the termination event is to be forwarded up the chain.
      */
-    public void sfTerminatedWith(TerminationRecord status, Prim comp) {
-        if (sfContainsChild(comp)) {
+    protected boolean onChildTerminated(TerminationRecord status, Prim comp) {
+        boolean forward = true;
+        if (status.isNormal()) {
             try {
-                if (status.errorType.equals("normal".intern())) {
-                    sfRemoveChild(comp);
-                    if (actionKeysVector.size() != 0) {
-                        startNextRandom();
-                    } else {
-                        sfTerminate(TerminationRecord.normal(name));
-                    }
-                } else {
-                    super.sfTerminatedWith(status, comp);
+                sfRemoveChild(comp);
+                if (actionKeysVector.size() != 0) {
+                    startNextRandom();
+                    forward = false;
                 }
             } catch (Exception e) {
                 sfTerminate(TerminationRecord.abnormal(
-                    "error in starting next random component", name));
+                        "error in starting next random component", name));
+                forward=false;
             }
         }
+        return forward;
     }
 }
