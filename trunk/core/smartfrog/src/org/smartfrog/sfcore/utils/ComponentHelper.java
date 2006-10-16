@@ -34,7 +34,6 @@ import org.smartfrog.services.filesystem.FileSystem;
 import java.rmi.RemoteException;
 import java.io.InputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 
 /**
@@ -144,8 +143,8 @@ public class ComponentHelper {
                     attribute,
                     defval,
                     false);
-        } catch (RemoteException ex) {
-        } catch (SmartFrogResolutionException ex) {
+        } catch (RemoteException ignored) {
+        } catch (SmartFrogResolutionException ignored) {
         }
         return false;
     }
@@ -178,7 +177,8 @@ public class ComponentHelper {
     /**
      * Method that can be invoked in any PrimImpl to trigger the detach and/or termination of a component
      * according to the values of the boolean attributes 'sfShouldDetach', 'sfShouldTerminate'
-     * and 'sfShouldTerminateQuietly'
+     * and 'sfShouldTerminateQuietly'.
+     *
      * @param record the pre-constructed termination record to use if termination is started
      * @return true if termination has been scheduled.
      */
@@ -207,7 +207,8 @@ public class ComponentHelper {
 
     /**
      *
-     * @param terminationType - termination type, system recognized types are "normal", "abnormal" and "externalReferenceDead".
+     * @param terminationType - termination type, system recognized types
+     *  are "normal", "abnormal" and "externalReferenceDead".
      *  If this is null, then normal/abnormal is chosen based on whether thrown is null or not
      * @param terminationMessage - description of termination. Can be null
      * @param refId Reference - id of terminating component. If null, triggers a call to sfCompleteNameSafe.
@@ -259,7 +260,6 @@ public class ComponentHelper {
      * mark this task for termination by spawning a separate thread to do it.
      * as {@link Prim#sfTerminate} and {@link Prim#sfStart()} are synchronized,
      * the thread blocks until sfStart has finished.
-     *
      * @param record  record to terminate with
      * @param dontTerminate set to true to  not actually terminate
      * @param detach  detach first?
@@ -268,6 +268,17 @@ public class ComponentHelper {
     public void targetForTermination(TerminationRecord record, boolean dontTerminate,
                                      boolean detach, boolean quietly) {
 
+
+        try {
+            if(isComponentTerminating()) {
+                return;
+            }
+        } catch (RemoteException ignored) {
+            //that didn't work. We had either a transient or permanent
+            //fault talking to the far end. what to do? Right now we
+            //take the cautious option of running the termination thread
+            //anyway, just in case the far end is reachable again in a moment.
+        }
         TerminatorThread terminator = new TerminatorThread(owner, record);
         if (detach) {
             terminator.detach();
@@ -298,12 +309,28 @@ public class ComponentHelper {
      * as {@link Prim#sfTerminate} and {@link Prim#sfStart()} are synchronized,
      * the thread blocks until sfStart has finished.
      * Note that we detach before terminating; this stops our timely end propagating.
+     * <i>Important.</i> This operation is implicitly harmless to use during termination. It will
+     * not interfere with a component that is already closing down, nor with its notification options.
      */
     public void targetForTermination() {
 
         Reference name= completeNameOrNull();
         TerminationRecord record = TerminationRecord.normal(name);
         targetForTermination(record,false, false,false);
+    }
+
+    /**
+     * Checks for the component terminating or being terminated. There is
+     * a possible race condition, because the component (in a separate thread)
+     * may enter the terminating phase during the test, and we wont pick it up.
+     * As termination is one way, we do know that if this method returns true
+     * then termination is underway and irreversible.
+     * @return true if the owner is in termination phase or has terminated.
+     *
+     * @throws RemoteException for networking trouble
+     */
+    public boolean isComponentTerminating() throws RemoteException {
+        return owner.sfIsTerminating() || owner.sfIsTerminated();
     }
 
     /**
@@ -321,7 +348,7 @@ public class ComponentHelper {
 
         InputStream in = SFClassLoader.getResourceAsStream(resourcename, targetCodeBase, true);
         if (in == null) {
-            throw new SmartFrogException("Not found: " + resourcename);
+            throw new SmartFrogException("Not found: " + resourcename+" in "+targetCodeBase);
         }
         return in;
     }
@@ -353,6 +380,26 @@ public class ComponentHelper {
     public String getCodebase() throws SmartFrogResolutionException,
             RemoteException {
         return (String) owner.sfResolve(SmartFrogCoreKeys.SF_CODE_BASE);
+    }
+
+
+    /**
+     * Load a class in the classloader, using the SmartFrog classloader.
+     * {@link SFClassLoader#forName(String, String, boolean)}
+     * @param classname
+     * @return
+     * @throws SmartFrogResolutionException if the class could not be found
+     * @throws RemoteException for network problems
+     */
+    public Class loadClass(String classname) throws SmartFrogResolutionException, RemoteException {
+        String targetCodeBase = getCodebase();
+
+        try {
+            return SFClassLoader.forName(classname, targetCodeBase, true);
+        } catch (ClassNotFoundException ignored) {
+            throw new SmartFrogResolutionException("Not found: " + classname + " in " + targetCodeBase);
+
+        }
     }
 
     /**
