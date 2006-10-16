@@ -37,15 +37,15 @@ import java.util.ListIterator;
  * created 03-Jun-2005 16:49:03
  */
 
-public class ChainListener implements TestListener {
+public class ChainListener implements TestListener,Iterable<TestListener> {
 
-    private List listeners =new ArrayList();
+    private List<TestListener> listeners =new ArrayList<TestListener>();
 
 
     public ChainListener() {
     }
 
-    public ChainListener(List factories, TestSuite suite,
+    public ChainListener(List<TestListenerFactory> factories, TestSuite suite,
                          String hostname,
                          String processname, String suitename,
                          long timestamp) throws SmartFrogException, RemoteException {
@@ -59,21 +59,20 @@ public class ChainListener implements TestListener {
      * @param suite     the test suite that is about to run. May be null,
      *                  especially during testing.
      * @param hostname  name of host
-     * @param processname
+     * @param processname process of the tests
      * @param suitename name of test suite
      * @param timestamp start timestamp (UTC)
      */
-    public void createAndAddListeners(List factories, TestSuite suite,
+    public void createAndAddListeners(List<TestListenerFactory> factories,
+                                      TestSuite suite,
                                       String hostname,
-                                      String processname, String suitename,
+                                      String processname,
+                                      String suitename,
                                       long timestamp) throws SmartFrogException, RemoteException {
         //reset the list of listeners
-        listeners =new ArrayList(factories.size());
+        listeners =new ArrayList<TestListener>(factories.size());
         //run through the factories
-        Iterator it=factories.iterator();
-        while (it.hasNext()) {
-            //create and add each one to the listener list
-            TestListenerFactory factory = (TestListenerFactory) it.next();
+        for(TestListenerFactory factory:factories) {
             TestListener listener = factory.listen(suite, hostname, processname, suitename, timestamp);
             addListener(listener);
         }
@@ -91,8 +90,8 @@ public class ChainListener implements TestListener {
      * Iterator operator.
      * @return
      */
-    public ListIterator iterator() {
-        return listeners.listIterator();
+    public Iterator<TestListener> iterator() {
+        return listeners.iterator();
     }
 
     /**

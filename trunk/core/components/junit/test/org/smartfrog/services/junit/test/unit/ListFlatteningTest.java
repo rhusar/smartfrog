@@ -20,11 +20,12 @@
 package org.smartfrog.services.junit.test.unit;
 
 import junit.framework.TestCase;
-import org.smartfrog.services.junit.junit3.JUnitTestSuiteImpl;
+import org.smartfrog.services.junit.junit3.JUnit3TestSuiteImpl;
 import org.smartfrog.sfcore.common.SmartFrogInitException;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Iterator;
 
 /**
  * created Nov 23, 2004 11:33:33 AM
@@ -32,8 +33,9 @@ import java.util.List;
 
 public class ListFlatteningTest extends TestCase {
 
+    @SuppressWarnings("unchecked")
     public void testListFlattening() throws Exception {
-        JUnitTestSuiteImpl junit = new JUnitTestSuiteImpl();
+        JUnit3TestSuiteImpl junit = new JUnit3TestSuiteImpl();
         List l1 = new ArrayList();
         List l2 = new ArrayList();
         List l3 = new ArrayList();
@@ -47,23 +49,23 @@ public class ListFlatteningTest extends TestCase {
         flat.add("2");
         flat.add("3");
         flat.add("4");
-        List flat2 = junit.flattenStringList(l2, "l2");
+        List<String> flat2 = junit.flattenStringList(l2, "l2");
         assertEquals(flat, flat);
         assertEquals(flat, flat2);
         l2.add(new ArrayList());
         l1.add(l2);
-        List flat3 = junit.flattenStringList(l1, "l1");
+        List<String> flat3 = junit.flattenStringList(l1, "l1");
         assertEquals(flat, flat3);
         List l4 = new ArrayList();
         l4.add(l1);
         l4.add(new Integer("3"));
         try {
-            List flat4 = junit.flattenStringList(l4, "l5");
+            List<String> flat4 = junit.flattenStringList(l4, "l5");
             fail("should have thrown something");
         } catch (SmartFrogInitException e) {
             //expected
         }
-        List flat5 = junit.flattenStringList(null, "flat5");
+        List<String> flat5 = junit.flattenStringList(null, "flat5");
         assertEquals(0, flat5.size());
     }
 

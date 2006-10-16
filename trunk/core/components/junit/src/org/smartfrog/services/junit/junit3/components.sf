@@ -29,7 +29,7 @@
    * This is the JUnit test suite; it runs the junit tests in all classes that are in the
    * package tree with the matching pattern, and/or the named class
    */
-  JUnitTestSuite extends PackagedTestSuite {
+  JUnit3TestSuite extends PackagedTestSuite {
       sfClass "org.smartfrog.services.junit.junit3.JUnitTestSuiteImpl";
   }
   

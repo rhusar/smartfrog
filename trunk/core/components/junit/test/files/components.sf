@@ -18,11 +18,7 @@ For more information: www.smartfrog.org
 
 */
 
-#include "/org/smartfrog/components.sf"
-#include "/org/smartfrog/predicates.sf"
-#include "/org/smartfrog/services/junit/components.sf"
-#include "/org/smartfrog/services/junit/listeners/html/components.sf";
-#include "/org/smartfrog/services/junit/listeners/xml/components.sf";
+#include "/org/smartfrog/services/junit/all.sf"
 #include "/org/smartfrog/services/filesystem/tempfile.sf"
 
 //sfCodeBase PROPERTY org.smartfrog.codebase;
@@ -31,7 +27,7 @@ For more information: www.smartfrog.org
 /**
  * base for our tests
  */
-TestBase extends JUnitTestSuite {
+TestBase extends JUnit3TestSuite {
 
     package "org.smartfrog.services.junit.test.targets";
 }

@@ -35,12 +35,12 @@ import java.util.List;
 public class TestListenerLogImpl extends AbstractTestLog implements TestListenerLog {
 
 
-    private List/*<LogListener>*/ listeners;
+    private List<LogListener> listeners;
     public static final String ERROR_DUPLICATE_ADD = "Duplicate listener registration";
 
 
     public TestListenerLogImpl() throws RemoteException {
-        listeners = new ArrayList(1);
+        listeners = new ArrayList<LogListener>(1);
     }
 
     /**
@@ -50,9 +50,7 @@ public class TestListenerLogImpl extends AbstractTestLog implements TestListener
      * @param entry
      */
     public void log(LogEntry entry) throws RemoteException {
-        Iterator elements = listeners.iterator();
-        while (elements.hasNext()) {
-            LogListener listener = (LogListener) elements.next();
+        for(LogListener listener:listeners) {
             listener.log(entry);
         }
     }

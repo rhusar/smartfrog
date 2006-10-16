@@ -20,16 +20,15 @@
 
 package org.smartfrog.services.junit.listeners.html;
 
-import org.smartfrog.services.junit.TestSuite;
 import org.smartfrog.services.junit.TestListener;
+import org.smartfrog.services.junit.TestSuite;
 import org.smartfrog.services.junit.listeners.xml.XmlTestIndexImpl;
-import org.smartfrog.services.junit.listeners.html.HtmlTestIndex;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.utils.ComponentHelper;
 
-import java.rmi.RemoteException;
 import java.io.File;
 import java.nio.charset.Charset;
+import java.rmi.RemoteException;
 
 /**
 

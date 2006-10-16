@@ -23,21 +23,20 @@ import junit.framework.AssertionFailedError;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestResult;
+import org.smartfrog.services.junit.AbstractTestSuite;
+import org.smartfrog.services.junit.RunnerConfiguration;
+import org.smartfrog.services.junit.TestListener;
+import org.smartfrog.services.junit.TestListenerFactory;
+import org.smartfrog.services.junit.Utils;
 import org.smartfrog.services.junit.data.Statistics;
 import org.smartfrog.services.junit.data.TestInfo;
 import org.smartfrog.services.junit.log.TestListenerLog;
-import org.smartfrog.services.junit.junit3.JUnitTestSuite;
-import org.smartfrog.services.junit.RunnerConfiguration;
-import org.smartfrog.services.junit.TestListener;
-import org.smartfrog.services.junit.Utils;
-import org.smartfrog.services.junit.TestListenerFactory;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogInitException;
+import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
 import org.smartfrog.sfcore.logging.Log;
-import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.processcompound.SFProcess;
-import org.smartfrog.sfcore.security.SFClassLoader;
 import org.smartfrog.sfcore.utils.ComponentHelper;
 
 import java.lang.reflect.InvocationTargetException;
@@ -46,7 +45,6 @@ import java.net.InetAddress;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 
@@ -56,7 +54,7 @@ import java.util.Properties;
  * actually run; we bring up Junit internally and run it here.
  */
 
-public class JUnitTestSuiteImpl extends PrimImpl implements JUnitTestSuite,
+public class JUnit3TestSuiteImpl extends AbstractTestSuite implements JUnitTestSuite,
         junit.framework.TestListener {
 
     /**
@@ -72,7 +70,7 @@ public class JUnitTestSuiteImpl extends PrimImpl implements JUnitTestSuite,
     /**
      * List of classes to test
      */
-    private List classes;
+    private List<String> classes;
 
     /**
      * Is the if= set?
@@ -112,13 +110,13 @@ public class JUnitTestSuiteImpl extends PrimImpl implements JUnitTestSuite,
     /**
      * test class list we build up
      */
-    private HashMap testClasses;
+    private HashMap<String,String> testClasses;
 
     /**
      * track the active tests; used to build up full statistics
      * on what a test does.
      */
-    private HashMap startedTests;
+    private HashMap<String , Long> startedTests;
 
     /**
      * listener for tests; set at binding time
@@ -139,7 +137,7 @@ public class JUnitTestSuiteImpl extends PrimImpl implements JUnitTestSuite,
     private static final String SUITE_METHOD_NAME = "suite";
     public static final String WARN_IGNORING_REMOTE_FAULT = "Ignoring remote fault";
 
-    public JUnitTestSuiteImpl() throws RemoteException {
+    public JUnit3TestSuiteImpl() throws RemoteException {
         helper = new ComponentHelper(this);
     }
 
@@ -166,9 +164,11 @@ public class JUnitTestSuiteImpl extends PrimImpl implements JUnitTestSuite,
      * @param runner the runner configuration to use
      * @throws java.rmi.RemoteException
      */
-    public void bind(RunnerConfiguration runner) throws RemoteException {
+    public void bind(RunnerConfiguration runner) throws RemoteException, SmartFrogException {
+        super.bind(configuration);
         log(suitename + " binding to test runner");
-        this.configuration = runner;
+        configuration = runner;
+
     }
 
     /**
@@ -205,8 +205,8 @@ public class JUnitTestSuiteImpl extends PrimImpl implements JUnitTestSuite,
     /**
      * read in our configuration
      *
-     * @throws SmartFrogException
-     * @throws RemoteException
+     * @throws SmartFrogException on trouble
+     * @throws RemoteException on trouble
      */
     protected void readConfiguration() throws SmartFrogException,
             RemoteException {
@@ -222,10 +222,12 @@ public class JUnitTestSuiteImpl extends PrimImpl implements JUnitTestSuite,
         List propList = (List) sfResolve(ATTR_SYSPROPS,
                 (List) null,
                 false);
+        //TODO: represent as tuples
+
         if (propList != null && propList.size() > 0) {
-            propList = flattenStringList(propList, ATTR_SYSPROPS);
+            List<String> properties= flattenStringList(propList, ATTR_SYSPROPS);
             String[] values = new String[0];
-            values = (String[]) propList.toArray(values);
+            values = properties.toArray(values);
             int len = values.length;
             if ((len % 2) != 0) {
                 //build up an error message with as much data as we can include
@@ -266,7 +268,7 @@ public class JUnitTestSuiteImpl extends PrimImpl implements JUnitTestSuite,
         suitename = getComponentShortName();
         //then look for an override, which is mandatory if we do not know who
         //we are right now.
-        suitename = sfResolve(ATTR_NAME, (String) suitename, suitename==null);
+        suitename = sfResolve(ATTR_NAME, suitename, suitename==null);
         log("Running test suite " + suitename + " on host " + hostname);
     }
 
@@ -275,11 +277,8 @@ public class JUnitTestSuiteImpl extends PrimImpl implements JUnitTestSuite,
      * flat.
      */
     protected void buildClassList() {
-        testClasses = new HashMap();
-        Iterator it = classes.iterator();
-        while (it.hasNext()) {
-            Object o = it.next();
-            String testclass = (String) o;
+        testClasses = new HashMap<String, String>();
+        for(String testclass:classes) {
             addTest(testclass);
         }
     }
@@ -303,22 +302,20 @@ public class JUnitTestSuiteImpl extends PrimImpl implements JUnitTestSuite,
      *
      * @param src
      * @param name
-     * @return
+     * @return a flatter list
      * @throws SmartFrogInitException
      */
-    public List flattenStringList(final List src, String name)
+    public List<String> flattenStringList(final List src, String name)
             throws SmartFrogException {
         if (src == null) {
             return new ArrayList(0);
         }
-        List dest = new ArrayList(src.size());
-        Iterator index = src.iterator();
-        while (index.hasNext()) {
-            Object element = index.next();
+        List<String> dest = new ArrayList<String>(src.size());
+        for(Object element:src) {
             if (element instanceof List) {
-                List l2 = flattenStringList((List) element, name);
-                for (Iterator i2 = l2.iterator(); i2.hasNext();) {
-                    dest.add(i2.next());
+                List<String> l2 = flattenStringList((List) element, name);
+                for (String s:l2) {
+                    dest.add(s);
                 }
             } else if (!(element instanceof String)) {
                 throw new SmartFrogInitException("An element in "
@@ -327,7 +324,7 @@ public class JUnitTestSuiteImpl extends PrimImpl implements JUnitTestSuite,
                         " is not string or a list: " +
                         element.toString() + " class=" + element.getClass());
             } else {
-                dest.add(element);
+                dest.add((String) element);
             }
         }
         return dest;
@@ -346,6 +343,7 @@ public class JUnitTestSuiteImpl extends PrimImpl implements JUnitTestSuite,
     public boolean runTests() throws RemoteException, SmartFrogException {
 
         log.info("running test suite " + suitename);
+        getConfiguration();
         if (configuration == null) {
             throw new SmartFrogException(
                     "TestSuite has not been configured yet");
@@ -376,18 +374,16 @@ public class JUnitTestSuiteImpl extends PrimImpl implements JUnitTestSuite,
         }
 
         //reset the logs
-        startedTests = new HashMap();
+        startedTests = new HashMap<String, Long>();
 
         //now run all the tests
         try {
             boolean failed = false;
-            Iterator it = testClasses.keySet().iterator();
-            while (it.hasNext()) {
-                String classname = (String) it.next();
+            for(String classname :testClasses.keySet()) {
                 try {
                     testSingleClass(classname);
                     updateResultAttributes(false);
-                } catch (ClassNotFoundException e) {
+                } catch (RemoteException e) {
                     throw SmartFrogException.forward(e);
                 } catch (IllegalAccessException e) {
                     throw SmartFrogException.forward(e);
@@ -440,8 +436,8 @@ public class JUnitTestSuiteImpl extends PrimImpl implements JUnitTestSuite,
      * @throws InvocationTargetException
      */
     private void testSingleClass(String classname)
-            throws ClassNotFoundException, IllegalAccessException,
-            InvocationTargetException {
+            throws IllegalAccessException,
+            InvocationTargetException, SmartFrogResolutionException, RemoteException {
         log("testing " + classname);
         Test tests;
         Class clazz = loadTestClass(classname);
@@ -460,17 +456,18 @@ public class JUnitTestSuiteImpl extends PrimImpl implements JUnitTestSuite,
      * @throws ClassNotFoundException
      */
     private Class loadTestClass(String classname)
-            throws ClassNotFoundException {
-        return SFClassLoader.forName(classname);
+            throws SmartFrogResolutionException, RemoteException {
+        return helper.loadClass(classname);
     }
 
     /**
-     * get the tests from the class, either as a suite or as introspected tests
+     * get the tests from the class, either as a suite or as introspected tests.
+     * There is no verification here that a class is a test suite!
      *
-     * @param clazz
+     * @param clazz class with the test
      * @return the test
-     * @throws IllegalAccessException
-     * @throws InvocationTargetException
+     * @throws IllegalAccessException if it is not accessible
+     * @throws InvocationTargetException if the test suite method failed
      */
     private Test extractTest(Class clazz) throws IllegalAccessException,
             InvocationTargetException {
@@ -478,7 +475,7 @@ public class JUnitTestSuiteImpl extends PrimImpl implements JUnitTestSuite,
         try {
             // check if there is a suite method
             Method method = clazz.getMethod(SUITE_METHOD_NAME, new Class[0]);
-            //despite what IDEs say, there is no redundant cast here, as we don't want
+            //despite what IDEs may say, there is no redundant cast here, as we don't want
             //java1.5 to get confused.
             return (Test) method.invoke(null, (Object[]) new Class[0]);
         } catch (NoSuchMethodException e) {
@@ -609,13 +606,13 @@ public class JUnitTestSuiteImpl extends PrimImpl implements JUnitTestSuite,
      * file the start time;  if there already is one, then take that one instead.
      * Will increment the started count in the statistics if needed.
      *
-     * @param testname
+     * @param testname name of the test
      * @return timestamp of test start.
      */
     private synchronized long registerStartTime(String testname) {
         if (!startedTests.containsKey(testname)) {
             long start = System.currentTimeMillis();
-            startedTests.put(testname, new Long(start));
+            startedTests.put(testname, start);
             stats.incTestsStarted();
             return start;
         } else {
@@ -631,7 +628,7 @@ public class JUnitTestSuiteImpl extends PrimImpl implements JUnitTestSuite,
      * @throws RuntimeException if there is no key of that name
      */
     private long lookupStartTime(String testname) {
-        return ((Long) startedTests.get(testname)).longValue();
+        return startedTests.get(testname);
     }
 
     /**

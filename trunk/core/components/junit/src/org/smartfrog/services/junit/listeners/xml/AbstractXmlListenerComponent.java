@@ -23,8 +23,6 @@ package org.smartfrog.services.junit.listeners.xml;
 import org.smartfrog.services.filesystem.FileSystem;
 import org.smartfrog.services.junit.TestListener;
 import org.smartfrog.services.junit.TestSuite;
-import org.smartfrog.services.junit.listeners.xml.XmlListener;
-import org.smartfrog.services.junit.listeners.xml.XmlListenerFactory;
 import org.smartfrog.services.junit.listeners.html.OneHostXMLListener;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogInitException;
@@ -51,7 +49,7 @@ public abstract class AbstractXmlListenerComponent extends PrimImpl
     /**
      * mapping of suite to file
      */
-    private HashMap testFiles = new HashMap();
+    private HashMap<String, String> testFiles = new HashMap<String, String>();
     protected String suffix = ".xml";
     private boolean useProcessname;
 
@@ -80,7 +78,7 @@ public abstract class AbstractXmlListenerComponent extends PrimImpl
      * @return absolute path of the output file, or null for no mapping.
      */
     private synchronized String getMapping(String suitename) {
-        return (String) testFiles.get(suitename);
+        return testFiles.get(suitename);
     }
 
     /**

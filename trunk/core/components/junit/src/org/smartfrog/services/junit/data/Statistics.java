@@ -44,7 +44,7 @@ public final class Statistics implements Serializable, Cloneable {
     private int loggedMessages = 0;
 
 
-    private HashMap/*<String,Integer>*/ outcomes=new HashMap();
+    private HashMap<String,Integer> outcomes=new HashMap<String, Integer>();
 
 
     /**
@@ -108,9 +108,7 @@ public final class Statistics implements Serializable, Cloneable {
         addTestsStarted(that.getTestsStarted());
         addLoggedMessages(that.getLoggedMessages());
         //add all the outcomes
-        Iterator keys=that.outcomes.keySet().iterator();
-        while (keys.hasNext()) {
-            String outcome = (String) keys.next();
+        for(String outcome:that.outcomes.keySet()) {
             increment(outcome,that.getOutcome(outcome));
         }
     }
@@ -145,7 +143,7 @@ public final class Statistics implements Serializable, Cloneable {
      * @return the count or 0 for no events of that outcome found.
      */
     public int getOutcome(String outcome) {
-        Integer current = (Integer) outcomes.get(outcome);
+        Integer current = outcomes.get(outcome);
         int value = 0;
         if (current != null) {
             value = current.intValue();

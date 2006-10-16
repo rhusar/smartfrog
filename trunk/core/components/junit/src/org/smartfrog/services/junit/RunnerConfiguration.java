@@ -83,7 +83,7 @@ public class RunnerConfiguration implements Serializable, Cloneable {
     /**
      * the shallow clone copies all the simple settings, but shares the test listener.
      * and test log. There is a deeper clone of the system properties
-     * @return
+     * @return the clone
      * @throws CloneNotSupportedException
      */
     protected Object clone() throws CloneNotSupportedException {
