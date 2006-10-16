@@ -23,6 +23,6 @@ public interface DeploymentServer extends Remote {
 
     String ATTR_SYSTEM_PATH = "systemPath";
 
-    String ATTR_SUBSCRIPTIONS_PATAH = "subscriptionsPath";
+    String ATTR_SUBSCRIPTIONS_PATH = "subscriptionsPath";
 
 }

@@ -66,6 +66,7 @@ public class JdbcBindingImpl extends PrimImpl implements JdbcBinding {
             throws SmartFrogException, RemoteException {
         super.sfStart();
         Log log = LogFactory.getLog(this);
+        ComponentHelper helper=new ComponentHelper(this);
 
         driver = sfResolve(ATTR_DRIVER, "", false);
         url = sfResolve(ATTR_USERNAME, "", true);
@@ -74,11 +75,7 @@ public class JdbcBindingImpl extends PrimImpl implements JdbcBinding {
         properties = sfResolve(ATTR_PROPERTIES, (Vector) null, false);
 
         if(driver!=null) {
-            try {
-                Class aClass = SFClassLoader.forName(driver);
-            } catch (ClassNotFoundException e) {
-                throw new SmartFrogException("Could not load "+driver,e);
-            }
+            helper.loadClass(driver);
         }
 
         connectionProperties=new Properties();

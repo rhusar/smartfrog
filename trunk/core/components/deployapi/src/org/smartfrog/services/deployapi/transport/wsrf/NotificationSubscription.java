@@ -38,7 +38,6 @@ import org.smartfrog.projects.alpine.faults.AlpineRuntimeException;
 import org.smartfrog.projects.alpine.xmlutils.XsdUtils;
 import org.smartfrog.projects.alpine.transport.TransmitQueue;
 import org.smartfrog.projects.alpine.transport.DirectExecutor;
-import org.smartfrog.projects.alpine.transport.Transmission;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -72,7 +71,7 @@ xsd:dateTime
 public class NotificationSubscription extends AbstractEventSubscription
         implements EventSubscription, WSRPResourceSource, WSNConstants {
 
-    private static Log log= LogFactory.getLog(NotificationSubscription.class);
+    private static final Log log= LogFactory.getLog(NotificationSubscription.class);
     private PropertyMap resources = new PropertyMap();
     private String id = UUID.randomUUID().toString();
     private QName topic;
@@ -94,8 +93,6 @@ public class NotificationSubscription extends AbstractEventSubscription
 
     /**
      * @param request incoming request
-     * @throws org.smartfrog.services.deployapi.transport.faults.BaseException
-     *
      * @throws org.smartfrog.services.deployapi.transport.faults.BaseException
      *
      * @throws AlpineRuntimeException ifthere is trouble parsing/validating the address
@@ -186,6 +183,8 @@ public class NotificationSubscription extends AbstractEventSubscription
         String useNotify = XomHelper.getElementValue(request, "wsnt:" + USE_NOTIFY, false);
         if (useNotify != null) {
             useNotifyMessage = XomHelper.getXsdBoolValue(useNotify);
+        } else {
+            useNotifyMessage=true;
         }
         addWsntResource(USE_NOTIFY, Boolean.toString(useNotifyMessage));
 
@@ -256,18 +255,19 @@ public class NotificationSubscription extends AbstractEventSubscription
      *
      * @param idurl  event ID URL; set to null to have one made ip
      * @param source any source XML; again, optional.
+     * @param resourceID id of the resource
      * @return an event ready to be sent or to have more data appended.
      */
     protected SoapElement createMuwsManagementEvent(String idurl, Element source, String resourceID) {
-        SoapElement event = new SoapElement("muws-p1-xs:ManagementEvent", Constants.MUWS_P1_NAMESPACE);
-        SoapElement eventID = new SoapElement("muws-p1-xs:EventId", Constants.MUWS_P1_NAMESPACE);
+        SoapElement event = new SoapElement("muws-p1-xs:"+ MUWS_MANAGEMENT_EVENT, Constants.MUWS_P1_NAMESPACE);
+        SoapElement eventID = new SoapElement("muws-p1-xs:"+ MUWS_EVENT_ID, Constants.MUWS_P1_NAMESPACE);
         if (idurl == null) {
             idurl = "http://example.org/uri/" + UUID.randomUUID().toString();
         }
         eventID.appendChild(idurl);
         event.appendChild(eventID);
-        SoapElement sourceComponent = new SoapElement("muws-p1-xs:SourceComponent", Constants.MUWS_P1_NAMESPACE);
-        SoapElement sourceResource = new SoapElement("muws-p1-xs:ResourceId", Constants.MUWS_P1_NAMESPACE);
+        SoapElement sourceComponent = new SoapElement("muws-p1-xs:"+ MUWS_SOURCE_COMPONENT, Constants.MUWS_P1_NAMESPACE);
+        SoapElement sourceResource = new SoapElement("muws-p1-xs:"+ MUWS_RESOURCE_ID, Constants.MUWS_P1_NAMESPACE);
         sourceResource.appendChild(resourceID);
         sourceComponent.appendChild(sourceResource);
         if (source != null) {
@@ -278,19 +278,19 @@ public class NotificationSubscription extends AbstractEventSubscription
     }
 
     protected SoapElement createNotificationMessage(AlpineEPR producer, Element message) {
-        SoapElement notificationMessage = new SoapElement("wsnt:NotificationMessage", Constants.WSRF_WSNT_NAMESPACE);
-        SoapElement topicElt = new SoapElement("wsnt:Topic", Constants.WSRF_WSNT_NAMESPACE);
+        SoapElement notificationMessage = new SoapElement("wsnt:"+ WSNT_NOTIFICATION_MESSAGE, Constants.WSRF_WSNT_NAMESPACE);
+        SoapElement topicElt = new SoapElement("wsnt:"+ WSNT_TOPIC, Constants.WSRF_WSNT_NAMESPACE);
         topicElt.addAttribute(
                 new Attribute("wsnt:" + DIALECT, Constants.WSRF_WSNT_NAMESPACE, WSNConstants.SIMPLE_DIALECT));
         topicElt.appendQName(topic);
         notificationMessage.appendChild(topicElt);
         if (producer != null) {
             notificationMessage.appendChild(
-                    producer.toXomInNewNamespace("ProducerReference", Constants.WSRF_WSNT_NAMESPACE,
+                    producer.toXomInNewNamespace(WSNT_PRODUCER_REFERENCE, Constants.WSRF_WSNT_NAMESPACE,
                             "wsnt", Constants.WS_ADDRESSING_2004_NAMESPACE, "wsa2004"));
         }
         if (message != null) {
-            SoapElement messageElt = new SoapElement("wsnt:Message", Constants.WSRF_WSNT_NAMESPACE);
+            SoapElement messageElt = new SoapElement("wsnt:"+ WSNT_MESSAGE, Constants.WSRF_WSNT_NAMESPACE);
             notificationMessage.appendChild(
                     messageElt);
             messageElt.appendChild(message);
@@ -397,39 +397,25 @@ public class NotificationSubscription extends AbstractEventSubscription
         return subscriptionEPR;
     }
 
-    private static final String SEARCH_STRING = Constants.SUBSCRIPTION_ID_PARAM + "=";
-
     /**
      * Get the subscription ID from the query
      *
-     * @param query
+     * @param to endpoint to talk to
      * @return the trimmed string containing the subscription
      * @throws org.smartfrog.services.deployapi.transport.faults.BaseException
      *          if not found
      */
-    public static String extractSubscriptionIDFromQuery(String query) {
-        if (query == null) {
-            throw FaultRaiser.raiseNoSuchApplicationFault("No subscription in address");
-        }
-        int index = query.indexOf(Constants.SUBSCRIPTION_ID_PARAM);
-        if (index == -1) {
-            String message = "Didn't find query (" +
-                    SEARCH_STRING +
+    public static String extractSubscriptionIDFromAddress(AlpineEPR to) {
+        String value=to.lookupQuery(Constants.SUBSCRIPTION_ID_PARAM);
+        if(value==null) {
+            String message = "Didn't parameter query (" +
+                    Constants.SUBSCRIPTION_ID_PARAM+
                     ") in " +
-                    query;
+                    to.toString();
             throw FaultRaiser.raiseBadArgumentFault(message);
-        }
-        int start = index + SEARCH_STRING.length();
-        int end = query.indexOf("&", start);
-        if (end == -1) {
-            end = query.length();
-        }
-        String substrate = query.substring(start, end).trim();
-        if (substrate.length() == 0) {
-            throw FaultRaiser.raiseBadArgumentFault("Empty subscription in " + query);
-        }
 
-        return substrate;
+        }
+        return value;
     }
 
 }

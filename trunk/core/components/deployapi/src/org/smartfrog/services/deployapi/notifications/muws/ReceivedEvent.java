@@ -17,14 +17,23 @@
  For more information: www.smartfrog.org
 
  */
-package org.smartfrog.services.xmpp;
+package org.smartfrog.services.deployapi.notifications.muws;
+
+import org.smartfrog.projects.alpine.om.base.SoapElement;
+import org.smartfrog.projects.alpine.core.MessageContext;
 
 /**
+ * created 10-Oct-2006 16:10:38
  */
-public interface XmppListener extends Xmpp {
 
-    /**
-     * Classname of a filter to use
-     */
-    String ATTR_FILTER="filter";
+public class ReceivedEvent {
+
+    public SoapElement message;
+    long timestamp;
+
+    public ReceivedEvent(MessageContext messageContext, SoapElement event) {
+        message=event;
+        timestamp=System.currentTimeMillis();
+    }
+
 }

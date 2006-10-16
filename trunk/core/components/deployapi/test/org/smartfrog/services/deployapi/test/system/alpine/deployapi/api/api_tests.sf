@@ -18,15 +18,15 @@ For more information: www.smartfrog.org
 
 */
 
-#include "/org/smartfrog/services/junit/components.sf"
-#include "/org/smartfrog/services/filesystem/components.sf"
+
+#include "/org/smartfrog/services/junit/all.sf"
 
 /*
  This is a package of tests that run against a local or remote server
  that is served up by the endpoint specified.
  */
 
-  AlpineTestSuite extends JUnitTestSuite {
+  AlpineTestSuite extends JUnit3TestSuite {
         name "alpine";
         enabled true;
         if enabled;
@@ -82,6 +82,7 @@ For more information: www.smartfrog.org
     subdir "deployapi";
 
     enabled true;
+
 
 
     destDir extends Mkdir {

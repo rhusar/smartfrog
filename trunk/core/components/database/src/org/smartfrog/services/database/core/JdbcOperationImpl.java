@@ -22,12 +22,11 @@ package org.smartfrog.services.database.core;
 import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLivenessException;
-import org.smartfrog.sfcore.common.SmartFrogLogException;
+import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.logging.Log;
 import org.smartfrog.sfcore.logging.LogFactory;
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.prim.TerminationRecord;
-import org.smartfrog.sfcore.security.SFClassLoader;
 import org.smartfrog.sfcore.utils.ComponentHelper;
 
 import java.rmi.RemoteException;
@@ -43,7 +42,7 @@ public abstract class JdbcOperationImpl extends PrimImpl implements JdbcOperatio
 
 
     protected JdbcBinding database;
-    private SmartFrogException queuedFault;
+    private Throwable queuedFault;
     private boolean autocommit = false;
     private Log log;
     private Thread workerThread;
@@ -80,7 +79,7 @@ public abstract class JdbcOperationImpl extends PrimImpl implements JdbcOperatio
      * @throws SmartFrogDeploymentException
      */
     protected Connection connect() throws
-            SmartFrogDeploymentException{
+            SmartFrogDeploymentException, SmartFrogResolutionException, RemoteException {
         String driverName = database.getDriver();
         String url = database.getUrl();
         Properties props = database.createConnectionProperties();
@@ -141,16 +140,6 @@ public abstract class JdbcOperationImpl extends PrimImpl implements JdbcOperatio
         return workerThread;
     }
 
-    private Class loadDriverClass(String driver) throws
-            SmartFrogDeploymentException {
-        try {
-            Class aClass = SFClassLoader.forName(driver);
-            return aClass;
-        } catch (ClassNotFoundException e) {
-            throw new SmartFrogDeploymentException("Could not load " + driver, e);
-        }
-    }
-
     /**
      * Gets an instance of the required driver. Uses the ant class loader and
      * the optionally the provided classpath.
@@ -159,10 +148,10 @@ public abstract class JdbcOperationImpl extends PrimImpl implements JdbcOperatio
      *
      */
     private Driver loadDriver(String driver) throws
-            SmartFrogDeploymentException {
+            SmartFrogDeploymentException, SmartFrogResolutionException, RemoteException {
         Driver instance = null;
         try {
-            Class clazz=loadDriverClass(driver);
+            Class clazz= helper.loadClass(driver);
             instance = (Driver) clazz.newInstance();
         } catch (IllegalAccessException e) {
             throw new SmartFrogDeploymentException(
@@ -223,13 +212,14 @@ public abstract class JdbcOperationImpl extends PrimImpl implements JdbcOperatio
     /**
      * check the connection
      */
-    protected void checkConnection() throws SmartFrogDeploymentException {
+    protected void checkConnection() throws SmartFrogDeploymentException, SmartFrogResolutionException,
+            RemoteException {
         //do a quick connect to see that we are ok
         Connection connection = connect();
         close(connection);
     }
 
-    protected synchronized void queueFault(SmartFrogException e) {
+    protected synchronized void queueFault(Throwable e) {
         queuedFault =e;
     }
 
@@ -237,7 +227,7 @@ public abstract class JdbcOperationImpl extends PrimImpl implements JdbcOperatio
         queuedFault = translate(action, e);
     }
 
-    protected SmartFrogException getQueuedFault() {
+    protected Throwable getQueuedFault() {
         return queuedFault;
     }
 
@@ -255,7 +245,7 @@ public abstract class JdbcOperationImpl extends PrimImpl implements JdbcOperatio
     public void sfPing(Object source)
             throws SmartFrogLivenessException, RemoteException {
         super.sfPing(source);
-        SmartFrogException fault = getQueuedFault();
+        Throwable fault = getQueuedFault();
         if(fault!=null) {
             throw (SmartFrogLivenessException) SmartFrogLivenessException.forward(fault);
         }
@@ -320,6 +310,9 @@ public abstract class JdbcOperationImpl extends PrimImpl implements JdbcOperatio
             caught=e;
             queueFault("processing transactions", e);
         } catch (SmartFrogException e) {
+            caught = e;
+            queueFault(e);
+        } catch (RemoteException e) {
             caught = e;
             queueFault(e);
         } finally {

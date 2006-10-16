@@ -20,6 +20,7 @@
 package org.smartfrog.services.deployapi.transport.wsrf;
 
 /**
+ * Various WSNT and MUWS constants go in here for easy reuse.
  * created 27-Sep-2006 12:16:34
  */
 /*
@@ -52,4 +53,12 @@ public interface WSNConstants {
     String DIALECT = "dialect";
     String SUBSCRIPTION_REFERENCE = "SubscriptionReference";
     String SUBSCRIBE_RESPONSE = "SubscribeResponse";
+    String MUWS_MANAGEMENT_EVENT = "ManagementEvent";
+    String MUWS_EVENT_ID = "EventId";
+    String MUWS_SOURCE_COMPONENT = "SourceComponent";
+    String MUWS_RESOURCE_ID = "ResourceId";
+    String WSNT_NOTIFICATION_MESSAGE = "NotificationMessage";
+    String WSNT_PRODUCER_REFERENCE = "ProducerReference";
+    String WSNT_MESSAGE = "Message";
+    String WSNT_TOPIC = "Topic";
 }

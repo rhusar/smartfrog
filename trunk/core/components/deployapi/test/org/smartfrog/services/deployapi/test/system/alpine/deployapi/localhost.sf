@@ -17,9 +17,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 For more information: www.smartfrog.org
 
 */
-#include "/org/smartfrog/services/deployapi/test/system/alpine/deployapi/api/api_tests.sf"
-
-
+#include "/org/smartfrog/services/deployapi/test/system/alpine/deployapi/remote-interop.sf"
 /**
  URL to the hp endpoint
  */
@@ -33,7 +31,13 @@ LocalHostTests extends DeployapiTestRunner {
 
 }
 
-TestPlan extends LocalHostTests {
+TestPlan extends Compound {
+
+  notifications extends Notifications  {
+
+  }
+
+  localTests extends LocalHostTests;
 
 }
 

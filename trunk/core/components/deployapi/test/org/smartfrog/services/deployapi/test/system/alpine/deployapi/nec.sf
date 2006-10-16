@@ -18,7 +18,7 @@ For more information: www.smartfrog.org
 
 */
 #include "/org/smartfrog/services/deployapi/test/system/alpine/deployapi/api/api_tests.sf"
-#include "/org/smartfrog/services/junit/timeouts/components.sf"
+
 
 /**
  * This is a test run that tests against the NEC endpoint

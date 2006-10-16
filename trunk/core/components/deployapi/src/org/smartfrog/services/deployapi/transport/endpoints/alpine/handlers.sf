@@ -42,16 +42,26 @@ StatsHandler extends SharedHandler {
 /**
  * The subscription service
  */
-SubscriptionService extends SharedHandler {
+SubscriptionService extends WsrfHandler {
   classname "org.smartfrog.services.deployapi.transport.endpoints.alpine.SubscriptionService";
 }
 
 /**
- * component to receive subscriptions
+ * component to receive notifications
  */
-SubscriptionReceiver extends SharedHandler {
-  classname "org.smartfrog.services.deployapi.transport.endpoints.alpine.SubscriptionRelay";
+WSNotifyHandler extends WsrfHandler {
+  classname "org.smartfrog.services.deployapi.transport.endpoints.alpine.WSNotifyEndpoint";
 }
+
+
+/**
+ * component to receive WSN events
+ */
+MuwsEventHandler extends WSNotifyHandler {
+  classname "org.smartfrog.services.deployapi.transport.endpoints.alpine.MuwsEventHandler";
+}
+
+
 
 DeployApiEndpoint extends AlpineEndpoint {
     pivotHandler TBD;
@@ -60,7 +70,7 @@ DeployApiEndpoint extends AlpineEndpoint {
       LogCurrentMessageHandler:classname,
       AddressHandler:classname,
       MustUnderstandChecker:classname,
-      pivotHandler:classname,
+      LAZY pivotHandler:classname,
       LogCurrentMessageHandler:classname
     ];
 
@@ -112,3 +122,5 @@ SubscriptionEndpoint extends DeployApiEndpoint {
       </html>
      #;
 }
+
+

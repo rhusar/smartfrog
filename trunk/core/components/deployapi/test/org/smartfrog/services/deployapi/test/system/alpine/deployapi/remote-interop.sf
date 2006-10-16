@@ -17,17 +17,20 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 For more information: www.smartfrog.org
 
 */
+#include "/org/smartfrog/sfcore/logging/components.sf"
+#include "/org/smartfrog/sfcore/logging/logtoprimimpl.sf"
+#include "/org/smartfrog/services/deployapi/notifications/muws/components.sf"
+#include "/org/smartfrog/services/deployapi/test/system/alpine/deployapi/proxy.sf"
 #include "/org/smartfrog/services/deployapi/test/system/alpine/deployapi/nec.sf"
 #include "/org/smartfrog/services/deployapi/test/system/alpine/deployapi/ourgrid.sf"
 #include "/org/smartfrog/services/deployapi/test/system/alpine/deployapi/hp.sf"
-#include "/org/smartfrog/services/utils/setproperty/components.sf"
 #include "/org/smartfrog/services/www/livenessPage.sf"
-#include "/org/smartfrog/sfcore/logging/components.sf"
-#include "/org/smartfrog/sfcore/logging/logtoprimimpl.sf"
-#include "/org/smartfrog/services/junit/timeouts/components.sf"
-#include "/org/smartfrog/services/junit/listeners/xml/components.sf"
-#include "/org/smartfrog/services/junit/listeners/html/components.sf"
-#include "/org/smartfrog/services/deployapi/test/system/alpine/deployapi/proxy.sf"
+
+
+
+  Notifications extends NotifyHost {
+
+  }
 
   ServerTest extends TimeoutCompound {
 
@@ -48,7 +51,10 @@ For more information: www.smartfrog.org
         url healthURL;
       }
 
+      notifications extends Notifications ;
+
       tests extends DeployapiTestRunner {
+        notifications LAZY PARENT:notifications;
         basedir PARENT:basedir;
         enabled PARENT:enabled;
         endpoint PARENT:endpoint;
@@ -60,9 +66,7 @@ For more information: www.smartfrog.org
 
 
 fullSuite extends Compound {
-
   tempDir LAZY PROPERTY java.io.tmpdir;
-
   necEnabled true;
   ourgridEnabled true;
   hpEnabled true;
@@ -82,6 +86,7 @@ fullSuite extends Compound {
       debug true;
     }
   }
+
 
   testLog LAZY log:logTo:logTo;
 

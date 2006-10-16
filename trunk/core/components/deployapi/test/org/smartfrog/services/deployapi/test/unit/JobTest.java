@@ -127,8 +127,7 @@ public class JobTest extends UnitTestBase {
     }
     
     public void testUnknownJob() throws Exception {
-        Application job = repository.lookupJobFromQuery(Constants.JOB_ID_PARAM+"=1234");
-        assertNull(job);
+        assertLookupFaults(Constants.JOB_ID_PARAM + "=1234");
     }
     
     private void assertLookupFaults(String query) {
