@@ -67,4 +67,5 @@ public class EprTest extends AddressingTestBase {
         AlpineEPR epr2 = new AlpineEPR(xom, null);
         assertEquals(epr, epr2);
     }
+
 }

@@ -24,6 +24,7 @@ import nu.xom.Element;
 import nu.xom.Node;
 import org.smartfrog.projects.alpine.faults.InvalidXmlException;
 import org.smartfrog.projects.alpine.faults.ValidationException;
+import org.smartfrog.projects.alpine.faults.AlpineRuntimeException;
 import org.smartfrog.projects.alpine.interfaces.Validatable;
 import org.smartfrog.projects.alpine.interfaces.XomSource;
 import org.smartfrog.projects.alpine.om.base.SoapElement;
@@ -33,6 +34,8 @@ import org.smartfrog.projects.alpine.om.soap11.MessageDocument;
 import org.smartfrog.projects.alpine.xmlutils.NodeIterator;
 
 import javax.xml.namespace.QName;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 /*
 <wsa:EndpointReference
@@ -66,7 +69,6 @@ public final class AlpineEPR implements Validatable, AddressingConstants, XomSou
 
 
     private String address;
-
 
     private Element metadata;
 
@@ -362,5 +364,45 @@ public final class AlpineEPR implements Validatable, AddressingConstants, XomSou
         return "EPR to " + address;
     }
 
+    /**
+     * Look up a name=value pair from the query part of a URL 
+     * @param name property to search
+     * @return the query or null for no match
+     * @throws AlpineRuntimeException if the URL would not parse
+     */
+    public String lookupQuery(String name) {
+        URI uri;
+        try {
+            uri = new URI(getAddress());
+        } catch (URISyntaxException e) {
+            throw new AlpineRuntimeException("Couldn't turn an addr into a URL: " +
+                    toString(), e);
+        }
+        String query = uri.getQuery();
+        return lookupQuery(query, name);
+    }
+
+    /**
+     * Look up a name=value pair from the query part of a URL
+     * @param name property to search
+     * @return the query or null for no match
+     */
+    public static String lookupQuery(String query, String name) {
+        String param= name + "=";
+        int index;
+        if(query.startsWith(param)) {
+            //first query in the string
+            index= 0;
+        } else {
+            //this is the second query
+            index = query.indexOf("&"+param);
+        }
+        //find the end of the string
+        int end = query.indexOf("&", index);
+        if (end == -1) {
+            end = query.length();
+        }
+        return query.substring(index, end).trim();
+    }
 
 }
