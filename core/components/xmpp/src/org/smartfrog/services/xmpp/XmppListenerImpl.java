@@ -57,6 +57,8 @@ public class XmppListenerImpl extends AbstractXmppPrim implements XmppListener,
         super.sfStart();
         connection = login();
         connection.addConnectionListener(this);
+        String filter=sfResolve(ATTR_FILTER,"",true);
+        
         connection.addPacketListener(this, new MessageFilter());
     }
 

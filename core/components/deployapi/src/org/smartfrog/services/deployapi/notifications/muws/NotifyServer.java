@@ -17,14 +17,40 @@
  For more information: www.smartfrog.org
 
  */
-package org.smartfrog.services.xmpp;
+package org.smartfrog.services.deployapi.notifications.muws;
+
+import org.smartfrog.services.deployapi.components.DeploymentServer;
+
+import java.rmi.Remote;
 
 /**
+ * created 10-Oct-2006 15:34:25
  */
-public interface XmppListener extends Xmpp {
+
+
+public interface NotifyServer extends Remote {
+
+    /*
+          hostname PARENT:hostname;
+      servicesPath "alpine/";
+      muws LAZY PARENT:muws;
+     */
 
     /**
-     * Classname of a filter to use
+     * {@value}
      */
-    String ATTR_FILTER="filter";
+    String ATTR_HOSTNAME= DeploymentServer.ATTR_HOSTNAME;
+    /**
+     * {@value}
+     */
+    String ATTR_SERVICES_PATH = DeploymentServer.ATTR_SERVICESPATH;
+
+    String ATTR_NOTIFICATION_PATH = "notificationPath";
+    
+    /**
+     * {@value}
+     */
+    String ATTR_MUWS = "muws";
+
+    String EVENT="event";
 }

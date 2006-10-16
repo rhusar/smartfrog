@@ -220,34 +220,6 @@ public class JobRepository implements Iterable<Application> {
         return job;
     }
 
-    
-    
-    public String extractJobIDFromQuery(String query) {
-        if (query == null) {
-            throw FaultRaiser.raiseNoSuchApplicationFault("No job in address");
-        }
-        int index = query.indexOf(SEARCH_STRING);
-        if (index == -1) {
-            String message = "Didn't find query (" +
-                    SEARCH_STRING +
-                    ") in " +
-                    query;
-            log.debug(message);
-            throw FaultRaiser.raiseNoSuchApplicationFault(message);
-        }
-        int start = index + SEARCH_STRING.length();
-        int end = query.indexOf("&", start);
-        if (end == -1) {
-            end = query.length();
-        }
-        String substrate = query.substring(start, end).trim();
-        if(substrate.length()==0) {
-            throw FaultRaiser.raiseNoSuchApplicationFault("Empty job in "+query);
-        }
-            
-        return substrate;
-    }
-
     /**
      * Look up the job ID in a query
      * @param query
@@ -255,9 +227,12 @@ public class JobRepository implements Iterable<Application> {
      * @throws org.smartfrog.services.deployapi.transport.faults.BaseException on bad data
      */
     public Application lookupJobFromQuery(String query) {
-        String jobID=extractJobIDFromQuery(query);
+        String jobID=AlpineEPR.lookupQuery(query, Constants.JOB_ID_PARAM);
         log.debug("job is [" + jobID + "]");
         Application job=lookup(jobID);
+        if (job == null) {
+            throw FaultRaiser.raiseNoSuchApplicationFault("Empty job in " + query);
+        }
         return job;
     }
 
@@ -268,16 +243,12 @@ public class JobRepository implements Iterable<Application> {
      * @throws org.smartfrog.services.deployapi.transport.faults.BaseException on bad data
      */
     public Application lookupJobFromEndpointer(AlpineEPR epr) {
-        String address = epr.getAddress();
-        URL url = null;
-        try {
-            url = new URL(address);
-        } catch (MalformedURLException e) {
-            throw new BaseException("Couldn't turn an addr into a URL " +
-                    address, e);
+
+        String jobID=epr.lookupQuery(Constants.JOB_ID_PARAM);
+        Application job = lookup(jobID);
+        if(job==null) {
+            throw FaultRaiser.raiseNoSuchApplicationFault("Empty job in " +epr);
         }
-        String query = url.getQuery();
-        Application job = lookupJobFromQuery(query);
         return job;
     }
 }

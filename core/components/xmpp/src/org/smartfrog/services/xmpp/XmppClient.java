@@ -49,9 +49,6 @@ public interface XmppClient extends Xmpp {
     public void post(String message) throws RemoteException, SmartFrogException;
 
     /**
-     *
-     */
-    /**
      * Post a message to the specified recipient
      *
      * @param recipient target user

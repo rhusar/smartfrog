@@ -74,13 +74,20 @@ XmppComponent extends Prim {
     useTLS false;
 }
 
+
+
 /**
  * listens for new messages
  */
 
 XmppListener extends XmppComponent {
+    filter extends String {
+        description "classname for a filter to process incoming packets";
+    }
     sfClass "org.smartfrog.services.xmpp.XmppListenerImpl";
     presence true;
+    //default filter strips out all but messages
+    filter "org.smartfrog.services.xmpp.MessageFilter";
 }
 
 /**
@@ -156,4 +163,13 @@ JabberClientWorkflow extends JabberClient {
 XmppDebuggingWorkflow extends XmppDebugging {
     sfShouldTerminate true;
     unsetOnTerminate false;
+}
+
+/**
+ * This is the binding for the HP internal jabber server.
+ */
+HpJabberChatClient extends XmppClient {
+    server "jabber.google.com";
+    serviceName "hp.com";
+    port 5223;
 }

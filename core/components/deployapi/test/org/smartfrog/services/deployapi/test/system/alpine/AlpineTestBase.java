@@ -44,7 +44,9 @@ import org.smartfrog.services.deployapi.transport.wsrf.WsrfUtils;
 import org.smartfrog.services.deployapi.binding.DescriptorHelper;
 import org.smartfrog.services.xml.utils.ResourceLoader;
 import org.smartfrog.services.filesystem.FileSystem;
+import org.smartfrog.services.junit.AbstractTestSuite;
 import org.smartfrog.sfcore.languages.cdl.CdlCatalog;
+import org.smartfrog.sfcore.prim.Prim;
 import org.xml.sax.SAXException;
 
 import javax.xml.namespace.QName;
@@ -57,6 +59,8 @@ import java.io.IOException;
 import java.io.File;
 
 /**
+ * this test base is a junit test case, but it can also run under SmartFrog. In the latter's case
+ * it will autoextract the context from the running system
  * created 11-Apr-2006 14:57:19
  */
 
@@ -310,6 +314,30 @@ public abstract class AlpineTestBase extends TestCase {
             Element returned=result.getFirstChildElement(prop.getLocalPart(),prop.getNamespaceURI());
             assertNotNull("Missing property "+prop, returned);
         }
+    }
+
+    /**
+     * Get the hosted test suite from this component
+     * @return the Prim describing this test component, or null.
+     */
+    protected Prim getHostedTestSuite() {
+        return AbstractTestSuite.getTestSuite();
+    }
+
+    /**
+     * Test for being hosted
+     * @return true iff we are hosted
+     */
+    protected boolean isHosted() {
+        return getHostedTestSuite()!=null;
+    }
+
+    /**
+     * assert that the test is hosted.
+     */
+    protected void assertHosted() {
+        assertTrue("This test must run run under SmartFrog",
+                isHosted());
     }
 }
 

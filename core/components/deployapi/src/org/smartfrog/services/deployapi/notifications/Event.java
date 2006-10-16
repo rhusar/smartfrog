@@ -29,7 +29,7 @@ import java.util.Date;
 /**
  * created 27-Sep-2006 11:59:01
  */
-
+@SuppressWarnings("deprecation")
 public class Event {
 
     public Application application;
@@ -44,7 +44,7 @@ public class Event {
 
     public Event(Application application, LifecycleStateEnum type, TerminationRecord record) {
         this.application = application;
-        this.state = type;
+        state = type;
         this.record= record;
         timestamp=new Date();
     }

@@ -143,7 +143,7 @@ public class ServerInstance implements WSRPResourceSource {
                 Constants.SYSTEM_PATH, false);
         path = ctx + servicespath + systemPath;
         subscriptionsPath = ctx + servicespath
-                + owner.sfResolve(DeploymentServer.ATTR_SUBSCRIPTIONS_PATAH,
+                + owner.sfResolve(DeploymentServer.ATTR_SUBSCRIPTIONS_PATH,
                     Constants.SUBSCRIPTION_PATH, false);
         //temp dir set up
         File javatmpdir = new File(System.getProperty("java.io.tmpdir"));

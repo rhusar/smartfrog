@@ -42,7 +42,7 @@ import org.smartfrog.sfcore.logging.LogFactory;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.prim.TerminationRecord;
-import org.smartfrog.sfcore.security.SFClassLoader;
+import org.smartfrog.sfcore.utils.ComponentHelper;
 
 import java.io.File;
 import java.lang.reflect.Constructor;
@@ -75,7 +75,7 @@ public class CargoServerImpl extends PrimImpl implements CargoServer, Runnable {
     public static final int STATE_FAILED = 3;
     public static final int STATE_TERMINATED = 4;
     //any exception caught from the background thread
-    private SmartFrogException caughtException;
+    private Throwable caughtException;
     private Log log;
     public static final int DEFAULT_CARGO_PORT = 8080;
     private Vector properties;
@@ -87,9 +87,11 @@ public class CargoServerImpl extends PrimImpl implements CargoServer, Runnable {
     //list of things to deploy
     private List deployables=new ArrayList();
     private File configurationDir;
+    private ComponentHelper helper;
 
 
     public CargoServerImpl() throws RemoteException {
+        helper = new ComponentHelper(this);
     }
 
     public Log getLog() {
@@ -210,7 +212,7 @@ public class CargoServerImpl extends PrimImpl implements CargoServer, Runnable {
     /**
      * This is something for a background thread to do.
      */
-    protected void createAndConfigureContainer() throws SmartFrogException {
+    protected void createAndConfigureContainer() throws SmartFrogException, RemoteException {
 
         configuration = createLocalConfiguration(configurationClass, configurationDir);
 
@@ -355,7 +357,8 @@ public class CargoServerImpl extends PrimImpl implements CargoServer, Runnable {
      * @return
      * @throws SmartFrogException
      */
-    private LocalConfiguration createLocalConfiguration(String name,File dir) throws SmartFrogException {
+    private LocalConfiguration createLocalConfiguration(String name,File dir) throws SmartFrogException,
+            RemoteException {
         Class argclass = File.class;
         Object arg = dir;
         Object instance = construct(name, argclass, arg);
@@ -370,9 +373,9 @@ public class CargoServerImpl extends PrimImpl implements CargoServer, Runnable {
      * @return
      * @throws SmartFrogException
      */
-    private Object construct(String classname, Class argclass, Object arg) throws SmartFrogException {
+    private Object construct(String classname, Class argclass, Object arg) throws SmartFrogException, RemoteException {
         Object instance;
-        Class clazz = loadClass(classname);
+        Class clazz = helper.loadClass(classname);
         Class signature[] = new Class[] {
             argclass
         };
@@ -381,23 +384,6 @@ public class CargoServerImpl extends PrimImpl implements CargoServer, Runnable {
         };
         instance = instantiate(clazz, signature, arguments);
         return instance;
-    }
-
-    /**
-     * Load a class
-     *
-     * @param name
-     * @return
-     * @throws SmartFrogException
-     */
-    private Class loadClass(String name) throws SmartFrogException {
-        try {
-            Class newclass = null;
-            newclass = SFClassLoader.forName(name, codebase, true);
-            return newclass;
-        } catch (ClassNotFoundException e) {
-            throw SmartFrogException.forward(e);
-        }
     }
 
     /**
@@ -542,6 +528,9 @@ public class CargoServerImpl extends PrimImpl implements CargoServer, Runnable {
             container.start();
             setState(STATE_RUNNING);
         } catch (SmartFrogException e) {
+            caughtException = e;
+            setState(STATE_FAILED);
+        } catch (RemoteException e) {
             caughtException = e;
             setState(STATE_FAILED);
         } finally {

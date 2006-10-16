@@ -23,7 +23,6 @@ import org.smartfrog.services.deployapi.transport.endpoints.alpine.WsrfHandler;
 import org.smartfrog.services.deployapi.transport.wsrf.NotificationSubscription;
 import org.smartfrog.services.deployapi.transport.wsrf.WSRPResourceSource;
 import org.smartfrog.services.deployapi.transport.faults.FaultRaiser;
-import org.smartfrog.services.deployapi.system.Constants;
 import org.smartfrog.projects.alpine.core.MessageContext;
 import org.smartfrog.projects.alpine.core.EndpointContext;
 import org.smartfrog.projects.alpine.om.soap11.MessageDocument;
@@ -58,7 +57,6 @@ public class SubscriptionService extends WsrfHandler {
             //exit immediately if processing took place.
             return;
         }
-        NotificationSubscription sub = getSubscription(messageContext);
         Element payload = messageContext.getRequest().getBody().getFirstChildElement();
         if (payload == null) {
             throw new ServerException("Empty SOAP message");
@@ -91,11 +89,10 @@ public class SubscriptionService extends WsrfHandler {
     private NotificationSubscription getSubscription(MessageContext messageContext) {
         MessageDocument request = messageContext.getRequest();
         AlpineEPR to = getTo(request);
-        String url = to.getAddress();
-        String id = NotificationSubscription.extractSubscriptionIDFromQuery(url);
+        String id = NotificationSubscription.extractSubscriptionIDFromAddress(to);
         NotificationSubscription sub = getServerInstance().getSubscriptionStore().lookup(id);
         if (sub == null) {
-            FaultRaiser.raiseBadArgumentFault("No subscription at "+url);
+            FaultRaiser.raiseBadArgumentFault("No subscription at "+to);
         }
         return sub;
     }
