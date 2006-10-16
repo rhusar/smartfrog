@@ -122,7 +122,8 @@ For more information: www.smartfrog.org
   <!-- and do not complain if it could not start (or execution timed out) -->
   <!-- ========================================================== -->
   <target name="start-daemon-if-needed-with-logging"
-    depends="use-smartfrog-tasks,probe-local-daemon,declare-extended-smartfrog-tasks"
+    depends="use-smartfrog-tasks,probe-local-daemon,declare-extended-smartfrog-tasks,
+      declare-classpaths"
     unless="local.daemon.running">
       <property name="config.dir"
           location="${test.classes.dir}/org/smartfrog/test/configuration" />
@@ -130,7 +131,7 @@ For more information: www.smartfrog.org
             location="${config.dir}/default.ini" />
       <available file="${smartfrog.iniFile}" property="inifile.found"/>
       <fail unless="inifile.found">No file:${smartfrog.iniFile}</fail> 
-      <sf-startdaemon-debug  failonerror="false">
+      <sf-startdaemon-debug  failonerror="false" classpathref="run.classpath">
         <sysproperty key="java.util.config.logging.config.file"
           file="${config.dir}/logging.properties" />
         <sysproperty key="org.smartfrog.iniFile"
