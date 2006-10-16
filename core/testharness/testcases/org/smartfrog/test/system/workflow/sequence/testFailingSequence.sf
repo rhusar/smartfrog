@@ -18,11 +18,7 @@ For more information: www.smartfrog.org
 
 */
 
-#include "/org/smartfrog/components.sf"
-#include "/org/smartfrog/sfcore/workflow/combinators/sequence.sf"
-#include "/org/smartfrog/functions.sf"
-#include "/org/smartfrog/services/assertions/components.sf"
-#include "/org/smartfrog/services/filesystem/components.sf"
+#include "/org/smartfrog/test/system/workflow/sequence/components.sf"
 
 /**
  * Tests the scenario where failure of one component in sequence leads to 
@@ -31,23 +27,16 @@ For more information: www.smartfrog.org
  */
 testSequence extends Sequence {
 
+        toggle1 extends ToggleToTrueWorkflow;
 
-    actions extends LAZY {
-        
-        comp1 extends TouchFile {
-            filename "comp1";
-        }
-
-        comp2 extends Fail {
+        fail extends Fail {
           message "end of sequence";
           normal false;
         }
-        
-        comp3 extends TouchFile {
-            filename "comp3";
-        }
-    }
+
+        toggle2 extends ToggleToTrueWorkflow;
 }
-sfConfig extends Compound {
-    test extends testSequence;
+
+sfConfig extends TestBlock {
+    action extends testSequence;
 }

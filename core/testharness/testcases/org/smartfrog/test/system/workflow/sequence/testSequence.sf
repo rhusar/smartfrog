@@ -18,22 +18,21 @@ For more information: www.smartfrog.org
 
 */
 
-#include "/org/smartfrog/sfcore/workflow/combinators/delay.sf"
-#include "/org/smartfrog/services/assertions/components.sf"
-#include "/org/smartfrog/test/system/assertions/components.sf"
+
+#include "/org/smartfrog/test/system/workflow/sequence/components.sf"
 
 /**
- * Tests the scenario where failure of one component in sequence leads to 
- * sequence termination. First component creates a temp dir and third component
- * removes that but second component fails and thus third is never executed.
+ * test a sequence, assert both toggle to true
  */
-testSequence extends Delay {
 
-       delay 200;
-        
-        action extends Fail {
-          message "end of sequence";
-          normal true;
-        }
-        
+sfConfig extends TestBlock {
+    action extends Sequence {
+
+        toggle1 extends ToggleToTrueWorkflow;
+
+        toggle2 extends ToggleToTrueWorkflow;
+  }
 }
+
+
+
