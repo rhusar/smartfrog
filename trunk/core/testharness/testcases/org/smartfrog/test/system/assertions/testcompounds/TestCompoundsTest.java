@@ -20,7 +20,9 @@
 package org.smartfrog.test.system.assertions.testcompounds;
 
 import org.smartfrog.test.SmartFrogTestBase;
+import org.smartfrog.test.DeployingTestBase;
 import org.smartfrog.services.assertions.TestCompoundImpl;
+import org.smartfrog.services.assertions.TestBlock;
 import org.smartfrog.sfcore.prim.Prim;
 
 import java.rmi.RemoteException;
@@ -29,7 +31,7 @@ import java.rmi.RemoteException;
  * Date: 30-Apr-2004
  * Time: 22:03:23
  */
-public class TestCompoundsTest extends SmartFrogTestBase {
+public class TestCompoundsTest extends DeployingTestBase {
 
     private static final String FILES = "org/smartfrog/test/system/assertions/testcompounds/";
 
@@ -39,19 +41,9 @@ public class TestCompoundsTest extends SmartFrogTestBase {
         super(name);
     }
 
-    protected Prim application;
-
-    protected void tearDown() throws Exception {
-        super.tearDown();
-        terminateApplication(application);
-    }
-
-    public void testEmptyCompound() throws Throwable {
-     //   application =deployExpectingSuccess(TestCompoundsTest.FILES +"testEmptyCompound.sf","testEmptyCompound");
-    }
-
-    public void NOtestEmptySequence() throws Throwable {
+    public void testEmptySequence() throws Throwable {
         application =deployExpectingSuccess(TestCompoundsTest.FILES + "testEmptySequence.sf", "testEmptySequence");
+        expectSuccessfulTermination((TestBlock) application);
     }
 
     public void NOtestFailure() throws Throwable {

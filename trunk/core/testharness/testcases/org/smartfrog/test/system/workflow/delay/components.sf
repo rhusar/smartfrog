@@ -18,11 +18,20 @@ For more information: www.smartfrog.org
 
 */
 
-#include "/org/smartfrog/test/system/workflow/delay/components.sf"
+#include "/org/smartfrog/sfcore/workflow/combinators/delay.sf"
+#include "/org/smartfrog/services/assertions/components.sf"
+#include "/org/smartfrog/test/system/assertions/components.sf"
 
+/**
+ * a test sequence is a a test and a (normal)failure 
+ */
+testSequence extends Delay {
 
-sfConfig extends TestBlock {
-    action extends testSequence {
-      action:normal false;
-    }
+       delay 200;
+        
+        action extends Fail {
+          message "end of sequence";
+          normal true;
+        }
+        
 }

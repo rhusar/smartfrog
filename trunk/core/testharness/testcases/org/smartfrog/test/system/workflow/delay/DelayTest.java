@@ -20,22 +20,22 @@
 
 package org.smartfrog.test.system.workflow.delay;
 
-import org.smartfrog.test.SmartFrogTestBase;
-import org.smartfrog.sfcore.prim.Prim;
+import org.smartfrog.services.assertions.TestBlock;
+import org.smartfrog.test.DeployingTestBase;
 
 
 /**
  * test delays
  */
-public class DelayTest extends SmartFrogTestBase {
+public class DelayTest extends DeployingTestBase {
     protected static final String FILES = "org/smartfrog/test/system/workflow/delay/";
 
     public DelayTest(String s) {
         super(s);
     }
     public void testDelayNormal() throws Throwable {
-        Prim application=deployExpectingSuccess(FILES +"testDelayNormal.sf","testDelayNormal");
-        terminateApplication(application);
+        application=deployExpectingSuccess(FILES +"testDelayNormal.sf","testDelayNormal");
+        expectSuccessfulTermination((TestBlock) application);
     }
 
     /**
@@ -44,9 +44,9 @@ public class DelayTest extends SmartFrogTestBase {
      * this may be time to rethink how we run tests.
      * @throws Throwable
      */
-    public void NotestDelayAbnormalFailure() throws Throwable {
-        deployExpectingException(FILES+"testDelayAbnormalFailure.sf","testDelayAbnormalFailure",
-            "XXx","XX");
+    public void testDelayAbnormalFailure() throws Throwable {
+        application = deployExpectingSuccess(FILES+"testDelayAbnormalFailure.sf","testDelayAbnormalFailure");
+        expectAbnormalTermination((TestBlock) application);
     }
 
 }

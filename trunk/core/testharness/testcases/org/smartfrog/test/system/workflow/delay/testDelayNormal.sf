@@ -18,9 +18,9 @@ For more information: www.smartfrog.org
 
 */
 
-#include "/org/smartfrog/test/system/workflow/delay/delaybase.sf"
+#include "/org/smartfrog/test/system/workflow/delay/components.sf"
 
 
-sfConfig extends Compound {
-    test extends testSequence;
+sfConfig extends TestBlock {
+    action extends testSequence;
 }
