@@ -241,12 +241,16 @@ public class CompoundImpl extends PrimImpl implements Compound {
      * Compound, running it through its entire lifecycle. This is the preferred way
      * of creating new child components of a Compound.
      *
+     * Children cannot be created by a terminating component. It would only create
+     * orphan children that could not be managed, so is intercepted and a
+     * {@link SmartFrogDeploymentException} raised.
+     *
      * @param name name of attribute which the deployed component should adopt
      * @param parent of deployer component
      * @param cmp compiled component to deploy and start
      * @param parms parameters for description
      *
-     * @return deployed component if successfull
+     * @return deployed component if successful
      *
      * @exception SmartFrogDeploymentException failed to deploy compiled
      * component
@@ -257,7 +261,14 @@ public class CompoundImpl extends PrimImpl implements Compound {
         RemoteException, SmartFrogDeploymentException {
         Prim comp = null;
 
-        if (parms==null) parms = new ContextImpl();
+        //check for any attempt to create a child in a terminating component, and bail out
+        if(sfIsTerminated() || sfIsTerminating()) {
+            throw new SmartFrogDeploymentException("Cannot create a child during termination", this);
+        }
+        //no context? set one up
+        if (parms==null) {
+            parms = new ContextImpl();
+        }
         try {
             // This is needed so that the root component is properly named
             // when registering with the ProcessCompound
@@ -652,7 +663,7 @@ public class CompoundImpl extends PrimImpl implements Compound {
             Object elem = e.nextElement();
 
             if (elem instanceof Prim) {
-                new DumpCall((Prim) elem, target);
+                new DumpCall((Prim) elem, target).start();
             }
         }
     }
@@ -781,14 +792,20 @@ public class CompoundImpl extends PrimImpl implements Compound {
 
         /**
          * Constructor taking the component to call and the dump interface to
-         * dump to. Starts the dump call immediately as a thread
+         * dump to. Does not start the dump.
          *
          * @param callee source of dump call
          * @param caller destination of dump call
          */
         protected DumpCall(Prim callee, Dump caller) {
-            this.prim = callee;
-            this.dump = caller;
+            prim = callee;
+            dump = caller;
+        }
+
+        /**
+         * Start the dump thread
+         */
+        public void start() {
             (new Thread(this)).start();
         }
 
@@ -798,7 +815,7 @@ public class CompoundImpl extends PrimImpl implements Compound {
         public void run() {
             try {
                 prim.sfDumpState(dump);
-            } catch (Exception remex) {
+            } catch (Exception ignored) {
                 // ignore
             }
         }
