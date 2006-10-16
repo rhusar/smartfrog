@@ -73,7 +73,7 @@ public class OneHostXMLListener implements XmlListener {
      * We only really buffer during listening, but cache it in case wierd
      * race conditions or multiple sources complicate our lives.
      */
-    protected HashMap tests;
+    protected HashMap<String , TestInfo > tests;
 
     protected static final String ENCODING = "UTF8";
     protected static final String XML_DECLARATION = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n";
@@ -111,7 +111,7 @@ public class OneHostXMLListener implements XmlListener {
         this.suitename = suitename;
         this.startTime = startTime;
         this.preamble = preamble;
-        tests=new HashMap();
+        tests=new HashMap<String, TestInfo>();
     }
 
     /**
@@ -177,12 +177,12 @@ public class OneHostXMLListener implements XmlListener {
 
         try {
             out.close();
-        } catch (Exception e) {
+        } catch (Exception ignored) {
 
         }
         try {
             outstream.close();
-        } catch (IOException e) {
+        } catch (IOException ignored) {
 
         }
         out = null;
@@ -275,7 +275,7 @@ public class OneHostXMLListener implements XmlListener {
     public void endTest(TestInfo test) throws RemoteException,
             SmartFrogException {
         testCount++;
-        TestInfo cached=(TestInfo)tests.get(test.getText());
+        TestInfo cached=tests.get(test.getText());
         String type;
         if(cached==null) {
             type="pass";

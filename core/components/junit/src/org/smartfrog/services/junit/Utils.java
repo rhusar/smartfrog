@@ -36,26 +36,32 @@ public class Utils {
     /**
      * get the current hostname. This is not fully qualified.
      *
-     * @return
+     * @return the hostname, or an error string
      */
     public static String getHostname() {
         try {
             return InetAddress.getLocalHost().getHostName();
-        } catch (UnknownHostException e) {
+        } catch (UnknownHostException ignored) {
             return "(unknown host)";
         }
     }
-    
+
+    /**
+     * get the current IP addr.
+     *
+     * @return the address, or an error string
+     */
     public static String getIpAddr() {
         try {
             return InetAddress.getLocalHost().getHostAddress();
-        } catch (UnknownHostException e) {
+        } catch (UnknownHostException ignored ) {
             return "(unknown address)";
         }   
     }
 
     /**
      * Apply system properties. This adds them to the current JVM, and does not unapply it afterwards
+     * @param properties system properties
      */
     public static void applySysProperties(Properties properties) {
         Enumeration propertyEnum = properties.keys();

@@ -221,9 +221,7 @@ public class OneHostHtmlListener extends OneHostXMLListener {
             body.append(toXML(test.getFault()));
         }
         //now do the log
-        Iterator it=test.getMessages().iterator();
-        while (it.hasNext()) {
-            LogEntry entry = (LogEntry) it.next();
+        for(LogEntry entry:test.getMessages()) {
             String log="["+entry.levelToText()+"]"
                     +entry.getText();
             body.append(div(style(entry),log));
@@ -277,6 +275,7 @@ public class OneHostHtmlListener extends OneHostXMLListener {
             exit(buf, "td");
             exit(buf, "tr");
             exit(buf, "table");
+            //stop recursive output with a low level pointer equality test
             if(fault.getCause()!=null && fault.getCause()!=fault) {
                 buf.append(toXML(fault.getCause()));
             }

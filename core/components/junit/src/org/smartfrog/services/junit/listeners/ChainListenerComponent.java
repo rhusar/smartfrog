@@ -45,7 +45,7 @@ public class ChainListenerComponent extends PrimImpl implements TestListenerFact
      */
     public static final String ATTR_LISTENERS="listeners";
 
-    private List factories;
+    private List<TestListenerFactory> factories;
     private Log log;
     private ComponentHelper helper = new ComponentHelper(this);
 
@@ -82,11 +82,9 @@ public class ChainListenerComponent extends PrimImpl implements TestListenerFact
         super.sfStart();
         Vector factoryList=null;
         factoryList=sfResolve(ATTR_LISTENERS, factoryList,true);
-        factories=new ArrayList(factoryList.size());
-        Iterator fit=factoryList.iterator();
-        while (fit.hasNext()) {
-            Object next = fit.next();
-            TestListenerFactory factory = (TestListenerFactory) next;
+        factories=new ArrayList<TestListenerFactory>(factoryList.size());
+        for(Object elt:factoryList) {
+            TestListenerFactory factory = (TestListenerFactory) elt;
             factories.add(factory);
         }
     }

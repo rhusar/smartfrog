@@ -40,16 +40,16 @@ public class BufferingListenerComponent extends PrimImpl
 
 
     public BufferingListenerComponent() throws RemoteException {
-        errors = new ArrayList();
-        failures = new ArrayList();
-        starts = new ArrayList();
-        ends = new ArrayList();
-        messages = new ArrayList();
+        errors = new ArrayList<TestInfo>();
+        failures = new ArrayList<TestInfo>();
+        starts = new ArrayList<TestInfo>();
+        ends = new ArrayList<TestInfo>();
+        messages = new ArrayList<LogEntry>();
     }
 
-    private List errors, failures, starts, ends;
+    private List<TestInfo> errors, failures, starts, ends;
 
-    private List messages;
+    private List<LogEntry> messages;
 
     private int sessionStartCount, sessionEndCount;
 
@@ -73,7 +73,7 @@ public class BufferingListenerComponent extends PrimImpl
     /**
      * get the number of errors
      *
-     * @return
+     * @return the error count
      * @throws java.rmi.RemoteException
      */
     public synchronized int getErrorCount() throws RemoteException {
@@ -83,14 +83,14 @@ public class BufferingListenerComponent extends PrimImpl
     /**
      * get the error at that point in the list
      *
-     * @param entry
+     * @param entry the index of the entry
      * @return a copy of the error
      * @throws java.rmi.RemoteException
      * @throws IndexOutOfBoundsException if the entry is out of range
      */
     public synchronized TestInfo getErrorInfo(int entry)
             throws RemoteException, IndexOutOfBoundsException {
-        return ((TestInfo) errors.get(entry)).duplicate();
+        return errors.get(entry).duplicate();
     }
 
     /**
@@ -113,7 +113,7 @@ public class BufferingListenerComponent extends PrimImpl
      */
     public synchronized TestInfo getStartInfo(int entry)
             throws RemoteException, IndexOutOfBoundsException {
-        return ((TestInfo) starts.get(entry)).duplicate();
+        return starts.get(entry).duplicate();
     }
 
     /**
@@ -136,7 +136,7 @@ public class BufferingListenerComponent extends PrimImpl
      */
     public TestInfo getEndInfo(int entry) throws RemoteException,
             IndexOutOfBoundsException {
-        return ((TestInfo) ends.get(entry)).duplicate();
+        return ends.get(entry).duplicate();
     }
 
     /**
@@ -159,7 +159,7 @@ public class BufferingListenerComponent extends PrimImpl
      */
     public TestInfo getFailureInfo(int entry) throws RemoteException,
             IndexOutOfBoundsException {
-        return ((TestInfo) failures.get(entry)).duplicate();
+        return failures.get(entry).duplicate();
     }
 
     /**
@@ -196,32 +196,32 @@ public class BufferingListenerComponent extends PrimImpl
         return sessionEndCount;
     }
 
-    public List getErrors() {
+    public List<TestInfo> getErrors() {
         return errors;
     }
 
-    public List getFailures() {
+    public List<TestInfo> getFailures() {
         return failures;
     }
 
-    public List getStarts() {
+    public List<TestInfo> getStarts() {
         return starts;
     }
 
-    public List getEnds() {
+    public List<TestInfo> getEnds() {
         return ends;
     }
 
-    public List getMessages() {
+    public List<LogEntry> getMessages() {
         return messages;
     }
 
     /**
      * bind to a caller
      *
-     * @param suite
+     * @param suite test suite
      * @param hostname  name of host
-     * @param processname
+     * @param processname name of the process
      * @param suitename name of test suite
      * @param timestamp start timestamp (UTC)
      * @return a listener to talk to
@@ -262,7 +262,7 @@ public class BufferingListenerComponent extends PrimImpl
          * make a clone of any test info
          *
          * @param test
-         * @return
+         * @return cloned test information
          */
         private TestInfo cloneTestInfo(TestInfo test) {
             TestInfo cloned = null;

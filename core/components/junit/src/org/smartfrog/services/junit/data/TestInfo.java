@@ -335,7 +335,7 @@ public final class TestInfo implements Serializable, Cloneable {
      * Get the list of messages, all of type LogEntry
      * @return a list
      */
-    public List getMessages() {
+    public List<LogEntry> getMessages() {
         return messages;
     }
 

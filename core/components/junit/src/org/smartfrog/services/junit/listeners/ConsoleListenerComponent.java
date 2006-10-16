@@ -44,7 +44,7 @@ public class ConsoleListenerComponent extends PrimImpl
      * still go to the original console (i.e. no recursion)
      */
 
-    PrintStream outputstream = System.out;
+    private PrintStream outputstream = System.out;
 
     public ConsoleListenerComponent() throws RemoteException {
     }

@@ -313,6 +313,7 @@ public class TestRunnerComponent extends CompoundImpl implements TestRunner,
                     suiteComponent.bind(getConfiguration());
                     successful &= suiteComponent.runTests();
                     updateResultAttributes(suiteComponent);
+                    suiteComponent.bind(null);
                     //break out if the thread is interrupted
                     if (Thread.currentThread().isInterrupted()) {
                         log.info("Test was interrupted");

@@ -9,7 +9,7 @@ public class InterruptingWatchdogTimer implements Runnable {
 
     private long timeout;
 
-    private boolean didInterrupt=false;
+    private volatile boolean didInterrupt=false;
     private Thread watcher;
 
     public InterruptingWatchdogTimer(Thread target, long timeout) {
@@ -18,7 +18,7 @@ public class InterruptingWatchdogTimer implements Runnable {
     }
 
     public InterruptingWatchdogTimer(long timeout) {
-        this.target = Thread.currentThread();
+        target = Thread.currentThread();
         this.timeout = timeout;
     }
 
@@ -59,7 +59,7 @@ public class InterruptingWatchdogTimer implements Runnable {
                 target.interrupt();
             }
             didInterrupt=true;
-        } catch (InterruptedException e) {
+        } catch (InterruptedException ignored) {
 
         }
     }

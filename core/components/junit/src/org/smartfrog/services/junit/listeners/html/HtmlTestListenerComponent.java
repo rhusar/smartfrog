@@ -19,9 +19,9 @@
  */
 package org.smartfrog.services.junit.listeners.html;
 
+import org.smartfrog.services.junit.listeners.xml.AbstractXmlListenerComponent;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.utils.ComponentHelper;
-import org.smartfrog.services.junit.listeners.xml.AbstractXmlListenerComponent;
 
 import java.io.File;
 import java.io.IOException;

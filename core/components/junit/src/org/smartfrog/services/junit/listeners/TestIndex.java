@@ -18,13 +18,13 @@
 
  */package org.smartfrog.services.junit.listeners;
 
-import org.smartfrog.services.junit.TestSuite;
 import org.smartfrog.services.junit.TestListener;
+import org.smartfrog.services.junit.TestSuite;
 import org.smartfrog.sfcore.common.SmartFrogException;
 
+import java.io.File;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
-import java.io.File;
 
 /**
  * This interface is what index components
