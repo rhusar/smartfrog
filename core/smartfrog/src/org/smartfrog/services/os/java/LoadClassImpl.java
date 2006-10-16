@@ -198,13 +198,7 @@ public class LoadClassImpl extends PrimImpl implements LoadClass {
      */
     public static Class loadClass(Prim owner, String classname) throws RemoteException, SmartFrogException {
         Class loadedClass;
-        try {
-            ComponentHelper helper = new ComponentHelper(owner);
-            String codebase = helper.getCodebase();
-            loadedClass = SFClassLoader.forName(classname, codebase, true);
-        } catch (ClassNotFoundException e) {
-            throw SmartFrogException.forward(e);
-        }
-        return loadedClass;
+        ComponentHelper helper = new ComponentHelper(owner);
+        return helper.loadClass(classname);
     }
 }
