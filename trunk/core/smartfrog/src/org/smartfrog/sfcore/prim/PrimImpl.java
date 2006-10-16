@@ -93,16 +93,16 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
                 SmartFrogCoreKeys.SF_LIVENESS_FACTOR));
 
     /** Flag indicating that this component has been terminated. */
-    protected boolean sfIsTerminated = false;
+    protected volatile boolean sfIsTerminated = false;
 
     /** Flag indicating that this component termination is initiated. */
-    protected boolean sfIsTerminating = false;
+    protected volatile boolean sfIsTerminating = false;
 
     /** Flag indicating that this component has been deployed. */
-    protected boolean sfIsDeployed = false;
+    protected volatile boolean sfIsDeployed = false;
 
     /** Flag indicating that this component has been started. */
-    protected boolean sfIsStarted = false;
+    protected volatile boolean sfIsStarted = false;
 
     /** Parent. */
     protected Prim sfParent = null;
