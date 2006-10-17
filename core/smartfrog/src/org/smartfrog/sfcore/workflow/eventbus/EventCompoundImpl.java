@@ -248,10 +248,16 @@ public class EventCompoundImpl extends CompoundImpl implements EventBus,
             forward = onWorkflowTerminating(status, comp);
         } else {
             //check to see what the subclass wants
-            if (sfContainsChild(comp)) {
-                forward = onChildTerminated(status, comp);
-            } else {
-                forward = onNonChildTerminated(status, comp);
+            try {
+                if (sfContainsChild(comp)) {
+                    forward = onChildTerminated(status, comp);
+                } else {
+                    forward = onNonChildTerminated(status, comp);
+                }
+            } catch (Exception e) {
+                sfLog().error("Exception ",e);
+                forward=true;
+
             }
         }
         if (forward) {
@@ -290,7 +296,8 @@ public class EventCompoundImpl extends CompoundImpl implements EventBus,
     * @param comp child component that is terminating
     * @return true if the termination event is to be forwarded up the chain.
     */
-    protected boolean onChildTerminated(TerminationRecord status, Prim comp) {
+    protected boolean onChildTerminated(TerminationRecord status, Prim comp)
+            throws SmartFrogRuntimeException, RemoteException {
         return true;
     }
 
@@ -304,7 +311,8 @@ public class EventCompoundImpl extends CompoundImpl implements EventBus,
      * @param comp   non-child component that is terminating
      * @return true if the termination event is to be forwarded up the chain.
      */
-    protected boolean onNonChildTerminated(TerminationRecord status, Prim comp) {
+    protected boolean onNonChildTerminated(TerminationRecord status, Prim comp)
+            throws SmartFrogRuntimeException, RemoteException {
         return true;
     }
 

@@ -200,7 +200,7 @@ public class EventPrimImpl extends PrimImpl implements EventRegistration,
             try {
                 s.deregister(this);
             } catch (RemoteException ex) {
-                ex.printStackTrace();
+                sfLog().error(ex);
             }
         }
 

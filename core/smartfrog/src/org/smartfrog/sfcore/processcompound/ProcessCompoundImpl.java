@@ -1010,7 +1010,7 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
                     sfLog().debug("New ProcessCompound "+name+" created: "+ newPc.sfCompleteName());
                 } catch (Throwable thr) {
                     sfLog().debug("New ProcessCompound "+name+" created.");
-                    thr.printStackTrace();
+                    sfLog().error(thr);
                 }
             }
             return newPc;
