@@ -503,6 +503,7 @@ because javac was bailing out with some error about unzipping -->
           <sysproperty key="org.smartfrog.codebase"
               value="${codebase}"/>
           <!-- source files -->
+          <source file="test/files/deployclient.sf"/>
           <source file="${test.src.dir}/${deploy.sf}"/>
         </sf:parse>
         <!-- on success, we touch a property file to note we got it out -->

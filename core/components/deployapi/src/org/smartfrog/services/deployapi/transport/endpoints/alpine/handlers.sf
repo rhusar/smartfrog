@@ -46,21 +46,13 @@ SubscriptionService extends WsrfHandler {
   classname "org.smartfrog.services.deployapi.transport.endpoints.alpine.SubscriptionService";
 }
 
+
 /**
  * component to receive notifications
  */
 WSNotifyHandler extends WsrfHandler {
   classname "org.smartfrog.services.deployapi.transport.endpoints.alpine.WSNotifyEndpoint";
 }
-
-
-/**
- * component to receive WSN events
- */
-MuwsEventHandler extends WSNotifyHandler {
-  classname "org.smartfrog.services.deployapi.transport.endpoints.alpine.MuwsEventHandler";
-}
-
 
 
 DeployApiEndpoint extends AlpineEndpoint {
@@ -70,8 +62,9 @@ DeployApiEndpoint extends AlpineEndpoint {
       LogCurrentMessageHandler:classname,
       AddressHandler:classname,
       MustUnderstandChecker:classname,
-      LAZY pivotHandler:classname,
-      LogCurrentMessageHandler:classname
+      LAZY pivotHandler:classname
+      //http://jira.smartfrog.org/jira/browse/SFOS-23
+//      ,LogCurrentMessageHandler:classname
     ];
 
      getMessage ##

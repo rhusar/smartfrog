@@ -36,6 +36,15 @@ ITS MEDIA, AND YOU HEREBY WAIVE ANY CLAIM IN THIS REGARD.
 
 
 
+/**
+ * component to receive WSN events
+ */
+MuwsEventHandler extends WSNotifyHandler {
+  classname "org.smartfrog.services.deployapi.transport.endpoints.alpine.MuwsEventHandler";
+}
+
+
+
 MuwsEventEndpointPath "events/";
 
 
@@ -43,7 +52,7 @@ MuwsEventEndpoint extends DeployApiEndpoint {
     name "muwsevents";
     path ("/"++MuwsEventEndpointPath);
     pivotHandler MuwsEventHandler;
-     getMessage ##
+    getMessage ##
       <html>
       <head><title>Muws Event Endpoint</title><head>
       <body>Client side endpoint for muws events.</body>
@@ -84,11 +93,6 @@ NotifyHost extends AlpineServerOnJetty {
 
 }
 
-
-sfConfig extends NotifyHost {
-
-
-}
 
 
 

@@ -66,9 +66,9 @@ public class NotifyServerImpl extends PrimImpl implements NotifyServer {
      * Can be called to start components. Subclasses should override to provide
      * functionality Do not block in this call, but spawn off any main loops!
      *
-     * @throws org.smartfrog.sfcore.common.SmartFrogException
+     * @throws SmartFrogException
      *                                  failure while starting
-     * @throws java.rmi.RemoteException In case of network/rmi error
+     * @throws RemoteException In case of network/rmi error
      */
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
@@ -76,7 +76,7 @@ public class NotifyServerImpl extends PrimImpl implements NotifyServer {
                 protocol, false);
         hostname = sfResolve(DeploymentServer.ATTR_HOSTNAME,
                 hostname, false);
-        if (hostname.length() == 0) {
+        if (hostname==null || hostname.length() == 0) {
             hostname = Constants.LOCALHOST;
         }
         port = sfResolve(DeploymentServer.ATTR_PORT,
@@ -119,19 +119,19 @@ public class NotifyServerImpl extends PrimImpl implements NotifyServer {
         if(key == null || key.length() == 0) {
             return null;
         }
-        WeakReference<MuwsEventReceiver> ref = entries.get(key);
-        if (ref != null) {
-            MuwsEventReceiver receiver = ref.get();
-            if(receiver==null) {
-                //obsolete match
-                synchronized(this) {
+        synchronized (this) {
+            WeakReference<MuwsEventReceiver> ref = entries.get(key);
+            if (ref != null) {
+                MuwsEventReceiver receiver = ref.get();
+                if (receiver == null) {
+                    //obsolete match
                     entries.remove(key);
                 }
+                return receiver;
+            } else {
+                //no match
+                return null;
             }
-            return receiver;
-        } else {
-            //no match
-            return null;
         }
 
     }
