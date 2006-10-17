@@ -1,8 +1,6 @@
 package org.smartfrog.test.system.workflow.repeat;
 
-import org.smartfrog.test.SmartFrogTestBase;
 import org.smartfrog.test.DeployingTestBase;
-import org.smartfrog.sfcore.prim.Prim;
 
 /**
  * test delays
@@ -24,7 +22,7 @@ public class RepeatTest extends DeployingTestBase {
                 "testEmptyRepeat",
                 "SmartFrogDeploymentException", null,
                 "SmartFrogResolutionException",
-                "non-optional attribute 'action' is missing");
+                "non-optional attribute");
     }
 
     public void testNegativeRepeat() throws Throwable {
