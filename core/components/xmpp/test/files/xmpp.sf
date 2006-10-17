@@ -21,12 +21,13 @@
 #include "/org/smartfrog/services/xmpp/components.sf"
 #include "/org/smartfrog/sfcore/workflow/components.sf"
 
-sfConfig extends Sequence {
 
-    debug extends XmppDebugging {
-        sfShouldTerminate true;
-        unsetOnTerminate false;
-    }
+/**
+ * Not intended to do anything useful, merely
+ * parse correctly
+ */
+
+sfConfig extends Parallel {
 
     post extends GoogleChatClientWorkflow {
         to "smartfrog.two@gmail.com";
@@ -35,6 +36,10 @@ sfConfig extends Sequence {
         message "hello, world";
     }
 
+    listener extends GoogleChatListener {
+        login "smartfrog.two";
+        password PROPERTY xmpp.password;
+    }
 
 
 }
