@@ -124,7 +124,7 @@ public abstract class WsrfSession extends Session {
 
     /**
     * Bind to an address; forces us to use the
-    * {@link Constants.WS_ADDRESSING_NAMESPACE} namespace for WSA, and
+    * {@link Constants#WS_ADDRESSING_NAMESPACE} namespace for WSA, and
     * mark the headers as MustUnderstand.
     *
     * @param endpoint

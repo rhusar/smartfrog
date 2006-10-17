@@ -60,7 +60,7 @@ public class MuwsEventReceiver implements Iterable<ReceivedEvent>{
     }
 
 
-    public int getCount() {
+    public synchronized int getCount() {
         return count;
     }
 
