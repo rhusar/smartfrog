@@ -58,6 +58,11 @@ AssertSchema extends Schema {
     //name of a value attribute on that reference
     attributeEquals extends OptionalString;
 
+    //value of a vector element to test
+    attributeVectorValue extends OptionalString;
+    //the index to look for
+    attributeVectorIndex extends OptionalInteger;
+
     //name of a file to probe for
     fileExists extends OptionalString;
     //name of a directory to probe for
