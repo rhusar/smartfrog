@@ -100,8 +100,9 @@ AlpineHandler extends Prim {
 ClassFactoryHandler extends AlpineHandler {
 
     alpineHandlerSchema extends Schema {
-        //the name of the handler class
-        classname extends String;
+        classname extends String {
+            description "the classname of the handler";
+        }
     }
 }
 
