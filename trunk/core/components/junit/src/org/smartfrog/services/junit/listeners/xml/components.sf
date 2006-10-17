@@ -57,7 +57,7 @@ XmlListenerSchema extends Schema {
 
 XmlListener extends TestListener {
     xmlListenerSchema extends XmlListenerSchema;
-    sfClass "org.smartfrog.services.junit.listeners.XmlListenerComponent";
+    sfClass "org.smartfrog.services.junit.listeners.xml.XmlListenerComponent";
     useHostname true;
     useProcessname false;
     suffix ".xml";
