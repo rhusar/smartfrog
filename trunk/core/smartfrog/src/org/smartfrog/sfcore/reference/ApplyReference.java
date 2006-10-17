@@ -167,12 +167,15 @@ public class ApplyReference extends Reference implements Copying, Cloneable, Ser
         String functionClass = null;
         Object result;
 
-        if (getData()) return this;
+        if (getData()) {
+            return this;
+        }
 
-        if (rr instanceof ComponentDescription)
+        if (rr instanceof ComponentDescription) {
             comp.setParent((ComponentDescription) rr);
-        else if (rr instanceof Prim)
+        } else if (rr instanceof Prim) {
             comp.setPrimParent((Prim) rr);
+        }
 
         try {
             functionClass = (String) comp.sfResolveHere("sfFunctionClass");
@@ -188,7 +191,8 @@ public class ApplyReference extends Reference implements Copying, Cloneable, Ser
                 try {
                     forFunction.sfAddAttribute(name, value);
                 } catch (SmartFrogContextException e) {
-                    //shouldn't happen
+                    //shouldn't happen. but when it does...
+                    e.printStackTrace();
                 }
             }
         }

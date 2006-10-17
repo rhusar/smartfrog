@@ -61,7 +61,7 @@ public class EventQueue extends EventPrimImpl implements Prim {
                     try {
                         s.event(messages.get(i));
                     } catch (Exception ex) {
-                        ex.printStackTrace();
+                        sfLog().error(ex);
                     }
                 }
                 synchronized (registrationMessages) {
