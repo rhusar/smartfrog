@@ -25,13 +25,14 @@ import java.util.Vector;
 import java.util.Calendar;
 
 import org.smartfrog.test.SmartFrogTestBase;
+import org.smartfrog.test.DeployingTestBase;
 import org.smartfrog.sfcore.prim.Prim;
 
 
 /**
  * JUnit test class for functions provided by SmartFrog framework.
  */
-public class FunctionsSystemTest extends SmartFrogTestBase {
+public class FunctionsSystemTest extends DeployingTestBase {
 
     private static final String FILES="org/smartfrog/test/system/functions/";
 
@@ -61,18 +62,18 @@ public class FunctionsSystemTest extends SmartFrogTestBase {
     public void testCaseTCN33() throws Throwable {
         String expected = "Unable to connect to host remoteHost.india.hp.com"+
                 "at port 50002 This would not work";
-        Prim appl = deployExpectingSuccess(FILES + "tcn33.sf", "tcn33");
-        assertNotNull(appl);
-        String actual = (String) (appl.sfResolve("message"));
+        application = deployExpectingSuccess(FILES + "tcn33.sf", "tcn33");
+        assertNotNull(application);
+        String actual = (String) (application.sfResolve("message"));
         assertFalse(expected.equals(actual));
     }
     /**
      * Tests "cancat" function.
      */
     public void testCaseTCP9() throws Throwable {
-        Prim appl = deployExpectingSuccess(FILES + "tcp9.sf", "tcp9");
-        assertNotNull(appl);
-        String message = (String) (appl.sfResolve("message"));
+        application = deployExpectingSuccess(FILES + "tcp9.sf", "tcp9");
+        assertNotNull(application);
+        String message = (String) (application.sfResolve("message"));
         assertContains(message, "Hello World");
     }
     /**
@@ -83,9 +84,9 @@ public class FunctionsSystemTest extends SmartFrogTestBase {
         expected.add("Macgrath");
         expected.add("Hayden");
         expected.add("Ponting");
-        Prim appl = deployExpectingSuccess(FILES + "tcp10.sf", "tcp10");
-        assertNotNull(appl);
-        Vector actual = (Vector) (appl.sfResolve("administrators"));
+        application = deployExpectingSuccess(FILES + "tcp10.sf", "tcp10");
+        assertNotNull(application);
+        Vector actual = (Vector) (application.sfResolve("administrators"));
         assertNotNull("Did not find the value", actual);
         assertEquals(expected, actual);
     }
@@ -97,9 +98,9 @@ public class FunctionsSystemTest extends SmartFrogTestBase {
         expected.add("This is a test for the append function");
         expected.add("provided by");
         expected.add("smartfrog framework");
-        Prim appl = deployExpectingSuccess(FILES + "tcp11.sf", "tcp11");
-        assertNotNull(appl);
-        Vector actual = (Vector) (appl.sfResolve("logMessage"));
+        application = deployExpectingSuccess(FILES + "tcp11.sf", "tcp11");
+        assertNotNull(application);
+        Vector actual = (Vector) (application.sfResolve("logMessage"));
         assertEquals(expected, actual);
     }
     /**
@@ -108,9 +109,9 @@ public class FunctionsSystemTest extends SmartFrogTestBase {
     public void testCaseTCP12() throws Throwable {
         String expected = "Unable to connect to host remoteHost.india.hp.com "+
                 "at port 50002";
-        Prim appl = deployExpectingSuccess(FILES + "tcp12.sf", "tcp12");
-        assertNotNull(appl);
-        String actual = (String) (appl.sfResolve("message"));
+        application = deployExpectingSuccess(FILES + "tcp12.sf", "tcp12");
+        assertNotNull(application);
+        String actual = (String) (application.sfResolve("message"));
         assertContains(expected, actual);
     }
     /**
@@ -118,9 +119,9 @@ public class FunctionsSystemTest extends SmartFrogTestBase {
      */
     public void testCaseTCP13() throws Throwable {
         String expected = "value is 99\n";
-        Prim appl = deployExpectingSuccess(FILES + "tcp13.sf", "tcp13");
-        assertNotNull(appl);
-        String actual = (String) (appl.sfResolve("base"));
+        application = deployExpectingSuccess(FILES + "tcp13.sf", "tcp13");
+        assertNotNull(application);
+        String actual = (String) (application.sfResolve("base"));
         assertContains(expected, actual);
     }
     /**
@@ -128,9 +129,9 @@ public class FunctionsSystemTest extends SmartFrogTestBase {
      */
     public void testCaseTCP14() throws Throwable {
         Integer expected = new Integer(1000);
-        Prim appl = deployExpectingSuccess(FILES + "tcp14.sf", "tcp14");
-        assertNotNull(appl);
-        Integer actual = (Integer) (appl.sfResolve("test"));
+        application = deployExpectingSuccess(FILES + "tcp14.sf", "tcp14");
+        assertNotNull(application);
+        Integer actual = (Integer) (application.sfResolve("test"));
         assertEquals(expected, actual);
     }
     /**
@@ -139,9 +140,9 @@ public class FunctionsSystemTest extends SmartFrogTestBase {
     public void testCaseTCP15() throws Throwable {
         int min = 1;
         int max = 6;
-        Prim appl = deployExpectingSuccess(FILES + "tcp15.sf", "tcp15");
-        assertNotNull(appl);
-        Integer actual = (Integer) (appl.sfResolve("throw1"));
+        application = deployExpectingSuccess(FILES + "tcp15.sf", "tcp15");
+        assertNotNull(application);
+        Integer actual = (Integer) (application.sfResolve("throw1"));
         assertNotNull(actual);
         assertTrue((min<=actual.intValue()) && (actual.intValue()<=max));
     }
@@ -149,10 +150,10 @@ public class FunctionsSystemTest extends SmartFrogTestBase {
      * Tests "random" function.
      */
     public void testCaseTCP16() throws Throwable {
-        Prim appl = deployExpectingSuccess(FILES + "tcp16.sf", "tcp16");
-        assertNotNull(appl);
-        Integer seq1 = (Integer) (appl.sfResolve("sequence1"));
-        Integer seq2 = (Integer) (appl.sfResolve("sequence2"));
+        application = deployExpectingSuccess(FILES + "tcp16.sf", "tcp16");
+        assertNotNull(application);
+        Integer seq1 = (Integer) (application.sfResolve("sequence1"));
+        Integer seq2 = (Integer) (application.sfResolve("sequence2"));
         assertNotNull(seq1);
         assertNotNull(seq2);
         assertTrue( (seq2.intValue()- seq1.intValue()) == 1);
@@ -163,9 +164,18 @@ public class FunctionsSystemTest extends SmartFrogTestBase {
     public void testCaseTCP17() throws Throwable {
         Calendar dt = Calendar.getInstance();
         String expected = dt.getTime().toString();
-        Prim appl = deployExpectingSuccess(FILES + "tcp17.sf", "tcp17");
-        assertNotNull(appl);
-        String actual = (String)(appl.sfResolve("today"));
+        application = deployExpectingSuccess(FILES + "tcp17.sf", "tcp17");
+        assertNotNull(application);
+        String actual = (String)(application.sfResolve("today"));
         assertContains(expected, actual.substring(1, 8));
+    }
+
+    /**
+     * Test that lazy vectors still resolve, as do other elements in the list
+     * @throws Throwable
+     */
+    public void testLazyVector() throws Throwable {
+        application = deployExpectingSuccess(FILES + "lazyVector.sf", "lazyVector");
+        assertLivenessSuccess(application,10);
     }
 }

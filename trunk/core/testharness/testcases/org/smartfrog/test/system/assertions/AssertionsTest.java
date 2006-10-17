@@ -22,6 +22,7 @@
 package org.smartfrog.test.system.assertions;
 
 import org.smartfrog.test.SmartFrogTestBase;
+import org.smartfrog.test.DeployingTestBase;
 import org.smartfrog.services.assertions.SmartFrogAssertionException;
 import org.smartfrog.sfcore.prim.Prim;
 
@@ -29,19 +30,12 @@ import org.smartfrog.sfcore.prim.Prim;
  * Date: 30-Apr-2004
  * Time: 22:03:23
  */
-public class AssertionsTest extends SmartFrogTestBase {
+public class AssertionsTest extends DeployingTestBase {
 
     private static final String FILES = "org/smartfrog/test/system/assertions/";
 
     public AssertionsTest(String name) {
         super(name);
-    }
-
-    protected Prim application;
-
-    protected void tearDown() throws Exception {
-        super.tearDown();
-        terminateApplication(application);
     }
 
     public void testBasicAssertions() throws Throwable {
@@ -113,4 +107,20 @@ public class AssertionsTest extends SmartFrogTestBase {
     public void testAttributeNotFound() throws Throwable {
         deployExpectingAssertionFailure(FILES + "testAttributeNotFound.sf", "testAttributeNotFound");
     }
+
+    public void testAssertVectorEval() throws Throwable {
+        application = deployExpectingSuccess(FILES + "testAssertVectorEval.sf",
+                "testAssertVectorEval");
+    }
+    public void testAssertVectorSize() throws Throwable {
+        deployExpectingAssertionFailure(FILES + "testAssertVectorSize.sf",
+                "testAssertVectorSize");
+    }
+
+    public void testAssertVectorEvalFail() throws Throwable {
+        deployExpectingAssertionFailure(FILES + "testAssertVectorEvalFail.sf",
+                "testAssertVectorEvalFail");
+    }
+
+
 }
