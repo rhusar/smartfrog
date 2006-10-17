@@ -361,7 +361,7 @@ public abstract class SmartFrogTestBase extends TestCase {
         buffer.append(thrown.getClass().getName());
         buffer.append('\n');
         buffer.append("Stack:    ");
-        final StackTraceElement[] stackTrace = thrown.getStackTrace();
+        StackTraceElement[] stackTrace = thrown.getStackTrace();
         for(int i=0;i<stackTrace.length;i++) {
             StackTraceElement frame=stackTrace[i];
             buffer.append(frame.toString());
@@ -758,7 +758,7 @@ public abstract class SmartFrogTestBase extends TestCase {
      */
     public void assertAttributeExists(Prim app, String attribute)
             throws SmartFrogResolutionException, RemoteException {
-        Object value = resolveAttribute(app,attribute);
+        resolveAttribute(app,attribute);
     }
 
     /**
@@ -824,22 +824,12 @@ public abstract class SmartFrogTestBase extends TestCase {
 
 
 
-    public static void assertEquals(String o1, String o2) {
-/*
-      System.out.println("       - AssertEquals: \n"+
-                         "          > "+ o1+"\n"+
-                         "          > "+ o2+"\n");
-*/
+/*    public static void assertEquals(String o1, String o2) {
       TestCase.assertEquals(o1,o2);
     }
     public static void assertEquals(Object o1, Object o2) {
-/*
-      System.out.println("       - AssertEquals(Obj): \n"+
-                         "          > "+ o1.toString()+"\n"+
-                         "          > "+ o2.toString()+"\n");
-*/
       TestCase.assertEquals(o1,o2);
-    }
+    }*/
 
     /**
      * assert that a property is defined
@@ -863,6 +853,18 @@ public abstract class SmartFrogTestBase extends TestCase {
             throw new AssertionError(e);
         } catch (RemoteException e) {
             throw new AssertionError(e);
+        }
+    }
+
+    /**
+     * assert that an application is alive;
+     * @param application application
+     * @param count number of times to check
+     * @throws AssertionError if something failed, wrapping the underlying exception
+     */
+    protected void assertLivenessSuccess(Prim application,int count) {
+        for(int i=0;i<count;i++) {
+            assertLivenessSuccess(application);
         }
     }
 }
