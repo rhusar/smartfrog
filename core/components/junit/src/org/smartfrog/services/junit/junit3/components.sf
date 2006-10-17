@@ -30,7 +30,7 @@
    * package tree with the matching pattern, and/or the named class
    */
   JUnit3TestSuite extends PackagedTestSuite {
-      sfClass "org.smartfrog.services.junit.junit3.JUnitTestSuiteImpl";
+      sfClass "org.smartfrog.services.junit.junit3.JUnit3TestSuiteImpl";
   }
   
   

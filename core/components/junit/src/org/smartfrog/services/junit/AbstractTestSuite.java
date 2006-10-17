@@ -19,8 +19,6 @@
  */
 package org.smartfrog.services.junit;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimImpl;
@@ -36,7 +34,6 @@ import java.rmi.RemoteException;
 
 public abstract class AbstractTestSuite extends PrimImpl implements TestSuite {
 
-    private static final Log log= LogFactory.getLog(AbstractTestSuite.class);
 
     private static final ThreadLocal<RunnerConfiguration> configurationContext =new ThreadLocal<RunnerConfiguration>();
 
@@ -73,7 +70,7 @@ public abstract class AbstractTestSuite extends PrimImpl implements TestSuite {
         if (overwriting) {
             //warn that something got overwritten. It is probably harmless, but can
             //cause interesting behaviour
-            log.info("Overwriting an existing thread-local configuration context.\n"
+            sfLog().info("Overwriting an existing thread-local configuration context.\n"
                 +"Multiple thread runners may be active in the same thread\n"
                 +"or the tests are themselves deploying tests.");
         }
