@@ -36,7 +36,8 @@ import java.rmi.RemoteException;
  * created 22-Sep-2006 16:43:35
  */
 
-public class TestCompoundImpl extends EventCompoundImpl implements TestCompound {
+public class TestCompoundImpl extends EventCompoundImpl
+        implements TestCompound, TestBlock {
     private ComponentDescription teardownCD;
     private Prim teardown;
 
@@ -52,8 +53,13 @@ public class TestCompoundImpl extends EventCompoundImpl implements TestCompound 
     private DelayedTerminator testsTerminator;
     private Prim actionPrim;
     private String exitType;
-
     private String exitText;
+    private volatile boolean finished = false;
+    private volatile boolean failed = false;
+    private volatile boolean succeeded = false;
+    private volatile boolean forcedTimeout = false;
+    private volatile TerminationRecord status;
+
     /**
      * The message of a forced shutdown. This is important, as we look for
      * it when the component is terminated, and can use its presence to infer
@@ -272,18 +278,35 @@ public class TestCompoundImpl extends EventCompoundImpl implements TestCompound 
                         name,e);
             }
         }
+        synchronized (this) {
+            //update internal data structures
+            this.finished = true;
+            if (error != null) {
+                this.status = error;
+                this.failed = true;
+                this.succeeded = false;
+            } else {
+                this.status = status;
+                this.failed = false;
+                this.succeeded = true;
+            }
+        }
 
         //if the error record is non null, terminate ourselves with the new record
         if (error != null) {
+            this.status=error;
+            this.failed=true;
             sfTerminate(error);
             //dont forward, as we are terminating with an error
             forward = false;
+        } else {
+            this.status = status;
+            this.finished=true;
+            this.succeeded=true;
         }
         //trigger termination.
         return forward;
     }
-
-
 
 
     protected Prim deployAction() throws RemoteException, SmartFrogDeploymentException {
@@ -291,4 +314,50 @@ public class TestCompoundImpl extends EventCompoundImpl implements TestCompound 
         return child;
     }
 
+
+    /**
+     * Return true iff the component is finished. Spin on this, with a (delay)
+     * between calls
+     *
+     * @return
+     */
+    public boolean isFinished() {
+        return finished;
+    }
+
+    /**
+     * @return true only if the test has finished and failed
+     */
+    public boolean isFailed() {
+        return failed;
+    }
+
+    /**
+     * @return true iff the test succeeded
+     */
+
+    public boolean isSucceeded() {
+        return succeeded;
+    }
+
+    /**
+     * Get the exit record
+     *
+     * @return the exit record, will be null for an unfinished child
+     */
+
+
+    public TerminationRecord getStatus() {
+        return status;
+    }
+
+    /**
+     * return the tests prim
+     *
+     * @return the child component. this will be null after termination.
+     *
+     */
+    public Prim getAction() {
+        return actionPrim;
+    }
 }

@@ -26,12 +26,15 @@ import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.rmi.RemoteException;
+import java.util.Vector;
 
 
 /**
  * created 28-Apr-2004 11:40:53
  */
 public class AssertComponent extends PrimImpl implements Assert {
+    private static final String ERROR_VECTOR = "Vector too small, expected ";
+    private static final String ERROR_COULD_NOT_RESOLVE_ATTRIBUTE = "Could not resolve attribute ";
     //~ Constructors -----------------------------------------------------------
 
     /**
@@ -66,6 +69,13 @@ public class AssertComponent extends PrimImpl implements Assert {
         String attributeEquals = sfResolve(Assert.ATTRIBUTE_EQUALS,
                 (String) null,
                 false);
+
+        String attributeVectorValue = sfResolve(Assert.ATTR_VECTOR_VALUE,
+                (String) null,
+                false);
+        Integer attributeVectorIndex =(Integer) sfResolve(ATTR_VECTOR_INDEX,
+                (Integer) null,false);
+
         assertTrue(isTrue, IS_TRUE);
         assertTrue(!isFalse, IS_FALSE);
 
@@ -84,14 +94,36 @@ public class AssertComponent extends PrimImpl implements Assert {
 
         if(prim !=null && attribute!=null) {
             //look for a named attribute existing
-            assertTrue(prim.sfResolve(attribute,false)!=null,
-                    "Resolving attribute "+attribute+" of "+prim);
+            Object resolved = prim.sfResolve(attribute, false);
+            assertTrue(resolved !=null,
+                    ERROR_COULD_NOT_RESOLVE_ATTRIBUTE +attribute+" of "+prim);
             if(attributeEquals!=null) {
                 //do string match if needed
-                String attrValue=prim.sfResolve(attribute, (String)null,true);
+                String attrValue = resolved.toString();
                 assertEqualStrings(attributeEquals, attrValue, equalityIgnoresCase);
+            } else if(attributeVectorIndex!=null) {
+                //vector element
+                Vector v=(Vector) resolved;
+                int index = attributeVectorIndex.intValue();
+                try {
+                    Object vectorValue=v.elementAt(index);
+                    if(attributeVectorValue!=null) {
+                        assertEqualStrings(attributeVectorValue,
+                                vectorValue.toString(),
+                                equalityIgnoresCase);
+                    }
+                } catch (ArrayIndexOutOfBoundsException e) {
+                    //vector was too small, complain.
+                    throw new SmartFrogAssertionException(
+                            ERROR_VECTOR
+                                    + index+" elements, found "
+                            +v.size()+" in "+v.toString()
+                    );
+                }
             }
         }
+
+
 
         //file existence check
         String filename=sfResolve(FILE_EXISTS, (String) null, false);

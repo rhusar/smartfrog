@@ -51,4 +51,10 @@ public interface Assert extends Remote {
     public static final String CHECK_ON_LIVENESS = "checkOnLiveness";
 
     public static final String MESSAGE="message";
+
+    //value of a vector element to test
+    public static final String ATTR_VECTOR_VALUE="attributeVectorValue";
+    //the index to look for
+    public static final String ATTR_VECTOR_INDEX="attributeVectorIndex";
+
 }

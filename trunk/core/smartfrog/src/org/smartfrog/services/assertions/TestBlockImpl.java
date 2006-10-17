@@ -25,6 +25,7 @@ import org.smartfrog.sfcore.workflow.eventbus.EventCompoundImpl;
 import org.smartfrog.sfcore.workflow.combinators.DelayedTerminator;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
+import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
 import org.smartfrog.sfcore.utils.ComponentHelper;
 
 import java.rmi.RemoteException;
@@ -134,7 +135,8 @@ public class TestBlockImpl extends EventCompoundImpl implements TestBlock {
      * turn a startup exception into a cleaner exit
      * @param e exception
      */
-    private void startupException(Exception e) {
+    private void startupException(Exception e)
+            throws SmartFrogRuntimeException, RemoteException {
         //this is called if we failed during startup
         TerminationRecord fault = TerminationRecord.abnormal(ERROR_STARTUP_FAILURE, name, e);
         end(fault);
@@ -145,7 +147,8 @@ public class TestBlockImpl extends EventCompoundImpl implements TestBlock {
      * does nothing if finished==true.
      * @param record
      */
-    private synchronized void end(TerminationRecord record) {
+    private synchronized void end(TerminationRecord record)
+            throws SmartFrogRuntimeException, RemoteException {
         if(finished) {
             //non-reentrant
             return;
@@ -161,6 +164,7 @@ public class TestBlockImpl extends EventCompoundImpl implements TestBlock {
             actionTerminator.shutdown(false);
             actionTerminator = null;
         }
+        setTestBlockAttributes(this,record, forcedTimeout);
         //this can trigger a shutdown if we want it
         new ComponentHelper(this).sfSelfDetachAndOrTerminate(record);
     }
@@ -181,7 +185,8 @@ public class TestBlockImpl extends EventCompoundImpl implements TestBlock {
      * @param comp   child component that is terminating
      * @return true if the termination event is to be forwarded up the chain.
      */
-    protected boolean onChildTerminated(TerminationRecord status, Prim comp) {
+    protected boolean onChildTerminated(TerminationRecord status, Prim comp)
+            throws SmartFrogRuntimeException, RemoteException {
         if(comp==child) {
             //this is the action terminating, so log the closure and continue
             end(status);
@@ -192,4 +197,23 @@ public class TestBlockImpl extends EventCompoundImpl implements TestBlock {
         }
     }
 
+    /**
+     * Set the various attributes of the component
+     * based on whether the test record was success or not
+     * @param prim
+     * @param record
+     * @throws SmartFrogRuntimeException
+     * @throws RemoteException
+     */
+    public static void setTestBlockAttributes(Prim prim,
+                                              TerminationRecord record,
+                                              boolean timeout)
+            throws SmartFrogRuntimeException, RemoteException {
+        boolean success=record.isNormal();
+        prim.sfReplaceAttribute(ATTR_STATUS,record);
+        prim.sfReplaceAttribute(ATTR_FINISHED, Boolean.TRUE);
+        prim.sfReplaceAttribute(ATTR_SUCCEEDED, Boolean.valueOf(success));
+        prim.sfReplaceAttribute(ATTR_FAILED, Boolean.valueOf(!success));
+        prim.sfReplaceAttribute(ATTR_FORCEDTIMEOUT, Boolean.valueOf(timeout));
+    }
 }
