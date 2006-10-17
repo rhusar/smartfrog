@@ -131,6 +131,11 @@ GoogleChatClientWorkflow extends GoogleChatClient {
     sfShouldTerminate true;
 }
 
+GoogleChatListener extends XmppListener {
+    server GoogleChatClient:server;
+    serviceName GoogleChatClient:serviceName;
+}
+
 
 /**
  * binding to jabber.org
@@ -142,6 +147,11 @@ JabberClient extends XmppClient {
 JabberClientWorkflow extends JabberClient {
     sfShouldTerminate true;
 }
+
+JabberListener extends XmppListener {
+    server JabberClient:server;
+}
+
 
 /**
     Note that setting the system property smack.debugEnabled to true turns debugging
