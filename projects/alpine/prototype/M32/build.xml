@@ -233,7 +233,7 @@
       <path refid="base.compile.classpath"/>
       <path refid="libraries.path"/>
     </path>
-    <property name="compile.classpath.value" refid="exec.classpath"/>
+    <property name="compile.classpath.value" refid="compile.classpath"/>
     <echo level="verbose">compile.classpath=${compile.classpath.value}</echo>
   </target>
 
