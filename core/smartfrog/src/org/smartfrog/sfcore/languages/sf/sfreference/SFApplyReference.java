@@ -107,6 +107,7 @@ public class SFApplyReference extends SFReference implements ReferencePhases {
         Context forFunction = new ContextImpl();
         String functionClass = null;
         Object result;
+        boolean isLazy = false;
 
         if (getData()) return this;
 
@@ -131,6 +132,8 @@ public class SFApplyReference extends SFReference implements ReferencePhases {
                     value = comp.sfResolve(new Reference(ReferencePart.here(name)));
                 } catch (java.lang.StackOverflowError e) {
                     throw new SmartFrogFunctionResolutionException(e);
+                } catch (SmartFrogLazyResolutionException e) {
+                   isLazy = true;
                 }
 
                 if (value != null) {
@@ -150,6 +153,8 @@ public class SFApplyReference extends SFReference implements ReferencePhases {
             throw new SmartFrogFunctionResolutionException("unknown function class ");
         }
 
+        if (isLazy) throw new SmartFrogLazyResolutionException("function has lazy parameter");
+       
         try {
             Function function = (Function) SFClassLoader.forName(functionClass).newInstance();
             result = function.doit(forFunction, null, rr);
