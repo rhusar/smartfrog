@@ -166,7 +166,6 @@ For more information: www.smartfrog.org
       <pathelement location="${dns.project}"/>
       <pathelement location="${emailer.project}"/>
       <!--pathelement location="${fun.project}"/-->
-      <!--pathelement location="${junit.project}"/-->
       <pathelement location="${loggingservices.project}"/>
       <pathelement location="${net.project}"/>
       <pathelement location="${scripting.project}"/>
@@ -183,6 +182,11 @@ For more information: www.smartfrog.org
       <pathelement location="${www.project}"/>
       <pathelement location="${jetty.project}"/>
       <pathelement location="${tomcat.project}"/>
+    </path>
+
+
+    <path id="junit.path">
+      <pathelement location="${junit.project}"/>
     </path>
 
     <path id="xml.path">
@@ -399,6 +403,11 @@ For more information: www.smartfrog.org
     <delegate target="m2-install" buildpathref="xml.path"/>
   </target>
 
+  <target name="junit" depends="init"
+      description="junit testing">
+    <delegate target="m2-install" buildpathref="junit.path"/>
+  </target>
+
   <target name="xml-dist" depends="init"
     description="xml distribution">
     <delegate target="maybe-dist" buildpathref="xml.path"/>
@@ -409,7 +418,7 @@ For more information: www.smartfrog.org
     <delegate target="maybe-buildrelease" buildpathref="xml.path"/>
   </target>
   
-  <target name="cddlm" depends="web,m2-install,xml"
+  <target name="cddlm" depends="web,m2-install,xml,junit"
       description="CDDLM implementation components">
     <delegate target="m2-install" buildpathref="cddlm.path"/>
   </target>
