@@ -64,7 +64,8 @@ DeployApiEndpoint extends AlpineEndpoint {
       MustUnderstandChecker:classname,
       LAZY pivotHandler:classname
       //http://jira.smartfrog.org/jira/browse/SFOS-23
-//      ,LogCurrentMessageHandler:classname
+     ,
+     LogCurrentMessageHandler:classname
     ];
 
      getMessage ##
