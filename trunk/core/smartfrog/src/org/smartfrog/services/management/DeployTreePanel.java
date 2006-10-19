@@ -352,7 +352,7 @@ public class DeployTreePanel extends JPanel implements TreeSelectionListener {
           tempString = value.toString();
           try { tempString = ContextImpl.getBasicValueFor(value); } catch (Exception ex1) { }//ignore exception }
           text.append("\n"+tempString);
-          text.append("\n * Value resolved: \n"+solvedValue.toString());
+          text.append("\n * Value resolved: \n"+ prettyPrint(solvedValue));
           text.append("\n\n"+"+ Value class:"+value.getClass().toString());
           text.append("\n"+"+ Solved Value class:"+solvedValueClass);
           if (stackTrace !=null) text.append("\n\n"+"+ StackTrace:"+stackTrace);
@@ -365,6 +365,22 @@ public class DeployTreePanel extends JPanel implements TreeSelectionListener {
 
           //ex.printStackTrace();
       }
+   }
+
+   private String prettyPrint (Object obj){
+       StringBuffer sb = new StringBuffer();
+       if (obj instanceof String[]){
+           Object[] objects = (Object[]) obj;
+           int length = objects.length;
+           for (int i=0; i<length; i++ ){
+              sb.append(objects[i]);
+              sb.append("\n");
+           }
+       } else {
+           return "prettyPrint"+obj.toString();
+       }
+
+       return sb.toString();
    }
 
     /**

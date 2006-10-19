@@ -57,6 +57,8 @@ public class PopUpTable extends JComponent implements ActionListener {
    JMenuItem menuItemModifyAttribute = new JMenuItem();
    /** Item for Tree popup menu - remove attribute. */
    JMenuItem menuItemRemoveAttribute = new JMenuItem();
+    /** Item for Tree popup menu - remove attribute. */
+   JMenuItem menuItemInstrospectValue = new JMenuItem();
 
    /**
     *  Constructs PopUpTable object
@@ -73,13 +75,14 @@ public class PopUpTable extends JComponent implements ActionListener {
 
       menuItemRemoveAttribute.setText("Remove Attribute");
       menuItemModifyAttribute.setText("Add/Modify Attribute");
-
+      menuItemInstrospectValue.setText("Introspect Value");
 
       popupTable.add(menuItemRemoveAttribute);
       popupTable.add(menuItemModifyAttribute);
-
+      popupTable.add(menuItemInstrospectValue);
       menuItemRemoveAttribute.addActionListener(this);
       menuItemModifyAttribute.addActionListener(this);
+      menuItemInstrospectValue.addActionListener(this);
    }
 
 
@@ -151,6 +154,29 @@ public class PopUpTable extends JComponent implements ActionListener {
          modifyAttribute(name, value);
 
          // Entry pointed in the tree
+      } else if (source==menuItemInstrospectValue){
+         String name = null;
+         Object value = null;
+         if (row == -1) {
+            return;
+         } else {
+            name = (tempTable.getValueAt(row, 0)).toString();
+            Object node = getNode();
+             try {
+                 if (node instanceof Prim) {
+                    value = ((Prim)node).sfResolve(name,false);
+                 } else {
+                   value = ((ComponentDescription)node).sfResolve(name,false);
+                 }
+             } catch (SmartFrogResolutionException e1) {
+                 e1.printStackTrace();
+                 WindowUtilities.showError(this,"Failed to resolve value during instrospect '"+name+"'. \n"+e1.toString());
+             } catch (RemoteException e1) {
+                 e1.printStackTrace();
+                 WindowUtilities.showError(this,"Failed to instrospect '"+name+"'. \n"+e1.toString());
+             }
+         }
+          PopUpTree.modalDialog("Introspection "+ name ,  PopUpTree.introspect(value), "", source);
       }
    }
 

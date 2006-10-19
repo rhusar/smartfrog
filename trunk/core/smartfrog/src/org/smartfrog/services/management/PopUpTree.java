@@ -40,6 +40,7 @@ import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.prim.Prim;
 
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 
 
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
@@ -79,6 +80,9 @@ public class PopUpTree extends JComponent implements ActionListener {
     /** Item for Tree popup menu - detach. */
     JMenuItem menuItemDumpContext = new JMenuItem();
 
+    /** Item for Tree popup menu - detach. */
+    JMenuItem menuItemIntrospector = new JMenuItem();
+
     /** Item for Tree popup menu - sfParentageChanged. */
     JMenuItem menuItemParentageChanged = new JMenuItem();
     /**
@@ -103,6 +107,7 @@ public class PopUpTree extends JComponent implements ActionListener {
         menuItemDTerminate.setText("Detach and Terminate Comp");
         menuItemDumpContext.setText("Component Diag. Report");
         menuItemParentageChanged.setText("sfParentageChanged()");
+        menuItemIntrospector.setText("Instrospector");
 
         // Tree: options
         //      popupTree.add(menuItemAddAttribute);
@@ -116,6 +121,7 @@ public class PopUpTree extends JComponent implements ActionListener {
         popupTree.add(menuItemDumpContext);
 
         popupTree.add(menuItemParentageChanged);
+        popupTree.add(menuItemIntrospector);
 
         // Add action listeners for tree popup
         menuItemAddAttribute.addActionListener(this);
@@ -130,6 +136,7 @@ public class PopUpTree extends JComponent implements ActionListener {
         menuItemDumpContext.addActionListener(this);
 
         menuItemParentageChanged.addActionListener(this);
+        menuItemIntrospector.addActionListener(this);
     }
 
     /**
@@ -160,13 +167,15 @@ public class PopUpTree extends JComponent implements ActionListener {
             menuItemDTerminate.setVisible(true);
             menuItemDumpContext.setVisible(true);
             menuItemParentageChanged.setVisible(true);
+            menuItemIntrospector.setVisible(true);
         }else if  (getNode()instanceof ComponentDescription){
             menuItemDetach.setVisible(false);
             menuItemTerminateNormal.setVisible(false);
             menuItemTerminateAbnormal.setVisible(false);
             menuItemDTerminate.setVisible(false);
             menuItemDumpContext.setVisible(true);
-            menuItemParentageChanged.setVisible(true);
+            menuItemParentageChanged.setVisible(false);
+            menuItemIntrospector.setVisible(true);
         }
         popupTree.show(comp, x, y);
         this.parent = parent;
@@ -236,15 +245,59 @@ public class PopUpTree extends JComponent implements ActionListener {
 
             }
             modalDialog("Context info for "+ name ,  message.toString(), "", source);
+        } else if (source == menuItemIntrospector) {
+
+            StringBuffer message=new StringBuffer();
+            String name = "error";
+            if (node instanceof Prim) {
+                try {
+                    Prim objPrim = ((Prim)node);
+                    name = ((Prim)objPrim).sfCompleteName().toString();
+                } catch (Exception ex) {
+                    message.append("\n Error: "+ex.toString());
+                }
+            } else {
+                try {
+                    ComponentDescription objCD = ((ComponentDescription)node);
+                    name = ((ComponentDescription)objCD).sfCompleteName().toString();
+                } catch (Exception ex) {
+                    message.append("\n Error: "+ex.toString());
+                }
+
+            }
+            modalDialog("Introspection "+ name ,  introspect(node), "", source);
         }
 
     }
 
+    public static String introspect(Object node) {
+        StringBuffer message = new StringBuffer();
+        message.append("\n***** Class****\n");
+        message.append(node.getClass());
+        message.append("\n***** Constructors****\n");
+        message.append(print(node.getClass().getConstructors()));
+        message.append("\n***** Fields****\n");
+        message.append(print(node.getClass().getDeclaredFields()));
+        message.append("\n***** Methods****\n");
+        message.append(print(node.getClass().getMethods()));
+        message.append("\n***** Interfaces ****\n");
+        message.append(print(node.getClass().getInterfaces()));
+        return message.toString();
+    }
+
+    private static String print(Object[] objs) {
+        StringBuffer strb = new StringBuffer();
+        for(int i=0;i<objs.length;i++)  {
+            strb.append(objs[i].toString());
+            strb.append("\n");
+        }
+        return strb.toString();
+    }
     /**
      * Get Node
      * @return  Object
      */
-    private Object getNode() {
+    public Object getNode() {
         TreePath tpath = ((JTree) tempComp).getPathForLocation(tempX, tempY);
         Object node = (((DeployEntry) (tpath.getLastPathComponent())).getEntry());
         return node;
@@ -370,7 +423,7 @@ public class PopUpTree extends JComponent implements ActionListener {
      *@param  message  message to be displayed
      *@param defaultValue default value
      */
-    private void modalDialog(String title, String message,
+    public static void modalDialog(String title, String message,
             String defaultValue, Object source) {
         /**
          *  Scrollpane to hold the display's screen.
