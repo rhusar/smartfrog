@@ -129,4 +129,13 @@ public class PortalHandler extends WsrfHandler {
         getServerInstance().getSubscriptionStore().add(subscription);
     }
 
+    /**
+     * Returns a string representation of the object. I
+     *
+     * @return a string representation of the object.
+     */
+    public String toString() {
+        return "Portal";
+    }
+
 }

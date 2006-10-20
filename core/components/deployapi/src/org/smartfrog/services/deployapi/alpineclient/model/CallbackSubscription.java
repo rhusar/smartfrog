@@ -25,6 +25,7 @@ import org.smartfrog.projects.alpine.transport.TransmitQueue;
 import org.smartfrog.projects.alpine.transport.Transmission;
 import org.smartfrog.services.deployapi.transport.wsrf.WSNConstants;
 import org.smartfrog.services.deployapi.system.Constants;
+import org.smartfrog.services.deployapi.notifications.muws.MuwsEventReceiver;
 import org.ggf.cddlm.generated.api.CddlmConstants;
 import nu.xom.Element;
 
@@ -36,6 +37,10 @@ import nu.xom.Element;
 
 public class CallbackSubscription extends WsrfSession {
 
+    /**
+     * optional cached muws event receiver
+     */
+    private MuwsEventReceiver receiver;
 
     public CallbackSubscription(AlpineEPR endpoint, boolean validating, TransmitQueue queue) {
         super(endpoint, validating, queue);
@@ -66,6 +71,9 @@ public class CallbackSubscription extends WsrfSession {
 
     public void endUnsubscribe(Transmission tx) {
         endDestroy(tx);
+        if(receiver!=null) {
+            receiver.destroy();
+        }
     }
 
     public static void unsubscribe(CallbackSubscription subscription) {
@@ -73,5 +81,14 @@ public class CallbackSubscription extends WsrfSession {
             //unsubscribe.
             subscription.destroy();
         }
+    }
+
+
+    public MuwsEventReceiver getReceiver() {
+        return receiver;
+    }
+
+    public void setReceiver(MuwsEventReceiver receiver) {
+        this.receiver = receiver;
     }
 }

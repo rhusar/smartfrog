@@ -32,9 +32,6 @@ ITS MEDIA, AND YOU HEREBY WAIVE ANY CLAIM IN THIS REGARD.
 
 
 #include "/org/smartfrog/services/deployapi/transport/endpoints/alpine/handlers.sf"
-#include "/org/smartfrog/projects/alpine/config/smartfrog/alpine_server_on_jetty.sf"
-
-
 
 /**
  * component to receive WSN events
@@ -69,30 +66,6 @@ NotifyServer extends Prim {
   servicesPath "alpine/";
   notificationPath MuwsEventEndpointPath;
 }
-
-NotifyHost extends AlpineServerOnJetty {
-
-    home LAZY PROPERTY java.io.tmpdir;
-
-    port 8082;
-
-    hostname LAZY servlet:listener:ipaddr;
-
-    muws extends MuwsEventEndpoint {
-      servlet LAZY alpine;
-    }
-
-    /**
-     * the engine that does the work
-     */
-    engine extends NotifyServer {
-      port PARENT:port;
-      hostname PARENT:hostname;
-      muws LAZY PARENT:muws;
-    }
-
-}
-
 
 
 

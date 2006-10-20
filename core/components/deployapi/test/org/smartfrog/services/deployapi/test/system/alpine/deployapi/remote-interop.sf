@@ -19,15 +19,18 @@ For more information: www.smartfrog.org
 */
 #include "/org/smartfrog/sfcore/logging/components.sf"
 #include "/org/smartfrog/sfcore/logging/logtoprimimpl.sf"
-#include "/org/smartfrog/services/deployapi/notifications/muws/components.sf"
 #include "/org/smartfrog/services/deployapi/test/system/alpine/deployapi/proxy.sf"
 #include "/org/smartfrog/services/deployapi/test/system/alpine/deployapi/nec.sf"
 #include "/org/smartfrog/services/deployapi/test/system/alpine/deployapi/ourgrid.sf"
 #include "/org/smartfrog/services/deployapi/test/system/alpine/deployapi/hp.sf"
 #include "/org/smartfrog/services/www/livenessPage.sf"
+#include "/org/smartfrog/services/deployapi/notifications/muws/notifyhost.sf"
 
 
 
+/**
+ * this is the muws event listener,defaulting to port 8082
+ */
   Notifications extends NotifyHost {
 
   }
@@ -93,8 +96,8 @@ fullSuite extends Compound {
 
 
   OurgridTest extends ServerTest {
-
-//    sfProcessName "process2";
+    sfProcessHost "newmachine";
+    sfProcessName "process2";
     name "ourgrid";
     endpoint ourgrid_endpoint;
     enabled ourgridEnabled;
@@ -112,7 +115,7 @@ fullSuite extends Compound {
 
   NecTest extends ServerTest {
 
-//    sfProcessName "process1";
+    sfProcessName "process1";
     name "nec";
     endpoint nec_endpoint;
     enabled necEnabled;

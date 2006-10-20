@@ -43,9 +43,10 @@ public class NotifyServerImpl extends PrimImpl implements NotifyServer {
 
 
     private static NotifyServerImpl singleton;
-    private String protocol;
+    private String protocol="http";
     private String hostname;
-    private int port;
+    private int port=80;
+    private String baseurl;
 
     public NotifyServerImpl() throws RemoteException {
         //declare ourself as the sole singleton. This is a bit naughty, and its
@@ -85,8 +86,22 @@ public class NotifyServerImpl extends PrimImpl implements NotifyServer {
                 Constants.CONTEXT_PATH, false);
         String servicespath = sfResolve(DeploymentServer.ATTR_SERVICESPATH,
                 Constants.SERVICES_PATH, false);
-        String notifyPath = sfResolve(ATTR_NOTIFICATION_PATH,
-                "", false);
+        String notifypath = sfResolve(ATTR_NOTIFICATION_PATH,
+                "", true);
+        StringBuffer buff=new StringBuffer(256);
+        buff.append(protocol);
+        buff.append("//");
+        buff.append(hostname);
+        buff.append(':');
+        buff.append(port);
+        buff.append(ctx);
+        buff.append(servicespath);
+        buff.append(notifypath);
+        baseurl=buff.toString();
+    }
+
+    public String getURL(String receiverID) {
+        return baseurl+"?"+ NotifyServer.EVENT+"="+id;
     }
 
     /**
@@ -94,7 +109,7 @@ public class NotifyServerImpl extends PrimImpl implements NotifyServer {
      * @return the new receiver
      */
     public MuwsEventReceiver createReceiver() {
-        MuwsEventReceiver receiver=new MuwsEventReceiver();
+        MuwsEventReceiver receiver=new MuwsEventReceiver(this);
         add(receiver);
         return receiver;
     }
@@ -104,11 +119,13 @@ public class NotifyServerImpl extends PrimImpl implements NotifyServer {
      * @param receiver the receiver
      */
     public synchronized void add(MuwsEventReceiver receiver) {
-        if(receiver.id==null) {
-            receiver.id=Integer.toString(id++);
+        if(receiver.getId()==null) {
+            receiver.setId(Integer.toString(id++));
         }
-        entries.put(receiver.id,new WeakReference<MuwsEventReceiver>(receiver));
+        receiver.setURL(getURL(receiver.getId()));
+        entries.put(receiver.getId(), new WeakReference<MuwsEventReceiver>(receiver));
     }
+
 
     /**
      * look up a receiver from a key.
@@ -133,7 +150,14 @@ public class NotifyServerImpl extends PrimImpl implements NotifyServer {
                 return null;
             }
         }
+    }
 
+    /**
+     * Remove a specific receiver from the list
+     * @param receiver
+     */
+    public synchronized void remove(MuwsEventReceiver receiver) {
+        entries.remove(receiver.getId());
     }
 
 }

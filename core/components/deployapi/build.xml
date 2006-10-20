@@ -503,6 +503,11 @@ because javac was bailing out with some error about unzipping -->
           <sysproperty key="org.smartfrog.codebase"
               value="${codebase}"/>
           <!-- source files -->
+          <source file="src/org/smartfrog/services/deployapi/examples/interop/pelvoux.sf"/>
+          <source file="src/org/smartfrog/services/deployapi/examples/interop/chamonix.sf"/>
+          <source file="src/org/smartfrog/services/deployapi/examples/interop/pelvoux_internal.sf"/>
+          <source file="src/org/smartfrog/services/deployapi/examples/interop/pelvoux_forked.sf"/>
+          <!--test files-->
           <source file="test/files/deployclient.sf"/>
           <source file="test/org/smartfrog/services/deployapi/test/system/alpine/deployapi/server_and_tests.sf"/>
           <source file="test/org/smartfrog/services/deployapi/test/system/alpine/deployapi/all.sf"/>

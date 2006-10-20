@@ -68,4 +68,14 @@ public class WSNotifyHandler extends WsrfHandler implements WSNConstants {
         log.info("received WSN-Message");
         return true;
     }
+
+    /**
+     * Returns a string representation of the object. I
+     *
+     * @return a string representation of the object.
+     */
+    public String toString() {
+        return "WSNotifyHandler";
+    }
+
 }

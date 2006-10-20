@@ -33,15 +33,15 @@ public class Api_18_create_system_while_subscribed_invalid_epr_Test extends Subs
 
 
     public void testUnknownHost() throws Exception {
-        subscribeAndCreate("http://notifications.example.org/epr1");
+        subscribeAndCreate();
     }
 
     public void testClosedPort() throws Exception {
-        subscribeAndCreate("http://localhost:8081/epr1");
+        subscribeAndCreate();
     }
 
     public void test404Page() throws Exception {
-        subscribeAndCreate("http://deployment.sourceforge.net/example/epr1");
+        subscribeAndCreate();
     }
 
 

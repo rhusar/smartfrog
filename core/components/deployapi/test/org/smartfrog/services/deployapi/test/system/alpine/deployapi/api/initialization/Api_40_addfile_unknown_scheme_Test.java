@@ -32,7 +32,6 @@ import java.net.URI;
 
 /**
  * created 13-Apr-2006 13:51:02
- * Create a system , then destroy it immediately.
  */
 
 public class Api_40_addfile_unknown_scheme_Test extends StandardTestBase {

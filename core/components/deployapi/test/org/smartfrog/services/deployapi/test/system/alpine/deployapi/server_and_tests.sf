@@ -38,8 +38,8 @@ ITS MEDIA, AND YOU HEREBY WAIVE ANY CLAIM IN THIS REGARD.
 
 #include "/org/smartfrog/services/deployapi/test/system/alpine/deployapi/localhost.sf"
 #include "/org/smartfrog/services/deployapi/examples/interop/pelvoux_internal.sf"
+/*
 #include "/org/smartfrog/services/assertions/testcomponents.sf"
-#include "/org/smartfrog/services/deployapi/test/system/alpine/deployapi/proxy.sf"
 
 TestServer extends ExpectDeploy {
 
@@ -52,63 +52,20 @@ TestServer extends ExpectDeploy {
 
   }
 }
+*/
 
 
-TestListening extends Compound {
-      proxyEnabled true;
-      subdir name;
-      enabled true;
-      basedir "build/test/interop";
-
-      proxy extends Proxy {
-        enabled proxyEnabled;
-      }
 
 
-}
 
+sfConfig extends Compound {
 
-  DeployapiTestRunner extends TestRunner {
+/*  testServer extends PelvouxOnLocalIPAddress {
 
-    endpoint TBD;
-
-    basedir "/tmp";
-
-    subdir "deployapi";
-
-    enabled true;
-
-
-    destDir extends Mkdir {
-      dir subdir;
-      parentDir LAZY basedir;
-    }
-
-    console extends ConsoleListener {
-    };
-
-    htmlListener extends HtmlTestListener {
-      outputDirectory LAZY destDir:absolutePath;
-    }
-
-    listener extends ChainListener {
-        listeners [ LAZY console, LAZY htmlListener];
-    }
-
-    portal extends PortalTestSuite {
-      endpoint LAZY PARENT:endpoint;
-      enabled PARENT:enabled;
-    }
-
-    creation extends CreationTestSuite {
-      endpoint LAZY PARENT:endpoint;
-      enabled PARENT:enabled;
-    }
-
- }
-
-
-sfConfig extends TestSystem {
+  }*/
+  
+  testPlan extends TestPlan {
+  }
 
 }
 

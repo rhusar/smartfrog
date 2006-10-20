@@ -23,8 +23,15 @@ import org.smartfrog.services.deployapi.test.system.alpine.deployapi.api.Standar
 import org.smartfrog.services.deployapi.alpineclient.model.CallbackSubscription;
 import org.smartfrog.services.deployapi.alpineclient.model.SystemSession;
 import org.smartfrog.services.deployapi.system.Constants;
+import org.smartfrog.services.deployapi.notifications.muws.NotifyServer;
+import org.smartfrog.services.deployapi.notifications.muws.NotifyServerImpl;
+import org.smartfrog.services.deployapi.notifications.muws.MuwsEventReceiver;
+import org.smartfrog.sfcore.common.SmartFrogResolutionException;
+import org.smartfrog.sfcore.prim.Prim;
+import org.smartfrog.sfcore.reference.Reference;
 
 import javax.xml.namespace.QName;
+import java.rmi.RemoteException;
 
 /**
  * created 29-Sep-2006 13:30:18
@@ -34,17 +41,22 @@ public abstract class SubscribingTestBase extends StandardTestBase {
     private CallbackSubscription subscription;
     protected static final String HTTP_EXAMPLE_ORG = "http://example.org";
 
+    private Reference ref;
+    private static final String NOTIFICATIONS = "notifications";
+
     public SubscribingTestBase(String name) {
         super(name);
     }
 
     /**
-     * subscribe to the portal using a dummy URL
-     * @param topic topic to subscribe to
+     * Set up our reference
+     * @throws Exception
      */
-    protected CallbackSubscription subscribeToPortal(QName topic) {
-        return subscribeToPortal(topic, getCallbackURL());
+    protected void setUp() throws Exception {
+        super.setUp();
+        ref = Reference.fromString("PARENT:"+ NOTIFICATIONS);
     }
+
 
     /**
      * Get the default URL for subscriptions
@@ -55,12 +67,39 @@ public abstract class SubscribingTestBase extends StandardTestBase {
     }
 
     /**
-     * subscribe to the portal using a specified callback URL
-     * @param topic topic to subscribe to
+     * Look up the notify server and fail if there is none.
+     * @return the notify server
+     * @throws SmartFrogResolutionException
+     * @throws RemoteException
      */
-    protected CallbackSubscription subscribeToPortal(QName topic, String callback) {
+    protected NotifyServer lookupNotifyServer() throws SmartFrogResolutionException, RemoteException {
+        assertHosted();
+        return (NotifyServer) getHostedTestSuite().sfResolve(ref,(Prim)null,true);
+    }
+
+    /**
+     * Create a muws receiver from our local receiver
+     * @return a new event receiver
+     * @throws SmartFrogResolutionException
+     * @throws RemoteException
+     */
+    protected MuwsEventReceiver createSubscriptionReceiver() throws SmartFrogResolutionException, RemoteException {
+        NotifyServer server = lookupNotifyServer();
+        NotifyServerImpl serverImpl=(NotifyServerImpl) server;
+        MuwsEventReceiver receiver = serverImpl.createReceiver();
+        return receiver;
+    }
+
+    /**
+    * subscribe to the portal using a specified callback URL
+    * @param topic topic to subscribe to
+    */
+    protected CallbackSubscription subscribeToPortal(QName topic)
+            throws SmartFrogResolutionException, RemoteException {
         assertNull("subscription in use", subscription);
-        subscription = getPortal().subscribe(topic, callback, false, null);
+        MuwsEventReceiver receiver=createSubscriptionReceiver();
+        subscription = getPortal().subscribe(topic, receiver.getURL(), false, null);
+        subscription.setReceiver(receiver);
         return subscription;
     }
 
@@ -83,6 +122,7 @@ public abstract class SubscribingTestBase extends StandardTestBase {
     public void waitForSubscription() {
         failNotImplemented();
     }
+
     /**
      * unsubscribe, if needed
      */
@@ -94,12 +134,12 @@ public abstract class SubscribingTestBase extends StandardTestBase {
     /**
      * Subscribe at the portal to a system creation event
      */
-    protected void subscribeToSystemCreationEvent() {
+    protected void subscribeToSystemCreationEvent() throws SmartFrogResolutionException, RemoteException {
         subscribeToPortal(Constants.PORTAL_CREATED_EVENT);
     }
 
-    protected SystemSession subscribeAndCreate(String callback) {
-        subscribeToPortal(Constants.PORTAL_CREATED_EVENT, callback);
+    protected SystemSession subscribeAndCreate() throws SmartFrogResolutionException, RemoteException {
+        subscribeToPortal(Constants.PORTAL_CREATED_EVENT);
         return createSystem(null);
     }
 
@@ -107,15 +147,16 @@ public abstract class SubscribingTestBase extends StandardTestBase {
      * Create a system to which we are subscribed.
      * This sets the system and subscription fields, which will be cleaned
      * up on teardown
-     * @param callback callback URL
      * @return the active system session.
      */
-    protected SystemSession createSubscribedSystem(String callback) {
+    protected SystemSession createSubscribedSystem() throws SmartFrogResolutionException,
+            RemoteException {
         assertNull("subscription in use", subscription);
         SystemSession system = createSystem(null);
         setSystem(system);
-        subscription = system.subscribeToLifecycleEvents(callback, false);
+        MuwsEventReceiver receiver = createSubscriptionReceiver();
+        subscription = system.subscribeToLifecycleEvents(receiver.getURL(), false);
+        subscription.setReceiver(receiver);
         return system;
     }
-
 }

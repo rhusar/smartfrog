@@ -79,4 +79,14 @@ public class MuwsEventHandler extends WSNotifyHandler {
     private NotifyServerImpl getNotifyServer() {
         return NotifyServerImpl.getSingleton();
     }
+
+    /**
+     * Returns a string representation of the object. I
+     *
+     * @return a string representation of the object.
+     */
+    public String toString() {
+        return "MuwsEventHandler";
+    }
+
 }

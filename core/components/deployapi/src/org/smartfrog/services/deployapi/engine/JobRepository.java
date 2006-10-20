@@ -245,9 +245,12 @@ public class JobRepository implements Iterable<Application> {
     public Application lookupJobFromEndpointer(AlpineEPR epr) {
 
         String jobID=epr.lookupQuery(Constants.JOB_ID_PARAM);
+        if(jobID.length()==0) {
+            throw FaultRaiser.raiseNoSuchApplicationFault("Empty/missing"+ Constants.JOB_ID_PARAM+" in " + epr);
+        }
         Application job = lookup(jobID);
         if(job==null) {
-            throw FaultRaiser.raiseNoSuchApplicationFault("Empty job in " +epr);
+            throw FaultRaiser.raiseNoSuchApplicationFault("No running system with ID "+jobID+" and EPR " +epr);
         }
         return job;
     }

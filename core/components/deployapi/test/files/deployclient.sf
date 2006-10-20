@@ -19,8 +19,8 @@
  */
 #include "/org/smartfrog/sfcore/logging/components.sf"
 #include "/org/smartfrog/sfcore/logging/logtoprimimpl.sf"
-#include "/org/smartfrog/services/deployapi/notifications/muws/components.sf"
 #include "/org/smartfrog/services/www/livenessPage.sf"
+#include "/org/smartfrog/services/deployapi/notifications/muws/notifyhost.sf"
 
 
 

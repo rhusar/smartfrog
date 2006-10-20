@@ -21,23 +21,22 @@ For more information: www.smartfrog.org
 /**
  URL to the hp endpoint
  */
-localhost_endpoint "http://127.0.0.1:5050/alpine/portal/";
+localhost_endpoint "http://127.0.0.1:8080/alpine/portal/";
 
 
-LocalHostTests extends DeployapiTestRunner {
-
-  endpoint localhost_endpoint;
-  subdir "localhost";
-
-}
 
 TestPlan extends Compound {
 
   notifications extends Notifications  {
-
+    
   }
 
-  localTests extends LocalHostTests;
+  localTests extends DeployapiTestRunner {
+
+    endpoint localhost_endpoint;
+    subdir "localhost";
+
+  }
 
 }
 

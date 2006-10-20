@@ -67,6 +67,15 @@ public class SubscriptionService extends WsrfHandler {
 
     }
 
+    /**
+     * Returns a string representation of the object. I
+     *
+     * @return a string representation of the object.
+     */
+    public String toString() {
+        return "SubscriptionService";
+    }
+
 
     /**
      * Handle a destroy operation by unsubscribing
@@ -74,11 +83,13 @@ public class SubscriptionService extends WsrfHandler {
      * @param messageContext
      * @param endpointContext
      */
-    protected void destroy(MessageContext messageContext,
+    protected boolean destroy(MessageContext messageContext,
                            EndpointContext endpointContext) {
         NotificationSubscription sub = getSubscription(messageContext);
+        log.info("destorying subscription "+sub.getId());
         sub.unsubscribe();
         remove(sub);
+        return true;
     }
 
     /**

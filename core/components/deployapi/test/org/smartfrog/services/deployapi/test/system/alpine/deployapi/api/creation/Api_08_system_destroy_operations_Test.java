@@ -29,6 +29,7 @@ import org.smartfrog.services.deployapi.test.system.alpine.deployapi.api.Standar
  */
 
 public class Api_08_system_destroy_operations_Test extends StandardTestBase {
+    private static final int SECONDS = 16;
 
     public Api_08_system_destroy_operations_Test(String name) {
         super(name);
@@ -44,11 +45,11 @@ public class Api_08_system_destroy_operations_Test extends StandardTestBase {
         SystemSession system = getPortal().create(null);
         system.destroy();
         try {
-            for (int i = 1; i <= 128; i *= 2) {
+            for (int i = 1; i <= SECONDS; i++) {
                 system.ping();
                 sleep(i);
             }
-            fail("Expected failure");
+            fail("Expected a system to be destroyed, but it was still present after "+SECONDS+" seconds");
         } catch (AlpineRuntimeException e) {
             //expected error of some form or other
         }

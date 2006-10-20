@@ -21,7 +21,6 @@
 
 
 #include "/org/smartfrog/components.sf"
-#include "/org/smartfrog/predicates.sf"
 
  DeploymentServer extends Prim {
  

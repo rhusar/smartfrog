@@ -20,7 +20,7 @@ For more information: www.smartfrog.org
 #include "/org/smartfrog/services/deployapi/components/alpine/deployapi_on_alpine.sf"
 #include "/org/smartfrog/services/logging/log4j/logtolog4jimpl.sf"
 #include "/org/smartfrog/sfcore/logging/components.sf"
-
+#include "/org/smartfrog/services/jetty/jetty-complete.sf"
 /**
  * this is the OB510 "pelvoux" laptop that hosts the interop test server of Alpine
  */

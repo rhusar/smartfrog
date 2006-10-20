@@ -181,4 +181,14 @@ public class SystemHandler extends WsrfHandler {
         app.getSubscribers().add(subscription);
         getServerInstance().getSubscriptionStore().add(subscription);
     }
+
+    /**
+     * Returns a string representation of the object. I
+     *
+     * @return a string representation of the object.
+     */
+    public String toString() {
+        return "System";
+    }
+
 }
