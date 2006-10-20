@@ -19,9 +19,7 @@
  */
  
 
-#include "/org/smartfrog/projects/alpine/config/smartfrog/components.sf"
-
-
+#include "/org/smartfrog/projects/alpine/config/smartfrog/handler.sf"
 
 EchoHandler extends SharedHandler {
   classname "org.smartfrog.projects.alpine.handlers.EchoHandler";

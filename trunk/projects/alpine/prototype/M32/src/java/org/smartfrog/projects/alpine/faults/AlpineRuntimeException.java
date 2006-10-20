@@ -20,13 +20,12 @@
 
 package org.smartfrog.projects.alpine.faults;
 
-import nu.xom.Document;
 import nu.xom.Element;
 import org.smartfrog.projects.alpine.interfaces.SoapFaultSource;
 import org.smartfrog.projects.alpine.om.base.SoapElement;
 import org.smartfrog.projects.alpine.om.soap11.Fault;
 import org.smartfrog.projects.alpine.om.soap11.MessageDocument;
-import org.smartfrog.projects.alpine.om.soap11.Soap11Constants;
+import org.smartfrog.projects.alpine.om.soap11.SoapConstants;
 import org.smartfrog.projects.alpine.wsa.AlpineEPR;
 import org.smartfrog.projects.alpine.wsa.AddressingConstants;
 import org.smartfrog.projects.alpine.xmlutils.XsdUtils;
@@ -81,12 +80,12 @@ public class AlpineRuntimeException extends RuntimeException implements SoapFaul
 
     /**
      * Override point: get a fault code. the default is
-     * {@link Soap11Constants#FAULTCODE_SERVER};
+     * {@link SoapConstants#FAULTCODE_SERVER};
      *
      * @return the string to be used in the fault code
      */
     protected String getFaultCode() {
-        return Soap11Constants.FAULTCODE_SERVER;
+        return SoapConstants.FAULTCODE_SERVER;
     }
 
     /**

@@ -173,7 +173,7 @@ public class Transmission implements Callable {
 
 
     /**
-     * Add the requst and response messages to the fault as XML fragments. Good for diagnostics.
+     * Add the request and response messages to the fault as XML fragments. Good for diagnostics.
      *
      * @param fault
      */

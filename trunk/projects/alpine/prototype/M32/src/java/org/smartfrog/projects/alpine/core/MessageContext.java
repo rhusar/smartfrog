@@ -24,7 +24,7 @@ import org.smartfrog.projects.alpine.om.base.SoapElement;
 import org.smartfrog.projects.alpine.om.soap11.Body;
 import org.smartfrog.projects.alpine.om.soap11.Envelope;
 import org.smartfrog.projects.alpine.om.soap11.MessageDocument;
-import org.smartfrog.projects.alpine.om.soap11.Soap11Constants;
+import org.smartfrog.projects.alpine.om.soap11.SoapConstants;
 import org.smartfrog.projects.alpine.om.soap11.SoapFactory;
 import org.smartfrog.projects.alpine.om.soap11.SoapMessageParser;
 import org.smartfrog.projects.alpine.om.soap12.Soap12Constants;
@@ -69,7 +69,7 @@ public class MessageContext extends Context {
     /**
      * SOAP namespace. Defaults to SOAP12
      */
-    private String soapNamespace = Soap11Constants.URI_SOAP12;
+    private String soapNamespace = SoapConstants.URI_SOAPAPI;
 
     /**
      * incoming request
@@ -175,7 +175,7 @@ public class MessageContext extends Context {
      * @throws SAXException
      */
     public SoapMessageParser createParser() throws SAXException {
-        return new SoapMessageParser(loader, soapNamespace, validating, new SoapFactory());
+        return new SoapMessageParser(loader, soapNamespace, validating, null);
     }
 
     /**

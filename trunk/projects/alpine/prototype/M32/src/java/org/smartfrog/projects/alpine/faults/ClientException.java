@@ -19,7 +19,7 @@
  */
 package org.smartfrog.projects.alpine.faults;
 
-import org.smartfrog.projects.alpine.om.soap11.Soap11Constants;
+import org.smartfrog.projects.alpine.om.soap11.SoapConstants;
 
 /**
  * created 11-Apr-2006 10:33:20
@@ -49,12 +49,12 @@ public class ClientException extends AlpineRuntimeException {
 
     /**
      * Override point: get a fault code. the default is
-     * {@link org.smartfrog.projects.alpine.om.soap11.Soap11Constants#FAULTCODE_SERVER};
+     * {@link org.smartfrog.projects.alpine.om.soap11.SoapConstants#FAULTCODE_SERVER};
      *
      * @return the string to be used in the fault code
      */
     protected String getFaultCode() {
-        return Soap11Constants.FAULTCODE_CLIENT;
+        return SoapConstants.FAULTCODE_CLIENT;
     }
 
 }

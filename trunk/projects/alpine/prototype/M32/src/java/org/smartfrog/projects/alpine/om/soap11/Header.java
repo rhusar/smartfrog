@@ -77,7 +77,7 @@ public class Header extends Soap11Element {
      * @throws InvalidXmlException if it has any other value
      */
     public static boolean isMustUnderstand(Element that) {
-        Attribute attribute = that.getAttribute(ATTR_MUST_UNDERSTAND, URI_SOAP11);
+        Attribute attribute = that.getAttribute(ATTR_MUST_UNDERSTAND, URI_SOAPAPI);
         if (attribute == null) {
             return false;
         }
@@ -96,11 +96,11 @@ public class Header extends Soap11Element {
      * @param understand should we understand or not?
      */
     public static void setMustUnderstand(Element that,boolean understand) {
-        Attribute attribute = that.getAttribute(ATTR_MUST_UNDERSTAND, URI_SOAP11);
+        Attribute attribute = that.getAttribute(ATTR_MUST_UNDERSTAND, URI_SOAPAPI);
         if (attribute != null) {
             that.removeAttribute(attribute);
         }
-        Attribute mu=new Attribute(PREFIX_SOAP +":"+ATTR_MUST_UNDERSTAND, URI_SOAP11,understand?"1":"0");
+        Attribute mu=new Attribute(PREFIX_SOAP +":"+ATTR_MUST_UNDERSTAND, URI_SOAPAPI,understand?"1":"0");
         that.addAttribute(mu);
     }
 

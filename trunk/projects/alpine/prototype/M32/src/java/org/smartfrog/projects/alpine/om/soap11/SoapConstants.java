@@ -25,7 +25,7 @@ import javax.xml.namespace.QName;
 /**
  * constants of soap11
  */
-public interface Soap11Constants {
+public interface SoapConstants {
 
     /**
      * {@value}
@@ -37,6 +37,10 @@ public interface Soap11Constants {
      */
     public static final String URI_SOAP12 = "http://www.w3.org/2003/05/soap-envelope";
 
+    /**
+     * The value for our soap apis
+     */
+    public static final String URI_SOAPAPI= URI_SOAP12;
     /**
      * {@value}
      */
@@ -51,7 +55,7 @@ public interface Soap11Constants {
     /**
      * Qname of the element
      */
-    public static final QName QNAME_ENVELOPE = new QName(URI_SOAP11, ELEMENT_ENVELOPE);
+    public static final QName QNAME_ENVELOPE = new QName(URI_SOAPAPI, ELEMENT_ENVELOPE);
 
     /**
      * {@value}
@@ -60,7 +64,7 @@ public interface Soap11Constants {
     /**
      * Qname of the element
      */
-    public static final QName QNAME_HEADER = new QName(URI_SOAP11, ELEMENT_HEADER);
+    public static final QName QNAME_HEADER = new QName(URI_SOAPAPI, ELEMENT_HEADER);
 
 
     /**
@@ -70,7 +74,7 @@ public interface Soap11Constants {
     /**
      * Qname of the element
      */
-    public static final QName QNAME_BODY = new QName(URI_SOAP11, ELEMENT_BODY);
+    public static final QName QNAME_BODY = new QName(URI_SOAPAPI, ELEMENT_BODY);
 
 
     /**
@@ -80,7 +84,7 @@ public interface Soap11Constants {
     /**
      * Qname of the element
      */
-    public static final QName QNAME_FAULT = new QName(URI_SOAP11, ELEMENT_FAULT);
+    public static final QName QNAME_FAULT = new QName(URI_SOAPAPI, ELEMENT_FAULT);
 
     /**
      * {@value}

@@ -19,20 +19,13 @@
  */
 package org.smartfrog.test.system.projects.alpine.remote;
 
-import org.smartfrog.projects.alpine.core.MessageContext;
 import org.smartfrog.projects.alpine.om.soap11.MessageDocument;
 import org.smartfrog.projects.alpine.om.soap11.Body;
 import org.smartfrog.projects.alpine.om.soap11.Header;
 import org.smartfrog.projects.alpine.om.soap11.Fault;
-import org.smartfrog.projects.alpine.om.soap11.Soap11Constants;
-import org.smartfrog.projects.alpine.wsa.AddressDetails;
-import org.smartfrog.projects.alpine.transport.http.HttpTransportFault;
+import org.smartfrog.projects.alpine.om.soap11.SoapConstants;
 import org.smartfrog.projects.alpine.transport.Transmission;
 import org.smartfrog.projects.alpine.faults.SoapException;
-
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeoutException;
-import java.io.IOException;
 
 import nu.xom.Element;
 import nu.xom.Elements;
@@ -97,7 +90,7 @@ public class EchoTest extends RemoteTestBase {
             fail("expected a not understood fault");
         } catch (SoapException e) {
             Fault fault=e.getFault();
-            assertEquals(Soap11Constants.FAULTCODE_MUST_UNDERSTAND,fault.getFaultCode());
+            assertEquals(SoapConstants.FAULTCODE_MUST_UNDERSTAND,fault.getFaultCode());
             assertNotNull(fault.getFaultActor(), fault.getFaultActor());
             assertNotNull(fault.getFaultString(), fault.getFaultString());
         }

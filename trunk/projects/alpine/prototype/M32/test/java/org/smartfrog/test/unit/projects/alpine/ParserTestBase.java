@@ -26,7 +26,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.smartfrog.projects.alpine.faults.AlpineRuntimeException;
 import org.smartfrog.projects.alpine.om.soap11.MessageDocument;
-import org.smartfrog.projects.alpine.om.soap11.Soap11Constants;
+import org.smartfrog.projects.alpine.om.soap11.SoapConstants;
 import org.smartfrog.projects.alpine.om.soap11.SoapMessageParser;
 import org.smartfrog.projects.alpine.xmlutils.CatalogHandler;
 import org.smartfrog.projects.alpine.xmlutils.ResourceLoader;
@@ -95,7 +95,7 @@ public abstract class ParserTestBase extends TestCase implements Filenames {
     protected void initParser() throws SAXException {
         ResourceLoader loader = new ResourceLoader(this.getClass());
         parser = new SoapMessageParser(loader,
-                Soap11Constants.URI_SOAP12,
+                SoapConstants.URI_SOAPAPI,
                 isParserValidating(),
                 null);
     }

@@ -28,7 +28,8 @@ import org.smartfrog.projects.alpine.om.base.SoapElement;
 import org.smartfrog.projects.alpine.xmlutils.XsdUtils;
 
 /**
- * this iteration doesnt have the envisaged chain of handlers, all we do is create soap nodes
+ * this iteration doesnt have the envisaged chain of handlers, all we do is create soap nodes,
+ * though we can handoff to another factory.
  */
 public class SoapFactory extends ExtendedNodeFactory {
 
@@ -43,10 +44,10 @@ public class SoapFactory extends ExtendedNodeFactory {
     }
 
     /**
-     * Default ctor is bound to SOAP11 and to
+     * Default ctor is bound to {@link SoapConstants#URI_SOAPAPI}.
      */
     public SoapFactory() {
-        this(Soap11Constants.URI_SOAP11, null);
+        this(SoapConstants.URI_SOAPAPI, null);
     }
 
     /**
@@ -61,13 +62,13 @@ public class SoapFactory extends ExtendedNodeFactory {
 
         Element element = null;
         if (soapns.equals(namespace)) {
-            if (Soap11Constants.ELEMENT_ENVELOPE.equals(name)) {
+            if (SoapConstants.ELEMENT_ENVELOPE.equals(name)) {
                 element = new Envelope(name, namespace);
-            } else if (Soap11Constants.ELEMENT_HEADER.equals(name)) {
+            } else if (SoapConstants.ELEMENT_HEADER.equals(name)) {
                 element = new Header(name, namespace);
-            } else if (Soap11Constants.ELEMENT_BODY.equals(name)) {
+            } else if (SoapConstants.ELEMENT_BODY.equals(name)) {
                 element = new Body(name, namespace);
-            } else if (Soap11Constants.ELEMENT_FAULT.equals(name)) {
+            } else if (SoapConstants.ELEMENT_FAULT.equals(name)) {
                 element = new Fault(name, namespace);
             } else {
                 //something else in our namespace. wierd.

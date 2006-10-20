@@ -1,11 +1,15 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+<soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope">
   <soap:Body>
     <soap:Fault>
-      <faultcode>soap:Client</faultcode>
-      <faultstring>Invalid message format</faultstring>
-      <faultactor>http://example.org/someactor</faultactor>
-      <detail>
+      <soap:Code>
+        <soap:Value>soap:Client</soap:Value>
+      </soap:Code>
+      <soap:Reason>
+        <soap:Text xml:lang="en">Invalid message format</soap:Text>
+      </soap:Reason>
+      <soap:Role>http://example.org/someactor</soap:Role>
+      <soap:Detail>
         <m:msg xmlns:m='http://example.org/faults/exceptions'>
          There were
           <b>lots</b> of elements in 
@@ -14,7 +18,7 @@
         <m:Exception xmlns:m='http://example.org/faults/exceptions'>
           <m:ExceptionType>Severe</m:ExceptionType>
         </m:Exception>
-      </detail>
+      </soap:Detail>
     </soap:Fault>
   </soap:Body>
 </soap:Envelope>

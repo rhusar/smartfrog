@@ -395,14 +395,20 @@ public final class AlpineEPR implements Validatable, AddressingConstants, XomSou
             index= 0;
         } else {
             //this is the second query
-            index = query.indexOf("&"+param);
+            param= "&" + param;
+            index = query.indexOf(param);
         }
+        if(index<0) {
+            return null;
+        }
+        int pl=param.length();
+
         //find the end of the string
-        int end = query.indexOf("&", index);
+        int end = query.indexOf("&", index+pl);
         if (end == -1) {
             end = query.length();
         }
-        return query.substring(index, end).trim();
+        return query.substring(index+pl, end).trim();
     }
 
 }

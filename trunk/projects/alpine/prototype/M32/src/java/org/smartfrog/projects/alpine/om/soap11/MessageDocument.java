@@ -22,7 +22,6 @@ package org.smartfrog.projects.alpine.om.soap11;
 
 import nu.xom.Document;
 import nu.xom.Element;
-import nu.xom.Attribute;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.smartfrog.projects.alpine.faults.InvalidXmlException;
@@ -162,7 +161,7 @@ public class MessageDocument extends Document implements ValidateXml {
      */
     public Fault getFault() {
         Body body = getBody();
-        return (Fault) body.getFirstChildElement(Soap11Constants.QNAME_FAULT);
+        return (Fault) body.getFirstChildElement(SoapConstants.QNAME_FAULT);
     }
 
 
@@ -170,13 +169,15 @@ public class MessageDocument extends Document implements ValidateXml {
      * Validate the Xml. Throw {@link InvalidXmlException} if invalid.
      */
     public void validateXml() {
-        if (getRootElement() == null) {
+        Element root = getRootElement();
+        if (root == null) {
             throw new InvalidXmlException(ERROR_EMPTY_DOCUMENT);
         }
-        if (!(getRootElement() instanceof Envelope)) {
-            throw new InvalidXmlException(Soap11Constants.FAULTCODE_VERSION_MISMATCH);
+        if (!(root instanceof Envelope)) {
+            throw new InvalidXmlException(SoapConstants.FAULTCODE_VERSION_MISMATCH
+                    +" : {"+ root.getNamespaceURI()+ "}#" + root.getQualifiedName());
         }
-        Envelope env = (Envelope) getRootElement();
+        Envelope env = (Envelope) root;
         env.validateXml();
     }
 

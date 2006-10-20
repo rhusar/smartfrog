@@ -19,6 +19,8 @@
  */
 package org.smartfrog.test.unit.projects.alpine.wsa;
 
+import org.smartfrog.projects.alpine.wsa.AlpineEPR;
+
 /**
  * created 10-Oct-2006 16:30:34
  */
@@ -42,4 +44,9 @@ public class QueryTest extends AddressingTestBase {
         assertNull(epr.lookupQuery("name3"));
     }
 
+    public void testDuplicate() throws Exception {
+        AlpineEPR job=new AlpineEPR("http://chamonix.hpl.hp.com:8080/alpine/system/?system=uuid_023713ca_edfc_43a4_abaa_fc8c8244fbfd");
+        String jobID = job.lookupQuery("system");
+        assertEquals("uuid_023713ca_edfc_43a4_abaa_fc8c8244fbfd",jobID);
+    }
 }

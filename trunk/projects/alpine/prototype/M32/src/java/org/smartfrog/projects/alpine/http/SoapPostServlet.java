@@ -172,7 +172,7 @@ public class SoapPostServlet extends ServletBase {
             if (messageContext.getResponse() == null) {
                 throw new ServerException("No response message created in handler chain");
             }
-            if (!messageContext.isProcessed()) {
+            if (!messageContext.isProcessed() && fault==null) {
                 // a missing processed flag generates a warning, as long as there is a response.
                 getLog().warn("Message has not been marked as processed, but it contains a response");
             }
@@ -217,7 +217,7 @@ public class SoapPostServlet extends ServletBase {
      *
      * @param endpointContext this endpoint
      * @return the list of handlers
-     * @throws AlpineRuntimeException if there was no handler list, as defined by {@link ContextConstants.ATTR_HANDLERS}
+     * @throws AlpineRuntimeException if there was no handler list, as defined by {@link ContextConstants#ATTR_HANDLERS}
      *                                in the endpoint context.
      */
     private List<MessageHandler> createMessageHandlers(EndpointContext endpointContext) {
