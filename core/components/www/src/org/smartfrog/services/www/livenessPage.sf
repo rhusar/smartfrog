@@ -32,7 +32,6 @@ For more information: www.smartfrog.org
   * Include the core smartfrog components.
   */
  #include "/org/smartfrog/components.sf"
- #include "/org/smartfrog/predicates.sf"
 
 
  /**
