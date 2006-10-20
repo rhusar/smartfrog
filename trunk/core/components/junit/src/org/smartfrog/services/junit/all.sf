@@ -34,10 +34,9 @@ ITS MEDIA, AND YOU HEREBY WAIVE ANY CLAIM IN THIS REGARD.
  * declare all the junit stuff, even things from subsidiary directories
  */
 
-#include "/org/smartfrog/services/junit/components.sf"
+#include "/org/smartfrog/services/junit/testrunner.sf"
+#include "/org/smartfrog/services/junit/log/testlistenerlogimpl.sf"
 #include "/org/smartfrog/services/junit/junit3/components.sf"
-#include "/org/smartfrog/services/junit/timeouts/components.sf"
 #include "/org/smartfrog/services/junit/listeners/xml/components.sf"
 #include "/org/smartfrog/services/junit/listeners/html/components.sf"
 #include "/org/smartfrog/services/junit/timeouts/components.sf"
-#include "/org/smartfrog/services/filesystem/components.sf"

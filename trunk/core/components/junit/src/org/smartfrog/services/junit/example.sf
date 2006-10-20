@@ -27,9 +27,7 @@ For more information: www.smartfrog.org
  /**
   * Include the core smartfrog components.
   */
-#include "/org/smartfrog/components.sf"
-#include "/org/smartfrog/predicates.sf"
-#include "/org/smartfrog/services/junit/components.sf"
+#include "/org/smartfrog/services/junit/all.sf"
 
 sfConfig extends TestRunner {
 
@@ -38,8 +36,9 @@ sfConfig extends TestRunner {
 
     }
 
-    JUnitTestSuite extends TestSuite {
-        name "org.example";
+    JUnitTestSuite extends JUnit3TestSuite {
+        package "org.example";
+
         classes ["firstTest","secondTest"];
     }
 }

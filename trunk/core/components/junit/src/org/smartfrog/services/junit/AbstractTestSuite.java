@@ -51,9 +51,11 @@ public abstract class AbstractTestSuite extends PrimImpl implements TestSuite {
      */
     public void bind(RunnerConfiguration configuration) throws RemoteException, SmartFrogException {
         boolean overwriting=false;
-        synchronized(this) {
+        boolean overwritingourselves=false;
+        synchronized(configurationContext) {
             if(configurationContext!=null && configuration!=null) {
                 overwriting=true;
+                overwritingourselves= configurationContext.get()==configuration;
             }
             configurationContext.set(configuration);
             //set or reset the test suite context
@@ -73,6 +75,9 @@ public abstract class AbstractTestSuite extends PrimImpl implements TestSuite {
             sfLog().info("Overwriting an existing thread-local configuration context.\n"
                 +"Multiple thread runners may be active in the same thread\n"
                 +"or the tests are themselves deploying tests.");
+            if(overwritingourselves) {
+                sfLog().info("P.S. The component is overwriting its own configuration");
+            }
         }
     }
 

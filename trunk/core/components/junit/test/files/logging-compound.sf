@@ -18,7 +18,7 @@ For more information: www.smartfrog.org
 
 */
 
-#include "/org/smartfrog/services/junit/components.sf"
+#include "/org/smartfrog/services/junit/all.sf"
 #include "/org/smartfrog/sfcore/logging/components.sf"
 #include "/org/smartfrog/sfcore/logging/logtoprimimpl.sf"
 
@@ -38,7 +38,7 @@ LoggingCompound extends Compound {
     logTo extends LogToPrimImpl {
       loggerClass "org.smartfrog.sfcore.logging.LogToPrimImpl";
       //the destination prim is defined here
-      logTo extends TestListenerLog {
+      logTo extends TestListenerLogImpl {
 
       }
       //trace out what is going on
