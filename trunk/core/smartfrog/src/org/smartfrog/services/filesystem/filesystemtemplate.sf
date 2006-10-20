@@ -18,7 +18,6 @@ For more information: www.smartfrog.org
 
 */
 #include "/org/smartfrog/components.sf"
-#include "/org/smartfrog/predicates.sf"
 
 DeletableFileSchema extends Schema {
     //delete flag
