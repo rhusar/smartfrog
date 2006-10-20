@@ -25,15 +25,19 @@ import nu.xom.XPathContext;
 /**
  
  */
-public class XPathContextFactory implements Soap11Constants {
+public class XPathContextFactory implements SoapConstants {
 
 
     public static XPathContext create() {
         XPathContext context=new XPathContext();
         context.addNamespace("xsd",URI_XSD_2001);
-        context.addNamespace("soap", URI_SOAP11);        
-        context.addNamespace("env", URI_SOAP11);        
-        context.addNamespace("wsdl", URI_WSDL);   
+        context.addNamespace("soap11", URI_SOAP11);
+        context.addNamespace("env11", URI_SOAP11);
+        context.addNamespace("soap12", URI_SOAP12);
+        context.addNamespace("env12", URI_SOAP12);
+        context.addNamespace("soap", URI_SOAPAPI);
+        context.addNamespace("env", URI_SOAPAPI);
+        context.addNamespace("wsdl", URI_WSDL);
         context.addNamespace("xml", URI_XML_1998);
         return context;
 }

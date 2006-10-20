@@ -22,8 +22,9 @@ package org.smartfrog.projects.alpine.om.soap11;
 
 import nu.xom.Element;
 import nu.xom.Elements;
-import nu.xom.Attribute;
 import org.smartfrog.projects.alpine.xmlutils.BaseElementsIterator;
+
+import javax.xml.namespace.QName;
 
 /**
  * The element name is "Envelope".
@@ -66,7 +67,7 @@ public class Envelope extends Soap11Element {
      * @return the body or null
      */
     public Body getBody() {
-        Element child = getFirstChildElement(QNAME_BODY);
+        Element child = getFirstChildElement(ELEMENT_BODY, getNamespaceURI());
         return (Body) child;
     }
 

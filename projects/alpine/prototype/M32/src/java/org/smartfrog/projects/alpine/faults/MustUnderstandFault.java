@@ -20,8 +20,7 @@
 package org.smartfrog.projects.alpine.faults;
 
 import nu.xom.Element;
-import org.smartfrog.projects.alpine.om.soap12.Soap12Constants;
-import org.smartfrog.projects.alpine.om.soap11.Soap11Constants;
+import org.smartfrog.projects.alpine.om.soap11.SoapConstants;
 
 /**
  * created 22-Mar-2006 12:01:49
@@ -33,7 +32,7 @@ public class MustUnderstandFault extends SoapException {
     public static final String NOT_UNDERSTOOD = "A mustUnderstand header was not understood by the endpoint :";
 
     public MustUnderstandFault(String faultActor,Element header) {
-        super(Soap11Constants.FAULTCODE_MUST_UNDERSTAND,
+        super(SoapConstants.FAULTCODE_MUST_UNDERSTAND,
                 faultActor,
                 NOT_UNDERSTOOD +header.getQualifiedName(),
                 null);

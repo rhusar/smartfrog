@@ -5,12 +5,17 @@ Content-Length: nnnn
 -->
 
 <soap:Envelope
-  xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+  xmlns:soap="http://www.w3.org/2003/05/soap-envelope">
   <soap:Body>
     <soap:Fault>
-      <faultcode>soap:Server</faultcode>
-      <faultstring>Server Error</faultstring>
-      <detail>
+      <soap:Role>soap:Server</soap:Role>
+      <soap:Code>
+        <soap:Value>soap:Server</soap:Value>
+      </soap:Code>
+      <soap:Reason>
+        <soap:Text xml:lang="en">Server Error</soap:Text>
+      </soap:Reason>
+      <soap:Detail>
         <e:myfaultdetails xmlns:e="http://example.org/uri">
           <message>
                    My application didn't work
@@ -19,7 +24,7 @@ Content-Length: nnnn
                    1001
           </errorcode>
         </e:myfaultdetails>
-      </detail>
+      </soap:Detail>
     </soap:Fault>
   </soap:Body>
 </soap:Envelope>

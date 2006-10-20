@@ -61,7 +61,8 @@ public class SimpleTest extends ValidTestBase {
         MessageDocument doc = getDocument();
         envelope = getEnvelope(doc);
         body = envelope.getBody();
-        xpathContext = XPathContextFactory.create(); 
+        assertNotNull("there is no body to this message body",body);
+        xpathContext = XPathContextFactory.create();
         xpathContext.addNamespace("m", URI_EXAMPLE_ORG_1);
     }
 

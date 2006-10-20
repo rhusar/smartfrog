@@ -39,7 +39,7 @@ public class Fault extends Soap11Element {
      * an empty fault is given an empty code and stub details element
      */ 
     public Fault() {
-        this(ELEMENT_FAULT,URI_SOAP11);
+        this(ELEMENT_FAULT, URI_SOAPAPI);
         setFaultCode("");
         setFaultString("");
         demandCreateFaultDetail();

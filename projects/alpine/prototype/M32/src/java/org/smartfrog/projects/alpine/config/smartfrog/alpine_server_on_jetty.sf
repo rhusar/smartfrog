@@ -17,9 +17,17 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 For more information: www.smartfrog.org
 
 */
-#include "/org/smartfrog/services/www/components.sf";
-#include "/org/smartfrog/services/jetty/components.sf";
+
+
 #include "/org/smartfrog/projects/alpine/config/smartfrog/components.sf"
+#include "/org/smartfrog/services/jetty/jetty-core.sf";
+/**
+ * this is the jetty binding.
+ */
+AlpineServletOnJetty extends AlpineServlet  {
+    //sfClass JettyServlet:sfClass;
+}
+
 
 /**
  * This defines an Alpine runtime hosted under Jetty

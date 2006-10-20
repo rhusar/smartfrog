@@ -7,11 +7,11 @@ SOAPAction: "Some-URI"
 -->
 
 <soap:Envelope
-  xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"
-  soap:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+  xmlns:soap="http://www.w3.org/2003/05/soap-envelope"
+  soap:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">
 <soap:Body>
   <m:GetLastTradePriceDetailed
-    xmlns:m="Some-URI">
+    xmlns:m="http://example.org/Some-URI">
     <Symbol>DEF</Symbol>
     <Company>DEF Corp</Company>
     <Price>34.1</Price>

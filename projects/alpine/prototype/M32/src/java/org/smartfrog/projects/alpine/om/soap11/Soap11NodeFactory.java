@@ -42,13 +42,13 @@ public class Soap11NodeFactory implements NamespaceNodeFactory {
      */
     public Element startMakingElement(String fullname, String namespace, NodeFactory baseFactory) {
         String name = XsdUtils.extractLocalname(fullname);
-        if (Soap11Constants.ELEMENT_ENVELOPE.equals(name)) {
+        if (SoapConstants.ELEMENT_ENVELOPE.equals(name)) {
             return new Envelope(name, namespace);
         }
-        if (Soap11Constants.ELEMENT_HEADER.equals(name)) {
+        if (SoapConstants.ELEMENT_HEADER.equals(name)) {
             return new Header(name, namespace);
         }
-        if (Soap11Constants.ELEMENT_FAULT.equals(name)) {
+        if (SoapConstants.ELEMENT_FAULT.equals(name)) {
             return new Fault(name, namespace);
         }
 
