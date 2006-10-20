@@ -18,17 +18,11 @@ For more information: www.smartfrog.org
 
 */
 
-#include "/org/smartfrog/predicates.sf"
-
-/**
- * Include the core smartfrog components.
- */
-#include "/org/smartfrog/components.sf"
-
 /**
  * base webserver declarations
  */
 #include "/org/smartfrog/services/www/webserver.sf"
+#include "/org/smartfrog/services/filesystem/filesystemtemplate.sf"
 
 /**
  * declare a base Java app server.
