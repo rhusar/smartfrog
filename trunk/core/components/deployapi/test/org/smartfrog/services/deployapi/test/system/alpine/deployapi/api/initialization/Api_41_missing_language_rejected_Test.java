@@ -10,7 +10,6 @@ import nu.xom.Attribute;
 
 /**
  * created 13-Apr-2006 13:51:02
- * Create a system , then destroy it immediately.
  */
 
 public class Api_41_missing_language_rejected_Test extends StandardTestBase {

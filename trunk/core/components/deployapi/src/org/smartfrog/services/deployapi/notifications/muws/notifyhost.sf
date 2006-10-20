@@ -17,13 +17,30 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 For more information: www.smartfrog.org
 
 */
-#include "/org/smartfrog/services/deployapi/examples/interop/pelvoux.sf"
 
-/**
- * A variant of the pelvoux system in which the process is forked.
- */
+#include "/org/smartfrog/projects/alpine/config/smartfrog/alpine_server_on_jetty.sf"
+#include "/org/smartfrog/services/deployapi/notifications/muws/components.sf"
 
+NotifyHost extends AlpineServerOnJetty {
 
-sfConfig extends Pelvoux {
-  sfProcessName "forked";
+    home LAZY PROPERTY java.io.tmpdir;
+
+    port 8082;
+
+    hostname LAZY servlet:listener:ipaddr;
+
+    muws extends MuwsEventEndpoint {
+      servlet LAZY alpine;
+    }
+
+    /**
+     * the engine that does the work
+     */
+    engine extends NotifyServer {
+      port PARENT:port;
+      hostname PARENT:hostname;
+      muws LAZY PARENT:muws;
+    }
+
 }
+

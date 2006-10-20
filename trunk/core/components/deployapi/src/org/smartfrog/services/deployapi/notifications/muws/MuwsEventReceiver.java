@@ -32,21 +32,25 @@ import java.util.ListIterator;
 
 public class MuwsEventReceiver implements Iterable<ReceivedEvent>{
 
+
+    private NotifyServerImpl owner;
+
     private int size;
 
     private List<ReceivedEvent> buffer;
 
-    public String id;
-
+    private String id;
+    private String url;
     private int count=0;
     public static final int DEFAULT_SIZE = 16;
 
 
-    public MuwsEventReceiver() {
-        this(DEFAULT_SIZE);
+    public MuwsEventReceiver(NotifyServerImpl owner) {
+        this(owner, DEFAULT_SIZE);
     }
 
-    public MuwsEventReceiver(int size) {
+    public MuwsEventReceiver(NotifyServerImpl owner,int size) {
+        this.owner=owner;
         this.size = size;
         buffer = new ArrayList<ReceivedEvent>(size);
     }
@@ -82,4 +86,34 @@ public class MuwsEventReceiver implements Iterable<ReceivedEvent>{
         buffer.add(new ReceivedEvent(messageContext, event));
     }
 
+    /**
+     * cleare the buffer
+     */
+    public synchronized void clear() {
+        buffer.clear();
+    }
+
+    public synchronized int size() {
+        return buffer.size();
+    }
+
+    public synchronized ReceivedEvent get(int offset) {
+        return buffer.get(offset);
+    }
+
+    /**
+     * destroy an instance by unregistering it from its container
+     */
+    public void destroy() {
+        owner.remove(this);
+    }
+
+
+    public String getURL() {
+        return url;
+    }
+
+    public void setURL(String url) {
+        this.url = url;
+    }
 }

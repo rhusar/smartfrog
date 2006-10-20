@@ -92,10 +92,12 @@ public abstract class WsrfHandler extends HandlerBase implements MessageHandler 
         if (Constants.WSRF_ELEMENT_DESTROY_REQUEST.equals(requestName)) {
             verifyNamespace(getRequest(messageContext),
                     Constants.WSRF_WSRL_NAMESPACE);
-            destroy(messageContext,endpointContext);
-            setResponse(messageContext,
+            boolean processed=destroy(messageContext,endpointContext);
+            if(processed) {
+                setResponse(messageContext,
                     new Element(Constants.WSRF_ELEMENT_DESTROY_RESPONSE,
                             Constants.WSRF_WSRL_NAMESPACE));
+            }
         }
     }
 
@@ -105,9 +107,11 @@ public abstract class WsrfHandler extends HandlerBase implements MessageHandler 
      * @param messageContext
      * @param endpointContext
      */
-    protected  void destroy(MessageContext messageContext,
+    protected  boolean destroy(MessageContext messageContext,
                          EndpointContext endpointContext) {
-        throw FaultRaiser.raiseNotImplementedFault("<wsrf:destroy/>. This endpoint is not destroyable");
+        //throw FaultRaiser.raiseNotImplementedFault("<wsrf:destroy/>. This endpoint is not destroyable "+toString());
+        log.debug("Skipping destruction of an indestructable endpoint "+toString());
+        return false;
     }
 
     protected SoapElement getRequest(MessageContext messageContext) {
@@ -354,5 +358,14 @@ public abstract class WsrfHandler extends HandlerBase implements MessageHandler 
         if(!expectedTopic.equals(topic)) {
             throw FaultRaiser.raiseBadArgumentFault("Unsupported topic: ["+topic+"] - expected "+expectedTopic);
         }
+    }
+
+
+    /**
+     * Returns a string representation of the object. I
+     * @return a string representation of the object.
+     */
+    public String toString() {
+        return "WSRF Handler";
     }
 }

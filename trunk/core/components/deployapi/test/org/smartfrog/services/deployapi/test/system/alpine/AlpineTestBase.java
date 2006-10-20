@@ -31,7 +31,7 @@ import org.ggf.cddlm.generated.api.CddlmConstants;
 import org.smartfrog.projects.alpine.om.base.SoapElement;
 import org.smartfrog.projects.alpine.om.soap11.SoapMessageParser;
 import org.smartfrog.projects.alpine.om.soap11.SoapFactory;
-import org.smartfrog.projects.alpine.om.soap11.Soap11Constants;
+import org.smartfrog.projects.alpine.om.soap11.SoapConstants;
 import org.smartfrog.projects.alpine.om.soap11.MessageDocument;
 import org.smartfrog.projects.alpine.transport.DirectExecutor;
 import org.smartfrog.projects.alpine.transport.TransmitQueue;
@@ -113,10 +113,13 @@ public abstract class AlpineTestBase extends TestCase {
      */
     protected void tearDown() throws Exception {
         super.tearDown();
-        if (system != null) {
-            system.destroy();
+        try {
+            if (system != null) {
+                system.destroy();
+            }
+        } finally {
+            FileSystem.recursiveDelete(tempdir);
         }
-        FileSystem.recursiveDelete(tempdir);
     }
 
     /**
@@ -292,7 +295,7 @@ public abstract class AlpineTestBase extends TestCase {
 
     protected SoapMessageParser createXmlParser() throws SAXException {
         return new SoapMessageParser(new org.smartfrog.projects.alpine.xmlutils.ResourceLoader(getClass()),
-                Soap11Constants.URI_SOAP12, false, new SoapFactory());
+                SoapConstants.URI_SOAPAPI, false, null);
     }
 
     protected MessageDocument parseString(String xml,String uri) throws IOException, ParsingException, SAXException {
@@ -336,8 +339,12 @@ public abstract class AlpineTestBase extends TestCase {
      * assert that the test is hosted.
      */
     protected void assertHosted() {
+        boolean hosted = isHosted();
         assertTrue("This test must run run under SmartFrog",
-                isHosted());
+                hosted);
     }
+
+
+
 }
 

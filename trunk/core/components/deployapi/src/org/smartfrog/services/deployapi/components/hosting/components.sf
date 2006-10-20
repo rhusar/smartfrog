@@ -34,8 +34,6 @@ ITS MEDIA, AND YOU HEREBY WAIVE ANY CLAIM IN THIS REGARD.
 This represents a hosted app
 */
 
-#include "/org/smartfrog/predicates.sf"
-
 /**
  * Include the core smartfrog components.
  */

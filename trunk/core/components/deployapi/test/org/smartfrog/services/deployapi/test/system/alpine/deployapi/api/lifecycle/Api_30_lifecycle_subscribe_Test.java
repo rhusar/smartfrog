@@ -32,7 +32,7 @@ public class Api_30_lifecycle_subscribe_Test extends SubscribingTestBase {
     }
 
     public void testSubscribe() throws Exception {
-        createSubscribedSystem(getCallbackURL());
+        createSubscribedSystem();
     }
 
 }

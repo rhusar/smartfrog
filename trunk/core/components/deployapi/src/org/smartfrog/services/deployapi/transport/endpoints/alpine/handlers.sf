@@ -19,6 +19,7 @@ For more information: www.smartfrog.org
 */
 
 #include "/org/smartfrog/projects/alpine/handlers/components.sf"
+#include "/org/smartfrog/projects/alpine/config/smartfrog/endpoint.sf"
 
 WsrfHandler extends InstanceHandler {
 }

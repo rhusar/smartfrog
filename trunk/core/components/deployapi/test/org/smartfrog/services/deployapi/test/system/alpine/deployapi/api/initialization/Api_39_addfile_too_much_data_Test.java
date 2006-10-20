@@ -28,7 +28,6 @@ import org.smartfrog.services.deployapi.test.system.alpine.deployapi.api.Standar
 
 /**
  * created 13-Apr-2006 13:51:02
- * Create a system , then destroy it immediately.
  */
 
 public class Api_39_addfile_too_much_data_Test extends StandardTestBase {
