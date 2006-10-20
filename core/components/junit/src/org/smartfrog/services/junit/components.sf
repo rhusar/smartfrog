@@ -28,41 +28,12 @@ For more information: www.smartfrog.org
   * Include the test suite
   */
 #include "/org/smartfrog/services/junit/testsuite.sf"
-//include java components
-#include "/org/smartfrog/services/os/java/components.sf"
+//test runner
+#include "/org/smartfrog/services/junit/testrunner.sf"
 //include logging
 #include "/org/smartfrog/services/junit/log/testlistenerlogimpl.sf"
 //base listeners
 #include "/org/smartfrog/services/junit/listeners/components.sf";
 
-
-
-
-/**
- * and the test runner
- */
-
-TestRunnerSchema extends Schema {
-    listener extends CD;
-    keepGoing extends OptionalBoolean;
-    failOnError extends OptionalBoolean;
-    threadPriority extends OptionalInteger;
-    runTests extends Boolean;
-    //component that is a log. this also needs to be bound to the logging system.
-    //there is no autobind.
-    testLog extends OptionalCD;
-}
-
-/**
- * the base test runner has a console listener automatically
- */
-TestRunner extends Compound {
-    sfClass "org.smartfrog.services.junit.TestRunnerComponent";
-    testRunnerSchema extends TestRunnerSchema;
-    listener extends ConsoleListener ;
-    failOnError true;
-    keepGoing true;
-    runTests true; 
-}
 
 

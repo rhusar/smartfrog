@@ -303,7 +303,7 @@ public class JUnit3TestSuiteImpl extends AbstractTestSuite implements JUnitTestS
      * @param src
      * @param name
      * @return a flatter list
-     * @throws SmartFrogInitException
+     * @throws SmartFrogInitException if there is an element that is not of the right type
      */
     public List<String> flattenStringList(final List src, String name)
             throws SmartFrogException {
@@ -474,10 +474,8 @@ public class JUnit3TestSuiteImpl extends AbstractTestSuite implements JUnitTestS
         //todo: verify that the class implements test or testsuite
         try {
             // check if there is a suite method
-            Method method = clazz.getMethod(SUITE_METHOD_NAME, new Class[0]);
-            //despite what IDEs may say, there is no redundant cast here, as we don't want
-            //java1.5 to get confused.
-            return (Test) method.invoke(null, (Object[]) new Class[0]);
+            Method method = clazz.getMethod(SUITE_METHOD_NAME);
+            return (Test) method.invoke(null);
         } catch (NoSuchMethodException e) {
             //if not, assume that it is a testclass and do it that way
             return new junit.framework.TestSuite(clazz);

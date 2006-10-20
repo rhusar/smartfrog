@@ -1,4 +1,4 @@
-/** (C) Copyright 1998-2006 Hewlett-Packard Development Company, LP
+/** (C) Copyright 2006 Hewlett-Packard Development Company, LP
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
@@ -18,34 +18,33 @@ For more information: www.smartfrog.org
 
 */
 
-/*
- this file declares the timeout
- */
 
-
-
- /**
-  * Include the core smartfrog components.
-  */
 #include "/org/smartfrog/components.sf"
 
-TimeoutCompoundSchema extends Schema {
-    failOnTimeout extends Boolean;
-    //message to get logged at info level
-    timeoutMessage extends String;
-    //timeout in seconds. If <=0 the timeout is disabled
-    timeout extends Integer;
+/**
+ * and the test runner
+ */
+
+TestRunnerSchema extends Schema {
+    listener extends CD;
+    keepGoing extends OptionalBoolean;
+    failOnError extends OptionalBoolean;
+    threadPriority extends OptionalInteger;
+    runTests extends Boolean;
+    //component that is a log. this also needs to be bound to the logging system.
+    //there is no autobind.
+    testLog extends OptionalCD;
 }
 
 /**
  * the base test runner has a console listener automatically
  */
-TimeoutCompound  extends Compound {
-    sfClass "org.smartfrog.services.junit.timeouts.TimeoutCompoundImpl";
-    timeoutCompoundSchema extends TimeoutCompoundSchema;
-    failOnTimeout true;
-    timeoutMessage "timeout";
-    timeout 600;
+TestRunner extends Compound {
+    sfClass "org.smartfrog.services.junit.TestRunnerComponent";
+    testRunnerSchema extends TestRunnerSchema;
+    listener extends ConsoleListener ;
+    failOnError true;
+    keepGoing true;
+    runTests true;
 }
-
 

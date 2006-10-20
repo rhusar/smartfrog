@@ -311,9 +311,12 @@ public class TestRunnerComponent extends CompoundImpl implements TestRunner,
                 if (o instanceof TestSuite) {
                     TestSuite suiteComponent = (TestSuite) o;
                     suiteComponent.bind(getConfiguration());
-                    successful &= suiteComponent.runTests();
+                    try {
+                        successful &= suiteComponent.runTests();
+                    } finally {
+                        suiteComponent.bind(null);
+                    }
                     updateResultAttributes(suiteComponent);
-                    suiteComponent.bind(null);
                     //break out if the thread is interrupted
                     if (Thread.currentThread().isInterrupted()) {
                         log.info("Test was interrupted");

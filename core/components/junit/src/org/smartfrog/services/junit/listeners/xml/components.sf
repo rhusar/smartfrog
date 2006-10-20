@@ -23,6 +23,7 @@ For more information: www.smartfrog.org
   * extend the basic listeners
   */
 #include "/org/smartfrog/services/junit/listeners/components.sf"
+#include "/org/smartfrog/services/filesystem/filesystemtemplate.sf"
 
 
 XmlTestIndexSchema extends Schema {
