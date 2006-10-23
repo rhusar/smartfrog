@@ -71,14 +71,14 @@ public class TestRunnerComponent extends CompoundImpl implements TestRunner,
 
     /**
      * Should we terminate after running our tests?
-     * {@link ShouldDetachOrTerminate.ATTR_SHOULD_TERMINATE}
+     * {@link ShouldDetachOrTerminate#ATTR_SHOULD_TERMINATE}
      */
     private boolean shouldTerminate = true;
 
     /**
      * if terminating, should we detach?
      * Should we terminate after running our tests?
-     * {@link ShouldDetachOrTerminate.ATTR_SHOULD_DETACH}
+     * {@link ShouldDetachOrTerminate#ATTR_SHOULD_DETACH}
      */
     private boolean shouldDetach = false;
 
@@ -98,11 +98,12 @@ public class TestRunnerComponent extends CompoundImpl implements TestRunner,
     private RunnerConfiguration configuration = new RunnerConfiguration();
 
     public static final String ERROR_TESTS_IN_PROGRESS = "Component is already running tests";
+    public static final String TESTS_FAILED = "Tests Failed";
 
     /**
      * constructor
      *
-     * @throws RemoteException
+     * @throws RemoteException for network problems
      */
     public TestRunnerComponent() throws RemoteException {
         helper = new ComponentHelper(this);
@@ -119,7 +120,7 @@ public class TestRunnerComponent extends CompoundImpl implements TestRunner,
     /**
      * validate our settings, bail out if they are invalid
      *
-     * @throws SmartFrogInitException
+     * @throws SmartFrogInitException if the configuration is invalid
      */
     private void validate() throws SmartFrogInitException {
         if (threadPriority < Thread.MIN_PRIORITY ||
@@ -134,10 +135,9 @@ public class TestRunnerComponent extends CompoundImpl implements TestRunner,
      * Deploy the compound. Deployment is defined as iterating over the context
      * and deploying any parsed eager components.
      *
-     * @throws org.smartfrog.sfcore.common.SmartFrogException
-     *                                  failure deploying compound or
+     * @throws SmartFrogException     failure deploying compound or
      *                                  sub-component
-     * @throws java.rmi.RemoteException In case of Remote/nework error
+     * @throws RemoteException In case of Remote/nework error
      */
     public synchronized void sfDeploy() throws SmartFrogException,
             RemoteException {
@@ -150,9 +150,8 @@ public class TestRunnerComponent extends CompoundImpl implements TestRunner,
      * components in the compound context. Any failure will cause the compound
      * to terminate
      *
-     * @throws org.smartfrog.sfcore.common.SmartFrogException
-     *                                  failed to start compound
-     * @throws java.rmi.RemoteException In case of Remote/nework error
+     * @throws SmartFrogException failed to start compound
+     * @throws RemoteException In case of Remote/nework error
      */
     public synchronized void sfStart() throws SmartFrogException,
             RemoteException {
@@ -168,11 +167,11 @@ public class TestRunnerComponent extends CompoundImpl implements TestRunner,
                     + "must refer to an implementation of TestListenerFactory");
         }
         TestListenerFactory listenerFactory = (TestListenerFactory) o;
-        String name = ((Prim) listenerFactory).sfResolve(
+        String listenerName = ((Prim) listenerFactory).sfResolve(
                 TestListenerFactory.ATTR_NAME,
                 "",
                 true);
-        log.info("Test Listener is of type " + name);
+        log.info("Test Listener is of type " + listenerName);
         configuration.setListenerFactory(listenerFactory);
         configuration.setKeepGoing(
                 sfResolve(ATTR_KEEPGOING, configuration.getKeepGoing(), false));
@@ -204,16 +203,17 @@ public class TestRunnerComponent extends CompoundImpl implements TestRunner,
      * cached exception gets thrown.
      *
      * @param source source of ping
-     * @throws org.smartfrog.sfcore.common.SmartFrogLivenessException
-     *          liveness failed
+     * @throws SmartFrogLivenessException liveness failed
      */
     public void sfPing(Object source) throws SmartFrogLivenessException,
             RemoteException {
         //check the substuff
         super.sfPing(source);
         //then look to see if we had a failure with our tests
-        if (failOnError && isFinished() && getCachedException() != null) {
-            SmartFrogLivenessException.forward(getCachedException());
+        synchronized(this) {
+            if (failOnError && isFinished() && getCachedException() != null) {
+                SmartFrogLivenessException.forward(getCachedException());
+            }
         }
     }
 
@@ -262,7 +262,7 @@ public class TestRunnerComponent extends CompoundImpl implements TestRunner,
         log.info("Beginning tests");
         try {
             if (!executeTests()) {
-                throw new SmartFrogException("Tests Failed");
+                throw new SmartFrogException(TESTS_FAILED);
             }
         } catch (RemoteException e) {
             catchException(e);
@@ -297,9 +297,9 @@ public class TestRunnerComponent extends CompoundImpl implements TestRunner,
      * out (between suites) if we are interrupted. Sets the {@link
      * TestResultAttributes#ATTR_FINISHED} attribute to true on completion.
      *
-     * @return
-     * @throws SmartFrogException
-     * @throws RemoteException
+     * @return true if the tests worked
+     * @throws SmartFrogException for problems
+     * @throws RemoteException for network problems
      */
     public boolean executeTests() throws SmartFrogException, RemoteException {
 
@@ -310,10 +310,12 @@ public class TestRunnerComponent extends CompoundImpl implements TestRunner,
                 Object o = e.nextElement();
                 if (o instanceof TestSuite) {
                     TestSuite suiteComponent = (TestSuite) o;
+                    //bind to the configuration. This will set the static properties.
                     suiteComponent.bind(getConfiguration());
                     try {
                         successful &= suiteComponent.runTests();
                     } finally {
+                        //unbind from this test
                         suiteComponent.bind(null);
                     }
                     updateResultAttributes(suiteComponent);
@@ -378,12 +380,12 @@ public class TestRunnerComponent extends CompoundImpl implements TestRunner,
         return cachedException;
     }
 
-    public synchronized void catchException(Throwable cachedException) {
-        if (cachedException != null) {
-            ThrowableTraceInfo tti = new ThrowableTraceInfo(cachedException);
-            log.info("Caught exception in tests " + tti, cachedException);
+    public synchronized void catchException(Throwable caught) {
+        if (caught != null) {
+            ThrowableTraceInfo tti = new ThrowableTraceInfo(caught);
+            log.info("Caught exception in tests " + tti, caught);
         }
-        this.cachedException = cachedException;
+        this.cachedException = caught;
     }
 
     public synchronized boolean isFinished() throws RemoteException {

@@ -25,6 +25,7 @@ import junit.framework.TestCase;
 import junit.framework.TestResult;
 import org.smartfrog.services.junit.AbstractTestSuite;
 import org.smartfrog.services.junit.RunnerConfiguration;
+import org.smartfrog.services.junit.TestContextInjector;
 import org.smartfrog.services.junit.TestListener;
 import org.smartfrog.services.junit.TestListenerFactory;
 import org.smartfrog.services.junit.Utils;
@@ -44,6 +45,7 @@ import java.lang.reflect.Method;
 import java.net.InetAddress;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Properties;
@@ -373,21 +375,22 @@ public class JUnit3TestSuiteImpl extends AbstractTestSuite implements JUnitTestS
             testLog.addLogListener(listener);
         }
 
+        // set up our context
+        HashMap<String, Object> context = new HashMap<String, Object>();
+        context.put(TestContextInjector.ATTR_PRIM,this);
+        context.put(TestContextInjector.ATTR_LISTENER,listener);
+        context.put(TestContextInjector.ATTR_PROPERTIES,sysproperties);
+
         //reset the logs
         startedTests = new HashMap<String, Long>();
-
         //now run all the tests
         try {
             boolean failed = false;
             for(String classname :testClasses.keySet()) {
                 try {
-                    testSingleClass(classname);
+                    testSingleClass(classname,context);
                     updateResultAttributes(false);
                 } catch (RemoteException e) {
-                    throw SmartFrogException.forward(e);
-                } catch (IllegalAccessException e) {
-                    throw SmartFrogException.forward(e);
-                } catch (InvocationTargetException e) {
                     throw SmartFrogException.forward(e);
                 }
                 if (Thread.currentThread().isInterrupted()) {
@@ -435,16 +438,23 @@ public class JUnit3TestSuiteImpl extends AbstractTestSuite implements JUnitTestS
      * @throws IllegalAccessException
      * @throws InvocationTargetException
      */
-    private void testSingleClass(String classname)
-            throws IllegalAccessException,
-            InvocationTargetException, SmartFrogResolutionException, RemoteException {
+    private boolean testSingleClass(String classname,HashMap<String,Object> context) throws RemoteException {
         log("testing " + classname);
         Test tests;
-        Class clazz = loadTestClass(classname);
-        tests = extractTest(clazz);
-        TestResult result = new TestResult();
-        result.addListener(this);
-        tests.run(result);
+
+        try {
+            Class clazz = loadTestClass(classname);
+            tests = extractTest(clazz);
+            injectTestContext(tests, context);
+            TestResult result = new TestResult();
+            result.addListener(this);
+            tests.run(result);
+            return true;
+        } catch (SmartFrogException e) {
+            //skip the test
+            log.error(e);
+            return false;
+        }
     }
 
 
@@ -469,8 +479,7 @@ public class JUnit3TestSuiteImpl extends AbstractTestSuite implements JUnitTestS
      * @throws IllegalAccessException if it is not accessible
      * @throws InvocationTargetException if the test suite method failed
      */
-    private Test extractTest(Class clazz) throws IllegalAccessException,
-            InvocationTargetException {
+    private Test extractTest(Class clazz) throws SmartFrogInitException {
         //todo: verify that the class implements test or testsuite
         try {
             // check if there is a suite method
@@ -479,8 +488,43 @@ public class JUnit3TestSuiteImpl extends AbstractTestSuite implements JUnitTestS
         } catch (NoSuchMethodException e) {
             //if not, assume that it is a testclass and do it that way
             return new junit.framework.TestSuite(clazz);
+        } catch (IllegalAccessException e) {
+            throw new SmartFrogInitException("No access to the method "+SUITE_METHOD_NAME
+                    +" in class "+clazz,e);
+        } catch (InvocationTargetException e) {
+            throw new SmartFrogInitException("Exception in " + SUITE_METHOD_NAME
+                    + " in class " + clazz, e.getCause());
         }
     }
+
+
+    /**
+     * inject the test context into every test that expects it
+     * @param tests
+     * @param context
+     */
+    private void injectTestContext(junit.framework.TestSuite tests, HashMap<String, Object> context) {
+        Enumeration t=tests.tests();
+        while (t.hasMoreElements()) {
+            Test test = (Test) t.nextElement();
+            injectTestContext(test,context);
+        }
+    }
+
+    /**
+     * inject test context into a test
+     * @param test
+     * @param context
+     */
+    private void injectTestContext(Test test, HashMap<String, Object> context) {
+        if (test instanceof TestContextInjector) {
+            TestContextInjector tci = (TestContextInjector) test;
+            tci.setTestContext(context);
+        } else if (test instanceof junit.framework.TestSuite) {
+            injectTestContext((junit.framework.TestSuite)test,context);
+        }
+    }
+
 
     /**
      * Get the short name of a component.

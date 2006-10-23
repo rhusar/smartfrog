@@ -33,27 +33,40 @@ import java.rmi.RemoteException;
 
 public interface TestSuite extends Prim, Remote, TestResultAttributes {
 
+    /**
+     * {@value}
+     */
     public static final String ATTR_NAME = "name";
+    /**
+     * {@value}
+     */
     public static final String ATTR_IF = "if";
+    /**
+     * {@value}
+     */
     public static final String ATTR_UNLESS = "unless";
     
-    //list in name, value pairs [[name,value],[n2,v2]]
+    /**
+     * list in name, value pairs [[name,value],[n2,v2]]
+     * {@value}
+     */
     public static final String ATTR_SYSPROPS="properties";
 
-    //read only properties
     /**
      * bind to the configuration. A null parameter means 'stop binding'
      *
-     * @param configuration
-     * @throws RemoteException
+     * @param configuration configuration to bind to
+     * @throws RemoteException for network problems
+     * @throws SmartFrogException for other problems
      */
     void bind(RunnerConfiguration configuration) throws RemoteException,
             SmartFrogException;
 
     /**
-     * run the test
-     *
-     * @throws RemoteException
+     * run the tests
+     * @return true if they worked
+     * @throws RemoteException for network problems
+     * @throws SmartFrogException for other problems
      */
     boolean runTests() throws RemoteException, SmartFrogException;
 

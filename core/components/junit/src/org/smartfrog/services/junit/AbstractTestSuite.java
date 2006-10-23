@@ -53,14 +53,15 @@ public abstract class AbstractTestSuite extends PrimImpl implements TestSuite {
         boolean overwriting=false;
         boolean overwritingourselves=false;
         synchronized(configurationContext) {
-            if(configurationContext!=null && configuration!=null) {
+            RunnerConfiguration current = configurationContext.get();
+            if(current !=null && configuration!=null) {
                 overwriting=true;
-                overwritingourselves= configurationContext.get()==configuration;
+                overwritingourselves= current ==configuration;
             }
             configurationContext.set(configuration);
             //set or reset the test suite context
             if(configuration!=null) {
-                if (testSuiteContext != null) {
+                if (testSuiteContext.get() != null) {
                     overwriting = true;
                 }
 
@@ -97,4 +98,6 @@ public abstract class AbstractTestSuite extends PrimImpl implements TestSuite {
     public static Prim getTestSuite() {
         return testSuiteContext.get();
     }
+
+
 }
