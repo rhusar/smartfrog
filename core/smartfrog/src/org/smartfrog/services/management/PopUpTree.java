@@ -105,7 +105,7 @@ public class PopUpTree extends JComponent implements ActionListener {
         menuItemTerminateNormal.setText("Terminate Component - NORMAL");
         menuItemTerminateAbnormal.setText("Terminate Component - ABNORMAL");
         menuItemDTerminate.setText("Detach and Terminate Comp");
-        menuItemDumpContext.setText("Component Diag. Report");
+        menuItemDumpContext.setText("Diagnostics Report");
         menuItemParentageChanged.setText("sfParentageChanged()");
         menuItemIntrospector.setText("Instrospector");
 
