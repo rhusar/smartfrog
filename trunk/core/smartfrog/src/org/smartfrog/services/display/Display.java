@@ -1349,8 +1349,8 @@ public class Display extends JFrame implements ActionListener, KeyListener {
                 (new Display_documentScreen_documentAdapter(this));
         jMenuItemInfoProp.addActionListener
                 (new Display_jMenuItemInfoProp_actionAdapter(this));
-        jMenuItemInfoProp.setText("Info Sys Prop");
-        jMenuItemProcessComp.setText("Diag. Proc Comp");
+        jMenuItemInfoProp.setText("Info System Properties");
+        jMenuItemProcessComp.setText("Diagnostics Report ");
         jMenuItemProcessComp.addActionListener
                 (new Display_jMenuItemProcessComp_actionAdapter(this));
         jCheckBoxMenuItemPause.setToolTipText("Pause AutoScroll (Alt+P)");
@@ -1360,7 +1360,7 @@ public class Display extends JFrame implements ActionListener, KeyListener {
         // AutoScroll by default
         jCheckBoxMenuItemPause.setAccelerator(javax.swing.KeyStroke.getKeyStroke(
                 80, java.awt.event.KeyEvent.ALT_MASK, false));
-        jMenuItemMngConsole.setText("SF Mng Console");
+        jMenuItemMngConsole.setText("SF Management Console");
         jMenuItemMngConsole.addActionListener(
                 new java.awt.event.ActionListener() {
                     public void actionPerformed(ActionEvent e) {
