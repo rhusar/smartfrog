@@ -24,17 +24,17 @@ import nu.xom.Serializer;
 import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpStatus;
-import org.apache.commons.httpclient.params.HttpConnectionParams;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.RequestEntity;
+import org.apache.commons.httpclient.params.HttpConnectionParams;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.smartfrog.projects.alpine.core.MessageContext;
 import org.smartfrog.projects.alpine.core.Context;
 import org.smartfrog.projects.alpine.core.ContextConstants;
+import org.smartfrog.projects.alpine.core.MessageContext;
 import org.smartfrog.projects.alpine.faults.SoapException;
-import org.smartfrog.projects.alpine.http.HttpConstants;
 import org.smartfrog.projects.alpine.http.HttpBinder;
+import org.smartfrog.projects.alpine.http.HttpConstants;
 import org.smartfrog.projects.alpine.om.soap11.MessageDocument;
 import org.smartfrog.projects.alpine.om.soap11.SoapMessageParser;
 import org.smartfrog.projects.alpine.transport.Transmission;
@@ -177,18 +177,34 @@ public class HttpTransmitter {
                     throw fault;
                 }
                 //extract the response
-                responseStream = method.getResponseBodyAsStream();
+                responseStream = new CachingInputStream(method.getResponseBodyAsStream(),"utf8");
                 //parse it
                 SoapMessageParser parser = tx.getContext().createParser();
-                MessageDocument response = parser.parseStream(responseStream);
-                //set our response
-                tx.getContext().setResponse(response);
-                // if is a fault, turn it into an exception.
-                if (requestFailed) {
+                MessageDocument response;
+                if (!requestFailed) {
+                    response = parser.parseStream(responseStream);
+                    //set our response
+                    tx.getContext().setResponse(response);
+                } else {
+                    // if is a fault, turn it into an exception.
+                    try {
+                        response = parser.parseStream(responseStream);
+                    } catch (Exception e) {
+                        //this is here to catch XML Responses that cannot be
+                        //parsed, and to avoid the underlying problem 'remote server error'
+                        //from being lost.
+                        String text=responseStream.toString();
+                        throw new SoapException(
+                                "The remote endpoint returned an error,\n"
+                                        + "but the response could not be parsed\n"
+                                        + "and turned into a SOAPFault.\n"+text,
+                                e,null);
+                    }
+
+                    //set our response
+                    tx.getContext().setResponse(response);
                     throw new SoapException(response);
                 }
-
-
             } catch (IOException ioe) {
                 throw new HttpTransportFault(destination, ioe);
             } catch (SAXException e) {
