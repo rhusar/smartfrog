@@ -35,40 +35,46 @@ public interface TestRunner extends Remote , TestResultAttributes
  {
 
     /**
-     * name of the listener
-     */
-    String ATTR_LISTENER = "listener";
-
-    /**
-     * name of the keepgoing attr
-     */
-    String ATTR_KEEPGOING = "keepGoing";
-
-    /**
      * should deploy fail if there is an error?
      */
     String ATTR_FAILONERROR = "failOnError";
 
+     /**
+      * name of the keepgoing attr
+      */
+     String ATTR_KEEPGOING = "keepGoing";
 
-    /**
-     * thread priority; 1 to 9
-     */
-    String ATTR_THREAD_PRIORITY="threadPriority";
+     /**
+      * name of the listener
+      */
+     String ATTR_LISTENER = "listener";
 
-    /**
+     /**
      * boolean: run tests on startup
      */
     String ATTR_RUN_TESTS_ON_STARTUP="runTests";
+
+     /**
+      * Name of a single test to run
+      */
+    String ATTR_SINGLE_TEST="singleTest";
+
+     /**
+      * the test log
+      */
+     String ATTR_TESTLOG = "testLog";
+
+     /**
+      * thread priority; 1 to 9
+      */
+     String ATTR_THREAD_PRIORITY = "threadPriority";
+
 
      /**
       * time in seconds that a single test can take
       */
     String ATTR_TIMEOUT_SECONDS="timeout";
 
-     /**
-      * the test log
-      */
-    String ATTR_TESTLOG="testLog";
 
      /**
       * Get the listener factory

@@ -22,6 +22,15 @@ TestSuiteSchema extends Schema {
     unless extends OptionalBoolean;
     //list in name, value pairs [[name,value],[n2,v2]]
     properties extends OptionalVector;
+    tags extends OptionalVector{
+      description "A list of text tags to describe the test suite";
+    }
+    description extends OptionalString {
+      description "Non-marked up text description";
+    }
+    links extends OptionalVector {
+      description "A list of URLs to link to";
+    }
 }
 
 
@@ -44,10 +53,14 @@ TestSuite extends Prim {
   PackagedTestSuiteSchema extends Schema {
       //the package that all classes are in
       //e.g "org.example.test"
-      package extends String;
+      package extends String {
+        descripion "The base package for the tests";
+      }
       //the classes in the package.
       //e.g. ["test1","subpackage.test2"]
-      classes extends Vector;
+      classes extends Vector {
+        description "A list of test classes, in or underneath the supplied package";
+      }
   }
   
   /**
@@ -55,7 +68,7 @@ TestSuite extends Prim {
    */
   PackagedTestSuite extends TestSuite {
       packagedTestSuiteSchema extends PackagedTestSuiteSchema;
-      //our name detauts to the package
+      //our name defauts to the package
       name LAZY package;
   }
   

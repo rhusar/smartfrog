@@ -30,6 +30,10 @@ TestRunnerSchema extends Schema {
     keepGoing extends OptionalBoolean;
     failOnError extends OptionalBoolean;
     threadPriority extends OptionalInteger;
+    singleTest extends OptionalString {
+      description "the name of a single test component to run";
+    }
+
     runTests extends Boolean;
     //component that is a log. this also needs to be bound to the logging system.
     //there is no autobind.
