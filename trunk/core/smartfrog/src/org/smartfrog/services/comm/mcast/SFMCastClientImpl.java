@@ -56,6 +56,11 @@ import org.smartfrog.sfcore.prim.TerminationRecord;
 
 public class SFMCastClientImpl extends PrimImpl implements Prim, SFMCastClient,
         Runnable {
+    /*
+      Date format
+     */
+    static SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss.SSS z yyyy/MM/dd");
+
     /** Muilticast socket. */
     MulticastSocket sock;
 
@@ -249,8 +254,7 @@ public class SFMCastClientImpl extends PrimImpl implements Prim, SFMCastClient,
             msg.append (".");
             msg.append (method);
             msg.append ( " [" );
-            msg.append ((new SimpleDateFormat("HH:mm:ss.SSS z, yyyy/MM/dd").
-                    format(new Date())));
+            msg.append (dateFormat.format(new Date()));
             msg.append ("]> ");
             msg.append (message);
             System.err.println(msg.toString());
@@ -268,8 +272,7 @@ public class SFMCastClientImpl extends PrimImpl implements Prim, SFMCastClient,
             msg.append (".");
             msg.append (method);
             msg.append ( " [" );
-            msg.append ((new SimpleDateFormat("HH:mm:ss.SSS z, yyyy/MM/dd").
-                    format(new Date())));
+            msg.append (dateFormat.format(new Date()));
             msg.append ("]> ");
             msg.append (message);
             System.out.println(msg.toString());
@@ -287,8 +290,7 @@ public class SFMCastClientImpl extends PrimImpl implements Prim, SFMCastClient,
             msg.append (".");
             msg.append ( "Exception");
             msg.append ( " [" );
-            msg.append ((new SimpleDateFormat("HH:mm:ss.SSS z, yyyy/MM/dd").
-                    format(new Date())));
+            msg.append (dateFormat.format(new Date()));
             msg.append ("]> ");
             //msg.append (exception.getMessage());
             msg.append("\n StackTrace: ");
