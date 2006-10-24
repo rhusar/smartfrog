@@ -19,9 +19,9 @@
  */
 package org.smartfrog.services.deployapi.test.system.alpine.deployapi.api.notification;
 
-import org.smartfrog.services.deployapi.test.system.alpine.deployapi.api.SubscribingTestBase;
-import org.smartfrog.services.deployapi.system.Constants;
 import org.smartfrog.services.deployapi.alpineclient.model.CallbackSubscription;
+import org.smartfrog.services.deployapi.system.Constants;
+import org.smartfrog.services.deployapi.test.system.alpine.deployapi.api.SubscribingTestBase;
 
 /**
  * created 04-May-2006 13:46:55
@@ -49,9 +49,9 @@ public class Api_20_multiple_subscriptions_Test extends SubscribingTestBase {
     }
 
     public void testSubscribe() throws Exception {
-        sub1 = getPortal().subscribeToPortalEvents(getCallbackURL(), false);
-        sub2 = getPortal().subscribeToPortalEvents(getCallbackURL(), true);
         subscribeToPortal(Constants.PORTAL_CREATED_EVENT);
+        sub1 = getPortal().subscribeToPortalEvents(HTTP_EXAMPLE_ORG, false);
+        sub2 = getPortal().subscribeToPortalEvents(HTTP_EXAMPLE_ORG, true);
         createSystem(null);
         waitForSubscription();
     }

@@ -20,8 +20,8 @@
 package org.smartfrog.services.deployapi.test.system.alpine.deployapi.api.informative;
 
 import org.ggf.cddlm.generated.api.CddlmConstants;
-import org.smartfrog.services.deployapi.test.system.alpine.deployapi.api.StandardTestBase;
 import org.smartfrog.projects.alpine.faults.AlpineRuntimeException;
+import org.smartfrog.services.deployapi.test.system.alpine.deployapi.api.StandardTestBase;
 
 import javax.xml.namespace.QName;
 import java.util.ArrayList;
@@ -31,9 +31,9 @@ import java.util.List;
  * created 04-May-2006 13:46:55
  */
 
-public class Api_36_get_multiple_system_properties_Test extends StandardTestBase {
+public class Api_36_g_multiple_system_properties_Test extends StandardTestBase {
 
-    public Api_36_get_multiple_system_properties_Test(String name) {
+    public Api_36_g_multiple_system_properties_Test(String name) {
         super(name);
     }
 

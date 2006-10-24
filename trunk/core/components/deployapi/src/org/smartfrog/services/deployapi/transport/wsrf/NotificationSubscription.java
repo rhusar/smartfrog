@@ -19,31 +19,31 @@
  */
 package org.smartfrog.services.deployapi.transport.wsrf;
 
-import nu.xom.Element;
 import nu.xom.Attribute;
-
-import javax.xml.namespace.QName;
-
-import org.smartfrog.services.deployapi.binding.XomHelper;
-import org.smartfrog.services.deployapi.system.Constants;
-import org.smartfrog.services.deployapi.transport.faults.FaultRaiser;
-import org.smartfrog.services.deployapi.notifications.EventSubscription;
-import org.smartfrog.services.deployapi.notifications.Event;
-import org.smartfrog.services.deployapi.notifications.AbstractEventSubscription;
-import org.smartfrog.services.deployapi.alpineclient.model.NotifySession;
-import org.smartfrog.services.deployapi.engine.Application;
-import org.smartfrog.projects.alpine.wsa.AlpineEPR;
-import org.smartfrog.projects.alpine.om.base.SoapElement;
-import org.smartfrog.projects.alpine.faults.AlpineRuntimeException;
-import org.smartfrog.projects.alpine.xmlutils.XsdUtils;
-import org.smartfrog.projects.alpine.transport.TransmitQueue;
-import org.smartfrog.projects.alpine.transport.DirectExecutor;
+import nu.xom.Element;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.smartfrog.projects.alpine.faults.AlpineRuntimeException;
+import org.smartfrog.projects.alpine.om.base.SoapElement;
+import org.smartfrog.projects.alpine.om.soap11.Body;
+import org.smartfrog.projects.alpine.om.soap11.MessageDocument;
+import org.smartfrog.projects.alpine.transport.DirectExecutor;
+import org.smartfrog.projects.alpine.transport.TransmitQueue;
+import org.smartfrog.projects.alpine.wsa.AlpineEPR;
+import org.smartfrog.projects.alpine.xmlutils.XsdUtils;
+import org.smartfrog.services.deployapi.alpineclient.model.NotifySession;
+import org.smartfrog.services.deployapi.binding.XomHelper;
+import org.smartfrog.services.deployapi.engine.Application;
+import org.smartfrog.services.deployapi.notifications.AbstractEventSubscription;
+import org.smartfrog.services.deployapi.notifications.Event;
+import org.smartfrog.services.deployapi.notifications.EventSubscription;
+import org.smartfrog.services.deployapi.system.Constants;
+import org.smartfrog.services.deployapi.transport.faults.FaultRaiser;
 
+import javax.xml.namespace.QName;
+import java.net.URL;
 import java.util.List;
 import java.util.UUID;
-import java.net.URL;
 /*
 <wsnt:Subscribe>
 <wsnt:ConsumerReference>
@@ -157,7 +157,7 @@ public class NotificationSubscription extends AbstractEventSubscription
      * @param request
      * @throws org.smartfrog.services.deployapi.transport.faults.BaseException
      *
-     * @throws AlpineRuntimeException ifthere is trouble parsing/validating the address
+     * @throws AlpineRuntimeException if there is trouble parsing/validating the address
      */
     private void parse(Element request) {
         resources.addStaticProperty(Constants.PROPERTY_MUWS_RESOURCEID,
@@ -180,12 +180,9 @@ public class NotificationSubscription extends AbstractEventSubscription
         //get the qname from the topic.
         String qnameExpresion = topicExpression.getValue();
         topic = XsdUtils.resolveQName(topicExpression, qnameExpresion, false);
+        //check to see if notify messages are wanted
         String useNotify = XomHelper.getElementValue(request, "wsnt:" + USE_NOTIFY, false);
-        if (useNotify != null) {
-            useNotifyMessage = XomHelper.getXsdBoolValue(useNotify);
-        } else {
-            useNotifyMessage=true;
-        }
+        useNotifyMessage = useNotify == null || XomHelper.getXsdBoolValue(useNotify);
         addWsntResource(USE_NOTIFY, Boolean.toString(useNotifyMessage));
 
         subscriptionPolicy = XomHelper.getElement(request, "wsnt:" + SUBSCRIPTION_POLICY, false);
@@ -193,8 +190,9 @@ public class NotificationSubscription extends AbstractEventSubscription
         String termTime = XomHelper.getElementValue(request, "wsnt:" + INITIAL_TERMINATION_TIME, false);
         //todo: act on the term time.
 
-        //create the session
-        session = new NotifySession(callback, true, new TransmitQueue(new DirectExecutor()));
+        //create the session. Dont worry about validating responses, as it is mostly for debugging
+        //anyway.
+        session = new NotifySession(callback, false, new TransmitQueue(new DirectExecutor()));
     }
 
     /*
@@ -229,7 +227,7 @@ public class NotificationSubscription extends AbstractEventSubscription
      *
      * @param event the event of interest
      */
-    public void event(Event event) {
+    public boolean event(Event event) {
         //send the event to the callback
         SoapElement request;
         Application application = event.application;
@@ -240,12 +238,20 @@ public class NotificationSubscription extends AbstractEventSubscription
             request = coreEvent;
         }
         try {
-            session.invokeBlocking(null,request);
+            log.info("Notifying "+getCallback());
+            MessageDocument response = session.invokeBlocking(null, request);
+            if(log.isInfoEnabled()) {
+                Body body = response.getBody();
+                log.info("Response ="+body.toXML());
+            }
         } catch (AlpineRuntimeException e) {
             lastError = e;
-            //if anything went wrong, log and unsubscribe us.
+            //if anything went wrong, log
             log.error("Failed to post the event to "+callback,e);
+            //signal the failure
+            return false;
         }
+        return true;
     }
 
 
@@ -262,7 +268,7 @@ public class NotificationSubscription extends AbstractEventSubscription
         SoapElement event = new SoapElement("muws-p1-xs:"+ MUWS_MANAGEMENT_EVENT, Constants.MUWS_P1_NAMESPACE);
         SoapElement eventID = new SoapElement("muws-p1-xs:"+ MUWS_EVENT_ID, Constants.MUWS_P1_NAMESPACE);
         if (idurl == null) {
-            idurl = "http://example.org/uri/" + UUID.randomUUID().toString();
+            idurl = "urn:uri:" + UUID.randomUUID().toString();
         }
         eventID.appendChild(idurl);
         event.appendChild(eventID);

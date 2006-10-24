@@ -19,6 +19,7 @@
  */
 package org.smartfrog.services.deployapi.test.system.alpine.deployapi.api.notification;
 
+import org.smartfrog.services.deployapi.notifications.muws.ReceivedEvent;
 import org.smartfrog.services.deployapi.test.system.alpine.deployapi.api.SubscribingTestBase;
 
 /**
@@ -35,7 +36,8 @@ public class Api_17_create_system_while_subscribed_Test extends SubscribingTestB
     public void testCreate_system_while_subscribed() throws Exception {
         subscribeToSystemCreationEvent();
         createSystem(null);
-        waitForSubscription();
+        ReceivedEvent event = waitForSubscription();
+        assertNotNull(event);
     }
 
 }

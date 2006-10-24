@@ -20,15 +20,16 @@
 
 package org.smartfrog.services.deployapi.test.unit;
 
+import org.smartfrog.projects.alpine.wsa.AlpineEPR;
 import org.smartfrog.services.deployapi.engine.Application;
 import org.smartfrog.services.deployapi.engine.JobRepository;
 import org.smartfrog.services.deployapi.system.Constants;
 import org.smartfrog.services.deployapi.system.LifecycleStateEnum;
 import org.smartfrog.services.deployapi.transport.faults.BaseException;
-import org.smartfrog.projects.alpine.wsa.AlpineEPR;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.concurrent.Executors;
 
 /**
 
@@ -46,7 +47,7 @@ public class JobTest extends UnitTestBase {
 
     protected void setUp() throws Exception {
         super.setUp();
-        repository=new JobRepository(new URL("http://localhost:5050"), null);
+        repository=new JobRepository(new URL("http://localhost:5050"), null, Executors.newSingleThreadExecutor());
         job = createJob();
     }
 

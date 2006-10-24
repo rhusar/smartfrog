@@ -21,18 +21,17 @@ package org.smartfrog.services.deployapi.test.system.alpine;
 
 import junit.framework.TestCase;
 import nu.xom.Element;
-import nu.xom.Nodes;
-import nu.xom.XPathContext;
-import nu.xom.ParsingException;
 import nu.xom.Elements;
+import nu.xom.Nodes;
+import nu.xom.ParsingException;
+import nu.xom.XPathContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.ggf.cddlm.generated.api.CddlmConstants;
 import org.smartfrog.projects.alpine.om.base.SoapElement;
-import org.smartfrog.projects.alpine.om.soap11.SoapMessageParser;
-import org.smartfrog.projects.alpine.om.soap11.SoapFactory;
-import org.smartfrog.projects.alpine.om.soap11.SoapConstants;
 import org.smartfrog.projects.alpine.om.soap11.MessageDocument;
+import org.smartfrog.projects.alpine.om.soap11.SoapConstants;
+import org.smartfrog.projects.alpine.om.soap11.SoapMessageParser;
 import org.smartfrog.projects.alpine.transport.DirectExecutor;
 import org.smartfrog.projects.alpine.transport.TransmitQueue;
 import org.smartfrog.projects.alpine.wsa.AlpineEPR;
@@ -40,23 +39,24 @@ import org.smartfrog.projects.alpine.xmlutils.XsdUtils;
 import org.smartfrog.services.deployapi.alpineclient.model.PortalSession;
 import org.smartfrog.services.deployapi.alpineclient.model.SystemSession;
 import org.smartfrog.services.deployapi.alpineclient.model.WsrfSession;
-import org.smartfrog.services.deployapi.transport.wsrf.WsrfUtils;
 import org.smartfrog.services.deployapi.binding.DescriptorHelper;
-import org.smartfrog.services.xml.utils.ResourceLoader;
+import org.smartfrog.services.deployapi.transport.wsrf.WsrfUtils;
 import org.smartfrog.services.filesystem.FileSystem;
-import org.smartfrog.services.junit.AbstractTestSuite;
+import org.smartfrog.services.junit.TestContextInjector;
+import org.smartfrog.services.xml.utils.ResourceLoader;
 import org.smartfrog.sfcore.languages.cdl.CdlCatalog;
 import org.smartfrog.sfcore.prim.Prim;
 import org.xml.sax.SAXException;
 
 import javax.xml.namespace.QName;
+import java.io.File;
+import java.io.IOException;
 import java.net.MalformedURLException;
+import java.util.HashMap;
+import java.util.List;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.List;
-import java.io.IOException;
-import java.io.File;
 
 /**
  * this test base is a junit test case, but it can also run under SmartFrog. In the latter's case
@@ -64,7 +64,7 @@ import java.io.File;
  * created 11-Apr-2006 14:57:19
  */
 
-public abstract class AlpineTestBase extends TestCase {
+public abstract class AlpineTestBase extends TestCase implements TestContextInjector {
 
     protected static final Log log = LogFactory.getLog(AlpineTestBase.class);
     private AlpineEPR portalEPR;
@@ -80,6 +80,7 @@ public abstract class AlpineTestBase extends TestCase {
     private ResourceLoader resourceLoader;
     DescriptorHelper descriptorHelper;
     File tempdir;
+    protected HashMap<String, Object> testContext;
 
     /**
      * Constructs a test case with the given name.
@@ -136,6 +137,21 @@ public abstract class AlpineTestBase extends TestCase {
         return target;
     }
 
+    /**
+     * Get an integer value
+     * @param property test property
+     * @param defval default value
+     * @param required whether it is required or not
+     * @return the integer value of the property
+     */
+    protected int getJunitParameter(String property, int defval,boolean required) {
+        String value=getJunitParameter(property,required);
+        if(value!=null) {
+            return Integer.valueOf(value).intValue();
+        } else {
+            return defval;
+        }
+    }
 
 
     /**
@@ -324,7 +340,8 @@ public abstract class AlpineTestBase extends TestCase {
      * @return the Prim describing this test component, or null.
      */
     protected Prim getHostedTestSuite() {
-        return AbstractTestSuite.getTestSuite();
+        assertHosted();
+        return (Prim) getTestContext().get(TestContextInjector.ATTR_PRIM);
     }
 
     /**
@@ -332,7 +349,7 @@ public abstract class AlpineTestBase extends TestCase {
      * @return true iff we are hosted
      */
     protected boolean isHosted() {
-        return getHostedTestSuite()!=null;
+        return getTestContext() !=null;
     }
 
     /**
@@ -345,6 +362,16 @@ public abstract class AlpineTestBase extends TestCase {
     }
 
 
+    /**
+     * {@inheritDoc}
+     * @param context
+     */
+    public void setTestContext(HashMap context) {
+        testContext=context;
+    }
 
+    public HashMap<String, Object> getTestContext() {
+        return testContext;
+    }
 }
 

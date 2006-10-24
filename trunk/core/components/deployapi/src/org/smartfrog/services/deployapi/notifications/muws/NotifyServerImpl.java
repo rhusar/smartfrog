@@ -19,12 +19,11 @@
  */
 package org.smartfrog.services.deployapi.notifications.muws;
 
-import org.smartfrog.sfcore.prim.PrimImpl;
-import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.services.deployapi.components.DeploymentServer;
 import org.smartfrog.services.deployapi.system.Constants;
+import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.prim.PrimImpl;
 
-import java.lang.ref.WeakReference;
 import java.rmi.RemoteException;
 import java.util.HashMap;
 
@@ -36,10 +35,10 @@ import java.util.HashMap;
 
 public class NotifyServerImpl extends PrimImpl implements NotifyServer {
 
-    private int id=0;
+    private int id=1;
 
-    private HashMap<String, WeakReference<MuwsEventReceiver>> entries =
-            new HashMap<String, WeakReference<MuwsEventReceiver>>();
+    private HashMap<String, MuwsEventReceiver> entries =
+            new HashMap<String, MuwsEventReceiver>();
 
 
     private static NotifyServerImpl singleton;
@@ -90,7 +89,7 @@ public class NotifyServerImpl extends PrimImpl implements NotifyServer {
                 "", true);
         StringBuffer buff=new StringBuffer(256);
         buff.append(protocol);
-        buff.append("//");
+        buff.append("://");
         buff.append(hostname);
         buff.append(':');
         buff.append(port);
@@ -101,7 +100,7 @@ public class NotifyServerImpl extends PrimImpl implements NotifyServer {
     }
 
     public String getURL(String receiverID) {
-        return baseurl+"?"+ NotifyServer.EVENT+"="+id;
+        return baseurl+"?"+ NotifyServer.EVENT+"="+ receiverID;
     }
 
     /**
@@ -120,10 +119,11 @@ public class NotifyServerImpl extends PrimImpl implements NotifyServer {
      */
     public synchronized void add(MuwsEventReceiver receiver) {
         if(receiver.getId()==null) {
-            receiver.setId(Integer.toString(id++));
+            int newid = id++;
+            receiver.setId(Integer.toString(newid));
         }
         receiver.setURL(getURL(receiver.getId()));
-        entries.put(receiver.getId(), new WeakReference<MuwsEventReceiver>(receiver));
+        entries.put(receiver.getId(), receiver);
     }
 
 
@@ -137,18 +137,7 @@ public class NotifyServerImpl extends PrimImpl implements NotifyServer {
             return null;
         }
         synchronized (this) {
-            WeakReference<MuwsEventReceiver> ref = entries.get(key);
-            if (ref != null) {
-                MuwsEventReceiver receiver = ref.get();
-                if (receiver == null) {
-                    //obsolete match
-                    entries.remove(key);
-                }
-                return receiver;
-            } else {
-                //no match
-                return null;
-            }
+            return entries.get(key);
         }
     }
 

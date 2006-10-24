@@ -19,14 +19,15 @@
  */
 package org.smartfrog.services.deployapi.notifications.muws;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.smartfrog.projects.alpine.core.EndpointContext;
 import org.smartfrog.projects.alpine.core.MessageContext;
 import org.smartfrog.projects.alpine.faults.AlpineRuntimeException;
 import org.smartfrog.projects.alpine.om.base.SoapElement;
 import org.smartfrog.projects.alpine.wsa.AlpineEPR;
 import org.smartfrog.services.deployapi.system.Constants;
 import org.smartfrog.services.deployapi.transport.endpoints.alpine.WSNotifyHandler;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 /**
  * created 10-Oct-2006 14:58:54
@@ -37,6 +38,19 @@ public class MuwsEventHandler extends WSNotifyHandler {
 
     private static final Log log= LogFactory.getLog(MuwsEventHandler.class);
 
+
+    /**
+     * Message handler
+     *
+     * @param messageContext
+     * @param endpointContext
+     * @throws org.smartfrog.projects.alpine.faults.AlpineRuntimeException
+     *
+     */
+    public void process(MessageContext messageContext, EndpointContext endpointContext) {
+        super.process(messageContext, endpointContext);
+    }
+
     /**
      * Handle a notification event. The default implementation logs it and returns true
      *
@@ -44,13 +58,24 @@ public class MuwsEventHandler extends WSNotifyHandler {
      * @return true if the message was processed
      */
     protected boolean notificationReceived(MessageContext messageContext) {
-        SoapElement request = getRequest(messageContext);
-        SoapElement event = (SoapElement) request.getFirstChildElement(MUWS_MANAGEMENT_EVENT,
-                                                    Constants.MUWS_P1_NAMESPACE);
-        if (event == null) {
-            throw new AlpineRuntimeException("No muws-p1:" + MUWS_MANAGEMENT_EVENT + " found in the request");
+        try {
+            SoapElement request = getRequest(messageContext);
+            SoapElement message = (SoapElement) request.getFirstChildElement(WSNT_MESSAGE, Constants.WSRF_WSNT_NAMESPACE);
+            if (message == null) {
+                throw new AlpineRuntimeException("No wsnt:" + WSNT_MESSAGE+ " found in the request "+request.toXML());
+            }
+            SoapElement event = (SoapElement) message.getFirstChildElement(MUWS_MANAGEMENT_EVENT,
+                                                        Constants.MUWS_P1_NAMESPACE);
+            if (event == null) {
+                throw new AlpineRuntimeException("No muws-p1:" + MUWS_MANAGEMENT_EVENT + " found in the request"
+                +request.toXML());
+            }
+            return muwsEventReceived(messageContext,event);
+        } catch (AlpineRuntimeException e) {
+            //catch any subscription error, log and rethrow
+            log.error(e);
+            throw e;
         }
-        return muwsEventReceived(messageContext,event);
     }
 
 

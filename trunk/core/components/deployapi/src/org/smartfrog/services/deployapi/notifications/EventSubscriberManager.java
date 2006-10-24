@@ -19,38 +19,49 @@
  */
 package org.smartfrog.services.deployapi.notifications;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Iterator;
+import java.util.List;
 import java.util.ListIterator;
 import java.util.concurrent.ExecutorService;
 
 /**
- * something to handle all subscriptions
+ * something to handle all subscriptions. Unlike {@link SubscriptionServiceStore}, this
+ * component uses hard references, so retains the links.
  * created 27-Sep-2006 11:34:52
  */
 
 public class EventSubscriberManager extends AbstractEventSubscription 
         implements Iterable<EventSubscription>, EventSubscription {
 
+    private static final Log log= LogFactory.getLog(EventSubscriberManager.class);
+
     private List<EventSubscription> subscriptions=new ArrayList<EventSubscription>();
 
     private ExecutorService executor;
+    private String role;
 
-    public EventSubscriberManager(ExecutorService executor) {
+    public EventSubscriberManager(String role, ExecutorService executor) {
+        this.role=role;
         this.executor = executor;
     }
-
 
     public void shutdown() {
         executor.shutdown();
     }
     public void add(EventSubscription sub) {
+        if(log.isInfoEnabled()) {log.info("adding a subscription "+sub);}
         subscriptions.add(sub);
         sub.setManager(this);
     }
 
     public void remove(EventSubscription sub) {
+        if (log.isInfoEnabled()) {
+            log.info("removing the subscription " + sub);
+        }
         subscriptions.remove(sub);
     }
 
@@ -80,10 +91,11 @@ public class EventSubscriberManager extends AbstractEventSubscription
      *
      * @param event the event of interest
      */
-    public void event(Event event)  {
+    public boolean event(Event event)  {
         for(EventSubscription sub:this) {
             executor.submit(new NotifierRunnable(sub, event));
         }
+        return true;
     }
 
 
@@ -98,4 +110,11 @@ public class EventSubscriberManager extends AbstractEventSubscription
     }
 
 
+    /**
+     * Returns a string representation of the object. I
+     * @return a string representation of the object.
+     */
+    public String toString() {
+        return "EventSubscriberManager for "+role+" of size "+subscriptions.size();
+    }
 }

@@ -34,6 +34,7 @@ import org.smartfrog.services.deployapi.notifications.EventSubscriberManager;
 import org.smartfrog.services.deployapi.notifications.SubscriptionServiceStore;
 import org.smartfrog.services.deployapi.system.Constants;
 import org.smartfrog.services.deployapi.system.Utils;
+import org.smartfrog.services.deployapi.transport.wsrf.NotificationSubscription;
 import org.smartfrog.services.deployapi.transport.wsrf.PropertyMap;
 import org.smartfrog.services.deployapi.transport.wsrf.WSRPResourceSource;
 import org.smartfrog.services.deployapi.transport.wsrf.WsrfUtils;
@@ -76,12 +77,12 @@ public class ServerInstance implements WSRPResourceSource {
 
 
     //keep all portal subscriptions
-    private EventSubscriberManager subscriptions;
+    //private EventSubscriberManager subscriptions;
 
     //weak reference store of all subscriptions
     private SubscriptionServiceStore subscriptionStore=new SubscriptionServiceStore();
 
-    private File tempdir;
+    private File tempdir=null;
 
     private DescriptorHelper descriptorHelper;
 
@@ -167,7 +168,7 @@ public class ServerInstance implements WSRPResourceSource {
     private void init() throws IOException {
         systemsURL = new URL(protocol, hostname, port, path);
         subscriptionURL = new URL(protocol, hostname, port, subscriptionsPath);
-        jobs = new JobRepository(systemsURL, this);
+        jobs = new JobRepository(systemsURL, this, createEventExecutorService());
         if (tempdir == null) {
             tempdir = File.createTempFile("filestore", ".dir");
             //little bit of a race condition here.
@@ -175,7 +176,6 @@ public class ServerInstance implements WSRPResourceSource {
         }
         descriptorHelper = new DescriptorHelper(tempdir);
         filestore = new AddedFilestore(tempdir);
-        subscriptions=new EventSubscriberManager(createEventExecutorService());
         log.debug("Creating server instance " + toString());
 
         //now create our property map
@@ -188,8 +188,7 @@ public class ServerInstance implements WSRPResourceSource {
      */
     public void terminate() throws RemoteException {
         filestore.deleteAllEntries();
-        jobs.terminate();
-        subscriptions.shutdown();
+        jobs.shutdown();
     }
 
     /**
@@ -218,7 +217,7 @@ public class ServerInstance implements WSRPResourceSource {
     }
 
     public EventSubscriberManager getSubscriptions() {
-        return subscriptions;
+        return jobs.getSubscriptions();
     }
 
     public String getSubscriptionsPath() {
@@ -375,5 +374,16 @@ public class ServerInstance implements WSRPResourceSource {
 
     public SubscriptionServiceStore getSubscriptionStore() {
         return subscriptionStore;
+    }
+
+    /**
+     * subscribe to portal events
+     * @param subscription
+     */
+    public void subscribeToPortalEvents(NotificationSubscription subscription) {
+        log.info("Adding portal subscription "+subscription);
+        EventSubscriberManager subscriptions = getSubscriptions();
+        subscriptions.add(subscription);
+        getSubscriptionStore().add(subscription);
     }
 }
