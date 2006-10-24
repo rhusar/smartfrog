@@ -436,6 +436,7 @@
           doctitle="${Name.System}"
           bottom="${Name.Company}"
           source="${javac.java.version}"
+          verbose="false"
           >
       </javadoc>
     </presetdef>
@@ -453,7 +454,7 @@
     <!--  Java Docs for all                                                -->
     <echo message=""/>
     <echo message="------------------------------------------------------------------------"/>
-    <echo message="  Creating Java Docs for ${Name.System} ${version} [${dist.jdocs.dir}]"/>
+    <echo message="  Creating Java Docs for ${javadoc.header} [${dist.jdocs.dir}]"/>
     <echo message="------------------------------------------------------------------------"/>
     <mkdir dir="${dist.jdocs.dir}"/>
     <sf-javadoc
