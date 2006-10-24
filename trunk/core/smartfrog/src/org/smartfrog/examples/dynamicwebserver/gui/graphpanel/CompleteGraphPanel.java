@@ -20,6 +20,9 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.examples.dynamicwebserver.gui.graphpanel;
 
+import org.smartfrog.sfcore.logging.LogFactory;
+import org.smartfrog.sfcore.logging.LogSF;
+
 import java.awt.BorderLayout;
 import java.awt.Color;
 
@@ -60,7 +63,8 @@ public class CompleteGraphPanel extends JPanel { // implements KeyListener{
         try {
             jbInit();
         } catch (Exception e) {
-            e.printStackTrace();
+           LogSF sfLog = LogFactory.getLog(this.getClass());
+           if (sfLog.isErrorEnabled()) sfLog.error (e);
         }
     }
 
@@ -79,7 +83,8 @@ public class CompleteGraphPanel extends JPanel { // implements KeyListener{
         try {
             jbInit();
         } catch (Exception e) {
-            e.printStackTrace();
+            LogSF sfLog = LogFactory.getLog(title+"_CompleteGraphPanel");
+            if (sfLog.isErrorEnabled()) sfLog.error (e);
         }
 
         setVisible(true);

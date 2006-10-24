@@ -98,7 +98,7 @@ public abstract class NetElemImpl extends CompoundImpl implements Compound,
                     }
                 }
             } catch (Exception e) {
-                e.printStackTrace();
+                if (sfLog().isErrorEnabled())sfLog().error( e);
             }
         }
     }

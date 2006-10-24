@@ -26,12 +26,18 @@ import javax.swing.event.TreeModelListener;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
 import org.smartfrog.sfcore.processcompound.ProcessCompound;
+import org.smartfrog.sfcore.logging.LogSF;
+import org.smartfrog.sfcore.logging.LogFactory;
+import org.smartfrog.sfcore.prim.Prim;
 
 /**
  * DeployTreeModelSF is the deployable tree model for SmartFrog component
  * hierarchy.
  */
 public class DeployTreeModelSF implements TreeModel {
+    /** Log for this class, created using class name*/
+    LogSF sfLog = LogFactory.getLog(DeployTreeModelSF.class);
+
     DeployEntry entry = null;
 
     //Prim or Compound
@@ -54,12 +60,10 @@ public class DeployTreeModelSF implements TreeModel {
         try {
             this.entry = new DeployEntry();
             this.listeners = new Vector();
-
+            initLog();
             //System.out.println("Model created");
         } catch (Exception ex) {
-            System.out.println(ex.toString());
-
-            //ex.printStackTrace();
+            if (sfLog().isErrorEnabled()) sfLog().error(ex);
         }
     }
 
@@ -75,12 +79,10 @@ public class DeployTreeModelSF implements TreeModel {
            boolean newShowRootProcessName = (showRootProcessName&&(entry instanceof ProcessCompound));
             this.entry = new DeployEntry(entry, newShowRootProcessName,showCDasChild);
             this.listeners = new Vector();
-
+            initLog();
             //System.out.println("DeployTreeModel created");
         } catch (Exception ex) {
-            System.out.println("sfManagementConsole (DeployTreeModel): "+ex.toString());
-
-            //ex.printStackTrace();
+            if (sfLog().isErrorEnabled()) sfLog().error("sfManagementConsole (DeployTreeModel): "+ex.toString(),ex);
         }
     }
 
@@ -199,8 +201,22 @@ public class DeployTreeModelSF implements TreeModel {
      *@param  node
      */
     public void add(String node) {
-        System.out.println("Not implemented. DeployTreeModelSF: " + node);
-
+        sfLog().out("Not implemented. DeployTreeModelSF: " + node);
         //entry.add(node);
+    }
+
+    private void initLog (){
+        try {
+            if (entry.getEntry() instanceof Prim) {
+               this.sfLog=LogFactory.getLog((Prim)(entry.getEntry()));
+            } else {
+               this.sfLog=LogFactory.getLog((String)entry.getEntry());
+            }
+        } catch (Exception e) {
+            sfLog.error(e);
+        }
+    }
+    private LogSF sfLog(){
+        return sfLog;
     }
 }

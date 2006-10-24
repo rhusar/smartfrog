@@ -42,12 +42,16 @@ import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.parser.Phases;
 import org.smartfrog.sfcore.parser.SFParser;
 import org.smartfrog.sfcore.reference.Reference;
+import org.smartfrog.sfcore.logging.LogSF;
+import org.smartfrog.sfcore.logging.LogFactory;
 
 
 /**
  *  Dialog to create/add/modify attributes of a SmartFrog component
  */
 public class NewAttributeDialog extends JDialog {
+    /** Log for this class, created using class name*/
+    LogSF sfLog = LogFactory.getLog(this.getClass());
     /** Panel. */
     private JPanel panel = new JPanel();
     /** Save button. */
@@ -125,7 +129,7 @@ public class NewAttributeDialog extends JDialog {
                 }
             }
         } catch (Exception ex) {
-            ex.printStackTrace();
+            if (sfLog().isErrorEnabled()) sfLog().error (ex);
         }
     }
 
@@ -246,9 +250,7 @@ public class NewAttributeDialog extends JDialog {
                     try {
                         return Reference.fromString(valueStr);
                     } catch (Exception ex) {
-                        System.out.println(ex.getMessage());
-
-                        //ex.printStackTrace();
+                        if (sfLog().isErrorEnabled()) sfLog().error (ex);
                         return null;
                     }
 
@@ -261,7 +263,7 @@ public class NewAttributeDialog extends JDialog {
                     return Double.valueOf(valueStr);
             }
         } catch (Exception ex) {
-            System.out.println("Error: " + ex.getMessage());
+            if (sfLog().isErrorEnabled()) sfLog().error (ex);
         }
 
         return null;
@@ -309,7 +311,7 @@ public class NewAttributeDialog extends JDialog {
                 return top.sfAsComponentDescription();
             }
         } catch (Throwable ex) {
-            ex.printStackTrace();
+            if (sfLog().isErrorEnabled()) sfLog().error (ex);
         }
 
         try {
@@ -359,10 +361,7 @@ public class NewAttributeDialog extends JDialog {
                 //3 Info
             }
         } catch (Throwable ex) {
-            //this.log(ex.getMessage(), "Parse", 5);
-            System.err.println("Error: " + ex.toString());
-
-            //ex.printStackTrace();
+            if (sfLog().isErrorEnabled()) sfLog().error (ex);
         }
 
         return null;
@@ -379,7 +378,7 @@ public class NewAttributeDialog extends JDialog {
             SFParser parser = new SFParser(language);
             return parser.sfParseAnyValue( textToParse);
         } catch (Throwable ex) {
-            ex.printStackTrace();
+            if (sfLog().isErrorEnabled()) sfLog().error (ex);
         }
         return null;
     }
@@ -395,5 +394,9 @@ public class NewAttributeDialog extends JDialog {
         attribute[0] = null;
         attribute[1] = null;
         this.dispose();
+    }
+
+    private LogSF sfLog(){
+        return sfLog;
     }
 }

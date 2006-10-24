@@ -75,7 +75,7 @@ public class GameArenaWrapper extends EventPrimImpl implements Prim, Linker {
     RemoteException {
         try {
             super.sfDeploy();
-            System.out.println(" Deploying game");
+            if (sfLog().isInfoEnabled()) sfLog().info(" Deploying game");
             myName = (String) sfResolve("name");
 
             // get optional attribute opponent
@@ -114,7 +114,7 @@ public class GameArenaWrapper extends EventPrimImpl implements Prim, Linker {
             super.sfStart();
 
             // create the frame, add the game arena, start the game
-            System.out.println(" Starting game");
+            if (sfLog().isInfoEnabled()) sfLog().info(" Starting game");
             gameFrame = new GameFrame(windowSize);
             gameArena = new ConnectedGameArena(windowSize, this);
             gameFrame.getContentPane().add(gameArena, BorderLayout.CENTER);
@@ -153,7 +153,7 @@ public class GameArenaWrapper extends EventPrimImpl implements Prim, Linker {
      * @param tr TerminationRecord object
      */
     public synchronized void sfTerminateWith(TerminationRecord tr) {
-        System.out.println(" Ending game");
+        if (sfLog().isInfoEnabled()) sfLog().info(" Ending game");
         // check if gameArena is initialized
         if (gameArena != null) {
             gameArena.stopGame();
@@ -241,14 +241,12 @@ public class GameArenaWrapper extends EventPrimImpl implements Prim, Linker {
                         this.opponent = discoveredPlayer;
 
                         // set the name on the display
-                        gameArena.setOpponentName((String) opponent.sfResolve(
-                                "name"));
-                        System.out.println("Discovered " +
-                            ((Prim) discoveredPlayer).sfCompleteName());
+                        gameArena.setOpponentName((String) opponent.sfResolve("name"));
+                        if (sfLog().isInfoEnabled()) sfLog().info ("Discovered " + ((Prim) discoveredPlayer).sfCompleteName());
                     }
                 }
             } catch (Exception ex) {
-                ex.printStackTrace();
+                if (sfLog().isErrorEnabled()) sfLog().error (ex);
             }
         }
 

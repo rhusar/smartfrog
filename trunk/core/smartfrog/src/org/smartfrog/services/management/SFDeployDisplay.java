@@ -103,7 +103,7 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
       } catch (java.rmi.ConnectException cex) {
          exitWith("Error: " + cex.getMessage(), ExitCodes.EXIT_ERROR_CODE_GENERAL);
       } catch (Exception e) {
-         e.printStackTrace();
+         LogFactory.getLog(SFDeployDisplay.class).error("Error in SFDeployDisplay.main():" + e,e);
          exitWith("Error in SFDeployDisplay.main():" + e, ExitCodes.EXIT_ERROR_CODE_GENERAL);
       }
 
@@ -181,9 +181,6 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
                         if (LogFactory.getLog("SFManagamentConsole").isErrorEnabled()){
                           LogFactory.getLog("SFManagamentConsole").error(ex);
                         }
-//                        Logger.log(ex);
-//                        System.err.println();
-//                        ex.printStackTrace();
                         exitWith("Error in SFDeployDisplay.refresh():" + ex, ExitCodes.EXIT_ERROR_CODE_GENERAL);
                      }
                   }

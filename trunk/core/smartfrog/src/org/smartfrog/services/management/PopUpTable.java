@@ -33,6 +33,9 @@ import javax.swing.tree.TreePath;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.common.*;
+import org.smartfrog.sfcore.logging.LogSF;
+import org.smartfrog.sfcore.logging.LogFactory;
+
 import java.rmi.*;
 import org.smartfrog.services.display.WindowUtilities;
 
@@ -131,8 +134,8 @@ public class PopUpTable extends JComponent implements ActionListener {
 
       if (source == menuItemRemoveAttribute) {
          if (row == -1) {
-            System.out.println("No selected Cell");
-
+            if (sfLog().isErrorEnabled()) sfLog().error("No selected Cell");
+            WindowUtilities.showError(this,"No selected Cell");
             return;
          }
 
@@ -169,10 +172,10 @@ public class PopUpTable extends JComponent implements ActionListener {
                    value = ((ComponentDescription)node).sfResolve(name,false);
                  }
              } catch (SmartFrogResolutionException e1) {
-                 e1.printStackTrace();
+                 if (sfLog().isErrorEnabled()) sfLog().error ("Failed to resolve value during instrospect '"+name,e1);
                  WindowUtilities.showError(this,"Failed to resolve value during instrospect '"+name+"'. \n"+e1.toString());
              } catch (RemoteException e1) {
-                 e1.printStackTrace();
+                 if (sfLog().isErrorEnabled()) sfLog().error ("Failed to instrospect '"+name,e1);
                  WindowUtilities.showError(this,"Failed to instrospect '"+name+"'. \n"+e1.toString());
              }
          }
@@ -201,7 +204,7 @@ public class PopUpTable extends JComponent implements ActionListener {
             return;
          }
          if (attribute[1] == null) {
-            System.out.println(" Wrong format for: " + attribute[0].toString());
+             if (sfLog().isErrorEnabled()) sfLog().error (" Wrong format for: " + attribute[0].toString());
             return;
          }
 
@@ -211,7 +214,7 @@ public class PopUpTable extends JComponent implements ActionListener {
             modify(node,attribute[0],attribute[1]);
             //((Prim) (((DeployEntry) (tpath.getLastPathComponent())).getEntry())).sfReplaceAttribute(attribute[0],attribute[1]);
          } catch (Exception ex) {
-            ex.printStackTrace();
+            if (sfLog().isErrorEnabled()) sfLog().error ("Failed to modify '"+name,ex);
             WindowUtilities.showError(this,"Failed to modify '"+name+"'. \n"+ex.toString());
 
          }
@@ -286,7 +289,7 @@ public class PopUpTable extends JComponent implements ActionListener {
             org.smartfrog.services.management.DeployMgnt.removeAttribute(obj,(String) attribName);
             parent.refreshTable();
          } catch (Exception ex) {
-            ex.printStackTrace();
+            if (sfLog().isErrorEnabled()) sfLog().error ("Failed to remove '"+attribName,ex);
             WindowUtilities.showError(this,"Failed to remove '"+attribName+"'. \n"+ex.toString());
          }
       }
@@ -306,9 +309,19 @@ public class PopUpTable extends JComponent implements ActionListener {
             org.smartfrog.services.management.DeployMgnt.modifyAttribute(obj, attribName, value);
             parent.refreshTable();
          } catch (Exception ex) {
-            ex.printStackTrace();
+            if (sfLog().isErrorEnabled()) sfLog().error ("Failed to modify '"+attribName,ex);
             WindowUtilities.showError(this,"Failed to modify '"+attribName+"'. \n"+ex.toString());
          }
       }
    }
+   /** Log for this class, created using class name*/
+    LogSF sfLog = LogFactory.getLog(this.getClass());
+
+    /**
+     * Log for this class
+      * @return
+     */
+   private LogSF sfLog(){
+        return sfLog;
+   }    
 }

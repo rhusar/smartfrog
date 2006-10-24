@@ -613,7 +613,7 @@ public class ConfigurationDescriptor implements MessageKeys{
                 if (SFSystem.sfLog().isTraceEnabled()) {SFSystem.sfLog().trace("  Extracted ["+field+"] from ["+tempURL+"]"); }
                 this.setName(field);
             } catch (Exception ex) {
-                ex.printStackTrace();
+                if (SFSystem.sfLog().isErrorEnabled()) SFSystem.sfLog().error(ex);
                 throw new SmartFrogInitException("Error parsing NAME in: "+ deploymentURL+"("+ex.getMessage()+")", ex);
             }
             if (SFSystem.sfLog().isDebugEnabled()){SFSystem.sfLog().debug("Parsing SFACT results: ["+this.toString()+"]");}

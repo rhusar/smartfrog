@@ -20,6 +20,9 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.examples.pong;
 
+import org.smartfrog.sfcore.logging.LogSF;
+import org.smartfrog.sfcore.logging.LogFactory;
+
 import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -36,6 +39,9 @@ import java.util.Vector;
  * Defines the Game Arena for pong game.
  */
 public class GameArena extends Canvas implements KeyListener {
+     /** Log for this class, created using class name*/
+    LogSF log = LogFactory.getLog(this.getClass());
+
     /** Image object. */
     static Image offScreenImage = null;
     /** Graphics object. */
@@ -113,7 +119,7 @@ public class GameArena extends Canvas implements KeyListener {
 
                                     repaint();
                                 } catch (Exception e) {
-                                    e.printStackTrace();
+                                    if (log.isErrorEnabled()) log.error (e);
                                     beating = false;
                                 }
                             }

@@ -20,6 +20,9 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.examples.pong;
 
+import org.smartfrog.sfcore.logging.LogSF;
+import org.smartfrog.sfcore.logging.LogFactory;
+
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Rectangle;
@@ -30,6 +33,10 @@ import javax.swing.JFrame;
  * Defines the Game Frame for pong game.
  */
 public class GameFrame extends JFrame {
+
+   /** Log for this class, created using class name*/
+   static LogSF sfLogStatic = LogFactory.getLog(GameFrame.class);
+
     /** A player object. */
     public Player player = null;
     /** Default frame dimension. */
@@ -49,7 +56,7 @@ public class GameFrame extends JFrame {
         try {
             FrameInit();
         } catch (Exception ex) {
-            ex.printStackTrace();
+            sfLogStatic.err(ex);
         }
     }
 

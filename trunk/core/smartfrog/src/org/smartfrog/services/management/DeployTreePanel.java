@@ -35,12 +35,18 @@ import javax.swing.tree.TreePath;
 import java.io.StringWriter;
 import java.io.PrintWriter;
 import org.smartfrog.sfcore.common.ContextImpl;
+import org.smartfrog.sfcore.logging.LogSF;
+import org.smartfrog.sfcore.logging.LogFactory;
 
 /**
  * Tree panel for SmartFrog hierarchy of components.
  *
  */
 public class DeployTreePanel extends JPanel implements TreeSelectionListener {
+
+    /** Log for this class, created using class name*/
+    LogSF sfLog = LogFactory.getLog(this.getClass());
+
     BorderLayout borderLayout1 = new BorderLayout();
     JSplitPane jSplitPane1 = new JSplitPane();
     BorderLayout borderLayout2 = new BorderLayout();
@@ -80,7 +86,7 @@ public class DeployTreePanel extends JPanel implements TreeSelectionListener {
             treeInit(null, false,true);
             jbInit();
         } catch (Exception ex) {
-            ex.printStackTrace();
+            if (sfLog().isErrorEnabled()) sfLog().error (ex);
         }
     }
 
@@ -98,7 +104,7 @@ public class DeployTreePanel extends JPanel implements TreeSelectionListener {
             jbInit();
             popupinit();
         } catch (Exception ex) {
-            ex.printStackTrace();
+            if (sfLog().isErrorEnabled()) sfLog().error (ex);
         }
     }
 
@@ -279,8 +285,8 @@ public class DeployTreePanel extends JPanel implements TreeSelectionListener {
         DeployTreePanel test = new DeployTreePanel();
         mainFrame.getContentPane().add(test);
         mainFrame.setVisible(true);
-        System.out.println("Starting...a new adventure.");
-        System.out.println("...Finished");
+        LogFactory.getLog(DeployTreePanel.class).out("Starting...a new adventure.");
+        LogFactory.getLog(DeployTreePanel.class).out("...Finished");
     }
 
     /**
@@ -306,7 +312,7 @@ public class DeployTreePanel extends JPanel implements TreeSelectionListener {
             Object attrib = this.table.getValueAt(this.table.getSelectedRow(), 0);
             resolveAttrib(attrib);
         } catch (Exception ex) {
-            //ex.printStackTrace();
+            if (sfLog().isIgnoreEnabled()) sfLog().ignore(ex);
         }
 
         if (e.isPopupTrigger()) {
@@ -342,7 +348,7 @@ public class DeployTreePanel extends JPanel implements TreeSelectionListener {
                   ex.printStackTrace(pw);
                   stackTrace = ("\r\n"+sw.toString()+"\r\n");
               } catch (Exception e2) {
-                  ex.printStackTrace();
+                  if (sfLog().isErrorEnabled()) sfLog().error (e2);
               }
           }
           String tempString = "";
@@ -362,8 +368,7 @@ public class DeployTreePanel extends JPanel implements TreeSelectionListener {
               "sfManagementConsole.deployEntry.getAttributes: error reading "+
               attribName+" >"+rex.getMessage();
           jTextArea1.setText(err);
-
-          //ex.printStackTrace();
+          if (sfLog().isErrorEnabled()) sfLog().error (err,rex);
       }
    }
 
@@ -428,6 +433,14 @@ public class DeployTreePanel extends JPanel implements TreeSelectionListener {
         value = ((ComponentDescription)node).sfResolve(attribName.toString());
     }
     return value;
+   }
+
+    /**
+     * Log for this class
+      * @return
+     */
+   private LogSF sfLog(){
+        return sfLog;
    }
 
 }

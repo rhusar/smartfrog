@@ -20,6 +20,9 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.services.trace;
 
+import org.smartfrog.sfcore.logging.LogSF;
+import org.smartfrog.sfcore.logging.LogFactory;
+
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 
@@ -67,7 +70,7 @@ public class TraceTreePanel extends JPanel implements TreeSelectionListener {
         try {
             jbInit();
         } catch (Exception ex) {
-            ex.printStackTrace();
+            sfLog().error(ex);
         }
     }
 
@@ -82,7 +85,7 @@ public class TraceTreePanel extends JPanel implements TreeSelectionListener {
         try {
             jbInit();
         } catch (Exception ex) {
-            ex.printStackTrace();
+            sfLog().error(ex);
         }
     }
 
@@ -169,45 +172,56 @@ public class TraceTreePanel extends JPanel implements TreeSelectionListener {
         this.table.repaint();
     }
 
+    /** Log for this class, created using class name*/
+    LogSF sfLog = LogFactory.getLog(this.getClass());
+
     /**
-     * Main processing method for Trace Tree Panel.
-     *
-     * @param args command line arguments
+     * Log for this class
+      * @return
      */
-    public static void main(String[] args) {
-        JFrame mainFrame = new JFrame("Text TraceTreePanel", null);
-        TraceTreePanel test = new TraceTreePanel();
-        mainFrame.getContentPane().add(test);
-        mainFrame.setVisible(true);
-        System.out.println("Starting...a new adventure.");
-        System.out.println(
-            "Adding: ROOT:System -------------------------------------------");
-        test.add(
-            "ROOT:baz, STARTED,15:51:37.187 22/06/01 guijarro-j-5/15.144.25.153");
-        test.add(
-            "ROOT:System, DEPLOYED, 15:51:37.187 22/06/01 guijarro-j-5/15.144.25.153");
-        System.out.println(
-            "Adding: ROOT:System:foo:bar2 -----------------------------------");
-        test.add(
-            "ROOT:System:foo:bar2,DEPLOYED,15:51:37.187 22/06/01 guijarro-j-5/15.144.25.153");
-        System.out.println(
-            "Adding: ROOT:System:foo ----------------------------------------");
-        test.add(
-            "ROOT:System:foo, DEPLOYED, 15:51:37.187 22/06/01 guijarro-j-5/15.144.25.153");
-        System.out.println(
-            "Adding: ROOT:System:foo:bar ------------------------------------");
-        test.add(
-            "ROOT:System:foo:bar,DEPLOYED,15:51:37.187 22/06/01 guijarro-j-5/15.144.25.153");
-        System.out.println(
-            "Adding: ROOT:baz ------------------------------------");
-        test.add(
-            "ROOT:baz,STARTED,15:51:37.187 22/06/01 guijarro-j-5/15.144.25.153");
-        test.add(
-            "ROOT:System:foo:bar,STARTED,15:51:37.187 22/06/01 guijarro-j-5/15.144.25.153");
-        test.add(
-            "ROOT,DEPLOYED,00:51:37.187 22/06/01 guijarro-j-5/15.144.25.153");
-        test.add(
-            "ROOT,STARTED,00:51:37.187 22/06/01 guijarro-j-5/15.144.25.153");
-        System.out.println("...Finished");
-    }
+   private LogSF sfLog(){
+        return sfLog;
+   }
+
+//    /**
+//     * Main processing method for Trace Tree Panel.
+//     *
+//     * @param args command line arguments
+//     */
+//    public static void main(String[] args) {
+//        JFrame mainFrame = new JFrame("Text TraceTreePanel", null);
+//        TraceTreePanel test = new TraceTreePanel();
+//        mainFrame.getContentPane().add(test);
+//        mainFrame.setVisible(true);
+//        System.out.println("Starting...a new adventure.");
+//        System.out.println(
+//            "Adding: ROOT:System -------------------------------------------");
+//        test.add(
+//            "ROOT:baz, STARTED,15:51:37.187 22/06/01 guijarro-j-5/15.144.25.153");
+//        test.add(
+//            "ROOT:System, DEPLOYED, 15:51:37.187 22/06/01 guijarro-j-5/15.144.25.153");
+//        System.out.println(
+//            "Adding: ROOT:System:foo:bar2 -----------------------------------");
+//        test.add(
+//            "ROOT:System:foo:bar2,DEPLOYED,15:51:37.187 22/06/01 guijarro-j-5/15.144.25.153");
+//        System.out.println(
+//            "Adding: ROOT:System:foo ----------------------------------------");
+//        test.add(
+//            "ROOT:System:foo, DEPLOYED, 15:51:37.187 22/06/01 guijarro-j-5/15.144.25.153");
+//        System.out.println(
+//            "Adding: ROOT:System:foo:bar ------------------------------------");
+//        test.add(
+//            "ROOT:System:foo:bar,DEPLOYED,15:51:37.187 22/06/01 guijarro-j-5/15.144.25.153");
+//        System.out.println(
+//            "Adding: ROOT:baz ------------------------------------");
+//        test.add(
+//            "ROOT:baz,STARTED,15:51:37.187 22/06/01 guijarro-j-5/15.144.25.153");
+//        test.add(
+//            "ROOT:System:foo:bar,STARTED,15:51:37.187 22/06/01 guijarro-j-5/15.144.25.153");
+//        test.add(
+//            "ROOT,DEPLOYED,00:51:37.187 22/06/01 guijarro-j-5/15.144.25.153");
+//        test.add(
+//            "ROOT,STARTED,00:51:37.187 22/06/01 guijarro-j-5/15.144.25.153");
+//        System.out.println("...Finished");
+//    }
 }

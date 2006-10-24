@@ -33,6 +33,8 @@ import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.compound.Compound;
 import org.smartfrog.sfcore.compound.CompoundImpl;
 import org.smartfrog.sfcore.prim.TerminationRecord;
+import org.smartfrog.sfcore.logging.LogSF;
+import org.smartfrog.sfcore.logging.LogFactory;
 
 
 /**
@@ -318,7 +320,8 @@ public class GraphImpl extends CompoundImpl implements Graph, Compound,
         try {
             convertData(source.getData());
         } catch (Exception e) {
-            e.printStackTrace();
+            LogSF sfLog = LogFactory.getLog(this.getClass());
+            if (sfLog.isErrorEnabled()) sfLog.error (e);
         }
     }
 }

@@ -24,13 +24,17 @@ import java.awt.Dimension;
 import java.rmi.RemoteException;
 
 import org.smartfrog.sfcore.compound.Compound;
+import org.smartfrog.sfcore.logging.LogSF;
+import org.smartfrog.sfcore.logging.LogFactory;
 
 
 /**
  * A compound to collect data from a source and convert into some other form.
  */
-public class TideMeterImpl extends GraphImpl implements TideMeter, Compound,
-    Runnable {
+public class TideMeterImpl extends GraphImpl implements TideMeter, Compound, Runnable {
+    /** Log for this class, created using class name*/
+    LogSF sfLog = LogFactory.getLog(this.getClass());
+
     // the tide mark pane
     TideMarkPanel tmp;
     int maxResetPeriod;
@@ -105,7 +109,7 @@ public class TideMeterImpl extends GraphImpl implements TideMeter, Compound,
 
             convertData(lastValue);
         } catch (Exception e) {
-            e.printStackTrace();
+            if (sfLog.isErrorEnabled()) sfLog.error (e);
         }
     }
 }

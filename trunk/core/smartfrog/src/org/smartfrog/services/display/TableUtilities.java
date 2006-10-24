@@ -121,8 +121,7 @@ public class TableUtilities {
          } catch (Exception e) {
             // Usually this error is due to a race condition between this method
             // and some other code modifying the TableColumnModel of this table
-            System.out.println(
-                  "Possible race condition detected, retrying...");
+            System.out.println("Possible race condition detected, retrying...");
 
             try {
                retries++;
@@ -133,8 +132,7 @@ public class TableUtilities {
                   Thread.sleep(100);
                }
             } catch (Exception ee) {
-               System.err.println("Error retriying setColumnWidths:\n" +
-                     ee);
+               System.err.println("Error retriying setColumnWidths:\n" + ee);
                ee.printStackTrace();
             }
          }

@@ -47,8 +47,7 @@ import org.smartfrog.sfcore.reference.ReferencePart;
  *
  */
 
-public class ThresholderImpl extends CompoundImpl implements Thresholder,
-    Compound, SmartFrogCoreKeys  {
+public class ThresholderImpl extends CompoundImpl implements Thresholder, Compound, SmartFrogCoreKeys  {
     int upperThreshold;
     int lowerThreshold;
     int pollFrequency;
@@ -244,9 +243,7 @@ public class ThresholderImpl extends CompoundImpl implements Thresholder,
                     }
                 }
             } catch (Exception e) {
-                logger.logOptional(name,
-                    "excption caught in ajusting number of instances");
-                e.printStackTrace();
+                if (sfLog().isWarnEnabled()) sfLog().warn (name+"- exception caught in ajusting number of instances", e);
             }
         }
     }
@@ -279,13 +276,12 @@ public class ThresholderImpl extends CompoundImpl implements Thresholder,
                     balancer.addServer(server);
                 }
             } catch (Exception e) {
-                logger.logOptional(name,
-                    "help... exception in starting instance");
-                e.printStackTrace();
+                if (sfLog().isWarnEnabled()) sfLog().warn (name+ "help... exception in starting instance", e);
 
                 try {
                     deployed.sfDetachAndTerminate(TerminationRecord.normal(null));
                 } catch (Exception ex) {
+                    if (sfLog().isIgnoreEnabled()) sfLog().ignore (ex);
                 }
 
                 throw e;
@@ -401,8 +397,7 @@ public class ThresholderImpl extends CompoundImpl implements Thresholder,
                     sleep(pollFrequency);
                     logger.logOptional(name, "poller awake");
                 } catch (Exception e) {
-                    logger.logOptional(name, "excpetion caught in the poller");
-                    e.printStackTrace();
+                    if (sfLog().isWarnEnabled()) sfLog().warn (name+"- exception caught in the poller",e);
                 }
             }
 

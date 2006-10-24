@@ -45,6 +45,8 @@ import java.util.ArrayList;
 
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.componentdescription.ComponentDescriptionImpl;
+import org.smartfrog.sfcore.logging.LogSF;
+import org.smartfrog.sfcore.logging.LogFactory;
 import org.smartfrog.services.display.WindowUtilities;
 
 
@@ -217,7 +219,7 @@ public class PopUpTree extends JComponent implements ActionListener {
                 try {
                     ((Prim)node).sfParentageChanged();
                 } catch (RemoteException ex1) {
-                    //ex1.printStackTrace();
+                    if (sfLog().isErrorEnabled()) sfLog().error (ex1);
                 }
             } else if (node instanceof ComponentDescription){
                 ((ComponentDescriptionImpl)node).sfParentageChanged();
@@ -347,7 +349,7 @@ public class PopUpTree extends JComponent implements ActionListener {
      *  Adds a feature to the Attrib attribute of the PopUpTree object
      */
     void addAttrib() {
-        System.out.println("ADD ATTRIBUTE! @Todo Complete!!!!!!!!!!1");
+        if (sfLog().isWarnEnabled()) sfLog().warn("ADD ATTRIBUTE! @Todo Complete!!!!!!!!!!1");
     }
 
     /**
@@ -365,8 +367,8 @@ public class PopUpTree extends JComponent implements ActionListener {
                 name = ((Prim)obj).sfCompleteName().toString();
                 org.smartfrog.services.management.DeployMgnt.terminate((Prim) obj, type, reason);
             } catch (Exception ex){
+               if (sfLog().isErrorEnabled()) sfLog().error ("Problem when trying to Terminate '"+name,ex);
                WindowUtilities.showError(this,"Problem when trying to Terminate '"+name+"'. \n"+ex.toString());
-               ex.printStackTrace();
             }
         }
     }
@@ -387,8 +389,8 @@ public class PopUpTree extends JComponent implements ActionListener {
                 org.smartfrog.services.management.DeployMgnt.dTerminate((Prim) obj, type, reason);
                 parent.refresh();
             } catch (Exception ex){
+                if (sfLog().isErrorEnabled()) sfLog().error ("Problem when trying to Detach and Terminate '"+name,ex);
                WindowUtilities.showError(this,"Problem when trying to Detach and Terminate '"+name+"'. \n"+ex.toString());
-               ex.printStackTrace();
             }
         }
     }
@@ -406,9 +408,9 @@ public class PopUpTree extends JComponent implements ActionListener {
                 name = ((Prim)obj).sfCompleteName().toString();
                 org.smartfrog.services.management.DeployMgnt.detach((Prim) obj);
                 parent.refresh();
-            }catch (Exception ex){
+            } catch (Exception ex){
+              if (sfLog().isErrorEnabled()) sfLog().error ("Problem when trying to Detach and Terminate '"+name);
               WindowUtilities.showError(this,"Problem when trying to Detach and Terminate '"+name+"'. \n"+ex.toString());
-              ex.printStackTrace();
             }
             // Refresh Console.
             // To do: automatic Refresh ;-)
@@ -441,5 +443,14 @@ public class PopUpTree extends JComponent implements ActionListener {
         scrollPane.getViewport().add(screen, null);
         pane.show(true);
     }
+   /** Log for this class, created using class name*/
+    LogSF sfLog = LogFactory.getLog(this.getClass());
 
+    /**
+     * Log for this class
+      * @return
+     */
+   private LogSF sfLog(){
+        return sfLog;
+   }
 }

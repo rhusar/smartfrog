@@ -72,6 +72,8 @@ import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.processcompound.SFProcess;
 import org.smartfrog.sfcore.reference.Reference;
+import org.smartfrog.sfcore.logging.LogSF;
+import org.smartfrog.sfcore.logging.LogFactory;
 import org.smartfrog.SFSystem;
 
 import java.awt.Image;
@@ -84,6 +86,11 @@ import java.rmi.RemoteException;
  * producer.
  */
 public class Display extends JFrame implements ActionListener, KeyListener {
+    /**
+     * Class log for static invocations
+     */
+    static LogSF logStatic = LogFactory.getLog(Display.class);
+
     /**
      * Color for non editable screen.
      */
@@ -287,7 +294,7 @@ public class Display extends JFrame implements ActionListener, KeyListener {
 
         try {
             // Execution
-            System.out.println("# B # Display Executing ");
+            if (logStatic.isInfoEnabled()) logStatic.info("# B # Display Executing ");
 
             // Display Streams
             OutputStream dout = System.out;
@@ -330,24 +337,23 @@ public class Display extends JFrame implements ActionListener, KeyListener {
             }
 
             //Testing output
-            System.out.println(
-                    "Testing Redirection to Display: using System.out");
+            System.out.println("Testing Redirection to Display: using System.out");
             outstream.println("Printing directly using PrintStream");
             System.err.println("Printing directly using System.err");
 
             // Testing standard imput from user:
-            BufferedReader br = new BufferedReader(new InputStreamReader(
-                    System.in));
+            BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
             String line = "";
             System.out.println("Reading (type 'end' to finish)...");
 
             while (!line.equals("end")) {
                 try {
-                    System.out.println("Enter something ;-) <ENTER>: ");
+                    logStatic.out("Enter something ;-) <ENTER>: ");
                     line = br.readLine();
-                    System.out.println("Typed: " + line);
+                    if (logStatic.isInfoEnabled()) logStatic.info("Typed: " + line);
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    if (logStatic.isErrorEnabled()) logStatic.err(e);
+
                 }
 
                 //end catch
@@ -362,14 +368,13 @@ public class Display extends JFrame implements ActionListener, KeyListener {
 
                         public void actionPerformed(ActionEvent evt) {
                             String message = "timer..." + fmt.format(new Date());
-                            System.out.println("Stdout:" + message);
+                            if (logStatic.isInfoEnabled()) logStatic.info("Stdout:" + message);
                         }
                     });
 
             t.start();
         } catch (Exception e) {
-            System.err.println("Error in 'full' execution code:\n" + e);
-            e.printStackTrace();
+            if (logStatic.isErrorEnabled()) logStatic.err("Error in 'full' execution code: " + e,e);
         }
     }
 
@@ -487,8 +492,7 @@ public class Display extends JFrame implements ActionListener, KeyListener {
         try {
             printKey.print(key);
         } catch (Exception ex) {
-            System.err.println("Error printing key:\n" + ex);
-            ex.printStackTrace();
+            if (sfLog().isErrorEnabled()) sfLog().error("Error printing key: "+ex.toString(),ex);
         }
     }
 
@@ -563,7 +567,6 @@ public class Display extends JFrame implements ActionListener, KeyListener {
             screenScrollChanged = false;
         } catch (Exception e) {
             //this.setTitle("Error: "+e.getMessage());
-            //e.printStackTrace();
         }
     }
 
@@ -882,11 +885,10 @@ public class Display extends JFrame implements ActionListener, KeyListener {
                                 // Terminate sfDisplayCompound
                                 try {
                                     TerminationRecord tr = new TerminationRecord
-                                            ("normal",
-                                                    "User termination", null);
+                                            ("normal", "User termination", null);
                                     this.sfObj.sfDetachAndTerminate(tr);
                                 } catch (Exception ex) {
-                                    ex.printStackTrace();
+                                    sfLog().error(ex);
                                 }
                             }
                         }
@@ -901,16 +903,15 @@ public class Display extends JFrame implements ActionListener, KeyListener {
                 } else {
                     // Terminate sfDisplayCompound
                     try {
-                        TerminationRecord tr = new TerminationRecord("normal",
-                                "Display close by user", null);
+                        TerminationRecord tr = new TerminationRecord("normal", "Display close by user", null);
                         this.sfObj.sfDetachAndTerminate(tr);
                     } catch (Exception ex) {
-                        ex.printStackTrace();
+                        if (sfLog().isErrorEnabled()) sfLog().error(ex);
                     }
                 }
             } else if (systemExit) {
-                System.out.println(
-                        "Not part for SF System. Press <ENTER> to finish...");
+                sfLog().out("Not part for SF System. Press <ENTER> to finish...");
+                //System.out.println("Not part for SF System. Press <ENTER> to finish...");
                 System.exit(0);
             }
 
@@ -1408,7 +1409,7 @@ public class Display extends JFrame implements ActionListener, KeyListener {
             return img;
         } catch (Exception e) {
             //ignore
-            e.printStackTrace();
+            if (logStatic.isErrorEnabled()) logStatic.error(e);
         }
         return null;
     }
@@ -1443,8 +1444,7 @@ public class Display extends JFrame implements ActionListener, KeyListener {
             pipeKeyOut = new PipedOutputStream(pipeKeyIn);
             printKey = new PrintStream(pipeKeyOut);
         } catch (Exception e) {
-            System.err.println("Error connecting pipes:\n" + e);
-            e.printStackTrace();
+            if (sfLog().isErrorEnabled()) sfLog().error("Error connecting pipes:: "+e.toString(),e);
         }
 
         // Timer for autoScroll
@@ -1786,5 +1786,16 @@ public class Display extends JFrame implements ActionListener, KeyListener {
         public void actionPerformed(ActionEvent e) {
             adaptee.jMenuItemProcessComp_actionPerformed(e);
         }
+
+    }
+
+    public LogSF sfLog() {
+      try {
+          if (sfObj!=null) {
+              return LogFactory.getLog(sfObj);
+          }
+      } catch (Exception ex){
+      }
+      return logStatic;
     }
 }

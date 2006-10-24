@@ -305,7 +305,6 @@ public class SFTrace extends PrimImpl implements SFTraceIntf {
                 } catch (Exception ex) {
                     if (log.isErrorEnabled())
                         log.error("sfTrace: "+ex, ex);
-                    //ex.printStackTrace();
                 }
             }
         } catch (Throwable th) {

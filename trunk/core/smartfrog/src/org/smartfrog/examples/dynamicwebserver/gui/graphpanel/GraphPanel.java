@@ -222,10 +222,10 @@ public class GraphPanel extends JPanel implements ComponentListener,
                 tracker.waitForID(1, 5000);
                 tracker.waitForID(2, 5000);
             } catch (InterruptedException iex) {
-                iex.printStackTrace();
+                if (log.isErrorEnabled()) log.error (iex);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            if (log.isErrorEnabled()) log.error (e);
         }
     }
 
@@ -452,7 +452,7 @@ public class GraphPanel extends JPanel implements ComponentListener,
             // if dirty was true, we give a chance to any of the previous function to do some work
             dirty = false;
         } catch (Throwable ex) {
-            ex.printStackTrace();
+           if (log.isErrorEnabled()) log.error (ex);
         }
     }
 
