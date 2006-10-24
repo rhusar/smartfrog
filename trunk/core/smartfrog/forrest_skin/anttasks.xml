@@ -25,7 +25,7 @@
       <title>Ant task Index</title>
       <p>These are the Ant tasks to deploy and undeploy applications with SmartFrog during a build process.
 	      Links to document : <a href="antTasksManual/index.html">HTML</a>  and 
-	      "<a href="http://smartfrog.cvs.sourceforge.net/*checkout*/smartfrog/core/smartfrog/docs/antTasksManual/index.html">CVS (Online)</a>"   </p>
+	      "<a href="http://svn.sourceforge.net/viewvc/*checkout*/smartfrog/trunk/core/smartfrog/docs/antTasksManual/index.html">CVS (Online)</a>"   </p>
     </section>
    
 	  
