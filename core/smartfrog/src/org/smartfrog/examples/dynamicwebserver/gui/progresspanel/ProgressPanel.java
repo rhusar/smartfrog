@@ -44,6 +44,12 @@ import javax.swing.JTextField;
  */
 
 public class ProgressPanel extends JPanel {
+
+    /*
+      Date format
+    */
+    static SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss.SSS yyyy/MM/dd");
+
     static int i = 0;
     ImageIcon redBall;
     ImageIcon grnBall;
@@ -98,9 +104,7 @@ public class ProgressPanel extends JPanel {
                 if (status == 0) {
                     label.setIcon((Icon) this.redBall);
                 } else if (status == 1) {
-                    message = "[" +
-                        (new SimpleDateFormat("HH:mm:ss.SSS dd/MM/yy").format(new Date(
-                                System.currentTimeMillis()))) + "] " + message;
+                    message = "[" +dateFormat.format(new Date(System.currentTimeMillis())) + "] " + message;
                     label.setToolTipText(message);
                     label.setIcon((Icon) this.yelBall);
                 } else if (status == 2) {
