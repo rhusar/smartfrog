@@ -76,6 +76,9 @@ import org.smartfrog.SFSystem;
 
 import java.awt.Image;
 
+import java.rmi.RemoteException;
+
+
 /**
  * Multiuse Simple display object. It is possible to start / stop the data
  * producer.
@@ -358,8 +361,7 @@ public class Display extends JFrame implements ActionListener, KeyListener {
 
 
                         public void actionPerformed(ActionEvent evt) {
-                            String message = "timer..." +
-                                    fmt.format(new Date());
+                            String message = "timer..." + fmt.format(new Date());
                             System.out.println("Stdout:" + message);
                         }
                     });
@@ -971,7 +973,7 @@ public class Display extends JFrame implements ActionListener, KeyListener {
         out.println("* User Work Dir:  " + System.getProperty("user.dir"));
 
         try {
-            java.net.InetAddress localhost = java.net.InetAddress.getLocalHost();
+            java.net.InetAddress localhost = SFProcess.sfDeployedHost();;
             out.println("* LocalHost Name: " + localhost.getHostName());
             out.println("* LocalHost Add:  " + localhost.getHostAddress());
 
@@ -1058,30 +1060,31 @@ public class Display extends JFrame implements ActionListener, KeyListener {
         }
         //End option dialog
         int port = 3800;
-        String hostName = "localhost";
+        String hostName = null;
+
+        try {
+            hostName = SFProcess.getProcessCompound().sfDeployedHost().getCanonicalHostName();
+        } catch (RemoteException e) {
+            hostName =""; //Ignored.
+        }
 
         //New option dialgog
         hostName = modalOptionDialog("Management Console for ...", "HostName: ", hostName);
         if (hostName == null) return;
 
         try {
-            java.net.InetAddress.getByName(hostName);
-            SFProcess.getRootLocator().getRootProcessCompound(
-                    java.net.InetAddress.getByName(hostName)
-                    , port).sfContext();
+                java.net.InetAddress.getByName(hostName);
+                SFProcess.getRootLocator().getRootProcessCompound(java.net.InetAddress.getByName(hostName), port);
         } catch (java.net.UnknownHostException uex) {
             this.modalErrorDialog("startMngConsole",
                     "Couldn't start SFMngConsole for resource " + hostName +
                             ". Unknown host.");
             return;
         } catch (java.rmi.ConnectException cex) {
-            this.modalErrorDialog("startMngConsole",
-                    "Couldn't start SFMngConsole for resource " + hostName + ". " +
-                            cex.getMessage());
+            this.modalErrorDialog("startMngConsole", "Couldn't start SFMngConsole for resource " + hostName + ". " + cex.getMessage());
             return;
         } catch (Exception e) {
-            this.modalErrorDialog("startMngConsole",
-                    "Couldn't start SFMngConsole for resource " + hostName);
+            this.modalErrorDialog("startMngConsole", "Couldn't start SFMngConsole for resource " + hostName);
             return;
         }
 
@@ -1099,8 +1102,7 @@ public class Display extends JFrame implements ActionListener, KeyListener {
             }
             String nameDisplay = "sfManagementConsole ";
             mngConsole = org.smartfrog.services.management.SFDeployDisplay.
-                    startConsole(nameDisplay, height, width, positionDisplay, showRootProcess, showCDasChild, hostName,
-                            port, false);
+                    startConsole(nameDisplay, height, width, positionDisplay, showRootProcess, showCDasChild, hostName, port, false);
         } catch (java.net.UnknownHostException uex) {
             if (mngConsole != null) {
                 mngConsole.dispose();

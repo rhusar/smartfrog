@@ -289,10 +289,10 @@ public class DefaultRootLocatorImpl implements RootLocator, MessageKeys {
         ProcessCompound localCompound = SFProcess.getProcessCompound();
 
         if (hostAddress == null) {
-            hostAddress = InetAddress.getLocalHost();
+            hostAddress = SFProcess.sfDeployedHost();
         }
 
-        if ((localCompound != null)&& hostAddress.equals(InetAddress.getLocalHost()) && localCompound.sfIsRoot()) {
+        if ((localCompound != null)&& hostAddress.equals(SFProcess.sfDeployedHost()) && localCompound.sfIsRoot()) {
             return localCompound;
         }
 

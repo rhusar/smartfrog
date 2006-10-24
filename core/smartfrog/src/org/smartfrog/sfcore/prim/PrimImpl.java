@@ -21,7 +21,6 @@ For more information: www.smartfrog.org
 package org.smartfrog.sfcore.prim;
 
 import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.rmi.NoSuchObjectException;
 import java.rmi.RemoteException;
 import java.rmi.server.RemoteStub;
@@ -29,8 +28,24 @@ import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.Vector;
 
-import org.smartfrog.sfcore.common.*;
 import org.smartfrog.sfcore.common.Diagnostics;
+import org.smartfrog.sfcore.common.Context;
+import org.smartfrog.sfcore.common.ContextImpl;
+import org.smartfrog.sfcore.common.Diagnostics;
+import org.smartfrog.sfcore.common.Logger;
+import org.smartfrog.sfcore.common.MessageKeys;
+import org.smartfrog.sfcore.common.MessageUtil;
+import org.smartfrog.sfcore.common.SFMarshalledObject;
+import org.smartfrog.sfcore.common.SmartFrogContextException;
+import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
+import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
+import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.common.SmartFrogLifecycleException;
+import org.smartfrog.sfcore.common.SmartFrogLivenessException;
+import org.smartfrog.sfcore.common.SmartFrogResolutionException;
+import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
+import org.smartfrog.sfcore.common.SmartFrogUpdateException;
+import org.smartfrog.sfcore.common.TerminatorThread;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.componentdescription.ComponentDescriptionImpl;
 import org.smartfrog.sfcore.logging.LogFactory;
@@ -284,20 +299,8 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
      */
     public InetAddress sfDeployedHost() throws RemoteException {
         try {
-            String hostName = System.getProperty("java.rmi.server.hostname");
-            try {
-                if (hostName!=null) {
-                    return java.net.InetAddress.getByName(hostName);
-                }
-            } catch (UnknownHostException ex) {
-               if (sfLog().isIgnoreEnabled()){
-                 sfLog().ignore(MessageUtil.formatMessage(MSG_FAILED_INET_ADDRESS_LOOKUP),ex);
-               }
-//               Logger.logQuietly(MessageUtil.formatMessage(MSG_FAILED_INET_ADDRESS_LOOKUP),ex);
-            }
-            return java.net.InetAddress.getLocalHost();
+            return SFProcess.sfDeployedHost();
         } catch (Exception ex) {
-//            Logger.logQuietly(MessageUtil.formatMessage(MSG_FAILED_INET_ADDRESS_LOOKUP),ex);
           if (sfLog().isIgnoreEnabled()){
             sfLog().ignore(MessageUtil.formatMessage(MSG_FAILED_INET_ADDRESS_LOOKUP),ex);
           }

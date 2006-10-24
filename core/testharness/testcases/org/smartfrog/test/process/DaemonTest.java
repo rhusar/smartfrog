@@ -47,7 +47,7 @@ public class DaemonTest extends TestCase {
 
     public void testStopDaemon() throws Exception {
         TerminationRecord tr = new TerminationRecord("Process Terminated", null, null);
-        ProcessCompound sfDaemon = SFProcess.getRootLocator().getRootProcessCompound(InetAddress.getLocalHost(), 3800);
+        ProcessCompound sfDaemon = SFProcess.getRootLocator().getRootProcessCompound(SFProcess.sfDeployedHost(), 3800);
         TerminatorThread terminator = new TerminatorThread(sfDaemon, tr).detach().quietly();
         terminator.start();
     }
