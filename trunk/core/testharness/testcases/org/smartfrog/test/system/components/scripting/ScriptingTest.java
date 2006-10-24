@@ -65,7 +65,7 @@ public void testCaseTCP50() throws Throwable
 		
 		System.out.println("testCaseTCP52  process name :" +applicationtcp52.sfCompleteName());
 	
-		ProcessCompound pc= SFProcess.getRootLocator().getRootProcessCompound(InetAddress.getLocalHost());
+		ProcessCompound pc= SFProcess.getRootLocator().getRootProcessCompound(SFProcess.sfDeployedHost());
 		Prim count=(Prim)pc.sfResolve("exam");
 		
 		String actualPSfClass =(String) count.sfResolveHere("sfClass");

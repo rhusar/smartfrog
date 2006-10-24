@@ -26,13 +26,13 @@ import org.smartfrog.sfcore.common.SmartFrogException;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
-import java.net.UnknownHostException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
 import org.smartfrog.sfcore.common.SmartFrogCoreProperty;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
+import org.smartfrog.sfcore.processcompound.SFProcess;
 
 /**
  *
@@ -200,12 +200,12 @@ public class LogToFileImpl extends LogToStreamsImpl implements LogToFile {
 
         if (useHostNameInFileName) {
             try {
-                String hostname = java.net.InetAddress.getLocalHost().getCanonicalHostName();
+                String hostname = SFProcess.sfDeployedHost().getCanonicalHostName();
                 if ((newfileName.toString().length()>0)&&!(newfileName.toString().endsWith("_"))) {
                                 newfileName.append("_");
                 }
                 newfileName.append(hostname);
-            } catch (UnknownHostException ex) {
+            } catch (SmartFrogException ex) {
                 if (isErrorEnabled()) error("",ex);
             }
         }

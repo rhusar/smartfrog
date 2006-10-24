@@ -25,7 +25,6 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintStream;
-import java.net.InetAddress;
 import java.rmi.RemoteException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -38,6 +37,7 @@ import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.reference.Reference;
+import org.smartfrog.sfcore.processcompound.SFProcess;
 
 import org.smartfrog.services.display.PrintErrMsgInt;
 import org.smartfrog.services.display.PrintMsgInt;
@@ -46,8 +46,13 @@ import org.smartfrog.services.display.PrintMsgInt;
  * Class used to log system.out and system.err messages into a file.
  *
  */
-public class SFLogToFile extends PrimImpl implements Prim, PrintMsgInt,
-    PrintErrMsgInt {
+public class SFLogToFile extends PrimImpl implements Prim, PrintMsgInt, PrintErrMsgInt {
+
+    /*
+      Date format
+     */
+    static SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss.SSS yyyy/MM/dd");
+
     /** Reference for filename. */
     Reference fileNameRef = new Reference("fileName");
     /** String name for file name. */
@@ -138,8 +143,7 @@ public class SFLogToFile extends PrimImpl implements Prim, PrintMsgInt,
 
         // create the file & redirect the outputs
         try {
-            if (processName.equals(SmartFrogCoreKeys.SF_ROOT_PROCESS) ||
-                                        !logOnlyInRootProcess) {
+            if (processName.equals(SmartFrogCoreKeys.SF_ROOT_PROCESS) || !logOnlyInRootProcess) {
                 createFile();
                 redirectOutputs();
             } else {
@@ -162,12 +166,10 @@ public class SFLogToFile extends PrimImpl implements Prim, PrintMsgInt,
     RemoteException {
         super.sfStart();
         if (detachAndTerminate) {
-            termR = new TerminationRecord("normal",
-                    "Not deployed in rootProcess", this.sfCompleteName());
-
+            termR = new TerminationRecord("normal", "Not deployed in rootProcess", this.sfCompleteName());
             TerminatorThread terminator = new TerminatorThread(this,termR).detach();
             terminator.start();
-            }
+        }
     }
     /**
      * Creates the file using attributes.
@@ -185,7 +187,7 @@ public class SFLogToFile extends PrimImpl implements Prim, PrintMsgInt,
 
         // add hostname and date to file name
         try {
-            String hostName = InetAddress.getLocalHost().getHostName();
+            String hostName = SFProcess.sfDeployedHost().getHostName();
             fullFileName += hostName;
         } catch (Exception e) {
             // log the exception
@@ -200,15 +202,13 @@ public class SFLogToFile extends PrimImpl implements Prim, PrintMsgInt,
         String timeFileName = "";
 
         if (useTime) {
-            timeFileName = "_" +
-                new SimpleDateFormat(formatTimeString).format(now);
+            timeFileName = "_" + new SimpleDateFormat(formatTimeString).format(now);
         }
 
         String dateFileName = "";
 
         if (useDate) {
-            dateFileName = "_" +
-                new SimpleDateFormat(formatDateString).format(now);
+            dateFileName = "_" + new SimpleDateFormat(formatDateString).format(now);
         }
 
         // add the extension
@@ -282,10 +282,7 @@ public class SFLogToFile extends PrimImpl implements Prim, PrintMsgInt,
      *@return  The formatted message
      */
     private String formatMsg(String msg) {
-        msg = "[" +
-            (new SimpleDateFormat("HH:mm:ss.SSS dd/MM/yy").format(new Date(
-                    System.currentTimeMillis()))) + "] " + msg;
-
+        msg = "[" +(dateFormat.format(new Date(System.currentTimeMillis()))) + "] " + msg;
         return msg;
     }
 

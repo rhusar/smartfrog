@@ -45,7 +45,9 @@ import java.rmi.RemoteException;
 import java.util.Enumeration;
 import java.util.Properties;
 import java.rmi.ConnectException;
+
 import org.smartfrog.sfcore.logging.LogFactory;
+import org.smartfrog.sfcore.logging.LogSF;
 import org.smartfrog.Version;
 
 
@@ -59,6 +61,10 @@ import org.smartfrog.Version;
  *
  */
 public class SFProcess implements MessageKeys {
+    /**
+     * Log for SFProcess (Process Log).
+     */
+    private static LogSF sfLog= LogFactory.sfGetProcessLog();
     /**
      * Single instance of process compound for this process
      */
@@ -90,7 +96,7 @@ public class SFProcess implements MessageKeys {
 //    /** ProcessLog. This log is used to log into the core log: SF_CORE_LOG
 //     *  It can be replaced using sfSetLog()
 //     */
-//    private LogSF sflog = LogFactory.sfGetProcessLog();
+//    private LogSF sflog = sfLog();
 
     private SFProcess (){
     }
@@ -201,7 +207,7 @@ public class SFProcess implements MessageKeys {
                             "Deployment Failure: " + ex, comp.sfCompleteName()));
                 } catch (Exception termex) {
                     // ignore
-                    if (LogFactory.sfGetProcessLog().isIgnoreEnabled()){LogFactory.sfGetProcessLog().ignore(ex); }
+                    if (sfLog().isIgnoreEnabled()){sfLog().ignore(ex); }
                 }
             }
 
@@ -235,8 +241,8 @@ public class SFProcess implements MessageKeys {
 
             try {
                 TerminationRecord tr = TerminationRecord.abnormal("Failed to start ", newRef);
-                if (LogFactory.sfGetProcessLog().isErrorEnabled()) {
-                  LogFactory.sfGetProcessLog().error(newRef.toString(),SmartFrogException.forward(ex),tr);
+                if (sfLog().isErrorEnabled()) {
+                  sfLog().error(newRef.toString(),SmartFrogException.forward(ex),tr);
                 }
                 comp.sfTerminate(tr);
             } catch (Exception termEx) {
@@ -283,27 +289,27 @@ public class SFProcess implements MessageKeys {
                 if (processCompound != null) {
                     try {
                         //Logger.log("Terminating sfDaemon gracefully!!");
-                        LogFactory.sfGetProcessLog().out("Terminating sfDaemon gracefully!!");
+                        sfLog().out("Terminating sfDaemon gracefully!!");
                         processCompound.sfTerminate(new TerminationRecord(TerminationRecord.NORMAL,
                                 "sfDaemon forced to terminate ",
                                 ((Prim) processCompound).sfCompleteName()));
                     } catch (RemoteException re) {
                         //Logger.log(re);
                         //log and ignore
-                        if (LogFactory.sfGetProcessLog().isIgnoreEnabled()) {
-                          LogFactory.sfGetProcessLog().ignore(re);
+                        if (sfLog().isIgnoreEnabled()) {
+                          sfLog().ignore(re);
                         }
 
                     } catch (Throwable thr) {
                         //Logger.log(thr);
-                        if (LogFactory.sfGetProcessLog().isIgnoreEnabled()) {
-                          LogFactory.sfGetProcessLog().ignore(thr);
+                        if (sfLog().isIgnoreEnabled()) {
+                          sfLog().ignore(thr);
                         }
                     }
                 }
             } else {
                 //Logger.log("sfDaemon killed!");
-                LogFactory.sfGetProcessLog().out("sfDaemon killed!");
+                sfLog().out("sfDaemon killed!");
                 //http://www.tldp.org/LDP/abs/html/exitcodes.html
                 // 130 - Control-C is fatal error signal 2, (130 = 128 + 2)
                 ExitCodes.exitWithError(ExitCodes.EXIT_ERROR_CODE_CRTL_ALT_DEL);
@@ -322,7 +328,7 @@ public class SFProcess implements MessageKeys {
                 oldHandler=Signal.handle(new Signal(name), this);
             } catch (IllegalArgumentException e) {
                 //this happens when binding fails. In this situation, warn, but keep going
-                LogFactory.sfGetProcessLog().err("Failed to set control-C handler -is JVM running with -Xrs set?",e);
+                sfLog().err("Failed to set control-C handler -is JVM running with -Xrs set?",e);
 //                Logger.log("Failed to set control-C handler -is JVM running with -Xrs set?");
 //                Logger.log(e);
             }
@@ -547,5 +553,43 @@ public class SFProcess implements MessageKeys {
         return target;
     }
 
+    /**
+     * Request the host to which this process is bound to
+     *
+     * @return the host InetAddress
+     *
+     * @throws RemoteException In case of network/rmi error
+     * @throws SmartFrogException wrapped Exception
+     */
+
+    public static InetAddress sfDeployedHost() throws SmartFrogException {
+        try {
+            String hostName = System.getProperty("java.rmi.server.hostname");
+            try {
+                if (hostName!=null) {
+                    return java.net.InetAddress.getByName(hostName);
+                }
+            } catch (UnknownHostException ex) {
+               if (sfLog().isIgnoreEnabled()){
+                 sfLog().ignore(MessageUtil.formatMessage(MSG_FAILED_INET_ADDRESS_LOOKUP),ex);
+               }
+            }
+            return java.net.InetAddress.getLocalHost();
+        } catch (Exception ex) {
+          if (sfLog().isIgnoreEnabled()){
+            sfLog().ignore(MessageUtil.formatMessage(MSG_FAILED_INET_ADDRESS_LOOKUP),ex);
+          }
+          throw SmartFrogException.forward(MessageUtil.formatMessage(MSG_FAILED_INET_ADDRESS_LOOKUP),ex);
+        }
+    }
+
+
+    /**
+     * Log for SFProcess.
+     * @return  ProcessLog
+     */
+    private static LogSF sfLog() {
+        return sfLog;
+    }
 
 }

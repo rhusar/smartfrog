@@ -25,6 +25,9 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.logging.Logger;
 
+import org.smartfrog.sfcore.processcompound.*;
+import org.smartfrog.sfcore.common.*;
+
 /**
  * created Jul 12, 2004 3:55:32 PM
  */
@@ -44,11 +47,21 @@ public class BasicNetworkingTest extends TestCase {
 
     /**
      * may fail if DNS is badly set up or absent
+     * @throws SmartFrogException
+     */
+    public void testProcessSfDeployedHost() throws SmartFrogException {
+        InetAddress addr;
+        addr= SFProcess.sfDeployedHost();
+        logAddr("SFProcess.sfDeployedHost", addr);
+    }
+
+    /**
+     * may fail if DNS is badly set up or absent
      * @throws UnknownHostException
      */
     public void testLocalhost() throws UnknownHostException {
         InetAddress addr;
-        addr=InetAddress.getByName("localhost");
+        addr= InetAddress.getByName("localhost");
         logAddr("localhost", addr);
     }
 

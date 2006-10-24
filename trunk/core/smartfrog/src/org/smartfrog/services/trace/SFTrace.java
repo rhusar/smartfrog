@@ -94,11 +94,10 @@ public class SFTrace extends PrimImpl implements SFTraceIntf {
 
         try {
             try {
-                localhost = java.net.InetAddress.getLocalHost();
+                localhost = SFProcess.getProcessCompound().sfDeployedHost();
             } catch (Exception ex) {
                 if (log.isErrorEnabled()) {
-                    log.error("sfTrace: Exception deployment: " +
-                            ex.toString(),ex);
+                    log.error("sfTrace: Exception deployment: " + ex.toString(),ex);
                 }
             }
 
@@ -108,8 +107,7 @@ public class SFTrace extends PrimImpl implements SFTraceIntf {
                         .toString();
             } catch (Exception ex) {
                 if (log.isErrorEnabled()) {
-                    log.error("sfTrace: Exception deployment:" +
-                            ex.toString(),ex);
+                    log.error("sfTrace: Exception deployment:" + ex.toString(),ex);
                 }
             }
 
@@ -117,8 +115,7 @@ public class SFTrace extends PrimImpl implements SFTraceIntf {
                 processName = getSfProcessName();
             } catch (Exception ex) {
                 if (log.isErrorEnabled()) {
-                    log.error("sfTrace: Exception deployment:" +
-                            ex.toString());
+                    log.error("sfTrace: Exception deployment:" + ex.toString());
                 }
             }
 

@@ -29,6 +29,7 @@ import java.io.PrintStream;
 import java.rmi.RemoteException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.net.InetAddress;
 
 import javax.swing.Timer;
 
@@ -39,12 +40,12 @@ import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.prim.TerminationRecord;
+import org.smartfrog.sfcore.processcompound.SFProcess;
 
 /**
  *  Implements PrintMsgInt interface and prints the message remotely.
  */
-public class SFDisplay extends PrimImpl implements Prim, PrintMsgInt,
-      PrintErrMsgInt {
+public class SFDisplay extends PrimImpl implements Prim, PrintMsgInt, PrintErrMsgInt {
    /** String name for attribute autoClean. */
    private static final String AUTO_CLEAN = "autoClean";
    /** String name for attribute cleanEveryNumSec. */
@@ -164,8 +165,7 @@ public class SFDisplay extends PrimImpl implements Prim, PrintMsgInt,
             // read components attributes
             readSFAttributes();
             if (showIP) {
-                String hostName = (java.net.InetAddress.getLocalHost()).
-                                                                toString();
+                InetAddress hostName = SFProcess.sfDeployedHost();
                 nameDisplay = nameDisplay + " [" + hostName + "]";
                 nameDisplay = nameDisplay.replace('\\', '_');
                 nameDisplay = nameDisplay.replace('/', '_');

@@ -44,7 +44,6 @@ import org.smartfrog.sfcore.compound.Compound;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.processcompound.ProcessCompound;
 import org.smartfrog.sfcore.processcompound.SFProcess;
-import org.smartfrog.sfcore.common.Logger;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -62,7 +61,10 @@ import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.InetAddress;
-import java.net.*;
+import java.net.InetAddress;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.UnknownHostException;
 
 
 /**
@@ -516,7 +518,7 @@ public final class Diagnostics {
        InetAddress localhost=null;
        out.append("Network test localhost: ");
        try {
-         localhost = InetAddress.getLocalHost();
+         localhost = SFProcess.sfDeployedHost();
          String localhostName = localhost.getCanonicalHostName();
          out.append("hostname '"+localhostName+"', ");
          out.append("ip '"+localhost.getHostAddress()+"', ");
@@ -529,7 +531,7 @@ public final class Diagnostics {
          } else {
              out.append(" [Failed], "+time2+"ms");
          }
-       } catch (UnknownHostException ex1) {
+       } catch (Exception ex1) {
            time2=System.currentTimeMillis()-time;
            out.append("[Failed], Failed to resolve localhost ip, "+time2+"ms"+", "+ex1.toString());
        }
