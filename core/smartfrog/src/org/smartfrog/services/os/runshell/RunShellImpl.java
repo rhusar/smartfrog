@@ -147,10 +147,6 @@ public class RunShellImpl extends PrimImpl implements Prim, RunShell, Runnable {
     /** logger value. */
     int logger = 2;
 
-    // 5- info log, 1 - Critical. Use -1 to avoid log
-    /** Flag indicating print stack. */
-    boolean printStack = false;
-
     /** log */
     private Log log;
 
@@ -242,16 +238,12 @@ public class RunShellImpl extends PrimImpl implements Prim, RunShell, Runnable {
 
             sfReplaceAttribute(varStatus, "finished");
             sfReplaceAttribute(varExitValue,new Integer(exitVal));
-            log("Finished: " + terminationType + ", ExitVal: " + exitVal, 3);
+            if (sfLog().isTraceEnabled()) sfLog().trace("Finished: " + terminationType + ", ExitVal: " + exitVal);
 
             //Thread.sleep(3*1000);
         } catch (Exception ex) {
             terminationType = "abnormal";
-            log(ex.getMessage(), 2);
-
-            if (printStack) {
-                ex.printStackTrace();
-            }
+            if (sfLog().isErrorEnabled()) sfLog().error(ex.getMessage(), ex);
 
             try {
               sfReplaceAttribute(varStatus, "terminated");
@@ -284,7 +276,6 @@ public class RunShellImpl extends PrimImpl implements Prim, RunShell, Runnable {
     protected void readSFAttributes() throws SmartFrogException, RemoteException {
 
         logger = sfResolve(varLogger,logger,false);
-        printStack = sfResolve(varPrintStack, printStack,false);
 
         //Optional attributes
         delayBetweenCmds = sfResolve(varDelayBetweenCmds,delayBetweenCmds,false);
@@ -314,7 +305,7 @@ public class RunShellImpl extends PrimImpl implements Prim, RunShell, Runnable {
         try{
             processName = sfResolve(varSFProcessName,processName,true);
         } catch (SmartFrogResolutionException e) {
-            log("Failed to read mandatory attribute (readSFAttributes): "+e.toString(),1);
+            if (sfLog().isErrorEnabled()) sfLog().error("Failed to read mandatory attribute (readSFAttributes): "+e.toString(),e);
             throw e;
         }
 
@@ -352,11 +343,7 @@ public class RunShellImpl extends PrimImpl implements Prim, RunShell, Runnable {
             // This should kill the thread and this closes dumpOut...
             dos.close();
         } catch (IOException e) {
-            log(e.getMessage(), 3);
-
-            if (printStack) {
-                e.printStackTrace();
-            }
+            if (sfLog().isErrorEnabled()) sfLog().error(e);
         }
 
         try {
@@ -365,11 +352,7 @@ public class RunShellImpl extends PrimImpl implements Prim, RunShell, Runnable {
                 subProcess = null;
             }
         } catch (Exception ex) {
-            log(ex.getMessage(), 3);
-
-            if (printStack) {
-                ex.printStackTrace();
-            }
+            if (sfLog().isErrorEnabled()) sfLog().error(ex);
         }
 
         super.sfTerminateWith(tr);
@@ -388,23 +371,22 @@ public class RunShellImpl extends PrimImpl implements Prim, RunShell, Runnable {
             try {
                 Thread.sleep(delayBetweenCmds * 1000);
             } catch (InterruptedException iex) {
-                log(iex.getMessage(), 2);
+                if (sfLog().isErrorEnabled()) sfLog().error(iex);
             }
         } else {
-            log("No delay between two consecutive cmds.", 5);
+            if (sfLog().isTraceEnabled()) sfLog().trace("No delay between two consecutive cmds.");
         }
 
         if (dos != null) {
             try {
-                log("Executing: " + cmd, 2);
+                if (sfLog().isDebugEnabled()) sfLog().debug("Executing: " + cmd);
                 dos.writeBytes(cmd);
                 dos.flush();
             } catch (IOException ex) {
-                log(ex.getMessage(), 1);
-                PrintExceptionStack(ex);
+                if (sfLog().isErrorEnabled()) sfLog().error(ex);
             }
         } else {
-            log("Error: Stream closed. Shell probably terminated.", 1);
+            if (sfLog().isErrorEnabled()) sfLog().error("Error: Stream closed. Shell probably terminated.");
         }
     }
 
@@ -417,7 +399,7 @@ public class RunShellImpl extends PrimImpl implements Prim, RunShell, Runnable {
 
         if ((cmds==null)||(cmds.isEmpty())) return;
 
-        log("Executing Batch: " + cmds, 1);
+        if (sfLog().isDebugEnabled()) sfLog().debug("Executing Batch: " + cmds);
         Object element = null;
 
         for (Enumeration e = cmds.elements(); e.hasMoreElements();) {
@@ -432,7 +414,7 @@ public class RunShellImpl extends PrimImpl implements Prim, RunShell, Runnable {
             execCmd(exitCmd);
         }
 
-        log("Executing Batch: DONE." + cmds, 3);
+        if (sfLog().isDebugEnabled()) sfLog().debug("Executing Batch: DONE." + cmds);
     }
 
     // Aux Methods!
@@ -446,7 +428,7 @@ public class RunShellImpl extends PrimImpl implements Prim, RunShell, Runnable {
     private Vector readVarData(String typeAttrib) {
         if (typeAttrib==null) return null;
 
-        log(" runShell.readVarData()", 4);
+        if (sfLog().isTraceEnabled()) sfLog().trace(" runShell.readVarData()");
 
         Object key = null;
         Object value = null;
@@ -469,32 +451,28 @@ public class RunShellImpl extends PrimImpl implements Prim, RunShell, Runnable {
 
                                 if (element instanceof String) {
                                     data.add((String) element);
-                                    log("runShell.readVarData().Adding(Vect): " +
-                                        element, 5);
+                                    if (sfLog().isTraceEnabled()) sfLog().trace("runShell.readVarData().Adding(Vect): " +
+                                        element);
                                 }
                             }
                         } else if (value instanceof String) {
                             data.add(value);
-                            log("runShell.readVarData().Adding(Str):  " +
-                                value, 5);
+                            if (sfLog().isTraceEnabled()) sfLog().trace("runShell.readVarData().Adding(Str):  " +
+                                value);
                         }
                     }
                 } catch (Exception ex) {
-                    log(ex.getMessage(), 2);
-
-                    if (printStack) {
-                        ex.printStackTrace();
-                    }
+                    if (sfLog().isErrorEnabled()) sfLog().error(ex.getMessage());
                 }
             }
         }
 
         if (data.isEmpty()) {
-            log("runShell.readVarData(): Not data.", 5);
+            if (sfLog().isDebugEnabled()) sfLog().debug("runShell.readVarData(): No data.");
             data = null;
         }
 
-        log("runShell.readVarData().data: " + data, 4);
+        if (sfLog().isTraceEnabled()) sfLog().trace("runShell.readVarData().data: " + data);
         return data;
     }
 
@@ -538,8 +516,7 @@ public class RunShellImpl extends PrimImpl implements Prim, RunShell, Runnable {
                         }
                     }
                 } catch (Exception ex) {
-                    log(ex.getMessage(), 2);
-                    PrintExceptionStack(ex);
+                    if (sfLog().isErrorEnabled()) sfLog().error(ex);
                 }
             }
         }
@@ -608,12 +585,9 @@ public class RunShellImpl extends PrimImpl implements Prim, RunShell, Runnable {
             }
 
             cmd = result;
-            log("CreatedCmd:" + arrayToString(cmd), 5);
+            if (sfLog().isDebugEnabled()) sfLog().debug("CreatedCmd:" + arrayToString(cmd));
         } catch (Exception e) {
-            log("SFRunCommand.createCmd:Error creating Cmd.(" + e.getMessage() +
-                ")", 5);
-
-            PrintExceptionStack(e);
+            if (sfLog().isErrorEnabled()) sfLog().trace("SFRunCommand.createCmd:Error creating Cmd.(" + e.getMessage() +")",e);
         }
 
         return cmd;
@@ -645,31 +619,4 @@ public class RunShellImpl extends PrimImpl implements Prim, RunShell, Runnable {
     public String getNotifierId() {
         return (processName + processId);
     }
-
-    /**
-     *  Log - Writes messages in the standart output
-     *
-     *@param  severity  severity of message
-     *@param  message   message
-     */
-    private void log(String message, int severity) {
-        try {
-            //if (logger != false ) {
-            if (logger >= severity) {
-                //System.out.println("  LOG: Process "+ notifierId()+"  msg:" +
-        //  message + ", serverity: "+ severity);
-                System.out.println("[" + getNotifierId() + "] " + "LOG" +
-                    " > " + message + ", SFRunShell, " + severity);
-            }
-        } catch (Exception e) {
-            PrintExceptionStack(e);
-        }
-    }
-
-    private void PrintExceptionStack(Exception e) {
-        if (printStack != false) {
-            log.error("exception",e);
-        }
-    }
-
 }

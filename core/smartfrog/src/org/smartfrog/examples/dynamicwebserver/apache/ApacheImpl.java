@@ -135,8 +135,7 @@ public class ApacheImpl extends CompoundImpl implements Compound, Apache,
      * @param newState new state of Apache
      */
     public synchronized void setApacheState(boolean newState) {
-        logger.log(name,
-                "setting apache state to " + newState + " from " + apacheState);
+        logger.log(name, "setting apache state to " + newState + " from " + apacheState);
 
         if ((!apacheState) && (newState)) {
             apacheState = newState;
@@ -174,7 +173,7 @@ public class ApacheImpl extends CompoundImpl implements Compound, Apache,
             if (manageDaemon)
                 p = Runtime.getRuntime().exec(apachectlLocation + " start");
         } catch (Exception e) {
-            e.printStackTrace();
+            if (sfLog().isErrorEnabled()) sfLog().error (e);
         }
 
         logger.log(name, "httpd started");
@@ -187,7 +186,7 @@ public class ApacheImpl extends CompoundImpl implements Compound, Apache,
                         p = Runtime.getRuntime().exec(apachectlLocation + " start");
                     needRestart = false;
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    if (sfLog().isErrorEnabled()) sfLog().error (e);
                 }
             }
             //end if (needRestart)
@@ -195,6 +194,7 @@ public class ApacheImpl extends CompoundImpl implements Compound, Apache,
             try {
                 Thread.sleep(interCheckTime * 1000);
             } catch (InterruptedException ignored) {
+                if (sfLog().isIgnoreEnabled()) sfLog().ignore (ignored);
             }
 
             try {
@@ -246,8 +246,7 @@ public class ApacheImpl extends CompoundImpl implements Compound, Apache,
                     shouldRefresh = false;
                 }
             } catch (Exception e) {
-                logger.err(name, "error checking for processes - ignored");
-                e.printStackTrace();
+                if (sfLog().isErrorEnabled()) sfLog().error (name + "- error checking for processes - ignored",e);
             }
         }
 
@@ -263,7 +262,7 @@ public class ApacheImpl extends CompoundImpl implements Compound, Apache,
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            if (sfLog().isErrorEnabled()) sfLog().error (e);
         }
     }
 

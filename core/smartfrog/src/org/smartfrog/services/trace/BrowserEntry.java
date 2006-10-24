@@ -25,6 +25,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 
 import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
+import org.smartfrog.sfcore.logging.LogSF;
+import org.smartfrog.sfcore.logging.LogFactory;
 
 
 /**
@@ -32,6 +34,9 @@ import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
  *
  */
 public final class BrowserEntry implements Entry {
+
+
+
     //public static String CRLF = "\r\n";
     /** String for name. */
     private String name = null;
@@ -135,12 +140,11 @@ public final class BrowserEntry implements Entry {
                 //attribs: "+this.getDN());
                             }
                         } catch (Exception ex) {
-                            System.out.println("Child " + nameChild +
-                                " not contained in " + this.getDN());
+                            if (sfLog().isErrorEnabled()) sfLog().error("Child " + nameChild +" not contained in " + this.getDN(),ex);
                         }
                     }
                 } catch (Exception ex) {
-                    System.out.println("Failed in adding new child:" + getDN());
+                    if (sfLog().isErrorEnabled()) sfLog().error("Failed in adding new child:" + getDN(),ex);
                 }
             } else {
                 // if it is for one or our children we pass the ball
@@ -184,13 +188,10 @@ public final class BrowserEntry implements Entry {
                             // ----
                         }
                     } catch (Exception ex) {
-                        ex.printStackTrace();
-                        System.out.println("xChild " + nameChild +
-                            " not contained in " + this.getDN());
+                        if (sfLog().isErrorEnabled()) sfLog().error("xChild " + nameChild +" not contained in " + this.getDN(),ex);
                     }
                 } else {
-                    System.out.println("ERROR: Trying to add: \n" +
-                        getMsgDN(msg) + " to \n" + this.getDN());
+                    if (sfLog().isErrorEnabled()) sfLog().error("ERROR: Trying to add: \n" + getMsgDN(msg) + " to \n" + this.getDN());
                 }
             }
         }
@@ -677,51 +678,62 @@ public final class BrowserEntry implements Entry {
         //return null;
     }
 
-    /**
-     *  The main method.
-     *
-     * @param  args  cpmmand line arguments
-     */
-    public static void main(String[] args) {
-        //Test
-        System.out.println("Starting...a new adventure.");
+//    /**
+//     *  The main method.
+//     *
+//     * @param  args  cpmmand line arguments
+//     */
+//    public static void main(String[] args) {
+//        //Test
+//        System.out.println("Starting...a new adventure.");
+//
+//        BrowserEntry entry = new BrowserEntry(SmartFrogCoreKeys.SF_ROOT);
+//        System.out.println(
+//            "Adding: ROOT:System -------------------------------------------");
+//        entry.add(
+//            "ROOT:System, DEPLOYED, 15:51:37.187 22/06/01 guijarro-j-5/15.144.25.153");
+//        System.out.println(
+//            "Adding: ROOT:System:foo:bar2 -----------------------------------");
+//        entry.add(
+//            "ROOT:System:foo:bar2,DEPLOYED,15:51:37.187 22/06/01 guijarro-j-5/15.144.25.153");
+//        System.out.println(
+//            "Adding: ROOT:System:foo ----------------------------------------");
+//        entry.add(
+//            "ROOT:System:foo, DEPLOYED, 15:51:37.187 22/06/01 guijarro-j-5/15.144.25.153");
+//        System.out.println(
+//            "Adding: ROOT:System:foo:bar ------------------------------------");
+//        entry.add(
+//            "ROOT:System:foo:bar,DEPLOYED,15:51:37.187 22/06/01 guijarro-j-5/15.144.25.153");
+//        System.out.println(
+//            "Adding: ROOT:baz and bar---------------------------------");
+//        entry.add(
+//            "ROOT:baz, STARTED,15:51:37.187 22/06/01 guijarro-j-5/15.144.25.153");
+//        entry.add(
+//            "ROOT:bar, STARTED,15:51:37.187 22/06/01 guijarro-j-5/15.144.25.153");
+//        entry.add(
+//            "ROOT:System:foo:bar, STARTED,15:51:37.187 22/06/01 guijarro-j-5/15.144.25.153");
+//        entry.add(
+//            "ROOT, DEPLOYED,00:51:37.187 22/06/01 guijarro-j-5/15.144.25.153");
+//        entry.add(
+//            "ROOT, STARTED,00:51:37.187 22/06/01 guijarro-j-5/15.144.25.153");
+//        System.out.println("Node root: " + entry.toStringAll());
+//        System.out.println("Entry[1]:" + entry.getChild(1));
+//        System.out.println("Entry[2]:" + entry.getChild(2));
+//        System.out.println("Entry[0]:" + entry.getChild(0));
+//        System.out.println("Entry[3]:" + entry.getChild(3));
+//        System.out.println("...Finished");
+//    }
 
-        BrowserEntry entry = new BrowserEntry(SmartFrogCoreKeys.SF_ROOT);
-        System.out.println(
-            "Adding: ROOT:System -------------------------------------------");
-        entry.add(
-            "ROOT:System, DEPLOYED, 15:51:37.187 22/06/01 guijarro-j-5/15.144.25.153");
-        System.out.println(
-            "Adding: ROOT:System:foo:bar2 -----------------------------------");
-        entry.add(
-            "ROOT:System:foo:bar2,DEPLOYED,15:51:37.187 22/06/01 guijarro-j-5/15.144.25.153");
-        System.out.println(
-            "Adding: ROOT:System:foo ----------------------------------------");
-        entry.add(
-            "ROOT:System:foo, DEPLOYED, 15:51:37.187 22/06/01 guijarro-j-5/15.144.25.153");
-        System.out.println(
-            "Adding: ROOT:System:foo:bar ------------------------------------");
-        entry.add(
-            "ROOT:System:foo:bar,DEPLOYED,15:51:37.187 22/06/01 guijarro-j-5/15.144.25.153");
-        System.out.println(
-            "Adding: ROOT:baz and bar---------------------------------");
-        entry.add(
-            "ROOT:baz, STARTED,15:51:37.187 22/06/01 guijarro-j-5/15.144.25.153");
-        entry.add(
-            "ROOT:bar, STARTED,15:51:37.187 22/06/01 guijarro-j-5/15.144.25.153");
-        entry.add(
-            "ROOT:System:foo:bar, STARTED,15:51:37.187 22/06/01 guijarro-j-5/15.144.25.153");
-        entry.add(
-            "ROOT, DEPLOYED,00:51:37.187 22/06/01 guijarro-j-5/15.144.25.153");
-        entry.add(
-            "ROOT, STARTED,00:51:37.187 22/06/01 guijarro-j-5/15.144.25.153");
-        System.out.println("Node root: " + entry.toStringAll());
-        System.out.println("Entry[1]:" + entry.getChild(1));
-        System.out.println("Entry[2]:" + entry.getChild(2));
-        System.out.println("Entry[0]:" + entry.getChild(0));
-        System.out.println("Entry[3]:" + entry.getChild(3));
-        System.out.println("...Finished");
-    }
+   /** Log for this class, created using class name*/
+    static LogSF sfLog = LogFactory.getLog(BrowserEntry.class);
+
+    /**
+     * Log for this class
+      * @return
+     */
+   private LogSF sfLog(){
+        return sfLog;
+   }
 }
 
 

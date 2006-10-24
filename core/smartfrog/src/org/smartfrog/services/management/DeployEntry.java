@@ -26,6 +26,7 @@ import org.smartfrog.services.trace.Entry;
 import org.smartfrog.sfcore.common.Context;
 import org.smartfrog.sfcore.common.ContextImpl;
 import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
+import org.smartfrog.sfcore.common.SmartFrogLogException;
 import org.smartfrog.sfcore.compound.Compound;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimImpl;
@@ -33,6 +34,8 @@ import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.processcompound.ProcessCompound;
 import java.rmi.RemoteException;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
+import org.smartfrog.sfcore.logging.LogSF;
+import org.smartfrog.sfcore.logging.LogFactory;
 
 
 /**
@@ -42,6 +45,9 @@ import org.smartfrog.sfcore.componentdescription.ComponentDescription;
  * @see Entry
  */
 public class DeployEntry implements Entry {
+
+    /** Log for this class, created using class name*/
+    LogSF sfLog = LogFactory.getLog(DeployEntry.class);
 
     boolean showCDasChild = true;
 
@@ -61,9 +67,9 @@ public class DeployEntry implements Entry {
             this.entry = (Object) entry;
             this.showRootProcessName = showRootProcessName;
             this.showCDasChild=showCDasChild;
+            initLog();
         } catch (Exception ex) {
-            System.out.println("sfManagementConsole (DeployEntry1): "+ex.toString());
-            //ex.printStackTrace();
+            if (sfLog().isErrorEnabled()) sfLog().error("sfManagementConsole (DeployEntry1): "+ex.toString(),ex);
         }
     }
 
@@ -73,12 +79,10 @@ public class DeployEntry implements Entry {
     public DeployEntry() {
         try {
             this.entry = new PrimImpl();
-
+            initLog();
             //System.out.println("Model created");
         } catch (Exception ex) {
-            System.out.println("sfManagementConsole (DeployEntry2): "+ex.toString());
-
-            //ex.printStackTrace();
+            if (sfLog().isErrorEnabled()) sfLog().error("sfManagementConsole (DeployEntry2): "+ex.toString(),ex);
         }
     }
 
@@ -91,10 +95,9 @@ public class DeployEntry implements Entry {
         try {
             this.entry = message;
             //System.out.println("Model created");
+            initLog();
         } catch (Exception ex) {
-            System.out.println("sfManagementConsole (DeployEntry3): "+ex.toString());
-
-            //ex.printStackTrace();
+            if (sfLog().isErrorEnabled()) sfLog().error("sfManagementConsole (DeployEntry3): "+ex.toString(),ex);
         }
     }
 
@@ -144,7 +147,7 @@ public class DeployEntry implements Entry {
             //return entry;
         } catch (Exception ex) {
             //System.out.println(ex.toString());
-            ex.printStackTrace();
+            if (sfLog().isErrorEnabled()) sfLog().error(ex);
         }
 
         return null;
@@ -200,10 +203,9 @@ public class DeployEntry implements Entry {
             } catch (java.rmi.NoSuchObjectException nex){
                 //Ignore. component has terminated and RMI object has been
                 //unexported
-                //@TODO: Log
+                if (sfLog().isIgnoreEnabled()) sfLog().ignore(nex);
             } catch (Exception ex) {
-                System.out.println("sfManagementConsole (getDN.Prim): "+ex.getMessage());
-                //@TODO Log
+                if (sfLog().isErrorEnabled()) sfLog().error(ex);
             }
         } else if (entry instanceof ComponentDescription) {
             //System.out.println("EntryCD: getting name");
@@ -211,8 +213,7 @@ public class DeployEntry implements Entry {
                 name = ((ComponentDescription) entry).sfCompleteName().toString();
             //    System.out.println("EntryCD: getting name - "+name);
             } catch (Exception ex) {
-                System.out.println("sfManagementConsole (getDN.ComponentDescription): "+ex.getMessage());
-                //@TODO Log
+                if (sfLog().isErrorEnabled()) sfLog().error(ex);
             }
         }
         //System.out.println("getDN(): "+name);
@@ -235,7 +236,7 @@ public class DeployEntry implements Entry {
                 return ((getChildren())[index][1]);
             } catch (Exception ex) {
                 //System.out.println(ex.toString());
-                ex.printStackTrace();
+                if (sfLog().isErrorEnabled()) sfLog().error(ex);
             }
         }
 
@@ -314,8 +315,7 @@ public class DeployEntry implements Entry {
                             data[index][0] = name;
                             data[index][1] = value;
                         } catch (Exception ex) {
-                            System.err.println("sfManagementConsole.deployEntry.getAttributes: error reading "+
-                                name+" >"+ex.getMessage());
+                            if (sfLog().isErrorEnabled()) sfLog().error("sfManagementConsole.deployEntry.getAttributes: error reading "+name+" >"+ex.getMessage());
                             data[index][0] = name;
                             data[index][1] = "Error:"+ex.toString();
                             index++;
@@ -324,18 +324,17 @@ public class DeployEntry implements Entry {
                         index++;
                     }
                 } catch (Exception ex1) {
-                    ex1.printStackTrace();
+                    if (sfLog().isErrorEnabled()) sfLog().error(ex1);
                 }
             }
 
             return data;
         } catch (java.rmi.NoSuchObjectException nso){
             //Ignore: tipically component terminated and unexported from rmi
-            //@TODO: log
+            if (sfLog().isIgnoreEnabled()) sfLog().ignore(nso);
             return empty;
         } catch (Exception ex) {
-            System.err.println("Error DeployEntry.getAttributes()" +  ex.toString());
-            //ex.printStackTrace();
+            if (sfLog().isErrorEnabled()) sfLog().error("Error DeployEntry.getAttributes()" +  ex.toString(),ex);
             return empty;
         }
     }
@@ -377,7 +376,7 @@ public class DeployEntry implements Entry {
                     index++;
                   }
                 } catch (Exception ex1) {
-                  ex1.printStackTrace();
+                  if (sfLog().isErrorEnabled()) sfLog().error(ex1);
                   data[index][0] = name;
                   data[index][1] = "Error:"+ex1.toString();
                   index++;
@@ -385,7 +384,7 @@ public class DeployEntry implements Entry {
             }
             return data;
         } catch (Exception ex) {
-            ex.printStackTrace();
+            if (sfLog().isErrorEnabled()) sfLog().error(ex);
             return null;
         }
     }
@@ -548,7 +547,7 @@ public class DeployEntry implements Entry {
                     counter++;
                   }
                 } catch (Exception ex1) {
-                  ex1.printStackTrace();
+                  if (sfLog().isErrorEnabled()) sfLog().error(ex1);
                 }
             }
             return counter;
@@ -562,12 +561,12 @@ public class DeployEntry implements Entry {
      *
      */
     public void info() {
-        System.out.println("Info: " + this.toString());
-        System.out.println("    - #Children&CD:" + this.getChildrenCount());
-        System.out.println("    - #Attributes:" + this.sizeAttributes());
-        System.out.println("    - isLeaf():" + this.isLeaf());
-        System.out.println("    - children:" + getChildren());
-        System.out.println("    - attributes:" + getAttributes());
+        sfLog().out("Info: " + this.toString());
+        sfLog().out("    - #Children&CD:" + this.getChildrenCount());
+        sfLog().out("    - #Attributes:" + this.sizeAttributes());
+        sfLog().out("    - isLeaf():" + this.isLeaf());
+        sfLog().out("    - children:" + getChildren());
+        sfLog().out("    - attributes:" + getAttributes());
     }
 
     // Parse Name of Entry (SFObjects)
@@ -622,8 +621,7 @@ public class DeployEntry implements Entry {
             }
 
         } catch (Exception ex) {
-            //@Todo log this.
-            ex.printStackTrace();
+            if (sfLog().isErrorEnabled()) sfLog().error(ex);
         }
 
         return entryName;
@@ -747,10 +745,25 @@ public class DeployEntry implements Entry {
                 return (new DeployEntry(value,newShowRootProcessName,this.showCDasChild));
             }
         } catch (Exception ex) {
-            System.out.println("Error building mgt info: " + ex);
+            if (sfLog().isErrorEnabled()) sfLog().error("Error building mgt info: " + ex,ex);
             //return new DeployEntry((ex.getMessage()+(value.toString())));
         }
         return new DeployEntry();
+    }
+
+    private void initLog (){
+        try {
+            if (entry instanceof Prim) {
+               this.sfLog=LogFactory.getLog((Prim)entry);
+            } else {
+               this.sfLog=LogFactory.getLog((String)entry);
+            }
+        } catch (Exception e) {
+            sfLog.error(e);
+        }
+    }
+    private LogSF sfLog(){
+        return sfLog;
     }
 }
 

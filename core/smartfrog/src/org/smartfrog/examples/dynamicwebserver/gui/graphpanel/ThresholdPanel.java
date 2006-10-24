@@ -103,9 +103,10 @@ public class ThresholdPanel extends GraphPanel implements KeyListener {
                 tracker.waitForID(0, 5000);
                 tracker.waitForID(1, 5000);
             } catch (InterruptedException iex) {
-                iex.printStackTrace();
+                if (log.isErrorEnabled()) log.error (iex);
             }
         } catch (Exception e) {
+            if (log.isIgnoreEnabled()) log.ignore (e);
         }
     }
 

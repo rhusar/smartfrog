@@ -1593,48 +1593,53 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
         boolean ready;
 
         try {
-            System.out.println("preparing");
+            if (sfLog().isTraceEnabled()) sfLog().trace("preparing");
             this.sfPrepareUpdate();
-            System.out.println("preparing done");
+            if (sfLog().isTraceEnabled()) sfLog().trace("preparing done");
 
-            System.out.println("update with");
+            if (sfLog().isTraceEnabled()) sfLog().trace("update with");
             ready = this.sfUpdateWith(desc.sfContext());
             if (!ready) throw new SmartFrogUpdateException("top level component must accept update", null);
-            System.out.println("update with done");
+            if (sfLog().isTraceEnabled()) sfLog().trace("update with done");
         } catch (Exception e) {
-            e.printStackTrace();
+            if (sfLog().isErrorEnabled()) sfLog().error(e);
             try {
-                System.out.println("abandoning");
+                if (sfLog().isTraceEnabled()) sfLog().trace("abandoning");
                 this.sfAbandonUpdate();
-                System.out.println("abandoning done");
+                if (sfLog().isTraceEnabled()) sfLog().trace("abandoning done");
             } catch (RemoteException e1) {
                 // ignore?
             }
 
             if (e instanceof SmartFrogUpdateException)
                 throw (SmartFrogUpdateException) e;
-            else
-                throw new SmartFrogUpdateException("error in update, abandoning", e);
+            else {
+                String message = "error in update, abandoning";
+                if (sfLog().isWarnEnabled()) sfLog().warn(message,e);
+                throw new SmartFrogUpdateException(message, e);
+            }    
         }
 
         if (ready) {
             try {
-                System.out.println("update");
+                if (sfLog().isTraceEnabled()) sfLog().trace("update");
                 this.sfUpdate();
-                System.out.println("update done\nupdate deploy");
+                if (sfLog().isTraceEnabled()) sfLog().trace("update done");
+                if (sfLog().isTraceEnabled()) sfLog().trace("update deploy");
                 this.sfUpdateDeploy();
-                System.out.println("update deploy done\nupdate start");
+                if (sfLog().isTraceEnabled()) sfLog().trace("update deploy done");
+                if (sfLog().isTraceEnabled()) sfLog().trace("update start");
                 this.sfUpdateStart();
-                System.out.println("update start done");
+                if (sfLog().isTraceEnabled()) sfLog().trace("update start done");
             } catch (Exception e) {
-                System.out.println("failed");
-                e.printStackTrace();
+                String message = "fatal error in update - terminating";
+                if (sfLog().isErrorEnabled()) sfLog().error(message,e);
                 try {
-                    this.sfTerminate(TerminationRecord.abnormal("fatal error in update - terminated comopnents", sfCompleteNameSafe(), e));
+                    this.sfTerminate(TerminationRecord.abnormal(message+" ", sfCompleteNameSafe(), e));
                 } catch (Exception e1) {
                     // ignore?
                 }
-                throw new SmartFrogUpdateException("fatal error in update, terminating application", e);
+                throw new SmartFrogUpdateException(message+" application", e);
             }
         }
     }

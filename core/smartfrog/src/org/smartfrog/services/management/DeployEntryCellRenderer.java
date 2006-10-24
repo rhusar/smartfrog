@@ -30,8 +30,13 @@ import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.compound.Compound;
 import org.smartfrog.sfcore.processcompound.ProcessCompound;
 import org.smartfrog.sfcore.common.*;
+import org.smartfrog.sfcore.logging.LogSF;
+import org.smartfrog.sfcore.logging.LogFactory;
 
 public class DeployEntryCellRenderer extends DefaultTreeCellRenderer {
+
+  /** Log for this class, created using class name*/
+  static LogSF sfLogStatic = LogFactory.getLog(DefaultTreeCellRenderer.class);
 
   // icons for the Tree
   ImageIcon icon = null;
@@ -89,7 +94,7 @@ public class DeployEntryCellRenderer extends DefaultTreeCellRenderer {
     try {
       return new ImageIcon(org.smartfrog.SFSystem.getByteArrayForResource(path));
     } catch (SmartFrogException ex) {
-      ex.printStackTrace();
+      if (sfLogStatic.isErrorEnabled()) sfLogStatic.error(ex);
     }
     return null;
   }

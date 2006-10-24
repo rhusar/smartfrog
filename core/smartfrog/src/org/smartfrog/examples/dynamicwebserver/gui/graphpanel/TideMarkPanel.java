@@ -65,10 +65,10 @@ public class TideMarkPanel extends ThresholdPanel {
                 tracker.waitForID(0, 5000);
                 tracker.waitForID(1, 5000);
             } catch (InterruptedException iex) {
-                iex.printStackTrace();
+                if (log.isErrorEnabled()) log.error (iex);
             }
         } catch (Exception e) {
-            //        e.printStackTrace();
+            if (log.isIgnoreEnabled()) log.ignore (e);
         }
     }
 

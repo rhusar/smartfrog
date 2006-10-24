@@ -78,7 +78,7 @@ public  class LogFactory {
      *
      * @return Log
      */
-    public static Log getLog(Class clazz) {
+    public static LogSF getLog(Class clazz) {
         return (getLog(clazz.toString()));
     }
 

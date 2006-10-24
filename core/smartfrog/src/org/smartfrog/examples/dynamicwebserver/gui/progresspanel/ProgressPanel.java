@@ -20,6 +20,9 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.examples.dynamicwebserver.gui.progresspanel;
 
+import org.smartfrog.sfcore.logging.LogSF;
+import org.smartfrog.sfcore.logging.LogFactory;
+
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.FlowLayout;
@@ -45,6 +48,8 @@ import javax.swing.JTextField;
 
 public class ProgressPanel extends JPanel {
 
+   /** Log for this class, created using class name*/
+   static LogSF sfLogStatic = LogFactory.getLog(ProgressPanel.class);
     /*
       Date format
     */
@@ -81,7 +86,7 @@ public class ProgressPanel extends JPanel {
             jbInit();
             jLabelTitle.setText(title);
         } catch (Exception ex) {
-            ex.printStackTrace();
+            sfLogStatic.err(ex);
         }
     }
 
@@ -116,7 +121,7 @@ public class ProgressPanel extends JPanel {
                 }
             }
         } catch (Exception ex) {
-            ex.printStackTrace();
+            sfLogStatic.err(ex);
         }
     }
 
@@ -189,4 +194,6 @@ public class ProgressPanel extends JPanel {
         jPanelLabel.add(jLabelTitle, BorderLayout.CENTER);
         jPanelLabel.add(jLabel4, BorderLayout.WEST);
     }
+
+
 }

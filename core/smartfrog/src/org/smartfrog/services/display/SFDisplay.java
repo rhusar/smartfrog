@@ -322,8 +322,7 @@ public class SFDisplay extends PrimImpl implements Prim, PrintMsgInt, PrintErrMs
          }
       } catch (Exception e) {
          System.setErr(sysErr);
-         System.err.println("Error in SFDisplay.sfTerminateWith():" + e);
-         e.printStackTrace();
+         if (sfLog().isErrorEnabled()) sfLog().error("Error in SFDisplay.sfTerminateWith():" + e,e);
       }
 
       try {
@@ -371,8 +370,7 @@ public class SFDisplay extends PrimImpl implements Prim, PrintMsgInt, PrintErrMs
          try {
             printMsgImp.printMsg(msg + "");
          } catch (Exception ex) {
-            System.out.println(ex);
-            ex.printStackTrace();
+             if (sfLog().isErrorEnabled()) sfLog().error(ex);
          }
       } else {
          //System.out.println("" + msg);
@@ -400,8 +398,7 @@ public class SFDisplay extends PrimImpl implements Prim, PrintMsgInt, PrintErrMs
          try {
             printMsgImp.printMsg(msg + "");
          } catch (Exception ex) {
-            System.out.println(ex);
-            ex.printStackTrace();
+            if (sfLog().isErrorEnabled()) sfLog().error(ex);
          }
       } else {
          //System.out.println("" + msg);

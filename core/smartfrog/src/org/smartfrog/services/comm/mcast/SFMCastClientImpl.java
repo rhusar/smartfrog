@@ -108,7 +108,7 @@ public class SFMCastClientImpl extends PrimImpl implements Prim, SFMCastClient,
               sock.joinGroup(address);
             }
             catch (IOException e) {
-              error("sfDeploy","Can't create multicast addrss: " + e);
+              if (sfLog().isErrorEnabled()) sfLog().error("Can't create multicast addrss: " + e,e);
               throw SmartFrogException.forward (e);
             }
     }
@@ -132,7 +132,7 @@ public class SFMCastClientImpl extends PrimImpl implements Prim, SFMCastClient,
      *@param  t  Termination record
      */
     public synchronized void sfTerminateWith(TerminationRecord t) {
-        log("sfTerminateWith", " Terminating for reason: " + t.toString());
+        if (sfLog().isErrorEnabled()) sfLog().info("Terminating for reason: " + t.toString());
         if (action != null) {
             try {
               action.interrupt();
@@ -160,8 +160,7 @@ public class SFMCastClientImpl extends PrimImpl implements Prim, SFMCastClient,
             cd = sfResolve (ATR_SERVERS, cd, true);
             //True to Get exception thown!
         } catch (SmartFrogResolutionException e) {
-            error("readSFAttributes","Failed to read mandatory attribute "+
-                   ", Error:"+ e.toString());
+            if (sfLog().isErrorEnabled()) sfLog().error("Failed to read mandatory attribute "+ ", Error:"+ e.toString(),e);
             throw e;
         }
         port = sfResolve(ATR_MCASTPORT, port, false);
@@ -178,7 +177,7 @@ public class SFMCastClientImpl extends PrimImpl implements Prim, SFMCastClient,
         ByteArrayInputStream b_in = new ByteArrayInputStream(buf);
         int packetCount = 0;
         DatagramPacket rcvPacket = new DatagramPacket(buf, buf.length);
-        log("run","Ready to receive... add:"+this.address+" port:"+port);
+        if (sfLog().isInfoEnabled()) sfLog().info("Ready to receive... add:"+this.address+" port:"+port);
         while (true) {
           try {
             try {
@@ -194,7 +193,7 @@ public class SFMCastClientImpl extends PrimImpl implements Prim, SFMCastClient,
             Object o = o_in.readObject();
             str.append(", object: " + o.getClass().toString() + ", "+
                 o.toString());
-            log("run",str.toString());
+            if (sfLog().isInfoEnabled()) sfLog().info(str.toString());
             //send replay
             //DatagramPacket sendReply = new DatagramPacket(rcvPacket.getData()
         //,rcvPacket.getLength(), rcvPacket.getAddress(), rcvPacket.
@@ -223,82 +222,22 @@ public class SFMCastClientImpl extends PrimImpl implements Prim, SFMCastClient,
                     v.add(h.nextElement());
               }
               this.sfReplaceAttribute(ATR_SERVERS+"v", v);
-//              cd.getContext().put(ATR_SERVERS+"v", o);
             } catch (Exception ex){
-                System.out.println(" Error: "+this.sfCompleteNameSafe()+" "+
-                ex.getMessage());
+                if (sfLog().isErrorEnabled()) sfLog().error(" Error: "+this.sfCompleteNameSafe()+" "+ ex.getMessage(),ex);
             }
 
 
           }
           catch (IOException e) {
-            exception("Problems receiving packet", e);
+            if (sfLog().isErrorEnabled()) sfLog().error("Problems receiving packet", e);
          } catch (ClassNotFoundException ex){
-            exception("Problems getting object from received packet", ex);
+            if (sfLog().isErrorEnabled()) sfLog().error("Problems getting object from received packet", ex);
          }
           rcvPacket.setLength(buf.length);
           b_in.reset(); // reset so next read is from start of byte[] again
         }
     }
 
-    // Utility methods
-    /**
-     * Logs error mesasge at the standard err stream.
-     * @param method Name of the method
-     * @param message Error Message
-     */
-    private void error(String method, String message) {
-        if (debug) {
-            StringBuffer msg = new StringBuffer();
-            msg.append (myName);
-            msg.append (".");
-            msg.append (method);
-            msg.append ( " [" );
-            msg.append (dateFormat.format(new Date()));
-            msg.append ("]> ");
-            msg.append (message);
-            System.err.println(msg.toString());
-        }
-    }
-    /**
-     * Logs mesasge at the standard out stream.
-     * @param method Name of the method
-     * @param message Log message
-     */
-    private void log(String method, String message) {
-        if (debug) {
-            StringBuffer msg = new StringBuffer();
-            msg.append (myName);
-            msg.append (".");
-            msg.append (method);
-            msg.append ( " [" );
-            msg.append (dateFormat.format(new Date()));
-            msg.append ("]> ");
-            msg.append (message);
-            System.out.println(msg.toString());
-        }
-    }
-    /**
-     * Logs exception with stack trace at the standard err stream.
-     * @param method Name of the method
-     * @param exception The exception object
-     */
-    private void exception(String method, Throwable exception) {
-        if (debug) {
-            StringBuffer msg = new StringBuffer();
-            msg.append (myName);
-            msg.append (".");
-            msg.append ( "Exception");
-            msg.append ( " [" );
-            msg.append (dateFormat.format(new Date()));
-            msg.append ("]> ");
-            //msg.append (exception.getMessage());
-            msg.append("\n StackTrace: ");
-            msg.append(exception.getStackTrace().toString());
-            System.err.println(msg.toString());
-            exception.printStackTrace();
-        }
-    }
 }
 
 

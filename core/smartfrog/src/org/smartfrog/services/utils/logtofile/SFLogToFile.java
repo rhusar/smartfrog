@@ -235,8 +235,7 @@ public class SFLogToFile extends PrimImpl implements Prim, PrintMsgInt, PrintErr
             } catch (Exception e) {
                 System.setOut(originalSysOut);
                 System.setErr(originalSysErr);
-                System.err.println("Error in SFDisplay.sfDeploy():" + e);
-                e.printStackTrace();
+                if (sfLog().isErrorEnabled()) sfLog().error("Error in SFDisplay.sfDeploy():" + e,e);
             }
         }
     }

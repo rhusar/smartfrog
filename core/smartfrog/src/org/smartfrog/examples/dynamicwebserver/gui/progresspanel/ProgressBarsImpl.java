@@ -134,7 +134,7 @@ public class ProgressBarsImpl extends SFDisplay implements Prim, ProgressBars,
             try {
                 hash.put(key, panel);
             } catch (Exception ex) {
-                ex.printStackTrace();
+                if (sfLog().isErrorEnabled()) sfLog().error (ex);
             }
         }
 
@@ -146,7 +146,7 @@ public class ProgressBarsImpl extends SFDisplay implements Prim, ProgressBars,
     /**
      * Gets the eventSender attribute of the SFProgressBars object
      *
-     * @param msg message
+     * @param msgO message
      *
      * @return The eventSender value
      */
@@ -168,7 +168,7 @@ public class ProgressBarsImpl extends SFDisplay implements Prim, ProgressBars,
     /**
      * Gets the eventTotalItems attribute of the SFProgressBars object
      *
-     * @param msg message
+     * @param msgO message
      *
      * @return The eventTotalItems value
      */
@@ -192,7 +192,7 @@ public class ProgressBarsImpl extends SFDisplay implements Prim, ProgressBars,
     /**
      * Gets the eventItem attribute of the SFProgressBars object
      *
-     * @param msg message
+     * @param msgO message
      *
      * @return The eventItem value
      */
@@ -211,7 +211,7 @@ public class ProgressBarsImpl extends SFDisplay implements Prim, ProgressBars,
             //System.out.println("Item:"+item);
             return Integer.parseInt(item);
         } catch (Exception ex) {
-            //ex.printStackTrace();
+            if (sfLog().isIgnoreEnabled()) sfLog().ignore(ex);
             return -1;
         }
     }
@@ -219,7 +219,7 @@ public class ProgressBarsImpl extends SFDisplay implements Prim, ProgressBars,
     /**
      * Gets the eventMsg attribute of the SFProgressBars object
      *
-     * @param msg message
+     * @param msgO message
      *
      * @return The eventMsg value
      */
@@ -230,7 +230,7 @@ public class ProgressBarsImpl extends SFDisplay implements Prim, ProgressBars,
             //System.out.println("msg:"+msg);
             return msg;
         } catch (Exception ex) {
-            //ex.printStackTrace();
+            if (sfLog().isIgnoreEnabled()) sfLog().ignore (ex);
             if (msgO!=null){
                 return msgO.toString();
             } else {
@@ -425,7 +425,7 @@ public class ProgressBarsImpl extends SFDisplay implements Prim, ProgressBars,
                 }
             }
         } catch (Exception exc) {
-            exc.printStackTrace();
+            if (sfLog().isErrorEnabled()) sfLog().error (exc);
         }
     }
 }
