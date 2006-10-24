@@ -83,6 +83,11 @@ public class TestRunnerComponent extends CompoundImpl implements TestRunner,
     private boolean shouldDetach = false;
 
     /**
+     * String to set to the name of a single test component to run
+     */
+    private String singleTest=null;
+
+    /**
      * thread to run the tests
      */
     private Thread worker = null;
@@ -183,7 +188,7 @@ public class TestRunnerComponent extends CompoundImpl implements TestRunner,
                 ShouldDetachOrTerminate.ATTR_SHOULD_TERMINATE, shouldTerminate, false);
         shouldDetach = sfResolve(
                 ShouldDetachOrTerminate.ATTR_SHOULD_DETACH, shouldDetach, false);
-
+        singleTest = sfResolve(ATTR_SINGLE_TEST,singleTest,false);
         configuration.setTestLog((TestListenerLog) sfResolve(ATTR_TESTLOG,(Prim)null,false));
 
         validate();
@@ -304,33 +309,77 @@ public class TestRunnerComponent extends CompoundImpl implements TestRunner,
     public boolean executeTests() throws SmartFrogException, RemoteException {
 
         try {
-            boolean successful = true;
-            Enumeration e = sfChildren();
-            while (e.hasMoreElements()) {
-                Object o = e.nextElement();
-                if (o instanceof TestSuite) {
-                    TestSuite suiteComponent = (TestSuite) o;
-                    //bind to the configuration. This will set the static properties.
-                    suiteComponent.bind(getConfiguration());
-                    try {
-                        successful &= suiteComponent.runTests();
-                    } finally {
-                        //unbind from this test
-                        suiteComponent.bind(null);
-                    }
-                    updateResultAttributes(suiteComponent);
-                    //break out if the thread is interrupted
-                    if (Thread.currentThread().isInterrupted()) {
-                        log.info("Test was interrupted");
-                        return false;
-                    }
-                }
+            if(singleTest==null || singleTest.length()==0) {
+                return executeBatchTests();
+            } else {
+                return executeSingleTest();
             }
-            return successful;
         } finally {
             //this is here as it can throw an exception
             sfReplaceAttribute(ATTR_FINISHED, Boolean.TRUE);
         }
+    }
+
+
+    private boolean executeBatchTests() throws RemoteException, SmartFrogException {
+        boolean successful = true;
+        Enumeration e = sfChildren();
+        while (e.hasMoreElements()) {
+            Object child = e.nextElement();
+            if (child instanceof TestSuite) {
+                TestSuite suiteComponent = (TestSuite) child;
+                successful &= executeTestSuite(suiteComponent);
+            }
+            //break out if the thread is interrupted
+            if (Thread.currentThread().isInterrupted()) {
+                log.info("Test was interrupted");
+                return false;
+            }
+            if(!successful && !configuration.getKeepGoing()) {
+                //we have failed and asked to stop in this situation
+                log.info("Stopping tests after a failure");
+                return false;
+            }
+        }
+        return successful;
+    }
+
+    /**
+     * if a single test was asked for, run it.
+     * @return
+     * @throws SmartFrogException
+     * @throws RemoteException
+     */
+    private boolean executeSingleTest() throws SmartFrogException, RemoteException {
+        Prim child=null;
+        child=sfResolve(singleTest,child,false);
+        if(child==null) {
+            log.info("No test suite called "+singleTest);
+            return false;
+        }
+        TestSuite suiteComponent = (TestSuite) child;
+        return executeTestSuite(suiteComponent);
+    }
+
+    /**
+     * Execute a single test
+     * @param suiteComponent the suite to run
+     * @return true if the tests were successful
+     * @throws RemoteException
+     * @throws SmartFrogException
+     */
+    private boolean executeTestSuite(TestSuite suiteComponent) throws RemoteException, SmartFrogException {
+        //bind to the configuration. This will set the static properties.
+        suiteComponent.bind(getConfiguration());
+        boolean result;
+        try {
+            result = suiteComponent.runTests();
+        } finally {
+            //unbind from this test
+            suiteComponent.bind(null);
+        }
+        updateResultAttributes(suiteComponent);
+        return result;
     }
 
 
@@ -339,7 +388,7 @@ public class TestRunnerComponent extends CompoundImpl implements TestRunner,
      *
      * @param testSuite
      */
-    private void updateResultAttributes(Prim testSuite)
+    private synchronized void updateResultAttributes(Prim testSuite)
             throws SmartFrogRuntimeException, RemoteException {
         statistics.retrieveAndAdd(testSuite);
         statistics.updateResultAttributes(this, false);

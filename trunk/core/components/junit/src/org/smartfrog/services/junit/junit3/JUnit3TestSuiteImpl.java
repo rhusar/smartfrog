@@ -302,8 +302,8 @@ public class JUnit3TestSuiteImpl extends AbstractTestSuite implements JUnitTestS
      * flatten a string list, validating type as we go. recurses as much as we
      * need to. At its most efficient if no flattening is needed.
      *
-     * @param src
-     * @param name
+     * @param src source list
+     * @param name name of the list, for reporting errors
      * @return a flatter list
      * @throws SmartFrogInitException if there is an element that is not of the right type
      */
@@ -433,28 +433,27 @@ public class JUnit3TestSuiteImpl extends AbstractTestSuite implements JUnitTestS
     /**
      * test a single class
      *
-     * @param classname
-     * @throws ClassNotFoundException
-     * @throws IllegalAccessException
-     * @throws InvocationTargetException
+     * @param classname test class to load and run
+     * @param context name-object mapping context
+     * @return true if the test ran
      */
-    private boolean testSingleClass(String classname,HashMap<String,Object> context) throws RemoteException {
+    private boolean testSingleClass(String classname,HashMap<String,Object> context) {
         log("testing " + classname);
         Test tests;
-
+        TestResult result;
+        result = new TestResult();
+        result.addListener(this);
         try {
             Class clazz = loadTestClass(classname);
             tests = extractTest(clazz);
             injectTestContext(tests, context);
-            TestResult result = new TestResult();
-            result.addListener(this);
-            tests.run(result);
-            return true;
-        } catch (SmartFrogException e) {
-            //skip the test
-            log.error(e);
-            return false;
+        } catch (Exception e) {
+            //couldnt set up the tests, so we catch the exception and create a failure
+            //test that reports the outcome
+            tests=new Warning(classname, e);
         }
+        tests.run(result);
+        return true;
     }
 
 

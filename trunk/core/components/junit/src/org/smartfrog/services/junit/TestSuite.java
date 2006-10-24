@@ -36,21 +36,42 @@ public interface TestSuite extends Prim, Remote, TestResultAttributes {
     /**
      * {@value}
      */
-    public static final String ATTR_NAME = "name";
-    /**
-     * {@value}
-     */
     public static final String ATTR_IF = "if";
     /**
      * {@value}
      */
     public static final String ATTR_UNLESS = "unless";
-    
+
+    /**
+     * Non-marked up text description
+     * {@value}
+     */
+    public static final String ATTR_DESCRIPTION = "description";
+
+    /**
+     * A list of URLs to link to
+     * {@value}
+     */
+    public static final String ATTR_LINKS = "links";
+
+    /**
+     * {@value}
+     */
+    public static final String ATTR_NAME = "name";
+
     /**
      * list in name, value pairs [[name,value],[n2,v2]]
      * {@value}
      */
     public static final String ATTR_SYSPROPS="properties";
+
+
+    /**
+     * A list of text tags to describe the test suite
+     * {@value}
+     */
+    public static final String ATTR_TAGS = "tags";
+
 
     /**
      * bind to the configuration. A null parameter means 'stop binding'

@@ -19,7 +19,10 @@ For more information: www.smartfrog.org
 */
 
 /*
- this file declares the timeout
+ this file declares a timeout compound.
+ This only deploys a component for a set period of time, before cleaning up.
+ It is an option whether or not to raise an error if the child components had
+ not already terminated.
  */
 
 
