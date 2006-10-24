@@ -30,7 +30,7 @@ import java.util.ListIterator;
  * created 10-Oct-2006 15:36:11
  */
 
-public class MuwsEventReceiver implements Iterable<ReceivedEvent>{
+public class MuwsEventReceiver implements Iterable<ReceivedEvent> {
 
 
     private NotifyServerImpl owner;
@@ -41,7 +41,7 @@ public class MuwsEventReceiver implements Iterable<ReceivedEvent>{
 
     private String id;
     private String url;
-    private int count=0;
+    private int count = 0;
     public static final int DEFAULT_SIZE = 16;
 
 
@@ -49,8 +49,8 @@ public class MuwsEventReceiver implements Iterable<ReceivedEvent>{
         this(owner, DEFAULT_SIZE);
     }
 
-    public MuwsEventReceiver(NotifyServerImpl owner,int size) {
-        this.owner=owner;
+    public MuwsEventReceiver(NotifyServerImpl owner, int size) {
+        this.owner = owner;
         this.size = size;
         buffer = new ArrayList<ReceivedEvent>(size);
     }
@@ -80,10 +80,11 @@ public class MuwsEventReceiver implements Iterable<ReceivedEvent>{
 
     public synchronized void muwsEventReceived(MessageContext messageContext, SoapElement event) {
         count++;
-        if(buffer.size()>=size) {
+        if (buffer.size() >= size) {
             buffer.remove(0);
         }
         buffer.add(new ReceivedEvent(messageContext, event));
+        notifyAll();
     }
 
     /**
@@ -115,5 +116,21 @@ public class MuwsEventReceiver implements Iterable<ReceivedEvent>{
 
     public void setURL(String url) {
         this.url = url;
+    }
+
+    public synchronized ReceivedEvent waitForEvent(long milliseconds) {
+        if(size()>0) {
+            return buffer.get(0);
+        } else {
+            try {
+                wait(milliseconds);
+                if(size()==0) {
+                    return null;
+                }
+                return buffer.get(0);
+            } catch (InterruptedException e) {
+                return null;
+            }
+        }
     }
 }

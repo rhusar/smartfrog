@@ -19,15 +19,17 @@
  */
 package org.smartfrog.services.deployapi.notifications;
 
-import org.smartfrog.services.deployapi.transport.wsrf.NotificationSubscription;
-import org.smartfrog.services.deployapi.transport.faults.FaultRaiser;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.smartfrog.services.deployapi.transport.faults.FaultRaiser;
+import org.smartfrog.services.deployapi.transport.wsrf.NotificationSubscription;
 
 import java.lang.ref.WeakReference;
 import java.util.HashMap;
 
 /**
+ * A weak reference store of subscriptions. Content added here is not retained unless
+ * Other things link to it.
  * created 05-Oct-2006 12:32:38
  */
 
@@ -41,7 +43,6 @@ public class SubscriptionServiceStore  {
 
     public void add(NotificationSubscription sub) {
         subscriptions.put(sub.getId(), new WeakReference<NotificationSubscription>(sub));
-        //return a new address
     }
 
     public void remove(String key) {

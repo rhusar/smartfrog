@@ -133,12 +133,12 @@ For more information: www.smartfrog.org
     InformativeTestSuite extends AlpineTestSuite {
         name "informative";
         description "informative tests";
-        package "org.smartfrog.services.deployapi.test.system.alpine.deployapi.informative";
+        package "org.smartfrog.services.deployapi.test.system.alpine.deployapi.api.informative";
         classes [
           "Api_12_resource_id_unique_Test",
           "Api_28_initialize_with_attachment_Test",
           "Api_35_get_multiple_portal_properties_Test",
-          "Api_36_get_multiple_system_properties_Test",
+          "Api_36_g_multiple_system_properties_Test",
           "Api_37_create_system_remote_host_Test"
           ];
     }
@@ -153,7 +153,8 @@ For more information: www.smartfrog.org
 
     enabled true;
 
-
+    //this should be linked to the notification handler.
+    notifications TBD;
 
     destDir extends Mkdir {
       dir subdir;

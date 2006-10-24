@@ -40,11 +40,12 @@ public class LogEvents extends AbstractEventSubscription implements EventSubscri
      *
      * @param event the event of interest
      */
-    public void event(Event event) {
+    public boolean event(Event event) {
         if(log.isInfoEnabled()) {
             log.info(event.toString());
         }
         incrementEventCount();
+        return true;
     }
 
     /**

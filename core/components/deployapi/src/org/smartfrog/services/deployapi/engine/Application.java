@@ -165,7 +165,7 @@ public class Application implements WSRPResourceSource {
     public Application(String id, ServerInstance owner) {
         setId(id);
         this.owner=owner;
-        subscribers=new EventSubscriberManager(owner.createEventExecutorService());
+        subscribers=new EventSubscriberManager("Application ID "+id, owner.createEventExecutorService());
         addInitialProperties();
         enterStateNotifying(LifecycleStateEnum.instantiated, "id=" + id);
     }

@@ -32,7 +32,7 @@ public interface EventSubscription {
      * Something happened to this job
      * @param event the event of interest
      */
-    void event(Event event);
+    boolean event(Event event);
 
     /**
      * Probe the event for still being valid

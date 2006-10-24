@@ -37,7 +37,7 @@ ITS MEDIA, AND YOU HEREBY WAIVE ANY CLAIM IN THIS REGARD.
  * component to receive WSN events
  */
 MuwsEventHandler extends WSNotifyHandler {
-  classname "org.smartfrog.services.deployapi.transport.endpoints.alpine.MuwsEventHandler";
+  classname "org.smartfrog.services.deployapi.notifications.muws.MuwsEventHandler";
 }
 
 

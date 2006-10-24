@@ -23,11 +23,13 @@ package org.smartfrog.services.deployapi.notifications;
  * created 27-Sep-2006 11:58:07
  */
 
-public class NotifierRunnable implements Runnable{
+public class NotifierRunnable implements Runnable {
 
     protected EventSubscription subscription;
 
     protected Event event;
+
+    protected boolean result;
 
     public NotifierRunnable(EventSubscription subscription, Event event) {
         this.subscription = subscription;
@@ -46,6 +48,6 @@ public class NotifierRunnable implements Runnable{
      * The worker raises the event
      */
     public void run() {
-        subscription.event(event);
+        result=subscription.event(event);
     }
 }

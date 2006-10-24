@@ -21,7 +21,6 @@ package org.smartfrog.services.deployapi.notifications;
 
 import org.smartfrog.services.deployapi.engine.Application;
 import org.smartfrog.services.deployapi.system.LifecycleStateEnum;
-import org.smartfrog.projects.alpine.om.soap11.Fault;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 
 import java.util.Date;
@@ -43,6 +42,8 @@ public class Event {
 
 
     public Event(Application application, LifecycleStateEnum type, TerminationRecord record) {
+        assert application!=null;
+        assert type!=null;
         this.application = application;
         state = type;
         this.record= record;
@@ -55,9 +56,9 @@ public class Event {
      * @return a string representation of the object.
      */
     public String toString() {
-        return "Event for <"+application+"> entering state "
+        return "Event for <"+application.getId()+"> entering state "
                 +state
                 +" at "+timestamp.toGMTString()
-                +" "+record!=null?record+toString():"";
+                +" "+(record!=null?record+toString():"");
     }
 }

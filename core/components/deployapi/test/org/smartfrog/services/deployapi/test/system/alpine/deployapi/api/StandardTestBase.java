@@ -40,10 +40,10 @@ import java.net.URISyntaxException;
  * created 11-Apr-2006 14:56:59
  */
 
-public abstract class StandardTestBase extends AlpineTestBase {
+public abstract class StandardTestBase extends AlpineTestBase  {
 
 
-    int delay=0;
+    protected int delay=0;
     private static final String TEST_DELAY = "test.delay.seconds" ;
     /**
      * {@value}
@@ -149,4 +149,6 @@ public abstract class StandardTestBase extends AlpineTestBase {
                 + " underlying features have not been implemented in the client");
         }
     }
+
+
 }

@@ -19,13 +19,13 @@
  */
 package org.smartfrog.services.deployapi.test.system.alpine.deployapi.api;
 
-import org.smartfrog.services.deployapi.test.system.alpine.deployapi.api.StandardTestBase;
 import org.smartfrog.services.deployapi.alpineclient.model.CallbackSubscription;
 import org.smartfrog.services.deployapi.alpineclient.model.SystemSession;
-import org.smartfrog.services.deployapi.system.Constants;
+import org.smartfrog.services.deployapi.notifications.muws.MuwsEventReceiver;
 import org.smartfrog.services.deployapi.notifications.muws.NotifyServer;
 import org.smartfrog.services.deployapi.notifications.muws.NotifyServerImpl;
-import org.smartfrog.services.deployapi.notifications.muws.MuwsEventReceiver;
+import org.smartfrog.services.deployapi.notifications.muws.ReceivedEvent;
+import org.smartfrog.services.deployapi.system.Constants;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.reference.Reference;
@@ -39,10 +39,12 @@ import java.rmi.RemoteException;
 
 public abstract class SubscribingTestBase extends StandardTestBase {
     private CallbackSubscription subscription;
-    protected static final String HTTP_EXAMPLE_ORG = "http://example.org";
+    protected static final String HTTP_EXAMPLE_ORG = "http://invalid.example.org";
 
     private Reference ref;
     private static final String NOTIFICATIONS = "notifications";
+    private static final int SUBSCRIBE_WAIT_TIMEOUT = 5000;
+    private static final String PROPERTY_WAIT_TIMEOUT = "wait.timeout";
 
     public SubscribingTestBase(String name) {
         super(name);
@@ -59,22 +61,15 @@ public abstract class SubscribingTestBase extends StandardTestBase {
 
 
     /**
-     * Get the default URL for subscriptions
-     * @return {@link #HTTP_EXAMPLE_ORG}
-     */
-    protected String getCallbackURL() {
-        return HTTP_EXAMPLE_ORG;
-    }
-
-    /**
      * Look up the notify server and fail if there is none.
      * @return the notify server
      * @throws SmartFrogResolutionException
      * @throws RemoteException
      */
     protected NotifyServer lookupNotifyServer() throws SmartFrogResolutionException, RemoteException {
-        assertHosted();
-        return (NotifyServer) getHostedTestSuite().sfResolve(ref,(Prim)null,true);
+        Prim self = getHostedTestSuite();
+        Prim prim = self.sfResolve(ref, (Prim) null, true);
+        return (NotifyServer) prim;
     }
 
     /**
@@ -98,7 +93,7 @@ public abstract class SubscribingTestBase extends StandardTestBase {
             throws SmartFrogResolutionException, RemoteException {
         assertNull("subscription in use", subscription);
         MuwsEventReceiver receiver=createSubscriptionReceiver();
-        subscription = getPortal().subscribe(topic, receiver.getURL(), false, null);
+        subscription = getPortal().subscribe(topic, receiver.getURL(), true, null);
         subscription.setReceiver(receiver);
         return subscription;
     }
@@ -119,8 +114,20 @@ public abstract class SubscribingTestBase extends StandardTestBase {
         this.subscription = subscription;
     }
 
-    public void waitForSubscription() {
-        failNotImplemented();
+    public ReceivedEvent waitForSubscription()  {
+        assertNotNull("No subscription",subscription);
+        MuwsEventReceiver receiver = subscription.getReceiver();
+        ReceivedEvent event = receiver.waitForEvent(getSubscribeWaitTimeout());
+        assertNotNull("Subscription timed out",event);
+        return event;
+    }
+
+    /**
+     * Get the junit parameter for waiting
+     * @return
+     */
+    protected int getSubscribeWaitTimeout() {
+        return getJunitParameter(PROPERTY_WAIT_TIMEOUT,SUBSCRIBE_WAIT_TIMEOUT,false);
     }
 
     /**
@@ -152,6 +159,7 @@ public abstract class SubscribingTestBase extends StandardTestBase {
     protected SystemSession createSubscribedSystem() throws SmartFrogResolutionException,
             RemoteException {
         assertNull("subscription in use", subscription);
+        assertHosted();
         SystemSession system = createSystem(null);
         setSystem(system);
         MuwsEventReceiver receiver = createSubscriptionReceiver();

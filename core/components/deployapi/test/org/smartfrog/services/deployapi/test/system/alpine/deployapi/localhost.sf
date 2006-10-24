@@ -17,7 +17,13 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 For more information: www.smartfrog.org
 
 */
-#include "/org/smartfrog/services/deployapi/test/system/alpine/deployapi/remote-interop.sf"
+#include "/org/smartfrog/sfcore/logging/components.sf"
+#include "/org/smartfrog/sfcore/logging/logtoprimimpl.sf"
+#include "/org/smartfrog/services/deployapi/test/system/alpine/deployapi/api/api_tests.sf"
+#include "/org/smartfrog/services/deployapi/notifications/muws/notifyhost.sf"
+
+
+
 /**
  URL to the hp endpoint
  */
@@ -27,15 +33,22 @@ localhost_endpoint "http://127.0.0.1:8080/alpine/portal/";
 
 TestPlan extends Compound {
 
-  notifications extends Notifications  {
+  
+
+  notifications extends NotifyHost  {
     
   }
 
   localTests extends DeployapiTestRunner {
-
+    singleTest PROPERTY single.test;
+    notifications LAZY PARENT:notifications:engine;
     endpoint localhost_endpoint;
     subdir "localhost";
 
+  //quick hack to run a single test
+/*  notification:classes [
+          "Api_17_create_system_while_subscribed_Test"
+          ];*/
   }
 
 }

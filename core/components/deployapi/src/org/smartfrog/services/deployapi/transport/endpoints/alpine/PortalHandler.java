@@ -19,22 +19,17 @@
  */
 package org.smartfrog.services.deployapi.transport.endpoints.alpine;
 
-import org.smartfrog.services.deployapi.transport.wsrf.WSRPResourceSource;
-import org.smartfrog.services.deployapi.transport.wsrf.NotificationSubscription;
-import org.smartfrog.services.deployapi.transport.endpoints.portal.CreateProcessor;
-import org.smartfrog.services.deployapi.transport.endpoints.portal.ResolveProcessor;
-import org.smartfrog.services.deployapi.transport.endpoints.portal.LookupSystemProcessor;
-import org.smartfrog.services.deployapi.transport.faults.FaultRaiser;
-import org.smartfrog.services.deployapi.engine.ServerInstance;
-import org.smartfrog.services.deployapi.system.Constants;
-import org.smartfrog.services.deployapi.notifications.EventSubscriberManager;
+import nu.xom.Element;
 import org.smartfrog.projects.alpine.core.EndpointContext;
 import org.smartfrog.projects.alpine.core.MessageContext;
-import org.smartfrog.projects.alpine.om.soap11.MessageDocument;
 import org.smartfrog.projects.alpine.faults.ServerException;
-import nu.xom.Element;
-
-import javax.xml.namespace.QName;
+import org.smartfrog.projects.alpine.om.soap11.MessageDocument;
+import org.smartfrog.services.deployapi.system.Constants;
+import org.smartfrog.services.deployapi.transport.endpoints.portal.CreateProcessor;
+import org.smartfrog.services.deployapi.transport.endpoints.portal.LookupSystemProcessor;
+import org.smartfrog.services.deployapi.transport.endpoints.portal.ResolveProcessor;
+import org.smartfrog.services.deployapi.transport.wsrf.NotificationSubscription;
+import org.smartfrog.services.deployapi.transport.wsrf.WSRPResourceSource;
 
 /**
  * created 10-Apr-2006 10:54:18
@@ -123,10 +118,7 @@ public class PortalHandler extends WsrfHandler {
                                         NotificationSubscription subscription) {
         //verify the topic
         verifyTopic(Constants.PORTAL_CREATED_EVENT, subscription);
-        //get the global subscription list
-        EventSubscriberManager subscriptions = getServerInstance().getSubscriptions();
-        subscriptions.add(subscription);
-        getServerInstance().getSubscriptionStore().add(subscription);
+        getServerInstance().subscribeToPortalEvents(subscription);
     }
 
     /**

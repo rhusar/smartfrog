@@ -28,10 +28,8 @@ import org.smartfrog.services.deployapi.notifications.EventSubscriberManager;
 import org.smartfrog.services.deployapi.system.Constants;
 import org.smartfrog.services.deployapi.system.LifecycleStateEnum;
 import org.smartfrog.services.deployapi.system.Utils;
-import org.smartfrog.services.deployapi.transport.faults.BaseException;
 import org.smartfrog.services.deployapi.transport.faults.FaultRaiser;
 
-import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 import java.rmi.RemoteException;
@@ -39,6 +37,7 @@ import java.util.Collection;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.concurrent.ExecutorService;
 
 /**
  * This class remembers what got deployed by whom. It retains weak references to
@@ -59,10 +58,10 @@ public class JobRepository implements Iterable<Application> {
     private ServerInstance engine;
     private EventSubscriberManager subscriptions;
 
-    public JobRepository(URL systemsURL, ServerInstance owner) {
+    public JobRepository(URL systemsURL, ServerInstance owner, ExecutorService notificationExecutor) {
         this.systemsURL = systemsURL;
         this.engine=owner;
-        subscriptions=new EventSubscriberManager(owner.createEventExecutorService());
+        subscriptions=new EventSubscriberManager("Portal", notificationExecutor);
     }
 
     public void clear() {
@@ -146,8 +145,8 @@ public class JobRepository implements Iterable<Application> {
      * Termination routine
      * @throws RemoteException
      */
-    public void terminate() throws RemoteException {
-    
+    public void shutdown() throws RemoteException {
+        subscriptions.shutdown();
     }
     
     /**
@@ -254,4 +253,9 @@ public class JobRepository implements Iterable<Application> {
         }
         return job;
     }
+
+    public EventSubscriberManager getSubscriptions() {
+        return subscriptions;
+    }
+
 }
