@@ -24,7 +24,7 @@
       <section id="DynamicWebserverExample">
            <title>Dynamic Webserver Example </title>
            <p>The Dynamic Web Example is an example of an adaptive application built using SmartFrog. The concept is relatively simple, in that the system implements a web server that adapts to load by deploying or removing web servers according to the load.
-               Links to document : <a href="sfDynamicWebServerExample.html">HTML</a> , <a href="sfDynamicWebServerExample.pdf">PDF</a> , "<a href="http://svn.sourceforge.net/viewvc/*checkout*/smartfrog/trunk/core/smartfrog/docs/sfDynamicWebServerExample.pdf">CVS (Online)</a>"   </p>
+               Links to document : <a href="sfDynamicWebServerExample.html">HTML</a> , <a href="sfDynamicWebServerExample.pdf">PDF</a> , "<a href="http://svn.sourceforge.net/viewvc/*checkout*/smartfrog/trunk/core/smartfrog/docs/sfDynamicWebServerExample.pdf">SVN (Online)</a>"   </p>
          </section>
 
        	

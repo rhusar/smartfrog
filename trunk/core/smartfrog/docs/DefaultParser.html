@@ -110,20 +110,25 @@
 <TR>
 <TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod24">BaseComponent</A></TD>
 <TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
-<TD ALIGN=LEFT VALIGN=BASELINE>( &lt;NULL&gt; | <A HREF="#prod25">BaseReference</A> )? ( &lt;SEMICOLON&gt; | ( &lt;LBRACE&gt; <A HREF="#prod2">AttributesNoEOF</A> &lt;RBRACE&gt; ) )</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>( &lt;NULL&gt; | <A HREF="#prod25">LinkReference</A> )? ( &lt;SEMICOLON&gt; | ( &lt;LBRACE&gt; <A HREF="#prod2">AttributesNoEOF</A> &lt;RBRACE&gt; ) )</TD>
 </TR>
 <TR>
 <TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod6">ReferenceNoEOF</A></TD>
 <TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
-<TD ALIGN=LEFT VALIGN=BASELINE>( &lt;LAZY&gt; )? <A HREF="#prod25">BaseReference</A></TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>( &lt;LAZY&gt; )? <A HREF="#prod26">BaseReference</A></TD>
 </TR>
 <TR>
-<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod25">BaseReference</A></TD>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod26">BaseReference</A></TD>
 <TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
-<TD ALIGN=LEFT VALIGN=BASELINE><A HREF="#prod26">ReferencePart</A> ( &lt;REFPARTSEP&gt; <A HREF="#prod26">ReferencePart</A> )*</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>( ( ( &lt;OPTIONAL&gt; ( &lt;OPSTART&gt; <A HREF="#prod11">Primitive</A> ")" )? )? <A HREF="#prod25">LinkReference</A> ) | ( &lt;APPLY&gt; &lt;LBRACE&gt; <A HREF="#prod2">AttributesNoEOF</A> &lt;RBRACE&gt; ) | ( &lt;ASSERT&gt; &lt;LBRACE&gt; <A HREF="#prod2">AttributesNoEOF</A> &lt;RBRACE&gt; ) )</TD>
 </TR>
 <TR>
-<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod26">ReferencePart</A></TD>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod25">LinkReference</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE><A HREF="#prod27">ReferencePart</A> ( &lt;REFPARTSEP&gt; <A HREF="#prod27">ReferencePart</A> )*</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod27">ReferencePart</A></TD>
 <TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
 <TD ALIGN=LEFT VALIGN=BASELINE>( &lt;ROOT&gt; )</TD>
 </TR>
@@ -180,10 +185,10 @@
 <TR>
 <TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod11">Primitive</A></TD>
 <TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
-<TD ALIGN=LEFT VALIGN=BASELINE>( ( &lt;NULL&gt; ) | ( <A HREF="#prod14">String</A> ) | ( <A HREF="#prod27">Number</A> ) | ( <A HREF="#prod28">Boolean</A> ) | ( <A HREF="#prod29">ByteArray</A> ) | ( &lt;VECTORSTART&gt; ( <A HREF="#prod11">Primitive</A> ( &lt;COMMA&gt; <A HREF="#prod11">Primitive</A> )* )? &lt;VECTOREND&gt; ) )</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>( ( &lt;NULL&gt; ) | ( <A HREF="#prod14">String</A> ) | ( <A HREF="#prod28">Number</A> ) | ( <A HREF="#prod29">Boolean</A> ) | ( <A HREF="#prod30">ByteArray</A> ) | ( &lt;VECTORSTART&gt; ( <A HREF="#prod11">Primitive</A> ( &lt;COMMA&gt; <A HREF="#prod11">Primitive</A> )* )? &lt;VECTOREND&gt; ) | &lt;DATA&gt; <A HREF="#prod26">BaseReference</A> | &lt;TBD&gt; )</TD>
 </TR>
 <TR>
-<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod27">Number</A></TD>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod28">Number</A></TD>
 <TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
 <TD ALIGN=LEFT VALIGN=BASELINE>( &lt;DOUBLE&gt; | &lt;FLOAT&gt; | &lt;INTEGER&gt; | &lt;LONG&gt; )</TD>
 </TR>
@@ -193,12 +198,12 @@
 <TD ALIGN=LEFT VALIGN=BASELINE>( ( &lt;STRING&gt; ) | ( &lt;MULTILINESTRING&gt; ) )</TD>
 </TR>
 <TR>
-<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod28">Boolean</A></TD>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod29">Boolean</A></TD>
 <TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
 <TD ALIGN=LEFT VALIGN=BASELINE>( &lt;TRUE&gt; | &lt;FALSE&gt; )</TD>
 </TR>
 <TR>
-<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod29">ByteArray</A></TD>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod30">ByteArray</A></TD>
 <TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
 <TD ALIGN=LEFT VALIGN=BASELINE>( ( &lt;BYTEARRAY&gt; ) )</TD>
 </TR>

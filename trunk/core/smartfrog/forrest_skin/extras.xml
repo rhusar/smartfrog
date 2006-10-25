@@ -24,27 +24,27 @@
       <section id="CSFExtentions">
             <title>CSF Extentions</title>
             <p>This document describes some  extensions provided to allow experimentation with constraint resolution technologies in conjunction with the SmartFrog language. These extensions are not intended to provide the definitive SmartFrog Constraint System, but are designed to allow a wide variety of different technologies to be used for this purpose. Consequently, the extensions themselves provide very limited syntactic or semantic support, and mostly the support is in the form of free textual annotations that are then interpreted by an appropriate plug-in for the specific constraint solver in use.
-                Links to document : <a href="csfExtensions.html">HTML</a> ,  <a href="csfExtensions.pdf">PDF</a> , "<a href="http://svn.sourceforge.net/viewvc/*checkout*/smartfrog/trunk/core/smartfrog/docs/csfExtensions.pdf">CVS (Online)</a>"   </p>
+                Links to document : <a href="csfExtensions.html">HTML</a> ,  <a href="csfExtensions.pdf">PDF</a> , "<a href="http://svn.sourceforge.net/viewvc/*checkout*/smartfrog/trunk/core/smartfrog/docs/csfExtensions.pdf">SVN (Online)</a>"   </p>
           </section>
 
 <section id="SFDebugger">
             <title>SmartFrog Debugger</title>
             <p>This document describes about SmartFrog debugger which is a tool designed to allow debugging of SmartFrog component descriptions at various lifecycle methods at runtime.
-                Links to document : <a href="sfDebugger_readme.html">HTML</a> , "<a href="http://svn.sourceforge.net/viewvc/*checkout*/smartfrog/trunk/core/extras/sfDebugger/doc/sfDebugger_readme.sxw">CVS (Online)</a>"   </p>
+                Links to document : <a href="sfDebugger_readme.html">HTML</a> , "<a href="http://svn.sourceforge.net/viewvc/*checkout*/smartfrog/trunk/core/extras/sfDebugger/doc/sfDebugger_readme.sxw">SVN (Online)</a>"   </p>
           </section>
 
 
       <section id="EclipsePlugin">
             <title>SmartFrog Eclipse plug-in</title>
             <p>Ths document describes about the SmartFrog Eclipse plug-in that provides the user with one common integrated development environment (IDE) in which to develop SmartFrog description files and Java component files. The Eclipse platform offers the benefits of project management, version control, and sophisticated Java development tools for writing, compiling, testing, and debugging Java applications.
-                Links to document : <a href="Readme.html">HTML</a> , "<a href="http://svn.sourceforge.net/viewvc/*checkout*/smartfrog/trunk/core/extras/eclipse/smartfrog-plugin/shared/docs/Readme.html">CVS (Online)</a>"   </p>
+                Links to document : <a href="Readme.html">HTML</a> , "<a href="http://svn.sourceforge.net/viewvc/*checkout*/smartfrog/trunk/core/extras/eclipse/smartfrog-plugin/shared/docs/Readme.html">SVN (Online)</a>"   </p>
 </section>
 
 
       <section id="SFGui">
             <title>SFGui</title>
             <p>This document describes about SFGui whic is a light and simple editor to help in writing and debugging SmartFrog descriptions.
-		    Links to document : <a href="SFGuiManual.html">HTML</a> ,  <a href="SFGuiManual.pdf">PDF</a> , "<a href="http://svn.sourceforge.net/viewvc/*checkout*/smartfrog/trunk/core/extras/sfgui/docs/SFGuiManual.pdf">CVS (Online)</a>"   </p>
+		    Links to document : <a href="SFGuiManual.html">HTML</a> ,  <a href="SFGuiManual.pdf">PDF</a> , "<a href="http://svn.sourceforge.net/viewvc/*checkout*/smartfrog/trunk/core/extras/sfgui/docs/SFGuiManual.pdf">SVN (Online)</a>"   </p>
           </section>
     	
     	
