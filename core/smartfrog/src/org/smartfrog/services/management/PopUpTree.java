@@ -48,6 +48,7 @@ import org.smartfrog.sfcore.componentdescription.ComponentDescriptionImpl;
 import org.smartfrog.sfcore.logging.LogSF;
 import org.smartfrog.sfcore.logging.LogFactory;
 import org.smartfrog.services.display.WindowUtilities;
+import org.smartfrog.sfcore.common.*;
 
 
 /**
@@ -69,7 +70,7 @@ public class PopUpTree extends JComponent implements ActionListener {
     JMenuItem menuItemAddAttribute = new JMenuItem();
 
     //   JMenuItem menuItemModifyAttribute = new JMenuItem();
-    //   JMenuItem menuItemRemoveAttribute = new JMenuItem();
+    JMenuItem menuItemRemoveAttribute = new JMenuItem();
     /** Item for Tree popup menu - normal terminate. */
     JMenuItem menuItemTerminateNormal = new JMenuItem();
     /** Item for Tree popup menu - abnormal terminate . */
@@ -101,7 +102,7 @@ public class PopUpTree extends JComponent implements ActionListener {
         // Tree: options
         menuItemAddAttribute.setText("Add Attribute");
 
-        //      menuItemRemoveAttribute.setText("Remove Attribute");
+        menuItemRemoveAttribute.setText("Remove Data");
         //      menuItemModifyAttribute.setText("Modify Attribute");
         menuItemDetach.setText("Detach Component");
         menuItemTerminateNormal.setText("Terminate Component - NORMAL");
@@ -113,7 +114,7 @@ public class PopUpTree extends JComponent implements ActionListener {
 
         // Tree: options
         //      popupTree.add(menuItemAddAttribute);
-        //      popupTree.add(menuItemRemoveAttribute);
+        popupTree.add(menuItemRemoveAttribute);
         //      popupTree.add(menuItemModifyAttribute);
         popupTree.add(menuItemTerminateNormal);
         popupTree.add(menuItemTerminateAbnormal);
@@ -128,7 +129,7 @@ public class PopUpTree extends JComponent implements ActionListener {
         // Add action listeners for tree popup
         menuItemAddAttribute.addActionListener(this);
 
-        //      menuItemRemoveAttribute.addActionListener(this);
+        menuItemRemoveAttribute.addActionListener(this);
         //      menuItemModifyAttribute.addActionListener(this);
         menuItemTerminateNormal.addActionListener(this);
         menuItemTerminateAbnormal.addActionListener(this);
@@ -163,6 +164,7 @@ public class PopUpTree extends JComponent implements ActionListener {
         tempX = x;
         tempY = y;
         if ( getNode() instanceof Prim){
+          menuItemRemoveAttribute.setVisible(false);
             menuItemDetach.setVisible(true);
             menuItemTerminateNormal.setVisible(true);
             menuItemTerminateAbnormal.setVisible(true);
@@ -171,6 +173,7 @@ public class PopUpTree extends JComponent implements ActionListener {
             menuItemParentageChanged.setVisible(true);
             menuItemIntrospector.setVisible(true);
         }else if  (getNode()instanceof ComponentDescription){
+          menuItemRemoveAttribute.setVisible(true);
             menuItemDetach.setVisible(false);
             menuItemTerminateNormal.setVisible(false);
             menuItemTerminateAbnormal.setVisible(false);
@@ -201,7 +204,10 @@ public class PopUpTree extends JComponent implements ActionListener {
         //System.out.println("Tree PopUp(source): "+e.getSource()+", Path:
         //"+path);
         // Launch it
-       if (source == menuItemAddAttribute) {
+        if (source == menuItemRemoveAttribute) {
+          remove();
+        } else
+        if (source == menuItemAddAttribute) {
            addAttrib();
        } else if (source == menuItemTerminateNormal) {
            terminate(node, TerminationRecord.NORMAL , "Console Management Action");
@@ -352,6 +358,27 @@ public class PopUpTree extends JComponent implements ActionListener {
         if (sfLog().isWarnEnabled()) sfLog().warn("ADD ATTRIBUTE! @Todo Complete!!!!!!!!!!1");
     }
 
+    void remove() {
+      Object obj = getNode();
+      System.out.println("remove() "+obj);
+      if (obj instanceof ComponentDescription) {
+        ComponentDescription cd = (ComponentDescription)obj;
+        ComponentDescription CDparent = cd.sfParent();
+        Prim primParent = cd.sfPrimParent();
+        try {
+          if (CDparent != null) {
+            CDparent.sfRemoveAttribute(CDparent.sfAttributeKeyFor(cd));
+          } else if (primParent != null) {
+            primParent.sfRemoveAttribute(primParent.sfAttributeKeyFor(cd));
+          }
+          parent.refresh();
+        }
+        catch (Exception ex) {
+          if (sfLog().isErrorEnabled()) sfLog().error ("Problem when trying to remove '"+cd);
+          WindowUtilities.showError(this,"Problem when trying to remove '"+cd+"'. \n"+ex.toString());
+        }
+      }
+    }
     /**
      * Terminates the deploy management
      *

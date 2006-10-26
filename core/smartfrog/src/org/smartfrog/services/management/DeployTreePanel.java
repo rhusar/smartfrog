@@ -161,6 +161,15 @@ public class DeployTreePanel extends JPanel implements TreeSelectionListener {
         this.add(statusPanel,  BorderLayout.SOUTH);
         statusPanel.add(completeName, BorderLayout.SOUTH);
         this.add(jSplitPane1, BorderLayout.CENTER);
+        tableScrollPane.getViewport().addMouseListener(new java.awt.event.MouseAdapter() {
+                public void mouseReleased(MouseEvent e) {
+                    table_mouseClicked(e);
+                }
+                public void mousePressed(MouseEvent e) {
+                    table_mouseClicked(e);
+                }
+            });
+
         table.addMouseListener(new java.awt.event.MouseAdapter() {
                 public void mouseReleased(MouseEvent e) {
                     table_mouseClicked(e);
