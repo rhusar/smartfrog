@@ -34,10 +34,8 @@ import java.util.Enumeration;
 import java.rmi.RemoteException;
 
 /**
- *  Description of the Class
+ *  Component to replace text attributes in a text file
  *
- *@author     julgui
- *@created    19 October 2001
  */
 public class SFReplaceFileVar extends PrimImpl implements Prim {
 

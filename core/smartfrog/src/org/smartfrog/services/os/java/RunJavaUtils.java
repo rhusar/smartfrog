@@ -102,7 +102,7 @@ public class RunJavaUtils {
      * eliminate all duplicate entries from a vector.
      * uses a hash table, O(n*(O(hashtable add)+O(hashtable lookup))
      * @param source
-     * @return
+     * @return Vector
      */
     public static Vector mergeDuplicates(Collection source) {
         HashMap map=new HashMap(source.size());
@@ -124,7 +124,7 @@ public class RunJavaUtils {
     /**
      * turn a vector of strings into a space separated list
      * @param source
-     * @return
+     * @return String
      */
     public static String makeSpaceSeparatedString(Vector source) {
         //the classpath; space separated values

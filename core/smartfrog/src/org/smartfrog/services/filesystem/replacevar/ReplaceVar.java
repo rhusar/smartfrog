@@ -61,6 +61,7 @@ public class ReplaceVar {
    * Passes the filename to the object on creation
    *
    * @param filename  the name of the file to use
+   * @param newfilename  the name of the new file
    */
   public ReplaceVar (String filename, String newfilename) {
     this.filename = filename;
@@ -71,6 +72,7 @@ public class ReplaceVar {
    * Passes the filename to the object on creation
    *
    * @param filename  the name of the file to use
+   * @param newfilename  the name of the new file
    * @param cached    whether the file is cached in memory or not
 
    */
@@ -258,11 +260,6 @@ public class ReplaceVar {
 //----------------------------------------------------------------------------
 
   /**
-   * Sets a value for a specified key. This temporarily loads the entire
-   * file into memory if it is not already cached. If
-   * the file is cached, the change is only in memory until the
-   * <code>flush()</code> method is called. If the file is not cached,
-   * then writes happen immediately.
    *
    * @param data  the hashmap
 
@@ -284,11 +281,6 @@ public class ReplaceVar {
 
 //----------------------------------------------------------------------------
    /**
-   * Sets a value for a specified key. This temporarily loads the entire
-   * file into memory if it is not already cached. If
-   * the file is cached, the change is only in memory until the
-   * <code>flush()</code> method is called. If the file is not cached,
-   * then writes happen immediately.
    *
    * @param data   hashmap to write
 
@@ -306,18 +298,11 @@ public class ReplaceVar {
 
   //----------------------------------------------------------------------------
 
-  /**
-   * Sets a value for a specified key. This temporarily loads the entire
-   * file into memory if it is not already cached. If
-   * the file is cached, the change is only in memory until the
-   * <code>flush()</code> method is called. If the file is not cached,
-   * then writes happen immediately.
-   *
-   * @param section   the section in the file
-   * @param key       the name of the key to change
-   * @param value     the String value to change the key to
 
-   */
+    /**
+     *
+     * @param data
+     */
   public void setSetting(Vector data) {
     if (data==null) return;
     //If the file is cached in memory
@@ -335,17 +320,9 @@ public class ReplaceVar {
   }
 
   //----------------------------------------------------------------------------
-   /**
-   * Sets a value for a specified key. This temporarily loads the entire
-   * file into memory if it is not already cached. If
-   * the file is cached, the change is only in memory until the
-   * <code>flush()</code> method is called. If the file is not cached,
-   * then writes happen immediately.
+  /**
    *
-   * @param section   the section in the file
-   * @param key       the name of the key to change
-   * @param value     the String value to change the key to
-
+   * @param data
    */
   public void setSettingCached(Vector data) {
      if (data==null) return;
@@ -370,18 +347,10 @@ public class ReplaceVar {
 
  //----------------------------------------------------------------------------
 
-  /**
-   * Sets a value for a specified key. This temporarily loads the entire
-   * file into memory if it is not already cached. If
-   * the file is cached, the change is only in memory until the
-   * <code>flush()</code> method is called. If the file is not cached,
-   * then writes happen immediately.
-   *
-   * @param section   the section in the file
-   * @param key       the name of the key to change
-   * @param value     the String value to change the key to
-
-   */
+    /**
+     *
+     * @param data
+     */
   public void append(Vector data) {
     if (data==null) return;
     //If the file is cached in memory
@@ -398,19 +367,10 @@ public class ReplaceVar {
     }
   }
 
-  //----------------------------------------------------------------------------
-   /**
-   * Sets a value for a specified key. This temporarily loads the entire
-   * file into memory if it is not already cached. If
-   * the file is cached, the change is only in memory until the
-   * <code>flush()</code> method is called. If the file is not cached,
-   * then writes happen immediately.
-   *
-   * @param section   the section in the file
-   * @param key       the name of the key to change
-   * @param value     the String value to change the key to
-
-   */
+    /**
+     *
+     * @param data
+     */
   public void appendCached(Vector data) {
      if (data==null) return;
      String key = null;

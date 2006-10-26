@@ -34,7 +34,7 @@ public interface RemoteCachePolicy extends LibraryCachePolicy {
      * create a path to the remote system, all but the base URL,
      * using the artifact as the 
      * @param artifact
-     * @return
+     * @return String path
      * @throws RemoteException
      */
     public String createRemotePath(SerializedArtifact artifact) throws RemoteException,SmartFrogException;

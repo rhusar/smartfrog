@@ -387,7 +387,7 @@ public class ComponentHelper {
      * Load a class in the classloader, using the SmartFrog classloader.
      * {@link SFClassLoader#forName(String, String, boolean)}
      * @param classname
-     * @return
+     * @return class
      * @throws SmartFrogResolutionException if the class could not be found
      * @throws RemoteException for network problems
      */

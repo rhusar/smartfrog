@@ -51,7 +51,7 @@ public interface JavaPackage extends Remote {
 
     /**
      * get the vector of uris
-     * @return
+     * @return  vector
      */
     public Vector getUriClasspathList() throws RemoteException;
 }

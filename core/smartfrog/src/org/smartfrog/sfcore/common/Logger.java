@@ -71,7 +71,7 @@ public class Logger implements MessageKeys {
     public static boolean testNetwork = true;
 
     /** Property to define a list of remote hosts for remote network test . The default value can be overridden by the
-      * value specified in default.ini file. Default value {@value }
+      * value specified in default.ini file.
       */
     public static String[] testURI = {SMARTFROG_URL};
 
