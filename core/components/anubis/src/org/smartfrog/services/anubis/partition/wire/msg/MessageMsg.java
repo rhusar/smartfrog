@@ -86,8 +86,6 @@ public final class MessageMsg extends TimedMsg {
     /**
      * Writes the timed message attributes to wire form in the given byte
      * array
-     *
-     * @param wireForm byte[]
      */
     protected void writeWireForm() throws WireFormException {
         super.writeWireForm();
@@ -102,8 +100,10 @@ public final class MessageMsg extends TimedMsg {
      * Sets the timed message attributes to the wire form held in a
      * byte array
      *
-     * @param wireForm byte[]
-     * @throws UnknownHostException
+     * @param buf byte[]
+     * @throws IOException
+     * @throws WireFormException
+     * @throws ClassNotFoundException
      */
     protected void readWireForm(ByteBuffer buf) throws IOException, WireFormException, ClassNotFoundException {
         super.readWireForm(buf);
