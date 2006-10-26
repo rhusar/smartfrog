@@ -7,6 +7,7 @@ import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.componentdescription.ComponentDescriptionImpl;
+import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 
 import java.rmi.RemoteException;
 import java.util.Hashtable;
@@ -48,6 +49,58 @@ public  class LogFactory {
             //and remember it
             loggers.put(prim, log);
         } catch (RemoteException e){
+            throw (SmartFrogLogException)SmartFrogLogException.forward(e);
+        }
+        return log;
+    }
+
+    /**
+     * Get a log for an object.
+     * Prim and ComponentDescription will use sfCompletename
+     * An unkwon object uses its class name.
+     * @param obj (Prim, ComponentDescription, object.)
+     * @return a new log.
+     * @throws SmartFrogLogException when something went wrong with getting a log
+     */
+    public static synchronized LogSF getLog(Object obj) throws SmartFrogLogException
+    {
+        LogSF log=null;
+        try {
+            if (obj instanceof Prim) {
+               getLog(obj);
+            } else if (obj instanceof ComponentDescription){
+               getLog((ComponentDescription)obj);
+            } else {
+               getLog(obj.getClass().toString());
+            }
+        } catch (Exception e){
+            throw (SmartFrogLogException)SmartFrogLogException.forward(e);
+        }
+        return log;
+    }
+
+        /**
+     * get a log for a component
+     * @param cd component description
+     * @return a new log.
+     * @throws SmartFrogLogException when something went wrong with getting a log
+     */
+    public static synchronized LogSF getLog(ComponentDescription cd) throws SmartFrogLogException
+    {
+        LogSF log=null;
+        try {
+            final Reference completeName = cd.sfCompleteName();
+            //look for a log
+            log = (LogSF)loggers.get(completeName);
+            //if found, return it
+            if (log!=null) {
+                return log;
+            }
+            //else create a new one
+            log = new LogImpl (completeName.toString());
+            //and remember it
+            loggers.put(cd, log);
+        } catch (Exception e){
             throw (SmartFrogLogException)SmartFrogLogException.forward(e);
         }
         return log;

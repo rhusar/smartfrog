@@ -471,7 +471,7 @@ public class PopUpTree extends JComponent implements ActionListener {
         pane.show(true);
     }
    /** Log for this class, created using class name*/
-    LogSF sfLog = LogFactory.getLog(this.getClass());
+    LogSF sfLog = LogFactory.getLog("sfManagementConsole");
 
     /**
      * Log for this class

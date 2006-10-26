@@ -39,7 +39,7 @@ import java.awt.*;
  */
 public class NewAttributeDialog extends JDialog {
     /** Log for this class, created using class name*/
-    LogSF sfLog = LogFactory.getLog(this.getClass());
+    LogSF sfLog = LogFactory.getLog("sfManagementConsole");
     /** Panel. */
     private JPanel panel = new JPanel();
     /** Save button. */

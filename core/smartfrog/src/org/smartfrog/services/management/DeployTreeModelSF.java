@@ -36,7 +36,7 @@ import org.smartfrog.sfcore.prim.Prim;
  */
 public class DeployTreeModelSF implements TreeModel {
     /** Log for this class, created using class name*/
-    LogSF sfLog = LogFactory.getLog(DeployTreeModelSF.class);
+    LogSF sfLog = LogFactory.getLog("sfManagementConsole");
 
     DeployEntry entry = null;
 

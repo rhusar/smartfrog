@@ -36,7 +36,7 @@ import org.smartfrog.sfcore.logging.LogFactory;
 public class DeployEntryCellRenderer extends DefaultTreeCellRenderer {
 
   /** Log for this class, created using class name*/
-  static LogSF sfLogStatic = LogFactory.getLog(DefaultTreeCellRenderer.class);
+  static LogSF sfLogStatic = LogFactory.getLog("sfManagementConsole");
 
   // icons for the Tree
   ImageIcon icon = null;

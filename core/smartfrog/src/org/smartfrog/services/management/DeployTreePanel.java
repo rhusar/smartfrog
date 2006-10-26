@@ -45,7 +45,7 @@ import org.smartfrog.sfcore.logging.LogFactory;
 public class DeployTreePanel extends JPanel implements TreeSelectionListener {
 
     /** Log for this class, created using class name*/
-    LogSF sfLog = LogFactory.getLog(this.getClass());
+    LogSF sfLog = LogFactory.getLog("sfManagementConsole");
 
     BorderLayout borderLayout1 = new BorderLayout();
     JSplitPane jSplitPane1 = new JSplitPane();
