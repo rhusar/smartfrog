@@ -66,9 +66,8 @@ These are the meaningful targets for this build file:
     <property name="year" value=""/>
     <echo message=""/>
     <echo message="==================================================================="/>
-    <echo message="= ${Name} ${version}"/>
-    <echo message="= ${name} "/>
-    <echo message="==================================================================="/>
+    <echo message="= ${Name} ${version}, ${name} >
+    <echo message=""/>
   </target>
 
   <!-- =================================================================== -->
@@ -185,9 +184,7 @@ These are the meaningful targets for this build file:
   <target name="jdocs" depends="init" description="Generates the API documentation">
     <!--  Java Docs for all                                                -->
     <echo message=""/>
-    <echo message="------------------------------------------------------------------------"/>
-    <echo message="  Creating Java Docs for ${Name} examples [${jdocs}]"/>
-    <echo message="------------------------------------------------------------------------"/>
+    <echo message="-------Creating Java Docs for ${Name} examples [${jdocs}]----------"/>
     <mkdir dir="${jdocs}"/>
     <javadoc packagenames="org.smartfrog.*"
            sourcepath="${src}"

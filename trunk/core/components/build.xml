@@ -457,9 +457,7 @@ For more information: www.smartfrog.org
   <target name="jdocs" depends="init, initjdocs" description="Generates the API documentation">
     <!--  Java Docs for all                                                -->
     <echo message=""/>
-    <echo message="------------------------------------------------------------------------"/>
-    <echo message="  Creating Java Docs for ${Name.System} ${version} [${dist.jdocs.dir}]"/>
-    <echo message="------------------------------------------------------------------------"/>
+    <echo message="---------Creating Java Docs for ${Name.System} ${version} [${dist.jdocs.dir}]--------"/>
     <sf-javadoc
         packagenames="org.smartfrog.*"
         destdir="${comp.dist.jdocs.dir}"
