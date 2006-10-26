@@ -453,9 +453,7 @@
           >
     <!--  Java Docs for all                                                -->
     <echo message=""/>
-    <echo message="------------------------------------------------------------------------"/>
-    <echo message="  Creating Java Docs for ${javadoc.header} [${dist.jdocs.dir}]"/>
-    <echo message="------------------------------------------------------------------------"/>
+    <echo message="----------------Creating Java Docs for ${javadoc.header} [${dist.jdocs.dir}]---------------"/>
     <mkdir dir="${dist.jdocs.dir}"/>
     <sf-javadoc
         sourcepath="${src.dir}"
