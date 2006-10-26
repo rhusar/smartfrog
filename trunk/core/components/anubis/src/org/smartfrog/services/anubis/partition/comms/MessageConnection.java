@@ -350,7 +350,7 @@ public class MessageConnection
      * immediately inform the connectionSet to disconnect.
      *
      * @param impl
-     * @return
+     * @return  boolean
      */
     public boolean assignImpl(IOConnection impl) {
 

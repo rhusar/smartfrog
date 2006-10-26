@@ -38,7 +38,7 @@ public class NameData implements Serializable {
      * particular name, but only one per node.
      *
      * @param obj
-     * @return
+     * @return boolean
      */
     public boolean equals(Object obj) {
         if( obj instanceof NameData )

@@ -89,7 +89,6 @@ public class HeartbeatMsg extends TimedMsg implements Heartbeat {
      *               byte buffer for lazy unmarshalling later.
      * @param wireForm
      *
-     * @return long
      */
     public HeartbeatMsg(ByteBuffer wireForm) throws ClassNotFoundException, WireFormException, IOException {
         super();

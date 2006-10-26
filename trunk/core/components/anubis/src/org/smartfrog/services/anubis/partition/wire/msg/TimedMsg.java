@@ -60,7 +60,6 @@ public class TimedMsg extends WireMsg implements Timed, Sender {
      *               the fromWire(wire) method, read attributes in the
      *               readWireForm(wire) method.
      *
-     * @return long
      */
     public TimedMsg(ByteBuffer wireForm) throws ClassNotFoundException, WireFormException, IOException {
         super();
@@ -91,7 +90,7 @@ public class TimedMsg extends WireMsg implements Timed, Sender {
 
     /**
      * Timed interface
-     * @return
+     * @return  long time
      */
     public long   getTime()       { return time; }
     public void   setTime(long t) { time = t; }
