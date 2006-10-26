@@ -532,7 +532,7 @@ public class ConfigurationDescriptor implements MessageKeys{
      * @see Action
      * @throws SmartFrogInitException  failure in some part of the process
      *
-     * @TODO fix this text for JavaDocs
+     // TODO fix this text for JavaDocs
      */
     public ConfigurationDescriptor (String deploymentURL) throws SmartFrogInitException {
         try {

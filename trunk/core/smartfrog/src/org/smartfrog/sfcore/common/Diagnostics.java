@@ -552,7 +552,7 @@ public final class Diagnostics {
     /**
      * Report simple remote network diagnostics by default bound to {@link #SMARTFROG_URL}
      * @param out the stream to print the report to.
-     * @parm url URI for a host to reach
+     * @param url URI for a host to reach
      * @return failed. It reports if the test failed or not.
      */
     public static boolean doReportRemoteNetwork(StringBuffer out, String uriString) {

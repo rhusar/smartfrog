@@ -169,7 +169,7 @@ public class LocalFilestoreImpl extends FileUsingComponentImpl
      * look up a file from a URI
      *
      * @param uri
-     * @return
+     * @return FileEntry
      * @throws SmartFrogException error while lookup
      * @throws RemoteException In case of network/rmi error
      */

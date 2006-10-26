@@ -30,7 +30,7 @@ public class Date extends BaseFunction {
      * Currently this is in ctime() format
      *  {@link java.util.Date#toString}; it will move to ISO8601/RFC3339
      * format with the next release
-     * @todo generate RFC3339 timestamps
+      //TODO generate RFC3339 timestamps
      * @return system date
      */
     protected Object doFunction() {
