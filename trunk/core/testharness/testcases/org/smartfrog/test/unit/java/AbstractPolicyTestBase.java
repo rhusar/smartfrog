@@ -59,7 +59,7 @@ public abstract class AbstractPolicyTestBase extends TestCase {
 
     /**
      * Create a path for the logging artifact
-     * @return
+     * @return String logging path
      * @throws SmartFrogException
      */
     protected abstract String createLoggingPath() throws Exception;
