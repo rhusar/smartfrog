@@ -34,7 +34,7 @@ public abstract class AbstractRemotePolicyTestBase extends AbstractPolicyTestBas
     /**
      * Create a path for the logging artifact
      *
-     * @return
+     * @return  String logging path
      *
      * @throws org.smartfrog.sfcore.common.SmartFrogException
      *

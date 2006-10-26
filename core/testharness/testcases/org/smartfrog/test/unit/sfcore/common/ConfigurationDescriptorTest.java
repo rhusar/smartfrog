@@ -160,7 +160,6 @@ public class ConfigurationDescriptorTest extends TestCase implements Configurati
          * Deploys an application and returns the refence to deployed application.
          * @param sfact  SFACT: SmartFrog Action Descriptors
          * @param testDescription Description for the test
-         * @return Reference to deployed application
          * @throws RemoteException in the event of remote trouble.
          */
         protected void deployExpectingSuccess2(String sfact, String testDescription)

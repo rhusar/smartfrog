@@ -75,7 +75,7 @@ public interface BooleanValues extends Remote {
     
     /**
      * throw a runtime fault when invoking
-     * @return
+     * @return boolean
      * @throws RemoteException
      * @throws java.lang.RuntimeException always.
      */

@@ -55,7 +55,7 @@ public class AssertionsTest extends DeployingTestBase {
 
 
     /**
-     * @todo: turn on once we have a way of expecting liveness faults.
+     //Todo: turn on once we have a way of expecting liveness faults.
      * @throws Throwable
      */
     public void NotestFalseIsLazyTrue() throws Throwable {
