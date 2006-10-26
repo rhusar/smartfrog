@@ -315,7 +315,7 @@ public class PopUpTable extends JComponent implements ActionListener {
       }
    }
    /** Log for this class, created using class name*/
-    LogSF sfLog = LogFactory.getLog(this.getClass());
+    LogSF sfLog = LogFactory.getLog("sfManagementConsole");
 
     /**
      * Log for this class

@@ -753,11 +753,7 @@ public class DeployEntry implements Entry {
 
     private void initLog (){
         try {
-            if (entry instanceof Prim) {
-               this.sfLog=LogFactory.getLog((Prim)entry);
-            } else {
-               this.sfLog=LogFactory.getLog((String)entry);
-            }
+           this.sfLog=LogFactory.getLog("sfManagementConsole");
         } catch (Exception e) {
             sfLog.error(e);
         }

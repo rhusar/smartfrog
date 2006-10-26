@@ -77,7 +77,7 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
       //Init system
       org.smartfrog.SFSystem.initSystem();
       //Logger.log("Starting management window...");
-      LogSF sflog = LogFactory.getLog("SFManagamentConsole");
+      LogSF sflog = LogFactory.getLog("sfManagementConsole");
       sflog.out("Starting management window...");
 
       String nameDisplay = "sfManagementConsole";
@@ -103,7 +103,7 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
       } catch (java.rmi.ConnectException cex) {
          exitWith("Error: " + cex.getMessage(), ExitCodes.EXIT_ERROR_CODE_GENERAL);
       } catch (Exception e) {
-         LogFactory.getLog(SFDeployDisplay.class).error("Error in SFDeployDisplay.main():" + e,e);
+         LogFactory.getLog("sfManagementConsole").error("Error in SFDeployDisplay.main():" + e,e);
          exitWith("Error in SFDeployDisplay.main():" + e, ExitCodes.EXIT_ERROR_CODE_GENERAL);
       }
 
@@ -140,12 +140,12 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
       String infoConnection = ("sfManagementConsole connecting to " +
             hostname + ":" + port);
       //Logger.log(infoConnection);
-      LogFactory.getLog("SFManagamentConsole").out(infoConnection);
+      LogFactory.getLog("sfManagementConsole").out(infoConnection);
       nameDisplay = nameDisplay + " [" + "sfManagementConsole connected to " +
             hostname + ":" + port + "]";
 
       if (showRootProcess) {
-         LogFactory.getLog("SFManagamentConsole").warn(" showing rootProcess");
+         LogFactory.getLog("sfManagementConsole").warn(" showing rootProcess");
          //Logger.log(" showing rootProcess");
       } else {
          //System.out.println("");
@@ -390,8 +390,8 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
          ((DeployTreePanel) panelTree).refresh();
       } catch (Throwable ex) {
 //         Logger.logQuietly("Failure refresh() SFDeployDisplay!",ex);
-         if (LogFactory.getLog("SFManagamentConsole").isIgnoreEnabled()){
-           LogFactory.getLog("SFManagamentConsole").ignore("Failure refresh() SFDeployDisplay!",ex);
+         if (LogFactory.getLog("sfManagementConsole").isIgnoreEnabled()){
+           LogFactory.getLog("sfManagementConsole").ignore("Failure refresh() SFDeployDisplay!",ex);
          }
       }
    }
@@ -404,8 +404,8 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
     */
    public void actionPerformed(ActionEvent e) {
       //Logger.log("ActionEvent SFDEployDisplay: "+ e);
-      if (LogFactory.getLog("SFManagamentConsole").isTraceEnabled()){
-        LogFactory.getLog("SFManagamentConsole").trace("ActionEvent SFDEployDisplay: "+ e);
+      if (LogFactory.getLog("sfManagementConsole").isTraceEnabled()){
+        LogFactory.getLog("sfManagementConsole").trace("ActionEvent SFDEployDisplay: "+ e);
       }
       if ((e.getActionCommand()).equals("refreshButton")) {
          refresh(e);
