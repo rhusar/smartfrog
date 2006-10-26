@@ -123,7 +123,7 @@ public class HeartbeatComms extends MulticastComms implements HeartbeatCommsIntf
      * connection. But the method of the base class MulticastComms to send is
      * sendObject().
      *
-     * @param msg
+     * @param obj
      */
     public void sendObject(Object obj) { return; }
     public void sendHeartbeat(HeartbeatMsg msg) {
@@ -139,7 +139,7 @@ public class HeartbeatComms extends MulticastComms implements HeartbeatCommsIntf
      * This will be called from the connection set - ignoring is used in a
      * critical section in deliverObject() that uses connectionSet as its
      * monitor.
-     * @param ignoring
+     * @param ignoringUpdate
      */
     public void setIgnoring(View ignoringUpdate){
         synchronized(ingnoringMonitor) {

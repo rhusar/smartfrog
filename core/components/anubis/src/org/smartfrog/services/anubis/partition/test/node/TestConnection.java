@@ -50,7 +50,7 @@ public class TestConnection
 
     /**
      * Connection comms interface
-     * @param obj
+     * @param bytes
      */
     public void deliver(byte[] bytes) {
 

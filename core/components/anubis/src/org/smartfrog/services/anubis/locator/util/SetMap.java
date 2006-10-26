@@ -66,7 +66,7 @@ public class SetMap {
     /**
      * indicates if the map is empty
      *
-     * @return
+     * @return  boolean
      */
     public boolean isEmpty() { return map.isEmpty(); }
 
@@ -89,7 +89,7 @@ public class SetMap {
      * returns a set view of the entries in the map. That is a set of
      * objects of the type Map.Entry.
      *
-     * @return
+     * @return Set
      */
     public Set     entrySet() { return map.entrySet(); }
 

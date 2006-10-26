@@ -140,7 +140,7 @@ public class ActiveTimeQueue extends Thread {
      *
      * @param element
      * @param time
-     * @return
+     * @return boolean
      */
     public boolean add(TimeQueueElement element, long time) {
         synchronized( queue ) {
@@ -159,7 +159,7 @@ public class ActiveTimeQueue extends Thread {
      * now?
      *
      * @param element
-     * @return
+     * @return boolean
      */
     public boolean remove(TimeQueueElement element) {
         synchronized( queue ) {

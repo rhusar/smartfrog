@@ -111,7 +111,7 @@ public class PingProtocolImpl extends BitView implements HeartbeatProtocol {
      * and the timebound.
      *
      * @param timenow current time
-     * @param timeout expiration period
+     * @param timebound expiration period
      * @return true if expried, false if not
      */
     public boolean isNotTimely(long timenow, long timebound) {
@@ -153,7 +153,7 @@ public class PingProtocolImpl extends BitView implements HeartbeatProtocol {
      * information counts.
      *
      * @param hb - heartbeat message
-     * @return
+     * @return boolean
      */
     public boolean receiveHeartbeat(Heartbeat hb) {
 
@@ -209,7 +209,7 @@ public class PingProtocolImpl extends BitView implements HeartbeatProtocol {
 
     /**
      * Timed interface
-     * @return
+     * @return long
      */
     public long getTime() {
         return time;
@@ -221,7 +221,7 @@ public class PingProtocolImpl extends BitView implements HeartbeatProtocol {
 
     /**
      * Sender interface
-     * @return
+     * @return identity
      */
     public Identity getSender() {
         return sender;

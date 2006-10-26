@@ -300,7 +300,6 @@ public class NodeIdSet implements Serializable, Cloneable, WireSizes {
 
     /**
      * Return a new identical copy
-     * @param s BitSet
      * @return BitSet
      */
     public Object clone(){

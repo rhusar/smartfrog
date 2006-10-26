@@ -49,7 +49,8 @@ public class PingHeartbeatMsg extends HeartbeatMsg {
     /**
      * Construct a ping heartbeat message
      *
-     * @param hb HeartbeatMsg
+     * @param identity
+     * @param address
      */
     public PingHeartbeatMsg(Identity identity, ConnectionAddress address) {
         super(identity, address);
@@ -103,8 +104,6 @@ public class PingHeartbeatMsg extends HeartbeatMsg {
 
     /**
      * Write the message attributes to the
-     *
-     * @param wire byte[]
      */
     protected void writeWireForm() throws WireFormException {
         super.writeWireForm();
@@ -114,7 +113,7 @@ public class PingHeartbeatMsg extends HeartbeatMsg {
     /**
      * Read the attributes from the wire format.
      *
-     * @param wireForm byte[]
+     * @param buf byte[]
      */
     protected void readWireForm(ByteBuffer buf) throws IOException,
         WireFormException, ClassNotFoundException {

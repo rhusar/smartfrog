@@ -131,7 +131,7 @@ public class HeartbeatProtocolAdapter
 
     /**
      * Candidate interface
-     * @return
+     * @return  Identity
      */
     public Identity          getId()               { return candidate.getId(); }
     public Identity          getVote()                { return candidate.getVote(); }

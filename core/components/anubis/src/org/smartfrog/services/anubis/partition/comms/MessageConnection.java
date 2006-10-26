@@ -71,7 +71,7 @@ public class MessageConnection
      *
      * @param id - the identity of this node
      * @param cs - the connection set
-     * @param con - the heartbeat connection (used to get details of the connection)
+     * @param can - the heartbeat connection (used to get details of the connection)
      */
     public MessageConnection(Identity id, ConnectionSet cs, HeartbeatProtocol hbp, Candidate can) {
         super(hbp, can);
@@ -117,7 +117,7 @@ public class MessageConnection
      * General deliver method - any messaage received by the transport will
      * be delivered using this method. The message will be a valid TimedMsg!
      *
-     * @param msg - the message
+     * @param bytes - the message
      */
     public void deliver(byte[] bytes) {
 
@@ -288,7 +288,7 @@ public class MessageConnection
 
     /**
      *
-     * @param msg
+     * @param tm
      */
     public void sendMsg(TimedMsg tm) {
         if (tm == null) {

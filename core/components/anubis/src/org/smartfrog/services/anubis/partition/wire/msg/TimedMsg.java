@@ -98,7 +98,7 @@ public class TimedMsg extends WireMsg implements Timed, Sender {
 
     /**
      * Sender interface implemenation
-     * @return
+     * @return  identity
      */
     public Identity          getSender()        { return sender; }
     public ConnectionAddress getSenderAddress() {
@@ -124,9 +124,10 @@ public class TimedMsg extends WireMsg implements Timed, Sender {
     /**
      * Sets the timed message attributes to the wire form held in a
      * byte array
-     *
-     * @param wireForm byte[]
-     * @throws UnknownHostException
+     * @param buf
+     * @throws IOException
+     * @throws WireFormException
+     * @throws ClassNotFoundException
      */
     protected void readWireForm(ByteBuffer buf) throws IOException, WireFormException, ClassNotFoundException {
         super.readWireForm(buf);
@@ -138,7 +139,6 @@ public class TimedMsg extends WireMsg implements Timed, Sender {
      * Writes the timed message attributes to wire form in the given byte
      * array
      *
-     * @param wireForm byte[]
      */
     protected void writeWireForm() throws WireFormException {
         super.writeWireForm();

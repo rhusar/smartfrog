@@ -227,8 +227,6 @@ public class LocalListeners {
 
     /**
      * deregister a listener.
-     *
-     * @param name
      * @param listener
      */
     public synchronized void deregister(AnubisListener listener) {
