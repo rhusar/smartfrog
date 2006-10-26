@@ -75,7 +75,7 @@
          basedir="${build.dir}">
       <exclude name="build.xml"/>
       <exclude name="WEB-INF/web.xml"/>
-      <exclude name="**/CVS/**"/>
+      <exclude name="**/SVN/**"/>
       <exclude name="src/**"/>
     </war>
     

@@ -134,7 +134,7 @@ For more information: www.smartfrog.org
 		<fileset dir="${ExtrasHOME}/eclipse/smartfrog-plugin/shared/docs">
 			<include name="Readme.*" />
 			<include name="images/**"/>
-			<exclude name="**/CVS"/>
+			<exclude name="**/SVN"/>
 		</fileset>
 		<fileset dir="${ExtrasHOME}/sfgui/docs">
 			<include name="SFGuiManual.*" />

@@ -240,7 +240,7 @@
   </target>  
 
 <!-- ==================================================================== -->
-<!-- this little section hacks into Ant's own CVS tree to hand off document
+<!-- this little section hacks into Ant's own SVN tree to hand off document
   generation. It is nasty because the automated docgen is not quite production
   ready -->
   
@@ -262,7 +262,7 @@
       refid="xdoclet.extra.classpath"/>    
   </target>  
 
-<!-- probe for xdocs, which is only in CVS, not redist packages --> 
+<!-- probe for xdocs, which is only in SVN, not redist packages --> 
 <target name="probe-xdocs" depends="init-xdocs" >
   <available property="xdocs.found" file="${xdocs.dir}/build.xml"/>
 </target>

@@ -1,7 +1,7 @@
 <project name="smartfrog-plugin" default="build" basedir=".">
 
    <property environment="env"/>
-   <property name="cvs.root" value=":pserver:${env.CVS_USR}:${env.CVS_PWD}@${env.CVS_TUNNEL}:/cvs"/>
+   <property name="cvs.root" value=":pserver:${env.SVN_USR}:${env.SVN_PWD}@${env.SVN_TUNNEL}:/cvs"/>
 
    <target name="build">
       <cvs cvsRoot="${cvs.root}" package="${ant.project.name}/build.xml" quiet="true" dest=".." />

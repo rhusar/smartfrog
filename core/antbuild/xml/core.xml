@@ -167,9 +167,9 @@
   <!-- ========================================================== -->
   
   <target name="load-library-versions" depends="core.init-core">
-    <!-- per project, CVS managed override -->
+    <!-- per project, SVN managed override -->
     <property file="libraries.properties" />
-    <!-- central CVS managed libraries list -->
+    <!-- central SVN managed libraries list -->
     <property file="${smartfrog.components.dir}/libraries.properties" />
   </target>
 

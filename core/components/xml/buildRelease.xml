@@ -66,7 +66,7 @@
         <include name="LICENSE.txt"/>
         <include name="changes.txt"/>
         <include name="readme.txt"/>
-        <exclude name="**/CVS"/>
+        <exclude name="**/SVN"/>
         <exclude name="**/*.dfPackage"/>
         <exclude name="**/Cvs"/>
         <exclude name="**/.#*"/>
@@ -132,7 +132,7 @@
         <include name="LICENSE.txt"/>
         <include name="changes.txt"/>
         <include name="readme.txt"/>
-        <exclude name="**/CVS"/>
+        <exclude name="**/SVN"/>
         <exclude name="**/*.dfPackage"/>
         <exclude name="**/Cvs"/>
         <exclude name="bin/tools/**"/>
