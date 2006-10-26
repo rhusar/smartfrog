@@ -238,7 +238,7 @@ public class MessageNioHandler implements SendingListener, IOConnection, WireSiz
      * on the socketChannel.  If that first write was enough to send the whole packet then SENDING_DONE is returned
      * otherwise SENDING_PENDING is returned.  The registered SendingListener will be called when all the data has gone
      *
-     * @param objectToSend the object to be serialized
+     * @param bytesToSend the object to be serialized
      * @param listener the object to call back when the whole object has been successfully sent on the socketChannel
      * @return sending error code from SENDING_DONE, SENDING_PENDING or SENDING_REFUSED
      */

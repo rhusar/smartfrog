@@ -80,7 +80,7 @@ public class MessageConnectionServer
      * Create a new MessageConnectionImpl in response to a connection request. This
      * method is called by the ConnectionServer base class.
      *
-     * @param so
+     * @param channel
      *
     public void createConnection(Socket so) {
         MessageConnectionImpl impl = new MessageConnectionImpl(me, so, this,

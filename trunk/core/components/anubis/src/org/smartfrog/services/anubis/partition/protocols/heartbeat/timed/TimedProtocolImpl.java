@@ -66,7 +66,7 @@ public class TimedProtocolImpl extends BitView implements HeartbeatProtocol {
      * and the timebound.
      *
      * @param timenow current time
-     * @param timeout expiration period
+     * @param timebound expiration period
      * @return true if expried, false if not
      */
     public boolean isNotTimely(long timenow, long timebound) {
@@ -108,7 +108,7 @@ public class TimedProtocolImpl extends BitView implements HeartbeatProtocol {
      * information counts.
      *
      * @param hb - heartbeat message
-     * @return
+     * @return  boolean false if terminated or failed
      */
     public boolean receiveHeartbeat(Heartbeat hb) {
 
@@ -164,14 +164,14 @@ public class TimedProtocolImpl extends BitView implements HeartbeatProtocol {
 
     /**
      * Timed interface
-     * @return
+     * @return  time
      */
     public long              getTime()          { return time; }
     public void              setTime(long t)    { time = t; }
 
     /**
      * Sender interface
-     * @return
+     * @return  identity
      */
     public Identity          getSender()        { return sender; }
     public ConnectionAddress getSenderAddress() { return address; }

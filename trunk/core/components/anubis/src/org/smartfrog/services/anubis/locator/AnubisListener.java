@@ -111,7 +111,7 @@ abstract public class AnubisListener {
      * of the AnubisValue class.
      *
      * @param i
-     * @return
+     * @return AnubisValue
      */
     public AnubisValue createValue(ProviderInstance i) {
         return new AnubisValue(i);

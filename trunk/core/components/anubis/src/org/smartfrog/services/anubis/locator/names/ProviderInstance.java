@@ -45,7 +45,7 @@ public class ProviderInstance extends NameData {
 
     /**
      * Create a provider proxy that matches this instance
-     * @return
+     * @return  proxy provider
      */
     public ProviderProxy proxy() {
         return new ProviderProxy(name, node);
@@ -63,7 +63,7 @@ public class ProviderInstance extends NameData {
      * data).
      *
      * @param obj
-     * @return
+     * @return  boolean
      */
     public boolean equals(Object obj) {
     if( obj instanceof ProviderInstance )
@@ -78,7 +78,7 @@ public class ProviderInstance extends NameData {
      * classes and providerInstance classes in a container will work, but is
      * poor style - it gets confusing.
      *
-     * @return
+     * @return  hascode
      */
     public int hashCode() {
         return super.hashCode();

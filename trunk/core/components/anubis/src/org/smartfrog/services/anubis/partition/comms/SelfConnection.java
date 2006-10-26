@@ -70,13 +70,13 @@ public class SelfConnection extends BitView implements Connection, HeartbeatProt
 
     /**
      * HeartbeatProtocol interface
-     * @param m
+     * @param h
      */
     public boolean           receiveHeartbeat(Heartbeat h) { return true; }
 
     /**
      * Candidate interface - redirect to CandidateImpl
-     * @return
+     * @return Indentity
      */
     public Identity  getId()               { return getSender(); }
     public Identity  getVote()                { return candidate.getVote(); }

@@ -95,7 +95,7 @@ public final class SerializedMsg extends WireMsg {
     /**
      * read wire message format
      *
-     * @param wire byte[]
+     * @param buf byte[]
      * @throws IOException
      * @throws WireFormException
      * @throws ClassNotFoundException
@@ -121,7 +121,6 @@ public final class SerializedMsg extends WireMsg {
      * Writes the timed message attributes to wire form in the given byte
      * array
      *
-     * @param wireForm byte[]
      */
     protected void writeWireForm() throws WireFormException {
         super.writeWireForm();

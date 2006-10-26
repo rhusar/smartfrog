@@ -87,7 +87,7 @@ public class AnubisProvider {
     /**
      * setTime is introduced to allow for the SubProcess interface. Remote
      * interfaces need to be re-done - this is a temporary fix.
-     * @param time
+     * @param value
      */
     protected void setValueObj(ValueData value) { this.value = value; }
     protected void setInstance(String instance) { this.instance = instance; }

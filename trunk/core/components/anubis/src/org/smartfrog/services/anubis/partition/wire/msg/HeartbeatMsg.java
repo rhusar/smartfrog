@@ -87,6 +87,7 @@ public class HeartbeatMsg extends TimedMsg implements Heartbeat {
      *               pattern of simply extending the super(byte[])
      *               sonstructor because it wants to retain the wire and
      *               byte buffer for lazy unmarshalling later.
+     * @param wireForm
      *
      * @return long
      */
@@ -122,7 +123,7 @@ public class HeartbeatMsg extends TimedMsg implements Heartbeat {
 
     /**
      * NumberedView interface implementation
-     * @return
+     * @return view
      */
     public View getView() {
         if( !viewUnmarshalled )
@@ -147,7 +148,7 @@ public class HeartbeatMsg extends TimedMsg implements Heartbeat {
 
     /**
      * Candidate interface
-     * @return
+     * @return  identity
      */
     public Identity getCandidate() {
         if( !candidateUnmarshalled )
@@ -161,7 +162,7 @@ public class HeartbeatMsg extends TimedMsg implements Heartbeat {
 
     /**
      * Message link requirements data field
-     * @return
+     * @return NodeIdSet
      */
     public NodeIdSet getMsgLinks() {
         if( !msgLinksUnmarshalled )
@@ -174,7 +175,7 @@ public class HeartbeatMsg extends TimedMsg implements Heartbeat {
 
     /**
      * testInterface get and set
-     * @return
+     * @param address
      */
     public void setTestInterface(ConnectionAddress address) {
         testInterface = address;
@@ -228,8 +229,6 @@ public class HeartbeatMsg extends TimedMsg implements Heartbeat {
 
     /**
      * Write the message attributes to the
-     *
-     * @param wire byte[]
      */
     protected void writeWireForm() throws WireFormException {
         super.writeWireForm();
@@ -269,7 +268,7 @@ public class HeartbeatMsg extends TimedMsg implements Heartbeat {
      * on demand. These attributes are not likely to be needed often - so we
      * only unmarshall them when we have to.
      *
-     * @param wireForm byte[]
+     * @param buf byte[]
      */
     protected void readWireForm(ByteBuffer buf) throws IOException, WireFormException, ClassNotFoundException {
         super.readWireForm(buf);

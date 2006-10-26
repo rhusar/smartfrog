@@ -42,7 +42,7 @@ public class LeaderMgr {
      * Returns the current leader - assumes there has been an election.
      * The local candidate always votes for the winner of the local
      * election. So return the local candidates vote
-     * @return
+     * @return  Identity
      */
     public Identity getLeader() {
         return localCandidate.getVote();
@@ -60,7 +60,7 @@ public class LeaderMgr {
      * node voted for are both in the partition.
      *
      * @param v
-     * @return
+     * @return  Candidate
      */
     private synchronized Candidate election(View v) {
 
@@ -130,7 +130,7 @@ public class LeaderMgr {
      * the view.
      *
      * @param v
-     * @return
+     * @return  Identity
      */
     public synchronized Identity electLeader(View v) {
         return (v.isStable() ? stableElection(v) : unstableElection(v));
@@ -141,7 +141,7 @@ public class LeaderMgr {
      * Perform the stable election (most votes wins - highest id as tie-breaker)
      *
      * @param v
-     * @return
+     * @return Identity
      */
     private Identity stableElection(View v) {
         localCandidate.setVote(election(v));
@@ -154,7 +154,7 @@ public class LeaderMgr {
      * otherwise local candidate)
      *
      * @param v
-     * @return
+     * @return  Identity
      */
     private Identity unstableElection(View v) {
         if( !v.contains(localCandidate.getVote()) )
@@ -172,7 +172,7 @@ public class LeaderMgr {
      * guarantee on accuracy, but it can be used as a guide.
      *
      * @param v
-     * @return
+     * @return Identity
      */
     public synchronized Identity predictLeader(View v) {
         return election(v).getId();

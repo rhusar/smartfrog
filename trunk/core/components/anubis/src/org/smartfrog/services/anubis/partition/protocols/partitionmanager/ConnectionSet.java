@@ -362,8 +362,8 @@ public class ConnectionSet extends CompoundImpl
 
     /**
      * gets the connection in the specified possition of the connection set.
-     * @param i
-     * @return
+     * @param id
+     * @return connection
      */
     public synchronized Connection getConnection(Identity id) {
         return (Connection)connections.get( id );
@@ -842,7 +842,7 @@ public class ConnectionSet extends CompoundImpl
     /**
      * Returns an indication of
      * @param id
-     * @return
+     * @return boolean true if message link contains id
      */
     public boolean wantsMsgLinkTo(Identity id) {
         return msgLinks.contains(id.id);

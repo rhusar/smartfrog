@@ -44,7 +44,7 @@ public class CandidateImpl implements Candidate {
 
     /**
      * Candidate interface
-     * @return
+     * @return  Identity
      */
     public Identity  getId()                  { return me;}
     public Identity  getVote()                { return vote;}

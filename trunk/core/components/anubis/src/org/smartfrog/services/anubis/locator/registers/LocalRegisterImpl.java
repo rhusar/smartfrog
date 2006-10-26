@@ -284,8 +284,6 @@ public class LocalRegisterImpl {
      *                   the listeners are responsible for contacting this
      *                   local registry to get provider info.
      * @param provider
-     * @param name
-     * @return
      */
     public void registerProvider(AnubisProvider provider) {
         requests.put(new UserProviderRequest(UserProviderRequest.Register,
@@ -302,8 +300,6 @@ public class LocalRegisterImpl {
      *                     register.
      *                     deregister with local register.
      * @param provider
-     * @param name
-     * @return
      */
     public void deregisterProvider(AnubisProvider provider) {
         requests.put(new UserProviderRequest(UserProviderRequest.Deregister,
@@ -328,7 +324,6 @@ public class LocalRegisterImpl {
 
     /**
      * @param listener
-     * @return
      */
     public void registerListener(AnubisListener listener) {
         requests.put(new UserListenerRequest(UserListenerRequest.Register, listener));
@@ -342,8 +337,6 @@ public class LocalRegisterImpl {
      *                     and there are no more.
      *                     The global only has pending listeners registered.
      * @param listener
-     * @param name
-     * @return
      */
     public void deregisterListener(AnubisListener listener) {
         requests.put(new UserListenerRequest(UserListenerRequest.Deregister, listener));
@@ -398,8 +391,8 @@ public class LocalRegisterImpl {
      * 3) register all providers and listeners again
      * Note: we are being dumb and pessimistic here - always recover all
      * registrations - could be more clever.
-     *
-     * @param g
+     * @param leader
+     * @param timeStamp
      */
     public synchronized void stable(int leader, long timeStamp) {
         stable = true;

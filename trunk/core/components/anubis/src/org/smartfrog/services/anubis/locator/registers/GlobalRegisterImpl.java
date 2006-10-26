@@ -78,7 +78,7 @@ public class GlobalRegisterImpl {
     /**
      * Constructor - sets the local
      * @param id
-     * @param l
+     * @param locator
      */
     public GlobalRegisterImpl(Identity id, Locator locator) {
         this.me             = id.id;
@@ -385,7 +385,7 @@ public class GlobalRegisterImpl {
 
     /**
      * List out the contents of the register by node.
-     * @return
+     * @return  String
      */
     public synchronized String toString() {
         if( !active )

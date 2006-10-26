@@ -88,7 +88,7 @@ public class LocalProviders {
      * Constructor
      *
      * @param l
-     * @param g
+     * @param id
      */
     public LocalProviders(Locator l, Integer id) {
         locator = l;
@@ -103,8 +103,9 @@ public class LocalProviders {
      *
      * FIX ME: does not check for uniqueness in the partition.
      *
-     * @param name - unique name associated with the provider
-     * @param provider - the provider interface
+     * @param provider  - the provider interface
+     * @param value
+     * @param time
      */
     public synchronized void register(AnubisProvider provider, ValueData value, long time) {
 
