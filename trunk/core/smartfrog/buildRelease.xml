@@ -280,7 +280,7 @@ To Be Written
         <include name="changes.txt"/>
         <include name="readme.txt"/>
         <include name="sf-build-version.properties"/>
-        <exclude name="**/CVS" />
+        <exclude name="**/SVN" />
         <exclude name="**/*.dfPackage" />
         <exclude name="**/Cvs" />
         <exclude name="**/.#*" />
@@ -409,7 +409,7 @@ To Be Written
         <include name="changes.txt"/>
         <include name="readme.txt"/>
         <include name="sf-build-version.properties"/>
-        <exclude name="**/CVS" />
+        <exclude name="**/SVN" />
         <exclude name="**/*.dfPackage" />
         <exclude name="**/Cvs" />
         <exclude name="bin/tools/**"/>

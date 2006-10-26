@@ -70,7 +70,7 @@
 
         <copy todir="${plugin.dest}">
             <fileset dir="${basedir}">
-                <exclude name="**/CVS/**"/>
+                <exclude name="**/SVN/**"/>
                 <!-- key directories -->
                 <include name="SmartFrog/**"/>
                 <include name="icons/**"/>

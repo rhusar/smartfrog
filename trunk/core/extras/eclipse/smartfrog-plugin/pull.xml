@@ -28,7 +28,7 @@
    </target>
 
    <target name="pullSource"> 
-      <cvs cvsRoot=":pserver:${env.CVS_USR}:${env.CVS_PWD}@${env.CVS_TUNNEL}:/cvs"
+      <cvs cvsRoot=":pserver:${env.SVN_USR}:${env.SVN_PWD}@${env.SVN_TUNNEL}:/cvs"
          package="${ant.project.name}/src"
          date="${Label}"
          dest=".."
@@ -36,7 +36,7 @@
    </target>
 
    <target name="pullTest"> 
-      <cvs cvsRoot=":pserver:${env.CVS_USR}:${env.CVS_PWD}@${env.CVS_TUNNEL}:/cvs"
+      <cvs cvsRoot=":pserver:${env.SVN_USR}:${env.SVN_PWD}@${env.SVN_TUNNEL}:/cvs"
          package="${ant.project.name}/test"
          date="${Label}"
          dest=".."
@@ -44,7 +44,7 @@
    </target>
 
    <target name="pullDistribution"> 
-      <cvs cvsRoot=":pserver:${env.CVS_USR}:${env.CVS_PWD}@${env.CVS_TUNNEL}:/cvs"
+      <cvs cvsRoot=":pserver:${env.SVN_USR}:${env.SVN_PWD}@${env.SVN_TUNNEL}:/cvs"
          package="${ant.project.name}/${dist}"
          date="${Label}"
          dest=".."

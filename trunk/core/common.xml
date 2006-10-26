@@ -1274,9 +1274,9 @@
   <!-- init all the maven2 support   -->
   <!-- ========================================================== -->
    <target name="m2-init" depends="init,init-proxy,declare-extended-smartfrog-tasks">
-   <!-- per project, CVS managed override -->
+   <!-- per project, SVN managed override -->
     <property file="libraries.properties" />
-    <!-- central CVS managed libraries list -->
+    <!-- central SVN managed libraries list -->
     <property file="${smartfrog.components.dir}/libraries.properties" />
 
     <!-- Maven2 stuff

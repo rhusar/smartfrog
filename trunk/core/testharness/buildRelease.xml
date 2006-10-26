@@ -128,7 +128,7 @@ To use: ant -f buildRelease release
           <include name="build.xml"/>
           <include name="buildRelease.xml"/>
           <include name="rmitargets"/>
-          <exclude name="**/CVS" />
+          <exclude name="**/SVN" />
           <exclude name="**/*.dfPackage" />
           <exclude name="**/Cvs" />
           <exclude name="**/.#*" />
@@ -151,7 +151,7 @@ To use: ant -f buildRelease release
         <include name="build.xml"/>
         <include name="buildRelease.xml"/>
         <include name="rmitargets"/>
-        <exclude name="**/CVS" />
+        <exclude name="**/SVN" />
         <exclude name="**/*.dfPackage" />
         <exclude name="**/Cvs" />
         <exclude name="**/.#*" />
