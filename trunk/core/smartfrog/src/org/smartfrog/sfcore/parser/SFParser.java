@@ -30,6 +30,7 @@ import org.smartfrog.sfcore.common.*;
 import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.security.SFClassLoader;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
+import org.smartfrog.sfcore.languages.sf.sfcomponentdescription.*;
 
 
 /**
@@ -287,7 +288,10 @@ public class SFParser implements Parser, MessageKeys {
            Object o = parser.sfParseAnyValue(is);
            if (o instanceof ReferencePhases) {
                o = ((ReferencePhases)o).sfAsReference();
-           }
+             } else if (o instanceof SFComponentDescription) {
+                 o = ((SFComponentDescription)o).sfAsComponentDescription();
+             }
+
            return o;
     }
 
