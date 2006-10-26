@@ -246,7 +246,7 @@ public class SmartFrogCoreProperty {
      * @see org.smartfrog.sfcore.languages.sf.SFParser
      */
     public final static String sfParserSFFactoryClass =
-                   propBase+propBaseSFParserSF + "factoryClass";
+                   propBaseSFParserSF + "factoryClass";
 
 
    /**
@@ -257,7 +257,7 @@ public class SmartFrogCoreProperty {
     * @see org.smartfrog.sfcore.languages.sf.SFParser
     */
    public final static String sfParserSFIncludeHandlerClass =
-                              propBase+propBaseSFParserSF + "includeHandlerClass";
+                              propBaseSFParserSF + "includeHandlerClass";
 
 
 }
