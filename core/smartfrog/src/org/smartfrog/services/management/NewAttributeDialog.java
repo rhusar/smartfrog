@@ -20,23 +20,10 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.services.management;
 
-import java.awt.Dimension;
-import java.awt.Frame;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.util.Iterator;
 import java.util.Vector;
 
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JDialog;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
-import javax.swing.JTextField;
 
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.parser.Phases;
@@ -44,7 +31,8 @@ import org.smartfrog.sfcore.parser.SFParser;
 import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.logging.LogSF;
 import org.smartfrog.sfcore.logging.LogFactory;
-
+import javax.swing.*;
+import java.awt.*;
 
 /**
  *  Dialog to create/add/modify attributes of a SmartFrog component
@@ -99,6 +87,7 @@ public class NewAttributeDialog extends JDialog {
 
     //final int VECTOR = 3;
     private JComboBox TypejComboBox = new JComboBox(componentTypes);
+  JLabel jLabel1 = new JLabel();
 
     /**
      * Constructs NewAttributeDialog with frame, title , modal and set of
@@ -156,47 +145,42 @@ public class NewAttributeDialog extends JDialog {
                     jButtonCancel_actionPerformed(e);
                 }
             });
-        jLabelType.setText("Value");
+        //jLabelType.setText("Value");
         jLabelName.setText("Name");
-        NamejTextField.setNextFocusableComponent(TypejComboBox);
+        NamejTextField.setNextFocusableComponent(ValuejTextArea);
         NamejTextField.setText("");
-        jLabelValue.setText("(use SF syntax)");
+        jLabelValue.setText("Value");
         ValuejTextArea.setNextFocusableComponent(jButtonSave);
         panel.setMinimumSize(new Dimension(550, 300));
         panel.setPreferredSize(new Dimension(550, 300));
-        getContentPane().add(panel);
+        jLabel1.setText("(use SF syntax)");
+    getContentPane().add(panel);
 //        panel.add(TypejComboBox,
 //            new GridBagConstraints(1, 1, 2, 1, 1.0, 0.0,
 //                GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL,
 //                new Insets(15, 13, 0, 23), 151, 0));
         panel.add(NamejTextField,
-            new GridBagConstraints(1, 0, 2, 1, 1.0, 0.0,
-                GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
-                new Insets(17, 13, 0, 23), 302, 0));
+              new GridBagConstraints(1, 0, 2, 1, 1.0, 0.0
+            ,GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, new Insets(17, 13, 0, 23), 302, 0));
         panel.add(jLabelName,
-            new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0,
-                GridBagConstraints.WEST, GridBagConstraints.NONE,
-                new Insets(17, 24, 0, 0), 0, 0));
-        panel.add(jLabelType,
-            new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0,
-                GridBagConstraints.WEST, GridBagConstraints.NONE,
-                new Insets(17, 24, 0, 8), 0, 0));
-        panel.add(jLabelValue,
-            new GridBagConstraints(0, 2, 1, 1, 0.0, 0.0,
-                GridBagConstraints.WEST, GridBagConstraints.NONE,
-                new Insets(13, 24, 140, 0), 0, 0));
+              new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0
+            ,GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(17, 24, 0, 0), 0, 0));
+       // panel.add(jLabelType,
+        //     new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0
+        //    ,GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(17, 24, 0, 8), 0, 0));
         panel.add(jButtonCancel,
-            new GridBagConstraints(2, 3, 1, 1, 0.0, 0.0,
-                GridBagConstraints.CENTER, GridBagConstraints.NONE,
-                new Insets(16, 22, 13, 89), 0, 0));
+              new GridBagConstraints(2, 3, 1, 1, 0.0, 0.0
+            ,GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(16, 22, 13, 89), 0, 0));
         panel.add(jButtonSave,
-            new GridBagConstraints(1, 3, 1, 1, 0.0, 0.0,
-                GridBagConstraints.CENTER, GridBagConstraints.NONE,
-                new Insets(16, 85, 13, 0), 12, 0));
+              new GridBagConstraints(1, 3, 1, 1, 0.0, 0.0
+            ,GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(16, 85, 13, 0), 12, 0));
         panel.add(jScrollPane1,
-            new GridBagConstraints(1, 2, 2, 1, 1.0, 1.0,
-                GridBagConstraints.CENTER, GridBagConstraints.BOTH,
-                new Insets(19, 13, 0, 23), 300, 130));
+              new GridBagConstraints(1, 1, 2, 2, 1.0, 1.0
+            ,GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(19, 13, 0, 23), 300, 130));
+    panel.add(jLabelValue, new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0
+            ,GridBagConstraints.SOUTHWEST, GridBagConstraints.NONE, new Insets(13, 24, 0, 0), 0, 0));
+    panel.add(jLabel1, new GridBagConstraints(0, 2, 1, 1, 0.0, 0.0
+            ,GridBagConstraints.NORTHEAST, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
         jScrollPane1.getViewport().add(ValuejTextArea, null);
     }
 
@@ -370,7 +354,7 @@ public class NewAttributeDialog extends JDialog {
     /**
      * Parse
      * @param textToParse  text to be parsed
-     * @param language language 
+     * @param language language
      * @return Object
      */
     public Object parseValue(String textToParse, String language) {
