@@ -73,12 +73,8 @@ For more information: www.smartfrog.org
 
 
     <echo message=""/>
-    <echo message="==================================================================="/>
-    <echo message="= ${Name.System} ${version}"/>
-    <echo message="= ${Name.Company} "/>
-    <echo message="==================================================================="/>
-    <echo message=""/>
-    <echo message="(${ant.version})"/>
+<echo message="==================================================================="/>
+<echo message="= ${Name.System} ${version}", ${Name.Company} (${ant.version})"/>
   </target>
 
 
