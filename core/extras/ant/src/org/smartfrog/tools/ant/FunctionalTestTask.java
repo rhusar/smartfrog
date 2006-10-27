@@ -19,11 +19,11 @@
  */
 package org.smartfrog.tools.ant;
 
-import org.apache.tools.ant.taskdefs.Sequential;
-import org.apache.tools.ant.taskdefs.Parallel;
-import org.apache.tools.ant.Task;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
+import org.apache.tools.ant.Task;
+import org.apache.tools.ant.taskdefs.Parallel;
+import org.apache.tools.ant.taskdefs.Sequential;
 
 /**
  * 
@@ -76,7 +76,7 @@ public class FunctionalTestTask extends Task {
     public static final String MESSAGE_FORCED_SHUTDOWN_OF_APPLICATION = "Forced shutdown of application";
 
 
-    public FunctionalTestTask() throws Exception {
+    public FunctionalTestTask() {
     }
 
 
@@ -165,10 +165,10 @@ public class FunctionalTestTask extends Task {
      * @param junit
      */
     public void addTest(Sequential junit) {
-        if (this.test != null) {
+        if (test != null) {
             log("Overriding previous definition of <test>");
         }
-        this.test = junit;
+        test = junit;
     }
 
     /**
@@ -300,13 +300,13 @@ public class FunctionalTestTask extends Task {
     /**
      * Run a task in the background. when finished, it will signal.
      */
-    private class BackgroundTask implements Runnable {
+    private static class BackgroundTask implements Runnable {
         private Task task;
 
         private BuildException exception;
         private Thread thread;
 
-        public BackgroundTask(Task task) {
+        BackgroundTask(Task task) {
             thread = new Thread(this);
             this.task = task;
         }
