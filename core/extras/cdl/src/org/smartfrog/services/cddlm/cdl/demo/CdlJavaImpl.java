@@ -19,7 +19,7 @@
  */
 package org.smartfrog.services.cddlm.cdl.demo;
 
-import org.smartfrog.services.cddlm.cdl.cmp.CmpComponentImpl;
+import org.smartfrog.services.cddlm.cdl.cmp.CmpCompoundImpl;
 import org.smartfrog.sfcore.common.SmartFrogException;
 
 import java.rmi.RemoteException;
@@ -28,7 +28,7 @@ import java.rmi.RemoteException;
  * created 24-Jun-2005 14:01:08
  */
 
-public class CdlJavaImpl extends CmpComponentImpl implements CdlJava {
+public class CdlJavaImpl extends CmpCompoundImpl implements CdlJava {
 
     public CdlJavaImpl() throws RemoteException {
     }

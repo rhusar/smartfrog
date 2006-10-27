@@ -38,7 +38,7 @@
 
 
     <base:CdlComponent cdl:extends="base:Compound" >
-      <sfClass>org.smartfrog.services.cddlm.cdl.base.CdlComponentImpl</sfClass>
+      <sfClass>org.smartfrog.services.cddlm.cdl.base.CdlCompoundImpl</sfClass>
     </base:CdlComponent>
 
 

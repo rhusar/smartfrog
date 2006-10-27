@@ -22,7 +22,7 @@ package org.smartfrog.sfcore.languages.cdl.dom;
 import nu.xom.Attribute;
 import nu.xom.Element;
 import nu.xom.Node;
-import org.smartfrog.services.cddlm.cdl.cmp.CmpComponentImpl;
+import org.smartfrog.services.cddlm.cdl.cmp.CmpCompoundImpl;
 import org.smartfrog.services.xml.java5.NamespaceUtils;
 import org.smartfrog.services.xml.utils.XsdUtils;
 import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
@@ -31,10 +31,10 @@ import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
 import org.smartfrog.sfcore.languages.cdl.Constants;
 import org.smartfrog.sfcore.languages.cdl.components.CdlComponentDescription;
 import org.smartfrog.sfcore.languages.cdl.components.CdlComponentDescriptionImpl;
-import org.smartfrog.sfcore.languages.cdl.faults.CdlInvalidValueReferenceException;
-import org.smartfrog.sfcore.languages.cdl.faults.CdlXmlParsingException;
 import org.smartfrog.sfcore.languages.cdl.faults.CdlException;
+import org.smartfrog.sfcore.languages.cdl.faults.CdlInvalidValueReferenceException;
 import org.smartfrog.sfcore.languages.cdl.faults.CdlResolutionException;
+import org.smartfrog.sfcore.languages.cdl.faults.CdlXmlParsingException;
 import org.smartfrog.sfcore.languages.cdl.generate.DescriptorSource;
 import org.smartfrog.sfcore.languages.cdl.generate.TypeMapper;
 import org.smartfrog.sfcore.languages.cdl.references.ReferencePath;
@@ -48,8 +48,6 @@ import org.smartfrog.sfcore.reference.Reference;
 
 import javax.xml.namespace.QName;
 import java.rmi.RemoteException;
-import java.util.List;
-import java.util.ArrayList;
 
 /**
  * This represents a template in the CDL
@@ -501,7 +499,7 @@ public class PropertyList extends DocNode implements DescriptorSource {
                 //only do the text if there were no children
                 if(text!=null &&
                         (Constants.POLICY_ALWAYS_EXPORT_TEXT_NODES || exported>0)) {
-                    description.sfReplaceAttribute(CmpComponentImpl.ATTR_TEXT,text);
+                    description.sfReplaceAttribute(CmpCompoundImpl.ATTR_TEXT,text);
                 }
             }
         }

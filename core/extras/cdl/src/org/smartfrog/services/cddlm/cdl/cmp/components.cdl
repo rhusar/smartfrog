@@ -16,7 +16,7 @@
     <!--Not part of the spec: a cmp:component-->
     <cmp:Component >
       <sfClass sfi:type="trimmed" cdl:ref="cmp:CommandPath" />
-      <cmp:CommandPath >org.smartfrog.services.cddlm.cdl.base.CdlComponentImpl</cmp:CommandPath>
+      <cmp:CommandPath >org.smartfrog.services.cddlm.cdl.base.CdlCompoundImpl</cmp:CommandPath>
     </cmp:Component>
 
  <!-- Events -->

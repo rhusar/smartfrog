@@ -1,4 +1,4 @@
-/** (C) Copyright 2006 Hewlett-Packard Development Company, LP
+/** (C) Copyright 2005 Hewlett-Packard Development Company, LP
 
  This library is free software; you can redistribute it and/or
  modify it under the terms of the GNU Lesser General Public
@@ -17,14 +17,23 @@
  For more information: www.smartfrog.org
 
  */
-package org.smartfrog.services.cddlm.cdl.base;
 
-import java.rmi.Remote;
+
+package org.smartfrog.services.cddlm.cdl.cmp;
+
+import org.smartfrog.services.cddlm.cdl.base.CdlCompoundImpl;
+
+import java.rmi.RemoteException;
 
 /**
- * created 01-Feb-2006 11:18:53
+ * created 22-Jun-2005 13:14:43
  */
 
+public class CmpCompoundImpl extends CdlCompoundImpl implements CmpComponent {
 
-public interface CdlComponent extends Remote {
+
+    public CmpCompoundImpl() throws RemoteException {
+    }
+
+
 }

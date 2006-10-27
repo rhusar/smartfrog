@@ -19,25 +19,25 @@
  */
 package org.smartfrog.services.cddlm.cdl.demo;
 
-import org.smartfrog.services.cddlm.cdl.cmp.CmpComponentImpl;
+import org.smartfrog.services.cddlm.cdl.cmp.CmpCompoundImpl;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLivenessException;
 import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
-import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.logging.Log;
 import org.smartfrog.sfcore.prim.TerminationRecord;
+import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.utils.ComponentHelper;
 
 import javax.swing.*;
 import javax.xml.namespace.QName;
-import java.rmi.RemoteException;
 import java.awt.*;
+import java.rmi.RemoteException;
 
 /**
  * created 23-Jun-2005 17:52:13
  */
 
-public class EchoImpl extends CmpComponentImpl implements Echo, Runnable {
+public class EchoImpl extends CmpCompoundImpl implements Echo, Runnable {
 
     private Log log;
     public static QName QNAME_MESSAGE = new QName(Echo.DEMO_NAMESPACE, Echo.ATTR_MESSAGE);
