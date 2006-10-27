@@ -21,8 +21,9 @@ package org.smartfrog.services.deployapi.engine;
 
 import nu.xom.Element;
 import org.smartfrog.projects.alpine.om.base.SoapElement;
+import org.smartfrog.services.cddlm.cdl.base.LifecycleStateEnum;
 import org.smartfrog.services.deployapi.system.Constants;
-import org.smartfrog.services.deployapi.system.LifecycleStateEnum;
+import org.smartfrog.services.deployapi.system.Utils;
 import org.smartfrog.services.deployapi.transport.wsrf.Property;
 import org.smartfrog.services.deployapi.transport.wsrf.WsrfUtils;
 
@@ -47,7 +48,7 @@ public class ApplicationStateProperty implements Property {
 
     public List<Element> getValue() {
         LifecycleStateEnum state = owner.getState();
-        SoapElement cmpState = state.toCmpState();
+        SoapElement cmpState = Utils.toCmpState(state);
 
         return WsrfUtils.listify(cmpState);
     }

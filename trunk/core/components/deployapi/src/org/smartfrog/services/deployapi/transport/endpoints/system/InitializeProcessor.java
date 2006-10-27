@@ -22,14 +22,14 @@ package org.smartfrog.services.deployapi.transport.endpoints.system;
 import nu.xom.Element;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.smartfrog.projects.alpine.om.base.SoapElement;
+import org.smartfrog.services.cddlm.cdl.base.LifecycleStateEnum;
 import org.smartfrog.services.deployapi.binding.DescriptorHelper;
 import org.smartfrog.services.deployapi.binding.XomHelper;
 import org.smartfrog.services.deployapi.engine.ServerInstance;
 import org.smartfrog.services.deployapi.system.Constants;
 import org.smartfrog.services.deployapi.system.DeploymentLanguage;
-import org.smartfrog.services.deployapi.system.LifecycleStateEnum;
 import org.smartfrog.services.deployapi.transport.endpoints.alpine.WsrfHandler;
-import org.smartfrog.projects.alpine.om.base.SoapElement;
 
 import java.io.File;
 import java.io.IOException;

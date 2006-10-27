@@ -20,8 +20,13 @@
 package org.smartfrog.services.deployapi.system;
 
 import nu.xom.Element;
+import nu.xom.Elements;
+import org.ggf.cddlm.generated.api.CddlmConstants;
+import org.smartfrog.projects.alpine.om.base.SoapElement;
+import org.smartfrog.services.cddlm.cdl.base.LifecycleStateEnum;
+import org.smartfrog.services.deployapi.binding.XomHelper;
+import org.smartfrog.services.deployapi.transport.faults.FaultRaiser;
 
-import javax.xml.namespace.QName;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.Closeable;
@@ -164,5 +169,51 @@ public class Utils {
         address.appendChild(url);
         endpoint.appendChild(address);
         return endpoint;
+    }
+
+    /**
+     * Go from XML to types
+     * @param grandparent
+     * @return
+     * @throws
+     */
+    public static LifecycleStateEnum parseCmpState(Element grandparent) {
+        Element parent = grandparent.getFirstChildElement(LifecycleStateEnum.STATE,
+                CddlmConstants.CDL_CMP_TYPES_NAMESPACE);
+        if(parent==null) {
+            throw FaultRaiser.raiseBadArgumentFault(
+                    "No elements under cmp:State element under " + grandparent);
+        }
+        Elements elements = parent.getChildElements();
+        if(elements.size()==0) {
+            throw FaultRaiser.raiseBadArgumentFault("No elements under cmp:State "+parent);
+        }
+        Element child = elements.get(0);
+        if(!CddlmConstants.CDL_CMP_TYPES_NAMESPACE.equals(child.getNamespaceURI())) {
+            throw FaultRaiser.raiseBadArgumentFault(
+                    "First state element is not in the expected namespace "+child);
+        }
+        String statename=child.getLocalName();
+        for(LifecycleStateEnum e: LifecycleStateEnum.values()) {
+            if(e.getXmlName().equals(statename)) {
+                return e;
+            }
+        }
+        throw FaultRaiser.raiseBadArgumentFault(
+                "no state found matching " + child);
+    }
+
+    /**
+     * Return a cmp:State element containing the local state
+     * as a direct child. The name of the local state is defined
+     * by the xmlName value of the state.
+     * @return the state in XML
+     * @param state the state to parse
+     */
+    public static SoapElement toCmpState(LifecycleStateEnum state) {
+        SoapElement parent = XomHelper.cmpElement(LifecycleStateEnum.STATE);
+        SoapElement child = XomHelper.cmpElement(state.getXmlName());
+        parent.appendChild(child);
+        return parent;
     }
 }

@@ -1,11 +1,11 @@
 package org.smartfrog.services.deployapi.test.unit;
 
 import junit.framework.TestCase;
-import org.smartfrog.services.deployapi.system.LifecycleStateEnum;
-import org.smartfrog.services.deployapi.transport.faults.BaseException;
-import org.smartfrog.projects.alpine.om.base.SoapElement;
 import nu.xom.Element;
-import nu.xom.Node;
+import org.smartfrog.projects.alpine.om.base.SoapElement;
+import org.smartfrog.services.cddlm.cdl.base.LifecycleStateEnum;
+import org.smartfrog.services.deployapi.system.Utils;
+import org.smartfrog.services.deployapi.transport.faults.BaseException;
 
 /**
  */
@@ -14,16 +14,16 @@ public class LifecycleStateTest extends TestCase {
 
     public void testXmlRoundTrip() throws Exception {
         for(LifecycleStateEnum state: LifecycleStateEnum.values()) {
-            Element e=state.toCmpState();
+            Element e= Utils.toCmpState(state);
             SoapElement base = makeParent(e);
-            LifecycleStateEnum back=LifecycleStateEnum.extract(base);
+            LifecycleStateEnum back= Utils.parseCmpState(base);
         }
     }
 
     public void testNoParent() throws Exception {
         SoapElement base = makeParent(null);
         try {
-            LifecycleStateEnum.extract(base);
+            Utils.parseCmpState(base);
             fail("should have bailed out");
         } catch (BaseException e) {
             //expected
@@ -31,12 +31,12 @@ public class LifecycleStateTest extends TestCase {
     }
 
     public void testUnknownState() throws Exception {
-        SoapElement e = LifecycleStateEnum.undefined.toCmpState();
+        SoapElement e = Utils.toCmpState(LifecycleStateEnum.undefined);
         Element child = (Element) e.getChild(0);
         child.setLocalName("madeupname");
         SoapElement base = makeParent(e);
         try {
-            LifecycleStateEnum.extract(base);
+            Utils.parseCmpState(base);
             fail("should have bailed out");
         } catch (BaseException ex) {
             //expected

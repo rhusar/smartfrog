@@ -25,13 +25,15 @@ import org.apache.commons.logging.LogFactory;
 import org.ggf.cddlm.generated.api.CddlmConstants;
 import org.smartfrog.projects.alpine.om.base.SoapElement;
 import org.smartfrog.projects.alpine.wsa.AlpineEPR;
+import org.smartfrog.services.cddlm.cdl.base.CdlCompound;
+import org.smartfrog.services.cddlm.cdl.base.LifecycleListener;
+import org.smartfrog.services.cddlm.cdl.base.LifecycleStateEnum;
 import org.smartfrog.services.deployapi.binding.DescriptorHelper;
 import org.smartfrog.services.deployapi.binding.XomHelper;
 import org.smartfrog.services.deployapi.notifications.Event;
 import org.smartfrog.services.deployapi.notifications.EventSubscriberManager;
 import org.smartfrog.services.deployapi.system.Constants;
 import org.smartfrog.services.deployapi.system.DeploymentLanguage;
-import org.smartfrog.services.deployapi.system.LifecycleStateEnum;
 import org.smartfrog.services.deployapi.system.Utils;
 import org.smartfrog.services.deployapi.transport.endpoints.system.OptionProcessor;
 import org.smartfrog.services.deployapi.transport.faults.BaseException;
@@ -65,7 +67,7 @@ import java.util.List;
  * created Aug 5, 2004 3:00:26 PM
  */
 
-public class Application implements WSRPResourceSource {
+public class Application implements WSRPResourceSource, LifecycleListener {
 
     private final static Log log = LogFactory.getLog(Application.class);
     private String jsdlLanguage;
@@ -415,12 +417,12 @@ public class Application implements WSRPResourceSource {
     /**
      * first pass impl of deployment; use sfsystem
      *
-     * @param hostname
-     * @param application
-     * @param language
-     * @param url
-     * @return
-     * @
+     * @param hostname host to deploy on
+     * @param application uniique application name
+     * @param language language to use
+     * @param url URL of the application
+     * @param subprocess name of any subprocess
+     * @return the deployed prim
      */
     private Prim deployThroughSFSystem(String hostname, String application,
                                        DeploymentLanguage language, String url,
@@ -433,17 +435,25 @@ public class Application implements WSRPResourceSource {
             if (subprocess != null) {
                 config.setSubProcess(subprocess);
             }
+            //select the language
             config.setContextAttribute(ActionDeploy.KEY_LANGUAGE,language.getExtension());
+            //tell the CDL runtime what the root component should be
             log.info("Deploying " + url + " to " + hostname+" as "+language.getDescription());
             //deploy, throwing an exception if we cannot
             Object result = config.execute(null);
             enterStateNotifying(LifecycleStateEnum.initialized, "initialized");
             enterStateNotifying(LifecycleStateEnum.running, "running");
-            if (result instanceof Prim) {
+            if(result instanceof CdlCompound) {
+                //we can subscribe to this because it implements a cdl compound
+                CdlCompound compound=(CdlCompound) result;
+                compound.subscribe(getAddress(), this);
+                return (Prim)compound;
+            } else if (result instanceof Prim) {
+                log.warn("We have not deployed a component that raises lifecycle events");
                 return (Prim) result;
             } else {
                 final String message = "got something not a Prim back from a deployer";
-                log.info(message);
+                log.error(message);
                 throw new BaseException(message + " " + result.toString());
             }
 
@@ -491,7 +501,10 @@ public class Application implements WSRPResourceSource {
      * were in before This method is synchronous, you cannot enter a state till
      * the last one was processed.
      *
+     * If you try and enter the current state, then nothing happens
+     *
      * @param newState new state to enter
+     * @param info string to record in the stateInfo field.
      */
     public synchronized void enterStateNotifying(LifecycleStateEnum newState,
                                                  String info) {
@@ -519,9 +532,16 @@ public class Application implements WSRPResourceSource {
                 addTimeProperty(propname,
                         null);
             }
+            if (log.isDebugEnabled()) {
+                log.debug("Changing state:" + toString());
+            }
             //create a notification
             Event event=new Event(this,newState, terminationRecord);
             subscribers.event(event);
+        } else {
+            if(log.isDebugEnabled()) {
+                log.debug("reentrant state entry for "+toString());
+            }
         }
     }
 
@@ -536,13 +556,20 @@ public class Application implements WSRPResourceSource {
      * @param record
      */
     public synchronized void enterTerminatedStateNotifying(
-            TerminationRecord record) {
+            TerminationRecord record)  {
         terminationRecord = record;
         enterStateNotifying(LifecycleStateEnum.terminated, record.toString());
     }
 
+    /**
+     * String operation returns the id, address and state information.
+     * If the terminationRecord is not null, that is also included
+     * @return textual description of the Application
+     */
     public String toString() {
-        return "job ID=" + id + " address=" + address + " state=" + state.toString();
+        return "Application ID=" + id + " address=" + address + " state=" + state.toString()
+                + (stateInfo!=null?(" "+stateInfo):"")
+                + (terminationRecord!=null?("\n"+terminationRecord.toString()):"");
     }
 
     /**
@@ -590,7 +617,7 @@ public class Application implements WSRPResourceSource {
         SoapElement pingBack = XomHelper.apiElement(Constants.API_ELEMENT_PING_RESPONSE);
 
         LifecycleStateEnum state = getState();
-        SoapElement pingBody = state.toCmpState();
+        SoapElement pingBody = Utils.toCmpState(state);
         pingBack.appendChild(pingBody);
         if(state == LifecycleStateEnum.instantiated || state == LifecycleStateEnum.terminated) {
             //instantiated but no deployment has commenced.
