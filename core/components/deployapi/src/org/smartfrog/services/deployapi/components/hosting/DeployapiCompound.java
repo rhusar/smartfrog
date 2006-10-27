@@ -19,26 +19,14 @@
  */
 package org.smartfrog.services.deployapi.components.hosting;
 
-import java.rmi.Remote;
+import org.smartfrog.services.cddlm.cdl.base.CdlCompound;
 
 /**
- *
+ *  This is an extension of a CDL compound that
  * created Sep 8, 2004 2:33:07 PM
  */
 
-public interface CddlmCompound extends Remote {
+public interface DeployapiCompound extends CdlCompound {
 
-
-    /**
-     * URL of an endpoint to notify
-     */
-    /*
-    public String ATTR_NOTIFICATION_ENDPOINT = "endpoint";
-
-    public String ATTR_TIMEOUT = "timeout";
-
-    public String ATTR_IDENTIFIER = "identifier";
-*/
-    public String ATTR_JOBURI = "joburi";
 
 }
