@@ -62,14 +62,10 @@ Reference URL:http://ant.apache.org
     <property name="version" value="smartfrog components"/>
     <!--property name="Version" value="1.00.000_beta"/-->
     <property name="year" value="2006"/>
-
     <echo message=""/>
     <echo message="==================================================================="/>
-    <echo message="= ${Name.System} ${version}"/>
-    <echo message="= ${Name.Company} "/>
+    <echo message="= ${Name.System} ${version}", ${Name.Company} (${ant.version})"/>
     <echo message="==================================================================="/>
-    <echo message=""/>
-    <echo message="(${ant.version})"/>
     <available property="nice.task.present" classname="org.apache.tools.ant.taskdefs.Nice" />
   </target>
 
