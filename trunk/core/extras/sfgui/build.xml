@@ -50,7 +50,7 @@ Reference URL:http://ant.apache.org
 
     <echo message=""/>
 <echo message="==================================================================="/>
-<echo message="= ${Name.System} ${version}", ${Name.Company} (${ant.version})"/>
+    <echo message="= ${Name.System} ${version}, ${Name.Company} (${ant.version})"/>
     <available property="nice.task.present" classname="org.apache.tools.ant.taskdefs.Nice" />
   </target>
 
