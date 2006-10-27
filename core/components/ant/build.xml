@@ -64,7 +64,7 @@ Reference URL:http://ant.apache.org
     <property name="year" value="2006"/>
     <echo message=""/>
     <echo message="==================================================================="/>
-    <echo message="= ${Name.System} ${version}", ${Name.Company} (${ant.version})"/>
+    <echo message="= ${Name.System} ${version}, ${Name.Company} (${ant.version})     "/>
     <echo message="==================================================================="/>
     <available property="nice.task.present" classname="org.apache.tools.ant.taskdefs.Nice" />
   </target>
