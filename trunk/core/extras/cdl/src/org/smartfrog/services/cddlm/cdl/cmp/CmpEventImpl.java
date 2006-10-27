@@ -25,7 +25,7 @@ import java.rmi.RemoteException;
  * created 23-Jun-2005 16:37:05
  */
 
-public class CmpEventImpl extends CmpComponentImpl implements CmpEvent {
+public class CmpEventImpl extends CmpCompoundImpl implements CmpEvent {
 
     public CmpEventImpl() throws RemoteException {
     }

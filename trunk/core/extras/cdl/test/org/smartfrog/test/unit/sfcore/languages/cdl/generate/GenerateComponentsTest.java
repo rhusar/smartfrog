@@ -19,16 +19,15 @@
  */
 package org.smartfrog.test.unit.sfcore.languages.cdl.generate;
 
-import junit.framework.TestCase;
-import org.smartfrog.test.system.sfcore.languages.cdl.execute.CdlComponentTest;
-import org.smartfrog.test.system.sfcore.languages.cdl.execute.CdlExecTest;
-import org.smartfrog.test.SmartFrogTestBase;
-import org.smartfrog.sfcore.parser.Phases;
+import org.smartfrog.services.cddlm.cdl.base.CdlCompoundImpl;
+import org.smartfrog.services.cddlm.cdl.demo.EchoImpl;
+import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.languages.cdl.components.CdlComponentDescription;
-import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
-import org.smartfrog.services.cddlm.cdl.demo.EchoImpl;
-import org.smartfrog.services.cddlm.cdl.base.CdlComponentImpl;
+import org.smartfrog.sfcore.parser.Phases;
+import org.smartfrog.test.SmartFrogTestBase;
+import org.smartfrog.test.system.sfcore.languages.cdl.execute.CdlComponentTest;
+import org.smartfrog.test.system.sfcore.languages.cdl.execute.CdlExecTest;
 
 /**
  * Use the CDL Files of the things that get deployed, and make some unit test
@@ -54,7 +53,7 @@ public class GenerateComponentsTest extends SmartFrogTestBase {
         ComponentDescription rootCD = phases.sfAsComponentDescription();
         CdlComponentDescription rootCDL = (CdlComponentDescription) rootCD;
         String sfClass = rootCDL.sfResolve(SmartFrogCoreKeys.SF_CLASS, "", true);
-        assertEquals(CdlComponentImpl.class.getName(), sfClass);
+        assertEquals(CdlCompoundImpl.class.getName(), sfClass);
     }
 
     public void testEchoSfClassCorrect() throws Exception {

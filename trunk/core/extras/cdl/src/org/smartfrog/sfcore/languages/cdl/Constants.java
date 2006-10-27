@@ -163,10 +163,11 @@ public class Constants {
     /**
      * This is the default classname of anything, unless you say otherwise
      */
-    public static final String CDL_COMPONENT_CLASSNAME = "org.smartfrog.services.cddlm.cdl.base.CdlComponentImpl";
+    public static final String CDL_COMPONENT_CLASSNAME = "org.smartfrog.services.cddlm.cdl.base.CdlCompoundImpl";
 
     /** our namespace node {@value} */
     public static final QName QNAME_SMARTFROG_TYPES_NAMESPACE_ATTRIBUTE =
             new QName(XMLNS_SMARTFROG_TYPES, "namespace");
+
 
 }
