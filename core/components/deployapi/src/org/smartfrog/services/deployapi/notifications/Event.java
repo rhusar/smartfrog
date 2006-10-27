@@ -19,8 +19,8 @@
  */
 package org.smartfrog.services.deployapi.notifications;
 
+import org.smartfrog.services.cddlm.cdl.base.LifecycleStateEnum;
 import org.smartfrog.services.deployapi.engine.Application;
-import org.smartfrog.services.deployapi.system.LifecycleStateEnum;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 
 import java.util.Date;

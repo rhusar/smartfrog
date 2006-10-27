@@ -20,19 +20,25 @@
 package org.smartfrog.services.deployapi.alpineclient.model;
 
 import nu.xom.Element;
-import static org.ggf.cddlm.generated.api.CddlmConstants.*;
+import static org.ggf.cddlm.generated.api.CddlmConstants.API_ELEMENT_ADDFILE_RESPONSE;
+import static org.ggf.cddlm.generated.api.CddlmConstants.API_ELEMENT_PING_REQUEST;
+import static org.ggf.cddlm.generated.api.CddlmConstants.API_ELEMENT_RUN_REQUEST;
+import static org.ggf.cddlm.generated.api.CddlmConstants.API_ELEMENT_TERMINATE_REQUEST;
+import static org.ggf.cddlm.generated.api.CddlmConstants.API_SYSTEM_OPERATION_INITIALIZE;
+import static org.ggf.cddlm.generated.api.CddlmConstants.API_SYSTEM_OPERATION_RUN;
+import static org.ggf.cddlm.generated.api.CddlmConstants.API_SYSTEM_OPERATION_TERMINATE;
+import static org.ggf.cddlm.generated.api.CddlmConstants.CDL_API_TYPES_NAMESPACE;
+import static org.ggf.cddlm.generated.api.CddlmConstants.PROPERTY_SYSTEM_SYSTEM_STATE;
 import org.smartfrog.projects.alpine.om.base.SoapElement;
 import org.smartfrog.projects.alpine.om.soap11.MessageDocument;
-import org.smartfrog.projects.alpine.om.soap11.Body;
-import org.smartfrog.projects.alpine.transport.Session;
 import org.smartfrog.projects.alpine.transport.Transmission;
 import org.smartfrog.projects.alpine.transport.TransmitQueue;
 import org.smartfrog.projects.alpine.wsa.AlpineEPR;
-import org.smartfrog.services.deployapi.binding.XomHelper;
+import org.smartfrog.services.cddlm.cdl.base.LifecycleStateEnum;
 import org.smartfrog.services.deployapi.binding.UriListType;
+import org.smartfrog.services.deployapi.binding.XomHelper;
 import static org.smartfrog.services.deployapi.binding.XomHelper.apiElement;
 import org.smartfrog.services.deployapi.system.Constants;
-import org.smartfrog.services.deployapi.system.LifecycleStateEnum;
 
 import javax.xml.namespace.QName;
 import java.rmi.RemoteException;

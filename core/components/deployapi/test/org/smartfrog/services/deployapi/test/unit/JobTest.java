@@ -21,10 +21,10 @@
 package org.smartfrog.services.deployapi.test.unit;
 
 import org.smartfrog.projects.alpine.wsa.AlpineEPR;
+import org.smartfrog.services.cddlm.cdl.base.LifecycleStateEnum;
 import org.smartfrog.services.deployapi.engine.Application;
 import org.smartfrog.services.deployapi.engine.JobRepository;
 import org.smartfrog.services.deployapi.system.Constants;
-import org.smartfrog.services.deployapi.system.LifecycleStateEnum;
 import org.smartfrog.services.deployapi.transport.faults.BaseException;
 
 import java.net.MalformedURLException;
