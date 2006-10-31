@@ -61,9 +61,11 @@ public class NodesIterator implements Iterator<Node>,
      */
     public Node next() {
         if (!hasNext()) {
-            return null;
+            throw new NoSuchElementException();
         } else {
-            return (Node) nodes.get(index++);
+            Node n = nodes.get(index);
+            index++;
+            return n;
         }
     }
 
@@ -79,7 +81,7 @@ public class NodesIterator implements Iterator<Node>,
      *                                       method.
      */
     public void remove() {
-        throw new UnsupportedOperationException();
+        nodes.remove(index);
     }
 
     /**

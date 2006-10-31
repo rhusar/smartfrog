@@ -31,8 +31,8 @@ import javax.servlet.ServletContext;
  */
 public class ServletBase extends HttpServlet {
 
-    private static Log log =
-            LogFactory.getLog(ServletBase.class.getName());
+    private static final Log log =
+            LogFactory.getLog(ServletBase.class);
         
     
     public ServletBase() {
@@ -47,9 +47,7 @@ public class ServletBase extends HttpServlet {
      * our initialize routine; subclasses should call this if they override it
      */
     public void init() throws javax.servlet.ServletException {
-        ServletContext context = getServletConfig().getServletContext();
-
-    }    
+    }
 
 
     /**
