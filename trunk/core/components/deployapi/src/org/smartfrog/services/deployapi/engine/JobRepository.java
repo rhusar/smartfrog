@@ -214,7 +214,7 @@ public class JobRepository implements Iterable<Application> {
         job.setAddress(createJobAddress(id));
         add(job);
         //and register the event
-        Event event=new Event(job, LifecycleStateEnum.instantiated, null);
+        Event event=new Event(job, LifecycleStateEnum.instantiated, LifecycleStateEnum.undefined, null);
         subscriptions.event(event);
         return job;
     }
@@ -227,6 +227,9 @@ public class JobRepository implements Iterable<Application> {
      */
     public Application lookupJobFromQuery(String query) {
         String jobID=AlpineEPR.lookupQuery(query, Constants.JOB_ID_PARAM);
+        if(jobID==null) {
+            throw FaultRaiser.raiseNoSuchApplicationFault("No job in query string ["+query+"]");
+        }
         log.debug("job is [" + jobID + "]");
         Application job=lookup(jobID);
         if (job == null) {

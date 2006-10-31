@@ -166,10 +166,12 @@ public class Application implements WSRPResourceSource, LifecycleListener {
 
     public Application(String id, ServerInstance owner) {
         setId(id);
-        this.owner=owner;
-        subscribers=new EventSubscriberManager("Application ID "+id, owner.createEventExecutorService());
         addInitialProperties();
-        enterStateNotifying(LifecycleStateEnum.instantiated, "id=" + id);
+        this.owner=owner;
+        if(owner!=null) {
+            subscribers=new EventSubscriberManager("Application ID "+id, owner.createEventExecutorService());
+            enterStateNotifying(LifecycleStateEnum.instantiated, "id=" + id);
+        }
     }
 
     /**
@@ -442,7 +444,6 @@ public class Application implements WSRPResourceSource, LifecycleListener {
             //deploy, throwing an exception if we cannot
             Object result = config.execute(null);
             enterStateNotifying(LifecycleStateEnum.initialized, "initialized");
-            enterStateNotifying(LifecycleStateEnum.running, "running");
             if(result instanceof CdlCompound) {
                 //we can subscribe to this because it implements a cdl compound
                 CdlCompound compound=(CdlCompound) result;
@@ -510,6 +511,7 @@ public class Application implements WSRPResourceSource, LifecycleListener {
                                                  String info) {
         stateInfo = info;
         if (!newState.equals(state)) {
+            LifecycleStateEnum old=state;
             state = newState;
             QName propname = null;
             switch (state) {
@@ -536,8 +538,12 @@ public class Application implements WSRPResourceSource, LifecycleListener {
                 log.debug("Changing state:" + toString());
             }
             //create a notification
-            Event event=new Event(this,newState, terminationRecord);
-            subscribers.event(event);
+            Event event=new Event(this,newState, old, terminationRecord);
+            if(subscribers!=null) {
+                subscribers.event(event);
+            } else {
+                log.warn("this component is incomplete; we are probably running unit tests");
+            }
         } else {
             if(log.isDebugEnabled()) {
                 log.debug("reentrant state entry for "+toString());
@@ -558,7 +564,11 @@ public class Application implements WSRPResourceSource, LifecycleListener {
     public synchronized void enterTerminatedStateNotifying(
             TerminationRecord record)  {
         terminationRecord = record;
-        enterStateNotifying(LifecycleStateEnum.terminated, record.toString());
+        String info = record.toString();
+        if(!record.isNormal()) {
+            enterFailedState(info);
+        }
+        enterStateNotifying(LifecycleStateEnum.terminated, info);
     }
 
     /**
@@ -596,7 +606,7 @@ public class Application implements WSRPResourceSource, LifecycleListener {
             throws RemoteException {
         Prim target = resolvePrimNonFaulting();
         if (state == LifecycleStateEnum.terminated) {
-            log.info("job already terminated");
+            log.info("Ignoring termination of an already terminated job");
             return true;
         }
         TerminationRecord termination;
@@ -659,9 +669,10 @@ public class Application implements WSRPResourceSource, LifecycleListener {
 
 
     /**
-     * Create a temporary file
-     * @param extension
-     * @return
+     * Create a temporary file and register the file as an attachment
+     * @param extension extension to give it
+     * @return the new file
+     * @throws java.io.IOException if the file wont be created.
      */
     public FileEntry createNewTempFile(String extension) throws IOException {
         AddedFilestore filestore = owner.getFilestore();
@@ -670,6 +681,10 @@ public class Application implements WSRPResourceSource, LifecycleListener {
         return entry;
     }
 
+    /**
+     * Add the attachment in the attachments table
+     * @param entry new file entry
+     */
     public synchronized void addAttachment(FileEntry entry) {
         attachments.add(entry);
     }

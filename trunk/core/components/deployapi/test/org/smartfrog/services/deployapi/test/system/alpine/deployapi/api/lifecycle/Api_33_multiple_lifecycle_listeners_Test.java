@@ -19,7 +19,11 @@
  */
 package org.smartfrog.services.deployapi.test.system.alpine.deployapi.api.lifecycle;
 
+import org.smartfrog.services.deployapi.alpineclient.model.CallbackSubscription;
+import org.smartfrog.services.deployapi.alpineclient.model.SystemSession;
+import org.smartfrog.services.deployapi.notifications.muws.ReceivedEvent;
 import org.smartfrog.services.deployapi.test.system.alpine.deployapi.api.SubscribingTestBase;
+import org.ggf.cddlm.generated.api.CddlmConstants;
 
 /**
  * created 04-May-2006 13:46:55
@@ -31,9 +35,16 @@ public class Api_33_multiple_lifecycle_listeners_Test extends SubscribingTestBas
         super(name);
     }
 
-    public void testSubscribe() throws Exception {
-        createSubscribedSystem();
-        waitForSubscription();
+    public void testSubscribeToMultipleListeners() throws Exception {
+        SystemSession session = createSubscribedSystem();
+        log.info("session 1 listening at "+getSubscription().getReceiver());
+        CallbackSubscription s2 = session.subscribeToLifecycleEvents(
+                createSubscriptionReceiver());
+        log.info("session 2 listening at " + s2.getReceiver());
+        runSystem(CddlmConstants.INTEROP_API_TEST_DOC_1_VALID_DESCRIPTOR);
+        waitForSubscription("run for first listener of two");
+        ReceivedEvent event = s2.waitForEvent(0);
+        assertNotNull("Subscription timed out for second listener", event);
     }
 
 }

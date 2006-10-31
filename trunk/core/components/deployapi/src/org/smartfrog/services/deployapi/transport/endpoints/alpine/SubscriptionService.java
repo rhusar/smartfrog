@@ -86,9 +86,13 @@ public class SubscriptionService extends WsrfHandler {
     protected boolean destroy(MessageContext messageContext,
                            EndpointContext endpointContext) {
         NotificationSubscription sub = getSubscription(messageContext);
-        log.info("destorying subscription "+sub.getId());
-        sub.unsubscribe();
-        remove(sub);
+        if(sub!=null) {
+            log.info("destorying subscription "+sub.getId());
+            sub.unsubscribe();
+            remove(sub);
+        } else {
+            log.error("No subscription to destroy for "+messageContext.getRequest().getAddressDetails().getTo());
+        }
         return true;
     }
 

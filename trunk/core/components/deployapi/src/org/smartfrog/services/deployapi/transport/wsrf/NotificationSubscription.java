@@ -222,6 +222,33 @@ public class NotificationSubscription extends AbstractEventSubscription
         return root;
     }
 
+    /*
+    muws-p1-xs:ManagementEvent>
+<muws-p1-xs:ReportTime>2005-03-01T01:56:00Z</muws-p1-xs:ReportTime>
+<muws-p1-
+xs:EventId>http://www.gridforum.org/cddlm/components/2005/02/events/Lifecycle
+</muws-p1-xs:EventId>
+<muws-p1-xs:SourceComponent>
+<muws-p1-xs:ResourceId>xsd:anyURI</muws-p1-xs:ResourceId>
+</muws-p1-xs:SourceComponent>
+<muws-p2-xs:Situation>
+<muws-p2-xs:SituationCategory>
+<cmp:LifecycleSituation/>
+</muws-p2-xs:SituationCategory>
+</muws-p2-xs:Situation>
+<cmp:LifecycleTransition>
+<muws-p2-xs:StateTransition Time=”2005-03-01T01:54:30Z”>
+<muws-p2-xs:EnteredState>
+<cmp:RunningState/>
+</muws-p2-xs:EnteredState>
+<muws-p2-xs:PreviousState>
+<cmp:InitializedState/>
+</muws-p2-xs:PreviousState>
+</muws-p2-xs:StateTransition>
+</cmp:LifecycleTransition>
+</muws-p1-xs:ManagementEvent>
+     */
+
     /**
      * Something happened to this job
      *
@@ -229,21 +256,10 @@ public class NotificationSubscription extends AbstractEventSubscription
      */
     public boolean event(Event event) {
         //send the event to the callback
-        SoapElement request;
-        Application application = event.application;
-        SoapElement coreEvent = createMuwsManagementEvent(null, null, application.getId());
-        if (isUseNotifyMessage()) {
-            request = createNotificationMessage(subscriptionEPR, coreEvent);
-        } else {
-            request = coreEvent;
-        }
+        SoapElement request = createMuwsLifecycleEvent(event);
         try {
             log.info("Notifying "+getCallback());
             MessageDocument response = session.invokeBlocking(null, request);
-            if(log.isInfoEnabled()) {
-                Body body = response.getBody();
-                log.info("Response ="+body.toXML());
-            }
         } catch (AlpineRuntimeException e) {
             lastError = e;
             //if anything went wrong, log
@@ -254,17 +270,42 @@ public class NotificationSubscription extends AbstractEventSubscription
         return true;
     }
 
+    /**
+     * Create a muws lifecycle event
+     * @param event
+     * @return
+     */
+    public SoapElement createMuwsLifecycleEvent(Event event) {
+        SoapElement request;
+        Application application = event.application;
+        SoapElement situationCategory =
+            new SoapElement("muws-p2-xs:SituationCategory", Constants.MUWS_P2_NAMESPACE);
+        situationCategory.appendChild(
+            new SoapElement("cmp:LifecycleSituation", Constants.CDL_CMP_TYPES_NAMESPACE));
+        String resourceID = application!=null?application.getId():"(unknown resource)";
+        SoapElement coreEvent = createMuwsManagementEvent(null,
+                situationCategory,
+                event.makeCmpLifecycleTransition(),
+                resourceID);
+        if (isUseNotifyMessage()) {
+            request = createNotificationMessage(subscriptionEPR, coreEvent);
+        } else {
+            request = coreEvent;
+        }
+        return request;
+    }
+
 
     /**
      * Create a new muws event, to which you can append data.
      * The event is valid according to muws-p1.xsd.
      *
      * @param idurl  event ID URL; set to null to have one made ip
-     * @param source any source XML; again, optional.
+     * @param content any source XML; again, optional.
      * @param resourceID id of the resource
      * @return an event ready to be sent or to have more data appended.
      */
-    protected SoapElement createMuwsManagementEvent(String idurl, Element source, String resourceID) {
+    public SoapElement createMuwsManagementEvent(String idurl, Element situationCategory, Element content, String resourceID) {
         SoapElement event = new SoapElement("muws-p1-xs:"+ MUWS_MANAGEMENT_EVENT, Constants.MUWS_P1_NAMESPACE);
         SoapElement eventID = new SoapElement("muws-p1-xs:"+ MUWS_EVENT_ID, Constants.MUWS_P1_NAMESPACE);
         if (idurl == null) {
@@ -276,10 +317,15 @@ public class NotificationSubscription extends AbstractEventSubscription
         SoapElement sourceResource = new SoapElement("muws-p1-xs:"+ MUWS_RESOURCE_ID, Constants.MUWS_P1_NAMESPACE);
         sourceResource.appendChild(resourceID);
         sourceComponent.appendChild(sourceResource);
-        if (source != null) {
-            sourceComponent.appendChild(source);
-        }
         event.appendChild(sourceComponent);
+        if(situationCategory!=null) {
+            SoapElement situation= new SoapElement("muws-p2-xs:Situation", Constants.MUWS_P2_NAMESPACE);
+            event.appendChild(situation);
+            situation.appendChild(situationCategory);
+        }
+        if (content != null) {
+            event.appendChild(content);
+        }
         return event;
     }
 

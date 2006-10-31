@@ -26,12 +26,15 @@ import org.smartfrog.services.deployapi.notifications.muws.NotifyServer;
 import org.smartfrog.services.deployapi.notifications.muws.NotifyServerImpl;
 import org.smartfrog.services.deployapi.notifications.muws.ReceivedEvent;
 import org.smartfrog.services.deployapi.system.Constants;
+import org.smartfrog.services.cddlm.cdl.base.LifecycleStateEnum;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.reference.Reference;
 
 import javax.xml.namespace.QName;
 import java.rmi.RemoteException;
+
+import junit.framework.AssertionFailedError;
 
 /**
  * created 29-Sep-2006 13:30:18
@@ -114,11 +117,18 @@ public abstract class SubscribingTestBase extends StandardTestBase {
         this.subscription = subscription;
     }
 
-    public ReceivedEvent waitForSubscription()  {
+    /**
+     * Wait for a subscription event
+     * @param reason
+     * @return the received event
+     * @throws junit.framework.AssertionFailedError on timeout
+     */
+    public ReceivedEvent waitForSubscription(String reason)
+            throws AssertionFailedError {
         assertNotNull("No subscription",subscription);
-        MuwsEventReceiver receiver = subscription.getReceiver();
-        ReceivedEvent event = receiver.waitForEvent(getSubscribeWaitTimeout());
-        assertNotNull("Subscription timed out",event);
+        ReceivedEvent event = subscription.waitForEvent(getSubscribeWaitTimeout());
+        assertNotNull("Subscription timed out waiting for "+reason,event);
+
         return event;
     }
 
@@ -162,9 +172,27 @@ public abstract class SubscribingTestBase extends StandardTestBase {
         assertHosted();
         SystemSession system = createSystem(null);
         setSystem(system);
-        MuwsEventReceiver receiver = createSubscriptionReceiver();
-        subscription = system.subscribeToLifecycleEvents(receiver.getURL(), false);
-        subscription.setReceiver(receiver);
+        subscription = system.subscribeToLifecycleEvents(createSubscriptionReceiver());
         return system;
+    }
+
+    /**
+     * Wait for the system to enter a the specified state. If the application is already in that
+     * state, we return immediately, otherwise the method blocks unil the
+     * @param expected the state we want to reach
+     * @return the event that was used to signal an event change
+     * @throws junit.framework.AssertionFailedError on timeout
+     */
+    protected ReceivedEvent waitForState(LifecycleStateEnum expected)
+            throws AssertionFailedError {
+        if (expected.equals(getSystem().getLifecycleState())) {
+            return null;
+        }
+        ReceivedEvent event = waitForSubscription(expected.getXmlName());
+        //TODO: get state from the event
+        LifecycleStateEnum state = event.getState();
+
+        assertEquals(expected, state);
+        return event;
     }
 }

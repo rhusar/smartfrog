@@ -44,6 +44,7 @@ import org.smartfrog.services.deployapi.transport.wsrf.WsrfUtils;
 import org.smartfrog.services.filesystem.FileSystem;
 import org.smartfrog.services.junit.TestContextInjector;
 import org.smartfrog.services.xml.utils.ResourceLoader;
+import org.smartfrog.services.cddlm.cdl.base.LifecycleStateEnum;
 import org.smartfrog.sfcore.languages.cdl.CdlCatalog;
 import org.smartfrog.sfcore.prim.Prim;
 import org.xml.sax.SAXException;
@@ -372,6 +373,10 @@ public abstract class AlpineTestBase extends TestCase implements TestContextInje
 
     public HashMap<String, Object> getTestContext() {
         return testContext;
+    }
+
+    public void assertSystemState(LifecycleStateEnum state)  {
+        assertEquals(state,getSystem().getLifecycleState());
     }
 }
 

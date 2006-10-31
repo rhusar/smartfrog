@@ -142,7 +142,7 @@ public class JobTest extends UnitTestBase {
 
     public void testTerminateRetains() throws Exception {
         String id=job.getId();
-        assertEquals(LifecycleStateEnum.instantiated, job.getState());
+        assertEquals(LifecycleStateEnum.undefined, job.getState());
         repository.terminate(job,"");
         assertEquals(LifecycleStateEnum.terminated,job.getState());
         //check it is still there

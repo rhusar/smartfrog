@@ -26,6 +26,7 @@ import org.smartfrog.projects.alpine.transport.Transmission;
 import org.smartfrog.services.deployapi.transport.wsrf.WSNConstants;
 import org.smartfrog.services.deployapi.system.Constants;
 import org.smartfrog.services.deployapi.notifications.muws.MuwsEventReceiver;
+import org.smartfrog.services.deployapi.notifications.muws.ReceivedEvent;
 import org.ggf.cddlm.generated.api.CddlmConstants;
 import nu.xom.Element;
 
@@ -91,4 +92,14 @@ public class CallbackSubscription extends WsrfSession {
     public void setReceiver(MuwsEventReceiver receiver) {
         this.receiver = receiver;
     }
+
+    /**
+     * Wait for an incoming event. If there already is one in the buffer, return that
+     * @param milliseconds time to wait.
+     * @return the event or null for timeout
+     */
+    public ReceivedEvent waitForEvent(long milliseconds) {
+         return getReceiver().waitForEvent(milliseconds);
+    }
+
 }
