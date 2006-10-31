@@ -151,4 +151,21 @@ public abstract class StandardTestBase extends AlpineTestBase  {
     }
 
 
+    /**
+     * load a CDL document and initialize the system inline with it
+     * @param cdlResource path to the resource containing the descriptor
+     * @throws Exception if something went wrong.
+     */
+    protected void initializeSystem(String cdlResource) throws Exception{
+        assertNotNull("No system",getSystem());
+        Document document = loadCdlDocument(cdlResource);
+        Element cdl=(Element) document.getRootElement().copy();
+        SoapElement request = getDescriptorHelper().createInitRequestInline(CddlmConstants.XML_CDL_NAMESPACE, cdl, null);
+        getSystem().initialize(request);
+    }
+
+    protected void runSystem(String cdlResource) throws Exception {
+        initializeSystem(cdlResource);
+        getSystem().run();
+    }
 }

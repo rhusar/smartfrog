@@ -21,14 +21,18 @@ package org.smartfrog.services.deployapi.notifications;
 
 import org.smartfrog.services.cddlm.cdl.base.LifecycleStateEnum;
 import org.smartfrog.services.deployapi.engine.Application;
+import org.smartfrog.services.deployapi.system.Constants;
 import org.smartfrog.sfcore.prim.TerminationRecord;
+import org.smartfrog.projects.alpine.om.base.SoapElement;
+import org.smartfrog.projects.alpine.xmlutils.XsdUtils;
 
 import java.util.Date;
+
+import nu.xom.Attribute;
 
 /**
  * created 27-Sep-2006 11:59:01
  */
-@SuppressWarnings("deprecation")
 public class Event {
 
     public Application application;
@@ -38,16 +42,16 @@ public class Event {
     public TerminationRecord record;
 
 
-    public LifecycleStateEnum state;
+    public LifecycleStateEnum state, oldState;
 
-
-    public Event(Application application, LifecycleStateEnum type, TerminationRecord record) {
-        assert application!=null;
-        assert type!=null;
+    public Event(Application application, LifecycleStateEnum newState, LifecycleStateEnum oldState,
+                 TerminationRecord record) {
+        assert newState != null;
         this.application = application;
-        state = type;
-        this.record= record;
-        timestamp=new Date();
+        state = newState;
+        this.oldState = oldState;
+        this.record = record;
+        timestamp = new Date();
     }
 
     /**
@@ -56,9 +60,39 @@ public class Event {
      * @return a string representation of the object.
      */
     public String toString() {
-        return "Event for <"+application.getId()+"> entering state "
-                +state
-                +" at "+timestamp.toGMTString()
-                +" "+(record!=null?record+toString():"");
+        return "Event for <" + (application!=null?application.getId():"") + "> entering state "
+                + state
+                + " at " + XsdUtils.toIsoTime(timestamp)
+                + " " + (record != null ? record + toString() : "");
+    }
+
+
+    /**
+     * Get a state transition from the current and old state
+     *
+     * @return
+     */
+    public SoapElement makeCmpLifecycleTransition() {
+
+        SoapElement transition =
+                new SoapElement("cmp:LifecycleTransition", Constants.CDL_CMP_TYPES_NAMESPACE);
+        SoapElement stateTransition = new SoapElement("muws-p2-xs:StateTransition",
+                Constants.MUWS_P2_NAMESPACE);
+        stateTransition.addAttribute(
+                new Attribute("muws-p2-xs:Time", Constants.MUWS_P2_NAMESPACE,
+                        XsdUtils.toIsoTime(timestamp)));
+        transition.appendChild(stateTransition);
+        stateTransition.appendChild(muwsStateChange("EnteredState", state));
+        if(oldState!=LifecycleStateEnum.undefined) {
+            stateTransition.appendChild(muwsStateChange("PreviousState", oldState));
+        }
+        return transition;
+    }
+
+    private SoapElement muwsStateChange(String local, LifecycleStateEnum s) {
+        SoapElement muws = new SoapElement("muws-p2-xs:" + local, Constants.MUWS_P2_NAMESPACE);
+        muws.appendChild(
+                new SoapElement("cmp:" + s.getXmlName(), Constants.CDL_CMP_TYPES_NAMESPACE));
+        return muws;
     }
 }

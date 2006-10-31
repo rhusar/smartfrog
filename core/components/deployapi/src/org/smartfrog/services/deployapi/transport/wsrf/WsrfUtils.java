@@ -74,11 +74,11 @@ public final class WsrfUtils {
      * @param loader
      * @return a resolver
      */
-    public XmlCatalogResolver createWsrfCatalogResolver(ResourceLoader loader) {
+    public static XmlCatalogResolver createWsrfCatalogResolver(ResourceLoader loader) {
         return new CdlCatalog(loader);
     }
 
-    public QName makeQname(String prefix, String element, Map<String, String> context) {
+    public static QName makeQname(String prefix, String element, Map<String, String> context) {
         String uri = context.get(prefix);
         return new QName(uri, element, prefix);
     }

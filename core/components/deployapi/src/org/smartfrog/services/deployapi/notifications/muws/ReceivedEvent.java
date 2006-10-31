@@ -21,6 +21,16 @@ package org.smartfrog.services.deployapi.notifications.muws;
 
 import org.smartfrog.projects.alpine.om.base.SoapElement;
 import org.smartfrog.projects.alpine.core.MessageContext;
+import org.smartfrog.projects.alpine.xmlutils.NodesIterator;
+import org.smartfrog.services.cddlm.cdl.base.LifecycleStateEnum;
+import org.smartfrog.services.deployapi.system.Constants;
+import org.smartfrog.services.deployapi.system.Utils;
+import org.smartfrog.services.deployapi.transport.wsrf.WsrfUtils;
+import org.smartfrog.services.xml.utils.XmlCatalogResolver;
+import org.smartfrog.sfcore.languages.cdl.faults.CdlXmlParsingException;
+import org.smartfrog.sfcore.languages.cdl.CdlCatalog;
+import nu.xom.Node;
+import nu.xom.XPathContext;
 
 /**
  * created 10-Oct-2006 16:10:38
@@ -28,12 +38,35 @@ import org.smartfrog.projects.alpine.core.MessageContext;
 
 public class ReceivedEvent {
 
+    private static final XPathContext catalog= CdlCatalog.createXPathContext();
     public SoapElement message;
     long timestamp;
 
     public ReceivedEvent(MessageContext messageContext, SoapElement event) {
         message=event;
         timestamp=System.currentTimeMillis();
+    }
+
+    /*
+    <cmp:LifecycleTransition>
+<muws-p2-xs:StateTransition Time=”2005-03-01T01:54:30Z”>
+<muws-p2-xs:EnteredState>
+<cmp:RunningState/>
+</muws-p2-xs:EnteredState>
+<muws-p2-xs:PreviousState>
+<cmp:InitializedState/>
+</muws-p2-xs:PreviousState>
+</muws-p2-xs:StateTransition>
+</cmp:LifecycleTransition>
+     */
+    public LifecycleStateEnum getState() {
+
+        for(Node n:message.xpath("./cmp:LifecycleTransition/muws-p2-xs:StateTransition/muws-p2-xs:EnteredState/*", catalog)) {
+            SoapElement e=(SoapElement) n;
+            String statename = e.getLocalName();
+            return LifecycleStateEnum.extract(statename);
+        }
+        throw new CdlXmlParsingException("no EnteredState transition in \n"+message.toXML());
     }
 
 }

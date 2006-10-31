@@ -21,9 +21,13 @@ package org.smartfrog.services.deployapi.test.system.alpine.deployapi.api.initia
 
 import nu.xom.Document;
 import nu.xom.Element;
+import nu.xom.ParsingException;
 import org.ggf.cddlm.generated.api.CddlmConstants;
 import org.smartfrog.projects.alpine.om.base.SoapElement;
 import org.smartfrog.services.deployapi.test.system.alpine.deployapi.api.StandardTestBase;
+import org.xml.sax.SAXException;
+
+import java.io.IOException;
 
 /**
  * created 13-Apr-2006 13:51:02
@@ -49,10 +53,7 @@ public class Api_22_deploy_inline_Test extends StandardTestBase {
     }
 
     public void testInlineDeploy() throws Exception {
-        Document document = loadCdlDocument(CddlmConstants.INTEROP_API_TEST_DOC_1_VALID_DESCRIPTOR);
-        Element cdl=(Element) document.getRootElement().copy();
-        SoapElement request = getDescriptorHelper().createInitRequestInline(CddlmConstants.XML_CDL_NAMESPACE, cdl, null);
-        getSystem().initialize(request);
+        initializeSystem(CddlmConstants.INTEROP_API_TEST_DOC_1_VALID_DESCRIPTOR);
     }
 
 }

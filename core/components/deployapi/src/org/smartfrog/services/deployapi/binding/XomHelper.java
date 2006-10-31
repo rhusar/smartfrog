@@ -233,9 +233,12 @@ public class XomHelper extends XomUtils {
      * @param name
      */
     public static void adopt(Element element, String name) {
-        element.setLocalName(name);
+        //this is a bit convoluted, because we cannot change the prefix on an element until it is
+        //in the right namespace. First we 'unnamespace it', then we push it into the right place
+        element.setNamespacePrefix("");
         element.setNamespaceURI(CDL_API_TYPES_NAMESPACE);
         element.setNamespacePrefix("api");
+        element.setLocalName(name);
     }
 
     /**

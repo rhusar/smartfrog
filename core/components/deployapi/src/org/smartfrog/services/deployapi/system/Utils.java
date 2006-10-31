@@ -173,34 +173,34 @@ public class Utils {
 
     /**
      * Go from XML to types
-     * @param grandparent
+     * @param source
      * @return
      * @throws
      */
-    public static LifecycleStateEnum parseCmpState(Element grandparent) {
-        Element parent = grandparent.getFirstChildElement(LifecycleStateEnum.STATE,
-                CddlmConstants.CDL_CMP_TYPES_NAMESPACE);
-        if(parent==null) {
-            throw FaultRaiser.raiseBadArgumentFault(
-                    "No elements under cmp:State element under " + grandparent);
-        }
-        Elements elements = parent.getChildElements();
-        if(elements.size()==0) {
-            throw FaultRaiser.raiseBadArgumentFault("No elements under cmp:State "+parent);
-        }
-        Element child = elements.get(0);
-        if(!CddlmConstants.CDL_CMP_TYPES_NAMESPACE.equals(child.getNamespaceURI())) {
-            throw FaultRaiser.raiseBadArgumentFault(
-                    "First state element is not in the expected namespace "+child);
-        }
-        String statename=child.getLocalName();
-        for(LifecycleStateEnum e: LifecycleStateEnum.values()) {
-            if(e.getXmlName().equals(statename)) {
-                return e;
+    public static LifecycleStateEnum parseCmpState(Element source) {
+        Element cmpstate;
+        if (source.getLocalName().equals(LifecycleStateEnum.STATE)
+                && CddlmConstants.CDL_CMP_TYPES_NAMESPACE.equals(source.getNamespaceURI())) {
+            cmpstate = source;
+        } else {
+            cmpstate = source.getFirstChildElement(LifecycleStateEnum.STATE,
+                    CddlmConstants.CDL_CMP_TYPES_NAMESPACE);
+            if (cmpstate == null) {
+                throw FaultRaiser.raiseBadArgumentFault(
+                        "No cmp:State element under " + source.toXML());
             }
         }
-        throw FaultRaiser.raiseBadArgumentFault(
-                "no state found matching " + child);
+        Elements elements = cmpstate.getChildElements();
+        if (elements.size() == 0) {
+            throw FaultRaiser.raiseBadArgumentFault("No elements under cmp:State " + cmpstate.toXML());
+        }
+        Element child = elements.get(0);
+        if (!CddlmConstants.CDL_CMP_TYPES_NAMESPACE.equals(child.getNamespaceURI())) {
+            throw FaultRaiser.raiseBadArgumentFault(
+                    "First state element is not in the expected namespace " + child);
+        }
+        String statename = child.getLocalName();
+        return LifecycleStateEnum.extract(statename);
     }
 
     /**

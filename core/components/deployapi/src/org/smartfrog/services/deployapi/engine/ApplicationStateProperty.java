@@ -49,7 +49,6 @@ public class ApplicationStateProperty implements Property {
     public List<Element> getValue() {
         LifecycleStateEnum state = owner.getState();
         SoapElement cmpState = Utils.toCmpState(state);
-
         return WsrfUtils.listify(cmpState);
     }
 }

@@ -6,6 +6,7 @@ import org.smartfrog.projects.alpine.om.base.SoapElement;
 import org.smartfrog.services.cddlm.cdl.base.LifecycleStateEnum;
 import org.smartfrog.services.deployapi.system.Utils;
 import org.smartfrog.services.deployapi.transport.faults.BaseException;
+import org.smartfrog.sfcore.languages.cdl.faults.CdlRuntimeException;
 
 /**
  */
@@ -38,7 +39,7 @@ public class LifecycleStateTest extends TestCase {
         try {
             Utils.parseCmpState(base);
             fail("should have bailed out");
-        } catch (BaseException ex) {
+        } catch (CdlRuntimeException ex) {
             //expected
         }
     }

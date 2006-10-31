@@ -45,6 +45,8 @@ TestPlan extends Compound {
     endpoint localhost_endpoint;
     subdir "localhost";
 
+    singleClass "";
+
   //quick hack to run a single test
 /*  notification:classes [
           "Api_17_create_system_while_subscribed_Test"

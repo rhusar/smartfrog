@@ -53,6 +53,9 @@ public class Api_20_multiple_subscriptions_Test extends SubscribingTestBase {
         sub1 = getPortal().subscribeToPortalEvents(HTTP_EXAMPLE_ORG, false);
         sub2 = getPortal().subscribeToPortalEvents(HTTP_EXAMPLE_ORG, true);
         createSystem(null);
-        waitForSubscription();
+        waitForSubscription("portal events");
+        assertNotNull(
+                "second subscription not notified",
+                sub2.waitForEvent(getSubscribeWaitTimeout()));
     }
 }

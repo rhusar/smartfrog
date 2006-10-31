@@ -19,7 +19,13 @@
  */
 package org.smartfrog.services.deployapi.test.system.alpine.deployapi.api.lifecycle;
 
+import org.smartfrog.services.deployapi.alpineclient.model.SystemSession;
 import org.smartfrog.services.deployapi.test.system.alpine.deployapi.api.SubscribingTestBase;
+import org.smartfrog.services.deployapi.notifications.muws.MuwsEventReceiver;
+import org.smartfrog.services.cddlm.cdl.base.LifecycleStateEnum;
+import org.ggf.cddlm.generated.api.CddlmConstants;
+
+import java.rmi.RemoteException;
 
 /**
  * created 04-May-2006 13:46:55
@@ -32,8 +38,14 @@ public class Api_32_failure_events_Test extends SubscribingTestBase {
     }
 
     public void testSubscribe() throws Exception {
-        createSubscribedSystem();
-        waitForSubscription();
+        SystemSession session = createSubscribedSystem();
+        initializeSystem(CddlmConstants.INTEROP_API_TEST_DOC_3_RUN_TIME_ERROR);
+        waitForSubscription("failure");
+        assertSystemState(LifecycleStateEnum.failed);
+        MuwsEventReceiver receiver = getSubscription().getReceiver();
+        receiver.clear();
+        getSystem().terminate("terminating failed system");
+        waitForSubscription("terminate");
     }
 
 }

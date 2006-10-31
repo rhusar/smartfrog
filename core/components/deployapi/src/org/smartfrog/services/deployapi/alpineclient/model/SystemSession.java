@@ -34,14 +34,18 @@ import org.smartfrog.projects.alpine.om.soap11.MessageDocument;
 import org.smartfrog.projects.alpine.transport.Transmission;
 import org.smartfrog.projects.alpine.transport.TransmitQueue;
 import org.smartfrog.projects.alpine.wsa.AlpineEPR;
+import org.smartfrog.projects.alpine.faults.AlpineRuntimeException;
 import org.smartfrog.services.cddlm.cdl.base.LifecycleStateEnum;
 import org.smartfrog.services.deployapi.binding.UriListType;
 import org.smartfrog.services.deployapi.binding.XomHelper;
 import static org.smartfrog.services.deployapi.binding.XomHelper.apiElement;
 import org.smartfrog.services.deployapi.system.Constants;
+import org.smartfrog.services.deployapi.system.Utils;
+import org.smartfrog.services.deployapi.notifications.muws.MuwsEventReceiver;
 
 import javax.xml.namespace.QName;
 import java.rmi.RemoteException;
+import java.util.List;
 
 /**
  * created 10-Apr-2006 17:08:08
@@ -100,11 +104,10 @@ public class SystemSession extends WsrfSession {
      * @return
      * @throws RemoteException
      */
-    public LifecycleStateEnum getLifecycleState() throws RemoteException {
-        String value = getResourcePropertyValue(PROPERTY_SYSTEM_SYSTEM_STATE);
-        LifecycleStateEnum state =
-                LifecycleStateEnum.extract(value);
-        return state;
+    public LifecycleStateEnum getLifecycleState() {
+        List<Element> result = getResourcePropertyList(PROPERTY_SYSTEM_SYSTEM_STATE);
+        SoapElement parent = (SoapElement) result.get(0);
+        return Utils.parseCmpState(parent);
     }
 
     /**
@@ -181,6 +184,18 @@ public class SystemSession extends WsrfSession {
      */
     public CallbackSubscription subscribeToLifecycleEvents(String callback, boolean useNotify) {
         return subscribe(Constants.SYSTEM_LIFECYCLE_EVENT, callback, useNotify, null);
+    }
+
+    /**
+     * Subscribe to the lifecycle events (blocking call)
+     *
+     * @param receiver receiver
+     * @return the new subscription, bound to the receiver
+     */
+    public CallbackSubscription subscribeToLifecycleEvents(MuwsEventReceiver receiver) {
+        CallbackSubscription  sub=subscribe(Constants.SYSTEM_LIFECYCLE_EVENT, receiver.getURL(), true, null);
+        sub.setReceiver(receiver);
+        return sub;
     }
 
 }

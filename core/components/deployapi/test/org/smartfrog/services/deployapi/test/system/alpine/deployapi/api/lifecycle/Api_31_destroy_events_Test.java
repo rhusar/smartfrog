@@ -19,7 +19,10 @@
  */
 package org.smartfrog.services.deployapi.test.system.alpine.deployapi.api.lifecycle;
 
+import org.smartfrog.services.deployapi.alpineclient.model.SystemSession;
 import org.smartfrog.services.deployapi.test.system.alpine.deployapi.api.SubscribingTestBase;
+import org.smartfrog.services.cddlm.cdl.base.LifecycleStateEnum;
+import org.ggf.cddlm.generated.api.CddlmConstants;
 
 /**
  * created 04-May-2006 13:46:55
@@ -32,8 +35,11 @@ public class Api_31_destroy_events_Test extends SubscribingTestBase {
     }
 
     public void testSubscribe() throws Exception {
-        createSubscribedSystem();
-        waitForSubscription();
+        SystemSession session = createSubscribedSystem();
+        runSystem(CddlmConstants.INTEROP_API_TEST_DOC_1_VALID_DESCRIPTOR);
+        waitForState(LifecycleStateEnum.running);
+        session.terminate("end of life");
+        waitForState(LifecycleStateEnum.terminated);
     }
 
 }

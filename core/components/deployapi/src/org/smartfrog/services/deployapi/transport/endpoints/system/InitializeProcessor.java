@@ -86,10 +86,10 @@ public class InitializeProcessor extends SystemProcessor {
             job.enterFailedState(e.toString());
             throw translateException(e);
         }
-
+/*
         if (deployed) {
             job.enterStateNotifying(LifecycleStateEnum.running, null);
-        }
+        }*/
         Element response = XomHelper.apiElement("initializeResponse");
         return response;
     }

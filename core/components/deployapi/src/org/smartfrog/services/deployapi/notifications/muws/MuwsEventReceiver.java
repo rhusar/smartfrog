@@ -25,6 +25,8 @@ import org.smartfrog.projects.alpine.om.base.SoapElement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.LinkedList;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * created 10-Oct-2006 15:36:11
@@ -34,26 +36,17 @@ public class MuwsEventReceiver implements Iterable<ReceivedEvent> {
 
 
     private NotifyServerImpl owner;
-
-    private int size;
-
-    private List<ReceivedEvent> buffer;
-
+    private List<ReceivedEvent> events;
     private String id;
     private String url;
-    private int count = 0;
-    public static final int DEFAULT_SIZE = 16;
+    private AtomicInteger count = new AtomicInteger(0);
 
 
     public MuwsEventReceiver(NotifyServerImpl owner) {
-        this(owner, DEFAULT_SIZE);
+        this.owner = owner;
+        events = new LinkedList<ReceivedEvent>();
     }
 
-    public MuwsEventReceiver(NotifyServerImpl owner, int size) {
-        this.owner = owner;
-        this.size = size;
-        buffer = new ArrayList<ReceivedEvent>(size);
-    }
 
     public String getId() {
         return id;
@@ -63,9 +56,12 @@ public class MuwsEventReceiver implements Iterable<ReceivedEvent> {
         this.id = id;
     }
 
-
-    public synchronized int getCount() {
-        return count;
+    /**
+     * Get the count of received events
+     * @return
+     */
+    public int getCount() {
+        return count.get();
     }
 
 
@@ -75,31 +71,30 @@ public class MuwsEventReceiver implements Iterable<ReceivedEvent> {
      * @return an Iterator.
      */
     public ListIterator<ReceivedEvent> iterator() {
-        return buffer.listIterator();
+        return events.listIterator();
     }
 
+    /**
+     * Handler for received muws events. A new event is added and notify() is called to wake
+     * up any waiting object.
+     * @param messageContext the message context
+     * @param event the received event
+     */
     public synchronized void muwsEventReceived(MessageContext messageContext, SoapElement event) {
-        count++;
-        if (buffer.size() >= size) {
-            buffer.remove(0);
-        }
-        buffer.add(new ReceivedEvent(messageContext, event));
-        notifyAll();
+        count.incrementAndGet();
+        events.add(new ReceivedEvent(messageContext, event));
+        notify();
     }
 
     /**
      * cleare the buffer
      */
     public synchronized void clear() {
-        buffer.clear();
+        events.clear();
     }
 
     public synchronized int size() {
-        return buffer.size();
-    }
-
-    public synchronized ReceivedEvent get(int offset) {
-        return buffer.get(offset);
+        return events.size();
     }
 
     /**
@@ -118,19 +113,35 @@ public class MuwsEventReceiver implements Iterable<ReceivedEvent> {
         this.url = url;
     }
 
+    /**
+     * Wait for an incoming event. If there already is one in the buffer, return that, removing
+     * it from the list.
+     *
+     * @param milliseconds time to wait.
+     * @return the event or null for timeout
+     */
     public synchronized ReceivedEvent waitForEvent(long milliseconds) {
-        if(size()>0) {
-            return buffer.get(0);
-        } else {
+        if(size()==0) {
             try {
                 wait(milliseconds);
                 if(size()==0) {
                     return null;
                 }
-                return buffer.get(0);
             } catch (InterruptedException e) {
                 return null;
             }
         }
+        return events.remove(0);
+    }
+
+
+    /**
+     * Returns a string representation of the object. In general, the
+     * <code>toString</code> method returns a string that
+     * "textually represents" this object. The result
+     * @return a string representation of the object.
+     */
+    public String toString() {
+        return "Receiver at "+url+" with "+ events.size()+" event(s)";
     }
 }
