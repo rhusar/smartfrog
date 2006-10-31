@@ -43,9 +43,8 @@
     <dirname property="antfile.dir" file="${ant.file.common}"/>
     <property name="core.dir" location="${antfile.dir}"/>
     
-    <!-- This is to decide the directory strecture for the components, and default is false -->
+    <!-- This is to decide the directory structure for the components, and default is false -->
     <property name="is.component" value="false"  />
-    <echo> Is component "${is.component}" </echo>
 
     <!-- the common.properties file lets you provide a single declaration of
     overrides (like the compiler settings) that apply across
@@ -59,10 +58,8 @@
 
     <property name="smartfrog.home" location="${core.dir}/smartfrog"/>
     <property name="smartfrog.dist.dir" location="${smartfrog.home}/dist" />
-    <property name="smartfrog.dist.lib.dir"
-      location="${smartfrog.dist.dir}/lib"/>
-    <property name="smartfrog.components.dir"
-      location="${core.dir}/components"/>
+    <property name="smartfrog.dist.lib.dir" location="${smartfrog.dist.dir}/lib"/>
+    <property name="smartfrog.components.dir" location="${core.dir}/components"/>
     
     <!-- Compile options for Smartfrog Release -->
     <property name="javac.debug.mode" value="true"/> 
@@ -260,7 +257,6 @@
      <available file="${user.home}/.ant/lib/junit-3.8.2.jar"/>
    </condition>
 
-   <echo >In project ${project.name}</echo>
     <echo level="verbose">system.tests.enabled=${system.tests.enabled}</echo>
     <echo level="verbose">unit.tests.enabled=${unit.tests.enabled}</echo>
 
