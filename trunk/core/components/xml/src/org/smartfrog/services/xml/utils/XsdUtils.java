@@ -57,8 +57,8 @@ public final class XsdUtils {
     /**
      * convert into a boolean value or null if it is not recognised
      * @param value string in. this is not trimmed first.
-     * @return {@link Boolean.TRUE} for value==true|1 ;
-     *   {@link Boolean.FALSE} for value==false|0,
+     * @return {@link Boolean#TRUE} for value==true|1 ;
+     *   {@link Boolean#FALSE} for value==false|0,
      *   null for anything else
      */
     public static Boolean convertFromXsdForm(String value) {

@@ -63,10 +63,10 @@ public class DomToXom {
     }
 
     /**
-     * Convert a Dom doc to a Xom doc
-     * @param dom
-     * @return
-     * @throws ParsingException
+     * Convert a Dom doc to a Xom doc, bu turning it into bytes and then back into Xom.
+     * @param dom dom document to read
+     * @return a parsed Xom document
+     * @throws ParsingException if the doc doesnt parse
      * @throws RuntimeException for IO problems (very hard to do, given we are reading a string buffer)
      */
     public Document convert(org.w3c.dom.Document dom) throws ParsingException {
