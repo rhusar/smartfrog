@@ -42,7 +42,7 @@ public class ParallelTest extends DeployingTestBase {
     public void testSimpleParallel() throws Throwable {
         application = deployExpectingSuccess(FILES + "testSimpleParallel.sf", "testSimpleParallel");
         TestBlock block = (TestBlock) application;
-        expectAbnormalTermination(block);
+        expectSuccessfulTermination(block);
         Prim action=block.getAction();
         Prim toggle=(Prim) ((Prim) block).sfResolve("toggle");
         assertAttributeEquals(toggle,"value",true);
