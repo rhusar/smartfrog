@@ -86,18 +86,16 @@ public class SFTrace extends PrimImpl implements SFTraceIntf {
      * @throws SmartFrogException in case of error while deploying
      * @throws RemoteException in case of network/rmi error
      */
-    public synchronized void sfDeploy() throws SmartFrogException,
-            RemoteException {
-        super.sfDeploy();
+    public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
 
-        log = sfGetCoreLog();
+        super.sfDeploy();
 
         try {
             try {
                 localhost = SFProcess.getProcessCompound().sfDeployedHost();
             } catch (Exception ex) {
-                if (log.isErrorEnabled()) {
-                    log.error("sfTrace: Exception deployment: " + ex.toString(),ex);
+                if (sfLog().isErrorEnabled()) {
+                    sfLog().error("sfTRACE: Exception deployment: " + ex.toString(),ex);
                 }
             }
 
@@ -106,16 +104,16 @@ public class SFTrace extends PrimImpl implements SFTraceIntf {
                         .sfResolve(SmartFrogCoreKeys.SF_ROOT_LOCATOR_PORT)
                         .toString();
             } catch (Exception ex) {
-                if (log.isErrorEnabled()) {
-                    log.error("sfTrace: Exception deployment:" + ex.toString(),ex);
+                if (sfLog().isErrorEnabled()) {
+                    sfLog().error("sfTRACE: Exception deployment:" + ex.toString(),ex);
                 }
             }
 
             try {
                 processName = getSfProcessName();
             } catch (Exception ex) {
-                if (log.isErrorEnabled()) {
-                    log.error("sfTrace: Exception deployment:" + ex.toString());
+                if (sfLog().isErrorEnabled()) {
+                    sfLog().error("sfTRACE: Exception deployment:" + ex.toString());
                 }
             }
 
@@ -152,8 +150,7 @@ public class SFTrace extends PrimImpl implements SFTraceIntf {
     }
 
     String getSfProcessName() {
-        String value = (String) System.getProperty(
-                "org.smartfrog.sfcore.processcompound.sfProcessName");
+        String value = (String) System.getProperty("org.smartfrog.sfcore.processcompound.sfProcessName");
 
         if (value == null) {
             return SmartFrogCoreKeys.SF_ROOT;
@@ -176,9 +173,8 @@ public class SFTrace extends PrimImpl implements SFTraceIntf {
 
             // TODO: Check
         } catch (Exception ex) {
-            if (log.isErrorEnabled()) {
-                log.error("sfTrace: Exception(getUniqueID :" +
-                        ex.toString(),ex);
+            if (sfLog().isErrorEnabled()) {
+                sfLog().error("sfTRACE: Exception(getUniqueID :" + ex.toString(),ex);
             }
             id = "defaultUniqueID";
         }
@@ -192,8 +188,7 @@ public class SFTrace extends PrimImpl implements SFTraceIntf {
      * @throws SmartFrogException in case of error in starting
      * @throws RemoteException in case of network/rmi error
      */
-    public synchronized void sfStart() throws SmartFrogException,
-					      RemoteException {
+    public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
     }
 
@@ -264,7 +259,7 @@ public class SFTrace extends PrimImpl implements SFTraceIntf {
      * Prints message terminate.
      *
      * @param msg message
-     * @param teminationType termination type
+     * @param terminationType termination type
      * @param terminationMsg termination message
      * @param date termination date
      */
@@ -293,23 +288,22 @@ public class SFTrace extends PrimImpl implements SFTraceIntf {
                         msg = msg + ":" + rootLocatorPort;
                     }
                 }
-                msg = msg + ", [" +
-                    (dateFormatter.format(date)) + "]";
+                msg = msg + ", [" +(dateFormatter.format(date)) + "]";
             }
 
             if (printMsgImp == null) {
-                log.out("sfTrace: " + msg);
+                sfLog().out("[sfTRACE] "+msg);
             } else {
                 try {
                     printMsgImp.printMsg(msg + "\n");
                 } catch (Exception ex) {
-                    if (log.isErrorEnabled())
-                        log.error("sfTrace: "+ex, ex);
+                    if (sfLog().isErrorEnabled())
+                        sfLog().error("sfTRACE: "+ex, ex);
                 }
             }
         } catch (Throwable th) {
-	    if (log.isErrorEnabled())
-            log.error("SFTrace.printMsg " + th.toString(),th);
+	    if (sfLog().isErrorEnabled())
+            sfLog().error("sfTRACE.printMsg " + th.toString(),th);
         }
     }
 
@@ -376,7 +370,7 @@ public class SFTrace extends PrimImpl implements SFTraceIntf {
             throws SmartFrogException {
             Date date = new Date(System.currentTimeMillis());
             try {
-                prim.sfReplaceAttribute("sfTraceTerminateLifeCycle",date);
+                prim.sfReplaceAttribute("sfTracesfTraceTerminateLifeCycle",date);
             } catch (RemoteException rex){
                 printMsg(rex.toString(),null);
             }

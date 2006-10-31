@@ -33,7 +33,7 @@ Trace extends Prim {
         sfClass "org.smartfrog.services.trace.SFTrace";
     // set to false if you want to switch date, process and host displays off the messages
     verbose true;
-
+    sfLog "sfTrace";
    // future improvement: output per Hook, no need for now.
         //outputMsg LAZY PARENT:display; // for printing Trace messages!
    //Active Hooks. By default they are active
