@@ -242,26 +242,25 @@ public class EventCompoundImpl extends CompoundImpl implements EventBus,
      * @param comp sender of termination
      */
     public void sfTerminatedWith(TerminationRecord status, Prim comp) {
-        boolean forward;
+        boolean terminate;
         if (isWorkflowTerminating()) {
             //during termination, always forward
-            forward = onWorkflowTerminating(status, comp);
+            terminate = onWorkflowTerminating(status, comp);
         } else {
             //check to see what the subclass wants
             try {
                 if (sfContainsChild(comp)) {
-                    forward = onChildTerminated(status, comp);
+                    terminate = onChildTerminated(status, comp);
                 } else {
-                    forward = onNonChildTerminated(status, comp);
+                    terminate = onNonChildTerminated(status, comp);
                 }
             } catch (Exception e) {
                 sfLog().error("Exception ",e);
-                forward=true;
-
+                terminate =true;
             }
         }
-        if (forward) {
-            super.sfTerminatedWith(status, comp);
+        if (terminate) {
+            sfTerminate(status);
         }
     }
 
@@ -287,8 +286,7 @@ public class EventCompoundImpl extends CompoundImpl implements EventBus,
     * depending on what happens underneath.
     * It is only called outside of component termination, i.e. when {@link #isWorkflowTerminating()} is
     * false, and when the comp parameter is a child, that is <code>sfContainsChild(comp)</code> holds.
-    * If the the method returns true, the event is forwarded up the object heirarchy, which
-    * will eventually trigger a component termination.
+    * If the the method returns true, we terminate the component.
     * <p>
     * Always return false if you start new components from this method!
     * </p>
@@ -309,11 +307,11 @@ public class EventCompoundImpl extends CompoundImpl implements EventBus,
      * It is not normally overridden, but is there to provide complete coverage.
      * @param status exit record of the component
      * @param comp   non-child component that is terminating
-     * @return true if the termination event is to be forwarded up the chain.
+     * @return true if the component is to be terminated
      */
     protected boolean onNonChildTerminated(TerminationRecord status, Prim comp)
             throws SmartFrogRuntimeException, RemoteException {
-        return true;
+        return false;
     }
 
     /**
