@@ -131,6 +131,11 @@ public class JUnit3TestSuiteImpl extends AbstractTestSuite implements JUnitTestS
     private Properties sysproperties;
 
     /**
+     * Single test to run
+     */
+    private String singleTest;
+
+    /**
      * Error if sysproperties are uneven.
      * {@value}
      */
@@ -220,6 +225,8 @@ public class JUnit3TestSuiteImpl extends AbstractTestSuite implements JUnitTestS
         classes = flattenStringList(nestedClasses,
                 ATTR_CLASSES);
 
+        singleTest = sfResolve(ATTR_SINGLE_TEST, singleTest, false);
+
         //properties. extract the list, flatten it and bind to sysproperties
         List propList = (List) sfResolve(ATTR_SYSPROPS,
                 (List) null,
@@ -276,7 +283,8 @@ public class JUnit3TestSuiteImpl extends AbstractTestSuite implements JUnitTestS
 
     /**
      * build the list of classes to run. At this point the list is already
-     * flat.
+     * flat. If the user has asked for a single test, so {@link #singleTest} is not null,
+     * then only tests that end with that pattern are tested. 
      */
     protected void buildClassList() {
         testClasses = new HashMap<String, String>();
@@ -287,15 +295,32 @@ public class JUnit3TestSuiteImpl extends AbstractTestSuite implements JUnitTestS
 
     /**
      * add a test to the list , prepending the package
-     *
+     * If {@link #singleTest} is not null, only tests whose classnameor fullname match
+     * will be allowed.
      * @param classname
      */
     private void addTest(String classname) {
-        String fullname = packageValue + classname;
-        if (testClasses.get(fullname) == null) {
+        String fullname = getFullClassname(classname);
+        boolean add;
+        //should we add this?
+        add=singleTest==null
+                || singleTest.length()==0
+                || singleTest.equals(classname)
+                || singleTest.equals(fullname);
+        
+        if (add && testClasses.get(fullname) == null) {
             log.debug("adding test " + fullname);
             testClasses.put(fullname, fullname);
         }
+    }
+
+    /**
+     * Get the full classname of a class
+     * @param classname
+     * @return
+     */
+    private String getFullClassname(String classname) {
+        return packageValue + classname;
     }
 
     /**

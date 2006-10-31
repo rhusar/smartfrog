@@ -52,14 +52,19 @@ TestSuite extends Prim {
   
   PackagedTestSuiteSchema extends Schema {
       //the package that all classes are in
-      //e.g "org.example.test"
+      //e.g "org.example.test", "test.files." or ""
       package extends String {
-        descripion "The base package for the tests";
+        description  "The base package for the tests. Use \"\" for no package";
       }
       //the classes in the package.
       //e.g. ["test1","subpackage.test2"]
       classes extends Vector {
         description "A list of test classes, in or underneath the supplied package";
+      }
+
+      singleTest extends OptionalString {
+        description  ##The name of a single test class to run.
+          This can be the full package name or a short name#;
       }
   }
   
