@@ -1,4 +1,4 @@
-/** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
+/** (C) Copyright 2006 Hewlett-Packard Development Company, LP
 
  This library is free software; you can redistribute it and/or
  modify it under the terms of the GNU Lesser General Public
@@ -17,17 +17,28 @@
  For more information: www.smartfrog.org
 
  */
-package org.smartfrog.services.junit.junit3;
-
-import org.smartfrog.services.junit.PackagedTestSuite;
+package org.smartfrog.services.junit;
 
 /**
- * This is the junit specific test suite interface
- * created 20-May-2004 11:08:18
+ * created 30-Oct-2006 14:26:28
  */
 
+public interface PackagedTestSuite extends TestSuite {
+    /**
+     * Package to use
+     * {@value}
+     */
+    String ATTR_PACKAGE = "package";
 
-public interface JUnitTestSuite extends PackagedTestSuite {
+    /**
+     * List of test classes
+     * {@value}
+     */
+    String ATTR_CLASSES = "classes";
 
-
+    /**
+     * Name of a single test to run.
+     * {@value}
+     */
+    String ATTR_SINGLE_TEST = TestRunner.ATTR_SINGLE_TEST;
 }
