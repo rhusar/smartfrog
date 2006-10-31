@@ -86,6 +86,10 @@ public class CdlCatalog extends XmlCatalogResolver {
                 WSRF_PACKAGE + XML_FILENAME_SOAP_12,
             SOAP11_NAMESPACE,
                 WSRF_PACKAGE + XML_FILENAME_SOAP_11,
+            MUWS_P1_NAMESPACE,
+                WSRF_PACKAGE + XML_FILENAME_SOAP_11,
+            MUWS_P2_NAMESPACE,
+                WSRF_PACKAGE + XML_FILENAME_WSDM_MUWS_P2,
     };
 
     private static final String[][] names = {
@@ -99,6 +103,8 @@ public class CdlCatalog extends XmlCatalogResolver {
             {"cdl", XML_CDL_NAMESPACE},
             {"cmp", CDL_CMP_TYPES_NAMESPACE},
             {"cmpw", CDL_CMP_WSDL_NAMESPACE},
+            {"muws-p1-xs", MUWS_P2_NAMESPACE},
+            {"muws-p2-xs", MUWS_P2_NAMESPACE},
             {"wsrf-bf", WSRF_WSBF_NAMESPACE},
             {"wsrf-rl", WSRF_WSRL_NAMESPACE},
             {"wsrf-rp", WSRF_WSRP_NAMESPACE},
@@ -112,7 +118,6 @@ public class CdlCatalog extends XmlCatalogResolver {
         super(loader);
         loadCDDLMMappings();
     }
-
 
     /**
      * load in the standard CDDLM mappings

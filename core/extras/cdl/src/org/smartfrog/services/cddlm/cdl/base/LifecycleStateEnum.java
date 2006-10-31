@@ -21,6 +21,7 @@
 package org.smartfrog.services.cddlm.cdl.base;
 
 import org.smartfrog.sfcore.prim.Prim;
+import org.smartfrog.sfcore.languages.cdl.faults.CdlXmlParsingException;
 
 import java.rmi.RemoteException;
 
@@ -43,10 +44,26 @@ public enum LifecycleStateEnum {
 
     private final String xmlName;
 
-    public static LifecycleStateEnum extract(String text) {
-        return valueOf(text);
+    /**
+     * Convert the XML value into an enumeration entry
+     * @param text text to parse
+     * @return the enumeration
+     * @throws org.smartfrog.sfcore.languages.cdl.faults.CdlXmlParsingException  if we cannot parse
+     */
+    public static LifecycleStateEnum extract(String text)
+        throws CdlXmlParsingException{
+        if(undefined.hasXmlName(text)) return undefined;
+        if (instantiated.hasXmlName(text)) return instantiated;
+        if (initialized.hasXmlName(text)) return initialized;
+        if (running.hasXmlName(text)) return running;
+        if (failed.hasXmlName(text)) return failed;
+        if (terminated.hasXmlName(text)) return terminated;
+        throw new CdlXmlParsingException("No CDL state matches ["+text+"]");
     }
 
+    private boolean hasXmlName(String name) {
+        return xmlName.equals(name);
+    }
 
     public String getXmlName() {
         return xmlName;

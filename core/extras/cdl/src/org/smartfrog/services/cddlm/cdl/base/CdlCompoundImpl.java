@@ -34,7 +34,8 @@ import java.net.URISyntaxException;
 import java.rmi.RemoteException;
 
 /**
- * Base component for CDL components. It is a compound, obviously.
+ * Base component for CDL components. It is a compound, obviously. Lifecycle events
+ * can be relayed to a lifecycle listener
  * created 01-Feb-2006 11:19:17
  */
 
@@ -92,6 +93,8 @@ public class CdlCompoundImpl extends CompoundImpl
             log.error(e);
         }
     }
+
+
     /**
      * Resolve a reference
      * @param name qname of the reference
@@ -133,7 +136,7 @@ public class CdlCompoundImpl extends CompoundImpl
         } catch (URISyntaxException e) {
             throw SmartFrogException.forward(e);
         }
-        this.listener = target;
+        listener = target;
         sfReplaceAttribute(ATTR_JOBURI, uri);
     }
 
