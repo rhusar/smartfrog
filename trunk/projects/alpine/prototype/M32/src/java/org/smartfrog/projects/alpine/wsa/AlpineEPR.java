@@ -232,6 +232,7 @@ public final class AlpineEPR implements Validatable, AddressingConstants, XomSou
                                            String wsaNs, String wsaPrefix) {
         String prefixColon = wsaPrefix + ":";
         SoapElement root = new SoapElement(rootPrefix +":"+rootname, rootNs);
+        root.addNamespaceDeclaration(wsaPrefix,wsaNs);
         if (address != null) {
             Element to = new SoapElement(prefixColon + WSA_ADDRESS, wsaNs, getAddress());
             root.appendChild(to);
@@ -388,6 +389,9 @@ public final class AlpineEPR implements Validatable, AddressingConstants, XomSou
      * @return the query or null for no match
      */
     public static String lookupQuery(String query, String name) {
+        if(query==null) {
+            return null;
+        }
         String param= name + "=";
         int index;
         if(query.startsWith(param)) {

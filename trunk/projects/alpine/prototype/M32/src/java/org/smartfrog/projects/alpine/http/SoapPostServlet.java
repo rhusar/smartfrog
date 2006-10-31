@@ -112,7 +112,6 @@ public class SoapPostServlet extends ServletBase {
      * @param response
      */
     protected void turnOffCaching(HttpServletResponse response) {
-
         response.setHeader("Cache-Control","no-cache");
         response.setHeader("Pragma", "no-cache");
     }

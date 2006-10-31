@@ -34,6 +34,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Date;
+import java.text.SimpleDateFormat;
 
 /**
  * XML Schema helper stuff.
@@ -69,6 +71,16 @@ public final class XsdUtils {
         return "false".equals(value) || "0".equals(value);
     }
 
+
+    /**
+     * Convert a date to an iso timestamp
+     * @param timestamp
+     * @return
+     */
+    public static String toIsoTime(Date timestamp) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+        return sdf.format(timestamp);
+    }
 
     /**
      * Convert from a string triple. Prefix may be null.
@@ -176,9 +188,8 @@ public final class XsdUtils {
     }
 
     /**
-     * /**
      * Extract the first child element of an element
-     *
+     * @param element the element to scan
      * @return the element or null for no child elements
      */
     public static Element getFirstChildElement(Element element) {
@@ -195,8 +206,8 @@ public final class XsdUtils {
 
     /**
      * Test for an element having a full name matching the qname
-     *
-     * @param testName
+     * @param  element element to search
+     * @param testName expected name
      * @return true iff local name and namespace URIs match.
      */
     public static boolean isNamed(Element element, QName testName) {
@@ -207,7 +218,7 @@ public final class XsdUtils {
     /**
      * Get the immediate text value of an element. That is -the concatenation
      * of all direct child text elements. This string is not trimmed.
-     *
+     * @param  element element to search
      * @return a next string, which will be empty "" if there is no text
      */
     public static String getTextValue(Element element) {
@@ -223,7 +234,7 @@ public final class XsdUtils {
 
     /**
      * Apply an XPath query to a node
-     *
+     * @param  element element to search
      * @param path    xpath query
      * @param context context for prefix evaluation
      * @return an iterator over all nodes that match the path
@@ -248,7 +259,7 @@ public final class XsdUtils {
     /**
      * Print a document to a string, for debug purposes
      *
-     * @param document
+     * @param document doc to print
      * @return a formatted, indented, wrapped, version of the message
      */
     public static String printToString(Document document) {
@@ -277,7 +288,7 @@ public final class XsdUtils {
     /**
      * Get the child elements in a given namespace
      *
-     * @param element
+     * @param  element element to search
      * @param namespace name of the elements
      * @return
      */
@@ -289,7 +300,7 @@ public final class XsdUtils {
     /**
      * Get the child elements in a given namespace
      *
-     * @param element
+     * @param  element element to search
      * @param namespace name of the elements
      * @return
      */
@@ -300,7 +311,7 @@ public final class XsdUtils {
     /**
      * Get the child elements of the given name
      *
-     * @param element
+     * @param  element element to search
      * @param name name of the elements
      * @return iterator over the elements
      */
@@ -309,9 +320,9 @@ public final class XsdUtils {
     }
 
     /**
-     * copy the nodes in the Elements type into a java5 typed list.
-     * @param in
-     * @return
+     * copy the nodes in the Elements type into a java5 typed list. There is no cloning.
+     * @param in element list
+     * @return a list representation.
      */
     public static List<Element> makeList(Elements in) {
         List<Element> out=new ArrayList<Element>(in.size());
