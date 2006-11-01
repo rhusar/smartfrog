@@ -52,11 +52,11 @@ public class DelayedTerminator implements Runnable {
      * Create a delayed time.
      * If the time is -1, then the wait is for {@link Long#MAX_VALUE}, otherwise it
      * is for as many milliseconds as needed.
-     * @param prim
-     * @param time
-     * @param log
-     * @param description
-     * @param normalTermination
+     * @param prim component to shut down
+     * @param time how long to sleep
+     * @param log a log to log to
+     * @param description text to use in the termination record (or null to have something made up)
+     * @param normalTermination should the termination be normal.
      */
     public DelayedTerminator(Prim prim, long time, LogSF log, String description, boolean normalTermination) {
         if(time<0) {
@@ -107,7 +107,7 @@ public class DelayedTerminator implements Runnable {
     public synchronized void shutdown(boolean terminateTarget) {
         if (self != null) {
             shutdown = true;
-            this.shouldTerminate = terminateTarget;
+            shouldTerminate = terminateTarget;
             self.interrupt();
         }
     }
