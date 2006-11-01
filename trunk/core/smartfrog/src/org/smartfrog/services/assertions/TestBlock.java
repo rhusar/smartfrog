@@ -59,6 +59,12 @@ public interface TestBlock extends Remote {
     String ATTR_TIMEOUT = "timeout";
 
     /**
+     * Is timeout expected
+     * {@value}
+     */
+    String ATTR_EXPECTTIMEOUT = "expectTimeout";
+
+    /**
      * {@value}
      */
     String ATTR_FORCEDTIMEOUT = "forcedTimeout";

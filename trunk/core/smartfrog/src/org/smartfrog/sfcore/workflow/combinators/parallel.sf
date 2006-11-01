@@ -34,8 +34,14 @@ Parallel extends ActionsCompound {
     sfClass "org.smartfrog.sfcore.workflow.combinators.Parallel";
     parallelSchema extends Schema {
       asynchCreateChild extends OptionalBoolean;
+      terminateOnEmptyDeploy extends OptionalBoolean {
+        description ##flag which indicates that the parallel component
+          should terminate immediately if there are no children to deploy#;
+      }
+}
     }  
     // Deploy children in parallel? Set to true to deploy every child component
     //in a new thread
-    asynchCreateChild false; 
+    asynchCreateChild false;
+    terminateOnEmptyDeploy false;
 }

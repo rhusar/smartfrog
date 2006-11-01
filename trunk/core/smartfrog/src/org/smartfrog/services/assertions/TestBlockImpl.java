@@ -119,10 +119,11 @@ public class TestBlockImpl extends EventCompoundImpl implements TestBlock {
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
         long timeout = sfResolve(ATTR_TIMEOUT,0L,true);
+        boolean expectTimeout=sfResolve(ATTR_EXPECTTIMEOUT,false,true);
         try {
             child=sfCreateNewChild(ACTION,action, null);
             if(timeout>0) {
-                actionTerminator=new DelayedTerminator(child, timeout, sfLog(),"timeout",false );
+                actionTerminator=new DelayedTerminator(child, timeout, sfLog(),"timeout",expectTimeout);
             }
         } catch (RemoteException e) {
             startupException(e);
@@ -188,7 +189,10 @@ public class TestBlockImpl extends EventCompoundImpl implements TestBlock {
     protected boolean onChildTerminated(TerminationRecord status, Prim comp)
             throws SmartFrogRuntimeException, RemoteException {
         if(comp==child) {
-            //this is the action terminating, so log the closure and continue
+            //this is the action terminating,
+            //forget about our now-terminated child (it cannot be serialized any more)
+            child=null;
+            //log the closure and continue
             end(status);
             return false;
         } else {

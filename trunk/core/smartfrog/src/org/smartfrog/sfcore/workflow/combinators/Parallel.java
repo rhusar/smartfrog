@@ -35,6 +35,7 @@ import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.workflow.eventbus.EventCompoundImpl;
+import org.smartfrog.sfcore.utils.ComponentHelper;
 
 /**
  * Parallel is a modified compound which differs in that the sub-components
@@ -55,8 +56,11 @@ import org.smartfrog.sfcore.workflow.eventbus.EventCompoundImpl;
 public class Parallel extends EventCompoundImpl implements Compound {
 
     private static Reference asynchCreateChildRef = new Reference ("asynchCreateChild");
-
+    /** {@value} */
+    public static final String ATTR_TERMINATE_IF_EMPTY = "terminateOnEmptyDeploy";
+    private static Reference terminateIfEmptyRef = new Reference(ATTR_TERMINATE_IF_EMPTY);
     private boolean asynchCreateChild=false;
+    private boolean terminateIfEmpty=false;
     private Vector asynchChildren = null;
 
     /**
@@ -64,7 +68,7 @@ public class Parallel extends EventCompoundImpl implements Compound {
      *
      * @throws java.rmi.RemoteException In case of network or RMI failure.
      */
-    public Parallel() throws java.rmi.RemoteException {
+    public Parallel() throws RemoteException {
         super();
     }
 
@@ -78,6 +82,7 @@ public class Parallel extends EventCompoundImpl implements Compound {
     public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
         super.sfDeploy();
         asynchCreateChild = sfResolve(asynchCreateChildRef,asynchCreateChild,false);
+        terminateIfEmpty = sfResolve(terminateIfEmptyRef, terminateIfEmpty, false);
     }
 
     /**
@@ -88,22 +93,36 @@ public class Parallel extends EventCompoundImpl implements Compound {
      */
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
-
-        // let any errors be thrown and caught by SmartFrog for abnormal termination  - including empty actions
-        try {
-            if (!asynchCreateChild){
-                if (sfLog().isDebugEnabled()){sfLog().debug(" Parallel Synch");};
-                synchCreateChild();
-            } else {
-                if (sfLog().isDebugEnabled()){sfLog().debug(" Parallel Asynch");};
-                asynchCreateChild();
+        TerminationRecord terminationRecord = null;
+        if (!actions.isEmpty()) {
+// let any errors be thrown and caught by SmartFrog for abnormal termination  - including empty actions
+            try {
+                if (!asynchCreateChild){
+                    if (sfLog().isDebugEnabled()){sfLog().debug(" Parallel Synch");};
+                    synchCreateChild();
+                } else {
+                    if (sfLog().isDebugEnabled()){sfLog().debug(" Parallel Asynch");};
+                    asynchCreateChild();
+                }
+            } catch (Exception ex) {
+                if (sfLog().isErrorEnabled()){
+                  sfLog().error(sfCompleteNameSafe()+" - Failed to start sub-components ",ex);
+                }
+                terminationRecord = TerminationRecord
+                        .abnormal("Failed to start sub-components " + ex, name);
+                //sfTerminate(terminationRecord);
             }
-        } catch (Exception ex) {
-            if (sfLog().isErrorEnabled()){
-              sfLog().error(sfCompleteNameSafe()+" - Failed to start sub-components ",ex);
+        } else {
+            //no actions. Maybe terminate 
+            if(terminateIfEmpty) {
+                terminationRecord = new TerminationRecord(TerminationRecord.NORMAL,
+                        "Parallel component is empty",name);
             }
-            sfTerminate(TerminationRecord.abnormal("Failed to start sub-components " + ex, name));
         }
+        if (terminationRecord!=null) {
+            new ComponentHelper(this).targetForWorkflowTermination(terminationRecord);
+        }
+
     }
 
 
