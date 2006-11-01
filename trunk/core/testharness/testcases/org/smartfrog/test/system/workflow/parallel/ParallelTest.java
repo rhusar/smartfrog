@@ -29,22 +29,39 @@ import org.smartfrog.sfcore.prim.Prim;
  */
 public class ParallelTest extends DeployingTestBase {
     protected static final String FILES = "org/smartfrog/test/system/workflow/parallel/";
+    private TestBlock block;
 
     public ParallelTest(String s) {
         super(s);
     }
+
+    public void setBlock(Prim prim) {
+        setBlock((TestBlock) prim);
+    }
+
+    public void setBlock(TestBlock block) {
+        this.block = block;
+    }
+
     public void testEmptyParallel() throws Throwable {
         application=deployExpectingSuccess(FILES +"testEmptyParallel.sf","testEmptyParallel");
-        TestBlock block=(TestBlock)application;
+        setBlock(application);
         expectSuccessfulTermination(block);
+        assertAttributeEquals(application, TestBlock.ATTR_FORCEDTIMEOUT, true);
     }
 
     public void testSimpleParallel() throws Throwable {
         application = deployExpectingSuccess(FILES + "testSimpleParallel.sf", "testSimpleParallel");
-        TestBlock block = (TestBlock) application;
+        setBlock(application);
         expectSuccessfulTermination(block);
-        Prim action=block.getAction();
-        Prim toggle=(Prim) ((Prim) block).sfResolve("toggle");
+        Prim toggle=(Prim) (application.sfResolve("toggle"));
         assertAttributeEquals(toggle,"value",true);
+    }
+
+    public void testEmptyParallelTerminating() throws Throwable {
+        application = deployExpectingSuccess(FILES + "testEmptyParallelTerminating.sf",
+                "testEmptyParallelTerminating");
+        block = (TestBlock) application;
+        expectSuccessfulTermination(block);
     }
 }

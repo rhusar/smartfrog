@@ -26,8 +26,14 @@ import org.smartfrog.services.os.java.LibraryArtifactImpl;
 import org.smartfrog.services.os.java.LibraryArtifact;
 import org.smartfrog.services.filesystem.FileUsingComponent;
 import org.smartfrog.sfcore.prim.Prim;
+import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.security.SFGeneralSecurityException;
 
 import java.io.File;
+import java.rmi.RemoteException;
+import java.net.UnknownHostException;
+
+import junit.framework.AssertionFailedError;
 
 /**
  * Test library work
@@ -36,6 +42,7 @@ import java.io.File;
 
 public class LibraryTest extends SmartFrogTestBase {
     public static final String FILES = JavaPackageTest.FILES;
+    private static final String EXCEPTION_JUNIT_ASSERTION_FAILED = "junit.framework.AssertionFailedError";
 
 
     public LibraryTest(String name) {
@@ -131,6 +138,11 @@ public class LibraryTest extends SmartFrogTestBase {
             File file = new File(filename);
             assertTrue("not found " + filename, file.exists());
             file.delete();
+        } catch(Throwable thrown) {
+            //connection refused exceptions are a sign of being offline
+            assertFaultCauseAndTextContains(thrown,EXCEPTION_SMARTFROG, "connection refused",null);
+            System.out.println("No connection to the remote server; ignoring result");
+            System.out.println(thrown);
         } finally {
             terminateApplication(application);
         }
@@ -151,11 +163,15 @@ public class LibraryTest extends SmartFrogTestBase {
      * @throws Throwable
      */
     public void testMaven2DownloadBadSha1() throws Throwable {
-        deployExpectingException(FILES + "testMaven2DownloadBadSha1.sf",
-                "testMaven2DownloadBadSha1",
-                EXCEPTION_LIFECYCLE,
-                null,
-                EXCEPTION_SMARTFROG,
-                LibraryArtifactImpl.ERROR_CHECKSUM_FAILURE);
+        try {
+            deployExpectingException(FILES + "testMaven2DownloadBadSha1.sf",
+                    "testMaven2DownloadBadSha1",
+                    EXCEPTION_LIFECYCLE,
+                    null,
+                    EXCEPTION_SMARTFROG,
+                    LibraryArtifactImpl.ERROR_CHECKSUM_FAILURE);
+        } catch (AssertionFailedError thrown) {
+            assertFaultCauseAndTextContains(thrown, EXCEPTION_JUNIT_ASSERTION_FAILED, "connection refused", null);
+        }
     }
 }

@@ -26,15 +26,23 @@ For more information: www.smartfrog.org
  * removes that but second component fails and thus third is never executed.
  */
 testSequence extends Sequence {
+        //to diagnose RMI problems
+        sfExport true;
 
         toggle1 extends ToggleToTrueWorkflow;
 
         fail extends Fail {
-          message "end of sequence";
+          message "halted mid-sequence";
           normal false;
         }
 
+        //these should never be reached. 
         toggle2 extends ToggleToTrueWorkflow;
+
+        fail extends Fail {
+          message "overrun";
+          normal false;
+        }
 }
 
 sfConfig extends TestBlock {

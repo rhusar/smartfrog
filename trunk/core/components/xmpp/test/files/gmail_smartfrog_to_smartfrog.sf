@@ -21,6 +21,9 @@
 #include "/org/smartfrog/services/xmpp/components.sf"
 #include "/org/smartfrog/sfcore/workflow/components.sf"
 
+/**
+ * this is an example that sends a message using google
+ */
 sfConfig extends Sequence {
 
     debug extends XmppDebugging {
@@ -34,7 +37,5 @@ sfConfig extends Sequence {
         password PROPERTY xmpp.password;
         message "hello, world";
     }
-
-
 
 }

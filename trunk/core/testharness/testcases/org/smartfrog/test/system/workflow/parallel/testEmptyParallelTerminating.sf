@@ -22,18 +22,14 @@
 #include "/org/smartfrog/test/system/workflow/parallel/components.sf"
 
 /**
- * deploy a parallel component.
- * Expect it to terminate once there are no active children
+ * deploy a parallel component. expect it to terminate if there are no active children
  */
 sfConfig extends TestBlock {
 
-
  action extends Parallel {
-       toggle1 extends ToggleToTrueWorkflow;
+  terminateOnEmptyDeploy true;
+ }
 
-  }
-
-  toggle LAZY action:parallel:toggle1;
 }
 
 

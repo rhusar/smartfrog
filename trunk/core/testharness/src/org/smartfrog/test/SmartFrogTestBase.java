@@ -382,9 +382,9 @@ public abstract class SmartFrogTestBase extends TestCase {
         assertNotNull("No substring ", substring);
         final boolean contained = source.indexOf(substring)>=0;
 
-        if(!contained)
-        {
-            String message = "- Did not find ["+substring+"] in ["+source+"]"+"\n, Result:"+cfgDescMsg;
+        if(!contained) {
+            String message = "- Did not find ["+substring+"] in ["+source+"]"+
+                (cfgDescMsg!=null?("\n, Result:"+cfgDescMsg):"");
             System.out.println(message);
             if (extraText != null) {
                 System.out.println(extraText);
