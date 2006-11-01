@@ -22,10 +22,13 @@
 #include "/org/smartfrog/test/system/workflow/parallel/components.sf"
 
 /**
- * deploy a parallel component. expect it to terminate if there are no active children
+ * Deploy a parallel component. 
+ * There are no active children; it will stay around
  */
 sfConfig extends TestBlock {
-
+ timeout 2000;
+ expectTimeout true;
+ 
  action extends Parallel {
  }
 

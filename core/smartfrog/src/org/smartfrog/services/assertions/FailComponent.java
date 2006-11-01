@@ -81,8 +81,8 @@ public class FailComponent extends PrimImpl implements Fail,Runnable {
         }
         TerminationRecord record;
         Reference name = this.sfCompleteNameSafe();
-        record = normal ? TerminationRecord.normal(name) : TerminationRecord.abnormal(message, name);
-        record.description = message;
+        record=new TerminationRecord(normal?TerminationRecord.NORMAL:TerminationRecord.ABNORMAL,
+                message,name);
         TerminatorThread terminator = new TerminatorThread(this, record);
         if (detach) terminator.detach();
         if (!notifyParent) terminator.quietly();

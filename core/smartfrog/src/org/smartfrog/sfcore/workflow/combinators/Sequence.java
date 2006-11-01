@@ -21,16 +21,13 @@ For more information: www.smartfrog.org
 package org.smartfrog.sfcore.workflow.combinators;
 
 import java.rmi.RemoteException;
-import java.util.Enumeration;
 
-import org.smartfrog.sfcore.common.Context;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.compound.Compound;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.TerminationRecord;
-import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.workflow.eventbus.EventCompoundImpl;
 import org.smartfrog.sfcore.common.*;
 
@@ -121,7 +118,7 @@ public class Sequence extends EventCompoundImpl implements Compound {
      * @return true whenever a child component is not started
      */
     protected boolean onChildTerminated(TerminationRecord status, Prim comp) {
-        boolean forward = true;
+        boolean terminate = true;
         if (status.isNormal()) {
 
             if (actionKeys.hasMoreElements()) {
@@ -135,7 +132,7 @@ public class Sequence extends EventCompoundImpl implements Compound {
                     ComponentDescription act = (ComponentDescription) actions.get(componentName);
                     sfCreateNewChild(componentName, act, null);
                     //do not forward the event
-                    forward = false;
+                    terminate = false;
                 } catch (Exception e) {
                     //oops, something went wrong
                     if (sfLog().isErrorEnabled()) {
@@ -145,7 +142,7 @@ public class Sequence extends EventCompoundImpl implements Compound {
                             .abnormal("error in starting next component: exception " + e, name, e);
                     sfTerminate(tr);
                     //we've triggered an abnormal shutdown, so no forwarding of the earlier event
-                    forward = false;
+                    terminate = false;
                 }
 
             } else {
@@ -154,7 +151,7 @@ public class Sequence extends EventCompoundImpl implements Compound {
                 if (sfLog().isDebugEnabled()) {
                     sfLog().debug("no more components for sequence " + name.toString());
                 }
-                forward = true;
+                terminate = true;
             }
         } else {
             //abnormal terminations
@@ -163,9 +160,9 @@ public class Sequence extends EventCompoundImpl implements Compound {
                         SmartFrogException.forward(status.cause),
                         status);
             }
-            forward = true;
+            terminate = true;
         }
-        return forward;
+        return terminate;
     }
 
 }

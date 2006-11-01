@@ -49,14 +49,18 @@ public abstract class DeployingTestBase extends SmartFrogTestBase {
     }
 
 
-    protected void expectSuccessfulTermination(TestBlock testBlock) throws Throwable {
-        TerminationRecord status = spinUntilFinished(testBlock);
-        assertTrue("unexpected exit status" + status, status.isNormal());
+    protected TerminationRecord expectSuccessfulTermination(TestBlock testBlock) throws Throwable {
+        return expectTermination(testBlock, true);
     }
 
-    protected void expectAbnormalTermination(TestBlock testBlock) throws Throwable {
+    protected TerminationRecord expectAbnormalTermination(TestBlock testBlock) throws Throwable {
+        return expectTermination(testBlock, false);
+    }
+
+    protected TerminationRecord expectTermination(TestBlock testBlock,boolean normal) throws Throwable {
         TerminationRecord status = spinUntilFinished(testBlock);
-        assertFalse("unexpected exit status"+status, status.isNormal());
+        assertTrue("unexpected exit status" + status, normal==status.isNormal());
+        return status;
     }
 
     /**

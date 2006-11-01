@@ -27,11 +27,14 @@ For more information: www.smartfrog.org
 
 sfConfig extends TestBlock {
     action extends Sequence {
+        //to diagnose RMI problems
+        sfExport true;
 
         toggle1 extends ToggleToTrueWorkflow;
 
         toggle2 extends ToggleToTrueWorkflow;
   }
+
 }
 
 
