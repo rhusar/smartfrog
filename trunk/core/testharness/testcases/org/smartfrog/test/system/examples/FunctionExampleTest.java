@@ -21,21 +21,14 @@
 
 package org.smartfrog.test.system.examples;
 
-import org.smartfrog.test.SmartFrogTestBase;
-import org.smartfrog.sfcore.prim.Prim;
-
-import java.net.*;
-import java.io.*;
-
-import java.util.Vector;
-import java.util.Calendar;
+import org.smartfrog.test.DeployingTestBase;
 
 
 /**
  * JUnit test class for test cases related to Function Example 
  *  */
 
-public class FunctionExampleTest extends SmartFrogTestBase {
+public class FunctionExampleTest extends DeployingTestBase {
 
     private static final String FILES = "org/smartfrog/examples/functions/";
 
@@ -44,13 +37,13 @@ public class FunctionExampleTest extends SmartFrogTestBase {
     }
 
     public void testCaseFE01() throws Throwable {
-          Prim applicationFE01 = deployExpectingSuccess(FILES+"function.sf", "tcFE01");
-		  assertNotNull(applicationFE01);
-		    String actual = (String) (applicationFE01.sfResolve("message"));
-			System.out.println(actual);
-			String expected = "hello - here is a constructed message\n"+"value is "+"99"+"\n"+"goodbye\n"+
-			"[[elementA, elementB]"+", "+ "Message from outerVector"+", "+"[value is "+", "+"99"+"]]";
-        	assertContains(actual,expected); 
+        application = deployExpectingSuccess(FILES + "function.sf", "tcFE01");
+        assertNotNull(application);
+        String actual = (String) (application.sfResolve("message"));
+        System.out.println(actual);
+        String expected = "hello - here is a constructed message\n" + "value is " + "99" + "\n" + "goodbye\n" +
+                "[[elementA, elementB]" + ", " + "Message from outerVector" + ", " + "[value is " + ", " + "99" + "]]";
+        assertContains(actual, expected);
 
     }
 

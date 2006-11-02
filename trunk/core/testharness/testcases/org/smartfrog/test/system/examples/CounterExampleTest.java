@@ -21,17 +21,14 @@
 
 package org.smartfrog.test.system.examples;
 
-import org.smartfrog.test.SmartFrogTestBase;
 import org.smartfrog.sfcore.prim.Prim;
-
-import java.net.*;
-import java.io.*;
+import org.smartfrog.test.DeployingTestBase;
 
 /**
- * JUnit test class for test cases related to Conter Example 
+ * JUnit test class for test cases related to Counter Example
  */
 public class CounterExampleTest
-    extends SmartFrogTestBase {
+        extends DeployingTestBase {
 
     private static final String FILES = "org/smartfrog/examples/counter/";
 
@@ -40,69 +37,66 @@ public class CounterExampleTest
     }
 
     public void testCaseCE01() throws Throwable {
-          Prim applicationCE01 = deployExpectingSuccess(FILES+"example.sf", "tcCE01");
-		  assertNotNull(applicationCE01);
-	
-			String actualSfClass = (String)applicationCE01.sfResolveHere("sfClass");
-			assertEquals("org.smartfrog.examples.counter.CounterImpl", actualSfClass);
-			int actual = 0;
-			int expected = 20;
-			actual = applicationCE01.sfResolve("limit",actual,true);
-			assertEquals(expected, actual);
+         application = deployExpectingSuccess(FILES + "example.sf", "tcCE01");
+        assertNotNull(application);
 
-		  
-
+        String actualSfClass = (String) application.sfResolveHere("sfClass");
+        assertEquals("org.smartfrog.examples.counter.CounterImpl", actualSfClass);
+        int actual = 0;
+        int expected = 20;
+        actual = application.sfResolve("limit", actual, true);
+        assertEquals(expected, actual);
     }
-	 public void testCaseCE02() throws Throwable {
-          deployExpectingException(FILES+"example2.sf", "tcCE02", "SmartFrogLifecycleException" ,"Illegal ClassType");
 
+    public void testCaseCE02() throws Throwable {
+        deployExpectingException(FILES + "example2.sf", "tcCE02", "SmartFrogLifecycleException", "Illegal ClassType");
     }
-	
-	 public void testCaseCE03() throws Throwable {
-       
-	 deployExpectingException(FILES+"example3.sf", "tcCE03", "SmartFrogLifecycleException" ,"Unresolved Reference: HERE counter");
 
+    public void testCaseCE03() throws Throwable {
+        deployExpectingException(FILES + "example3.sf", "tcCE03", "SmartFrogLifecycleException",
+                "Unresolved Reference: HERE counter");
     }
-	public void testCaseCE04() throws Throwable {
-       
-	 deployExpectingException(FILES+"example4.sf", "tcCE04", "SmartFrogLifecycleException" ,"Unresolved Reference: HERE limit");
 
+    public void testCaseCE04() throws Throwable {
+        deployExpectingException(FILES + "example4.sf", "tcCE04", "SmartFrogLifecycleException",
+                "Unresolved Reference: HERE limit");
     }
-	public void testCaseCE05() throws Throwable {
-          Prim applicationCE05 = deployExpectingSuccess(FILES+"example5.sf", "tcCE05");
-		  assertNotNull(applicationCE05);
 
-			String actualSfClass = (String)applicationCE05.sfResolveHere("sfClass");
-			assertEquals("org.smartfrog.sfcore.compound.CompoundImpl", actualSfClass);
+    public void testCaseCE05() throws Throwable {
+        application = deployExpectingSuccess(FILES + "example5.sf", "tcCE05");
+        assertNotNull(application);
 
-			Prim counter1 = (Prim)applicationCE05.sfResolveHere("counter1");
-			String actualSfClass1 = (String)counter1.sfResolveHere("sfClass");
-			assertEquals("org.smartfrog.sfcore.compound.CompoundImpl", actualSfClass1);
+        String actualSfClass = (String) application.sfResolveHere("sfClass");
+        assertEquals("org.smartfrog.sfcore.compound.CompoundImpl", actualSfClass);
+
+        Prim counter1 = (Prim) application.sfResolveHere("counter1");
+        String actualSfClass1 = (String) counter1.sfResolveHere("sfClass");
+        assertEquals("org.smartfrog.sfcore.compound.CompoundImpl", actualSfClass1);
 
 
-			Prim counter1A = (Prim)counter1.sfResolveHere("counter1A");
+        Prim counter1A = (Prim) counter1.sfResolveHere("counter1A");
 
-			String actualSfClass1A = (String)counter1A.sfResolveHere("sfClass");
-			assertEquals("org.smartfrog.examples.counter.CounterImpl", actualSfClass1A);
+        String actualSfClass1A = (String) counter1A.sfResolveHere("sfClass");
+        assertEquals("org.smartfrog.examples.counter.CounterImpl", actualSfClass1A);
 
-			int actual1A = 0;
-			int expected1A = 2;
-			actual1A = counter1A.sfResolve("limit",actual1A,true);
-			assertEquals(expected1A, actual1A);
-			
-			Prim counter2 = (Prim)applicationCE05.sfResolveHere("counter2");
-			int actual2 = 0;
-			int expected2 = 2;
-			actual2 = counter2.sfResolve("limit",actual2,true);
-			assertEquals(expected2, actual2);
-			
-			Prim counter3 = (Prim)applicationCE05.sfResolveHere("counter3");
-			Prim counter3A = (Prim)counter3.sfResolveHere("counter3A");
+        int actual1A = 0;
+        int expected1A = 2;
+        actual1A = counter1A.sfResolve("limit", actual1A, true);
+        assertEquals(expected1A, actual1A);
 
-			int actual3A = 0;
-			int expected3A = 2;
-			actual3A = counter3A.sfResolve("limit",actual3A,true);
-			assertEquals(expected3A, actual3A);
+        Prim counter2 = (Prim) application.sfResolveHere("counter2");
+        int actual2 = 0;
+        int expected2 = 2;
+        actual2 = counter2.sfResolve("limit", actual2, true);
+        assertEquals(expected2, actual2);
+
+        Prim counter3 = (Prim) application.sfResolveHere("counter3");
+        Prim counter3A = (Prim) counter3.sfResolveHere("counter3A");
+
+        int actual3A = 0;
+        int expected3A = 2;
+        actual3A = counter3A.sfResolve("limit", actual3A, true);
+        assertEquals(expected3A, actual3A);
 
     }
 

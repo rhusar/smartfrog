@@ -43,7 +43,7 @@ public class DownloadTest extends SmartFrogTestBase {
         Throwable t=deployExpectingException(FILES + "testNoSuchHostname.sf",
                 "testNoSuchHostname",
                 EXCEPTION_LIFECYCLE, null,
-                "UnknownHostException",null);
+                null,null);
         /*
         Throwable innermost=t.getCause().getCause();
         assertFaultCauseAndTextContains(innermost,

@@ -143,107 +143,115 @@ public class ConfigurationDescriptorDeployTest extends SmartFrogTestBase impleme
              }
         }
 */
-        /**
-         * Deploys an application and returns the refence to deployed application.
-         * @param sfact  SFACT: SmartFrog Action Descriptors
-         * @param testDescription Description for the test
-         * @return Reference to deployed application
-         * @throws RemoteException in the event of remote trouble.
-         */
+    /**
+     * Deploys an application and returns the refence to deployed application.
+     * @param sfact  SFACT: SmartFrog Action Descriptors
+     * @param testDescription Description for the test
+     * @return Reference to deployed application
+     * @throws RemoteException in the event of remote trouble.
+     */
 
-        protected Prim deployExpectingSuccess2(String sfact, String testDescription)
-                                                        throws Exception,Throwable {
-            testDescription = "- Test description: \n   "+testDescription+" -  \n";
-            ConfigurationDescriptor cfgDesc = new ConfigurationDescriptor(sfact);
-            try {
-                startSmartFrog();
-                Object deployedApp = SFSystem.runConfigurationDescriptor(cfgDesc,true);
-                System.out.println("\n"+testDescription+"\n    "+cfgDesc.toString("\n    "));
-                if (deployedApp instanceof Prim) {
-                    return ((Prim) deployedApp);
-                } else if (deployedApp instanceof ConfigurationDescriptor) {
-                    Throwable exception = ((ConfigurationDescriptor)deployedApp).
-                            resultException;
-                    if (exception!=null); {
-                        throw exception;
-                    }
+    protected Prim deployExpectingSuccess2(String sfact, String testDescription)
+            throws Throwable {
+        testDescription = "- Test description: \n   " + testDescription + " -  \n";
+        ConfigurationDescriptor cfgDesc = new ConfigurationDescriptor(sfact);
+        try {
+            startSmartFrog();
+            Object deployedApp = SFSystem.runConfigurationDescriptor(cfgDesc, true);
+            System.out.println("\n" + testDescription + "\n    " + cfgDesc.toString("\n    "));
+            if (deployedApp instanceof Prim) {
+                return ((Prim) deployedApp);
+            } else if (deployedApp instanceof ConfigurationDescriptor) {
+                Throwable exception = ((ConfigurationDescriptor) deployedApp).
+                        resultException;
+                if (exception != null) ;
+                {
+                    throw exception;
                 }
-            } catch (Throwable throwable) {
-                System.out.println("\n"+testDescription+"\n    "+cfgDesc.toString("\n    "));
-                logChainedException(throwable);
-                throw throwable;
             }
-            fail(testDescription+"something odd came back");
-            //fail throws a fault; this is here to keep the compiler happy.
-            return null;
+        } catch (Throwable throwable) {
+            System.out.println("\n" + testDescription + "\n    " + cfgDesc.toString("\n    "));
+            logChainedException(throwable);
+            throw throwable;
         }
+        fail(testDescription + "something odd came back");
+        //fail throws a fault; this is here to keep the compiler happy.
+        return null;
+    }
 
 
-        public void testurlTest01 ()throws Throwable{
-           String sfact = urlTest01;
-           String description = "testurlTest01("+sfact+")";
-           deployExpectingSuccess2(sfact,description);
-        }
-        public void testurlTest02 ()throws Throwable{
-           String sfact = urlTest02;
-           String description = "testurlTest02("+sfact+")";
-           deployExpectingSuccess2(sfact,description);
-        }
-        public void testurlTest03 ()throws Throwable{
-           String sfact = urlTest03;
-           String description = "testurlTest03("+sfact+")";
-           deployExpectingSuccess2(sfact,description);
-        }
-        public void testurlTest04 ()throws Throwable{
-           String sfact = urlTest04;
-           String description = "testurlTest04("+sfact+")";
-           deployExpectingSuccess2(sfact,description);
-        }
-        public void testurlTest05 ()throws Throwable{
-           String sfact = urlTest05;
-           String description = "testurlTest05("+sfact+")";
-           deployExpectingSuccess2(sfact,description);
-        }
-        public void testurlTest06 ()throws Throwable{
-           String sfact = urlTest06;
-           String description = "testurlTest06("+sfact+")";
-           deployExpectingSuccess2(sfact,description);
-        }
-        public void testurlTest07 ()throws Throwable{
-           String sfact = urlTest07;
-           String description = "testurlTest07("+sfact+")";
-           deployExpectingSuccess2(sfact,description);
-        }
+    public void testurlTest01() throws Throwable {
+        String sfact = urlTest01;
+        String description = "testurlTest01(" + sfact + ")";
+        application = deployExpectingSuccess2(sfact, description);
+    }
+
+    public void testurlTest02() throws Throwable {
+        String sfact = urlTest02;
+        String description = "testurlTest02(" + sfact + ")";
+        application = deployExpectingSuccess2(sfact, description);
+    }
+
+    public void testurlTest03() throws Throwable {
+        String sfact = urlTest03;
+        String description = "testurlTest03(" + sfact + ")";
+        application = deployExpectingSuccess2(sfact, description);
+    }
+
+    public void testurlTest04() throws Throwable {
+        String sfact = urlTest04;
+        String description = "testurlTest04(" + sfact + ")";
+        application = deployExpectingSuccess2(sfact, description);
+    }
+
+    public void testurlTest05() throws Throwable {
+        String sfact = urlTest05;
+        String description = "testurlTest05(" + sfact + ")";
+        application = deployExpectingSuccess2(sfact, description);
+    }
+
+    public void testurlTest06() throws Throwable {
+        String sfact = urlTest06;
+        String description = "testurlTest06(" + sfact + ")";
+        application = deployExpectingSuccess2(sfact, description);
+    }
+
+    public void testurlTest07() throws Throwable {
+        String sfact = urlTest07;
+        String description = "testurlTest07(" + sfact + ")";
+        application = deployExpectingSuccess2(sfact, description);
+    }
 
 
-        public void testurlTest08 ()throws Throwable{
-           String sfact = urlTest08;
-           String description = "testurlTest08("+sfact+")";
-           deployExpectingSuccess2(sfact,description);
-        }
-        public void testurlTest09 ()throws Throwable{
-           String sfact = urlTest09;
-           String description = "testurlTest09("+sfact+")";
-           deployExpectingSuccess2(sfact,description);
-        }
+    public void testurlTest08() throws Throwable {
+        String sfact = urlTest08;
+        String description = "testurlTest08(" + sfact + ")";
+        application = deployExpectingSuccess2(sfact, description);
+    }
 
-        public void testurlTest09b ()throws Throwable{
-           String sfact = urlTest07b;
-           String description = "testurlTest07b("+sfact+")";
-           deployExpectingSuccess2(sfact,description);
-        }
+    public void testurlTest09() throws Throwable {
+        String sfact = urlTest09;
+        String description = "testurlTest09(" + sfact + ")";
+        application = deployExpectingSuccess2(sfact, description);
+    }
 
-        public void testurlTest10 ()throws Throwable{
-           String sfact = urlTest10;
-           String description = "testurlTest10("+sfact+")";
-           deployExpectingSuccess2(sfact,description);
-        }
+    public void testurlTest09b() throws Throwable {
+        String sfact = urlTest07b;
+        String description = "testurlTest07b(" + sfact + ")";
+        application = deployExpectingSuccess2(sfact, description);
+    }
 
-        public void testurlTest11 ()throws Throwable{
-           String sfact = urlTest11;
-           String description = "testurlTest11("+sfact+")";
-           deployExpectingSuccess2(sfact,description);
-        }
+    public void testurlTest10() throws Throwable {
+        String sfact = urlTest10;
+        String description = "testurlTest10(" + sfact + ")";
+        application = deployExpectingSuccess2(sfact, description);
+    }
+
+    public void testurlTest11() throws Throwable {
+        String sfact = urlTest11;
+        String description = "testurlTest11(" + sfact + ")";
+        application = deployExpectingSuccess2(sfact, description);
+    }
 
 // 12 and 12b cannot be run when 7 is.
 //        public void testurlTest12 ()throws Throwable{

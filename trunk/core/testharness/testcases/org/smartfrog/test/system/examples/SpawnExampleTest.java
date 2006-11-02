@@ -21,17 +21,15 @@
 
 package org.smartfrog.test.system.examples;
 
-import org.smartfrog.test.SmartFrogTestBase;
-import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
-import java.net.*;
-import java.io.*;
+import org.smartfrog.sfcore.prim.Prim;
+import org.smartfrog.test.DeployingTestBase;
 
 /**
- * JUnit test class for test cases related to Spawn Example 
+ * JUnit test class for test cases related to Spawn Example
  */
 public class SpawnExampleTest
-    extends SmartFrogTestBase {
+        extends DeployingTestBase {
 
     private static final String FILES = "org/smartfrog/examples/spawn/";
 
@@ -41,65 +39,58 @@ public class SpawnExampleTest
 
     public void testCaseSE01() throws Throwable {
 
-          Prim applicationSE01 = deployExpectingSuccess(FILES+"example.sf", "tcSE01");
-		  assertNotNull(applicationSE01);
-	
-			String actualSfClass = (String)applicationSE01.sfResolveHere("sfClass");
-			assertEquals("org.smartfrog.sfcore.compound.CompoundImpl", actualSfClass);	
-			
-			Prim nest = (Prim)applicationSE01.sfResolveHere("nest");
-			String actualNestSfClass = (String)nest.sfResolveHere("sfClass");
-			assertEquals("org.smartfrog.sfcore.compound.CompoundImpl", actualNestSfClass);
-			
-			// check the 5 counters
-			Prim littleCuckoo0 = (Prim)nest.sfResolveHere("littleCuckoo0");
-			assertNotNull(littleCuckoo0);
-			Prim littleCuckoo1 = (Prim)nest.sfResolveHere("littleCuckoo1");
-			assertNotNull(littleCuckoo1);
-			Prim littleCuckoo2 = (Prim)nest.sfResolveHere("littleCuckoo2");
-			assertNotNull(littleCuckoo2);
-			Prim littleCuckoo3 = (Prim)nest.sfResolveHere("littleCuckoo3");
-			assertNotNull(littleCuckoo3);
-			Prim littleCuckoo4 = (Prim)nest.sfResolveHere("littleCuckoo4");
-			assertNotNull(littleCuckoo4);
-			
-			
-			Prim spawn = (Prim)applicationSE01.sfResolveHere("spawn");
-			String actualspawnSfClass = (String)spawn.sfResolveHere("sfClass");
-			assertEquals("org.smartfrog.examples.spawn.Spawn", actualspawnSfClass);
-			String actualsfOffspringName = (String)spawn.sfResolveHere("sfOffspringName");
-			assertEquals("myBaby", actualsfOffspringName);
-			//check the 5 counters
-			Prim myBaby0 = (Prim)spawn.sfResolveHere("myBaby0");
-			assertNotNull(myBaby0);
-			Prim myBaby1 = (Prim)spawn.sfResolveHere("myBaby1");
-			assertNotNull(myBaby1);
-			Prim myBaby2 = (Prim)spawn.sfResolveHere("myBaby2");
-			assertNotNull(myBaby2);
-			Prim myBaby3 = (Prim)spawn.sfResolveHere("myBaby3");
-			assertNotNull(myBaby3);
-			Prim myBaby4 = (Prim)spawn.sfResolveHere("myBaby4");
-			assertNotNull(myBaby4);
+        application = deployExpectingSuccess(FILES + "example.sf", "tcSE01");
+        assertNotNull(application);
 
-			
+        String actualSfClass = (String) application.sfResolveHere("sfClass");
+        assertEquals("org.smartfrog.sfcore.compound.CompoundImpl", actualSfClass);
 
-			Prim cuckoo = (Prim)applicationSE01.sfResolveHere("cuckoo");
-			String actualcuckooSfClass = (String)cuckoo.sfResolveHere("sfClass");
-			assertEquals("org.smartfrog.examples.spawn.Spawn", actualcuckooSfClass);
-			String actualCuckooOffspringName = (String)cuckoo.sfResolveHere("sfOffspringName");
-			assertEquals("littleCuckoo", actualCuckooOffspringName);
-			ComponentDescription cd = null;
-			cd = cuckoo.sfResolve("sfOffspringDescription",cd,true);
-			String actual =cd.toString();	
-			assertNotNull(cd);
-			String expected = "limit 3";
-			assertContains(actual,expected);
-			
-			
-			
- 			
+        Prim nest = (Prim) application.sfResolveHere("nest");
+        String actualNestSfClass = (String) nest.sfResolveHere("sfClass");
+        assertEquals("org.smartfrog.sfcore.compound.CompoundImpl", actualNestSfClass);
+
+        // check the 5 counters
+        Prim littleCuckoo0 = (Prim) nest.sfResolveHere("littleCuckoo0");
+        assertNotNull(littleCuckoo0);
+        Prim littleCuckoo1 = (Prim) nest.sfResolveHere("littleCuckoo1");
+        assertNotNull(littleCuckoo1);
+        Prim littleCuckoo2 = (Prim) nest.sfResolveHere("littleCuckoo2");
+        assertNotNull(littleCuckoo2);
+        Prim littleCuckoo3 = (Prim) nest.sfResolveHere("littleCuckoo3");
+        assertNotNull(littleCuckoo3);
+        Prim littleCuckoo4 = (Prim) nest.sfResolveHere("littleCuckoo4");
+        assertNotNull(littleCuckoo4);
 
 
+        Prim spawn = (Prim) application.sfResolveHere("spawn");
+        String actualspawnSfClass = (String) spawn.sfResolveHere("sfClass");
+        assertEquals("org.smartfrog.examples.spawn.Spawn", actualspawnSfClass);
+        String actualsfOffspringName = (String) spawn.sfResolveHere("sfOffspringName");
+        assertEquals("myBaby", actualsfOffspringName);
+        //check the 5 counters
+        Prim myBaby0 = (Prim) spawn.sfResolveHere("myBaby0");
+        assertNotNull(myBaby0);
+        Prim myBaby1 = (Prim) spawn.sfResolveHere("myBaby1");
+        assertNotNull(myBaby1);
+        Prim myBaby2 = (Prim) spawn.sfResolveHere("myBaby2");
+        assertNotNull(myBaby2);
+        Prim myBaby3 = (Prim) spawn.sfResolveHere("myBaby3");
+        assertNotNull(myBaby3);
+        Prim myBaby4 = (Prim) spawn.sfResolveHere("myBaby4");
+        assertNotNull(myBaby4);
+
+
+        Prim cuckoo = (Prim) application.sfResolveHere("cuckoo");
+        String actualcuckooSfClass = (String) cuckoo.sfResolveHere("sfClass");
+        assertEquals("org.smartfrog.examples.spawn.Spawn", actualcuckooSfClass);
+        String actualCuckooOffspringName = (String) cuckoo.sfResolveHere("sfOffspringName");
+        assertEquals("littleCuckoo", actualCuckooOffspringName);
+        ComponentDescription cd = null;
+        cd = cuckoo.sfResolve("sfOffspringDescription", cd, true);
+        String actual = cd.toString();
+        assertNotNull(cd);
+        String expected = "limit 3";
+        assertContains(actual, expected);
 
 
     }

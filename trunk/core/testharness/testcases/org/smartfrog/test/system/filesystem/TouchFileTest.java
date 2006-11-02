@@ -20,6 +20,7 @@
 package org.smartfrog.test.system.filesystem;
 
 import org.smartfrog.test.SmartFrogTestBase;
+import org.smartfrog.test.DeployingTestBase;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.reference.Reference;
@@ -34,7 +35,7 @@ import java.rmi.RemoteException;
  * created 18-May-2004 13:29:12
  */
 
-public class TouchFileTest  extends SmartFrogTestBase {
+public class TouchFileTest  extends DeployingTestBase {
 
     public static final String FILES = "org/smartfrog/test/system/filesystem/";
 
@@ -47,7 +48,7 @@ public class TouchFileTest  extends SmartFrogTestBase {
     }
 
     public void testWorking() throws Throwable {
-        Prim application=deployExpectingSuccess(FILES + "testTouchWorking.sf", "testTouchWorking");
+        application=deployExpectingSuccess(FILES + "testTouchWorking.sf", "testTouchWorking");
     }
 
     /**
@@ -55,16 +56,16 @@ public class TouchFileTest  extends SmartFrogTestBase {
      * @throws Throwable
      */
     public void testTouchSetTime() throws Throwable {
-        Prim application = deployExpectingSuccess(FILES +
+        Prim touchapp = deployExpectingSuccess(FILES +
                 "testTouchSetTime.sf", "testTouchSetTime");
-        String filename = application.sfResolve(TouchFileIntf.ATTR_FILENAME,
+        String filename = touchapp.sfResolve(TouchFileIntf.ATTR_FILENAME,
                 (String) null,
                 true);
-        long age = application.sfResolve(TouchFileImpl.ATTR_AGE, (long) 0, true);
+        long age = touchapp.sfResolve(TouchFileImpl.ATTR_AGE, (long) 0, true);
         File file = new File(filename);
         assertTrue(file.exists());
         assertEquals(age, file.lastModified());
-        terminateApplication(application);
+        terminateApplication(touchapp);
         assertFalse(file.exists());
     }
 
@@ -75,21 +76,16 @@ public class TouchFileTest  extends SmartFrogTestBase {
      * @throws Throwable
      */
     public void testTouchSubdirs() throws Throwable {
-        Prim application = deployExpectingSuccess(FILES +
+        application = deployExpectingSuccess(FILES +
                 "testTouchSubdirs.sf", "testTouchSubdirs");
-
         File file;
-        try {
-            String filename = application.sfResolve(FileUsingComponent.ATTR_ABSOLUTE_PATH,
-                    (String) null,
-                    true);
-            file = new File(filename);
-            assertTrue("not found " + file, file.exists());
-            assertTrue("not a file " + file, file.isFile());
-            file.delete();
-        } finally {
-            terminateApplication(application);
-        }
+        String filename = application.sfResolve(FileUsingComponent.ATTR_ABSOLUTE_PATH,
+                (String) null,
+                true);
+        file = new File(filename);
+        assertTrue("not found " + file, file.exists());
+        assertTrue("not a file " + file, file.isFile());
+        file.delete();
     }
 
 }

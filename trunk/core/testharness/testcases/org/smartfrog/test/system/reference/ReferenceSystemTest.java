@@ -134,49 +134,49 @@ public class ReferenceSystemTest extends SmartFrogTestBase {
 
     public void testCaseTCP23() throws Throwable {
         Vector expected = new Vector();
-	Vector actual = null;
+	    Vector actual = null;
         expected.add("Macgrath");
         expected.add("Hayden");
         expected.add("Ponting");
-        Prim appl = deployExpectingSuccess(FILES + "tcp23.sf", "tcp23");
-        assertNotNull(appl);
-        actual = appl.sfResolve("administrators",actual,true);
+        application = deployExpectingSuccess(FILES + "tcp23.sf", "tcp23");
+        assertNotNull(application);
+        actual = application.sfResolve("administrators",actual,true);
         assertNotNull("Did not find the value", actual);
         assertEquals(expected, actual);
     }
 
-     public void testCaseTCP24() throws Throwable {
-        Prim application = deployExpectingSuccess(FILES + "tcp24.sf", "tcp24");
-	assertNotNull(application);
-	Prim component1 = null;
-	int actual = 0;
-	int expected = 5;
-	component1 = application.sfResolve("component1",component1,true);
+    public void testCaseTCP24() throws Throwable {
+        application = deployExpectingSuccess(FILES + "tcp24.sf", "tcp24");
+        assertNotNull(application);
+        Prim component1 = null;
+        int actual = 0;
+        int expected = 5;
+        component1 = application.sfResolve("component1", component1, true);
         assertNotNull(component1);
-	actual = component1.sfResolve("limit",actual,true);
+        actual = component1.sfResolve("limit", actual, true);
         assertEquals(expected, actual);
     }
 
-     public void testCaseTCP25() throws Throwable {
-        Prim application = deployExpectingSuccess(FILES + "tcp25.sf", "tcp25");
-	assertNotNull(application);
-	InetAddress address = null;
-	address = application.sfResolve("address",address,true);
+    public void testCaseTCP25() throws Throwable {
+        application = deployExpectingSuccess(FILES + "tcp25.sf", "tcp25");
+        assertNotNull(application);
+        InetAddress address = null;
+        address = application.sfResolve("address", address, true);
         assertNotNull(address);
     }
 
     public void testCaseTCP26() throws Throwable {
-        Prim application = deployExpectingSuccess(FILES + "tcp26.sf", "tcp26");
-	assertNotNull(application);
-	Prim spawn = null;
-	String expected = "limit 3";
-	ComponentDescription cd = null;
-	spawn = application.sfResolve("spawn",spawn,true);
+        application = deployExpectingSuccess(FILES + "tcp26.sf", "tcp26");
+        assertNotNull(application);
+        Prim spawn = null;
+        String expected = "limit 3";
+        ComponentDescription cd = null;
+        spawn = application.sfResolve("spawn", spawn, true);
         assertNotNull(spawn);
-	cd = spawn.sfResolve("sfOffspringDescription",cd,true);
-        String actual =cd.toString();
-	assertNotNull(cd);
-	assertContains(actual,expected);
+        cd = spawn.sfResolve("sfOffspringDescription", cd, true);
+        String actual = cd.toString();
+        assertNotNull(cd);
+        assertContains(actual, expected);
     }
 
     public void testCaseTCN96() throws Exception {

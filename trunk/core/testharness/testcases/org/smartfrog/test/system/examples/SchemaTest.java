@@ -21,10 +21,9 @@
 
 package org.smartfrog.test.system.examples;
 
-import junit.framework.TestCase;
-import org.smartfrog.test.SmartFrogTestBase;
-import org.smartfrog.sfcore.parser.Phases;
 import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.parser.Phases;
+import org.smartfrog.test.SmartFrogTestBase;
 
 /**
  * JUnit test class for test cases for "schemas" example
@@ -36,14 +35,14 @@ public class SchemaTest extends SmartFrogTestBase {
     public SchemaTest(String s) {
         super(s);
     }
-     
+
     public void testCaseTCP33() throws SmartFrogException {
-	Phases phases = parse(FILES + "schema.sf");
+        Phases phases = parse(FILES + "schema.sf");
         assertNotNull(phases);
     }
 
     public void testCaseTCP34() throws SmartFrogException {
-        Phases phases = parse(FILES+ "test.sf");
+        Phases phases = parse(FILES + "test.sf");
         assertNotNull(phases);
-    } 
+    }
 }

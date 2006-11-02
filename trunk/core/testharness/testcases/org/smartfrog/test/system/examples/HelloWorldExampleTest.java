@@ -21,19 +21,15 @@
 
 package org.smartfrog.test.system.examples;
 
-import org.smartfrog.test.SmartFrogTestBase;
 import org.smartfrog.sfcore.prim.Prim;
-import java.net.*;
-import java.io.*;
-import java.util.Vector;
-import java.util.Calendar;
+import org.smartfrog.test.DeployingTestBase;
 
 
 /**
  * JUnit test class for test cases related to HelloWorld Example 
  *  */
 
-public class HelloWorldExampleTest extends SmartFrogTestBase {
+public class HelloWorldExampleTest extends DeployingTestBase {
 
     private static final String FILES = "org/smartfrog/examples/helloworld/";
 
@@ -43,17 +39,17 @@ public class HelloWorldExampleTest extends SmartFrogTestBase {
 
     public void testCaseHWE01() throws Throwable 
 	{
-            Prim applicationHWE01 = deployExpectingSuccess(FILES+"example1.sf", "tcHWE01");
-		    assertNotNull(applicationHWE01);
+            application = deployExpectingSuccess(FILES+"example1.sf", "tcHWE01");
+		    assertNotNull(application);
 
-			Prim generator = (Prim)applicationHWE01.sfResolve("g");
+			Prim generator = (Prim)application.sfResolve("g");
 			
 			int actualGeneratorFrq = 0;
 			int expectedGeneratorFrq= 10;
 			actualGeneratorFrq = generator.sfResolve("frequency",actualGeneratorFrq,true);
 			assertEquals(expectedGeneratorFrq, actualGeneratorFrq);
 
-			Prim printer = (Prim)applicationHWE01.sfResolve("p");
+			Prim printer = (Prim)application.sfResolve("p");
 			
 			String actualPrinterName = "";
 			String expectedPrinterName= "myPrinter";
@@ -63,17 +59,17 @@ public class HelloWorldExampleTest extends SmartFrogTestBase {
 
 	public void testCaseHWE01a() throws Throwable 
 	{
-			Prim applicationHWE01a = deployExpectingSuccess(FILES+"example1a.sf", "tcHWE01a");
-			assertNotNull(applicationHWE01a);
+			application = deployExpectingSuccess(FILES+"example1a.sf", "tcHWE01a");
+			assertNotNull(application);
 
-			Prim generator = (Prim)applicationHWE01a.sfResolve("g");
+			Prim generator = (Prim)application.sfResolve("g");
 			
 			int actualGeneratorFrq = 0;
 			int expectedGeneratorFrq= 10;
 			actualGeneratorFrq = generator.sfResolve("frequency",actualGeneratorFrq,true);
 			assertEquals(expectedGeneratorFrq, actualGeneratorFrq);
 
-			Prim printer = (Prim)applicationHWE01a.sfResolve("p");
+			Prim printer = (Prim)application.sfResolve("p");
 			
 			String actualPrinterName = "";
 			String expectedPrinterName= "printerA";
@@ -83,36 +79,37 @@ public class HelloWorldExampleTest extends SmartFrogTestBase {
 	
 	public void testCaseHWE01b() throws Throwable 
 	{
-			Prim applicationHWE01b = deployExpectingSuccess(FILES+"example1b.sf", "tcHWE01b");
-			assertNotNull(applicationHWE01b);
+			application = deployExpectingSuccess(FILES+"example1b.sf", "tcHWE01b");
+			assertNotNull(application);
 
-			Prim generator = (Prim)applicationHWE01b.sfResolve("g");
+			Prim generator = (Prim)application.sfResolve("g");
 			
 			int actualGeneratorFrq = 0;
 			int expectedGeneratorFrq= 10;
 			actualGeneratorFrq = generator.sfResolve("frequency",actualGeneratorFrq,true);
 			assertEquals(expectedGeneratorFrq, actualGeneratorFrq);
 
-			Prim printer = (Prim)applicationHWE01b.sfResolve("p");
+			Prim printer = (Prim)application.sfResolve("p");
 			
 			String actualPrinterName = "";
 			String expectedPrinterName= "printerB";
 			actualPrinterName = printer.sfResolve("name",actualPrinterName,true);
 			assertEquals(expectedPrinterName, actualPrinterName);
 	}
-	public void testCaseHWE01c() throws Throwable 
-	{
-			Prim applicationHWE01c = deployExpectingSuccess(FILES+"example1c.sf", "tcHWE01c");
-			assertNotNull(applicationHWE01c);
 
-			Prim generator = (Prim)applicationHWE01c.sfResolve("g");
+    public void testCaseHWE01c() throws Throwable
+	{
+			application = deployExpectingSuccess(FILES+"example1c.sf", "tcHWE01c");
+			assertNotNull(application);
+
+			Prim generator = (Prim)application.sfResolve("g");
 			
 			int actualGeneratorFrq = 0;
 			int expectedGeneratorFrq= 10;
 			actualGeneratorFrq = generator.sfResolve("frequency",actualGeneratorFrq,true);
 			assertEquals(expectedGeneratorFrq, actualGeneratorFrq);
 
-			Prim printer = (Prim)applicationHWE01c.sfResolve("p");
+			Prim printer = (Prim)application.sfResolve("p");
 			
 			String actualPrinterName = "";
 			String expectedPrinterName= "printerC";
@@ -121,17 +118,17 @@ public class HelloWorldExampleTest extends SmartFrogTestBase {
 	}
 	public void testCaseHWE01dist() throws Throwable 
 	{
-			Prim applicationHWE01d = deployExpectingSuccess(FILES+"example1dist.sf", "tcHWE01Dist");
-			assertNotNull(applicationHWE01d);
+			application = deployExpectingSuccess(FILES+"example1dist.sf", "tcHWE01Dist");
+			assertNotNull(application);
 
-			Prim generator = (Prim)applicationHWE01d.sfResolve("g");
+			Prim generator = (Prim)application.sfResolve("g");
 			
 			int actualGeneratorFrq = 0;
 			int expectedGeneratorFrq= 10;
 			actualGeneratorFrq = generator.sfResolve("frequency",actualGeneratorFrq,true);
 			assertEquals(expectedGeneratorFrq, actualGeneratorFrq);
 
-			Prim printer = (Prim)applicationHWE01d.sfResolve("p");
+			Prim printer = (Prim)application.sfResolve("p");
 			
 			String actualPrinterName = "";
 			String expectedPrinterName= "myPrinter";
@@ -141,24 +138,24 @@ public class HelloWorldExampleTest extends SmartFrogTestBase {
 	}
 	public void testCaseHWE02() throws Throwable 
 	{
-			Prim applicationHWE2 = deployExpectingSuccess(FILES+"example2.sf", "tcHWE2");
-			assertNotNull(applicationHWE2);
+			application = deployExpectingSuccess(FILES+"example2.sf", "tcHWE2");
+			assertNotNull(application);
 
-			Prim generator1 = (Prim)applicationHWE2.sfResolve("g1");
+			Prim generator1 = (Prim)application.sfResolve("g1");
 			
 			int actualGenerator1Frq = 0;
 			int expectedGenerator1Frq= 10;
 			actualGenerator1Frq = generator1.sfResolve("frequency",actualGenerator1Frq,true);
 			assertEquals(expectedGenerator1Frq, actualGenerator1Frq);
 
-			Prim generator2 = (Prim)applicationHWE2.sfResolve("g2");
+			Prim generator2 = (Prim)application.sfResolve("g2");
 			
 			int actualGenerator2Frq = 0;
 			int expectedGenerator2Frq= 5;
 			actualGenerator2Frq = generator2.sfResolve("frequency",actualGenerator2Frq,true);
 			assertEquals(expectedGenerator2Frq, actualGenerator2Frq);
 
-			Prim printer = (Prim)applicationHWE2.sfResolve("p");
+			Prim printer = (Prim)application.sfResolve("p");
 			
 			String actualPrinterName = "";
 			String expectedPrinterName= "myPrinter";
@@ -167,10 +164,10 @@ public class HelloWorldExampleTest extends SmartFrogTestBase {
 	}
 	public void testCaseHWE03() throws Throwable 
 	{
-			Prim applicationHWE3 = deployExpectingSuccess(FILES+"example3.sf", "tcHWE3");
-			assertNotNull(applicationHWE3);
+			application = deployExpectingSuccess(FILES+"example3.sf", "tcHWE3");
+			assertNotNull(application);
 			
-			Prim pair1 = (Prim)applicationHWE3.sfResolve("pair1");
+			Prim pair1 = (Prim)application.sfResolve("pair1");
 			
 			Prim generator1 = (Prim)pair1.sfResolve("g");
 				int actualGenerator1Frq = 0;
@@ -181,7 +178,7 @@ public class HelloWorldExampleTest extends SmartFrogTestBase {
 			Prim printer1 = (Prim)pair1.sfResolve("p");
 			assertNotNull(printer1);
 
-			Prim pair2 = (Prim)applicationHWE3.sfResolve("pair2");
+			Prim pair2 = (Prim)application.sfResolve("pair2");
 
 			Prim generator2 = (Prim)pair2.sfResolve("g");
 				int actualGenerator2Frq = 0;
