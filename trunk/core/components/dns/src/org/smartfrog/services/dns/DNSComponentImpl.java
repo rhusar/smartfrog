@@ -170,7 +170,7 @@ public abstract class DNSComponentImpl extends ComponentDescriptionImpl
      * if a hierarchy contains no zone, view or data components.
      *
      *
-     * @param result An array allocated by the caller where the result
+     * @param res An array allocated by the caller where the result
      * of this check will be returned (in result[0])
      * @return A visitor pattern to check
      * if a hierarchy contains no zone, view or data components.
@@ -198,7 +198,6 @@ public abstract class DNSComponentImpl extends ComponentDescriptionImpl
      * Returns an object that implements a visitor pattern to remove
      * all the components of a hierarchy in deleted or to be deleted state.
      *
-     * @param newState The new state of this components.
      * @return An object  that implements a visitor pattern to remove
      * all the components of a hierarchy in to be deleted state.
      */
