@@ -21,17 +21,16 @@
 
 package org.smartfrog.test.system.examples;
 
-import org.smartfrog.test.SmartFrogTestBase;
-import org.smartfrog.sfcore.prim.Prim;
+import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
-import org.smartfrog.sfcore.common.*;
-import java.rmi.*;
+import org.smartfrog.sfcore.prim.Prim;
+import org.smartfrog.test.DeployingTestBase;
 
 /**
  * JUnit test class for test cases for "workflow" example
  */
 public class WorkFlowTest
-    extends SmartFrogTestBase {
+    extends DeployingTestBase {
 
     private static final String FILES = "org/smartfrog/examples/workflow/";
 
@@ -40,7 +39,7 @@ public class WorkFlowTest
     }
 
     public void testCaseTCP27() throws Throwable {
-        Prim application = deployExpectingSuccess(FILES+"system.sf", "system");
+        application = deployExpectingSuccess(FILES+"system.sf", "system");
         String applicationName = "TCP27.system.tempname";
         String diag ="";
         Prim h1 = null;

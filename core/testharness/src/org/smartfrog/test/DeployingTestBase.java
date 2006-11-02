@@ -21,7 +21,10 @@ package org.smartfrog.test;
 
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.TerminationRecord;
+import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.services.assertions.TestBlock;
+
+import java.rmi.RemoteException;
 
 /**
  * Add an application that is always destroyed on teardown
@@ -35,17 +38,6 @@ public abstract class DeployingTestBase extends SmartFrogTestBase {
 
     protected DeployingTestBase(String name) {
         super(name);
-    }
-
-
-    /**
-     * This is an application that will be undeployed at teardown time
-     */
-    protected Prim application;
-
-    protected void tearDown() throws Exception {
-        super.tearDown();
-        terminateApplication(application);
     }
 
 
@@ -71,13 +63,19 @@ public abstract class DeployingTestBase extends SmartFrogTestBase {
      * @throws Throwable
      */
     protected TerminationRecord spinUntilFinished(TestBlock testBlock,long timeout) throws Throwable {
-        long endtime = System.currentTimeMillis() +timeout;
-        while (!testBlock.isFinished() && System.currentTimeMillis()<endtime) {
-            Thread.sleep(SPIN_INTERVAL);
+        try {
+            long endtime = System.currentTimeMillis() +timeout;
+            while (!testBlock.isFinished() && System.currentTimeMillis()<endtime) {
+                Thread.sleep(SPIN_INTERVAL);
+            }
+            assertTrue("timeout waiting for application to finish",testBlock.isFinished());
+            TerminationRecord status = testBlock.getStatus();
+            return status;
+        } catch (RemoteException e) {
+            //some kind of remoting problem may happen during termination.
+            logThrowable("RMI excaptions during spin-waits may be network race conditions",e);
+            throw e;
         }
-        assertTrue("timeout waiting for application to finish",testBlock.isFinished());
-        TerminationRecord status = testBlock.getStatus();
-        return status;
 
     }
 

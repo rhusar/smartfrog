@@ -20,25 +20,15 @@
 
 package org.smartfrog.test.system.examples;
 
-import org.smartfrog.test.SmartFrogTestBase;
 import org.smartfrog.sfcore.prim.Prim;
-import org.smartfrog.sfcore.componentdescription.ComponentDescription;
-import java.net.*;
-import java.io.*;
-import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.sfcore.security.SFGeneralSecurityException;
-import org.smartfrog.sfcore.prim.Prim;
-import org.smartfrog.test.unit.sfcore.common.ConfigurationDescriptorTestURLs;
-import org.smartfrog.sfcore.common.ConfigurationDescriptor;
-import org.smartfrog.sfcore.common.SmartFrogInitException;
-import org.smartfrog.SFSystem;
 import org.smartfrog.sfcore.reference.Reference;
+import org.smartfrog.test.DeployingTestBase;
 
 /**
  * JUnit test class for test cases related to Subprocess Example
  */
 public class SubProcessExampleTest
-    extends SmartFrogTestBase {
+    extends DeployingTestBase {
 
   // In this particular case we use the examples without screens
   //private static final String FILES = "org/smartfrog/examples/subprocesses/";
@@ -51,16 +41,14 @@ public class SubProcessExampleTest
 
   public void testCaseSubProcessEx01() throws Throwable {
 
-    Prim applicationSPE01 = deployExpectingSuccess(FILES +
+    application = deployExpectingSuccess(FILES +
         "subprocessTestHarness.sf", "tcSPE01");
-    assertNotNull(applicationSPE01);
-//	Prim applicationSPE01 = deployExpectingSuccess(FILES+"subprocess.sf", "tcSPE01");
-//		  assertNotNull(applicationSPE01);
+    assertNotNull(application);
 
-    String actualSfClass = (String) applicationSPE01.sfResolveHere("sfClass");
+    String actualSfClass = (String) application.sfResolveHere("sfClass");
     assertEquals("org.smartfrog.sfcore.compound.CompoundImpl", actualSfClass);
 
-    Prim sys = (Prim) applicationSPE01.sfResolveHere("system");
+    Prim sys = (Prim) application.sfResolveHere("system");
     //System.out.println();
     assertEquals("first", sys.sfDeployedProcessName());
 
@@ -85,7 +73,7 @@ public class SubProcessExampleTest
     int actualdemoF = 0;
     int expecteddemoF = 12;
     actualdemoF = demoF.sfResolve("limit", actualdemoE, true);
-    assertEquals(expecteddemoE, actualdemoE);
+    assertEquals(expecteddemoF, actualdemoF);
 
     //this does not work with the displayless version :-(
 //	Prim displayLOCALHOST = (Prim)foobar.sfResolveHere("displayLOCALHOST");
@@ -115,34 +103,35 @@ public class SubProcessExampleTest
   }
 
   public void testCaseExampleProcessComponentName02() throws Throwable {
-    Prim applicationEPCN02 = deployExpectingSuccess("org/smartfrog/examples/subprocesses/" + "exampleProcessComponentName.sf", "tcExcampleProcessComponentName02");
-    assertNotNull(applicationEPCN02);
+    application = deployExpectingSuccess("org/smartfrog/examples/subprocesses/" + "exampleProcessComponentName.sf",
+            "tcExampleProcessComponentName02");
+    assertNotNull(application);
 
-    String actualSfClass = (String) applicationEPCN02.sfResolveHere("sfClass");
+    String actualSfClass = (String) application.sfResolveHere("sfClass");
     assertEquals("org.smartfrog.sfcore.compound.CompoundImpl", actualSfClass);
 
-    Prim dos = (Prim) applicationEPCN02.sfResolveHere("dos");
+    Prim dos = (Prim) application.sfResolveHere("dos");
     assertEquals("DOS-VM", dos.sfDeployedProcessName());
 
-    Prim uno = (Prim) applicationEPCN02.sfResolveHere("uno");
+    Prim uno = (Prim) application.sfResolveHere("uno");
     Prim cuatro = (Prim) uno.sfResolveHere("cuatro");
     assertEquals("CUATRO-VM", cuatro.sfDeployedProcessName());
 
-    Prim tres = (Prim) applicationEPCN02.sfResolveHere("tres");
+    Prim tres = (Prim) application.sfResolveHere("tres");
     assertEquals("rootProcess", tres.sfDeployedProcessName());
 
     Reference refCUATRO = Reference.fromString("HOST localhost:CUATRO-VM:CUATRO");
-    Prim cuatro2 = (Prim)applicationEPCN02.sfResolve(refCUATRO,true);
+    Prim cuatro2 = (Prim)application.sfResolve(refCUATRO,true);
     System.out.println("      Testing: "+refCUATRO);
     assertEquals(cuatro.sfCompleteName().toString(), cuatro2.sfCompleteName().toString());
 
     Reference refTRES = Reference.fromString("HOST localhost:rootProcess:TRES");
-    Prim tres2 = (Prim)applicationEPCN02.sfResolve(refTRES,true);
+    Prim tres2 = (Prim)application.sfResolve(refTRES,true);
     System.out.println("      Testing: "+refTRES);
     assertEquals(tres.sfCompleteName().toString(), tres2.sfCompleteName().toString());
 
     Reference refDOS = Reference.fromString("HOST localhost:DOS-VM:DOS");
-    Prim dos2 = (Prim)applicationEPCN02.sfResolve(refDOS,true);
+    Prim dos2 = (Prim)application.sfResolve(refDOS,true);
     System.out.println("      Testing: "+refDOS);
     assertEquals(dos.sfCompleteName().toString(), dos2.sfCompleteName().toString());
 

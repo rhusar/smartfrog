@@ -23,6 +23,7 @@ package org.smartfrog.test.system.components.logger;
 
 import org.smartfrog.test.SmartFrogTestBase;
 import org.smartfrog.sfcore.prim.Prim;
+import org.smartfrog.services.filesystem.FileSystem;
 
 import java.io.File;
 import java.io.BufferedReader;
@@ -39,81 +40,106 @@ public class LoggerTest
     public LoggerTest(String s) {
         super(s);
     }
-   
+
     public void testCaseTCP35() throws Throwable {
-        Prim application = deployExpectingSuccess(FILES+"tcp35.sf", "tcp35");
-        assertNotNull(application);
-        Prim logger = (Prim)application.sfResolve("logger");
-        String logsDir = logger.sfResolve("logsDir", (String)null, false);
-        String logsFile = logger.sfResolve("logFile", (String)null, false);
-	terminateApplication(application);
-        
-	File file = new File(logsDir + "\\" + logsFile);
-		
+        Prim application = deployExpectingSuccess(FILES + "tcp35.sf", "tcp35");
+        String logsDir;
+        String logsFile;
+        try {
+            assertNotNull(application);
+            Prim logger = (Prim) application.sfResolve("logger");
+            logsDir = logger.sfResolve("logsDir", (String) null, false);
+            logsFile = logger.sfResolve("logFile", (String) null, false);
+        } finally {
+            terminateApplication(application);
+        }
+        File file = new File(logsDir + "\\" + logsFile);
+
         assertFalse(file.exists());
     }
-    
+
     public void testCaseTCP36() throws Throwable {
-        Prim application = deployExpectingSuccess(FILES+"tcp36.sf", "tcp36");
-        assertNotNull(application);
-        Prim logger = (Prim)application.sfResolve("logger");
-        String logsDir = logger.sfResolve("logsDir", (String)null, false);
-        String logsFile = logger.sfResolve("logFile", (String)null, false);
-	terminateApplication(application);
-        
-	File file = new File(logsDir + "\\" + logsFile);
-		
+        application = deployExpectingSuccess(FILES + "tcp36.sf", "tcp36");
+        String logsDir;
+        String logsFile;
+        try {
+            assertNotNull(application);
+            Prim logger = (Prim) application.sfResolve("logger");
+            logsDir = logger.sfResolve("logsDir", (String) null, false);
+            logsFile = logger.sfResolve("logFile", (String) null, false);
+        } finally {
+            terminateApplication(application);
+        }
+
+        File file = new File(logsDir + "\\" + logsFile);
+
         assertTrue(file.exists());
 
-	BufferedReader br = new BufferedReader(new FileReader(file));
-	String ln = null;
-	String [] expected = {"Foo:localhost:==>Info msg1", "Foo:localhost:==>Warning msg1", "Foo:localhost:==>Info msg1", "Foo:localhost:==>Log Error1"};
+        BufferedReader br = new BufferedReader(new FileReader(file));
+        String ln = null;
+        String[] expected
+                = {"Foo:localhost:==>Info msg1", "Foo:localhost:==>Warning msg1", "Foo:localhost:==>Info msg1", "Foo:localhost:==>Log Error1"};
 
-	int i = 0;
-	do {
-		ln = br.readLine();
-		assertContains(ln, expected[i]); 
-		i++;
-	} while (i != 4);
+        int i = 0;
+        do {
+            ln = br.readLine();
+            assertContains(ln, expected[i]);
+            i++;
+        } while (i != 4);
     }
 
-   public void testCaseTCP37() throws Throwable {
-        Prim application = deployExpectingSuccess(FILES+"tcp37.sf", "tcp37");
+    public void testCaseTCP37() throws Throwable {
+        Prim application = deployExpectingSuccess(FILES + "tcp37.sf", "tcp37");
         assertNotNull(application);
-        Prim logger = (Prim)application.sfResolve("logger");
-        String logsDir = logger.sfResolve("logsDir", (String)null, false);
-        String logsFile = logger.sfResolve("logFile", (String)null, false);
-	terminateApplication(application);
-        
-	File file1 = new File(logsDir);
-	File file2 = new File(logsDir + "\\" + logsFile);
-		
+        String logsDir;
+        String logsFile;
+        try {
+            Prim logger = (Prim) application.sfResolve("logger");
+            logsDir = logger.sfResolve("logsDir", (String) null, false);
+            logsFile = logger.sfResolve("logFile", (String) null, false);
+        } finally {
+            terminateApplication(application);
+        }
+
+        File file1 = new File(logsDir);
+        File file2 = new File(logsDir + "\\" + logsFile);
+
         assertTrue(file1.exists());
         assertTrue(file2.exists());
         assertTrue(file1.isDirectory());
         assertFalse(file2.isDirectory());
 
-	file2.delete();
-	assertFalse(file2.exists());
-	
+        file2.delete();
+        assertFalse(file2.exists());
+
     }
- 
-   public void testCaseTCP38() throws Throwable {
-        Prim application = deployExpectingSuccess(FILES+"tcp38.sf", "tcp38");
-        assertNotNull(application);
-        Prim logger = (Prim)application.sfResolve("logger");
-        String logsDir = logger.sfResolve("logsDir", (String)null, false);
-        String logsFile = logger.sfResolve("logFile", (String)null, false);
-	terminateApplication(application);
-        
-	File file = new File(logsDir + "\\" + logsFile);
-		
+
+    public void testCaseTCP38() throws Throwable {
+        Prim application = deployExpectingSuccess(FILES + "tcp38.sf", "tcp38");
+        String logsDir;
+        String logsFile;
+        try {
+            assertNotNull(application);
+            Prim logger = (Prim) application.sfResolve("logger");
+            logsDir = logger.sfResolve("logsDir", (String) null, false);
+            logsFile = logger.sfResolve("logFile", (String) null, false);
+        } finally {
+            terminateApplication(application);
+        }
+
+        File file = new File(logsDir + "\\" + logsFile);
+
         assertTrue(file.exists());
 
-	BufferedReader br = new BufferedReader(new FileReader(file));
-	String ln = null;
-		ln = br.readLine();
-		assertEquals(ln,(String)null);
+        BufferedReader br=null;
+        try {
+            br = new BufferedReader(new FileReader(file));
+            String ln = null;
+            ln = br.readLine();
+            assertEquals(ln, null);
+        } finally {
+            FileSystem.close(br);;
+        }
     }
 }
 

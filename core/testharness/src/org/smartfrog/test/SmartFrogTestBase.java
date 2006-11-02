@@ -151,6 +151,10 @@ public abstract class SmartFrogTestBase extends TestCase {
      * Value: {@value}
      */
     public static final String EXCEPTION_COMPILE_RESOLUTION = "SmartFrogCompileResolutionException";
+    /**
+     * This is an application that will be undeployed at teardown time
+     */
+    protected Prim application;
 
     /**
      * Construct the base class, extract hostname and test classes directory from the JVM
@@ -377,7 +381,7 @@ public abstract class SmartFrogTestBase extends TestCase {
      * @param cfgDescMsg
      * @param extraText any extra text, can be null
      */
-    public void assertContains(String source, String substring, String cfgDescMsg,String extraText) {
+    public static void assertContains(String source, String substring, String cfgDescMsg,String extraText) {
         assertNotNull("No string to look for ["+substring+"]",source);
         assertNotNull("No substring ", substring);
         final boolean contained = source.indexOf(substring)>=0;
@@ -399,7 +403,7 @@ public abstract class SmartFrogTestBase extends TestCase {
      * @param source
      * @param substring
      */
-    public void assertContains(String source, String substring) {
+    public static void assertContains(String source, String substring) {
        assertContains(source,substring,"",null);
     }
 
@@ -527,10 +531,11 @@ public abstract class SmartFrogTestBase extends TestCase {
     }
 
     /**
-     * parse a file.
+     * parse a file whose filename is resolved before parsing parsed.
      * @param filename the name of a file, relative to the classes.dir passed in
      * to the test JVM.
      * @throws SmartFrogException
+     * @return a parsed file
      */
     protected Phases parseLocalFile(String filename) throws SmartFrogException {
         File file=getRelativeFile(filename);
@@ -638,6 +643,8 @@ public abstract class SmartFrogTestBase extends TestCase {
                     assertFaultCauseAndTextContains(liveness.getCause(),
                             EXCEPTION_SMARTFROG_ASSERTION, null,
                             "expected nested assertion failure");
+                } finally {
+                    terminateApplication(application);
                 }
             }
 
@@ -690,35 +697,49 @@ public abstract class SmartFrogTestBase extends TestCase {
     /**
      * get an  attribute from an application
      *
-     * @param application
+     * @param target
      * @param attribute
      * @return
      * @throws SmartFrogResolutionException
      * @throws RemoteException
      * @throws AssertionError if a condition is not met
      */
-    public Object resolveAttribute(Prim application, String attribute)
+    public static Object resolveAttribute(Prim target, String attribute)
             throws SmartFrogResolutionException, RemoteException {
-        assertNotNull("Application is null",application);
-        assertNotNull("Attribute is null",attribute);
-        Object value = application.sfResolve(attribute, false);
-        assertNotNull("Expected non-null application attribute " + attribute,
+        assertNotNull("Target parameter is null", target);
+        assertNotNull("Attribute parameter is null",attribute);
+        Object value = target.sfResolve(attribute, false);
+        assertNotNull("Expected non-null "+describe(target, attribute),
                 value);
         return value;
     }
 
     /**
+     * Create a description of a target/attribute pair
+     * @param target
+     * @param attribute
+     * @return
+     */
+    private static String describe(Prim target,String attribute) {
+        try {
+            return "attribute " + attribute + " on " + target.sfCompleteName();
+        } catch (RemoteException e) {
+            return "attribute '" + attribute + "' on an unresponsive component";
+        }
+    }
+
+    /**
      * get a string attribute from an application
-     * @param application
+     * @param prim
      * @param attribute
      * @return the attribute as a string
      * @throws SmartFrogResolutionException
      * @throws RemoteException
      * @throws AssertionError if a condition is not met
      */
-    public String resolveStringAttribute(Prim application,String attribute)
+    public static String resolveStringAttribute(Prim prim,String attribute)
             throws SmartFrogResolutionException, RemoteException {
-        Object value = resolveAttributeWithTypeAssertion(application,
+        Object value = resolveAttributeWithTypeAssertion(prim,
                 attribute,
                 String.class);
         return (String) value;
@@ -726,7 +747,7 @@ public abstract class SmartFrogTestBase extends TestCase {
 
     /**
      * Resolve an attribute and make an assertion about the return type
-     * @param application app to resolve against
+     * @param prim app to resolve against
      * @param attribute attribute to resolve
      * @param expectedClass class that is required
      * @return the object
@@ -734,13 +755,14 @@ public abstract class SmartFrogTestBase extends TestCase {
      * @throws RemoteException
      * @throws AssertionError if a condition is not met
      */
-    public Object resolveAttributeWithTypeAssertion(Prim application,
-                                                    String attribute, Class expectedClass) throws SmartFrogResolutionException,
-            RemoteException {
+    public static Object resolveAttributeWithTypeAssertion(Prim prim,
+                                                    String attribute,
+                                                    Class expectedClass)
+            throws SmartFrogResolutionException, RemoteException {
         assertNotNull(expectedClass);
-        Object value = resolveAttribute(application,attribute);
+        Object value = resolveAttribute(prim,attribute);
         Class valueClass = value.getClass();
-        assertEquals("Expected attribute "+attribute
+        assertEquals("Expected "+ describe(prim, attribute)
             +" to be of type "+expectedClass+" but instead it is an instance of class "
             +valueClass.toString()+" with value "+value.toString(),
                 expectedClass,valueClass);
@@ -750,92 +772,82 @@ public abstract class SmartFrogTestBase extends TestCase {
     /**
      * assert that an attribute exists
      *
-     * @param app
+     * @param prim
      * @param attribute
      * @throws SmartFrogResolutionException
      * @throws RemoteException
      * @throws AssertionError if a condition is not met
      */
-    public void assertAttributeExists(Prim app, String attribute)
+    public static void assertAttributeExists(Prim prim, String attribute)
             throws SmartFrogResolutionException, RemoteException {
-        resolveAttribute(app,attribute);
+        resolveAttribute(prim,attribute);
     }
 
     /**
      * assert that an attribute exists
-     * @param app
+     * @param prim
      * @param attribute
      * @throws SmartFrogResolutionException
      * @throws RemoteException
      * @throws AssertionError if a condition is not met
      */
-    public void assertStringAttributeExists(Prim app,String attribute)
+    public static void assertStringAttributeExists(Prim prim,String attribute)
             throws SmartFrogResolutionException, RemoteException {
-        assertAttributeExists(app,attribute);
+        assertAttributeExists(prim,attribute);
     }
 
     /**
      * assert that an attribute exists and equals a specified value
-     * @param app
+     * @param prim
      * @param attribute
      * @param mustEqual
      * @throws SmartFrogResolutionException
      * @throws RemoteException
      * @throws AssertionError if a condition is not met
      */
-    public void assertAttributeEquals(Prim app, String attribute,String mustEqual)
+    public static void assertAttributeEquals(Prim prim, String attribute,String mustEqual)
             throws SmartFrogResolutionException, RemoteException {
-        String value=resolveStringAttribute(app, attribute);
-        assertEquals(mustEqual,value);
+        String value=resolveStringAttribute(prim, attribute);
+        assertEquals("Unequal "+ describe(prim, attribute),mustEqual,value);
     }
 
     /**
      * assert that an attribute exists and equals a specified value
      *
-     * @param app
+     * @param prim
      * @param attribute
      * @param mustEqual
      * @throws SmartFrogResolutionException
      * @throws RemoteException
      * @throws AssertionError if a condition is not met
      */
-    public void assertAttributeEquals(Prim app, String attribute,
+    public static void assertAttributeEquals(Prim prim, String attribute,
                                       Object mustEqual) throws SmartFrogResolutionException,
             RemoteException {
-        Object value = resolveAttribute(app, attribute);
-        assertEquals(mustEqual, value);
+        Object value = resolveAttribute(prim, attribute);
+        assertEquals("Unequal " + describe(prim, attribute), mustEqual, value);
     }
 
     /**
      * Assert the value of a boolean attribute
-     * @param app
+     * @param prim
      * @param attribute
      * @param expected
      * @throws SmartFrogResolutionException
      * @throws RemoteException
      */
-    public void assertAttributeEquals(Prim app, String attribute,
+    public static void assertAttributeEquals(Prim prim, String attribute,
                                       boolean expected) throws SmartFrogResolutionException,
             RemoteException {
-        Object value = resolveAttribute(app, attribute);
-        assertEquals(Boolean.class,value.getClass());
-        assertEquals(expected,((Boolean)value).booleanValue());
+        Object value = resolveAttributeWithTypeAssertion(prim, attribute,Boolean.class);
+        assertEquals("Unequal " + describe(prim, attribute),expected,((Boolean)value).booleanValue());
     }
-
-
-
-/*    public static void assertEquals(String o1, String o2) {
-      TestCase.assertEquals(o1,o2);
-    }
-    public static void assertEquals(Object o1, Object o2) {
-      TestCase.assertEquals(o1,o2);
-    }*/
 
     /**
      * assert that a property is defined
      * @param property
      */
-    public final void assertSystemPropertySet(String property) {
+    public static void assertSystemPropertySet(String property) {
         String value=TestHelper.getTestProperty(property,null);
         assertNotNull("Property not set: "+property, value);
     }
@@ -845,7 +857,7 @@ public abstract class SmartFrogTestBase extends TestCase {
      * @param application
      * @throws AssertionError if something failed, wrapping the underlying exception
      */
-    protected void assertLivenessSuccess(Prim application) {
+    protected static void assertLivenessSuccess(Prim application) {
         assertNotNull("Application is null",application);
         try {
             application.sfPing(null);
@@ -862,9 +874,14 @@ public abstract class SmartFrogTestBase extends TestCase {
      * @param count number of times to check
      * @throws AssertionError if something failed, wrapping the underlying exception
      */
-    protected void assertLivenessSuccess(Prim application,int count) {
+    protected static void assertLivenessSuccess(Prim application,int count) {
         for(int i=0;i<count;i++) {
             assertLivenessSuccess(application);
         }
+    }
+
+    protected void tearDown() throws Exception {
+        super.tearDown();
+        terminateApplication(application);
     }
 }

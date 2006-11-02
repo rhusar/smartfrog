@@ -21,17 +21,14 @@
 
 package org.smartfrog.test.system.examples;
 
-import org.smartfrog.test.SmartFrogTestBase;
 import org.smartfrog.sfcore.prim.Prim;
-
-import java.net.*;
-import java.io.*;
+import org.smartfrog.test.DeployingTestBase;
 
 /**
  * JUnit test class for test cases for "datareaders" example
  */
 public class DataReadersTest
-    extends SmartFrogTestBase {
+    extends DeployingTestBase {
 
     private static final String FILES = "org/smartfrog/examples/datareaders/";
 
@@ -40,21 +37,21 @@ public class DataReadersTest
     }
     
     public void testCaseTCP31() throws Throwable {
-        Prim application = deployExpectingSuccess(FILES+"dataProvider.sf", "provider");
+        application = deployExpectingSuccess(FILES+"dataProvider.sf", "provider");
         assertNotNull(application);
     }
 
     public void testCaseTCP32() throws Throwable {
-        Prim application = deployExpectingSuccess(FILES+"dataConsumer.sf", "consumer");
+        application = deployExpectingSuccess(FILES + "dataConsumer.sf", "consumer");
         assertNotNull(application);
-	Prim event = (Prim)application.sfResolveHere("event");
-	Prim event2 = (Prim)application.sfResolveHere("event2");
-	Prim event3 = (Prim)application.sfResolveHere("event3");
-	String message = event.sfResolve("message",(String)null, true);
-	String message2 = event2.sfResolve("message",(String)null, true);
-	String message3 = event3.sfResolve("message",(String)null, true);
-	assertEquals(message,"hello world! (data attribute)");
-	assertEquals(message2,"PRIM hello world! (component attribute)");
-	assertEquals(message3,"PRIM2 hello World!");
+        Prim event = (Prim) application.sfResolveHere("event");
+        Prim event2 = (Prim) application.sfResolveHere("event2");
+        Prim event3 = (Prim) application.sfResolveHere("event3");
+        String message = event.sfResolve("message", (String) null, true);
+        String message2 = event2.sfResolve("message", (String) null, true);
+        String message3 = event3.sfResolve("message", (String) null, true);
+        assertEquals(message, "hello world! (data attribute)");
+        assertEquals(message2, "PRIM hello world! (component attribute)");
+        assertEquals(message3, "PRIM2 hello World!");
     }
 }
