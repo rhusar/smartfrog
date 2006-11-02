@@ -26,6 +26,5 @@ Retry extends ActionCompound {
           description "retry interval in milliseconds";
         }
     }
-    // action 
     retry 1;
 }

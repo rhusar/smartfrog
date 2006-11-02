@@ -36,7 +36,6 @@ import java.rmi.RemoteException;
 
 public class TestBlockImpl extends EventCompoundImpl implements TestBlock {
 
-
     private volatile boolean finished=false;
     private volatile boolean failed = false;
     private volatile boolean succeeded = false;
@@ -124,6 +123,7 @@ public class TestBlockImpl extends EventCompoundImpl implements TestBlock {
             child=sfCreateNewChild(ACTION,action, null);
             if(timeout>0) {
                 actionTerminator=new DelayedTerminator(child, timeout, sfLog(),"timeout",expectTimeout);
+                actionTerminator.start();
             }
         } catch (RemoteException e) {
             startupException(e);
@@ -165,7 +165,7 @@ public class TestBlockImpl extends EventCompoundImpl implements TestBlock {
             actionTerminator.shutdown(false);
             actionTerminator = null;
         }
-        setTestBlockAttributes(this,record, forcedTimeout);
+        setTestBlockAttributes(record, forcedTimeout);
         //this can trigger a shutdown if we want it
         new ComponentHelper(this).sfSelfDetachAndOrTerminate(record);
     }
@@ -204,20 +204,21 @@ public class TestBlockImpl extends EventCompoundImpl implements TestBlock {
     /**
      * Set the various attributes of the component
      * based on whether the test record was success or not
-     * @param prim
      * @param record
+     * @param timeout did we time out
      * @throws SmartFrogRuntimeException
      * @throws RemoteException
      */
-    public static void setTestBlockAttributes(Prim prim,
-                                              TerminationRecord record,
-                                              boolean timeout)
+    public void setTestBlockAttributes(
+            TerminationRecord record,
+            boolean timeout)
             throws SmartFrogRuntimeException, RemoteException {
         boolean success=record.isNormal();
-        prim.sfReplaceAttribute(ATTR_STATUS,record);
-        prim.sfReplaceAttribute(ATTR_FINISHED, Boolean.TRUE);
-        prim.sfReplaceAttribute(ATTR_SUCCEEDED, Boolean.valueOf(success));
-        prim.sfReplaceAttribute(ATTR_FAILED, Boolean.valueOf(!success));
-        prim.sfReplaceAttribute(ATTR_FORCEDTIMEOUT, Boolean.valueOf(timeout));
+        sfLog().debug("Terminated Test with status "+record+" timeout="+timeout);
+        sfReplaceAttribute(ATTR_STATUS,record);
+        sfReplaceAttribute(ATTR_FINISHED, Boolean.TRUE);
+        sfReplaceAttribute(ATTR_SUCCEEDED, Boolean.valueOf(success));
+        sfReplaceAttribute(ATTR_FAILED, Boolean.valueOf(!success));
+        sfReplaceAttribute(ATTR_FORCEDTIMEOUT, Boolean.valueOf(timeout));
     }
 }

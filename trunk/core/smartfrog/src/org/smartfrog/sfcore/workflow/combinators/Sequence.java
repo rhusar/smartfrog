@@ -142,6 +142,7 @@ public class Sequence extends EventCompoundImpl implements Compound {
                             .abnormal("error in starting next component: exception " + e, name, e);
                     sfTerminate(tr);
                     //we've triggered an abnormal shutdown, so no forwarding of the earlier event
+                    //as that would use the (normal) terminator used.
                     terminate = false;
                 }
 

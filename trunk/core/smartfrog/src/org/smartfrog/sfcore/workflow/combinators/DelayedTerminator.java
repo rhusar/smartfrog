@@ -52,6 +52,8 @@ public class DelayedTerminator implements Runnable {
      * Create a delayed time.
      * If the time is -1, then the wait is for {@link Long#MAX_VALUE}, otherwise it
      * is for as many milliseconds as needed.
+     *
+     * <i>Important</i> This does not start the thread. Call {@link #start()} to do that.
      * @param prim component to shut down
      * @param time how long to sleep
      * @param log a log to log to
@@ -117,14 +119,12 @@ public class DelayedTerminator implements Runnable {
      * Start the new thread
      */
     public synchronized void start() {
-        if(self!=null) {
-            if (self != null) {
-                self = new Thread(this);
-                if(name!=null) {
-                    self.setName(name);
-                }
-                self.start();
+        if(self==null) {
+            self = new Thread(this);
+            if(name!=null) {
+                self.setName(name);
             }
+            self.start();
         }
     }
 
@@ -142,7 +142,7 @@ public class DelayedTerminator implements Runnable {
 
         synchronized (this) {
             try {
-                if (shutdown == true) {
+                if (shutdown) {
 
                     //initiated shutdown
                     log.debug("initiated shutdown " + description);

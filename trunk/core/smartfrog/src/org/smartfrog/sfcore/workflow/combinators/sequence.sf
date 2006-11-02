@@ -22,9 +22,6 @@ For more information: www.smartfrog.org
 /**
  * the list of the sequence goes into the actions component
  */
-//Sequence extends ActionCompound {
-Sequence extends Compound {
+Sequence extends ActionsCompound {
     sfClass "org.smartfrog.sfcore.workflow.combinators.Sequence";
-    sendTo  extends LAZY {}
-    registerWith extends LAZY {}
 }
