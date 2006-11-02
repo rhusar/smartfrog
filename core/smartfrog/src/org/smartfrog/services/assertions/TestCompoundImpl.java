@@ -147,6 +147,7 @@ public class TestCompoundImpl extends EventCompoundImpl
             testsTerminator = new DelayedTerminator(testsPrim, testTimeout, logSF,
                     FORCED_TERMINATION,
                     false);
+            testsTerminator.start();
         }
     }
 
