@@ -50,16 +50,16 @@ import org.smartfrog.sfcore.reference.Reference;
  */
 
 /**
- * @todo: References - How are they resolved?
- * @todo: Split in: Project, Target, Task
- * @todo: Try to make the different parts remotable
- * @todo: Integrate build listener and log
- * @todo: improve error messages
- * @todo: test typdef and taskdef
- * @todo: how to do properties
- * @todo: overload sfResolve for project and even task
- * @todo: review the creation of an element inside a project (task=null)
- */
+// * TODO: References - How are they resolved?
+// * TODO: Split in: Project, Target, Task
+// * TODO: Try to make the different parts remotable
+// * TODO: Integrate build listener and log
+// * TODO: improve error messages
+// * TODO: test typdef and taskdef
+// * TODO: how to do properties
+// * TODO: overload sfResolve for project and even task
+// * TODO: review the creation of an element inside a project (task=null)
+// */
 public class AntProject {
 
     private org.apache.tools.ant.Project project = null;
@@ -92,7 +92,7 @@ public class AntProject {
         level = extractLogLevel(level, logLevel, Ant.ATTR_LOG_LEVEL_WARN, Project.MSG_WARN);
         level = extractLogLevel(level, logLevel, Ant.ATTR_LOG_LEVEL_ERROR, Project.MSG_ERR);
 
-        //Register build listener @TODO replace this with our own listener
+        //Register build listener TODO replace this with our own listener
         org.apache.tools.ant.DefaultLogger logger = new org.apache.tools.ant.DefaultLogger();
         logger.setOutputPrintStream(System.out);
         logger.setErrorPrintStream(System.err);
@@ -264,7 +264,7 @@ public class AntProject {
      * @throws IllegalArgumentException
      * @throws IllegalAccessException
      * @throws ClassNotFoundException
-     * @todo: internationalise the equalsIgnoreCase calls
+     * TODO: internationalise the equalsIgnoreCase calls
      */
     private Object createElement(Object task, java.lang.reflect.Method[] methods, String elementType) throws
             InstantiationException, InvocationTargetException,
@@ -293,7 +293,7 @@ public class AntProject {
             }
         }
         // If a method to create element is not found, then try finding the element class and create a new instance
-        //@TODO: project.createDataType(); or  project.getDataTypeDefinitions();
+        //TODO: project.createDataType(); or  project.getDataTypeDefinitions();
         try {
 
             //if (types.containsKey(elementType)) {
@@ -302,14 +302,14 @@ public class AntProject {
                 //System.out.println("   #-Creating element for: "+elementType+" using "+project.getDataTypeDefinitions().get(elementType));
                 //Object obj = Class.forName(types.getProperty(elementType)).newInstance();
                 Object obj = ((Class) project.getDataTypeDefinitions().get(elementType)).newInstance();
-                //@todo: improve error messages
+                //TODO: improve error messages
                 return obj;
             } else {
                 //Try to load the class directly
                 //System.out.println("   #- Creating element for: "+elementType+" using "+elementType);
                 Object obj = Class.forName(elementType).newInstance();
                 return obj;
-                //@todo: improve error messages
+                //TODO: improve error messages
             }
         } catch (Exception ex1) {
             log.error("cound ot create a datatype ",ex1);
