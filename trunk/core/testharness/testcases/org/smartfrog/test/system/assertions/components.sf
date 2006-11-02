@@ -20,7 +20,8 @@ For more information: www.smartfrog.org
 
 /*
  this file declares a component that can set a value and will toggle it on demand
- or on deploy
+ or on deploy. It can also set the value in a remote target, which lets toggle values
+ outlive their termination.
  */
 
 
@@ -34,7 +35,8 @@ For more information: www.smartfrog.org
 BooleanValues extends WorkflowPrim {
     sfClass "org.smartfrog.test.system.assertions.BooleanValuesImpl";
     schema extends Schema {
-
+      //reference to a remote target
+        target extends OptionalCD;
         value extends OptionalBoolean;
         toggle extends OptionalBoolean;
     }
