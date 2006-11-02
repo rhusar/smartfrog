@@ -28,12 +28,13 @@
 sfConfig extends TestBlock {
 
 
- action extends Parallel {
-       toggle1 extends ToggleToTrueWorkflow;
+  action extends Parallel {
+       toggle1 extends ToggleToTrueWorkflow {
+          target LAZY PARENT:PARENT;
+       }
 
   }
-
-  toggle LAZY action:parallel:toggle1;
+  
 }
 
 

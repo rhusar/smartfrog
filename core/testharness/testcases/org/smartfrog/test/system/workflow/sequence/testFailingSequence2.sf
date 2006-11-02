@@ -18,28 +18,34 @@ For more information: www.smartfrog.org
 
 */
 
-
 #include "/org/smartfrog/test/system/workflow/sequence/components.sf"
 
 /**
- * test a sequence, assert both toggle to true
+ * Tests the scenario where failure of one component in sequence leads to 
+ * sequence termination. First component creates a temp dir and third component
+ * removes that but second component fails and thus third is never executed.
+ * we use the check of the toggle value as the way of looking into the system
  */
-
 sfConfig extends TestBlock {
-
     action extends Sequence {
+
       //set sfConfig:value=false
-       toggle1 extends ToggleToFalseWorkflow {
+       -- extends ToggleToTrueWorkflow {
+          target LAZY PARENT:PARENT;
+       }
+       -- extends ToggleToTrueWorkflow {
           target LAZY PARENT:PARENT;
        }
 
-       //then we toggle the sfConfig:value=true
+        fail extends Fail {
+          message "halted mid-sequence";
+          normal false;
+        }
+        //then we toggle the sfConfig:value=true
+
        toggle2 extends ToggleToTrueWorkflow {
           target LAZY PARENT:PARENT;
        }
-  }
+    }
 
 }
-
-
-

@@ -36,31 +36,27 @@ public class SequenceTest extends DeployingTestBase {
     public SequenceTest(String s) {
         super(s);
     }
-    public void testComponentFailureInSequence() throws Throwable {
+    public void testSequence() throws Throwable {
         application=deployExpectingSuccess(FILES+"testSequence.sf","testSequence");
         TestBlock block=(TestBlock)application;
         expectSuccessfulTermination(block);
-/*
-        Prim sequence = block.getAction();
-        Prim toggle1 = (Prim) sequence.sfResolve("toggle1");
-        Prim toggle2 = (Prim) sequence.sfResolve("toggle2");
-        assertAttributeEquals(toggle1, "value", true);
-        assertAttributeEquals(toggle2, "value", true);
-*/
+        assertAttributeEquals(application, "value", true);
     }
 
-    public void testComponentFailureInNewSequence() throws Throwable {
+    public void testFailingSequence() throws Throwable {
         application = deployExpectingSuccess(FILES + "testFailingSequence.sf", "testFailingSequence");
         TestBlock block = (TestBlock) application;
         TerminationRecord record = expectAbnormalTermination(block);
         assertContains(record.description, "mid-sequence");
-/*
-        Prim sequence=block.getAction();
-        assertNotNull("empty sequence action in the testblock", sequence);
-        Prim toggle1=(Prim)sequence.sfResolve("toggle1");
-        Prim toggle2 = (Prim) sequence.sfResolve("toggle2");
-        assertAttributeEquals(toggle1,"value",true);
-        assertAttributeEquals(toggle2, "value", false);
-*/
     }
+
+    public void testFailingSequence2() throws Throwable {
+        application = deployExpectingSuccess(FILES + "testFailingSequence2.sf",
+                "testFailingSequence2");
+        TestBlock block = (TestBlock) application;
+        TerminationRecord record = expectAbnormalTermination(block);
+        assertContains(record.description, "mid-sequence");
+        assertAttributeEquals(application, "value", true);
+    }
+
 }

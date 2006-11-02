@@ -54,8 +54,8 @@ public class ParallelTest extends DeployingTestBase {
         application = deployExpectingSuccess(FILES + "testSimpleParallel.sf", "testSimpleParallel");
         setBlock(application);
         expectSuccessfulTermination(block);
-        Prim toggle=(Prim) (application.sfResolve("toggle"));
-        assertAttributeEquals(toggle,"value",true);
+        //Prim toggle=(Prim) (application.sfResolve("toggle"));
+        assertAttributeEquals(application,"value",true);
     }
 
     public void testEmptyParallelTerminating() throws Throwable {
