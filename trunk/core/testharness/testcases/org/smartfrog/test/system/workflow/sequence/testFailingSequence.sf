@@ -39,7 +39,7 @@ testSequence extends Sequence {
         //these should never be reached. 
         toggle2 extends ToggleToTrueWorkflow;
 
-        fail extends Fail {
+        fail2 extends Fail {
           message "overrun";
           normal false;
         }
