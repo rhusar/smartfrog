@@ -41,7 +41,8 @@ public interface BooleanValues extends Remote {
     String ATTR_VALUE ="value";
     
     String ATTR_TOGGLE = "toggle";
-    
+
+    String ATTR_TARGET = "target";
 
     /**
      * always evaluates to true

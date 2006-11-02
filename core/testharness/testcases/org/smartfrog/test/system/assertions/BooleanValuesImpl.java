@@ -22,6 +22,7 @@
 package org.smartfrog.test.system.assertions;
 
 import org.smartfrog.sfcore.prim.PrimImpl;
+import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.utils.ComponentHelper;
@@ -35,6 +36,7 @@ import java.rmi.RemoteException;
  */
 public class BooleanValuesImpl extends PrimImpl implements BooleanValues {
 
+    private Prim target;
 
     public BooleanValuesImpl() throws RemoteException {
 
@@ -44,7 +46,7 @@ public class BooleanValuesImpl extends PrimImpl implements BooleanValues {
     public synchronized void sfStart()
         throws SmartFrogException, RemoteException {
         super.sfStart();
-        boolean valuePresent=null!=sfResolve(BooleanValues.ATTR_VALUE, (Object)null, false);
+        target=sfResolve(ATTR_TARGET, target,false);
         boolean toggle=sfResolve(ATTR_TOGGLE,false,false);
         if(toggle) {
             //toggle if asked
@@ -84,7 +86,8 @@ public class BooleanValuesImpl extends PrimImpl implements BooleanValues {
     }
 
     /**
-     * throw a runtime fault when invoking
+     * throw a runtime fault when invoking.
+     * Here to test how well RTE-s get marshalled over the wire.
      *
      * @return
      * @throws java.rmi.RemoteException
@@ -94,11 +97,22 @@ public class BooleanValuesImpl extends PrimImpl implements BooleanValues {
         throw new RuntimeException("invoked throwRuntimeException()");
     }
 
+    /**
+     * Toggle our local value. Will also set the value of any prim set in the
+     * target attribute to the final value (no toggle, just a set).
+     * @return
+     * @throws RemoteException
+     * @throws SmartFrogException
+     */
     public boolean toggle()
         throws RemoteException, SmartFrogException {
         boolean current=getValue();
         boolean next=!current;
-        sfReplaceAttribute(BooleanValues.ATTR_VALUE, Boolean.valueOf(next));
+        Boolean newValue = Boolean.valueOf(next);
+        sfReplaceAttribute(BooleanValues.ATTR_VALUE, newValue);
+        if(target!=null) {
+            target.sfReplaceAttribute(BooleanValues.ATTR_VALUE, newValue);
+        }
         return next;
     }
 
