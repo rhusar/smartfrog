@@ -61,8 +61,7 @@ To Be Written
 
 	<echo message=""/>
     <echo message="==================================================================="/>
-    <echo message="= ${Name.Framework} - ${Name.System} -  ${Name.Company} "/>
-    <echo message="==================================================================="/>
+    <echo message="= ${Name.Framework} - ${Name.System} -  ${Name.Company}  (Release)"/>
   </target>
 <!-- =================================================================== -->
   <!-- Help on usage                                                       -->
