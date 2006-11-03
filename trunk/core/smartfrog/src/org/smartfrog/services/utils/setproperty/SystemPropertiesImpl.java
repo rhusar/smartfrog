@@ -232,10 +232,12 @@ public class SystemPropertiesImpl extends PrimImpl implements SystemProperties {
      */
     public void setProperty(String name, String value)
             throws SmartFrogException, RemoteException {
+        String action = "setting " + name + " to " + value;
         try {
+            sfLog().info(action);
             System.setProperty(name, value);
         } catch (SecurityException e) {
-            throw SmartFrogException.forward("setting " + name + " to " + value, e);
+            throw SmartFrogException.forward(action, e);
         }
     }
 
