@@ -54,10 +54,11 @@ For more information: www.smartfrog.org
         url healthURL;
       }
 
-      notifications extends Notifications ;
+      //this has to link to a notify service in the same process
+      //notifications TBD;;
 
       tests extends DeployapiTestRunner {
-        notifications LAZY PARENT:notifications;
+        notifications LAZY PARENT:ATTRIB notifications;
         basedir PARENT:basedir;
         enabled PARENT:enabled;
         endpoint PARENT:endpoint;
@@ -93,11 +94,10 @@ fullSuite extends Compound {
 
   testLog LAZY log:logTo:logTo;
 
+  notifications extends Notifications ;
 
 
   OurgridTest extends ServerTest {
-    sfProcessHost "newmachine";
-    sfProcessName "process2";
     name "ourgrid";
     endpoint ourgrid_endpoint;
     enabled ourgridEnabled;
@@ -114,8 +114,6 @@ fullSuite extends Compound {
   }
 
   NecTest extends ServerTest {
-
-    sfProcessName "process1";
     name "nec";
     endpoint nec_endpoint;
     enabled necEnabled;

@@ -17,22 +17,18 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 For more information: www.smartfrog.org
 
 */
-#include "/org/smartfrog/services/utils/setproperty/components.sf"
+#include "/org/smartfrog/services/deployapi/test/system/alpine/deployapi/remote-interop.sf"
+#include "/org/smartfrog/services/deployapi/notifications/muws/notifyhost.sf"
+#include "/org/smartfrog/services/deployapi/test/system/alpine/deployapi/proxy.sf"
 
-/**
- * This is the settings for the server test for steve to do the ports
+TestPlan extends fullSuite {
 
- */
-  Proxy extends SystemProperties {
-    enabled true;
-    setOnDeploy enabled;
-    unsetOnTerminate false;
-    host "web-proxy";
-    port "8088";
-    properties [
-      ["http.proxyHost",host],
-      ["http.proxyPort",port],
-      ["https.proxyHost",host],
-      ["https.proxyPort",port]
-      ];
-  }
+  necEnabled false;
+  ourgridEnabled true;
+  hpEnabled false;
+  proxyEnabled true;
+}
+
+
+sfConfig extends TestPlan {
+}
