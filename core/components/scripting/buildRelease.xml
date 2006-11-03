@@ -60,11 +60,8 @@ To Be Written
         value="(C) Copyright 1998-${year} Hewlett-Packard Development Company, LP"/>
 
     <echo message=""/>
-    <echo
-        message="==================================================================="/>
-    <echo message="= ${Name.Framework} - ${Name.System} -  ${Name.Company} "/>
-    <echo
-        message="==================================================================="/>
+    <echo message="==================================================================="/>
+    <echo message="= ${Name.Framework} - ${Name.System} -  ${Name.Company} (Release)"/>
   </target>
 <!-- =================================================================== -->
   <!-- Help on usage                                                       -->
