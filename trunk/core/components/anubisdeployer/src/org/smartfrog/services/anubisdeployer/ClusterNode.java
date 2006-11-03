@@ -61,8 +61,8 @@ public interface ClusterNode extends Remote {
     /**
      * Reserve some units of each of the reserrvable aspects
      * @param id an identifier to be used to indicate the set of reservations
-     * @param data information regarding the reservation
-     * @param the component for which the resources are being reserved
+     * @param info data information regarding the reservation
+     * @param forComponent the component for which the resources are being reserved
      */
     public void reserveResources(String id, ComponentDescription info, Prim forComponent)
 	throws SmartFrogException, RemoteException;
