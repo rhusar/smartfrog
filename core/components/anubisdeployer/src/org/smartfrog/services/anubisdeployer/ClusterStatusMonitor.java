@@ -113,7 +113,7 @@ public class ClusterStatusMonitor extends PrimImpl implements Prim, ClusterMonit
     /**
      * Register for notification in changes in cluster resource information
      *
-     * @param classback the interface to notify of changes in status
+     * @param callback the interface to notify of changes in status
      */
     public  ComponentDescription registerForClusterStatus(ClusterStatus callback)
 	throws RemoteException {
@@ -126,7 +126,7 @@ public class ClusterStatusMonitor extends PrimImpl implements Prim, ClusterMonit
     /**
      * Deregister for notification in changes in cluster resource information
      *
-     * @param classback the interface to remove from tbe notification
+     * @param callback the interface to remove from tbe notification
      */
     public void deregisterForClusterStatus(ClusterStatus callback)
 	throws RemoteException {
