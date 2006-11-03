@@ -30,9 +30,6 @@ http://cddlm.lsd.ufcg.edu.br:8080/muse/services/Portal
 Thanks,
 Flavio Santos
 */
-/**
- URL to the
- */
 ourgrid_endpoint "http://cddlm.lsd.ufcg.edu.br:8080/muse/services/Portal";
 
 ourgrid_wsdl "http://cddlm.lsd.ufcg.edu.br:8080/muse/services/Portal?wsdl";
@@ -42,13 +39,6 @@ OurGridTests extends DeployapiTestRunner {
   healthURL ourgrid_health;
   endpoint ourgrid_endpoint;
   subdir "ourgrid";
-
 }
 
 
-TestPlan extends OurGridTests{
-
-}
-
-sfConfig extends TestPlan {
-}
