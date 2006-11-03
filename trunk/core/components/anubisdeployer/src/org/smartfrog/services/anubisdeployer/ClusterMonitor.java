@@ -57,7 +57,7 @@ public interface ClusterMonitor extends Remote {
     /**
      * Register for notification in changes in cluster resource information
      *
-     * @param classback the interface to notify of changes in status
+     * @param callback the interface to notify of changes in status
      * @return the current status
      */
     public ComponentDescription registerForClusterStatus(ClusterStatus callback)
@@ -66,7 +66,7 @@ public interface ClusterMonitor extends Remote {
     /**
      * Deregister for notification in changes in cluster resource information
      *
-     * @param classback the interface to remove from tbe notification
+     * @param callback the interface to remove from tbe notification
      */
     public void deregisterForClusterStatus(ClusterStatus callback)
 	throws RemoteException;

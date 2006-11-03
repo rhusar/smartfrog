@@ -296,8 +296,9 @@ public class TemplateGen {
    * @param outputFile Output description file  
    * @param securityStatus A flag to keep security on of off
    * @param dynamicLoadingStatus A flag to keep dynamic classloading on or off
-   * @param hostname Httpserver hostname for dynamic classloading
-   * @param jars List of jar files for dynamic classloading  
+   * @param jars List of jar files for dynamic classloading
+   * @param logdir log directory
+   * @throws Exception  
    */
    static public void createTemplate(Map map, String templateFile, String outputFile, boolean securityStatus, boolean dynamicLoadingStatus, String [] jars, String logdir) throws Exception{
     try {
@@ -331,7 +332,6 @@ public class TemplateGen {
   /** Runs the TemplateGen and generates the description file.
    * 
    * @param args The input command line.
-   * @param hostname Httpserver hostname for dynamic classloading
    * @param jars List of jar files for dynamic classloading  
    */
   static void createDescription(String [] args, String [] jars) throws Exception{

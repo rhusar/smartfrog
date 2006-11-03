@@ -275,10 +275,9 @@ public class TelnetImpl extends PrimImpl implements Telnet,
      * @param end String to search
      * @param timeout Timeout 
      * @return true if string is located in the inp stream, false if search
-     * is timedout or string is not found
+     *  is timedout or string is not found
      */
-    public boolean waitForString(InputStream is, String end, long timeout) 
-                                                            throws Exception {
+    public boolean waitForString(InputStream is, String end, long timeout) throws Exception {
         byte buffer[] = new byte[32];
         long starttime = System.currentTimeMillis();
 
