@@ -54,7 +54,7 @@ public class DNSOpaqueImpl extends DNSComponentImpl {
      * its context.
      *
      * @param parent A parent in the description hierarchy.
-     * @param cxt A context from which to obtain arguments to configure
+     * @param ctx A context from which to obtain arguments to configure
      * this object.
      * @exception SmartFrogException if an error occurs while initializing
      * this component or any of its sub-components.
