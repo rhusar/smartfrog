@@ -432,11 +432,14 @@ public abstract class SmartFrogTestBase extends TestCase {
      * @throws SFGeneralSecurityException
      * @throws UnknownHostException
      */
-    public void startSmartFrog() throws SmartFrogException, RemoteException,
-            SFGeneralSecurityException, UnknownHostException {
+    public void startSmartFrog() throws SmartFrogException, RemoteException, SFGeneralSecurityException, UnknownHostException {
         if(!SFSystem.isSmartfrogInit()) {
             SFSystem.runSmartFrog();
         }
+    }
+
+    public void terminateSmartFrog() throws SmartFrogException, RemoteException, SFGeneralSecurityException, UnknownHostException {
+       SFSystem.runConfigurationDescriptor(new ConfigurationDescriptor(":TERMINATE:::localhost:"));
     }
 
     /**
