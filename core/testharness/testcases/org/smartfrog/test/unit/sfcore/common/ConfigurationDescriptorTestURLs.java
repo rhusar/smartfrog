@@ -68,7 +68,7 @@ public interface ConfigurationDescriptorTestURLs {
     String urlTestN07  ="\"HOST localhost:sfDefault:\":DEPLOY:org/smartfrog/examples/counter/example.sf::localhost:";
     String urlTestN08 ="\"HOST localhost:rootProcess:\":DEPLOY:org/smartfrog/examples/counter/example.sf::localhost:";
 
-    String fileURLTest01 = "org/smartfrog/examples/configurationdescriptor/example.sfcd";
+    String fileURLTest01 = "org/smartfrog/test/system/deploy/example.sfcd";
     // String url  ="";
 
 }
