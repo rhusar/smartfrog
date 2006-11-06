@@ -193,9 +193,9 @@ public class ConfigurationDescriptorDeployTest extends SmartFrogTestBase impleme
         application = deployExpectingSuccessFile(sfact, description);
         Thread.sleep(5*1000);
         application = null;
-        terminateSmartFrog();
-        Thread.sleep(5*1000);
-        startSmartFrog();
+//        terminateSmartFrog();
+//        Thread.sleep(5*1000);
+//        startSmartFrog();
 
     }
 //
