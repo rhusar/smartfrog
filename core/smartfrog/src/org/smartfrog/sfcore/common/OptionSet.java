@@ -154,7 +154,7 @@ public class OptionSet {
 
                     case 'f':
                         try {
-                            this.readCfgDescriptorsFile(args[++i]);
+                            cfgDescriptors = readCfgDescriptorsFile(args[++i]);
                         } catch (SmartFrogInitException ex){
                           exitCode = ExitCodes.EXIT_ERROR_CODE_BAD_ARGS;
                           //Logger.log(ex);
@@ -209,9 +209,11 @@ public class OptionSet {
      * @param fileURL file to be read
      * @throws SmartFrogException if failed to read
      */
-    private void readCfgDescriptorsFile(String fileURL) throws SmartFrogException{
+    public static Vector readCfgDescriptorsFile(String fileURL) throws SmartFrogException{
         String line;
         LineNumberReader file=null;
+        /** Vector for configurationDescriptors to be deployed. */
+        Vector cfgDescriptors = new Vector();
         try {
             file = new LineNumberReader (new BufferedReader(new InputStreamReader(
                (org.smartfrog.SFSystem.getInputStreamForResource(fileURL)))));
@@ -223,7 +225,7 @@ public class OptionSet {
                    if (line.length()>0){
                      //Logger.log(" Reading and Creating: "+line);
                      if (!(line.startsWith("#"))&&!(line.startsWith("//"))){
-                       this.cfgDescriptors.add(new ConfigurationDescriptor(line));
+                       cfgDescriptors.add(new ConfigurationDescriptor(line));
                      //Logger.log(" result: " + this.cfgDescriptors.lastElement().toString());
                      } else {
                        //Ignore
@@ -254,5 +256,6 @@ public class OptionSet {
               }
             }
         }
+        return cfgDescriptors;
     }
 }
