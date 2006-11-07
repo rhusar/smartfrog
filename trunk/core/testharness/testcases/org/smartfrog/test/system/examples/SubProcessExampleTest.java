@@ -71,7 +71,7 @@ public class SubProcessExampleTest
 
     Prim demoF = (Prim) foobar.sfResolveHere("demoF");
     int actualdemoF = 0;
-    int expecteddemoF = 12;
+    int expecteddemoF = 7;
     actualdemoF = demoF.sfResolve("limit", actualdemoE, true);
     assertEquals(expecteddemoF, actualdemoF);
 
