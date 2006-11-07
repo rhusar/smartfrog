@@ -159,10 +159,11 @@ public class ConfigurationDescriptorDeployTest extends SmartFrogTestBase impleme
         try {
             startSmartFrog();
             Object deployedApp=null;
+            System.out.println("\n Testing: " + testDescription + "\n    ");
             for (Enumeration items = cfgDescS.elements(); items.hasMoreElements();) {
               ConfigurationDescriptor cfgDesc =(ConfigurationDescriptor)items.nextElement();
               deployedApp = SFSystem.runConfigurationDescriptor( cfgDesc);
-              System.out.println("\n" + testDescription + "\n    " + cfgDesc.toString("\n    "));
+              System.out.println("\n    " + cfgDesc.toString("\n    "));
                 if (deployedApp instanceof Prim) {
                     System.out.println("\n" + testDescription + "\n    " + cfgDesc.toString("\n    "+ ((Prim) deployedApp).sfCompleteName()));
                 } else if (deployedApp instanceof ConfigurationDescriptor) {
@@ -191,8 +192,7 @@ public class ConfigurationDescriptorDeployTest extends SmartFrogTestBase impleme
         String sfact = fileURLTest01;
         String description = "testFileURLTest01 (" + sfact + ")";
         application = deployExpectingSuccessFile(sfact, description);
-        Thread.sleep(5*1000);
-        application = null;
+        Thread.sleep(10*1000);
 //        terminateSmartFrog();
 //        Thread.sleep(5*1000);
 //        startSmartFrog();
