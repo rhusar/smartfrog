@@ -9,5 +9,4 @@ Julio:DEPLOY:org/smartfrog/examples/counter/example.sf::localhost:
 "HOST localhost:first:CounterInFirst1FIST":DEPLOY:org/smartfrog/examples/counter/example.sf::localhost:first
 counterEx3:DEPLOY:org/smartfrog/examples/counter/example2.sf:"testLevel1:counterToSucceed":localhost:
 "HOST localhost:sfDefault:SubProcessInDefault1":TERMINATE:::localhost:
-//"HOST "127.0.0.1":sfDefault:Julio2B":DEPLOY:org/smartfrog/examples/counter/example2.sf:"testLevel1:counterToSucceed":localhost:
 finaldeploy:DEPLOY:org/smartfrog/examples/counter/example.sf::localhost:

@@ -162,17 +162,19 @@ public class ConfigurationDescriptorDeployTest extends SmartFrogTestBase impleme
             System.out.println("\n Testing: " + testDescription + "\n    ");
             for (Enumeration items = cfgDescS.elements(); items.hasMoreElements();) {
               ConfigurationDescriptor cfgDesc =(ConfigurationDescriptor)items.nextElement();
-              deployedApp = SFSystem.runConfigurationDescriptor( cfgDesc);
-              System.out.println("\n    " + cfgDesc.toString("\n    "));
-                if (deployedApp instanceof Prim) {
-                    System.out.println("\n" + testDescription + "\n    " + cfgDesc.toString("\n    "+ ((Prim) deployedApp).sfCompleteName()));
-                } else if (deployedApp instanceof ConfigurationDescriptor) {
-                    Throwable exception = ((ConfigurationDescriptor) deployedApp).resultException;
-                    if (exception != null) ;
-                    {
-                        throw exception;
-                    }
-                 }
+              System.out.println("\n    To deploy: " + cfgDesc.toString("\n    "));
+              deployedApp = SFSystem.runConfigurationDescriptor( cfgDesc,true);
+              System.out.println("\n      Result: "+ cfgDesc.toString("\n    "));
+//                if (deployedApp instanceof Prim) {
+//                    System.out.println("\n" + testDescription + "\n    " + cfgDesc.toString("\n    "+ ((Prim) deployedApp).sfCompleteName()));
+//                } else if (deployedApp instanceof ConfigurationDescriptor) {
+//                    Throwable exception = ((ConfigurationDescriptor) deployedApp).resultException;
+//                    if (exception != null) ;
+//                    {
+//                        System.out.println("\n Exception for: " +  testDescription + "\n    " + exception.toString());
+//                        throw exception;
+//                    }
+//                 }
              } //for
              if (deployedApp instanceof Prim) {
                     return ((Prim) deployedApp);
