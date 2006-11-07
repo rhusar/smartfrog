@@ -73,7 +73,7 @@ System extends Compound {
         //textDisplay "Hello world!/n";
       }
 
-     sfProcessName "first";
+     sfProcessName "first2";
      sfProcessComponentName "a2";
 
      demoA extends MyCounter {
@@ -87,7 +87,7 @@ System extends Compound {
            outputMsg LAZY ATTRIB displayTrace;
         }
 
-        sfProcessName "test";
+        sfProcessName "test2";
         sfProcessComponentName "b2";
         displayTEST extends DisplayOff{
             nameDisplay "Process TEST (Exit:ALT+F4)";
@@ -106,7 +106,7 @@ System extends Compound {
             traceTest2 extends Trace{
                outputMsg LAZY ATTRIB displayTrace;
             }
-            sfProcessName "test2";
+            sfProcessName "test22";
             sfProcessComponentName "e2";
             displayTEST2 extends DisplayOff{
                 nameDisplay "Process TEST2 (Exit:ALT+F4)";
@@ -123,7 +123,7 @@ System extends Compound {
 
      baz extends Compound {
         sfProcessComponentName "c2";
-        sfProcessName "test2";
+        sfProcessName "test22";
         demoC extends MyCounter {
            Message "demoC";
            limit 9;
