@@ -148,16 +148,16 @@ public class WFOriginalPersistence extends PersistenceModel {
             SmartFrogException, RemoteException {
 
         if (CommitPoints.POST_START.equals(point)) {
-            System.out.println(" ===== " + point + " is a commit point");
+            // System.out.println(" ===== " + point + " is a commit point");
             component.sfReplaceAttribute(RComponent.WFSTATUSENTRY,
                                          RComponent.WFSTATUS_STARTED);
             stable = true;
             return true;
         } else if (CommitPoints.POST_RECOVER.equals(point)) {
-            System.out.println(" ===== " + point + " is a commit point");
+            // System.out.println(" ===== " + point + " is a commit point");
             return true;
         } else {
-            System.out.println(" ===== " + point + " is not a commit point");
+            // System.out.println(" ===== " + point + " is not a commit point");
             return false;
         }
     }

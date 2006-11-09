@@ -122,7 +122,7 @@ public class RedeployPersistence extends PersistenceModel {
     public void recoverContext(Context context) throws
             SmartFrogDeploymentException {
 
-        System.out.println("  ***** Recovering context ****** ");
+        // System.out.println("  ***** Recovering context ****** ");
 
         try {
             /**
@@ -143,8 +143,7 @@ public class RedeployPersistence extends PersistenceModel {
                 ComponentDescription cd = (ComponentDescription) storedCd.copy();
                 cd.sfReplaceAttribute("wfVersion", "Recovered Version");
                 context.sfAddAttribute(name, cd);
-                System.out.println(" ***** Adding " + name +
-                                   " to context *****");
+                // System.out.println(" ***** Adding " + name + " to context *****");
             }
         } catch (SmartFrogContextException ex) {
             throw (SmartFrogDeploymentException) SmartFrogDeploymentException.
@@ -231,10 +230,10 @@ public class RedeployPersistence extends PersistenceModel {
         if ((CommitPoints.PRE_DEPLOY_WITH.equals(point) ||
              CommitPoints.POST_START.equals(point) ||
              CommitPoints.POST_RECOVER.equals(point))) {
-            System.out.println("=== " + point + " is a commit point ===");
+            // System.out.println("=== " + point + " is a commit point ===");
             return true;
         } else {
-            System.out.println("=== " + point + " is not a commit point ===");
+            // System.out.println("=== " + point + " is not a commit point ===");
             return false;
         }
     }
