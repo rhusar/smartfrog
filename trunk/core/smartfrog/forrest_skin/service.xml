@@ -50,9 +50,13 @@
            <title>ShellScript </title>
            <p>This document shows how the SmartFrog system can make this process easy through the use of the process management and shell scripting components provided as part of the core release.
                Links to document : <a href="sfShellScript.html">HTML</a>  , <a href="sfShellScript.pdf">PDF</a> , "<a href="http://svn.sourceforge.net/viewvc/*checkout*/smartfrog/trunk/core/smartfrog/docs/sfShellScript.pdf">SVN (Online) </a>"   </p>
+	 </section>
+
+	 <section id="Autoloader">
+           <title>Autoloader </title>
+	   <p>The SmartFrog component Autoloader provides the facility to load components from file if, and when, components attempt to access them through a reference. The autoloader intercepts reference resolutions and will deploy the resource associated with a specific reference if it has not already been deployed, and then complete the reference resolution.
+               Links to document : <a href="sfAutoloader.html">HTML</a>  , <a href="sfAutoloader.pdf">PDF</a> , "<a href="http://svn.sourceforge.net/viewvc/*checkout*/smartfrog/trunk/core/smartfrog/docs/sfAutoloader.pdf">SVN (Online) </a>"   </p>
          </section>
-
-
 
           <section id="WebComponents">
            <title>WebComponents </title>
