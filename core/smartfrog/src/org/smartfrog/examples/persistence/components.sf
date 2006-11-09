@@ -24,8 +24,10 @@ For more information: www.smartfrog.org
  * The PersistentCounter component is a basic primitive component.
  */
 
+#include "/org/smartfrog/components.sf"
 #include "/org/smartfrog/predicates.sf"
-#include "/org/smartfrog/examples/counter/components.sf"
+#include "org/smartfrog/services/display/components.sf"
+
 
 PersistentCounter extends Counter {
    /**
@@ -34,3 +36,19 @@ PersistentCounter extends Counter {
    sfClass "org.smartfrog.examples.persistence.PersistentCounterImpl";
 }
 
+
+/**
+ * Persist a component to a directory
+ */
+
+SFPersist extends Prim {
+    sfClass "org.smartfrog.services.persistence.SFPersist";
+    persistSchema extends Schema {
+
+        //this is the axis configuration file for a service
+        directory extends String;
+    }
+
+    directory LAZY PROPERTY java.io.tmpdir;
+
+}
