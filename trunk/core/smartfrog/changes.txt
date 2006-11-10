@@ -1,3 +1,48 @@
+release 3_10_016
+----------------
+2006-Nov-13 Release date
+2006-Nov-09 Mod: Old Persistence component removed from services
+2006-Nov-09 Add: Documentation for Autoloader component 
+2006-Nov-02 Add: New workflow Tester component added for running tests deployments in services. 
+2006-Nov-01 Mod: Some tuning and reworking of the workflow components.  Parallel can be made to terminate on startup if there are no children. Not 100% sure that Sequence exits when a child fails half way through.
+2006-Oct-26 Fix: Documentation modified for SVN references.
+2006-Oct-26 Fix: Javadocs fixed.
+2006-Oct-26 Fix: Changes in Log for management console.
+2006-Oct-26 Fix: Property names sfParserSFFactoryClass, sfParserSFIncludeHandlerClass incorrectly defined
+2006-Oct-26 Fix: Enable DATA nodes to be removed from management console tree view.
+2006-Oct-26 Fix: Management console: attribute modify/add popup not appearing when no attributes exist.
+2006-Oct-26 Fix: Management console: DATA added via add/modify dialog are SFComponentDescription, should be ComponentDescription.
+2006-Oct-24 Fix: Replace instances of Throwable.printstacktrace() and System.out/err with sfLog.
+2006-Oct-24 Add: New method in SFProcess.java to centralize all InetAddress.getLocalHost() calls. SFProcess.sfDeployedHost()
+2006-Oct-20 Mod: Modifications for ASF license compliance
+2006-Oct-20 Mod: build.html for instruction for using SubVersion.
+2006-Oct-18 Fix: Fix for attribute resolution after LAZY attribute found
+2006-Oct-16 Mod: Marking some properties as volatile in PrimImpl so that they get reread more often, and on java1.5+, accesses can be ordered correctly
+2006-Oct-11 Fix: sfManagementConsole scripts not working with security enabled.
+2006-Oct-10 Add: FileScanner methods in filesystem component.
+2006-Oct-09 Mod: System property setters are workflow enabled. The systemProperties class also has changed its behaviour to enable users to revert back to how it was before: you now have a choice of setOnEarlyDeploy and setOnDeploy, which controls how early the properties get set.
+2006-Oct-09 Mod: Java classpath setup components are now workflow
+2006-Oct-09 Mod: Make file components workflow enabled, in the .sf files and in the implementation
+2006-Oct-09 Add: Declare a new WorkflowPrim component. This does nothing except declare the schema types for self-terminating "workflow enabled" components, and to make things that extend it more documented as such
+2006-Oct-09 Mod: Added info on setting up a new .sf filetype in idea in IDE_development.sxw
+2006-Sep-25 Mod: Updated parser target and workflow docs
+2006-Sep-25 Mod: Update component moved from implments in PrimImpl to extends in Prim
+2006-Sep-14 Add: A failure component
+2006-Sep-14 Mod: Major update for LAZY assertions and schemas, plus optional links
+2006-Sep-06 Add: Added example for Logger.testNetwork in default.ini
+2006-Sep-06 Fix: problem when a reference was offset, the result was not un-marshaled
+2006-Sep-04 Mod: Changes to the filesystem stuff
+-copyfile can copy to a target directory
+-mkdir can clean up its target directory on startup
+-a function to get the full path of a file
+-libraryartifact can be copied on deploy
+2006-Sep-o4 Add: Schema added for workflows components delay, timeout, attribute, eventbus.
+2006-Sep-02 Fix: Problem with release 3.10 when using sfLog attribute to fix the name of the component log. The problem was that the transtion from default core log to the component log was done to early in the deployment of the component  (in deploywith).
+2006-Aug-27 Fix: For ClassPath under Cygwin. Unix shell scripts should now work with cygwin shell.
+Note: Java will still try to use DOS paths and SFHOME needs to be preset using the DOS path and not the Cygwin(unix) path. Only relative paths will work with Java under cygwin.
+2006-Aug-25 Add: Added phase sfAsCompleteName, shown on -v and -d. Old -d as funny description mode no longer works.
+2006-Aug-22 Mod: Forrest documentaion modifications.
+
 release 3_10_000
 ----------------
 2006-Aug-03 Release date
