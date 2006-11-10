@@ -86,7 +86,8 @@ public class InfoProcess {
     }
 
     public void stop (){
-      cleanProcess(); // Review this for not killing it! Use an auxiliary process.
+      if (this.process==null) return;
+      if ((!this.process.getStatus().equals("running"))) return;
       //System.out.println("process.Stop:stopping -"+this.getProcessName()+" Cmd:"+this.stopCmd);
       if (this.stopCmd!=null){
          process=new RunProcess(this.stopCmd+" "+this.stopAtt, this.workDir, this.processName, this.envProp);
@@ -96,7 +97,7 @@ public class InfoProcess {
       } else {
          //process=new RunProcess(this.startCmd+" "+this.startAtt, this.workDir, this.processName);
          this.statusInfo="Stopped(no Stop cmd)";
-      }
+      }  
       //System.out.println("process.Stop:stop end -"+this.getProcessName());
     }
 
