@@ -79,7 +79,7 @@ public class MainFrame extends JFrame implements ActionListener {
    /**
     *  Description of the Field
     */
-   public final static String version = "v0.7 r24";
+   public final static String version = "v0.7 r26";
    // This has to  be done properly !!!!!!!!!!!!!!! no static. Because of crap log.
    static PrintStream msg = System.out;
    static JLabel statusBar = new JLabel();
@@ -1541,6 +1541,15 @@ public class MainFrame extends JFrame implements ActionListener {
     */
    void runSFDaemon() {
       String cmd = "";
+
+      String cmdStop = "java" + " "
+                + "-cp \"" + classpath + "\" "
+                + this.sfSystemClass + " "
+                + "-a"+" "
+                +  this.sfDaemonProcessName + ":TERMINATE:::"
+                + "" + this.hostNameTextField.getText()+ ":"+ " "
+                + "-e";
+
       if (isWindows == false) {
          //linux
          cmd = "java" + " "
@@ -1550,14 +1559,6 @@ public class MainFrame extends JFrame implements ActionListener {
                 + cmdSFDaemon + "" + sfDaemonProcessName + " "
                 + this.sfSystemClass
                 + "";
-//         cmd = "java" + " "
-//                + "-cp " + classpath + " "
-//                + sfDaemonDefIniFileProperty + sfDaemonDefIniFile + " "
-//                + sfDaemonDefSFFileProperty + sfDaemonDefSFFile + " "
-//                + cmdSFDaemon + "" + sfDaemonProcessName + " "
-//                + this.sfSystemClass
-//                + "";
-
       } else {
          // windows
          cmd = "java" + " "
@@ -1568,14 +1569,13 @@ public class MainFrame extends JFrame implements ActionListener {
                 + this.sfSystemClass
                 + "";
       }
-      this.runExe("sfDaemon", cmd, ".");
+      this.runExe("sfDaemon", cmd, cmdStop, ".");
    }
 
    /**
     *  Main processing commands method for the MainFrame object
     */
-   void stopSFDaemon() {
-
+   void stopSFDaemonBtn() {
       String cmd = "";
 
           cmd = "java" + " "
@@ -1589,6 +1589,28 @@ public class MainFrame extends JFrame implements ActionListener {
 
 
       this.runExe("sfStopDaemon", cmd, ".");
+   }
+
+   /**
+    *  Main processing commands method for the MainFrame object
+    */
+   void stopSFDaemon() {
+
+      this.processPanel.mngProcess.stopProcess("sfDaemon");
+
+//      String cmd = "";
+//
+//          cmd = "java" + " "
+//                + "-cp \"" + classpath + "\" "
+//                + this.sfSystemClass + " "
+//                + "-a"+" "
+//                +  this.sfDaemonProcessName + ":TERMINATE:::"
+//                + "" + this.hostNameTextField.getText()+ ":"+ " "
+//                + "-e";
+//
+//
+//
+//      this.runExe("sfStopDaemon", cmd, ".");
    }
 
 
@@ -1621,6 +1643,27 @@ public class MainFrame extends JFrame implements ActionListener {
          output.requestFocus();
       } catch (Exception ex) {
          log(ex.getMessage(), "RUNBatchFile(" + batchFile + ")", 5);
+         ex.printStackTrace();
+      }
+   }
+
+  /**
+    *  Main processing commands method for the MainFrame object
+    *
+    *@param  name     Description of Parameter
+    *@param  exeCmd   Description of Parameter
+    *@param  workDir  Description of Parameter
+    */
+   public void runExe(String name, String exeCmd, String stopCmd, String workDir) {
+      try {
+         auxProcess = new InfoProcess(name, exeCmd, " ", stopCmd, " ", workDir, null);
+         auxProcess.start();
+         this.processPanel.mngProcess.addProcess(auxProcess, true);
+         this.processPanel.refresh();
+         log("Process Running: " + "" + name, "RUNExe", 3);
+         output.requestFocus();
+      } catch (Exception ex) {
+         log(ex.getMessage(), "RUNExe(" + name + ")", 5);
          ex.printStackTrace();
       }
    }
@@ -3600,7 +3643,7 @@ public class MainFrame extends JFrame implements ActionListener {
   }
 
   void jButtonSFStopDaemon_actionPerformed(ActionEvent e) {
-      this.stopSFDaemon();
+      this.stopSFDaemonBtn();
   }
 
   void jMenuItemStopSfDaemon_actionPerformed(ActionEvent e) {
