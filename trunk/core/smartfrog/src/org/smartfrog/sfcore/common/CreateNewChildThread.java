@@ -130,12 +130,14 @@ public class CreateNewChildThread extends Thread {
      return ranOrCancelled() && runner == null;
  }
 
+
     /**
      * Cancel the thread
+     * @param synchTermination boolean to terminate component synchronously
      * @param mayInterruptIfRunning boolean to interrupt
      * @return boolean
      */
- public boolean cancel(boolean mayInterruptIfRunning) {
+ public boolean cancel(boolean synchTermination, boolean mayInterruptIfRunning) {
      synchronized (this) {
          if (ranOrCancelled()) return false;
          state = CANCELLED;
@@ -147,11 +149,32 @@ public class CreateNewChildThread extends Thread {
 
          //Terminate child if it was deployed
          if (result!=null) {
-             try {
-                 ((Prim)result).sfTerminate(TerminationRecord.abnormal(
-                     "cancelled", null));
-             } catch (RemoteException ex) {
+             if (synchTermination) {
+                 if (sfLog().isTraceEnabled()) {
+                     try {
+                         sfLog().trace("SYNCTermination: "+ ((Prim)result).sfCompleteName());
+                     } catch (RemoteException e) { sfLog().ignore(e); }
+                 }                 
+                 try {
+                     ((Prim)result).sfTerminate(TerminationRecord.abnormal("cancelled", null));
+                 } catch (RemoteException ex) {
+                     sfLog().ignore("ignoring during cancel (synch termination)", ex);
+                 }
+
+             } else {
+                if (sfLog().isTraceEnabled()) {
+                    try {
+                        sfLog().trace("ASYNCTermination: "+ ((Prim)result).sfCompleteName());
+                    } catch (RemoteException e) { sfLog().ignore(e); }
+                }
+                try {
+                    (new TerminatorThread((Prim)(((Prim)result)),TerminationRecord.abnormal("cancelled", null))).start();
+                } catch (Exception ex) {
+                    // ignore
+                    sfLog().ignore("ignoring during cancel (asynch termination)", ex);
+                }
              }
+
          }
          result=null;
 

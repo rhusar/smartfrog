@@ -29,6 +29,7 @@ import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
 import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.common.CreateNewChildThread;
+import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.compound.Compound;
 import org.smartfrog.sfcore.prim.Prim;
@@ -221,8 +222,14 @@ public class Parallel extends EventCompoundImpl implements Compound {
         if  (asynchChildren!=null){
             for (Enumeration e = asynchChildren.elements(); e.hasMoreElements(); ) {
                 CreateNewChildThread t = (CreateNewChildThread)e.nextElement();
+                boolean  sfSyncTerminate = false;
                 try {
-                    t.cancel(true);
+                    sfSyncTerminate = sfResolve(SmartFrogCoreKeys.SF_SYNC_TERMINATE, sfSyncTerminate, false);
+                } catch (Exception sfrex){
+                    //Ignore
+                }
+                try {
+                    t.cancel(sfSyncTerminate,true);
                 } catch (Exception ignored) {
                 }
             }
