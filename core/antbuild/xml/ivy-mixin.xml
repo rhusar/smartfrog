@@ -1,0 +1,66 @@
+<project name="m2-deploy" default="installed"
+    xmlns:ivy="antlib:fr.jayasoft.ivy.ant">
+
+  <description>
+    These targets extend compile-and-jar with extra states and transitions,
+    to do pom-based builds.
+  </description>
+
+  <import file="compile-and-jar.xml"/>
+
+
+  <target name="ivy-init" >
+    <fail >
+      <condition >
+        <not>
+          <typefound uri="antlib:fr.jayasoft.ivy.ant" name="retrieve"/>
+        </not>
+      </condition>
+      You need the ivy tasks from http://www.jayasoft.org/ivy/download
+      ivy.jar should be installed in ANT_HOME/lib or ${user.home}/.ant/lib
+    </fail>
+    <!--copy ivy artifacts into a subdirectory of ./lib, which should not be SVN managed.-->
+    <property name="ivy.lib.dir" location="lib" />
+    <ivy:configure file="${root.dir}/ivyconf.xml"/>
+  </target>
+
+  <target name="ivy-resolve" depends="ivy-init">
+    <ivy:resolve />
+  </target>
+
+  <target name="ivy-retrieve" depends="ivy-resolve">
+    <ivy:retrieve pattern="${ivy.lib.dir}/[conf]/[artifact]-[revision].[ext]" sync="true" />
+  </target>
+
+  <target name="ivy-report" depends="ivy-resolve">
+    <ivy:report todir="${build.dir}/ivy"/>
+  </target>
+
+  <target name="ready-to-publish" depends="packaged,ivy-init"/>
+
+  <target name="ivy-publish" depends="ready-to-publish">
+    <ivy:publish resolver="local" pubrevision="${project.version}"
+        overwrite="true"
+        artifactspattern="${dist.dir}/[artifact]-[revision].[ext]" />
+  </target>
+
+
+  <!--
+    set the compile classpath up with everything from the lib/compile directory
+  -->
+    <target name="compile-classpath" depends="ivy-retrieve">
+      <path id="compile.classpath">
+        <fileset dir="lib/compile" includes="*.jar" />
+      </path>
+      <property name="compile.classpath.value" refid="compile.classpath" />
+      <echo>compile.classpath=${compile.classpath.value}</echo>
+    </target>
+
+
+  <!--
+    this target does the local install, copy
+  -->
+
+  <target name="installed" depends="ivy-publish"
+      description="Component built and installed locally"/>
+</project>
