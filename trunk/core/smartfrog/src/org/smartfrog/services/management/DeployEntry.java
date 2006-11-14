@@ -138,9 +138,11 @@ public class DeployEntry implements Entry {
      */
     public DeployEntry getRoot() {
         //System.out.println("getRoot():"+this.toString());
-        //return "ROOT";
         // Needs to the the real ROOT of the system
         try {
+            if ((entry instanceof ProcessCompound)&& this.showRootProcessName){
+                return this;
+            }
             if (entry instanceof Prim) {
                return (new DeployEntry(((Prim) entry).sfResolveWithParser(SmartFrogCoreKeys.SF_ROOT),this.showRootProcessName,this.showCDasChild));
             }
