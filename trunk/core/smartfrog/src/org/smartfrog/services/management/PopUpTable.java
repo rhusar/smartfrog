@@ -35,6 +35,8 @@ import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.common.*;
 import org.smartfrog.sfcore.logging.LogSF;
 import org.smartfrog.sfcore.logging.LogFactory;
+import org.smartfrog.sfcore.processcompound.ProcessCompound;
+import org.smartfrog.sfcore.processcompound.SFProcess;
 
 import java.rmi.*;
 import org.smartfrog.services.display.WindowUtilities;
@@ -139,8 +141,7 @@ public class PopUpTable extends JComponent implements ActionListener {
             return;
          }
 
-         remove((((DeployEntry) (tpath.getLastPathComponent())).getEntry()),
-               (String) (tempTable.getValueAt(row, 0)));
+         remove((((DeployEntry) (tpath.getLastPathComponent())).getEntry()), (String) (tempTable.getValueAt(row, 0)));
 
          // Entry pointed in the tree
       } else if (source == menuItemModifyAttribute) {
@@ -201,10 +202,13 @@ public class PopUpTable extends JComponent implements ActionListener {
 
       if (attribute != null) {
          if (attribute[0] == null) {
+            if (sfLog().isTraceEnabled()) sfLog().trace ("No attribute to modify");
+            WindowUtilities.showError(this,"No attribute to modify");
             return;
          }
          if (attribute[1] == null) {
              if (sfLog().isErrorEnabled()) sfLog().error (" Wrong format for: " + attribute[0].toString());
+             WindowUtilities.showError(this," Wrong format for: " + attribute[0].toString());
             return;
          }
 
@@ -312,6 +316,8 @@ public class PopUpTable extends JComponent implements ActionListener {
             if (sfLog().isErrorEnabled()) sfLog().error ("Failed to modify '"+attribName,ex);
             WindowUtilities.showError(this,"Failed to modify '"+attribName+"'. \n"+ex.toString());
          }
+      } else {
+         WindowUtilities.showError(this,"Only Components or ComponentDescriptions can be modified");
       }
    }
    /** Log for this class, created using class name*/

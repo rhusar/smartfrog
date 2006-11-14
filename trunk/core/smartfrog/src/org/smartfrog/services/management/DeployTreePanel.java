@@ -83,7 +83,7 @@ public class DeployTreePanel extends JPanel implements TreeSelectionListener {
      */
     public DeployTreePanel() {
         try {
-            treeInit(null, false,true);
+            treeInit(null,false , false,true);
             jbInit();
         } catch (Exception ex) {
             if (sfLog().isErrorEnabled()) sfLog().error (ex);
@@ -94,13 +94,14 @@ public class DeployTreePanel extends JPanel implements TreeSelectionListener {
      * Constructs the DeployTreePanel object with root.
      *
      * @param  root  Root of the tree.
+     * @param  isCopy is root a copy?
      * @param inRootPanel flag indicating to show in root panel
      * @param showCDasChild flag indicating to show CD as child
      */
-    public DeployTreePanel(Object root, boolean inRootPanel,boolean showCDasChild) {
+    public DeployTreePanel(Object root, boolean isCopy, boolean inRootPanel,boolean showCDasChild) {
         try {
             this.inRootPanel = inRootPanel;
-            treeInit(root, inRootPanel,showCDasChild);
+            treeInit(root, isCopy , inRootPanel,showCDasChild);
             jbInit();
             popupinit();
         } catch (Exception ex) {
@@ -183,13 +184,14 @@ public class DeployTreePanel extends JPanel implements TreeSelectionListener {
     /**
      * Initializes the tree.
      *
-     * @param  root  Root of the tree.
+     * @param  root  Root of the tree
+     * @param isCopy is root a copy?.
      * @param inRootPanel flag indicating to show in root panel
      * @param showCDasChild flag indicating to show CD as child
      */
-    private void treeInit(Object root, boolean inRootPanel, boolean showCDasChild) {
+    private void treeInit(Object root, boolean isCopy, boolean inRootPanel, boolean showCDasChild) {
         if (root != null) {
-            treeModel = new DeployTreeModelSF(root, inRootPanel,showCDasChild);
+            treeModel = new DeployTreeModelSF(root, isCopy, inRootPanel,showCDasChild);
         } else {
             treeModel = new DeployTreeModelSF();
         }
@@ -252,9 +254,10 @@ public class DeployTreePanel extends JPanel implements TreeSelectionListener {
      *  Sets the model attribute of the DeployTreePanel object
      *
      *@param  root  root of the tree
+     * @param isCopy is root a copy?
      */
-    public void setModel(Object root) {
-        treeModel = new DeployTreeModelSF(root, inRootPanel,showCDasChild);
+    public void setModel(Object root, boolean isCopy) {
+        treeModel = new DeployTreeModelSF(root, isCopy, inRootPanel,showCDasChild);
         this.systemViewTree.setModel(treeModel);
     }
 

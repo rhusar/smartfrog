@@ -26,6 +26,7 @@ For more information: www.smartfrog.org
 // DeployManagement component
 DeployManagement  extends Display {
       sfClass "org.smartfrog.services.management.SFDeployDisplay";
+      // root - for the management console, by default finds ROOT.
       nameDisplay "SF Deploy Management Display (Exit: alt+F4 )"; //Window Title
       positionDisplay "NW"; //Default C. (also N, S, SE, ...)
       redirectStd false; //Redirect System.out,.in,.err
