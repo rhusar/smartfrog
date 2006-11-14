@@ -55,6 +55,8 @@ public class DeployEntry implements Entry {
 
     private boolean showRootProcessName = false;
 
+    private boolean isCopy = false;
+
     /**
      * Constructs the DeployEntry object
      *
@@ -62,9 +64,22 @@ public class DeployEntry implements Entry {
      * @param showRootProcessName flag indicating to show rootprocess name
      * @param showCDasChild flag indicating to show CD as child
      */
-    public DeployEntry(Object entry, boolean showRootProcessName, boolean showCDasChild) {
+//    public DeployEntry(Object entry, boolean showRootProcessName, boolean showCDasChild) {
+//        this (entry,false,showRootProcessName, showCDasChild);
+//    }
+
+    /**
+     * Constructs the DeployEntry object
+     *
+     * @param  entry  object entry.
+     * @param  isCopy is entry a copy of the original object (normally when a CD is accessed remotely)
+     * @param showRootProcessName flag indicating to show rootprocess name
+     * @param showCDasChild flag indicating to show CD as child
+     */
+    public DeployEntry(Object entry,boolean isCopy, boolean showRootProcessName, boolean showCDasChild) {
         try {
             this.entry = (Object) entry;
+            this.isCopy = isCopy;
             this.showRootProcessName = showRootProcessName;
             this.showCDasChild=showCDasChild;
             initLog();
@@ -132,6 +147,14 @@ public class DeployEntry implements Entry {
     }
 
     /**
+     *  An entry will be a copy when access to a ComponentDescription remotely because CD does not have a remote interface
+     * @return is copy
+     */
+    public boolean isCopy(){
+        return isCopy;
+    }
+
+    /**
      *  Gets the root attribute of the DeployEntry object
      *
      *@return    The root value
@@ -144,7 +167,7 @@ public class DeployEntry implements Entry {
                 return this;
             }
             if (entry instanceof Prim) {
-               return (new DeployEntry(((Prim) entry).sfResolveWithParser(SmartFrogCoreKeys.SF_ROOT),this.showRootProcessName,this.showCDasChild));
+               return (new DeployEntry(((Prim) entry).sfResolveWithParser(SmartFrogCoreKeys.SF_ROOT),false,this.showRootProcessName,this.showCDasChild));
             }
             //return entry;
         } catch (Exception ex) {
@@ -371,10 +394,9 @@ public class DeployEntry implements Entry {
                 try {
                   name = e.nextElement().toString();
                   obj = context.get(name);
-
                   if ((isChild(obj))) {
                     data[index][0] = name;
-                    data[index][1] = obj2Entry(obj);
+                    data[index][1] = obj2Entry(obj,false);
                     index++;
                   }
                 } catch (Exception ex1) {
@@ -732,19 +754,28 @@ public class DeployEntry implements Entry {
      *  Replacement method introduced: 12-2-02
      *
      *@param  value  inp object
+     *@param  isCopy of the original object?
      *@return        DeployEntry object
      */
-    private DeployEntry obj2Entry(Object value) {
+    private DeployEntry obj2Entry(Object value, boolean isCopy) {
         try {
             boolean newShowRootProcessName = (this.showRootProcessName&&(entry instanceof ProcessCompound));
             if ((value instanceof Prim)||(value instanceof ComponentDescription)) {
-                return (new DeployEntry(value,newShowRootProcessName,this.showCDasChild));
+                return (new DeployEntry(value, isCopy, newShowRootProcessName,this.showCDasChild));
             } else if (value instanceof Reference) {
                 do {
-                    ((Reference) value).setEager(true);
+                   ((Reference) value).setEager(true);
                     value = ((Prim) entry).sfResolve((Reference) value);
+                    //Check if we are getting a copy
+                    if (value instanceof ComponentDescription) {
+                        Object value2 = ((Prim) entry).sfResolve((Reference) value);
+                        if (!value.equals(value2)){
+                            isCopy = true;
+                        }
+                        sfLog().info("JULIO- Checking if we got a copy: " + isCopy);
+                    }     
                 } while (value instanceof Reference);
-                return (new DeployEntry(value,newShowRootProcessName,this.showCDasChild));
+                return (new DeployEntry(value,isCopy, newShowRootProcessName,this.showCDasChild));
             }
         } catch (Exception ex) {
             if (sfLog().isErrorEnabled()) sfLog().error("Error building mgt info: " + ex,ex);

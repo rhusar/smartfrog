@@ -42,8 +42,11 @@ import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.processcompound.SFProcess;
+import org.smartfrog.sfcore.processcompound.ProcessCompound;
 
 import org.smartfrog.sfcore.common.ExitCodes;
+import org.smartfrog.sfcore.componentdescription.ComponentDescription;
+import org.smartfrog.sfcore.reference.Reference;
 
 
 /**
@@ -272,7 +275,7 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
       JPanel deployLocalPPanel = null;
       if (addRootProcessPanel) {
          //Add rootProcessPanel
-         deployPanel = new DeployTreePanel(SFProcess.getRootLocator().getRootProcessCompound(InetAddress.getByName(hostname), port), true,showCDasChild);
+         deployPanel = new DeployTreePanel(SFProcess.getRootLocator().getRootProcessCompound(InetAddress.getByName(hostname), port), false, true,showCDasChild);
          deployPanel.setEnabled(true);
          display.tabPane.add(deployPanel, "rootProcess", indexPanel++);
          //Add Local Process Panel
@@ -281,7 +284,7 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
             try {
                 processName = SFProcess.getProcessCompound().sfCompleteName().toString();
             } catch (Exception ex) { LogFactory.getLog("sfManagementConsole").ignore(ex);}
-            deployLocalPPanel = new DeployTreePanel(SFProcess.getProcessCompound(), true,showCDasChild);
+            deployLocalPPanel = new DeployTreePanel(SFProcess.getProcessCompound(),false, true,showCDasChild);
             deployLocalPPanel.setEnabled(true);
             display.tabPane.add(deployLocalPPanel, processName, indexPanel++);
           }
@@ -304,7 +307,7 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
          //System.out.println("* " + key + ": " + value.toString());
          if (value instanceof Prim) {
             if (((Prim) value).sfParent() == null) {
-               deployPanel = new DeployTreePanel(value, false, showCDasChild);
+               deployPanel = new DeployTreePanel(value,false, false, showCDasChild);
                deployPanel.setEnabled(true);
                display.tabPane.add(deployPanel, key, indexPanel++);
             }
@@ -323,19 +326,50 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
    public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
 //      try {
          super.sfDeploy();
+         boolean isObjCopy = false;
+         Object root = null;
+         boolean isPC = false;
+         String name =  "Deployed System ...";
+         root = sfResolve ("root",false);
+         if (root==null)  {
+           // We add the new Tree component here
+           root = this.sfResolveWithParser(SmartFrogCoreKeys.SF_ROOT);
+         }
+         //else {
+             // Special case for the local process compound. sfResolve will get the remote stub
 
-         // We add the new Tree component here
-         Object root = this.sfResolveWithParser(SmartFrogCoreKeys.SF_ROOT);
+//                if (sfResolveHere("root").toString().equals("LAZY PROCESS")){
+//                    root = SFProcess.getProcessCompound();
+//                }
+//             }
+         //}
+
+         if (root instanceof ComponentDescription) {
+            try {
+                name = ((ComponentDescription)root).sfCompleteName().toString();
+            } catch (Exception ex){ sfLog().ignore(ex);}
+
+            Object value2 = sfResolve("root",false);
+            if (!root.equals(value2)){
+                isObjCopy = true;
+            }
+            sfLog().info("JULIO- Checking if we got a copy: " + isObjCopy);   //TODO to remove when finished
+         } else if (root instanceof Prim) {
+             try {
+                name = ((Prim)root).sfCompleteName().toString();
+            } catch (Exception ex){ sfLog().ignore(ex);}
+            if (root instanceof ProcessCompound){
+                isPC =true;
+            }
+         }
+
 
          //root= new CompoundImpl();
          //System.out.println("Root: "+root.toString());
-         this.panelTree = new DeployTreePanel(root, false,true);
+         this.panelTree = new DeployTreePanel(root,isObjCopy, isPC,true);
          this.panelTree.setEnabled(true);
          addFrogIcon(display);
-         display.tabPane.add(panelTree, "Deploy Deployed System ...", 0);
-
-         this.display.screen.append("\n Version: " +
-               org.smartfrog.Version.versionString() + "\n");
+         display.tabPane.add(panelTree, name, 0);
 
          // Button for Refresh view ...
          refresh.setText("Refresh");
@@ -393,9 +427,23 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
     */
    public void refresh() {
       try {
+         boolean isObjCopy = false;
+         Object root = null;
+         root = sfResolve ("root",false);
+         if (root==null)  {
+           // We add the new Tree component here
+           root = this.sfResolveWithParser(SmartFrogCoreKeys.SF_ROOT);
+         }
+
+         if (root instanceof ComponentDescription) {
+            Object value2 = sfResolve("root",false);
+            if (!root.equals(value2)){
+                isObjCopy = true;
+            }
+            sfLog().info("JULIO- Checking if we got a copy: " + isObjCopy);
+         }
          //System.out.println("Refreshing info");
-         Object root = this.sfResolve(SmartFrogCoreKeys.SF_ROOT,true);
-         ((DeployTreePanel) panelTree).setModel(root);
+         ((DeployTreePanel) panelTree).setModel(root,isObjCopy);
          ((DeployTreePanel) panelTree).refresh();
       } catch (Throwable ex) {
 //         Logger.logQuietly("Failure refresh() SFDeployDisplay!",ex);

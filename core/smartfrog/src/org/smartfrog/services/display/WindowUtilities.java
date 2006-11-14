@@ -42,7 +42,6 @@ import javax.swing.border.SoftBevelBorder;
  *  Window Utilities to handle some common window and frame representation
  *  problems
  *
- *@deprecated    12 December 2001
  */
 public class WindowUtilities {
    /**
