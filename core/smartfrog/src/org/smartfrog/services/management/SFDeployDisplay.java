@@ -263,20 +263,29 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
     *      attribute
     *@throws  Exception        If any error
     */
-   public static void addProcessesPanels(Display display,
-         boolean addRootProcessPanel,boolean showCDasChild, String hostname, int port)
+   public static void addProcessesPanels(Display display, boolean addRootProcessPanel,boolean showCDasChild, String hostname, int port)
           throws Exception {
       int indexPanel = 0;
 
       // Adding pannels
       JPanel deployPanel = null;
-
+      JPanel deployLocalPPanel = null;
       if (addRootProcessPanel) {
-         deployPanel = new DeployTreePanel(SFProcess.getRootLocator()
-               .getRootProcessCompound(InetAddress.getByName(
-               hostname), port), true,showCDasChild);
+         //Add rootProcessPanel
+         deployPanel = new DeployTreePanel(SFProcess.getRootLocator().getRootProcessCompound(InetAddress.getByName(hostname), port), true,showCDasChild);
          deployPanel.setEnabled(true);
-         display.tabPane.add(deployPanel, "rootProcess...", indexPanel++);
+         display.tabPane.add(deployPanel, "rootProcess", indexPanel++);
+         //Add Local Process Panel
+          if (!SFProcess.getProcessCompound().sfIsRoot()) {
+            String processName = "localSubProcess";
+            try {
+                processName = SFProcess.getProcessCompound().sfCompleteName().toString();
+            } catch (Exception ex) { LogFactory.getLog("sfManagementConsole").ignore(ex);}
+            deployLocalPPanel = new DeployTreePanel(SFProcess.getProcessCompound(), true,showCDasChild);
+            deployLocalPPanel.setEnabled(true);
+            display.tabPane.add(deployLocalPPanel, processName, indexPanel++);
+          }
+
       }
 
       Context context = SFProcess.getRootLocator()
