@@ -1,0 +1,66 @@
+<?xml version="1.0" ?>
+<project name="docs" default="init-docs">
+
+  <description>
+    Mixin to create javadocs and other documentation
+  </description>
+  <target name="ready-to-javadoc" depends="compiled" />
+
+  <target name="javadocs" depends="compile"
+      description="make the java docs">
+    <javadoc
+        access="private"
+        destdir="${javadoc.dir}"
+        packagenames="d1.*"
+        sourcepath="src"
+        use="true"
+        version="true"
+        windowtitle="${project.name}"
+        failonerror="true">
+      <classpath refid="compile.classpath"/>
+    </javadoc>
+  </target>
+
+  <target name="javadocs-finished" depends="javadocs" />
+
+
+  <target name="init-docs" depends="initialized" >
+    <property name="doc.src.dir" location="doc" />
+    <available property="doc.src.dir.found" file="${doc.src.dir}"/>
+  </target>
+
+  <target name="ready-to-process-other-docs" depends="init-docs" />
+
+  <!--
+    doc processing only if the directory is found
+  -->
+  <target name="process-other-docs" depends="ready-to-process-other-docs"
+      if="doc.src.dir.found">
+    <tstamp/>
+    <copy todir="${dist.doc.dir}" overwrite="true">
+      <fileset dir="doc" includes="**/*.html"/>
+      <filterset>
+        <filter token="DATE" value="${DSTAMP}"/>
+        <filter token="TIME" value="${TSTAMP}"/>
+      </filterset>
+    </copy>
+
+
+    <copy todir="${dist.doc.dir}" overwrite="true">
+      <fileset dir="doc" includes="**/*.txt"/>
+      <filterset begintoken="[[" endtoken="]]">
+        <filter token="DATE" value="${DSTAMP}"/>
+        <filter token="TIME" value="${TSTAMP}"/>
+        <filter token="TIMESTAMP" value="${timestamp.isoformat}"/>
+      </filterset>
+    </copy>
+
+  </target>
+
+  <target name="other-docs-finished" depends="process-other-docs" />
+
+  <!--state in which all other docs are finished.-->
+  <target name="documents-processed"
+      depends="javadocs-finished,other-docs-finished" />
+
+</project>

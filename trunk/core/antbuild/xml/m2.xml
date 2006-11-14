@@ -34,7 +34,7 @@
       <attribute name="version"/>
       <sequential>
         <property name="@{property}" 
-          location="${m2.repository}/@{groupIDpath}/@{artifactID}/@{component.version}" />
+          location="${m2.repository}/@{groupIDpath}/@{artifactID}/@{version}" />
       </sequential>
     </macrodef>
     
@@ -71,7 +71,7 @@
    </target>
    
    
-   <target name="m2-tasks" depends="m2.init-m2"
+   <target name="m2-tasks" depends="init-m2"
        xmlns:m2="antlib:org.apache.maven.artifact.ant">
      <fail unless="m2.tasks.available">
      you need the maven2 tasks from http://maven.apache.org/maven2/ant-tasks.html
@@ -104,7 +104,7 @@
   <!-- POM creation/copy, depending on whether it exists or not   -->
   <!-- ========================================================== -->
   
-   <target name="m2-copy-pom" depends="m2.init-m2" if="project.haspom">
+   <target name="m2-copy-pom" depends="init-m2" if="project.haspom">
      <copy file="${project.pom}" tofile="${target.pom}" > 
       <!-- we expand ant properties here.  -->
        <filterchain>
@@ -114,7 +114,7 @@
    </target>
 
    <!-- inline creation of a very minimal (zero dependency) pom -->
-   <target name="m2-make-pom" depends="m2.init-m2" unless="project.haspom">
+   <target name="m2-make-pom" depends="init-m2" unless="project.haspom">
    <echo message="Creating Pom ${target.pom}" level="verbose"/>
    <echoxml file="${target.pom}">
       <project>

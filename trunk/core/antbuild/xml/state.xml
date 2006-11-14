@@ -1,0 +1,51 @@
+<project name="state">
+
+  <description>
+
+    This is a modelling of the state of a system.
+
+    These targets do not contain any actions, instead they are things you can
+    depend on an application being in before a next operation.
+
+    This represents an alternate way of viewing a build. Instead of describing
+    targets as actions "compile", "deploy", etc, you can have state targets that
+    represent states an application passes through during a build. The action targets
+    are those transformations applied to an application to get from one state to another.
+
+  </description>
+  <target name="initialized" />
+
+  <target name="ready-to-compile" depends="initialized"/>
+
+  <target name="compiled" depends="ready-to-compile"/>
+
+  <target name="ready-to-package" depends="compiled"/>
+
+  <target name="packaged" depends="ready-to-package"/>
+
+  <target name="ready-to-test" depends="packaged"/>
+
+  <target name="tested" depends="ready-to-test"/>
+
+  <target name="test" depends="tested"/>
+
+  <target name="ready-to-deploy" depends="tested"/>
+
+  <target name="deployed" depends="ready-to-deploy"/>
+
+
+  <!--publishing ::= saving the artifacts to a (shared) repository-->
+  <target name="ready-to-publish" depends="packaged"/>
+
+  <target name="published" depends="ready-to-publish"/>
+
+  <!--publishing ::= saving the artifacts to SFHOME-->
+  <target name="ready-to-install" depends="packaged"/>
+
+  <target name="installed" depends="ready-to-install"/>
+
+  <target name="ready-to-clean" />
+
+  <target name="cleaned" depends="ready-to-clean"/>
+
+</project>
