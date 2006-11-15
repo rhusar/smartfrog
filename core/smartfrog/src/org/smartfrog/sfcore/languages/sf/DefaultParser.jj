@@ -44,8 +44,8 @@ public class DefaultParser {
   static final String sumOp = "org.smartfrog.sfcore.languages.sf.functions.Sum";
   static final String timesOp = "org.smartfrog.sfcore.languages.sf.functions.Product";
 
-  static final String andOp = "org.smartfrog.sfcore.languages.sf.functions.Conjunction";
-  static final String orOp = "org.smartfrog.sfcore.languages.sf.functions.Disjunction";
+  static final String andOp = "org.smartfrog.sfcore.languages.sf.functions.And";
+  static final String orOp = "org.smartfrog.sfcore.languages.sf.functions.Or";
 
   static final String eqOp = "org.smartfrog.sfcore.languages.sf.functions.EQ";
   static final String neOp = "org.smartfrog.sfcore.languages.sf.functions.NE";
