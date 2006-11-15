@@ -53,6 +53,8 @@ DefaultManagementDisplay extends DeployManagement {
     showIP true;                  // Show IP address in window title
     showSfProcess true;           // Show sfProcess name in  window title
     terminateSFProcessOnExit true; // Terminates sfDaemon when window is closed
+    widthDisplay 800;
+    heightDisplay 600;
     root LAZY PROCESS;
 }
 
@@ -68,9 +70,8 @@ DefaultCompound extends Compound {
     display extends DefaultDisplay;
 }
 
-DefaultManagementCompound extends DefaultManagementDisplay { 
-    sfProcessComponentName "sfDefault";
-    display extends DefaultDisplay;
+DefaultManagementCompound extends DefaultCompound { 
+    display extends DefaultManagementDisplay;
 }
 
 DefaultTraceDisplayCompound extends DefaultCompound {
