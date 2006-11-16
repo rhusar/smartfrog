@@ -101,8 +101,9 @@ public class PropertyFile  extends DataType  implements Cloneable {
 
     /**
      * Creates and returns a copy of this object.
+     * Since Ant1.7 this has been required to be public
      */
-    protected Object clone() throws CloneNotSupportedException {
+    public Object clone() throws CloneNotSupportedException {
         return super.clone();
     }
 
