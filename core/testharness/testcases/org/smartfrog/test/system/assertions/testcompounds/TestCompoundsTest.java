@@ -19,13 +19,11 @@
  */
 package org.smartfrog.test.system.assertions.testcompounds;
 
-import org.smartfrog.test.SmartFrogTestBase;
 import org.smartfrog.test.DeployingTestBase;
 import org.smartfrog.services.assertions.TestCompoundImpl;
 import org.smartfrog.services.assertions.TestBlock;
-import org.smartfrog.sfcore.prim.Prim;
-
-import java.rmi.RemoteException;
+import org.smartfrog.sfcore.prim.TerminationRecord;
+import org.smartfrog.sfcore.common.SmartFrogException;
 
 /**
  * Date: 30-Apr-2004
@@ -42,63 +40,58 @@ public class TestCompoundsTest extends DeployingTestBase {
     }
 
     public void testEmptySequence() throws Throwable {
-        application =deployExpectingSuccess(TestCompoundsTest.FILES + "testEmptySequence.sf", "testEmptySequence");
+        application = deployExpectingSuccess(TestCompoundsTest.FILES + "testEmptySequence.sf", "testEmptySequence");
         expectSuccessfulTermination((TestBlock) application);
     }
 
-    public void NOtestFailure() throws Throwable {
-        application =deployExpectingSuccess(TestCompoundsTest.FILES + "testFailure.sf", "testFailure");
+    public void testFailure() throws Throwable {
+        TerminationRecord record = deployToAbnormalTermination("testFailure");
+        assertRecordContains(record, "failure message",null,null);
     }
 
-
-    public void NOtestUnexpectedFailure() throws Throwable {
-        deployExpectingException(TestCompoundsTest.FILES + "testUnexpectedFailure.sf",
-                "testUnexpectedFailure", null, TestCompoundImpl.TEST_FAILED_WRONG_STATUS);
+    private TerminationRecord deployToAbnormalTermination(String test) throws Throwable {
+        application = deployExpectingSuccess(TestCompoundsTest.FILES + test +".sf", test);
+        TerminationRecord record = expectAbnormalTermination((TestBlock) application);
+        return record;
     }
 
-    public void NOtestFailureWrongMessage() throws Throwable {
-        deployExpectingException(TestCompoundsTest.FILES + "testFailureWrongMessage.sf",
-                "testFailureWrongMessage",null, TestCompoundImpl.TEST_FAILED_WRONG_STATUS);
+    protected void assertRecordContains(TerminationRecord record,
+                                        String descriptionText,
+                                        String throwableClass,
+                                        String throwableText) {
+        if(descriptionText!=null) {
+            assertContains(record.description,descriptionText);
+        }
+        if(throwableClass !=null || throwableText !=null) {
+            if(record.cause!=null) {
+                assertFaultCauseAndTextContains(record.cause,
+                        throwableClass, throwableText, null);
+            } else {
+                fail("Expected Termination record "+record+" to contain "
+                +" a throwable "+(throwableClass!=null?throwableClass:"")
+                + (throwableText!=null?(" with text"+throwableText):""));
+            }
+
+        }
     }
 
-
-    public void NOtestFailureWrongMessage2() throws Throwable {
-        application = deployExpectingSuccess(TestCompoundsTest.FILES + "testFailureWrongMessage.sf",
-                "testFailureWrongMessage");
-/*        app.sfPing(null);
-        app.sfPing(null);
-        app.sfPing(null);
-        app.sfPing(null);
-        app.sfPing(null);
-        app.sfPing(null);*/
-        //terminateApplication(app);
-        application =null;
-
+    public void testUnexpectedFailure() throws Throwable {
+        TerminationRecord record = deployToAbnormalTermination("testUnexpectedFailure");
     }
 
-    /**
-     * spin, pinging the application until it terminates successfully or not.
-     * @param ping ping every second?
-     * @param secondsToSpin number of seconds to spin
-     * @param expectNormal is a normal exit expected?
-     * @param errorText any error text to look for
-     * @param exceptionName
-     * @param exceptionText
-     */
-    public void spinUntilTerminated(Prim app,boolean ping, int secondsToSpin,
-                                    boolean expectNormal,String errorText,String exceptionName,String exceptionText)
-            throws RemoteException {
-        
-        terminateApplication(app);
+    public void testFailureWrongMessage() throws Throwable {
+        TerminationRecord record = deployToAbnormalTermination("testFailureWrongMessage");
+        assertRecordContains(record, TestCompoundImpl.TEST_FAILED_WRONG_STATUS, null, null);
     }
 
-    public void NOtestFailureWrongMessageNested() throws Throwable {
+    public void testFailureWrongMessageNested() throws Throwable {
         application =deployExpectingSuccess(TestCompoundsTest.FILES + "testFailureWrongMessageNested.sf",
                 "testFailureWrongMessageNested");
     }
 
-    public void NOtestSmartFrogException() throws Throwable {
-        application =deployExpectingSuccess(TestCompoundsTest.FILES + "testSmartFrogException.sf", "testSmartFrogException");
+    public void testSmartFrogException() throws Throwable {
+        deployExpectingException(TestCompoundsTest.FILES + "testSmartFrogException.sf",
+                "testSmartFrogException", SmartFrogException.class.toString(), "SFE");
     }
 
 }

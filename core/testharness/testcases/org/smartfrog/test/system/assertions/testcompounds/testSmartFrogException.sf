@@ -34,7 +34,7 @@ ITS MEDIA, AND YOU HEREBY WAIVE ANY CLAIM IN THIS REGARD.
 
 sfConfig extends ExpectDeployFailure {
     action extends SmartFrogException {
-        message "failure message";
+        message "SFE";
     }
 
 }
