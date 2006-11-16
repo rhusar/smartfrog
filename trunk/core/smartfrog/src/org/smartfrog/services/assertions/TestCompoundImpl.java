@@ -216,7 +216,7 @@ public class TestCompoundImpl extends EventCompoundImpl
      * @return true if the termination event is to be forwarded up the chain.
      */
     protected boolean onChildTerminated(TerminationRecord status, Prim comp) {
-        boolean forward=true;
+        boolean terminate =true;
         boolean tearDownTime=false;
         TerminationRecord error=null;
         if (actionPrim == comp) {
@@ -254,6 +254,8 @@ public class TestCompoundImpl extends EventCompoundImpl
                             + "but got " + status;
                     sfLog().error(errorText);
                     error = TerminationRecord.abnormal(errorText, status.id);
+                    //propagate any exception
+                    error.cause=status.cause;
                 }
             }
             tearDownTime=true;
@@ -273,7 +275,7 @@ public class TestCompoundImpl extends EventCompoundImpl
         if(tearDownTime && teardownCD!=null) {
             try {
                 sfCreateNewChild(name + "_teardownRunning", teardownCD, null);
-                forward = false;
+                terminate = false;
             } catch (Exception e) {
                 error = TerminationRecord.abnormal("failed to start teardown",
                         name,e);
@@ -299,14 +301,14 @@ public class TestCompoundImpl extends EventCompoundImpl
             this.failed=true;
             sfTerminate(error);
             //dont forward, as we are terminating with an error
-            forward = false;
+            terminate = false;
         } else {
             this.status = status;
             this.finished=true;
             this.succeeded=true;
         }
         //trigger termination.
-        return forward;
+        return terminate;
     }
 
 

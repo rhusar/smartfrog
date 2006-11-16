@@ -343,8 +343,9 @@ public abstract class SmartFrogTestBase extends TestCase {
 
     /**
      * assert that a throwable's classname is of a given type/substring
-     * @param thrown
-     * @param name
+     * @param thrown what was thrown
+     * @param name the name of the class
+     * @param cfgDescMsg description (can be null)
      */
     public void assertThrowableNamed(Throwable thrown,String name, String cfgDescMsg) {
         assertContains(thrown.getClass().getName(),name, cfgDescMsg, extractDiagnosticsInfo(thrown));
@@ -352,7 +353,7 @@ public abstract class SmartFrogTestBase extends TestCase {
 
     /**
      * extract as much info as we can from a throwable.
-     * @param thrown
+     * @param thrown what was thrown
      * @return a string describing the throwable; includes a stack trace
      */
     protected String extractDiagnosticsInfo(Throwable thrown) {

@@ -25,6 +25,7 @@ import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.services.assertions.TestBlock;
 
 import java.rmi.RemoteException;
+import java.rmi.NoSuchObjectException;
 
 /**
  * Add an application that is always destroyed on teardown
@@ -58,22 +59,26 @@ public abstract class DeployingTestBase extends SmartFrogTestBase {
     /**
      * Delay until a test has finished, sleeping (and yielding the CPU) until
      * that point is reached. There is no timeout.
-     * @param testBlock
+     * @param testBlock component to spin on
      * @return the termination record of the component
      * @throws Throwable
      */
-    protected TerminationRecord spinUntilFinished(TestBlock testBlock,long timeout) throws Throwable {
+    protected TerminationRecord spinUntilFinished(TestBlock testBlock, long timeout) throws Throwable {
         try {
-            long endtime = System.currentTimeMillis() +timeout;
-            while (!testBlock.isFinished() && System.currentTimeMillis()<endtime) {
+            long endtime = System.currentTimeMillis() + timeout;
+            while (!testBlock.isFinished() && System.currentTimeMillis() < endtime) {
                 Thread.sleep(SPIN_INTERVAL);
             }
-            assertTrue("timeout waiting for application to finish",testBlock.isFinished());
+            assertTrue("timeout waiting for application to finish", testBlock.isFinished());
             TerminationRecord status = testBlock.getStatus();
             return status;
+        } catch (NoSuchObjectException e) {
+            //some kind of remoting problem may happen during termination.
+            logThrowable("Object has been deleted", e);
+            throw e;
         } catch (RemoteException e) {
             //some kind of remoting problem may happen during termination.
-            logThrowable("RMI excaptions during spin-waits may be network race conditions",e);
+            logThrowable("RMI exceptions during spin-waits may be network race conditions", e);
             throw e;
         }
 
@@ -82,7 +87,7 @@ public abstract class DeployingTestBase extends SmartFrogTestBase {
     /**
      * Delay until a test has finished, sleeping (and yielding the CPU) until
      * that point is reached. There is no timeout.
-     * @param testBlock
+     * @param testBlock component to spin on 
      * @return the termination record of the component
      * @throws Throwable
      */

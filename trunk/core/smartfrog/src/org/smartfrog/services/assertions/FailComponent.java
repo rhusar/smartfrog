@@ -79,13 +79,18 @@ public class FailComponent extends PrimImpl implements Fail,Runnable {
                 return;
             }
         }
+        TerminationRecord record = createTerminationRecord();
+        TerminatorThread terminator = new TerminatorThread(this, record);
+        terminator.setShouldDetach(detach);
+        terminator.setNotifyParent(notifyParent);
+        terminator.start();
+    }
+
+    private TerminationRecord createTerminationRecord() {
         TerminationRecord record;
-        Reference name = this.sfCompleteNameSafe();
+        Reference name = sfCompleteNameSafe();
         record=new TerminationRecord(normal?TerminationRecord.NORMAL:TerminationRecord.ABNORMAL,
                 message,name);
-        TerminatorThread terminator = new TerminatorThread(this, record);
-        if (detach) terminator.detach();
-        if (!notifyParent) terminator.quietly();
-        terminator.run();
+        return record;
     }
 }

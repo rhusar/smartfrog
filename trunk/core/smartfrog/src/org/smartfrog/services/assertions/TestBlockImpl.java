@@ -146,7 +146,9 @@ public class TestBlockImpl extends EventCompoundImpl implements TestBlock {
     /**
      * log the end of the event. This may trigger workflow termination.
      * does nothing if finished==true.
-     * @param record
+     * @param record termination record
+     * @throws SmartFrogRuntimeException smartfrog problems
+     * @throws RemoteException RMI problems
      */
     private synchronized void end(TerminationRecord record)
             throws SmartFrogRuntimeException, RemoteException {
