@@ -20,14 +20,19 @@
   <include url="${ivy.default.conf.dir}/ivyconf-local.xml"/>
   <conf defaultResolver="default"/>
   <resolvers>
+<!-- BUGBUG: not a real m2 repo structure
     <filesystem name="team">
       ivys="true" artifacts="true"
       m2compatible="true" >
-      <artifact pattern="${ivy.conf.dir}/repository/${maven2.pattern.ext}"/>
-      <ivy pattern="${ivy.conf.dir}/repository/${maven2.pattern}.xml"/>
+      <artifact pattern="${root.dir}/antbuild/repository/${maven2.pattern.ext}"/>
+      <ivy pattern="${root.dir}/antbuild/repository/${maven2.pattern}.xml"/>
+    </filesystem>-->
+    <filesystem name="team">
+      ivys="true" artifacts="true"
+      m2compatible="true" >
+      <artifact pattern="${root.dir}/antbuild/repository/${maven2.pattern.ext}"/>
+      <ivy pattern="${root.dir}/antbuild/repository/${maven2.pattern}.xml"/>
     </filesystem>
-    <ivyrep name="ivyrep"/>
-    <ivyrep name="sandbox" ivyroot="http://opensvn.csie.org/ivyrepsandbox/"/>
     <ibiblio name="maven2"
         root="${ibiblio-maven2-root}"
         pattern="${maven2.pattern.ext}"
@@ -36,8 +41,6 @@
     <chain name="default" dual="true">
       <resolver ref="local"/>
       <resolver ref="team"/>
-<!--      <resolver ref="ivyrep"/>
-      <resolver ref="sandbox"/>-->
       <resolver ref="maven2"/>
     </chain>
     <chain name="internal">
@@ -46,6 +49,6 @@
     </chain>
   </resolvers>
   <modules>
-    <module organisation="org.antbook" name=".*" resolver="internal"/>
+    <module organisation="org.smartfrog" name=".*" resolver="internal"/>
   </modules>
 </ivyconf>

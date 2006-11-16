@@ -4,21 +4,39 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:noNamespaceSchemaLocation="../antbuild/ivy/ivy.xsd"
     >
-  <info organisation="org.smartfrog" module="smartfrog"/>
-  <!-- define our configurations, based on the maven set -->
+  <info organisation="org.smartfrog" module="smartfrog">
+    <license name="LGPL"/>
+    <ivyauthor name="Hewlett-Packard" url="http://www.smartfrog.org"/>
+    <description>Smartfrog core, services and examples</description>
+  </info>
+  <!-- define our configurations -->
   <configurations defaultconfmapping="default">
-    <conf name="compile" visibility="private"/>
-    <conf name="test" extends="compile" visibility="private"/>
-    <conf name="master" description="contains the artifact but no dependencies"/>
-    <conf name="runtime" description="runtime but not the artifact"/>
     <conf name="default" extends="master,runtime"/>
+    <conf name="compile" visibility="private"
+        description="artifacts needed to compile the application"/>
+    <conf name="unittest" extends="compile"
+        description="the classpath needed to run unittests"/>
+    <conf name="systemtest" extends="compile"
+        description="the classpath needed to run systemtests"/>
+    <conf name="test" extends="unittest,systemtest"
+        description="the classpath needed to run tests"/>
+    <conf name="core" description="the core smartfrog JAR only"/>
+    <conf name="services" description="the core and sfServices JAR" extends="core"/>
+    <conf name="examples" description="the core, sfSercies and sfExamples JARs"
+        extends="services"/>
+
+    <conf name="master" description="contains the artifact but no dependencies"
+       extends="services"/>
+    <conf name="runtime" description="runtime but not the artifact"/>
+
+    <!--non standard configurations-->
     <conf name="javacc" visibility="private"/>
   </configurations>
   <publications>
     <!--get the artifact from our module name-->
-    <artifact name="${smartfrog.title}"/>
-    <artifact name="${sf-examples.title}" />
-    <artifact name="${sf-services.title}"/>
+    <artifact name="${smartfrog.title}" conf="core"/>
+    <artifact name="${sf-services.title}" conf="services"/>
+    <artifact name="${sf-examples.title}" conf="examples"/>
   </publications>
   <dependencies>
 
