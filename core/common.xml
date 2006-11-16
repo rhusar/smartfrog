@@ -605,6 +605,8 @@
       depends="init-common-simpledefinitions">
     <delete dir="${build.dir}" />
     <delete dir="${dist.dir}"  />
+    <delete dir="releases"  />
+    <delete file="version.properties"/>
   </target>
 
   <!-- ========================================================== -->
@@ -1072,6 +1074,12 @@
   </target>
 
 
+  <!-- =================================================================== -->
+  <!-- a clean distribution                                               -->
+  <!-- =================================================================== -->
+  <target name="fromclean" depends="clean,dist"
+      description="create a clean distribution"/>
+
   <!-- ========================================================== -->
   <!-- this is an override point -->
   <!-- copy all dependencies -->
@@ -1267,12 +1275,7 @@
   <!-- ========================================================== -->
   <!-- init all the maven2 support   -->
   <!-- ========================================================== -->
-   <target name="m2-init" depends="init,init-proxy,declare-extended-smartfrog-tasks">
-   <!-- per project, SVN managed override -->
-    <property file="libraries.properties" />
-    <!-- central SVN managed libraries list -->
-    <property file="${smartfrog.components.dir}/libraries.properties" />
-
+   <target name="m2-init" depends="init,init-proxy,declare-extended-smartfrog-tasks,load-versions">
     <!-- Maven2 stuff
       All components build into the org.smartfrog group, unless otherwise stated, but
       are their own artifacts.
@@ -1364,7 +1367,7 @@
    </target>
 
    <!-- look for local then remote definitions of library versions -->
-  <target name="m2-load-versions" depends="init">
+  <target name="load-versions" depends="init">
     <property file="libraries.properties"/>
     <property file="${smartfrog.components.dir}/libraries.properties"/>
   </target>
@@ -1413,7 +1416,46 @@
 
   </target>
 
-  <target name="installed" depends="m2-install"
+
+  <target name="ivy-init" depends="init-common-simpledefinitions,load-versions"
+      xmlns:ivy="antlib:fr.jayasoft.ivy.ant">
+    <property name="ivy.lib.dir" location="${build.dir}/lib" />
+    <ivy:configure file="${core.dir}/antbuild/ivy/ivyconf.xml"/>
+  </target>
+
+  <target name="ivy-resolve" depends="ivy-init"
+      xmlns:ivy="antlib:fr.jayasoft.ivy.ant">
+    <ivy:resolve />
+  </target>
+
+  <target name="ivy-retrieve" depends="ivy-resolve"
+      xmlns:ivy="antlib:fr.jayasoft.ivy.ant">
+    <ivy:retrieve pattern="${ivy.lib.dir}/[conf]/[artifact]-[revision].[ext]" sync="true" />
+  </target>
+
+  <target name="ivy-report" depends="ivy-resolve"
+      xmlns:ivy="antlib:fr.jayasoft.ivy.ant">
+    <ivy:report todir="${build.dir}/ivy/reports"/>
+    <echo> published Ivy report to
+      ${build.dir}/ivy/reports
+    </echo>
+  </target>
+
+  <!--jars,-->
+  <target name="ready-to-publish" depends="checksum-target-jar,ivy-report"/>
+
+  <target name="ivy-publish" depends="ready-to-publish"
+      xmlns:ivy="antlib:fr.jayasoft.ivy.ant">
+    <ivy:publish resolver="local" pubrevision="${Version}"
+        overwrite="true"
+        artifactspattern="${dist.lib.dir}/[artifact]-[revision].[ext]" />
+  </target>
+
+  <target name="published" depends="ivy-publish,m2-install"
+      description="Publish artifacts to the local repositories"
+      />
+
+  <target name="installed" depends="published"
     description="Place the system in a state in which the components are installed for reuse" />
   
   

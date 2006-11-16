@@ -1,12 +1,15 @@
-<?xml version="1.0" encoding="ISO-8859-1"?>
+<?xml version="1.0" ?>
 <?xml-stylesheet type="text/xsl" href="http://ivyrep.jayasoft.org/ivy-doc.xsl"?>
 <ivy-module version="1.0">
-  <info organisation="org.smartfrog" module="sf-jetty">
+  <info organisation="org.smartfrog" module="sf-cdl">
     <license name="LGPL"/>
     <ivyauthor name="Hewlett-Packard" url="http://www.smartfrog.org"/>
-    <description>SmartFrog jetty component</description>
+    <description>
+      CDL Language Support
+      Created 16-Nov-2006 by slo
+    </description>
   </info>
-<!-- FIXME: Ivy 1.4.1 buildlist bug
+  <!-- FIXME: Ivy 1.4.1 buildlist bug
   <configurations defaultconfmapping="default">
     <include file="../../antbuild/ivy/configurations.xml"/>
   </configurations>
@@ -27,6 +30,7 @@
     <conf name="runtime" description="runtime but not the artifact"
         extends="redist"/>
   </configurations>
+
   <publications>
     <!--get the artifact from our module name-->
     <artifact conf="master"/>
@@ -36,24 +40,30 @@
         name="smartfrog"
         changing="true"
         rev="latest.integration"
-        conf="services->daemon"/>
-    <dependency org="org.smartfrog"
-        name="sf-www"
-        changing="true"
-        rev="latest.integration"
-        conf="compile->default;runtime->default;systemtest->default"/>
+        conf="compile->services;runtime->services;daemon->services"/>
     <dependency org="org.smartfrog"
         name="sf-tasks"
         changing="true"
         rev="latest.integration"
         conf="build->default"/>
-    <dependency org="javax.servlet"
-        name="servlet-api"
-        rev="${servletapi.version}"
-        conf="compile->master"/>
-    <dependency org="org.mortbay.jetty"
-        name="jetty"
-        rev="${jetty.version}"
+    <dependency org="org.smartfrog"
+        name="sf-testharness"
+        changing="true"
+        rev="latest.integration"
+        conf="test->default"/>
+    <dependency org="org.smartfrog"
+        name="sf-xml"
+        changing="true"
+        rev="latest.integration"
+        conf="compile->default;runtime->default;redist->redist"/>
+    <dependency org="org.ggf"
+        name="cddlm"
+        changing="true"
+        rev="latest.integration"
         conf="compile->default;redist->default"/>
+    <dependency org="commons-logging"
+        name="commons-logging-api"
+        rev="latest.integration"
+        conf="${commons-logging.version}"/>
   </dependencies>
 </ivy-module>

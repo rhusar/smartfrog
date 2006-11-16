@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <?xml-stylesheet type="text/xsl" href="http://ivyrep.jayasoft.org/ivy-doc.xsl"?>
 <ivy-module version="1.0">
-  <info organisation="org.smartfrog" module="sf-jetty">
+  <info organisation="org.smartfrog" module="sf-junit">
     <license name="LGPL"/>
     <ivyauthor name="Hewlett-Packard" url="http://www.smartfrog.org"/>
-    <description>SmartFrog jetty component</description>
+    <description>Functional testing</description>
   </info>
 <!-- FIXME: Ivy 1.4.1 buildlist bug
   <configurations defaultconfmapping="default">
@@ -12,11 +12,10 @@
   </configurations>
   -->
   <configurations defaultconfmapping="default">
-    <conf name="default" extends="master,runtime"
-        description="default configuration contains artifacts and runtime dependencies"/>
+    <conf name="default" extends="master,runtime"/>
     <conf name="build" visibility="private"
         description="artifacts needed to build the application"/>
-    <conf name="compile" visibility="private"
+    <conf name="compile" visibility="private" 
         description="artifacts needed to compile the application"/>
     <conf name="daemon" visibility="private"
         description="the classpath needed to run smartfrog daemons"/>
@@ -33,27 +32,31 @@
   </publications>
   <dependencies>
     <dependency org="org.smartfrog"
-        name="smartfrog"
-        changing="true"
-        rev="latest.integration"
-        conf="services->daemon"/>
+      name="smartfrog"
+      changing="true"
+      rev="latest.integration"
+      conf="compile->services;runtime->services;daemon->services"/>
     <dependency org="org.smartfrog"
-        name="sf-www"
-        changing="true"
-        rev="latest.integration"
-        conf="compile->default;runtime->default;systemtest->default"/>
-    <dependency org="org.smartfrog"
-        name="sf-tasks"
-        changing="true"
+        name="sf-tasks" changing="true"
         rev="latest.integration"
         conf="build->default"/>
-    <dependency org="javax.servlet"
-        name="servlet-api"
-        rev="${servletapi.version}"
-        conf="compile->master"/>
-    <dependency org="org.mortbay.jetty"
-        name="jetty"
-        rev="${jetty.version}"
-        conf="compile->default;redist->default"/>
+    <dependency org="org.smartfrog"
+        name="sf-xml" changing="true"
+        rev="latest.integration"
+        conf="compile->master;runtime->default"/>
+    <dependency org="org.smartfrog"
+        name="sf-testharness" changing="true"
+        rev="latest.integration"
+        conf="test->default"/>
+    <dependency org="junit"
+        name="junit"
+        rev="${junit.version}"
+        conf="compile->master;redist->default"/>
+<!--
+    <dependency org="testng"
+        name="testng"
+        rev="${testng.version}"
+        conf="compile->master;runtime->default"/>
+-->
   </dependencies>
 </ivy-module>

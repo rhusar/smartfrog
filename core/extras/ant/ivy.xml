@@ -1,10 +1,10 @@
 <?xml version="1.0" ?>
 <?xml-stylesheet type="text/xsl" href="http://ivyrep.jayasoft.org/ivy-doc.xsl"?>
 <ivy-module version="1.0">
-  <info organisation="org.smartfrog" module="sf-m32">
+  <info organisation="org.smartfrog" module="sf-tasks">
     <license name="LGPL"/>
     <ivyauthor name="Hewlett-Packard" url="http://www.smartfrog.org"/>
-    <description>Alpine SOAP stack, M32 prototype</description>
+    <description>Ant tasks for smartfrog</description>
   </info>
 <!-- FIXME: Ivy 1.4.1 buildlist bug
   <configurations defaultconfmapping="default">
@@ -35,9 +35,14 @@
       rev="latest.integration"
       conf="compile->core;runtime->core;systemtest->services"/>
     <!--still a bit unstable-->
+    <dependency org="ant"
+        name="ant-testutil"
+        changing="true"
+        rev="${ant-testutil.version}"
+        conf="test->default"/>
     <dependency org="junit"
         name="junit"
         rev="${junit.version}"
-        conf="unittest->default"/>
+        conf="test->default"/>
   </dependencies>
 </ivy-module>
