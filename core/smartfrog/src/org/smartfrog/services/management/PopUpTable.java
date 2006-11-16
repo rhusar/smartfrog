@@ -140,7 +140,7 @@ public class PopUpTable extends JComponent implements ActionListener {
             WindowUtilities.showError(this,"No selected Cell");
             return;
          }
-         if (isNodeACopy()){
+         if (isParentNodeACopy()){
                 WindowUtilities.showError(this,"The node selected is a copy and no 'remove' action can be applied\n Use a console running in the local process of this node");
                 return;
          }
@@ -148,7 +148,7 @@ public class PopUpTable extends JComponent implements ActionListener {
 
          // Entry pointed in the tree
       } else if (source == menuItemModifyAttribute) {
-          if (isNodeACopy()){
+          if (isParentNodeACopy()){
                  WindowUtilities.showError(this,"The node selected is a copy and no 'modify' action can be applied\n Use a console running in the local process of this node");
                  return;
           }
