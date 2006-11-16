@@ -59,7 +59,7 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
    private JTree tree = null;
    private JScrollPane scrollPaneTree = null;
 
-
+   final JCheckBoxMenuItem jCheckBoxMenuItemShowCDasChild = new JCheckBoxMenuItem();
    /**
     * Constructs SFDeployDisplay object
     *
@@ -375,7 +375,7 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
          refresh.addActionListener(this);
          display.mainToolBar.add(this.refresh);
          JMenu jMenuMng = new JMenu();
-         final JCheckBoxMenuItem jCheckBoxMenuItemShowCDasChild = new JCheckBoxMenuItem();
+
          jMenuMng.setText("Mng. Console");
          display.jMenuBarDisplay.add(jMenuMng);
          jCheckBoxMenuItemShowCDasChild.setSelected(true);
@@ -453,6 +453,7 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
          }
          //System.out.println("Refreshing info");
          ((DeployTreePanel) panelTree).setModel(root,isObjCopy);
+         ((DeployTreePanel) panelTree).showCDasChild(jCheckBoxMenuItemShowCDasChild.isSelected());
          ((DeployTreePanel) panelTree).refresh();
       } catch (Throwable ex) {
 //         Logger.logQuietly("Failure refresh() SFDeployDisplay!",ex);

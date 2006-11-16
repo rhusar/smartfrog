@@ -87,6 +87,10 @@ public class DeployTreeModelSF implements TreeModel {
         }
     }
 
+    public void showCDasChild(boolean showCDasChild){
+       entry.showCDasChild = showCDasChild;
+    }
+
     /**
      *  Gets the root attribute of the DeployTreeModelSF object
      *

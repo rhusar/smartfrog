@@ -203,6 +203,10 @@ public class DeployTreePanel extends JPanel implements TreeSelectionListener {
         //systemViewJTree.setPreferredSize(new Dimension(200, 100));
     }
 
+    public void showCDasChild(boolean showCDasChild){
+       treeModel.showCDasChild(showCDasChild);
+    }
+
     /**
      * Adds message to the tree model.
      *
