@@ -149,6 +149,11 @@ public class Display extends JFrame implements ActionListener, KeyListener {
      */
     JCheckBoxMenuItem jCheckBoxMenuItemPause = new JCheckBoxMenuItem();
     /**
+     * Check box AskSaveChages
+     */
+    JCheckBoxMenuItem jCheckBoxMenuItemAskSaveChanges = new JCheckBoxMenuItem();
+
+    /**
      * Menu item - clean all.
      */
     JMenuItem jMenuItemCleanAll = new JMenuItem();
@@ -236,7 +241,6 @@ public class Display extends JFrame implements ActionListener, KeyListener {
     private boolean systemExit = true;
     Display mngConsole = null;
     private JMenuItem jMenuItemMngConsole = new JMenuItem();
-
 
     /**
      * Constructs Display object with title.
@@ -364,8 +368,6 @@ public class Display extends JFrame implements ActionListener, KeyListener {
             Timer t = new Timer(1 * 1000,
                     new ActionListener() {
                         SimpleDateFormat fmt = new SimpleDateFormat("HH:mm:ss");
-
-
                         public void actionPerformed(ActionEvent evt) {
                             String message = "timer..." + fmt.format(new Date());
                             if (logStatic.isInfoEnabled()) logStatic.info("Stdout:" + message);
@@ -604,6 +606,9 @@ public class Display extends JFrame implements ActionListener, KeyListener {
      * @return boolean true or false
      */
     boolean okToAbandon() {
+        if ((!jCheckBoxMenuItemAskSaveChanges.isSelected())) {
+            return true;
+        }
         if (!dirty) {
             return true;
         }
@@ -1359,10 +1364,15 @@ public class Display extends JFrame implements ActionListener, KeyListener {
         jCheckBoxMenuItemPause.setToolTipText("Pause AutoScroll (Alt+P)");
         jCheckBoxMenuItemPause.setText("AutoScroll");
         jCheckBoxMenuItemPause.setSelected(true);
-
         // AutoScroll by default
         jCheckBoxMenuItemPause.setAccelerator(javax.swing.KeyStroke.getKeyStroke(
                 80, java.awt.event.KeyEvent.ALT_MASK, false));
+
+        jCheckBoxMenuItemAskSaveChanges.setToolTipText("Ask to Save Changes?");
+        jCheckBoxMenuItemAskSaveChanges.setText("Ask Save Changes?");
+        jCheckBoxMenuItemAskSaveChanges.setSelected(true);
+
+
         jMenuItemMngConsole.setText("SF Management Console");
         jMenuItemMngConsole.addActionListener(
                 new java.awt.event.ActionListener() {
@@ -1373,6 +1383,7 @@ public class Display extends JFrame implements ActionListener, KeyListener {
         jMenuBarDisplay.add(jMenuFile);
         jMenuBarDisplay.add(jMenuHelp);
         jMenuFile.add(jCheckBoxMenuItemPause);
+        jMenuFile.add(jCheckBoxMenuItemAskSaveChanges);
         jMenuFile.addSeparator();
         jMenuFile.add(jMenuItemCleanAll);
         jMenuFile.add(jMenuItemSaveAs);
@@ -1401,6 +1412,9 @@ public class Display extends JFrame implements ActionListener, KeyListener {
         mainToolBar.add(stopResume, null);
     }
 
+    public void setAskSaveChanges(boolean askSaveChanges){
+       jCheckBoxMenuItemAskSaveChanges.setSelected(askSaveChanges);   
+    }
 
     public static Image createImage(String imagesPath) {
         try {

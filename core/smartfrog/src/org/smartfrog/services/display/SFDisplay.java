@@ -79,6 +79,8 @@ public class SFDisplay extends PrimImpl implements Prim, PrintMsgInt, PrintErrMs
    private static final String EXTERNAL_PRINTER = "externalPrinter";
    /** String name for attribute screenEditable. */
    private static final String SCREEN_EDITABLE = "screenEditable";
+    /** String name for attribute askSaveChanges. */
+    private static final String ASK_SAVE_CHANGES = "askSaveChanges";
 
    /**
     * Definition of components attribute - display.
@@ -108,10 +110,12 @@ public class SFDisplay extends PrimImpl implements Prim, PrintMsgInt, PrintErrMs
    private boolean redirectStd = false;
    /** Definition of component attribute - formatMsg. */
    private boolean formatMsg = false;
-   /** Definition of component attribute - screenEditable. */
+   /** Definition of component attribute - screenEditable. @value*/
    private boolean screenEditable = true;
-   /** Definition of component attribute - terminateSFProcessOnExit. */
+   /** Definition of component attribute - terminateSFProcessOnExit. @value*/
    boolean terminateSFProcessOnExit = false;
+    /** Definition of component attribute - ask save changes. Default: @value */
+   private boolean askSaveChanges = false;
 
    /** Should clean the screen every "cleanEveryNumSec"?. */
    private boolean autoClean = true;
@@ -188,6 +192,7 @@ public class SFDisplay extends PrimImpl implements Prim, PrintMsgInt, PrintErrMs
                display.setTextScreen(text);
                setPositionDisplay(positionDisplay, display);
                display.setVisible(true);
+               display.setAskSaveChanges(askSaveChanges);
 
                // Redirecting standard output:
                // TODO: redirect to other objects here???
@@ -204,8 +209,7 @@ public class SFDisplay extends PrimImpl implements Prim, PrintMsgInt, PrintErrMs
                   System.setOut(out);
                   System.setErr(out);
                }
-            }
-            if (autoClean) {
+               if (autoClean) {
                 timerAutoClean =
                     new Timer(cleanEveryNumSec * 1000,
                         new ActionListener() {
@@ -225,7 +229,9 @@ public class SFDisplay extends PrimImpl implements Prim, PrintMsgInt, PrintErrMs
                 if (autoSave) {
                     display.resetScreenFile(directoryAutoSave);
                 }
+              }
             }
+
         } catch (Exception e) {
              System.setErr(sysErr);
              // TODO: Get the message from message bundle
@@ -270,6 +276,9 @@ public class SFDisplay extends PrimImpl implements Prim, PrintMsgInt, PrintErrMs
 
             attribToRead = EXTERNAL_PRINTER;
             havePrinter = sfResolve(EXTERNAL_PRINTER,havePrinter, false);
+
+            attribToRead = ASK_SAVE_CHANGES;
+            askSaveChanges = sfResolve(ASK_SAVE_CHANGES,askSaveChanges, false);
 
             attribToRead = AUTO_CLEAN;
             autoClean = sfResolve(AUTO_CLEAN, autoClean, false);

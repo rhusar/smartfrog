@@ -140,11 +140,18 @@ public class PopUpTable extends JComponent implements ActionListener {
             WindowUtilities.showError(this,"No selected Cell");
             return;
          }
-
-         remove((((DeployEntry) (tpath.getLastPathComponent())).getEntry()), (String) (tempTable.getValueAt(row, 0)));
+         if (isNodeACopy()){
+                WindowUtilities.showError(this,"The node selected is a copy and no 'remove' action can be applied\n Use a console running in the local process of this node");
+                return;
+         }
+         remove(getNode(), (String) (tempTable.getValueAt(row, 0)));
 
          // Entry pointed in the tree
       } else if (source == menuItemModifyAttribute) {
+          if (isNodeACopy()){
+                 WindowUtilities.showError(this,"The node selected is a copy and no 'modify' action can be applied\n Use a console running in the local process of this node");
+                 return;
+          }
          Object name = null;
          Object value = null;
 
@@ -237,6 +244,19 @@ public class PopUpTable extends JComponent implements ActionListener {
        node = ((((DeployEntry) (tpath.getLastPathComponent())).getEntry()));
        return node;
    }
+
+    public boolean isNodeACopy(){
+        TreePath tpath = (tempTree).getSelectionPath();
+        DeployEntry node = (((DeployEntry) (tpath.getLastPathComponent())));
+        return node.isCopy();
+
+    }
+
+    public boolean isParentNodeACopy(){
+        TreePath tpath = (tempTree).getSelectionPath();
+        DeployEntry parentNode = (((DeployEntry) (tpath.getParentPath().getLastPathComponent())));
+        return parentNode.isCopy();
+    }
 
    /**
     * Converts tree path to path
