@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <?xml-stylesheet type="text/xsl" href="http://ivyrep.jayasoft.org/ivy-doc.xsl"?>
 <ivy-module version="1.0">
-  <info organisation="org.smartfrog" module="sf-jetty">
+  <info organisation="org.smartfrog" module="sf-cargo">
     <license name="LGPL"/>
     <ivyauthor name="Hewlett-Packard" url="http://www.smartfrog.org"/>
     <description>SmartFrog jetty component</description>
@@ -47,13 +47,40 @@
         changing="true"
         rev="latest.integration"
         conf="build->default"/>
-    <dependency org="javax.servlet"
-        name="servlet-api"
-        rev="${servletapi.version}"
-        conf="compile->master"/>
-    <dependency org="org.mortbay.jetty"
-        name="jetty"
-        rev="${jetty.version}"
-        conf="compile->default;redist->default"/>
+    <!--get the ant redistributables-->
+    <dependency org="org.smartfrog"
+        name="sf-ant"
+        changing="true"
+        rev="latest.integration"
+        conf="redist->redist"/>
+    <dependency org="org.codehaus.cargo"
+        name="cargo-core-api-generic"
+        rev="${cargo.version}"
+        conf="compile->master;redist->default">
+      <exclude org="xalan" />
+      <exclude org="xerces"/>
+      <exclude org="ant"/>
+      <exclude org="xml-apis"/>
+    </dependency>
+    <dependency org="org.codehaus.cargo"
+        name="cargo-core-container-geronimo"
+        rev="${cargo.version}"
+        conf="redist->default"/>
+    <dependency org="org.codehaus.cargo"
+        name="cargo-core-container-jboss"
+        rev="${cargo.version}"
+        conf="redist->default"/>
+    <dependency org="org.codehaus.cargo"
+        name="cargo-core-container-jetty"
+        rev="${cargo.version}"
+        conf="redist->default"/>
+    <dependency org="org.codehaus.cargo"
+        name="cargo-core-container-tomcat"
+        rev="${cargo.version}"
+        conf="redist->default"/>
+    <dependency org="org.codehaus.cargo"
+        name="cargo-core-container-weblogic"
+        rev="${cargo.version}"
+        conf="redist->default"/>
   </dependencies>
 </ivy-module>

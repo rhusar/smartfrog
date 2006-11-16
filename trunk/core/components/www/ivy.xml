@@ -12,19 +12,20 @@
   </configurations>
   -->
   <configurations defaultconfmapping="default">
-    <conf name="default" extends="master,runtime"/>
+    <conf name="default" extends="master,runtime"
+        description="default configuration contains artifacts and runtime dependencies"/>
     <conf name="build" visibility="private"
         description="artifacts needed to build the application"/>
     <conf name="compile" visibility="private"
         description="artifacts needed to compile the application"/>
-    <conf name="unittest" extends="compile"
-        description="the classpath needed to run unittests"/>
-    <conf name="systemtest" extends="unittest"
-        description="the classpath needed to run systemtests"/>
-    <conf name="test" extends="systemtest"
+    <conf name="daemon" visibility="private"
+        description="the classpath needed to run smartfrog daemons"/>
+    <conf name="test" extends="default,compile"
         description="the classpath needed to run tests"/>
     <conf name="master" description="contains the artifact but no dependencies"/>
-    <conf name="runtime" description="runtime but not the artifact"/>
+    <conf name="redist" description="redistributals excluding smartfrog artifacts"/>
+    <conf name="runtime" description="runtime but not the artifact"
+        extends="redist"/>
   </configurations>
   <publications>
     <!--get the artifact from our module name-->
@@ -35,9 +36,10 @@
       name="smartfrog"
       changing="true"
       rev="latest.integration"
-      conf="compile->services;runtime->services;systemtest->services"/>
+      conf="compile->services;runtime->services;daemon->services;"/>
     <dependency org="org.smartfrog"
         name="sf-tasks"
+        changing="true"
         rev="latest.integration"
         conf="build->default"/>
     <dependency org="javax.servlet"

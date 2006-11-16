@@ -50,5 +50,6 @@
   </resolvers>
   <modules>
     <module organisation="org.smartfrog" name=".*" resolver="internal"/>
+    <module organisation="org.ggf" name=".*" resolver="internal"/>
   </modules>
 </ivyconf>

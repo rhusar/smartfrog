@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <?xml-stylesheet type="text/xsl" href="http://ivyrep.jayasoft.org/ivy-doc.xsl"?>
 <ivy-module version="1.0">
-  <info organisation="org.smartfrog" module="sf-jetty">
+  <info organisation="org.smartfrog" module="sf-tomcat">
     <license name="LGPL"/>
     <ivyauthor name="Hewlett-Packard" url="http://www.smartfrog.org"/>
     <description>SmartFrog jetty component</description>
@@ -36,24 +36,27 @@
         name="smartfrog"
         changing="true"
         rev="latest.integration"
-        conf="services->daemon"/>
+        conf="daemon->services"/>
     <dependency org="org.smartfrog"
         name="sf-www"
         changing="true"
         rev="latest.integration"
-        conf="compile->default;runtime->default;systemtest->default"/>
+        conf="compile->default;runtime->default"/>
     <dependency org="org.smartfrog"
         name="sf-tasks"
         changing="true"
         rev="latest.integration"
         conf="build->default"/>
-    <dependency org="javax.servlet"
-        name="servlet-api"
-        rev="${servletapi.version}"
-        conf="compile->master"/>
-    <dependency org="org.mortbay.jetty"
-        name="jetty"
-        rev="${jetty.version}"
-        conf="compile->default;redist->default"/>
+    <dependency org="commons-logging"
+        name="commons-logging-api"
+        rev="${commons-logging.version}"
+        conf="compile->master;redist->master"/>
+    <dependency org="commons-httpclient"
+        name="commons-httpclient"
+        rev="${commons-httpclient.version}"
+        conf="compile->master;redist->default">
+      <exclude org="commons-logging"/>
+      <exclude org="junit"/>
+    </dependency>
   </dependencies>
 </ivy-module>
