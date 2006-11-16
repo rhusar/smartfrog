@@ -204,11 +204,17 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
      */
     public Object sfResolveHere(Object name, boolean mandatory)
         throws SmartFrogResolutionException {
-        try {
+        //the check for mandatory is done outside of the call, for
+        //a very minor speedup when references do not resolve
+        //and yet are needed. There are other costs (branch misprediction penalty),
+        //of course
+        if (mandatory) {
             return sfResolveHere(name);
-        } catch (SmartFrogResolutionException e) {
-            if (mandatory) {
-                throw e;
+        } else {
+            try {
+                return sfResolveHere(name);
+            } catch (SmartFrogResolutionException ignored) {
+                //failed to resolve a non-mandatory element
             }
         }
         return null;
