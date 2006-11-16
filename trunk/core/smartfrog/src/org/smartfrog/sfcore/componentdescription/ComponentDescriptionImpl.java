@@ -119,8 +119,6 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
      * @return reference of attribute names to this component
      */
     public Reference sfCompleteName() {
-//        if (sfCompleteName==null) { //No cache. Conflict with Schema error report
-
             Object cdParent = sfResolveParent();
             if (cdParent == null) {
                 return new Reference();
@@ -148,12 +146,11 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
             if (key!=null) {
                 sfCompleteName.addElement(ReferencePart.here(key));
             } else {
-                sfCompleteName.addElement(new HereReferencePart("*unknown*"));
+                sfCompleteName.addElement(new HereReferencePart("*copy*"));
                if (((sfLog()!= null) && sfLog().isTraceEnabled())){
-                    sfLog().trace("Internal error generating CD complete name - child not named in parent yet: "+sfCompleteName);
+                    sfLog().trace("Internal error generating CD complete name - CD is a copy: "+sfCompleteName); //or child not named in parent yet 
                }
             }
-//        } //cache
         return sfCompleteName;
     }
 

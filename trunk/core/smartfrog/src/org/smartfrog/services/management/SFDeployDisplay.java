@@ -136,7 +136,7 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
          int width, String positionDisplay, final boolean showRootProcess, final boolean showCDasChild,
          final String hostname, final int port, boolean shouldSystemExit)
           throws Exception {
-      final JButton refreshButton;
+      final JButton refreshButton = new JButton();
       JMenu jMenuMng = new JMenu();
       final JCheckBoxMenuItem jCheckBoxMenuItemShowRootProcessPanel = new JCheckBoxMenuItem();
       final JCheckBoxMenuItem jCheckBoxMenuItemShowCDasChild = new JCheckBoxMenuItem();
@@ -164,11 +164,10 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
          newDisplay.setShouldSystemExit(shouldSystemExit);
          newDisplay.setVisible(false);
          newDisplay.setSize(width, height);
-         org.smartfrog.services.display.WindowUtilities.setPositionDisplay(null,
-               newDisplay, positionDisplay);
+         newDisplay.setAskSaveChanges(false);
+         org.smartfrog.services.display.WindowUtilities.setPositionDisplay(null, newDisplay, positionDisplay);
 
          // Button for Refresh view ...
-         refreshButton = new JButton();
          refreshButton.setText("Refresh");
          refreshButton.setActionCommand("refreshButton");
          refreshButton.addActionListener(
@@ -181,6 +180,7 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
                         addProcessesPanels(newDisplay, jCheckBoxMenuItemShowRootProcessPanel.isSelected(), //showRootProcess,
                               jCheckBoxMenuItemShowCDasChild.isSelected(),hostname, port);
                      } catch (Exception ex) {
+                        ex.printStackTrace();
                         if (LogFactory.getLog("SFManagamentConsole").isErrorEnabled()){
                           LogFactory.getLog("SFManagamentConsole").error(ex);
                         }
@@ -279,7 +279,7 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
          deployPanel.setEnabled(true);
          display.tabPane.add(deployPanel, "rootProcess", indexPanel++);
          //Add Local Process Panel
-          if (!SFProcess.getProcessCompound().sfIsRoot()) {
+          if (SFProcess.getProcessCompound()!=null && (!SFProcess.getProcessCompound().sfIsRoot())) {
             String processName = "localSubProcess";
             try {
                 processName = SFProcess.getProcessCompound().sfCompleteName().toString();
@@ -291,9 +291,7 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
 
       }
 
-      Context context = SFProcess.getRootLocator()
-            .getRootProcessCompound(InetAddress.getByName(
-            hostname), port).sfContext();
+      Context context = SFProcess.getRootLocator().getRootProcessCompound(InetAddress.getByName(hostname), port).sfContext();
       java.util.Enumeration keys = context.keys();
       Object key = "";
       Object value = "";
@@ -350,13 +348,13 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
             } catch (Exception ex){ sfLog().ignore(ex);}
 
             Object value2 = sfResolve("root",false);
-            if (!root.equals(value2)){
+            if (root != value2){
                 isObjCopy = true;
             }
-            sfLog().info("JULIO- Checking if we got a copy: " + isObjCopy);   //TODO to remove when finished
+
          } else if (root instanceof Prim) {
              try {
-                name = ((Prim)root).sfCompleteName().toString();
+                name = sfResolve(SmartFrogCoreKeys.SF_PROCESS, sfProcessName, false);
             } catch (Exception ex){ sfLog().ignore(ex);}
             if (root instanceof ProcessCompound){
                 isPC =true;
@@ -376,6 +374,18 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
          refresh.setActionCommand("refreshButton");
          refresh.addActionListener(this);
          display.mainToolBar.add(this.refresh);
+         JMenu jMenuMng = new JMenu();
+         final JCheckBoxMenuItem jCheckBoxMenuItemShowCDasChild = new JCheckBoxMenuItem();
+         jMenuMng.setText("Mng. Console");
+         display.jMenuBarDisplay.add(jMenuMng);
+         jCheckBoxMenuItemShowCDasChild.setSelected(true);
+         jCheckBoxMenuItemShowCDasChild.setText("Show show CD as child");
+         jCheckBoxMenuItemShowCDasChild.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                refresh();
+            }
+          });
+         jMenuMng.add(jCheckBoxMenuItemShowCDasChild);
          display.showToolbar(true);
       //end panelTree example
    }
@@ -437,10 +447,9 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
 
          if (root instanceof ComponentDescription) {
             Object value2 = sfResolve("root",false);
-            if (!root.equals(value2)){
+            if (root!=value2){
                 isObjCopy = true;
             }
-            sfLog().info("JULIO- Checking if we got a copy: " + isObjCopy);
          }
          //System.out.println("Refreshing info");
          ((DeployTreePanel) panelTree).setModel(root,isObjCopy);

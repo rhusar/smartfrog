@@ -43,6 +43,7 @@ Display extends Prim {
       //showSfProcess false; // shows sfProcessName in title;
       //externalPrinter ; //Component implementing PrintMsfInf
       // terminateSFProcessOnExit true;// Terminates SF process when window is closed
+      askSaveChanges false; //Ask to save changes?
 }
 // end Display
 

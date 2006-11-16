@@ -311,6 +311,19 @@ public class PopUpTree extends JComponent implements ActionListener {
         return node;
     }
 
+    public boolean isNodeACopy(){
+        TreePath tpath = ((JTree) tempComp).getPathForLocation(tempX, tempY);
+        DeployEntry node = (((DeployEntry) (tpath.getLastPathComponent())));
+        return node.isCopy();
+
+    }
+
+    public boolean isParentNodeACopy(){
+        TreePath tpath = ((JTree) tempComp).getPathForLocation(tempX, tempY);
+        DeployEntry parentNode = (((DeployEntry) (tpath.getParentPath().getLastPathComponent())));
+        return parentNode.isCopy();
+    }
+
     /**
      * Converts tree path to path
      *@param  tpath  Tree path object
@@ -360,14 +373,20 @@ public class PopUpTree extends JComponent implements ActionListener {
 
     void remove() {
       Object obj = getNode();
-      System.out.println("remove() "+obj);
+      //System.out.println("remove() "+obj);
       if (obj instanceof ComponentDescription) {
         ComponentDescription cd = (ComponentDescription)obj;
         ComponentDescription CDparent = cd.sfParent();
         Prim primParent = cd.sfPrimParent();
         try {
           if (CDparent != null) {
+            //we need to check is the parent is a copy
+            if (isParentNodeACopy() || isNodeACopy()) {
+                WindowUtilities.showError(this,"The node selected is a copy and no action can be applied\n Use a console running in the local process of this node");
+                return;
+            }
             CDparent.sfRemoveAttribute(CDparent.sfAttributeKeyFor(cd));
+
           } else if (primParent != null) {
             primParent.sfRemoveAttribute(primParent.sfAttributeKeyFor(cd));
           }
