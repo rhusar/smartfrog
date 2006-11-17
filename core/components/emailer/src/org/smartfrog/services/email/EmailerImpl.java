@@ -40,9 +40,7 @@ import java.util.Vector;
 import java.rmi.RemoteException;
 
 import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.sfcore.common.SmartFrogLifecycleException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
-import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.common.TerminatorThread;
@@ -190,7 +188,7 @@ public class EmailerImpl extends PrimImpl implements Emailer {
         from = sfResolve(FROM, from, false); 
         subject =  sfResolve(SUBJECT, subject, false);
         message =  sfResolve(MESSAGE, message, false);
-        attachmentList = (Vector) sfResolve(ATTACHMENTS, attachmentList,false);
+        attachmentList = sfResolve(ATTACHMENTS, attachmentList,false);
         sendOnStartup= sfResolve(SEND_ON_STARTUP, sendOnStartup,false);
         sendOnShutdown = sfResolve(SEND_ON_SHUTDOWN, sendOnShutdown, false);    }
 
@@ -200,50 +198,50 @@ public class EmailerImpl extends PrimImpl implements Emailer {
     /**
      * Sends a single part message using to, from subject attributes defined in
      * the Emailer component
-     * @param message Message body
+     * @param text Message body
      * @throws SmartFrogException if any error while sending the email
      * @throws RemoteException if any rmi or network error
      */
-    public void sendEmail(String message) 
+    public void sendEmail(String text)
                             throws SmartFrogException, RemoteException {
         //use default to, from and subject
-        sendEmail(toList, ccList, from, subject, message);
+        sendEmail(toList, ccList, from, subject, text);
     }
     
     /**
      * Sends a single part message using to, from attributes defined in
      * the Emailer component
-     * @param subject The subject text that overrides the default value
-     * @param message Message body
+     * @param messageSubject The subject text that overrides the default value
+     * @param text Message body
      * @throws SmartFrogException if any error while sending the email
      * @throws RemoteException if any rmi or network error
      */
-    public void sendEmail(String subject, String message)
+    public void sendEmail(String messageSubject, String text)
                             throws SmartFrogException, RemoteException {
         //use default to and from email addresses
-        sendEmail(toList, ccList, from, subject, message);
+        sendEmail(toList, ccList, from, messageSubject, text);
     }
 
     /**
      * Sends a single part message.
      * @param to comma separated list of email ids
      * @param cc  comma separated list of email ids
-     * @param from from address
-     * @param subject The subject text that overrides the default value
-     * @param message Message body
+     * @param messageFrom from address
+     * @param messageSubject The subject text that overrides the default value
+     * @param text Message body
      * @throws SmartFrogException if any error while sending the email
      * @throws RemoteException if any rmi or network error
      */
     public void sendEmail(String to ,String cc, 
-                        String from, String subject, String message)
+                        String messageFrom, String messageSubject, String text)
             throws SmartFrogException, RemoteException {
         try {
             if ( log.isInfoEnabled() ) {
-                log.info("Sending email to " + to + " cc: +" + cc + " from: " + from);
-                log.info("Subject :" + subject);
-                log.info("Message:" + message);
+                log.info("Sending email to " + to + " cc: +" + cc + " from: " + messageFrom);
+                log.info("Subject :" + messageSubject);
+                log.info("Message:" + text);
             }
-            Message emailMsg = constructSinglepartMessage(to, cc, from, subject, message);
+            Message emailMsg = constructSinglepartMessage(to, cc, messageFrom, messageSubject, text);
             sendMessage(emailMsg);
         } catch (MessagingException mex) {
             log.error("failed to send message", mex);
@@ -262,56 +260,67 @@ public class EmailerImpl extends PrimImpl implements Emailer {
     
     /**
      * Constructs single part email message.
-     * @return Mail message
+     * @param to
+     * @param cc
+     * @param messageFrom
+     * @param messageSubject
+     * @param text
+     * @return the message to send
+     * @throws MessagingException
      */
     private Message constructSinglepartMessage(String to, String cc, 
-            String from, String subject, String msgText) 
+            String messageFrom, String messageSubject, String text)
                                                 throws MessagingException{
-        if (( to == null) || to.equals("")) {
-            throw new MessagingException("To address list can not be null");
-        }
-        if (( from == null) || from.equals("")) {
-            throw new MessagingException("From address can not be null");
-        }
+        validateHeaders(to, messageFrom);
             
 	    Message msg = new MimeMessage(session);
         
-	    msg.setFrom(new InternetAddress(from));
+	    msg.setFrom(new InternetAddress(messageFrom));
         
 	    InternetAddress[] toAddress = InternetAddress.parse(toList);
 	    msg.setRecipients(Message.RecipientType.TO, toAddress);
 
-        if ((cc != null) && (!cc.equals(""))) {
+        if (cc != null && cc.length() != 0) {
             InternetAddress[] ccAddress = InternetAddress.parse(cc);
             msg.setRecipients(Message.RecipientType.CC, ccAddress);
         }
-	    msg.setSubject(subject);
+	    msg.setSubject(messageSubject);
 	    msg.setSentDate(new Date());
-	    msg.setText(msgText);
+	    msg.setText(text);
         return msg;
     }
+
+    private void validateHeaders(String to, String messageFrom) throws MessagingException {
+        if (( to == null) || to.length()==0) {
+            throw new MessagingException("To address list can not be empty");
+        }
+        if (( messageFrom == null) || messageFrom.length() == 0) {
+            throw new MessagingException("From address can not be empty");
+        }
+    }
+
     /**
      * Sends Email with the attachment.
      * @param to to addresses
      * @param cc cc addresses
-     * @param from from address
-     * @param subject the subject
-     * @param message the message body
+     * @param messageFrom from address
+     * @param messageSubject the subject
+     * @param text the message body
      * @param attachments vector of attachments 
      * @throws SmartFrogException if unable to send email
      */
-    public void sendEmailWithAttachments(String to, String cc, String from,
-                String subject, String message, Vector attachments)
+    public void sendEmailWithAttachments(String to, String cc, String messageFrom,
+                String messageSubject, String text, Vector attachments)
                     throws SmartFrogException {
         try {
             if ( log.isInfoEnabled() ) {
-                log.info("Sending email to " + to + " cc: +" + cc + " from: " + from);
-                log.info("Subject :" + subject);
-                log.info("Message:" + message);
+                log.info("Sending email to " + to + " cc: +" + cc + " from: " + messageFrom);
+                log.info("Subject :" + messageSubject);
+                log.info("Message:" + text);
             }
 
-            Message emailMsg = constructMultipartMessage(to, cc, from, subject,
-                                message, attachments);
+            Message emailMsg = constructMultipartMessage(to, cc, messageFrom, messageSubject,
+                    text, attachments);
             sendMessage(emailMsg);
         }catch (MessagingException mex) {
             log.error("failed to send message", mex);
@@ -321,30 +330,31 @@ public class EmailerImpl extends PrimImpl implements Emailer {
     
     /**
      * Constructs Multipart email message.
-     * @return Mail message
+     * @param to
+     * @param cc
+     * @param messageFrom
+     * @param messageSubject
+     * @param text
+     * @param attachments
+     * @return the message
+     * @throws MessagingException
      */
     private Message constructMultipartMessage(String to, String cc, 
-            String from, String subject, String msgText, Vector attachments) 
+            String messageFrom, String messageSubject, String text, Vector attachments)
                                                 throws MessagingException{
-        if (( to == null) || to.equals("")) {
-            throw new MessagingException("To address list can not be null");
-        }
-        if (( from == null) || from.equals("")) {
-            throw new MessagingException("From address can not be null");
-        }
-            
+        validateHeaders(to, messageFrom);
 	    Message msg = new MimeMessage(session);
         
-	    msg.setFrom(new InternetAddress(from));
+	    msg.setFrom(new InternetAddress(messageFrom));
         
 	    InternetAddress[] toAddress = InternetAddress.parse(toList);
 	    msg.setRecipients(Message.RecipientType.TO, toAddress);
 
-        if ((cc != null) && (!cc.equals(""))) {
+        if (cc != null && cc.length()!=0) {
             InternetAddress[] ccAddress = InternetAddress.parse(cc);
             msg.setRecipients(Message.RecipientType.CC, ccAddress);
         }
-	    msg.setSubject(subject);
+	    msg.setSubject(messageSubject);
 	    msg.setSentDate(new Date());
 
    	    // create the Multipart and add its parts to it
@@ -353,7 +363,7 @@ public class EmailerImpl extends PrimImpl implements Emailer {
    	    // create and fill the first message part
 	    MimeBodyPart mbp1 = new MimeBodyPart();
         
-	    mbp1.setText(msgText);
+	    mbp1.setText(text);
         mp.addBodyPart(mbp1);
         
         // create and add MIME body parts for all the attachments

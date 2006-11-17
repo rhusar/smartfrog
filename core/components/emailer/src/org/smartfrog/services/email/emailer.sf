@@ -45,7 +45,7 @@ EmailerSchema extends Schema {
 	runAsWorkFlowComponent extends Boolean;
 	sendOnStartup extends OptionalBoolean;
 	sendOnShutdown extends OptionalBoolean;
-    attachments extends OptionalVector;
+  attachments extends OptionalVector;
 }
  
  
