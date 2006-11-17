@@ -23,7 +23,15 @@
 
   <target name="packaged" depends="ready-to-package"/>
 
-  <target name="ready-to-test" depends="packaged"/>
+  <target name="ready-to-compile-tests" depends="packaged"/>
+
+  <target name="tests-compiled" depends="ready-to-compile-tests"/>
+
+  <target name="ready-to-package-tests" depends="tests-compiled"/>
+
+  <target name="tests-packaged" depends="ready-to-package-tests"/>
+
+  <target name="ready-to-test" depends="tests-packaged"/>
 
   <target name="tested" depends="ready-to-test"/>
 
@@ -39,7 +47,7 @@
 
   <target name="published" depends="ready-to-publish"/>
 
-  <!--publishing ::= saving the artifacts to SFHOME-->
+  <!--installing ::= saving the artifacts to SFHOME-->
   <target name="ready-to-install" depends="packaged"/>
 
   <target name="installed" depends="ready-to-install"/>

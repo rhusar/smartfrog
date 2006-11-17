@@ -1,4 +1,4 @@
-<project name="m2-deploy" default="installed"
+<project name="ivy-mixin" 
     xmlns:ivy="antlib:fr.jayasoft.ivy.ant">
 
   <description>
@@ -10,7 +10,7 @@
   <!--<import file="state.xml"/>-->
 
 
-  <target name="ivy-init" depends="init-core,artifact-names">
+  <target name="ivy-init" depends="init-core,load-version-info,artifact-names">
     <property name="ivy.dir" location="${root.dir}/antbuild/ivy" />
     <fail >
       <condition >
@@ -38,7 +38,7 @@
     <ivy:report todir="${build.dir}/ivy/report"/>
   </target>
 
-  <target name="ready-to-publish" depends="ivy-resolve,packaged"/>
+  <target name="ready-to-publish" depends="packaged,ivy-report"/>
 
   <target name="ivy-publish" depends="ready-to-publish">
     <ivy:publish resolver="local" pubrevision="${artifact.version}"

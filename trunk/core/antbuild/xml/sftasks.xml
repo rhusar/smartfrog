@@ -3,55 +3,17 @@
   xmlns:ac="antlib:net.sf.antcontrib"
   xmlns:sf="antlib:org.smartfrog.tools.ant"
   xmlns:m2="antlib:org.apache.maven.artifact.ant"
+  xmlns:ivy="antlib:fr.jayasoft.ivy.ant"
   >
 
-  <import file="m2.xml" />
+  <import file="ivy-mixin.xml" />
 
   <!-- Declare our maven2-driven libraries to smartfrog core and tasks (nothing else) -->
   <target name="smartfrog-tasks-classpath" 
-    depends="core.load-version-info,m2.m2-tasks">
-    <m2:libraries pathID="smartfrog.tasks.classpath">
-      <dependency groupID="org.smartfrog"
-        artifactID="smartfrog"
-        version="${smartfrog.version}"
-        scope="compile"
-        />  
-      <dependency groupID="org.smartfrog"
-        artifactID="sfServices"
-        version="${smartfrog.version}"
-        scope="compile"
-        /> 
-      <dependency groupID="org.smartfrog"
-        artifactID="sf-tasks"
-        version="${smartfrog.version}"
-        scope="compile"
-        />
-    </m2:libraries>
+    depends="ivy-retrieve">
+    <ivy:cachepath pathid="smartfrog.tasks.classpath" conf="build" />
   </target>
 
-  <target name="smartfrog-testharness-classpath" 
-    depends="core.load-version-info,m2.m2-tasks">
-    <m2:libraries pathID="smartfrog.testharness-only.classpath">
-      <dependency groupID="org.smartfrog"
-        artifactID="sf-testharness"
-        version="${smartfrog.version}"
-        scope="test"
-        />  
-    </m2:libraries>
-    <m2:libraries pathID="smartfrog.testharness-junit.classpath">
-      <dependency groupID="org.smartfrog"
-        artifactID="sf-testharness"
-        version="${smartfrog.version}"/>
-      <dependency groupID="junit"
-        artifactID="junit"
-        version="${junit.version}"/>
-    </m2:libraries>    
-    <path id="smartfrog.testharness.classpath">
-      <path refid="smartfrog.tasks.classpath"/>
-      <path refid="smartfrog.testharness-junit.classpath"/>
-    </path>
-  </target>  
-  
   <!-- ========================================================== -->
   <!-- probe for tasks and use them if they are not loaded already -->
   <!-- ========================================================== -->
