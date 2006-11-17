@@ -8,7 +8,7 @@
   on Ant1.5! 
   
   To build and run the tests, you need ant-testutil.jar, which you get
-  by running "ant test-jar" in Ant or from http://gump.covalent.net/jars/latest/ant/ant-testutil.jar
+  by running "ant test-jar" in Ant or ant-testutil.jar
   
 </description>
 
