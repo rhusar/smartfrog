@@ -28,13 +28,6 @@ For more information: www.smartfrog.org
 Introduction
 ============
 The build script for SmartFrog Scripting component.
-To run the build script ant 1.6.1 must be installed
-and ant executable should be in the system path.
-
-Installing the build tools
-==========================
-Please go though the installation guide and install ant 1.6.1 or later.
-Reference URL:http://ant.apache.org
 
 </description>
 
@@ -61,7 +54,7 @@ Reference URL:http://ant.apache.org
     <property name="Name.Company" value="(C) Copyright 1998-2006 Hewlett-Packard Development Company, LP"/>
     <property name="version" value="smartfrog components"/>
     <!--property name="Version" value="1.00.000_beta"/-->
-    <property name="year" value="2004"/>
+    <property name="year" value="2006"/>
 
     <echo message=""/>
 <echo message="==================================================================="/>
@@ -276,7 +269,7 @@ Reference URL:http://ant.apache.org
     description="Prepares distribution package">
   </target-->
 
-	<target name="dist" depends="common.dist , jdocs" description="create the jar files">
+	<target name="dist" depends="common.dist,jdocs" description="create the jar files">
 	 <copy todir = "${dist.lib.dir}">
         <fileset dir ="${lib.dir}" />
     </copy> 
@@ -294,20 +287,6 @@ Reference URL:http://ant.apache.org
 	</target>
 
 
- <!-- ========================================================== -->
-  <!-- clean -->
-  <!-- ========================================================== -->
-
-<target name="clean" depends="common.clean" description="clean up build ,dist and releases" >
-    <delete dir="releases"  />  
-    <delete dir="test"  />
-   <delete file="version.properties"/>  
- </target>  
-
-  <!-- =================================================================== -->
-  <!-- a clean distribution                                               -->
-  <!-- =================================================================== -->
-  <target name="fromclean" depends="clean,dist"/>
 
     <!-- =================================================================== -->
     <!-- sfParse parsertargets                                                -->

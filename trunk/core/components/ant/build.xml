@@ -293,16 +293,6 @@ Reference URL:http://ant.apache.org
 	</target>
 
 
- <!-- ========================================================== -->
-  <!-- clean -->
-  <!-- ========================================================== -->
-
-<target name="clean" depends="common.clean" description="clean up build ,dist and releases" >
-    <delete dir="releases"  />  
-    <delete dir="build"  /> 
-   <delete file="version.properties"/>  
- </target>  
-
   <!-- =================================================================== -->
   <!-- a clean distribution                                               -->
   <!-- =================================================================== -->
