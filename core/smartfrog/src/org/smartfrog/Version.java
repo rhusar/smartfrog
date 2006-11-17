@@ -112,7 +112,7 @@ public class Version {
         if (!status.trim().equals("")){
             newStatus=""+status;
         } else newStatus="";
-        return name+" "+majorRelease+"."+minorRelease+"."+build+newStatus;
+        return name+" "+majorRelease+"."+minorRelease+"."+build+newStatus+" ("+buildDate+")";
     }
 
     /**
