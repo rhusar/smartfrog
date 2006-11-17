@@ -134,13 +134,15 @@ public class PopUpTable extends JComponent implements ActionListener {
 
       path = treePath2Path(tpath);
 
+      //System.out.println(" path "+path+", parentcopy: "+ isParentNodeACopy() +", node copy"+ isNodeACopy()+", Action: "+ e);
+
       if (source == menuItemRemoveAttribute) {
          if (row == -1) {
             if (sfLog().isErrorEnabled()) sfLog().error("No selected Cell");
             WindowUtilities.showError(this,"No selected Cell");
             return;
          }
-         if (isParentNodeACopy()){
+         if (isNodeACopy()){
                 WindowUtilities.showError(this,"The node selected is a copy and no 'remove' action can be applied\n Use a console running in the local process of this node");
                 return;
          }
@@ -148,7 +150,7 @@ public class PopUpTable extends JComponent implements ActionListener {
 
          // Entry pointed in the tree
       } else if (source == menuItemModifyAttribute) {
-          if (isParentNodeACopy()){
+          if (isNodeACopy()){
                  WindowUtilities.showError(this,"The node selected is a copy and no 'modify' action can be applied\n Use a console running in the local process of this node");
                  return;
           }
@@ -349,5 +351,5 @@ public class PopUpTable extends JComponent implements ActionListener {
      */
    private LogSF sfLog(){
         return sfLog;
-   }    
+   }
 }

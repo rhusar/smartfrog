@@ -201,6 +201,8 @@ public class PopUpTree extends JComponent implements ActionListener {
 
         path = treePath2Path(tpath);
 
+        //System.out.println(" path "+path+", parentcopy: "+ isParentNodeACopy() +", node copy"+ isNodeACopy()+", Action: "+ e);
+
         //System.out.println("Tree PopUp(source): "+e.getSource()+", Path:
         //"+path);
         // Launch it
@@ -310,6 +312,15 @@ public class PopUpTree extends JComponent implements ActionListener {
         Object node = (((DeployEntry) (tpath.getLastPathComponent())).getEntry());
         return node;
     }
+    /**
+     * Get RDN Node
+     * @return  Object
+     */
+    public String getRDNNode() {
+        TreePath tpath = ((JTree) tempComp).getPathForLocation(tempX, tempY);
+        String nodeRDN = ((DeployEntry) (tpath.getLastPathComponent())).getRDN();
+        return nodeRDN;
+    }
 
     public boolean isNodeACopy(){
         TreePath tpath = ((JTree) tempComp).getPathForLocation(tempX, tempY);
@@ -373,6 +384,11 @@ public class PopUpTree extends JComponent implements ActionListener {
 
     void remove() {
       Object obj = getNode();
+      //we need to check is the parent is a copy
+      if (isParentNodeACopy()  || getRDNNode().equals("*copy*") ) {
+          WindowUtilities.showError(this,"The node selected is a copy and no action can be applied\n Use a console running in the local process of this node");
+          return;
+      }
       //System.out.println("remove() "+obj);
       if (obj instanceof ComponentDescription) {
         ComponentDescription cd = (ComponentDescription)obj;
@@ -380,11 +396,6 @@ public class PopUpTree extends JComponent implements ActionListener {
         Prim primParent = cd.sfPrimParent();
         try {
           if (CDparent != null) {
-            //we need to check is the parent is a copy
-            if (isParentNodeACopy() || isNodeACopy()) {
-                WindowUtilities.showError(this,"The node selected is a copy and no action can be applied\n Use a console running in the local process of this node");
-                return;
-            }
             CDparent.sfRemoveAttribute(CDparent.sfAttributeKeyFor(cd));
 
           } else if (primParent != null) {
