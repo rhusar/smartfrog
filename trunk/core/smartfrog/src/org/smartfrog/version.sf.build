@@ -18,7 +18,8 @@ For more information: www.smartfrog.org
 
 */
 
-Version extends {
+Version extends DATA {
+  version ( name ++ "." ++ majorRelease ++ "." ++ minorRelease ++ "." ++ build ++ status ++ " (" ++ buildDate ++ ")" );
   name "SmartFrog";
   majorRelease "@majorRelease@";
   minorRelease "@minorRelease@";

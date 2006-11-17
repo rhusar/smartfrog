@@ -377,8 +377,6 @@ public class SFProcess implements MessageKeys {
         // @TODO fix after refactoring ProcessCompound.
         //deployDefaultProcessDescriptions((ProcessCompound)processCompound);
 
-        processCompound.sfAddAttribute(SmartFrogCoreKeys.SF_VERSION,Version.versionString());
-
         return processCompound;
     }
 

@@ -19,6 +19,7 @@ For more information: www.smartfrog.org
 */
 
 #include "org/smartfrog/components.sf"
+#include "org/smartfrog/version.sf"
 
 ProcessCompoundSchema extends CompoundSchema {
   sfProcessJava extends OptionalString {description "name for java runtime";}
@@ -55,6 +56,9 @@ ProcessCompound extends Compound {
 
   // reference to root of current heirachy of processes - not necessarily a root process compound
   rootProcess LAZY ROOT;
+
+  sfVersionInfo Version;
+  sfVersion sfVersionInfo:version;
 }
 
 sfConfig extends ProcessCompound;
