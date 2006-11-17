@@ -32,6 +32,8 @@ import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.processcompound.ProcessCompound;
+import org.smartfrog.sfcore.processcompound.SFProcess;
+
 import java.rmi.RemoteException;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.logging.LogSF;
@@ -83,7 +85,6 @@ public class DeployEntry implements Entry {
             this.showRootProcessName = showRootProcessName;
             this.showCDasChild=showCDasChild;
             initLog();
-            //sfLog().info("DeployEntry created: "+entry+", copy: "+isCopy);
         } catch (Exception ex) {
             if (sfLog().isErrorEnabled()) sfLog().error("sfManagementConsole (DeployEntry1): "+ex.toString(),ex);
         }
@@ -633,14 +634,15 @@ public class DeployEntry implements Entry {
             //Now every component can register with its local processCompound
             // and therefore it should be shown in this way.
             //Find ProcessCompound where entry is deployed
-            StringBuffer refStr = new StringBuffer();
-            refStr.append("HOST \"");
-            refStr.append(((Prim)entry).sfDeployedHost().getCanonicalHostName());
-            refStr.append("\":");
-            refStr.append(((Prim)entry).sfDeployedProcessName());
-            Reference refPC = Reference.fromString(refStr.toString());
+//            StringBuffer refStr = new StringBuffer();
+//            refStr.append("HOST \"");
+//            refStr.append(((Prim)entry).sfDeployedHost().getCanonicalHostName());
+//            refStr.append("\":");
+//            refStr.append(((Prim)entry).sfDeployedProcessName());
+//            Reference refPC = Reference.fromString(refStr.toString());
             // enty host
-            pcEntry = (ProcessCompound)((Prim)entry).sfResolve(refPC);
+            //pcEntry = (ProcessCompound)((Prim)entry).sfResolve(refPC);
+            pcEntry = SFProcess.getProcessCompound();
             try {
               Object prim = ((Prim)entry).sfResolve( ((Prim) entry).sfCompleteName());
               if (pcEntry.sfContainsValue(prim)) {
@@ -768,11 +770,14 @@ public class DeployEntry implements Entry {
     private DeployEntry obj2Entry(Object value, boolean isCopy) {
         try {
             boolean newShowRootProcessName = (this.showRootProcessName&&(entry instanceof ProcessCompound));
-            if ((value instanceof Prim)||(value instanceof ComponentDescription)) {
+            if ((value instanceof Prim)) {
+                return (new DeployEntry(value, false, newShowRootProcessName,this.showCDasChild));
+            }
+            if ((value instanceof ComponentDescription)) {
                 return (new DeployEntry(value, isCopy, newShowRootProcessName,this.showCDasChild));
             }
 //            else if (value instanceof Reference) {
-//                //sfLog().info("resolving reference...");    
+//                //sfLog().info("resolving reference...");
 //                do {
 //                   ((Reference) value).setEager(true);
 //                    value = ((Prim) entry).sfResolve((Reference) value);
