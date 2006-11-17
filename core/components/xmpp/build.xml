@@ -1,5 +1,6 @@
 <?xml version="1.0"?>
-<project name="xmpp" default="default">
+<project name="xmpp" default="default"
+    xmlns:ivy="antlib:fr.jayasoft.ivy.ant">
 
   <!--
   /** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
@@ -36,29 +37,17 @@
 
 
   <property name="root.dir" location="../.."/>
+
   <!-- Import common stuff -->
   <import file="${root.dir}/common.xml"/>
 
-
-  <!-- import libs. may need proxy setup -->
-  <target name="m2" depends="m2-tasks">
-    <m2-libraries pathID="libraries.path" verbose="true">
-      <dependency groupID="jivesoftware"
-          artifactID="smack"
-          version="${smack.version}"/>
-    </m2-libraries>
-  </target>
 
   <!-- ========================================================== -->
   <!-- declare our compile time classpath -->
   <!-- ========================================================== -->
 
-  <target name="declare-compile.classpath"
-      depends="declare-base.compile.classpath,m2">
-    <path id="compile.classpath">
-      <path refid="base.compile.classpath"/>
-      <path refid="libraries.path"/>
-    </path>
+  <target name="declare-compile.classpath" depends="ivy-resolve">
+    <ivy:cachepath pathid="compile.classpath" conf="compile" />
     <property name="compile.classpath.value" refid="compile.classpath"/>
     <echo level="verbose">compile.classpath=${compile.classpath.value}</echo>
   </target>

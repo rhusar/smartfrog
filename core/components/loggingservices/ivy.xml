@@ -40,7 +40,7 @@
       name="smartfrog"
       changing="true"
       rev="latest.integration"
-      conf="compile->services;runtime->services;daemon->services"/>
+      conf="compile,runtime,daemon->services"/>
     <dependency org="org.smartfrog"
         name="sf-tasks"
         rev="latest.integration"
@@ -48,13 +48,11 @@
     <dependency org="log4j"
         name="log4j"
         rev="${log4j.version}"
-        conf="compile->default;redist->default"
+        conf="compile,redist->default"
     />
     <dependency org="commons-logging"
-        name="commons-logging-api"
+        name="commons-logging"
         rev="${commons-logging.version}"
-        conf="compile->master;redist->master"/>
-
-
+        conf="compile,redist->master"/>
   </dependencies>
 </ivy-module>
