@@ -63,70 +63,14 @@
 
   </target>
 
-  <target name="declare-compile.classpath" depends="ivy-resolve"  >
-    <ivy:cachepath pathid="compile.classpath" conf="compile" />
-    <property name="compile.classpath.value" refid="compile.classpath"/>
-    <echo level="verbose">compile.classpath=${compile.classpath.value}</echo>
-  </target>
-
-  <target name="ready-to-declare-classpaths" depends="init,core.load-version-info"/>
-
-  <target name="declare-exec.classpath" depends="declare-compile.classpath">
-    <ivy:cachepath pathid="runtime.classpath" conf="runtime" />
-    <path id="exec.classpath">
-      <pathelement location="${target.jar}"/>
-      <path refid="runtime.classpath"/>
-    </path>
-    <property name="exec.classpath.value" refid="exec.classpath"/>
-    <echo level="verbose">exec.classpath=${exec.classpath.value}</echo>
-  </target>
-
-  <target name="declare-tests.compile.classpath"
-    depends="declare-exec.classpath,ivy-resolve">
-    <ivy:cachepath pathid="tests.compile.classpath" conf="test" />
-    <property name="tests.compile.classpath.value"
-      refid="tests.compile.classpath"/>
-    <echo level="verbose">
-      tests.compile.classpath=${tests.compile.classpath.value}</echo>
-  </target>  
-
-  <!-- ========================================================== -->
-  <!-- this is an override point -->
-  <!-- it does nothing but declare all the dependencies for compilation -->
-  <!-- anything that overrides compile can declare a dependency on this -->
-  <!-- target to get its dependencies right -->
-  <!-- ========================================================== -->
-  <target name="pre-compile"
-      depends="init,declare-classpaths,core.core-tasks">
-  </target>
-
-  <!-- ========================================================== -->
-  <!-- this is an override point -->
-  <!-- compile everything, copy useful files over-->
-  <!-- ========================================================== -->
-  <target name="compile"
-      depends="pre-compile">
-    <depend srcdir="${src.dir}"
-        destdir="${build.classes.dir}"
-        cache="${build.dir}/depends"
-        closure="yes"/>
-    <core:javac
-        classpathref="compile.classpath"
-        srcdir="${src.dir}"
-        destdir="${build.classes.dir}"
-        excludes="**/engine/Job.java,**/axis2/**"
-        />
-    <core:copy-useful-files src="${src.dir}" dest="${build.classes.dir}"/>
-  </target>
-
-  <target name="default" depends="dist"/>
+  <target name="default" depends="published"/>
 
   <!-- ========================================================== -->
   <!-- this is an override point -->
   <!-- dependencies and setup logic needed to run tests-->
   <!-- ========================================================== -->
 
-  <target name="ready-to-test" depends="unittest.ready-to-test,init,dist,package-tests">
+  <target name="ready-to-test" depends="unittest.ready-to-test,init,dist,tests-packaged">
     <property name="test.endpoint" value="http://localhost:8080/alpine/portal/"/>
   </target>
 
@@ -173,7 +117,11 @@
   <!-- ========================================================== -->
   <!-- parse the file -->
   <!-- ========================================================== -->
-  <target name="parse" depends="package-tests,packaged,init-codebase"
+
+
+  <target name="ready-to-parse" depends="tests-packaged,packaged,init-codebase" />
+
+  <target name="parse" depends="ready-to-parse"
       description="parse the deployment descriptor">
     <property name="warfile.timestamp"
         location="${build.dir}/warfile.timestamp"/>
@@ -211,7 +159,7 @@
     </ac:if>
   </target>
 
-  <target name="parse-server" depends="package-tests,init-codebase"
+  <target name="parse-server" depends="ready-to-parse"
       description="parse the deployment descriptor for a server">
     <fail unless="server">Set the "server" property!</fail>
     <property name="server.dir" location="hosts/${server}"/>
@@ -307,7 +255,7 @@
       application="${application.name}"/>
   </target>
 
-  <target name="test-deploy" depends="init-deploy-test,package-tests"
+  <target name="test-deploy" depends="init-deploy-test,tests-packaged"
     description="deploy tests">
     <deploytest test="${test.target}"/>
   </target>
@@ -382,7 +330,7 @@
   <!-- ========================================================== -->
   <!-- installation includes the test jars as well as all the dependencies-->
   <!-- ========================================================== -->
-  <target name="install" depends="init-codebase,dist,package-tests">
+  <target name="install" depends="ready-to-install,init-codebase,dist,tests-packaged">
     <property name="install.dir" location="${smartfrog.dist.lib.dir}"/>
     <mkdir dir="${install.dir}"/>
     <copy todir="${install.dir}">
@@ -528,7 +476,7 @@
     <interop-status endpoint="hp"/>
   </target>
 
-  <target name="prepare-interop-tests" depends="init-interop-tests,dist,package-tests">
+  <target name="prepare-interop-tests" depends="init-interop-tests,dist,tests-packaged">
     <macrodef name="interop-test">
       <attribute name="endpoint"/>
       <sequential>
