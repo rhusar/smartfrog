@@ -2,7 +2,7 @@
 <project name="deployapi" default="default"
     xmlns:ac="antlib:net.sf.antcontrib"
     xmlns:sf="antlib:org.smartfrog.tools.ant"
-    xmlns:m2="antlib:org.apache.maven.artifact.ant"
+    xmlns:ivy="antlib:fr.jayasoft.ivy.ant"
     xmlns:core="http://smartfrog.org/build/core"
     >
 
@@ -46,9 +46,8 @@
   <!-- Import common stuff -->
   <import file="${xml.dir}/systemtest.xml"/>
   <import file="${xml.dir}/gui.xml"/>
-
-  <!-- demo axis2 only -->
-  <!--<import file="demo.xml"/>-->
+  <import file="${xml.dir}/ivy-mixin.xml"/>
+  <import file="${xml.dir}/state.xml"/>
 
   <!-- ========================================================== -->
   <!-- ========================================================== -->
@@ -57,8 +56,6 @@
     <property name="war.dir" location="war"/>
     <property name="webinf.dir" location="${war.dir}/WEB-INF"/>
     <property name="services.dir" location="${webinf.dir}/services"/>
-    <property name="build.axis2.dir" location="${build.dir}/axis2"/>
-    <property name="build.axis2.src.dir" location="${build.axis2.dir}/src"/>
     <property name="target.war.name"
         value="${artifact.name}-war-${artifact.version}.war"/>
     <property name="target.war"
@@ -66,163 +63,27 @@
 
   </target>
 
-  <target name="declare-compile.classpath"
-      depends="core-libraries,smartfrog-modules-classpath,smartfrog-core-classpath,jetty-classpath">
-    <path id="compile.classpath">
-      <path refid="core.classpath"/>
-      <path refid="smartfrog.core.classpath"/>
-      <path refid="smartfrog.modules.classpath"/>
-    </path>
+  <target name="declare-compile.classpath" depends="ivy-resolve"  >
+    <ivy:cachepath pathid="compile.classpath" conf="compile" />
     <property name="compile.classpath.value" refid="compile.classpath"/>
     <echo level="verbose">compile.classpath=${compile.classpath.value}</echo>
   </target>
 
-
-  <target name="m2-tasks" depends="m2.init-m2"
-      xmlns:m2="antlib:org.apache.maven.artifact.ant">
-    <presetdef name="lib2" uri="antlib:org.apache.maven.artifact.ant">
-      <m2:dependencies>
-        <localRepository location="${m2.repository}"/>
-        <!-- look in SCM first -->
-        <remoteRepository url="${m2.smartfrog.scm.repository.url}"
-            />
-        <remoteRepository url="${m2.smartfrog.scm.old.repository.url}"/>
-        <!-- then hit ibiblio -->
-        <remoteRepository url="${m2.ibiblio.repository}"/>
-        <!-- local M1 repository -->
-        <remoteRepository url="${m1.repository.url}"
-            layout="legacy"/>
-
-        <!-- apache M1 repository -->
-        <!--<remoteRepository url="${m1.apache.cvs.repository}" layout="legacy"/>-->
-
-        <remoteRepository url="http://dist.codehaus.org/" layout="legacy"/>
-
-      </m2:dependencies>
-    </presetdef>
-  </target>
-
-  <target name="ready-to-declare-classpaths" depends="init,m2-tasks,core.load-version-info"/>
-
-  <target name="core-libraries" depends="ready-to-declare-classpaths">
-    <m2:libraries pathID="core.classpath">
-      <dependency groupID="commons-lang"
-          artifactID="commons-lang"
-          version="${commons-lang.version}">
-        <exclusion
-            groupId="junit"
-            artifactId="junit"/>
-      </dependency>
-      <!--get commons logging implementation, but no baggage-->
-      <dependency groupID="commons-logging"
-          artifactID="commons-logging-api"
-          version="${commons-logging.version}"/>
-      <dependency groupID="log4j"
-          artifactID="log4j"
-          version="${log4j.version}"/>
-    </m2:libraries>
-  </target>
-
-  <target name="smartfrog-core-classpath"
-      depends="ready-to-declare-classpaths">
-    <m2:libraries pathID="smartfrog.core.classpath">
-      <dependency groupID="org.smartfrog"
-          artifactID="smartfrog"
-          version="${smartfrog.version}"
-          scope="compile"
-          />
-      <dependency groupID="org.smartfrog"
-          artifactID="sfServices"
-          version="${smartfrog.version}"
-          scope="compile"
-          />
-    </m2:libraries>
-  </target>
-
-  <target name="smartfrog-modules-classpath"
-      depends="ready-to-declare-classpaths">
-    <m2:libraries pathID="smartfrog.modules.classpath" verbose="true">
-      <dependency groupID="org.smartfrog"
-          artifactID="sf-xml"
-          version="${smartfrog.version}"/>
-      <dependency groupID="org.smartfrog"
-          artifactID="sf-cdl"
-          version="${smartfrog.version}"/>
-      <dependency groupID="org.smartfrog"
-          artifactID="sf-www"
-          version="${smartfrog.version}"/>
-      <dependency groupID="org.smartfrog"
-          artifactID="sf-jetty"
-          version="${smartfrog.version}"/>
-      <dependency groupID="org.smartfrog"
-          artifactID="sf-m32"
-          version="${smartfrog.version}"/>
-      <dependency groupID="org.smartfrog"
-          artifactID="sf-loggingservices"
-          version="${smartfrog.version}"/>
-    </m2:libraries>
-  </target>
-
-  <!-- jetty classes -->
-  <target name="jetty-classpath"
-      depends="smartfrog-core-classpath">
-    <m2:libraries pathID="jetty.classpath">
-      <dependency groupID="jetty"
-          artifactID="jetty"
-          version="${jetty.version}"/>
-      <dependency groupID="servletapi"
-          artifactID="servletapi"
-          version="${servletapi.version}"/>
-    </m2:libraries>
-  </target>
-
-  <target name="mail-libraries" depends="ready-to-declare-classpaths">
-    <m2:libraries pathID="mail.classpath">
-      <dependency groupID="javax.activation"
-          artifactID="activation"
-          version="${activation.version}"/>
-      <dependency groupID="javax.mail"
-          artifactID="mail"
-          version="${mail.version}"/>
-    </m2:libraries>
-  </target>
-
+  <target name="ready-to-declare-classpaths" depends="init,core.load-version-info"/>
 
   <target name="declare-exec.classpath" depends="declare-compile.classpath">
+    <ivy:cachepath pathid="runtime.classpath" conf="runtime" />
     <path id="exec.classpath">
       <pathelement location="${target.jar}"/>
-      <path refid="compile.classpath"/>
+      <path refid="runtime.classpath"/>
     </path>
     <property name="exec.classpath.value" refid="exec.classpath"/>
     <echo level="verbose">exec.classpath=${exec.classpath.value}</echo>
   </target>
 
-  <!-- declares the testharness and junit path -->
-
-  <target name="test-libraries" depends="m2-tasks">
-    <m2:libraries pathID="test-libraries.classpath">
-
-      <dependency groupID="org.smartfrog"
-          artifactID="sf-jetty"
-          version="${smartfrog.version}"/>
-      <dependency groupID="org.smartfrog"
-          artifactID="sf-junit"
-          version="${smartfrog.version}"/>
-      <dependency groupID="org.smartfrog"
-          artifactID="sf-testharness"
-          version="${smartfrog.version}"/>
-      <dependency groupID="junit"
-          artifactID="junit"
-          version="${junit.version}"/>
-    </m2:libraries>
-  </target>
-
   <target name="declare-tests.compile.classpath"
-    depends="declare-exec.classpath,test-libraries">
-    <path id="tests.compile.classpath">
-      <path refid="exec.classpath"/>
-      <path refid="test-libraries.classpath"/>
-    </path>
+    depends="declare-exec.classpath,ivy-resolve">
+    <ivy:cachepath pathid="tests.compile.classpath" conf="test" />
     <property name="tests.compile.classpath.value"
       refid="tests.compile.classpath"/>
     <echo level="verbose">
@@ -258,164 +119,7 @@
     <core:copy-useful-files src="${src.dir}" dest="${build.classes.dir}"/>
   </target>
 
-  <target name="default" depends="war"/>
-
-  <target name="specifications" depends="init">
-
-    <fail unless="deployment.project.dir">
-      Need to specify the location of the sourceforge deploy project
-      deployment.project.dir
-    </fail>
-    <property name="deployment.xml.dir"
-        location="${deployment.project.dir}/xml"/>
-    <property name="cddlm.dir"
-        location="${deployment.xml.dir}/api"/>
-    <property name="cdl.dir"
-        location="${deployment.xml.dir}/cdl"/>
-    <property name="constants.xml.dir"
-        location="${cddlm.dir}"/>
-    <property name="wsrf.dir"
-        location="${deployment.xml.dir}/wsrf"/>
-    <property name="soap.dir"
-        location="${deployment.xml.dir}/wsrf"/>
-
-    <!--XML Schemas -->
-    <property name="xml-cdl.xsd"
-        location="${cddlm.dir}/xml-cdl.xsd"/>
-
-    <property name="component-model.xsd"
-        location="${cddlm.dir}/component-model.xsd"/>
-    <property name="component-model-events.xml"
-        location="${cddlm.dir}/component-model-events.xml"/>
-
-    <property name="deployment-api.xsd"
-        location="${cddlm.dir}/deployment-api.xsd"/>
-
-    <!-- ws-topics -->
-    <property name="deployment-api-portal-events.xml"
-        location="${cddlm.dir}/deployment-api-portal-events.xml"/>
-    <property name="deployment-api-system-events.xml"
-        location="${cddlm.dir}/deployment-api-system-events.xml"/>
-
-
-    <!-- WSDL -->
-    <property name="deployment-api.wsdl"
-        location="${cddlm.dir}/deployment-api.wsdl"/>
-
-    <!-- generic XML -->
-    <property name="constants.xml"
-        location="${constants.xml.dir}/constants.xml"/>
-    <property name="transform.xsl"
-        location="${transforms.dir}/createJavaConstants.xsl"/>
-
-    <!-- incoming specs -->
-    <property name="soap12.xsd"
-        location="${soap.dir}/soap12.xsd"/>
-    <property name="ws-addressing.xsd"
-        location="${soap.dir}/ws-addressing.xsd"/>
-    <property name="wsrf-rp.xsd"
-        location="${wsrf.dir}/wsrf-WS-ResourceProperties-1.2-draft-01.xsd"/>
-    <property name="wsrf-rp.wsdl"
-        location="${wsrf.dir}/wsrf-WS-ResourceProperties-1.2-draft-01.wsdl"/>
-    <property name="wsrf-rl.xsd"
-        location="${wsrf.dir}/wsrf-WS-ResourceLifetime-1.2-draft-01.xsd"/>
-    <property name="wsrf-rl.wsdl"
-        location="${wsrf.dir}/wsrf-WS-ResourceLifetime-1.2-draft-01.wsdl"/>
-
-    <property name="wsrf-n.xsd"
-        location="${wsrf.dir}/wsn-WS-BaseNotification-1.2-draft-01.xsd"/>
-    <property name="wsrf-n.wsdl"
-        location="${wsrf.dir}/wsn-WS-BaseNotification-1.2-draft-01.wsdl"/>
-    <property name="wsrf-bf.xsd"
-        location="${wsrf.dir}/wsrf-WS-BaseFaults-1.2-draft-01.xsd"/>
-    <property name="wstop.xsd"
-        location="${wsrf.dir}/wsn-WS-Topics-1.2-draft-01.xsd"/>
-
-    <property name="muws-p1.xsd"
-        location="${wsrf.dir}/wsdm-muws-part1.xsd"/>
-    <property name="muws-p2.xsd"
-        location="${wsrf.dir}/wsdm-muws-part2.xsd"/>
-    <property name="wsdm-mows.xsd"
-        location="${wsrf.dir}/wsdm-mows.xsd"/>
-
-    <property name="test-helper.xsd"
-        location="${cddlm.dir}/test-helper.xsd"/>
-    <property name="smartfrog.xsd"
-        location="${cddlm.dir}/smartfrog.xsd"/>
-    <property name="system-binding.wsdl"
-        location="${cddlm.dir}/system-binding.wsdl"/>
-  </target>
-
-  <target name="prepare-libraries" depends="declare-classpaths">
-    <property name="build.temp.lib.dir" location="${build.dir}/temp/lib"/>
-    <mkdir dir="${build.temp.lib.dir}"/>
-    <!--
-        <copypath destDir="${build.temp.lib.dir}" pathref="axis2.classpath">
-          <flattenmapper/>
-        </copypath>
-    -->
-    <copypath destDir="${build.temp.lib.dir}" pathref="core.classpath">
-      <flattenmapper/>
-    </copypath>
-  </target>
-
-  <!-- here to verify that all the downloaded jars are valid
-because javac was bailing out with some error about unzipping -->
-  <target name="validate-libraries" depends="prepare-libraries">
-    <property name="build.temp.unzip.dir" location="${build.temp.lib.dir}/unzip"/>
-    <mkdir dir="${build.temp.unzip.dir}"/>
-    <copypath destDir="${build.temp.lib.dir}" pathref="compile.classpath">
-      <flattenmapper/>
-    </copypath>
-    <copypath destDir="${build.temp.lib.dir}" pathref="tests.compile.classpath">
-      <flattenmapper/>
-    </copypath>
-
-    <ac:for param="name">
-      <path>
-        <fileset dir="${build.temp.lib.dir}" includes="*.jar"/>
-      </path>
-      <sequential>
-        <echo>@{name}</echo>
-        <exec executable="jar" dir="${build.temp.unzip.dir}" failonerror="true">
-          <arg value="-xf"/>
-          <arg value="@{name}"/>
-        </exec>
-        <!-- <unzip src="@{name}" dest="${build.temp.unzip.dir}"/> -->
-      </sequential>
-    </ac:for>
-  </target>
-
-  <!--
-    add extra actions after compilation, before making the JAR
-  -->
-  <target name="post-compile" depends="dist.post-compile,prepare-libraries"/>
-
-  <!-- make the WAR file -->
-  <target name="war" depends="post-compile"
-      description="Create the WAR file">
-    <property name="target.war.name"
-        value="${artifact.name}-war-${artifact.version}.war"/>
-    <property name="target.war"
-        location="${dist.dir}/${target.war.name}"/>
-
-
-    <core:jar destFile="${target.war}">
-      <!--  WAR file, includes WEB-INF stuff-->
-      <fileset dir="${war.dir}" includes="**/*"/>
-      <zipfileset prefix="WEB-INF/lib" dir="${build.temp.lib.dir}"
-          includes="*.jar"/>
-      <zipfileset prefix="WEB-INF/lib" file="${target.jar}"/>
-
-    </core:jar>
-  </target>
-
-  <target name="unwar" depends="war"
-      description="Create the WAR file and expand it into a directory">
-    <property name="unwar.dir" location="${build.dir}/exploded"/>
-    <unzip src="${target.war}" dest="${unwar.dir}"/>
-  </target>
-
+  <target name="default" depends="dist"/>
 
   <!-- ========================================================== -->
   <!-- this is an override point -->
@@ -445,23 +149,8 @@ because javac was bailing out with some error about unzipping -->
     -put everything in one place for when we need to sign it
     -see at a glance what is in there
     -->
-  <target name="prepare-codebase" depends="declare-classpaths,test-libraries">
-    <property name="build.codebase.dir" location="${build.dir}/codebase"/>
-    <mkdir dir="${build.codebase.dir}"/>
-    <copypath destdir="${build.codebase.dir}" pathref="core.classpath">
-      <flattenmapper/>
-    </copypath>
-    <copypath destdir="${build.codebase.dir}" pathref="jetty.classpath">
-      <flattenmapper/>
-    </copypath>
-    <copypath destdir="${build.codebase.dir}" pathref="smartfrog.modules.classpath">
-      <flattenmapper/>
-    </copypath>
-    <copypath destdir="${build.codebase.dir}"
-      pathref="test-libraries.classpath">
-      <flattenmapper/>
-    </copypath>
-
+  <target name="prepare-codebase" depends="declare-classpaths">
+    <property name="build.codebase.dir" location="${ivy.lib.dir}/test"/>
   </target>
   <!-- ========================================================== -->
   <!-- set-->
@@ -477,12 +166,14 @@ because javac was bailing out with some error about unzipping -->
     <echo level="verbose">
       deploying to ${deploy.host}
       codebase=${codebase}</echo>
+    <!--here to stop the IDE complaining that codebase is unset-->
+    <property name="codebase" value=""/>
   </target>
 
   <!-- ========================================================== -->
   <!-- parse the file -->
   <!-- ========================================================== -->
-  <target name="parse" depends="package-tests,war,init-codebase"
+  <target name="parse" depends="package-tests,packaged,init-codebase"
       description="parse the deployment descriptor">
     <property name="warfile.timestamp"
         location="${build.dir}/warfile.timestamp"/>
@@ -553,7 +244,7 @@ because javac was bailing out with some error about unzipping -->
   <!-- ========================================================== -->
   <!-- deploy; requires a host -->
   <!-- ========================================================== -->
-  <target name="deploy" depends="parse,init-codebase,init-deploy-properties,war"
+  <target name="deploy" depends="parse,init-codebase,init-deploy-properties"
       description="deploy">
 
     <sf:deploy classpathref="run.classpath"
@@ -584,7 +275,7 @@ because javac was bailing out with some error about unzipping -->
     <property name="tests.sf" 
       value="org/smartfrog/services/deployapi/test/system/alpine/deployapi/localhost.sf"/>
     <property name="tests.name" 
-      value="${ant-project.name}-tests"/>
+      value="${ant.project.name}-tests"/>
     <property name="test.target" value="localhost"/>
     <macrodef name="deploytest">
       <attribute name="test" />
@@ -623,7 +314,7 @@ because javac was bailing out with some error about unzipping -->
 
   <target name="test-undeploy" depends="init-deploy-test"
     description="undeploy tests"
-    xmlns:sf="antlib:org.smartfrog.tools.ant">
+    >
     <sf:undeploy classpathref="tests.run.classpath"
       logStackTraces="true"
       host="${deploy.host}"
@@ -691,7 +382,7 @@ because javac was bailing out with some error about unzipping -->
   <!-- ========================================================== -->
   <!-- installation includes the test jars as well as all the dependencies-->
   <!-- ========================================================== -->
-  <target name="install" depends="init-codebase,dist,package-tests,m2-install">
+  <target name="install" depends="init-codebase,dist,package-tests">
     <property name="install.dir" location="${smartfrog.dist.lib.dir}"/>
     <mkdir dir="${install.dir}"/>
     <copy todir="${install.dir}">
