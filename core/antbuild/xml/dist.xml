@@ -2,6 +2,7 @@
   xmlns:core="http://smartfrog.org/build/core"
   xmlns:ac="antlib:net.sf.antcontrib"
   xmlns:sf="antlib:org.smartfrog.tools.ant"
+  xmlns:ivy="antlib:fr.jayasoft.ivy.ant"
   >
   
   <description>
@@ -11,68 +12,78 @@
   <!-- import the core -->
   <import file="sftasks.xml"/>
   
-  
-  <!-- ========================================================== -->
-  <!-- this set of classpath targets is done to allow override of -->
-  <!-- any stage of the process, with all the dependent classpaths -->
-  <!-- being set up right, automatically -->
-    <!-- define the common compile classpath, which includes
-        smartfrog and our lib dir -->
-  <!-- ========================================================== -->
-        
-  <target name="declare-base.compile.classpath" depends="init,core.artifact-names" >  
-    <path id="base.compile.classpath">
-      <path refid="smartfrog.classpath"/>
-    </path>
-  </target>
-    
-  
-  <target name="probe-lib-dir" depends="init">
-    <available file="${lib.dir}" type="dir" property="lib.dir.found" /> 
+ <!-- new states -->
+
+  <target name="ready-to-compile"
+      depends="init,declare-classpaths,core-tasks">
   </target>
 
-  <target name="declare-compile.classpath-lib-dir" 
-    depends="declare-base.compile.classpath,probe-lib-dir" 
-    if="lib.dir.found">  
-    <path id="compile.classpath">
-      <path refid="base.compile.classpath"/>
-      <fileset dir="${lib.dir}">
-        <include name="**/*.jar"/>
-      </fileset>
-    </path>    
+  <target name="compiled" depends="compile"/>
+  <!-- override point: here we have already compiled everything
+  and done the rmic compile -->
+  <target name="ready-to-package" depends="rmi,generate-version" />
+
+  <target name="packaged" depends="package"/>
+
+  <target name="ready-to-compile-tests"
+      depends="packaged,declare-tests.compile.classpath" />
+
+  <target name="tests-compiled" depends="compile-tests"/>
+
+  <target name="tests-packaged"
+      depends="package-tests" />
+
+
+
+
+  <!-- ========================================================== -->
+  <!-- this is an override point -->
+  <!-- create the JAR ${target.jar}-->
+  <!-- ========================================================== -->
+  <target name="package" depends="jar"
+      description="create the JAR files">
   </target>
-  
-  <target name="declare-compile.classpath-no-lib-dir" 
-    depends="declare-base.compile.classpath,probe-lib-dir" 
-    unless="lib.dir.found">  
-    <path id="compile.classpath">
-      <path refid="base.compile.classpath"/>
-    </path>    
+
+
+  <!-- ========================================================== -->
+  <!-- this is an override point -->
+  <!-- everything for distribution -->
+  <!-- ========================================================== -->
+  <target name="dist" depends="packaged"
+      description="create a distribution">
   </target>
- 
- <target name="declare-compile.classpath" 
-    depends="declare-compile.classpath-no-lib-dir,declare-compile.classpath-lib-dir" >  
+
+
+  <!-- ========================================================== -->
+  <!-- classpath setup assumes Ivy is used to prepare things -->
+  <!-- ========================================================== -->
+        
+
+  <target name="declare-compile.classpath" depends="ready-to-declare-classpaths"  >
+    <ivy:cachepath pathid="compile.classpath" conf="compile" />
     <property name="compile.classpath.value" refid="compile.classpath"/>
     <echo level="verbose">compile.classpath=${compile.classpath.value}</echo>
   </target>
-  
-  <target name="declare-exec.classpath" depends="declare-compile.classpath" >  
+
+  <target name="ready-to-declare-classpaths" depends="ivy-retrieve"/>
+
+  <target name="declare-exec.classpath" depends="ready-to-declare-classpaths">
+    <ivy:cachepath pathid="runtime.classpath" conf="runtime" />
     <path id="exec.classpath">
       <pathelement location="${target.jar}"/>
-      <path refid="compile.classpath"/>
-    </path>    
+      <path refid="runtime.classpath"/>
+    </path>
     <property name="exec.classpath.value" refid="exec.classpath"/>
     <echo level="verbose">exec.classpath=${exec.classpath.value}</echo>
   </target>
 
-  <target name="declare-tests.compile.classpath" 
-      depends="declare-exec.classpath,smartfrog-testharness-classpath" >  
-    <path id="tests.compile.classpath">
-      <path refid="exec.classpath"/>
-      <path refid="smartfrog.testharness-junit.classpath" />
-    </path>
-    <property name="tests.compile.classpath.value" refid="tests.compile.classpath"/>
-    <echo level="verbose">tests.compile.classpath=${tests.compile.classpath.value}</echo>
+  <target name="declare-tests.compile.classpath"
+      depends="declare-exec.classpath,ivy-resolve">
+    <ivy:cachepath pathid="tests.compile.classpath" conf="test" />
+    <property name="tests.compile.classpath.value"
+        refid="tests.compile.classpath"/>
+    <echo level="verbose">
+      tests.compile.classpath=${tests.compile.classpath.value}</echo>
   </target>
    
   <target name="declare-tests.run.classpath" depends="declare-tests.compile.classpath" >  
@@ -96,25 +107,15 @@
     are defined-->  
   <target name="declare-classpaths" 
     depends=
-     "declare-base.compile.classpath,declare-compile.classpath,declare-exec.classpath,declare-tests.compile.classpath,declare-tests.run.classpath,declare-tests.run.classpath,declare-run.classpath"/>
+     "declare-compile.classpath,declare-exec.classpath,declare-tests.compile.classpath,declare-tests.run.classpath,declare-tests.run.classpath,declare-run.classpath"/>
   
 
-  <!-- ========================================================== -->
-  <!-- this is an override point -->
-  <!-- it does nothing but declare all the dependencies for compilation -->
-  <!-- anything that overrides compile can declare a dependency on this -->
-  <!-- target to get its dependencies right -->
-  <!-- ========================================================== -->
-  <target name="pre-compile"
-      depends="init,declare-classpaths,core-tasks">
-  </target>
-  
   <!-- ========================================================== -->
   <!-- this is an override point -->
   <!-- compile everything, copy useful files over-->
   <!-- ========================================================== -->
   <target name="compile"
-      depends="pre-compile">
+      depends="ready-to-compile">
       <depend srcdir="${src.dir}"
           destdir="${build.classes.dir}"
           cache="${build.dir}/depends"
@@ -132,7 +133,7 @@
   <!-- RMI compile by looking for all remote classes in the
        compiled project-->
   <!-- ========================================================== -->
-  <target name="rmi" depends="compile"
+  <target name="rmi" depends="compiled"
       description="create the RMI classes">
       <core:rmic
           base="${build.classes.dir}"
@@ -142,11 +143,6 @@
           <classpath refid="compile.classpath"/>
       </core:rmic>
   </target>  
-  
-  <!-- override point: here we have already compiled everything
-  and done the rmic compile -->
-  <target name="post-compile" depends="rmi" />
-  
   
 
   <!--
@@ -178,40 +174,18 @@
   <!--
     bypass all the self-referential stuff here.
   -->
-  <target name="jar" depends="post-compile" >
+  <target name="jar" depends="ready-to-package" >
     <core:jar destfile="${target.jar}" 
              basedir="${build.classes.dir}" 
              includes="**/*"/>
      <echo level="verbose">created package ${target.jar}</echo>
   </target>  
   
-  <!-- ========================================================== -->
-  <!-- this is an override point -->
-  <!-- create the JAR ${target.jar}-->
-  <!-- ========================================================== -->
-  <target name="package" depends="jar,generate-version"
-    description="create the JAR files">
-  </target>
-   
-  
- <!-- ========================================================== -->
-  <!-- this is an override point -->
-  <!-- everything for distribution -->
-  <!-- ========================================================== -->
-  <target name="dist" depends="package"
-    description="create a distribution">
-  </target>   
-  
-  <!-- ========================================================== -->
-  <!-- this is an override point -->
-  <!-- compile everything, copy useful files over-->
-  <!-- ========================================================== -->
-  
-  <target name="pre-compile-tests" 
-    depends="jar,declare-tests.compile.classpath" />
-  
+
+
+
   <target name="compile-tests"
-      depends="pre-compile-tests">
+      depends="ready-to-compile-tests">
       <depend 
           srcdir="${test.src.dir}"
           destdir="${test.classes.dir}"
@@ -225,15 +199,14 @@
       <core:copy-useful-files src="${test.src.dir}" dest="${test.classes.dir}"/>
   </target>  
 
-  <target name="post-compile-tests" depends="compile-tests"/>
-  
+
 
   
   <!-- ========================================================== -->
   <!-- this is an override point -->
   <!-- create the test jar ${test.jar}-->
   <!-- ========================================================== -->
-  <target name="package-tests" depends="compile-tests"
+  <target name="package-tests" depends="ready-to-package-tests"
       description="create the JAR file for the tests">
     <core:jar destfile="${test.jar}" 
       basedir="${test.classes.dir}" 
