@@ -1,5 +1,6 @@
 <?xml version="1.0"?>
 <project name="cdl" default="default"
+    xmlns:ivy="antlib:fr.jayasoft.ivy.ant"
   >
 
   <!--
@@ -26,8 +27,7 @@
 
   <description>
      Build file for CDL language.
-     Needs the Maven2 task library to build, and is java1.5+
-     
+
   </description>
 
   
@@ -47,63 +47,38 @@
     <mkdir dir="lib"/>
   </target>
 
-  <target name="m2-files" depends="m2-tasks">
-    <m2-libraries pathID="m2.classpath">
-      <dependency groupID="org.ggf"
-        artifactID="cddlm"
-        version="${cddlm.version}"/>
-      <dependency groupID="commons-lang"
-        artifactID="commons-lang"
-        version="${commons-lang.version}"/>
-      <dependency groupID="commons-logging"
-        artifactID="commons-logging-api"
-        version="${commons-logging.version}"/>
-      <dependency groupID="log4j"
-        artifactID="log4j"
-        version="${log4j.version}"/>
-      <dependency groupID="org.smartfrog"
-        artifactID="sf-xml"
-        version="${Version}"/>
-      <dependency groupID="xom"
-        artifactID="xom"
-        version="${xom.version}"/>
-      <dependency groupID="xalan"
-        artifactID="xalan"
-        version="${xalan.version}"/>
-    </m2-libraries>
+
+  <target name="declare-compile.classpath" depends="ivy-resolve"  >
+    <ivy:cachepath pathid="compile.classpath" conf="compile" />
+    <property name="compile.classpath.value" refid="compile.classpath"/>
+    <echo level="verbose">compile.classpath=${compile.classpath.value}</echo>
   </target>
 
-  <target name="declare-compile.classpath-lib-dir"
-    depends="declare-base.compile.classpath,probe-lib-dir,m2-files"
-    if="lib.dir.found">
-    <path id="compile.classpath">
-      <path refid="base.compile.classpath"/>
-      <path refid="m2.classpath"/>
-      <fileset dir="${lib.dir}">
-        <include name="**/*.jar"/>
-      </fileset>
-    </path>
-  </target>
+  <!-- this is the classpath for running the daemon -->
 
+  <target name="declare-run.classpath" depends="init" >
+    <ivy:cachepath pathid="run.classpath" conf="daemon" />
+    <property name="run.classpath.value" refid="run.classpath"/>
+    <echo level="verbose">daemon.classpath=${daemon.classpath.value}</echo>
+  </target>
 
 
   <!-- ========================================================== -->
   <!-- this is an override point -->
   <!-- copy all dependencies -->
   <!-- ========================================================== -->
-  <target name="install-dependencies" depends="m2-files"
+  <target name="install-dependencies" depends="ivy-retrieve"
       if="smartfrog.dist.lib.dir">
+
     <property name="build.lib.dir" location="${build.dir}/lib"/>
     <mkdir dir="${build.lib.dir}"/>
 
+    <ivy:cachepath pathid="runtime.path" conf="runtime" />
+
     <copy todir="${smartfrog.dist.lib.dir}" flatten="true">
-      <path refid="m2.classpath"/>
+      <path refid="runtime.path"/>
     </copy>
 
-    <copy-useful-files src="${lib.dir}"
-        pattern="**/*.jar"
-        dest="${smartfrog.dist.lib.dir}"
-        failonerror="false"/>
   </target>
 
 
@@ -126,8 +101,8 @@
 
   </target>
 
-  <target name="default" depends="dist"
-    description="make the distribution"/>
+  <target name="default" depends="dist,published"
+    description="make and publish the distribution"/>
 
     
   <!-- ========================================================== -->
@@ -196,6 +171,6 @@ sfConfig extends DefaultCompound;
     depends="start-daemon-if-needed,start-console"/>
   
 
-  <target name="all" depends="m2-install,test" />
+  <target name="all" depends="test,published" />
 
 </project>
