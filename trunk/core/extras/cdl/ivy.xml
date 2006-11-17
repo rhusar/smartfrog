@@ -62,8 +62,9 @@
         rev="latest.integration"
         conf="compile->default;redist->default"/>
     <dependency org="commons-logging"
-        name="commons-logging-api"
-        rev="latest.integration"
-        conf="${commons-logging.version}"/>
+        name="commons-logging"
+        rev="${commons-logging.version}"
+        conf="compile,redist->master"
+        />
   </dependencies>
 </ivy-module>
