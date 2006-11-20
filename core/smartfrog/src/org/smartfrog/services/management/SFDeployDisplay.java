@@ -21,8 +21,10 @@ package org.smartfrog.services.management;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.*;
 import java.net.InetAddress;
 import java.rmi.RemoteException;
+import java.lang.reflect.Constructor;
 
 import javax.swing.JButton;
 import javax.swing.JPanel;
@@ -36,6 +38,7 @@ import org.smartfrog.sfcore.logging.LogSF;
 
 import org.smartfrog.services.display.Display;
 import org.smartfrog.services.display.SFDisplay;
+import org.smartfrog.services.display.WindowUtilities;
 import org.smartfrog.sfcore.common.Context;
 import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
 import org.smartfrog.sfcore.common.SmartFrogException;
@@ -60,6 +63,8 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
    private JScrollPane scrollPaneTree = null;
 
    final JCheckBoxMenuItem jCheckBoxMenuItemShowCDasChild = new JCheckBoxMenuItem();
+   final JCheckBoxMenuItem jCheckBoxScriptingPanel = new JCheckBoxMenuItem();
+
    /**
     * Constructs SFDeployDisplay object
     *
@@ -94,13 +99,14 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
 
       final boolean showRootProcess = opts.showRootProcess;
       final boolean showCDasChild = opts.showCDasChild;
+      final boolean showScripting = opts.showScripting;
       final String hostname = opts.host;
       final int port = opts.port;
       String positionDisplay = opts.windowPosition;
 
       try {
          startConsole(nameDisplay, height, width, positionDisplay,
-               showRootProcess,showCDasChild, hostname, port, true);
+               showRootProcess,showCDasChild, showScripting, hostname, port, true);
       } catch (java.net.UnknownHostException uex) {
          exitWith("Error: Unknown host.", ExitCodes.EXIT_ERROR_CODE_GENERAL);
       } catch (java.rmi.ConnectException cex) {
@@ -133,13 +139,14 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
 
 
    public static Display startConsole(String nameDisplay, int height,
-         int width, String positionDisplay, final boolean showRootProcess, final boolean showCDasChild,
+         int width, String positionDisplay, final boolean showRootProcess, final boolean showCDasChild, final boolean showScripting,
          final String hostname, final int port, boolean shouldSystemExit)
           throws Exception {
       final JButton refreshButton = new JButton();
       JMenu jMenuMng = new JMenu();
       final JCheckBoxMenuItem jCheckBoxMenuItemShowRootProcessPanel = new JCheckBoxMenuItem();
       final JCheckBoxMenuItem jCheckBoxMenuItemShowCDasChild = new JCheckBoxMenuItem();
+      final JCheckBoxMenuItem jCheckBoxScriptingPanel = new JCheckBoxMenuItem();
       String infoConnection = ("sfManagementConsole connecting to " +
             hostname + ":" + port);
       //Logger.log(infoConnection);
@@ -179,6 +186,7 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
                      try {
                         addProcessesPanels(newDisplay, jCheckBoxMenuItemShowRootProcessPanel.isSelected(), //showRootProcess,
                               jCheckBoxMenuItemShowCDasChild.isSelected(),hostname, port);
+                         addScriptingPanel (newDisplay, jCheckBoxScriptingPanel.isSelected());
                      } catch (Exception ex) {
                         ex.printStackTrace();
                         if (LogFactory.getLog("SFManagamentConsole").isErrorEnabled()){
@@ -213,9 +221,18 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
          });
          jMenuMng.add(jCheckBoxMenuItemShowCDasChild);
 
+         jCheckBoxScriptingPanel.setSelected(showScripting);
+         jCheckBoxScriptingPanel.setText("Scripting");
+         jCheckBoxScriptingPanel.addActionListener(new ActionListener() {
+               public void actionPerformed(ActionEvent e) {
+                            refreshButton.doClick();
+               }
+         });
+         jMenuMng.add(jCheckBoxScriptingPanel);
 
          newDisplay.setVisible(true);
          addProcessesPanels(newDisplay, showRootProcess, showCDasChild, hostname, port);
+         addScriptingPanel(newDisplay,jCheckBoxScriptingPanel.isSelected());
 
          return newDisplay;
       }
@@ -311,9 +328,42 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
             }
          }
       }
+
       display.tabPane.setSelectedIndex(0);
    }
 
+   public static void addScriptingPanel (Display display,  boolean showScriptingPanel) throws Exception {
+
+      JPanel scriptingPanel = new JPanel();
+      try {
+          if (showScriptingPanel) {
+            Class jConsoleClass = Class.forName("bsh.util.JConsole");
+            Class intepreterClass = Class.forName("bsh.Interpreter");
+            Class jConsoleInterface = Class.forName ("bsh.ConsoleInterface");
+            //Gets parameters for constructor if any
+            //Object[] jConsoleparameters = [""];
+
+            // get the right constructor method method
+            Constructor jConsoleConstructor = jConsoleClass.getConstructor(null);
+            Class[] intepreterParameters = {jConsoleInterface};
+            Constructor interpreterConstructor = intepreterClass.getConstructor(intepreterParameters);
+            // Invoke the constructors
+            Object jConsoleObject = jConsoleConstructor.newInstance(null);
+            Object[] parameters = {jConsoleObject};
+            Object interpreterObject = interpreterConstructor.newInstance(parameters);
+
+            new Thread((Runnable) interpreterObject).start(); // start a thread to call the run() method
+
+            display.tabPane.add((Component)jConsoleObject, "Scripting Panel");
+
+          }
+          display.tabPane.setSelectedIndex(0);
+      } catch (Throwable thr){
+          thr.printStackTrace();
+          WindowUtilities.showError(display, thr.toString());
+
+      }
+   }
 
    /**
     * Deploys display component.
@@ -386,6 +436,15 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
             }
           });
          jMenuMng.add(jCheckBoxMenuItemShowCDasChild);
+
+         jCheckBoxScriptingPanel.setSelected(false);
+         jCheckBoxScriptingPanel.setText("Scripting");
+         jCheckBoxScriptingPanel.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                refresh();
+            }
+          });
+         jMenuMng.add(jCheckBoxScriptingPanel);
          display.showToolbar(true);
       //end panelTree example
    }
