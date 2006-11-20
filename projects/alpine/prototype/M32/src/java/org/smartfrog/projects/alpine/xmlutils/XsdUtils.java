@@ -252,6 +252,9 @@ public final class XsdUtils {
      * @return a formatted, indented, wrapped, version of the message
      */
     public static String printToString(Element element) {
+        if(element==null) {
+            return "";
+        }
         Document doc = new Document((Element) element.copy());
         return XsdUtils.printToString(doc);
     }

@@ -196,21 +196,25 @@ public class HttpTransmitter {
                     // if is a fault, turn it into an exception.
                     try {
                         response = parser.parseStream(responseStream);
+                        //set our response
+                        tx.getContext().setResponse(response);
                     } catch (Exception e) {
                         //this is here to catch XML Responses that cannot be
                         //parsed, and to avoid the underlying problem 'remote server error'
                         //from being lost.
                         String text=responseStream.toString();
-                        throw new SoapException(
+                        SoapException ex = new SoapException(
                                 "The remote endpoint returned an error,\n"
                                         + "but the response could not be parsed\n"
-                                        + "and turned into a SOAPFault.\n"+text,
-                                e,null);
+                                        + "and turned into a SOAPFault.\n"
+                                        +"XML:"+ text+
+                                "\nParse Error:"+e.toString(),
+                                e, null);
+                        ex.addAddressDetails(request);
+                        throw ex;
                     }
-
-                    //set our response
-                    tx.getContext().setResponse(response);
-                    throw new SoapException(response);
+                    SoapException ex = new SoapException(response);
+                    throw ex;
                 }
             } catch (IOException ioe) {
                 throw new HttpTransportFault(destination, ioe);
