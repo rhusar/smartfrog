@@ -38,8 +38,12 @@ public class SoapException extends AlpineRuntimeException implements SoapFaultSo
      * @param fault
      */ 
     public SoapException(Fault fault) {
-        super(fault.getFaultString());
+        super(fault.getFaultString()!=null? fault.getFaultString():
+             fault.toXML());
         this.fault = fault;
+        if(fault.getFaultString()==null) {
+
+        }
     }
 
     /**
@@ -90,9 +94,14 @@ public class SoapException extends AlpineRuntimeException implements SoapFaultSo
         this.fault = fault;
     }
 
+    public SoapException(String text,MessageDocument message) {
+        this(text,message.getFault());
+        addAddressDetails(message);
+    }
 
     public SoapException(MessageDocument message) {
         this(message.getFault());
+        addAddressDetails(message);
     }
 
     /**
