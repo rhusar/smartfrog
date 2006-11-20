@@ -52,6 +52,8 @@ import java.io.OutputStream;
 
 /**
  * Implement Http using commons-httpclient
+ *
+ * this code passes its proxy settings down from the
  * created 23-Mar-2006 16:48:29
  */
 
@@ -81,11 +83,16 @@ public class HttpTransmitter {
         wsa.addressMessage(request);
         //create a client
         httpclient = new HttpClient();
-        propagateSettings(tx.getContext());
+        propagateNetworkSettings(tx.getContext());
     }
 
 
-    private void propagateSettings(Context settings) {
+    /**
+     * Extract proxy settings from the system and pass them down to httpclient
+     * @param settings settings context, including timeout. {@link HttpConnectionParams#SO_TIMEOUT}
+     *
+     */
+    private void propagateNetworkSettings(Context settings) {
         //proxy settings
         proxySettings = new ProxySettings();
         proxySettings.bindToSystemSettings();
