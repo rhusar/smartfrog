@@ -22,6 +22,8 @@ package org.smartfrog.projects.alpine.transport.http;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.UsernamePasswordCredentials;
 import org.apache.commons.httpclient.HostConfiguration;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * Class to pass java proxy settings down to the http client runtime.
@@ -32,8 +34,7 @@ import org.apache.commons.httpclient.HostConfiguration;
 
 public class ProxySettings {
 
-    boolean enabled = false;
-
+    private static final Log log= LogFactory.getLog(ProxySettings.class);
     private String proxyHost;
     private String proxyUser;
     private int proxyPort;
@@ -106,6 +107,7 @@ public class ProxySettings {
         proxyPort = Integer.parseInt(System.getProperty("http.proxyPort", "80"));
         proxyUser = System.getProperty("http.proxyUser");
         proxyPassword = System.getProperty("proxyPassword");
+        log.debug("Binding to proxy "+proxyHost+":"+proxyPort);
         return true;
     }
 
