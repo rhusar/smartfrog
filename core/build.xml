@@ -244,7 +244,7 @@ For more information: www.smartfrog.org
   <!-- full clean Cruise Control build without Checkout                    -->
   <!-- =================================================================== -->
     <target name="cc"
-        depends="clean, release, dist, tasks ,cc-test, mavenReportNoSVNUpdate" 
+        depends="clean,release,dist,tasks,cc-test,mavenReportNoSVNUpdate"
         description="cruise control full build, with NO checkout"/>
 
   <!-- =================================================================== -->
@@ -345,7 +345,74 @@ For more information: www.smartfrog.org
   <!-- =================================================================== -->
   <!-- cddlm compile is handed down-->
   <!-- =================================================================== -->
-  <target name="cddlm" depends="m2-install">
-    <forward2 dir="${components.project}" target="cddlm"/>
+  <target name="cddlm" depends="ivy-cddlm" />
+
+  <!-- =================================================================== -->
+  <!-- Create an ordered list of all ivy-enabled projects-->
+  <!-- Non-ivy projects are ignored-->
+  <!-- =================================================================== -->
+  <target name="ivy-init" xmlns:ivy="antlib:fr.jayasoft.ivy.ant">
+    <property file="components/libraries.properties" />
+    <ivy:configure file="antbuild/ivy/ivyconf.xml"/>
+    <presetdef name="ivy-projects">
+      <ivy:buildlist skipbuildwithoutivy="true">
+        <fileset dir="." includes="*/build.xml"/>
+        <fileset dir="extras" includes="*/build.xml"/>
+        <fileset dir="components" includes="*/build.xml"/>
+        <!--place for symlinks to external projects you want included-->
+        <fileset dir="external" includes="**/build.xml"/>
+      </ivy:buildlist>
+    </presetdef>
+    <ivy-projects reference="child.projects" />
+    <property name="child.projects.property" refid="child.projects" />
+    <echo>The order to build the projects is
+      ${child.projects.property}
+    </echo>
+    <!-- build them-->
+    <presetdef name="ivy-delegate" description="Delegate the build">
+      <subant verbose="true">
+        <buildpath refid="child.projects"/>
+        <!--<property file="master.properties"/>-->
+      </subant>
+    </presetdef>
   </target>
+
+  <target name="ivy-publish" depends="ivy-init">
+    <ivy-delegate target="published" />
+  </target>
+
+
+  <target name="published" depends="ivy-publish"/>
+
+
+  <target name="ivy-report" depends="ivy-init"
+      xmlns:ivy="antlib:fr.jayasoft.ivy.ant">
+    <property name="ivy.report.dir" location="build/ivy/reports" />
+    <delete dir="${ivy.report.dir}"/>
+    <ivy:repreport organisation="org.smartfrog" todir="${ivy.report.dir}"
+        graph="true" dot="true"/>
+  </target>
+
+  <target name="ivy-graph" depends="ivy-report" >
+    <exec executable="dot">
+      <arg value="-Tpng" />
+      <arg value="-o" />
+      <arg file="${ivy.report.dir}/smartfrog.png"/>
+      <arg file="${ivy.report.dir}//ivy-repository-report.dot"/>
+    </exec>
+  </target>
+
+  <target name="ivy-clean" depends="ivy-init">
+    <ivy-delegate target="clean" />
+  </target>
+
+  <target name="ivy-cddlm" depends="ivy-init">
+    <ivy-projects reference="cddlm.projects" root="sf-deployapi"/>
+    <subant  target="published" verbose="true">
+      <buildpath refid="cddlm.projects"/>
+      <!--<property file="master.properties"/>-->
+    </subant>
+  </target>
+
+
 </project>
