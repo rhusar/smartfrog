@@ -18,15 +18,16 @@ For more information: www.smartfrog.org
 
 */
 #include "/org/smartfrog/services/deployapi/test/system/alpine/deployapi/remote-interop.sf"
-#include "/org/smartfrog/services/deployapi/notifications/muws/notifyhost.sf"
-#include "/org/smartfrog/services/deployapi/test/system/alpine/deployapi/proxy.sf"
+
 
 TestPlan extends fullSuite {
 
   necEnabled false;
   ourgridEnabled true;
   hpEnabled false;
-  proxyEnabled true;
+
+  hpTest "";
+  necTest "";
 }
 
 

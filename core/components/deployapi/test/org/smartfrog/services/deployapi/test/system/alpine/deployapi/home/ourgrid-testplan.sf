@@ -1,0 +1,93 @@
+//import the ourgrid testplan but turn the proxy off.
+#include "/org/smartfrog/sfcore/logging/components.sf"
+#include "/org/smartfrog/sfcore/logging/logtoprimimpl.sf"
+#include "/org/smartfrog/services/deployapi/test/system/alpine/deployapi/proxy.sf"
+#include "/org/smartfrog/services/deployapi/test/system/alpine/deployapi/nec.sf"
+#include "/org/smartfrog/services/deployapi/test/system/alpine/deployapi/ourgrid.sf"
+#include "/org/smartfrog/services/deployapi/test/system/alpine/deployapi/hp.sf"
+#include "/org/smartfrog/services/www/livenessPage.sf"
+#include "/org/smartfrog/services/deployapi/notifications/muws/notifyhost.sf"
+
+
+
+  ServerTest extends TimeoutCompound {
+
+      endpoint TBD;
+      name TBD;
+      healthURL endpoint;
+      timeout 200;
+      subdir name;
+      enabled true;
+      basedir "build/test/interop";
+
+
+      health extends LivenessPage {
+        url healthURL;
+      }
+
+      notifyCompound extends NotifyHost {
+
+     }
+
+      //this has to link to a notify service in the same process
+      //notifications TBD;;
+
+      tests extends DeployapiTestRunner {
+      /**
+ * this is the muws event listener,defaulting to port 8082
+ */
+        notifications LAZY PARENT:notifyCompound:engine;
+        basedir PARENT:basedir;
+        enabled PARENT:enabled;
+        endpoint PARENT:endpoint;
+        subdir PARENT:subdir;
+
+        singleTest "notification";
+      }
+
+  }
+
+
+
+fullSuite extends Compound {
+  tempDir LAZY PROPERTY java.io.tmpdir;
+  necEnabled true;
+  ourgridEnabled true;
+  hpEnabled true;
+  proxyEnabled true;
+
+  log extends SFLog {
+    //log against our parent
+    logFrom LAZY PARENT;
+    //log to a prim
+    logTo extends LogToPrimImpl {
+      loggerClass "org.smartfrog.sfcore.logging.LogToPrimImpl";
+      //the destination prim is defined here
+      logTo extends TestListenerLogImpl {
+
+      }
+      //trace out what is going on
+      debug true;
+    }
+  }
+
+
+  testLog LAZY log:logTo:logTo;
+
+
+
+
+
+  OurgridTest extends ServerTest {
+    name "ourgrid";
+    endpoint ourgrid_endpoint;
+    enabled ourgridEnabled;
+    proxyEnabled PARENT:proxyEnabled;
+    testLog LAZY PARENT:testLog;
+  }
+
+
+}
+
+sfConfig extends fullSuite {
+}
