@@ -40,19 +40,33 @@ public class OptionSet {
     protected byte optionLength = 1;
     /** Usage. */
     public String usage = "\n" +
-        "Usage: sfManagementConsole  [-h hostname] [-p  portnumber] [-w  windowPosition(C,N,SE,..)] [-r] [-c] [-?]\n";
+        "Usage: sfManagementConsole  [-h hostname] [-p  portnumber] [-w  windowPosition(C,N,SE,..)] [-r] [-c] [-s] [-?]\n";
+    /** Help string . */
+    public String helpTxt = "\n* Parameters: " + "\n" +
+    "    -h hostname:    hostname\n" +
+    "    -p portnumber:  port number\n" +
+    "    -w postion:     window position (C,NE,SW,...) \n" +
+    "    -r:             show root and local process \n" +
+    "    -c:             don't show CompDesc as tree leaves \n"+
+    "    -s:    show Scripting panel\n" +
+    "    -?:             this help text.\n"+
+    " \n";
+
     /** Error string. */
     public String errorString = null;
-    /** Flag indicating remote daemon. */
+    /** Flag indicating remote daemon. @value */
     public boolean isRemoteDaemon = false;
-    /** Falg indicating remote sub process. */
+    /** Falg indicating remote sub process. @value */
     public boolean isRemoteSubprocess = false;
     /** Flag indicating window position. */
     public boolean isWindowPosition = false;
-    /** Flag indicating show root process. */
+    /** Flag indicating show root process. @value */
     public boolean showRootProcess = false;
-    /** Flag indicating show Cd as child. */
+    /** Flag indicating show Cd as child. @value */
     public boolean showCDasChild = true;
+    /** Flag indicating show Scripting panel. @value*/
+    public boolean showScripting = false;
+
 
     /** Hostname. */
     public String host = "localhost";
@@ -64,6 +78,8 @@ public class OptionSet {
     public Vector names = new Vector();
     /** Flag indicating exit status. */
     public boolean exit = false;
+
+
 
     /** Constructs an OptionSet from an array of arguments.
      *
@@ -77,7 +93,7 @@ public class OptionSet {
                 if (args[i].charAt(0) == optionFlagIndicator) {
                     switch (args[i].charAt(1)) {
                     case '?':
-                        errorString = "SFManagementConsole help";
+                        errorString = "SFManagementConsole help"+helpTxt;
                         exitCode = ExitCodes.EXIT_CODE_SUCCESS;
                         break;
 
@@ -123,6 +139,10 @@ public class OptionSet {
 
                     case 'c':
                          showCDasChild = false;
+
+                         break;
+                    case 's':
+                         showScripting = true;
 
                          break;
 
