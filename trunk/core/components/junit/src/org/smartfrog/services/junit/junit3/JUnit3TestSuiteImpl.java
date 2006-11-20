@@ -278,7 +278,7 @@ public class JUnit3TestSuiteImpl extends AbstractTestSuite implements JUnitTestS
         //then look for an override, which is mandatory if we do not know who
         //we are right now.
         suitename = sfResolve(ATTR_NAME, suitename, suitename==null);
-        log("Running test suite " + suitename + " on host " + hostname);
+        log("Running JUnit3 test suite " + suitename + " on host " + hostname);
     }
 
     /**
@@ -369,7 +369,7 @@ public class JUnit3TestSuiteImpl extends AbstractTestSuite implements JUnitTestS
      */
     public boolean runTests() throws RemoteException, SmartFrogException {
 
-        log.info("running test suite " + suitename);
+        log.info("Running junit3 test suite " + suitename);
         getConfiguration();
         if (configuration == null) {
             throw new SmartFrogException(

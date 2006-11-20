@@ -41,7 +41,7 @@ import java.util.HashMap;
  */
 public abstract class AbstractXmlListenerComponent extends PrimImpl
         implements XmlListenerFactory {
-    protected Log log;
+    private Log log;
     protected ComponentHelper helper = new ComponentHelper(this);
     protected String outputDir;
     protected String preamble;
@@ -154,7 +154,7 @@ public abstract class AbstractXmlListenerComponent extends PrimImpl
                 + "; hostname=" + useHostname
                 +" ; useProcessname="
                 +useProcessname);
-        log.info("preamble is " + preamble != null ? preamble : "(undefined)");
+        log.info("preamble is " + (preamble != null ? preamble : "(undefined)"));
     }
 
     /**
