@@ -72,6 +72,8 @@ public abstract class SubscribingTestBase extends StandardTestBase {
     protected NotifyServer lookupNotifyServer() throws SmartFrogResolutionException, RemoteException {
         Prim self = getHostedTestSuite();
         Prim prim = self.sfResolve(ref, (Prim) null, true);
+        assertTrue("Expected reference of type NotifyServer, not "+prim,
+                prim instanceof NotifyServer);
         return (NotifyServer) prim;
     }
 
