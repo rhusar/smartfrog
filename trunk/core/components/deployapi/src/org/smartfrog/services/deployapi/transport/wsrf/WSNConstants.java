@@ -50,7 +50,7 @@ public interface WSNConstants {
     String USE_NOTIFY = "UseNotify";
     String SUBSCRIPTION_POLICY = "SubscriptionPolicy";
     String INITIAL_TERMINATION_TIME = "InitialTerminationTime";
-    String DIALECT = "dialect";
+    String DIALECT = "Dialect";
     String SUBSCRIPTION_REFERENCE = "SubscriptionReference";
     String SUBSCRIBE_RESPONSE = "SubscribeResponse";
     String MUWS_MANAGEMENT_EVENT = "ManagementEvent";
