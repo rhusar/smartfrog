@@ -187,6 +187,7 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
                         addProcessesPanels(newDisplay, jCheckBoxMenuItemShowRootProcessPanel.isSelected(), //showRootProcess,
                               jCheckBoxMenuItemShowCDasChild.isSelected(),hostname, port);
                          addScriptingPanel (newDisplay, jCheckBoxScriptingPanel.isSelected());
+
                      } catch (Exception ex) {
                         ex.printStackTrace();
                         if (LogFactory.getLog("SFManagamentConsole").isErrorEnabled()){
@@ -222,10 +223,17 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
          jMenuMng.add(jCheckBoxMenuItemShowCDasChild);
 
          jCheckBoxScriptingPanel.setSelected(showScripting);
-         jCheckBoxScriptingPanel.setText("Scripting");
+         jCheckBoxScriptingPanel.setText("Add Scripting ...");
          jCheckBoxScriptingPanel.addActionListener(new ActionListener() {
                public void actionPerformed(ActionEvent e) {
-                            refreshButton.doClick();
+                   try {
+                       addScriptingPanel(newDisplay,jCheckBoxScriptingPanel.isSelected());
+                       jCheckBoxScriptingPanel.setSelected(false);
+                   } catch (Exception e1) {
+                       WindowUtilities.showError(newDisplay,e1.toString());
+                   }
+
+                   refreshButton.doClick();
                }
          });
          jMenuMng.add(jCheckBoxScriptingPanel);
@@ -233,6 +241,7 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
          newDisplay.setVisible(true);
          addProcessesPanels(newDisplay, showRootProcess, showCDasChild, hostname, port);
          addScriptingPanel(newDisplay,jCheckBoxScriptingPanel.isSelected());
+         jCheckBoxScriptingPanel.setSelected(false);
 
          return newDisplay;
       }
@@ -438,9 +447,15 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
          jMenuMng.add(jCheckBoxMenuItemShowCDasChild);
 
          jCheckBoxScriptingPanel.setSelected(false);
-         jCheckBoxScriptingPanel.setText("Scripting");
+         jCheckBoxScriptingPanel.setText("Add Scripting ...");
          jCheckBoxScriptingPanel.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
+                try {
+                    addScriptingPanel (display,jCheckBoxScriptingPanel.isSelected());
+                    jCheckBoxScriptingPanel.setSelected(false);
+                } catch (Exception e1) {
+                    WindowUtilities.showError(display,e1.toString());
+                }
                 refresh();
             }
           });
