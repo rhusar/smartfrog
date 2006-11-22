@@ -182,18 +182,23 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
                   if ((e.getActionCommand()).equals("refreshButton")) {
                      //preserve scripting panel
                      JTabbedPane scriptingTab = initScriptingTabbedPane (newDisplay.tabPane,false);
-                     newDisplay.cleanAddedPanels();
+                     try {
+                      newDisplay.cleanAddedPanels();
+                     } catch (Throwable thr1) {
+                        if (LogFactory.getLog("SFManagementConsole").isErrorEnabled()){
+                          LogFactory.getLog("SFManagementConsole").error(thr1);
+                        }
+                     }
                      try {
                         addProcessesPanels(newDisplay, jCheckBoxMenuItemShowRootProcessPanel.isSelected(), //showRootProcess,
                               jCheckBoxMenuItemShowCDasChild.isSelected(),hostname, port);
                          //Add scripting panel
-                         if (scriptingTab!=null) newDisplay.add(scriptingPanelName,scriptingTab);
-                     } catch (Exception ex) {
-                        ex.printStackTrace();
+                         if (scriptingTab!=null) newDisplay.tabPane.add(scriptingPanelName,scriptingTab);
+                     } catch (Throwable ex) {
                         if (LogFactory.getLog("SFManagementConsole").isErrorEnabled()){
                           LogFactory.getLog("SFManagementConsole").error(ex);
                         }
-                        exitWith("Error in SFDeployDisplay.refresh():" + ex, ExitCodes.EXIT_ERROR_CODE_GENERAL);
+                        //exitWith("Error in SFDeployDisplay.refresh():" + ex, ExitCodes.EXIT_ERROR_CODE_GENERAL);
                      }
                   }
                }
@@ -571,7 +576,6 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
          ((DeployTreePanel) panelTree).showCDasChild(jCheckBoxMenuItemShowCDasChild.isSelected());
          ((DeployTreePanel) panelTree).refresh();
       } catch (Throwable ex) {
-//         Logger.logQuietly("Failure refresh() SFDeployDisplay!",ex);
          if (sfLogStatic().isIgnoreEnabled()){
            sfLogStatic().ignore("Failure refresh() SFDeployDisplay!",ex);
          }
