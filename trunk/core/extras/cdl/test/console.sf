@@ -36,7 +36,7 @@ ITS MEDIA, AND YOU HEREBY WAIVE ANY CLAIM IN THIS REGARD.
 
 #include "org/smartfrog/services/display/components.sf"
 #include "org/smartfrog/services/trace/components.sf"
-#include "org/smartfrog/services/persistence/components.sf"
+//#include "org/smartfrog/services/persistence/components.sf"
 #include "org/smartfrog/components.sf"
 
 // Default sfDaemon Display
