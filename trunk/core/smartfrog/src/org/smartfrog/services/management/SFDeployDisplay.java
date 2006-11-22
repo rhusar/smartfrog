@@ -387,6 +387,7 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
         classParameters = new Class[]{String.class, Object.class};
         Method method = intepreterClass.getMethod("set",classParameters);
         ProcessCompound rootProcess = SFProcess.getRootLocator().getRootProcessCompound(InetAddress.getByName(hostname), port);
+        method.invoke(interpreterObject, new Object[] {"bsh.system.shutdownOnExit",new Boolean(false)});  
         method.invoke(interpreterObject, new Object[]{"rootProcess",rootProcess});
         method.invoke(interpreterObject, new Object[]{"localProcess",SFProcess.getProcessCompound()});
         String panelName="";
