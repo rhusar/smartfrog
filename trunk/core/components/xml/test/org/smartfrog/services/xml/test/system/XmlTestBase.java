@@ -40,12 +40,12 @@ import java.rmi.RemoteException;
 /**
  * base class for tests; currently extends the smartfrog testbase
  */
-public abstract class TestBase extends SmartFrogTestBase {
+public abstract class XmlTestBase extends SmartFrogTestBase {
 
     public static final String CODEBASE_PROPERTY = "org.smartfrog.codebase";
 
     /**
-     * Well known attribute for xml under a compoint
+     * Well known attribute for xml under a component
      */
     public static final String ATTR_XML = "xml";
 
@@ -54,7 +54,7 @@ public abstract class TestBase extends SmartFrogTestBase {
      */
     private Prim application;
 
-    protected TestBase(String name) {
+    protected XmlTestBase(String name) {
         super(name);
     }
 
@@ -148,15 +148,16 @@ public abstract class TestBase extends SmartFrogTestBase {
     /**
      * load an XML File
      * @param file
+     * @param validate
      * @return the loaded document.
      * @throws SAXException
      * @throws ParsingException
      * @throws IOException
      */
-    public Document loadXMLFile(File file) throws SAXException,
+    public Document loadXMLFile(File file, boolean validate) throws SAXException,
             ParsingException, IOException {
-        XMLReader xmlParser = ParserHelper.createXmlParser(true,true,false);
-        Builder builder = new Builder(xmlParser, true);
+        XMLReader xmlParser = ParserHelper.createXmlParser(validate,true,false);
+        Builder builder = new Builder(xmlParser, validate);
         Document document = builder.build(file);
         return document;
     }

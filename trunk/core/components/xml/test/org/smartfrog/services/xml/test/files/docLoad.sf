@@ -43,22 +43,18 @@ rootDoc extends XmlDocument {
 
 }
 */
-tempFile extends TempFile {
+
+textFile extends TempFileWithCleanup {
     prefix "testxml";
     suffix ".xml";
-    deleteOnExit true;
-}
-
-textFile extends TextFile {
-    file tempFile;
+    encoding "UTF-8";
     text xmltext;
 }
 
 /**
  XML doc as a multiline string
  */
-xmltext
-##<?xml value="1.0" ?>
+xmltext ##<?xml value="1.0" ?>
 <!DOCTYPE meals>
 <meals >
   <meal name="soup" served="warm">
@@ -76,12 +72,12 @@ xmltext
 
 
 sfConfig  extends Compound {
-    sfSyncTerminate true;
 
-    file extends textFile;
+    xmlfile extends textFile;
 
     xml extends XmlDocument {
-        filename LAZY PARENT:file:absolutePath;
+        xml "";
+        filename LAZY PARENT:xmlfile;
     }
 
 
