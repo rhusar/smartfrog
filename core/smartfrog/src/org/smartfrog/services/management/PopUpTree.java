@@ -24,14 +24,7 @@ import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import javax.swing.JComponent;
-import javax.swing.JMenuItem;
-
-import javax.swing.JPopupMenu;
-import javax.swing.JDialog;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
-import javax.swing.JTree;
+import javax.swing.*;
 import javax.swing.tree.TreePath;
 import java.awt.Frame;
 
@@ -48,7 +41,11 @@ import org.smartfrog.sfcore.componentdescription.ComponentDescriptionImpl;
 import org.smartfrog.sfcore.logging.LogSF;
 import org.smartfrog.sfcore.logging.LogFactory;
 import org.smartfrog.services.display.WindowUtilities;
+import org.smartfrog.services.display.Display;
+import org.smartfrog.services.display.SFDisplay;
 import org.smartfrog.sfcore.common.*;
+import org.smartfrog.sfcore.processcompound.SFProcess;
+import org.smartfrog.sfcore.processcompound.ProcessCompound;
 
 
 /**
@@ -88,6 +85,9 @@ public class PopUpTree extends JComponent implements ActionListener {
 
     /** Item for Tree popup menu - sfParentageChanged. */
     JMenuItem menuItemParentageChanged = new JMenuItem();
+    /** Item for Tree popup menu - add ScriptingPanel. */
+    JMenuItem menuItemAddScriptingPanel = new JMenuItem();
+
     /**
      *  Constructs PopUpTree object
      */
@@ -110,6 +110,7 @@ public class PopUpTree extends JComponent implements ActionListener {
         menuItemDTerminate.setText("Detach and Terminate Comp");
         menuItemDumpContext.setText("Diagnostics Report");
         menuItemParentageChanged.setText("sfParentageChanged()");
+        menuItemAddScriptingPanel.setText("Add Scripting Panel");
         menuItemIntrospector.setText("Instrospector");
 
         // Tree: options
@@ -124,6 +125,7 @@ public class PopUpTree extends JComponent implements ActionListener {
         popupTree.add(menuItemDumpContext);
 
         popupTree.add(menuItemParentageChanged);
+        popupTree.add(menuItemAddScriptingPanel);
         popupTree.add(menuItemIntrospector);
 
         // Add action listeners for tree popup
@@ -139,6 +141,7 @@ public class PopUpTree extends JComponent implements ActionListener {
         menuItemDumpContext.addActionListener(this);
 
         menuItemParentageChanged.addActionListener(this);
+        menuItemAddScriptingPanel.addActionListener(this);
         menuItemIntrospector.addActionListener(this);
     }
 
@@ -171,6 +174,7 @@ public class PopUpTree extends JComponent implements ActionListener {
             menuItemDTerminate.setVisible(true);
             menuItemDumpContext.setVisible(true);
             menuItemParentageChanged.setVisible(true);
+            menuItemAddScriptingPanel.setVisible(true);
             menuItemIntrospector.setVisible(true);
         }else if  (getNode()instanceof ComponentDescription){
           menuItemRemoveAttribute.setVisible(true);
@@ -180,6 +184,7 @@ public class PopUpTree extends JComponent implements ActionListener {
             menuItemDTerminate.setVisible(false);
             menuItemDumpContext.setVisible(true);
             menuItemParentageChanged.setVisible(false);
+            menuItemAddScriptingPanel.setVisible(true);
             menuItemIntrospector.setVisible(true);
         }
         popupTree.show(comp, x, y);
@@ -276,6 +281,43 @@ public class PopUpTree extends JComponent implements ActionListener {
 
             }
             modalDialog("Introspection "+ name ,  introspect(node), "", source);
+        }  else if (source == menuItemAddScriptingPanel) {
+            StringBuffer message=new StringBuffer();
+            String name = "error";
+            String hostname = "localhost";
+            int port = 3800;
+            if (node instanceof Prim) {
+                try {
+                    Prim objPrim = ((Prim)node);
+                    name = ((Prim)objPrim).sfCompleteName().toString();
+                    name = name.substring(name.lastIndexOf("."));
+                    hostname = objPrim.sfResolve("sfHost",hostname,false);
+                    ProcessCompound pc = SFProcess.getProcessCompound();
+                    if (pc!=null) {
+                     port = pc.sfResolve("sfRootLocatorPort",port,false);
+                    }
+                } catch (Exception ex) {
+                    message.append("\n Error: "+ex.toString());
+                }
+            } else {
+                try {
+                    ComponentDescription objCD = ((ComponentDescription)node);
+                    name = ((ComponentDescription)objCD).sfCompleteName().toString();
+                    name = name.substring(name.lastIndexOf("."));
+                } catch (Exception ex) {
+                    message.append("\n Error: "+ex.toString());
+                }
+
+            }
+
+            try {
+                Object obj = (parent.getParent());
+                SFDeployDisplay.addScriptingPanel(((JTabbedPane)(obj)) ,name ,node, hostname ,port );
+            } catch (Exception e1) {
+                if (sfLog().isErrorEnabled()) sfLog().error (e1);
+                WindowUtilities.showError(this,e1.toString());
+            }
+
         }
 
     }
@@ -386,7 +428,9 @@ public class PopUpTree extends JComponent implements ActionListener {
       Object obj = getNode();
       //we need to check is the parent is a copy
       if (isParentNodeACopy()  || getRDNNode().equals("*copy*") ) {
-          WindowUtilities.showError(this,"The node selected is a copy and no action can be applied\n Use a console running in the local process of this node");
+          String msg = "The node selected is a copy and no action can be applied\n Use a console running in the local process of this node";
+          if (sfLog().isErrorEnabled()) sfLog().error (msg);
+          WindowUtilities.showError(this,msg);
           return;
       }
       //System.out.println("remove() "+obj);
@@ -404,8 +448,9 @@ public class PopUpTree extends JComponent implements ActionListener {
           parent.refresh();
         }
         catch (Exception ex) {
-          if (sfLog().isErrorEnabled()) sfLog().error ("Problem when trying to remove '"+cd);
-          WindowUtilities.showError(this,"Problem when trying to remove '"+cd+"'. \n"+ex.toString());
+          String msg = "Problem when trying to remove '";
+          if (sfLog().isErrorEnabled()) sfLog().error (msg + cd);
+          WindowUtilities.showError(this,msg +cd+"'. \n"+ex.toString());
         }
       }
     }
@@ -424,8 +469,9 @@ public class PopUpTree extends JComponent implements ActionListener {
                 name = ((Prim)obj).sfCompleteName().toString();
                 org.smartfrog.services.management.DeployMgnt.terminate((Prim) obj, type, reason);
             } catch (Exception ex){
-               if (sfLog().isErrorEnabled()) sfLog().error ("Problem when trying to Terminate '"+name,ex);
-               WindowUtilities.showError(this,"Problem when trying to Terminate '"+name+"'. \n"+ex.toString());
+               String msg = "Problem when trying to Terminate '" +name;
+               if (sfLog().isErrorEnabled()) sfLog().error (msg ,ex);
+               WindowUtilities.showError(this,msg +"'. \n"+ex.toString());
             }
         }
     }
@@ -446,8 +492,9 @@ public class PopUpTree extends JComponent implements ActionListener {
                 org.smartfrog.services.management.DeployMgnt.dTerminate((Prim) obj, type, reason);
                 parent.refresh();
             } catch (Exception ex){
-                if (sfLog().isErrorEnabled()) sfLog().error ("Problem when trying to Detach and Terminate '"+name,ex);
-               WindowUtilities.showError(this,"Problem when trying to Detach and Terminate '"+name+"'. \n"+ex.toString());
+                String msg = "Problem when trying to Detach and Terminate '"+name;
+                if (sfLog().isErrorEnabled()) sfLog().error (msg,ex);
+               WindowUtilities.showError(this, msg + "'. \n"+ex.toString());
             }
         }
     }
@@ -466,8 +513,9 @@ public class PopUpTree extends JComponent implements ActionListener {
                 org.smartfrog.services.management.DeployMgnt.detach((Prim) obj);
                 parent.refresh();
             } catch (Exception ex){
-              if (sfLog().isErrorEnabled()) sfLog().error ("Problem when trying to Detach and Terminate '"+name);
-              WindowUtilities.showError(this,"Problem when trying to Detach and Terminate '"+name+"'. \n"+ex.toString());
+              String msg = "Problem when trying to Detach and Terminate '"+name;
+              if (sfLog().isErrorEnabled()) sfLog().error (msg);
+              WindowUtilities.showError(this, msg +"'. \n"+ex.toString());
             }
             // Refresh Console.
             // To do: automatic Refresh ;-)

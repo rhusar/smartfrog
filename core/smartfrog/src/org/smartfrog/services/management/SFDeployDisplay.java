@@ -25,13 +25,9 @@ import java.awt.*;
 import java.net.InetAddress;
 import java.rmi.RemoteException;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
 
-import javax.swing.JButton;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTree;
-import javax.swing.JMenu;
-import javax.swing.JCheckBoxMenuItem;
+import javax.swing.*;
 
 import org.smartfrog.sfcore.logging.LogFactory;
 import org.smartfrog.sfcore.logging.LogSF;
@@ -48,6 +44,7 @@ import org.smartfrog.sfcore.processcompound.SFProcess;
 import org.smartfrog.sfcore.processcompound.ProcessCompound;
 
 import org.smartfrog.sfcore.common.ExitCodes;
+import org.smartfrog.sfcore.common.OrderedHashtable;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.reference.Reference;
 
@@ -63,8 +60,9 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
    private JScrollPane scrollPaneTree = null;
 
    final JCheckBoxMenuItem jCheckBoxMenuItemShowCDasChild = new JCheckBoxMenuItem();
-   final JCheckBoxMenuItem jCheckBoxScriptingPanel = new JCheckBoxMenuItem();
+   final JMenuItem jMenuScriptingPanel = new JMenuItem();
 
+   static final String scriptingPanelName = "Scripting:";
    /**
     * Constructs SFDeployDisplay object
     *
@@ -85,7 +83,7 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
       //Init system
       org.smartfrog.SFSystem.initSystem();
       //Logger.log("Starting management window...");
-      LogSF sflog = LogFactory.getLog("sfManagementConsole");
+      LogSF sflog = sfLogStatic();
       sflog.out("Starting management window...");
 
       String nameDisplay = "sfManagementConsole";
@@ -112,7 +110,7 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
       } catch (java.rmi.ConnectException cex) {
          exitWith("Error: " + cex.getMessage(), ExitCodes.EXIT_ERROR_CODE_GENERAL);
       } catch (Exception e) {
-         LogFactory.getLog("sfManagementConsole").error("Error in SFDeployDisplay.main():" + e,e);
+         sfLogStatic().error("Error in SFDeployDisplay.main():" + e,e);
          exitWith("Error in SFDeployDisplay.main():" + e, ExitCodes.EXIT_ERROR_CODE_GENERAL);
       }
 
@@ -146,16 +144,16 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
       JMenu jMenuMng = new JMenu();
       final JCheckBoxMenuItem jCheckBoxMenuItemShowRootProcessPanel = new JCheckBoxMenuItem();
       final JCheckBoxMenuItem jCheckBoxMenuItemShowCDasChild = new JCheckBoxMenuItem();
-      final JCheckBoxMenuItem jCheckBoxScriptingPanel = new JCheckBoxMenuItem();
+      final JMenuItem jMenuScriptingPanel = new JMenuItem();
       String infoConnection = ("sfManagementConsole connecting to " +
             hostname + ":" + port);
       //Logger.log(infoConnection);
-      LogFactory.getLog("sfManagementConsole").out(infoConnection);
+      sfLogStatic().out(infoConnection);
       nameDisplay = nameDisplay + " [" + "sfManagementConsole connected to " +
             hostname + ":" + port + "]";
 
       if (showRootProcess) {
-         LogFactory.getLog("sfManagementConsole").warn(" showing rootProcess");
+         sfLogStatic().warn(" showing rootProcess");
          //Logger.log(" showing rootProcess");
       } else {
          //System.out.println("");
@@ -182,16 +180,18 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
                public void actionPerformed(ActionEvent e) {
                   //System.out.println("ActionEvent SFDEployDisplay: "+ e);
                   if ((e.getActionCommand()).equals("refreshButton")) {
+                     //preserve scripting panel
+                     JTabbedPane scriptingTab = initScriptingTabbedPane (newDisplay.tabPane,false);
                      newDisplay.cleanAddedPanels();
                      try {
                         addProcessesPanels(newDisplay, jCheckBoxMenuItemShowRootProcessPanel.isSelected(), //showRootProcess,
                               jCheckBoxMenuItemShowCDasChild.isSelected(),hostname, port);
-                         addScriptingPanel (newDisplay, jCheckBoxScriptingPanel.isSelected());
-
+                         //Add scripting panel
+                         if (scriptingTab!=null) newDisplay.add(scriptingPanelName,scriptingTab);
                      } catch (Exception ex) {
                         ex.printStackTrace();
-                        if (LogFactory.getLog("SFManagamentConsole").isErrorEnabled()){
-                          LogFactory.getLog("SFManagamentConsole").error(ex);
+                        if (LogFactory.getLog("SFManagementConsole").isErrorEnabled()){
+                          LogFactory.getLog("SFManagementConsole").error(ex);
                         }
                         exitWith("Error in SFDeployDisplay.refresh():" + ex, ExitCodes.EXIT_ERROR_CODE_GENERAL);
                      }
@@ -222,26 +222,24 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
          });
          jMenuMng.add(jCheckBoxMenuItemShowCDasChild);
 
-         jCheckBoxScriptingPanel.setSelected(showScripting);
-         jCheckBoxScriptingPanel.setText("Add Scripting ...");
-         jCheckBoxScriptingPanel.addActionListener(new ActionListener() {
+         jMenuScriptingPanel.setText("Add Scripting ...");
+         jMenuScriptingPanel.addActionListener(new ActionListener() {
                public void actionPerformed(ActionEvent e) {
                    try {
-                       addScriptingPanel(newDisplay,jCheckBoxScriptingPanel.isSelected());
-                       jCheckBoxScriptingPanel.setSelected(false);
+                      addScriptingPanel (newDisplay.tabPane, null,null,hostname,port );
                    } catch (Exception e1) {
+                       if (sfLogStatic().isErrorEnabled()){ sfLogStatic().error(e1);}
                        WindowUtilities.showError(newDisplay,e1.toString());
                    }
-
-                   refreshButton.doClick();
+                  //refreshButton.doClick();
                }
          });
-         jMenuMng.add(jCheckBoxScriptingPanel);
+         jMenuMng.add(jMenuScriptingPanel);
 
          newDisplay.setVisible(true);
          addProcessesPanels(newDisplay, showRootProcess, showCDasChild, hostname, port);
-         addScriptingPanel(newDisplay,jCheckBoxScriptingPanel.isSelected());
-         jCheckBoxScriptingPanel.setSelected(false);
+         if (showScripting) addScriptingPanel (newDisplay.tabPane, null,null,hostname,port );
+         
 
          return newDisplay;
       }
@@ -306,10 +304,10 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
          display.tabPane.add(deployPanel, "rootProcess", indexPanel++);
          //Add Local Process Panel
           if (SFProcess.getProcessCompound()!=null && (!SFProcess.getProcessCompound().sfIsRoot())) {
-            String processName = "localSubProcess";
+            String processName = "localProcess";
             try {
                 processName = SFProcess.getProcessCompound().sfCompleteName().toString();
-            } catch (Exception ex) { LogFactory.getLog("sfManagementConsole").ignore(ex);}
+            } catch (Exception ex) { sfLogStatic().ignore(ex);}
             deployLocalPPanel = new DeployTreePanel(SFProcess.getProcessCompound(),false, true,showCDasChild);
             deployLocalPPanel.setEnabled(true);
             display.tabPane.add(deployLocalPPanel, processName, indexPanel++);
@@ -341,40 +339,92 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
       display.tabPane.setSelectedIndex(0);
    }
 
-   public static void addScriptingPanel (Display display,  boolean showScriptingPanel) throws Exception {
+    private static LogSF sfLogStatic() {
+        return LogFactory.getLog("sfManagementConsole");
+    }
+
+    /**
+     * This will create a new panel with the console for the scripting engine and will declare serveral objects in the
+     * scripting engine: rootProcess, localProcess, sfObj and the string provided by sfObjName pointing to the sfObj.
+     * @param tabPane display tabPane where to add the panel
+     * @param sfObjName  Name used to identify the object
+     * @param sfObj Object to be linked in the scripting engine
+     * @param hostname where to locate the root process compound
+     * @param port port where to locate the root process
+     * @throws Exception
+     */
+   public static void addScriptingPanel (JTabbedPane tabPane, String sfObjName, Object sfObj, String hostname, int port) throws Exception {
+
 
       JPanel scriptingPanel = new JPanel();
+
+      JTabbedPane scriptingTabPane = null;
+
+
+
       try {
-          if (showScriptingPanel) {
-            Class jConsoleClass = Class.forName("bsh.util.JConsole");
-            Class intepreterClass = Class.forName("bsh.Interpreter");
-            Class jConsoleInterface = Class.forName ("bsh.ConsoleInterface");
-            //Gets parameters for constructor if any
-            //Object[] jConsoleparameters = [""];
+        Class jConsoleClass = Class.forName("bsh.util.JConsole");
+        Class intepreterClass = Class.forName("bsh.Interpreter");
+        Class jConsoleInterface = Class.forName ("bsh.ConsoleInterface");
+        //Gets parameters for constructor if any
+        //Object[] jConsoleparameters = [""];
 
-            // get the right constructor method method
-            Constructor jConsoleConstructor = jConsoleClass.getConstructor(null);
-            Class[] intepreterParameters = {jConsoleInterface};
-            Constructor interpreterConstructor = intepreterClass.getConstructor(intepreterParameters);
-            // Invoke the constructors
-            Object jConsoleObject = jConsoleConstructor.newInstance(null);
-            Object[] parameters = {jConsoleObject};
-            Object interpreterObject = interpreterConstructor.newInstance(parameters);
+        // get the right constructor method method
+        Constructor jConsoleConstructor = jConsoleClass.getConstructor(null);
+        Class[] classParameters = {jConsoleInterface};
+        Constructor interpreterConstructor = intepreterClass.getConstructor(classParameters);
+        // Invoke the constructors
+        Object jConsoleObject = jConsoleConstructor.newInstance(null);
+        Object[] parameters = {jConsoleObject};
+        Object interpreterObject = interpreterConstructor.newInstance(parameters);
+        // Invoke method set("prim",this);
+        //java.lang.String string, java.lang.Object object
+        classParameters = new Class[]{String.class, Object.class};
+        Method method = intepreterClass.getMethod("set",classParameters);
+        ProcessCompound rootProcess = SFProcess.getRootLocator().getRootProcessCompound(InetAddress.getByName(hostname), port);
+        method.invoke(interpreterObject, new Object[]{"rootProcess",rootProcess});
+        method.invoke(interpreterObject, new Object[]{"localProcess",SFProcess.getProcessCompound()});
+        String panelName="";
+        if (sfObj!=null) {
+           method.invoke(interpreterObject, new Object[]{"sfObj",sfObj});
+           method.invoke(interpreterObject, new Object[]{sfObjName,sfObj});
+           panelName = sfObjName;
+        } else {
+            panelName = "rootProcess";
+        }
 
-            new Thread((Runnable) interpreterObject).start(); // start a thread to call the run() method
-
-            display.tabPane.add((Component)jConsoleObject, "Scripting Panel");
-
-          }
-          display.tabPane.setSelectedIndex(0);
+        new Thread((Runnable) interpreterObject).start(); // start a thread to call the run() method
+        scriptingTabPane = initScriptingTabbedPane(tabPane,true);
+        scriptingTabPane.add((Component)jConsoleObject, panelName);
+        scriptingTabPane.setSelectedIndex(0);
       } catch (Throwable thr){
-          thr.printStackTrace();
-          WindowUtilities.showError(display, thr.toString());
+          if (sfLogStatic().isErrorEnabled()){ sfLogStatic().error(thr);}
+          WindowUtilities.showError(scriptingTabPane, thr.toString());
 
       }
    }
 
-   /**
+    /**
+     *
+     * @param tabPane Tabbed pane where to add the scripting tabbed pane.
+     * @param createIfMissing
+     * @return  if not createIfMissing then it returns null, otherwise it will always return a tabbed pane
+     */
+    private static JTabbedPane initScriptingTabbedPane(JTabbedPane tabPane, boolean createIfMissing) {
+        JTabbedPane scriptingTabPane;
+
+        int tabIndex = tabPane.indexOfTab(scriptingPanelName);
+        if (tabIndex <= -1){
+           if (!(createIfMissing)) return null; 
+           scriptingTabPane = new JTabbedPane();
+           tabPane.add(scriptingPanelName,scriptingTabPane);
+        } else {
+            scriptingTabPane = (JTabbedPane) tabPane.getComponentAt(tabIndex);
+        }
+        return scriptingTabPane;
+    }
+
+    /**
     * Deploys display component.
     *
     *@throws  SmartFrogException  If unable to deploy the component
@@ -392,14 +442,6 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
            // We add the new Tree component here
            root = this.sfResolveWithParser(SmartFrogCoreKeys.SF_ROOT);
          }
-         //else {
-             // Special case for the local process compound. sfResolve will get the remote stub
-
-//                if (sfResolveHere("root").toString().equals("LAZY PROCESS")){
-//                    root = SFProcess.getProcessCompound();
-//                }
-//             }
-         //}
 
          if (root instanceof ComponentDescription) {
             try {
@@ -446,20 +488,19 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
           });
          jMenuMng.add(jCheckBoxMenuItemShowCDasChild);
 
-         jCheckBoxScriptingPanel.setSelected(false);
-         jCheckBoxScriptingPanel.setText("Add Scripting ...");
-         jCheckBoxScriptingPanel.addActionListener(new ActionListener() {
+         jMenuScriptingPanel.setText("Add Scripting ...");
+         jMenuScriptingPanel.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 try {
-                    addScriptingPanel (display,jCheckBoxScriptingPanel.isSelected());
-                    jCheckBoxScriptingPanel.setSelected(false);
+                    addScriptingPanel (display.tabPane, "sfManagementConsole", this,"localhost",3800 );
                 } catch (Exception e1) {
+                    if (sfLogStatic().isErrorEnabled()){ sfLogStatic().error(e1); }
                     WindowUtilities.showError(display,e1.toString());
                 }
                 refresh();
             }
           });
-         jMenuMng.add(jCheckBoxScriptingPanel);
+         jMenuMng.add(jMenuScriptingPanel);
          display.showToolbar(true);
       //end panelTree example
    }
@@ -531,8 +572,8 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
          ((DeployTreePanel) panelTree).refresh();
       } catch (Throwable ex) {
 //         Logger.logQuietly("Failure refresh() SFDeployDisplay!",ex);
-         if (LogFactory.getLog("sfManagementConsole").isIgnoreEnabled()){
-           LogFactory.getLog("sfManagementConsole").ignore("Failure refresh() SFDeployDisplay!",ex);
+         if (sfLogStatic().isIgnoreEnabled()){
+           sfLogStatic().ignore("Failure refresh() SFDeployDisplay!",ex);
          }
       }
    }
@@ -545,8 +586,8 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
     */
    public void actionPerformed(ActionEvent e) {
       //Logger.log("ActionEvent SFDEployDisplay: "+ e);
-      if (LogFactory.getLog("sfManagementConsole").isTraceEnabled()){
-        LogFactory.getLog("sfManagementConsole").trace("ActionEvent SFDEployDisplay: "+ e);
+      if (sfLogStatic().isTraceEnabled()){
+        sfLogStatic().trace("ActionEvent SFDEployDisplay: "+ e);
       }
       if ((e.getActionCommand()).equals("refreshButton")) {
          refresh(e);
