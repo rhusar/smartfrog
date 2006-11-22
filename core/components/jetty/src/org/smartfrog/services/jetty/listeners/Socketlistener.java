@@ -48,19 +48,19 @@ import java.rmi.RemoteException;
  */
 
 public class Socketlistener extends PrimImpl implements SocketListenerIntf {
-    Reference listenerPortRef = new Reference(LISTENER_PORT);
-    Reference serverHostRef = new Reference(SERVER_HOST);
-    Reference serverNameRef = new Reference(SERVER_NAME);
+    private Reference listenerPortRef = new Reference(LISTENER_PORT);
+    private Reference serverHostRef = new Reference(SERVER_HOST);
+    private Reference serverNameRef = new Reference(SERVER_NAME);
 
-    int listenerPort = 8080;
+    private int listenerPort = 8080;
 
-    String serverHost = null;
+    private String serverHost = null;
 
-    String serverName = null;
+    private String serverName = null;
 
-    SocketListener listener = null;
+    private SocketListener listener = null;
 
-    JettyHelper jettyHelper = new JettyHelper(this);
+    private JettyHelper jettyHelper = new JettyHelper(this);
 
   /** Standard RMI constructor */
   public Socketlistener() throws RemoteException {
