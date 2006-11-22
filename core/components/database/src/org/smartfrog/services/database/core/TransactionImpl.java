@@ -73,7 +73,7 @@ public class TransactionImpl extends JdbcOperationImpl implements Transaction {
     public static final String ERROR_NO_COMMANDS = "No commands declared";
     public static final String ERROR_TOO_MANY_COMMANDS = "Too many command attributes";
 
-    private List commands;
+    private List<String> commands;
     private boolean escapeProcessing = false;
     private String delimiter;
     private int expectedStatementCount = -1;
@@ -153,11 +153,14 @@ public class TransactionImpl extends JdbcOperationImpl implements Transaction {
             }
         } else {
             if(commandList!=null) {
-                //the commands are set to the command list; no duplication or processing
-                commands=commandList;
+                //the commands are copied to the command list as strings.
+                commands=new ArrayList<String>(commandList.size());
+                for(Object o:commandList) {
+                    commands.add(o.toString());
+                }
             } else {
                 //no commands at all. That's not really allowed. 
-                commands = new ArrayList(0);
+                commands = new ArrayList<String>(0);
                 command = "";
             }
         }
@@ -194,13 +197,13 @@ public class TransactionImpl extends JdbcOperationImpl implements Transaction {
      * delimiters not at tne d
      *
      * @param sql
-     * @param delimiter
+     * @param commandDelimiter
      * @return a (possibly empty) list of commands.
      * @throws IOException
      */
-    public List crackCommands(String sql, String delimiter) throws IOException {
-        List list = new ArrayList();
-        int delimiterSize = delimiter.length();
+    public List<String> crackCommands(String sql, String commandDelimiter) throws IOException {
+        List<String> list = new ArrayList<String>();
+        int delimiterSize = commandDelimiter.length();
         String line;
         StringBuffer buffer = new StringBuffer();
         BufferedReader in = new BufferedReader(new StringReader(sql));
@@ -213,7 +216,7 @@ public class TransactionImpl extends JdbcOperationImpl implements Transaction {
             //add the line
             buffer.append(line);
             String trimmed = line.trim();
-            if (trimmed.endsWith(delimiter)) {
+            if (trimmed.endsWith(commandDelimiter)) {
                 //this is the end of the line, so we break it here
                 String sqlcommand = buffer.substring(0, buffer.length() - delimiterSize);
                 //don't add empty commands, but dont strip off trailing whitespace for the sake
@@ -242,18 +245,18 @@ public class TransactionImpl extends JdbcOperationImpl implements Transaction {
      * @throws SmartFrogDeploymentException
      */
     public void executeCommands(Connection connection,
-                                Iterator commandIterator)
+                                Iterator<String> commandIterator)
             throws SmartFrogDeploymentException {
         while (commandIterator.hasNext()) {
-            String command = commandIterator.next().toString();
+            String command = commandIterator.next();
             executeOneCommand(connection, command);
         }
     }
 
     /**
      * Directly derived from apache code, has apache copyright until rewritten better
-     * @param connection
-     * @param command
+     * @param connection connection to use
+     * @param command comand to issue
      * @throws SmartFrogDeploymentException
      */
     public void executeOneCommand(Connection connection,String command)
@@ -312,9 +315,9 @@ public class TransactionImpl extends JdbcOperationImpl implements Transaction {
 
     /**
      * Override point, act on the results
-     * @param results
+     * @param results the results of the operation
+     * @throws SQLException
      */
-
     protected void processResults(ResultSet results)
             throws SQLException {
         if(printResults) {
@@ -325,8 +328,8 @@ public class TransactionImpl extends JdbcOperationImpl implements Transaction {
 
     /**
      * Print a result set to the log at info level.
-     * @param results
-     * @throws SQLException
+     * @param results to process
+     * @throws SQLException if something failed
      */
     protected void printResults(ResultSet results) throws SQLException {
         ResultSetMetaData md = results.getMetaData();
