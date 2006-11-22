@@ -35,6 +35,7 @@ IF NOT "%1"=="" GOTO start
 
 :end
 @echo off
+rem for JMX remote agent add: -Dcom.sun.management.jmxremote 
 %SFJVM% %SFCMDPARAMETERS% -Dorg.smartfrog.sfcore.processcompound.sfProcessName=rootProcess org.smartfrog.SFSystem %1 %2 %3 %4 %5 %6 %7 %8 %9
 
 endlocal
