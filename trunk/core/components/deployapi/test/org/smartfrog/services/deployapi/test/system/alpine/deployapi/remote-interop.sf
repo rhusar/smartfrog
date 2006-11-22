@@ -58,7 +58,7 @@ For more information: www.smartfrog.org
       //notifications TBD;;
 
       tests extends DeployapiTestRunner {
-        notifications LAZY PARENT:ATTRIB notifications;
+        notifications LAZY PARENT:ATTRIB notifications:engine;
         basedir PARENT:basedir;
         enabled PARENT:enabled;
         endpoint PARENT:endpoint;

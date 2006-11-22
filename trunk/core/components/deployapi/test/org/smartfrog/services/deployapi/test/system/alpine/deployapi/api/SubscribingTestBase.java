@@ -21,6 +21,8 @@ package org.smartfrog.services.deployapi.test.system.alpine.deployapi.api;
 
 import org.smartfrog.services.deployapi.alpineclient.model.CallbackSubscription;
 import org.smartfrog.services.deployapi.alpineclient.model.SystemSession;
+import org.smartfrog.services.deployapi.alpineclient.model.WsrfSession;
+import org.smartfrog.services.deployapi.alpineclient.model.PortalSession;
 import org.smartfrog.services.deployapi.notifications.muws.MuwsEventReceiver;
 import org.smartfrog.services.deployapi.notifications.muws.NotifyServer;
 import org.smartfrog.services.deployapi.notifications.muws.NotifyServerImpl;
@@ -30,9 +32,14 @@ import org.smartfrog.services.cddlm.cdl.base.LifecycleStateEnum;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.reference.Reference;
+import org.smartfrog.projects.alpine.wsa.AddressDetails;
+import org.smartfrog.projects.alpine.wsa.AlpineEPR;
+import org.smartfrog.projects.alpine.faults.AlpineRuntimeException;
 
 import javax.xml.namespace.QName;
 import java.rmi.RemoteException;
+import java.net.URL;
+import java.net.MalformedURLException;
 
 import junit.framework.AssertionFailedError;
 
@@ -46,8 +53,6 @@ public abstract class SubscribingTestBase extends StandardTestBase {
 
     private Reference ref;
     private static final String NOTIFICATIONS = "notifications";
-    private static final int SUBSCRIBE_WAIT_TIMEOUT = 5000;
-    private static final String PROPERTY_WAIT_TIMEOUT = "wait.timeout";
 
     public SubscribingTestBase(String name) {
         super(name);
@@ -71,7 +76,8 @@ public abstract class SubscribingTestBase extends StandardTestBase {
      */
     protected NotifyServer lookupNotifyServer() throws SmartFrogResolutionException, RemoteException {
         Prim self = getHostedTestSuite();
-        Prim prim = self.sfResolve(ref, (Prim) null, true);
+        Prim prim = self.sfResolve(ref, (Prim) null, false);
+        assertTrue("Configuration error: No notify server at "+ref.toString(),prim!=null);
         assertTrue("Expected reference of type NotifyServer, not "+prim,
                 prim instanceof NotifyServer);
         return (NotifyServer) prim;
@@ -98,18 +104,53 @@ public abstract class SubscribingTestBase extends StandardTestBase {
             throws SmartFrogResolutionException, RemoteException {
         assertNull("subscription in use", subscription);
         MuwsEventReceiver receiver=createSubscriptionReceiver();
-        subscription = getPortal().subscribe(topic, receiver.getURL(), true, null);
+        PortalSession session = getPortal();
+        subscription = session.subscribe(topic, receiver.getURL(), true, null);
         subscription.setReceiver(receiver);
+        subscription.setTimeout(getSubscribeWaitTimeout());
+        patchSubscription(session,subscription);
         return subscription;
     }
+
+
 
     /**
      * unsubscribe from the current endpoint
      */
     protected void unsubscribe() {
-        CallbackSubscription.unsubscribe(subscription);
-        subscription=null;
+        try {
+            CallbackSubscription.unsubscribe(subscription);
+        } finally {
+            subscription = null;
+        }
     }
+
+    /**
+     * Fix problems wherein the remote endpoints get their hostname wrong
+     * @param sub subscription to fix up.
+     */
+    protected void patchSubscription(WsrfSession session,CallbackSubscription sub) {
+        AlpineEPR sessionEPR = session.getAddress().getTo();
+        URL sessionURL=sessionEPR.createAddressURL();
+        URL subURL = sub.getEndpoint().createAddressURL();
+        if("localhost".equals(subURL.getHost()) && subURL.getPath().indexOf("/muse/services/")>=0) {
+            //bad hostname
+
+            try {
+                URL newSub;
+                newSub = new URL(subURL.getProtocol(),
+                        sessionURL.getHost(),    // <- this is the patched host
+                        sessionURL.getPort(),
+                        subURL.getFile());       // <- the file is the path plus query
+                log.warn("Patching the path of the subscription to "+newSub);
+                sub.bind(new AlpineEPR(newSub));
+            } catch (MalformedURLException e) {
+                throw new AlpineRuntimeException("Could not convert the URL",e);
+            }
+        }
+
+    }
+
 
     public CallbackSubscription getSubscription() {
         return subscription;
@@ -132,14 +173,6 @@ public abstract class SubscribingTestBase extends StandardTestBase {
         assertNotNull("Subscription timed out waiting for "+reason,event);
 
         return event;
-    }
-
-    /**
-     * Get the junit parameter for waiting
-     * @return
-     */
-    protected int getSubscribeWaitTimeout() {
-        return getJunitParameter(PROPERTY_WAIT_TIMEOUT,SUBSCRIBE_WAIT_TIMEOUT,false);
     }
 
     /**
@@ -175,6 +208,9 @@ public abstract class SubscribingTestBase extends StandardTestBase {
         SystemSession system = createSystem(null);
         setSystem(system);
         subscription = system.subscribeToLifecycleEvents(createSubscriptionReceiver());
+        subscription.setTimeout(getSubscribeWaitTimeout());
+        //fix up bad hostnames.
+        patchSubscription(system, subscription);
         return system;
     }
 

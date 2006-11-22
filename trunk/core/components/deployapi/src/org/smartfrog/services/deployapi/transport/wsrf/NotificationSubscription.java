@@ -171,11 +171,7 @@ public class NotificationSubscription extends AbstractEventSubscription
         callback.validate();
         Element topicExpression =
                 XomHelper.getElement(request, "wsnt:" + TOPIC_EXPRESSION, true);
-        String dialect =
-                XomHelper.getAttributeValue(topicExpression, Constants.WSRF_WSNT_NAMESPACE, DIALECT, true);
-        if (!dialect.equals(WSNConstants.SIMPLE_DIALECT)) {
-            throw FaultRaiser.raiseBadArgumentFault("Unsupported Dialect " + dialect);
-        }
+        WsrfUtils.expectSimpleDialect(topicExpression);
         addWsntResource(TOPIC_EXPRESSION, topicExpression);
         //get the qname from the topic.
         String qnameExpresion = topicExpression.getValue();
@@ -332,8 +328,7 @@ xs:EventId>http://www.gridforum.org/cddlm/components/2005/02/events/Lifecycle
     protected SoapElement createNotificationMessage(AlpineEPR producer, Element message) {
         SoapElement notificationMessage = new SoapElement("wsnt:"+ WSNT_NOTIFICATION_MESSAGE, Constants.WSRF_WSNT_NAMESPACE);
         SoapElement topicElt = new SoapElement("wsnt:"+ WSNT_TOPIC, Constants.WSRF_WSNT_NAMESPACE);
-        topicElt.addAttribute(
-                new Attribute("wsnt:" + DIALECT, Constants.WSRF_WSNT_NAMESPACE, WSNConstants.SIMPLE_DIALECT));
+        WsrfUtils.addSimpleDialectAttribute(topicElt);
         topicElt.appendQName(topic);
         notificationMessage.appendChild(topicElt);
         if (producer != null) {

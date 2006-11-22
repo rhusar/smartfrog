@@ -79,8 +79,8 @@ public abstract class AlpineTestBase extends TestCase implements TestContextInje
     public static final String VALIDATING_PROPERTY = "validating";
     public XPathContext xpath;
     private ResourceLoader resourceLoader;
-    DescriptorHelper descriptorHelper;
-    File tempdir;
+    private DescriptorHelper descriptorHelper;
+    private File tempdir;
     protected HashMap<String, Object> testContext;
 
     /**
@@ -158,8 +158,8 @@ public abstract class AlpineTestBase extends TestCase implements TestContextInje
     /**
      * bind to a target; set up the endpoint, endpointURL and epr fields from the target URL
      *
-     * @param target
-     * @throws java.net.MalformedURLException
+     * @param target target host
+     * @throws java.net.MalformedURLException if the URL is invalid
      */
     protected void bindToPortal(String target) throws MalformedURLException {
         portalEPR = new AlpineEPR(target);
@@ -174,8 +174,8 @@ public abstract class AlpineTestBase extends TestCase implements TestContextInje
         return log;
     }
 
-    private Boolean getBoolParameter(String property) {
-        return Boolean.valueOf(getJunitParameter(property, false));
+    private boolean getBoolParameter(String property) {
+        return Boolean.valueOf(getJunitParameter(property, false)).booleanValue();
     }
 
     public AlpineEPR getPortalEPR() {
@@ -304,10 +304,10 @@ public abstract class AlpineTestBase extends TestCase implements TestContextInje
     }
 
     protected SystemSession createSystem(String hostname) {
-        SystemSession system = getPortal().create(hostname);
+        SystemSession session = getPortal().create(hostname);
         //this sets it up for cleanup on teardown
-        setSystem(system);
-        return system;
+        setSystem(session);
+        return session;
     }
 
     protected SoapMessageParser createXmlParser() throws SAXException {

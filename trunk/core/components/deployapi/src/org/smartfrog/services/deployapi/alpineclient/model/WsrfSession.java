@@ -370,4 +370,13 @@ public abstract class WsrfSession extends Session {
         Transmission transmission = queue(operation, request);
         return transmission.blockForResult(getTimeout());
     }
+
+    /**
+     * For use in the toString method; return the session type
+     *
+     * @return the type of this session, e,g "SOAP", "WSRF"
+     */
+    protected String sessionType() {
+        return "WSRF";
+    }
 }

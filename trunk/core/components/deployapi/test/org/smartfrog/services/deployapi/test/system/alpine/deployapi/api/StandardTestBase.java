@@ -49,6 +49,8 @@ public abstract class StandardTestBase extends AlpineTestBase  {
      * {@value}
      */
     public static final String TEST_IMPLEMENTED = "test.implemented";
+    private static final int SUBSCRIBE_WAIT_TIMEOUT = 5000;
+    private static final String PROPERTY_WAIT_TIMEOUT = "wait.timeout";
 
     protected StandardTestBase(String name) {
         super(name);
@@ -67,14 +69,6 @@ public abstract class StandardTestBase extends AlpineTestBase  {
         if(delay>0) {
             Thread.sleep(delay*1000);
         }
-    }
-
-    /**
-     * Tears down the fixture, for example, close a network connection.
-     * This method is called after a test is executed.
-     */
-    protected void tearDown() throws Exception {
-        super.tearDown();
     }
 
     protected boolean isSystemInActiveSystems(String id) {
@@ -162,10 +156,19 @@ public abstract class StandardTestBase extends AlpineTestBase  {
         Element cdl=(Element) document.getRootElement().copy();
         SoapElement request = getDescriptorHelper().createInitRequestInline(CddlmConstants.XML_CDL_NAMESPACE, cdl, null);
         getSystem().initialize(request);
+        getSystem().setTimeout(getSubscribeWaitTimeout());
     }
 
     protected void runSystem(String cdlResource) throws Exception {
         initializeSystem(cdlResource);
         getSystem().run();
+    }
+
+    /**
+     * Get the junit parameter for waiting
+     * @return
+     */
+    protected int getSubscribeWaitTimeout() {
+        return getJunitParameter(PROPERTY_WAIT_TIMEOUT,SUBSCRIBE_WAIT_TIMEOUT,false);
     }
 }
