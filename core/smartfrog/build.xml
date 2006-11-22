@@ -18,7 +18,7 @@
 <!DOCTYPE project [
      <!ENTITY security SYSTEM "private/buildSecurity.xml">
 ]>
-<project name="SmartFrog" default="all" basedir=".">
+<project name="SmartFrog" default="all" basedir="." xmlns:ivy="antlib:fr.jayasoft.ivy.ant">
   <description>
     Introduction
     ============
@@ -113,11 +113,12 @@
   <property name="src" value="src"/>
   <!-- where the source is -->
   <property name="src.dir" location="src"/>
-  <!-- where the source is -->
-  <property name="build" location="build"/>
+  <!-- where all compiled artifacts should go -->
+  <property name="build.dir" location="build"/>
+  <property name="build" location="${build.dir}"/>
   <!-- where the files for the jar file go -->
-  <!-- where the files for the jar file go -->
-  <property name="build.classes.dir" location="${build}"/>
+  <property name="build.classes.dir" location="${build.dir}"/>
+  <property name="build.extra.dir" location="buildextra"/>
   <property name="dist.dir" location="dist"/>
   <!-- where the files to zip go -->
   <property name="releases.dir" location="releases"/>
@@ -230,8 +231,9 @@
   <!--                                                                     -->
   <!-- =================================================================== -->
   <target name="initbuild" depends="init">
-    <mkdir dir="${build}"/>
+    <mkdir dir="${build.dir}"/>
     <mkdir dir="${build.classes.dir}"/>
+    <mkdir dir="${build.extra.dir}"/>
   </target>
   <!-- =================================================================== -->
   <!--                                                                     -->
@@ -247,10 +249,6 @@
     <mkdir dir="${dist.signedLib.dir}"/>
     <mkdir dir="${dist.src.dir}"/>
   </target>
-  <!-- =================================================================== -->
-  <!-- FixCRLF for different platforms  only inside DIST!                  -->
-  <!-- =================================================================== -->
-  <target name="fixCRLF" depends="copybins" description="adapts CRLF for different OS">  </target>
   <!-- =================================================================== -->
   <!--                                                                     -->
   <!-- =================================================================== -->
@@ -408,7 +406,18 @@
   <!-- execute permissions are set on binary stuff, permissions that get   -->
   <!--     lost                                                            -->
   <!-- =================================================================== -->
-  <target name="copybins" depends="initdist">
+  <target name="init.scripts.pattern" depends="init">
+    <patternset id="shellscripts">
+      <include name="smartfrog"/>
+      <include name="sf*"/>
+      <include name="*.pl"/>
+      <include name="*.py"/>
+      <exclude name="*.bat"/>
+      <exclude name="*.cmd"/>
+    </patternset>
+  </target>
+
+  <target name="copybins" depends="initdist,init.scripts.pattern">
     <copy todir="${dist.bin.dir}">
       <fileset dir="${bin}">
         <include name="**/*"/>
@@ -416,9 +425,24 @@
         <exclude name="**/tools"/>
       </fileset>
     </copy>
-    <chmod dir="${dist.bin.dir}" perm="ugo+rx" excludes="**/*.ico, **/*.ini, **/*.sf*,**/*.bat"/>
-    <chmod dir="${dist.bin.dir}/security" perm="ugo+rx" excludes="**/*.ico, **/*.ini, **/*.sf*,**/*.bat"/>
+    <!-- recursively set all batch files to DOS-->
+    <fixcrlf srcdir="${dist.bin.dir}" eol="dos" includes="**/*.bat,**/*.cmd" />
+    <!-- set the shell scripts to unix and executable-->
+    <fixcrlf srcdir="${dist.bin.dir}" eol="unix" eof="remove" >
+      <patternset refid="shellscripts"/>
+    </fixcrlf>
+    <chmod dir="${dist.bin.dir}" perm="ugo+rx" >
+      <patternset refid="shellscripts"/>
+    </chmod>
+    <!-- set the security shell scripts to unix and executable-->
+    <fixcrlf srcdir="${dist.bin.dir}/security" eol="unix" eof="remove" >
+      <patternset refid="shellscripts"/>
+    </fixcrlf>
+    <chmod dir="${dist.bin.dir}/security" perm="ugo+rx" >
+      <patternset refid="shellscripts"/>
+    </chmod>
   </target>
+
   <!-- =================================================================== -->
   <!-- Copy PDF, HTML files from docs to dist/docs                         -->
   <!-- =================================================================== -->
@@ -501,18 +525,25 @@
   <!-- =================================================================== -->
 
   <target name="target-names" depends="init,generateversion">
+    <property name="smartfrog.title"
+        value="smartfrog" />
     <property name="smartfrog.stub"
-      value="smartfrog-${Version}" />
+      value="${smartfrog.title}-${Version}" />
     <property name="smartfrog.jar"
       location="${dist.lib.dir}/${smartfrog.stub}.jar" />
 
+    <property name="sf-services.title"
+        value="sfServices" />
     <property name="sf-services.stub"
-      value="sfServices-${Version}" />
+      value="${sf-services.title}-${Version}" />
     <property name="sf-services.jar"
       location="${dist.lib.dir}/${sf-services.stub}.jar" />
 
+    <property name="sf-examples.title"
+        value="sfExamples" />
+
     <property name="sf-examples.stub"
-      value="sfExamples-${Version}" />
+      value="${sf-examples.title}-${Version}" />
     <property name="sf-examples.jar"
       location="${dist.lib.dir}/${sf-examples.stub}.jar" />
 
@@ -559,7 +590,9 @@
   <!-- =================================================================== -->
   <!--  DIST                                                               -->
   <!-- =================================================================== -->
-  <target name="dist" depends="build,initdist,jars,copylibs,copybins,copyPrivate,copydocs, copyexamples,copyTestCA,buildSetup,fixCRLF,srczip" description="Prepares distribution package">
+  <target name="dist"
+      depends="build,initdist,jars,copylibs,copybins,copyPrivate,copydocs, copyexamples,copyTestCA,buildSetup,srczip"
+      description="Prepares distribution package">
   </target>
   <!-- =================================================================== -->
   <!--  SECUREDIST                                                         -->
@@ -584,7 +617,8 @@
   <target name="clean" depends="init" description="Restores the distribution to its clean state">
     <!-- Delete the ${build} ${dist.dir} ${jdocs} directory trees -->
     <!-- remove parser source files -->
-    <delete dir="${build}" failonerror="false"/>
+    <delete dir="${build.dir}" failonerror="false"/>
+    <delete dir="${build.extra.dir}" failonerror="false"/>
     <delete dir="${dist.dir}" failonerror="false"/>
     <delete dir="${src.dir}/documentation" failonerror="false"/>
   </target>
@@ -614,7 +648,10 @@
   <!-- =================================================================== -->
   <!-- do everything -->
   <!-- =================================================================== -->
-  <target name="all" depends="dist,sfParseTest" description="creates all the packages required to run smartfrog, and validate any .sf in the package">  </target>
+  <target name="all" depends="dist,sfParseTest"
+      description="creates all the packages required to run smartfrog, and validate any .sf in the package">
+  </target>
+
   <target name="default" depends="all" description="default target for the project; invokes 'all'"/>
 
 
@@ -775,6 +812,42 @@
 
 
   </target>
+
+
+  <target name="ivy-init" depends="init,target-names"    >
+    <property name="ivy.dir" location="${build.extra.dir}/ivy" />
+    <property name="ivy.lib.dir" location="${ivy.dir}/lib" />
+    <property name="ivy.reports.dir" location="${build.dir}/ivy/reports"/>
+    <ivy:configure file="ivyconf.xml"/>
+  </target>
+
+  <target name="ivy-resolve" depends="ivy-init">
+    <ivy:resolve />
+  </target>
+
+  <target name="ivy-retrieve" depends="ivy-resolve">
+    <ivy:retrieve pattern="${ivy.lib.dir}/[conf]/[artifact]-[revision].[ext]" sync="true" />
+  </target>
+
+  <target name="ivy-report" depends="ivy-resolve">
+    <ivy:report todir="${ivy.reports.dir}"/>
+    <echo> published Ivy report to 
+${ivy.reports.dir}
+    </echo>
+  </target>
+
+  <!--jars,-->
+  <target name="ready-to-publish" depends="jars,ivy-report"/>
+
+  <target name="ivy-publish" depends="ready-to-publish">
+    <ivy:publish resolver="local" pubrevision="${Version}"
+        overwrite="true"
+        artifactspattern="${dist.dir}/lib/[artifact]-[revision].[ext]" />
+  </target>
+
+  <target name="published" depends="ivy-publish,m2-install"
+      description="Publish artifacts to the local repositories"
+      />
 
 </project>
 <!-- End of file -->

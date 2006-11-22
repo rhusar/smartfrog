@@ -454,6 +454,7 @@
     <sf-javadoc
         sourcepath="${src.dir}"
         destdir="${dist.jdocs.dir}"
+        source="${javac.java.version}"
         classpathref="compile.classpath"
         >
       <group title="SmartFrog Packages" packages="org.smartfrog.*"/>
