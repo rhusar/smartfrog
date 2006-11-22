@@ -194,7 +194,7 @@ public final class Diagnostics {
             header(out, "System properties");
             doReportSystemProperties(out);
 
-            header(out, org.smartfrog.Version.versionString() + " - "+org.smartfrog.Version.buildDate());
+            header(out, org.smartfrog.Version.versionString());
             out.append("\n");
 
         }
@@ -304,7 +304,7 @@ public final class Diagnostics {
         header(out, "System properties");
         doReportSystemProperties(out);
 
-        header(out, org.smartfrog.Version.versionString() + " - "+org.smartfrog.Version.buildDate());
+        header(out, org.smartfrog.Version.versionString() );
         out.append("\n");
 
     }
