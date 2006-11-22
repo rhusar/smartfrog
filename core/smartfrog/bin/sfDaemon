@@ -56,7 +56,7 @@ done
 #echo $CMDLINE
 #$CMDLINE
 
-
+# For JMX remote agent add: -Dcom.sun.management.jmxremote 
 if test "$SFCODEBASE" && ! test "$SFSECURITY"; then
         java $JVMARGS "$SFDEFAULTINI" "$SFDEFAULTSF" $SFRMIHOSTNAME "$SFCODEBASE" -Dorg.smartfrog.sfcore.processcompound.sfProcessName=rootProcess org.smartfrog.SFSystem $CLASSARGS
 elif test "$SFSECURITY" && ! test "$SFCODEBASE"; then
