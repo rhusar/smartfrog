@@ -31,6 +31,8 @@ import org.smartfrog.sfcore.compound.Compound;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.reference.Reference;
+import org.smartfrog.sfcore.reference.ReferencePart;
+import org.smartfrog.sfcore.reference.HereReferencePart;
 import org.smartfrog.sfcore.processcompound.ProcessCompound;
 import org.smartfrog.sfcore.processcompound.SFProcess;
 
@@ -199,7 +201,7 @@ public class DeployEntry implements Entry {
      */
     public String getRDN() {
         //System.out.println("getRDN()"+getRDN(getDN()));
-        return getRDN(getDN());
+        return getRDN(getDNReference());
     }
 
     /**
@@ -209,9 +211,46 @@ public class DeployEntry implements Entry {
      */
     public String getParentDN() {
         //System.out.println("getParentDN()"+getParentDN(getDN()));
-        return getParentDN(getDN());
+        return getParentDN(getDNReference());
     }
 
+    /**
+     *  Gets the dN attribute of the DeployEntry object
+     *
+     *@return    The dN value
+     */
+    public Reference getDNReference() {
+        Reference ref = new Reference();
+        ref.addElement(new HereReferencePart("unknown"));;
+
+        if (entry instanceof String) {
+            ref = new Reference();
+            ref.addElement(new HereReferencePart(entry));;
+            return ref;
+        } else if (entry instanceof Prim) {
+            //System.out.println("EntryPrim: getting name");
+            try {
+                ref = ((Prim) entry).sfCompleteName();
+                //System.out.println("EntryPrim: getting name - "+name);
+            } catch (java.rmi.NoSuchObjectException nex){
+                //Ignore. component has terminated and RMI object has been
+                //unexported
+                if (sfLog().isIgnoreEnabled()) sfLog().ignore(nex);
+            } catch (Exception ex) {
+                if (sfLog().isErrorEnabled()) sfLog().error(ex);
+            }
+        } else if (entry instanceof ComponentDescription) {
+            //System.out.println("EntryCD: getting name");
+            try {
+                ref = ((ComponentDescription) entry).sfCompleteName();
+            //    System.out.println("EntryCD: getting name - "+name);
+            } catch (Exception ex) {
+                if (sfLog().isErrorEnabled()) sfLog().error(ex);
+            }
+        }
+        //System.out.println("getDN(): "+name);
+        return (ref);
+    }
     /**
      *  Gets the dN attribute of the DeployEntry object
      *
@@ -246,7 +285,6 @@ public class DeployEntry implements Entry {
         //System.out.println("getDN(): "+name);
         return (name);
     }
-
     //*****************************
 
     /**
@@ -609,6 +647,7 @@ public class DeployEntry implements Entry {
      *
      *@param  DN  DeployEntry
      *@return   rdn attribute
+     * @deprecated
      */
     private String getRDN(String DN) {
           String RDN ="";
@@ -620,6 +659,29 @@ public class DeployEntry implements Entry {
           }
           return RDN;
     }
+
+    /**
+     *  Gets the rDN attribute of the DeployEntry object
+     *
+     *@param  DN  DeployEntry
+     *@return   rdn attribute
+     */
+    private String getRDN(Reference DN) {
+          String RDN ="";
+          if (this.showRootProcessName) {
+             RDN = this.getRDNProcessCompound();
+          }
+          if (RDN.equals("")){
+             ReferencePart refP = DN.lastElement();
+             if (refP instanceof HereReferencePart){
+               return ((HereReferencePart)refP).toString(-1);  
+             } else {
+               return refP.toString();
+             }
+          }
+          return RDN;
+    }
+
 
     /**
      *  Gets the registered Name in ProcessCompound for Entry object
@@ -669,6 +731,7 @@ public class DeployEntry implements Entry {
      *
      *@param  DN  DeployEntry
      *@return     The parentDN value
+     * @deprecated
      */
     private String getParentDN(String DN) {
         if (DN.lastIndexOf(':') > 0) {
@@ -678,6 +741,22 @@ public class DeployEntry implements Entry {
         }
     }
 
+    /**
+     *  Gets the parentDN attribute of the DeployEntry object
+     *
+     *@param  DN  DeployEntry
+     *@return     The parentDN value
+     */
+    private String getParentDN(Reference DN) {
+        if (DN.size()>1) {
+            Reference newRef = (Reference) DN.copy();
+            ReferencePart refP = DN.lastElement();
+            newRef.removeElement(refP);
+            return (newRef.toString());
+        } else {
+            return null;
+        }
+    }
     /**
      *  Gets the msgChild4Parent attribute of the DeployEntry object
      *
