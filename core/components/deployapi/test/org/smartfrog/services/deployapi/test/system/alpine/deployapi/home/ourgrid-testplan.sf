@@ -21,6 +21,7 @@
       basedir "build/test/interop";
 
 
+
       health extends LivenessPage {
         url healthURL;
       }
@@ -74,7 +75,9 @@ fullSuite extends Compound {
 
   testLog LAZY log:logTo:logTo;
 
-
+      proxy extends Proxy {
+        enabled proxyEnabled;
+      }
 
 
 

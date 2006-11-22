@@ -50,7 +50,8 @@ public class CallbackSubscription extends WsrfSession {
     /**
      * extract the subscription from a message
      * @throws AlpineRuntimeException if parsing fails
-     * @param payload
+     * @param payload payload to get the addresss from
+     * @param parent parent session
      */
     public CallbackSubscription(WsrfSession parent,Element payload) {
         super(parent,null);
@@ -102,4 +103,17 @@ public class CallbackSubscription extends WsrfSession {
          return getReceiver().waitForEvent(milliseconds);
     }
 
+
+    public String toString() {
+        return super.toString()+" with returns to "+getReceiver().getURL();
+    }
+
+    /**
+     * For use in the toString method; return the session type
+     *
+     * @return the type of this session, e,g "SOAP", "WSRF"
+     */
+    protected String sessionType() {
+        return "Callback";
+    }
 }

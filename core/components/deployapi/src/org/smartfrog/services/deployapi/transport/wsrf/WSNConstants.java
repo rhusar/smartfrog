@@ -44,7 +44,9 @@ public interface WSNConstants {
 
 
     String SUBSCRIBE ="Subscribe";
-    String SIMPLE_DIALECT="http://www.ibm.com/xmlns/stdwip/web-services/WSTopics/TopicExpression/simple";
+    String IBM_DIALECT="http://www.ibm.com/xmlns/stdwip/web-services/WSTopics/TopicExpression/simple";
+    String OASIS_DIALECT="http://docs.oasis-open.org/wsn/2004/06/TopicExpression/Simple";
+    String SIMPLE_DIALECT=OASIS_DIALECT;
     String CONSUMER_REFERENCE = "ConsumerReference";
     String TOPIC_EXPRESSION = "TopicExpression";
     String USE_NOTIFY = "UseNotify";

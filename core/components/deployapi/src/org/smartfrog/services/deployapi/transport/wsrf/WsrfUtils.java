@@ -30,6 +30,8 @@ import org.smartfrog.projects.alpine.wsa.AlpineEPR;
 import org.smartfrog.services.xml.utils.ResourceLoader;
 import org.smartfrog.services.xml.utils.XmlCatalogResolver;
 import org.smartfrog.services.deployapi.system.Constants;
+import org.smartfrog.services.deployapi.binding.XomHelper;
+import org.smartfrog.services.deployapi.transport.faults.FaultRaiser;
 import org.smartfrog.sfcore.languages.cdl.CdlCatalog;
 
 import javax.xml.namespace.QName;
@@ -44,6 +46,7 @@ import java.util.ArrayList;
  */
 
 public final class WsrfUtils {
+    public static final String ERROR_UNSUPPORTED_DIALECT = "Unsupported Dialect:";
 
     private WsrfUtils() {
     }
@@ -203,10 +206,9 @@ xsd:dateTime
                 Constants.WS_ADDRESSING_NAMESPACE, "wsa");
         subscribe.appendChild(consumer);
         SoapElement topicElement=WsntElement(WSNConstants.TOPIC_EXPRESSION);
-        topicElement.addAttribute(new Attribute("wsnt:" +WSNConstants.DIALECT,
-                Constants.WSRF_WSNT_NAMESPACE,
-                WSNConstants.SIMPLE_DIALECT));
+        addSimpleDialectAttribute(topicElement);
         topicElement.appendQName(topic);
+        assert assertSimpleDialect(topicElement);
         subscribe.appendChild(topicElement);
         SoapElement notifyElement=WsntElement(WSNConstants.USE_NOTIFY);
         notifyElement.appendChild(Boolean.toString(useNotify));
@@ -219,4 +221,56 @@ xsd:dateTime
         return subscribe;
 
     }
+
+    /**
+     * Add a dialect element to an attribute
+     * @param topicElement
+     */
+    public static void addSimpleDialectAttribute(Element topicElement) {
+        Attribute attribute;
+        attribute = new Attribute(WSNConstants.DIALECT,
+                WSNConstants.SIMPLE_DIALECT);
+/*
+        attribute = new Attribute("wsnt:" + WSNConstants.DIALECT,
+                Constants.WSRF_WSNT_NAMESPACE,
+                WSNConstants.SIMPLE_DIALECT);
+*/
+        topicElement.addAttribute(attribute);
+    }
+
+    /**
+     * Get the dialect info from the topic
+     * @param topic topic to scan
+     * @return the value of the @Dialect attribute
+     */
+    public static String extractDialect(Element topic) {
+        String dialect =
+               // XomHelper.getAttributeValue(topic, Constants.WSRF_WSNT_NAMESPACE, WSNConstants.DIALECT, true);
+                XomHelper.getAttributeValue(topic,"",WSNConstants.DIALECT, true);
+        return dialect;
+    }
+
+    /**
+     * Verify that the message contains a single dialect.
+     * @param topic topic to scan
+     * @throws org.smartfrog.services.deployapi.transport.faults.BaseException if the dialect is unsupported
+     */
+    public static void expectSimpleDialect(Element topic) {
+        String dialect=extractDialect(topic);
+        if (!WSNConstants.SIMPLE_DIALECT.equals(dialect)) {
+            throw FaultRaiser.raiseBadArgumentFault(ERROR_UNSUPPORTED_DIALECT + dialect);
+        }
+    }
+
+    /**
+     * Verify that the message contains a single dialect.
+     *
+     * @param topic topic to scan
+     * @return true so that we can be used in assert statements
+     */
+    public static boolean assertSimpleDialect(Element topic) {
+        expectSimpleDialect(topic);
+        return true;
+    }
+
 }
