@@ -25,7 +25,7 @@ import org.smartfrog.services.xml.interfaces.XmlNode;
  * created 01-Apr-2005 14:54:24
  */
 
-public class DocLoadTest extends TestBase {
+public class DocLoadTest extends XmlTestBase {
 
     public DocLoadTest(String name) {
         super(name);

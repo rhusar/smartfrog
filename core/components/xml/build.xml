@@ -32,7 +32,7 @@
   <!-- override point -->
   <property file="build.properties"/>
   <property name="is.component" value="true"/>
-
+  <property name="javac.java.version" value="true"/>
   <property name="root.dir" location="../.."/>
   <!-- Import common stuff -->
   <import file="../../common.xml"/>
@@ -61,7 +61,7 @@
   
   <!-- this is the classpath for running the daemon -->
   
-  <target name="declare-run.classpath" depends="init" >
+  <target name="declare-run.classpath" depends="ivy-resolve" >
     <ivy:cachepath pathid="run.classpath" conf="daemon" />
     <property name="run.classpath.value" refid="run.classpath"/>
     <echo level="verbose">daemon.classpath=${daemon.classpath.value}</echo>
@@ -104,9 +104,8 @@
       Using Javac version 1.4: the java 1.5 packages will be omitted.
       Do not redistribute this build.
     </echo>
-
   </target>
-
+  
   <target name="pre-compile" depends="common.pre-compile,javac.version" >
 
   </target>
@@ -138,7 +137,7 @@
   <!-- create a distro. 
        we want both sf-junit and the test har -->
   <!-- ========================================================== -->
-  <target name="dist" depends="common.dist, jdocs" description="create a distribution">
+  <target name="dist" depends="common.dist,jdocs" description="create a distribution">
 <!--
   <copy todir = "${dist.lib.dir}">
         <fileset dir ="${lib.dir}" />
@@ -159,7 +158,7 @@
   <!-- ========================================================== -->
   <!-- parse the file -->
   <!-- ========================================================== -->
-  <target name="parse" depends="init,dist,init-codebase"
+  <target name="parse" depends="init,common.dist,init-codebase"
     description="parse the deployment descriptor">
     <property name="parse.quiet" value="true"/>
     <sf-parse quiet="${parse.quiet}">
@@ -193,7 +192,7 @@
   <!-- ========================================================== -->
   <!-- set-->
   <!-- ========================================================== -->
-  <target name="init-codebase" depends="init-deploy-properties"
+  <target name="init-codebase" depends="init-deploy-properties,declare-classpaths"
     description="set up the codebase property">
     <sf-tourl property="codebase">
       <fileset file="${target.jar}"/>

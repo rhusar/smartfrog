@@ -80,13 +80,39 @@ public class XmlDocumentImpl extends CompoundXmlNode implements XmlDocument {
         } catch (XMLException e) {
             throw XmlNodeHelper.handleXmlException(e);
         }
-
     }
 
     private Prim resolveRoot() throws SmartFrogResolutionException,
             RemoteException {
         Prim root = sfResolve(ATTR_ROOT, (Prim) null, true);
         return root;
+    }
+
+
+    /**
+     * generate XML from the doc. This always triggers a recalculate of
+     * everything, then the attribute is saved. We do it this way because we
+     * don't know what has changed underneath.
+     *
+     * @return XML of the tree
+     * @throws java.rmi.RemoteException
+     * @throws org.smartfrog.sfcore.common.SmartFrogException
+     *                                  for smartfrog problems, and for caught
+     *                                  XMLExceptions
+     */
+    public String toXML() throws RemoteException, SmartFrogException {
+        //special handling of the situation where there is no root.
+        // We have to be loading a document from a file in this situation
+        Prim root = sfResolve(ATTR_ROOT, (Prim) null, false);
+        if(root!=null) {
+            return super.toXML();
+        }
+        if(getSourcefile()==null) {
+            throw new SmartFrogException("The XML document has no "+ATTR_ROOT
+                    +" attribute and no "+ATTR_SOURCEFILE+" attribute, so cannot be constructed");
+        }
+        //this is only transient until we build it
+        return "";
     }
 
     /**
@@ -143,7 +169,7 @@ public class XmlDocumentImpl extends CompoundXmlNode implements XmlDocument {
 
         String destFilename = FileSystem.lookupAbsolutePath(this,
                 ATTR_DESTFILE,
-                (String) null,
+                null,
                 null,
                 false,
                 null);
@@ -166,18 +192,22 @@ public class XmlDocumentImpl extends CompoundXmlNode implements XmlDocument {
      */
     private void bindToSourceFile() throws RemoteException,
             SmartFrogRuntimeException {
-        String sourceFilename = FileSystem.lookupAbsolutePath(this,
-                new Reference(ATTR_SOURCEFILE),
-                (String) null,
-                null,
-                false,
-                null);
+        String sourceFilename = getSourcefile();
         if (sourceFilename != null) {
             File source = new File(sourceFilename);
             FileUsingComponentImpl.bind(this, source);
             throw new SmartFrogDeploymentException(ERROR_UNSUPPORTED_FEATURE,
                     this);
         }
+    }
+
+    private String getSourcefile() throws SmartFrogResolutionException, RemoteException {
+        return FileSystem.lookupAbsolutePath(this,
+                new Reference(ATTR_SOURCEFILE),
+                (String) null,
+                null,
+                false,
+                null);
     }
 
     /**

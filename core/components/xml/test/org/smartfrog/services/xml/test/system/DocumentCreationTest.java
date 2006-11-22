@@ -30,7 +30,7 @@ import java.io.File;
  * created 27-Jan-2005 14:02:01
  */
 
-public class DocumentCreationTest extends TestBase {
+public class DocumentCreationTest extends XmlTestBase {
 
     public DocumentCreationTest(String name) {
         super(name);
@@ -48,7 +48,7 @@ public class DocumentCreationTest extends TestBase {
             String xml=doc.toXML();
             tempfile = File.createTempFile("doc",".xml");
             doc.save(tempfile.getAbsolutePath());
-            Document xdom=loadXMLFile(tempfile);
+            Document xdom=loadXMLFile(tempfile, false);
         } finally {
             if(tempfile!=null) {
                 tempfile.delete();
