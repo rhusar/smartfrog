@@ -398,7 +398,7 @@ public class DeployTreePanel extends JPanel implements TreeSelectionListener {
               sb.append("\n");
            }
        } else {
-           return "prettyPrint"+obj.toString();
+           return obj.toString();
        }
 
        return sb.toString();
