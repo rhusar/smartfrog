@@ -353,12 +353,14 @@ For more information: www.smartfrog.org
   <!-- =================================================================== -->
   <target name="ivy-init" xmlns:ivy="antlib:fr.jayasoft.ivy.ant">
     <property file="components/libraries.properties" />
+    <mkdir dir="external" />
     <ivy:configure file="antbuild/ivy/ivyconf.xml"/>
     <presetdef name="ivy-projects">
       <ivy:buildlist skipbuildwithoutivy="true">
         <fileset dir="." includes="*/build.xml"/>
         <fileset dir="extras" includes="*/build.xml"/>
-        <fileset dir="components" includes="*/build.xml"/>
+        <fileset dir="components" includes="*/build.xml" 
+         excludes="deployapi/build.xml"/>
         <!--place for symlinks to external projects you want included-->
         <fileset dir="external" includes="**/build.xml"/>
       </ivy:buildlist>
@@ -407,12 +409,27 @@ For more information: www.smartfrog.org
   </target>
 
   <target name="ivy-cddlm" depends="ivy-init">
-    <ivy-projects reference="cddlm.projects" root="sf-deployapi"/>
+    <ivy-projects reference="cddlm.projects" root="sf-deployapi">
+      <fileset dir="components/deployapi" includes="build.xml" />
+    </ivy-projects>
     <subant  target="published" verbose="true">
       <buildpath refid="cddlm.projects"/>
       <!--<property file="master.properties"/>-->
     </subant>
   </target>
 
+  <target name="ivy-www" depends="ivy-init">
+    <ivy-projects reference="www.projects" leaf="sf-www"/>
+    <subant  target="published" verbose="true">
+      <buildpath refid="www.projects"/>
+    </subant>
+  </target>
+
+  <target name="ivy-test" depends="ivy-init">
+    <ivy-projects reference="junit.projects" root="sf-junit"/>
+    <subant  target="published" verbose="true">
+      <buildpath refid="junit.projects"/>
+    </subant>
+  </target>
 
 </project>
