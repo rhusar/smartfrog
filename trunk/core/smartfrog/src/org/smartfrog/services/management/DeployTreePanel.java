@@ -282,6 +282,12 @@ public class DeployTreePanel extends JPanel implements TreeSelectionListener {
         this.table.repaint();
     }
 
+    public void refreshSelectedNode(){
+        TreePath treePath = systemViewTree.getSelectionPath();
+        systemViewTree.collapsePath(treePath.getParentPath());
+        systemViewTree.setSelectionPath(treePath);
+    }
+
     /**
      *  Refreshes the table.
      */
