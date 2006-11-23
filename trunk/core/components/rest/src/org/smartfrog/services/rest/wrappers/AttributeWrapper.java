@@ -24,6 +24,7 @@ import nu.xom.Attribute;
 import nu.xom.Document;
 import nu.xom.Element;
 import org.smartfrog.services.rest.Restful;
+import org.smartfrog.services.rest.XmlConstants;
 import org.smartfrog.services.rest.data.ResolutionResult;
 import org.smartfrog.services.rest.exceptions.MethodNotSupportedException;
 import org.smartfrog.services.rest.exceptions.RestException;
@@ -83,7 +84,7 @@ public class AttributeWrapper implements Restful
 
 			ownerContext.sfRemoveAttribute(targetName);
 
-			restResponse.setContentType("application/xml");
+			restResponse.setContentType(XmlConstants.APPLICATION_XML);
 			restResponse.setContentLength(response.length());
 			restResponse.setContents(response.getBytes());
 		}
@@ -98,7 +99,7 @@ public class AttributeWrapper implements Restful
 	{
 		Document xmlResponse = getXMLRepresentation();
 
-		restResponse.setContentType("application/xml");
+		restResponse.setContentType(XmlConstants.APPLICATION_XML);
 		restResponse.setContentLength(xmlResponse.toXML().length());
 		restResponse.setContents(xmlResponse.toXML().getBytes());
 	}
@@ -130,7 +131,7 @@ public class AttributeWrapper implements Restful
 
 			ownerContext.sfAddAttribute(restRequest.getTargetResourceName(), data);
 
-			restResponse.setContentType("application/xml");
+			restResponse.setContentType(XmlConstants.APPLICATION_XML);
 			restResponse.setContentLength(response.length());
 			restResponse.setContents(response.getBytes());
 		}
@@ -167,7 +168,7 @@ public class AttributeWrapper implements Restful
 
 			ownerContext.sfReplaceAttribute(restRequest.getTargetResourceName(), data);
 
-			restResponse.setContentType("application/xml");
+			restResponse.setContentType(XmlConstants.APPLICATION_XML);
 			restResponse.setContentLength(response.length());
 			restResponse.setContents(response.getBytes());
 		}

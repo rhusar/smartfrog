@@ -24,6 +24,7 @@ import nu.xom.Attribute;
 import nu.xom.Document;
 import nu.xom.Element;
 import org.smartfrog.services.rest.Restful;
+import org.smartfrog.services.rest.XmlConstants;
 import org.smartfrog.services.rest.data.ComponentStub;
 import org.smartfrog.services.rest.data.ResolutionResult;
 import org.smartfrog.services.rest.exceptions.MethodNotSupportedException;
@@ -93,7 +94,7 @@ public class ComponentWrapper implements Restful
 				String response = HttpRestResponse.generateResponseXML("OK", "The selected component has been " +
 						" detached from the SmartFrog tree and terminated.");
 
-				restResponse.setContentType("application/xml");
+				restResponse.setContentType(XmlConstants.APPLICATION_XML);
 				restResponse.setContentLength(response.length());
 				restResponse.setContents(response.getBytes());
 			}
@@ -115,7 +116,7 @@ public class ComponentWrapper implements Restful
 				String response = HttpRestResponse.generateResponseXML("OK", "The selected component description has " +
 						"been removed from the SmartFrog tree.");
 
-				restResponse.setContentType("application/xml");
+				restResponse.setContentType(XmlConstants.APPLICATION_XML);
 				restResponse.setContentLength(response.length());
 				restResponse.setContents(response.getBytes());
 			}
@@ -131,7 +132,7 @@ public class ComponentWrapper implements Restful
 	{
 		Document xmlResponse = getXMLRepresentation();
 
-		restResponse.setContentType("application/xml");
+		restResponse.setContentType(XmlConstants.APPLICATION_XML);
 		restResponse.setContentLength(xmlResponse.toXML().length());
 		restResponse.setContents(xmlResponse.toXML().getBytes());
 	}
@@ -188,7 +189,7 @@ public class ComponentWrapper implements Restful
 				}
 			}
 
-			restResponse.setContentType("application/xml");
+			restResponse.setContentType(XmlConstants.APPLICATION_XML);
 			restResponse.setContentLength(response.length());
 			restResponse.setContents(response.getBytes());
 		}
@@ -232,7 +233,7 @@ public class ComponentWrapper implements Restful
 
 				if (!(result.getOwner() instanceof Prim))
 				{
-					throw new Exception("Exception while attempting to deploy a description with a parent" +
+					throw new RestException("Exception while attempting to deploy a description with a parent" +
 							" that does not descend from Prim");
 				}
 
@@ -250,11 +251,14 @@ public class ComponentWrapper implements Restful
 				}
 			}
 
-			restResponse.setContentType("application/xml");
+			restResponse.setContentType(XmlConstants.APPLICATION_XML);
 			restResponse.setContentLength(response.length());
 			restResponse.setContents(response.getBytes());
 		}
-		catch (Exception e)
+        catch (RestException e) {
+            throw e;
+        }
+        catch (Exception e)
 		{
 			throw new RestException(e.getMessage(), e);
 		}

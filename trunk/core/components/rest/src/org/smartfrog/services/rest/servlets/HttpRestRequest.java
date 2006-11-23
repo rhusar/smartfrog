@@ -166,7 +166,7 @@ public class HttpRestRequest implements Serializable
 
 		// followReferences, for GET requests, should we transparently resolve through references
 		param = servletRequest.getParameter("followReferences");
-		followReferences = ((param == null) || (param.equals(""))) ? true : Boolean.valueOf(param).booleanValue();
+		followReferences = ((param == null) || (param.length()==0)) || Boolean.valueOf(param).booleanValue();
 	}
 
 	/**
