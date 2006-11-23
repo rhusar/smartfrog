@@ -1,5 +1,7 @@
 build
 dist
+external
+releases
 build.properties
 runtime.properties
 common.properties
