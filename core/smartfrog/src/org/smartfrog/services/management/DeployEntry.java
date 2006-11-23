@@ -671,7 +671,7 @@ public class DeployEntry implements Entry {
           if (this.showRootProcessName) {
              RDN = this.getRDNProcessCompound();
           }
-          if (RDN.equals("")){
+          if ((RDN.equals(""))&&(DN.size()>=1)){
              ReferencePart refP = DN.lastElement();
              if (refP instanceof HereReferencePart){
                return ((HereReferencePart)refP).toString(-1);  
@@ -711,7 +711,7 @@ public class DeployEntry implements Entry {
                 entryName =  (String)pcEntry.sfAttributeKeyFor(prim);
               }
             } catch (Exception ex2) {
-              if (pcEntry.sfContainsValue(this.getEntry())) {
+              if ((pcEntry!=null)&&(pcEntry.sfContainsValue(this.getEntry()))) {
                   entryName =  (String)pcEntry.sfAttributeKeyFor(this.getEntry());
               }
             }

@@ -45,6 +45,7 @@ import org.smartfrog.sfcore.processcompound.ProcessCompound;
 
 import org.smartfrog.sfcore.common.ExitCodes;
 import org.smartfrog.sfcore.common.OrderedHashtable;
+import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.reference.Reference;
 
@@ -54,7 +55,8 @@ import org.smartfrog.sfcore.reference.Reference;
  *  component or it can be started as a separate console.
  */
 public class SFDeployDisplay extends SFDisplay implements ActionListener {
-   protected JButton refresh = new JButton();
+   protected JButton refreshNode = new JButton();
+   protected JButton refreshPanes = new JButton();
    private JPanel panelTree = null;
    private JTree tree = null;
    private JScrollPane scrollPaneTree = null;
@@ -140,7 +142,8 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
          int width, String positionDisplay, final boolean showRootProcess, final boolean showCDasChild, final boolean showScripting,
          final String hostname, final int port, boolean shouldSystemExit)
           throws Exception {
-      final JButton refreshButton = new JButton();
+      final JButton refreshButtonPanes = new JButton();
+      final JButton refreshButtonNode = new JButton();
       JMenu jMenuMng = new JMenu();
       final JCheckBoxMenuItem jCheckBoxMenuItemShowRootProcessPanel = new JCheckBoxMenuItem();
       final JCheckBoxMenuItem jCheckBoxMenuItemShowCDasChild = new JCheckBoxMenuItem();
@@ -173,13 +176,13 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
          org.smartfrog.services.display.WindowUtilities.setPositionDisplay(null, newDisplay, positionDisplay);
 
          // Button for Refresh view ...
-         refreshButton.setText("Refresh");
-         refreshButton.setActionCommand("refreshButton");
-         refreshButton.addActionListener(
+         refreshButtonPanes.setText("Refresh all tabs");
+         refreshButtonPanes.setActionCommand("refreshButtonPanes");
+         refreshButtonPanes.addActionListener(
             new ActionListener() {
                public void actionPerformed(ActionEvent e) {
                   //System.out.println("ActionEvent SFDEployDisplay: "+ e);
-                  if ((e.getActionCommand()).equals("refreshButton")) {
+                  if ((e.getActionCommand()).equals("refreshButtonPanes")) {
                      //preserve scripting panel
                      JTabbedPane scriptingTab = initScriptingTabbedPane (newDisplay.tabPane,false);
                      try {
@@ -203,8 +206,33 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
                   }
                }
             });
-         newDisplay.mainToolBar.add(refreshButton);
+
+        // Button to Refresh tabs view ...
+         refreshButtonNode.setText("Refresh node");
+         refreshButtonNode.setActionCommand("refreshButtonNode");
+         refreshButtonNode.addActionListener(
+            new ActionListener() {
+               public void actionPerformed(ActionEvent e) {
+                  //System.out.println("ActionEvent SFDEployDisplay: "+ e);
+                  if ((e.getActionCommand()).equals("refreshButtonNode")) {
+
+                     try {
+                        DeployTreePanel treePanel = ((DeployTreePanel)(newDisplay.tabPane.getSelectedComponent()));
+                        treePanel.refreshSelectedNode();
+                        System.out.println("Refreshing "+ newDisplay.tabPane.getSelectedComponent());
+                     } catch (Throwable thr1) {
+                        if (LogFactory.getLog("SFManagementConsole").isErrorEnabled()){
+                          LogFactory.getLog("SFManagementConsole").error(thr1);
+                        }
+                     }
+                  }
+               }
+            });
+         newDisplay.mainToolBar.add(refreshButtonNode);
+         newDisplay.mainToolBar.add(refreshButtonPanes);
+         //Show toolbar
          newDisplay.showToolbar(true);
+
          // Add deployTreePanel menu items
          jMenuMng.setText("Mng. Console");
          newDisplay.jMenuBarDisplay.add(jMenuMng);
@@ -213,7 +241,7 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
          jCheckBoxMenuItemShowRootProcessPanel.setAccelerator(javax.swing.KeyStroke.getKeyStroke(77, java.awt.event.KeyEvent.CTRL_MASK | java.awt.event.KeyEvent.ALT_MASK, false));
          jCheckBoxMenuItemShowRootProcessPanel.addActionListener(new ActionListener() {
                public void actionPerformed(ActionEvent e) {
-                            refreshButton.doClick();
+                            refreshButtonPanes.doClick();
                }
          });
          jMenuMng.add(jCheckBoxMenuItemShowRootProcessPanel);
@@ -222,7 +250,7 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
          jCheckBoxMenuItemShowCDasChild.setText("Show show CD as child");
          jCheckBoxMenuItemShowCDasChild.addActionListener(new ActionListener() {
                public void actionPerformed(ActionEvent e) {
-                            refreshButton.doClick();
+                            refreshButtonPanes.doClick();
                }
          });
          jMenuMng.add(jCheckBoxMenuItemShowCDasChild);
@@ -236,7 +264,7 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
                        if (sfLogStatic().isErrorEnabled()){ sfLogStatic().error(e1);}
                        WindowUtilities.showError(newDisplay,e1.toString());
                    }
-                  //refreshButton.doClick();
+                  //refreshButtonPanes.doClick();
                }
          });
          jMenuMng.add(jMenuScriptingPanel);
@@ -365,8 +393,6 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
 
       JTabbedPane scriptingTabPane = null;
 
-
-
       try {
         Class jConsoleClass = Class.forName("bsh.util.JConsole");
         Class intepreterClass = Class.forName("bsh.Interpreter");
@@ -402,11 +428,18 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
         new Thread((Runnable) interpreterObject).start(); // start a thread to call the run() method
         scriptingTabPane = initScriptingTabbedPane(tabPane,true);
         scriptingTabPane.add((Component)jConsoleObject, panelName);
-        scriptingTabPane.setSelectedIndex(0);
+        scriptingTabPane.setSelectedIndex(scriptingTabPane.getTabCount()-1);
+        int tabIndex = tabPane.indexOfTab(scriptingPanelName);
+        if (tabIndex >= 0){
+           tabPane.setSelectedIndex(tabIndex);
+        }
       } catch (Throwable thr){
           if (sfLogStatic().isErrorEnabled()){ sfLogStatic().error(thr);}
-          WindowUtilities.showError(scriptingTabPane, thr.toString());
-
+          if (thr instanceof ClassNotFoundException) {
+            WindowUtilities.showError(tabPane, "For the scripting panel to work BeanShell ('bsh-1.3.0.jar') \nneeds to be in the console's classpath or lib directory");
+          } else {
+             WindowUtilities.showError(tabPane, thr.toString());
+          }
       }
    }
 
@@ -439,80 +472,111 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
    public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
 //      try {
          super.sfDeploy();
-         boolean isObjCopy = false;
-         Object root = null;
-         boolean isPC = false;
-         String name =  "Deployed System ...";
-         root = sfResolve ("root",false);
-         if (root==null)  {
-           // We add the new Tree component here
-           root = this.sfResolveWithParser(SmartFrogCoreKeys.SF_ROOT);
-         }
-
-         if (root instanceof ComponentDescription) {
-            try {
-                name = ((ComponentDescription)root).sfCompleteName().toString();
-            } catch (Exception ex){ sfLog().ignore(ex);}
-
-            Object value2 = sfResolve("root",false);
-            if (root != value2){
-                isObjCopy = true;
-            }
-
-         } else if (root instanceof Prim) {
-             try {
-                name = sfResolve(SmartFrogCoreKeys.SF_PROCESS, sfProcessName, false);
-            } catch (Exception ex){ sfLog().ignore(ex);}
-            if (root instanceof ProcessCompound){
-                isPC =true;
-            }
-         }
-
-
-         //root= new CompoundImpl();
-         //System.out.println("Root: "+root.toString());
-         this.panelTree = new DeployTreePanel(root,isObjCopy, isPC,true);
-         this.panelTree.setEnabled(true);
-         addFrogIcon(display);
-         display.tabPane.add(panelTree, name, 0);
-
-         // Button for Refresh view ...
-         refresh.setText("Refresh");
-         refresh.setActionCommand("refreshButton");
-         refresh.addActionListener(this);
-         display.mainToolBar.add(this.refresh);
-         JMenu jMenuMng = new JMenu();
-
-         jMenuMng.setText("Mng. Console");
-         display.jMenuBarDisplay.add(jMenuMng);
-         jCheckBoxMenuItemShowCDasChild.setSelected(true);
-         jCheckBoxMenuItemShowCDasChild.setText("Show show CD as child");
-         jCheckBoxMenuItemShowCDasChild.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                refresh();
-            }
-          });
-         jMenuMng.add(jCheckBoxMenuItemShowCDasChild);
-
-         jMenuScriptingPanel.setText("Add Scripting ...");
-         jMenuScriptingPanel.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                try {
-                    addScriptingPanel (display.tabPane, "sfManagementConsole", this,"localhost",3800 );
-                } catch (Exception e1) {
-                    if (sfLogStatic().isErrorEnabled()){ sfLogStatic().error(e1); }
-                    WindowUtilities.showError(display,e1.toString());
-                }
-                refresh();
-            }
-          });
-         jMenuMng.add(jMenuScriptingPanel);
-         display.showToolbar(true);
+         //createManagementPane();
+        createManagementPaneAsynch();
       //end panelTree example
    }
 
+     /**
+     * Starts in a separate thread
+     */
+    protected void createManagementPaneAsynch() {
+        Thread consoleThread = new Thread(new Runnable() {
+            public void run() {
+                try {
+                    //It helps in a slightly faster deployment
+                    Thread.sleep(500);
+                    createManagementPane();
+                } catch (Exception e) {
+                   if (sfLog().isErrorEnabled()) {
+                      sfLog().error(e);
+                    }  //if
+                } //catch
+              } //run
+            } //Runnable
+        ); //Thread
+        consoleThread.setName("sfManagementConsoleThread");
+        consoleThread.start();
+    }
 
-   /**
+    protected void createManagementPane() throws SmartFrogResolutionException, RemoteException {
+        boolean isObjCopy = false;
+         Object root = null;
+         boolean isPC = false;
+         String name =  "Deployed System ...";
+
+        root = sfResolve ("root",false);
+        if (root==null)  {
+          // We add the new Tree component here
+          root = this.sfResolveWithParser(SmartFrogCoreKeys.SF_ROOT);
+        }
+
+        if (root instanceof ComponentDescription) {
+           try {
+               name = ((ComponentDescription)root).sfCompleteName().toString();
+           } catch (Exception ex){ sfLog().ignore(ex);}
+
+           Object value2 = sfResolve("root",false);
+           if (root != value2){
+               isObjCopy = true;
+           }
+
+        } else if (root instanceof Prim) {
+            try {
+               name = sfResolve(SmartFrogCoreKeys.SF_PROCESS, sfProcessName, false);
+           } catch (Exception ex){ sfLog().ignore(ex);}
+           if (root instanceof ProcessCompound){
+               isPC =true;
+           }
+        }
+
+        //root= new CompoundImpl();
+        //System.out.println("Root: "+root.toString());
+        this.panelTree = new DeployTreePanel(root, isObjCopy, isPC,true);
+        this.panelTree.setEnabled(true);
+        addFrogIcon(display);
+        display.tabPane.add(panelTree, name, 0);
+
+        // Button to Refresh view ...
+        refreshPanes.setText("Refresh all tabs");
+        refreshPanes.setActionCommand("refreshButtonPanes");
+        refreshPanes.addActionListener(this);
+        // Button to Refresh node ...
+        refreshNode.setText("Refresh node");
+        refreshNode.setActionCommand("refreshButtonNode");
+        refreshNode.addActionListener(this);
+        display.mainToolBar.add(this.refreshNode);
+        display.mainToolBar.add(this.refreshPanes);
+        JMenu jMenuMng = new JMenu();
+
+        jMenuMng.setText("Mng. Console");
+        display.jMenuBarDisplay.add(jMenuMng);
+        jCheckBoxMenuItemShowCDasChild.setSelected(true);
+        jCheckBoxMenuItemShowCDasChild.setText("Show show CD as child");
+        jCheckBoxMenuItemShowCDasChild.addActionListener(new ActionListener() {
+           public void actionPerformed(ActionEvent e) {
+               refreshPanes();
+           }
+         });
+        jMenuMng.add(jCheckBoxMenuItemShowCDasChild);
+
+        jMenuScriptingPanel.setText("Add Scripting ...");
+        jMenuScriptingPanel.addActionListener(new ActionListener() {
+           public void actionPerformed(ActionEvent e) {
+               try {
+                   addScriptingPanel (display.tabPane, "sfManagementConsole", this,"localhost",3800 );
+               } catch (Exception e1) {
+                   if (sfLogStatic().isErrorEnabled()){ sfLogStatic().error(e1); }
+                   WindowUtilities.showError(display,e1.toString());
+               }
+           }
+         });
+        jMenuMng.add(jMenuScriptingPanel);
+        display.showToolbar(true);
+    }
+
+
+    /**
     * Starts the display component.
     *
     *@throws  SmartFrogException  If unable to start the component
@@ -554,9 +618,9 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
 
 
    /**
-    *  Refreshes the display panel.
+    *  refresh all tabs in the display panel.
     */
-   public void refresh() {
+   public void refreshPanes() {
       try {
          boolean isObjCopy = false;
          Object root = null;
@@ -578,11 +642,22 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
          ((DeployTreePanel) panelTree).refresh();
       } catch (Throwable ex) {
          if (sfLogStatic().isIgnoreEnabled()){
-           sfLogStatic().ignore("Failure refresh() SFDeployDisplay!",ex);
+           sfLogStatic().ignore("Failure refreshPanes() SFDeployDisplay!",ex);
          }
       }
    }
-
+   /**
+    *  refreshNode the display panel.
+    */
+   public void refreshNode() {
+      try {
+         ((DeployTreePanel) panelTree).refreshSelectedNode();
+      } catch (Throwable ex) {
+         if (sfLogStatic().isIgnoreEnabled()){
+           sfLogStatic().ignore("Failure refreshNode() SFDeployDisplay!",ex);
+         }
+      }
+   }
 
    /**
     * Interface Method.
@@ -594,10 +669,11 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
       if (sfLogStatic().isTraceEnabled()){
         sfLogStatic().trace("ActionEvent SFDEployDisplay: "+ e);
       }
-      if ((e.getActionCommand()).equals("refreshButton")) {
-         refresh(e);
+      if ((e.getActionCommand()).equals("refreshButtonPanes")) {
+         refreshPanes(e);
+      } else if ((e.getActionCommand()).equals("refreshButtonNode")) {
+         refreshNode(e);
       }
-
    }
 
 
@@ -606,8 +682,16 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
     *
     *@param  e  acrtion event
     */
-   private void refresh(ActionEvent e) {
-      this.refresh();
+   private void refreshPanes(ActionEvent e) {
+      this.refreshPanes();
+   }
+     /**
+    * Interface Method.
+    *
+    *@param  e  acrtion event
+    */
+   private void refreshNode(ActionEvent e) {
+      this.refreshNode();
    }
 
 }
