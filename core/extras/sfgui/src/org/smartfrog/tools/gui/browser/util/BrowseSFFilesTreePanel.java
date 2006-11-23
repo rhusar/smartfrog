@@ -93,7 +93,7 @@ public class BrowseSFFilesTreePanel extends JPanel implements TreeSelectionListe
       //jSplitPane1.setPreferredSize(new Dimension(300, 300));
       jSplitPane1.setLastDividerLocation(200);
       //40% of the space goes to left/top
-      jSplitPane1.setResizeWeight(0.4);
+  //jSplitPane1.setResizeWeight(0.4);
       //jSplitPane1.setDividerLocation(200);
       jSplitPane1.add(treeScrollPane, JSplitPane.LEFT);
       this.add(jSplitPane1, BorderLayout.CENTER);

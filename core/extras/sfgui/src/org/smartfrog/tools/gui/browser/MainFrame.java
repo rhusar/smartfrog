@@ -59,9 +59,10 @@ import org.smartfrog.sfcore.reference.*;
 import org.smartfrog.sfcore.parser.*;
 import org.smartfrog.sfcore.componentdescription.*;
 import org.smartfrog.tools.gui.browser.util.BrowseSFFilesTreePanel;
+import org.smartfrog.tools.gui.browser.util.LoadSFFiles;
 
 /**
- *@author     julgui
+
  *@created    19 September 2001
  */
 //to DO:
@@ -71,7 +72,6 @@ import org.smartfrog.tools.gui.browser.util.BrowseSFFilesTreePanel;
 // - redirected keyboard fron processes!
 //
 /**
- *@author     julgui
  *@created
  */
 
@@ -80,7 +80,7 @@ public class MainFrame
   /**
    *  Description of the Field
    */
-  public final static String version = "v0.7 r28";
+  public final static String version = "v0.8 r01";
   // This has to  be done properly !!!!!!!!!!!!!!! no static. Because of crap log.
   static PrintStream msg = System.out;
   static JLabel statusBar = new JLabel();
@@ -264,6 +264,7 @@ public class MainFrame
   JMenuItem jMenuItemInfo = new JMenuItem();
   JMenu jMenuTools = new JMenu();
   JMenuItem jMenuItemCleanOutput = new JMenuItem();
+  JMenuItem jMenuItemReloadDescriptions = new JMenuItem();
   JMenuItem jMenuItemCleanMsg = new JMenuItem();
   JButton jButtonStop = new JButton();
   JButton jButtonRun = new JButton();
@@ -1606,7 +1607,7 @@ public class MainFrame
    */
   void runSFDaemon() {
     String cmd = "";
-
+    LoadSFFiles.refreshClassPath();
     String cmdStop = "java" + " "
         + "-cp \"" + classpath + "\" "
         + this.sfSystemClass + " "
@@ -2263,6 +2264,20 @@ public class MainFrame
    *
    *@param  e  Description of Parameter
    */
+  void jMenuItemReloadDescriptions_actionPerformed(ActionEvent e) {
+     BrowseSFFilesTreePanel old = BrowseSFComponentPanel;
+     LoadSFFiles.refreshClassPath();
+     BrowseSFComponentPanel = new BrowseSFFilesTreePanel(this);
+     jTabbedPanelNorth.remove(old);
+     jTabbedPanelNorth.add(BrowseSFComponentPanel, panelNameBrowseComp);
+     old=null;
+  }
+
+  /**
+   *  Description of the Method
+   *
+   *@param  e  Description of Parameter
+   */
   void jMenuItemCleanMsg_actionPerformed(ActionEvent e) {
     jTextAreaMsg.setText("");
   }
@@ -2796,10 +2811,11 @@ public class MainFrame
     jMenuItemInfo.addActionListener(new MainFrame_jMenuItemInfo_actionAdapter(this));
     jMenuTools.setText("Tools");
     jMenuItemCleanOutput.setText("Clean Output");
-    jMenuItemCleanOutput.addActionListener(new
-                                           MainFrame_jMenuItemCleanOutput_actionAdapter(this));
-    jMenuItemCleanOutput.setAccelerator(javax.swing.KeyStroke.getKeyStroke(79,
-        java.awt.event.KeyEvent.ALT_MASK, false));
+    jMenuItemCleanOutput.addActionListener(new MainFrame_jMenuItemCleanOutput_actionAdapter(this));
+    jMenuItemCleanOutput.setAccelerator(javax.swing.KeyStroke.getKeyStroke(79, java.awt.event.KeyEvent.ALT_MASK, false));
+    jMenuItemReloadDescriptions.setText("Reload Descriptions");
+    jMenuItemReloadDescriptions.addActionListener(new MainFrame_jMenuItemReloadDescription_actionAdapter(this));
+
     jMenuItemCleanMsg.setText("Clean Msg");
     jMenuItemCleanMsg.addActionListener(new
                                         MainFrame_jMenuItemCleanMsg_actionAdapter(this));
@@ -2885,7 +2901,7 @@ public class MainFrame
     jMenuItemInfoProp.addActionListener(new
                                         MainFrame_jMenuItemInfoProp_actionAdapter(this));
     jSplitPane2.setBorder(null);
-    jSplitPane2.setLastDividerLocation(200);
+    jSplitPane2.setLastDividerLocation(400);
     //jSplitPane2.setResizeWeight(0.3);
     statusBar.setBorder(BorderFactory.createLoweredBevelBorder());
     statusBar.setText(" ");
@@ -3069,6 +3085,7 @@ public class MainFrame
     jMenuEdit.add(jMenuItemSearchNext);
     jMenuTools.add(jMenuItemCleanOutput);
     jMenuTools.add(jMenuItemCleanMsg);
+    jMenuTools.add(jMenuItemReloadDescriptions);
     jMenuTools.add(jMenuItemSaveOutput);
     jMenuTools.addSeparator();
     jMenuTools.add(jRadioButtonMenuItemSF);
@@ -3098,7 +3115,7 @@ public class MainFrame
     jFileChooser.setFileFilter(sfFilter);
     //jFileChooser.setCurrentDirectory(new File(System.getProperty("user.dir")));
     jFileChooser.setCurrentDirectory(new File("./sf/"));
-    jSplitPane2.setDividerLocation(350);
+    jSplitPane2.setDividerLocation(400);
   }
 
   /**
@@ -4525,9 +4542,35 @@ class MainFrame_jMenuItemCleanOutput_actionAdapter
 
 /**
  *  Description of the Class
+
+ */
+class MainFrame_jMenuItemReloadDescription_actionAdapter
+    implements java.awt.event.ActionListener {
+
+  MainFrame adaptee;
+
+  /**
+   *  Constructor for the MainFrame_jMenuItemReloadDescription_actionAdapter object
+   *
+   *@param  adaptee  Description of Parameter
+   */
+  MainFrame_jMenuItemReloadDescription_actionAdapter(MainFrame adaptee) {
+    this.adaptee = adaptee;
+  }
+
+  /**
+   *  Description of the Method
+   *
+   *@param  e  Description of Parameter
+   */
+  public void actionPerformed(ActionEvent e) {
+    adaptee.jMenuItemReloadDescriptions_actionPerformed(e);
+  }
+}
+
+/**
+ *  Description of the Class
  *
- *@author     julgui
- *@created    19 September 2001
  */
 class MainFrame_jMenuItemCleanMsg_actionAdapter
     implements java.awt.event.ActionListener {
@@ -4556,8 +4599,8 @@ class MainFrame_jMenuItemCleanMsg_actionAdapter
 /**
  *  Description of the Class
  *
- *@author     julgui
- *@created    19 September 2001
+
+
  */
 class MainFrame_output_focusAdapter
     extends java.awt.event.FocusAdapter {
@@ -4586,8 +4629,8 @@ class MainFrame_output_focusAdapter
 /**
  *  Description of the Class
  *
- *@author     julgui
- *@created    19 September 2001
+
+
  */
 class MainFrame_jButtonOpen_actionAdapter
     implements java.awt.event.ActionListener {
@@ -4616,8 +4659,8 @@ class MainFrame_jButtonOpen_actionAdapter
 /**
  *  Description of the Class
  *
- *@author     julgui
- *@created    19 September 2001
+
+
  */
 class MainFrame_jButtonSave_actionAdapter
     implements java.awt.event.ActionListener {
@@ -4646,8 +4689,8 @@ class MainFrame_jButtonSave_actionAdapter
 /**
  *  Description of the Class
  *
- *@author     julgui
- *@created    19 September 2001
+
+
  */
 class MainFrame_jButtonAbout_actionAdapter
     implements java.awt.event.ActionListener {
@@ -4676,8 +4719,8 @@ class MainFrame_jButtonAbout_actionAdapter
 /**
  *  Description of the Class
  *
- *@author     julgui
- *@created    19 September 2001
+
+
  */
 class MainFrame_jButtonPreferences_actionAdapter
     implements java.awt.event.ActionListener {
@@ -4706,8 +4749,8 @@ class MainFrame_jButtonPreferences_actionAdapter
 /**
  *  Description of the Class
  *
- *@author     julgui
- *@created    19 September 2001
+
+
  */
 class MainFrame_jButtonUndo_actionAdapter
     implements java.awt.event.ActionListener {
@@ -4736,8 +4779,8 @@ class MainFrame_jButtonUndo_actionAdapter
 /**
  *  Description of the Class
  *
- *@author     julgui
- *@created    19 September 2001
+
+
  */
 class MainFrame_jButtonRedo_actionAdapter
     implements java.awt.event.ActionListener {
@@ -4766,8 +4809,8 @@ class MainFrame_jButtonRedo_actionAdapter
 /**
  *  Description of the Class
  *
- *@author     julgui
- *@created    19 September 2001
+
+
  */
 class MainFrame_jButtonParse_actionAdapter
     implements java.awt.event.ActionListener {
@@ -4796,8 +4839,8 @@ class MainFrame_jButtonParse_actionAdapter
 /**
  *  Description of the Class
  *
- *@author     julgui
- *@created    19 September 2001
+
+
  */
 class MainFrame_jButtonRun_actionAdapter
     implements java.awt.event.ActionListener {
@@ -4826,8 +4869,8 @@ class MainFrame_jButtonRun_actionAdapter
 /**
  *  Description of the Class
  *
- *@author     julgui
- *@created    19 September 2001
+
+
  */
 class MainFrame_jButtonStop_actionAdapter
     implements java.awt.event.ActionListener {
@@ -4856,8 +4899,8 @@ class MainFrame_jButtonStop_actionAdapter
 /**
  *  Description of the Class
  *
- *@author     julgui
- *@created    19 September 2001
+
+
  */
 class MainFrame_jButtonBrowser_actionAdapter
     implements java.awt.event.ActionListener {
@@ -4886,8 +4929,8 @@ class MainFrame_jButtonBrowser_actionAdapter
 /**
  *  Description of the Class
  *
- *@author     julgui
- *@created    19 September 2001
+
+
  */
 class MainFrame_jMenuItemBrowseSF_actionAdapter
     implements java.awt.event.ActionListener {
@@ -4916,8 +4959,8 @@ class MainFrame_jMenuItemBrowseSF_actionAdapter
 /**
  *  Description of the Class
  *
- *@author     julgui
- *@created    19 September 2001
+
+
  */
 class MainFrame_jMenuItemSaveOutput_actionAdapter
     implements java.awt.event.ActionListener {
@@ -4946,8 +4989,8 @@ class MainFrame_jMenuItemSaveOutput_actionAdapter
 /**
  *  Description of the Class
  *
- *@author     julgui
- *@created    19 September 2001
+
+
  */
 class MainFrame_jMenuItemInfoProp_actionAdapter
     implements java.awt.event.ActionListener {
@@ -4976,7 +5019,7 @@ class MainFrame_jMenuItemInfoProp_actionAdapter
 /**
  *  Description of the Class
  *
- *@author     julgui
+
  *@created    05 December 2001
  */
 class MainFrame_jButtonExit_actionAdapter
@@ -5006,7 +5049,7 @@ class MainFrame_jButtonExit_actionAdapter
 /**
  *  Description of the Class
  *
- *@author     julgui
+
  *@created    05 December 2001
  */
 class MainFrame_jMenuItem1_actionAdapter
@@ -5036,7 +5079,7 @@ class MainFrame_jMenuItem1_actionAdapter
 /**
  *  Description of the Class
  *
- *@author     julgui
+
  *@created    05 December 2001
  */
 class MainFrame_jButtonSFDaemon_actionAdapter
@@ -5066,14 +5109,14 @@ class MainFrame_jButtonSFDaemon_actionAdapter
 /**
  *  Description of the Class
  *
- *@author     julgui
+
  *@created    05 December 2001
  */
 
 /**
  *  Description of the Class
  *
- *@author     julgui
+
  *@created    05 December 2001
  */
 class MainFrame_documentTextAreaMsg_documentAdapter
@@ -5117,7 +5160,7 @@ class MainFrame_documentTextAreaMsg_documentAdapter
 /**
  *  Description of the Class
  *
- *@author     julgui
+
  *@created    05 December 2001
  */
 class MainFrame_documentScreen_documentAdapter
@@ -5161,7 +5204,7 @@ class MainFrame_documentScreen_documentAdapter
 /**
  *  Description of the Class
  *
- *@author     julgui
+
  *@created    05 December 2001
  */
 class MainFrame_jButtonCopy_actionAdapter
@@ -5191,7 +5234,7 @@ class MainFrame_jButtonCopy_actionAdapter
 /**
  *  Description of the Class
  *
- *@author     julgui
+
  *@created    05 December 2001
  */
 class MainFrame_jButtonCut_actionAdapter
@@ -5221,7 +5264,7 @@ class MainFrame_jButtonCut_actionAdapter
 /**
  *  Description of the Class
  *
- *@author     julgui
+
  *@created    05 December 2001
  */
 class MainFrame_jButtonPaste_actionAdapter
@@ -5251,7 +5294,7 @@ class MainFrame_jButtonPaste_actionAdapter
 /**
  *  Description of the Class
  *
- *@author     julgui
+
  *@created    15 February 2002
  */
 class MainFrame_jMenuItemKuntstoff_actionAdapter

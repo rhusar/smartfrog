@@ -36,6 +36,8 @@ import java.util.jar.*;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.io.Serializable;
+import java.io.File;
+import java.io.FilenameFilter;
 
 /**
  *  Title: SmartFrog CVS Description: Copyright:
@@ -110,7 +112,7 @@ public class LoadSFFiles {
    public void getSFFiles(Vector list) {
       int index = list.size();
       while ((index--) > 0) {
-         System.out.println("Jar: " + list.get(index));
+         //System.out.println("Jar: " + list.get(index));
          this.listJarContent((String)list.get(index), filters);
       }
    }
@@ -122,6 +124,7 @@ public class LoadSFFiles {
     *@return    Description of the Returned Value
     */
    public Vector init() {
+      refreshClassPath(getDirs());
       Vector listSF = new Vector();
       String classpath = System.getProperty("java.class.path");
       String pathSeparator = System.getProperty("path.separator");
@@ -147,6 +150,91 @@ public class LoadSFFiles {
       }
       return getListSFSorted();
       //return getListSF();
+   }
+
+
+   /**
+    * get a list of all JAR files in a directory
+    *
+    * Derived from Ant Diagnostics class
+    *
+    * @param libDir directory
+    * @return array of files (or null for no such directory)
+    *
+    */
+   private static File[] listJarFiles(File libDir, List filePaths) {
+       FilenameFilter filter = new FilenameFilter() {
+           public boolean accept(File dir, String name) {
+               return name.endsWith(".jar");
+           }
+       };
+
+       File[] files  = libDir.listFiles(filter);
+       if (filePaths !=null){
+          for (int i=0;i<files.length;i++){
+            filePaths.add(files[i].getAbsolutePath());
+          }
+       }
+       return files;
+    }
+
+  public static void refreshClassPath  (){
+    refreshClassPath(getDirs());
+  }
+
+   public static void refreshClassPath (Vector listDir){
+      String pathSeparator = System.getProperty("path.separator");
+      String fileSeparator = System.getProperty("file.separator");
+       List listJars = new Vector();
+       String classPath = "";
+       for (int i=0;i<listDir.size();i++){
+            //System.out.println("dir: "+ listDir.get(i));
+            File dir = new File (listDir.get(i).toString());
+            if (dir.isDirectory()){
+              listJarFiles (dir, listJars);
+            }
+        }
+        StringBuffer strB = new StringBuffer();
+        for (int i=0;i<listJars.size();i++){
+          strB.append(listJars.get(i));
+          strB.append(pathSeparator);
+        }
+//        System.out.println("classPath : "+strB.toString());
+//        System.setProperty("java.class.path",strB.toString());
+   }
+
+   public static Vector getDirs (){
+     Hashtable listDir = new Hashtable();
+     String classpath = System.getProperty("java.class.path");
+     String pathSeparator = System.getProperty("path.separator");
+     String fileSeparator = System.getProperty("file.separator");
+     String jarFile = "";
+     int index = 0;
+     int index2 = 0;
+     File testFile = null;
+     File parent = null;
+     while (true) {
+       index = classpath.lastIndexOf(pathSeparator);
+       if (index < 0) {
+         break;
+       }
+       jarFile = classpath.substring(index + 1);
+       testFile = new File(jarFile);
+       try {
+         if (testFile.isDirectory()) {
+           listDir.put(testFile.getCanonicalPath(), testFile.toString());
+         }
+         else {
+           parent = testFile.getParentFile();
+           if (parent!=null)
+             listDir.put(parent.getCanonicalPath(),testFile.toString());
+         }
+       } catch (IOException ex) {
+         ex.printStackTrace();
+       }
+       classpath = classpath.substring(0, index);
+     }
+     return new Vector(listDir.keySet());
    }
 
 
