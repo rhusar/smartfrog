@@ -25,6 +25,7 @@ import nu.xom.Document;
 import nu.xom.Element;
 import org.smartfrog.SFSystem;
 import org.smartfrog.services.rest.Restful;
+import org.smartfrog.services.rest.XmlConstants;
 import org.smartfrog.services.rest.data.AttributeStub;
 import org.smartfrog.services.rest.data.ComponentStub;
 import org.smartfrog.services.rest.data.ResolutionResult;
@@ -458,7 +459,7 @@ public class RequestHandler extends HttpServlet
 			// wipe the response and send the message
 			servletResponse.reset();
 			servletResponse.setStatus(statusCode);
-			servletResponse.setContentType("application/xml");
+			servletResponse.setContentType(XmlConstants.APPLICATION_XML);
 			servletResponse.setContentLength(d.toXML().length());
 			servletResponse.getWriter().print(d.toXML());
 		}

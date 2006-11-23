@@ -22,6 +22,7 @@ package org.smartfrog.services.rest.servlets;
 
 import nu.xom.*;
 import org.smartfrog.services.rest.exceptions.RestException;
+import org.smartfrog.services.rest.XmlConstants;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.XMLReaderFactory;
@@ -89,8 +90,10 @@ public class ParsedResourceRequest
 		Builder parser;
 		if (strictValidation)
 		{
-			if ((restRequest.getContentType() == null) || (!(restRequest.getContentType().equals("application/xml"))))
-				throw new RestException("Missing or Invalid Content Type Specified! (Expected: 'application/xml')");
+			if ((restRequest.getContentType() == null) || (!(restRequest.getContentType().equals(
+                    XmlConstants.APPLICATION_XML))))
+				throw new RestException("Missing or Invalid Content Type Specified!\n"+
+                        " Expected: "+ XmlConstants.APPLICATION_XML+" got "+ restRequest.getContentType());
 
 			XMLReader xerces = XMLReaderFactory.createXMLReader("org.apache.xerces.parsers.SAXParser");
 			xerces.setFeature("http://apache.org/xml/features/validation/schema", true);
