@@ -207,6 +207,8 @@ xsd:dateTime
         subscribe.appendChild(consumer);
         SoapElement topicElement=WsntElement(WSNConstants.TOPIC_EXPRESSION);
         addSimpleDialectAttribute(topicElement);
+        topicElement.addAttribute(new Attribute(WSNConstants.DIALECT,
+                WSNConstants.SIMPLE_DIALECT));
         topicElement.appendQName(topic);
         assert assertSimpleDialect(topicElement);
         subscribe.appendChild(topicElement);
@@ -219,7 +221,6 @@ xsd:dateTime
             subscribe.appendChild(itt);
         }
         return subscribe;
-
     }
 
     /**
