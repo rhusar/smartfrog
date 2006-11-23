@@ -63,14 +63,14 @@ public class SFProcessExecutionImpl  extends PrimImpl implements Prim, SFProcess
       this.autoStart = sfResolve (ATR_AUTO_START,autoStart,false);
       this.name = sfResolve(ATR_NAME, name, false);
       if (name==null) {
-          name = this.sfCompleteNameSafe().toString();
+          name = sfCompleteNameSafe().toString();
       }
       this.cmd = new Cmd(sfResolve(ATR_EXEC, new ComponentDescriptionImpl(null, null, false), true));
   }
 
   /**
    *  This method retrieves the paramters from the .sf file. For the purposes
-   *  of a demo default paramteres could be hard coded.
+   *  of a demo default parameters could be hard coded.
    *
    * @exception SmartFrogException deployment failure
    * @exception  RemoteException In case of network/rmi error
@@ -79,22 +79,13 @@ public class SFProcessExecutionImpl  extends PrimImpl implements Prim, SFProcess
       super.sfDeploy();
       readConfig();
       // RunProcessImpl
-      if (autoStart){
+      if (autoStart) {
           runProcess = new RunProcessImpl(name, cmd, this);
-          ((RunProcessImpl)runProcess).start();
+          ((RunProcessImpl) runProcess).start();
           runProcess.waitForReady(200);
           if (sfLog().isInfoEnabled()) sfLog().info("Process started");
       }
   }
-  /**
-  *  This sets a flag that will start the httpd process running.
-  *
-  * @exception  SmartFrogException starting failure
-  * @exception  RemoteException In cas eof network/rmi error
-  */
- public synchronized void sfStart() throws SmartFrogException,RemoteException {
-     super.sfStart();
- }
 
 
  /**
@@ -149,8 +140,8 @@ public class SFProcessExecutionImpl  extends PrimImpl implements Prim, SFProcess
    *          subprocess.
    */
   public InputStream getStdErrStream(){
-      if ( runProcess!=null){
-     return runProcess.getErrorStream();
+      if (runProcess != null) {
+          return runProcess.getErrorStream();
       } else {
           return null;
       }
@@ -168,14 +159,14 @@ public class SFProcessExecutionImpl  extends PrimImpl implements Prim, SFProcess
    *          subprocess.
    */
   public OutputStream getStdInpStream() {
-      if ( runProcess!=null){
+      if (runProcess != null) {
           return runProcess.getOutputStream();
       } else {
           return null;
       }
-     }
+  }
 
-     /**
+    /**
       * Kill the process
       */
      public void kill(){
@@ -197,7 +188,7 @@ public class SFProcessExecutionImpl  extends PrimImpl implements Prim, SFProcess
         try {
             readConfig();
         } catch (RemoteException rex) {
-            throw SmartFrogException.forward("Problem during reStart ",rex);
+            throw SmartFrogException.forward("Problem during restart ",rex);
         }
          // RunProcessImpl
          runProcess = new RunProcessImpl (name, cmd);
