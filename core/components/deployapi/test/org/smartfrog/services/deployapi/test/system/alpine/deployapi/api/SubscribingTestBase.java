@@ -227,7 +227,7 @@ public abstract class SubscribingTestBase extends StandardTestBase {
             return null;
         }
         ReceivedEvent event = waitForSubscription(expected.getXmlName());
-        //TODO: get state from the event
+        //get the state from the event
         LifecycleStateEnum state = event.getState();
 
         assertEquals(expected, state);

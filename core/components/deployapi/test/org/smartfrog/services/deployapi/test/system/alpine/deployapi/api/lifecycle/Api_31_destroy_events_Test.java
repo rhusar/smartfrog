@@ -37,6 +37,7 @@ public class Api_31_destroy_events_Test extends SubscribingTestBase {
     public void testSubscribe() throws Exception {
         SystemSession session = createSubscribedSystem();
         runSystem(CddlmConstants.INTEROP_API_TEST_DOC_1_VALID_DESCRIPTOR);
+        waitForState(LifecycleStateEnum.initialized);
         waitForState(LifecycleStateEnum.running);
         session.terminate("end of life");
         waitForState(LifecycleStateEnum.terminated);
