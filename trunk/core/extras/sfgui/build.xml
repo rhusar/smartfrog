@@ -43,13 +43,13 @@ Reference URL:http://ant.apache.org
   <target name="init">
     <tstamp/>
     <property name="Name.System" value="sfgui"/>
-    <property name="Name.Company" value="(C) Copyright 1998-2004 Hewlett-Packard Development Company, LP"/>
+    <property name="Name.Company" value="(C) Copyright 1998-2006 Hewlett-Packard Development Company, LP"/>
     <property name="version" value="smartfrog components"/>
     <property name="Version" value="1.00.000.beta"/>
-    <property name="year" value="2004"/>
+    <property name="year" value="2006"/>
 
     <echo message=""/>
-<echo message="==================================================================="/>
+    <echo message="==================================================================="/>
     <echo message="= ${Name.System} ${version}, ${Name.Company} (${ant.version})"/>
     <available property="nice.task.present" classname="org.apache.tools.ant.taskdefs.Nice" />
   </target>
@@ -363,6 +363,7 @@ Reference URL:http://ant.apache.org
   <target name="jars" depends="initdist, sfGuiJar"/>
 
 
+  <target name="published" depends="jars" />
 
   <!-- =================================================================== -->
   <!--  DIST                                                               -->

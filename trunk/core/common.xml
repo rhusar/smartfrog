@@ -1438,7 +1438,7 @@
       xmlns:ivy="antlib:fr.jayasoft.ivy.ant">
     <ivy:report todir="${build.dir}/ivy/reports"/>
     <echo> published Ivy report to
-      ${build.dir}/ivy/reports
+${build.dir}/ivy/reports
     </echo>
   </target>
 

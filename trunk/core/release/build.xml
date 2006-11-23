@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project name="release"
+    xmlns:ivy="antlib:fr.jayasoft.ivy.ant">
+
+  <description>
+    This build file aggregates artifacts from other projects to cut a release
+  </description>
+
+
+  <target name="clean" />
+
+  <target name="published" depends="ivy-report"/>
+
+
+
+  <target name="ivy-init" >
+    <property file="../components/libraries.properties"/>
+    <ivy:configure file="../antbuild/ivy/ivyconf.xml"/>
+  </target>
+
+  <target name="ivy-resolve" depends="ivy-init"
+      xmlns:ivy="antlib:fr.jayasoft.ivy.ant">
+    <ivy:resolve/>
+  </target>
+
+  <target name="ivy-retrieve" depends="ivy-resolve"
+      xmlns:ivy="antlib:fr.jayasoft.ivy.ant">
+    <ivy:retrieve pattern="${ivy.lib.dir}/[conf]/[artifact]-[revision].[ext]" sync="true"/>
+  </target>
+
+  <target name="ivy-report" depends="ivy-resolve"
+      xmlns:ivy="antlib:fr.jayasoft.ivy.ant">
+    <ivy:report todir="${build.dir}/ivy/reports"/>
+    <echo>published Ivy report to
+${build.dir}/ivy/reports
+    </echo>
+  </target>
+
+</project>

@@ -350,6 +350,7 @@ For more information: www.smartfrog.org
   <!-- =================================================================== -->
   <!-- Create an ordered list of all ivy-enabled projects-->
   <!-- Non-ivy projects are ignored-->
+  <!-- we also ignore the deployapi components, as their build is more complex-->
   <!-- =================================================================== -->
   <target name="ivy-init" xmlns:ivy="antlib:fr.jayasoft.ivy.ant">
     <property file="components/libraries.properties" />
@@ -358,9 +359,13 @@ For more information: www.smartfrog.org
     <presetdef name="ivy-projects">
       <ivy:buildlist skipbuildwithoutivy="true">
         <fileset dir="." includes="*/build.xml"/>
-        <fileset dir="extras" includes="*/build.xml"/>
-        <fileset dir="components" includes="*/build.xml" 
-         excludes="deployapi/build.xml"/>
+        <fileset dir="." includes="extras/**/build.xml"/>
+        <fileset dir="components" includes="**/build.xml" >
+          <exclude name="deployapi/build.xml"/>
+          <exclude name="jmx/build.xml"/>
+        </fileset>
+
+
         <!--place for symlinks to external projects you want included-->
         <fileset dir="external" includes="**/build.xml"/>
       </ivy:buildlist>

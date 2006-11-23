@@ -27,7 +27,9 @@
 
     <conf name="master" description="contains the artifact but no dependencies"
        extends="services"/>
-    <conf name="runtime" description="runtime but not the artifact"/>
+    <conf name="redist" description="redistributals excluding smartfrog artifacts"/>
+    <conf name="runtime" description="runtime but not the artifact"
+        extends="redist"/>
 
     <!--non standard configurations-->
     <conf name="javacc" visibility="private"/>

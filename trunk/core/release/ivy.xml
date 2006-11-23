@@ -1,0 +1,168 @@
+<?xml version="1.0" ?>
+<?xml-stylesheet type="text/xsl" href="http://ivyrep.jayasoft.org/ivy-doc.xsl"?>
+<ivy-module version="1.0">
+  <info organisation="org.smartfrog" module="sf-release">
+    <license name="LGPL"/>
+    <ivyauthor name="Hewlett-Packard" url="http://www.smartfrog.org"/>
+    <description>
+        Rerelease the artifacts
+        Created 23-Nov-2006 by slo
+    </description>
+  </info>
+<!-- FIXME: Ivy 1.4.1 buildlist bug
+  <configurations defaultconfmapping="default">
+    <include file="../antbuild/ivy/configurations.xml"/>
+  </configurations>
+  -->
+<configurations defaultconfmapping="default">
+    <conf name="default" extends="master,runtime"/>
+    <conf name="build" visibility="private"
+        description="artifacts needed to build the application"/>
+    <conf name="compile" visibility="private"
+        description="artifacts needed to compile the application"/>
+    <conf name="daemon" visibility="private"
+        description="the classpath needed to run smartfrog daemons"/>
+    <conf name="test" extends="default"
+        description="the classpath needed to run tests"/>
+    <conf name="master" description="contains the artifact but no dependencies"/>
+    <conf name="redist" description="redistributals excluding smartfrog artifacts"/>
+    <conf name="runtime" description="runtime but not the artifact"
+        extends="redist"/>
+    <conf name="sfjars" description="all the smartfrog JARs"
+        extends="runtime"/>
+</configurations>
+
+  <publications>
+    <!--get the artifact from our module name-->
+    <artifact conf="master" name="smartfrog-packages" type="zip"/>
+  </publications>
+  <dependencies>
+    <dependency org="org.smartfrog"
+      name="smartfrog"
+      changing="true"
+      rev="latest.integration"
+      conf="sfjars->examples;redist->redist"/>
+    <dependency org="org.smartfrog"
+        name="sf-tasks" changing="true"
+        rev="latest.integration"
+        conf="sfjars->master;redist->redist"/>
+    <dependency org="org.smartfrog"
+        name="sf-tasks" changing="true"
+        rev="latest.integration"
+        conf="sfjars->master;redist->redist"/>
+    <dependency org="org.smartfrog"
+        name="sf-junit"
+        changing="true"
+        rev="latest.integration"
+        conf="test->default"/>
+
+    <!-- ant component. do we omit the ant dist?-->
+    <dependency org="org.smartfrog"
+        name="sf-ant"
+        changing="true"
+        rev="latest.integration"
+        conf="sfjars->master;redist->redist"/>
+
+    <!-- anubis -->
+    <dependency org="org.smartfrog"
+        name="sf-anubis"
+        changing="true"
+        rev="latest.integration"
+        conf="sfjars->master;redist->redist"/>
+
+    <!--dns-->
+    <dependency org="org.smartfrog"
+        name="sf-dns"
+        changing="true"
+        rev="latest.integration"
+        conf="sfjars->master;redist->redist"/>
+    <!-- testing-->
+    <dependency org="org.smartfrog"
+        name="sf-junit"
+        changing="true"
+        rev="latest.integration"
+        conf="sfjars->master;redist->redist"/>
+
+
+
+    <!--logging-->
+    <dependency org="org.smartfrog"
+        name="sf-loggingservices"
+        changing="true"
+        rev="latest.integration"
+        conf="sfjars->master;redist->redist"/>
+
+    <!--scripting -->
+    <dependency org="org.smartfrog"
+        name="sf-scripting"
+        changing="true"
+        rev="latest.integration"
+        conf="sfjars->master;redist->redist"/>
+
+    <!--email -->
+    <dependency org="org.smartfrog"
+        name="sf-emailer"
+        changing="true"
+        rev="latest.integration"
+        conf="sfjars->master;redist->redist"/>
+
+    <!--net-->
+    <dependency org="org.smartfrog"
+        name="sf-net"
+        changing="true"
+        rev="latest.integration"
+        conf="sfjars->master;redist->redist"/>
+
+    <!--SLP-->
+    <dependency org="org.smartfrog"
+        name="sf-slplib"
+        changing="true"
+        rev="latest.integration"
+        conf="sfjars->master;redist->redist"/>
+
+
+    <!--ssh-->
+    <dependency org="org.smartfrog"
+        name="sf-ssh"
+        changing="true"
+        rev="latest.integration"
+        conf="sfjars->master;redist->redist"/>
+
+    <!-- XML -->
+    <dependency org="org.smartfrog"
+        name="sf-xml"
+        changing="true"
+        rev="latest.integration"
+        conf="sfjars->master;redist->redist"/>
+    <!--Jabber -->
+    <dependency org="org.smartfrog"
+        name="sf-xmpp"
+        changing="true"
+        rev="latest.integration"
+        conf="sfjars->master;redist->redist"/>
+
+
+    <!--web stuff-->
+    <dependency org="org.smartfrog"
+        name="sf-www"
+        changing="true"
+        rev="latest.integration"
+        conf="sfjars->master;redist->redist"/>
+    <dependency org="org.smartfrog"
+        name="sf-tomcat"
+        changing="true"
+        rev="latest.integration"
+        conf="sfjars->master;redist->redist"/>
+    <dependency org="org.smartfrog"
+        name="sf-jetty"
+        changing="true"
+        rev="latest.integration"
+        conf="sfjars->master;redist->redist"/>
+    <dependency org="org.smartfrog"
+        name="sf-cargo"
+        changing="true"
+        rev="latest.integration"
+        conf="sfjars->master;redist->redist"/>
+
+  </dependencies>
+</ivy-module>
