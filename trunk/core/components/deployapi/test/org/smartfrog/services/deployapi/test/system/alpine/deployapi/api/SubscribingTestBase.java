@@ -179,8 +179,11 @@ public abstract class SubscribingTestBase extends StandardTestBase {
      * unsubscribe, if needed
      */
     protected void tearDown() throws Exception {
-        unsubscribe();
-        super.tearDown();
+        try {
+            unsubscribe();
+        } finally {
+            super.tearDown();
+        }
     }
 
     /**

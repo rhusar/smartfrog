@@ -367,6 +367,7 @@
       <sshexec host="${ssh.server}"
           username="${ssh.user}"
           port="${ssh.port}"
+          trust="true"
           passphrase="${ssh.passphrase}"
           keyfile="${ssh.keyfile}"/>
     </presetdef>
@@ -375,6 +376,7 @@
           passphrase="${ssh.passphrase}"
           keyfile="${ssh.keyfile}"
           port="${ssh.port}"
+          trust="true"
           verbose="${ssh.verbose}">
       </scp>
     </presetdef>
