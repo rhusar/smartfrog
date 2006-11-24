@@ -51,5 +51,7 @@
   <modules>
     <module organisation="org.smartfrog" name=".*" resolver="internal"/>
     <module organisation="org.ggf" name=".*" resolver="internal"/>
+    <!-- here so that I can build the antbook at the same time-->
+    <module organisation="org.antbook" name=".*" resolver="internal"/>
   </modules>
 </ivyconf>

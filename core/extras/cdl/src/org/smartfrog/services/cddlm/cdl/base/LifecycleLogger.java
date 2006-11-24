@@ -17,30 +17,20 @@
  For more information: www.smartfrog.org
 
  */
-package org.smartfrog.test.system.sfcore.languages.cdl.execute;
+package org.smartfrog.services.cddlm.cdl.base;
 
-import org.smartfrog.sfcore.prim.Prim;
+import java.rmi.RemoteException;
+
 
 /**
- * created 24-Jun-2005 15:02:17
  */
+public interface LifecycleLogger extends LifecycleListener {
 
-public class Lazy1Test extends CdlDeployingTestBase {
+    String ATTR_LISTEN_TO="listenTo";
 
-    public Lazy1Test(String name) {
-        super(name);
-    }
+    int size() throws RemoteException;
 
-    public static final String LAZY1 = Lazy1Test.VALID + "lazy1.cdl";
+    LifecycleEvent getEvent(int count) throws RemoteException;
 
-
-    public void testLazyReference() throws Throwable {
-        application = deployExpectingSuccess(Lazy1Test.LAZY1, "lazy1");
-        Prim app = (Prim) resolveAttribute(application, "app");
-        String message = resolveStringAttribute(app, "user");
-        assertTrue("Empty message attribute", message.length() > 0);
-        assertEquals("lazy-value", message);
-    }
-
-
+    void clear() throws RemoteException;
 }

@@ -69,7 +69,7 @@ import java.util.List;
 
 public class Application implements WSRPResourceSource, LifecycleListener {
 
-    private final static Log log = LogFactory.getLog(Application.class);
+    private static final Log log = LogFactory.getLog(Application.class);
     private String jsdlLanguage;
     private String extension;
     /**

@@ -31,6 +31,7 @@ public interface EventSubscription {
     /**
      * Something happened to this job
      * @param event the event of interest
+     * @return true if it was processed
      */
     boolean event(Event event);
 

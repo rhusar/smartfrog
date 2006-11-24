@@ -42,31 +42,16 @@ public class CdlExecTest extends XmlTestBase {
 
 
     public void NotestDeployExec() throws Throwable {
-        Prim application = null;
-        try {
-            application = deployExpectingSuccess(EXEC_CDL, "testExec");
-        } finally {
-            terminateApplication(application);
-        }
+        application = deployExpectingSuccess(EXEC_CDL, "testExec");
     }
 
     public void NotestDeployJBoss() throws Throwable {
-        Prim application = null;
-        try {
-            application = deployExpectingSuccess(JBOSS_CDL, "testJboss");
-        } finally {
-            terminateApplication(application);
-        }
+        application = deployExpectingSuccess(JBOSS_CDL, "testJboss");
     }
 
     public void testDeploySound() throws Throwable {
-        Prim application = null;
-        try {
-            application = deployExpectingSuccess(SOUND_CDL, "testSound");
-            Thread.sleep(15000);
-        } finally {
-            terminateApplication(application);
-        }
+        application = deployExpectingSuccess(SOUND_CDL, "testSound");
+        Thread.sleep(15000);
     }
 
 }

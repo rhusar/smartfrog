@@ -37,7 +37,7 @@ import java.rmi.RemoteException;
  */
 
 public class TestCompoundImpl extends EventCompoundImpl
-        implements TestCompound, TestBlock {
+        implements TestCompound {
     private ComponentDescription teardownCD;
     private Prim teardown;
 

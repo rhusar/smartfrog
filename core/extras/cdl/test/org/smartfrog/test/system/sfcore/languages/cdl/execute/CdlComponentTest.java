@@ -46,7 +46,7 @@ import org.smartfrog.services.cddlm.cdl.demo.Echo;
  }
  }
  */ 
-public class CdlComponentTest extends DeployingTestBase {
+public class CdlComponentTest extends CdlDeployingTestBase {
 
     
     public static final String VALID_CDL_FILES = "files/sfcdl/valid/";

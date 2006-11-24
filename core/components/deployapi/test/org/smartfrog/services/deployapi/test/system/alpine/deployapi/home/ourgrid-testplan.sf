@@ -27,8 +27,8 @@
       }
 
       notifyCompound extends NotifyHost {
-
-     }
+        hostname "deployapi.iseran.com";
+      }
 
       //this has to link to a notify service in the same process
       //notifications TBD;;
@@ -43,7 +43,7 @@
         endpoint PARENT:endpoint;
         subdir PARENT:subdir;
 
-        singleTest "notification";
+        singleTest "creation";
       }
 
   }
@@ -55,7 +55,7 @@ fullSuite extends Compound {
   necEnabled true;
   ourgridEnabled true;
   hpEnabled true;
-  proxyEnabled true;
+  proxyEnabled false;
 
   log extends SFLog {
     //log against our parent
@@ -72,8 +72,8 @@ fullSuite extends Compound {
     }
   }
 
-
   testLog LAZY log:logTo:logTo;
+
 
       proxy extends Proxy {
         enabled proxyEnabled;
