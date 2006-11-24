@@ -31,7 +31,7 @@ import java.rmi.RemoteException;
  */
 
 
-public interface CdlCompound extends Remote {
+public interface CdlCompound extends LifecycleSource {
     /**
      * The name under which XML text gets added
      * {@value}
@@ -48,6 +48,11 @@ public interface CdlCompound extends Remote {
     public String ATTR_IDENTIFIER = "identifier";
 */
     String ATTR_JOBURI = "joburi";
+
+    /**
+     * Reference to something listening for events
+     */
+    String ATTR_LISTENER = "listener";
 
     /**
      * Resolve a reference
@@ -68,16 +73,6 @@ public interface CdlCompound extends Remote {
      * @throws java.rmi.RemoteException for network problems
      */
     String resolveText(QName name, boolean mandatory) throws SmartFrogResolutionException, RemoteException;
-
-    /**
-     * bind to something listening for lifecycle events. No events are raised at this point.
-     *
-     * @param uri job ID
-     * @throws org.smartfrog.sfcore.common.SmartFrogException
-     * @throws java.rmi.RemoteException
-     */
-    void subscribe(String uri, LifecycleListener target) throws SmartFrogException,
-            RemoteException;
 
     LifecycleListener getListener() throws RemoteException;
 }

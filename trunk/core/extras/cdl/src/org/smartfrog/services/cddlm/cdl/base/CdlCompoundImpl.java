@@ -25,6 +25,7 @@ import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.compound.CompoundImpl;
 import org.smartfrog.sfcore.prim.TerminationRecord;
+import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.reference.ReferencePart;
 
@@ -60,7 +61,11 @@ public class CdlCompoundImpl extends CompoundImpl
      */
     public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
         super.sfDeploy();
-        enterStateNotifying(LifecycleStateEnum.instantiated, null);
+        Prim listenerPrim=sfResolve(ATTR_LISTENER,(Prim)null,false);
+        if(listenerPrim!=null) {
+            listener=(LifecycleListener) listenerPrim;
+        }
+        enterStateNotifying(LifecycleStateEnum.initialized, null);
     }
 
     /**
@@ -140,6 +145,26 @@ public class CdlCompoundImpl extends CompoundImpl
         sfReplaceAttribute(ATTR_JOBURI, uri);
     }
 
+    /**
+     * unsubscribe. This is idempotent
+     * @param subscriber
+     * @throws SmartFrogException
+     * @throws RemoteException
+     * @return true if the listener was unsubscribed
+     */
+    public boolean unsubscribe(LifecycleListener subscriber)
+            throws SmartFrogException, RemoteException {
+        boolean match=listener==subscriber;
+        if(match) {
+            listener=null;
+        }
+        return match;
+    }
+
+
+    public LifecycleListener getListener() {
+        return listener;
+    }
 
     /**
      * enter a state, send notification if this is different from a state we
@@ -170,7 +195,4 @@ public class CdlCompoundImpl extends CompoundImpl
         }
     }
 
-    public LifecycleListener getListener() {
-        return listener;
-    }
 }

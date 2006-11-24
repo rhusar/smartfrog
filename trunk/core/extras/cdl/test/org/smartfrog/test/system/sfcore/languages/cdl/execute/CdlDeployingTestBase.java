@@ -20,6 +20,7 @@
 package org.smartfrog.test.system.sfcore.languages.cdl.execute;
 
 import org.smartfrog.test.SmartFrogTestBase;
+import org.smartfrog.test.DeployingTestBase;
 import org.smartfrog.test.unit.sfcore.languages.cdl.Filenames;
 import org.smartfrog.sfcore.prim.Prim;
 
@@ -29,14 +30,14 @@ import java.rmi.RemoteException;
  * created 31-Jan-2006 13:43:11
  */
 
-public abstract class DeployingTestBase extends SmartFrogTestBase implements Filenames {
+public abstract class CdlDeployingTestBase extends DeployingTestBase implements Filenames {
     public static final int SPIN_LAG = 1000;
     public static final String FILES = "files/sfcdl/";
-    public static final String VALID= Lazy1Test.FILES + "valid/";
-    public static final String INVALID = Lazy1Test.FILES + "invalid/";
+    public static final String VALID= FILES + "valid/";
+    public static final String INVALID = FILES + "invalid/";
     public static final int DEFAULT_TIMEOUT = 30;
 
-    public DeployingTestBase(String name) {
+    public CdlDeployingTestBase(String name) {
         super(name);
     }
 

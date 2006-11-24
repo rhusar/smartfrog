@@ -94,7 +94,7 @@ public class EventCompoundImpl extends CompoundImpl implements EventBus,
                   Object key = e.nextElement();
                   Object elem = sfContext.get(key);
                   if ((elem instanceof ComponentDescription)&& (((ComponentDescription)elem).getEager())) {
-                      childCtx.sfAddAttribute(key, (ComponentDescription)elem);
+                      childCtx.sfAddAttribute(key, elem);
                       if (action == null) {
                           action = (ComponentDescription)elem;
                       }

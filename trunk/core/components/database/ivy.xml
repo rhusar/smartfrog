@@ -61,5 +61,10 @@
         name="hsqldb"
         rev="${hsqldb.version}"
         conf="test->default"/>
-  </dependencies>
+<!--     <dependency org="commons-dbutils"
+        name="commons-dbutils"
+        rev="${commons-dbutils.version}"
+        conf="redist->master"/>        
+ -->
+ </dependencies>
 </ivy-module>

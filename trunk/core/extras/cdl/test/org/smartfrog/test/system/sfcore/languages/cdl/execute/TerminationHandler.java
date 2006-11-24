@@ -19,7 +19,6 @@
  */
 package org.smartfrog.test.system.sfcore.languages.cdl.execute;
 
-import junit.framework.Assert;
 import org.smartfrog.sfcore.prim.PrimHook;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.TerminationRecord;
@@ -31,10 +30,10 @@ import org.smartfrog.sfcore.common.SmartFrogLifecycleException;
 import java.rmi.RemoteException;
 
 /**
- * This is a class to wait() on to wait for terminations.
- * It will also signal with a timeout in case termination took longer than allowed.
+ * This is a class to wait() on to wait for terminations. It will also signal
+ * with a timeout in case termination took longer than allowed.
  */
-public class TerminationHandler extends Assert implements PrimHook {
+public class TerminationHandler implements PrimHook {
 
     private boolean normalTerminationExpected;
 
@@ -46,34 +45,37 @@ public class TerminationHandler extends Assert implements PrimHook {
 
 
     /**
-     *
-     * @param normalTerminationExpected (flag to say normal termination is expected)
-     * @param expectedMessageText text to look for in the message (can be null)
+     * @param normalTerminationExpected (flag to say normal termination is
+     *                                  expected)
+     * @param expectedMessageText       text to look for in the message (can be
+     *                                  null)
      */
-    public TerminationHandler(boolean normalTerminationExpected, String expectedMessageText) {
+    public TerminationHandler(boolean normalTerminationExpected,
+                              String expectedMessageText) {
         this.normalTerminationExpected = normalTerminationExpected;
     }
 
     /**
      * sfHookAction for terminating
      *
-     * @param source              prim component
+     * @param source prim component
      * @param record TerminationRecord object
+     *
      * @throws org.smartfrog.sfcore.common.SmartFrogException
      *          in case of any error
      */
     public void sfHookAction(Prim source, TerminationRecord record)
             throws SmartFrogException {
-       try {
-           Reference name = null;
-           name = source.sfCompleteName();
-           //check for a match
-           if (targetName.equals(name)) {
-               //and if so, save the record and notify our caller
-               terminationRecord = record;
-               this.notify();
-           }
-       } catch (RemoteException remoteTrouble) {
+        try {
+            Reference name = null;
+            name = source.sfCompleteName();
+            //check for a match
+            if (targetName.equals(name)) {
+                //and if so, save the record and notify our caller
+                terminationRecord = record;
+                this.notify();
+            }
+        } catch (RemoteException remoteTrouble) {
             throw new SmartFrogException(remoteTrouble);
         }
     }
@@ -85,30 +87,34 @@ public class TerminationHandler extends Assert implements PrimHook {
 
     /**
      * wait for a node to terminate within a given time.
+     *
      * @param prim
      * @param timeoutSeconds
      */
-    public void waitForTermination(Prim prim,int timeoutSeconds)  {
+    public void waitForTermination(Prim prim, int timeoutSeconds)
+            throws SmartFrogException {
         PrimImpl.sfTerminateWithHooks.addHook(this);
         try {
             try {
-                this.wait(timeoutSeconds*1000);
+                this.wait(timeoutSeconds * 1000);
             } catch (InterruptedException e) {
-                fail("timeout interrupted");
+                throw new SmartFrogException("timeout interrupted");
             }
             //at this point we have terminated.
-            assertNotNull("termination record is null",terminationRecord);
-            boolean normalEnd=TerminationRecord.NORMAL.equals(terminationRecord.errorType);
-            String text=terminationRecord.toString();
-            if(normalTerminationExpected) {
-                assertTrue("Expected normal termination, got "+text,normalEnd);
-            } else {
-                assertFalse("Expected abnormal termination, got " + text, normalEnd);
+            if (terminationRecord == null) {
+                throw new SmartFrogException("termination record is null");
             }
-            if(expectedMessageText!=null) {
-                assertTrue(
-                        "expected to find ["+expectedMessageText+"] in "+text,
-                        text.indexOf(expectedMessageText)>0);
+            boolean normalEnd = TerminationRecord.NORMAL
+                    .equals(terminationRecord.errorType);
+            String text = terminationRecord.toString();
+            if (normalTerminationExpected!=normalEnd) {
+                throw new SmartFrogException("unexpected outcome:"
+                    +terminationRecord);
+            }
+            if (expectedMessageText != null
+                    && text.indexOf(expectedMessageText) <= 0) {
+                throw new SmartFrogException(
+                        "failed to find [" + expectedMessageText + "] in " + text);
             }
         } finally {
             unregisterWithPrimImpl();
@@ -128,20 +134,26 @@ public class TerminationHandler extends Assert implements PrimHook {
     /**
      * Wait for an application terminating
      *
-     * @param prim                      component to wait on. Must be local for proper waiting to work
+     * @param prim                      component to wait on. Must be local for
+     *                                  proper waiting to work
      * @param timeoutSeconds
      * @param normalTerminationExpected
      * @param expectedText
+     *
      * @throws java.rmi.RemoteException
      * @throws InterruptedException
      */
-    public static void awaitTermination(Prim prim, int timeoutSeconds, boolean normalTerminationExpected,
+    public static void awaitTermination(Prim prim,
+                                        int timeoutSeconds,
+                                        boolean normalTerminationExpected,
                                         String expectedText) throws
-            RemoteException, InterruptedException {
+            RemoteException, SmartFrogException {
         if (!(prim instanceof PrimImpl)) {
-            fail("Only local process components can be waited on");
+            throw new SmartFrogException("Only local process components can be waited on");
         }
-        TerminationHandler terminateHandler = new TerminationHandler(normalTerminationExpected, expectedText);
+        TerminationHandler terminateHandler = new TerminationHandler(
+                normalTerminationExpected,
+                expectedText);
         terminateHandler.waitForTermination(prim, timeoutSeconds);
     }
 }

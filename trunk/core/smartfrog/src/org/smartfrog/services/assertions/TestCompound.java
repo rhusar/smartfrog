@@ -26,7 +26,7 @@ import java.rmi.Remote;
  */
 
 
-public interface TestCompound extends Remote {
+public interface TestCompound extends TestBlock {
 
 
     /**

@@ -16,17 +16,17 @@
 
     <base:Prim>
 <!--
-      <sf:sfClass/>
-      <sf:sfCodeBase />
-      <sf:sfDeployerClass />
-      <sf:sfExport/>
-      <sf:sfExportPort/>
-      <sf:sfLivenessDelay />
-      <sf:sfLivenessFactor />
-      <sf:sfLog />
-      <sf:sfProcessName />
-      <sf:sfProcessComponentName />
-      <sf:sfProcessHost/>
+      <sfClass/>
+      <sfCodeBase />
+      <sfDeployerClass />
+      <sfExport/>
+      <sfExportPort/>
+      <sfLivenessDelay />
+      <sfLivenessFactor />
+      <sfLog />
+      <sfProcessName />
+      <sfProcessComponentName />
+      <sfProcessHost/>
 -->
     </base:Prim>
 
@@ -41,7 +41,9 @@
       <sfClass>org.smartfrog.services.cddlm.cdl.base.CdlCompoundImpl</sfClass>
     </base:CdlComponent>
 
-
+    <base:LifecycleLogger cdl:extends="base:Prim">
+      <sfClass>org.smartfrog.services.cddlm.cdl.base.LifecycleLoggerImpl</sfClass>
+    </base:LifecycleLogger>
 
   </cdl:configuration>
 </cdl:cdl>

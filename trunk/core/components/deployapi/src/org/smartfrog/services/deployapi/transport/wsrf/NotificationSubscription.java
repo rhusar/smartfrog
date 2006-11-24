@@ -24,6 +24,7 @@ import nu.xom.Element;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.smartfrog.projects.alpine.faults.AlpineRuntimeException;
+import org.smartfrog.projects.alpine.faults.SoapException;
 import org.smartfrog.projects.alpine.om.base.SoapElement;
 import org.smartfrog.projects.alpine.om.soap11.Body;
 import org.smartfrog.projects.alpine.om.soap11.MessageDocument;
@@ -249,17 +250,23 @@ xs:EventId>http://www.gridforum.org/cddlm/components/2005/02/events/Lifecycle
      * Something happened to this job
      *
      * @param event the event of interest
+     * @return true if the event is still of interest
      */
     public boolean event(Event event) {
         //send the event to the callback
         SoapElement request = createMuwsLifecycleEvent(event);
         try {
-            log.info("Notifying "+getCallback());
+            if(log.isInfoEnabled()) {
+                log.info("Notifying "+getCallback()
+                    +"\n"+request.toXML());
+            }
             MessageDocument response = session.invokeBlocking(null, request);
+            log.info(response.toXML());
         } catch (AlpineRuntimeException e) {
             lastError = e;
             //if anything went wrong, log
             log.error("Failed to post the event to "+callback,e);
+            log.error(e.GenerateSoapFault().toXML());
             //signal the failure
             return false;
         }

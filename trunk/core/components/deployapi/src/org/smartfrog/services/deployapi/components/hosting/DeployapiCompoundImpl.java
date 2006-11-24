@@ -40,65 +40,6 @@ import java.rmi.RemoteException;
 public class DeployapiCompoundImpl extends CdlCompoundImpl
         implements DeployapiCompound, LifecycleListener {
 
-    private URI jobURI;
-    private static final Log log = LogFactory.getLog(DeployapiCompoundImpl.class);
-    private LifecycleListener listener;
-
     public DeployapiCompoundImpl() throws RemoteException {
-    }
-
-
-    /**
-     * bind to something listening for lifecycle events. No events are raised at this point.
-     * @param uri job ID
-     * @throws SmartFrogException
-     * @throws RemoteException
-     */
-    public synchronized void subscribe(String uri, LifecycleListener target) throws SmartFrogException,
-            RemoteException {
-        try {
-            jobURI = new URI(uri);
-        } catch (URISyntaxException e) {
-            throw SmartFrogException.forward(e);
-        }
-        this.listener = target;
-        sfReplaceAttribute(ATTR_JOBURI, uri);
-    }
-
-
-
-
-
-    /**
-     * enter a state, send notification if this is different from a state we
-     * were in before This method is synchronous, you cannot enter a state till
-     * the last one was processed.
-     * <p/>
-     * If you try and enter the current state, then nothing happens
-     *
-     * @param newState new state to enter
-     * @param info     string to record in the stateInfo field.
-     * @throws java.rmi.RemoteException for network problems
-     */
-    public void enterStateNotifying(LifecycleStateEnum newState, String info) throws RemoteException {
-        if (listener != null) {
-            listener.enterStateNotifying(newState, info);
-        }
-    }
-
-    /**
-     * terminate, send a message out
-     *
-     * @param record termination record
-     * @throws java.rmi.RemoteException for network problems
-     */
-    public void enterTerminatedStateNotifying(TerminationRecord record) throws RemoteException {
-        if(listener!=null) {
-            listener.enterTerminatedStateNotifying(record);
-        }
-    }
-
-    public LifecycleListener getListener() {
-        return listener;
     }
 }

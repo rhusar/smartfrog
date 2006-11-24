@@ -17,30 +17,30 @@
  For more information: www.smartfrog.org
 
  */
-package org.smartfrog.test.system.sfcore.languages.cdl.execute;
 
-import org.smartfrog.sfcore.prim.Prim;
 
-/**
- * created 24-Jun-2005 15:02:17
- */
+#include "/org/smartfrog/services/assertions/components.sf"
+#include "/org/smartfrog/services/cddlm/cdl/base/components.sf"
+#include "/org/smartfrog/sfcore/workflow/combinators/parallel.sf"
+#include "/org/smartfrog/sfcore/workflow/combinators/try.sf"
+#include "/org/smartfrog/sfcore/workflow/combinators/delay.sf"
 
-public class Lazy1Test extends CdlDeployingTestBase {
+sfConfig extends ExpectDeploy {
 
-    public Lazy1Test(String name) {
-        super(name);
+    undeployAfter 20000;
+
+    action extends Compound {
+        logger extends LifecycleLogger {
+        }
+
+        try extends Try {
+            action extends CdlComponent {
+                listener LAZY ATTRIB logger;
+                fail extends Fail {
+                    delay 2000;
+                }
+            }
+        }
+
     }
-
-    public static final String LAZY1 = Lazy1Test.VALID + "lazy1.cdl";
-
-
-    public void testLazyReference() throws Throwable {
-        application = deployExpectingSuccess(Lazy1Test.LAZY1, "lazy1");
-        Prim app = (Prim) resolveAttribute(application, "app");
-        String message = resolveStringAttribute(app, "user");
-        assertTrue("Empty message attribute", message.length() > 0);
-        assertEquals("lazy-value", message);
-    }
-
-
 }
