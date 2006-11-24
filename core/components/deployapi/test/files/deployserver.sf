@@ -26,7 +26,7 @@ Application extends DeployServer {
 
   //get this from the running system
     javahome LAZY PROPERTY java.io.tmpdir;
-    port 5050;
+    port 8080;
     location "mezzanine";
     liveness false;
     urlhost "127.0.0.1";

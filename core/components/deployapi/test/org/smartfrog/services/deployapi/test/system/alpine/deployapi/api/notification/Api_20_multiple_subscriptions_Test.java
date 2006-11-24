@@ -20,15 +20,16 @@
 package org.smartfrog.services.deployapi.test.system.alpine.deployapi.api.notification;
 
 import org.smartfrog.services.deployapi.alpineclient.model.CallbackSubscription;
+import org.smartfrog.services.deployapi.alpineclient.model.PortalSession;
 import org.smartfrog.services.deployapi.system.Constants;
 import org.smartfrog.services.deployapi.test.system.alpine.deployapi.api.SubscribingTestBase;
+import org.smartfrog.services.deployapi.notifications.muws.MuwsEventReceiver;
 
 /**
  * created 04-May-2006 13:46:55
  */
 
 public class Api_20_multiple_subscriptions_Test extends SubscribingTestBase {
-    private CallbackSubscription sub2;
     private CallbackSubscription sub1;
 
     public Api_20_multiple_subscriptions_Test(String name) {
@@ -43,19 +44,23 @@ public class Api_20_multiple_subscriptions_Test extends SubscribingTestBase {
         try {
             CallbackSubscription.unsubscribe(sub1);
         } finally {
-            CallbackSubscription.unsubscribe(sub2);
+            super.tearDown();
         }
-
     }
 
     public void testSubscribe() throws Exception {
         subscribeToPortal(Constants.PORTAL_CREATED_EVENT);
-        sub1 = getPortal().subscribeToPortalEvents(HTTP_EXAMPLE_ORG, false);
-        sub2 = getPortal().subscribeToPortalEvents(HTTP_EXAMPLE_ORG, true);
+        assertNotNull(getSubscription());
+        MuwsEventReceiver receiver = createSubscriptionReceiver();
+        PortalSession session = getPortal();
+        sub1 = session.subscribeToPortalEvents(HTTP_EXAMPLE_ORG, false);
+        sub1 = session.subscribe(Constants.PORTAL_CREATED_EVENT,
+                receiver.getURL(), true, null);
+        patchSubscription(session,sub1);
         createSystem(null);
         waitForSubscription("portal events");
         assertNotNull(
                 "second subscription not notified",
-                sub2.waitForEvent(getSubscribeWaitTimeout()));
+                sub1.waitForEvent(getSubscribeWaitTimeout()));
     }
 }

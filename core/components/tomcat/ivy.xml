@@ -48,7 +48,7 @@
         rev="latest.integration"
         conf="build->default"/>
     <dependency org="commons-logging"
-        name="commons-logging-api"
+        name="commons-logging"
         rev="${commons-logging.version}"
         conf="compile->master;redist->master"/>
     <dependency org="commons-httpclient"
