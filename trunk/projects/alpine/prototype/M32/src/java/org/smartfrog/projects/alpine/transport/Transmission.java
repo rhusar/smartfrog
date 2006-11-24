@@ -167,7 +167,8 @@ public class Transmission implements Callable {
         } catch (java.util.concurrent.TimeoutException timeoutException) {
             throw org.smartfrog.projects.alpine.faults.TimeoutException.fromConcurrentTimeout(timeoutException);
         } catch (InterruptedException e) {
-            throw new ClientException(e);
+            throw new ClientException("Interrupted while waiting for response from "+
+                    getRequest().getAddressDetails().getTo().toString());
         }
     }
 

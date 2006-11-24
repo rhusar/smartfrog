@@ -111,7 +111,8 @@ public class HttpTransmitter {
         String destination = wsa.getDestination();
         log.debug("Posting to " + destination);
         PostMethod method = new ProgressingPostMethod(destination);
-
+        //REVISIT. Its not clear that this method should stay around.
+        //method.setFollowRedirects(true);
         method.addRequestHeader("SOAPAction","");
         method.addRequestHeader("User-Agent",HttpConstants.ALPINE_VERSION);
         //fill in the details
