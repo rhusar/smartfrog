@@ -28,12 +28,7 @@ For more information: www.smartfrog.org
 Introduction
 ============
 
-
-Installing the build tools
-==========================
-Please go though the installation guide and install ant 1.6.1 or later.
-Reference URL:http://ant.apache.org
-
+This is a GUI for editing and deploying SmartFrog descriptors
 
 </description>
 
@@ -96,6 +91,15 @@ Reference URL:http://ant.apache.org
     <property name="jdocs" value="${docs}/jdocs"/>
     <property name="SFjdocs" value="${docs}/SFjdocs"/>
 
+    <fail unless="env.SFHOME">
+Stop!
+      
+The SFHOME environment variable is not set.
+      
+Either set the environment variable, or create a file build.properties
+with env.SFHOME set to the directory into which SmartFrog is distributed
+
+    </fail>
 
     <property name="core.smartfrog.lib" location="${env.SFHOME}/${lib}"/>
 
