@@ -89,7 +89,7 @@ public class Session {
      * @param epr
      */
     public void bind(AlpineEPR epr) {
-        this.endpoint = epr;
+        endpoint = epr;
         address = new AddressDetails(epr);
     }
 
@@ -239,5 +239,18 @@ public class Session {
 
     public String getSoapAction(SoapElement request) {
         return getSoapAction(request.getQName());
+    }
+
+
+    public String toString() {
+        return sessionType() +" session to "+address!=null?address.toString():"an undefined destination";
+    }
+
+    /**
+     * For use in the toString method; return the session type
+     * @return the type of this session, e,g "SOAP", "WSRF"
+     */
+    protected String sessionType() {
+        return "SOAP";
     }
 }

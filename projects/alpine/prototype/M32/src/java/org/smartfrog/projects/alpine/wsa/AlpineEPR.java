@@ -36,6 +36,8 @@ import org.smartfrog.projects.alpine.xmlutils.NodeIterator;
 import javax.xml.namespace.QName;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
+import java.net.MalformedURLException;
 
 /*
 <wsa:EndpointReference
@@ -90,6 +92,10 @@ public final class AlpineEPR implements Validatable, AddressingConstants, XomSou
 
     public AlpineEPR(String address) {
         this.address = address;
+    }
+
+    public AlpineEPR(URL url) {
+        this.address = url.toExternalForm();
     }
 
     /**
@@ -415,4 +421,20 @@ public final class AlpineEPR implements Validatable, AddressingConstants, XomSou
         return query.substring(index+pl, end).trim();
     }
 
+
+    /**
+     * Create a URL from the address
+     * @return a new URL
+     * @throws AlpineRuntimeException for any failure to convert the address string to a URL
+     */
+    public URL createAddressURL() {
+        if(address ==null) {
+            throw new AlpineRuntimeException("No address");
+        }
+        try {
+            return new URL(address);
+        } catch (MalformedURLException e) {
+            throw new AlpineRuntimeException("Cannot conver to a URL:"+address);
+        }
+    }
 }
