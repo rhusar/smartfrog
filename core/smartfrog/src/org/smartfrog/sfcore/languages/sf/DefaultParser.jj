@@ -49,7 +49,7 @@ public class DefaultParser {
 
   static final String eqOp = "org.smartfrog.sfcore.languages.sf.functions.EQ";
   static final String neOp = "org.smartfrog.sfcore.languages.sf.functions.NE";
-  static final String geOp = "org.smartfrog.sfcore.languages.sf.functions.GEs";
+  static final String geOp = "org.smartfrog.sfcore.languages.sf.functions.GE";
   static final String leOp = "org.smartfrog.sfcore.languages.sf.functions.LE";
   static final String gtOp = "org.smartfrog.sfcore.languages.sf.functions.GT";
   static final String ltOp = "org.smartfrog.sfcore.languages.sf.functions.LT";
@@ -333,13 +333,13 @@ TOKEN : /* Literals */
       >
     | < #EXPONENT: ["e","E"] (["+","-"])? (["0"-"9"])+ >
     | <DOUBLE:
-        <FLOAT_BASE> (["d", "D"])?
+        <FLOAT_BASE> ["d", "D"]
       >
     | <LONG:
-        <INTEGER> (["l", "L"])?
+        <INTEGER> ["l", "L"]
       >
     | <FLOAT:
-        <FLOAT_BASE> ["f", "F"]
+        <FLOAT_BASE> (["f", "F"])?
       >
     | <BYTEARRAY:
           (("#HEX#")
