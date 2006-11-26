@@ -99,7 +99,7 @@ DefaultTraceCompound extends DefaultCompound {
 sfConfig extends DefaultCompound;
 
 // Daemon Display with management console
-// sfConfig extends DefaultManagementCompound;
+ sfConfig extends DefaultManagementCompound;
 
 // Alternative default compound with persitance pattern enabled
 // Uncoment next line to use it.
