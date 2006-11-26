@@ -962,10 +962,10 @@ public class Display extends JFrame implements ActionListener, KeyListener {
      */
     void info() {
         out.println("");
-        out.println("*****************************************************");
+        out.println("*******************************************************");
         out.println("* " + org.smartfrog.Version.versionString() +
-                " - (C) Copyright Hewlett-Packard Development Company, LP *");
-        out.println("*****************************************************");
+                  "\n* (C)Copyright Hewlett-Packard Development Company, LP ");
+        out.println("*******************************************************");
         out.println("* Java Version:   " + System.getProperty("java.version"));
         out.println("* Java Home:      " + System.getProperty("java.home"));
         out.println("* Java Ext Dir:   " + System.getProperty("java.ext.dirs"));
@@ -1414,7 +1414,7 @@ public class Display extends JFrame implements ActionListener, KeyListener {
     }
 
     public void setAskSaveChanges(boolean askSaveChanges){
-       jCheckBoxMenuItemAskSaveChanges.setSelected(askSaveChanges);   
+       jCheckBoxMenuItemAskSaveChanges.setSelected(askSaveChanges);
     }
 
     public static Image createImage(String imagesPath) {
