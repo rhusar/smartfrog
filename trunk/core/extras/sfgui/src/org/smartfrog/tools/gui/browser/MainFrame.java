@@ -80,7 +80,7 @@ public class MainFrame
   /**
    *  Description of the Field
    */
-  public final static String version = "v0.8 r01";
+  public final static String version = "v0.8 r02";
   // This has to  be done properly !!!!!!!!!!!!!!! no static. Because of crap log.
   static PrintStream msg = System.out;
   static JLabel statusBar = new JLabel();
@@ -2109,20 +2109,19 @@ public class MainFrame
     jTextAreaMsg.append("\n  -OS: " + System.getProperty("os.name") + "\n");
     // to standard output a more complete info ;-)
     System.out.println("");
-    System.out.println("*****************************************************");
-    System.out.println("*   @ Serrano  - HP Labs Bristol -    2001          *");
-    System.out.println("*****************************************************");
+    System.out.println("*******************************************************");
+    System.out.println("* SFGui " + version );
+    System.out.println("* " + org.smartfrog.Version.versionString() );
+    System.out.println("* (C)Copyright Hewlett-Packard Development Company, LP ");
+    System.out.println("*******************************************************");
     System.out.println("Java Version:   " + System.getProperty("java.version"));
     System.out.println("Java Home:      " + System.getProperty("java.home"));
     System.out.println("Java Ext Dir:   " + System.getProperty("java.ext.dirs"));
-    System.out.println("Java ClassPath: " +
-                       System.getProperty("java.class.path"));
     System.out.println("OS Name:        " + System.getProperty("os.name"));
     System.out.println("OS Version:     " + System.getProperty("os.version"));
     System.out.println("User Name:      " + System.getProperty("user.name"));
     System.out.println("User Home:      " + System.getProperty("user.home"));
     System.out.println("User Work Dir:  " + System.getProperty("user.dir"));
-    System.out.println("Smart Frog:     " + org.smartfrog.Version.versionString());
     try {
       java.net.InetAddress localhost = java.net.InetAddress.getLocalHost();
       out.println("LocalHost Name: " + localhost.getHostName());
@@ -2132,6 +2131,10 @@ public class MainFrame
     catch (Exception ex) {
       System.out.println("Exception Info:" + ex.toString());
     }
+    System.out.println("* Java ClassPath: " + "\n" +
+          (System.getProperty("java.class.path")).replace(
+            System.getProperty("path.separator").charAt(0), '\n'));
+    out.println("*****************************************************");
     System.out.println("");
 
   }
