@@ -199,8 +199,7 @@ public class LoadSFFiles {
           strB.append(listJars.get(i));
           strB.append(pathSeparator);
         }
-//        System.out.println("classPath : "+strB.toString());
-//        System.setProperty("java.class.path",strB.toString());
+        System.setProperty("java.class.path",strB.toString());
    }
 
    public static Vector getDirs (){
@@ -323,7 +322,7 @@ public class LoadSFFiles {
     *  initializes internal hash tables with Jar file resources.
     *
     *@param  jarFileName  The feature to be added to the JarFiles attribute
-    *@param  filter       The feature to be added to the JarFiles attribute
+    *@param  filters       The feature to be added to the JarFiles attribute
     */
    private void addJarFiles(String jarFileName, String[] filters) {
       try {
@@ -384,16 +383,14 @@ public class LoadSFFiles {
            }
          }
          //while
-      } catch (NullPointerException e) {
-         System.out.println("done.");
       } catch (FileNotFoundException e) {
          System.err.println("File : " + jarFileName + ", " + e.getMessage());
          //e.printStackTrace();
       } catch (IOException e) {
          System.err.println("Error(IO): " + jarFileName + ", " + e.getMessage());
          //e.printStackTrace();
-      } catch (Exception ex) {
-         System.out.println("File: " + jarFileName);
+      } catch (Throwable thr) {
+         System.err.println("Error when reading File: " + jarFileName + ", "+ thr.toString());
       }
    }
 }
