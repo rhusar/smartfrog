@@ -432,7 +432,7 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
             return (Log) deplConst.newInstance(deplConstArgs);
         } catch (NoSuchMethodException nsmetexcp) {
             throw new SmartFrogLogException(MessageUtil.formatMessage(
-                    MessageKeys.MSG_METHOD_NOT_FOUND, targetClassName, "getConstructor()"),
+                    MessageKeys.MSG_METHOD_NOT_FOUND, targetClassName, "getConstructor(String,CompDesc,Integer)"),
                 nsmetexcp);
         } catch (ClassNotFoundException cnfexcp) {
             throw new SmartFrogLogException(MessageUtil.formatMessage(
