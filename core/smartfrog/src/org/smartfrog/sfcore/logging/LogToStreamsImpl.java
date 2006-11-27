@@ -271,7 +271,9 @@ public class LogToStreamsImpl extends LogToNothingImpl implements LogToStreams, 
      * @param outstream output stream to log to
      */
     public void setOutstream(PrintStream outstream) {
-        assert(outstream != null);
+        if (outstream == null) {
+            throw new IllegalArgumentException("Null outstream passed down");
+        }
         this.outstream = outstream;
     }
 
@@ -282,6 +284,9 @@ public class LogToStreamsImpl extends LogToNothingImpl implements LogToStreams, 
      */
     public void setErrstream(PrintStream errstream) {
         assert(errstream != null);
+        if(errstream==null) {
+            throw new IllegalArgumentException("Null errorstream passed down");
+        }
         this.errstream = errstream;
     }
 

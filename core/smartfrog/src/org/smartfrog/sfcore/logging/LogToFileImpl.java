@@ -26,6 +26,7 @@ import org.smartfrog.sfcore.common.SmartFrogException;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
+import java.io.FileNotFoundException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -62,7 +63,8 @@ public class LogToFileImpl extends LogToStreamsImpl implements LogToFile {
     /** Use date in file name */
     boolean datedName = true;
     /**  Used to format date used in filename */
-    protected DateFormat fileNameDateFormatter = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss:SSS zzz");;
+    protected DateFormat fileNameDateFormatter = new SimpleDateFormat(
+            FILE_DATE_FORMAT);
 
     /** Use Log Name in file name */
     boolean useLogNameInFileName = true;
@@ -78,6 +80,7 @@ public class LogToFileImpl extends LogToStreamsImpl implements LogToFile {
 
     /** Append data  */
     boolean append = true;
+    private static final String FILE_DATE_FORMAT = "yyyy-MM-dd_HH:mm:ss:SSS_zzz";
 
 
     /**
@@ -97,55 +100,57 @@ public class LogToFileImpl extends LogToStreamsImpl implements LogToFile {
      * @param componentComponentDescription A component description to overwrite class configuration
      * @param initialLogLevel level to log at
      */
-    public LogToFileImpl (String name, ComponentDescription componentComponentDescription, Integer initialLogLevel) {
-        super(name,initialLogLevel);
+    public LogToFileImpl(String name,
+                         ComponentDescription componentComponentDescription,
+                         Integer initialLogLevel) {
+        super(name, initialLogLevel);
         try {
-          readSFFileAttributes(classComponentDescription);
-        } catch (SmartFrogException ex1) {
-           this.error("",ex1);
-        }
-        try {
-          readSFFileAttributes(componentComponentDescription);
-        } catch (SmartFrogException ex1) {
-           this.error("",ex1);
-        }
-        PrintStream out=null;
-        try {
-           logFile = createFile(logFileExtension);
-           FileOutputStream fos = new FileOutputStream(logFile,append);
-           out = new PrintStream(fos);
-        } catch (Exception ex){
-          //@todo
-          ex.printStackTrace();
-        }
-        if (isDebugEnabled() && this.getClass().toString().endsWith("LogToFileImpl")) {
-            //This will go to the std output.
-            debug("LogToFileImpl using file name: "+logFile.getAbsolutePath());
-        }
-        setOutstream(out);
-        if (redirectSystemOutputs){
-            try {
-                redirectOutputs();
-            } catch (Exception ex1) {
-                ex1.printStackTrace();
+            readSFFileAttributes(classComponentDescription);
+            readSFFileAttributes(componentComponentDescription);
+            PrintStream out = null;
+            logFile = createFile(logFileExtension);
+            FileOutputStream fos = new FileOutputStream(logFile,
+                    append);
+            out = new PrintStream(fos);
+            if (isDebugEnabled() && this.getClass()
+                    .toString()
+                    .endsWith("LogToFileImpl")) {
+                //This will go to the std output.
+                debug("LogToFileImpl using file name: " + logFile.getAbsolutePath());
             }
-        }
-        if (isTraceEnabled() && this.getClass().toString().endsWith("LogToFileImpl")) {
-            String msg2 = "Log '"+name+"' "+
-            "\nusing Class ComponentDescription:\n{"+classComponentDescription+
-            "}\n, and using Component ComponentDescription:\n{"+ componentComponentDescription+"}";
-            trace(this.getClass().toString() + " "+msg2);
-        }
+            setOutstream(out);
+            if (redirectSystemOutputs) {
+                redirectOutputs();
+            }
+            if (isTraceEnabled() && this.getClass()
+                    .toString()
+                    .endsWith("LogToFileImpl")) {
+                String msg2 = "Log '" + name + "' " +
+                        "\nusing Class ComponentDescription:\n{" + classComponentDescription +
+                        "}\n, and using Component ComponentDescription:\n{" + componentComponentDescription + "}";
+                trace(this.getClass().toString() + " " + msg2);
+            }
 //        setLevel(initialLogLevel.intValue());
+        } catch (FileNotFoundException ex) {
+            faultInInitialization(ex);
+        }
+
     }
 
+    /**
+     * Called to handle faults in initialization
+     * @param thrown
+     */
+    private static void faultInInitialization(Throwable thrown) {
+        thrown.printStackTrace();
+    }
 
     /**
      *  Reads optional and mandatory attributes.
      * @param cd ComponentDescription A component description to read attributes from
      * @throws SmartFrogException error while reading attributes
      */
-    protected void readSFFileAttributes(ComponentDescription cd) throws SmartFrogException {
+    protected void readSFFileAttributes(ComponentDescription cd) {
         if (cd==null) return;
         //Optional attributes.
         try {
@@ -158,7 +163,8 @@ public class LogToFileImpl extends LogToStreamsImpl implements LogToFile {
           useHostNameInFileName = cd.sfResolve(ATR_USE_HOST_NAME_IN_FILE_NAME,useHostNameInFileName, false);
           useProcessNameInFileName = cd.sfResolve(ATR_USE_PROCESS_NAME_IN_FILE_NAME,useProcessNameInFileName, false);
           try {
-             fileNameDateFormatter = new SimpleDateFormat(cd.sfResolve(ATR_FILE_NAME_DATE_FORMAT, "yyyy/MM/dd HH:mm:ss:SSS zzz", false));
+             fileNameDateFormatter = new SimpleDateFormat(cd.sfResolve(ATR_FILE_NAME_DATE_FORMAT,
+                     FILE_DATE_FORMAT, false));
           } catch (Exception ex) {
              if (this.isErrorEnabled())this.error("fileNameDateFormatter", ex);
           }
@@ -175,18 +181,15 @@ public class LogToFileImpl extends LogToStreamsImpl implements LogToFile {
      * @return filename
      * @throws Exception error while creating file
      */
-    public File createFile(String fileExtension) throws Exception {
+    public File createFile(String fileExtension)  {
 
         // check the path ends correctly
         if (!path.endsWith(File.separator)) {
             path += File.separator;
         }
-
-        {
-            //Create new dir if it does not exist
-            File parentDir = new File(path);
-            parentDir.mkdir();
-        }
+        //Create new dir if it does not exist
+        File parentDir = new File(path);
+        parentDir.mkdirs();
 
         fullLogFileName.append(path);
         StringBuffer newfileName=new StringBuffer();
@@ -275,7 +278,7 @@ public class LogToFileImpl extends LogToStreamsImpl implements LogToFile {
      * Redirects system outputs to a file.
      * @throws Exception if any io error
      */
-    public void redirectOutputs() throws Exception {
+    public void redirectOutputs() throws FileNotFoundException {
         PrintStream originalOut = System.out;
         PrintStream originalErr = System.err;
 
@@ -306,10 +309,7 @@ public class LogToFileImpl extends LogToStreamsImpl implements LogToFile {
                 // Redirecting  output
                 System.setOut(newOut);
                 // Redirecting  err
-                if (errToOut)
-                   System.setErr(newOut);
-                else
-                   System.setErr(newErr);
+                System.setErr(errToOut?newOut:newErr);
             } catch (Exception e) {
                 System.setOut(originalOut);
                 System.setErr(originalErr);
