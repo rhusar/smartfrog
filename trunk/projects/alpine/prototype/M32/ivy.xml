@@ -4,7 +4,7 @@
   <info organisation="org.smartfrog" module="sf-m32">
     <license name="LGPL"/>
     <ivyauthor name="Hewlett-Packard" url="http://www.smartfrog.org"/>
-    <description>Alpine SOAP stacl</description>
+    <description>Alpine SOAP stack</description>
   </info>
 <!-- FIXME: Ivy 1.4.1 buildlist bug
   <configurations defaultconfmapping="default">
