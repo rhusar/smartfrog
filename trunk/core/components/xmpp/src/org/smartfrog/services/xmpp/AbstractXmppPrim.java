@@ -34,7 +34,7 @@ public abstract class AbstractXmppPrim extends PrimImpl implements Xmpp {
 
     private String server, login, password, resource, serviceName;
     private int port;
-    private boolean presence, requireEncryption,useTLS;
+    private boolean presence, requireEncryption, useTLS;
 
     protected AbstractXmppPrim() throws RemoteException {
     }

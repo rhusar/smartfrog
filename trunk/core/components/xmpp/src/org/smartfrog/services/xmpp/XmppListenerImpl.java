@@ -36,9 +36,17 @@ import java.rmi.RemoteException;
  */
 public class XmppListenerImpl extends AbstractXmppPrim implements XmppListener,
         ConnectionListener, PacketListener {
-    protected XMPPConnection connection;
-    protected Exception closedConnection;
+    //the connection
+    private XMPPConnection connection;
 
+    //the exception that caused the connection to be closed
+    private volatile Exception closedConnection;
+
+    private boolean reconnect;
+
+    private long timeout;
+
+    private long reconnectStarted=0;
 
     public XmppListenerImpl() throws RemoteException {
     }
@@ -48,9 +56,9 @@ public class XmppListenerImpl extends AbstractXmppPrim implements XmppListener,
      * Can be called to start components. Subclasses should override to provide
      * functionality Do not block in this call, but spawn off any main loops!
      *
-     * @throws org.smartfrog.sfcore.common.SmartFrogException
+     * @throws SmartFrogException
      *                                  failure while starting
-     * @throws java.rmi.RemoteException In case of network/rmi error
+     * @throws RemoteException In case of network/rmi error
      */
     public synchronized void sfStart()
             throws SmartFrogException, RemoteException {
@@ -58,7 +66,8 @@ public class XmppListenerImpl extends AbstractXmppPrim implements XmppListener,
         connection = login();
         connection.addConnectionListener(this);
         String filter=sfResolve(ATTR_FILTER,"",true);
-        
+        reconnect=sfResolve(ATTR_RECONNECT,reconnect, true);
+        timeout =sfResolve(ATTR_TIMEOUT, 0,true)*60000L;
         connection.addPacketListener(this, new MessageFilter());
     }
 
@@ -80,20 +89,24 @@ public class XmppListenerImpl extends AbstractXmppPrim implements XmppListener,
      *
      * @param source source of call
      *
-     * @throws org.smartfrog.sfcore.common.SmartFrogLivenessException
+     * @throws SmartFrogLivenessException
      *                                  component is terminated
-     * @throws java.rmi.RemoteException for consistency with the {@link
+     * @throws RemoteException for consistency with the {@link
      *                                  org.smartfrog.sfcore.prim.Liveness}
      *                                  interface
      */
     public void sfPing(Object source)
             throws SmartFrogLivenessException, RemoteException {
         super.sfPing(source);
-        if (closedConnection != null) {
-            throw new SmartFrogLivenessException(closedConnection);
-        }
-        if (connection == null) {
-            throw new SmartFrogLivenessException("Connection has been closed");
+        if(connection==null) {
+            reconnect();
+        } else {
+            if (closedConnection != null) {
+                throw new SmartFrogLivenessException(closedConnection);
+            }
+            if (connection == null) {
+                throw new SmartFrogLivenessException("Connection has been closed");
+            }
         }
     }
 
@@ -137,6 +150,7 @@ public class XmppListenerImpl extends AbstractXmppPrim implements XmppListener,
         sfLog().info(buffer);
     }
 
+
     /**
      * Notification that the connection was closed normally.
      */
@@ -152,5 +166,31 @@ public class XmppListenerImpl extends AbstractXmppPrim implements XmppListener,
     public synchronized void connectionClosedOnError(Exception e) {
         closedConnection = e;
         connection = null;
+    }
+
+    private synchronized boolean reconnect() throws SmartFrogLivenessException {
+        if(connection!=null) {
+            throw new IllegalStateException("Cannot reconnect -we are already connected");
+        }
+        if(reconnect) {
+            if(reconnectStarted==0) {
+                reconnectStarted= System.currentTimeMillis();
+            }
+            try {
+                connection = login();
+                reconnectStarted=0;
+                return true;
+            } catch (SmartFrogException e) {
+                sfLog().debug("Failing to reconnect",e);
+                if (timeout > 0 &&
+                        System.currentTimeMillis() > (reconnectStarted + timeout)) {
+                    throw new SmartFrogLivenessException("Could not reconnect",e);
+                }
+                return false;
+            }
+        } else {
+            return false;
+        }
+
     }
 }
