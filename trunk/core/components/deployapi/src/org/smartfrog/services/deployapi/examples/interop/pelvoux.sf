@@ -21,8 +21,10 @@ For more information: www.smartfrog.org
 #include "/org/smartfrog/services/logging/log4j/logtolog4jimpl.sf"
 #include "/org/smartfrog/sfcore/logging/components.sf"
 #include "/org/smartfrog/services/jetty/jetty-complete.sf"
+
 /**
  * this is the OB510 "pelvoux" laptop that hosts the interop test server of Alpine
+ * It is a live system hosted on a public network
  */
 Pelvoux extends Compound {
 
@@ -69,7 +71,6 @@ Pelvoux extends Compound {
       contextPath "/logs";
       server LAZY alpine:jettyServer;
 
-
    }
 
   logServlets extends Compound {
@@ -78,6 +79,7 @@ Pelvoux extends Compound {
       pathSpec "/*";
       context LAZY PARENT:context;
     }
+
   }
     //mime type of html pages
     htmlPages extends MimeType {

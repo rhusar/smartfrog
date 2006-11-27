@@ -50,7 +50,7 @@
     <dependency org="javax.servlet"
         name="servlet-api"
         rev="${servletapi.version}"
-        conf="compile->master"/>
+        conf="compile->master;redist->default"/>
     <dependency org="org.mortbay.jetty"
         name="jetty"
         rev="${jetty.version}"
