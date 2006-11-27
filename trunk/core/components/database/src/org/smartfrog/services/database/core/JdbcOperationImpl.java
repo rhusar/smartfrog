@@ -38,7 +38,8 @@ import java.util.Properties;
 /**
  * abstract Jdbc operation; contains common code
  */
-public abstract class JdbcOperationImpl extends PrimImpl implements JdbcOperation, Runnable {
+public abstract class JdbcOperationImpl extends PrimImpl
+        implements JdbcOperation, Runnable {
 
 
     protected JdbcBinding database;
@@ -47,8 +48,10 @@ public abstract class JdbcOperationImpl extends PrimImpl implements JdbcOperatio
     private Log log;
     private Thread workerThread;
     private ComponentHelper helper;
+
     /**
      * Protected constructor as this class is abstract
+     *
      * @throws RemoteException
      */
     protected JdbcOperationImpl() throws RemoteException {
@@ -58,44 +61,47 @@ public abstract class JdbcOperationImpl extends PrimImpl implements JdbcOperatio
      * Can be called to start components. Subclasses should override to provide
      * functionality Do not block in this call, but spawn off any main loops!
      *
-     * @throws org.smartfrog.sfcore.common.SmartFrogException
-     *                                  failure while starting
-     * @throws java.rmi.RemoteException In case of network/rmi error
+     * @throws SmartFrogException failure while starting
+     * @throws RemoteException    In case of network/rmi error
      */
     public synchronized void sfStart()
             throws SmartFrogException, RemoteException {
         super.sfStart();
         log = LogFactory.getLog(this);
         helper = new ComponentHelper(this);
-        database=(JdbcBinding) sfResolve(ATTR_DATABASE,database,true);
+        database = (JdbcBinding) sfResolve(ATTR_DATABASE, database, true);
         autocommit = sfResolve(ATTR_AUTOCOMMIT, autocommit, true);
     }
 
 
     /**
-     * Connect to the database; return a simple database connection
-     * bound to the jdbc options.
+     * Connect to the database; return a simple database connection bound to the
+     * jdbc options.
+     *
      * @return a new database connection
+     *
      * @throws SmartFrogDeploymentException
      */
     protected Connection connect() throws
-            SmartFrogDeploymentException, SmartFrogResolutionException, RemoteException {
+            SmartFrogDeploymentException,
+            SmartFrogResolutionException,
+            RemoteException {
         String driverName = database.getDriver();
         String url = database.getUrl();
         Properties props = database.createConnectionProperties();
-        String dbinfo= "database " + url + " using " + driverName;
-        log.debug("Binding to "+ dbinfo);
-        Connection connection=null;
+        String dbinfo = "database " + url + " using " + driverName;
+        log.debug("Binding to " + dbinfo);
+        Connection connection = null;
         try {
-            Driver driver=loadDriver(driverName);
-            connection = driver.connect(url,props);
+            Driver driver = loadDriver(driverName);
+            connection = driver.connect(url, props);
 
             if (connection == null) {
                 // Driver doesn't understand the URL
-                throw new SmartFrogDeploymentException("Failed to load "+dbinfo);
+                throw new SmartFrogDeploymentException("Failed to load " + dbinfo);
             }
         } catch (SQLException e) {
-            throw translate("Exception when load " + dbinfo,e);
+            throw translate("Exception when load " + dbinfo, e);
         }
         if (autocommit) {
             try {
@@ -110,13 +116,16 @@ public abstract class JdbcOperationImpl extends PrimImpl implements JdbcOperatio
 
     /**
      * any logic to convert from a SQL exception to a smartfrog one
+     *
      * @param operation
      * @param fault
+     *
      * @return a new exception to throw.
      */
 
-    protected SmartFrogDeploymentException translate(String operation,SQLException fault) {
-        return new SmartFrogDeploymentException(operation,fault);
+    protected SmartFrogDeploymentException translate(String operation,
+                                                     SQLException fault) {
+        return new SmartFrogDeploymentException(operation, fault);
     }
 
 
@@ -143,15 +152,19 @@ public abstract class JdbcOperationImpl extends PrimImpl implements JdbcOperatio
     /**
      * Gets an instance of the required driver. Uses the ant class loader and
      * the optionally the provided classpath.
-     *
+     * @param driver the driver classname
      * @return the driver instance
-     *
+     * @throws SmartFrogDeploymentException to wrap failures to create an instance
+     * @throws SmartFrogResolutionException if the class would not load
+     * @throws RemoteException on network problems
      */
     private Driver loadDriver(String driver) throws
-            SmartFrogDeploymentException, SmartFrogResolutionException, RemoteException {
+            SmartFrogDeploymentException,
+            SmartFrogResolutionException,
+            RemoteException {
         Driver instance = null;
         try {
-            Class clazz= helper.loadClass(driver);
+            Class clazz = helper.loadClass(driver);
             instance = (Driver) clazz.newInstance();
         } catch (IllegalAccessException e) {
             throw new SmartFrogDeploymentException(
@@ -166,7 +179,13 @@ public abstract class JdbcOperationImpl extends PrimImpl implements JdbcOperatio
     }
 
 
-    public void commitAndClose(Connection connection) throws SmartFrogDeploymentException {
+    /**
+     * Commit the operation and close the database
+     * @param connection
+     * @throws SmartFrogDeploymentException
+     */
+    public void commitAndClose(Connection connection)
+            throws SmartFrogDeploymentException {
         try {
             if (!autocommit) {
                 connection.commit();
@@ -181,13 +200,16 @@ public abstract class JdbcOperationImpl extends PrimImpl implements JdbcOperatio
     /**
      * Close a connection, turning any SqlException into a SmartFrog exeception
      * This does not attempt to call commit, even if it is required.
-     * @param connection
-     * @throws org.smartfrog.sfcore.common.SmartFrogDeploymentException
+     *
+     * @param connection connection to close
+     *
+     * @throws SmartFrogDeploymentException if something went wrong closing the connection
+     *
      */
     protected void close(Connection connection) throws
             SmartFrogDeploymentException {
         try {
-            if(connection!=null) {
+            if (connection != null) {
                 connection.close();
             }
         } catch (SQLException e) {
@@ -196,10 +218,12 @@ public abstract class JdbcOperationImpl extends PrimImpl implements JdbcOperatio
     }
 
     /**
-     * close a connection without throwing any exception, just log it at debug level
+     * close a connection without throwing any exception, just log it at debug
+     * level
+     *
      * @param connection
      */
-    protected void closeQuietly(Connection connection)  {
+    protected void closeQuietly(Connection connection) {
         try {
             if (connection != null) {
                 connection.close();
@@ -212,7 +236,8 @@ public abstract class JdbcOperationImpl extends PrimImpl implements JdbcOperatio
     /**
      * check the connection
      */
-    protected void checkConnection() throws SmartFrogDeploymentException, SmartFrogResolutionException,
+    protected void checkConnection()
+            throws SmartFrogDeploymentException, SmartFrogResolutionException,
             RemoteException {
         //do a quick connect to see that we are ok
         Connection connection = connect();
@@ -220,10 +245,10 @@ public abstract class JdbcOperationImpl extends PrimImpl implements JdbcOperatio
     }
 
     protected synchronized void queueFault(Throwable e) {
-        queuedFault =e;
+        queuedFault = e;
     }
 
-    protected synchronized void queueFault(String action,SQLException e) {
+    protected synchronized void queueFault(String action, SQLException e) {
         queuedFault = translate(action, e);
     }
 
@@ -246,13 +271,15 @@ public abstract class JdbcOperationImpl extends PrimImpl implements JdbcOperatio
             throws SmartFrogLivenessException, RemoteException {
         super.sfPing(source);
         Throwable fault = getQueuedFault();
-        if(fault!=null) {
-            throw (SmartFrogLivenessException) SmartFrogLivenessException.forward(fault);
+        if (fault != null) {
+            throw (SmartFrogLivenessException) SmartFrogLivenessException.forward(
+                    fault);
         }
     }
 
     /**
      * stop the worker thread if it is running.
+     *
      * @param status
      */
     protected synchronized void sfTerminateWith(TerminationRecord status) {
@@ -265,41 +292,48 @@ public abstract class JdbcOperationImpl extends PrimImpl implements JdbcOperatio
     }
 
     /**
-     * Start the worker thread. this should be called from sfStart if the implementation wants to
-     * do work in the {@link #performOperation(java.sql.Connection)} method.
+     * Start the worker thread. this should be called from sfStart if the
+     * implementation wants to do work in the {@link #performOperation(java.sql.Connection)}
+     * method.
+     *
      * @return
      */
-    protected synchronized Thread startWorkerThread() throws SmartFrogDeploymentException {
-        if(workerThread!=null) {
-            throw new SmartFrogDeploymentException("Cannot start the worker thread, as it is already running");
+    protected synchronized Thread startWorkerThread()
+            throws SmartFrogDeploymentException {
+        if (workerThread != null) {
+            throw new SmartFrogDeploymentException(
+                    "Cannot start the worker thread, as it is already running");
         }
-        Thread thread=new Thread(this, sfCompleteNameSafe().toString());
-        workerThread=thread;
+        Thread thread = new Thread(this, sfCompleteNameSafe().toString());
+        workerThread = thread;
         thread.start();
         return thread;
     }
 
     /**
-     * Stop the worker thread, or at least interrupt it.
-     * Does nothing if the thread is not running.
+     * Stop the worker thread, or at least interrupt it. Does nothing if the
+     * thread is not running.
      */
     protected synchronized void stopWorkerThread() {
-        if(workerThread!=null && workerThread.isAlive()) {
+        if (workerThread != null && workerThread.isAlive()) {
             workerThread.interrupt();
-            workerThread=null;
+            workerThread = null;
         }
     }
 
 
     /**
-    * run the operation by creating a connection, calling {@link #performOperation(java.sql.Connection)} and
-    * then closing the connection afterwards.
-    * <p>
-    * the component is then terminated after the run, if the sfTerminate or similar attributes are set.
-    * @see Thread#run()
-    */
+     * run the operation by creating a connection, calling {@link
+     * #performOperation(java.sql.Connection)} and then closing the connection
+     * afterwards.
+     * <p/>
+     * the component is then terminated after the run, if the sfTerminate or
+     * similar attributes are set.
+     *
+     * @see Thread#run()
+     */
     public void run() {
-        Throwable caught=null;
+        Throwable caught = null;
         Connection connection = null;
         try {
             connection = connect();
@@ -307,7 +341,7 @@ public abstract class JdbcOperationImpl extends PrimImpl implements JdbcOperatio
             commitAndClose(connection);
 
         } catch (SQLException e) {
-            caught=e;
+            caught = e;
             queueFault("processing transactions", e);
         } catch (SmartFrogException e) {
             caught = e;
@@ -326,11 +360,15 @@ public abstract class JdbcOperationImpl extends PrimImpl implements JdbcOperatio
 
     /**
      * Something for components to override. This performs the operation
+     *
      * @param connection the open connection.
+     *
      * @throws java.sql.SQLException
      * @throws org.smartfrog.sfcore.common.SmartFrogException
+     *
      */
-    public void performOperation(Connection connection) throws SQLException, SmartFrogException {
+    public void performOperation(Connection connection)
+            throws SQLException, SmartFrogException {
         log.debug("performing no useful work");
     }
 }

@@ -17,21 +17,15 @@
  For more information: www.smartfrog.org
 
  */
-package org.smartfrog.services.database.core;
 
-import java.rmi.Remote;
 
-/**
- * An interface for a jdbc operation
+/*
+ components to set up database testing
  */
-public interface JdbcOperation extends Remote {
 
-    /**
-     * {@value}
-     */
-    String ATTR_DATABASE = "database";
-    /**
-     * "should every command commit after execution" {@value}
-     */
-    String ATTR_AUTOCOMMIT = "autocommit";
-}
+#include "/org/smartfrog/services/database/core/components.sf"
+#include "/org/smartfrog/services/assertions/components.sf"
+#include "/org/smartfrog/sfcore/workflow/combinators/sequence.sf"
+
+
+

@@ -25,67 +25,57 @@ package org.smartfrog.services.database.core;
 public interface Transaction extends JdbcOperation {
 
     /**
-     * a command to execute
-     * {@value}
+     * a command to execute {@value}
      */
-    String ATTR_COMMAND="sql";
+    String ATTR_COMMAND = "sql";
 
     /**
-     * a list of commands to execute, each undelimited command in a separate element
-     * {@value}
+     * a list of commands to execute, each undelimited command in a separate
+     * element {@value}
      */
-    String ATTR_SQL_COMMANDS="sqlCommands";
+    String ATTR_SQL_COMMANDS = "sqlCommands";
 
     /**
-     * text file containing SQL commands to run
-     * {@value}
+     * text file containing SQL commands to run {@value}
      */
     String ATTR_COMMAND_FILE = "sqlFile";
 
     /**
-     * name of text resource containing SQL commands to run
-     * {@value}
+     * name of text resource containing SQL commands to run {@value}
      */
     String ATTR_COMMAND_RESOURCE = "sqlResource";
 
     /**
-     * delimiter char between SQL statements, usually ;
-     * {@value}
+     * delimiter char between SQL statements, usually ; {@value}
      */
-    String ATTR_DELIMITER ="delimiter";
+    String ATTR_DELIMITER = "delimiter";
 
     /**
-     * should SQL commands be escaped before execution?
-     * {@value}
+     * should SQL commands be escaped before execution? {@value}
      */
-    String ATTR_ESCAPE="escapeProcessing";
+    String ATTR_ESCAPE = "escapeProcessing";
 
     /**
-     *
-     this is primarily for internal testing, but can be used for debugging
-     statement parsing problems. It is the count of statements expected
-     after the string/file/resource is parsed. If there is a mismatch,
-     an exception is thrown.
-     * {@value}
+     * this is primarily for internal testing, but can be used for debugging
+     * statement parsing problems. It is the count of statements expected after
+     * the string/file/resource is parsed. If there is a mismatch, an exception
+     * is thrown. {@value}
      */
     String ATTR_EXPECTED_STATEMENT_COUNT = "expectedStatementCount";
 
     /**
-     *     failOnSqlError extends boolean {
-     description "should we fail on an SQL error?";
-     * {@value}
+     * failOnSqlError extends boolean { description "should we fail on an SQL
+     * error?"; {@value}
      */
     String ATTR_FAIL_ON_SQL_ERROR = "failOnSqlError";
 
     /**
-     * should the column headers be printed?"
-     * {@value}
+     * should the column headers be printed?" {@value}
      */
-    String ATTR_PRINTHEADERS ="printHeaders";
+    String ATTR_PRINTHEADERS = "printHeaders";
 
     /**
-     * should the results be printed?
-     * {@value}
+     * should the results be printed? {@value}
      */
     String ATTR_PRINTRESULTS = "printResults";
 }

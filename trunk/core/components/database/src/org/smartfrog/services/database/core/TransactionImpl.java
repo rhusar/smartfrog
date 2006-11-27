@@ -41,32 +41,32 @@
 
 package org.smartfrog.services.database.core;
 
-import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.services.filesystem.FileSystem;
+import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
+import org.smartfrog.sfcore.common.SmartFrogException;
 
-import java.rmi.RemoteException;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
-import java.io.BufferedReader;
 import java.io.StringReader;
-import java.util.List;
+import java.nio.charset.Charset;
+import java.rmi.RemoteException;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import java.sql.SQLWarning;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Vector;
-import java.nio.charset.Charset;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.sql.ResultSet;
-import java.sql.SQLWarning;
-import java.sql.ResultSetMetaData;
 
 /**
- * Implement a SQL transaction.
- * This class was written while looking at Ant's SQLExec, though there wasnt any direct cut and paste.
- * Its a lot simpler, as it offers less options for SQL processing, and corrects some ambiguities in Ant's task
- * created 20-Sep-2006 17:25:59
+ * Implement a SQL transaction. This class was written while looking at Ant's
+ * SQLExec, though there wasnt any direct cut and paste. Its a lot simpler, as
+ * it offers less options for SQL processing, and corrects some ambiguities in
+ * Ant's task created 20-Sep-2006 17:25:59
  */
 
 public class TransactionImpl extends JdbcOperationImpl implements Transaction {
@@ -87,15 +87,18 @@ public class TransactionImpl extends JdbcOperationImpl implements Transaction {
     public TransactionImpl() throws RemoteException {
     }
 
-    public synchronized void sfStart() throws SmartFrogException, RemoteException {
+    public synchronized void sfStart()
+            throws SmartFrogException, RemoteException {
         super.sfStart();
 
         delimiter = sfResolve(ATTR_DELIMITER, delimiter, true);
         escapeProcessing = sfResolve(ATTR_ESCAPE, escapeProcessing, true);
         expectedStatementCount = sfResolve(ATTR_EXPECTED_STATEMENT_COUNT,
                 expectedStatementCount, false);
-        failOnSqlError=sfResolve(ATTR_FAIL_ON_SQL_ERROR,failOnSqlError,true);
-        printResults= sfResolve(ATTR_PRINTRESULTS, printResults, true);
+        failOnSqlError = sfResolve(ATTR_FAIL_ON_SQL_ERROR,
+                failOnSqlError,
+                true);
+        printResults = sfResolve(ATTR_PRINTRESULTS, printResults, true);
         printHeaders = sfResolve(ATTR_PRINTHEADERS, printHeaders, true);
         int count = 0;
         String command = sfResolve(ATTR_COMMAND, (String) null, false);
@@ -111,13 +114,15 @@ public class TransactionImpl extends JdbcOperationImpl implements Transaction {
         if (commandFile != null) {
             count++;
         }
-        String resource = sfResolve(ATTR_COMMAND_RESOURCE, (String) null, false);
+        String resource = sfResolve(ATTR_COMMAND_RESOURCE,
+                (String) null,
+                false);
         if (resource != null) {
             count++;
         }
-        Vector commandList=null;
-        commandList= sfResolve(ATTR_SQL_COMMANDS,commandList,false);
-        if(commandList!=null) {
+        Vector commandList = null;
+        commandList = sfResolve(ATTR_SQL_COMMANDS, commandList, false);
+        if (commandList != null) {
             count++;
         }
         if (count == 0) {
@@ -127,7 +132,6 @@ public class TransactionImpl extends JdbcOperationImpl implements Transaction {
             throw new SmartFrogDeploymentException(ERROR_TOO_MANY_COMMANDS);
         }
 
-
         //everything is validated. read in the commands from file, resource or string
         if (commandFile != null) {
             try {
@@ -135,7 +139,8 @@ public class TransactionImpl extends JdbcOperationImpl implements Transaction {
                 buffer = FileSystem.readFile(commandFile, UTF8);
                 command = buffer.toString();
             } catch (IOException e) {
-                throw new SmartFrogDeploymentException("Failed to read " + commandFile, e);
+                throw new SmartFrogDeploymentException("Failed to read " + commandFile,
+                        e);
             }
         }
         if (resource != null) {
@@ -149,13 +154,14 @@ public class TransactionImpl extends JdbcOperationImpl implements Transaction {
             try {
                 commands = crackCommands(command, delimiter);
             } catch (IOException e) {
-                throw new SmartFrogDeploymentException("when parsing\n " + command, e);
+                throw new SmartFrogDeploymentException("when parsing\n " + command,
+                        e);
             }
         } else {
-            if(commandList!=null) {
+            if (commandList != null) {
                 //the commands are copied to the command list as strings.
-                commands=new ArrayList<String>(commandList.size());
-                for(Object o:commandList) {
+                commands = new ArrayList<String>(commandList.size());
+                for (Object o : commandList) {
                     commands.add(o.toString());
                 }
             } else {
@@ -185,23 +191,28 @@ public class TransactionImpl extends JdbcOperationImpl implements Transaction {
      * this runs in the other tread. Run the commands one by one
      *
      * @param connection the open connection.
+     *
      * @throws SQLException
      * @throws SmartFrogException
      */
-    public void performOperation(Connection connection) throws SQLException, SmartFrogException {
+    public void performOperation(Connection connection)
+            throws SQLException, SmartFrogException {
         executeCommands(connection, commands.iterator());
     }
 
     /**
-     * Crack the command string into a list of commands (which may be zero), at every line-ending delimiter.
-     * delimiters not at tne d
+     * Crack the command string into a list of commands (which may be zero), at
+     * every line-ending delimiter. delimiters not at tne d
      *
      * @param sql
      * @param commandDelimiter
+     *
      * @return a (possibly empty) list of commands.
+     *
      * @throws IOException
      */
-    public List<String> crackCommands(String sql, String commandDelimiter) throws IOException {
+    public List<String> crackCommands(String sql, String commandDelimiter)
+            throws IOException {
         List<String> list = new ArrayList<String>();
         int delimiterSize = commandDelimiter.length();
         String line;
@@ -218,7 +229,8 @@ public class TransactionImpl extends JdbcOperationImpl implements Transaction {
             String trimmed = line.trim();
             if (trimmed.endsWith(commandDelimiter)) {
                 //this is the end of the line, so we break it here
-                String sqlcommand = buffer.substring(0, buffer.length() - delimiterSize);
+                String sqlcommand = buffer.substring(0,
+                        buffer.length() - delimiterSize);
                 //don't add empty commands, but dont strip off trailing whitespace for the sake
                 //of comments.
                 if (sqlcommand.trim().length() > 0) {
@@ -237,11 +249,14 @@ public class TransactionImpl extends JdbcOperationImpl implements Transaction {
     }
 
     /**
-     * Execute a sequence of commands. It takes an iterator so anything can act as a source
-     * of commands; there isnt even any need for the type to be string, as long as
-     * the toString() method of each iterated value returns a single SQL command (without delimeter)
+     * Execute a sequence of commands. It takes an iterator so anything can act
+     * as a source of commands; there isnt even any need for the type to be
+     * string, as long as the toString() method of each iterated value returns a
+     * single SQL command (without delimeter)
+     *
      * @param connection
      * @param commandIterator
+     *
      * @throws SmartFrogDeploymentException
      */
     public void executeCommands(Connection connection,
@@ -254,12 +269,15 @@ public class TransactionImpl extends JdbcOperationImpl implements Transaction {
     }
 
     /**
-     * Directly derived from apache code, has apache copyright until rewritten better
+     * Directly derived from apache code, has apache copyright until rewritten
+     * better
+     *
      * @param connection connection to use
-     * @param command comand to issue
+     * @param command    comand to issue
+     *
      * @throws SmartFrogDeploymentException
      */
-    public void executeOneCommand(Connection connection,String command)
+    public void executeOneCommand(Connection connection, String command)
             throws SmartFrogDeploymentException {
         ResultSet resultSet = null;
 
@@ -287,7 +305,7 @@ public class TransactionImpl extends JdbcOperationImpl implements Transaction {
                     resultSet = statement.getResultSet();
                 }
             } while (hasResultSet);
-            if(updateCountTotal>0) {
+            if (updateCountTotal > 0) {
                 getLog().info(updateCountTotal + " rows affected");
             }
 
@@ -298,16 +316,16 @@ public class TransactionImpl extends JdbcOperationImpl implements Transaction {
             }
             connection.clearWarnings();
         } catch (SQLException e) {
-            getLog().error("Failed to execute: " + command,e);
+            getLog().error("Failed to execute: " + command, e);
             if (failOnSqlError) {
-                throw translate("When executing "+command, e);
+                throw translate("When executing " + command, e);
             }
         } finally {
             if (resultSet != null) {
                 try {
                     resultSet.close();
                 } catch (SQLException e) {
-                    getLog().error("when clsing the result set",e);
+                    getLog().error("when clsing the result set", e);
                 }
             }
         }
@@ -315,12 +333,14 @@ public class TransactionImpl extends JdbcOperationImpl implements Transaction {
 
     /**
      * Override point, act on the results
+     *
      * @param results the results of the operation
+     *
      * @throws SQLException
      */
     protected void processResults(ResultSet results)
             throws SQLException {
-        if(printResults) {
+        if (printResults) {
             printResults(results);
         }
     }
@@ -328,7 +348,9 @@ public class TransactionImpl extends JdbcOperationImpl implements Transaction {
 
     /**
      * Print a result set to the log at info level.
+     *
      * @param results to process
+     *
      * @throws SQLException if something failed
      */
     protected void printResults(ResultSet results) throws SQLException {

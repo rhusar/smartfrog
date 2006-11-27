@@ -13,7 +13,7 @@ AdminDB extends mysql {
 }
 
 DiaryDB extends mysql {
-  userid "diary";
+  username "diary";
   password "secret";
   url "jdbc:mysql://localhost/diary";
 }
