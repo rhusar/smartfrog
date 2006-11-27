@@ -25,7 +25,6 @@ import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.logging.Log;
 import org.smartfrog.sfcore.logging.LogFactory;
 import org.smartfrog.sfcore.prim.PrimImpl;
-import org.smartfrog.sfcore.security.SFClassLoader;
 import org.smartfrog.sfcore.utils.ComponentHelper;
 
 import java.rmi.RemoteException;
@@ -33,9 +32,8 @@ import java.util.Properties;
 import java.util.Vector;
 
 /**
- *  JDBC binding class
- * The sole deployment action is to check that the driver class is there
- * (and so implicitly load the class) 
+ * JDBC binding class The sole deployment action is to check that the driver
+ * class is there (and so implicitly load the class)
  */
 public class JdbcBindingImpl extends PrimImpl implements JdbcBinding {
 
@@ -66,7 +64,7 @@ public class JdbcBindingImpl extends PrimImpl implements JdbcBinding {
             throws SmartFrogException, RemoteException {
         super.sfStart();
         Log log = LogFactory.getLog(this);
-        ComponentHelper helper=new ComponentHelper(this);
+        ComponentHelper helper = new ComponentHelper(this);
 
         driver = sfResolve(ATTR_DRIVER, "", false);
         url = sfResolve(ATTR_USERNAME, "", true);
@@ -74,35 +72,38 @@ public class JdbcBindingImpl extends PrimImpl implements JdbcBinding {
         password = sfResolve(ATTR_PASSWORD, "", false);
         properties = sfResolve(ATTR_PROPERTIES, (Vector) null, false);
 
-        if(driver!=null) {
+        if (driver != null) {
             helper.loadClass(driver);
         }
 
-        connectionProperties=new Properties();
-        if(user!=null) {
+        connectionProperties = new Properties();
+        if (user != null) {
             connectionProperties.setProperty("user", user);
         }
 
-        if (password!=null) {
+        if (password != null) {
             connectionProperties.setProperty("password", password);
         }
 
-        if(properties!=null && properties.size()!=0) {
-            throw new SmartFrogDeploymentException("Properties are not yet implemented");
+        if (properties != null && properties.size() != 0) {
+            throw new SmartFrogDeploymentException(
+                    "Properties are not yet implemented");
         }
     }
 
     /**
      * Get the connection properties.
+     *
      * @return the new connection information
      */
     public Properties createConnectionProperties() {
-        Properties connProps= (Properties) connectionProperties.clone();
+        Properties connProps = (Properties) connectionProperties.clone();
         return connProps;
     }
 
     /**
      * Get the driver
+     *
      * @return the driver
      */
     public String getDriver() {
@@ -111,6 +112,7 @@ public class JdbcBindingImpl extends PrimImpl implements JdbcBinding {
 
     /**
      * get the username
+     *
      * @return username or null
      */
     public String getUser() {
@@ -119,6 +121,7 @@ public class JdbcBindingImpl extends PrimImpl implements JdbcBinding {
 
     /**
      * get the password
+     *
      * @return password or null
      */
     public String getPassword() {
@@ -127,12 +130,12 @@ public class JdbcBindingImpl extends PrimImpl implements JdbcBinding {
 
     /**
      * get the jdbc url
+     *
      * @return JDBC url
      */
     public String getUrl() {
         return url;
     }
 
-    
 
 }

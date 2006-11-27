@@ -11,54 +11,53 @@ public interface JdbcBinding extends Remote {
 
 
     /**
-     * Driver
-     * {@value}
+     * Driver {@value}
      */
-    public static final String ATTR_DRIVER="driver";
+    public static final String ATTR_DRIVER = "driver";
     /**
-     * URL of the system
-     * {@value}
+     * URL of the system {@value}
      */
-    public static final String ATTR_URL="url";
+    public static final String ATTR_URL = "url";
     /**
-     * username
-     * {@value}
+     * username {@value}
      */
-    public static final String ATTR_USERNAME="username";
+    public static final String ATTR_USERNAME = "username";
 
     /**
-     * password
-     * {@value}
+     * password {@value}
      */
-    public static final String ATTR_PASSWORD="password";
+    public static final String ATTR_PASSWORD = "password";
     /**
-     * any extra properties
-     * {@value}
+     * any extra properties {@value}
      */
-    public static final String ATTR_PROPERTIES="properties";
+    public static final String ATTR_PROPERTIES = "properties";
 
     Properties createConnectionProperties() throws RemoteException;
 
     /**
      * Get the driver
+     *
      * @return the driver
      */
     String getDriver() throws RemoteException;
 
     /**
      * get the username
+     *
      * @return username or null
      */
     String getUser() throws RemoteException;
 
     /**
      * get the password
+     *
      * @return password or null
      */
     String getPassword() throws RemoteException;
 
     /**
      * get the jdbc url
+     *
      * @return JDBC url
      */
     String getUrl() throws RemoteException;

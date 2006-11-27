@@ -43,8 +43,8 @@ DatabaseBinding extends Prim {
       };
       //URL of the system
       url extends String {
-        description "URL of the jdbc connection"
-      };
+        description "URL of the jdbc connection";
+      }
 
       username extends OptionalString {
         description "username for the database";
@@ -55,23 +55,16 @@ DatabaseBinding extends Prim {
       };
       //any extra properties
       properties extends OptionalVector {
-        description "list of name,value pairs for the JDBC connection"
+        description "list of name,value pairs for the JDBC connection";
       };
 
       classpath extends OptionalCD {
-        description "a classpath component describing classes needed by the JDBC driver"
+        description "a classpath component describing classes needed by the JDBC driver";
       }
   };
 
 }
 
-/**
- * HSQLDB is good for embedding and testing
- */
-
-HsqldbBinding extends DatabaseBinding {
-  driver "org.hsqldb.jdbcDriver";
-}
 
 
 /**
@@ -128,23 +121,23 @@ Transaction extends DatabaseOperation {
       description "delimiter char between SQL statements, usually ;";
     }
     escapeProcessing extends Boolean {
-      description "should SQL commands be escaped before execution?"
+      description "should SQL commands be escaped before execution?";
     }
     expectedStatementCount extends Integer {
       description ##
         this is primarily for internal testing, but can be used for debugging
         statement parsing problems. It is the count of statements expected
         after the string/file/resource is parsed. If there is a mismatch,
-        an exception is thrown. Omit or use -1 for do not care' #
+        an exception is thrown. Omit or use -1 for do not care' #;
     }
     failOnSqlError extends boolean {
       description "should we fail on an SQL error?";
     }
     printResults extends boolean {
-      description "should the results be printed?"
+      description "should the results be printed?";
     }
     printHeaders extends boolean {
-      description "should the column headers be printed?"
+      description "should the column headers be printed?";
     }
   }
 
@@ -157,17 +150,11 @@ Transaction extends DatabaseOperation {
 }
 
 /**
- * A transaction in a sequence
+ * A transaction in a sequence/workflow
  */
-SequentialTransaction extends Transaction {
+TransactionWorkflow extends Transaction {
   sfTerminate true;
 }
-
-
-
-
-
-
 
 /**
  * make a selection, results go into the results vector as a nested vector, columns becomes the vector of columns
@@ -187,7 +174,7 @@ Selection extends Transaction {
 /**
  * A Selection in a sequence
  */
-SequentialSelection extends Selection {
+SelectionWorkflow extends Selection {
   sfTerminate true;
 }
 
