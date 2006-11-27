@@ -126,7 +126,7 @@ public class InfoProcess {
 
 
     public String getCmd(){
-      return ("StartCmd: "+startCmd+" "+startAtt+" ¦ "+"StopCmd: "+stopCmd+" "+stopAtt);
+      return ("StartCmd: "+startCmd+" "+startAtt+" -- "+"StopCmd: "+stopCmd+" "+stopAtt);
     }
 
     public String getStatus (){
