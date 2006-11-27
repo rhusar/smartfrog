@@ -28,6 +28,7 @@ import org.smartfrog.sfcore.utils.ComponentHelper;
 import java.rmi.RemoteException;
 
 /**
+ * The Xmpp client can post
  */
 public class XmppClientImpl extends AbstractXmppPrim implements XmppClient {
 
@@ -43,9 +44,9 @@ public class XmppClientImpl extends AbstractXmppPrim implements XmppClient {
      * Can be called to start components. Subclasses should override to provide
      * functionality Do not block in this call, but spawn off any main loops!
      *
-     * @throws org.smartfrog.sfcore.common.SmartFrogException
+     * @throws SmartFrogException
      *                                  failure while starting
-     * @throws java.rmi.RemoteException In case of network/rmi error
+     * @throws RemoteException In case of network/rmi error
      */
     public synchronized void sfStart()
             throws SmartFrogException, RemoteException {
@@ -67,8 +68,8 @@ public class XmppClientImpl extends AbstractXmppPrim implements XmppClient {
      *
      * @param text text to send
      *
-     * @throws java.rmi.RemoteException on networking trouble
-     * @throws org.smartfrog.sfcore.common.SmartFrogException
+     * @throws RemoteException on networking trouble
+     * @throws SmartFrogException
      *                                  if there is no default destination, or
      *                                  something went wrong with the
      *                                  communications
@@ -84,8 +85,8 @@ public class XmppClientImpl extends AbstractXmppPrim implements XmppClient {
      * @param recipient target user
      * @param text      text to send
      *
-     * @throws java.rmi.RemoteException on networking trouble
-     * @throws org.smartfrog.sfcore.common.SmartFrogException
+     * @throws RemoteException on networking trouble
+     * @throws SmartFrogException
      *                                  if something went wrong with the
      *                                  communications
      */

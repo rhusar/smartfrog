@@ -27,4 +27,8 @@ public interface XmppListener extends Xmpp {
      * Classname of a filter to use
      */
     String ATTR_FILTER="filter";
+
+    String ATTR_RECONNECT="reconnect";
+
+    String ATTR_TIMEOUT="offlineMinutesTimeout";
 }

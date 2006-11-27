@@ -81,11 +81,22 @@ XmppComponent extends Prim {
  */
 
 XmppListener extends XmppComponent {
-    filter extends String {
-        description "classname for a filter to process incoming packets";
+
+    xmppListenerSchema extends Schema {
+        filter extends String {
+            description "classname for a filter to process incoming packets";
+        }
+        reconnect extends Boolean;
+        offlineMinutesTimeout extends Integer {
+            description "time in minutes for a timeout before it is reported";
+        }
+
     }
     sfClass "org.smartfrog.services.xmpp.XmppListenerImpl";
     presence true;
+    reconnect true;
+    //a lot of servers go down. To be robust you have to retry a lot.
+    offlineMinutesTimeout 60;
     //default filter strips out all but messages
     filter "org.smartfrog.services.xmpp.MessageFilter";
 }
@@ -177,6 +188,8 @@ XmppDebuggingWorkflow extends XmppDebugging {
 
 /**
  * This is the binding for the HP internal jabber server.
+ * If you are not inside HP, it isnt visible, though you may be able to
+ * route messages to users on it.
  */
 HpJabberChatClient extends XmppClient {
     server "jabber.google.com";
