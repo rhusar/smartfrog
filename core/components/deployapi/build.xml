@@ -382,14 +382,23 @@
     </presetdef>
   </target>
 
+  <target name="ssh-ready-to-upload"
+      depends="ssh-init,ready-to-install,init-codebase,dist,tests-packaged"/>
 
   <target name="ssh-mkdirs" depends="ssh-init">
     <ssh-cmd command="mkdir -p ${ssh.dir}/bin"/>
     <ssh-cmd command="mkdir -p ${ssh.dir}/lib"/>
   </target>
 
-  <target name="ssh-prepare-files" depends="install">
-    <fileset id="ssh.fileset" dir="${install.dir}" includes="*.jar"/>
+  <target name="ssh-prepare-files" depends="ssh-ready-to-upload">
+    <property name="ssh.upload.dir" location="${build.dir}/ssh"/>
+    <mkdir dir="${ssh.upload.dir}" />
+    <copy todir="${ssh.upload.dir}">
+      <fileset file="${target.jar}"/>
+      <fileset file="${test.jar}"/>
+      <fileset dir="${build.codebase.dir}" includes="*.jar"/>
+    </copy>
+    <fileset id="ssh.fileset" dir="${ssh.upload.dir}" includes="*.jar"/>
   </target>
 
   <!-- insert trust="true" to turn on trust -->

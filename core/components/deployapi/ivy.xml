@@ -74,13 +74,17 @@
         changing="true"
         rev="latest.integration"
         conf="test,runtime->default;redist->redist"/>
-
+    <dependency org="org.smartfrog"
+        name="sf-xmpp"
+        changing="true"
+        rev="latest.integration"
+        conf="test,redist,runtime->default"/>
     <!--logging-->
     <dependency org="org.smartfrog"
         name="sf-loggingservices"
         changing="true"
         rev="latest.integration"
-        conf="compile,redist->redist"/>
+        conf="compile,redist->default"/>
     <dependency org="commons-lang"
         name="commons-lang"
         rev="${commons-lang.version}"
