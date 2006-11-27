@@ -35,9 +35,6 @@ import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.security.SFClassLoader;
-import org.smartfrog.sfcore.common.ExitCodes;
-import sun.misc.Signal;
-import sun.misc.SignalHandler;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -45,10 +42,10 @@ import java.rmi.RemoteException;
 import java.util.Enumeration;
 import java.util.Properties;
 import java.rmi.ConnectException;
+import java.lang.reflect.Constructor;
 
 import org.smartfrog.sfcore.logging.LogFactory;
 import org.smartfrog.sfcore.logging.LogSF;
-import org.smartfrog.Version;
 
 
 /**
@@ -91,7 +88,7 @@ public class SFProcess implements MessageKeys {
      */
     protected static final Reference refProcessCompound = new Reference(
                 "ProcessCompound");
-
+    private static final String INTERRUPT_HANDLER = "org.smartfrog.sfcore.processcompound.InterruptHandlerImpl";
 
 //    /** ProcessLog. This log is used to log into the core log: SF_CORE_LOG
 //     *  It can be replaced using sfSetLog()
@@ -110,7 +107,7 @@ public class SFProcess implements MessageKeys {
      *
      * @throws Exception if failed to set root locator
      */
-    public synchronized static void setRootLocator(RootLocator c) throws Exception {
+    public static synchronized void setRootLocator(RootLocator c) throws Exception {
         if (rootLocator != null) {
             throw new Exception("Root locator already set");
         }
@@ -126,7 +123,7 @@ public class SFProcess implements MessageKeys {
      *
      * @throws Exception if failed to set process compound
      */
-    public synchronized static void setProcessCompound (ProcessCompound pc) throws Exception {
+    public static synchronized void setProcessCompound (ProcessCompound pc) throws Exception {
         if (processCompound != null) {
             throw new Exception("ProcessCompound already set");
         }
@@ -146,7 +143,7 @@ public class SFProcess implements MessageKeys {
      * @throws SmartFrogDeploymentException In case of any error while
      *         deploying the component
      */
-    public synchronized static RootLocator getRootLocator()
+    public static synchronized RootLocator getRootLocator()
         throws SmartFrogException, RemoteException {
         String className = null;
 
@@ -274,67 +271,33 @@ public class SFProcess implements MessageKeys {
         }
     }
 
-     private static boolean processCompoundTerminated = false;
 
     /**
-     * signal handler for control-C events
+     * Flag that indicates the process is terminated
      */
-    private static class InterruptHandler implements SignalHandler {
+    private static volatile boolean processCompoundTerminated = false;
 
-        private SignalHandler oldHandler;
 
-        public void handle(Signal sig) {
-            if (!processCompoundTerminated) {
-                processCompoundTerminated = true;
-                if (processCompound != null) {
-                    try {
-                        //Logger.log("Terminating sfDaemon gracefully!!");
-                        sfLog().out("Terminating sfDaemon gracefully!!");
-                        processCompound.sfTerminate(new TerminationRecord(TerminationRecord.NORMAL,
-                                "sfDaemon forced to terminate ",
-                                ((Prim) processCompound).sfCompleteName()));
-                    } catch (RemoteException re) {
-                        //Logger.log(re);
-                        //log and ignore
-                        if (sfLog().isIgnoreEnabled()) {
-                          sfLog().ignore(re);
-                        }
-
-                    } catch (Throwable thr) {
-                        //Logger.log(thr);
-                        if (sfLog().isIgnoreEnabled()) {
-                          sfLog().ignore(thr);
-                        }
-                    }
-                }
-            } else {
-                //Logger.log("sfDaemon killed!");
-                sfLog().out("sfDaemon killed!");
-                //http://www.tldp.org/LDP/abs/html/exitcodes.html
-                // 130 - Control-C is fatal error signal 2, (130 = 128 + 2)
-                ExitCodes.exitWithError(ExitCodes.EXIT_ERROR_CODE_CRTL_ALT_DEL);
-            }
-        }
-
-        /**
-         * bind to a signal. On HP-UX+cruise control this fails with an error,
-         * one we dont see on the command line.
-         * This handler catches the exception and logs it, so that smartfrog
-         * keeps running even if graceful shutdown is broken.
-         * @param name name of interrupt to bind to.
-         */
-        public void bind(String name) {
-            try {
-                oldHandler=Signal.handle(new Signal(name), this);
-            } catch (IllegalArgumentException e) {
-                //this happens when binding fails. In this situation, warn, but keep going
-                sfLog().err("Failed to set control-C handler -is JVM running with -Xrs set?",e);
-//                Logger.log("Failed to set control-C handler -is JVM running with -Xrs set?");
-//                Logger.log(e);
-            }
-        }
+    /**
+     * Flag that indicates the process is terminated
+     * @return the current flag value
+     */
+    static boolean isProcessCompoundTerminated() {
+        return processCompoundTerminated;
     }
 
+    /**
+     * Sets processCompoundTerminated to true, and returns its
+     * previous value, in a synchronized operation
+     * @return the previous value.
+     */
+    static synchronized boolean markProcessCompoundTerminated() {
+        boolean isTerminated=processCompoundTerminated;
+        if(!isTerminated) {
+            processCompoundTerminated=true;
+        }
+        return isTerminated;
+    }
 
     /**
      * Deploys the local process compound, if not already there
@@ -352,9 +315,17 @@ public class SFProcess implements MessageKeys {
         }
 
 
-        //conditionally add a shutdown hook
+        //conditionally add a shutdown hook when the JVM permits it
         if (addShutdownHook) {
-            new InterruptHandler().bind("INT");
+            try {
+                Class irqHandlerClass = Class.forName(INTERRUPT_HANDLER);
+                Constructor constructor = irqHandlerClass.getConstructor(new Class[0]);
+                InterruptHandler handler=(InterruptHandler) constructor.newInstance(new Object[0]);
+                handler.bind("INT", sfLog());
+            } catch (Exception e) {
+                sfLog().error("Could not create an interrupt handler from "+ INTERRUPT_HANDLER
+                        +"\nSmartFrog may be running on a JVM which does not support this feature",e);
+            }
         }
 
         ComponentDescription descr = (ComponentDescription) getProcessCompoundDescription().copy();
