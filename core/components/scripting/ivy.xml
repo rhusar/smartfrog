@@ -43,10 +43,12 @@
       conf="compile->services;runtime->services;daemon->services"/>
     <dependency org="org.smartfrog"
         name="sf-tasks"
+        changing="true"
         rev="latest.integration"
         conf="build->default"/>
     <dependency org="org.smartfrog"
         name="sf-testharness"
+        changing="true"
         rev="latest.integration"
         conf="test->default"/>
 <!-- Getting errors here.
