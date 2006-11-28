@@ -43,6 +43,7 @@
       conf="compile,runtime,daemon->services"/>
     <dependency org="org.smartfrog"
         name="sf-tasks"
+        changing="true"
         rev="latest.integration"
         conf="build->default"/>
     <dependency org="log4j"

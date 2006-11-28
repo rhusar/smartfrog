@@ -37,6 +37,7 @@
       conf="compile->examples;runtime->examples"/>
     <dependency org="org.smartfrog"
         name="sf-tasks"
+        changing="true"
         rev="latest.integration"
         conf="build->default"/>    
     <dependency org="junit"
