@@ -219,7 +219,6 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
                      try {
                         DeployTreePanel treePanel = ((DeployTreePanel)(newDisplay.tabPane.getSelectedComponent()));
                         treePanel.refreshSelectedNode();
-                        System.out.println("Refreshing "+ newDisplay.tabPane.getSelectedComponent());
                      } catch (Throwable thr1) {
                         if (LogFactory.getLog("SFManagementConsole").isErrorEnabled()){
                           LogFactory.getLog("SFManagementConsole").error(thr1);
@@ -272,7 +271,7 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
          newDisplay.setVisible(true);
          addProcessesPanels(newDisplay, showRootProcess, showCDasChild, hostname, port);
          if (showScripting) addScriptingPanel (newDisplay.tabPane, null,null,hostname,port );
-         
+
 
          return newDisplay;
       }
@@ -413,7 +412,7 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
         classParameters = new Class[]{String.class, Object.class};
         Method method = intepreterClass.getMethod("set",classParameters);
         ProcessCompound rootProcess = SFProcess.getRootLocator().getRootProcessCompound(InetAddress.getByName(hostname), port);
-        method.invoke(interpreterObject, new Object[] {"bsh.system.shutdownOnExit",new Boolean(false)});  
+        method.invoke(interpreterObject, new Object[] {"bsh.system.shutdownOnExit",new Boolean(false)});
         method.invoke(interpreterObject, new Object[]{"rootProcess",rootProcess});
         method.invoke(interpreterObject, new Object[]{"localProcess",SFProcess.getProcessCompound()});
         String panelName="";
@@ -454,7 +453,7 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
 
         int tabIndex = tabPane.indexOfTab(scriptingPanelName);
         if (tabIndex <= -1){
-           if (!(createIfMissing)) return null; 
+           if (!(createIfMissing)) return null;
            scriptingTabPane = new JTabbedPane();
            tabPane.add(scriptingPanelName,scriptingTabPane);
         } else {
@@ -636,7 +635,6 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
                 isObjCopy = true;
             }
          }
-         //System.out.println("Refreshing info");
          ((DeployTreePanel) panelTree).setModel(root,isObjCopy);
          ((DeployTreePanel) panelTree).showCDasChild(jCheckBoxMenuItemShowCDasChild.isSelected());
          ((DeployTreePanel) panelTree).refresh();
