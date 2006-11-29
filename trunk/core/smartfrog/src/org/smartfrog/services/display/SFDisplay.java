@@ -73,6 +73,8 @@ public class SFDisplay extends PrimImpl implements Prim, PrintMsgInt, PrintErrMs
    private static final String HEIGHT_DISPLAY = "heightDisplay";
    /** String name for attribute widthDisplay. */
    private static final String WIDTH_DISPLAY = "widthDisplay";
+   /** String name for attribute widthDisplay. */
+   private static final String FONTSIZE_DISPLAY = "fontSize";
    /** String name for attribute formatMsg. */
    private static final String FORMAT_MSG = "formatMsg";
    /** String name for attribute externalPrinter. */
@@ -102,6 +104,8 @@ public class SFDisplay extends PrimImpl implements Prim, PrintMsgInt, PrintErrMs
    private int height = 400;
    /** Definition of component attribute - width. */
    private int width = 500;
+   /** Definition of component attribute - fontSize @value. */
+   private int fontSize = 12;
    /** Definition of component attribute - PrintnMsgInt. */
    private PrintMsgInt printMsgImp = null;
    /** Definition of component attribute - havePrinter. */
@@ -189,6 +193,7 @@ public class SFDisplay extends PrimImpl implements Prim, PrintMsgInt, PrintErrMs
                display = new Display(nameDisplay, this, null);
                display.setVisible(false);
                display.setSize(width, height);
+               display.setFontSize(fontSize);
                display.setTextScreen(text);
                setPositionDisplay(positionDisplay, display);
                display.setVisible(true);
@@ -267,6 +272,9 @@ public class SFDisplay extends PrimImpl implements Prim, PrintMsgInt, PrintErrMs
 
             attribToRead = WIDTH_DISPLAY;
             width = sfResolve(WIDTH_DISPLAY, width, false);
+
+            attribToRead = FONTSIZE_DISPLAY;
+            fontSize = sfResolve(FONTSIZE_DISPLAY, fontSize, false);
 
             attribToRead = SCREEN_EDITABLE;
             screenEditable = sfResolve(SCREEN_EDITABLE,screenEditable, false);

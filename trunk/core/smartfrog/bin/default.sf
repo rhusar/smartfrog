@@ -40,6 +40,7 @@ ITS MEDIA, AND YOU HEREBY WAIVE ANY CLAIM IN THIS REGARD.
 DefaultDisplay extends  Display {
     nameDisplay "sfDaemon Display"; // Window Title
     positionDisplay "NE";         // Window position: North-West
+    fontSize 12;                  // Display font size
     redirectStd true;             // Redirect std output and error to this wind.
     showIP true;                  // Show IP address in window title
     showSfProcess true;           // Show sfProcess name in  window title
@@ -55,6 +56,7 @@ DefaultManagementDisplay extends DeployManagement {
     terminateSFProcessOnExit true; // Terminates sfDaemon when window is closed
     widthDisplay 800;
     heightDisplay 600;
+    fontSize 12;                  // Display font size
     root LAZY PROCESS;
 }
 

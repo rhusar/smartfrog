@@ -33,6 +33,7 @@ Display extends Prim {
       //screenEditable true; //Editable?
       heightDisplay  400;
       widthDisplay   500;
+      fontSize 12;
       //formatMsg     false; // Add date to every printed msg! Not to outputStreams. Ex. [21:44:10.934 16/12/01] msg
       autoClean false; // Should auto clean the screen?
       autoSave false; // Should save screen content before cleaning it?
