@@ -20,7 +20,7 @@ For more information: www.smartfrog.org
 
 #include "/org/smartfrog/sfcore/workflow/eventbus/eventbus.sf"
 
-Delay extends ActionCompound {
+Delay extends OptionalActionCompound {
     sfClass "org.smartfrog.sfcore.workflow.combinators.Delay";
     delaySchema extends Schema {
     //delay in milliseconds

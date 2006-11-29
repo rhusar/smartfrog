@@ -88,7 +88,7 @@ public class Delay extends EventCompoundImpl implements Compound, Runnable {
     public synchronized void sfDeploy() throws SmartFrogException,
         RemoteException {
         super.sfDeploy();
-        checkActionDefined();
+        //checkActionDefined();
         time = ((Integer)sfResolve(timeRef)).intValue();
     }
 
@@ -153,11 +153,16 @@ public class Delay extends EventCompoundImpl implements Compound, Runnable {
             }
             synchronized (this) {
                 if (!terminated && !isWorkflowTerminating()) {
-                    try {
-                        sfCreateNewChild(name + "_actionRunning", action, null);
-                    } catch (Exception e) {
-                        sfTerminate(TerminationRecord.abnormal(
-                                "error in launching delayed component", name, e));
+                    if(action!=null) {
+                        try {
+                            sfCreateNewChild(name + "_actionRunning", action, null);
+                        } catch (Exception e) {
+                            sfTerminate(TerminationRecord.abnormal(
+                                    "error in launching delayed component", name, e));
+                        }
+                    } else {
+                        //no work to do; terminate
+                        sfTerminate(TerminationRecord.normal(name));
                     }
                 }
             }

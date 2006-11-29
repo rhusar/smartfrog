@@ -49,7 +49,6 @@ EventCompound extends Compound {
     eventCompoundSchema extends EventCompoundSchema;
     sendTo  extends LAZY {}
     registerWith extends LAZY {}
-
 }
 
 /**
@@ -64,6 +63,9 @@ ActionCompound extends EventCompound {
   }
 }
 
+OptionalActionCompound extends ActionCompound {
+  actionCompoundSchema:action:optional true;
+}
 
 /**
  * A compound that can have a child component
