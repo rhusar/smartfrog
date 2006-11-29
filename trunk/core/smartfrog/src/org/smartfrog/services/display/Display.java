@@ -85,7 +85,7 @@ import java.rmi.RemoteException;
  * Multiuse Simple display object. It is possible to start / stop the data
  * producer.
  */
-public class Display extends JFrame implements ActionListener, KeyListener {
+public class Display extends JFrame implements ActionListener, KeyListener, FontSize {
     /**
      * Class log for static invocations
      */
@@ -143,7 +143,7 @@ public class Display extends JFrame implements ActionListener, KeyListener {
     /**
      * Menu file.
      */
-    JMenu jMenuFile = new JMenu();
+    JMenu jMenuDisplayOptions = new JMenu();
     /**
      * Check box.
      */
@@ -157,6 +157,15 @@ public class Display extends JFrame implements ActionListener, KeyListener {
      * Menu item - clean all.
      */
     JMenuItem jMenuItemCleanAll = new JMenuItem();
+
+    /**
+     * Menu item - increase font size.
+     */
+    JMenuItem jMenuItemIncreaseFontSize = new JMenuItem();
+    /**
+     * Menu item - reduce font size.
+     */
+    JMenuItem jMenuItemReduceFontSize = new JMenuItem();
     /**
      * Menu item - save as.
      */
@@ -1208,10 +1217,27 @@ public class Display extends JFrame implements ActionListener, KeyListener {
      *
      * @param e Action event
      */
+    void jMenuItemIncreaseFontSize_actionPerformed(ActionEvent e) {
+        increaseFontSize();
+    }
+
+    /**
+     * Interface method
+     *
+     * @param e Action event
+     */
+    void jMenuItemReduceFontSize_actionPerformed(ActionEvent e) {
+        reduceFontSize();
+    }
+
+    /**
+     * Interface method
+     *
+     * @param e Action event
+     */
     void jMenuItemCleanAll_actionPerformed(ActionEvent e) {
         cleanAll();
     }
-
 
     /**
      * Interface method
@@ -1324,7 +1350,7 @@ public class Display extends JFrame implements ActionListener, KeyListener {
 
         //Menus
         //File
-        jMenuFile.setText("File");
+        jMenuDisplayOptions.setText("Display options");
 
         //Exit
         jMenuItemExit.setText("Exit");
@@ -1347,6 +1373,19 @@ public class Display extends JFrame implements ActionListener, KeyListener {
         jMenuItemInfo.setText("Info");
         jMenuItemInfo.addActionListener(new Display_jMenuItemInfo_actionAdapter(
                 this));
+
+        jMenuItemIncreaseFontSize.setText("+ font size");
+        jMenuItemIncreaseFontSize.setAccelerator(javax.swing.KeyStroke.getKeyStroke(
+                KeyEvent.VK_RIGHT, java.awt.event.KeyEvent.CTRL_MASK, false));
+        jMenuItemIncreaseFontSize.addActionListener(new Display_jMenuItemIncreaseFontSize_actionAdapter(
+                this));
+
+        jMenuItemReduceFontSize.setText("- font size");
+        jMenuItemReduceFontSize.setAccelerator(javax.swing.KeyStroke.getKeyStroke(
+                KeyEvent.VK_LEFT, java.awt.event.KeyEvent.CTRL_MASK, false));
+        jMenuItemReduceFontSize.addActionListener(new Display_jMenuItemReduceFontSize_actionAdapter(
+                this));
+
         jMenuItemCleanAll.setText("Clean all");
         jMenuItemCleanAll.setAccelerator(javax.swing.KeyStroke.getKeyStroke(
                 67, java.awt.event.KeyEvent.ALT_MASK, false));
@@ -1382,15 +1421,19 @@ public class Display extends JFrame implements ActionListener, KeyListener {
                         jMenuItemMngConsole_actionPerformed(e);
                     }
                 });
-        jMenuBarDisplay.add(jMenuFile);
+        jMenuBarDisplay.add(jMenuDisplayOptions);
         jMenuBarDisplay.add(jMenuHelp);
-        jMenuFile.add(jCheckBoxMenuItemPause);
-        jMenuFile.add(jCheckBoxMenuItemAskSaveChanges);
-        jMenuFile.addSeparator();
-        jMenuFile.add(jMenuItemCleanAll);
-        jMenuFile.add(jMenuItemSaveAs);
-        jMenuFile.addSeparator();
-        jMenuFile.add(jMenuItemExit);
+        jMenuDisplayOptions.add(jCheckBoxMenuItemPause);
+        jMenuDisplayOptions.add(jCheckBoxMenuItemAskSaveChanges);
+        jMenuDisplayOptions.addSeparator();
+        jMenuDisplayOptions.add(jMenuItemIncreaseFontSize);
+        jMenuDisplayOptions.add(jMenuItemReduceFontSize);
+        jMenuDisplayOptions.addSeparator();
+        jMenuDisplayOptions.add(jMenuItemCleanAll);
+        jMenuDisplayOptions.add(jMenuItemSaveAs);
+
+        jMenuDisplayOptions.addSeparator();
+        jMenuDisplayOptions.add(jMenuItemExit);
         jMenuHelp.add(jMenuItemInfo);
         jMenuHelp.add(jMenuItemInfoProp);
         jMenuHelp.addSeparator();
@@ -1620,6 +1663,75 @@ public class Display extends JFrame implements ActionListener, KeyListener {
          */
         public void actionPerformed(ActionEvent e) {
             adaptee.jMenuItemCleanAll_actionPerformed(e);
+        }
+    }
+
+
+
+    /**
+     * Display_jMenuItemIncreaseFontSize_actionAdapter
+     */
+    static class Display_jMenuItemIncreaseFontSize_actionAdapter
+            implements java.awt.event.ActionListener {
+
+
+        /**
+         * Display object.
+         */
+        Display adaptee;
+
+
+        /**
+         * Constructs the Display_jMenuItemIncreaseFontSize_actionAdapter object
+         *
+         * @param adaptee Display object
+         */
+        Display_jMenuItemIncreaseFontSize_actionAdapter(Display adaptee) {
+            this.adaptee = adaptee;
+        }
+
+
+        /**
+         * Interface method
+         *
+         * @param e action event
+         */
+        public void actionPerformed(ActionEvent e) {
+            adaptee.jMenuItemIncreaseFontSize_actionPerformed(e);
+        }
+    }
+
+
+    /**
+     * Display_jMenuItemReduceFontSize_actionAdapter
+     */
+    static class Display_jMenuItemReduceFontSize_actionAdapter
+            implements java.awt.event.ActionListener {
+
+
+        /**
+         * Display object.
+         */
+        Display adaptee;
+
+
+        /**
+         * Constructs the Display_jMenuItemReduceFontSize_actionAdapter object
+         *
+         * @param adaptee Display object
+         */
+        Display_jMenuItemReduceFontSize_actionAdapter(Display adaptee) {
+            this.adaptee = adaptee;
+        }
+
+
+        /**
+         * Interface method
+         *
+         * @param e action event
+         */
+        public void actionPerformed(ActionEvent e) {
+            adaptee.jMenuItemReduceFontSize_actionPerformed(e);
         }
     }
 
