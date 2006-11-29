@@ -241,6 +241,7 @@ public class Display extends JFrame implements ActionListener, KeyListener {
     private boolean systemExit = true;
     Display mngConsole = null;
     private JMenuItem jMenuItemMngConsole = new JMenuItem();
+    private int fontSize = 12;
 
     /**
      * Constructs Display object with title.
@@ -1316,7 +1317,7 @@ public class Display extends JFrame implements ActionListener, KeyListener {
         screen.setBackground(NONEDITCOLOR);
         screen.setForeground(SystemColor.text);
         screen.addKeyListener(this);
-        screen.setFont(new java.awt.Font("DialogInput", 0, 12));
+        setFontSize(fontSize);
 
         mainToolBar.setBorder(BorderFactory.createEtchedBorder());
         mainToolBar.setDoubleBuffered(true);
@@ -1411,6 +1412,19 @@ public class Display extends JFrame implements ActionListener, KeyListener {
                         GridBagConstraints.NORTH, GridBagConstraints.BOTH,
                         new Insets(0, 8, 8, 8), 1, 1));
         mainToolBar.add(stopResume, null);
+    }
+
+    public void setFontSize(int fontSize) {
+        screen.setFont(new java.awt.Font("DialogInput", 0, fontSize));
+    }
+
+    public void increaseFontSize() {
+        screen.setFont(new java.awt.Font("DialogInput", 0, screen.getFont().getSize()+1));
+    }
+
+     public void reduceFontSize() {
+        if (screen.getFont().getSize()>1)
+        screen.setFont(new java.awt.Font("DialogInput", 0, screen.getFont().getSize()-1));
     }
 
     public void setAskSaveChanges(boolean askSaveChanges){
