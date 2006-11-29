@@ -49,4 +49,8 @@ public class DelayTest extends DeployingTestBase {
         expectAbnormalTermination((TestBlock) application);
     }
 
+    public void testDelayNoAction() throws Throwable {
+        application = deployExpectingSuccess(FILES + "testDelayNoAction.sf", "testDelayNoAction");
+        expectSuccessfulTermination((TestBlock) application);
+    }
 }
