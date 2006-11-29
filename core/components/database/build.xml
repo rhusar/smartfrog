@@ -44,6 +44,8 @@
   <import file="${xml.dir}/dist.xml"/>
   <import file="${xml.dir}/state.xml"/>
 
+  <!---->
+  <target name="default" depends="published" />
 
   
   <!-- ========================================================== -->
