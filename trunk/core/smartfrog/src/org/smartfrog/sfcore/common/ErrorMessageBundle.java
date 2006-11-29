@@ -90,6 +90,7 @@ public class ErrorMessageBundle extends ListResourceBundle
         { MSG_ILLEGAL_REFERENCE , "Illegal Reference"},
         { MSG_ILLEGAL_CLASS_TYPE , "Illegal ClassType"},
         { MSG_ILLEGAL_CLASS_TYPE_EXPECTING_GOT , "Illegal ClassType. Expecting type \"[{0}]\" and got \"{1} [{2}]\""},
+        { MSG_ILLEGAL_CLASS_TYPE_EXPECTING_PRIM_GOT_CD, "Expecting a Prim but got a reference to an undeployed component \"{1} [{2}]\""},
         { MSG_TBD_REFERENCE , "Failure in evaluating assertion - TBD found still undefined" },
         { MSG_ASSERTION_FAILURE , "Failure in evaluating assertion - assertion not evaluate to true" },
         // Resolution Exception messages end

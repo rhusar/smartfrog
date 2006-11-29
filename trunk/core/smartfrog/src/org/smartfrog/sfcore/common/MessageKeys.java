@@ -250,25 +250,32 @@ public interface MessageKeys {
     public static String MSG_ILLEGAL_REFERENCE = "MSG_ILLEGAL_REFERENCE";
     /**
      * Message key: illegal classtype.
-     * @see MSG_ILLEGAL_CLASS_TYPE_EXPECTING_GOT
+     * @see #MSG_ILLEGAL_CLASS_TYPE_EXPECTING_GOT
      */
     public static String MSG_ILLEGAL_CLASS_TYPE = "MSG_ILLEGAL_CLASS_TYPE";
 
     /**
      * Message key: illegal classtype with added information.
-     * @see MSG_ILLEGAL_CLASS_TYPE
+     * @see #MSG_ILLEGAL_CLASS_TYPE
      */
     public static String MSG_ILLEGAL_CLASS_TYPE_EXPECTING_GOT ="MSG_ILLEGAL_CLASS_TYPE_EXPECTING_GOT";
 
     /**
      * Message key: illegal classtype with added information.
-     * @see MSG_TBD_REFERENCE
+     *
+     * @see #MSG_ILLEGAL_CLASS_TYPE
+     */
+    public static String MSG_ILLEGAL_CLASS_TYPE_EXPECTING_PRIM_GOT_CD = "MSG_ILLEGAL_CLASS_TYPE_EXPECTING_PRIM_GOT_CD";
+
+    /**
+     * Message key: illegal classtype with added information.
+     * @see #MSG_TBD_REFERENCE
      */
     public static String MSG_TBD_REFERENCE ="MSG_TBD_REFERENCE";
 
     /**
      * Message key: illegal classtype with added information.
-     * @see MSG_ASSERTION_FAILURE
+     * @see #MSG_ASSERTION_FAILURE
      */
     public static String MSG_ASSERTION_FAILURE ="MSG_ASSERTION_FAILURE";
 
