@@ -7,6 +7,8 @@ import java.io.File;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SFNull;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
+import org.smartfrog.sfcore.common.MessageUtil;
+import org.smartfrog.sfcore.common.MessageKeys;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.compound.Compound;
 import org.smartfrog.sfcore.prim.Prim;
@@ -778,17 +780,32 @@ import java.rmi.RemoteException;
 
         try {
             Object referenceObj = sfResolve(reference);
-            if (referenceObj instanceof SFNull) {return null;}
+            if (referenceObj instanceof SFNull) {
+                return null;
+            }
 
             if (referenceObj instanceof Prim) {
                 return ((Prim) referenceObj);
-            } else {
-                illegalClassType = true;
-                throw SmartFrogResolutionException.illegalClassType(reference,
-                                    this.sfCompleteNameSafe()
-                                    , referenceObj , referenceObj.getClass().toString()
-                                    , "org.smartfrog.sfcore.prim.Prim");
             }
+            //we have an illegal class type
+            illegalClassType = true;
+            if(referenceObj instanceof ComponentDescription) {
+                //special handling for want Prim & got ComponentDescription, for extra end-user diagnostics
+                String referenceValueType = referenceObj.getClass().toString();
+                SmartFrogResolutionException fault = new SmartFrogResolutionException (reference,
+                        sfCompleteNameSafe(),
+                        MessageUtil.formatMessage(MessageKeys.MSG_ILLEGAL_CLASS_TYPE_EXPECTING_PRIM_GOT_CD,
+                                "org.smartfrog.sfcore.prim.Prim", referenceObj, referenceValueType));
+                fault.put(SmartFrogResolutionException.REFERENCE_OBJECT_RESOLVED, referenceObj.toString());
+                fault.put(SmartFrogResolutionException.REFERENCE_OBJECT_CLASS_TYPE, referenceValueType);
+                fault.put(SmartFrogResolutionException.DEFAULT_OBJECT_CLASS_TYPE, "org.smartfrog.sfcore.prim.Prim");
+                throw fault;
+            }
+            //any other class type
+            throw SmartFrogResolutionException.illegalClassType(reference,
+                                sfCompleteNameSafe()
+                                , referenceObj , referenceObj.getClass().toString()
+                                , "org.smartfrog.sfcore.prim.Prim");
         } catch (SmartFrogResolutionException e) {
             if ((mandatory) || (illegalClassType)) {
                 throw e;
