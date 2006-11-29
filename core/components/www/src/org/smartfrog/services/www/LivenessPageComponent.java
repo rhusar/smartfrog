@@ -100,21 +100,6 @@ public class LivenessPageComponent extends PrimImpl implements LivenessPage {
     }
 
     /**
-     * Called after instantiation for deployment purposed. Heart monitor is
-     * started and if there is a parent the deployed component is added to the
-     * heartbeat. Subclasses can override to provide additional deployment
-     * behavior.
-     *
-     * @throws org.smartfrog.sfcore.common.SmartFrogException
-     *                                  error while deploying
-     * @throws java.rmi.RemoteException In case of network/rmi error
-     */
-    public synchronized void sfDeploy()
-            throws SmartFrogException, RemoteException {
-        super.sfDeploy();
-    }
-
-    /**
      * Can be called to start components. Subclasses should override to provide
      * functionality Do not block in this call, but spawn off any main loops!
      *
