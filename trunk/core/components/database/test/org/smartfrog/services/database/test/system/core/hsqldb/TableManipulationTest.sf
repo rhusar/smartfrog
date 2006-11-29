@@ -2,43 +2,56 @@
 #include "/org/smartfrog/services/database/test/system/core/hsqldb/components.sf";
 
 
-TableManipulationTest extends DeploySequence {
+TableManipulationTest extends TestCompound {
 
-    action extends Compound {
-        db extends TestDB;
+    action extends TestDB { 
     }
 
     tests extends Sequence {
 
-        -- extends CreateUser {
-          database LAZY action:db;
-          username "newuser";
-          password "secret";
+        delay extends Delay {
+          time 5000;
         }
 
-        -- extends CreateEventsTable {
-          database LAZY action:db;
+        dropUser1 extends DropUser {
+          database LAZY ATTRIB action;
+          username testUser;
+          failOnSqlError false;
         }
 
-/*
-        -- extends TransactionWorkflow {
-
+        dropTable1 extends dropTable {
+          failOnSqlError false;
         }
-*/
 
-        -- extends SelectionWorkflow {
-          database LAZY action:db;
+        newuser extends CreateUser {
+          database LAZY PARENT:PARENT:action;
+          username testUser;
+          password testPass;
+        }
+
+
+        events extends CreateEventsTable {
+          database LAZY ATTRIB action;
+        }
+
+        select extends Transaction {
+          database LAZY ATTRIB action;
           sqlCommands [
             "SELECT * from events"
             ];
         }
 
-        -- extends DropTable {
-            database LAZY action:db;
+        dropTable extends DropTable {
+            database LAZY ATTRIB action;
             table "events";
         }
+
+        dropUser2 extends dropUser1 {
+          failOnSqlError true;
+        }
+
     }
-    }
+  }
 
 sfConfig extends TableManipulationTest {
 

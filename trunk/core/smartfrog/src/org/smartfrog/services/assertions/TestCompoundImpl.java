@@ -44,7 +44,7 @@ public class TestCompoundImpl extends EventCompoundImpl
     private ComponentDescription tests;
     private Prim testsPrim;
 
-    protected static final String ACTION_RUNNING = "_actionRunning";
+    protected static final String ACTION_RUNNING = "action";
     protected static final String TESTS_RUNNING = "_testsRunning";
     private long undeployAfter;
     private long testTimeout;
@@ -67,6 +67,7 @@ public class TestCompoundImpl extends EventCompoundImpl
      */
     public static final String FORCED_TERMINATION = "timed shutdown of test components";
     public static final String TEST_FAILED_WRONG_STATUS = "Expected action to terminate with the status ";
+    protected static final String TEARDOWN_RUNNING = "_teardownRunning";
 
     public TestCompoundImpl() throws RemoteException {
     }
@@ -91,9 +92,9 @@ public class TestCompoundImpl extends EventCompoundImpl
         if (teardownCD != null) {
             throw new SmartFrogException("Not yet supported " + ATTR_TEARDOWN);
         }
-        undeployAfter = sfResolve(ATTR_UNDEPLOY_AFTER, 0L,true);
-        expectTerminate = sfResolve(ATTR_EXPECT_TERMINATE,false,true);
-        exitType = sfResolve(ATTR_EXIT_TYPE,exitType,true);
+        undeployAfter = sfResolve(ATTR_UNDEPLOY_AFTER, 0L, true);
+        expectTerminate = sfResolve(ATTR_EXPECT_TERMINATE, false, true);
+        exitType = sfResolve(ATTR_EXIT_TYPE, exitType, true);
         exitText = sfResolve(ATTR_EXIT_TEXT, exitText, true);
     }
 
@@ -179,6 +180,10 @@ public class TestCompoundImpl extends EventCompoundImpl
         }
     }
 
+    /**
+     * When terminating we shutdown the action and the tests
+     * @param status
+     */
     public synchronized void sfTerminateWith(TerminationRecord status) {
         super.sfTerminateWith(status);
         shutdown(actionTerminator);
@@ -194,8 +199,8 @@ public class TestCompoundImpl extends EventCompoundImpl
      * @param terminator
      */
     private void shutdown(DelayedTerminator terminator) {
-        if (terminator !=null) {
-                terminator.shutdown(false);
+        if (terminator != null) {
+            terminator.shutdown(false);
         }
     }
 
@@ -211,15 +216,15 @@ public class TestCompoundImpl extends EventCompoundImpl
      * Always return false if you start new components from this method!
      * </p>
      *
-     * @param status exit record of the component
-     * @param comp   child component that is terminating
+     * @param childStatus exit record of the component
+     * @param child   child component that is terminating
      * @return true if the termination event is to be forwarded up the chain.
      */
-    protected boolean onChildTerminated(TerminationRecord status, Prim comp) {
+    protected boolean onChildTerminated(TerminationRecord childStatus, Prim child) {
         boolean terminate =true;
         boolean tearDownTime=false;
         TerminationRecord error=null;
-        if (actionPrim == comp) {
+        if (actionPrim == child) {
             if (actionTerminator.isForcedShutdown() && expectTerminate == false) {
                 //this is a forced shutdown, all is well
                 sfLog().info("Graceful shutdown of test components");
@@ -227,12 +232,12 @@ public class TestCompoundImpl extends EventCompoundImpl
                 //not a forced shutdown, so why did it die?
                 boolean expected = false;
                 //act on whether or not a fault was expected.
-                if (status.errorType.indexOf(exitType) >= 0) {
+                if (childStatus.errorType.indexOf(exitType) >= 0) {
                     //we have a match
                     sfLog().debug("Exit type is as expected");
                     expected = true;
                     if (exitText != null) {
-                        String description = status.description;
+                        String description = childStatus.description;
                         if (description == null) {
                             description = "";
                         }
@@ -251,20 +256,20 @@ public class TestCompoundImpl extends EventCompoundImpl
                 if (!expected) {
                     String errorText = TEST_FAILED_WRONG_STATUS + exitType + "\n"
                             + "and error text " + exitText + "\n"
-                            + "but got " + status;
+                            + "but got " + childStatus;
                     sfLog().error(errorText);
-                    error = TerminationRecord.abnormal(errorText, status.id);
+                    error = TerminationRecord.abnormal(errorText, childStatus.id);
                     //propagate any exception
-                    error.cause=status.cause;
+                    error.cause=childStatus.cause;
                 }
             }
             tearDownTime=true;
-        } else if(comp == testsPrim) {
+        } else if(child == testsPrim) {
             //tests are terminating.
             //it is an error if these terminated abnormally, for any reason at all.
             //that is: test failure triggers an undeployment.
             //There is no need to check this, because its implicit.
-            if(!status.isNormal()) {
+            if(!childStatus.isNormal()) {
                 sfLog().info("Tests have failed");
             }
             tearDownTime=true;
@@ -274,7 +279,8 @@ public class TestCompoundImpl extends EventCompoundImpl
         //kicks in on normal abnormal ter
         if(tearDownTime && teardownCD!=null) {
             try {
-                sfCreateNewChild(name + "_teardownRunning", teardownCD, null);
+                sfLog().debug("Starting teardown component");
+                sfCreateNewChild(TEARDOWN_RUNNING, teardownCD, null);
                 terminate = false;
             } catch (Exception e) {
                 error = TerminationRecord.abnormal("failed to start teardown",
@@ -283,29 +289,29 @@ public class TestCompoundImpl extends EventCompoundImpl
         }
         synchronized (this) {
             //update internal data structures
-            this.finished = true;
+            finished = true;
             if (error != null) {
-                this.status = error;
-                this.failed = true;
-                this.succeeded = false;
+                status = error;
+                failed = true;
+                succeeded = false;
             } else {
-                this.status = status;
-                this.failed = false;
-                this.succeeded = true;
+                status = childStatus;
+                failed = false;
+                succeeded = true;
             }
         }
 
         //if the error record is non null, terminate ourselves with the new record
         if (error != null) {
-            this.status=error;
-            this.failed=true;
+            status=error;
+            failed=true;
             sfTerminate(error);
             //dont forward, as we are terminating with an error
             terminate = false;
         } else {
-            this.status = status;
-            this.finished=true;
-            this.succeeded=true;
+            status = childStatus;
+            finished=true;
+            succeeded=true;
         }
         //trigger termination.
         return terminate;

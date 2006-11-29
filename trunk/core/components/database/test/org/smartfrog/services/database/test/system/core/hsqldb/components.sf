@@ -30,23 +30,23 @@
  testUser "testUser";
  testPass "secret";
 
- TestDB extends HsqldbInMemoryBinding {
-   database "test";
+ TestDB extends HsqldbBinding {
+   url "jdbc:hsqldb:mem:test";
  }
 
- TestUserBinding extends testDB {
+ TestUserBinding extends TestDB {
    username testUser;
    password testPass;
  }
 
 
- AdminCommand extends TransactionWorkflow {
+ AdminCommand extends Transaction {
     database LAZY TestDB;
  }
 
 
 
- UserCommand extends TransactionWorkflow {
+ UserCommand extends Transaction {
     database LAZY TestUserBinding;
  }
 
@@ -57,14 +57,21 @@
     username TBD;
     password TBD;
     sqlCommands [
-     (("CREATE USER "++ username )++(" PASSWORD "++ password))
+     (("CREATE USER " ++ username ) ++ (" PASSWORD " ++ password))
+    ];
+ }
+
+  DropUser extends AdminCommand {
+    username TBD;
+    sqlCommands [
+     ("DROP USER " ++ username )
     ];
  }
 
  DropTable extends AdminCommand {
     table TBD;
     sqlCommands [
-     ("DROP TABLE "++ table)
+     ("DROP TABLE " ++ table)
     ];
  }
 
@@ -82,6 +89,6 @@
       EVENT_LASTMODIFIED timestamp,
       EVENT_TEXT varchar(8192),
       primary key (EVENT_ID));
-      #;
-    ]
+      #
+    ];
  }

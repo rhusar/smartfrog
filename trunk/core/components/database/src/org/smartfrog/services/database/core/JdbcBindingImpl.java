@@ -22,6 +22,8 @@ package org.smartfrog.services.database.core;
 
 import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.common.SmartFrogLogException;
+import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.logging.Log;
 import org.smartfrog.sfcore.logging.LogFactory;
 import org.smartfrog.sfcore.prim.PrimImpl;
@@ -63,11 +65,21 @@ public class JdbcBindingImpl extends PrimImpl implements JdbcBinding {
     public synchronized void sfStart()
             throws SmartFrogException, RemoteException {
         super.sfStart();
-        Log log = LogFactory.getLog(this);
+        bindToDatabaseProperties();
+    }
+
+    /**
+     * Startup time binding to the database
+     * @throws SmartFrogResolutionException
+     * @throws RemoteException
+     * @throws SmartFrogDeploymentException
+     */
+    protected void bindToDatabaseProperties()
+            throws SmartFrogResolutionException, RemoteException, SmartFrogDeploymentException {
         ComponentHelper helper = new ComponentHelper(this);
 
         driver = sfResolve(ATTR_DRIVER, "", false);
-        url = sfResolve(ATTR_USERNAME, "", true);
+        url = sfResolve(ATTR_URL, "", true);
         user = sfResolve(ATTR_USERNAME, "", false);
         password = sfResolve(ATTR_PASSWORD, "", false);
         properties = sfResolve(ATTR_PROPERTIES, (Vector) null, false);
@@ -75,6 +87,7 @@ public class JdbcBindingImpl extends PrimImpl implements JdbcBinding {
         if (driver != null) {
             helper.loadClass(driver);
         }
+        sfLog().info("Binding to "+url+" with driver "+driver+" as "+user);
 
         connectionProperties = new Properties();
         if (user != null) {

@@ -203,25 +203,35 @@ HsqldbBinding extends DatabaseBinding {
   password "";
 }
 
-HsqldbInMemoryBinding extends HsqldbBinding {
-  database TBD;
-  url ("jdbc:hsqldb:mem:"++database);
+HsqldbPrefixedBinding extends HsqldbBinding {
+  _arg TBD;
+  _db LAZY _arg;
+  binding_prefix TBD;
+  url (binding_prefix ++ LAZY _db);
 }
 
+/**
+ * the memory binding takes a name
+ */
+HsqldbInMemoryBinding extends HsqldbPrefixedBinding {
+  database TBD;
+  _arg LAZY database;
+  binding_prefix "jdbc:hsqldb:mem:";
+}
 
 /**
  * the file binding takes a directory
  */
 HsqldbFileBinding extends HsqldbBinding {
     directory TBD;
-    file_binding_prefix "jdbc:hsqldb:file:";
-    url (file_binding_prefix++directory);
+    _arg LAZY directory;
+    binding_prefix "jdbc:hsqldb:file:";
 }
 
 /**
  * Shut down the database
  */
-ShutdownCommand extends TransactionWorkflow {
+ShutdownCommand extends Transaction {
     sqlCommands [
         "SHUTDOWN"
     ];
@@ -231,7 +241,7 @@ ShutdownCommand extends TransactionWorkflow {
 /**
  * Shut down the database and compact it
  */
-ShutdownAndCompactCommand extends TransactionWorkflow {
+ShutdownAndCompactCommand extends Transaction {
     sqlCommands [
         "SHUTDOWN COMPACT"
     ];

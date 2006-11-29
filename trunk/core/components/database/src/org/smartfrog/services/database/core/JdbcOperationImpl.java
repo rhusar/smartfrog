@@ -27,6 +27,7 @@ import org.smartfrog.sfcore.logging.Log;
 import org.smartfrog.sfcore.logging.LogFactory;
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.prim.TerminationRecord;
+import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.utils.ComponentHelper;
 
 import java.rmi.RemoteException;
@@ -69,7 +70,7 @@ public abstract class JdbcOperationImpl extends PrimImpl
         super.sfStart();
         log = LogFactory.getLog(this);
         helper = new ComponentHelper(this);
-        database = (JdbcBinding) sfResolve(ATTR_DATABASE, database, true);
+        database = (JdbcBinding) sfResolve(ATTR_DATABASE, (Prim)null, true);
         autocommit = sfResolve(ATTR_AUTOCOMMIT, autocommit, true);
     }
 
@@ -79,8 +80,9 @@ public abstract class JdbcOperationImpl extends PrimImpl
      * jdbc options.
      *
      * @return a new database connection
-     *
      * @throws SmartFrogDeploymentException
+     * @throws SmartFrogResolutionException
+     * @throws RemoteException
      */
     protected Connection connect() throws
             SmartFrogDeploymentException,
@@ -101,14 +103,14 @@ public abstract class JdbcOperationImpl extends PrimImpl
                 throw new SmartFrogDeploymentException("Failed to load " + dbinfo);
             }
         } catch (SQLException e) {
-            throw translate("Exception when load " + dbinfo, e);
+            throw translate("Exception when loading " + dbinfo, e);
         }
         if (autocommit) {
             try {
                 connection.setAutoCommit(autocommit);
             } catch (SQLException e) {
                 closeQuietly(connection);
-                throw translate("setting autocommit flag", e);
+                throw translate("setting autocommit flag on "+dbinfo, e);
             }
         }
         return connection;
@@ -117,8 +119,8 @@ public abstract class JdbcOperationImpl extends PrimImpl
     /**
      * any logic to convert from a SQL exception to a smartfrog one
      *
-     * @param operation
-     * @param fault
+     * @param operation what was attempted
+     * @param fault what went wrong
      *
      * @return a new exception to throw.
      */
@@ -150,8 +152,7 @@ public abstract class JdbcOperationImpl extends PrimImpl
     }
 
     /**
-     * Gets an instance of the required driver. Uses the ant class loader and
-     * the optionally the provided classpath.
+     * Gets an instance of the required driver.
      * @param driver the driver classname
      * @return the driver instance
      * @throws SmartFrogDeploymentException to wrap failures to create an instance
@@ -206,7 +207,7 @@ public abstract class JdbcOperationImpl extends PrimImpl
      * @throws SmartFrogDeploymentException if something went wrong closing the connection
      *
      */
-    protected void close(Connection connection) throws
+    protected synchronized void close(Connection connection) throws
             SmartFrogDeploymentException {
         try {
             if (connection != null) {
@@ -218,23 +219,23 @@ public abstract class JdbcOperationImpl extends PrimImpl
     }
 
     /**
-     * close a connection without throwing any exception, just log it at debug
-     * level
+     * close a connection without throwing any exception, just log it.
      *
      * @param connection
      */
     protected void closeQuietly(Connection connection) {
         try {
-            if (connection != null) {
-                connection.close();
-            }
-        } catch (SQLException e) {
+            close(connection);
+        } catch (SmartFrogDeploymentException e) {
             log.error("Exception when closing the connection ", e);
         }
     }
 
     /**
      * check the connection
+     * @throws SmartFrogDeploymentException if the connection wont start
+     * @throws SmartFrogResolutionException if there is something wrong with the settings
+     * @throws RemoteException on network problems
      */
     protected void checkConnection()
             throws SmartFrogDeploymentException, SmartFrogResolutionException,

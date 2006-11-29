@@ -36,6 +36,9 @@ For more information: www.smartfrog.org
  */
 DatabaseBinding extends Prim {
   sfClass "org.smartfrog.services.database.core.JdbcBindingImpl";
+  //this is not exported across processes, as it does VM-specific setup, and
+  //will in future export non-Remoteable methods for pooling
+  sfExport false;
   jdbcBindingSchema extends Schema {
       //driver classname. No extra loading stuff here other than SF codebase.
       driver extends OptionalString {
@@ -93,6 +96,7 @@ DatabaseOperation extends WorkflowPrim {
     }
   }
   autocommit true;
+  sfShouldTerminate true;
 }
 
 
@@ -130,35 +134,40 @@ Transaction extends DatabaseOperation {
         after the string/file/resource is parsed. If there is a mismatch,
         an exception is thrown. Omit or use -1 for do not care' #;
     }
-    failOnSqlError extends boolean {
+    failOnSqlError extends Boolean {
       description "should we fail on an SQL error?";
     }
-    printResults extends boolean {
+    printResults extends Boolean {
       description "should the results be printed?";
     }
-    printHeaders extends boolean {
+    printHeaders extends Boolean {
       description "should the column headers be printed?";
     }
   }
 
   sfClass "org.smartfrog.services.database.core.TransactionImpl";
   delimiter ";";
+  escapeProcessing false;
   expectedStatementCount -1;
   failOnSqlError true;
   printResults true;
   printHeaders true;
 }
 
+
 /**
- * A transaction in a sequence/workflow
+ * This component runs the SQL commands synchronously during termination.
+ * It is where to put shutdown operations like "DROP TABLE table1"
  */
-TransactionWorkflow extends Transaction {
-  sfTerminate true;
+TerminateTransaction extends Transaction {
+  sfClass "org.smartfrog.services.database.core.TerminationTransactionImpl";
 }
+
 
 /**
  * make a selection, results go into the results vector as a nested vector, columns becomes the vector of columns
  */
+/*
 Selection extends Transaction {
   selectionSchema extends Schema {
      minResultSize extends OptionalInteger {
@@ -169,23 +178,19 @@ Selection extends Transaction {
      }
   }
 }
+*/
 
-
-/**
- * A Selection in a sequence
- */
-SelectionWorkflow extends Selection {
-  sfTerminate true;
-}
 
 
 /**
  * this is an operation that should succeed
  * if the database is present
  */
+/*
 LivenessTransaction extends Transaction {
 
 }
+*/
 
 
 /**
@@ -195,6 +200,8 @@ LivenessTransaction extends Transaction {
  * of results.
  */
 
+/*
 LivenessSelection extends Selection {
 
 }
+*/

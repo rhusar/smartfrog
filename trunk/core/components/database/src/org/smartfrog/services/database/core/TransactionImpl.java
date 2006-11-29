@@ -44,6 +44,7 @@ package org.smartfrog.services.database.core;
 import org.smartfrog.services.filesystem.FileSystem;
 import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -72,7 +73,6 @@ import java.util.Vector;
 public class TransactionImpl extends JdbcOperationImpl implements Transaction {
     public static final String ERROR_NO_COMMANDS = "No commands declared";
     public static final String ERROR_TOO_MANY_COMMANDS = "Too many command attributes";
-
     private List<String> commands;
     private boolean escapeProcessing = false;
     private String delimiter;
@@ -87,6 +87,12 @@ public class TransactionImpl extends JdbcOperationImpl implements Transaction {
     public TransactionImpl() throws RemoteException {
     }
 
+    /**
+     * The startup operation is to read the commands in then execute them by way of {@link #executeStartupCommands()}.
+     * Subclasses may change this behaviour
+     * @throws SmartFrogException for smartfrog problems
+     * @throws RemoteException for network problems.
+     */
     public synchronized void sfStart()
             throws SmartFrogException, RemoteException {
         super.sfStart();
@@ -100,6 +106,47 @@ public class TransactionImpl extends JdbcOperationImpl implements Transaction {
                 true);
         printResults = sfResolve(ATTR_PRINTRESULTS, printResults, true);
         printHeaders = sfResolve(ATTR_PRINTHEADERS, printHeaders, true);
+        readCommands();
+        executeStartupCommands();
+    }
+
+    /**
+     * Execute any commands to run during {@link #sfStart()}.
+     * This delegates to {@link #startCommandThread()}
+     * @throws SmartFrogDeploymentException for smartfrog problems
+     * @throws SmartFrogResolutionException for smartfrog problems
+     * @throws RemoteException for network problems.
+     */
+    protected void executeStartupCommands()
+            throws SmartFrogDeploymentException, SmartFrogResolutionException, RemoteException {
+        startCommandThread();
+    }
+
+    /**
+     * Execute any commands in the {@link #commands} list by starting a separate thread
+     * @throws SmartFrogDeploymentException for smartfrog problems
+     * @throws SmartFrogResolutionException for smartfrog problems
+     * @throws RemoteException for network problems.
+     */
+    protected void startCommandThread()
+            throws SmartFrogDeploymentException, SmartFrogResolutionException, RemoteException {
+        if (commands.size() > 0) {
+            //work to do. check the connection (synchronously), then start the worker
+            checkConnection();
+            startWorkerThread();
+        } else {
+            //no work to do.
+            getLog().debug("No SQL statements to execute; skipping");
+        }
+    }
+
+    /**
+     * Read in the commands from file, a resource, the {@link #ATTR_COMMAND}
+     * string or {@link #ATTR_SQL_COMMANDS} list.
+     * @throws SmartFrogException for smartfrog problems
+     * @throws RemoteException for network problems.
+     */
+    protected void readCommands() throws RemoteException, SmartFrogException {
         int count = 0;
         String command = sfResolve(ATTR_COMMAND, (String) null, false);
         if (command != null) {
@@ -165,7 +212,7 @@ public class TransactionImpl extends JdbcOperationImpl implements Transaction {
                     commands.add(o.toString());
                 }
             } else {
-                //no commands at all. That's not really allowed. 
+                //no commands at all. That's not really allowed.
                 commands = new ArrayList<String>(0);
                 command = "";
             }
@@ -176,14 +223,6 @@ public class TransactionImpl extends JdbcOperationImpl implements Transaction {
             throw new SmartFrogDeploymentException("Expected " + expectedStatementCount
                     + " statements, but after parsing, there were " + size
                     + " from \n" + command);
-        }
-        if (size > 0) {
-            //work to do. check the connection (synchronously), then start the worker
-            checkConnection();
-            startWorkerThread();
-        } else {
-            //no work to do.
-            getLog().debug("No SQL statements to execute; skipping");
         }
     }
 
@@ -204,8 +243,8 @@ public class TransactionImpl extends JdbcOperationImpl implements Transaction {
      * Crack the command string into a list of commands (which may be zero), at
      * every line-ending delimiter. delimiters not at tne d
      *
-     * @param sql
-     * @param commandDelimiter
+     * @param sql SQL command
+     * @param commandDelimiter the delimiter for commands.
      *
      * @return a (possibly empty) list of commands.
      *
@@ -283,6 +322,9 @@ public class TransactionImpl extends JdbcOperationImpl implements Transaction {
 
         try {
             Statement statement = connection.createStatement();
+            if(sfLog().isInfoEnabled())
+                sfLog().info(command);
+            
             statement.setEscapeProcessing(escapeProcessing);
             boolean hasResultSet;
             int updateCount;
@@ -296,8 +338,9 @@ public class TransactionImpl extends JdbcOperationImpl implements Transaction {
                     if (updateCount != -1) {
                         updateCountTotal += updateCount;
                     }
+                    processNoResults(statement);
                 } else {
-                    processResults(resultSet);
+                    processResults(statement, resultSet);
                 }
                 hasResultSet = statement.getMoreResults();
                 if (hasResultSet) {
@@ -331,6 +374,10 @@ public class TransactionImpl extends JdbcOperationImpl implements Transaction {
         }
     }
 
+    protected void processNoResults(Statement statement) {
+        sfLog().info("--no results--");
+    }
+
     /**
      * Override point, act on the results
      *
@@ -338,7 +385,7 @@ public class TransactionImpl extends JdbcOperationImpl implements Transaction {
      *
      * @throws SQLException
      */
-    protected void processResults(ResultSet results)
+    protected void processResults(Statement statement,ResultSet results)
             throws SQLException {
         if (printResults) {
             printResults(results);
