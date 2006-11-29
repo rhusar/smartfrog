@@ -19,12 +19,6 @@
  */
 package org.smartfrog.services.display;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
-import java.awt.SystemColor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -76,7 +70,7 @@ import org.smartfrog.sfcore.logging.LogSF;
 import org.smartfrog.sfcore.logging.LogFactory;
 import org.smartfrog.SFSystem;
 
-import java.awt.Image;
+import java.awt.*;
 
 import java.rmi.RemoteException;
 
@@ -1343,7 +1337,7 @@ public class Display extends JFrame implements ActionListener, KeyListener, Font
         screen.setBackground(NONEDITCOLOR);
         screen.setForeground(SystemColor.text);
         screen.addKeyListener(this);
-        setFontSize(fontSize);
+        screen.setFont(new java.awt.Font("DialogInput", 0, fontSize));
 
         mainToolBar.setBorder(BorderFactory.createEtchedBorder());
         mainToolBar.setDoubleBuffered(true);
@@ -1458,16 +1452,63 @@ public class Display extends JFrame implements ActionListener, KeyListener, Font
     }
 
     public void setFontSize(int fontSize) {
-        screen.setFont(new java.awt.Font("DialogInput", 0, fontSize));
+        Object selected = getSelectedInTab();
+        if (selected instanceof JTextArea) {
+            Font font = ((JTextArea)selected).getFont();
+           ((JTextArea)selected).setFont(new java.awt.Font(font.getName(), 0, screen.getFont().getSize()+1));
+        } else if (selected instanceof FontSize) {
+           ((FontSize)selected).setFontSize(fontSize);
+        } else {
+            WindowUtilities.showError(this,"Cannot set font size, wrong component selected.\n Selected "+selected );
+            if (sfLog().isErrorEnabled()){
+                sfLog().error("Cannot set font size, wrong component selected.\n Selected "+selected );
+            }
+        }
     }
 
     public void increaseFontSize() {
-        screen.setFont(new java.awt.Font("DialogInput", 0, screen.getFont().getSize()+1));
+        Object selected = getSelectedInTab();
+        if (selected instanceof JTextArea) {
+            Font font = ((JTextArea)selected).getFont();
+           ((JTextArea)selected).setFont(new java.awt.Font(font.getName(), 0, screen.getFont().getSize()+1));
+        } else if (selected instanceof FontSize) {
+           ((FontSize)selected).increaseFontSize();;
+        } else {
+            WindowUtilities.showError(this,"Cannot increase font, wrong component selected.\n Selected "+selected );
+            if (sfLog().isErrorEnabled()){
+                sfLog().error("Cannot increase font, wrong component selected.\n Selected "+selected );
+            }
+        }
     }
 
-     public void reduceFontSize() {
-        if (screen.getFont().getSize()>1)
-        screen.setFont(new java.awt.Font("DialogInput", 0, screen.getFont().getSize()-1));
+
+    public void reduceFontSize() {
+        Object selected = getSelectedInTab();
+        if (selected instanceof JTextArea) {
+            Font font = ((JTextArea)selected).getFont();
+            if (font.getSize()>1)
+               ((JTextArea)selected).setFont(new java.awt.Font(font.getName(), 0, screen.getFont().getSize()-1));
+        } else if (selected instanceof FontSize) {
+           ((FontSize)selected).reduceFontSize();;
+        } else {
+            WindowUtilities.showError(this,"Cannot reduce font, wrong component selected.\n Selected "+selected );
+            if (sfLog().isErrorEnabled()){
+                sfLog().error("Cannot reduce font, wrong component selected.\n Selected "+selected );
+            }
+        }
+
+        //---
+    }
+
+    protected Object getSelectedInTab() {
+        Object selected = tabPane.getSelectedComponent();
+        if (selected instanceof JScrollPane) {
+            Object aux = ((JScrollPane)selected).getViewport().getComponent(0);
+            if (aux!=null) {
+               selected =  aux;
+            }
+        }
+        return selected;
     }
 
     public void setAskSaveChanges(boolean askSaveChanges){

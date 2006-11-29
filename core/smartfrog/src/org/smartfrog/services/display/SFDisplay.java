@@ -74,7 +74,7 @@ public class SFDisplay extends PrimImpl implements Prim, PrintMsgInt, PrintErrMs
    /** String name for attribute widthDisplay. */
    private static final String WIDTH_DISPLAY = "widthDisplay";
    /** String name for attribute widthDisplay. */
-   private static final String FONTSIZE_DISPLAY = "fontSize";
+   public static final String FONTSIZE_DISPLAY = "fontSize";
    /** String name for attribute formatMsg. */
    private static final String FORMAT_MSG = "formatMsg";
    /** String name for attribute externalPrinter. */

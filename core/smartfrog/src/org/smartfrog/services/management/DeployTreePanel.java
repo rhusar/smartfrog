@@ -37,12 +37,13 @@ import java.io.PrintWriter;
 import org.smartfrog.sfcore.common.ContextImpl;
 import org.smartfrog.sfcore.logging.LogSF;
 import org.smartfrog.sfcore.logging.LogFactory;
+import org.smartfrog.services.display.FontSize;
 
 /**
  * Tree panel for SmartFrog hierarchy of components.
  *
  */
-public class DeployTreePanel extends JPanel implements TreeSelectionListener {
+public class DeployTreePanel extends JPanel implements TreeSelectionListener, FontSize {
 
     /** Log for this class, created using class name*/
     LogSF sfLog = LogFactory.getLog("sfManagementConsole");
@@ -284,7 +285,9 @@ public class DeployTreePanel extends JPanel implements TreeSelectionListener {
 
     public void refreshSelectedNode(){
         TreePath treePath = systemViewTree.getSelectionPath();
+        //systemViewTree.nodeStructureChanged()
         systemViewTree.collapsePath(treePath.getParentPath());
+        systemViewTree.removeSelectionPath(treePath);
         systemViewTree.setSelectionPath(treePath);
     }
 
@@ -465,4 +468,26 @@ public class DeployTreePanel extends JPanel implements TreeSelectionListener {
         return sfLog;
    }
 
+    public void setFontSize(int fontSize) {
+        //JTree
+        jTextArea1.setFont(new java.awt.Font("DialogInput", 0, fontSize));
+        //Table
+        table.setFont(new java.awt.Font("DialogInput", 0, fontSize));
+        systemViewTree.setFont(new java.awt.Font("DialogInput", 0, fontSize));
+    }
+
+    public void increaseFontSize() {
+        table.setFont(new java.awt.Font("DialogInput", 0, table.getFont().getSize()+1));
+        jTextArea1.setFont(new java.awt.Font("DialogInput", 0, table.getFont().getSize()+1));
+        systemViewTree.setFont(new java.awt.Font("DialogInput", 0, table.getFont().getSize()+1));
+    }
+
+     public void reduceFontSize() {
+        if (table.getFont().getSize()>1)
+          table.setFont(new java.awt.Font("DialogInput", 0, table.getFont().getSize()-1));
+        if (jTextArea1.getFont().getSize()>1)
+          jTextArea1.setFont(new java.awt.Font("DialogInput", 0, jTextArea1.getFont().getSize()-1));
+        if (systemViewTree.getFont().getSize()>1)
+          systemViewTree.setFont(new java.awt.Font("DialogInput", 0, systemViewTree.getFont().getSize()-1));
+    }
 }

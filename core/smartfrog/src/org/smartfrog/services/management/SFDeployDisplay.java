@@ -531,8 +531,9 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
 
         //root= new CompoundImpl();
         //System.out.println("Root: "+root.toString());
-        this.panelTree = new DeployTreePanel(root, isObjCopy, isPC,true);
-        this.panelTree.setEnabled(true);
+        panelTree = new DeployTreePanel(root, isObjCopy, isPC,true);
+        ((DeployTreePanel)panelTree).setFontSize(sfResolve(SFDisplay.FONTSIZE_DISPLAY,12,false));
+        panelTree.setEnabled(true);
         addFrogIcon(display);
         display.tabPane.add(panelTree, name, 0);
 
