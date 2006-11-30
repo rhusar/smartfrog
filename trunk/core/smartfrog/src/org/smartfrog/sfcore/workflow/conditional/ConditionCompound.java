@@ -1,0 +1,122 @@
+/** (C) Copyright 2006 Hewlett-Packard Development Company, LP
+
+ This library is free software; you can redistribute it and/or
+ modify it under the terms of the GNU Lesser General Public
+ License as published by the Free Software Foundation; either
+ version 2.1 of the License, or (at your option) any later version.
+
+ This library is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ Lesser General Public License for more details.
+
+ You should have received a copy of the GNU Lesser General Public
+ License along with this library; if not, write to the Free Software
+ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+ For more information: www.smartfrog.org
+
+ */
+package org.smartfrog.sfcore.workflow.conditional;
+
+import org.smartfrog.sfcore.workflow.eventbus.EventCompoundImpl;
+import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.common.SmartFrogResolutionException;
+import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
+import org.smartfrog.sfcore.componentdescription.ComponentDescription;
+import org.smartfrog.sfcore.prim.Prim;
+import org.smartfrog.sfcore.prim.TerminationRecord;
+import org.smartfrog.sfcore.utils.ComponentHelper;
+
+import java.rmi.RemoteException;
+
+/**
+ * The base conditional event compound deploys itself and, on startup the condition. Evaluation
+ * of the condition is left to the childrentd
+ * created 29-Nov-2006 11:08:41
+ */
+
+public class ConditionCompound extends EventCompoundImpl implements Conditional, Condition {
+
+    //the deployed condition
+    private Condition condition;
+
+
+    public ConditionCompound() throws RemoteException {
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @return false
+     */
+    protected boolean isOldNotationSupported() {
+        return false;
+    }
+
+    /**
+     * Starts the component by deploying the condition
+     *
+     * @throws org.smartfrog.sfcore.common.SmartFrogException
+     *                         in case of problems creating the child
+     * @throws RemoteException In case of network/rmi error
+     */
+    public synchronized void sfStart() throws SmartFrogException, RemoteException {
+        super.sfStart();
+        deployCondition();
+    }
+
+    protected void deployCondition() throws SmartFrogResolutionException, RemoteException, SmartFrogDeploymentException {
+        condition = (Condition) deploy(ATTR_CONDITION, true);
+    }
+
+
+    /**
+     * Helper method to deploy any component of a given name. Its template is replaced in the graph
+     * by the running component
+     * @param name attribute to look up
+     * @param required flag to indicate the component is required
+     * @return the component or null if there was no attribute and required was false.
+     * @throws SmartFrogResolutionException
+     * @throws RemoteException
+     * @throws SmartFrogDeploymentException
+     */
+    protected Prim deploy(String name,boolean required)
+            throws SmartFrogResolutionException, RemoteException, SmartFrogDeploymentException {
+        ComponentDescription cd = null;
+        cd = sfResolve(name, cd, false);
+        if(cd!=null) {
+            return sfCreateNewChild(name, cd, null);
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * Get the condition
+     * @return
+     */
+    public Condition getCondition() {
+        return condition;
+    }
+
+
+    /**
+     * Evaluate the condition by delegating to the underlying condition.
+     *
+     * @return true if it is successful, false if not
+     * @throws java.rmi.RemoteException for network problems
+     * @throws org.smartfrog.sfcore.common.SmartFrogException
+     *                                  for any other problem
+     */
+    public synchronized boolean evaluate() throws RemoteException, SmartFrogException {
+        return condition.evaluate();
+    }
+
+    /**
+     * called after our work is done to trigger termination
+     */
+    protected synchronized void finish() {
+        new ComponentHelper(this).targetForWorkflowTermination(TerminationRecord.normal(this.name));
+    }
+}

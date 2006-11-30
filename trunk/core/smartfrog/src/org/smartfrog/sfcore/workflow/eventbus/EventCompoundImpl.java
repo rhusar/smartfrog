@@ -23,6 +23,7 @@ package org.smartfrog.sfcore.workflow.eventbus;
 import java.rmi.RemoteException;
 import java.util.Enumeration;
 import java.util.Vector;
+import java.util.NoSuchElementException;
 
 import org.smartfrog.sfcore.common.Context;
 import org.smartfrog.sfcore.common.SmartFrogException;
@@ -43,11 +44,7 @@ import org.smartfrog.sfcore.common.*;
  * event handling.
  */
 public class EventCompoundImpl extends CompoundImpl implements EventBus,
-    EventRegistration, EventSink, Compound {
-    protected static final String ATTR_REGISTER_WITH = "registerWith";
-    protected static final String ATTR_SEND_TO = "sendTo";
-    protected static final String ATTR_ACTIONS = "actions";
-    protected static final String ATTR_ACTION = "action";
+    EventRegistration, EventSink, EventCompound {
     private static Reference receiveRef = new Reference(ATTR_REGISTER_WITH);
     private static Reference sendRef = new Reference(ATTR_SEND_TO);
     private Vector receiveFrom = new Vector();
@@ -72,13 +69,23 @@ public class EventCompoundImpl extends CompoundImpl implements EventBus,
         super();
     }
 
+    /**
+     * This is an override point. The original set of event components
+     * suppored the 'old' notation, in which actions were listed in the {@link #ATTR_ACTIONS element}
+     * New subclasses do not need to remain backwards compatible and should declare this fact by
+     * returning false from this method
+     * @return true
+     */
+    protected boolean isOldNotationSupported() {
+        return true;
+    }
 
     /*
     * Method that overwrites compoundImpl behavior and delays loading eager components to sfStart phase.
     * If action or actions atributes are present then it behaves like compound and loads all eager components.
     */
     protected void sfDeployWithChildren() throws SmartFrogDeploymentException {
-      if (sfContext().containsKey(ATTR_ACTIONS)){
+      if (isOldNotationSupported() && sfContext().containsKey(ATTR_ACTIONS)){
           oldNotation=true;
           //Old WF notation using actions
           // Here follows normal CompoundImpl deployment
@@ -101,9 +108,8 @@ public class EventCompoundImpl extends CompoundImpl implements EventBus,
                   }
               }
 
-              this.actionKeys = childCtx.keys();
-
-              this.actions = childCtx;
+              actionKeys = childCtx.keys();
+              actions = childCtx;
 
           } catch (Exception sfex) {
               new TerminatorThread(this, sfex, null).quietly().start();
@@ -370,5 +376,51 @@ public class EventCompoundImpl extends CompoundImpl implements EventBus,
      */
     protected synchronized boolean isWorkflowTerminating() {
         return sfIsTerminated() || sfIsTerminating();
+    }
+
+
+    /**
+     * Get the component descriptions of all actions
+     * @return
+     */
+    public Context getActions() {
+        return actions;
+    }
+
+    /**
+     * Create the children synchronously.
+     * @throws java.rmi.RemoteException
+     * @throws org.smartfrog.sfcore.common.SmartFrogException
+     */
+    protected void synchCreateChildren() throws RemoteException, SmartFrogException {
+        actionKeys = getActions().keys();
+        try {
+            while (actionKeys.hasMoreElements()) {
+                Object key = actionKeys.nextElement();
+                ComponentDescription act = (ComponentDescription) actions.get(key);
+                sfDeployComponentDescription(key, this, act, null);
+                if (sfLog().isDebugEnabled()) sfLog().debug("Creating "+key);
+            }
+        } catch (NoSuchElementException ignored){
+           throw new SmartFrogRuntimeException ("Found no children to deploy",this);
+        }
+
+        //Actions are now children of this component, they are deployed and
+        //started
+        for (Enumeration e = sfChildren(); e.hasMoreElements();) {
+            Object elem = e.nextElement();
+
+            if (elem instanceof Prim) {
+                ((Prim) elem).sfDeploy();
+            }
+        }
+
+        for (Enumeration e = sfChildren(); e.hasMoreElements();) {
+            Object elem = e.nextElement();
+
+            if (elem instanceof Prim) {
+                ((Prim) elem).sfStart();
+            }
+        }
     }
 }
