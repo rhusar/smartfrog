@@ -22,21 +22,31 @@ For more information: www.smartfrog.org
 
 // note that since Terminator extends EventPrim, event registrations can be given
 
-
+/**
+ * Terminate a component, then terminate ourselves.
+ * Can be set up to terminate abnormally.
+ * If terminating the 'kill' component raises a fault, the terminator instance
+ * will terminate abnormally, regardless of the value of selftype.
+ */
 Terminator extends EventPrim {
     sfClass "org.smartfrog.sfcore.workflow.components.Terminator";
 
     terminatorSchema extends Schema {
         type extends String;
+        //what exit code for our own termination
+        selftype extends String;
         description extends String;
         detachFirst extends Boolean;
-        kill extends CD;
+        kill extends OptionalCD;
     }
 
     /*
     kill RefToComponent;
 */
-    type "normal";
+    type NORMAL;
+    selftype NORMAL;
+    NORMAL "normal";
+    ABNORMAL "abnormal";
     description "terminator action";
     detachFirst false;
 }

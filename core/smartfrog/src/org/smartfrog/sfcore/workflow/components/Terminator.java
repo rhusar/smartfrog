@@ -38,6 +38,7 @@ import org.smartfrog.sfcore.workflow.eventbus.EventPrimImpl;
 public class Terminator extends EventPrimImpl implements Prim {
     private TerminationRecord term = null;
     public static final String TYPE = "type";
+    public static final String SELFTYPE = "selftype";
     public static final String DESCRIPTION = "description";
     public static final String DETACH_FIRST = "detachFirst";
     public static final String KILL = "kill";
@@ -54,7 +55,7 @@ public class Terminator extends EventPrimImpl implements Prim {
     /**
      * On start, kills and terminates itself.
      *
-     * @throws SmartFrogException In case of smart frog system error
+     * @throws SmartFrogException In case of smartfrog system error
      * @throws RemoteException In case of network/rmi error
      */
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
@@ -62,30 +63,33 @@ public class Terminator extends EventPrimImpl implements Prim {
 
         Reference id = sfCompleteName();
         String type = (String) sfResolve(TYPE);
+        String selftype = sfResolve(SELFTYPE,TerminationRecord.NORMAL,false);
         String description = (String) sfResolve(DESCRIPTION);
         boolean detachFirst = ((Boolean) sfResolve(DETACH_FIRST)).
                                                             booleanValue();
-        term = TerminationRecord.normal(id);
+        term = new TerminationRecord(selftype,description,id);
+        Prim kill = sfResolve(KILL,(Prim)null,false);
+        if(kill!=null) {
+            try {
+                String killName = kill.sfCompleteName().toString();
+                String terminator = sfCompleteNameSafe().toString();
+                if (sfLog().isTraceEnabled()) {
+                    sfLog().trace("Terminating: " + killName + " by terminator: " + terminator, null, term);
+                }
 
-        Prim kill = (Prim) sfResolve(KILL);
-
-        try {
-            String killName = kill.sfCompleteName().toString();
-            String terminator = sfCompleteNameSafe().toString();
-            if (sfLog().isTraceEnabled()) {
-                sfLog().trace("Terminating: "+ killName +" by terminator: "+ terminator,null,term);
+                TerminationRecord targetRecord = new TerminationRecord(type, description, id);
+                if (detachFirst) {
+                    kill.sfDetachAndTerminate(targetRecord);
+                } else {
+                    kill.sfTerminate(targetRecord);
+                }
+                if (sfLog().isTraceEnabled()) {
+                    sfLog().trace("Terminated: " + killName + " by terminator: " + sfCompleteNameSafe(), null,
+                            targetRecord);
+                }
+            } catch (Exception e) {
+                term = TerminationRecord.abnormal(e.toString(), id);
             }
-
-            if (detachFirst) {
-                kill.sfDetachAndTerminate(new TerminationRecord(type, description, id));
-            } else {
-                kill.sfTerminate(new TerminationRecord(type, description, id));
-            }
-            if (sfLog().isTraceEnabled()) {
-                sfLog().trace("Terminated: "+killName+" by terminator: "+ sfCompleteNameSafe(), null, term);
-            }
-        } catch (Exception e) {
-            term = TerminationRecord.abnormal(e.toString(), id);
         }
 
         //now we terminate ourself.

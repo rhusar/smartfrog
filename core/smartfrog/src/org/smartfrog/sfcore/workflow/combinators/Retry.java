@@ -77,10 +77,9 @@ public class Retry extends EventCompoundImpl implements Compound {
     }
 
     /**
-     * Starts the component and starts subcomponents.
-     * Overrides CompoundImpl.sfStart.
+     * Starts the component by starting the first copy of the retry component
      *
-     * @throws RemoteException The required remote exception.
+     * @throws SmartFrogException in case of problems creating the child
      * @throws RemoteException In case of network/rmi error
      */
     public synchronized void sfStart() throws SmartFrogException, RemoteException {

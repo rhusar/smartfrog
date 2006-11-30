@@ -100,10 +100,10 @@ public class Parallel extends EventCompoundImpl implements Compound {
             try {
                 if (!asynchCreateChild){
                     if (sfLog().isDebugEnabled()){sfLog().debug(" Parallel Synch");};
-                    synchCreateChild();
+                    synchCreateChildren();
                 } else {
                     if (sfLog().isDebugEnabled()){sfLog().debug(" Parallel Asynch");};
-                    asynchCreateChild();
+                    asynchCreateChildren();
                 }
             } catch (Exception ex) {
                 if (sfLog().isErrorEnabled()){
@@ -127,9 +127,12 @@ public class Parallel extends EventCompoundImpl implements Compound {
     }
 
 
-
-
-    protected void asynchCreateChild() throws RemoteException, SmartFrogException {
+    /**
+     * Create the children of parallel, each in their own thread.
+     * @throws RemoteException
+     * @throws SmartFrogException
+     */
+    protected void asynchCreateChildren() throws RemoteException, SmartFrogException {
             asynchChildren = new Vector();
             actionKeys = actions.keys();
             try {
@@ -146,41 +149,6 @@ public class Parallel extends EventCompoundImpl implements Compound {
                throw new SmartFrogRuntimeException ("Found no children to deploy",this);
             }
     }
-
-
-
-    protected void synchCreateChild() throws RemoteException, SmartFrogException {
-        actionKeys = actions.keys();
-        try {
-            while (actionKeys.hasMoreElements()) {
-                Object key = actionKeys.nextElement();
-                ComponentDescription act = (ComponentDescription) actions.get(key);
-                sfDeployComponentDescription(key, this, act, null);
-                if (sfLog().isDebugEnabled()) sfLog().debug("Creating "+key);
-            }
-        } catch (NoSuchElementException ignored){
-           throw new SmartFrogRuntimeException ("Found no children to deploy",this);
-        }
-
-        //Actions are now children of parallel, they are deployed and
-        //started
-        for (Enumeration e = sfChildren(); e.hasMoreElements();) {
-            Object elem = e.nextElement();
-
-            if (elem instanceof Prim) {
-                ((Prim) elem).sfDeploy();
-            }
-        }
-
-        for (Enumeration e = sfChildren(); e.hasMoreElements();) {
-            Object elem = e.nextElement();
-
-            if (elem instanceof Prim) {
-                ((Prim) elem).sfStart();
-            }
-        }
-    }
-
 
 
     /**
