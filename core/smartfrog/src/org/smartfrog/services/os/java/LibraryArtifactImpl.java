@@ -32,6 +32,7 @@ import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
 import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.prim.Prim;
+import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.utils.PlatformHelper;
 import org.smartfrog.sfcore.utils.ComponentHelper;
 import org.smartfrog.sfcore.reference.Reference;
@@ -56,7 +57,8 @@ import java.net.ConnectException;
  * created 04-Apr-2005 13:38:47
  */
 
-public class LibraryArtifactImpl extends FileUsingCompoundImpl implements LibraryArtifact {
+public class LibraryArtifactImpl extends FileUsingCompoundImpl
+        implements LibraryArtifact, Runnable {
 
     private Library owner;
     private Vector repositories;
@@ -128,7 +130,6 @@ public class LibraryArtifactImpl extends FileUsingCompoundImpl implements Librar
         sha1 = sfResolve(ATTR_SHA1, sha1, false);
         md5 = sfResolve(ATTR_MD5, md5, false);
         blocksize = sfResolve(ATTR_BLOCKSIZE, BLOCKSIZE, false);
-        boolean terminate = sfResolve(ATTR_TERMINATE, false, false);
         downloadIfAbsent = sfResolve(ATTR_DOWNLOAD_IF_ABSENT,
                 downloadIfAbsent,
                 true);
@@ -157,10 +158,59 @@ public class LibraryArtifactImpl extends FileUsingCompoundImpl implements Librar
         //if we dont exist, we fetch
         boolean mustDownload;
         mustDownload = (!exists && downloadIfAbsent) || downloadAlways;
-        if (mustDownload) {
-            download();
+
+        if(syncDownload) {
+            if (mustDownload) {
+                download();
+            }
+            postDownloadActions(mustDownload);
+        } else {
+            //async download
+            if (mustDownload) {
+                thread().start();
+            } else {
+                postDownloadActions(mustDownload);
+            }
+
         }
 
+    }
+
+    private Thread thread() {
+        return new Thread(this);
+    }
+
+
+    /**
+     * Runnable entry point to a background download
+     */
+    public void run() {
+        Throwable caught=null;
+        try {
+            download();
+            postDownloadActions(true);
+        } catch (SmartFrogException e) {
+            caught=e;
+        } catch (RemoteException e) {
+            caught=e;
+        }
+        if(caught!=null) {
+            new ComponentHelper(this).sfSelfDetachAndOrTerminate(
+                    null,
+                    caught.getMessage(),
+                    null,
+                    caught);
+        }
+    }
+
+    /**
+     * Actions to do after a download
+     * @param downloaded flag set if we did a download
+     * @throws RemoteException
+     * @throws SmartFrogException
+     */
+    private void postDownloadActions(boolean downloaded)
+            throws RemoteException, SmartFrogException {
         checkExistence();
         if (exists) {
             //we check the checksums if needed.
@@ -176,19 +226,20 @@ public class LibraryArtifactImpl extends FileUsingCompoundImpl implements Librar
                 StringBuffer message = new StringBuffer();
                 message.append(ERROR_ARTIFACT_NOT_FOUND);
                 message.append(getFile().toString());
-                if (mustDownload) {
+                if (downloaded) {
                     message.append(" -or downloadable from ");
                     message.append(makeRepositoryUrlList());
                 }
                 throw new SmartFrogException(message.toString(), this);
             }
         }
-        
-        
+
+
         String message = "LibraryArtifactImpl completed. File : "+ getFile();
         if (sfLog().isDebugEnabled()) sfLog().debug(message);
 
-        new ComponentHelper(this).sfSelfDetachAndOrTerminate(null,message,null,null);
+        new ComponentHelper(this).sfSelfDetachAndOrTerminate(null,message,
+                null,null);
     }
 
     /**
@@ -315,7 +366,7 @@ public class LibraryArtifactImpl extends FileUsingCompoundImpl implements Librar
      * @param hexValue
      * @param blocksize
      *
-     * @throws SmartFrogException
+     * @throws SmartFrogException if there is a problem
      */
     public void checkChecksum(File file,
                               String algorithm,
@@ -380,7 +431,8 @@ public class LibraryArtifactImpl extends FileUsingCompoundImpl implements Librar
      *
      * @return path
      *
-     * @throws RemoteException if things go wrong
+     * @throws SmartFrogResolutionException on resolution trouble
+     * @throws RemoteException on network problems
      */
     public String makeRemoteUrlPath() throws RemoteException,
             SmartFrogException {
@@ -388,19 +440,13 @@ public class LibraryArtifactImpl extends FileUsingCompoundImpl implements Librar
     }
 
 
-    /**
-     * get the full name of the artifact. If a version tag is included, it
-     * is artifact-version+extension. If not, it is artifact+extension.
-     * @return
-     */
-/*    public String makeArtifactName() {
-        return Maven1Policy.createMaven1ArtifactName(artifact,version,extension);
-    }
-*/
+
     /**
      * create the file that represents the full path to the local file.
      *
      * @return a file that goes to the local location in the cache
+     * @throws SmartFrogResolutionException on resolution trouble
+     * @throws RemoteException on network problems
      */
     private File makeLocalFile() throws RemoteException, SmartFrogException {
         String absolutepath = owner.determineArtifactPath(createSerializedArtifact());
@@ -415,7 +461,7 @@ public class LibraryArtifactImpl extends FileUsingCompoundImpl implements Librar
      * @return a libraries instance or an error
      *
      * @throws SmartFrogResolutionException on resolution trouble
-     * @throws RemoteException
+     * @throws RemoteException on network problems
      */
     protected Library findOwner() throws SmartFrogResolutionException,
             RemoteException {
@@ -441,26 +487,6 @@ public class LibraryArtifactImpl extends FileUsingCompoundImpl implements Librar
         }
         return owner;
         */
-    }
-
-    /**
-     * recursive search for anything that is a library
-     *
-     * @param instance
-     *
-     * @return the parent that implements the interface, or null
-     *
-     * @throws RemoteException
-     */
-    private Library findLibrariesParent(Prim instance)
-            throws RemoteException {
-        if (instance == null) {
-            return null;
-        }
-        if (instance instanceof Library) {
-            return (Library) instance;
-        }
-        return findLibrariesParent(instance.sfParent());
     }
 
     /**

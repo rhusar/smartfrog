@@ -70,13 +70,6 @@ public interface LibraryArtifact extends FileUsingComponent {
     String ATTR_BLOCKSIZE = Download.ATTR_BLOCKSIZE;
 
     /**
-     * terminate after download {@value}
-     */
-
-    String ATTR_TERMINATE = "terminate";
-
-
-    /**
      * {@value}
      */
     String ATTR_DOWNLOAD_IF_ABSENT = "downloadIfAbsent";

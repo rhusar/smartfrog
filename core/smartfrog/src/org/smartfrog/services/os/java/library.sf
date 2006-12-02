@@ -226,8 +226,10 @@ LibraryArtifact extends FileUsingWorkflowComponent {
         downloadIfAbsent extends Boolean;
         downloadAlways extends Boolean;
         failIfNotPresent extends Boolean;
+/*
         sfShouldTerminate extends Boolean;
-        terminate extends Boolean;
+        terminate extends OptionalBoolean;
+*/
     }
     artifact ATTRIB project;
 
@@ -248,9 +250,11 @@ LibraryArtifact extends FileUsingWorkflowComponent {
 
     //stay present after download
     //real terminate flag, terminate is kept for legacy reasons.
+/*
     sfShouldTerminate terminate;
     terminate false;
 
+*/
 
 }
 
