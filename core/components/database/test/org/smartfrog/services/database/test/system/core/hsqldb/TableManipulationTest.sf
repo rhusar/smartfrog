@@ -19,6 +19,7 @@ TableManipulationTest extends TestCompound {
           failOnSqlError false;
         }
 
+        //forward reference
         dropTable1 extends dropTable {
           failOnSqlError false;
         }

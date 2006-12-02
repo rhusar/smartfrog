@@ -18,43 +18,32 @@
 
  */
 
-
 /*
- components to set up database testing
+ * This contains some useful transactions.
+ * They need to be bound to a database before they become useful
  */
 
-#include "/org/smartfrog/services/database/core/components.sf"
-#include "/org/smartfrog/services/assertions/components.sf"
-#include "/org/smartfrog/sfcore/workflow/combinators/sequence.sf"
-#include "/org/smartfrog/sfcore/workflow/combinators/delay.sf"
-
-
-
-
- AdminCommand extends Transaction {
- }
-
-
-
- UserCommand extends Transaction {
- }
-
-
-
  /**
-  * Create an events table with various attributes
-  * this is an implicit test of multi-line SQL.
+  Create any user
   */
- CreateEventsTable extends AdminCommand {
+ CreateUser extends Transaction {
+    username TBD;
+    password TBD;
     sqlCommands [
-    ##CREATE TABLE events (
-      EVENT_ID varchar(64) not null,
-      EVENT_NAME varchar(255) not null,
-      EVENT_DATE timestamp not null,
-      EVENT_VERSION integer,
-      EVENT_LASTMODIFIED timestamp,
-      EVENT_TEXT varchar(8192),
-      primary key (EVENT_ID));
-      #
+     (("CREATE USER " ++ username ) ++ (" PASSWORD " ++ password))
     ];
-    }
+ }
+
+  DropUser extends Transaction {
+    username TBD;
+    sqlCommands [
+     ("DROP USER " ++ username )
+    ];
+ }
+
+ DropTable extends Transaction {
+    table TBD;
+    sqlCommands [
+     ("DROP TABLE " ++ table)
+    ];
+ }

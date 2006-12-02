@@ -20,41 +20,23 @@
 
 
 /*
- components to set up database testing
+ components to set up hsqldb testing
  */
 
-#include "/org/smartfrog/services/database/core/components.sf"
-#include "/org/smartfrog/services/assertions/components.sf"
-#include "/org/smartfrog/sfcore/workflow/combinators/sequence.sf"
-#include "/org/smartfrog/sfcore/workflow/combinators/delay.sf"
+#include "/org/smartfrog/services/database/test/system/core/components.sf";
+#include "/org/smartfrog/services/database/mysql/components.sf";
 
+ memorydb "memory";
+ testUser "testUser";
+ testPass "secret";
 
-
-
- AdminCommand extends Transaction {
+ TestDB extends MysqlTargetedBinding {
+   database "diary";
  }
 
-
-
- UserCommand extends Transaction {
+ TestUserBinding extends TestDB {
+   username testUser;
+   password testPass;
  }
 
-
-
- /**
-  * Create an events table with various attributes
-  * this is an implicit test of multi-line SQL.
-  */
- CreateEventsTable extends AdminCommand {
-    sqlCommands [
-    ##CREATE TABLE events (
-      EVENT_ID varchar(64) not null,
-      EVENT_NAME varchar(255) not null,
-      EVENT_DATE timestamp not null,
-      EVENT_VERSION integer,
-      EVENT_LASTMODIFIED timestamp,
-      EVENT_TEXT varchar(8192),
-      primary key (EVENT_ID));
-      #
-    ];
-    }
+ }
