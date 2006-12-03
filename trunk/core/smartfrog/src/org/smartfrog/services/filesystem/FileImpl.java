@@ -66,12 +66,12 @@ public class FileImpl extends FileUsingComponentImpl implements FileIntf {
         File parentDir = null;
         String dir = FileSystem.lookupAbsolutePath(this,
                 ATTR_DIR,
-                (String) null,
-                (File) null,
+                null,
+                null,
                 false,
                 null);
         if (dir != null) {
-            if (debugEnabled) {
+            if (sfLog().isDebugEnabled()) {
                 sfLog().debug("dir=" + dir);
             }
             parentDir = new File(dir);

@@ -97,13 +97,32 @@ public class FileUsingComponentImpl extends PrimImpl implements FileUsingCompone
         if(filename!=null) {
             file=new File(filename);
         }
+    }
 
+    /**
+     * Bind the class to the filename; indicate in the operation whether the
+     * filename is mandatory or not.
+     * This is the variation that also uses the {@link #ATTR_DIR attribute}
+     * to select a parent directory.
+     *
+     * @param mandatory flag to indicate mandatoryness
+     * @param defval    a default value to use if not mandatory (can be null)
+     *
+     * @throws RemoteException           In case of network/rmi error
+     * @throws SmartFrogRuntimeException runtime error
+     */
+    protected void bindWithDir(boolean mandatory, String defval)
+            throws RemoteException, SmartFrogRuntimeException {
+        String filename = bindWithDir(this, mandatory, defval);
+        if (filename != null) {
+            file = new File(filename);
+        }
     }
 
     /**
      * creates the file object instance, to the absolute path,
-     * then sets the attribute {@value FileIntf#ATTR_ABSOLUTE_PATH}
-     * to the absolute path, and {@value FileUsingComponent#ATTR_URI}
+     * then sets the attribute {@link FileIntf#ATTR_ABSOLUTE_PATH}
+     * to the absolute path, and {@link FileUsingComponent#ATTR_URI}
      * to the URI. From here on, {@link #getFile()} is valid.
      * @param absolutePath absolute pat of file
      * @throws SmartFrogRuntimeException runtime error
@@ -113,7 +132,6 @@ public class FileUsingComponentImpl extends PrimImpl implements FileUsingCompone
             throws SmartFrogRuntimeException, RemoteException {
         File newfile=new File(absolutePath);
         bind(newfile);
-
     }
 
     /**
@@ -133,20 +151,73 @@ public class FileUsingComponentImpl extends PrimImpl implements FileUsingCompone
 
     /**
      * Bind the class to the filename; indicate in the operation whether the
-     * filename is mandatory or not
+     * filename is mandatory or not.
+     * This variation also looks up parent directory in the {@link #ATTR_DIR}
+     * attribute.
      *
+     * @param component the component to read attributes from
      * @param mandatory flag to indicate mandatoryness
      * @param defval    a default value to use if not mandatory (can be null)
      * @return the absolutePath value
      * @throws RemoteException  In case of network/rmi error
      * @throws SmartFrogRuntimeException runtime error
      */
-    public static String bind(Prim component,boolean mandatory, String defval)
+    public static String bindWithDir(Prim component,boolean mandatory, String defval)
+            throws RemoteException, SmartFrogRuntimeException {
+        File parentDir = null;
+        String dir = FileSystem.lookupAbsolutePath(component,
+                ATTR_DIR,
+                null,
+                null,
+                false,
+                null);
+        if (dir != null) {
+            parentDir = new File(dir);
+        }
+        return bind(component, parentDir, defval, mandatory);
+    }
+
+    /**
+     * Bind the class to the filename; indicate in the operation whether the
+     * filename is mandatory or not
+     *
+     * @param component the component to read attributes from
+     * @param mandatory flag to indicate mandatoryness
+     * @param defval    a default value to use if not mandatory (can be null)
+     *
+     * @return the absolutePath value
+     *
+     * @throws RemoteException           In case of network/rmi error
+     * @throws SmartFrogRuntimeException runtime error
+     */
+    public static String bind(Prim component, boolean mandatory, String defval)
+            throws RemoteException, SmartFrogRuntimeException {
+        return bind(component, null, defval, mandatory);
+    }
+
+    /**
+     * Bind the class to the filename; indicate in the operation whether the
+     * filename is mandatory or not
+     *
+     * @param component the component to read attributes from
+     * @param parentDir the parent directory to use (can be null)
+     * @param mandatory flag to indicate mandatoryness
+     * @param defval    a default value to use if not mandatory (can be null)
+     *
+     * @return the absolutePath value
+     *
+     * @throws RemoteException           In case of network/rmi error
+     * @throws SmartFrogRuntimeException runtime error
+     */
+    public static String bind(Prim component,
+                              File parentDir,
+                              String defval,
+                              boolean mandatory)
             throws RemoteException, SmartFrogRuntimeException {
         String absolutePath = FileSystem.lookupAbsolutePath(component,
                 ATTR_FILENAME,
                 defval,
-                null,
+                parentDir,
                 mandatory,
                 null);
         if (absolutePath != null && absolutePath.length()>0) {

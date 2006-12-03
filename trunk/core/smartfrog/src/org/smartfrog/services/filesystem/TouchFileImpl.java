@@ -45,7 +45,7 @@ public class TouchFileImpl extends FileUsingComponentImpl implements TouchFileIn
     public synchronized void sfDeploy() throws SmartFrogException,
             RemoteException {
         super.sfDeploy();
-        bind(true, "");
+        bindWithDir(true, "");
         age = sfResolve(ATTR_AGE, age, false);
     }
 

@@ -37,7 +37,7 @@ TouchFileSchema extends FileUsingComponentSchema {
  * the TouchFile component exits immediately after creation.
  * it takes a file and an age
  */
-TouchFile extends WorkflowPrim {
+TouchFile extends FileAndDirWorkflowComponent {
     touchFileSchema extends TouchFileSchema;
     sfClass "org.smartfrog.services.filesystem.TouchFileImpl";
 }

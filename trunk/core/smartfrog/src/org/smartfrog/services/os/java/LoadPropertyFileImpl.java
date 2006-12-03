@@ -63,7 +63,7 @@ public class LoadPropertyFileImpl extends FileUsingComponentImpl implements Load
      */
     public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
         super.sfDeploy();
-        bind(false,null);
+        bindWithDir(false,null);
         ComponentHelper helper = new ComponentHelper(this);
         String resource=sfResolve(ATTR_RESOURCE,(String)null,false);
         boolean required=sfResolve(ATTR_REQUIRED,true,false);

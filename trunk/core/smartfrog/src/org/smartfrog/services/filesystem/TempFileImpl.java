@@ -1,4 +1,4 @@
-/** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
+/** (C) Copyright 1998-2006 Hewlett-Packard Development Company, LP
 
  This library is free software; you can redistribute it and/or
  modify it under the terms of the GNU Lesser General Public
@@ -83,20 +83,22 @@ public class TempFileImpl extends FileUsingComponentImpl implements TempFile {
                 wout.flush();
                 wout.close();
             } catch (IOException ioe) {
-                if (wout!=null) {
-                    try {
-                        wout.close();
-                    } catch (IOException ignored) {
-                        //ignore this
-                    }
-                }
+                FileSystem.close(wout);
                 throw SmartFrogException.forward("When trying to write to "+ getFile(),ioe);
             }
         }
-
         sfReplaceAttribute(FileUsingComponent.ATTR_FILENAME, file.toString());
+    }
+
+
+    public synchronized void sfStart()
+            throws SmartFrogException, RemoteException {
+        super.sfStart();
         //maybe terminate
-        new ComponentHelper(this).sfSelfDetachAndOrTerminate(null, "Created temp file "+file, null, null);
+        new ComponentHelper(this).sfSelfDetachAndOrTerminate(null,
+                "Created temp file " + file,
+                null,
+                null);
     }
 
     /**

@@ -31,10 +31,9 @@ For more information: www.smartfrog.org
 FileSchema extends FileUsingComponentSchema {
 
     //name of a file
-    filename extends Optional;
+    filename extends OptionalFilenameType;
 
-    //a directory
-    dir extends Optional;
+
 
     //file must always exist
     mustExist extends OptionalBoolean;

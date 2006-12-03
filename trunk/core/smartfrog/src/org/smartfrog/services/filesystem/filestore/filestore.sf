@@ -31,24 +31,13 @@ ITS MEDIA, AND YOU HEREBY WAIVE ANY CLAIM IN THIS REGARD.
 */
 
 /*
-This represents a hosted app
+This represents a filestore
 */
-
-#include "/org/smartfrog/predicates.sf"
-
-/**
- * Include the core smartfrog components.
- */
-#include "/org/smartfrog/components.sf"
 
 #include "/org/smartfrog/services/filesystem/filesystemtemplate.sf"
 
 
-LocalFilestore extends Prim {
+LocalFilestore extends FileUsingComponent {
     sfClass "org.smartforg.services.filesystem.filestore.LocalFilestoreImpl";
-    schema extends Schema {
-        filename extends FilenameType;
-    }
-    
 }
 

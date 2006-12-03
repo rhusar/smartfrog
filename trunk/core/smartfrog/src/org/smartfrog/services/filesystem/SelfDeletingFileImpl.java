@@ -50,7 +50,7 @@ public class SelfDeletingFileImpl extends FileUsingComponentImpl
     public synchronized void sfDeploy() throws SmartFrogException,
             RemoteException {
         super.sfDeploy();
-        bind(true, null);
+        bindWithDir(true, null);
     }
 
     /**

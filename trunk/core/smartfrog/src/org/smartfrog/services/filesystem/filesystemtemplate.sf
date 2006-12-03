@@ -58,5 +58,24 @@ FileUsingWorkflowComponent extends WorkflowPrim {
     fileUsingComponentSchema extends FileUsingComponentSchema;
 }
 
+/**
+ * Schemas and templates for components that also
+ * have an optional directory attribute
+ */
+
+FileAndDirComponentSchema extends FileUsingComponentSchema {
+    //an optional directory
+    dir extends OptionalFilenameType;
+}
+
+FileAndDirComponent extends FileUsingComponent {
+    fileAndDirComponentSchema extends FileAndDirComponentSchema;
+}
+
+FileAndDirWorkflowComponent extends FileAndDirComponent {
+    workflowPrimSchema extends WorkflowPrimSchema;
+}
+
+
 
 
