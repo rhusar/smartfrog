@@ -26,7 +26,7 @@ For more information: www.smartfrog.org
  * To delete the file afterwards, set the deleteOnExit attribute to true
  */
 
-TextFileSchema extends DeletableFileSchema {
+TextFileSchema extends Schema {
     //text to write out
     text extends String;
     //encoding of the optional text. 
@@ -37,7 +37,15 @@ TextFileSchema extends DeletableFileSchema {
 TextFile extends SelfDeletingFile {
     textFileSchema extends TextFileSchema;
     sfClass "org.smartfrog.services.filesystem.TextFileImpl";
+    deleteOnExit false;
+}
 
-    //default encoding is utf8
+TextFileUtf8 extends TextFile {
+    //encoding is utf8
     encoding "UTF-8";
+}
+
+TextFileUtf16 extends TextFile {
+    //encoding is utf16
+    encoding "UTF-16";
 }

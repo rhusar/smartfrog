@@ -69,13 +69,7 @@ public class TextFileImpl extends SelfDeletingFileImpl implements TextFile {
                 wout.flush();
                 wout.close();
             } catch (IOException ioe) {
-                if (wout != null) {
-                    try {
-                        wout.close();
-                    } catch (IOException ignored) {
-                        //ignore this
-                    }
-                }
+                FileSystem.close(wout);
                 throw SmartFrogException.forward("When trying to write to " +
                         file,
                         ioe);

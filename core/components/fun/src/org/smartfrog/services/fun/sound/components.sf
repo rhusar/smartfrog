@@ -34,7 +34,7 @@ SoundPlayerSchema extends Schema {
   loops extends OptionalInteger;
 }
 
-SoundPlayer extends FileUsingWorkflowComponent {
+SoundPlayer extends FileAndDirWorkflowComponent {
   sfClass "org.smartfrog.services.fun.sound.SoundPlayerImpl";
   loops 1;
 }

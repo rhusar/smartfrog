@@ -52,7 +52,7 @@ ITS MEDIA, AND YOU HEREBY WAIVE ANY CLAIM IN THIS REGARD.
  The component is workflow-enabled; it will terminate if requested.
  */
 
-PropertyFileSchema extends FileUsingComponentSchema {
+PropertyFileSchema extends Schema {
   //resource, which must be on the classpath of the component
   resource extends OptionalString;
 
@@ -63,7 +63,7 @@ PropertyFileSchema extends FileUsingComponentSchema {
   properties extends OptionalVector;
 }
 
-LoadPropertyFile extends WorkflowPrim {
+LoadPropertyFile extends FileAndDirWorkflowComponent {
   sfClass "org.smartfrog.services.os.java.LoadPropertyFileImpl";
   propertyFileSchema extends PropertyFileSchema;
   required true;

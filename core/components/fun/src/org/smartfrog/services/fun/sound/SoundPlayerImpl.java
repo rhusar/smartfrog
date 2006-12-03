@@ -94,7 +94,7 @@ public class SoundPlayerImpl extends FileUsingComponentImpl
             throws SmartFrogException, RemoteException {
         super.sfStart();
         log = sfGetApplicationLog();
-        bind(true, null);
+        bindWithDir(true, null);
         int loops = sfResolve(ATTR_LOOPS, 1, false);
         shouldTerminate = sfResolve(
                 ShouldDetachOrTerminate.ATTR_SHOULD_TERMINATE,

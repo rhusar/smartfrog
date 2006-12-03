@@ -29,9 +29,6 @@ TempFileSchema extends DeletableFileSchema {
     prefix extends String;
     //suffix, like ".tmp"
     suffix extends OptionalString;
-    //a directory. If not specified, the temp directory for this JVM will
-    //be used.
-    dir extends Optional;
     //text to write out
     text extends OptionalString;
     //encoding of the optional text. Only needed when text is set
