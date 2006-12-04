@@ -67,19 +67,40 @@ public class TextFileTest extends SmartFrogTestBase {
 
 
     public void testEncoded() throws Throwable {
+        application = deployExpectingSuccess(FILES +
+            "textFileEncodingTest.sf", "textFileEncodingTest");
+        String filename = resolveStringAttribute(application,
+                FileUsingComponent.ATTR_ABSOLUTE_PATH);
+        File file = null;
+        file = new File(filename);
+        //UTF encoded files are that much bigger
+        assertEquals(12,file.length());
+    }
+
+
+    public void testTextFileDirTest() throws Throwable {
         Prim application = deployExpectingSuccess(FILES +
-                "textFileEncodingTest.sf", "textFileEncodingTest");
+                "textFileDirTest.sf", "textFileDirTest");
+        File file = null;
         try {
             String filename = resolveStringAttribute(application,
                     FileUsingComponent.ATTR_ABSOLUTE_PATH);
-            File file = null;
             file = new File(filename);
-            //UTF encoded files are that much bigger
-            assertEquals(12,file.length());
+            //verify the state of the file
+            assertTrue(file.exists());
+            assertTrue(file.length() > 10);
+            String PARENT_DIR_NAME = "textFileDirTestSubdir";
+            assertTrue(filename,file.getParentFile().getName().contains(PARENT_DIR_NAME));
+            String expected = File.separator+PARENT_DIR_NAME;
+            assertTrue(filename+"does not contain "+expected,filename.contains(expected));
         } finally {
             terminateApplication(application);
+            //cleanup
+            if (file != null) {
+                file.delete();
+                assertFalse(file.exists());
+            }
         }
     }
-
 
 }
