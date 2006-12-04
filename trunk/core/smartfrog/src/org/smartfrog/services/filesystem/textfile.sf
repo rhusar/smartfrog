@@ -38,6 +38,7 @@ TextFile extends SelfDeletingFile {
     textFileSchema extends TextFileSchema;
     sfClass "org.smartfrog.services.filesystem.TextFileImpl";
     deleteOnExit false;
+    encoding "UTF-8";
 }
 
 TextFileUtf8 extends TextFile {
