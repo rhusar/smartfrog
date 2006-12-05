@@ -42,7 +42,6 @@ ITS MEDIA, AND YOU HEREBY WAIVE ANY CLAIM IN THIS REGARD.
  */
 
 ConditionalEventCompound extends EventCompound {
-  sfClass "org.smartfrog.sfcore.workflow.conditions.ConditionalEventCompound";
   conditionalSchema extends ConditionalSchema;
   sfShouldTerminate true;
 }
@@ -55,6 +54,7 @@ If extends ConditionalEventCompound {
     then extends OptionalCD;
     else extends OptionalCD;
   }
+  sfClass "org.smartfrog.sfcore.workflow.conditional.IfImpl"
 }
 
 /**
@@ -65,13 +65,14 @@ If extends ConditionalEventCompound {
  */
 WaitFor extends If {
   waitForSchema extends Schema {
-    interval extends integer {
+    interval extends Integer {
       description "pause in milliseconds between tests";
     };
-    timeout extends integer {
+    timeout extends Integer {
       description "time in milliseconds after which the test is deemed to have failed";
     };
   }
+  sfClass "org.smartfrog.sfcore.workflow.conditional.WaitForImpl";
 }
 
 /**
@@ -94,11 +95,11 @@ FailingWaitFor extends WaitFor {
  */
 TestCondition extends ConditionalEventCompound {
   testConditionSchema extends Schema {
-    message extends string {
+    message extends String {
       description "error text on failure";
     };
   }
-
+  sfClass "org.smartfrog.sfcore.workflow.conditional.TestConditionImpl";
   message "Test condition failed";
 }
 
@@ -113,6 +114,7 @@ TestCondition extends ConditionalEventCompound {
  */
 LivenessTest extends TestCondition {
   message "Liveness condition failed";
+  sfClass "org.smartfrog.sfcore.workflow.conditional.TestConditionImpl";
   sfShouldTerminate false;
 }
 
