@@ -41,13 +41,14 @@ import org.smartfrog.sfcore.workflow.eventbus.EventCompoundImpl;
 public class OnEvent extends EventCompoundImpl implements Compound {
 
     /* whether to handle a single event, or multiple */
-    boolean singleEvent = true;
+    private boolean singleEvent = true;
 
     /* whether the event handler should continue to handle events */
-    boolean finished = false;
+    private boolean finished = false;
 
     /* ensure that each child event handler is differently named */
-    int index = 0;
+    private int index = 0;
+    public static final String ATTR_OTHERWISE = "otherwise";
 
     /**
      * Constructs OnEvent.
@@ -67,7 +68,7 @@ public class OnEvent extends EventCompoundImpl implements Compound {
         ComponentDescription act;
 
         try {
-            String name = "otherwise";
+            String name = ATTR_OTHERWISE;
             try {
                 act = (ComponentDescription)sfResolve(event.toString());
                 name = event.toString();
@@ -76,8 +77,12 @@ public class OnEvent extends EventCompoundImpl implements Compound {
             }
 
             synchronized (this) {
-                if (finished)return;
-                if (singleEvent)finished = true;
+                if (finished) {
+                    return;
+                }
+                if (singleEvent) {
+                    finished = true;
+                }
             }
 
             sfCreateNewChild(name+index++, act, null);
@@ -85,12 +90,12 @@ public class OnEvent extends EventCompoundImpl implements Compound {
         } catch (SmartFrogResolutionException e) {
             // no handler - log and ignore
             if (sfLog().isIgnoreEnabled()) {
-                sfLog().ignore(this.sfCompleteNameSafe()+ " - ignoring unknown event "+event, e);
+                sfLog().ignore(sfCompleteNameSafe()+ " - ignoring unknown event "+event, e);
             }
         } catch (Exception e) {
             // error in  handler - terminate...
             if (sfLog().isErrorEnabled()) {
-                sfLog().error(this.sfCompleteNameSafe()+ " - error in event handler for event "+event, e);
+                sfLog().error(sfCompleteNameSafe()+ " - error in event handler for event "+event, e);
             }
             sfTerminate(TerminationRecord.abnormal("error in event handler for event "+event, null));
         }
@@ -132,7 +137,7 @@ public class OnEvent extends EventCompoundImpl implements Compound {
                 }
             } catch (Exception e) {
                 if (sfLog().isErrorEnabled()) {
-                    sfLog().error(this.sfCompleteNameSafe()+ " - error handling child event handler termination ", e);
+                    sfLog().error(sfCompleteNameSafe()+ " - error handling child event handler termination ", e);
                 }
                 sfTerminate(TerminationRecord.abnormal( "error handling child event handler termination "+e, sfCompleteNameSafe()));
             }

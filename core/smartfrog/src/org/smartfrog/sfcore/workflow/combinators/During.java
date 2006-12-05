@@ -53,7 +53,7 @@ public class During extends EventCompoundImpl implements Compound {
     /**
      * Reference for attribute time.
      */
-    static Reference timeRef = new Reference(ATTR_TIME);
+    static final Reference timeRef = new Reference(ATTR_TIME);
     /**
      * Time taken.
      */

@@ -56,7 +56,7 @@ import org.smartfrog.sfcore.utils.ComponentHelper;
  */
 public class Parallel extends EventCompoundImpl implements Compound {
 
-    private static Reference asynchCreateChildRef = new Reference ("asynchCreateChild");
+    private static final Reference asynchCreateChildRef = new Reference ("asynchCreateChild");
     /** {@value} */
     public static final String ATTR_TERMINATE_IF_EMPTY = "terminateOnEmptyDeploy";
     private static Reference terminateIfEmptyRef = new Reference(ATTR_TERMINATE_IF_EMPTY);

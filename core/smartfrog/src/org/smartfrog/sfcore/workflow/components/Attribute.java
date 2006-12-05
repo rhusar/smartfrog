@@ -34,7 +34,9 @@ import org.smartfrog.sfcore.workflow.eventbus.EventPrimImpl;
  * documented in Terminator.sf
  */
 public class Attribute extends EventPrimImpl implements Prim {
-    TerminationRecord term = null;
+    private TerminationRecord term = null;
+    public static final String ATTR_ATTRIBUTE_NAME = "attributeName";
+    private static final String ATTR_OF_COMPONENT = "ofComponent";
 
     /**
      * Constructs Attribute.
@@ -60,8 +62,8 @@ public class Attribute extends EventPrimImpl implements Prim {
         Reference id = sfCompleteName();
         term = TerminationRecord.normal(id);
 
-        String name = (String) sfResolve("attributeName");
-        Prim component = (Prim) sfResolve("ofComponent");
+        String name = (String) sfResolve(ATTR_ATTRIBUTE_NAME);
+        Prim component = (Prim) sfResolve(ATTR_OF_COMPONENT);
         value = sfResolve("value");
 
         try {
