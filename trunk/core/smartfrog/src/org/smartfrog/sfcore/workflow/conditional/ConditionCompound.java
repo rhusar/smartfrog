@@ -32,7 +32,7 @@ import java.rmi.RemoteException;
 
 /**
  * The base conditional event compound deploys itself and, on startup the condition. Evaluation
- * of the condition is left to the childrentd
+ * of the condition is left to the childrend
  * created 29-Nov-2006 11:08:41
  */
 

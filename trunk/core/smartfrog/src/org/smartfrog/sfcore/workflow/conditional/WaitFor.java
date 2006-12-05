@@ -27,5 +27,4 @@ package org.smartfrog.sfcore.workflow.conditional;
 public interface WaitFor extends If {
     String ATTR_INTERVAL="interval";
     String ATTR_TIMEOUT="timeout";
-   // String ATTR_RETRY_COUNT="retryCount";
 }

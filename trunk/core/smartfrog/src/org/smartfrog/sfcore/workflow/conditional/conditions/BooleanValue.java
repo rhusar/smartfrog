@@ -50,7 +50,6 @@ public class BooleanValue extends PrimImpl implements Condition {
      */
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
-
     }
 
     /**
