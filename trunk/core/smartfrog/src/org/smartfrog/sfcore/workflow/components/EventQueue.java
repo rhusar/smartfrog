@@ -39,7 +39,7 @@ import org.smartfrog.sfcore.prim.TerminationRecord;
  * required event handling.
  */
 public class EventQueue extends EventPrimImpl implements Prim {
-    SenderThread sender = null;
+    private SenderThread sender = null;
 
     private class SenderThread extends Thread {
 	private boolean finished = false;
@@ -86,18 +86,22 @@ public class EventQueue extends EventPrimImpl implements Prim {
         return true;
 	}
 
-	public void run() {
-	    while (!finished) {
-		synchronized (messages) {
-		    if (allDone())
-			try {
-			    messages.wait();
-			} catch (InterruptedException e) {
-			}
-		}
-		if (!finished) doAll();
-	    }
-	}
+        public void run() {
+            while (!finished) {
+                synchronized (messages) {
+                    if (allDone()) {
+                        try {
+                            messages.wait();
+                        } catch (InterruptedException e) {
+                            //ignored
+                        }
+                    }
+                }
+                if (!finished) {
+                    doAll();
+                }
+            }
+        }
     }
 
 
@@ -125,7 +129,7 @@ public class EventQueue extends EventPrimImpl implements Prim {
      * @param sink org.smartfrog.sfcore.workflow.eventbus.EventSink
      * @see org.smartfrog.sfcore.workflow.eventbus.EventRegistration
      */
-    synchronized public void register(EventSink sink) {
+    public synchronized void register(EventSink sink) {
         super.register(sink);
         if (!registrationMessages.containsKey(sink)) {
             synchronized (messages) {
@@ -142,9 +146,9 @@ public class EventQueue extends EventPrimImpl implements Prim {
      * Deregisters an EventSink for forwarding of events.
      *
      * @param sink org.smartfrog.sfcore.workflow.eventbus.EventSink
-     * @see EventRegistration
+     * @see org.smartfrog.sfcore.workflow.eventbus.EventRegistration
      */
-    synchronized public void deregister(EventSink sink) {
+    public synchronized void deregister(EventSink sink) {
         super.deregister(sink);
         if (registrationMessages.containsKey(sink)) {
             synchronized (registrationMessages) {
@@ -159,7 +163,7 @@ public class EventQueue extends EventPrimImpl implements Prim {
      *
      * @param event java.lang.Object
      */
-    synchronized public void event(Object event) {
+    public synchronized void event(Object event) {
         synchronized (messages) {
             messages.add(event);
             messageIndex += 1;
@@ -193,7 +197,9 @@ public class EventQueue extends EventPrimImpl implements Prim {
         try {
             sender.finished();
             sender.interrupt();
-        } catch (Exception e) {}
+        } catch (Exception e) {
+            //ignored
+        }
 
         super.sfTerminatedWith(status, comp);
     }

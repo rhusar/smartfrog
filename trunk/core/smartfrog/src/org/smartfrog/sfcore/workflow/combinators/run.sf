@@ -19,6 +19,16 @@ For more information: www.smartfrog.org
 */
 #include "/org/smartfrog/sfcore/workflow/eventbus/eventbus.sf"
 
+
+/**
+ * Run is a modified compound which differs in that its only sub-component is
+ * created and then left parentless to fend for itself. A Run combinator
+ * creates no subcomponents until it's sfStart phase at which point the
+ * subcomponent is created in the normal way. The Run combinator starts the
+ * sub-component and then terminates normally if no error ocurred. If an error
+ * occurs at any point, or a sub-component terminates abnormally during
+ * start-up, the Run combinator does too.
+ */
 Run extends EventCompound {
     sfClass "org.smartfrog.sfcore.workflow.combinators.Run";
     // action extends ...; // ComponentDescription to deploy

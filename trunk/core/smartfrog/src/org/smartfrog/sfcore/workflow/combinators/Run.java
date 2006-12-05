@@ -53,24 +53,24 @@ public class Run extends EventCompoundImpl implements Compound {
     // Old attributes
     /** Reference to parent for the new component
      String name for attribute. Value {@value}.*/
-    static Reference parentRef = new Reference("parent");
+    static final Reference parentRef = new Reference("parent");
 
     /** Reference to name for the new component
      String name for attribute. Value {@value}.*/
-    static Reference asNameRef = new Reference("asName");
+    static final Reference asNameRef = new Reference("asName");
 
     // New attributes
     /** Reference to myName for the new component.
      String name for attribute. Value {@value} or asName.*/
-    final static String ATTR_NAME = "newComponentName";
+    private static final String ATTR_NAME = "newComponentName";
 
     /** Reference to parent for the new deployment.
      String name for attribute. Value {@value} or parent.*/
-    final static String ATTR_PARENT = "newComponentParent";
+    private static final String ATTR_PARENT = "newComponentParent";
 
     /** Reference to compund component used to drive the new deployment.
      String name for attribute. Value {@value} or parent.*/
-    final static String ATTR_DEPLOYER = "newComponentDeployer";
+    private static final String ATTR_DEPLOYER = "newComponentDeployer";
 
     private Compound parent=null;
 
@@ -138,7 +138,7 @@ public class Run extends EventCompoundImpl implements Compound {
             if ((parent != null) && (newComponentName==null)) {
                 String parentName = "parentName";
                 try { parentName = parent.sfCompleteName().toString(); } catch (Throwable ex){}
-                String message = this.sfCompleteNameSafe()+ " needs to provide a name () when providing a parent ('parent' "+ parentName+")";
+                String message = sfCompleteNameSafe()+ " needs to provide a name () when providing a parent ('parent' "+ parentName+")";
                 if (sfLog().isErrorEnabled()) sfLog().error(message);
                 throw new SmartFrogDeploymentException( message , this, sfContext());
             }

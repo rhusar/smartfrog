@@ -34,11 +34,11 @@ import org.smartfrog.sfcore.workflow.eventbus.EventPrimImpl;
  * deployment. Attributes are documented in the file doNothing.sf
  */
 public class DoNothing extends EventPrimImpl implements Prim {
-    String myId;
-    int time;
-    String terminationType;
-    String message;
-    boolean printEvents;
+    private String myId;
+    private int time;
+    private String terminationType;
+    private String message;
+    private boolean printEvents;
     public static final String TIME = "time";
     public static final String TERMINATION_TYPE = "terminationType";
     public static final String MESSAGE = "message";

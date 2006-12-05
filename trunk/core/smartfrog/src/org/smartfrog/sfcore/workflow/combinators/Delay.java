@@ -51,7 +51,7 @@ public class Delay extends EventCompoundImpl implements Compound, Runnable {
     /**
      * Reference for attribute time
      */
-    static Reference timeRef = new Reference(ATTR_TIME);
+    static final Reference timeRef = new Reference(ATTR_TIME);
 
     /**
      * Time taken.
