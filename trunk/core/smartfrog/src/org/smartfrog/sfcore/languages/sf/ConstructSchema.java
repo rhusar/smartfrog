@@ -49,7 +49,8 @@ public class ConstructSchema implements PhaseAction {
                     if (value instanceof SFApplyReference) {
                          schemaElement = (SFApplyReference) value;
                     } else {
-                        throw new SmartFrogAssertionResolutionException("Element " + key + " of schema " + cd.sfCompleteName() + " must be a ComponentDescription, found: " + value);
+                        throw new SmartFrogAssertionResolutionException("Element " + key + " of schema " + cd.sfCompleteName()
+                                + " must be a ComponentDescription, found: " + value + " of type "+value.getClass());
                     }
 
                     schemaElement.sfAddParameter("name", key);
