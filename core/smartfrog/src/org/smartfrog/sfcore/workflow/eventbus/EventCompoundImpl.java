@@ -124,7 +124,7 @@ public class EventCompoundImpl extends CompoundImpl implements EventBus,
      * @param sink org.smartfrog.sfcore.workflow.eventbus.EventSink
      * @see EventRegistration
      */
-    synchronized public void register(EventSink sink) {
+    public synchronized void register(EventSink sink) {
         if (sfLog().isDebugEnabled()) {
            sfLog().debug(sfCompleteNameSafe().toString()  + " had registration from " + sink.toString());
         }
@@ -156,7 +156,7 @@ public class EventCompoundImpl extends CompoundImpl implements EventBus,
      * @param event java.lang.Object
      * @see EventSink
      */
-    synchronized public void event(Object event) {
+    public synchronized void event(Object event) {
         handleEvent(event);
         sendEvent(event);
     }
@@ -179,7 +179,7 @@ public class EventCompoundImpl extends CompoundImpl implements EventBus,
      *
      * @param event java.lang.String
      */
-    synchronized public void sendEvent(Object event) {
+    public synchronized void sendEvent(Object event) {
         for (Enumeration e = sendTo.elements(); e.hasMoreElements();) {
             EventSink s = (EventSink) e.nextElement();
             try {
