@@ -40,8 +40,10 @@ import org.smartfrog.sfcore.common.*;
 
 
 /**
- * An extension of Compound providing the SmartFrog Component with the required
- * event handling.
+ * An extension of Compound providing the SmartFrog Component
+ * event handling and the ability of the subclass to control which children get deployed and when.
+ * This compound is a good starting block for implementing any Compound extension with complex lifecycles,
+ * as most of the setup is handled, and there are override points to tweak behaviour.
  */
 public class EventCompoundImpl extends CompoundImpl implements EventBus,
     EventRegistration, EventSink, EventCompound {
@@ -421,6 +423,28 @@ public class EventCompoundImpl extends CompoundImpl implements EventBus,
             if (elem instanceof Prim) {
                 ((Prim) elem).sfStart();
             }
+        }
+    }
+
+    /**
+     * Helper method to deploy any component of a given name. It's template is replaced in the graph
+     * by the running component
+     *
+     * @param name     attribute to look up
+     * @param required flag to indicate the component is required
+     * @return the component or null if there was no attribute and required was false.
+     * @throws org.smartfrog.sfcore.common.SmartFrogResolutionException
+     * @throws java.rmi.RemoteException
+     * @throws org.smartfrog.sfcore.common.SmartFrogDeploymentException
+     */
+    protected Prim deployChildCD(String name, boolean required)
+            throws SmartFrogResolutionException, RemoteException, SmartFrogDeploymentException {
+        ComponentDescription cd = null;
+        cd = sfResolve(name, cd, false);
+        if (cd != null) {
+            return sfCreateNewChild(name, cd, null);
+        } else {
+            return null;
         }
     }
 }

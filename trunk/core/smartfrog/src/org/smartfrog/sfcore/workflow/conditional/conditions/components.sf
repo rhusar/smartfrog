@@ -51,28 +51,28 @@ For more information: www.smartfrog.org
  */
 
 Value extends Conditional {
-  sfClass "org.smartfrog.sfcore.workflow.conditional.conditions.BooleanValue"
+  sfClass "org.smartfrog.sfcore.workflow.conditional.conditions.BooleanValue";
   value TBD;
 }
 
-True extends Value{
+True extends Value {
   value true;
 }
 
 
-False extends Value{
+False extends Value {
   value false;
 }
 
 /**
  * templates that are targeted at another component
  */
-TargetedCondition extends  Conditional {
+/*TargetedCondition extends Prim {
   targetedConditionSchema extends Schema {
     target CD;
   }
 
-}
+}*/
 
 /*
 Resolves extends TargetedCondition {
@@ -99,9 +99,9 @@ IsRunning extends InState {
 /**
  * Pings a component; returns true if it is alive
  */
-IsAlive extends TargetedCondition {
+/*IsAlive extends TargetedCondition {
   sfClass "org.smartfrog.sfcore.workflow.conditional.conditions.IsAlive";
-}
+}*/
 
 TwoArgumentCondition extends Conditional {
   left TBD;
@@ -149,7 +149,7 @@ Contains extends TwoArgumentCondition {
  */
 
 Not extends Conditional {
-  sfClass "org.smartfrog.sfcore.workflow.conditional.conditions.NotCompoundCondition"
+  sfClass "org.smartfrog.sfcore.workflow.conditional.conditions.NotCompoundCondition";
   conditionalSchema extends ConditionalSchema;
 }
 

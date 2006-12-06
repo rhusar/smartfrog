@@ -50,7 +50,7 @@ public class IfImpl extends ConditionCompound implements If {
         } else {
             branch=ATTR_ELSE;
         }
-        Prim prim = deploy(branch, false);
+        Prim prim = deployChildCD(branch, false);
         if(prim==null) {
             //no branch; our work is done
             finish();

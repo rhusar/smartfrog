@@ -67,30 +67,9 @@ public class ConditionCompound extends EventCompoundImpl implements Conditional,
     }
 
     protected void deployCondition() throws SmartFrogResolutionException, RemoteException, SmartFrogDeploymentException {
-        condition = (Condition) deploy(ATTR_CONDITION, true);
+        condition = (Condition) deployChildCD(ATTR_CONDITION, true);
     }
 
-
-    /**
-     * Helper method to deploy any component of a given name. Its template is replaced in the graph
-     * by the running component
-     * @param name attribute to look up
-     * @param required flag to indicate the component is required
-     * @return the component or null if there was no attribute and required was false.
-     * @throws SmartFrogResolutionException
-     * @throws RemoteException
-     * @throws SmartFrogDeploymentException
-     */
-    protected Prim deploy(String name,boolean required)
-            throws SmartFrogResolutionException, RemoteException, SmartFrogDeploymentException {
-        ComponentDescription cd = null;
-        cd = sfResolve(name, cd, false);
-        if(cd!=null) {
-            return sfCreateNewChild(name, cd, null);
-        } else {
-            return null;
-        }
-    }
 
     /**
      * Get the condition
