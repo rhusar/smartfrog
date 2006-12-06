@@ -1,0 +1,86 @@
+/** (C) Copyright 2006 Hewlett-Packard Development Company, LP
+
+ This library is free software; you can redistribute it and/or
+ modify it under the terms of the GNU Lesser General Public
+ License as published by the Free Software Foundation; either
+ version 2.1 of the License, or (at your option) any later version.
+
+ This library is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ Lesser General Public License for more details.
+
+ You should have received a copy of the GNU Lesser General Public
+ License along with this library; if not, write to the Free Software
+ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+ For more information: www.smartfrog.org
+
+ */
+package org.smartfrog.services.database.mysql;
+
+import org.smartfrog.services.database.core.ConnectionOpenCondition;
+import org.smartfrog.sfcore.workflow.conditional.Condition;
+import org.smartfrog.sfcore.common.SmartFrogException;
+
+import java.rmi.RemoteException;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.lang.reflect.Method;
+import java.lang.reflect.InvocationTargetException;
+
+/**
+ * A subclass of {@link ConnectionOpenCondition} which issues a ping command against the database.
+ *
+ * To reduce GPL dependencies and to work with other drivers that are pingable, we use
+ * reflection to invoke a method called 'vind ping
+ * for mysql, this requires a database > 3.22, and a compatible mysql driver.
+ *
+ * created 05-Dec-2006 15:19:35
+ */
+
+public class IsMysqlLive extends ConnectionOpenCondition implements Condition {
+    private final Class[] EMPTY_PARAM_CLASSES = {};
+    private final Object[] EMPTY_PARAM_OBJECTS = {};
+
+
+    public IsMysqlLive() throws RemoteException {
+    }
+/*
+
+    protected boolean ping(Connection connection) throws SmartFrogException, RemoteException {
+
+        if (!(connection instanceof com.mysql.jdbc.Connection)) {
+            throw new SmartFrogException("JDBC connection " + connection + " is of type " + connection.getClass()
+                    + " and not from a current MySQL driver");
+        }
+        com.mysql.jdbc.Connection mysqlConnection = (com.mysql.jdbc.Connection) connection;
+        try {
+            mysqlConnection.ping();
+            return true;
+        } catch (SQLException e) {
+            getLog().debug("When pinging ", e);
+            return false;
+        }
+    }*/
+
+    protected boolean ping(Connection connection) throws SmartFrogException, RemoteException {
+        Class<? extends Connection> clazz = connection.getClass();
+        try {
+            Method method = clazz.getMethod("ping", EMPTY_PARAM_CLASSES);
+            method.invoke(connection, EMPTY_PARAM_OBJECTS);
+            return true;
+        } catch (NoSuchMethodException e) {
+            throw new SmartFrogException("Connection " + connection + "  of type " +clazz
+                +" does not have a method called ping()");
+        } catch (IllegalAccessException e) {
+            throw new SmartFrogException("Connection " + connection + "  of type " + clazz
+                    + " does allow access to the ping() method");
+        } catch (InvocationTargetException e) {
+            getLog().debug("When pinging ", e.getCause());
+            return false;
+        }
+    }
+
+
+}
