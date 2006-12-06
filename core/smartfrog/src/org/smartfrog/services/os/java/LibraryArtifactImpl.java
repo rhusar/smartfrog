@@ -1,4 +1,4 @@
-/** (C) Copyright 2005 Hewlett-Packard Development Company, LP
+/** (C) Copyright 2005-2006 Hewlett-Packard Development Company, LP
 
  This library is free software; you can redistribute it and/or
  modify it under the terms of the GNU Lesser General Public
@@ -19,9 +19,6 @@
  */
 package org.smartfrog.services.os.java;
 
-import org.smartfrog.services.filesystem.FileUsingComponentImpl;
-import org.smartfrog.services.filesystem.FileUsingComponent;
-import org.smartfrog.services.filesystem.FileImpl;
 import org.smartfrog.services.filesystem.FileIntf;
 import org.smartfrog.services.filesystem.FileSystem;
 import org.smartfrog.services.filesystem.FileUsingCompoundImpl;
@@ -29,13 +26,9 @@ import org.smartfrog.services.os.download.DownloadImpl;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
-import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
-import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.TerminationRecord;
-import org.smartfrog.sfcore.utils.PlatformHelper;
 import org.smartfrog.sfcore.utils.ComponentHelper;
-import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.logging.Log;
 
 import java.rmi.RemoteException;
@@ -44,6 +37,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Vector;
 import java.util.Iterator;
+import java.util.Locale;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.DigestInputStream;
@@ -101,6 +95,8 @@ public class LibraryArtifactImpl extends FileUsingCompoundImpl
      */
     public static final String ERROR_ARTIFACT_NOT_FOUND = "Artifact not found at ";
 
+    private volatile Thread thread;
+
     public LibraryArtifactImpl() throws RemoteException {
     }
 
@@ -119,8 +115,9 @@ public class LibraryArtifactImpl extends FileUsingCompoundImpl
             RemoteException {
         super.sfDeploy();
         log = sfGetApplicationLog();
-        owner = findOwner();
-        repositories = ((Prim) owner).sfResolve(Library.ATTR_REPOSITORIES,
+        Prim ownerPrim = sfResolve(ATTR_LIBRARY, (Prim)null, true);
+        owner = (Library) ownerPrim;
+        repositories = ownerPrim.sfResolve(Library.ATTR_REPOSITORIES,
                 (Vector) null, true);
         syncDownload = sfResolve(ATTR_SYNCHRONOUS, syncDownload, true);
         project = sfResolve(ATTR_PROJECT, project, true);
@@ -167,7 +164,8 @@ public class LibraryArtifactImpl extends FileUsingCompoundImpl
         } else {
             //async download
             if (mustDownload) {
-                thread().start();
+                thread = new Thread(this);
+                thread.start();
             } else {
                 postDownloadActions(mustDownload);
             }
@@ -176,38 +174,48 @@ public class LibraryArtifactImpl extends FileUsingCompoundImpl
 
     }
 
-    private Thread thread() {
-        return new Thread(this);
+    /**
+     * {@inheritDoc}
+     * @param status
+     */
+    protected synchronized void sfTerminateWith(TerminationRecord status) {
+        super.sfTerminateWith(status);
+        if (thread != null) {
+            thread.interrupt();
+        }
     }
-
 
     /**
      * Runnable entry point to a background download
      */
     public void run() {
-        Throwable caught=null;
         try {
-            download();
-            postDownloadActions(true);
-        } catch (SmartFrogException e) {
-            caught=e;
-        } catch (RemoteException e) {
-            caught=e;
-        }
-        if(caught!=null) {
-            new ComponentHelper(this).sfSelfDetachAndOrTerminate(
-                    null,
-                    caught.getMessage(),
-                    null,
-                    caught);
+            Throwable caught=null;
+            try {
+                download();
+                postDownloadActions(true);
+            } catch (SmartFrogException e) {
+                caught=e;
+            } catch (RemoteException e) {
+                caught=e;
+            }
+            if(caught!=null) {
+                new ComponentHelper(this).sfSelfDetachAndOrTerminate(
+                        null,
+                        caught.getMessage(),
+                        null,
+                        caught);
+            }
+        } finally {
+            thread=null;
         }
     }
 
     /**
      * Actions to do after a download
      * @param downloaded flag set if we did a download
-     * @throws RemoteException
-     * @throws SmartFrogException
+     * @throws RemoteException for network problems
+     * @throws SmartFrogException for other problems
      */
     private void postDownloadActions(boolean downloaded)
             throws RemoteException, SmartFrogException {
@@ -234,10 +242,20 @@ public class LibraryArtifactImpl extends FileUsingCompoundImpl
             }
         }
 
-
         String message = "LibraryArtifactImpl completed. File : "+ getFile();
         if (sfLog().isDebugEnabled()) sfLog().debug(message);
 
+        if(copyTo!=null) {
+            try {
+                FileSystem.fCopy(getFile(), copyTo);
+            } catch (IOException ex) {
+                throw SmartFrogException.forward("Failed when copying "
+                    + getFile().getAbsolutePath() +
+                    " to " +
+                    copyTo.getAbsolutePath()
+                    , ex);
+            }
+        }
         new ComponentHelper(this).sfSelfDetachAndOrTerminate(null,message,
                 null,null);
     }
@@ -250,9 +268,9 @@ public class LibraryArtifactImpl extends FileUsingCompoundImpl
      */
     private void checkExistence() throws SmartFrogRuntimeException,
             RemoteException {
-//set our exists flag
+        //set our exists flag
         exists = getFile().exists();
-//and the matching resource
+        //and the matching resource
         sfReplaceAttribute(FileIntf.ATTR_EXISTS, Boolean.valueOf(exists));
     }
 
@@ -264,7 +282,7 @@ public class LibraryArtifactImpl extends FileUsingCompoundImpl
      * @throws SmartFrogException if there are no repositories.
      */
     public void download() throws SmartFrogException {
-        if (repositories.size() == 0) {
+        if (repositories.isEmpty()) {
             throw new SmartFrogException(ERROR_NO_REPOSITORIES);
         }
         Iterator it = repositories.iterator();
@@ -293,7 +311,7 @@ public class LibraryArtifactImpl extends FileUsingCompoundImpl
         while (it.hasNext()) {
             String repository = (String) it.next();
             repos.append(repository);
-            repos.append("/");
+            repos.append('/');
             repos.append(remoteUrlPath);
             if (it.hasNext()) {
                 repos.append(' ');
@@ -308,7 +326,7 @@ public class LibraryArtifactImpl extends FileUsingCompoundImpl
      * during fetching are logged at debug level, and turned into a failure of
      * this method.
      *
-     * @param repositoryBaseURL
+     * @param repositoryBaseURL base URL of the repository
      *
      * @return the exception that got us here
      */
@@ -326,14 +344,14 @@ public class LibraryArtifactImpl extends FileUsingCompoundImpl
             DownloadImpl.download(url, getFile(), blocksize);
             return null;
         } catch (MalformedURLException e) {
-            throw SmartFrogException.forward(url.toString(), e);
+            throw SmartFrogException.forward(url, e);
         } catch (NoRouteToHostException e) {
-            throw SmartFrogException.forward(url.toString(), e);
+            throw SmartFrogException.forward(url, e);
         } catch (ConnectException e) {
-            throw SmartFrogException.forward(url.toString(), e);
+            throw SmartFrogException.forward(url, e);
         } catch (IOException e) {
             log.debug("Failed fetch from " + url, e);
-            throw SmartFrogException.forward(url.toString(), e);
+            throw SmartFrogException.forward(url, e);
             //return e;
         }
     }
@@ -341,7 +359,7 @@ public class LibraryArtifactImpl extends FileUsingCompoundImpl
     /**
      * check that md5 checksum
      *
-     * @throws SmartFrogException
+     * @throws SmartFrogException on a checksum failure
      */
     public void checkMd5Checksum() throws SmartFrogException {
         checkChecksum(getFile(), "MD5", md5, BLOCKSIZE);
@@ -350,7 +368,7 @@ public class LibraryArtifactImpl extends FileUsingCompoundImpl
     /**
      * check our sha1 checksum
      *
-     * @throws SmartFrogException
+     * @throws SmartFrogException on a checksum failure
      */
     public void checkSha1Checksum() throws SmartFrogException {
         checkChecksum(getFile(), "SHA", sha1, BLOCKSIZE);
@@ -361,12 +379,12 @@ public class LibraryArtifactImpl extends FileUsingCompoundImpl
      * do it *every* load, even if the file is in cache. That may be overkill,
      * but there you go.
      *
-     * @param file
-     * @param algorithm
-     * @param hexValue
-     * @param blocksize
+     * @param file file to check
+     * @param algorithm java crypto api algorithm
+     * @param hexValue expected hex value
+     * @param blocksize buffer size to read the file
      *
-     * @throws SmartFrogException if there is a problem
+     * @throws SmartFrogException on a checksum failure
      */
     public void checkChecksum(File file,
                               String algorithm,
@@ -380,20 +398,24 @@ public class LibraryArtifactImpl extends FileUsingCompoundImpl
             throw new SmartFrogException("No algorithm " + algorithm, e, this);
         }
         FileInputStream instream = null;
-        byte buffer[] = new byte[0];
+        DigestInputStream digestStream=null;
+        byte[] buffer= new byte[0];
         try {
             instream = new FileInputStream(file);
             buffer = new byte[blocksize];
-            DigestInputStream digestStream = new DigestInputStream(instream,
+
+            digestStream = new DigestInputStream(instream,
                     messageDigest);
             while (digestStream.read(buffer, 0, blocksize) != -1) {
                 // all the work is in the digest stream; here we just pump
                 // the channel.
             }
             digestStream.close();
+            digestStream=null;
             instream.close();
             instream = null;
         } catch (IOException ioe) {
+            FileSystem.close(digestStream);
             FileSystem.close(instream);
             throw new SmartFrogException(ioe, this);
         }
@@ -403,18 +425,19 @@ public class LibraryArtifactImpl extends FileUsingCompoundImpl
         //next: compare with the expected string
         String actual = LibraryHelper.digestToString(fileDigest);
         //clean up leading, tailing chars in the request
-        String expected = hexValue.trim();
+        String expected = hexValue.trim().toLowerCase(Locale.ENGLISH);
 
         if (expected.length() > 0) {
             //case insensitive comparison.
             //we could go the other way, converting from string into hex. But
             //this approach leaves us set up for error reporting.
-            if (!actual.equalsIgnoreCase(hexValue)) {
+            String actuallc=actual.toLowerCase(Locale.ENGLISH);
+            if (!actuallc.equals(expected)) {
                 throw new SmartFrogException(ERROR_CHECKSUM_FAILURE
                         + file.getAbsolutePath()
                         + " with algorithm " + algorithm
-                        + "- expected [" + expected + "]"
-                        + " - got " + actual,
+                        + "- expected [" + expected + ']'
+                    + " - got " + actual,
                         this);
             }
         } else {
@@ -454,40 +477,6 @@ public class LibraryArtifactImpl extends FileUsingCompoundImpl
         return file;
     }
 
-
-    /**
-     * Find our owning Library <ol> <li> direct attribute <li> Parent </li>
-     *
-     * @return a libraries instance or an error
-     *
-     * @throws SmartFrogResolutionException on resolution trouble
-     * @throws RemoteException on network problems
-     */
-    protected Library findOwner() throws SmartFrogResolutionException,
-            RemoteException {
-        final Object libAttr = sfResolve(ATTR_LIBRARY, owner, true);
-        assert  (!(libAttr instanceof ComponentDescription)):"Uninstantiated component: " + libAttr;
-        return (Library) libAttr;
-        /*
-        owner = null;
-        Object resolved = sfResolve(ATTR_LIBRARY, owner, false);
-        if (resolved != null) {
-            if (resolved instanceof Library) {
-                owner = (Library) resolved;
-            } else {
-                throw SmartFrogResolutionException.illegalClassType(new Reference(ATTR_LIBRARY),
-                        this.sfCompleteNameSafe());
-            }
-        }
-        if(owner==null) {
-            owner=findLibrariesParent(this);
-        }
-        if(owner==null) {
-            throw new SmartFrogResolutionException(ERROR_NO_OWNER,this);
-        }
-        return owner;
-        */
-    }
 
     /**
      * @return Returns the artifact.
