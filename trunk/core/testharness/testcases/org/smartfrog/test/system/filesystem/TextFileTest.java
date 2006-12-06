@@ -92,7 +92,7 @@ public class TextFileTest extends SmartFrogTestBase {
             String PARENT_DIR_NAME = "textFileDirTestSubdir";
             assertTrue(filename,file.getParentFile().getName().contains(PARENT_DIR_NAME));
             String expected = File.separator+PARENT_DIR_NAME;
-            assertTrue(filename+"does not contain "+expected,filename.contains(expected));
+            assertTrue(filename+"does not contain "+expected,filename.indexOf(expected)>=0);
         } finally {
             terminateApplication(application);
             //cleanup
