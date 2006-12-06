@@ -34,6 +34,7 @@ public class WaitForImpl extends ConditionCompound implements WaitFor, Runnable 
     private long interval;
     private long timeout;
     private long end;
+    private Prim action;
 
 
     public WaitForImpl() throws RemoteException {
@@ -51,6 +52,7 @@ public class WaitForImpl extends ConditionCompound implements WaitFor, Runnable 
         super.sfStart();
         interval=sfResolve(ATTR_INTERVAL,interval,true);
         timeout = sfResolve(ATTR_INTERVAL, interval, true);
+        //pick on the current start time.
         end=System.currentTimeMillis()+timeout;
     }
 
@@ -81,7 +83,7 @@ public class WaitForImpl extends ConditionCompound implements WaitFor, Runnable 
             //we have either timed out or the test has passed.
             //chose the branch to test
             String branch=test?ATTR_THEN:ATTR_ELSE;
-            Prim prim = deploy(branch, false);
+            Prim prim = deployChildCD(branch, false);
             //then finish if we did not deploy anything
             if(prim==null) {
                 finish();

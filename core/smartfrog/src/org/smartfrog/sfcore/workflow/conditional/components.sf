@@ -54,7 +54,7 @@ If extends ConditionalEventCompound {
     then extends OptionalCD;
     else extends OptionalCD;
   }
-  sfClass "org.smartfrog.sfcore.workflow.conditional.IfImpl"
+  sfClass "org.smartfrog.sfcore.workflow.conditional.IfImpl";
 }
 
 /**
@@ -82,7 +82,7 @@ WaitFor extends If {
 FailingWaitFor extends WaitFor {
   message "Timed out";
 
-  then extends Terminator {
+  else extends Terminator {
     description PARENT:message;
     selftype Terminator:ABNORMAL;
   }

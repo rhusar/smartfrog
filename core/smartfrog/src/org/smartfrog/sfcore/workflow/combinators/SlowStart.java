@@ -24,6 +24,7 @@ public class SlowStart extends EventCompoundImpl implements Compound {
     private int timeout;
     private long endTime;
     private boolean live=false;
+    private Prim action;
 
     public SlowStart() throws RemoteException {
 
@@ -33,10 +34,10 @@ public class SlowStart extends EventCompoundImpl implements Compound {
     public synchronized void sfStart()
         throws SmartFrogException, RemoteException {
         super.sfStart();
-        checkActionDefined();
         timeout=sfResolve(ATTR_TIMEOUT, 0, true);
         endTime=System.currentTimeMillis()+timeout;
-        //Prim action=
+        //deploy the action
+        action = deployChildCD(ATTR_ACTION, true);
     }
 
 
@@ -50,7 +51,27 @@ public class SlowStart extends EventCompoundImpl implements Compound {
 
     protected void sfPingChild(Liveness child)
         throws SmartFrogLivenessException, RemoteException {
-        super.sfPingChild(child);
+        if (!live) {
+            long now = System.currentTimeMillis();
+            if (now > endTime) {
+                //timeout time is reached, time to go live
+                if (sfLog().isInfoEnabled()) sfLog().info("going live at end of timeout");
+                live = true;
+            }
+        }
+        try {
+            super.sfPingChild(child);
+            // if we get here, liveness kicks in
+            if(!live) {
+                if (sfLog().isInfoEnabled())  sfLog().info("child is live");
+                live=true;
+            }
+        } catch (SmartFrogLivenessException e) {
+            if(live) {
+                //rethrow the exception when we are live
+                throw e;
+            }
+        }
 
         //if(child ==)
     }
