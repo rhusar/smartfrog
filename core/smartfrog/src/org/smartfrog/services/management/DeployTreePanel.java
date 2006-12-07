@@ -34,6 +34,8 @@ import java.rmi.RemoteException;
 import javax.swing.tree.TreePath;
 import java.io.StringWriter;
 import java.io.PrintWriter;
+import java.util.Vector;
+
 import org.smartfrog.sfcore.common.ContextImpl;
 import org.smartfrog.sfcore.logging.LogSF;
 import org.smartfrog.sfcore.logging.LogFactory;
@@ -277,18 +279,54 @@ public class DeployTreePanel extends JPanel implements TreeSelectionListener, Fo
             { " ", " " }
         };
         this.table.setModel(new DefaultTableModel(data, title));
-        this.systemViewTree.updateUI();
-
-        //org.smartfrog.services.utils.gui.TableUtilities.setColumnWidths(this.table,new java.awt.Insets(4,4,4,4),true,false);
+        updateTable();
         this.table.repaint();
+        refreshSelectedNode();
+        //org.smartfrog.services.utils.gui.TableUtilities.setColumnWidths(this.table,new java.awt.Insets(4,4,4,4),true,false);
+
     }
 
     public void refreshSelectedNode(){
-        TreePath treePath = systemViewTree.getSelectionPath();
-        //systemViewTree.nodeStructureChanged()
-        systemViewTree.collapsePath(treePath.getParentPath());
-        systemViewTree.removeSelectionPath(treePath);
-        systemViewTree.setSelectionPath(treePath);
+        try {
+            Vector selectedRows = new Vector();
+            boolean[] openClosed = new boolean[(systemViewTree.getRowCount())];
+
+            for (int i = 0; i < systemViewTree.getRowCount(); ++i) {
+                if (systemViewTree.isExpanded(i)) {
+                    openClosed[i] = true;
+                } else {
+                    openClosed[i] = false;
+                }
+                if (systemViewTree.isRowSelected(i)) {
+                    selectedRows.add(new Integer(i));
+                }
+            }
+
+            systemViewTree.updateUI();
+
+            int rowIndex = 0;
+            while (rowIndex < systemViewTree.getRowCount()) {
+                if (openClosed[rowIndex] == true) {
+                    systemViewTree.expandRow(rowIndex);
+                }
+                ++rowIndex;
+            }
+
+            //Tree expansion
+            int[] rows = new int[selectedRows.size()];
+            int index = 0;
+            for (int i = 0; i < selectedRows.size();) {
+                System.out.println("Selected: i " + i + " - " + ((Integer) selectedRows.elementAt(i)).intValue());
+                rows[index++] = ((Integer) selectedRows.elementAt(i)).intValue();
+            }
+            systemViewTree.setSelectionRows(rows);
+            int[] aux = {2};
+            systemViewTree.setSelectionRows(aux);
+        } catch (Exception e) {
+            if (sfLog().isIgnoreEnabled()) sfLog().ignore(e);
+            //e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            //Ignore. It happens when a node is removed.
+        }
     }
 
     /**

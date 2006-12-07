@@ -23,8 +23,13 @@ package org.smartfrog.services.management;
 import java.util.Vector;
 
 import javax.swing.event.TreeModelListener;
+import javax.swing.event.TreeModelEvent;
+import javax.swing.event.EventListenerList;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
+import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreeNode;
+
 import org.smartfrog.sfcore.processcompound.ProcessCompound;
 import org.smartfrog.sfcore.logging.LogSF;
 import org.smartfrog.sfcore.logging.LogFactory;
@@ -34,7 +39,7 @@ import org.smartfrog.sfcore.prim.Prim;
  * DeployTreeModelSF is the deployable tree model for SmartFrog component
  * hierarchy.
  */
-public class DeployTreeModelSF implements TreeModel {
+public class DeployTreeModelSF  implements TreeModel {
     /** Log for this class, created using class name*/
     LogSF sfLog = LogFactory.getLog("sfManagementConsole");
 
@@ -71,7 +76,7 @@ public class DeployTreeModelSF implements TreeModel {
      *  Constructs the DeployTreeModelSF object with the deploy entry
      *
      * @param  entry  deploy entry
-     * @param isCopy is entry a copy? 
+     * @param isCopy is entry a copy?
      * @param showRootProcessName flag indicating to show rootprocess name
      * @param showCDasChild flag indicating to show CD as child
      */
