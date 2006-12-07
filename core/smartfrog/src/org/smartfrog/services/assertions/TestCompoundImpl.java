@@ -28,6 +28,7 @@ import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.workflow.eventbus.EventCompoundImpl;
 import org.smartfrog.sfcore.workflow.combinators.DelayedTerminator;
 import org.smartfrog.sfcore.utils.ComponentHelper;
+import org.smartfrog.sfcore.utils.ShouldDetachOrTerminate;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 
 import java.rmi.RemoteException;
@@ -44,8 +45,9 @@ public class TestCompoundImpl extends EventCompoundImpl
     private ComponentDescription tests;
     private Prim testsPrim;
 
-    protected static final String ACTION_RUNNING = "action";
-    protected static final String TESTS_RUNNING = "_testsRunning";
+    protected static final String ACTION_RUNNING = ATTR_ACTION;
+    protected static final String TESTS_RUNNING = ATTR_TESTS;
+    protected static final String TEARDOWN_RUNNING = ATTR_TEARDOWN;
     private long undeployAfter;
     private long testTimeout;
     private boolean expectTerminate;
@@ -67,9 +69,18 @@ public class TestCompoundImpl extends EventCompoundImpl
      */
     public static final String FORCED_TERMINATION = "timed shutdown of test components";
     public static final String TEST_FAILED_WRONG_STATUS = "Expected action to terminate with the status ";
-    protected static final String TEARDOWN_RUNNING = "_teardownRunning";
+    private boolean shouldTerminate;
 
     public TestCompoundImpl() throws RemoteException {
+    }
+
+
+    /**
+     * {@inheritDoc}
+     * @return false
+     */
+    protected boolean isOldNotationSupported() {
+        return false;
     }
 
     /**
@@ -96,6 +107,7 @@ public class TestCompoundImpl extends EventCompoundImpl
         expectTerminate = sfResolve(ATTR_EXPECT_TERMINATE, false, true);
         exitType = sfResolve(ATTR_EXIT_TYPE, exitType, true);
         exitText = sfResolve(ATTR_EXIT_TEXT, exitText, true);
+        shouldTerminate = sfResolve(ShouldDetachOrTerminate.ATTR_SHOULD_TERMINATE,true,true);
     }
 
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
@@ -221,11 +233,11 @@ public class TestCompoundImpl extends EventCompoundImpl
      * @return true if the termination event is to be forwarded up the chain.
      */
     protected boolean onChildTerminated(TerminationRecord childStatus, Prim child) {
-        boolean terminate =true;
+        boolean terminate = shouldTerminate;
         boolean tearDownTime=false;
         TerminationRecord error=null;
         if (actionPrim == child) {
-            if (actionTerminator.isForcedShutdown() && expectTerminate == false) {
+            if (actionTerminator.isForcedShutdown() && !expectTerminate) {
                 //this is a forced shutdown, all is well
                 sfLog().info("Graceful shutdown of test components");
             } else {
@@ -236,15 +248,13 @@ public class TestCompoundImpl extends EventCompoundImpl
                     //we have a match
                     sfLog().debug("Exit type is as expected");
                     expected = true;
-                    if (exitText != null) {
+                    if (exitText != null && exitText.length()>0) {
                         String description = childStatus.description;
                         if (description == null) {
                             description = "";
                         }
 
-                        if (description.indexOf(exitText) >= 0) {
-                            expected &= true;
-                        } else {
+                        if (description.indexOf(exitText) < 0) {
                             sfLog().debug("Exit text mismatch");
                             expected=false;
                         }

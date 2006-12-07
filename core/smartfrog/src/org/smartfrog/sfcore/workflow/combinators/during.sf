@@ -32,6 +32,5 @@ During extends ActionCompound {
     /**
      * initial time is zero
     */
-
     time 0;
 }

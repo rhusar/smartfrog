@@ -111,6 +111,8 @@ TestCompound extends ActionCompound {
   sfShouldTerminate true;
   description "";
 
+  action extends Compound;
+
   //default to one minute
   undeployAfter 60000;
   //no delay by default

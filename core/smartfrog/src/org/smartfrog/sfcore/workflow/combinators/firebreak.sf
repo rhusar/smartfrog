@@ -29,5 +29,4 @@ For more information: www.smartfrog.org
  */
 FireBreak extends Parallel {
     sfClass "org.smartfrog.sfcore.workflow.combinators.FireBreak";
-    //actions extends LAZY {}
 }

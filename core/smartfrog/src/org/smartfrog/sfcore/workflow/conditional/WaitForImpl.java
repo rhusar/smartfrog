@@ -34,7 +34,7 @@ public class WaitForImpl extends ConditionCompound implements WaitFor, Runnable 
     private long interval;
     private long timeout;
     private long end;
-    private Prim action;
+    private Thread thread;
 
 
     public WaitForImpl() throws RemoteException {
@@ -54,8 +54,26 @@ public class WaitForImpl extends ConditionCompound implements WaitFor, Runnable 
         timeout = sfResolve(ATTR_INTERVAL, interval, true);
         //pick on the current start time.
         end=System.currentTimeMillis()+timeout;
+        thread = new Thread(this);
+        thread.start();
     }
 
+
+    /**
+     * Handle notifications of termination
+     *
+     * @param status termination status of sender
+     * @param comp   sender of termination
+     */
+    public void sfTerminatedWith(TerminationRecord status, Prim comp) {
+        super.sfTerminatedWith(status, comp);
+        //stop the waiting
+        synchronized(this) {
+            if(thread!=null) {
+                thread.interrupt();
+            }
+        }
+    }
 
     /**
      * When an object implementing interface <code>Runnable</code> is used
@@ -70,34 +88,41 @@ public class WaitForImpl extends ConditionCompound implements WaitFor, Runnable 
      */
     public void run() {
 
-        Throwable fault=null;
         try {
-            boolean timedout = false;
-            boolean test;
-            test = evaluate();
-            while(!test && !timedout) {
-                Thread.sleep(interval);
+            Throwable fault=null;
+            try {
+                boolean timedout = false;
+                boolean test;
                 test = evaluate();
-                timedout = System.currentTimeMillis() < end;
+                while(!test && !timedout) {
+                    Thread.sleep(interval);
+                    test = evaluate();
+                    timedout = System.currentTimeMillis() > end;
+                }
+                //we have either timed out or the test has passed.
+                //chose the branch to test
+                String branch=test?ATTR_THEN:ATTR_ELSE;
+                Prim prim = deployChildCD(branch, false);
+                //then finish if we did not deploy anything
+                if(prim==null) {
+                    finish();
+                }
+            } catch (RemoteException e) {
+                fault=e;
+            } catch (SmartFrogException e) {
+                fault = e;
+            } catch (InterruptedException e) {
+                //we have been interrupted, which implies terminated.
+                //Do nothing
             }
-            //we have either timed out or the test has passed.
-            //chose the branch to test
-            String branch=test?ATTR_THEN:ATTR_ELSE;
-            Prim prim = deployChildCD(branch, false);
-            //then finish if we did not deploy anything
-            if(prim==null) {
-                finish();
+            if(fault!=null) {
+                //trouble -fail
+                sfTerminate(TerminationRecord.abnormal("Trouble during WaitFor",name,fault));
             }
-        } catch (RemoteException e) {
-            fault=e;
-        } catch (SmartFrogException e) {
-            fault = e;
-        } catch (InterruptedException e) {
-            fault = e;
-        }
-        if(fault!=null) {
-            //trouble -fail
-            sfTerminate(TerminationRecord.abnormal("Trouble during WaitFor",name,fault));
+        } finally {
+            synchronized (this) {
+                thread=null;
+            }
         }
 
     }
