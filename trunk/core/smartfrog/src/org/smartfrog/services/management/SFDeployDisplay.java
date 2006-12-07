@@ -218,7 +218,7 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
 
                      try {
                         DeployTreePanel treePanel = ((DeployTreePanel)(newDisplay.tabPane.getSelectedComponent()));
-                        treePanel.refreshSelectedNode();
+                        treePanel.refresh();
                      } catch (Throwable thr1) {
                         if (LogFactory.getLog("SFManagementConsole").isErrorEnabled()){
                           LogFactory.getLog("SFManagementConsole").error(thr1);
@@ -650,7 +650,7 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
     */
    public void refreshNode() {
       try {
-         ((DeployTreePanel) panelTree).refreshSelectedNode();
+         ((DeployTreePanel) panelTree).refresh();
       } catch (Throwable ex) {
          if (sfLogStatic().isIgnoreEnabled()){
            sfLogStatic().ignore("Failure refreshNode() SFDeployDisplay!",ex);
