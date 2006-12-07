@@ -105,10 +105,13 @@ public class LivenessPageChecker implements LivenessPage {
      */
     protected Log log;
 
+    /**
+     * Mime types
+     */
     protected HashMap mimeTypeMap;
 
-    
-    
+
+
     /**
      * create a new liveness page
      *
@@ -233,7 +236,6 @@ public class LivenessPageChecker implements LivenessPage {
      */
     public synchronized void onStart() throws SmartFrogDeploymentException {
         demandCreateURL();
-
     }
 
     private void demandCreateURL() throws SmartFrogDeploymentException {
@@ -252,7 +254,6 @@ public class LivenessPageChecker implements LivenessPage {
         if (!isEnabled()) {
             return;
         }
-
         checkPage();
     }
 

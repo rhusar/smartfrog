@@ -82,6 +82,11 @@ For more information: www.smartfrog.org
 
      //flag to say that the check is on/off; useful during development
      enabled extends OptionalBoolean;
+
+     //check on startup
+     checkOnStartup extends Boolean;
+     //check on liveness
+     checkOnLiveness extends Boolean;
  }
 
  /*
@@ -90,7 +95,7 @@ For more information: www.smartfrog.org
   The
  */
 
- LivenessPage extends Prim {
+ LivenessPage extends WorkflowPrim {
      livenessPageSchema extends LivenessPageSchema;
      sfClass "org.smartfrog.services.www.LivenessPageComponent";
      fetchErrorText true;
@@ -99,6 +104,8 @@ For more information: www.smartfrog.org
      followRedirects true;
      checkFrequency 1;
      enabled true;
+     checkOnStartup false;
+     checkOnLiveness true;
  }
 
 
@@ -116,6 +123,8 @@ For more information: www.smartfrog.org
     }
     sfClass "org.smartfrog.services.www.WaitForPageImpl";
     fetchErrorText false;
+    checkOnLiveness false;
+    sfShouldTerminate true;
   }
   
 

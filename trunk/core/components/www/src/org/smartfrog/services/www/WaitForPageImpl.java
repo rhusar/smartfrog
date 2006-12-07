@@ -49,17 +49,14 @@ public class WaitForPageImpl extends LivenessPageComponent
         this.worker = worker;
     }
 
+
     /**
-     * This overridden property does nothing.
+     * override point --should we check for workflow termination after startup
      *
-     * @throws java.rmi.RemoteException
-     * @throws org.smartfrog.sfcore.common.SmartFrogLivenessException
-     *
+     * @return true if the workflow attributes should be checked during startup
      */
-    protected void livenessPing()
-        throws RemoteException, SmartFrogLivenessException {
-        //do nothing during liveness, as we expect the endpoint to 
-        //be invalid for a while
+    protected boolean terminateAfterStartup() {
+        return true;
     }
 
 
@@ -168,10 +165,13 @@ public class WaitForPageImpl extends LivenessPageComponent
                 lastException);
         }
         //now do a terminate with the relevant exception
-        getHelper().targetForTermination(record, false, false);
-
+        getHelper().sfSelfDetachAndOrTerminate(record);
     }
 
+    /**
+     * Change the name in the description text
+     * @return "Waiting for "
+     */
     protected String getDescription() {
         return "Waiting for ";
     }
