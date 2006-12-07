@@ -205,9 +205,8 @@ HsqldbBinding extends DatabaseBinding {
 
 HsqldbPrefixedBinding extends HsqldbBinding {
   _arg TBD;
-  _db LAZY _arg;
   binding_prefix TBD;
-  url (binding_prefix ++ LAZY _db);
+  url (binding_prefix ++ LAZY _arg);
 }
 
 /**

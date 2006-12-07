@@ -163,6 +163,12 @@ TerminateTransaction extends Transaction {
   sfClass "org.smartfrog.services.database.core.TerminationTransactionImpl";
 }
 
+/**
+ * This is a condition which checks that a connection to the URL can be opened
+ */
+ConnectionOpen extends DatabaseOperation {
+  sfClass "org.smartfrog.services.database.core.ConnectionOpenCondition";
+}
 
 /**
  * make a selection, results go into the results vector as a nested vector, columns becomes the vector of columns

@@ -27,7 +27,7 @@
 #include "/org/smartfrog/services/assertions/components.sf"
 #include "/org/smartfrog/sfcore/workflow/combinators/sequence.sf"
 #include "/org/smartfrog/sfcore/workflow/combinators/delay.sf"
-
+#include "/org/smartfrog/sfcore/workflow/conditional/components.sf"
 
 
 

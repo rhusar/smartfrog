@@ -70,7 +70,7 @@ import java.util.Vector;
  * Ant's task created 20-Sep-2006 17:25:59
  */
 
-public class TransactionImpl extends JdbcOperationImpl implements Transaction {
+public class TransactionImpl extends AsyncJdbcOperation implements Transaction {
     public static final String ERROR_NO_COMMANDS = "No commands declared";
     public static final String ERROR_TOO_MANY_COMMANDS = "Too many command attributes";
     private List<String> commands;
