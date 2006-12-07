@@ -44,6 +44,9 @@ public final class Statistics implements Serializable, Cloneable {
     private int loggedMessages = 0;
 
 
+    /**
+     * Hash table by outcome
+     */
     private HashMap<String,Integer> outcomes=new HashMap<String, Integer>();
 
 
