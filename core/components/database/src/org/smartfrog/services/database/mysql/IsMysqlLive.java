@@ -40,32 +40,30 @@ import java.lang.reflect.InvocationTargetException;
  */
 
 public class IsMysqlLive extends ConnectionOpenCondition implements Condition {
+
+    /**
+     * Pre-created parameter class
+     */
     private final Class[] EMPTY_PARAM_CLASSES = {};
+    /**
+     * Pre-created parameter class
+     */
     private final Object[] EMPTY_PARAM_OBJECTS = {};
 
 
     public IsMysqlLive() throws RemoteException {
     }
-/*
 
-    protected boolean ping(Connection connection) throws SmartFrogException, RemoteException {
 
-        if (!(connection instanceof com.mysql.jdbc.Connection)) {
-            throw new SmartFrogException("JDBC connection " + connection + " is of type " + connection.getClass()
-                    + " and not from a current MySQL driver");
-        }
-        com.mysql.jdbc.Connection mysqlConnection = (com.mysql.jdbc.Connection) connection;
-        try {
-            mysqlConnection.ping();
-            return true;
-        } catch (SQLException e) {
-            getLog().debug("When pinging ", e);
-            return false;
-        }
-    }*/
-
-    protected boolean ping(Connection connection) throws SmartFrogException, RemoteException {
-        Class<? extends Connection> clazz = connection.getClass();
+    /**
+     * Introspect to make a ping on the remote system. Any error during the ping is logged at debug level and
+     * the method returns false. A successful ping is turned into success; there's no timing checks or anything
+     * @param connection connection to ping
+     * @return true if the ping succeeds, false if something went wrong.
+     * @throws SmartFrogException if the connection does not support a public void ping() method
+     */
+    protected boolean ping(Connection connection) throws SmartFrogException {
+        Class clazz = connection.getClass();
         try {
             Method method = clazz.getMethod("ping", EMPTY_PARAM_CLASSES);
             method.invoke(connection, EMPTY_PARAM_OBJECTS);

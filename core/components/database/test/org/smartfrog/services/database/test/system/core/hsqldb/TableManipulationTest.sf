@@ -4,14 +4,17 @@
 
 TableManipulationTest extends TestCompound {
 
+    description "Creates users and tables";
+    sfShouldTerminate false;
+
     action extends TestDB { 
     }
 
     tests extends Sequence {
 
-        delay extends Delay {
+/*        delay extends Delay {
           time 5000;
-        }
+        }*/
 
         dropUser1 extends DropUser {
           database LAZY ATTRIB action;

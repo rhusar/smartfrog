@@ -20,8 +20,7 @@
 
 
 /*
- components for MySQL integration
-  see http://www.hsqldb.org/doc/guide/ch04.html for more details
+ * components for MySQL integration
  */
 
 #include "/org/smartfrog/services/database/core/components.sf";
@@ -33,26 +32,35 @@
  * HSQLDB is good for embedding and testing
  */
 
-MysqlBinding extends DatabaseBinding {
-  driver "org.gjt.mm.mysql.Driver";
+MySqlBinding extends DatabaseBinding {
+  driver "com.mysql.jdbc.Driver";
 
 }
 
 /**
  * Add host and database names to the binding
  */
-MysqlTargetedBinding extends MysqlBinding {
+MySqlTargetedBinding extends MysqlBinding {
   host locahost;
+  //port
+  port 3306;
   database "";
   binding_prefix "jdbc:mysql://";
-  url (((binding_prefix ++ host) ++ "/")) ++ database);
+  url (((((binding_prefix ++ host) ++ ":" ) ++ port) ++ "/")) ++ database);
 }
 
 /**
  * The administrator account
  */
-MysqlAdministrator extends MysqlTargetedBinding {
+MySqlAdministrator extends MysqlTargetedBinding {
   username "root";
   password "";
 }
 
+/**
+ * Test for a live database
+ * Requires a database > 3.22, and a compatible mysql driver.
+ */
+IsMySqlLive extends ConnectionOpens {
+  sfClass "org.smartfrog.services.database.mysql.IsMysqlLive";
+}
