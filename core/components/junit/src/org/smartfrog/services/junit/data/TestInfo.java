@@ -28,8 +28,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * This is information about a test that is sent over the wire. created
- * 15-Apr-2004 13:15:32
+ * This is information about a test that is sent over the wire.
+ *
+ * One of the problems here is that even 'success' can be qualified, so that Prolog unit tests can
+ * say 'suceeded, but with multiple solutions', or a timed test could have 'succeeded out of time'
  */
 
 public final class TestInfo implements Serializable, Cloneable {
@@ -45,6 +47,18 @@ public final class TestInfo implements Serializable, Cloneable {
      * @serial
      */
     private String text;
+
+    /**
+     * A description of the test from any description attribute/metadata
+     * @serial
+     */
+    private String description;
+
+    /**
+     * A list of tags to file the test
+     * @serial
+     */
+    private List<String> tags;
 
     /**
      * classname of the test
@@ -272,6 +286,24 @@ public final class TestInfo implements Serializable, Cloneable {
 
     public void setSessionID(String sessionID) {
         this.sessionID = sessionID;
+    }
+
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+
+    public String getIpaddr() {
+        return ipaddr;
+    }
+
+    public void setIpaddr(String ipaddr) {
+        this.ipaddr = ipaddr;
     }
 
     /**
