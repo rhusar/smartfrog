@@ -25,6 +25,7 @@ import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.common.SmartFrogLivenessException;
 import org.smartfrog.sfcore.utils.ComponentHelper;
+import org.smartfrog.sfcore.workflow.conditional.Condition;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -32,7 +33,7 @@ import java.rmi.RemoteException;
 
 /**
  */
-public class HostExistsImpl extends PrimImpl implements HostExists {
+public class HostExistsImpl extends PrimImpl implements HostExists, Condition {
 
     private String host;
     private boolean checkOnStartup;
@@ -95,8 +96,8 @@ public class HostExistsImpl extends PrimImpl implements HostExists {
             throws SmartFrogException, RemoteException {
         super.sfStart();
         host=sfResolve(ATTR_HOSTNAME,(String)null,false);
-        checkOnStartup = sfResolve(ATTR_HOSTNAME, true, true);
-        checkOnLiveness = sfResolve(ATTR_HOSTNAME, true, true);
+        checkOnStartup = sfResolve(ATTR_CHECK_ON_STARTUP, true, true);
+        checkOnLiveness = sfResolve(ATTR_CHECK_ON_LIVENESS, true, true);
         if(checkOnStartup && host!=null && !hostExists(host)) {
             throw new SmartFrogDeploymentException("Unknown host "+host);
         }
@@ -123,5 +124,18 @@ public class HostExistsImpl extends PrimImpl implements HostExists {
         if (checkOnLiveness && host != null && !hostExists(host)) {
             throw new SmartFrogLivenessException("Unknown host " + host);
         }
+    }
+
+
+    /**
+     * check for the host existing
+     *
+     * @return true if it is successful, false if not
+     * @throws java.rmi.RemoteException for network problems
+     * @throws org.smartfrog.sfcore.common.SmartFrogException
+     *                                  for any other problem
+     */
+    public boolean evaluate() throws RemoteException, SmartFrogException {
+        return hostExists(host);
     }
 }

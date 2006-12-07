@@ -52,6 +52,18 @@ HostExists extends WorkflowPrim {
     checkOnLiveness false;
 }
 
+/**
+ * This makes the component act as a condition, by dropping the startup check
+ * the condition is then only checked in the evaluate() method
+ */
+HostExistsCondition extends HostExists {
+  checkOnStartup false;
+}
+
+/**
+ * As a function
+ */
 hostExists extends {
     phase.function "org.smartfrog.services.www.diagnostics.HostExistsFunction";
 }
+

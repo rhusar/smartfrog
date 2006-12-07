@@ -25,6 +25,7 @@ import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.logging.Log;
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.utils.ComponentHelper;
+import org.smartfrog.sfcore.workflow.conditional.Condition;
 
 import java.net.URL;
 import java.rmi.RemoteException;
@@ -38,7 +39,7 @@ import java.util.Vector;
  * cache information about the GET with remote access, too. created 21-Apr-2004
  * 13:46:23
  */
-public class LivenessPageComponent extends PrimImpl implements LivenessPage {
+public class LivenessPageComponent extends PrimImpl implements LivenessPage, Condition {
 
     /**
      * enabled flag
@@ -66,6 +67,9 @@ public class LivenessPageComponent extends PrimImpl implements LivenessPage {
      */
     private Log log;
     private ComponentHelper helper;
+
+    private boolean checkOnStartup;
+    private boolean checkOnLiveness;
 
     /**
      * empty constructor
@@ -146,7 +150,8 @@ public class LivenessPageComponent extends PrimImpl implements LivenessPage {
         livenessPage.setFetchErrorText(sfResolve(ATTR_ERROR_TEXT,
                 livenessPage.getFetchErrorText(), false));
         checkFrequency = sfResolve(ATTR_CHECK_FREQUENCY, checkFrequency, false);
-
+        checkOnStartup = sfResolve(ATTR_CHECK_ON_STARTUP, true, true);
+        checkOnLiveness = sfResolve(ATTR_CHECK_ON_LIVENESS, true, true);
 
         updateEnabledState();
         //now tell the liveness page it is deployed
@@ -159,7 +164,23 @@ public class LivenessPageComponent extends PrimImpl implements LivenessPage {
 
         helper = new ComponentHelper(this);
         log = helper.getLogger();
-        log.info(getDescription() + toString());
+        String description = getDescription() + toString();
+        log.info(description);
+        if(checkOnStartup) {
+            checkPage();
+        }
+        //and do a termination if asked for
+        if(terminateAfterStartup()) {
+            helper.sfSelfDetachAndOrTerminate(null,description,null,null);
+        }
+    }
+
+    /**
+     * override point --should we check for workflow termination after startup
+     * @return true if the workflow attributes should be checked during startup
+     */
+    protected boolean terminateAfterStartup() {
+        return true;
     }
 
     protected String getDescription() {
@@ -184,7 +205,9 @@ public class LivenessPageComponent extends PrimImpl implements LivenessPage {
     public void sfPing(Object source)
             throws SmartFrogLivenessException, RemoteException {
         super.sfPing(source);
-        livenessPing();
+        if(checkOnLiveness) {
+            livenessPing();
+        }
     }
 
     /**
@@ -231,6 +254,24 @@ public class LivenessPageComponent extends PrimImpl implements LivenessPage {
             return livenessPage.toString();
         } else {
             return "undeployed liveness checker";
+        }
+    }
+
+
+    /**
+     * For liveness we evaluate the page and return true if the page is there
+     *
+     * @return true if it is successful, false if not
+     * @throws java.rmi.RemoteException for network problems
+     * @throws org.smartfrog.sfcore.common.SmartFrogException
+     *                                  for any other problem
+     */
+    public boolean evaluate() throws RemoteException, SmartFrogException {
+        try {
+            livenessPage.onPing();
+            return true;
+        } catch (SmartFrogLivenessException e) {
+            return false;
         }
     }
 }

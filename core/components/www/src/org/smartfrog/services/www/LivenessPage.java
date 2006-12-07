@@ -32,20 +32,22 @@ import java.rmi.RemoteException;
 
 public interface LivenessPage extends Remote {
 
-    static final String ATTR_URL = "url";
-    static final String ATTR_HOST = "host";
-    static final String ATTR_PORT = "port";
-    static final String ATTR_PROTOCOL = "protocol";
-    static final String ATTR_PAGE = "page";
-    static final String ATTR_PATH = "path";
-    static final String ATTR_FOLLOW_REDIRECTS = "followRedirects";
-    static final String ATTR_ERROR_TEXT = "fetchErrorText";
-    static final String ATTR_MINIMUM_RESPONSE_CODE = "minimumResponseCode";
-    static final String ATTR_MAXIMUM_RESPONSE_CODE = "maximumResponseCode";
-    static final String ATTR_CHECK_FREQUENCY = "checkFrequency";
-    static final String ATTR_ENABLED = "enabled";
-    static final String ATTR_QUERIES = "queries";
-    static final String ATTR_MIME_TYPES = "mimeType";
+    String ATTR_URL = "url";
+    String ATTR_HOST = "host";
+    String ATTR_PORT = "port";
+    String ATTR_PROTOCOL = "protocol";
+    String ATTR_PAGE = "page";
+    String ATTR_PATH = "path";
+    String ATTR_FOLLOW_REDIRECTS = "followRedirects";
+    String ATTR_ERROR_TEXT = "fetchErrorText";
+    String ATTR_MINIMUM_RESPONSE_CODE = "minimumResponseCode";
+    String ATTR_MAXIMUM_RESPONSE_CODE = "maximumResponseCode";
+    String ATTR_CHECK_FREQUENCY = "checkFrequency";
+    String ATTR_ENABLED = "enabled";
+    String ATTR_QUERIES = "queries";
+    String ATTR_MIME_TYPES = "mimeType";
+    String ATTR_CHECK_ON_STARTUP = "checkOnStartup";
+    String ATTR_CHECK_ON_LIVENESS = "checkOnLiveness";
 
     /**
      * Check the page, regardless of whether the component is enabled or not.
