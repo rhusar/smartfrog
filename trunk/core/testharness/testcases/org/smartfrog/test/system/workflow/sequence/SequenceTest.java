@@ -43,6 +43,12 @@ public class SequenceTest extends DeployingTestBase {
         assertAttributeEquals(application, "value", true);
     }
 
+    public void testEmptySequence() throws Throwable {
+        application = deployExpectingSuccess(FILES + "testEmptySequence.sf", "testEmptySequence");
+        TestBlock block = (TestBlock) application;
+        expectSuccessfulTermination(block);
+    }
+
     public void testFailingSequence() throws Throwable {
         application = deployExpectingSuccess(FILES + "testFailingSequence.sf", "testFailingSequence");
         TestBlock block = (TestBlock) application;
