@@ -26,8 +26,6 @@ Delay extends OptionalActionCompound {
     //delay in milliseconds
         time extends Integer;
     }
-    // action ...
-    
     //delay in milliseconds
     time 0;
 }

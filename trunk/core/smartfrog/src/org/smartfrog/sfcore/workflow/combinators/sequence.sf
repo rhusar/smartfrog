@@ -26,10 +26,12 @@ For more information: www.smartfrog.org
  * combinator creates no subcomponents until it's sfStart phase at which point
  * the first mentioned sub-components is created in the normal way. The
  * Sequence combinator waits for each of its sub-components to terminate at
- * which point it starts the next. When teh last terminates normally it too
+ * which point it starts the next. When the last child terminates normally it too
  * terminates normally. If an error occurs at any point, or a sub-component
  * terminates abnormally, the Sequence combinator does too.
  */
 Sequence extends ActionsCompound {
     sfClass "org.smartfrog.sfcore.workflow.combinators.Sequence";
+    //control action on an empty deployment
+    sfShouldTerminate true;
 }

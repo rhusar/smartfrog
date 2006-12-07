@@ -30,6 +30,7 @@ import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.workflow.eventbus.EventCompoundImpl;
 import org.smartfrog.sfcore.common.*;
+import org.smartfrog.sfcore.utils.ComponentHelper;
 
 /**
  * Sequence is a modified compound which differs in that the sub-components
@@ -79,15 +80,12 @@ public class Sequence extends EventCompoundImpl implements Compound {
      *         the component
      */
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
-            super.sfStart();
+        super.sfStart();
+        if(actionKeys.hasMoreElements()) {
             // let any errors be thrown and caught by SmartFrog for abnormal
             // termination  - including empty actions
             String componentName;
-            try {
-                componentName = (String)actionKeys.nextElement();
-            } catch (java.util.NoSuchElementException nex){
-               throw new SmartFrogRuntimeException ("Empty actions",this);
-            }
+            componentName = (String)actionKeys.nextElement();
             ComponentDescription act =null;
             try {
               act = (ComponentDescription) actions.get(componentName);
@@ -101,6 +99,13 @@ public class Sequence extends EventCompoundImpl implements Compound {
                         + componentName +" in " +sfCompleteNameSafe() ,ex);
               }
             }
+        } else {
+            //nothing in the sequence, so just terminate ourselves
+            new ComponentHelper(this).sfSelfDetachAndOrTerminate(TerminationRecord.NORMAL,
+                    "Empty Sequence",
+                    null,
+                    null);
+        }
     }
 
 
