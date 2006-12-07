@@ -98,6 +98,7 @@ public interface LibraryArtifact extends FileUsingComponent {
     /**
      * Create a serialized artifact to work with 
      * @return a serialized representation of the artifact's state.
+     * @throws RemoteException for network problems
      */
     public SerializedArtifact createSerializedArtifact() throws RemoteException;
 

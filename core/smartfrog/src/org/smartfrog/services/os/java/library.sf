@@ -206,7 +206,7 @@ Maven2Library extends Library {
 
 LibraryArtifact extends FileUsingWorkflowComponent {
     sfClass "org.smartfrog.services.os.java.LibraryArtifactImpl";
-    librarySchema extends Schema {
+    artifactSchema extends Schema {
         library extends OptionalCD;
         project extends String;
         artifact extends String;
@@ -222,14 +222,16 @@ LibraryArtifact extends FileUsingWorkflowComponent {
         md5 extends OptionalString;
         //block size for downloads
         blocksize extends OptionalInteger;
+       // Attribute to copy a component to. If it is a directory, 
+       // then the file gets copied as is. If is not a dir (or doesnt exist)
+       // it is taken as a filepath.
+        copyTo extends FilenameType;
+
         //flag for o
         downloadIfAbsent extends Boolean;
         downloadAlways extends Boolean;
         failIfNotPresent extends Boolean;
-/*
-        sfShouldTerminate extends Boolean;
-        terminate extends OptionalBoolean;
-*/
+
     }
     artifact ATTRIB project;
 
@@ -247,14 +249,6 @@ LibraryArtifact extends FileUsingWorkflowComponent {
 
     //require the file to exist or be downloaded
     failIfNotPresent true;
-
-    //stay present after download
-    //real terminate flag, terminate is kept for legacy reasons.
-/*
-    sfShouldTerminate terminate;
-    terminate false;
-
-*/
 
 }
 
