@@ -25,13 +25,15 @@ import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 
 
 /**
- * Implements the property reference part. This part resolves to the system
- * property with given value. References are not forwarded from here, so
+ * Implements the iproperty reference part. This part resolves to the system
+ * property with given value; if it is not found it will try to find it in the environment properties set.
+ * The string value is the transformed to an object using default the parser.
+ * References are not forwarded from here, so
  * having this part in the middle of a reference does NOT make sense!
  *
  */
 public class IPropertyReferencePart extends ReferencePart {
-    /** Base string representation of this part (PROPERTY). */
+    /** Base string representation of this part (@value). */
     public static final String IPROPERTY = "IPROPERTY";
 
 
@@ -95,10 +97,11 @@ public class IPropertyReferencePart extends ReferencePart {
             throws SmartFrogResolutionException {
         try {
             String v = SFSystem.getProperty((String) value, null);
-            if (v == null) {
+            if (v==null)
+               v = SFSystem.getEnv((String) value, null);
+            if (v == null)
                 throw SmartFrogResolutionException.notFound(r, null);
-            }
-            return new Integer(v);
+            return SFSystem.parseValue(v,null);
         } catch (Throwable ex) {
             throw (SmartFrogResolutionException) SmartFrogResolutionException.forward(ex.toString(), r, ex);
         }
@@ -120,10 +123,11 @@ public class IPropertyReferencePart extends ReferencePart {
        throws SmartFrogResolutionException {
         try {
             String v = SFSystem.getProperty((String) value, null);
-            if (v == null) {
+            if (v==null)
+               v = SFSystem.getEnv((String) value, null);
+            if (v == null)
                 throw SmartFrogResolutionException.notFound(r, null);
-            }
-            return new Integer(v);
+            return SFSystem.parseValue(v,null);
         } catch (Throwable ex) {
             throw (SmartFrogResolutionException) SmartFrogResolutionException.forward(ex.toString(), r, ex);
         }
