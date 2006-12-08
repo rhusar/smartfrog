@@ -53,6 +53,7 @@ import java.util.Enumeration;
 import java.util.Properties;
 import java.util.Vector;
 import org.smartfrog.sfcore.common.Diagnostics;
+import org.smartfrog.sfcore.parser.SFParser;
 
 
 /**
@@ -118,6 +119,37 @@ public class SFSystem implements MessageKeys {
      */
     public static String getProperty(String key) {
         return System.getProperty(key);
+    }
+
+    /**
+     * Entry point to get system environment properties.
+     *  @since java 1.5
+     *
+     * @param key property key to look up
+     * @param def default to return if key not present
+     *
+     * @return property value under key or default if not present
+     */
+    public static String getEnv (String key, String def) {
+        String res = System.getenv(key);
+
+        if (res == null) {
+            return def;
+        }
+
+        return res;
+    }
+
+    /**
+     * Common entry point to get environment properties.
+     *  @since java 1.5
+     *
+     * @param key key to look up
+     *
+     * @return property value under key
+     */
+    public static String getEnv(String key) {
+        return System.getenv(key);
     }
 
     /**
@@ -598,6 +630,23 @@ public class SFSystem implements MessageKeys {
           if (bStrm!=null) { try { bStrm.close();} catch (IOException swallowed) { } }
           if (iStrm!=null) { try { iStrm.close();} catch (IOException swallowed) { } }
         }
+    }
+
+    /**
+     * Creates an object from a String using the language parser selected by language.
+     *
+     * @param textToParse  text to be parsed
+     * @param language language. If null then "sf" is used by default.
+     * @return Object
+     */
+    public static Object parseValue(String textToParse, String language) {
+        try {
+            SFParser parser = new SFParser(language);
+            return parser.sfParseAnyValue( textToParse);
+        } catch (Throwable ex) {
+            if (sfLog().isErrorEnabled()) sfLog().error (ex);
+        }
+        return null;
     }
 
     /**

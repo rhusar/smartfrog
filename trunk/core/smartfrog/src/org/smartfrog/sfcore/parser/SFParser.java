@@ -88,12 +88,17 @@ public class SFParser implements Parser, MessageKeys {
      * Constructor for an instance of the parser for the given language.
      *
      * @param languageOrUrl the name of the language to use or the url
-     *        with suffixed by language extension.
+     *        with suffixed by language extension.  if null the uses sf language by default
      *
      * @throws SmartFrogException error crearing instance of parser
      */
     public SFParser(String languageOrUrl) throws SmartFrogException {
-        theLanguage = getLanguageFromUrl(languageOrUrl);
+        if (languageOrUrl!=null) {
+         theLanguage = getLanguageFromUrl(languageOrUrl);
+        } else {
+            theLanguage = getLanguageFromUrl("sf");
+        }
+             
         parser = getParser();
     }
 
