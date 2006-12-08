@@ -26,12 +26,13 @@ import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 
 /**
  * Implements the property reference part. This part resolves to the system
- * property with given value. References are not forwarded from here, so
+ * property with given value; if it is not found it will try to find it in the environment properties set.
+ * References are not forwarded from here, so
  * having this part in the middle of a reference does NOT make sense!
  *
  */
 public class PropertyReferencePart extends ReferencePart {
-    /** Base string representation of this part (PROPERTY). */
+    /** Base string representation of this part (@value). */
     public static final String PROPERTY = "PROPERTY";
 
     public Object value;
@@ -93,9 +94,12 @@ public class PropertyReferencePart extends ReferencePart {
     public Object resolve(ReferenceResolver rr, Reference r, int index)
         throws SmartFrogResolutionException {
         try {
-            String s = SFSystem.getProperty((String) value, null);
-            if (s==null) throw SmartFrogResolutionException.notFound (r,null);
-            return s;
+            String v = SFSystem.getProperty((String) value, null);
+            if (v==null)
+               v = SFSystem.getEnv((String) value, null);
+            if (v==null)
+                throw SmartFrogResolutionException.notFound (r,null);
+            return v;
         } catch (Throwable ex) {
             throw (SmartFrogResolutionException)SmartFrogResolutionException.forward (ex.toString(),r,ex);
         }
@@ -116,9 +120,12 @@ public class PropertyReferencePart extends ReferencePart {
     public Object resolve(RemoteReferenceResolver rr, Reference r, int index)
         throws SmartFrogResolutionException {
         try {
-          String s = SFSystem.getProperty((String) value, null);
-          if (s==null) throw SmartFrogResolutionException.notFound (r,null);
-          return s;
+          String v = SFSystem.getProperty((String) value, null);
+          if (v==null)
+               v = SFSystem.getEnv((String) value, null);
+            if (v==null)
+                throw SmartFrogResolutionException.notFound (r,null);
+          return v;
         } catch (Throwable ex) {
             throw (SmartFrogResolutionException)SmartFrogResolutionException.forward (ex.toString(),r,ex);
         }
