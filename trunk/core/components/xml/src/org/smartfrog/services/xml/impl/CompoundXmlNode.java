@@ -68,16 +68,24 @@ public abstract class CompoundXmlNode extends CompoundImpl implements XmlNode,
     /**
      * Get the node underneath. Will be null until the node is created.
      *
-     * @return
+     * @return the node
      */
     public Node getNode() {
         return helper.getNode();
     }
 
+    /**
+     * Get the parent node
+     * @return the node cast to a ParentNode
+     */
     public ParentNode getParentNode() {
         return (ParentNode) helper.getNode();
     }
 
+    /**
+     * Get the parent element
+     * @return the node cast to an Element
+     */
     public Element getParentElement() {
         return (Element) helper.getNode();
     }
@@ -89,15 +97,6 @@ public abstract class CompoundXmlNode extends CompoundImpl implements XmlNode,
     public String getXml() {
         return helper.getXml();
     }
-
-    /**
-     * create a node of the appropriate type. This is called during deployment;
-     *
-     * @return a new node
-     * @throws nu.xom.XMLException if needed
-     */
-    public abstract Node createNode() throws RemoteException,
-            SmartFrogException;
 
     /**
      * generate XML from the doc. This always triggers a recalculate of
@@ -150,8 +149,8 @@ public abstract class CompoundXmlNode extends CompoundImpl implements XmlNode,
     /**
      * subclasses must implement their child processing logic here.
      *
-     * @throws SmartFrogException
-     * @throws RemoteException
+     * @throws SmartFrogException error while deploying
+     * @throws RemoteException In case of network/rmi error
      */
     protected abstract void addChildren() throws SmartFrogException,
             RemoteException;
@@ -160,7 +159,7 @@ public abstract class CompoundXmlNode extends CompoundImpl implements XmlNode,
     /**
      * add a child to this node.
      *
-     * @param node
+     * @param node child node
      */
     public void appendChild(LocalNode node) {
         Node xomNode = node.getNode();
@@ -175,7 +174,7 @@ public abstract class CompoundXmlNode extends CompoundImpl implements XmlNode,
     /**
      * cast a prim to a {@link LocalNode} and add.
      *
-     * @param nodeAsPrim
+     * @param nodeAsPrim the node as a prim
      * @throws SmartFrogDeploymentException if of the wrong type
      */
     public void appendChild(Prim nodeAsPrim)

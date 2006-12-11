@@ -32,6 +32,10 @@ import java.rmi.RemoteException;
  */
 public class XmlDocTypeImpl extends SimpleXmlNode implements XmlDocType {
 
+    /**
+     *
+     * @throws RemoteException In case of network/rmi error
+     */
     public XmlDocTypeImpl() throws RemoteException {
     }
 
@@ -39,6 +43,9 @@ public class XmlDocTypeImpl extends SimpleXmlNode implements XmlDocType {
      * create a node of the appropriate type. This is called during deployment;
      *
      * @return a new node of type {@link DocType}
+     * @throws RemoteException In case of network/rmi error
+     * @throws SmartFrogException For smartfrog problems, and for caught
+     *                            XMLExceptions 
      */
     public Node createNode() throws RemoteException, SmartFrogException {
         String publicID = sfResolve(ATTR_PUBLICID, (String) null, false);

@@ -31,6 +31,11 @@ import java.rmi.RemoteException;
  * Implement the text node
  */
 public class XmlTextNodeImpl extends SimpleXmlNode implements XmlTextNode {
+
+    /**
+     *
+     * @throws RemoteException In case of network/rmi error
+     *  */
     public XmlTextNodeImpl() throws RemoteException {
     }
 
@@ -38,6 +43,9 @@ public class XmlTextNodeImpl extends SimpleXmlNode implements XmlTextNode {
      * create a node of the appropriate type. This is called during deployment;
      * Requires {@link #ATTR_TEXT} to be set
      * @return a Node of type {@link nu.xom.Text}
+     * @throws RemoteException In case of network/rmi error
+     * @throws SmartFrogException For smartfrog problems, and for caught
+     *                            XMLExceptions
      */
     public Node createNode() throws RemoteException, SmartFrogException {
         String text = sfResolve(ATTR_TEXT, "", true);

@@ -66,19 +66,27 @@ public final class ParserHelper implements XmlConstants {
         return xerces;
     }
 
-    public static void setFeatures(XMLReader xerces,
+    /**
+     * Set a featurel on the parser
+     * @param parser parser
+     * @param secureLoading whether secure loading should be supported
+     * @param validate whether validation is needed
+     * @param disableDoctypes whether doc types are allowed
+     */
+    public static void setFeatures(XMLReader parser,
                                     boolean secureLoading,
-                                    boolean validate, boolean disableDoctypes) {
+                                    boolean validate,
+                                    boolean disableDoctypes) {
 /*        setFeature(xerces,
                 FEATURE_SECURE_PROCESSING,
                 secureLoading);*/
         if(validate) {
-            enableXmlSchema(xerces);
+            enableXmlSchema(parser);
         }
-        setFeature(xerces,
+        setFeature(parser,
                 FEATURE_SAX_NAMESPACES,
                 true);
-        setFeature(xerces,
+        setFeature(parser,
                 FEATURE_SAX_VALIDATION,
                 validate);
 /*        setFeature(xerces,
@@ -94,32 +102,32 @@ public final class ParserHelper implements XmlConstants {
 
     /**
      * turn XSD support on
-     * @param xerces
+     * @param parser parser
      */
-    public static void enableXmlSchema(XMLReader xerces) {
-        setFeature(xerces,
+    public static void enableXmlSchema(XMLReader parser) {
+        setFeature(parser,
                 FEATURE_XERCES_XSD,
                 true);
-        setFeature(xerces,
+        setFeature(parser,
                 FEATURE_XERCES_XSD_FULLCHECKING,
                 true);
     }
 
     /**
-     * create Xerces. look first for xerces, then for the sun version
+     * create a parser. look first for xerces, then for the sun version
      *
-     * @return a copy of Xerces
-     * @throws SAXException if neither implementation coudl be loaded
+     * @return a copy of Xerces or other parsser
+     * @throws SAXException if no implementation could be loaded
      */
     public static XMLReader createBaseXercesInstance() throws SAXException {
-        XMLReader xerces = null;
+        XMLReader parser = null;
         try {
-            xerces = XMLReaderFactory.createXMLReader(PARSER_XERCES);
+            parser = XMLReaderFactory.createXMLReader(PARSER_XERCES);
         } catch (SAXException e) {
             log.debug("Failed to find Xerces", e);
-            xerces = XMLReaderFactory.createXMLReader(PARSER_JAVA_15);
+            parser = XMLReaderFactory.createXMLReader(PARSER_JAVA_15);
         }
-        return xerces;
+        return parser;
     }
 
     /**
@@ -144,7 +152,7 @@ public final class ParserHelper implements XmlConstants {
     /**
      * use the JAXP APIs to locate and bind to a parser
      *
-     * @return
+     * @return a DOM runtime
      * @throws ParserConfigurationException
      */
     public static DOMImplementation loadDomImplementation()

@@ -76,7 +76,7 @@ public class AttributeIterator implements Iterator<Attribute>,
 
     /**
      * Return a new iterator over the element
-     * @return
+     * @return a new iterator over the element
      */
     public Iterator<Attribute> iterator() {
         return new AttributeIterator(element);

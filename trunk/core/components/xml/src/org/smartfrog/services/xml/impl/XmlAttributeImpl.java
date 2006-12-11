@@ -34,6 +34,10 @@ import java.rmi.RemoteException;
 public class XmlAttributeImpl extends SimpleXmlNode
         implements XmlAttribute {
 
+    /**
+     *
+     * @throws RemoteException In case of network/rmi error
+     */
     public XmlAttributeImpl() throws RemoteException {
     }
 

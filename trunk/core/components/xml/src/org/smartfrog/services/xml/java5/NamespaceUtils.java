@@ -57,7 +57,7 @@ public final class NamespaceUtils {
     /**
      * map from, say tns:something to 'tns'
      *
-     * @param string
+     * @param string to extract the ns from
      * @return null for no namespace
      */
     public static String extractNamespacePrefix(String string) {
@@ -72,7 +72,7 @@ public final class NamespaceUtils {
     /**
      * map from, say tns:something to 'something'
      *
-     * @param string
+     * @param string to extract the local name from
      * @return everything following the : or the whole string if one is not
      *         there
      */
@@ -87,8 +87,8 @@ public final class NamespaceUtils {
 
     /**
      * Get the qname of an element
-     * @param element
-     * @return
+     * @param element element to turn into a qname
+     * @return java 5 qualified name
      */
     public static QName makeQName(Element element) {
         return new QName(element.getNamespaceURI(),element.getLocalName());

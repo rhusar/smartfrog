@@ -47,6 +47,12 @@ public class DomToXom {
         this.builder = builder;
     }
 
+    /**
+     * convert a DOM to a byte array
+     * @param dom dom to serialize
+     * @return the byte array equivalent
+     * @throws ParsingException
+     */
     public byte[] convertToBytes(org.w3c.dom.Document dom) throws ParsingException {
         Document xom = DOMConverter.convert(dom);
         ByteArrayOutputStream out = new ByteArrayOutputStream();

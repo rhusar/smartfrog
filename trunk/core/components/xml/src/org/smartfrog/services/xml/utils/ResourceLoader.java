@@ -59,7 +59,7 @@ public class ResourceLoader {
     /**
      * load with a given codebase; goes through the smartfrog loader.
      *
-     * @param sfCodebase
+     * @param sfCodebase the codebase
      */
     public ResourceLoader(String sfCodebase) {
         this.codebase = sfCodebase;
@@ -70,9 +70,10 @@ public class ResourceLoader {
      * get the sfcodebase from a component. This is used to trigger sfcodebase
      * operation.
      *
-     * @param owner
-     * @throws SmartFrogResolutionException
-     * @throws RemoteException
+     * @param owner owner class
+     * @throws RemoteException In case of network/rmi error
+     * @throws SmartFrogResolutionException For smartfrog problems, and for caught
+     *                            XMLExceptions
      */
     public ResourceLoader(Prim owner) throws SmartFrogResolutionException,
             RemoteException {
@@ -97,11 +98,22 @@ public class ResourceLoader {
         return in;
     }
 
+    /**
+     * Load a resource through the loader
+     * @param resourceName name of the resource
+     * @return the input stream or null
+     */
     private InputStream loadResourceThroughClassloader(String resourceName) {
         InputStream in = loader.getResourceAsStream(resourceName);
         return in;
     }
 
+    /**
+     * Assert that a resource is loaded
+     * @param in input stream (may be null)
+     * @param resourcename the name of the resource (For the error)
+     * @throws IOException if the file was not found
+     */
     private void assertResourceLoaded(InputStream in, String resourcename)
             throws IOException {
         if ( in == null ) {
@@ -112,8 +124,8 @@ public class ResourceLoader {
     /**
      * load a resource.
      *
-     * @param resourceName
-     * @return
+     * @param resourceName name of the resource
+     * @return the open stream
      * @throws IOException if a resource is missing
      */
     public InputStream loadResource(String resourceName) throws IOException {
@@ -130,8 +142,8 @@ public class ResourceLoader {
     /**
      * load a resource into a string.
      *
-     * @param resourceName
-     * @return
+     * @param resourceName name of the resource
+     * @return the resource loaded as a string
      * @throws IOException if a resource is missing
      */
     public String loadResourceAsString(String resourceName) throws IOException {

@@ -55,6 +55,9 @@ public class XmlDocumentImpl extends CompoundXmlNode implements XmlDocument {
     public static final String UTF8 = "UTF-8";
     public static final String ERROR_WRONG_TYPE = "is not an XMLElement";
 
+    /**
+     * @throws RemoteException In case of network/rmi error
+     */
     public XmlDocumentImpl() throws RemoteException {
     }
 
@@ -63,6 +66,9 @@ public class XmlDocumentImpl extends CompoundXmlNode implements XmlDocument {
      *
      * @return a new node
      * @throws nu.xom.XMLException if needed
+     * @throws RemoteException In case of network/rmi error
+     * @throws SmartFrogException For smartfrog problems, and for caught
+     *                            XMLExceptions
      */
     public Node createNode() throws RemoteException, SmartFrogException {
         Prim root = resolveRoot();
@@ -82,6 +88,12 @@ public class XmlDocumentImpl extends CompoundXmlNode implements XmlDocument {
         }
     }
 
+    /**
+     * Resolve the root attribute, which must be present
+     * @return the root atribute
+     * @throws SmartFrogResolutionException if there was none
+     * @throws RemoteException In case of network/rmi error
+     *  */
     private Prim resolveRoot() throws SmartFrogResolutionException,
             RemoteException {
         Prim root = sfResolve(ATTR_ROOT, (Prim) null, true);
@@ -95,10 +107,9 @@ public class XmlDocumentImpl extends CompoundXmlNode implements XmlDocument {
      * don't know what has changed underneath.
      *
      * @return XML of the tree
-     * @throws java.rmi.RemoteException
-     * @throws org.smartfrog.sfcore.common.SmartFrogException
-     *                                  for smartfrog problems, and for caught
-     *                                  XMLExceptions
+     * @throws RemoteException In case of network/rmi error
+     * @throws SmartFrogException For smartfrog problems, and for caught
+     *                            XMLExceptions
      */
     public String toXML() throws RemoteException, SmartFrogException {
         //special handling of the situation where there is no root.
@@ -118,7 +129,7 @@ public class XmlDocumentImpl extends CompoundXmlNode implements XmlDocument {
     /**
      * get the node typecast to a document
      *
-     * @return
+     * @return the document
      */
     public Document getDocument() {
         return (Document) getNode();
@@ -128,8 +139,9 @@ public class XmlDocumentImpl extends CompoundXmlNode implements XmlDocument {
      * root is added when we create the document; this call does the others
      * Called during the {@link CompoundXmlNode#sfDeploy()} operation of
      * our superclass
-     * @throws SmartFrogException
-     * @throws RemoteException
+     * @throws RemoteException In case of network/rmi error
+     * @throws SmartFrogException For smartfrog problems, and for caught
+     *                            XMLExceptions
      */
     protected void addChildren() throws SmartFrogException, RemoteException {
 
@@ -158,9 +170,9 @@ public class XmlDocumentImpl extends CompoundXmlNode implements XmlDocument {
      * After calling the superclass (and so deploying all our children), we
      * generate the XML, Then save the document, if desired
      *
-     * @throws org.smartfrog.sfcore.common.SmartFrogException
-     *                                  error while deploying
-     * @throws java.rmi.RemoteException In case of network/rmi error
+     * @throws RemoteException In case of network/rmi error
+     * @throws SmartFrogException For smartfrog problems, and for caught
+     *                            XMLExceptions
      */
     public synchronized void sfDeploy() throws SmartFrogException,
             RemoteException {
@@ -187,8 +199,9 @@ public class XmlDocumentImpl extends CompoundXmlNode implements XmlDocument {
     /**
      * optional code to bind to a source file.
      * @todo Implement file loading, building up a graph of prims as we go
-     * @throws RemoteException
-     * @throws SmartFrogRuntimeException
+     * @throws RemoteException In case of network/rmi error
+     * @throws SmartFrogException For smartfrog problems, and for caught
+     *                            XMLExceptions
      */
     private void bindToSourceFile() throws RemoteException,
             SmartFrogRuntimeException {
@@ -201,6 +214,12 @@ public class XmlDocumentImpl extends CompoundXmlNode implements XmlDocument {
         }
     }
 
+    /**
+     * Get the source file attribute
+     * @return
+     * @throws SmartFrogResolutionException
+     * @throws RemoteException
+     */
     private String getSourcefile() throws SmartFrogResolutionException, RemoteException {
         return FileSystem.lookupAbsolutePath(this,
                 new Reference(ATTR_SOURCEFILE),
@@ -213,9 +232,9 @@ public class XmlDocumentImpl extends CompoundXmlNode implements XmlDocument {
     /**
      * internal save routine
      *
-     * @param filename
-     * @param encoding
-     * @throws IOException
+     * @param filename file to save to
+     * @param encoding encoding
+     * @throws IOException if saving fails
      */
     protected void saveToFile(String filename, String encoding)
             throws IOException {
@@ -234,19 +253,19 @@ public class XmlDocumentImpl extends CompoundXmlNode implements XmlDocument {
     }
 
     /**
-     * save a document to a file
+     * save a document to a file as UTF8
      *
-     * @param filename
-     * @throws RemoteException
+     * @param filename file to save to
+     * @throws IOException if saving fails
      */
-    public void save(String filename) throws RemoteException, IOException {
+    public void save(String filename) throws IOException {
         save(filename, UTF8);
     }
 
     /**
      * Get the entire Xom document serialised for local manipulation.
      *
-     * @return
+     * @return the serialized document
      * @throws RemoteException
      */
     public SerializedXomDocument getXomDocument() throws RemoteException {
@@ -257,7 +276,7 @@ public class XmlDocumentImpl extends CompoundXmlNode implements XmlDocument {
      * set a new Xom document. After this point, the doc graph will diverge from
      * that of (any components) used to describe it
      *
-     * @param document
+     * @param document the serialized document
      * @throws RemoteException
      */
     public void setXomDocument(SerializedXomDocument document)
@@ -269,11 +288,11 @@ public class XmlDocumentImpl extends CompoundXmlNode implements XmlDocument {
     /**
      * save a document to a file
      *
-     * @param filename
-     * @param encoding
-     * @throws RemoteException
+     * @param filename file to save to
+     * @param encoding encoding
+     * @throws IOException if saving fails
      */
-    public void save(String filename, String encoding) throws RemoteException,
+    public void save(String filename, String encoding) throws 
             IOException {
         saveToFile(filename, encoding);
     }

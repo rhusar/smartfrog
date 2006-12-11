@@ -70,33 +70,33 @@ public interface XmlDocument extends XmlNode, FileUsingComponent {
 
     /**
      * save a document to a file
-     * @param filename
-     * @param encoding
-     * @throws RemoteException
+     * @param filename file name
+     * @param encoding encoding type
+     * @throws IOException for IO or network problems
      */
-    void save(String filename, String encoding) throws RemoteException,IOException ;
+    void save(String filename, String encoding) throws IOException ;
 
     /**
      * save a document to a file, utf-8 encoded
      *
-     * @param filename
-     * @throws RemoteException
+     * @param filename file name
+     * @throws IOException for IO or network problems
      */
-    void save(String filename) throws RemoteException,
+    void save(String filename) throws
             IOException;
 
     /**
      * Get the entire Xom document serialised for local manipulation.
-     * @return
-     * @throws RemoteException
+     * @return the document
+     * @throws RemoteException In case of network/rmi error
      */
     SerializedXomDocument getXomDocument() throws RemoteException;
 
     /**
      * set a new Xom document. After this point, the doc graph will diverge
      * from that of (any components) used to describe it
-     * @param document
-     * @throws RemoteException
+     * @param document document to pass in
+     * @throws RemoteException In case of network/rmi error
      */
     void setXomDocument(SerializedXomDocument document) throws RemoteException;
 }

@@ -56,7 +56,9 @@ public interface LocalNode {
      *
      * @return a new node
      *
-     * @throws nu.xom.XMLException if needed
+     * @throws RemoteException In case of network/rmi error
+     * @throws SmartFrogException For smartfrog problems, and for caught
+     *                            XMLExceptions
      */
     Node createNode() throws RemoteException,
             SmartFrogException;
