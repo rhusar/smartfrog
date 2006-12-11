@@ -243,6 +243,7 @@ public class SFSystem implements MessageKeys {
      * Prints given error string and exits system.
      *
      * @param str string to print on out
+     * @param exitCode exit code to exit with
      */
     public void exitWith(String str, int exitCode) {
         if (str != null) {
@@ -253,9 +254,11 @@ public class SFSystem implements MessageKeys {
 
 
     /**
-     * exit with an error code that depends on the status of the execution
-     *
+     * Exit with an error code that depends on the status of the execution
+     * If somethingFailed==false, we exit with {@link ExitCodes#EXIT_CODE_SUCCESS}.
+     * Otherwise, the exit code is passed down.
      * @param somethingFailed flag to indicate trouble
+     * @param exitCode exit code to exit with.
      */
     public static void exitWithStatus(boolean somethingFailed, int exitCode) {
         if(somethingFailed) {
@@ -290,6 +293,8 @@ public class SFSystem implements MessageKeys {
      * Runs a configuration descripor trapping any possible exception
      * @param cfgDesc ConfigurationDescriptor
      * @see ConfigurationDescriptor
+     * @return whatever came back from calling
+     *  {@link ConfigurationDescriptor#execute(ProcessCompound)}
      */
     public static Object runConfigurationDescriptor (ConfigurationDescriptor cfgDesc) {
         try {
@@ -302,11 +307,12 @@ public class SFSystem implements MessageKeys {
 
     /**
      * run whatever action is configured
-     * @param configuration
-     * @param throwException
+     * @param configuration the configuration to run
+     * @param throwException a flag to control whether exceptions should be thrown or
+     * caught and logged.
      * @return whatever came back from calling
      *  {@link ConfigurationDescriptor#execute(ProcessCompound)}
-     * @throws SmartFrogException
+     * @throws SmartFrogException if something went wrong and throwException==true.
      */
     public static Object runConfigurationDescriptor(ConfigurationDescriptor configuration,
                                                     boolean throwException) throws SmartFrogException {
