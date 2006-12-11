@@ -43,8 +43,8 @@ public class XomUtils {
     /**
      * turn a qname into an element of the same name
      *
-     * @param qname
-     * @return
+     * @param qname quanlified name of the elemment
+     * @return an element of the qname
      */
     public static Element element(QName qname) {
         Element element = new Element(qname.getLocalPart(),
@@ -56,9 +56,9 @@ public class XomUtils {
 
     /**
      * Save Xom to a buffer
-     * @param document
-     * @return
-     * @throws java.io.IOException
+     * @param document document to save
+     * @return the document serialized to a byte array
+     * @throws java.io.IOException in very unlikely circumstaances
      */
     public static byte[] xomToBuffer(Document document) throws IOException {
         ByteArrayOutputStream out=new ByteArrayOutputStream();
@@ -73,7 +73,7 @@ public class XomUtils {
      * detatch the root element from the doc, so it
      * can be used elsewhere. The doc is left with a dummy element
      * to avoid it being malformed.
-     * @param document
+     * @param document the document to detach from
      * @return element that was the root
      */
     public static Element detachRootElement(Document document) {
@@ -86,8 +86,8 @@ public class XomUtils {
      * Use the sun.misc codec to base-64 encode something.
      * This ties us to Sun java, but removes a dependency on commons.codec
      * or Xerces internal operations.
-     * @param payload
-     * @return
+     * @param payload the data to encode
+     * @return a base 64 encoded file
      */
     public static String base64Encode(byte[] payload) {
         sun.misc.BASE64Encoder encoder=new BASE64Encoder();
@@ -97,15 +97,21 @@ public class XomUtils {
 
     /**
      * Save a document to a buffer then base-64 encode it to a string
-     * @param document
+     * @param document the document to encode
      * @return the encoded string.
-     * @throws IOException
+     * @throws IOException if serialization went horribly wrong
      */
     public static String base64Encode(Document document) throws IOException {
         byte[] buffer=xomToBuffer(document);
         return base64Encode(buffer);
     }
 
+    /**
+     * Decode base 64 conent to a byte array
+     * @param encoded the encodec content
+     * @return the decoded buffer
+     * @throws IOException if something went wrong decoding the string
+     */
     public static byte[] base64Decode(String encoded) throws IOException {
         sun.misc.BASE64Decoder decoder=new BASE64Decoder();
         return decoder.decodeBuffer(encoded);

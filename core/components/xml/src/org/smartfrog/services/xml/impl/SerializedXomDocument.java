@@ -40,7 +40,7 @@ public class SerializedXomDocument implements Serializable {
     /**
      * create a node with a document
      *
-     * @param document
+     * @param document document to bind to
      */
     public SerializedXomDocument(Document document) {
         this.document = document;
@@ -54,8 +54,8 @@ public class SerializedXomDocument implements Serializable {
     /**
      * write out an object
      *
-     * @param out
-     * @throws IOException
+     * @param out output stream
+     * @throws IOException if writing fails
      */
     private void writeObject(java.io.ObjectOutputStream out) throws
             IOException {
@@ -65,7 +65,7 @@ public class SerializedXomDocument implements Serializable {
     /**
      * read in an object
      *
-     * @param in
+     * @param in object to read
      * @throws IOException
      * @throws ClassNotFoundException
      */
@@ -77,7 +77,7 @@ public class SerializedXomDocument implements Serializable {
     /**
      * get the underlying document
      *
-     * @return
+     * @return the document
      */
     public Document getDocument() {
         return document;
@@ -86,7 +86,7 @@ public class SerializedXomDocument implements Serializable {
     /**
      * set the underlying document
      *
-     * @param document
+     * @param document the document
      */
     public void setDocument(Document document) {
         this.document = document;

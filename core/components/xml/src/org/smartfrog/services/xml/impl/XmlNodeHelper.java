@@ -118,10 +118,9 @@ public final class XmlNodeHelper implements XmlNode {
      * don't know what has changed underneath.
      *
      * @return XML of the tree
-     * @throws java.rmi.RemoteException
-     * @throws org.smartfrog.sfcore.common.SmartFrogException
-     *                                  for smartfrog problems, and for caught
-     *                                  XMLExceptions
+     * @throws RemoteException In case of network/rmi error
+     * @throws SmartFrogException For smartfrog problems, and for caught
+     *                            XMLExceptions
      */
     public String toXML() throws RemoteException, SmartFrogException {
         try {
@@ -144,8 +143,9 @@ public final class XmlNodeHelper implements XmlNode {
      * Validate the XML, post-generation. Default implementation checks the
      * <code>valid</code> attribute and fails if it is false.
      *
-     * @throws SmartFrogException
-     * @throws RemoteException
+     * @throws RemoteException In case of network/rmi error
+     * @throws SmartFrogException For smartfrog problems, and for caught
+     *                            XMLExceptions
      */
     public void validate() throws SmartFrogException,
             RemoteException {
@@ -160,7 +160,7 @@ public final class XmlNodeHelper implements XmlNode {
     /**
      * equality test compares node values
      * @param o
-     * @return
+     * @return true if they are equal
      */
     public boolean equals(Object o) {
         if (this == o) {
@@ -193,7 +193,7 @@ public final class XmlNodeHelper implements XmlNode {
     /**
      * mape from an XMLException (extending RuntimeException) into a
      * SmartFrogException, which can then be thrown.
-     * @param xmle
+     * @param xmle XML exception
      * @return an instantiated and configured SmartFrogException.
      */
     public static SmartFrogException handleXmlException(XMLException xmle) {

@@ -197,7 +197,7 @@ public class XmlCatalogResolver implements URIResolver, EntityResolver {
     /**
      * extract any filename from this file.
      *
-     * @param systemId
+     * @param systemId the system ID/URL
      * @return the filename
      */
     String getFilenameFromSystemID(String systemId) {
@@ -209,7 +209,7 @@ public class XmlCatalogResolver implements URIResolver, EntityResolver {
 
     /**
      * strip off everything after the last forward /
-     * @param systemId
+     * @param systemId the system ID/URL
      * @return what is left at the end, or null if there is no / or nothing after it
      */
     private String extractLastPathElement(String systemId) {

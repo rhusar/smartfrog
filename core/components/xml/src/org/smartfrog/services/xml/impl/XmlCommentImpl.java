@@ -31,6 +31,11 @@ import java.rmi.RemoteException;
  * Comment class
  */
 public class XmlCommentImpl extends SimpleXmlNode implements XmlComment {
+
+    /**
+     *
+     * @throws RemoteException In case of network/rmi error
+     */
     public XmlCommentImpl() throws RemoteException {
     }
 
@@ -38,6 +43,9 @@ public class XmlCommentImpl extends SimpleXmlNode implements XmlComment {
      * create a node of the appropriate type. This is called during deployment;
      *
      * @return a Node of type {@link nu.xom.Comment}
+     * @throws RemoteException In case of network/rmi error
+     * @throws SmartFrogException For smartfrog problems, and for caught
+     *                            XMLExceptions
      */
     public Node createNode() throws RemoteException, SmartFrogException {
         String text = sfResolve(ATTR_COMMENT, "", true);

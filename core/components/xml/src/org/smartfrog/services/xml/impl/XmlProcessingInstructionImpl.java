@@ -33,6 +33,9 @@ import java.rmi.RemoteException;
 public class XmlProcessingInstructionImpl extends SimpleXmlNode
         implements XmlProcessingInstruction {
 
+    /**
+     * @throws RemoteException In case of network/rmi error
+     */
     public XmlProcessingInstructionImpl() throws RemoteException {
     }
 
@@ -40,7 +43,9 @@ public class XmlProcessingInstructionImpl extends SimpleXmlNode
      * create a node of the appropriate type. This is called during deployment;
      *
      * @return a Node of type {@link nu.xom.ProcessingInstruction}
-     */
+     * @throws RemoteException In case of network/rmi error
+     * @throws SmartFrogException For smartfrog problems, and for caught
+     *                            XMLExceptions     */
     public Node createNode() throws RemoteException, SmartFrogException {
         String target = sfResolve(ATTR_TARGET, "", true);
         String data = sfResolve(ATTR_DATA, "", true);

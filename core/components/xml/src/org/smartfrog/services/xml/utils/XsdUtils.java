@@ -25,7 +25,10 @@ package org.smartfrog.services.xml.utils;
  */
 
 public final class XsdUtils {
+
+    /** XSD constant {@value} */
     public static final String TRUE = "true";
+    /** XSD constant {@value} */   
     public static final String FALSE = "false";
 
     private XsdUtils() {

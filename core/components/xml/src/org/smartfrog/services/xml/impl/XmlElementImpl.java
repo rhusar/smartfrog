@@ -34,6 +34,9 @@ import java.util.Enumeration;
  */
 public class XmlElementImpl extends CompoundXmlNode implements XmlElement {
 
+    /**
+     * @throws RemoteException In case of network/rmi error
+     *  */
     public XmlElementImpl() throws RemoteException {
     }
 
@@ -41,8 +44,9 @@ public class XmlElementImpl extends CompoundXmlNode implements XmlElement {
      * create a node of the appropriate type. This is called during deployment;
      *
      * @return a new node
-     * @throws RemoteException
-     * @throws SmartFrogException
+     * @throws RemoteException In case of network/rmi error
+     * @throws SmartFrogException For smartfrog problems, and for caught
+     *                            XMLExceptions
      */
     public Node createNode() throws RemoteException, SmartFrogException {
         String localname = sfResolve(ATTR_LOCALNAME, (String) null, true);
@@ -66,8 +70,9 @@ public class XmlElementImpl extends CompoundXmlNode implements XmlElement {
 
     /**
      * Add our children
-     * @throws SmartFrogException
-     * @throws RemoteException
+     * @throws RemoteException In case of network/rmi error
+     * @throws SmartFrogException For smartfrog problems, and for caught
+     *                            XMLExceptions
      */
     protected void addChildren() throws SmartFrogException, RemoteException {
         for (Enumeration e = sfChildren(); e.hasMoreElements();) {

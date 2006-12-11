@@ -67,19 +67,20 @@
     <echo level="verbose">daemon.classpath=${daemon.classpath.value}</echo>
   </target>
   
-  <target name="declare-exec.classpath" depends="declare-compile.classpath" >  
-    <path id="exec.classpath">
-      <path refid="compile.classpath"/>
-      <pathelement location="${target.jar}"/>
-    </path>    
+  <target name="declare-exec.classpath" depends="declare-compile.classpath" >
+    <ivy:cachepath pathid="ivy.test.classpath" conf="test" />
+      <path id="exec.classpath">
+          <pathelement location="${target.jar}"/>
+          <path refid="ivy.test.classpath"/>
+      </path>
     <property name="exec.classpath.value" refid="exec.classpath"/>
     <echo level="verbose">exec.classpath=${exec.classpath.value}</echo>
   </target>  
   
   <target name="declare-tests.run.classpath" depends="declare-tests.compile.classpath" >
     <path id="tests.run.classpath">
-      <path refid="tests.compile.classpath"/>
-      <pathelement location="${test.jar}"/>
+        <pathelement location="${test.jar}"/>
+         <path refid="tests.compile.classpath"/>
     </path>
     <property name="tests.run.classpath.value" refid="tests.run.classpath"/>
     <echo level="verbose">tests.run.classpath=${tests.run.classpath.value}</echo>

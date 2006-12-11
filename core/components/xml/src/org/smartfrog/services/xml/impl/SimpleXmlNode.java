@@ -53,7 +53,7 @@ public abstract class SimpleXmlNode extends PrimImpl implements XmlNode,
     /**
      * empty constructor
      *
-     * @throws RemoteException
+     * @throws RemoteException In case of network/rmi error
      */
     public SimpleXmlNode() throws RemoteException {
     }
@@ -61,7 +61,7 @@ public abstract class SimpleXmlNode extends PrimImpl implements XmlNode,
     /**
      * set the node
      *
-     * @param node
+     * @param node the node
      */
     public void setNode(Node node) {
         helper.setNode(node);
@@ -70,7 +70,7 @@ public abstract class SimpleXmlNode extends PrimImpl implements XmlNode,
     /**
      * set the XML
      *
-     * @param xml
+     * @param xml the content as xml
      */
     public void setXml(String xml) {
         helper.setXml(xml);
@@ -79,7 +79,7 @@ public abstract class SimpleXmlNode extends PrimImpl implements XmlNode,
     /**
      * Get the node underneath. Will be null until the node is created.
      *
-     * @return
+     * @return the node or null
      */
     public Node getNode() {
         return helper.getNode();
@@ -100,8 +100,8 @@ public abstract class SimpleXmlNode extends PrimImpl implements XmlNode,
      * don't know what has changed underneath.
      *
      * @return XML of the tree
-     * @throws RemoteException
-     * @throws SmartFrogException for smartfrog problems, and for caught
+     * @throws RemoteException In case of network/rmi error
+     * @throws SmartFrogException For smartfrog problems, and for caught
      *                            XMLExceptions
      */
     public String toXML() throws RemoteException, SmartFrogException {
@@ -112,8 +112,9 @@ public abstract class SimpleXmlNode extends PrimImpl implements XmlNode,
      * Validate the XML, post-generation. Default implementation checks the
      * <code>valid</code> attribute and fails if it is false.
      *
-     * @throws SmartFrogException
-     * @throws RemoteException
+     * @throws SmartFrogException for smartfrog problems, and for caught
+     *                            XMLExceptions
+     * @throws RemoteException In case of network/rmi error
      */
     public void validate() throws SmartFrogException,
             RemoteException {
@@ -133,6 +134,11 @@ public abstract class SimpleXmlNode extends PrimImpl implements XmlNode,
         toXML();
     }
 
+    /**
+     * Equality test. uses XML logic to compare
+     * @param o other instance to compare against
+     * @return true if there is a match
+     */
     public boolean equals(Object o) {
         if (this == o) {
             return true;

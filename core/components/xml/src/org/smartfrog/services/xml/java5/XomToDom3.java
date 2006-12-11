@@ -78,7 +78,7 @@ public class XomToDom3 {
 
     /**
      * Convert from a Xom document to a W3C Dom Document
-     * @param xom
+     * @param xom xom document
      * @return the Dom equivalent
      * @throws RuntimeException for dom instantiation problems
      */
@@ -88,7 +88,4 @@ public class XomToDom3 {
         return DOMConverter.convert(xom,domImpl);
     }
 
-    public static void createXerces() {
-
-    }
 }

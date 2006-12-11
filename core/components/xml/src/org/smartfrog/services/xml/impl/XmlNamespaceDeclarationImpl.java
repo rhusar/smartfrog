@@ -20,9 +20,9 @@ public class XmlNamespaceDeclarationImpl extends PrimImpl
     /**
      * look up our namespace declaration and add it to the XML element
      *
-     * @param element
-     * @throws SmartFrogResolutionException
-     * @throws RemoteException
+     * @param element element to add
+     * @throws SmartFrogResolutionException For smartfrog problems
+     * @throws RemoteException In case of network/rmi error
      */
     public void addDeclaration(Element element)
             throws SmartFrogResolutionException, RemoteException {
