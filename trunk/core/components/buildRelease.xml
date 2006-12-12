@@ -55,7 +55,7 @@ To use: ant -f buildRelease release
 
     <property name="root.dir" location=".."  />
     <property name="dist" value="dist"/>   
-	 <property name="releases.dir" value="releases"/>   
+	  <property name="releases.dir" value="releases"/>
     <echo message=""/>
     <echo message="==================================================================="/>
     <echo message="= ${Name.Components} - ${Name.Company} "/>
@@ -130,58 +130,58 @@ To use: ant -f buildRelease release
   <!-- allrelease                                                             -->
   <!-- =================================================================== -->
   <target name="allrelease" depends="init, initrelease">
-	 
+
     <zip destfile="../releases/${Name.System}.${version}.${DSTAMP}_ALL.zip">
-	    <zipfileset dir="." prefix="${Name.System}.${version}/components">
-	<include name="ant/**"/>
-	<include name="anubis/**"/>
-	<include name="anubisdeployer/**"/>
-	<include name="emailer/**"/>
-	<include name="jetty/**"/>
-	<include name="net/**"/>
-	<include name="scripting/**"/>
-	<include name="loggingservices/**"/>
-	<include name="slp/**"/>
-	<include name="ssh/**"/>
-	<include name="sfinstaller/**"/>
-	<include name="dns/**"/>
-	<include name="www/**"/>
-	<include name="lib/**"/>
-	<!--include name="xml/**"/-->
+      <zipfileset dir="." prefix="${Name.System}.${version}/components">
+        <include name="ant/**"/>
+        <include name="anubis/**"/>
+        <include name="anubisdeployer/**"/>
+        <include name="emailer/**"/>
+        <include name="jetty/**"/>
+        <include name="net/**"/>
+        <include name="scripting/**"/>
+        <include name="loggingservices/**"/>
+        <include name="slp/**"/>
+        <include name="ssh/**"/>
+        <include name="sfinstaller/**"/>
+        <include name="dns/**"/>
+        <include name="www/**"/>
+        <include name="lib/**"/>
+        <!--include name="xml/**"/-->
         <include name="build.xml"/>
         <!--include name="buildRelease.xml"/-->
         <include name="releaseBuild.xml"/>
         <include name="version.properties"/>
         <include name="libraries.properties"/>
-    <include name="${dist}/**"/>
-	<include name="${dist}/docs/**"/>
-	<include name="${dist}/docs/jdocs/**"/>
-	<include name="${dist}/bin/**"/>
-	<include name="${dist}/lib/**"/>
-	<include name="${dist}/src/**"/>
-	<include name="${dist}/build.xml"/>
-	<include name="${dist}/src.zip"/>
-        <exclude name="**/SVN" />
-        <exclude name="**/*.dfPackage" />
-        <exclude name="**/Cvs" />
-        <exclude name="**/.#*" />
-        <exclude name="**/*.*~" />
-		<exclude name="**/releases/**"/>
-		<exclude name="**/build/**"/>
-		<exclude name="ant/test/**"/>
-		<exclude name="anubis/test/**"/>
-		<exclude name="anubisdeployer/test/**"/>
-		<exclude name="emailer/test/**"/>
-		<exclude name="jetty/test/**"/>
-		<exclude name="net/test/**"/>
-		<exclude name="scripting/test/**"/>
-		<exclude name="loggingservices/test/**"/>
-		<exclude name="slp/test/**"/>
-		<exclude name="ssh/test/**"/>
-		<exclude name="sfinstaller/test/**"/>
-		<exclude name="dns/test/**"/>
-		<exclude name="www/test/**"/>
-	</zipfileset>
+        <include name="${dist}/**"/>
+        <include name="${dist}/docs/**"/>
+        <include name="${dist}/docs/jdocs/**"/>
+        <include name="${dist}/bin/**"/>
+        <include name="${dist}/lib/**"/>
+        <include name="${dist}/src/**"/>
+        <include name="${dist}/build.xml"/>
+        <include name="${dist}/src.zip"/>
+        <exclude name="**/SVN"/>
+        <exclude name="**/*.dfPackage"/>
+        <exclude name="**/Cvs"/>
+        <exclude name="**/.#*"/>
+        <exclude name="**/*.*~"/>
+        <exclude name="**/releases/**"/>
+        <exclude name="**/build/**"/>
+        <exclude name="ant/test/**"/>
+        <exclude name="anubis/test/**"/>
+        <exclude name="anubisdeployer/test/**"/>
+        <exclude name="emailer/test/**"/>
+        <exclude name="jetty/test/**"/>
+        <exclude name="net/test/**"/>
+        <exclude name="scripting/test/**"/>
+        <exclude name="loggingservices/test/**"/>
+        <exclude name="slp/test/**"/>
+        <exclude name="ssh/test/**"/>
+        <exclude name="sfinstaller/test/**"/>
+        <exclude name="dns/test/**"/>
+        <exclude name="www/test/**"/>
+      </zipfileset>
 	
    <zipfileset dir=".." prefix="${Name.System}.${version}">
 	   <include name="**/common.xml"/>
@@ -197,68 +197,68 @@ To use: ant -f buildRelease release
    </zip>
 
     <tar tarfile="../releases/${Name.System}.${version}.${DSTAMP}_ALL.tar">
-	    <tarfileset dir="." prefix="${Name.System}.${version}/components">
-	<include name="ant/**"/>
-	<include name="anubis/**"/>
-	<include name="anubisdeployer/**"/>
-	<include name="emailer/**"/>
-	<include name="jetty/**"/>
-	<include name="net/**"/>
-	<include name="scripting/**"/>
-	<include name="loggingservices/**"/>
-	<include name="slp/**"/>
-	<include name="ssh/**"/>
-	<include name="sfinstaller/**"/>
-	<include name="dns/**"/>
-	<include name="www/**"/>
-	<include name="lib/**"/>
-	<!--include name="xml/**"/-->
+      <tarfileset dir="." prefix="${Name.System}.${version}/components">
+        <include name="ant/**"/>
+        <include name="anubis/**"/>
+        <include name="anubisdeployer/**"/>
+        <include name="emailer/**"/>
+        <include name="jetty/**"/>
+        <include name="net/**"/>
+        <include name="scripting/**"/>
+        <include name="loggingservices/**"/>
+        <include name="slp/**"/>
+        <include name="ssh/**"/>
+        <include name="sfinstaller/**"/>
+        <include name="dns/**"/>
+        <include name="www/**"/>
+        <include name="lib/**"/>
+        <!--include name="xml/**"/-->
         <include name="build.xml"/>
         <!--include name="buildRelease.xml"/-->
         <include name="releaseBuild.xml"/>
         <include name="version.properties"/>
         <include name="libraries.properties"/>
-    <include name="${dist}/**"/>
-	<include name="${dist}/docs/**"/>
-	<include name="${dist}/docs/jdocs/**"/>
-	<include name="${dist}/bin/**"/>
-	<include name="${dist}/lib/**"/>
-	<include name="${dist}/src/**"/>
-	<include name="${dist}/build.xml"/>
-	<include name="${dist}/src.zip"/>
-        <exclude name="**/SVN" />
-        <exclude name="**/*.dfPackage" />
-        <exclude name="**/Cvs" />
-        <exclude name="**/.#*" />
-        <exclude name="**/*.*~" />
-		<exclude name="**/releases/**"/>
-		<exclude name="**/build/**"/>
-		<exclude name="ant/test/**"/>
-		<exclude name="anubis/test/**"/>
-		<exclude name="anubisdeployer/test/**"/>
-		<exclude name="emailer/test/**"/>
-		<exclude name="jetty/test/**"/>
-		<exclude name="net/test/**"/>
-		<exclude name="scripting/test/**"/>
-		<exclude name="loggingservices/test/**"/>
-		<exclude name="slp/test/**"/>
-		<exclude name="ssh/test/**"/>
-		<exclude name="sfinstaller/test/**"/>
-		<exclude name="dns/test/**"/>
-		<exclude name="www/test/**"/>
-    </tarfileset>
-    <tarfileset dir=".." prefix="${Name.System}.${version}">
-	<include name="**/common.xml"/>
-	   <include name="**/extras/ant/dist/**"/>
-	   <include name="**/antbuild/repository/**"/>
-	   <exclude name="**/Cvs" />
-    </tarfileset>
+        <include name="${dist}/**"/>
+        <include name="${dist}/docs/**"/>
+        <include name="${dist}/docs/jdocs/**"/>
+        <include name="${dist}/bin/**"/>
+        <include name="${dist}/lib/**"/>
+        <include name="${dist}/src/**"/>
+        <include name="${dist}/build.xml"/>
+        <include name="${dist}/src.zip"/>
+        <exclude name="**/SVN"/>
+        <exclude name="**/*.dfPackage"/>
+        <exclude name="**/Cvs"/>
+        <exclude name="**/.#*"/>
+        <exclude name="**/*.*~"/>
+        <exclude name="**/releases/**"/>
+        <exclude name="**/build/**"/>
+        <exclude name="ant/test/**"/>
+        <exclude name="anubis/test/**"/>
+        <exclude name="anubisdeployer/test/**"/>
+        <exclude name="emailer/test/**"/>
+        <exclude name="jetty/test/**"/>
+        <exclude name="net/test/**"/>
+        <exclude name="scripting/test/**"/>
+        <exclude name="loggingservices/test/**"/>
+        <exclude name="slp/test/**"/>
+        <exclude name="ssh/test/**"/>
+        <exclude name="sfinstaller/test/**"/>
+        <exclude name="dns/test/**"/>
+        <exclude name="www/test/**"/>
+      </tarfileset>
+      <tarfileset dir=".." prefix="${Name.System}.${version}">
+        <include name="**/common.xml"/>
+        <include name="**/extras/ant/dist/**"/>
+        <include name="**/antbuild/repository/**"/>
+        <exclude name="**/Cvs"/>
+      </tarfileset>
 
-	 <tarfileset dir="." prefix="${Name.System}.${version}">
-   <include name="build.example.properties"/>
-   </tarfileset>
+      <tarfileset dir="." prefix="${Name.System}.${version}">
+        <include name="build.example.properties"/>
+      </tarfileset>
 
-  </tar>
+    </tar>
   
   <gzip src="../releases/${Name.System}.${version}.${DSTAMP}_ALL.tar" zipfile="../releases/${Name.System}.${version}.${DSTAMP}_ALL.tar.gz"/>
   <delete file="../releases/${Name.System}.${version}.${DSTAMP}_ALL.tar"/>
@@ -268,31 +268,31 @@ To use: ant -f buildRelease release
   <!-- =================================================================== -->
   <!-- commonrelease                                                         -->
   <!-- =================================================================== -->
-  <target name="commonrelease" depends="init, initrelease"> 
-	  
-   <zip destfile="../releases/${Name.System}.${version}.${DSTAMP}_COMMON_DIST.zip">
-       <zipfileset dir="." prefix="${Name.System}.${version}">
-	<include name="${dist}/**"/>
-	<include name="${dist}/docs/**"/>
-	<include name="${dist}/docs/jdocs/**"/>
-	<include name="${dist}/bin/**"/>
-	<include name="${dist}/lib/**"/>
-	<include name="${dist}/src/**"/>
-	<include name="${dist}/src.zip"/>
-       </zipfileset>
-   </zip>
-	  
-  <tar tarfile="../releases/${Name.System}.${version}.${DSTAMP}_COMMON_DIST.tar">
+  <target name="commonrelease" depends="init, initrelease">
+
+    <zip destfile="../releases/${Name.System}.${version}.${DSTAMP}_COMMON_DIST.zip">
+      <zipfileset dir="." prefix="${Name.System}.${version}">
+        <include name="${dist}/**"/>
+        <include name="${dist}/docs/**"/>
+        <include name="${dist}/docs/jdocs/**"/>
+        <include name="${dist}/bin/**"/>
+        <include name="${dist}/lib/**"/>
+        <include name="${dist}/src/**"/>
+        <include name="${dist}/src.zip"/>
+      </zipfileset>
+    </zip>
+
+    <tar tarfile="../releases/${Name.System}.${version}.${DSTAMP}_COMMON_DIST.tar">
       <tarfileset dir="." prefix="${Name.System}.${version}">
-	<include name="${dist}/**"/>
-	<include name="${dist}/docs/**"/>
-	<include name="${dist}/docs/jdocs/**"/>
-	<include name="${dist}/bin/**"/>
-	<include name="${dist}/lib/**"/>
-	<include name="${dist}/src/**"/>
-	<include name="${dist}/src.zip"/>
+        <include name="${dist}/**"/>
+        <include name="${dist}/docs/**"/>
+        <include name="${dist}/docs/jdocs/**"/>
+        <include name="${dist}/bin/**"/>
+        <include name="${dist}/lib/**"/>
+        <include name="${dist}/src/**"/>
+        <include name="${dist}/src.zip"/>
       </tarfileset>
-  </tar>
+    </tar>
   
   <gzip src="../releases/${Name.System}.${version}.${DSTAMP}_COMMON_DIST.tar" zipfile="../releases/${Name.System}.${version}.${DSTAMP}_COMMON_DIST.tar.gz"/>
   <delete file="../releases/${Name.System}.${version}.${DSTAMP}_COMMON_DIST.tar"/>
@@ -333,11 +333,11 @@ To use: ant -f buildRelease release
     <!--copyreleaseszips project="${xml.project}" /-->
 
 
-   <zip destfile="../releases/${Name.System}.${version}.${DSTAMP}_DIST.zip">
-       <zipfileset dir="." prefix="${Name.System}.${version}">
-			<include name="${releases.dir}/*DIST.zip"/>
+    <zip destfile="../releases/${Name.System}.${version}.${DSTAMP}_DIST.zip">
+      <zipfileset dir="." prefix="${Name.System}.${version}">
+        <include name="${releases.dir}/*DIST.zip"/>
       </zipfileset>
-   </zip>
+    </zip>
 	
 
 	<macrodef name="copyreleasestars" >
@@ -374,7 +374,8 @@ To use: ant -f buildRelease release
       </tarfileset>
   </tar>
   
-  <gzip src="../releases/${Name.System}.${version}.${DSTAMP}_DIST.tar" zipfile="../releases/${Name.System}.${version}.${DSTAMP}_DIST.tar.gz"/>
+  <gzip src="../releases/${Name.System}.${version}.${DSTAMP}_DIST.tar"
+        zipfile="../releases/${Name.System}.${version}.${DSTAMP}_DIST.tar.gz"/>
   <delete file="../releases/${Name.System}.${version}.${DSTAMP}_DIST.tar"/>
   <delete dir="${releases.dir}"/>
   
@@ -386,7 +387,8 @@ To use: ant -f buildRelease release
   <!-- =================================================================== -->
   <!-- release                                                             -->
   <!-- =================================================================== -->
-  <target name="release" depends="init, initrelease, allrelease, commonrelease , distrelease" description="Creates zip with release packages"> 
+  <target name="release" depends="init, initrelease, allrelease,commonrelease, distrelease"
+          description="Creates zip with release packages">
   </target>
 </project>
 
