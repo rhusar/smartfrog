@@ -62,7 +62,7 @@ public class SfProcessRunnerAction
 
         SfProcessRunnerWizard wizard = new SfProcessRunnerWizard(
                 Messages.getString("SfProcessRunnerAction.title.SFProcess"), Messages.getString("SfProcessRunnerAction.widnowtitle.SFProcess"), Messages.getString("SfProcessRunnerAction.description.SFProcess"), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-                getSelectFile());
+                getSelectFile(), mSelectedIFile);
         ResizableWizardDialog dialog = new ResizableWizardDialog(mWindow
                 .getShell(), wizard);
         dialog.open();

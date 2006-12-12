@@ -56,13 +56,14 @@ class SfProcessRunnerWizard
      * @param selectedFile
      */
     public SfProcessRunnerWizard(String windowTitle, String pageTitle,
-        String desc, String selectedFile)
+        String desc, String selectedFile, IFile selectedIFile)
     {
         setWindowTitle(windowTitle);
 
         mTitle = pageTitle;
         mDesc = desc;
         mSelectedFile = selectedFile;
+	mFile = selectedIFile;
     }
 
     public void addPages()
@@ -80,7 +81,7 @@ class SfProcessRunnerWizard
         String hostName = runnerPage.getHostName();
         String processName = runnerPage.getProcessName();
         mSfRunner = new SfProcessRunnerExt(SmartFrogPlugin.getWorkbenchWindow()
-                .getShell(), mSelectedFile, hostName, processName);
+                .getShell(), mSelectedFile, hostName, processName, mFile);
         mSfRunner.start();
 
         return true;
