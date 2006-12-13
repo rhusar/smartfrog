@@ -445,11 +445,12 @@
     <property name="epr.ourgrid" value="http://cddlm.lsd.ufcg.edu.br:8080/muse/services/Portal"/>
     <property name="happy.ourgrid" value="http://cddlm.lsd.ufcg.edu.br:8080/muse/happyaxis.jsp?${query}"/>
     <property name="hp.server" value="deployapi.iseran.com" />
-    <property name="epr.hp" value="http://${hp.server}:8080/alpine/portal/"/>
-    <property name="happy.hp" value="http://${hp.server}:8080/alpine/portal/?${query}"/>
+    <property name="hp.port" value="8080" />
+    <property name="epr.hp" value="http://${hp.server}:${hp.port}/alpine/portal/"/>
+    <property name="happy.hp" value="http://${hp.server}:${hp.port}/alpine/portal/?${query}"/>
     <property name="localhost.server" value="localhost"/>
-    <property name="epr.localhost" value="http://${localhost.server}:8080/alpine/portal/"/>
-    <property name="happy.localhost" value="http://${localhost.server}:8080/alpine/portal/?${query}"/>
+    <property name="epr.localhost" value="http://${localhost.server}:1080/alpine/portal/"/>
+    <property name="happy.localhost" value="http://${localhost.server}:1080/alpine/portal/?${query}"/>
 
 
     <property name="test.interop.dir" location="${build.dir}/test/interop/"/>

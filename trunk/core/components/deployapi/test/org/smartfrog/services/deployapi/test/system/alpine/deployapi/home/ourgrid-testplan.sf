@@ -26,24 +26,25 @@
         url healthURL;
       }
 
+      /**
+        * this is the muws event listener,defaulting to port 8082
+        */
       notifyCompound extends NotifyHost {
         hostname "deployapi.iseran.com";
+        port 1082;
       }
 
       //this has to link to a notify service in the same process
       //notifications TBD;;
 
       tests extends DeployapiTestRunner {
-      /**
- * this is the muws event listener,defaulting to port 8082
- */
         notifications LAZY PARENT:notifyCompound:engine;
         basedir PARENT:basedir;
         enabled PARENT:enabled;
         endpoint PARENT:endpoint;
         subdir PARENT:subdir;
 
-        singleTest "creation";
+        //singleTest "creation";
       }
 
   }

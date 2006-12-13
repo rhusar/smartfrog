@@ -23,9 +23,9 @@ package org.smartfrog.projects.alpine.om.soap11;
 import nu.xom.Element;
 import nu.xom.Elements;
 import nu.xom.Node;
-import org.smartfrog.projects.alpine.om.base.SoapElement;
-import org.smartfrog.projects.alpine.faults.InvalidXmlException;
 import org.smartfrog.projects.alpine.faults.FaultConstants;
+import org.smartfrog.projects.alpine.faults.InvalidXmlException;
+import org.smartfrog.projects.alpine.om.base.SoapElement;
 
 import javax.xml.namespace.QName;
 
@@ -40,17 +40,17 @@ public class Fault extends Soap11Element {
      */ 
     public Fault() {
         this(ELEMENT_FAULT, URI_SOAPAPI);
-        setFaultCode("");
-        setFaultString("");
-        demandCreateFaultDetail();
-    }    
+    }
     
     public Fault(String name) {
-        super(name);
+        this(name, "");
     }
 
     public Fault(String name, String uri) {
         super(name, uri);
+        setFaultCode("");
+        setFaultString("");
+        demandCreateFaultDetail();
     }
 
     public Fault(Element element) {

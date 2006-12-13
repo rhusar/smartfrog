@@ -73,8 +73,9 @@ public class HttpBinder {
      * Churn out a response to the channel. If the message is a fault, we generate
      * a 500 response, if not, a 200
      *
-     * @param messageContext
-     * @param response
+     * @param messageContext context to use
+     * @param response response to send
+     * @throws java.io.IOException io exception
      */
     public void outputResponse(MessageContext messageContext, HttpServletResponse response) throws IOException {
         MessageDocument message = messageContext.getResponse();
@@ -140,9 +141,9 @@ public class HttpBinder {
     }
 
     /**
-     * Extract teh base content type; return null for none
+     * Extract the base content type; return null for none
      * @param contentType
-     * @return
+     * @return the content up to (and excluding) the first semicolon
      */
     public static String extractBaseContentType(String contentType) {
         if(contentType==null) {

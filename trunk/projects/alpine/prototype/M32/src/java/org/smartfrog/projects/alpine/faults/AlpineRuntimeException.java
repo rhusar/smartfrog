@@ -66,9 +66,10 @@ public class AlpineRuntimeException extends RuntimeException implements SoapFaul
      * subclass this to add more detail than just the message, stack trace,
      *
      * @return a fault
+     * @param soapNamespace
      */
-    public Fault GenerateSoapFault() {
-        Fault fault = new Fault();
+    public Fault GenerateSoapFault(String soapNamespace) {
+        Fault fault = new Fault(SoapConstants.ELEMENT_FAULT, soapNamespace);
         fault.setFaultCode(getFaultCode());
         fault.addThrowable(this);
         addExtraDetails(fault);
@@ -151,7 +152,7 @@ public class AlpineRuntimeException extends RuntimeException implements SoapFaul
      */
 
     public String toString() {
-        Fault fault = GenerateSoapFault();
+        Fault fault = GenerateSoapFault(SoapConstants.URI_SOAPAPI);
         return XsdUtils.printToString(fault) + "\n";
     }
 

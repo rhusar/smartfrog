@@ -81,7 +81,6 @@ public class MessageContext extends Context {
      */
     private MessageDocument response;
 
-
     /**
      * This is just a bit to say whether or not a message has been processed.
      * its there for the getCurrentMessage(), whifh
@@ -94,6 +93,7 @@ public class MessageContext extends Context {
 
     public void setRequest(MessageDocument request) {
         this.request = request;
+        setSoapNamespace(request.getEnvelope().getNamespaceURI());
     }
 
     public MessageDocument getResponse() {
@@ -162,8 +162,10 @@ public class MessageContext extends Context {
      * @return
      */
     protected Envelope createMessage() {
-        Envelope envelope = new Envelope();
-        envelope.appendChild(new Body());
+        Envelope envelope = new Envelope(SoapConstants.ELEMENT_ENVELOPE,
+                getSoapNamespace());
+        envelope.appendChild(new Body(SoapConstants.ELEMENT_BODY,
+                getSoapNamespace()));
         envelope.getHeader();
         return envelope;
     }

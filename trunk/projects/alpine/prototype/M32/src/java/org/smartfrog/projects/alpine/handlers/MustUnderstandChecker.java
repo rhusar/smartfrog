@@ -36,9 +36,9 @@ public class MustUnderstandChecker extends HandlerBase {
     /**
     * Message handler
     *
-    * @param messageContext
-    * @param endpointContext
-    * @throws org.smartfrog.projects.alpine.faults.AlpineRuntimeException
+    * @param messageContext context containing the headers and the SOAP Version
+    * @param endpointContext the endpoint context
+    * @throws MustUnderstandFault for a failure
     *
     */
     public void processMessage(MessageContext messageContext, EndpointContext endpointContext) {
@@ -48,8 +48,10 @@ public class MustUnderstandChecker extends HandlerBase {
     }
 
     private void checkOneElement(MessageContext messageContext,Element header) {
-        if(Header.isMustUnderstand(header)) {
-            throw new MustUnderstandFault(messageContext.getRole(), header);
+        if(Header.isMustUnderstand(header, messageContext.getSoapNamespace())) {
+            throw new MustUnderstandFault(messageContext.getSoapNamespace(),
+                    messageContext.getRole(),
+                    header);
         }
     }
 }

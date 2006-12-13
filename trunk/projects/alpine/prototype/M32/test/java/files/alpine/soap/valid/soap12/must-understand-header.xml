@@ -1,8 +1,8 @@
 <soap:Envelope
-  xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+  xmlns:soap="http://www.w3.org/2003/05/soap-envelope">
   <soap:Header>
     <t:Transaction
-      xmlns:t="http://example.org/uri1" soap:mustUnderstand="0">
+      xmlns:t="http://example.org/uri1" soap:mustUnderstand="1">
           5
     </t:Transaction>
   </soap:Header>

@@ -17,33 +17,19 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 For more information: www.smartfrog.org
 
 */
+#include "/org/smartfrog/services/deployapi/examples/interop/pelvoux.sf"
 
-#include "/org/smartfrog/projects/alpine/config/smartfrog/alpine_server_on_jetty.sf"
-#include "/org/smartfrog/services/deployapi/notifications/muws/components.sf"
+/**
+ a variant of the pelvoux system in which the hostname is whatever this machine has as an ip address.
+ Use for staging, and we use port 8080 for listening
+ */
 
-NotifyHost extends AlpineServerOnJetty {
-
-    home LAZY PROPERTY java.io.tmpdir;
-
-    port 8082;
-
-    hostname LAZY servlet:listener:ipaddr;
-
-    muws extends MuwsEventEndpoint {
-      servlet LAZY alpine;
-    }
-
-    /**
-     * the engine that does the work
-     */
-    engine extends NotifyServer {
-      port PARENT:port;
-      hostname PARENT:hostname;
-      muws LAZY PARENT:muws;
-    }
-
+PelvouxOnLocalIPAddress extends Pelvoux {
+    //extract from the soap stack itself
+    alpine:hostname LAZY alpine:deployapi:engine:servletContext:ipaddr;
+    //new port
+    alpine:port 8080;
 }
 
-sfConfig extends NotifyHost {
-    port 1082;
+sfConfig extends PelvouxOnLocalIPAddress {
 }

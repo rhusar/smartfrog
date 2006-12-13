@@ -78,7 +78,11 @@ public class SoapPostServlet extends ServletBase {
     }
 
     private String makeHtmlText(String message) {
-        return "<html><head><title>" + message + "</title></head><body>" + message + "</body></html>";
+        return "<html><head><title>"
+                + message
+                + "</title></head><body>"
+                + message
+                + "</body></html>";
     }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -141,7 +145,7 @@ public class SoapPostServlet extends ServletBase {
         MessageDocument responseMessage = null;
         HttpBinder binder = new HttpBinder(endpointContext);
         Fault fault = null;
-        FaultBridge bridge = FaultBridge.getFaultBridge(messageContext);
+        FaultBridge bridge;
         try {
             requestMessage = binder.parseIncomingPost(messageContext, request);
 
@@ -156,6 +160,7 @@ public class SoapPostServlet extends ServletBase {
                 } catch (Exception thrown) {
                     //if anything happened here. the rollback begins
                     getLog().info("Fault thrown in the handler " + handler, thrown);
+                    bridge = FaultBridge.getFaultBridge(messageContext);
                     fault = bridge.extractFaultFromThrowable(thrown);
                     for (int rollback = i; rollback >= 0; rollback--) {
                         handler = handlers.get(rollback);
@@ -177,6 +182,7 @@ public class SoapPostServlet extends ServletBase {
             }
         } catch (Exception thrown) {
             getLog().warn("Fault thrown outside the handler chain", thrown);
+            bridge = FaultBridge.getFaultBridge(messageContext);
             fault = bridge.extractFaultFromThrowable(thrown);
         }
         if (fault != null) {

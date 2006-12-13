@@ -19,15 +19,13 @@
  */
 package org.smartfrog.services.deployapi.transport.wsrf;
 
-import nu.xom.Attribute;
 import nu.xom.Element;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.smartfrog.projects.alpine.faults.AlpineRuntimeException;
-import org.smartfrog.projects.alpine.faults.SoapException;
 import org.smartfrog.projects.alpine.om.base.SoapElement;
-import org.smartfrog.projects.alpine.om.soap11.Body;
 import org.smartfrog.projects.alpine.om.soap11.MessageDocument;
+import org.smartfrog.projects.alpine.om.soap11.SoapConstants;
 import org.smartfrog.projects.alpine.transport.DirectExecutor;
 import org.smartfrog.projects.alpine.transport.TransmitQueue;
 import org.smartfrog.projects.alpine.wsa.AlpineEPR;
@@ -266,7 +264,7 @@ xs:EventId>http://www.gridforum.org/cddlm/components/2005/02/events/Lifecycle
             lastError = e;
             //if anything went wrong, log
             log.error("Failed to post the event to "+callback,e);
-            log.error(e.GenerateSoapFault().toXML());
+            log.error(e.GenerateSoapFault(SoapConstants.URI_SOAPAPI).toXML());
             //signal the failure
             return false;
         }

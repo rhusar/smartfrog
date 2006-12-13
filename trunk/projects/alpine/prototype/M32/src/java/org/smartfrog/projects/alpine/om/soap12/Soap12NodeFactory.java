@@ -20,16 +20,16 @@
 
 package org.smartfrog.projects.alpine.om.soap12;
 
-import nu.xom.NodeFactory;
+import org.smartfrog.projects.alpine.om.soap11.SoapConstants;
 import org.smartfrog.projects.alpine.om.soap11.SoapFactory;
 
 /**
- * TODO
+ * SOAP1.2 factory
  */
 public class Soap12NodeFactory extends SoapFactory {
 
-    public Soap12NodeFactory(String namespace, NodeFactory handoff) {
-        super(namespace, handoff);
+    public Soap12NodeFactory() {
+        super(SoapConstants.URI_SOAP12);
     }
 
 }
