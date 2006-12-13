@@ -59,7 +59,7 @@ public class Header extends Soap11Element {
      * @param mustUnderstand whether this header must be understood or not
      */
     public void setHeaderElement(Element element, boolean mustUnderstand) {
-        setMustUnderstand(element, mustUnderstand);
+        setMustUnderstand(element, getNamespaceURI(), mustUnderstand);
         addOrReplaceChild(element);
     }
     /**
@@ -72,12 +72,14 @@ public class Header extends Soap11Element {
     }
     /**
      * query the mustUnderstand attribute
-     *
+     * @param that the header that is being compared
+     * @param soapNamespace
      * @return true if it exists and is "1", false if it is absent or "0"
      * @throws InvalidXmlException if it has any other value
      */
-    public static boolean isMustUnderstand(Element that) {
-        Attribute attribute = that.getAttribute(ATTR_MUST_UNDERSTAND, URI_SOAPAPI);
+    public static boolean isMustUnderstand(Element that, String soapNamespace) {
+        Attribute attribute = that.getAttribute(ATTR_MUST_UNDERSTAND,
+                soapNamespace);
         if (attribute == null) {
             return false;
         }
@@ -93,14 +95,19 @@ public class Header extends Soap11Element {
 
     /**
      * remove any existing mustUnderstand header, and set a new one to either true or false
+     * @param soapNamespace
      * @param understand should we understand or not?
      */
-    public static void setMustUnderstand(Element that,boolean understand) {
-        Attribute attribute = that.getAttribute(ATTR_MUST_UNDERSTAND, URI_SOAPAPI);
+    public static void setMustUnderstand(Element that,
+                                         String soapNamespace,
+                                         boolean understand) {
+        Attribute attribute = that.getAttribute(ATTR_MUST_UNDERSTAND,
+                soapNamespace);
         if (attribute != null) {
             that.removeAttribute(attribute);
         }
-        Attribute mu=new Attribute(PREFIX_SOAP +":"+ATTR_MUST_UNDERSTAND, URI_SOAPAPI,understand?"1":"0");
+        Attribute mu=new Attribute(PREFIX_SOAP +":"+ATTR_MUST_UNDERSTAND,
+                soapNamespace,understand?"1":"0");
         that.addAttribute(mu);
     }
 

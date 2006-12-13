@@ -6,6 +6,7 @@ import org.smartfrog.services.deployapi.binding.XomHelper;
 import org.smartfrog.services.deployapi.system.Constants;
 import org.smartfrog.projects.alpine.interfaces.SoapFaultSource;
 import org.smartfrog.projects.alpine.om.soap11.Fault;
+import org.smartfrog.projects.alpine.om.soap11.SoapConstants;
 
 import javax.xml.namespace.QName;
 import java.util.ArrayList;
@@ -169,9 +170,10 @@ public class BaseException extends RuntimeException implements SoapFaultSource {
      * Create a soap fault from ourselves.
      * This includes fault code and actor, detail, and any nested cause
      * @return
+     * @param soapNamespace
      */
-    public Fault GenerateSoapFault() {
-        Fault fault=new Fault();
+    public Fault GenerateSoapFault(String soapNamespace) {
+        Fault fault=new Fault(SoapConstants.ELEMENT_FAULT,soapNamespace);
         if (faultCode == null) {
             initFaultCode();
         }

@@ -32,7 +32,7 @@ import org.smartfrog.test.system.projects.alpine.remote.RemoteTestBase;
  * http://www-lk.wso2.com:5049/axis2/services/wsaTestService - WSO2 Web Services Addressing
  */
 
-public class InteropTestBase extends RemoteTestBase {
+public abstract class InteropTestBase extends RemoteTestBase {
     public InteropTestBase(String name) {
         super(name);
     }

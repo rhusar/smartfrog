@@ -37,6 +37,6 @@ public class SoapFaultInternalTest extends ValidTestBase {
      * @return the resource to test
      */
     protected String getTestResource() {
-        return SOAP_FAULT_INTERNAL;
+        return SOAP11_FAULT_INTERNAL;
     }
 }

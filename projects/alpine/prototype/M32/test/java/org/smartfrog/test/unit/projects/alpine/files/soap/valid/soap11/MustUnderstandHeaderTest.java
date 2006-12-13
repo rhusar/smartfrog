@@ -37,6 +37,6 @@ public class MustUnderstandHeaderTest extends ValidTestBase {
      * @return the resource to test
      */
     protected String getTestResource() {
-        return SOAP_MUST_UNDERSTAND_HEADER;
+        return SOAP11_MUST_UNDERSTAND_HEADER;
     }
 }

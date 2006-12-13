@@ -12,6 +12,7 @@ public interface SoapFaultSource {
     /**
      * Create a soap fault from ourselves.
      * @return
+     * @param soapNamespace
      */ 
-    public Fault GenerateSoapFault();
+    public Fault GenerateSoapFault(String soapNamespace);
 }

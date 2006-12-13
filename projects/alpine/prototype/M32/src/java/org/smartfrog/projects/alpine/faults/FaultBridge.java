@@ -23,25 +23,31 @@ package org.smartfrog.projects.alpine.faults;
 import org.smartfrog.projects.alpine.core.MessageContext;
 import org.smartfrog.projects.alpine.interfaces.SoapFaultSource;
 import org.smartfrog.projects.alpine.om.soap11.Fault;
+import org.smartfrog.projects.alpine.om.soap11.SoapConstants;
 
 /**
  * Bridge faults from Java to SOAPFault
  *
- * A faultbridge may eventually be moved into a MessageContext, for per-endpoint fault bridge support.
+ * the namespace for faults is extracted from the message contexnt
  */
 public class FaultBridge {
 
-    private FaultBridge() {
+    private String namespace;
+
+
+
+    public FaultBridge(String namespace) {
+        this.namespace = namespace;
     }
-    
+
     /**
      * Get a faultbridge for a message. This is
      * based on the message context for dynamicity (maybe)
-     * @param context
-     * @return
+     * @param context source of xmlns and other values
+     * @return a new bridge
      */ 
     public static FaultBridge getFaultBridge(MessageContext context) {
-        return new FaultBridge();
+        return new FaultBridge(context.getSoapNamespace());
     }
 
     /**
@@ -67,19 +73,24 @@ public class FaultBridge {
     public AlpineRuntimeException convertFaultSourceToAlpineException(Throwable thrown) {
         Fault fault;
         SoapFaultSource source = (SoapFaultSource) thrown;
-        fault = source.GenerateSoapFault();
+        fault = source.GenerateSoapFault(namespace);
         return new SoapException(fault);
     }
 
     public AlpineRuntimeException convertThrowableToAlpineException(Throwable thrown) {
         //create a fault
-        Fault fault=new Fault();
-        fault.addThrowable(thrown);
+        Fault fault = createFault(thrown);
         //now we create a soap exception from it
         SoapException soapException=new SoapException(thrown,fault);
         return soapException;
     }
-    
+
+    private Fault createFault(Throwable thrown) {
+        Fault fault=new Fault(SoapConstants.ELEMENT_FAULT,namespace);
+        fault.addThrowable(thrown);
+        return fault;
+    }
+
     /**
      * If throwable implements {@link SoapFaultSource} we extract the
      * fault from the source, otherwise we create a new fault
@@ -88,12 +99,10 @@ public class FaultBridge {
      */ 
     public Fault extractFaultFromThrowable(Throwable thrown) {
         if (thrown instanceof SoapFaultSource) {
-            return ((SoapFaultSource)(thrown)).GenerateSoapFault();
+            return ((SoapFaultSource)(thrown)).GenerateSoapFault(namespace);
         }
         //anything else.
-        Fault fault = new Fault();
-        fault.addThrowable(thrown);
-        return fault;
+        return createFault(thrown);
     }
 
 }

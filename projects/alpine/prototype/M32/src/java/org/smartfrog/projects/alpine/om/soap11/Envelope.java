@@ -24,8 +24,6 @@ import nu.xom.Element;
 import nu.xom.Elements;
 import org.smartfrog.projects.alpine.xmlutils.BaseElementsIterator;
 
-import javax.xml.namespace.QName;
-
 /**
  * The element name is "Envelope".
  * The element MUST be present in a SOAP message
@@ -86,11 +84,11 @@ public class Envelope extends Soap11Element {
      * @return the header
      */
     public Header getHeader() {
-        Elements childElements = getChildElements(QNAME_HEADER);
+        Elements childElements = getChildElements(ELEMENT_HEADER,getNamespaceURI());
         Header header;
         if (childElements == null || childElements.size() == 0) {
             //create a new, empty header where there was none
-            header = new Header();
+            header = new Header(ELEMENT_HEADER, getNamespaceURI());
             //stick us at the front
             insertChild(header, 0);
         } else {
@@ -107,5 +105,6 @@ public class Envelope extends Soap11Element {
         String xmlns = getNamespaceURI();
         addNewNamespace(PREFIX_SOAP, xmlns);
     }
+
 
 }

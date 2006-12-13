@@ -20,15 +20,15 @@
 
 package org.smartfrog.projects.alpine.om.soap11;
 
-import org.smartfrog.projects.alpine.om.base.SoapElement;
 import nu.xom.Element;
+import org.smartfrog.projects.alpine.om.base.SoapElement;
 
 import javax.xml.namespace.QName;
 
 /**
  * This is the base class of of all Soap11 elements
  */
-public class Soap11Element extends SoapElement implements SoapConstants {
+public class Soap11Element extends SoapElement {
 
     public Soap11Element(QName name) {
         super(name);
@@ -63,14 +63,4 @@ public class Soap11Element extends SoapElement implements SoapConstants {
     }
 
 
-    /**
-     * Add a new namespace declaration if it is not there
-     * @param prefix the prefix
-     * @param xmlns the namespace
-     */
-    public void addNewNamespace(String prefix, String xmlns) {
-        if(getNamespaceURI(prefix)==null) {
-            addNamespaceDeclaration(prefix,xmlns);
-        }
-    }
 }

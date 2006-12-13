@@ -28,38 +28,37 @@ import org.smartfrog.projects.alpine.om.base.SoapElement;
 import org.smartfrog.projects.alpine.xmlutils.XsdUtils;
 
 /**
- * this iteration doesnt have the envisaged chain of handlers, all we do is create soap nodes,
- * though we can handoff to another factory.
+ * This is a soap factory that can be bound to any SOAP namespace
  */
 public class SoapFactory extends ExtendedNodeFactory {
 
     private String soapns;
 
-    private NodeFactory handoff;
-
-    public SoapFactory(String namespace, NodeFactory handoff) {
+    public SoapFactory(String namespace) {
         this.soapns = namespace;
-
-        this.handoff = handoff;
     }
 
     /**
      * Default ctor is bound to {@link SoapConstants#URI_SOAPAPI}.
      */
     public SoapFactory() {
-        this(SoapConstants.URI_SOAPAPI, null);
+        this(SoapConstants.URI_SOAPAPI);
+    }
+
+
+    public boolean inScope(String element, String namespace) {
+        return soapns.equals(namespace);
     }
 
     /**
      * Make a new element
      *
      * @param fullname  this comes in with a prefix: on it, which we will need to strip off
-     * @param namespace
-     * @return
+     * @param namespace namespace URI
+     * @return the new element
      */
     public Element startMakingElement(String fullname, String namespace) {
         String name = XsdUtils.extractLocalname(fullname);
-
         Element element = null;
         if (soapns.equals(namespace)) {
             if (SoapConstants.ELEMENT_ENVELOPE.equals(name)) {
@@ -74,14 +73,12 @@ public class SoapFactory extends ExtendedNodeFactory {
                 //something else in our namespace. wierd.
                 element = new SoapElement(name, namespace);
             }
-        } else {
-            if (handoff != null) {
-                return handoff.startMakingElement(name, namespace);
-            } else {
-                return new SoapElement(name, namespace);
-            }
         }
-
+/*
+        else {
+                return new SoapElement(name, namespace);
+        }
+*/
         return element;
     }
 
@@ -105,23 +102,4 @@ public class SoapFactory extends ExtendedNodeFactory {
         return startMakingElement(name, namespace);
     }
 
-    /**
-     * <p/>
-     * Creates a new <code>Document</code> object. The root element of this document is initially set to <code>&lt;root
-     * xmlns=http://www.xom.nu/fakeRoot""/></code>. This is only temporary. As soon as the real root element's start-tag
-     * is read, this element is replaced by the real root. This fake root should never be exposed. </p>
-     * <p/>
-     * <p/>
-     * The builder calls this method at the beginning of each document, before it calls any other method in this class.
-     * Thus this is a useful place to perform per-document initialization tasks. </p>
-     * <p/>
-     * <p/>
-     * Subclasses may change the root element, content, or other characteristics of the document returned. However, this
-     * method must not return null or the builder will throw a <code>ParsingException</code>. </p>
-     *
-     * @return the newly created <code>Document</code>
-     */
-    public Document startMakingDocument() {
-        return MessageDocument.create();
-    }
 }

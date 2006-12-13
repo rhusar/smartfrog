@@ -287,6 +287,7 @@ public class AddressDetails implements Validatable, AddressingConstants {
         this.namespace = namespace;
         boolean found = false;
         Header headers = message.getEnvelope().getHeader();
+        String soapNS = headers.getNamespaceURI();
         AlpineEPR epr = new AlpineEPR();
         found = epr.readFromHeaders(headers, namespace, false);
         if (found) {
@@ -327,8 +328,8 @@ public class AddressDetails implements Validatable, AddressingConstants {
                 understood = true;
             }
             //mark headers that we understood as so, for the MustUnderstand checker.
-            if(Header.isMustUnderstand(header) && understood) {
-                Header.setMustUnderstand(header,false);
+            if(Header.isMustUnderstand(header, soapNS) && understood) {
+                Header.setMustUnderstand(header, soapNS, false);
             }
         }
         return found;

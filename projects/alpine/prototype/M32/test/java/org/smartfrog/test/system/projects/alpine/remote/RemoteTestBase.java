@@ -95,7 +95,7 @@ public abstract class RemoteTestBase extends TestCase {
     protected void selectEndpoint() throws Exception {
         String target = System.getProperty(ENDPOINT);
         if (target == null) {
-            throw new Exception("No endpoint property " + ENDPOINT);
+            throw new Exception("No endpoint property '" + ENDPOINT+"'");
         }
         String path = getEndpointName();
         bindToAddress(target + path);

@@ -20,43 +20,13 @@
 
 package org.smartfrog.projects.alpine.om.soap11;
 
-import nu.xom.Element;
-import nu.xom.NodeFactory;
-import nu.xom.Nodes;
-import org.smartfrog.projects.alpine.interfaces.NamespaceNodeFactory;
-import org.smartfrog.projects.alpine.om.base.SoapElement;
-import org.smartfrog.projects.alpine.xmlutils.XsdUtils;
-
 /**
-
+ * SOAP 1.1 element factory
  */
-@Deprecated
-public class Soap11NodeFactory implements NamespaceNodeFactory {
+public class Soap11NodeFactory extends SoapFactory {
 
-    /**
-     * Make a new element
-     *
-     * @param fullname  this comes in with a prefix: on it, which we will need to strip off
-     * @param namespace
-     * @return an element or null
-     */
-    public Element startMakingElement(String fullname, String namespace, NodeFactory baseFactory) {
-        String name = XsdUtils.extractLocalname(fullname);
-        if (SoapConstants.ELEMENT_ENVELOPE.equals(name)) {
-            return new Envelope(name, namespace);
-        }
-        if (SoapConstants.ELEMENT_HEADER.equals(name)) {
-            return new Header(name, namespace);
-        }
-        if (SoapConstants.ELEMENT_FAULT.equals(name)) {
-            return new Fault(name, namespace);
-        }
 
-        return new SoapElement(name, namespace);
-    }
-
-    public Nodes finishMakingElement(Element element, NodeFactory baseFactory) {
-        Nodes nodes = new Nodes(element);
-        return nodes;
+    public Soap11NodeFactory() {
+        super(SoapConstants.URI_SOAP11);
     }
 }

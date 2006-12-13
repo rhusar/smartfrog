@@ -36,6 +36,6 @@ public class ResponseFaultMustUnderstandTest extends ValidTestBase {
      * @return the resource to test
      */
     protected String getTestResource() {
-        return SOAP_RESPONSE_FAULT_MUST_UNDERSTAND;
+        return SOAP11_RESPONSE_FAULT_MUST_UNDERSTAND;
     }
 }

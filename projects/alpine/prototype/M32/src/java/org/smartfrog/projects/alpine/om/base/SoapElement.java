@@ -32,13 +32,14 @@ import org.smartfrog.projects.alpine.xmlutils.BaseElementsIterator;
 import org.smartfrog.projects.alpine.xmlutils.NodeIterator;
 import org.smartfrog.projects.alpine.xmlutils.NodesIterator;
 import org.smartfrog.projects.alpine.xmlutils.XsdUtils;
+import org.smartfrog.projects.alpine.om.soap11.SoapConstants;
 
 import javax.xml.namespace.QName;
 
 /**
  * Extended element with a backpointer to the element
  */
-public class SoapElement extends Element implements ValidateXml {
+public class SoapElement extends Element implements ValidateXml, SoapConstants {
 
     /**
      * The prefix to use when creating a qname that has none.
@@ -231,7 +232,6 @@ public class SoapElement extends Element implements ValidateXml {
                 validation.validateXml();
             }
         }
-
     }
 
     /**
@@ -319,4 +319,32 @@ public class SoapElement extends Element implements ValidateXml {
         appendChild(prefix + ":" + qname.getLocalPart());
 
     }
+
+    /**
+     * Add a new namespace declaration if it is not there
+     * @param prefix the prefix
+     * @param xmlns the namespace
+     */
+    public void addNewNamespace(String prefix, String xmlns) {
+        if(getNamespaceURI(prefix)==null) {
+            addNamespaceDeclaration(prefix,xmlns);
+        }
+    }
+
+    /**
+     * Test for the node being in the SOAP1.1 namespace
+     * @return true iff this is a SOAP1.1 node
+     */
+    public boolean isSoap11() {
+        return URI_SOAP11.equals(getNamespaceURI());
+    }
+
+    /**
+     * Test for the node being in the SOAP1.2 namespace
+     * @return true iff this is a SOAP1.2 node
+     */
+    public boolean isSoap12() {
+        return URI_SOAP12.equals(getNamespaceURI());
+    }
+
 }

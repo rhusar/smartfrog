@@ -1,45 +1,25 @@
-/** (C) Copyright 2005 Hewlett-Packard Development Company, LP
-
- This library is free software; you can redistribute it and/or
- modify it under the terms of the GNU Lesser General Public
- License as published by the Free Software Foundation; either
- version 2.1 of the License, or (at your option) any later version.
-
- This library is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- Lesser General Public License for more details.
-
- You should have received a copy of the GNU Lesser General Public
- License along with this library; if not, write to the Free Software
- Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-
- For more information: www.smartfrog.org
-
- */
-
-package org.smartfrog.test.unit.projects.alpine.files.soap.valid.soap11;
+package org.smartfrog.test.unit.projects.alpine.files.soap.valid.soap12;
 
 import org.smartfrog.test.unit.projects.alpine.ValidTestBase;
-import org.smartfrog.projects.alpine.om.soap11.MessageDocument;
-import org.smartfrog.projects.alpine.om.soap11.Envelope;
 import org.smartfrog.projects.alpine.om.soap11.Body;
+import org.smartfrog.projects.alpine.om.soap11.Envelope;
+import org.smartfrog.projects.alpine.om.soap11.MessageDocument;
 import org.smartfrog.projects.alpine.om.soap11.XPathContextFactory;
 import org.smartfrog.projects.alpine.xmlutils.NodesIterator;
+import nu.xom.XPathContext;
 import nu.xom.Nodes;
 import nu.xom.Node;
-import nu.xom.XPathContext;
 
 /**
- 
+
  */
-public class SimpleTest extends ValidTestBase {
+public class Soap12SimpleTest extends ValidTestBase {
     private Body body;
     private Envelope envelope;
     private XPathContext xpathContext;
     public static final String NODE_VALUE = "DEF";
 
-    public SimpleTest(String name) {
+    public Soap12SimpleTest(String name) {
         super(name);
     }
 
@@ -49,7 +29,7 @@ public class SimpleTest extends ValidTestBase {
      * @return the resource to test
      */
     protected String getTestResource() {
-        return SOAP11_SIMPLE;
+        return SOAP12_SIMPLE;
     }
 
     /**
@@ -69,7 +49,7 @@ public class SimpleTest extends ValidTestBase {
     /**
      * first xpath test
      * @throws Exception
-     */ 
+     */
     public void testXpath() throws Exception {
         MessageDocument doc = getDocument();
         Body body;
@@ -87,8 +67,8 @@ public class SimpleTest extends ValidTestBase {
             count++;
         }
         assertEquals("iterated once",1,count);
-    }    
-    
+    }
+
     public void testXpath2() throws Exception {
         for(Node n: body.xpath("m:GetLastTradePriceDetailed/m:symbol", xpathContext))
         {
@@ -100,10 +80,10 @@ public class SimpleTest extends ValidTestBase {
     /**
      * get the envelope
      * @param doc
-     */ 
+     */
     public Envelope getEnvelope(MessageDocument doc) {
         return doc.getEnvelope();
     }
-    
-    
+
+
 }

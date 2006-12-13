@@ -23,6 +23,7 @@ import junit.framework.TestCase;
 import nu.xom.Element;
 import org.smartfrog.projects.alpine.om.soap11.Header;
 import org.smartfrog.projects.alpine.om.soap11.MessageDocument;
+import org.smartfrog.projects.alpine.om.soap11.SoapConstants;
 import org.smartfrog.projects.alpine.handlers.MustUnderstandChecker;
 import org.smartfrog.projects.alpine.core.MessageContext;
 import org.smartfrog.projects.alpine.core.EndpointContext;
@@ -37,6 +38,8 @@ public class HeaderTest extends TestCase {
     Element element;
     private MustUnderstandChecker checker;
 
+    public static final String SOAP11 = SoapConstants.URI_SOAP11;
+    public static final String SOAP12 = SoapConstants.URI_SOAP12;
     /**
      * Sets up the fixture, for example, open a network connection.
      * This method is called before a test is executed.
@@ -48,23 +51,32 @@ public class HeaderTest extends TestCase {
     }
 
     public void testAddMuTrue() throws Exception {
-        assertFalse(Header.isMustUnderstand(element));
-        Header.setMustUnderstand(element,true);
-        assertTrue(Header.isMustUnderstand(element));
+        assertFalse(Header.isMustUnderstand(element, SOAP11));
+        Header.setMustUnderstand(element, SOAP11, true);
+        assertTrue(Header.isMustUnderstand(element, SOAP11));
+        assertFalse(Header.isMustUnderstand(element, SOAP12));
     }
 
+    public void testAddMuTrueSoap12() throws Exception {
+        assertFalse(Header.isMustUnderstand(element, SOAP12));
+        Header.setMustUnderstand(element, SOAP12, true);
+        assertTrue(Header.isMustUnderstand(element, SOAP12));
+        assertFalse(Header.isMustUnderstand(element, SOAP11));
+    }
+
+
     public void testAddMuFalse() throws Exception {
-        assertFalse(Header.isMustUnderstand(element));
-        Header.setMustUnderstand(element, false);
-        assertFalse(Header.isMustUnderstand(element));
+        assertFalse(Header.isMustUnderstand(element, SOAP11));
+        Header.setMustUnderstand(element, SOAP11, false);
+        assertFalse(Header.isMustUnderstand(element, SOAP11));
     }
 
     public void testAddMuTrueFalse() throws Exception {
-        assertFalse(Header.isMustUnderstand(element));
-        Header.setMustUnderstand(element, true);
-        assertTrue(Header.isMustUnderstand(element));
-        Header.setMustUnderstand(element, false);
-        assertFalse(Header.isMustUnderstand(element));
+        assertFalse(Header.isMustUnderstand(element, SOAP11));
+        Header.setMustUnderstand(element, SOAP11, true);
+        assertTrue(Header.isMustUnderstand(element, SOAP11));
+        Header.setMustUnderstand(element, SOAP11, false);
+        assertFalse(Header.isMustUnderstand(element, SOAP11));
     }
 
     public void testMuCheckerPass() throws Exception {
@@ -81,7 +93,7 @@ public class HeaderTest extends TestCase {
         MessageDocument request = mc.createRequest();
         Header header = request.getEnvelope().getHeader();
         assertNotNull(header);
-        Header.setMustUnderstand(element, true);
+        Header.setMustUnderstand(element, SOAP11, true);
         header.appendChild(element);
         try {
             checker.processMessage(mc, new EndpointContext());

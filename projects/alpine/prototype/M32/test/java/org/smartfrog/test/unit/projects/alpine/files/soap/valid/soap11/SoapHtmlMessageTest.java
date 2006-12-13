@@ -36,6 +36,6 @@ public class SoapHtmlMessageTest extends ValidTestBase{
      * @return the resource to test
      */
     protected String getTestResource() {
-        return SOAP_HTML_MESSAGE;
+        return SOAP11_HTML_MESSAGE;
     }
 }

@@ -23,6 +23,7 @@ package org.smartfrog.test.unit.projects.alpine.faults;
 import org.smartfrog.test.unit.projects.alpine.ParserTestBase;
 import org.smartfrog.projects.alpine.om.soap11.Fault;
 import org.smartfrog.projects.alpine.om.soap11.Body;
+import org.smartfrog.projects.alpine.om.soap11.SoapConstants;
 import org.smartfrog.projects.alpine.om.base.SoapElement;
 import org.smartfrog.projects.alpine.faults.InvalidXmlException;
 import org.smartfrog.projects.alpine.faults.AlpineRuntimeException;
@@ -51,7 +52,7 @@ public class InvalidXmlExceptionTest extends ParserTestBase {
         try {
             throw new InvalidXmlException(element,"nothing interesting to say");
         } catch (AlpineRuntimeException e) {
-            fault = e.GenerateSoapFault();
+            fault = e.GenerateSoapFault(SoapConstants.URI_SOAPAPI);
         }
     }
         
