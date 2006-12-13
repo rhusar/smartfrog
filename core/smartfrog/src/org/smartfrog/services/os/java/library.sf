@@ -231,7 +231,7 @@ LibraryArtifact extends FileUsingWorkflowComponent {
         downloadIfAbsent extends Boolean;
         downloadAlways extends Boolean;
         failIfNotPresent extends Boolean;
-
+        copyTo extends OptionalString;
     }
     artifact ATTRIB project;
 
