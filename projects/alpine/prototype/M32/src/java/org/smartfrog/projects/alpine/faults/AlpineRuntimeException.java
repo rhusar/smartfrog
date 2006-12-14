@@ -28,6 +28,7 @@ import org.smartfrog.projects.alpine.om.soap11.MessageDocument;
 import org.smartfrog.projects.alpine.om.soap11.SoapConstants;
 import org.smartfrog.projects.alpine.wsa.AlpineEPR;
 import org.smartfrog.projects.alpine.wsa.AddressingConstants;
+import org.smartfrog.projects.alpine.wsa.AddressDetails;
 import org.smartfrog.projects.alpine.xmlutils.XsdUtils;
 
 import javax.xml.namespace.QName;
@@ -124,25 +125,29 @@ public class AlpineRuntimeException extends RuntimeException implements SoapFaul
      * would only hide the underlying fault.
      *
      * @param epr the endpoint
+     * @param wsaNamespace
      */
-    public void addAddressDetails(AlpineEPR epr) {
+    public void addAddressDetails(AlpineEPR epr, String wsaNamespace) {
         if (epr != null) {
+            String ns=wsaNamespace!=null? wsaNamespace: AddressingConstants.XMLNS_WSA_2005;
             addDetail(epr.toXomInNewNamespace("epr", 
                     FaultConstants.NS_URI_ALPINE, "alpine",
-                    AddressingConstants.XMLNS_WSA_2005, "wsa"));
-            addDetail(new SoapElement(FaultConstants.QNAME_FAULTDETAIL_HOSTNAME, epr.getAddress()));
+                    ns, "wsa"));
+            addDetail(new SoapElement(FaultConstants.QNAME_FAULTDETAIL_HOSTNAME, 
+                    epr.getAddress()));
         }
     }
 
     /**
-     * Add an address to a fault. As with {@link #addAddressDetails(org.smartfrog.projects.alpine.wsa.AlpineEPR)}
+     * Add an address to a fault. As with {@link #addAddressDetails(org.smartfrog.projects.alpine.wsa.AlpineEPR, String)}
      * the call gracefully handles a null message, or missing address details.
      *
      * @param message message to extract the destination from.
      */
     public void addAddressDetails(MessageDocument message) {
         if (message != null && message.getAddressDetails() != null) {
-            addAddressDetails(message.getAddressDetails().getTo());
+            AddressDetails addr = message.getAddressDetails();
+            addAddressDetails(addr.getTo(), addr.getNamespace());
         }
     }
 

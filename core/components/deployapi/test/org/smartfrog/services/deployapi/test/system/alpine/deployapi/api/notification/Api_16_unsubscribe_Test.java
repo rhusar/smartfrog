@@ -20,6 +20,7 @@
 package org.smartfrog.services.deployapi.test.system.alpine.deployapi.api.notification;
 
 import org.smartfrog.services.deployapi.test.system.alpine.deployapi.api.SubscribingTestBase;
+import org.smartfrog.projects.alpine.faults.AlpineRuntimeException;
 
 /**
  After subscribing to the portal for system creation events,
@@ -36,7 +37,13 @@ public class Api_16_unsubscribe_Test extends SubscribingTestBase {
 
     public void testUnsubscribe() throws Exception {
         subscribeToSystemCreationEvent();
-        unsubscribe();
+        try {
+            unsubscribe();
+        } catch (AlpineRuntimeException e) {
+            getLog().error(e);
+            getLog().error(e.toString());
+            throw e;
+        }
         createSystem(null);
     }
 

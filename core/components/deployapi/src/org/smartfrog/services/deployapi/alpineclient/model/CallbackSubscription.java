@@ -114,6 +114,6 @@ public class CallbackSubscription extends WsrfSession {
      * @return the type of this session, e,g "SOAP", "WSRF"
      */
     protected String sessionType() {
-        return "Callback";
+        return "Subscription";
     }
 }
