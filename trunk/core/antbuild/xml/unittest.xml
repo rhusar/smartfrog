@@ -3,7 +3,6 @@
   xmlns:core="http://smartfrog.org/build/core"
   xmlns:ac="antlib:net.sf.antcontrib"
   xmlns:sf="antlib:org.smartfrog.tools.ant"
-  xmlns:m2="antlib:org.apache.maven.artifact.ant"
   >
   
   <description>

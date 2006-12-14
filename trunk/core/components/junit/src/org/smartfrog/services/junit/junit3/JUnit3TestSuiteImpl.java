@@ -23,6 +23,7 @@ import junit.framework.AssertionFailedError;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestResult;
+import junit.framework.TestSuite;
 import org.smartfrog.services.junit.AbstractTestSuite;
 import org.smartfrog.services.junit.RunnerConfiguration;
 import org.smartfrog.services.junit.TestContextInjector;
@@ -169,7 +170,7 @@ public class JUnit3TestSuiteImpl extends AbstractTestSuite implements JUnitTestS
      * bind to the configuration. A null parameter means 'stop binding'
      *
      * @param runner the runner configuration to use
-     * @throws java.rmi.RemoteException
+     * @throws RemoteException
      */
     public void bind(RunnerConfiguration runner) throws RemoteException, SmartFrogException {
         super.bind(configuration);
@@ -184,9 +185,9 @@ public class JUnit3TestSuiteImpl extends AbstractTestSuite implements JUnitTestS
      * heartbeat. Subclasses can override to provide additional deployment
      * behavior.
      *
-     * @throws org.smartfrog.sfcore.common.SmartFrogException
+     * @throws SmartFrogException
      *                                  error while deploying
-     * @throws java.rmi.RemoteException In case of network/rmi error
+     * @throws RemoteException In case of network/rmi error
      */
     public synchronized void sfDeploy() throws SmartFrogException,
             RemoteException {
@@ -198,9 +199,9 @@ public class JUnit3TestSuiteImpl extends AbstractTestSuite implements JUnitTestS
      * Can be called to start components. Subclasses should override to provide
      * functionality Do not block in this call, but spawn off any main loops!
      *
-     * @throws org.smartfrog.sfcore.common.SmartFrogException
+     * @throws SmartFrogException
      *                                  failure while starting
-     * @throws java.rmi.RemoteException In case of network/rmi error
+     * @throws RemoteException In case of network/rmi error
      */
     public synchronized void sfStart() throws SmartFrogException,
             RemoteException {
@@ -233,7 +234,7 @@ public class JUnit3TestSuiteImpl extends AbstractTestSuite implements JUnitTestS
                 false);
         //TODO: represent as tuples
 
-        if (propList != null && propList.size() > 0) {
+        if (propList != null && !propList.isEmpty()) {
             List<String> properties= flattenStringList(propList, ATTR_SYSPROPS);
             String[] values = new String[0];
             values = properties.toArray(values);
@@ -297,7 +298,7 @@ public class JUnit3TestSuiteImpl extends AbstractTestSuite implements JUnitTestS
      * add a test to the list , prepending the package
      * If {@link #singleTest} is not null, only tests whose classnameor fullname match
      * will be allowed.
-     * @param classname
+     * @param classname test class
      */
     private void addTest(String classname) {
         String fullname = getFullClassname(classname);
@@ -316,8 +317,8 @@ public class JUnit3TestSuiteImpl extends AbstractTestSuite implements JUnitTestS
 
     /**
      * Get the full classname of a class
-     * @param classname
-     * @return
+     * @param classname the name of the class
+     * @return the full classname with package prepended
      */
     private String getFullClassname(String classname) {
         return packageValue + classname;
@@ -332,10 +333,10 @@ public class JUnit3TestSuiteImpl extends AbstractTestSuite implements JUnitTestS
      * @return a flatter list
      * @throws SmartFrogInitException if there is an element that is not of the right type
      */
-    public List<String> flattenStringList(final List src, String name)
+    public List<String> flattenStringList(List src, String name)
             throws SmartFrogException {
         if (src == null) {
-            return new ArrayList(0);
+            return new ArrayList<String>(0);
         }
         List<String> dest = new ArrayList<String>(src.size());
         for(Object element:src) {
@@ -365,7 +366,7 @@ public class JUnit3TestSuiteImpl extends AbstractTestSuite implements JUnitTestS
      * run the test bail out if we were interrupted.
      *
      * @return true iff all tests passed
-     * @throws java.rmi.RemoteException
+     * @throws RemoteException
      */
     public boolean runTests() throws RemoteException, SmartFrogException {
 
@@ -395,7 +396,7 @@ public class JUnit3TestSuiteImpl extends AbstractTestSuite implements JUnitTestS
                 sfDeployedProcessName(),
                 suitename,
                 System.currentTimeMillis());
-        final TestListenerLog testLog = configuration.getTestLog();
+        TestListenerLog testLog = configuration.getTestLog();
         if(testLog !=null) {
             testLog.addLogListener(listener);
         }
@@ -414,19 +415,20 @@ public class JUnit3TestSuiteImpl extends AbstractTestSuite implements JUnitTestS
             for(String classname :testClasses.keySet()) {
                 try {
                     testSingleClass(classname,context);
-                    updateResultAttributes(false);
-                } catch (RemoteException e) {
+                } catch (Exception e) {
+                    //something got thrown here
                     throw SmartFrogException.forward(e);
                 }
                 if (Thread.currentThread().isInterrupted()) {
                     log.error("Interrupted test thread");
                     failed=true;
                 }
-                updateResultAttributes(true);
+                updateResultAttributes(false);
                 failed |= !stats.isSuccessful();
                 if (failed && !configuration.getKeepGoing()) {
                     return false;
                 }
+                updateResultAttributes(true);
             }
             return !failed;
         } finally {
@@ -449,6 +451,9 @@ public class JUnit3TestSuiteImpl extends AbstractTestSuite implements JUnitTestS
     /**
      * write all our state to the results order it so that we set the finished
      * last
+     * @param finished finished flag
+     * @throws SmartFrogRuntimeException if needed
+     * @throws RemoteException on network trouble
      */
     private void updateResultAttributes(boolean finished)
             throws SmartFrogRuntimeException, RemoteException {
@@ -472,7 +477,7 @@ public class JUnit3TestSuiteImpl extends AbstractTestSuite implements JUnitTestS
             Class clazz = loadTestClass(classname);
             tests = extractTest(clazz);
             injectTestContext(tests, context);
-        } catch (Exception e) {
+        } catch (Throwable e) {
             //couldnt set up the tests, so we catch the exception and create a failure
             //test that reports the outcome
             tests=new Warning(classname, e);
@@ -485,9 +490,10 @@ public class JUnit3TestSuiteImpl extends AbstractTestSuite implements JUnitTestS
     /**
      * load the test class, using the secure classloader framework.
      *
-     * @param classname
-     * @return
-     * @throws ClassNotFoundException
+     * @param classname class
+     * @retur the loaded class
+     * @throws SmartFrogResolutionException on a load failure
+     * @throws RemoteException on network trouble
      */
     private Class loadTestClass(String classname)
             throws SmartFrogResolutionException, RemoteException {
@@ -500,8 +506,7 @@ public class JUnit3TestSuiteImpl extends AbstractTestSuite implements JUnitTestS
      *
      * @param clazz class with the test
      * @return the test
-     * @throws IllegalAccessException if it is not accessible
-     * @throws InvocationTargetException if the test suite method failed
+     * @throws SmartFrogInitException if the test suite setup failed
      */
     private Test extractTest(Class clazz) throws SmartFrogInitException {
         //todo: verify that the class implements test or testsuite
@@ -511,7 +516,7 @@ public class JUnit3TestSuiteImpl extends AbstractTestSuite implements JUnitTestS
             return (Test) method.invoke(null);
         } catch (NoSuchMethodException e) {
             //if not, assume that it is a testclass and do it that way
-            return new junit.framework.TestSuite(clazz);
+            return new TestSuite(clazz);
         } catch (IllegalAccessException e) {
             throw new SmartFrogInitException("No access to the method "+SUITE_METHOD_NAME
                     +" in class "+clazz,e);
@@ -524,10 +529,10 @@ public class JUnit3TestSuiteImpl extends AbstractTestSuite implements JUnitTestS
 
     /**
      * inject the test context into every test that expects it
-     * @param tests
-     * @param context
+     * @param tests test suite
+     * @param context context to inject
      */
-    private void injectTestContext(junit.framework.TestSuite tests, HashMap<String, Object> context) {
+    private void injectTestContext(TestSuite tests, HashMap<String, Object> context) {
         Enumeration t=tests.tests();
         while (t.hasMoreElements()) {
             Test test = (Test) t.nextElement();
@@ -537,15 +542,15 @@ public class JUnit3TestSuiteImpl extends AbstractTestSuite implements JUnitTestS
 
     /**
      * inject test context into a test
-     * @param test
-     * @param context
+     * @param test test to run
+     * @param context to inject if teh test is injectable
      */
     private void injectTestContext(Test test, HashMap<String, Object> context) {
         if (test instanceof TestContextInjector) {
             TestContextInjector tci = (TestContextInjector) test;
             tci.setTestContext(context);
-        } else if (test instanceof junit.framework.TestSuite) {
-            injectTestContext((junit.framework.TestSuite)test,context);
+        } else if (test instanceof TestSuite) {
+            injectTestContext((TestSuite)test,context);
         }
     }
 
@@ -553,7 +558,7 @@ public class JUnit3TestSuiteImpl extends AbstractTestSuite implements JUnitTestS
     /**
      * Get the short name of a component.
      * @return the final name in the list, or null for no match
-     * @throws RemoteException
+     * @throws RemoteException network ttrouble
      */
     private String getComponentShortName() throws RemoteException {
         Object key;
@@ -597,7 +602,7 @@ public class JUnit3TestSuiteImpl extends AbstractTestSuite implements JUnitTestS
     /**
      * ignore a remote fault by logging it
      *
-     * @param e
+     * @param e exception
      */
     private void IgnoreRemoteFault(Exception e) {
         log.warn(WARN_IGNORING_REMOTE_FAULT, e);
@@ -605,6 +610,8 @@ public class JUnit3TestSuiteImpl extends AbstractTestSuite implements JUnitTestS
 
     /**
      * A failure occurred.
+     * @param test test
+     * @param error error
      */
     public void addFailure(Test test, AssertionFailedError error) {
         stats.incFailures();
@@ -621,6 +628,8 @@ public class JUnit3TestSuiteImpl extends AbstractTestSuite implements JUnitTestS
 
     /**
      * A test ended.
+     * @param test test
+     *
      */
     public void endTest(Test test) {
         stats.incTestsRun();
@@ -640,6 +649,7 @@ public class JUnit3TestSuiteImpl extends AbstractTestSuite implements JUnitTestS
      * Note that if a test throws an exception in {@link TestCase#setUp()}
      * then this callback is <i>not</i> invoked by Junit. We need to be
      * aware of this fact.
+     * @param test test
      */
     public void startTest(Test test) {
         TestInfo info = onStart(test);
@@ -658,7 +668,8 @@ public class JUnit3TestSuiteImpl extends AbstractTestSuite implements JUnitTestS
      * and incrementing the started count in the statistics.
      * If it is there, do nothing.
      *
-     * @param test
+     * @param test test
+     * @return test informatation
      */
     public TestInfo onStart(Test test) {
         TestInfo info = new TestInfo(test);

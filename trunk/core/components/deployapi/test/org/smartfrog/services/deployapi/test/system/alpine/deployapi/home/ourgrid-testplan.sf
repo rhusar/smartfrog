@@ -2,9 +2,7 @@
 #include "/org/smartfrog/sfcore/logging/components.sf"
 #include "/org/smartfrog/sfcore/logging/logtoprimimpl.sf"
 #include "/org/smartfrog/services/deployapi/test/system/alpine/deployapi/proxy.sf"
-#include "/org/smartfrog/services/deployapi/test/system/alpine/deployapi/nec.sf"
 #include "/org/smartfrog/services/deployapi/test/system/alpine/deployapi/ourgrid.sf"
-#include "/org/smartfrog/services/deployapi/test/system/alpine/deployapi/hp.sf"
 #include "/org/smartfrog/services/www/livenessPage.sf"
 #include "/org/smartfrog/services/deployapi/notifications/muws/notifyhost.sf"
 
@@ -14,17 +12,13 @@
 
       endpoint TBD;
       name TBD;
-      healthURL endpoint;
-      timeout 200;
+      timeout 2000;
       subdir name;
       enabled true;
       basedir "build/test/interop";
 
 
 
-      health extends LivenessPage {
-        url healthURL;
-      }
 
       /**
         * this is the muws event listener,defaulting to port 8082
@@ -44,7 +38,8 @@
         endpoint PARENT:endpoint;
         subdir PARENT:subdir;
 
-        //singleTest "creation";
+        singleTest "notification";
+        singleClass "Api_17_create_system_while_subscribed_Test";
       }
 
   }
@@ -53,9 +48,7 @@
 
 fullSuite extends Compound {
   tempDir LAZY PROPERTY java.io.tmpdir;
-  necEnabled true;
   ourgridEnabled true;
-  hpEnabled true;
   proxyEnabled false;
 
   log extends SFLog {
@@ -74,12 +67,6 @@ fullSuite extends Compound {
   }
 
   testLog LAZY log:logTo:logTo;
-
-
-      proxy extends Proxy {
-        enabled proxyEnabled;
-      }
-
 
 
   OurgridTest extends ServerTest {

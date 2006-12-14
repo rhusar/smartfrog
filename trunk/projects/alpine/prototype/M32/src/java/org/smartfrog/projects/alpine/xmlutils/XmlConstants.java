@@ -31,35 +31,35 @@ public interface XmlConstants {
      * parser of choice is Apache Xerces; fallback is Sun xerces. {@value}
      */
 
-    final static String PARSER_XERCES = "org.apache.xerces.parsers.SAXParser";
+    String PARSER_XERCES = "org.apache.xerces.parsers.SAXParser";
     /**
      * what ships with Java1.5 {@value}
      */
-    final static String PARSER_JAVA_15 = "com.sun.org.apache.xerces.internal.parsers.SAXParser";
+    String PARSER_JAVA_15 = "com.sun.org.apache.xerces.internal.parsers.SAXParser";
 
-    static final String FEATURE_XERCES_XSD = "http://apache.org/xml/features/validation/schema";
+    String FEATURE_XERCES_XSD = "http://apache.org/xml/features/validation/schema";
 
-    final static String FEATURE_XERCES_XSD_FULLCHECKING = "http://apache.org/xml/features/validation/schema-full-checking";
-    final static String FEATURE_XERCES_URI_CONFORMANT = "http://apache.org/xml/features/standard-uri-conformant";
-    final static String FEATURE_XERCES_DISALLOW_DOCTYPES = "http://apache.org/xml/features/disallow-doctype-decl";
-    final static String FEATURE_SAX_GENERAL_ENTITIES = "http://xml.org/sax/features/external-general-entities";
+    String FEATURE_XERCES_XSD_FULLCHECKING = "http://apache.org/xml/features/validation/schema-full-checking";
+    String FEATURE_XERCES_URI_CONFORMANT = "http://apache.org/xml/features/standard-uri-conformant";
+    String FEATURE_XERCES_DISALLOW_DOCTYPES = "http://apache.org/xml/features/disallow-doctype-decl";
+    String FEATURE_SAX_GENERAL_ENTITIES = "http://xml.org/sax/features/external-general-entities";
     /**
      * Java1.5+ option for secure XML parsing
      * {@value}
      */
-    final static String FEATURE_JAXP_SECURE_PROCESSING = "http://javax.xml.XMLConstants/feature/secure-processing";
+    String FEATURE_JAXP_SECURE_PROCESSING = "http://javax.xml.XMLConstants/feature/secure-processing";
 
-    public static final String PROPERTY_XERCES_SCHEMA_LOCATION =
+    String PROPERTY_XERCES_SCHEMA_LOCATION =
             "http://apache.org/xml/properties/schema/external-schemaLocation";
-    public static final String PROPERTY_XERCES_NO_NAMESPACE_SCHEMA_LOCATION =
+    String PROPERTY_XERCES_NO_NAMESPACE_SCHEMA_LOCATION =
             "http://apache.org/xml/properties/schema/external-noNamespaceSchemaLocation";
 
-    public static final String FEATURE_SAX_VALIDATION = "http://xml.org/sax/features/validation";
-    public static final String FEATURE_SAX_NAMESPACES = "http://xml.org/sax/features/namespaces";
-    public static final String FEATURE_JAXP12_SCHEMA_LANGUAGE =
+    String FEATURE_SAX_VALIDATION = "http://xml.org/sax/features/validation";
+    String FEATURE_SAX_NAMESPACES = "http://xml.org/sax/features/namespaces";
+    String FEATURE_JAXP12_SCHEMA_LANGUAGE =
             "http://java.sun.com/xml/jaxp/properties/schemaLanguage";
-    public static final String FEATURE_JAXP12_SCHEMA_SOURCE =
+    String FEATURE_JAXP12_SCHEMA_SOURCE =
             "http://java.sun.com/xml/jaxp/properties/schemaSource";
-    public static final String URI_XSD =
+    String URI_XSD =
             "http://www.w3.org/2001/XMLSchema";
 }

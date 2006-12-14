@@ -109,6 +109,7 @@ public abstract class SubscribingTestBase extends StandardTestBase {
         subscription.setReceiver(receiver);
         subscription.setTimeout(getSubscribeWaitTimeout());
         patchSubscription(session,subscription);
+        getLog().info("Subscribing to "+subscription.toString());
         return subscription;
     }
 

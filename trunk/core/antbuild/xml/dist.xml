@@ -79,7 +79,11 @@
 
   <target name="declare-tests.compile.classpath"
       depends="declare-exec.classpath,ivy-resolve">
-    <ivy:cachepath pathid="tests.compile.classpath" conf="test" />
+    <ivy:cachepath pathid="tests.compile.ivy.classpath" conf="test" />
+    <path id="tests.compile.classpath">
+      <pathelement location="${target.jar}"/>
+      <path refid="tests.compile.ivy.classpath"/>
+    </path>
     <property name="tests.compile.classpath.value"
         refid="tests.compile.classpath"/>
     <echo level="verbose">

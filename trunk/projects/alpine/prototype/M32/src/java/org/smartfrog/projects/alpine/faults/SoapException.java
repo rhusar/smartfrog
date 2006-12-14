@@ -25,6 +25,8 @@ import org.smartfrog.projects.alpine.om.soap11.MessageDocument;
 import org.smartfrog.projects.alpine.om.soap11.SoapConstants;
 import org.smartfrog.projects.alpine.om.base.SoapElement;
 import org.smartfrog.projects.alpine.interfaces.SoapFaultSource;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * This represents a SOAPException from the XML. 
@@ -32,6 +34,7 @@ import org.smartfrog.projects.alpine.interfaces.SoapFaultSource;
  */
 public class SoapException extends AlpineRuntimeException implements SoapFaultSource {
 
+    private static Log log= LogFactory.getLog(SoapException.class);
     private Fault fault;
 
     private String soapNamespace;
@@ -130,7 +133,10 @@ public class SoapException extends AlpineRuntimeException implements SoapFaultSo
      * @param soapNamespace
      */
     public Fault GenerateSoapFault(String soapNamespace) {
-        return fault;
+        if(!(soapNamespace.equals(soapNamespace))) {
+            log.warn("Different xmlns for fault");
+        }
+        return (Fault) fault.copy();
     }
 
     /**

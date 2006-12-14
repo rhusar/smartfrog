@@ -130,6 +130,15 @@ For more information: www.smartfrog.org
           ];
     }
 
+    DebugTestSuite extends AlpineTestSuite {
+        name "debug";
+        description "debug run";
+        package "org.smartfrog.services.deployapi.test.system.alpine.deployapi.api";
+        classes [
+          ""
+          ];
+    }
+
     InformativeTestSuite extends AlpineTestSuite {
         name "informative";
         description "informative tests";
