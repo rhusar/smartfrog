@@ -22,7 +22,8 @@
     <conf name="test" extends="default,parser,master"
         description="the classpath needed to run tests"/>
     <conf name="master" description="contains the artifact but no dependencies"/>
-    <conf name="redist" description="redistributals excluding smartfrog artifacts"/>
+    <conf name="redist" description="redistributals excluding smartfrog artifacts"
+        extends="parser"/>
     <conf name="runtime" description="runtime but not the artifact"
         extends="redist"/>
     <conf name="parser" description="Xerces xml parser for Java1.4"/>
