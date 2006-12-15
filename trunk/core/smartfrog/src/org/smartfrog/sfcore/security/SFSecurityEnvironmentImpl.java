@@ -26,6 +26,7 @@ import java.rmi.server.RMIServerSocketFactory;
 import java.rmi.server.RMISocketFactory;
 import java.security.KeyStore;
 import java.security.cert.Certificate;
+import java.net.InetAddress;
 
 import javax.net.ssl.KeyManager;
 import javax.net.ssl.KeyManagerFactory;
@@ -80,6 +81,9 @@ public class SFSecurityEnvironmentImpl implements SFSecurityEnvironment {
 
     /** A RMI wrapper factory to the server's SSL factory. */
     private RMIServerSocketFactory rmissf;
+    /** Binding Address for RMIServerSocketFactory */
+    private InetAddress rmissfBindAddr=null;
+
 
     /** A RMI wrapper factory to the client's and server's SSL factories. */
     private RMISocketFactory rmisf;
@@ -87,17 +91,22 @@ public class SFSecurityEnvironmentImpl implements SFSecurityEnvironment {
     /** A debugging utility to print messages. */
     private SFDebug debug;
 
+
     /**
      * Constructs SFSecurityEnvironmentImpl. Initializes key store, key
      * managers,trust managers, contexts, SSL socket factories and RMI socket
      * factories
-     *
+     * <p>
+     * If the bind address is <code>null</code>, then the system will pick up
+     * an ephemeral port and a valid local address to bind the socket.
+     * <P>
+     * @param bindAddr bind address
      * @throws SFGeneralSecurityException if error during initalization
      */
-    public SFSecurityEnvironmentImpl() throws SFGeneralSecurityException {
+    public SFSecurityEnvironmentImpl(InetAddress bindAddr) throws SFGeneralSecurityException {
         // Init debugging.
         debug = SFDebug.getInstance("SFSecurityEnvironmentImpl");
-
+        this.rmissfBindAddr = bindAddr;
         // Check that requests comes from trusted code.
         SFSecurity.checkSFCommunity();
 
@@ -216,7 +225,7 @@ public class SFSecurityEnvironmentImpl implements SFSecurityEnvironment {
      */
     private void initRMISocketFactories() throws SFGeneralSecurityException {
         rmicsf = new SFClientSocketFactory(this);
-        rmissf = new SFServerSocketFactory(this);
+        rmissf = new SFServerSocketFactory(rmissfBindAddr,this);
         rmisf = new SFRMISocketFactory(rmicsf, rmissf);
     }
 

@@ -27,6 +27,7 @@ ProcessCompoundSchema extends CompoundSchema {
   sfProcessAllow extends OptionalBoolean {description "decides if subprocesses are allowed in root process";}
   sfProcessTimeout extends OptionalInteger {description "timeout for subprocess deployment in seconds";}
   sfRootLocatorPort extends Integer {description "root locator port for SmartFrog";}
+  sfRootLocatorBindAddress extends Optional {description "root locator bind address for SmartFrog";}
   sfRootLocatorClass extends OptionalString {description "class that implements root locator";}
 }
 
@@ -53,6 +54,8 @@ ProcessCompound extends Compound {
   sfRootLocatorClass "org.smartfrog.sfcore.processcompound.DefaultRootLocatorImpl";
 
   sfRootLocatorPort 3800;
+
+  //sfRootLocatorBindAddress "localhost"; //by default not defined
 
   // reference to root of current heirachy of processes - not necessarily a root process compound
   rootProcess LAZY ROOT;

@@ -22,6 +22,7 @@ package org.smartfrog.sfcore.security;
 
 import java.io.IOException;
 import java.net.ServerSocket;
+import java.net.InetAddress;
 import java.rmi.server.RMIServerSocketFactory;
 
 
@@ -34,13 +35,35 @@ public class SFServerSocketFactory implements RMIServerSocketFactory {
     /** A security environment that handles the configuration of sockets. */
     private SFSecurityEnvironment secEnv;
 
+    private final InetAddress bindAddr;
+
+    public int hashCode() {
+        return bindAddr.hashCode();
+    }
+    public boolean equals(Object obj) {
+        if (obj == this) {
+            return true;
+        } else if (obj == null || getClass() != obj.getClass()) {
+            return false;
+        }
+        SFServerSocketFactory other = (SFServerSocketFactory) obj;
+        return bindAddr.equals(other.bindAddr);
+    }
+
+
     /**
      * Constructs SFServerSocketFactory with security environment.
+     * <P>
+     * If the bind address is <code>null</code>, then the system will pick up
+     * an ephemeral port and a valid local address to bind the socket.
+     * <P>
+     * @param bindAddr bind address for the server socket
      *
      * @param secEnv A security environment that handles the configuration of
      *        sockets.
      */
-    public SFServerSocketFactory(SFSecurityEnvironment secEnv) {
+    public SFServerSocketFactory(InetAddress bindAddr, SFSecurityEnvironment secEnv) {
+        this.bindAddr = bindAddr;
         this.secEnv = secEnv;
     }
 
@@ -59,6 +82,6 @@ public class SFServerSocketFactory implements RMIServerSocketFactory {
          * for this reason we don't need a SSLServerSocketFactory.
          * However, we have to wrap it to pass the security
          * context. */
-        return new SFServerSocket(port, secEnv);
+        return new SFServerSocket(port, bindAddr, secEnv);
     }
 }

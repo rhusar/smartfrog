@@ -25,6 +25,8 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.RMISocketFactory;
+import java.net.InetAddress;
+import org.smartfrog.sfcore.processcompound.SFServerSocketFactory;
 
 
 /**
@@ -44,6 +46,9 @@ public class SFSecurity {
 
     /** A security environment shared by all the local SF components */
     private static SFSecurityEnvironment securityEnv;
+    /** A RMIServerSocketFactory used when security is ff */
+    private static SFServerSocketFactory nonSecServerSocketFactory;
+
 
     /**
      * Initializes the security using system properties to decide on the level
@@ -69,7 +74,7 @@ public class SFSecurity {
                        Security.addProvider(
                                        new com.sun.net.ssl.internal.ssl.Provider());
                      */
-                    securityEnv = new SFSecurityEnvironmentImpl();
+                    securityEnv = new SFSecurityEnvironmentImpl(null);
 
                     /*Make sure that we restrict downloading of stubs/RMIClientFactory
                        Note that this only works if this is called before RMI
@@ -164,13 +169,15 @@ public class SFSecurity {
      *
      * @since JDK1.1
      */
-    public static Registry createRegistry(int port) throws RemoteException {
+    public static Registry createRegistry(int port, InetAddress bindAddr) throws RemoteException {
+        System.out.println("Binding to "+bindAddr);
         if (isSecurityOn()) {
             return LocateRegistry.createRegistry(port,
                 securityEnv.getEmptyRMIClientSocketFactory(),
                 securityEnv.getRMIServerSocketFactory());
         } else {
-            return LocateRegistry.createRegistry(port);
+            nonSecServerSocketFactory = new SFServerSocketFactory(bindAddr);
+            return LocateRegistry.createRegistry(port,null,nonSecServerSocketFactory);
         }
     }
 

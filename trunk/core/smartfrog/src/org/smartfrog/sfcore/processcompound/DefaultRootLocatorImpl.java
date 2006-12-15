@@ -21,6 +21,7 @@ For more information: www.smartfrog.org
 package org.smartfrog.sfcore.processcompound;
 
 import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.rmi.RemoteException;
 import java.rmi.registry.Registry;
 
@@ -30,6 +31,7 @@ import org.smartfrog.sfcore.common.MessageUtil;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
+import org.smartfrog.sfcore.common.SFNull;
 import org.smartfrog.sfcore.security.SFSecurity;
 
 /**
@@ -120,6 +122,9 @@ public class DefaultRootLocatorImpl implements RootLocator, MessageKeys {
     /** Port for registry. */
     protected static int registryPort = -1;
 
+    /** Port for registry. */
+    protected static InetAddress registryBindAddr = null;
+
      /** RMI Registry. */
     protected static Registry registry = null;
 
@@ -166,6 +171,48 @@ public class DefaultRootLocatorImpl implements RootLocator, MessageKeys {
         return registryPort;
     }
 
+
+    /**
+     * Gets the bind address for RMI registry on which input process compound is running or
+     * if ProcessCompound is null then the 'sfRootLocatorPort' is read from
+     * processcompound.sf description
+     *
+     * @param c Instance of process compound
+     *
+     * @return InetAddress bind address or  <code>null</code> if no particular one is defined.
+     *
+     * @throws SmartFrogException fails to get the registry bind address
+     * @throws RemoteException In case of network/rmi error
+     */
+    protected static InetAddress getRegistryBindAddress(ProcessCompound c)
+        throws SmartFrogException, RemoteException {
+        Object bindAddr=null;
+        try {
+            if (registryBindAddr == null) {
+                if (c!=null) {
+                  bindAddr = (c.sfResolveHere(SmartFrogCoreKeys.SF_ROOT_LOCATOR_BIND_ADDRESS, false));
+                } else {
+                  bindAddr = SFProcess.getProcessCompoundDescription().sfResolveHere(SmartFrogCoreKeys.
+                                             SF_ROOT_LOCATOR_BIND_ADDRESS, false);
+                }
+                if ((bindAddr==null) ||(bindAddr instanceof SFNull)) {
+                    return null;
+                } else if (bindAddr instanceof java.net.InetAddress) {
+                   return ((java.net.InetAddress) bindAddr);
+                } else {
+                  registryBindAddr = InetAddress.getByName(bindAddr.toString());
+                }
+            }
+        } catch (UnknownHostException uhex){
+           throw new SmartFrogResolutionException(
+             "Wrong binding address for "+SmartFrogCoreKeys.SF_ROOT_LOCATOR_PORT
+             +": "+bindAddr+", "+bindAddr.getClass().getName()+"", uhex, c);
+
+        }
+        return registryBindAddr;
+    }
+
+
     /**
      * Tries to make the requesting process compound the root of the entire
      * host. This might fail since another process compound has already done
@@ -182,10 +229,11 @@ public class DefaultRootLocatorImpl implements RootLocator, MessageKeys {
         throws SmartFrogException, RemoteException {
 
         registryPort = getRegistryPort(c);
+        registryBindAddr = getRegistryBindAddress(c);
 
         try {
             if (registry==null) {
-                registry = SFSecurity.createRegistry(registryPort);
+                registry = SFSecurity.createRegistry(registryPort,registryBindAddr);
             }
             //registry.bind(defaultName, c);
             /**
