@@ -21,6 +21,8 @@ import org.smartfrog.sfcore.reference.ReferencePart;
 import org.smartfrog.sfcore.reference.HostReferencePart;
 import org.smartfrog.sfcore.reference.PropertyReferencePart;
 import org.smartfrog.sfcore.reference.IPropertyReferencePart;
+import org.smartfrog.sfcore.reference.EnvPropertyReferencePart;
+import org.smartfrog.sfcore.reference.IEnvPropertyReferencePart;
 import org.smartfrog.sfcore.reference.HereReferencePart;
 import org.smartfrog.sfcore.reference.RootReferencePart;
 import org.smartfrog.sfcore.reference.AttribReferencePart;
@@ -206,7 +208,10 @@ TOKEN : /* reserved words */
  | <HERE: "HERE">
  | <HOST: "HOST">
  | <INCLUDE: "#include">
+ | <PROPERTY: "PROPERTY">
  | <IPROPERTY: "IPROPERTY">
+ | <ENVPROPERTY: "ENVPROPERTY">
+ | <IENVPROPERTY: "IENVPROPERTY">
  | <LAZY: "LAZY">
  | <LBRACE: "{">
  | <LBRACKET: "[">
@@ -214,7 +219,6 @@ TOKEN : /* reserved words */
  | <OPTIONAL: "OPTIONAL">
  | <PARENT: "PARENT">
  | <PROCESS: "PROCESS">
- | <PROPERTY: "PROPERTY">
  | <RBRACE: "}">
  | <RBRACKET: "]">
  | <REFPARTSEP: ":">
@@ -759,6 +763,8 @@ void ReferencePart(SFReference ref) :
   | (<THIS> { ref.addElement(ReferencePart.thisref()); })
   | (<PROPERTY> id=<WORD> { ref.addElement(ReferencePart.property(id.image));})
   | (<IPROPERTY> id=<WORD> { ref.addElement(ReferencePart.iproperty(id.image));})
+  | (<ENVPROPERTY> id=<WORD> { ref.addElement(ReferencePart.envproperty(id.image));})
+  | (<IENVPROPERTY> id=<WORD> { ref.addElement(ReferencePart.ienvproperty(id.image));})
   | (<HOST> (
        (id=<WORD> { ref.addElement(ReferencePart.host(id.image));})
       |(id=<STRING> { ref.addElement(ReferencePart.host(id.image.substring(1, id.image.length() - 1)));})
