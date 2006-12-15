@@ -23,6 +23,7 @@ package org.smartfrog.sfcore.security;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.InetAddress;
 
 import javax.net.ssl.SSLSocket;
 import javax.net.ssl.SSLSocketFactory;
@@ -43,16 +44,20 @@ public class SFServerSocket extends ServerSocket {
 
     /**
      * Class Constructor.
-     *
+     * <P>
+     * If the bind address is <code>null</code>, then the system will pick up
+     * an ephemeral port and a valid local address to bind the socket.
+     * <P>     
+     * @param bindAddr bind address
      * @param port The port number
      * @param secEnv A security environment that handles the configuration of
      *        sockets.
      *
      * @throws IOException  In case error while creating server socket
      */
-    public SFServerSocket(int port, SFSecurityEnvironment secEnv)
+    public SFServerSocket(int port, InetAddress bindAddr, SFSecurityEnvironment secEnv)
         throws IOException {
-        super(port);
+        super(port,0,bindAddr);
         this.secEnv = secEnv;
         debug = SFDebug.getInstance("SFServerSocket");
     }

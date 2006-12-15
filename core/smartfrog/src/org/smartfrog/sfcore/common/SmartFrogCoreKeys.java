@@ -63,6 +63,12 @@ public interface SmartFrogCoreKeys {
      * Value {@value}
      */
     public final static String SF_ROOT_LOCATOR_PORT = "sfRootLocatorPort";
+   /**
+     * Registry bind adderess used by the rootProcess daemon.
+     *
+     * Value {@value}
+     */
+    public final static String SF_ROOT_LOCATOR_BIND_ADDRESS = "sfRootLocatorBindAddress";    
 
     /**
      * Attribute with garbage collection time out for SubProcesses.
