@@ -117,7 +117,7 @@ public final class ParserHelper implements XmlConstants {
         try {
             xerces = XMLReaderFactory.createXMLReader(PARSER_XERCES);
         } catch (SAXException e) {
-            log.debug("Failed to find Xerces; using the Java 1.5+ parser", e);
+            log.info("Failed to find Xerces; using the Java 1.5+ parser");
             xerces = XMLReaderFactory.createXMLReader(PARSER_JAVA_15);
         }
         return xerces;
