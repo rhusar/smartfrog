@@ -40,6 +40,7 @@ import org.smartfrog.sfcore.common.ContextImpl;
 import org.smartfrog.sfcore.logging.LogSF;
 import org.smartfrog.sfcore.logging.LogFactory;
 import org.smartfrog.services.display.FontSize;
+import org.smartfrog.services.display.WindowUtilities;
 
 /**
  * Tree panel for SmartFrog hierarchy of components.
@@ -419,7 +420,7 @@ public class DeployTreePanel extends JPanel implements TreeSelectionListener, Fo
           text.append("* Attribute: "+attribName);
           text.append("\n * Value: ");
           tempString = value.toString();
-          try { tempString = ContextImpl.getBasicValueFor(value); } catch (Exception ex1) { }//ignore exception }
+          try { tempString = ContextImpl.getBasicValueFor(value); } catch (Exception ex1) {tempString= tempString + "\n["+"Error when parsing value, defaulting to String\n"+ex1.toString()+"]";}//ignore exception }
           text.append("\n"+tempString);
           text.append("\n * Value resolved: \n"+ prettyPrint(solvedValue));
           text.append("\n\n"+"+ Value class:"+value.getClass().toString());
