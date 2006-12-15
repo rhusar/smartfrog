@@ -54,7 +54,7 @@ public abstract class SubscribingTestBase extends StandardTestBase {
     private Reference ref;
     private static final String NOTIFICATIONS = "notifications";
 
-    public SubscribingTestBase(String name) {
+    protected SubscribingTestBase(String name) {
         super(name);
     }
 

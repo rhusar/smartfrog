@@ -116,12 +116,6 @@ public abstract class WsrfSession extends Session {
         this.timeout = timeout;
     }
 
-    protected MessageContext createNewMessageContext() {
-        MessageContext ctx = super.createNewMessageContext();
-        return ctx;
-    }
-
-
     /**
     * Bind to an address; forces us to use the
     * {@link Constants#WS_ADDRESSING_NAMESPACE} namespace for WSA, and
