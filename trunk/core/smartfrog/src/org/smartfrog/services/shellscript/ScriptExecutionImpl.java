@@ -50,7 +50,7 @@ public class ScriptExecutionImpl  implements ScriptExecution, FilterListener {
 
       protected boolean resultReady = false;
 
-      private Integer code = null;
+      private Integer code = new Integer(-9999);
 
       protected InvocationTargetException exception = null;
 
@@ -186,9 +186,10 @@ public class ScriptExecutionImpl  implements ScriptExecution, FilterListener {
       private ComponentDescription asComponentDescription() {
         ComponentDescription cd = new ComponentDescriptionImpl(null, new ContextImpl(), false);
         try {
-          cd.sfAddAttribute("stdErr", stdErr);
-          cd.sfAddAttribute("stdOut", stdOut);
-          cd.sfAddAttribute("code", code);
+          cd.sfAddAttribute("resultReady", new Boolean (resultReady));
+          if (code!=null) cd.sfAddAttribute("code", code);
+          if (stdErr!=null) cd.sfAddAttribute("stdErr", stdErr);
+          if (stdOut!=null) cd.sfAddAttribute("stdOut", stdOut);
           if (exception != null) cd.sfAddAttribute("exception", exception);
         }
         catch (SmartFrogRuntimeException ex) {
