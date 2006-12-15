@@ -54,7 +54,7 @@ public final class ParserHelper implements XmlConstants {
      * @param disableDoctypes flag to disable doctypes
      * @param secureLoading   flag for secure loading (disables entity expansion)
      * @return an appropriately configured XML reader
-     * @throws org.xml.sax.SAXException
+     * @throws org.xml.sax.SAXException if something went very wrong
      */
     public static XMLReader createXmlParser(boolean validate,
                                             boolean disableDoctypes,
@@ -93,9 +93,9 @@ public final class ParserHelper implements XmlConstants {
     }
 
     /**
-     * turn XSD support on
+     * turn XSD support on (xerces-specific)
      *
-     * @param xerces
+     * @param xerces the parser
      */
     public static void enableXmlSchema(XMLReader xerces) {
         setFeature(xerces,
@@ -113,7 +113,7 @@ public final class ParserHelper implements XmlConstants {
      * @throws org.xml.sax.SAXException if neither implementation coudl be loaded
      */
     public static XMLReader createBaseXercesInstance() throws SAXException {
-        XMLReader xerces = null;
+        XMLReader xerces;
         try {
             xerces = XMLReaderFactory.createXMLReader(PARSER_XERCES);
         } catch (SAXException e) {
@@ -135,9 +135,9 @@ public final class ParserHelper implements XmlConstants {
                                   boolean flag) {
         try {
             parser.setFeature(name, flag);
-        } catch (SAXNotRecognizedException e) {
+        } catch (SAXNotRecognizedException ignored) {
             log.debug("SAXNotRecognizedException setting " + name);
-        } catch (SAXNotSupportedException e) {
+        } catch (SAXNotSupportedException ignored) {
             log.debug("SAXNotSupportedException setting " + name);
         }
     }
@@ -145,8 +145,8 @@ public final class ParserHelper implements XmlConstants {
     /**
      * use the JAXP APIs to locate and bind to a parser
      *
-     * @return
-     * @throws javax.xml.parsers.ParserConfigurationException
+     * @return a new instance (somehow)
+     * @throws javax.xml.parsers.ParserConfigurationException if it refuses to be
      *
      */
     public static DOMImplementation loadDomImplementation()

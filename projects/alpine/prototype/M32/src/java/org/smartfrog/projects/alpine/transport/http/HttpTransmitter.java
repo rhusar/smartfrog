@@ -107,136 +107,172 @@ public class HttpTransmitter {
         }
     }
 
+
+    /**
+     * Save a request to a file. This file should be deleted afterwards
+     *
+     * @return the file containing the request
+     * @throws IOException if the temp file could not be saved
+     */
+    protected File saveRequestToFile() throws IOException {
+        File outputFile = null;
+        OutputStream outToFile = null;
+        try {
+            outputFile = File.createTempFile("alpine", ".xml");
+            outToFile = new BufferedOutputStream(new FileOutputStream(outputFile));
+            Serializer serializer = new Serializer(outToFile);
+            serializer.write(request);
+            serializer.flush();
+            outToFile.flush();
+            outToFile.close();
+        } catch(IOException ioe) {
+            //clean up and rethrow on failure
+            if (outToFile != null) {
+                try {
+                    outToFile.close();
+                } catch (IOException e) {
+                    //swallow
+                }
+            }
+            //delete the file
+            outputFile.delete();
+            //rethrow
+            throw ioe;
+        }
+        return outputFile;
+    }
+
+    /**
+     * Save the current request to a file and then transmit it.
+     * @throws org.smartfrog.projects.alpine.faults.AlpineRuntimeException in case of trouble.
+     */
     public void transmit() {
+        File outputFile = null;
+        try {
+            outputFile = saveRequestToFile();
+        } catch (IOException ioe) {
+            //error before we even connect to the server
+            throw new HttpTransportFault(ERROR_DURING_PREPARATION, ioe);
+        }
+        try {
+            transmitPayload(outputFile);
+        } finally {
+            if (outputFile != null) {
+                outputFile.delete();
+            }
+        }
+    }
+
+    /**
+     * Transmit a file containing an XML message.
+     * the file is not deleted afterwards, so the transport can be used to push up existing messages 
+     * @param outputFile file to upload.
+     * @throws org.smartfrog.projects.alpine.faults.AlpineRuntimeException in case of trouble.
+     */
+    public void transmitPayload(File outputFile) {
         String destination = wsa.getDestination();
         log.debug("Posting to " + destination);
         PostMethod method = new ProgressingPostMethod(destination);
         //REVISIT. Its not clear that this method should stay around.
         //method.setFollowRedirects(true);
-        method.addRequestHeader("SOAPAction","");
-        method.addRequestHeader("User-Agent",HttpConstants.ALPINE_VERSION);
+        method.addRequestHeader("SOAPAction", "");
+        method.addRequestHeader("User-Agent", HttpConstants.ALPINE_VERSION);
         //fill in the details
         //1. get the message into a byte array
         //2. add it
         //3. TODO: add files?
-        File outputFile = null;
-        OutputStream outToFile = null;
         RequestEntity re = null;
+        String contentType = HttpConstants.CONTENT_TYPE_TEXT_XML;
+        String ctxContentType = (String) tx.getContext().get(ContextConstants.ATTR_SOAP_CONTENT_TYPE);
+        if (ctxContentType != null) {
+            contentType = ctxContentType;
+        }
+        re = new ProgressiveFileUploadRequestEntity(tx, request, outputFile,
+                contentType,
+                tx.getUploadFeedback(), BLOCKSIZE);
+        method.setRequestEntity(re);
+        InputStream responseStream = null;
         try {
-            try {
-                try {
-                    outputFile = File.createTempFile("alpine", ".post");
-                    outToFile = new BufferedOutputStream(new FileOutputStream(outputFile));
-                    Serializer serializer = new Serializer(outToFile);
-                    serializer.write(request);
-                    serializer.flush();
-                    outToFile.flush();
-                    String contentType = HttpConstants.CONTENT_TYPE_TEXT_XML;
-                    String ctxContentType = (String) tx.getContext().get(ContextConstants.ATTR_SOAP_CONTENT_TYPE);
-                    if(ctxContentType!=null) {
-                        contentType=ctxContentType;
-                    }
-                    re = new ProgressiveFileUploadRequestEntity(tx, request, outputFile,
-                            contentType,
-                            tx.getUploadFeedback(), BLOCKSIZE);
-                    method.setRequestEntity(re);
-                } finally {
-                    if (outToFile != null) {
-                        outToFile.close();
-                    }
-                }
-            } catch (IOException ioe) {
-                //error before we even connect to the server
-                throw new HttpTransportFault(ERROR_DURING_PREPARATION, ioe);
-
+            int statusCode = httpclient.executeMethod(method);
+            final boolean requestFailed = statusCode != HttpStatus.SC_OK;
+            boolean responseIsXml;
+            //get the content type and drop anything following a semicolon
+            //this can be null on an empty response
+            contentType = getResponseContentType(method);
+            if(contentType!=null) {
+                contentType = HttpBinder.extractBaseContentType(contentType);
+                responseIsXml = HttpBinder.isValidSoapContentType(contentType);
+            } else {
+                responseIsXml=false;
             }
-            InputStream responseStream = null;
-            try {
-                int statusCode = httpclient.executeMethod(method);
-                final boolean requestFailed = statusCode != HttpStatus.SC_OK;
-                boolean responseIsXml;
-                //get the content type and drop anything following a semicolon
-                //this can be null on an empty response
-                String contentType = getResponseContentType(method);
-                if(contentType!=null) {
-                    contentType = HttpBinder.extractBaseContentType(contentType);
-                    responseIsXml = HttpBinder.isValidSoapContentType(contentType);
-                } else {
-                    responseIsXml=false;
-                }
 
-                if (requestFailed &&
-                        (!responseIsXml || statusCode != HttpStatus.SC_INTERNAL_SERVER_ERROR)) {
-                    //TODO: treat 500+text/xml response specially, as it is probably a SOAPFault
-                    log.error("Method failed: " + method.getStatusLine());
-                    throw new HttpTransportFault(destination, method);
-                }
+            if (requestFailed &&
+                    (!responseIsXml || statusCode != HttpStatus.SC_INTERNAL_SERVER_ERROR)) {
+                //TODO: treat 500+text/xml response specially, as it is probably a SOAPFault
+                log.error("Method failed: " + method.getStatusLine());
+                throw new HttpTransportFault(destination, method);
+            }
 
-                //response is 200, but is it HTML?
-                if (!responseIsXml) {
-                    HttpTransportFault fault = new HttpTransportFault(destination, method,
-                            "Wrong content type: expected "
-                                    + HttpConstants.CONTENT_TYPE_TEXT_XML
-                                    + " or "
-                                    + HttpConstants.CONTENT_TYPE_SOAP_XML
-                                    + " but got ["
-                                    + contentType
-                                    + ']');
-                    throw fault;
-                }
-                //extract the response
-                responseStream = new CachingInputStream(method.getResponseBodyAsStream(),"utf8");
-                //parse it
-                SoapMessageParser parser = tx.getContext().createParser();
-                MessageDocument response;
-                if (!requestFailed) {
+            //response is 200, but is it HTML?
+            if (!responseIsXml) {
+                HttpTransportFault fault = new HttpTransportFault(destination, method,
+                        "Wrong content type: expected "
+                                + HttpConstants.CONTENT_TYPE_TEXT_XML
+                                + " or "
+                                + HttpConstants.CONTENT_TYPE_SOAP_XML
+                                + " but got ["
+                                + contentType
+                                + ']');
+                throw fault;
+            }
+            //extract the response
+            responseStream = new CachingInputStream(method.getResponseBodyAsStream(),"utf8");
+            //parse it
+            SoapMessageParser parser = tx.getContext().createParser();
+            MessageDocument response;
+            if (!requestFailed) {
+                response = parser.parseStream(responseStream);
+                //set our response
+                tx.getContext().setResponse(response);
+            } else {
+                // if is a fault, turn it into an exception.
+                try {
                     response = parser.parseStream(responseStream);
                     //set our response
                     tx.getContext().setResponse(response);
-                } else {
-                    // if is a fault, turn it into an exception.
-                    try {
-                        response = parser.parseStream(responseStream);
-                        //set our response
-                        tx.getContext().setResponse(response);
-                    } catch (Exception e) {
-                        //this is here to catch XML Responses that cannot be
-                        //parsed, and to avoid the underlying problem 'remote server error'
-                        //from being lost.
-                        String text=responseStream.toString();
-                        SoapException ex = new SoapException(
-                                "The remote endpoint returned an error,\n"
-                                        + "but the response could not be parsed\n"
-                                        + "and turned into a SOAPFault.\n"
-                                        +"XML:"+ text+
-                                "\nParse Error:"+e.toString(),
-                                e, null);
-                        ex.addAddressDetails(request);
-                        throw ex;
-                    }
-                    SoapException ex = new SoapException(response);
+                } catch (Exception e) {
+                    //this is here to catch XML Responses that cannot be
+                    //parsed, and to avoid the underlying problem 'remote server error'
+                    //from being lost.
+                    String text=responseStream.toString();
+                    SoapException ex = new SoapException(
+                            "The remote endpoint returned an error,\n"
+                                    + "but the response could not be parsed\n"
+                                    + "and turned into a SOAPFault.\n"
+                                    +"XML:"+ text+
+                            "\nParse Error:"+e.toString(),
+                            e, null);
+                    ex.addAddressDetails(request);
                     throw ex;
                 }
-            } catch (IOException ioe) {
-                throw new HttpTransportFault(destination, ioe);
-            } catch (SAXException e) {
-                throw new HttpTransportFault(destination, e);
-            } catch (ParsingException e) {
-                throw new HttpTransportFault(destination, e);
-            } finally {
-                if (responseStream != null) {
-                    try {
-                        responseStream.close();
-                    } catch (IOException e) {
-                        //ignore this.
-                    }
-                }
-                method.releaseConnection();
+                SoapException ex = new SoapException(response);
+                throw ex;
             }
+        } catch (IOException ioe) {
+            throw new HttpTransportFault(destination, ioe);
+        } catch (SAXException e) {
+            throw new HttpTransportFault(destination, e);
+        } catch (ParsingException e) {
+            throw new HttpTransportFault(destination, e);
         } finally {
-            if (outputFile != null) {
-                outputFile.delete();
+            if (responseStream != null) {
+                try {
+                    responseStream.close();
+                } catch (IOException e) {
+                    //ignore this.
+                }
             }
+            method.releaseConnection();
         }
     }
 

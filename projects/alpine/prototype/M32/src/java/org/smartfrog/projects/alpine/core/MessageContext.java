@@ -131,6 +131,11 @@ public class MessageContext extends Context {
         this.processed = processed;
     }
 
+
+    public ResourceLoader getLoader() {
+        return loader;
+    }
+
     /**
      * Create a new request and return it, as well as saving
      * it in the <code>request</code> attribute.
