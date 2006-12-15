@@ -148,8 +148,19 @@ public class Session {
      */
     public Transmission createTransmission(AlpineEPR destination,
                                            String action) {
-        MessageContext messageContext = createNewMessageContext();
+        MessageContext messageContext = createMessageContextWithRequest(destination, action);
         Transmission tx = new Transmission(messageContext);
+        return tx;
+    }
+
+    /**
+     * Create a mesae context with a request pointing at the far end
+     * @param destination url
+     * @param action soap Action
+     * @return the message context wit the the stub request put together
+     */
+    public MessageContext createMessageContextWithRequest(AlpineEPR destination, String action) {
+        MessageContext messageContext = createNewMessageContext();
         MessageDocument request = messageContext.createRequest();
         AddressDetails addressing = new AddressDetails(address);
         addressing.setTo(destination);
@@ -158,10 +169,10 @@ public class Session {
             messageIDSource.addNewID(addressing);
         }
         request.setAddressDetails(addressing);
-        return tx;
+        return messageContext;
     }
 
-    protected MessageContext createNewMessageContext() {
+    public MessageContext createNewMessageContext() {
         return new MessageContext(role, validating);
     }
 

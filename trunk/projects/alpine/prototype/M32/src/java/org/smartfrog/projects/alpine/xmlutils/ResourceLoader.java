@@ -77,8 +77,8 @@ public class ResourceLoader {
     /**
      * load a resource.
      *
-     * @param resourceName
-     * @return
+     * @param resourceName the name of the resource
+     * @return the resource as an input stream
      * @throws java.io.IOException if a resource is missing
      */
     public InputStream loadResource(String resourceName) throws IOException {

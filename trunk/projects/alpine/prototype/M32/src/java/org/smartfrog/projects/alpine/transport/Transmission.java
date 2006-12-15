@@ -136,6 +136,7 @@ public class Transmission implements Callable {
      * @throws AlpineRuntimeException which contains anything else translated or nested
      * @throws org.smartfrog.projects.alpine.faults.TimeoutException
      *                                if there is a timeout
+     * @return the response
      */
     public MessageDocument blockForResult(long timeout) {
         try {
@@ -176,7 +177,7 @@ public class Transmission implements Callable {
     /**
      * Add the request and response messages to the fault as XML fragments. Good for diagnostics.
      *
-     * @param fault
+     * @param fault the fault that is being raised
      */
     public void addMessagesToFault(AlpineRuntimeException fault) {
         if (getRequest() != null) {
