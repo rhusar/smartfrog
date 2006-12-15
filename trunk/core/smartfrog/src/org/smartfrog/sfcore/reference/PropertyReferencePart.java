@@ -26,7 +26,7 @@ import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 
 /**
  * Implements the property reference part. This part resolves to the system
- * property with given value; if it is not found it will try to find it in the environment properties set.
+ * property with given value.
  * References are not forwarded from here, so
  * having this part in the middle of a reference does NOT make sense!
  *
@@ -96,8 +96,6 @@ public class PropertyReferencePart extends ReferencePart {
         try {
             String v = SFSystem.getProperty((String) value, null);
             if (v==null)
-               v = SFSystem.getEnv((String) value, null);
-            if (v==null)
                 throw SmartFrogResolutionException.notFound (r,null);
             return v;
         } catch (Throwable ex) {
@@ -121,8 +119,6 @@ public class PropertyReferencePart extends ReferencePart {
         throws SmartFrogResolutionException {
         try {
           String v = SFSystem.getProperty((String) value, null);
-          if (v==null)
-               v = SFSystem.getEnv((String) value, null);
             if (v==null)
                 throw SmartFrogResolutionException.notFound (r,null);
           return v;

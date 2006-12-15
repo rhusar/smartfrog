@@ -98,6 +98,27 @@ public abstract class ReferencePart implements Copying, Cloneable, Serializable 
     }
 
     /**
+     * Creates an integer property part which resolves to a system environment property.
+     *
+     * @param s id of attribute
+     *
+     * @return reference part
+     */
+    public static ReferencePart ienvproperty(Object s) {
+        return new IEnvPropertyReferencePart(s);
+    }
+    /**
+     * Creates a property part which resolves to a system environment property.
+     *
+     * @param s id of attribute
+     *
+     * @return reference part
+     */
+    public static ReferencePart envproperty(Object s) {
+        return new EnvPropertyReferencePart(s);
+    }
+
+    /**
      * Creates an integer property part which resolves to a system property.
      *
      * @param s id of attribute
@@ -107,7 +128,6 @@ public abstract class ReferencePart implements Copying, Cloneable, Serializable 
     public static ReferencePart iproperty(Object s) {
         return new IPropertyReferencePart(s);
     }
-
     /**
      * Creates a reference part which resolves to a host's root process
      * compound component.
