@@ -62,11 +62,9 @@ DeployApiEndpoint extends AlpineEndpoint {
       StatsHandler:classname,
       LogCurrentMessageHandler:classname,
       AddressHandler:classname,
+      LAZY pivotHandler:classname,
       MustUnderstandChecker:classname,
-      LAZY pivotHandler:classname
-      //http://jira.smartfrog.org/jira/browse/SFOS-23
-     ,
-     LogCurrentMessageHandler:classname
+      LogCurrentMessageHandler:classname
     ];
 
      getMessage ##
@@ -106,11 +104,32 @@ SystemEndpoint extends DeployApiEndpoint {
      #;
 }
 
-SubscriptionEndpoint extends DeployApiEndpoint {
+
+
+DeployApiEndpoint extends AlpineEndpoint {
+    pivotHandler TBD;
+
+
+     getMessage ##
+      <html>
+      <head><title>Deployment Endpoint</title><head>
+      <body>This a demo endpoint of the HP implementation of the CDDLM Deployment system</body>
+      </html>
+     #;
+
+}
+
+SubscriptionEndpoint extends AlpineEndpoint {
     name "subscriptions";
     path "/subscription/";
-    pivotHandler SubscriptionService;
-     getMessage ##
+    handlers [
+      LogCurrentMessageHandler:classname,
+      AddressHandler:classname,
+      SubscriptionService:classname,
+      MustUnderstandChecker:classname,
+      LogCurrentMessageHandler:classname
+    ];
+    getMessage ##
       <html>
       <head><title>SubscriptionService Endpoint</title><head>
       <body>This the SubscriptionService endpoint of the HP implementation of the CDDLM Deployment system</body>

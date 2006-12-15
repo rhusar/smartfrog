@@ -26,7 +26,9 @@ import org.smartfrog.projects.alpine.om.soap11.Fault;
 import org.smartfrog.services.deployapi.engine.ServerInstance;
 
 /**
- * This class adds statistic gathering
+ * This class adds statistic gathering.
+ * If there is a server instance running we log to it, otherwise we skip. Why would this endpoint be live
+ * without a server? When we run on a client
  * created 02-May-2006 16:09:28
  */
 
@@ -39,8 +41,8 @@ public class StatsHandler extends HandlerBase {
     /**
      * Message handler
      *
-     * @param messageContext
-     * @param endpointContext
+     * @param messageContext message
+     * @param endpointContext endpoint
      * @throws org.smartfrog.projects.alpine.faults.AlpineRuntimeException
      *
      */
@@ -52,14 +54,20 @@ public class StatsHandler extends HandlerBase {
         synchronized (this) {
             requests++;
         }
-        ServerInstance.currentInstance().incrementRequests();
+        ServerInstance serverInstance = ServerInstance.currentInstance();
+        if (serverInstance != null) {
+            serverInstance.incrementRequests();
+        }
     }
 
     private void incrementFailures() {
         synchronized (this) {
             failures++;
         }
-        ServerInstance.currentInstance().incrementFailures();
+        ServerInstance serverInstance = ServerInstance.currentInstance();
+        if(serverInstance!=null) {
+            serverInstance.incrementFailures();
+        }
     }
 
     /**
