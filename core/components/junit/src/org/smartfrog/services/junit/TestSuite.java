@@ -72,6 +72,12 @@ public interface TestSuite extends Prim, Remote, TestResultAttributes {
      */
     public static final String ATTR_TAGS = "tags";
 
+    /**
+     * The name of another test suite that must have succeeded
+     * before this test runs. If this component failed to deploy or
+     * succeed, then this test suite is skipped.
+     */
+    public static final String ATTR_MUST_SUCCEED = "mustSucceed";
 
     /**
      * bind to the configuration. A null parameter means 'stop binding'
