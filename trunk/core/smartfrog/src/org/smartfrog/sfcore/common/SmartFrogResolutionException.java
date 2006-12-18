@@ -306,6 +306,27 @@ public class SmartFrogResolutionException extends SmartFrogRuntimeException
         return srex;
     }
 
+
+    /**
+     * To forward SmartFrog exceptions instead of chain them.
+     * If thr is an instance of SmartFrogResolutionException then the exception is returned
+     * without any modification, if not a new SmartFrogResolutionException is created
+     * with message as a paramenter
+     * @param message message
+     * @param thr throwable object to be forwarded
+     * @return Throwable that is a SmartFrogResolutionException
+     */
+    public static SmartFrogException forward (String message, Throwable thr){
+        if (thr instanceof SmartFrogResolutionException) {
+            if (message!=null){
+                ((SmartFrogResolutionException)thr).add("msg: ",message);
+            }
+            return (SmartFrogResolutionException)thr;
+        } else {
+            return new SmartFrogResolutionException(message, thr);
+        }
+    }
+
     /**
      * To forward SmartFrog exceptions instead of chain them.
      *
