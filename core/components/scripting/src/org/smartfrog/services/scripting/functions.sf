@@ -18,6 +18,8 @@ For more information: www.smartfrog.org
 
 */
 
+#include "org/smartfrog/functions.sf"
+
 /**
  * This SmartFrog function allows you to specify an expression
  * under the 'exp' attribute, expression that will be evaluated
@@ -26,8 +28,7 @@ For more information: www.smartfrog.org
  * in the expression context.
  */
 
-expression extends {
-    phase.function "org.smartfrog.sfcore.languages.sf.Function";
+expression extends Function {
     sfFunctionClass "org.smartfrog.services.scripting.Expression";
     // myvariable myvalue
     // exp "function(myvariable)" ...
