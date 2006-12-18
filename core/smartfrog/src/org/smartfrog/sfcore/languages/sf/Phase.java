@@ -66,8 +66,7 @@ public class Phase implements CDVisitor {
                                       Stack path)
             throws SmartFrogResolutionException {
         try {
-            PhaseAction p = (PhaseAction) (SFClassLoader.forName((String) action)
-                    .newInstance());
+            PhaseAction p = (PhaseAction) (SFClassLoader.forName((String) action).newInstance());
             p.forComponent(cd, phaseName, path);
             return p;
         } catch (Exception ex){
@@ -77,7 +76,7 @@ public class Phase implements CDVisitor {
             } else {
               actionClass = "null";
             }
-            throw (SmartFrogResolutionException)SmartFrogResolutionException.forward(phaseName+" ("+ actionClass + ")", ex);
+            throw (SmartFrogResolutionException)SmartFrogResolutionException.forward(phaseName+" ("+ actionClass +", internal cause: "+ex.getMessage()+ ")", ex);
         }
     }
 
