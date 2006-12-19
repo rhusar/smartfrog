@@ -71,5 +71,9 @@
         rev="${commons-logging.version}"
         conf="compile,redist->master"
         />
+    <dependency org="junit"
+                name="junit"
+                rev="${junit.version}"
+                conf="test->default"/>    
   </dependencies>
 </ivy-module>

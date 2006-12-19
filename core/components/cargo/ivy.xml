@@ -56,7 +56,7 @@
     <dependency org="org.codehaus.cargo"
         name="cargo-core-api-generic"
         rev="${cargo.version}"
-        conf="compile->master;redist->default">
+        conf="compile->default;redist->default">
       <exclude org="xalan" />
       <exclude org="xerces"/>
       <exclude org="ant"/>
