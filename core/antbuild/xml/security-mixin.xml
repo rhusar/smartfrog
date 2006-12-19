@@ -1,6 +1,6 @@
 <project name="security" default="init-security">
 
-  <import file="init.xml" />
+  <import file="state.xml" />
   <!-- this is only a demo. For real use use
   <input> task
   and/or
@@ -9,7 +9,7 @@
 
   -->
 
-  <target name="init-security" depends="init">
+  <target name="init-security" depends="initialized">
     <property name="keystore.dir" location="${user.home}/.secret"/>
     <mkdir dir="${keystore.dir}"/>
     <chmod file="${keystore.dir}" perm="700"/>
@@ -32,8 +32,8 @@
         >
       <dname>
         <param name="CN" value="autosigner"/>
-        <param name="OU" value="Steve and Erik"/>
-        <param name="O" value="Apache Software Foundation"/>
+        <param name="OU" value="SmartFrog"/>
+        <param name="O" value="Hewlett-Packard laboratories"/>
         <param name="C" value="EU"/>
       </dname>
     </genkey>

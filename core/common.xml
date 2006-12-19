@@ -1,6 +1,7 @@
 <?xml version="1.0"?>
 <project name="common" basedir="."
-  >
+     xmlns:ivy="antlib:fr.jayasoft.ivy.ant"
+    >
 
 <description>
   This is not a standalone build file; nor is it an XML fragment for 
@@ -66,7 +67,8 @@
     <property name="javac.deprecation.mode" value="true"/> 
     <property name="javac.debug.level" value="lines,vars,source" />
     <property name="javac.java.version" value="1.4" />
-    
+    <property name="javac.include.ant" value="false" />
+
     <property name="smartfrog.daemon.port" value="3800" />
 
     <!-- assume the sun compiler -->
@@ -267,7 +269,7 @@
             deprecation="${javac.deprecation.mode}"
             source="${javac.java.version}"
             target="${javac.java.version}"
-            includeAntRuntime="false"
+            includeAntRuntime="${javac.include.ant}"
             includes="**/*.java"
             >
        </javac>
@@ -446,6 +448,7 @@
   <!-- =================================================================== -->
   <target name="javadoc"
           depends="init, generateversion,declare-classpaths,init-javadoc"
+      unless="javadoc.disabled"
           >
     <!--  Java Docs for all                                                -->
     <echo message=""/>
@@ -454,7 +457,6 @@
     <sf-javadoc
         sourcepath="${src.dir}"
         destdir="${dist.jdocs.dir}"
-        source="${javac.java.version}"
         classpathref="compile.classpath"
         >
       <group title="SmartFrog Packages" packages="org.smartfrog.*"/>
@@ -519,37 +521,19 @@
     </path>
   </target>
 
-
-  <target name="probe-lib-dir" depends="init">
-    <available file="${lib.dir}" type="dir" property="lib.dir.found" />
-  </target>
-
-  <target name="declare-compile.classpath-lib-dir"
-    depends="declare-base.compile.classpath,probe-lib-dir"
-    if="lib.dir.found">
-    <path id="compile.classpath">
-      <path refid="base.compile.classpath"/>
-      <fileset dir="${lib.dir}">
-        <include name="**/*.jar"/>
-      </fileset>
-    </path>
-  </target>
-
-  <target name="declare-compile.classpath-no-lib-dir"
-    depends="declare-base.compile.classpath,probe-lib-dir"
-    unless="lib.dir.found">
-    <path id="compile.classpath">
-      <path refid="base.compile.classpath"/>
-    </path>
-  </target>
-
  <target name="declare-compile.classpath"
-    depends="declare-compile.classpath-no-lib-dir,declare-compile.classpath-lib-dir" >
+    depends="declare-base.compile.classpath" unless="ivy.enabled">
+   <path id="compile.classpath">
+     <path refid="base.compile.classpath"/>
+     <fileset dir=".">
+       <include name="lib/**/*.jar"/>
+     </fileset>
+   </path>
     <property name="compile.classpath.value" refid="compile.classpath"/>
     <echo level="verbose">compile.classpath=${compile.classpath.value}</echo>
   </target>
 
-  <target name="declare-exec.classpath" depends="declare-compile.classpath" >
+  <target name="declare-exec.classpath" depends="declare-compile.classpath" unless="ivy.enabled">
     <path id="exec.classpath">
       <path refid="compile.classpath"/>
       <pathelement location="${build.classes.dir}"/>
@@ -559,7 +543,7 @@
   </target>
 
   <target name="declare-tests.compile.classpath"
-      depends="declare-exec.classpath,use-smartfrog-testharness" >
+      depends="declare-exec.classpath,use-smartfrog-testharness" unless="ivy.enabled">
     <path id="tests.compile.classpath">
       <path refid="exec.classpath"/>
       <pathelement location="${junit.jar}"/>
@@ -569,7 +553,7 @@
     <echo level="verbose">tests.compile.classpath=${tests.compile.classpath.value}</echo>
   </target>
 
-  <target name="declare-tests.run.classpath" depends="declare-tests.compile.classpath" >
+  <target name="declare-tests.run.classpath" depends="declare-tests.compile.classpath" unless="ivy.enabled">
     <path id="tests.run.classpath">
       <path refid="tests.compile.classpath"/>
       <pathelement location="${test.classes.dir}"/>
@@ -578,13 +562,13 @@
     <echo level="verbose">tests.run.classpath=${tests.run.classpath.value}</echo>
   </target>
 
-  <target name="declare-run.classpath" depends="declare-tests.run.classpath" >
+  <target name="declare-run.classpath" depends="declare-tests.run.classpath" unless="ivy.enabled">
     <path id="run.classpath">
       <path refid="tests.run.classpath"/>
     </path>
   </target>
 
-  <target name="declare-run.classpath-no-tests" depends="declare-exec.classpath" >
+  <target name="declare-run.classpath-no-tests" depends="declare-exec.classpath" unless="ivy.enabled">
     <path id="run.classpath">
       <path refid="exec.classpath"/>
     </path>
@@ -595,7 +579,44 @@
     are defined-->
   <target name="declare-classpaths"
     depends=
-     "declare-base.compile.classpath,declare-compile.classpath,declare-exec.classpath,declare-tests.compile.classpath,declare-tests.run.classpath,declare-tests.run.classpath,declare-run.classpath-no-tests,declare-run.classpath"/>
+     "ivy-classpaths,declare-base.compile.classpath,declare-compile.classpath,declare-exec.classpath,declare-tests.compile.classpath,declare-tests.run.classpath,declare-tests.run.classpath,declare-run.classpath-no-tests,declare-run.classpath"/>
+
+
+  <target name="ivy.compile.classpath" depends="maybe-ivy-resolve" if="ivy.enabled">
+    <ivy:cachepath pathid="compile.classpath" conf="compile" />
+    <property name="compile.classpath.value" refid="compile.classpath"/>
+    <echo level="verbose">compile.classpath=${compile.classpath.value}</echo>
+  </target>
+
+  <target name="ivy.run.classpath" depends="maybe-ivy-resolve"  if="ivy.enabled">
+    <ivy:cachepath pathid="run.classpath" conf="daemon" />
+    <property name="run.classpath.value" refid="run.classpath"/>
+    <echo level="verbose">daemon.classpath=${daemon.classpath.value}</echo>
+  </target>
+
+  <target name="ivy.exec.classpath" depends="ivy.compile.classpath"  if="ivy.enabled">
+    <ivy:cachepath pathid="ivy.test.classpath" conf="test" />
+    <path id="exec.classpath">
+      <pathelement location="${target.jar}"/>
+      <path refid="ivy.test.classpath"/>
+    </path>
+    <property name="exec.classpath.value" refid="exec.classpath"/>
+    <echo level="verbose">exec.classpath=${exec.classpath.value}</echo>
+  </target>
+
+  <target name="ivy.tests.run.classpath" depends="ivy.exec.classpath"  if="ivy.enabled">
+    <path id="tests.run.classpath">
+      <pathelement location="${test.jar}"/>
+      <path refid="exec.classpath"/>
+    </path>
+    <property name="tests.run.classpath.value" refid="tests.run.classpath"/>
+    <echo level="verbose">tests.run.classpath=${tests.run.classpath.value}</echo>
+  </target>
+
+  <target name="ivy-classpaths"
+    depends="ivy.compile.classpath,ivy.exec.classpath,ivy.run.classpath,ivy.tests.run.classpath" />
+
+
 
   <!-- ========================================================== -->
   <!-- cleanup target -->
@@ -1335,6 +1356,7 @@
          property="m1.local.repository.url"/>
    </target>
 
+<!--
 
   <target name="m2-tasks" depends="m2-init"
        xmlns:m2="antlib:org.apache.maven.artifact.ant">
@@ -1344,15 +1366,11 @@
     <presetdef name="m2-libraries">
       <m2:dependencies>
         <localRepository location="${m2.repository}" />
-        <!-- look in SCM first -->
         <remoteRepository url="${m2.smartfrog.scm.repository.url}" />
         <remoteRepository url="${m2.smartfrog.scm.new.repository.url}"/>
-        <!-- then hit ibiblio -->
         <remoteRepository url="${m2.ibiblio.repository}" />
-        <!-- apache repository -->
         <remoteRepository url="http://cvs.apache.org/repository/"
                           layout="legacy"/>
-        <!--this comes in last so we abandon dependency checking reluctantly-->
         <remoteRepository url="${m1.local.repository.url}"
                           layout="legacy"/>
 
@@ -1366,6 +1384,7 @@
        </m2:install>
      </presetdef>
    </target>
+-->
 
    <!-- look for local then remote definitions of library versions -->
   <target name="load-versions" depends="init">
@@ -1418,24 +1437,57 @@
   </target>
 
 
-  <target name="ivy-init" depends="init-common-simpledefinitions,load-versions"
-      xmlns:ivy="antlib:fr.jayasoft.ivy.ant">
+  <target name="maybe-declare-ivy" if="ivy.enabled"
+          depends="init-common-simpledefinitions,load-versions">
+    <typedef uri="antlib:fr.jayasoft.ivy.ant" onerror="failall">
+      <classpath>
+        <pathelement location="${core.dir}/antbuild/ivy/lib/ivy-${ivy.version}.jar"/>
+      </classpath>
+    </typedef>
+  </target>
+
+  <target name="declare-ivy" unless="ivy.enabled"
+          depends="maybe-declare-ivy"
+          >
+    <typedef uri="antlib:fr.jayasoft.ivy.ant" onerror="failall">
+      <classpath>
+        <pathelement location="${core.dir}/antbuild/ivy/lib/ivy-${ivy.version}.jar"/>
+      </classpath>
+    </typedef>
+  </target>
+
+  <target name="maybe-ivy-init"
+          depends="init-common-simpledefinitions,load-versions,declare-ivy"
+          if="ivy.enabled" >
     <property name="ivy.lib.dir" location="${build.dir}/lib" />
     <ivy:configure file="${core.dir}/antbuild/ivy/ivyconf.xml"/>
   </target>
 
-  <target name="ivy-resolve" depends="ivy-init"
-      xmlns:ivy="antlib:fr.jayasoft.ivy.ant">
+  <target name="maybe-ivy-resolve" depends="maybe-ivy-init"
+          if="ivy.enabled" >
     <ivy:resolve />
   </target>
 
-  <target name="ivy-retrieve" depends="ivy-resolve"
-      xmlns:ivy="antlib:fr.jayasoft.ivy.ant">
+  <!--This is a trick. by running the same stuff
+  as "maybe-ivy-init" with the opposite condition we, guarantee
+  that the target code runs once, but only once-->
+  <target name="ivy-init"
+          depends="maybe-ivy-init"
+      unless="ivy.enabled">
+    <property name="ivy.lib.dir" location="${build.dir}/lib" />
+    <ivy:configure file="${core.dir}/antbuild/ivy/ivyconf.xml"/>
+  </target>
+
+  <target name="ivy-resolve" depends="maybe-ivy-resolve,declare-ivy"
+          unless="ivy.enabled">
+    <ivy:resolve />
+  </target>
+
+  <target name="ivy-retrieve" depends="ivy-resolve" >
     <ivy:retrieve pattern="${ivy.lib.dir}/[conf]/[artifact]-[revision].[ext]" sync="true" />
   </target>
 
-  <target name="ivy-report" depends="ivy-resolve"
-      xmlns:ivy="antlib:fr.jayasoft.ivy.ant">
+  <target name="ivy-report" depends="ivy-resolve" >
     <ivy:report todir="${build.dir}/ivy/reports"/>
     <echo> published Ivy report to
 ${build.dir}/ivy/reports
