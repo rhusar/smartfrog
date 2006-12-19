@@ -355,12 +355,12 @@ For more information: www.smartfrog.org
   <!-- =================================================================== -->
   <target name="ivy-init" depends="init"
           xmlns:ivy="antlib:fr.jayasoft.ivy.ant">
-      <typedef uri="antlib:fr.jayasoft.ivy.ant" onerror="failall">
+      <typedef uri="antlib:fr.jayasoft.ivy.ant" onerror="failall"
+          resource="fr/jayasoft/ivy/ant/antlib.xml">
         <classpath>
           <pathelement location="antbuild/ivy/lib/ivy-${ivy.version}.jar"/>
         </classpath>
       </typedef>
-    <property file="components/libraries.properties" />
     <mkdir dir="external" />
     <ivy:configure file="antbuild/ivy/ivyconf.xml"/>
     <presetdef name="ivy-projects">
@@ -410,7 +410,7 @@ For more information: www.smartfrog.org
       <arg value="-Tpng" />
       <arg value="-o" />
       <arg file="${ivy.report.dir}/smartfrog.png"/>
-      <arg file="${ivy.report.dir}//ivy-repository-report.dot"/>
+      <arg file="${ivy.report.dir}/ivy-repository-report.dot"/>
     </exec>
   </target>
 

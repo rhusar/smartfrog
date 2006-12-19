@@ -68,7 +68,7 @@
   </target>
 
 
-  <target name="ready-to-compile" depends="common.pre-compile,javac.version"/>
+  <target name="ready-to-compile" depends="pre-compile,javac.version"/>
 
   <!-- ========================================================== -->
   <!-- this is an override
