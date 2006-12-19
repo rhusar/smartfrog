@@ -1439,7 +1439,8 @@
 
   <target name="maybe-declare-ivy" if="ivy.enabled"
           depends="init-common-simpledefinitions,load-versions">
-    <typedef uri="antlib:fr.jayasoft.ivy.ant" onerror="failall">
+    <typedef uri="antlib:fr.jayasoft.ivy.ant" onerror="failall"
+             resource="fr/jayasoft/ivy/ant/antlib.xml">
       <classpath>
         <pathelement location="${core.dir}/antbuild/ivy/lib/ivy-${ivy.version}.jar"/>
       </classpath>
@@ -1449,7 +1450,8 @@
   <target name="declare-ivy" unless="ivy.enabled"
           depends="maybe-declare-ivy"
           >
-    <typedef uri="antlib:fr.jayasoft.ivy.ant" onerror="failall">
+    <typedef uri="antlib:fr.jayasoft.ivy.ant" onerror="failall"
+             resource="fr/jayasoft/ivy/ant/antlib.xml">
       <classpath>
         <pathelement location="${core.dir}/antbuild/ivy/lib/ivy-${ivy.version}.jar"/>
       </classpath>
