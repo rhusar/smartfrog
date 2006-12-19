@@ -32,11 +32,10 @@
   <!-- override point -->
   <property file="build.properties"/>
   <property name="is.component" value="true"/>
+  <property name="ivy.enabled" value="true"/>
   <property name="javac.java.version" value="true"/>
-  <property name="root.dir" location="../.."/>
   <!-- Import common stuff -->
   <import file="../../common.xml"/>
-  
   
   <!-- ========================================================== -->
   <!-- ========================================================== -->
@@ -45,45 +44,6 @@
     <property name="deploy.sf" value="files/success.sf"/>
     <property name="default.ini" location="test/files/default.ini"/>
     <property name="default.sf" location="test/files/default.sf"/>
-  </target>
-
-
-  <!-- ========================================================== -->
-  <!-- declare our compile time classpath -->
-  <!-- ========================================================== -->
-
-  <target name="declare-compile.classpath" depends="ivy-resolve"
-     >
-    <ivy:cachepath pathid="compile.classpath" conf="compile" />
-    <property name="compile.classpath.value" refid="compile.classpath"/>
-    <echo level="verbose">compile.classpath=${compile.classpath.value}</echo>
-  </target>
-  
-  <!-- this is the classpath for running the daemon -->
-  
-  <target name="declare-run.classpath" depends="ivy-resolve" >
-    <ivy:cachepath pathid="run.classpath" conf="daemon" />
-    <property name="run.classpath.value" refid="run.classpath"/>
-    <echo level="verbose">daemon.classpath=${daemon.classpath.value}</echo>
-  </target>
-  
-  <target name="declare-exec.classpath" depends="declare-compile.classpath" >
-    <ivy:cachepath pathid="ivy.test.classpath" conf="test" />
-      <path id="exec.classpath">
-          <pathelement location="${target.jar}"/>
-          <path refid="ivy.test.classpath"/>
-      </path>
-    <property name="exec.classpath.value" refid="exec.classpath"/>
-    <echo level="verbose">exec.classpath=${exec.classpath.value}</echo>
-  </target>  
-  
-  <target name="declare-tests.run.classpath" depends="declare-tests.compile.classpath" >
-    <path id="tests.run.classpath">
-        <pathelement location="${test.jar}"/>
-         <path refid="tests.compile.classpath"/>
-    </path>
-    <property name="tests.run.classpath.value" refid="tests.run.classpath"/>
-    <echo level="verbose">tests.run.classpath=${tests.run.classpath.value}</echo>
   </target>
 
 
@@ -106,16 +66,16 @@
       Do not redistribute this build.
     </echo>
   </target>
-  
-  <target name="pre-compile" depends="common.pre-compile,javac.version" >
 
-  </target>
+
+  <target name="ready-to-compile" depends="common.pre-compile,javac.version"/>
+
   <!-- ========================================================== -->
   <!-- this is an override
        with selective use of the nux codec. -->
   <!-- ========================================================== -->
   <target name="compile"
-      depends="pre-compile">
+      depends="ready-to-compile">
     <depend srcdir="${src.dir}"
         destdir="${build.classes.dir}"
         cache="${build.dir}/depends"

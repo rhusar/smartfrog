@@ -31,47 +31,13 @@
 
   <!-- override point -->
   <property file="build.properties"/>
-
+  <property name="is.component" value="true"/>
+  <property name="ivy.enabled" value="true"/>
 
   <property name="root.dir" location="../.."/>
   <!-- Import common stuff -->
   <import file="${root.dir}/common.xml"/>
   
-  <target name="m2-files" depends="m2-tasks">
-    <m2-libraries pathID="m2.classpath">
-      <dependency groupID="org.smartfrog"
-        artifactID="sf-www"
-        version="${Version}"/>
-<!--       <dependency groupID="commons-httpclient"
-        artifactID="commons-httpclient"
-        version="${commons-httpclient.version}"/> -->
-    </m2-libraries>
-  </target>  
-  
- <target name="declare-compile.classpath-lib-dir"
-    depends="declare-base.compile.classpath,probe-lib-dir,m2-files"
-    if="lib.dir.found">
-    <path id="compile.classpath">
-      <path refid="base.compile.classpath"/>
-      <path refid="m2.classpath"/>
-      <fileset dir="${lib.dir}">
-        <include name="**/*.jar"/>
-      </fileset>
-    </path>
-  </target>  
-  
-  <!-- ========================================================== -->
-  <!-- ========================================================== -->
-  <target name="init"
-    depends="init-standard-output-dirs,use-smartfrog-tasks,use-smartfrog-testharness">
-
-
-
-  </target>
-  
-
-
-
 
 
 </project>

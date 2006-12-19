@@ -28,7 +28,8 @@ For more information: www.smartfrog.org
 </description>
 
    <!-- override point -->
-  <property name="is.component" value="true"  />   
+  <property name="is.component" value="true"  />
+  <property name="ivy.enabled" value="true"/>
   <property file="build.properties" />
   <property name="root.dir" location="../../"  />
 
@@ -38,33 +39,6 @@ For more information: www.smartfrog.org
   <import file="${root.dir}/common.xml"/>
   
 
-
- <property name="Name.System" value="Emailer"/>
-  <!-- ========================================================== -->
-  <!-- pre-dist  -->
-  <!-- ========================================================== -->
-  <target name="init" depends="init-standard-output-dirs,use-smartfrog-tasks">
-  <tstamp/>
-    <property name="Name.Company" value="(C) Copyright 1998-2006 Hewlett-Packard Development Company, LP"/>
-    <property name="version" value="smartfrog components"/>
-    <!--property name="Version" value="1.00.000_beta"/-->
-    <property name="year" value="2004"/>
-  
-    <echo message=""/>
-<echo message="==================================================================="/>
-    <echo message="= ${Name.System} ${version}, ${Name.Company} (${ant.version})"/>
-  </target>
-
-
-  <!-- ========================================================== -->
-  <!-- clean -->
-  <!-- ========================================================== -->
-
- <target name="clean" depends="common.clean" description="clean up build ,dist and releases" >
-    <delete dir="releases"  />  
-    <delete dir="test"  /> 
-    <delete file="version.properties"/> 
- </target>  
 
 
   <!-- ========================================================== -->

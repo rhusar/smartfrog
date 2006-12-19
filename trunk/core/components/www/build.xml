@@ -1,5 +1,6 @@
 <?xml version="1.0"?>
-<project name="www" default="default">
+<project name="www" default="default"
+         xmlns:ivy="antlib:fr.jayasoft.ivy.ant">
 
   <!--
   /** (C) Copyright 2005 Hewlett-Packard Development Company, LP
@@ -32,6 +33,7 @@
   <!-- override point -->
   <property file="build.properties"/>
   <property name="is.component" value="true"/>
+  <property name="ivy.enabled" value="true"/>
   <property name="root.dir" location="../.."/>
   <!-- Import common stuff -->
   <import file="${root.dir}/common.xml"/>
@@ -65,12 +67,8 @@
               location="${testwar.dir}/WEB-INF/web.xml"/>
   </target>
 
-  <target name="war.classpath" depends="m2-tasks,war.init">
-    <m2-libraries pathID="war.classpath">
-      <dependency groupID="javax.servlet"
-                  artifactID="servlet-api"
-                  version="${servletapi.version}"/>
-    </m2-libraries>
+  <target name="war.classpath" depends="ivy-resolve,war.init">
+    <ivy:cachepath pathid="war.classpath" conf="war" />
   </target>
 
   <target name="war.javac" depends="war.classpath" >
@@ -91,9 +89,10 @@
   </target>
 
   <target name="war-installed"
-    depends="war"
+    depends="war,ivy-publish"
       description="install the war file to the m2 repository"
       xmlns:m2="antlib:org.apache.maven.artifact.ant">
+<!--
     <property name="testwar.pom.file" location="${build.dir}/testwar.pom"/>
     <echo file="${testwar.pom.file}"><![CDATA[<project>
   <modelVersion>4.0.0</modelVersion>
@@ -107,13 +106,14 @@
     <m2:install file="${testwar.war}">
       <pom refid="testwar.pom"/>
     </m2:install>
+-->
   </target>
 
   <!-- ========================================================== -->
   <!-- clean -->
   <!-- ========================================================== -->
 
- <target name="dist" depends="common.dist,m2-install,war-installed, jdocs">
+ <target name="dist" depends="common.dist,published,jdocs">
     <copy todir = "${dist.lib.dir}">
         <fileset dir ="${lib.dir}" />
     </copy>  

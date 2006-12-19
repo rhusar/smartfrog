@@ -52,7 +52,7 @@ For more information: www.smartfrog.org
 
    <!-- override point -->
   <property file="build.properties" />
-
+  <property name="ivy.enabled" value="true"/>
   <!-- this component keeps its test files in a different place from the
        rest, for historical reasons (i.e. it is nothing but test) -->
   <property name="test.src.dir" location="testcases" />
@@ -88,13 +88,13 @@ For more information: www.smartfrog.org
 
   <!-- set up our compile classpath to include junit -->
   
-  <target name="declare-compile.classpath" depends="declare-base.compile.classpath,assert-junit" >
+<!--  <target name="declare-compile.classpath" depends="declare-base.compile.classpath,assert-junit" >
     <path id="compile.classpath">
       <path refid="base.compile.classpath"/>
       <pathelement location="${junit.jar}"/>
     </path>    
   </target>
-  
+  -->
 
   <!-- replace the normal test with a simple noop, because we will
       not have the test harness around in the early stages of the build -->

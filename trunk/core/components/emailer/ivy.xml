@@ -51,5 +51,13 @@
         rev="latest.integration"
         conf="test->default"/>
 
+    <dependency org="javax.activation"
+                name="activation"
+                rev="${activation.version}"
+                conf="compile,redist->default"/>
+    <dependency org="javax.mail"
+                name="mail"
+                rev="${mail.version}"
+                conf="compile,redist->default"/>
   </dependencies>
 </ivy-module>

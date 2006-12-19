@@ -26,10 +26,14 @@
     <conf name="redist" description="redistributals excluding smartfrog artifacts"/>
     <conf name="runtime" description="runtime but not the artifact"
         extends="redist"/>
+    <conf name="war" description="compile pathfor the test war"/>
+
   </configurations>
   <publications>
     <!--get the artifact from our module name-->
     <artifact conf="master"/>
+    <!--the war conf publishes a new artifact-->
+<!--    <artifact name="" conf="war"/>-->
   </publications>
   <dependencies>
     <dependency org="org.smartfrog"
@@ -45,6 +49,6 @@
     <dependency org="javax.servlet"
         name="servlet-api"
         rev="${servletapi.version}"
-        conf="compile->master"/>    
+        conf="compile,war->master"/>
   </dependencies>
 </ivy-module>

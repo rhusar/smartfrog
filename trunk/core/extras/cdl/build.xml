@@ -34,7 +34,7 @@
   <!-- override point -->
   <property file="build.properties"/>
   <property name="javac.java.version" value="1.5"/>
-
+  <property name="ivy.enabled" value="true"/>
   <property name="root.dir" location="../.."/>
   <!-- Import common stuff -->
   <import file="${root.dir}/common.xml"/>
@@ -47,27 +47,11 @@
     <mkdir dir="lib"/>
   </target>
 
-
-  <target name="declare-compile.classpath" depends="ivy-resolve"  >
-    <ivy:cachepath pathid="compile.classpath" conf="compile" />
-    <property name="compile.classpath.value" refid="compile.classpath"/>
-    <echo level="verbose">compile.classpath=${compile.classpath.value}</echo>
-  </target>
-
-  <!-- this is the classpath for running the daemon -->
-
-  <target name="declare-run.classpath" depends="init" >
-    <ivy:cachepath pathid="run.classpath" conf="daemon" />
-    <property name="run.classpath.value" refid="run.classpath"/>
-    <echo level="verbose">daemon.classpath=${daemon.classpath.value}</echo>
-  </target>
-
-
   <!-- ========================================================== -->
   <!-- this is an override point -->
   <!-- copy all dependencies -->
   <!-- ========================================================== -->
-  <target name="install-dependencies" depends="ivy-retrieve"
+  <target name="install-dependencies" depends="ivy-resolve"
       if="smartfrog.dist.lib.dir">
 
     <property name="build.lib.dir" location="${build.dir}/lib"/>
@@ -81,25 +65,6 @@
 
   </target>
 
-
-  <!-- =================================================================== -->
-  <!--   JDocs                                                             -->
-  <!-- =================================================================== -->
-  <target name="javadoc" depends="init" description="Generates the API documentation">
-    <property name="dist.jdocs.dir" value="${build.dir}/javadocs/"/>
-    <mkdir dir="${dist.jdocs.dir}"/>
-    <javadoc packagenames="org.smartfrog.*"
-      sourcepath="${src.dir}"
-      destdir="${dist.jdocs.dir}"
-      version="true"
-      use="true"
-      source="1.5"
-      classpathref="exec.classpath"
-      >
-      <group title="SmartFrog Packages" packages="org.smartfrog.*"/>
-    </javadoc>
-
-  </target>
 
   <target name="default" depends="dist,published"
     description="make and publish the distribution"/>

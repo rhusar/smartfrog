@@ -29,63 +29,11 @@
 
   <!-- override point -->
   <property file="build.properties"/>
+  <property name="ivy.enabled" value="true"/>
   <property name="is.component" value="true"/>
 
-  <property name="root.dir" location="../.."/>
   <!-- Import common stuff -->
-  <import file="${root.dir}/common.xml"/>
-
-  <target name="m2-files" depends="m2-tasks">
-    <m2-libraries pathID="m2.classpath">
-      <dependency groupID="org.smartfrog"
-          artifactID="sf-www"
-          version="${Version}"/>
-      <dependency groupID="org.codehaus.cargo"
-          artifactID="cargo-core-uberjar"
-          version="${cargo.version}"/>
-      <!--ant is used by cargo-->
-      <dependency groupID="ant"
-          artifactID="ant"
-          version="${ant.m2.version}">
-        <exclusion groupId="xml-apis" artifactId="xml-apis"/>
-        <exclusion groupId="xerces" artifactId="xerces-impl"/>
-      </dependency>
-      <dependency groupID="xerces"
-          artifactID="xmlParserAPIs"
-          version="${xerces.version}"/>
-      <dependency groupID="xerces"
-          artifactID="xercesImpl"
-          version="${xerces.version}"/>
-    </m2-libraries>
-  </target>
-
-  <target name="declare-compile.classpath-lib-dir"
-      depends="declare-base.compile.classpath,probe-lib-dir,m2-files">
-    <path id="compile.classpath">
-      <path refid="base.compile.classpath"/>
-      <path refid="m2.classpath"/>
-    </path>
-  </target>
-
-  <target name="declare-exec.classpath" depends="declare-compile.classpath">
-    <path id="exec.classpath">
-      <path refid="compile.classpath"/>
-      <pathelement location="${target.jar}"/>
-    </path>
-    <property name="exec.classpath.value" refid="exec.classpath"/>
-    <echo level="verbose">exec.classpath=${exec.classpath.value}</echo>
-  </target>
-
-  <target name="declare-tests.run.classpath"
-      depends="declare-tests.compile.classpath">
-    <path id="tests.run.classpath">
-      <path refid="tests.compile.classpath"/>
-      <pathelement location="${test.jar}"/>
-    </path>
-    <property name="tests.run.classpath.value" refid="tests.run.classpath"/>
-    <echo level="verbose">
-      tests.run.classpath=${tests.run.classpath.value}</echo>
-  </target>
+  <import file="../../common.xml"/>
 
   <!-- ========================================================== -->
   <!-- ========================================================== -->

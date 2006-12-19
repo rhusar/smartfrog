@@ -93,7 +93,9 @@ For more information: www.smartfrog.org
     <property name="arithmetic-testharness.project" location="arithmetic-testharness" />
     <property name="cargo.project" location="cargo"/>
     <property name="cdl.project" location="${extras.dir}/cdl"/>
+    <property name="database.project" location="database" />
     <property name="deployapi.project" location="deployapi" />
+    <property name="dns.project" location="dns" />
     <property name="emailer.project" location="emailer" />
     <property name="fun.project" location="fun"/>
     <property name="jetty.project" location="jetty" />
@@ -108,8 +110,7 @@ For more information: www.smartfrog.org
     <property name="tomcat.project" location="tomcat" />
     <property name="xml.project" location="xml" />
     <property name="www.project" location="www" />
-    <property name="dns.project" location="dns" />
-    
+
     <!--where the files for release will go-->
     <property name="bin" value="bin"/>
     <property name="lib" value="lib"/>
@@ -198,6 +199,9 @@ For more information: www.smartfrog.org
       <pathelement location="${deployapi.project}"/>
     </path>
 
+    <path id="database.path">
+      <pathelement location="${database.project}"/>
+    </path>
 
     <presetdef name="delegate">
       <subant buildpathref="component.path"
