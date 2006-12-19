@@ -10,7 +10,7 @@
 </description>
 
   <property name="root.dir" location="../.."/>
-  <property name="ivy.enabled" value="true"/>
+  <!--<property name="ivy.enabled" value="true"/>-->
   <property name="javac.include.ant" value="true"/>
   <!-- Import common stuff -->
   <import file="${root.dir}/common.xml"/>
