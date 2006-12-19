@@ -126,8 +126,7 @@ public class NewAttributeDialog extends JDialog {
                         }
                         value = "extends DATA {\n"+ sw.toString()+"\n}";
                     }
-                    this.ValuejTextArea.setText(attribute[1].toString());
-//                    selectComboIndex(attribute[1]);
+                    this.ValuejTextArea.setText(value);
                 }
             }
         } catch (Exception ex) {
@@ -207,8 +206,6 @@ public class NewAttributeDialog extends JDialog {
         if ((this.NamejTextField.getText() != null) &&
                 (!this.NamejTextField.getText().equals(""))) {
             attribute[0] = this.NamejTextField.getText();
-
-            //attribute[1] = (String) this.TypejComboBox.getSelectedItem();
             attribute[1] = this.createValueObject(this.TypejComboBox.
                 getSelectedIndex(),(String) this.ValuejTextArea.
                 getText());
