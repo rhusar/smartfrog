@@ -49,6 +49,7 @@ For more information: www.smartfrog.org
    <!-- override point -->
   <property file="build.properties" />
   <property name="root.dir" location="../../"  />
+  <property name="ivy.enabled" value="true"/>
   <property name="Name.System" value="jetty"/>
   <!-- Import common stuff -->
   <!--available file="../../common.xml" property="root.dir" value="../.."/--> 
@@ -74,33 +75,6 @@ For more information: www.smartfrog.org
   <target name="all" depends="dist,test"
       description="Create a distribution and run tests"/>
 
-  <!-- ==========================================================             -->
-  <!--- STOP! Do not attempt to comment these out. They are here for a reason -->
-  <!--  you do need the m2 tasks to get this to build, as it is how it manages -->
-  <!-- dependencies *Between* components-->
-  <!-- ========================================================== -->
-
-  <target name="m2-files" depends="m2-tasks">
-    <m2-libraries pathID="m2.classpath">
-      <dependency groupID="org.smartfrog"
-        artifactID="sf-www"
-        version="${Version}"/>
-    </m2-libraries>
-  </target>  
-  
- <target name="declare-compile.classpath-lib-dir"
-    depends="declare-base.compile.classpath,probe-lib-dir,m2-files"
-    if="lib.dir.found">
-    <path id="compile.classpath">
-      <path refid="base.compile.classpath"/>
-      <path refid="m2.classpath"/>
-      <fileset dir="${lib.dir}">
-        <include name="**/*.jar"/>
-      </fileset>
-    </path>
-  </target>
-
-  
   <!-- ========================================================== -->
   <!-- this is an override point -->
   <!-- set the verified.ok property if everything needed is present -->

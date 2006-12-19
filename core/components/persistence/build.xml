@@ -29,22 +29,11 @@
 
   <!-- override point -->
   <property file="build.properties"/>
+  <property name="ivy.enabled" value="true"/>
 
 
   <property name="root.dir" location="../.."/>
   <!-- Import common stuff -->
   <import file="${root.dir}/common.xml"/>
-  
-  
-  <!-- ========================================================== -->
-  <!-- ========================================================== -->
-  <target name="init"
-    depends="init-standard-output-dirs,use-smartfrog-tasks,use-smartfrog-testharness">
-  </target>
-  
-  
-  
-  
-
 
 </project>

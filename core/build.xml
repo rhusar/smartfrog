@@ -45,6 +45,7 @@ For more information: www.smartfrog.org
     <property name="components.project" location="components" />
     <property name="extras.dir" location="extras" />
     <property name="ant.project" location="${extras.dir}/ant" />
+    <property file="${components.project}/libraries.properties" />
 
     <macrodef name="forward2">
      <attribute name="dir" />
@@ -352,7 +353,13 @@ For more information: www.smartfrog.org
   <!-- Non-ivy projects are ignored-->
   <!-- we also ignore the deployapi components, as their build is more complex-->
   <!-- =================================================================== -->
-  <target name="ivy-init" xmlns:ivy="antlib:fr.jayasoft.ivy.ant">
+  <target name="ivy-init" depends="init"
+          xmlns:ivy="antlib:fr.jayasoft.ivy.ant">
+      <typedef uri="antlib:fr.jayasoft.ivy.ant" onerror="failall">
+        <classpath>
+          <pathelement location="antbuild/ivy/lib/ivy-${ivy.version}.jar"/>
+        </classpath>
+      </typedef>
     <property file="components/libraries.properties" />
     <mkdir dir="external" />
     <ivy:configure file="antbuild/ivy/ivyconf.xml"/>
@@ -364,8 +371,6 @@ For more information: www.smartfrog.org
           <exclude name="deployapi/build.xml"/>
           <exclude name="jmx/build.xml"/>
         </fileset>
-
-
         <!--place for symlinks to external projects you want included-->
         <fileset dir="external" includes="**/build.xml"/>
       </ivy:buildlist>

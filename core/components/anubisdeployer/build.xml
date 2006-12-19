@@ -29,7 +29,7 @@
   <description>
      Build file for the Anubis Deployer.
   </description>
-  
+  <property name="ivy.enabled" value="true"/>
   <property name="is.component" value="true"  />
   <!-- override point -->
   <property file="build.properties"/>
@@ -43,6 +43,7 @@
   <!-- declare our compile time classpath -->
   <!-- ========================================================== -->
 
+<!--
  
  <target name="declare-compile.classpath" depends="declare-base.compile.classpath">
     <property name="anubis.lib.dir" value="${smartfrog.components.dir}/anubis/dist/lib/" />
@@ -51,39 +52,7 @@
       <fileset dir="${anubis.lib.dir}" includes="*.jar"/>
     </path>
   </target>
+-->
 
-  <!-- ========================================================== -->
-  <!-- ========================================================== -->
-  <target name="init"
-    depends="init-standard-output-dirs,use-smartfrog-tasks,use-smartfrog-testharness">
-  </target>
-  
-  <!-- ========================================================== -->
-  <!-- clean -->
-  <!-- ========================================================== -->
 
- <target name="clean" depends="common.clean" description="clean up build ,dist and releases" >
-    <delete dir="releases"  />  
-    <delete dir="test"  /> 
-    <delete file="version.properties"/> 
- </target>
- 
-  <!-- ========================================================== -->
-  <!-- create the jar -->
-  <!-- ========================================================== -->
-  <target name="dist" depends="common.dist,jdocs" description="create the jar files">
-   <!--copy todir = "${dist.lib.dir}">
-        <fileset dir ="${lib.dir}" />
-    </copy-->  
-     <!--copy todir = "${dist.doc.dir}">
-        <fileset dir ="${doc.dir}" />
-    </copy-->   
-     <copy todir = "${dist.src.dir}">
-        <fileset dir ="${src.dir}">
-            <include name="**/examples/**"/>
-        </fileset>
-           </copy>
-     <copy tofile="${dist.dir}/build.xml" file="releaseBuild.xml"/> 
-   <copy tofile="${dist.dir}/build.example.properties" file="build.example.properties"/>
-  </target> 
 </project>

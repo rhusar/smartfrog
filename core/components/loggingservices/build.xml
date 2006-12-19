@@ -31,6 +31,7 @@ For more information: www.smartfrog.org
   <!-- override point -->
   <property file="build.properties" />
   <property name="root.dir" location="../../"  />
+  <property name="ivy.enabled" value="true"/>
 
 
   <!-- Import common stuff -->

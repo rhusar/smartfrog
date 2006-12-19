@@ -115,7 +115,7 @@
 
     <!--SLP-->
     <dependency org="org.smartfrog"
-        name="sf-slplib"
+        name="sf-slp"
         changing="true"
         rev="latest.integration"
         conf="sfjars->master;redist->redist"/>

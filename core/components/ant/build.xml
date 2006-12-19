@@ -42,12 +42,13 @@ Reference URL:http://ant.apache.org
   <property file="build.properties" />
   <property name="root.dir" location="../../"  />
 
+  <property name="ivy.enabled" value="true"/>
+
+  <property name="is.component" value="true"  />
 
   <!-- Import common stuff -->
   <!--available file="../../common.xml" property="root.dir" value="../.."/--> 
   <import file="${root.dir}/common.xml"/>
-
-  <property name="is.component" value="true"  />
 
 
   <!--property name="doc.dir" location="doc"/-->
