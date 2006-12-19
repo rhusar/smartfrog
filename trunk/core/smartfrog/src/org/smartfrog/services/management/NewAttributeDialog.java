@@ -33,6 +33,8 @@ import org.smartfrog.sfcore.logging.LogSF;
 import org.smartfrog.sfcore.logging.LogFactory;
 import javax.swing.*;
 import java.awt.*;
+import java.io.StringWriter;
+import java.io.IOException;
 
 /**
  *  Dialog to create/add/modify attributes of a SmartFrog component
@@ -113,6 +115,17 @@ public class NewAttributeDialog extends JDialog {
                 }
 
                 if (attribute[1] != null) {
+                    String value = attribute[1].toString();
+                    if  (attribute[1] instanceof ComponentDescription) {
+                       StringWriter sw = new StringWriter();
+                        try {
+                            ((ComponentDescription)attribute[1]).writeOn(sw,1);
+                        } catch (IOException ioex) {
+                            // ignore should not happen
+                            if (sfLog().isIgnoreEnabled()) sfLog().ignore (ioex);
+                        }
+                        value = "extends DATA {\n"+ sw.toString()+"\n}";
+                    }
                     this.ValuejTextArea.setText(attribute[1].toString());
 //                    selectComboIndex(attribute[1]);
                 }
