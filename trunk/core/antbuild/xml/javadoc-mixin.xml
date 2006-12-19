@@ -1,12 +1,65 @@
 <?xml version="1.0" ?>
-<project name="docs" default="init-docs">
+<project name="docs" default="init-docs"
+         xmlns:m="http://smartfrog.org/macro">
 
   <description>
-    Mixin to create javadocs and other documentation
-  </description>
-  <target name="ready-to-javadoc" depends="compiled" />
+    Mixin to create javadocs and other documentation.
 
-  <target name="javadocs" depends="compile"
+    TODO: THIS IS NOT YET READY FOR USE 
+  </description>
+
+
+  <import file="macros-mixin.xml" />
+
+
+  <target name="javadoc-initialized" depends="initialized">
+
+    <property name="javadoc.access" value="protected"/>
+    <property name="javadoc.author" value="false"/>
+    <property name="javadoc.version" value="true"/>
+    <property name="javadoc.use" value="true"/>
+    <property name="javadoc.windowtitle" value="${Name.System}"/>
+    <property name="javadoc.packagenames" value="org.smartfrog.*"/>
+    <property name="javadoc.header" value="${Name.System} ${Version}"/>
+    <property name="javadoc.footer" value="${Name.System} ${Version}"/>
+    <presetdef name="javadoc" uri="${macros-mixin.uri}">
+      <javadoc packagenames="${javadoc.packagenames}"
+               author="${javadoc.author}"
+               version="${javadoc.version}"
+               use="${javadoc.use}"
+               windowtitle="${javadoc.windowtitle}"
+               header="${javadoc.header}"
+               footer="${javadoc.footer}"
+               doctitle="${Name.System}"
+               bottom="${Name.Company}"
+               source="${javac.java.version}"
+               verbose="false"
+          >
+      </javadoc>
+    </presetdef>
+
+  </target>
+
+  <target name="ready-to-javadoc" depends="compiled,javadoc-initialized" />
+
+
+  <target name="javadoc"
+          depends="ready-to-javadoc"
+      >
+    <!--  Java Docs for all                                                -->
+    <echo message=""/>
+    <echo message="------ Creating Java Docs for ${javadoc.header} [${dist.jdocs.dir}]---------------"/>
+    <mkdir dir="${dist.jdocs.dir}"/>
+    <sf-javadoc
+        sourcepath="${src.dir}"
+        destdir="${dist.jdocs.dir}"
+        classpathref="compile.classpath"
+        >
+      <group title="SmartFrog Packages" packages="org.smartfrog.*"/>
+    </sf-javadoc>
+  </target>
+
+  <target name="javadocs" depends="ready-to-javadoc"
       description="make the java docs">
     <javadoc
         access="private"

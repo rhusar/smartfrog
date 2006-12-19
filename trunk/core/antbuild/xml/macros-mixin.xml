@@ -1,9 +1,10 @@
 <project name="macros"
-    xmlns:ext="http://antbook.org/d1/ext"
+    xmlns:m="http://smartfrog.org/macro"
     xmlns:ac="antlib:net.sf.antcontrib">
 
 
-  <property name="macros-mixin.uri" value="http://antbook.org/d1/ext"/>
+  <property name="macros-mixin.uri" value="http://smartfrog.org/macro"/>
+
 
   <macrodef name="copy-useful-files" uri="${macros-mixin.uri}">
     <attribute name="src"/>
@@ -48,18 +49,6 @@
     </sequential>
   </macrodef>
 
-  <macrodef name="exml" uri="${macros-mixin.uri}">
-    <element name="files" optional="false"/>
-    <sequential>
-      <echoxml>
-        <x>
-          <files/>
-        </x>
-      </echoxml>
-    </sequential>
-  </macrodef>
-
-
   <!--copy files somewhere (Default is temp directory) and make a URL of all
       the files in the property-->
   <macrodef name="copy-and-url" uri="${macros-mixin.uri}">
@@ -67,7 +56,7 @@
     <attribute name="property"/>
     <element name="files" optional="false"/>
     <sequential>
-      <ext:verbose>copying to @{dest}</ext:verbose>
+      <m:verbose>copying to @{dest}</m:verbose>
       <echoxml>
         <files/>
       </echoxml>
@@ -77,7 +66,7 @@
       <makeurl property="@{property}">
         <files/>
       </makeurl>
-      <ext:verbose>URL =${@{property}}</ext:verbose>
+      <m:verbose>URL =${@{property}}</m:verbose>
     </sequential>
   </macrodef>
 
@@ -116,7 +105,7 @@
   <property name="javac.java.version" value="5"/>
 
   <!--this preset runs javac with some predefined behavior-->
-  <presetdef name="javac" uri="http://antbook.org/d1/ext">
+  <presetdef name="javac" uri="${macros-mixin.uri}">
     <javac debug="${javac.debug.mode}"
         nowarn="true"
         deprecation="${javac.deprecation.mode}"
@@ -130,11 +119,13 @@
 
   <!-- Default Jar task is configured to skip a duplicate add and fail if there
       is nothing but a manifest to create -->
-  <presetdef name="jar" uri="http://antbook.org/d1/ext">
+  <presetdef name="jar" uri="${macros-mixin.uri}">
     <jar duplicate="fail"
         compress="false"
         whenmanifestonly="fail"
         />
   </presetdef>
+
+
 
 </project>
