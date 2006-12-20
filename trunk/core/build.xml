@@ -355,7 +355,7 @@ For more information: www.smartfrog.org
   <!-- =================================================================== -->
   <target name="ivy-init" depends="init"
           xmlns:ivy="antlib:fr.jayasoft.ivy.ant">
-      <typedef uri="antlib:fr.jayasoft.ivy.ant" onerror="failall"
+      <typedef uri="antlib:fr.jayasoft.ivy.ant" onerror="fail"
           resource="fr/jayasoft/ivy/ant/antlib.xml">
         <classpath>
           <pathelement location="antbuild/ivy/lib/ivy-${ivy.version}.jar"/>
