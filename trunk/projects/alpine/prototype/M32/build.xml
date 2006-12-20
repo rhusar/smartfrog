@@ -30,6 +30,8 @@
   <!-- override point -->
   <property file="build.properties"/>
   <!-- <property file="libraries.properties"/> -->
+  <property name="is.component" value="false"/>
+  <property name="ivy.enabled" value="true"/>
   <property name="javac.java.version" value="1.5"/>
   <property name="root.dir" location="../../../../core"/>
   <property name="src.dir" location="src/java"/>
@@ -49,92 +51,7 @@
   </target>
 
 
-  <!-- import libs. may need proxy setup -->
-  <!-- note that this is a very unstable corner of Ant; needs
-       CVS_HEAD releases and will definitely change before long -->
-  <target name="m2" depends="m2-tasks">
 
-    <m2-libraries pathID="libraries.path" verbose="true">
-      <!--Required -->
-      <dependency groupID="commons-httpclient"
-          artifactID="commons-httpclient"
-          version="${commons-httpclient.version}"
-          >
-        <exclusion
-          groupId="commons-logging"
-          artifactId="commons-logging"/>
-      </dependency>
-
-      <dependency groupID="commons-logging"
-          artifactID="commons-logging-api"
-          version="${commons-logging.version}"/>
-      <dependency groupID="xerces"
-          artifactID="xercesImpl"
-          version="${xerces.version}"/>
-      <dependency groupID="xerces"
-          artifactID="xmlParserAPIs"
-          version="${xerces.version}"/>
-      <dependency groupID="xom"
-          artifactID="xom"
-          version="${xom.version}">
-      <exclusion
-        groupId="dom4j"
-        artifactId="dom4j"/>
-        <exclusion
-          groupId="jdom"
-          artifactId="jdom"/>
-      </dependency>
-
-    <!--required at compile but not client-side runtime-->
-      <dependency groupID="javax.servlet"
-          artifactID="servlet-api"
-          version="${servletapi.version}"
-          scope="compile"
-          />
-      <!--optional -->
-      <dependency groupID="log4j"
-          artifactID="log4j"
-          version="${log4j.version}"/>
-      <dependency groupID="jaxen"
-          artifactID="jaxen"
-          version="${jaxen.version}"/>
-      <dependency groupID="xalan"
-          artifactID="xalan"
-          version="${xalan.version}"/>
-
-      <!--optional, for smartfrog deployment-->
-      <dependency groupID="org.smartfrog"
-          artifactID="smartfrog"
-          version="${smartfrog.version}"
-          scope="compile"/>
-      <dependency groupID="org.smartfrog"
-          artifactID="sf-jetty"
-          version="${smartfrog.version}"
-          scope="test"/>
-      <dependency groupID="org.smartfrog"
-          artifactID="sf-www"
-          version="${smartfrog.version}"
-          scope="test"/>
-
-      <!--optional stuff for testing-->
-      <dependency groupID="httpunit"
-          artifactID="httpunit"
-          version="1.6"
-          scope="test">
-        <exclusion 
-          groupId="rhino"
-          artifactId="js" />
-      </dependency>
-      <dependency groupID="junit"
-          artifactID="junit"
-          version="${junit.version}"
-          scope="test"/>
-      <dependency groupID="org.smartfrog"
-          artifactID="sf-testharness"
-          version="${smartfrog.version}"
-          scope="test"/>
-    </m2-libraries>
-  </target>
 
 
   <!-- inline creation of a minimal pom
@@ -224,50 +141,6 @@
     </echoxml>
   </target>
 
-  <!-- ========================================================== -->
-  <!-- declare our compile time classpath -->
-  <!-- ========================================================== -->
-  <target name="declare-compile.classpath"
-      depends="declare-base.compile.classpath,m2">
-    <path id="compile.classpath">
-      <path refid="base.compile.classpath"/>
-      <path refid="libraries.path"/>
-    </path>
-    <property name="compile.classpath.value" refid="compile.classpath"/>
-    <echo level="verbose">compile.classpath=${compile.classpath.value}</echo>
-  </target>
-
-  <!-- this is the classpath for running the daemon -->
-
-  <target name="declare-run.classpath" depends="init">
-    <path id="run.classpath">
-      <path refid="smartfrog.classpath"/>
-    </path>
-    <sf-tourl property="run.classpath.value">
-      <path refid="run.classpath"/>
-    </sf-tourl>
-    <echo level="verbose">
-      run.classpath=
-      ${run.classpath.value}</echo>
-  </target>
-
-  <target name="declare-exec.classpath" depends="declare-compile.classpath">
-    <path id="exec.classpath">
-      <path refid="compile.classpath"/>
-      <pathelement location="${target.jar}"/>
-    </path>
-    <property name="exec.classpath.value" refid="exec.classpath"/>
-    <echo level="verbose">exec.classpath=${exec.classpath.value}</echo>
-  </target>
-
-  <target name="declare-tests.run.classpath" depends="declare-tests.compile.classpath">
-    <path id="tests.run.classpath">
-      <path refid="tests.compile.classpath"/>
-      <pathelement location="${test.jar}"/>
-    </path>
-    <property name="tests.run.classpath.value" refid="tests.run.classpath"/>
-    <echo level="verbose">tests.run.classpath=${tests.run.classpath.value}</echo>
-  </target>
 
   <!-- ========================================================== -->
   <!-- create a distro. 
