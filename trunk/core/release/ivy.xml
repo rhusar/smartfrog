@@ -76,13 +76,6 @@
         changing="true"
         rev="latest.integration"
         conf="sfjars->master;redist->redist"/>
-    <!-- testing-->
-    <dependency org="org.smartfrog"
-        name="sf-junit"
-        changing="true"
-        rev="latest.integration"
-        conf="sfjars->master;redist->redist"/>
-
 
 
     <!--logging-->
@@ -134,12 +127,20 @@
         changing="true"
         rev="latest.integration"
         conf="sfjars->master;redist->redist"/>
-    <!--Jabber -->
-    <dependency org="org.smartfrog"
+    <!--Java 1.5 bit are skipped right now -->
+<!--    <dependency org="org.smartfrog"
         name="sf-xmpp"
         changing="true"
         rev="latest.integration"
-        conf="sfjars->master;redist->redist"/>
+        conf="sfjars->master;redist->redist"/>-->
+    <!-- testing-->
+<!--
+    <dependency org="org.smartfrog"
+                name="sf-junit"
+                changing="true"
+                rev="latest.integration"
+                conf="sfjars->master;redist->redist"/>
+-->
 
 
     <!--web stuff-->
