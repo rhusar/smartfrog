@@ -38,11 +38,10 @@
       changing="true"
       rev="latest.integration"
       conf="compile,runtime->core;test->services"/>
-    <!--still a bit unstable-->
-    <dependency org="ant"
+<!--    <dependency org="org.apache.ant"
         name="ant-testutil"
         changing="true"
         rev="${ant-testutil.version}"
-        conf="test->default"/>
+        conf="test->default"/-->>
   </dependencies>
 </ivy-module>
