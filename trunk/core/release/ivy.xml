@@ -50,11 +50,7 @@
         name="sf-tasks" changing="true"
         rev="latest.integration"
         conf="sfjars->master;redist->redist"/>
-    <dependency org="org.smartfrog"
-        name="sf-junit"
-        changing="true"
-        rev="latest.integration"
-        conf="test->default"/>
+
 
     <!-- ant component. do we omit the ant dist?-->
     <dependency org="org.smartfrog"
