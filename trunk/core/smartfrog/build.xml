@@ -817,7 +817,14 @@
   <target name="ivy-init" depends="init,target-names"    >
     <property name="ivy.dir" location="${build.extra.dir}/ivy" />
     <property name="ivy.lib.dir" location="${ivy.dir}/lib" />
+    <property name="ivy.version" value="1.4.1" />
     <property name="ivy.reports.dir" location="${build.dir}/ivy/reports"/>
+    <typedef uri="antlib:fr.jayasoft.ivy.ant" onerror="fail"
+             resource="fr/jayasoft/ivy/ant/antlib.xml">
+      <classpath>
+        <pathelement location="../antbuild/ivy/lib/ivy-${ivy.version}.jar"/>
+      </classpath>
+    </typedef>
     <ivy:configure file="ivyconf.xml"/>
   </target>
 
