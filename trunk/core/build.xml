@@ -369,7 +369,9 @@ For more information: www.smartfrog.org
     <presetdef name="ivy-projects">
       <ivy:buildlist skipbuildwithoutivy="true">
         <fileset dir="." includes="*/build.xml"/>
-        <fileset dir="extras" includes="**/build.xml"/>
+        <fileset dir="extras" includes="**/build.xml">
+          <exclude name="cdl/build.xml" unless="java1.5+"/>
+        </fileset>
         <fileset dir="components" includes="**/build.xml" >
           <!--no cddlm here-->
           <exclude name="deployapi/build.xml"/>
