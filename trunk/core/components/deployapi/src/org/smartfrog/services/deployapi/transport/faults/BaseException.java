@@ -2,11 +2,11 @@ package org.smartfrog.services.deployapi.transport.faults;
 
 import nu.xom.Element;
 import org.ggf.cddlm.utils.FaultTemplate;
-import org.smartfrog.services.deployapi.binding.XomHelper;
-import org.smartfrog.services.deployapi.system.Constants;
 import org.smartfrog.projects.alpine.interfaces.SoapFaultSource;
 import org.smartfrog.projects.alpine.om.soap11.Fault;
 import org.smartfrog.projects.alpine.om.soap11.SoapConstants;
+import org.smartfrog.services.deployapi.system.Constants;
+import org.smartfrog.services.xml.java5.Xom5Utils;
 
 import javax.xml.namespace.QName;
 import java.util.ArrayList;
@@ -161,7 +161,7 @@ public class BaseException extends RuntimeException implements SoapFaultSource {
      * @param detail
      */
     public void addFaultDetail(QName name, String detail) {
-        Element elt= XomHelper.element(name);
+        Element elt= Xom5Utils.element(name);
         elt.appendChild(detail);
         data.add(elt);
     }

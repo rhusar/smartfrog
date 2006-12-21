@@ -40,6 +40,7 @@ import org.smartfrog.services.deployapi.transport.wsrf.WSRPResourceSource;
 import org.smartfrog.services.deployapi.transport.wsrf.WsrfUtils;
 import org.smartfrog.services.filesystem.FileSystem;
 import org.smartfrog.services.filesystem.filestore.AddedFilestore;
+import org.smartfrog.services.xml.java5.Xom5Utils;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLivenessException;
 import org.smartfrog.sfcore.prim.Prim;
@@ -297,7 +298,7 @@ public class ServerInstance implements WSRPResourceSource {
 
     @SuppressWarnings("deprecation")
     private Element makeStaticStatus() {
-        Element status = XomHelper.element(Constants.PROPERTY_PORTAL_STATIC_PORTAL_STATUS);
+        Element status = Xom5Utils.element(Constants.PROPERTY_PORTAL_STATIC_PORTAL_STATUS);
         Element portal = XomHelper.apiElement(StatusElements.PORTAL);
         status.appendChild(portal);
 

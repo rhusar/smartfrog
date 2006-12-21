@@ -26,6 +26,7 @@ import org.smartfrog.services.deployapi.binding.XomHelper;
 import org.smartfrog.services.deployapi.system.Constants;
 import org.smartfrog.services.deployapi.transport.wsrf.Property;
 import org.smartfrog.services.deployapi.transport.wsrf.WsrfUtils;
+import org.smartfrog.services.xml.java5.Xom5Utils;
 
 import javax.xml.namespace.QName;
 import java.util.List;
@@ -46,7 +47,7 @@ public class ActiveSystemsProperty implements Property {
     }
 
     public List<Element> getValue() {
-        Element response = XomHelper.element(Constants.PROPERTY_PORTAL_ACTIVE_SYSTEMS);
+        Element response = Xom5Utils.element(Constants.PROPERTY_PORTAL_ACTIVE_SYSTEMS);
         JobRepository jobs = owner.getJobs();
         for (Application job : jobs) {
             Element epr = (Element) job.getEndpointer().copy();
