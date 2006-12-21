@@ -45,6 +45,14 @@ import org.smartfrog.sfcore.common.*;
 import java.util.Vector;
 
 public class LogImpl implements LogSF, LogRegistration, Serializable {
+//    //check Local java.util.looging log record
+//    static ThreadLocal localThreadLog =
+//      new ThreadLocal() {
+//        protected Log[] initialValue() {
+//          return new Log[1];
+//        }
+//      };
+
 
     /** Default Log object */
     protected Log localLog = null;
@@ -111,6 +119,36 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
      * @param args args to invoke
      */
     public void  invoke (Method method, Object[] args) {
+//        // Local Thread log/debug info
+//        Log thrLog = null;
+//        try {
+//            Object[] thrCtx = localThreadLog.get();
+//            if (thrCtx[0]==null) {
+//                try {
+//                    thrCtx[0]= new Object[];
+//
+//                } finally {
+//                    thrCtx[0]=null;
+//                }
+//
+//            } else {
+//                thrLog = (Log)localThreadLog[0];
+//                method.invoke(thrLog,args);
+//            }
+//        } catch (Throwable thr){
+//            if(thr instanceof InvocationTargetException) {
+//                //get a sub throwable here
+//                thr=thr.getCause();
+//            }
+//            if (localThreadLog!=null) {
+//                thrLog.error("Error Invoke LogImpl for LocalThread",thr);
+//            }
+//            else {
+//                thr.printStackTrace();
+//            }
+//        }
+//        // end -  Local Thread log/debug info
+
         try {
             if (localLog!=null) {
                 method.invoke(localLog,args);

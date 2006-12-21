@@ -25,6 +25,8 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.RMISocketFactory;
+import java.rmi.server.RMIClientSocketFactory;
+import java.rmi.server.RMIServerSocketFactory;
 import java.net.InetAddress;
 import org.smartfrog.sfcore.processcompound.SFServerSocketFactory;
 
@@ -113,7 +115,12 @@ public class SFSecurity {
                     RMISocketFactory.setSocketFactory(securityEnv.getRMISocketFactory());
                     securityOn = true;
                 } else {
-                    // Activate a security manager that allows everything.
+
+//                     InetAddress rmissfBindAddr = InetAddress.getByName("guijarro-j-3.hpl.hp.com");
+//                     RMIClientSocketFactory  rmicsf = new org.smartfrog.sfcore.processcompound.SFClientSocketFactory();
+//                     RMIServerSocketFactory rmissf = new org.smartfrog.sfcore.processcompound.SFServerSocketFactory(rmissfBindAddr);
+//                     RMISocketFactory rmisf = new SFRMISocketFactory(rmicsf, rmissf);
+
                     System.setSecurityManager(new DummySecurityManager());
                     securityOn = false;
                     //Notification moved to SFSyten after the ini file is read.
