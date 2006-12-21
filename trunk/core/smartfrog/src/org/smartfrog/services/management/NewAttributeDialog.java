@@ -116,19 +116,16 @@ public class NewAttributeDialog extends JDialog {
 
                 if (attribute[1] != null) {
                     String value = attribute[1].toString();
-                    System.out.println("value "+attribute[1]+", "+attribute[1].getClass());
                     if  (attribute[1] instanceof ComponentDescription) {
                        StringWriter sw = new StringWriter();
                         try {
-                            ((ComponentDescription)attribute[1]).writeOn(sw,1);
+                            ((ComponentDescription)attribute[1]).writeOn(sw,0);
                         } catch (IOException ioex) {
                             // ignore should not happen
                             if (sfLog().isIgnoreEnabled()) sfLog().ignore (ioex);
                         }
-                        System.out.println("valueAdd "+value+", "+value.getClass());
-                        value = "extends DATA {\n"+ sw.toString()+"\n}";
+                        value = sw.toString();
                     }
-                    System.out.println("value "+value+", "+value.getClass());
                     this.ValuejTextArea.setText(value);
                 }
             }
