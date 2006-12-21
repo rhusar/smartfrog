@@ -34,6 +34,7 @@ import java.rmi.RemoteException;
 import javax.swing.tree.TreePath;
 import java.io.StringWriter;
 import java.io.PrintWriter;
+import java.io.IOException;
 import java.util.Vector;
 
 import org.smartfrog.sfcore.common.ContextImpl;
@@ -445,7 +446,17 @@ public class DeployTreePanel extends JPanel implements TreeSelectionListener, Fo
               sb.append(objects[i]);
               sb.append("\n");
            }
+       } else if (obj instanceof ComponentDescription) {
+           StringWriter sw = new StringWriter();
+            try {
+                ((ComponentDescription)obj).writeOn(sw,0);
+            } catch (IOException ioex) {
+                // ignore should not happen
+                if (sfLog().isIgnoreEnabled()) sfLog().ignore (ioex);
+            }
+           return sw.toString();
        } else {
+
            return obj.toString();
        }
 

@@ -204,6 +204,19 @@ public class PopUpTable extends JComponent implements ActionListener {
       Object[] attribute = new Object[2];
       attribute[0] = name;
       attribute[1] = value;
+      // try to get the object value
+      try {
+        TreePath tpath = (tempTree).getSelectionPath();
+        Object node = getNode();
+        if (node instanceof Prim) {
+            attribute[1] = ((Prim)node).sfResolve(name.toString());
+        } else if (node instanceof ComponentDescription) {
+            attribute[1] = ((ComponentDescription)node).sfResolve(name.toString());
+        }
+      } catch (Exception ex) {
+          if (sfLog().isIgnoreEnabled()) sfLog().ignore ("Failed to read real value during modify attribute '"+name,ex);
+          //WindowUtilities.showError(this,"Failed to modify '"+name+"'. \n"+ex.toString());
+      }
 
       NewAttributeDialog attrDialog = new NewAttributeDialog(null, "Add/Modify attribute", true, attribute);
       WindowUtilities.setPositionDisplay( this.parent.treeScrollPane, attrDialog, "C");
