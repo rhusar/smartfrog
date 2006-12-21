@@ -22,13 +22,11 @@ package org.smartfrog.services.xml.utils;
 import nu.xom.Document;
 import nu.xom.Element;
 import nu.xom.Serializer;
+import sun.misc.BASE64Decoder;
+import sun.misc.BASE64Encoder;
 
-import javax.xml.namespace.QName;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-
-import sun.misc.BASE64Encoder;
-import sun.misc.BASE64Decoder;
 
 /**
  * Generic static Xom utils; all java1.4+
