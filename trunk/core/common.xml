@@ -1198,7 +1198,7 @@
   <!-- this is the gump entry point; it does packaging and tests -->
   <!-- ========================================================== -->
   <target name="gump"
-    depends="test,dist,installed"
+    depends="test,dist,published"
     description="target for gump builds"
     />
 
