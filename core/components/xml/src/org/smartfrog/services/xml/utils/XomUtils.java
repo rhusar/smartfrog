@@ -41,20 +41,6 @@ public class XomUtils {
     }
 
     /**
-     * turn a qname into an element of the same name
-     *
-     * @param qname quanlified name of the elemment
-     * @return an element of the qname
-     */
-    public static Element element(QName qname) {
-        Element element = new Element(qname.getLocalPart(),
-                qname.getNamespaceURI());
-        element.setNamespacePrefix(qname.getPrefix());
-        return element;
-
-    }
-
-    /**
      * Save Xom to a buffer
      * @param document document to save
      * @return the document serialized to a byte array
