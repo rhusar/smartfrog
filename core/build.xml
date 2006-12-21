@@ -378,6 +378,7 @@ For more information: www.smartfrog.org
           <!--These need java 1.5 or later-->
           <exclude name="junit/build.xml" unless="java1.5+"/>
           <exclude name="database/build.xml" unless="java1.5+"/>
+          <exclude name="xmpp/build.xml" unless="java1.5+"/>
         </fileset>
         <!--place for symlinks to external projects you want included-->
         <fileset dir="external" includes="**/build.xml"/>
