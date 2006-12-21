@@ -42,6 +42,6 @@
         name="ant-testutil"
         changing="true"
         rev="${ant-testutil.version}"
-        conf="test->default"/-->>
+        conf="test->default"/>-->
   </dependencies>
 </ivy-module>
