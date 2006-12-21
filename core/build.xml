@@ -46,7 +46,10 @@ For more information: www.smartfrog.org
     <property name="extras.dir" location="extras" />
     <property name="ant.project" location="${extras.dir}/ant" />
     <property file="${components.project}/libraries.properties" />
-
+    <!-- work out our java version by introspection -->
+    <condition property="java1.5+" >
+      <available classname="java.lang.Readable"/>
+    </condition>
     <macrodef name="forward2">
      <attribute name="dir" />
      <attribute name="target" />
@@ -368,8 +371,13 @@ For more information: www.smartfrog.org
         <fileset dir="." includes="*/build.xml"/>
         <fileset dir="extras" includes="**/build.xml"/>
         <fileset dir="components" includes="**/build.xml" >
+          <!--no cddlm here-->
           <exclude name="deployapi/build.xml"/>
+          <!--JMX is currently broken-->
           <exclude name="jmx/build.xml"/>
+          <!--These need java 1.5 or later-->
+          <exclude name="junit/build.xml" unless="java1.5+"/>
+          <exclude name="database/build.xml" unless="java1.5+"/>
         </fileset>
         <!--place for symlinks to external projects you want included-->
         <fileset dir="external" includes="**/build.xml"/>
