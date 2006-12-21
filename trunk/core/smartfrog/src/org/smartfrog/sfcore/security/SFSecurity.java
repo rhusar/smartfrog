@@ -177,7 +177,6 @@ public class SFSecurity {
      * @since JDK1.1
      */
     public static Registry createRegistry(int port, InetAddress bindAddr) throws RemoteException {
-        System.out.println("Binding to "+bindAddr);
         if (isSecurityOn()) {
             return LocateRegistry.createRegistry(port,
                 securityEnv.getEmptyRMIClientSocketFactory(),
