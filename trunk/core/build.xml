@@ -370,7 +370,10 @@ For more information: www.smartfrog.org
       <ivy:buildlist skipbuildwithoutivy="true">
         <fileset dir="." includes="*/build.xml"/>
         <fileset dir="extras" includes="**/build.xml">
+          <!--no CDL unless asked for-->
           <exclude name="cdl/build.xml" unless="java1.5+"/>
+          <!--not ready for ivy builds yet-->
+          <exclude name="sfgui/build.xml" unless="java1.5+"/>
         </fileset>
         <fileset dir="components" includes="**/build.xml" >
           <!--no cddlm here-->
