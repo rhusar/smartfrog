@@ -402,8 +402,15 @@ public class DeployTreePanel extends JPanel implements TreeSelectionListener, Fo
           try {
               Object objSolvedValue = sfResolve(attribName.toString(), node);
               String tempString = objSolvedValue.toString();
-              try { tempString = ContextImpl.getBasicValueFor(objSolvedValue); } catch (Exception ex1){}
-              solvedValue.append(tempString);
+              try {
+                  if (objSolvedValue instanceof ComponentDescription) {
+                    tempString = prettyPrint(objSolvedValue);
+                  } else {
+                    tempString = ContextImpl.getBasicValueFor(objSolvedValue);
+                  }
+
+              } catch (Exception ex1){}
+              solvedValue.append(prettyPrint(tempString));
               solvedValueClass = objSolvedValue.getClass().toString();
           } catch (Exception ex) {
               solvedValue.append(" Failed to resolve ("+attribName+"): "+ ex.toString());
@@ -421,7 +428,17 @@ public class DeployTreePanel extends JPanel implements TreeSelectionListener, Fo
           text.append("* Attribute: "+attribName);
           text.append("\n * Value: ");
           tempString = value.toString();
-          try { tempString = ContextImpl.getBasicValueFor(value); } catch (Exception ex1) {tempString= tempString + "\n["+"Error when parsing value, defaulting to String\n"+ex1.toString()+"]";}//ignore exception }
+          try {
+            try {
+              if (value instanceof ComponentDescription) {
+                tempString = prettyPrint(value);
+              } else {
+                tempString = ContextImpl.getBasicValueFor(value);
+              }
+            } catch (Exception ex1){}
+          } catch (Exception ex1) {
+              tempString= tempString + "\n["+"Error when parsing value, defaulting to String\n"+ex1.toString()+"]";
+          }//ignore exception }
           text.append("\n"+tempString);
           text.append("\n * Value resolved: \n"+ prettyPrint(solvedValue));
           text.append("\n\n"+"+ Value class:"+value.getClass().toString());
