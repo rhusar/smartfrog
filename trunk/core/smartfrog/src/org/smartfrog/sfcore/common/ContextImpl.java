@@ -20,14 +20,8 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.sfcore.common;
 
-import java.io.Serializable;
-import java.util.Enumeration;
-import java.util.Iterator;
-import java.util.Vector;
-import java.io.StringWriter;
-import java.io.Writer;
-import java.io.IOException;
-import java.io.PrintWriter;
+import java.util.*;
+import java.io.*;
 
 
 /**
@@ -39,9 +33,11 @@ import java.io.PrintWriter;
  *
  */
 public class ContextImpl extends OrderedHashtable implements Context,
-    Serializable, PrettyPrinting {
+    Serializable, PrettyPrinting, Copying {
 
-    /**
+   Map attributeTags = new HashMap();
+
+   /**
      * Creates an empty context with default capacity.
      */
     public ContextImpl() {
@@ -158,7 +154,9 @@ public class ContextImpl extends OrderedHashtable implements Context,
     }
 
 
-    /**
+
+
+   /**
       * Adds an attribute to this context under given name.
       *
       * @param name name of attribute
@@ -259,8 +257,160 @@ public class ContextImpl extends OrderedHashtable implements Context,
      }
 
 
+   /**
+    * Set the TAGS for an attribute. TAGS are simply uninterpreted strings associated
+    * with each attribute.
+    *
+    * @param name attribute key for tags
+    * @param tags a set of tags
+    * @throws SmartFrogContextException
+    *          the attribute does not exist;
+    */
+   public synchronized void sfSetTags(Object name, Set tags) throws SmartFrogContextException {
+      if (!containsKey(name))
+         throw new SmartFrogContextException("Attribute " + name + " does not exists for setting tags");
 
+      Set s = Collections.synchronizedSet(new HashSet());
+      s.addAll(tags);
+      attributeTags.put(name, s);
+   }
 
+   /**
+    * Get the TAGS for an attribute. TAGS are simply uninterpreted strings associated
+    * with each attribute.
+    *
+    * @param name attribute key for tags
+    * @return the set of tags
+    * @throws SmartFrogContextException
+    *          the attribute does not exist;
+    */
+   public synchronized Set sfGetTags(Object name) throws SmartFrogContextException {
+      if (!containsKey(name))
+         throw new SmartFrogContextException("Attribute " + name + " does not exists for getting tags");
+      if (attributeTags.containsKey(name)) { // return a copy
+         Set s = new HashSet();
+         s.addAll((Set)attributeTags.get(name));
+         return s;
+      } else { //return an empty set as it has not been set yet
+         return new HashSet();
+      }
+   }
+
+   /**
+    * add a tag to the tag set of an attribute
+    *
+    * @param name attribute key for tags
+    * @param tag  a tag to add to the set
+    * @throws SmartFrogContextException
+    *          the attribute does not exist;
+    */
+   public synchronized void sfAddTag(Object name, String tag) throws SmartFrogContextException {
+      if (!containsKey(name))
+         throw new SmartFrogContextException("Attribute " + name + " does not exists for adding tags");
+      if (attributeTags.containsKey(name)) { // add it
+         Set s = (Set)attributeTags.get(name);
+         s.add(tag);
+      } else { //create a new set and add it
+         Set s = Collections.synchronizedSet(new HashSet());
+         s.add(tag);
+         attributeTags.put(name, s);
+      }
+   }
+
+   /**
+    * remove a tag from the tag set of an attribute if it exists
+    *
+    * @param name attribute key for tags
+    * @param tag  a tag to remove from the set
+    * @throws SmartFrogContextException
+    *          the attribute does not exist;
+    */
+   public synchronized void sfRemoveTag(Object name, String tag)  throws SmartFrogContextException {
+      if (!containsKey(name))
+         throw new SmartFrogContextException("Attribute " + name + " does not exists for removing tags");
+      if (attributeTags.containsKey(name)) { // remove it
+         Set s = (Set)attributeTags.get(name);
+         s.remove(tag);
+         if (s.size() == 0) attributeTags.remove(name);
+      } else { // do nothing as it isn't there!
+      }
+   }
+
+      /**
+    * add a tag to the tag set of an attribute
+    *
+    * @param name attribute key for tags
+    * @param tags  a set of tags to add to the set
+    * @throws SmartFrogContextException
+    *          the attribute does not exist;
+    */
+   public synchronized void sfAddTags(Object name, Set tags) throws SmartFrogContextException {
+      if (!containsKey(name))
+         throw new SmartFrogContextException("Attribute " + name + " does not exists for adding tags");
+      if (attributeTags.containsKey(name)) { // add it
+         Set s = (Set)attributeTags.get(name);
+         s.addAll(tags);
+      } else { //create a new set and add it
+         Set s = Collections.synchronizedSet(new HashSet());
+         s.addAll(tags);
+         attributeTags.put(name, s);
+      }
+   }
+
+   /**
+    * remove a tag from the tag set of an attribute if it exists
+    *
+    * @param name attribute key for tags
+    * @param tags  a set of tags to remove from the set
+    * @throws SmartFrogContextException
+    *          the attribute does not exist;
+    */
+   public synchronized void sfRemoveTags(Object name, Set tags)  throws SmartFrogContextException {
+      if (!containsKey(name))
+         throw new SmartFrogContextException("Attribute " + name + " does not exists for removing tags");
+      if (attributeTags.containsKey(name)) { // remove it
+         Set s = (Set)attributeTags.get(name);
+         s.removeAll(tags);
+         if (s.size() == 0) attributeTags.remove(name);
+      } else { // do nothing as it isn't there!
+      }
+   }
+   /**
+    * Return an iterator over the tags for an attribute
+    *
+    * @param name the name of the attribute
+    * @return an iterator over the tags
+    * @throws SmartFrogContextException
+    *          the attribute does not exist;
+    */
+   public Iterator sfTags(Object name) throws SmartFrogContextException {
+     Iterator iter;
+     if (!containsKey(name))
+         throw new SmartFrogContextException("Attribute " + name + " does not exists for iterating over tags");
+      if (attributeTags.containsKey(name)) { // return set iterator
+         Set s = (Set)attributeTags.get(name);
+         iter = s.iterator();
+      } else { // return iterator on empty set
+         Set s = new HashSet();
+         iter = s.iterator();
+      }
+     return iter;
+   }
+
+   /**
+    * Return whether or not a tag is in the list of tags for an attribute
+    *
+    * @param name the name of the attribute
+    * @param tag the tag to chack
+    *
+    * @return whether or not the attribute has that tag
+    * @throws SmartFrogContextException the attribute does not exist
+    */
+   public boolean sfContainsTag(Object name, String tag) throws SmartFrogContextException {
+     if (!containsKey(name))
+         throw new SmartFrogContextException("Attribute " + name + " does not exists for validating tag's existance");
+      return ((Set)attributeTags.get(name)).contains(tag);
+   }
 
     /**
      * Returns a string representation of the component. This will give a
@@ -325,6 +475,7 @@ public class ContextImpl extends OrderedHashtable implements Context,
             Object key = keys.nextElement();
             Object value = get(key);
             tabPad(ps, indent);
+            writeTagsOn(ps, indent, key);
             writeKeyOn(ps, indent, key);
             ps.write(' ');
             writeValueOn(ps, indent, value);
@@ -333,6 +484,30 @@ public class ContextImpl extends OrderedHashtable implements Context,
     }
 
     /**
+     * Writes given attribute key on a writer.
+     *
+     * @param ps writer to write on
+     * @param indent indent level
+     * @param key key to stringify
+     *
+     * @throws IOException failure while writing
+     */
+    protected void writeTagsOn(Writer ps, int indent, Object key) throws IOException {
+       if (attributeTags.containsKey(key)) {
+          try {
+             if (sfGetTags(key).size() > 0) {
+                ps.write("[ ");
+                for (Iterator i = sfTags(key); i.hasNext();) {
+                   ps.write(i.next().toString() + " ");
+                }
+                ps.write("] ");
+             }
+          } catch (SmartFrogContextException e) {
+             // shouldn't happen...
+          }
+       }
+    }
+   /**
      * Writes given attribute key on a writer.
      *
      * @param ps writer to write on
@@ -449,4 +624,114 @@ public class ContextImpl extends OrderedHashtable implements Context,
             ps.write("  ");
     }
 
+
+
+    // ///////////////////////////////////////////////////////////////////////////////////
+    // reimplementation of the hash table and oreder hash table methods to deal with the tags
+    // ///////////////////////////////////////////////////////////////////////////////////
+
+
+
+    /**
+     * Clears the tags as well as the hashtable.
+     * Overwrites OrderedHashtable.clear().
+     */
+    public void clear() {
+        super.clear();
+        attributeTags.clear();
+    }
+
+    /**
+     * Removes an entry from the hashtable.
+     * Overwrites OrderedHashtable.remove().
+     *
+     * @param key key to remove
+     *
+     * @return removed object
+     */
+    public Object remove(Object key) {
+        Object r = super.remove(key);
+        attributeTags.remove(key);
+        return r;
+    }
+
+
+    /**
+     *   Removes the element at the specified position.
+     *   Removes the key (and its corresponding value) from this hashtable.
+     *   This method does nothing if the key is not in the hashtable.
+     *   Overrides the method in OrderedHashtable
+     *
+     * @param index index to remove
+     *
+     * @return the value to which the index had been mapped in this hashtable,
+     *         or null if the key did not have a mapping
+     */
+    public Object remove(int index) {
+        Object key = orderedKeys.remove(index);
+        Object value = super.remove(index);
+        attributeTags.remove(key);
+        return value;
+    }
+
+
+    /**
+     * Renames an entry in the otable, leaving its position in the table
+     * unchanged. Overrides method in OrderedHashtable.
+     *
+     * @param key1 the initial key to be renamed
+     * @param key2 the new key name
+     *
+     * @return the initial key, or null if it wasn't in the table
+     */
+    public Object rename(Object key1, Object key2) {
+        super.rename(key1, key2);
+
+        if (attributeTags.containsKey(key1)) {
+           attributeTags.put(key2, attributeTags.get(key1));
+           attributeTags.remove(key1);
+        }
+
+        return key1;
+    }
+
+    /**
+     * Does a shallow copy of the hashtable, the ordered keys and
+     * the attributeTags.
+     *
+     * @return shallow copy of this table
+     */
+
+
+    public Object clone() {
+       Object ret = super.clone();
+       Map m = new HashMap();
+       for (Iterator i = attributeTags.keySet().iterator(); i.hasNext(); ) {
+          Object key = i.next();
+          Set s = (Set) attributeTags.get(key);
+          Set sc = Collections.synchronizedSet(new HashSet());
+          sc.addAll(s);
+          m.put(key, sc);
+       }
+       ((ContextImpl) ret).attributeTags = m;
+        return ret;
+    }
+
+   /**
+    * Does a deep copy of the hashtable. Values in the hashtable which
+    * understand the Copying interface get copied properly. If the Values
+    * cannot be copied, the basic SF values (numbers, strings, booleans, are
+    * each properly dealt with. Other values are copied using serialize/deserialize
+    * if they implement serialization - note that because of this transient data will
+    * not be copied. It also copies the attributeTags.
+    * 
+    * This overrides the one in OrderedHashtable.
+    *
+    * @return copy of hashtable
+    */
+   public Object copy() {
+      // note that since the super method uses clone,
+      // this is already copying attributeTags
+      return super.copy();
+   }
 }

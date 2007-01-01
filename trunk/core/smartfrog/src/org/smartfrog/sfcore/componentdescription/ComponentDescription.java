@@ -25,9 +25,6 @@ import java.io.Writer;
 import java.util.Iterator;
 import java.util.Stack;
 
-import org.smartfrog.sfcore.common.Context;
-import org.smartfrog.sfcore.common.Copying;
-import org.smartfrog.sfcore.common.PrettyPrinting;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.reference.ReferenceResolver;
@@ -35,7 +32,7 @@ import org.smartfrog.sfcore.reference.ReferenceResolverHelper;
 
 import org.smartfrog.sfcore.logging.LogSF;
 
-import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
+import org.smartfrog.sfcore.common.*;
 
 /**
  * Defines the context interface used by Components. Context implementations
@@ -43,7 +40,7 @@ import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
  * Components.
  * @see Copying
  */
-public interface ComponentDescription extends PrettyPrinting, Copying, ReferenceResolver, ReferenceResolverHelper {
+public interface ComponentDescription extends Tags, PrettyPrinting, Copying, ReferenceResolver, ReferenceResolverHelper {
 
     /**
      * Add an attribute to the component description context. Values should be

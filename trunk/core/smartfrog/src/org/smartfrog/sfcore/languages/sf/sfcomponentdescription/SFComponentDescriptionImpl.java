@@ -25,6 +25,8 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.util.Enumeration;
 import java.util.Vector;
+import java.util.Set;
+import java.util.HashSet;
 
 
 import org.smartfrog.sfcore.common.*;
@@ -221,6 +223,13 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
       for (Enumeration e = sfContext.keys(); e.hasMoreElements(); ) {
          Object key = e.nextElement();
          Object value = sfContext.get(key);
+         Set tags = null;
+         try {
+            tags = sfContext.sfGetTags(key);
+         } catch (SmartFrogException e1) {
+            //shouldn't happen
+         }
+
          try {
            // Get attribute and if key a reference try to place it in the
            // right component. Don't resolve value since it ain't mine
@@ -230,7 +239,7 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
                removals = new Vector(5);
              }
 
-             if (place( (Reference) key, value, resState)) {
+             if (place( (Reference) key, value, tags, resState)) {
                 removals.addElement(key);
              }
            } else if (value instanceof ComponentResolver) {
@@ -270,7 +279,7 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
     *@param  value     attribute value
     *@param  resState  resolution state
     */
-   protected boolean place(Reference key, Object value, ResolutionState resState) {
+   protected boolean place(Reference key, Object value, Set tags, ResolutionState resState) {
       Object nam = ((HereReferencePart) key.lastElement()).getValue();
       ComponentDescription destDescription = null;
 
@@ -292,6 +301,11 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
 
       // place value under simple name in destination
       destDescription.sfContext().put(nam, value);
+      try {
+         if (tags != null) destDescription.sfContext().sfAddTags(nam, tags);
+      } catch (SmartFrogException e) {
+         // shouldn't happen
+      }
 
       // Set new parent if value is component
       if (value instanceof ComponentDescription) {
@@ -415,12 +429,12 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
       Context sContext = (Context) superType.sfContext().copy();
       Object key;
       Object value;
+      Set tags;
 
       // re-parent any descriptions in super sfContext
       for (Enumeration e = sContext.keys(); e.hasMoreElements(); ) {
          key = e.nextElement();
          value = sContext.get(key);
-
          if (value instanceof SFComponentDescription) {
             ((SFComponentDescription) value).setParent(this);
          }
@@ -431,6 +445,12 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
          key = e.nextElement();
          value = sfContext.get(key);
          sContext.put(key, value);
+         try {
+            tags = sfContext.sfGetTags(key);
+            sContext.sfAddTags(key, tags);
+         } catch (SmartFrogException e1) {
+            //shouldn't happen
+         }
       }
 
       // set sfContext
@@ -603,19 +623,28 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
        for (Enumeration e = sfContext.keys(); e.hasMoreElements(); ) {
            Object key = e.nextElement();
            Object value = sfContext.get(key);
+           Set tags = null;
 
-           if (value instanceof SFTempValue) {
+          if (value instanceof SFTempValue) {
                //nothing - attribute is to be removed...
            } else if (value instanceof Phases) {
                value = ((Phases) value).sfAsComponentDescription();
                ((ComponentDescription) value).setParent(res);
                newContext.put(key, value);
-           } else if (value instanceof ReferencePhases) {
+          } else if (value instanceof ReferencePhases) {
                value = ((ReferencePhases) value).sfAsReference();
                newContext.put(key, value);
-           } else
+          } else
                newContext.put(key, copyValue(value));
+
+          try {
+             tags  = sfContext.sfGetTags(key);
+             newContext.sfAddTags(key, tags);
+          } catch (SmartFrogException e1) {
+                //shouldn't happen
+          }
        }
+
        return res;
    }
 
