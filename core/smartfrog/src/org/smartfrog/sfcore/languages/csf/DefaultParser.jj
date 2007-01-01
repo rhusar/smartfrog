@@ -32,9 +32,12 @@ import org.smartfrog.sfcore.reference.ThisReferencePart;
 
 import org.smartfrog.sfcore.common.SFNull;
 import org.smartfrog.sfcore.common.SFByteArray;
+import org.smartfrog.sfcore.common.SmartFrogException;
 import java.io.InputStream;
 import java.util.Vector;
 import java.util.Enumeration;
+import java.util.Set;
+import java.util.HashSet;
 
 
 
@@ -48,12 +51,12 @@ public class DefaultParser {
   static final String sumOp = "org.smartfrog.sfcore.languages.sf.functions.Sum";
   static final String timesOp = "org.smartfrog.sfcore.languages.sf.functions.Product";
 
-  static final String andOp = "org.smartfrog.sfcore.languages.sf.functions.Conjunction";
-  static final String orOp = "org.smartfrog.sfcore.languages.sf.functions.Disjunction";
+  static final String andOp = "org.smartfrog.sfcore.languages.sf.functions.And";
+  static final String orOp = "org.smartfrog.sfcore.languages.sf.functions.Or";
 
   static final String eqOp = "org.smartfrog.sfcore.languages.sf.functions.EQ";
   static final String neOp = "org.smartfrog.sfcore.languages.sf.functions.NE";
-  static final String geOp = "org.smartfrog.sfcore.languages.sf.functions.GEs";
+  static final String geOp = "org.smartfrog.sfcore.languages.sf.functions.GE";
   static final String leOp = "org.smartfrog.sfcore.languages.sf.functions.LE";
   static final String gtOp = "org.smartfrog.sfcore.languages.sf.functions.GT";
   static final String ltOp = "org.smartfrog.sfcore.languages.sf.functions.LT";
@@ -194,40 +197,44 @@ MORE :
   < ~[] >
 }
 
+/**
+ * if you change this, dont forget to update the reference documentation
+ */
 TOKEN : /* reserved words */
 {
-   <SEMICOLON: ";">
- | <COMMA: ",">
- | <LBRACE: "{">
- | <RBRACE: "}">
- | <LBRACKET: "[">
- | <RBRACKET: "]">
- | <VECTORSTART: "[|">
- | <VECTOREND: "|]" >
- | <REFPARTSEP: ":">
- | <NULL: "NULL">
- | <UNIQUE: "--">
- | <EXTENDS: "extends">
- | <LAZY: "LAZY">
- | <DATA: "DATA">
- | <OPTIONAL: "OPTIONAL">
- | <ROOT: "ROOT">
+   <APPLY: "APPLY">
+ | <ASSERT: "ASSERT">
  | <ATTRIB: "ATTRIB">
+ | <CODEBASE: "#codebase">
+ | <COMMA: ",">
+ | <DATA: "DATA">
+ | <EXTENDS: "extends">
+ | <FALSE: "false">
  | <HERE: "HERE">
- | <THIS: "THIS">
+ | <HOST: "HOST">
+ | <INCLUDE: "#include">
  | <PROPERTY: "PROPERTY">
  | <IPROPERTY: "IPROPERTY">
  | <ENVPROPERTY: "ENVPROPERTY">
  | <IENVPROPERTY: "IENVPROPERTY">
+ | <LAZY: "LAZY">
+ | <LBRACE: "{">
+ | <LBRACKET: "[">
+ | <NULL: "NULL">
+ | <OPTIONAL: "OPTIONAL">
  | <PARENT: "PARENT">
- | <HOST: "HOST">
  | <PROCESS: "PROCESS">
- | <APPLY: "APPLY">
- | <ASSERT: "ASSERT">
- | <INCLUDE: "#include">
- | <CODEBASE: "#codebase">
+ | <RBRACE: "}">
+ | <RBRACKET: "]">
+ | <REFPARTSEP: ":">
+ | <ROOT: "ROOT">
+ | <SEMICOLON: ";">
+ | <TBD: "TBD">
+ | <THIS: "THIS">
  | <TRUE: "true">
- | <FALSE: "false">
+ | <VECTOREND: "|]" >
+ | <VECTORSTART: "[|">
+ | <UNIQUE: "--">
 
  | <OPSTART: "(">
  | <OPEND: ")">
@@ -255,7 +262,6 @@ TOKEN : /* reserved words */
  | <ELSE: "ELSE">
  | <FI: "FI">
 
- | <TBD: "TBD">
  | <VAR: "VAR" ("/" (<DIGIT>)+ )? >
 }
 
@@ -346,13 +352,13 @@ TOKEN : /* Literals */
       >
     | < #EXPONENT: ["e","E"] (["+","-"])? (["0"-"9"])+ >
     | <DOUBLE:
-        <FLOAT_BASE> (["d", "D"])?
+        <FLOAT_BASE> ["d", "D"]
       >
     | <LONG:
-        <INTEGER> (["l", "L"])?
+        <INTEGER> ["l", "L"]
       >
     | <FLOAT:
-        <FLOAT_BASE> ["f", "F"]
+        <FLOAT_BASE> (["f", "F"])?
       >
     | <BYTEARRAY:
           (("#HEX#")
@@ -449,6 +455,12 @@ void AttributesNoEOF(CSFComponentDescription descr) :
     for (Enumeration e = attrs.elements(); e.hasMoreElements(); ) {
       Object[] attribute = (Object[])e.nextElement();
       descr.sfContext().put(attribute[0], attribute[1]);
+      try {
+         if (((Set)attribute[2]).size() > 0)descr.sfContext().sfSetTags(attribute[0], (Set)attribute[2]);
+      } catch (SmartFrogException sce) {
+         //shouldn't happen
+         sce.printStackTrace();
+    }
       if (attribute[1] instanceof CSFComponentDescription)
         ((CSFComponentDescription)attribute[1]).setParent(descr);
     }
@@ -460,7 +472,6 @@ Vector AttributeListNoEOF() :
 {
     Vector res = new Vector(10, 5);
     Object[] c;
-    String fName;
 }
 {
     ( c = Attribute() {res.addElement(c);}
@@ -485,18 +496,30 @@ void Includes(Vector res) :
 
 Object[] Attribute() :
 {
-  Object[] attribute = new Object[2];
+  Object[] attribute = new Object[3];
   SFReference name = new SFReference();
+  Set tags = new HashSet();
 }
 {
-  (Name(name) attribute[1]=Value()
+  ([ <LBRACKET> Tags(tags) <RBRACKET> ] Name(name) attribute[1]=Value()
    { if (name.size() == 1)
         attribute[0] = ((HereReferencePart)name.firstElement()).getValue();
      else
         attribute[0] = name;
      if (attribute[1] == null) attribute[1] = SFNull.get();
+     attribute[2] = tags;
      return attribute;
    })
+}
+
+void Tags(Set tags) :
+{
+    Token t;
+}
+{
+    [t=<WORD> {tags.add(t.image);}
+      [<COMMA>] Tags(tags)
+    ]
 }
 
 
@@ -530,7 +553,6 @@ Object Value() :
 {
     (
     res=Component()
-/*    | res=Var() <SEMICOLON>   */
     | res=SimpleValue() <SEMICOLON>
     | <SEMICOLON>
     ) { return res; }
@@ -937,5 +959,4 @@ SFByteArray ByteArray() :
       }
     }
 }
-
 
