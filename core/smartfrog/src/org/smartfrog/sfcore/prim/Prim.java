@@ -20,9 +20,7 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.sfcore.prim;
 
-import org.smartfrog.sfcore.common.Context;
-import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
+import org.smartfrog.sfcore.common.*;
 import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.reference.RemoteReferenceResolver;
 import org.smartfrog.sfcore.reference.RemoteReferenceResolverHelper;
@@ -38,7 +36,7 @@ import java.util.Iterator;
  * component knows how to react to termination, liveness, etc.
  *
  */
-public interface Prim extends Update, Liveness, RemoteReferenceResolver, RemoteReferenceResolverHelper, Diagnostics, Remote {
+public interface Prim extends Update, Liveness, RemoteReferenceResolver, RemoteReferenceResolverHelper, RemoteTags, Diagnostics, Remote {
     /**
      * Add an attribute to the component's context. Values should be
      * marshallable types if they are to be referenced remotely at run-time.

@@ -24,11 +24,7 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.io.StringWriter;
 import java.io.Writer;
-import java.util.Vector;
-import java.util.Enumeration;
-import java.util.Iterator;
-import java.util.Stack;
-import java.util.Properties;
+import java.util.*;
 
 import org.smartfrog.sfcore.common.Context;
 import org.smartfrog.sfcore.common.PrettyPrinting;
@@ -1195,4 +1191,106 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
       }
       return cd;
     }
+
+   // implementation of the TAGS interface
+
+
+   /**
+    * Set the TAGS for an attribute. TAGS are simply uninterpreted strings associated
+    * with each attribute.
+    *
+    * @param name attribute key for tags
+    * @param tags a set of tags
+    * @throws SmartFrogException
+    *          the attribute does not exist;
+    */
+   public void sfSetTags(Object name, Set tags) throws SmartFrogException {
+      sfContext.sfSetTags(name, tags);
+   }
+
+   /**
+    * Get the TAGS for an attribute. TAGS are simply uninterpreted strings associated
+    * with each attribute.
+    *
+    * @param name attribute key for tags
+    * @return the set of tags
+    * @throws SmartFrogException
+    *          the attribute does not exist;
+    */
+   public Set sfGetTags(Object name) throws SmartFrogException {
+      return sfContext.sfGetTags(name);
+   }
+
+   /**
+    * add a tag to the tag set of an attribute
+    *
+    * @param name attribute key for tags
+    * @param tag  a tag to add to the set
+    * @throws SmartFrogException
+    *          the attribute does not exist;
+    */
+   public void sfAddTag(Object name, String tag) throws SmartFrogException {
+      sfContext.sfAddTag(name, tag);
+   }
+
+   /**
+    * remove a tag from the tag set of an attribute if it exists
+    *
+    * @param name attribute key for tags
+    * @param tag  a tag to remove from the set
+    * @throws SmartFrogException
+    *          the attribute does not exist;
+    */
+   public void sfRemoveTag(Object name, String tag) throws SmartFrogException {
+      sfContext.sfRemoveTag(name, tag);
+   }
+
+   /**
+    * add a tag to the tag set of an attribute
+    *
+    * @param name attribute key for tags
+    * @param tags a set of tags to add to the set
+    * @throws SmartFrogException
+    *          the attribute does not exist;
+    */
+public void sfAddTags(Object name, Set tags) throws SmartFrogException {
+      sfContext.sfAddTags(name, tags);
+   }
+
+   /**
+    * remove a tag from the tag set of an attribute if it exists
+    *
+    * @param name attribute key for tags
+    * @param tags a set of tags to remove from the set
+    * @throws SmartFrogException
+    *          the attribute does not exist;
+    */
+   public void sfRemoveTags(Object name, Set tags) throws SmartFrogException {
+      sfContext.sfRemoveTags(name, tags);
+   }
+
+   /**
+    * Return an iterator over the tags for an attribute
+    *
+    * @param name the name of the attribute
+    * @return an iterator over the tags
+    * @throws SmartFrogException
+    *          the attribute does not exist;
+    */
+   public Iterator sfTags(Object name) throws SmartFrogException {
+      return sfContext.sfTags(name);
+   }
+
+   /**
+    * Return whether or not a tag is in the list of tags for an attribute
+    *
+    * @param name the name of the attribute
+    * @param tag  the tag to chack
+    * @return whether or not the attribute has that tag
+    * @throws SmartFrogException
+    *          the attribute does not exist
+    */
+   public boolean sfContainsTag(Object name, String tag) throws SmartFrogException {
+      return sfContext.sfContainsTag(name, tag);
+   }
 }

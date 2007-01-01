@@ -27,11 +27,11 @@ import java.rmi.server.RemoteStub;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.Vector;
+import java.util.Set;
 
 import org.smartfrog.sfcore.common.Diagnostics;
 import org.smartfrog.sfcore.common.Context;
 import org.smartfrog.sfcore.common.ContextImpl;
-import org.smartfrog.sfcore.common.Diagnostics;
 import org.smartfrog.sfcore.common.Logger;
 import org.smartfrog.sfcore.common.MessageKeys;
 import org.smartfrog.sfcore.common.MessageUtil;
@@ -177,7 +177,7 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
            try {
                // if sfLog() is called then a new log is created and an upcall is triggered
                if ((sfLog!=null) && sfLog().isTraceEnabled()) {
-                   sfLog().trace("sfResolved HERE '"+name.toString()+"' to '"+ result.toString()+"'");                  sfLog().trace("sfResolved HERE '"+name.toString()+"' to '"+ result.toString()+"'");
+                   sfLog().trace("sfResolved HERE '"+name.toString()+"' to '"+ result.toString()+"'");
                }
            } catch (Throwable thr) {thr.printStackTrace();} //ignore
 
@@ -1649,4 +1649,111 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
             }
         }
     }
+
+
+
+
+
+   // implementation of the RemoteTags interface
+
+   /**
+    * Set the TAGS for an attribute. TAGS are simply uninterpreted strings associated
+    * with each attribute.
+    *
+    * @param name attribute key for tags
+    * @param tags a set of tags
+    *
+    * @throws SmartFrogException the attribute does not exist;
+    */
+   public void sfSetTags(Object name, Set tags) throws SmartFrogException, RemoteException {
+      sfContext.sfSetTags(name, tags);
+   }
+
+   /**
+    * Get the TAGS for an attribute. TAGS are simply uninterpreted strings associated
+    * with each attribute.
+    *
+    * @param name attribute key for tags
+    * @return the set of tags
+    *
+    * @throws SmartFrogException the attribute does not exist;
+    */
+   public Set sfGetTags(Object name) throws SmartFrogException, RemoteException {
+      return sfContext.sfGetTags(name);
+   }
+
+   /**
+    * add a tag to the tag set of an attribute
+    *
+    * @param name attribute key for tags
+    * @param tag a tag to add to the set
+    *
+    * @throws SmartFrogException the attribute does not exist;
+    */
+   public void sfAddTag(Object name, String tag) throws SmartFrogException, RemoteException {
+      sfContext.sfAddTag(name,tag);
+   }
+
+   /**
+    * remove a tag from the tag set of an attribute if it exists
+    *
+    * @param name attribute key for tags
+    * @param tag a tag to remove from the set
+    *
+    * @throws SmartFrogException the attribute does not exist;
+    *
+    */
+   public void sfRemoveTag(Object name, String tag) throws SmartFrogException, RemoteException {
+      sfContext.sfRemoveTag(name, tag);
+   }
+
+         /**
+    * add a tag to the tag set of an attribute
+    *
+    * @param name attribute key for tags
+    * @param tags  a set of tags to add to the set
+    * @throws SmartFrogException
+    *          the attribute does not exist;
+    */
+   public void sfAddTags(Object name, Set tags) throws SmartFrogException, RemoteException {
+      sfContext.sfAddTags(name, tags);
+   }
+
+   /**
+    * remove a tag from the tag set of an attribute if it exists
+    *
+    * @param name attribute key for tags
+    * @param tags  a set of tags to remove from the set
+    * @throws SmartFrogException
+    *          the attribute does not exist;
+    */
+   public void sfRemoveTags(Object name, Set tags)  throws SmartFrogException, RemoteException {
+      sfContext.sfRemoveTags(name, tags);
+   }
+
+   /**
+    * Return an iterator over the tags for an attribute - not part of RemoteTags, but is part of Tags
+    *
+    * @param name the name of the attribute
+    * @return an iterator over the tags
+    *
+    * @throws SmartFrogException the attribute does not exist;
+    */
+   public Iterator sfTags(Object name) throws SmartFrogException {
+      return sfContext.sfTags(name);
+   }
+
+   /**
+    * Return whether or not a tag is in the list of tags for an attribute
+    *
+    * @param name the name of the attribute
+    * @param tag the tag to chack
+    *
+    * @return whether or not the attribute has that tag
+    * @throws SmartFrogException the attribute does not exist
+    */
+   public boolean sfContainsTag(Object name, String tag) throws SmartFrogException, RemoteException {
+      return sfContext.sfContainsTag(name, tag);
+   }
+
 }
