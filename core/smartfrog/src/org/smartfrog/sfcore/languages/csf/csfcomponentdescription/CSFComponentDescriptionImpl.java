@@ -27,10 +27,7 @@ import org.smartfrog.sfcore.languages.sf.sfcomponentdescription.SFComponentDescr
 import org.smartfrog.sfcore.languages.sf.sfcomponentdescription.SFComponentDescriptionImpl;
 import org.smartfrog.sfcore.parser.Phases;
 import org.smartfrog.sfcore.reference.Reference;
-import org.smartfrog.sfcore.common.MessageKeys;
-import org.smartfrog.sfcore.common.Context;
-import org.smartfrog.sfcore.common.SmartFrogResolutionException;
-import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.common.*;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -75,7 +72,7 @@ public class CSFComponentDescriptionImpl extends SFComponentDescriptionImpl
     public Vector setConstraints(Vector constraints) {
         Vector c = constraints;
         this.constraints = constraints;
-        return c;  //To change body of implemented methods use File | Settings | File Templates.
+        return c;
     }
 
     /**
@@ -84,7 +81,7 @@ public class CSFComponentDescriptionImpl extends SFComponentDescriptionImpl
      * @return the vector of constraints
      */
     public Vector getConstraints() {
-        return constraints;  //To change body of implemented methods use File | Settings | File Templates.
+        return constraints; 
     }
 
     /**
@@ -218,7 +215,7 @@ public class CSFComponentDescriptionImpl extends SFComponentDescriptionImpl
      *
      * @param superType super type to copy from
      */
-    protected void subtype(SFComponentDescription superType) {
+    protected void subtype(SFComponentDescription superType) throws SmartFrogTypeResolutionException {
         super.subtype(superType);
         for (Enumeration e = ((CSFComponentDescription) superType).getConstraints().elements(); e.hasMoreElements();) {
             Constraint c = (Constraint) e.nextElement();

@@ -409,7 +409,7 @@ public class ContextImpl extends OrderedHashtable implements Context,
    public boolean sfContainsTag(Object name, String tag) throws SmartFrogContextException {
      if (!containsKey(name))
          throw new SmartFrogContextException("Attribute " + name + " does not exists for validating tag's existance");
-      return ((Set)attributeTags.get(name)).contains(tag);
+      return sfGetTags(name).contains(tag);
    }
 
     /**

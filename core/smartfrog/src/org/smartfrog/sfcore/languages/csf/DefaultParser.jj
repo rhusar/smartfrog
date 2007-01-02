@@ -626,9 +626,7 @@ Object Operator() :
         if (arity==0) {
         for (Enumeration e = v.elements(); e.hasMoreElements(); ) {
             Object attribute = e.nextElement();
-            SFReference name = new SFReference();
-            name.addElement(ReferencePart.here("unique" + nextId++));
-            ((CSFComponentDescription)res).sfContext().put(name, attribute);
+            ((CSFComponentDescription)res).sfContext().put("unique" + nextId++, attribute);
             if (attribute instanceof CSFComponentDescription)
             ((CSFComponentDescription)attribute).setParent((CSFComponentDescription)res);
         }
@@ -850,9 +848,7 @@ Object Basic() :
           SFParser.componentFactory("default");
       for (Enumeration e = ((Vector)res).elements(); e.hasMoreElements(); ) {
           Object attribute = e.nextElement();
-          SFReference name = new SFReference();
-          name.addElement(ReferencePart.here("unique" + nextId++));
-          component.sfContext().put(name, attribute);
+          component.sfContext().put("unique" + nextId++, attribute);
           if (attribute instanceof CSFComponentDescription)
           ((CSFComponentDescription)attribute).setParent(component);
       }
