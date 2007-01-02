@@ -246,7 +246,9 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
              // Attribute value is resolvable, ask it to resolve itself
              ( (ComponentResolver) value).doPlaceResolve(resState);
            }
-         } catch (Throwable thr){
+         } catch (SmartFrogPlaceResolutionException pre){
+            throw pre;   // some handled error such as overriding a final attriute
+         } catch (Throwable thr){ // some other error - such as cyclic reference
            StringBuffer msg = new StringBuffer("Failed to resolve '");
            msg.append(key.toString());
            msg.append(" ");
@@ -279,7 +281,7 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
     *@param  value     attribute value
     *@param  resState  resolution state
     */
-   protected boolean place(Reference key, Object value, Set tags, ResolutionState resState) {
+   protected boolean place(Reference key, Object value, Set tags, ResolutionState resState) throws SmartFrogPlaceResolutionException {
       Object nam = ((HereReferencePart) key.lastElement()).getValue();
       ComponentDescription destDescription = null;
 
@@ -296,6 +298,19 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
          return false;
       }
 
+      boolean attrFinal = false;
+      try {
+         attrFinal = destDescription.sfContext().sfContainsTag(nam, "sfFinal");
+      } catch (SmartFrogException e) {
+         // leave false
+      }
+
+      if (attrFinal) {
+            throw new SmartFrogPlaceResolutionException(
+                 MessageUtil.formatMessage(CANNOT_OVERRIDE_FINAL, sfCompleteName(), key)
+            );
+      }
+      
       // Found destination
       resState.haveResolved(true);
 
@@ -392,8 +407,10 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
     *
     *@param  resState  resolution state to maintain unresolved types
     *@return           true if resolved, false if not
+    *@throw SmartFrogTypeResolutionException an error in the subtyping process, such as
+    * the override of a final attribute
     */
-   protected boolean resolveType(ResolutionState resState) {
+   protected boolean resolveType(ResolutionState resState) throws SmartFrogTypeResolutionException {
       Reference superTypeRef = type;
 
       if (superTypeRef == null) {
@@ -409,6 +426,8 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
             resState.haveResolved(true);
             superTypeRef = type;
          }
+      } catch (SmartFrogTypeResolutionException te) {
+         throw te; // this was from the sutyping - possibly a override of sfFinal
       } catch (Exception excpt) {
          resState.addUnresolved(superTypeRef, sfCompleteName(), null, excpt);
       }
@@ -423,8 +442,10 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
     *  description into it.
     *
     *@param  superType  super type to copy from
+    *@throw SmartFrogTypeResolutionException an error in the subtyping process, such as
+    * the override of a final attribute
     */
-   protected void subtype(SFComponentDescription superType) {
+   protected void subtype(SFComponentDescription superType) throws SmartFrogTypeResolutionException {
       // First copy the sfContext of the supertype
       Context sContext = (Context) superType.sfContext().copy();
       Object key;
@@ -444,6 +465,17 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
       for (Enumeration e = sfContext.keys(); e.hasMoreElements(); ) {
          key = e.nextElement();
          value = sfContext.get(key);
+         boolean finalAttr = false;
+         try {
+            finalAttr = sContext.sfContainsTag(key, "sfFinal");
+         } catch (SmartFrogException e1) {
+            // shouldn't happen
+         }
+         if (finalAttr) {
+            throw new SmartFrogTypeResolutionException(
+                 MessageUtil.formatMessage(CANNOT_OVERRIDE_FINAL, sfCompleteName(), key)
+            );
+         }
          sContext.put(key, value);
          try {
             tags = sfContext.sfGetTags(key);
@@ -625,17 +657,21 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
            Object value = sfContext.get(key);
            Set tags = null;
 
-          if (value instanceof SFTempValue) {
-               //nothing - attribute is to be removed...
-           } else if (value instanceof Phases) {
-               value = ((Phases) value).sfAsComponentDescription();
-               ((ComponentDescription) value).setParent(res);
-               newContext.put(key, value);
-          } else if (value instanceof ReferencePhases) {
-               value = ((ReferencePhases) value).sfAsReference();
-               newContext.put(key, value);
-          } else
-               newContext.put(key, copyValue(value));
+          try {
+             if (value instanceof SFTempValue || sfContext.sfContainsTag(key, "sfTemp")) {
+                  //nothing - attribute is to be removed...
+              } else if (value instanceof Phases) {
+                  value = ((Phases) value).sfAsComponentDescription();
+                  ((ComponentDescription) value).setParent(res);
+                  newContext.put(key, value);
+             } else if (value instanceof ReferencePhases) {
+                  value = ((ReferencePhases) value).sfAsReference();
+                  newContext.put(key, value);
+             } else
+                  newContext.put(key, copyValue(value));
+          } catch (SmartFrogException e1) {
+             //shouldn't happen - its for the checking of the tag!
+          }
 
           try {
              tags  = sfContext.sfGetTags(key);

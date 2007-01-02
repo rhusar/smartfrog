@@ -492,7 +492,7 @@ Object[] Attribute() :
   ([ <LBRACKET> Tags(tags) <RBRACKET> ] Name(name) attribute[1]=Value()
    { if (name.size() == 1)
         attribute[0] = ((HereReferencePart)name.firstElement()).getValue();
-     else
+      else
         attribute[0] = name;
      if (attribute[1] == null) attribute[1] = SFNull.get();
      attribute[2] = tags;
@@ -607,9 +607,7 @@ Object Operator() :
         if (arity==0) {
         for (Enumeration e = v.elements(); e.hasMoreElements(); ) {
             Object attribute = e.nextElement();
-            SFReference name = new SFReference();
-            name.addElement(ReferencePart.here("unique" + nextId++));
-            ((SFComponentDescription)res).sfContext().put(name, attribute);
+            ((SFComponentDescription)res).sfContext().put("unique" + nextId++, attribute);
             if (attribute instanceof SFComponentDescription)
             ((SFComponentDescription)attribute).setParent((SFComponentDescription)res);
         }
@@ -814,9 +812,7 @@ Object Basic() :
           SFParser.componentFactory("default");
       for (Enumeration e = ((Vector)res).elements(); e.hasMoreElements(); ) {
           Object attribute = e.nextElement();
-          SFReference name = new SFReference();
-          name.addElement(ReferencePart.here("unique" + nextId++));
-          component.sfContext().put(name, attribute);
+          component.sfContext().put("unique" + nextId++, attribute);
           if (attribute instanceof SFComponentDescription)
           ((SFComponentDescription)attribute).setParent(component);
       }

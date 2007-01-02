@@ -360,4 +360,9 @@ public interface MessageKeys {
      *  Predicates must be extended to ensure a copy is taken.
      */
      public static String CANNOT_LINK_TO_PREDICATE = "CANNOT_LINK_TO_PREDICATE";
+
+   /**
+    * Message key: Cannot override an attribute marked sfFinal
+    */
+   public static String CANNOT_OVERRIDE_FINAL = "CANNOT_OVERRIDE_FINAL";
 }
