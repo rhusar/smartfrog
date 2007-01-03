@@ -370,10 +370,10 @@ For more information: www.smartfrog.org
       <ivy:buildlist skipbuildwithoutivy="true">
         <fileset dir="." includes="*/build.xml"/>
         <fileset dir="extras" includes="**/build.xml">
-          <!--no CDL unless asked for-->
-          <exclude name="cdl/build.xml" unless="java1.5+"/>
+          <!--no CDL -->
+          <exclude name="cdl/build.xml"/>
           <!--not ready for ivy builds yet-->
-          <exclude name="sfgui/build.xml" unless="java1.5+"/>
+          <exclude name="sfgui/build.xml" />
         </fileset>
         <fileset dir="components" includes="**/build.xml" >
           <!--no cddlm here-->
@@ -390,9 +390,8 @@ For more information: www.smartfrog.org
       </ivy:buildlist>
     </presetdef>
     <ivy-projects reference="child.projects" />
-    <property name="child.projects.property" refid="child.projects" />
     <echo>The order to build the projects is
-      ${child.projects.property}
+      ${toString:child.projects}
     </echo>
     <!-- build them-->
     <presetdef name="ivy-delegate" description="Delegate the build">
@@ -434,7 +433,8 @@ For more information: www.smartfrog.org
 
   <target name="ivy-cddlm" depends="ivy-init">
     <ivy-projects reference="cddlm.projects" root="sf-deployapi">
-      <fileset dir="components/deployapi" includes="build.xml" />
+      <fileset file="components/deployapi/build.xml" />
+      <fileset file="extras/cdl/build.xml"/>
     </ivy-projects>
     <subant  target="published" verbose="true">
       <buildpath refid="cddlm.projects"/>
