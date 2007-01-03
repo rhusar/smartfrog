@@ -229,7 +229,7 @@ For more information: www.smartfrog.org
   <!-- incremental Cruise Control build                                    -->
   <!-- =================================================================== -->
        <target name="cc-incremental"
-        depends="svnupdate,dist,published"/>
+        depends="svnupdate,published,dist"/>
 
     <!-- =================================================================== -->
     <!-- Cruise control test suite                                           -->
@@ -248,7 +248,7 @@ For more information: www.smartfrog.org
   <!-- full clean Cruise Control build without Checkout                    -->
   <!-- =================================================================== -->
     <target name="cc"
-        depends="clean,release,dist,published,cc-test,mavenReportNoSVNUpdate"
+        depends="clean,published,release,dist,cc-test,mavenReportNoSVNUpdate"
         description="cruise control full build, with NO checkout"/>
 
   <!-- =================================================================== -->
