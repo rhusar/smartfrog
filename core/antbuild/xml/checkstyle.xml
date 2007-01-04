@@ -9,7 +9,7 @@
   <import file="core.xml"/>
 
 
-  <target name="checkstyle-init" depends="core.init-core">
+  <target name="checkstyle-init" depends="init-core">
 
     <typedef resource="checkstyletask.properties"
              uri="antlib:com.puppycrawl.checkstyle"

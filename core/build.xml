@@ -400,6 +400,10 @@ For more information: www.smartfrog.org
         <!--<property file="master.properties"/>-->
       </subant>
     </presetdef>
+    <!--  C:\Documents and Settings\slo\.ivy\local -->
+    <property name="ivy.user.dir" location="${user.home}/.ivy" />
+    <property name="ivy.local.dir" location="${ivy.user.dir}/local" />
+    <property name="ivy.cache.dir" location="${ivy.user.dir}/cache" />
   </target>
 
   <target name="ivy-publish" depends="ivy-init">
@@ -427,9 +431,23 @@ For more information: www.smartfrog.org
     </exec>
   </target>
 
-  <target name="ivy-clean" depends="ivy-init">
+  <target name="ivy-clean" depends="ivy-init"
+    description="pass clean down to all the ivy-managed projects">
     <ivy-delegate target="clean" />
   </target>
+
+  <target name="ivy-purge" depends="ivy-purge-published,ivy-purge-cache"
+    description="purge all locally published artifacts from the local repository">
+  </target>
+
+  <target name="ivy-purge-published" depends="ivy-init"
+    description="purge all locally published artifacts from the local repository">
+  </target>
+
+  <target name="ivy-purge-cache" depends="ivy-init"
+    description="purge all locally published artifacts from the local repository">
+  </target>
+
 
   <target name="ivy-cddlm" depends="ivy-init">
     <ivy-projects reference="cddlm.projects" root="sf-deployapi">

@@ -119,7 +119,7 @@
     This target is used to set up the standard output for builds and tests and things
    --> 
   <!-- ========================================================== -->
-  <target name="init-standard-output-dirs" depends="core.init-core">
+  <target name="init-standard-output-dirs" depends="init-core">
 
     <mkdir dir="${build.dir}" />    
     <mkdir dir="${build.classes.dir}" />    
@@ -143,7 +143,7 @@
     Override point: an init target that initially depends only 
     on init-core and init-standard-output-dirs
   -->
-  <target name="init" depends="core.init-core,core.init-standard-output-dirs"/>
+  <target name="init" depends="init-core,init-standard-output-dirs"/>
   
   
   <!-- ========================================================== -->
@@ -152,7 +152,7 @@
   <!-- changes with ant clean clean -->
   <!-- ========================================================== -->
   <target name="clean" description="clean up build and dist"
-      depends="core.init-core">
+      depends="init-core">
     <delete dir="${build.dir}" />    
     <delete dir="${dist.dir}"  />  
   </target>
@@ -166,7 +166,7 @@
    --> 
   <!-- ========================================================== -->
   
-  <target name="load-library-versions" depends="core.init-core">
+  <target name="load-library-versions" depends="init-core">
     <!-- per project, SVN managed override -->
     <property file="libraries.properties" />
     <!-- central SVN managed libraries list -->
@@ -197,7 +197,7 @@
   <!--
   logic to create a versioned jar name
   -->
-  <target name="artifact-names" depends="core.load-version-info">
+  <target name="artifact-names" depends="load-version-info">
     
     <!-- build the name of our JAR file from the name of the project.
       override any of this stuff for alternate naming -->
