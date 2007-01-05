@@ -413,6 +413,15 @@ For more information: www.smartfrog.org
 
   <target name="published" depends="ivy-publish"/>
 
+  <target name="ivy-list-order" depends="ivy-init"
+    xmlns:ivy="antlib:fr.jayasoft.ivy.ant">
+    <pathconvert pathsep="&#10;" refid="child.projects"
+      property="child.projects.list" />
+    <echo>
+${child.projects.list}
+    </echo>
+  </target>
+
 
   <target name="ivy-report" depends="ivy-init"
       xmlns:ivy="antlib:fr.jayasoft.ivy.ant">
