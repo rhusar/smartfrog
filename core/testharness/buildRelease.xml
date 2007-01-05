@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <!--
-/** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
+/** (C) Copyright 1998-2007 Hewlett-Packard Development Company, LP
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
@@ -43,9 +43,9 @@ To use: ant -f buildRelease release
     <tstamp/>
     <property name="Name.Testharness" value="SmartFrog Testharness"/>
     <property name="Name.System" value="testharness"/>
-    <property name="Name.Company" value="(C) Copyright 1998-2004 Hewlett-Packard Development Company, LP"/>
+    <property name="Name.Company" value="(C) Copyright 1998-2007 Hewlett-Packard Development Company, LP"/>
     <property name="version" value="3.02.002.beta"/>
-    <property name="year" value="2004"/>
+    <property name="year" value="2007"/>
 
     <property name="root.dir" location=".."  />
     

@@ -25,16 +25,6 @@ For more information: www.smartfrog.org
 
 <description>
      Build file for Jetty.
-     Important: set ${jetty.lib.dir} to point to the directory of jetty that 
-     contains the following files
-     org.mortbay.jetty.jar
-     org.mortbay.jmx.jar
-     jasper-compiler.jar
-     jasper-runtime.jar
-     javax-servlet.jar
-     
-     This is usually JETTY_HOME/lib and JETTY_HOME/ext in a source distribution.
-
      After deploying point your browser at http://localhost:8080 to see the web
      site.
 
