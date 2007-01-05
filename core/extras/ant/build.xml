@@ -13,14 +13,15 @@
   <!--<property name="ivy.enabled" value="true"/>-->
   <property name="javac.include.ant" value="true"/>
   <!-- Import common stuff -->
-  <import file="${root.dir}/common.xml"/>
+  <import file="../../common.xml"/>
+<!--  <import file="${root.dir}/common.xml"/>-->
 
   <!-- this is done so that the jarfile generated is bound to our project name with
     no -components suffix-->
   <property name="jarfile.suffix" value=""/>
     
   <target name="init" 
-    depends="init-common,verify-smartfrog,init-standard-output-dirs">
+    depends="init-common,init-standard-output-dirs">
     <property name="src.dir" location="src"/>
     <property name="target.name" value="${smartfrog.tasks.name}"/>
     <property name="target.jar" location="${smartfrog.tasks.jar}" />
@@ -261,9 +262,7 @@
 <!-- ==================================================================== -->
 <!-- end xdocs support -->
 <!-- ==================================================================== -->
-  
-<target name="dist" depends="package" 
-  description="Create a full distribution" />
+
 
   <!-- do all prework -->
 <target name="prepare-for-dist" depends="package">
