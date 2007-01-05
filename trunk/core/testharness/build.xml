@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
-<project name="testharness" default="test">
+<project name="testharness" default="default">
 
 <!--
-/** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
+/** (C) Copyright 1998-2007 Hewlett-Packard Development Company, LP
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
@@ -45,7 +45,8 @@ For more information: www.smartfrog.org
   The target "dist" creates a jar file in the dist/lib directory,
   that contains all the utility classes needed to deploy smartfrog
   programs as part of a unit test system. It is designed to be reusable
-  when testing other components.
+  when testing other components. The "published" target publishes this
+  to the ivy repository
 
 
 </description>
@@ -60,7 +61,12 @@ For more information: www.smartfrog.org
   <property name="root.dir" location=".."  />
 
   <!-- Import common stuff -->
-  <import file="../common.xml"/>
+  <import file="${root.dir}/common.xml"/>
+
+
+  <!--the default target publishes then runs the test. Why so?
+    so that even if the tests fail, downstream things can use the testharness-->
+  <target name="default" depends="published,test" />
 
   <!-- ========================================================== -->
   <!-- Test settings                                              -->
@@ -73,7 +79,6 @@ For more information: www.smartfrog.org
     <!-- load in our runtime properties too, so we can use presence/absence of
          values as a cue -->
     <property file="${runtime.properties}" prefix="runtime" />
-
     <property name="services" value="org/smartfrog/services/" />
     <property name="unittests" value="org/smartfrog/test/unit/" />
     <property name="systemtests" value="org/smartfrog/test/system/" />
@@ -259,47 +264,6 @@ For more information: www.smartfrog.org
     </sf-junit>
     </presetdef>
   </target>
-
-  <!-- ========================================================== -->
-  <!-- system tests are more complex than the unit tests as they need a
-       functional smartfrog daemon. We bring this up by
-       conditionally booting the daemon if one was not there already,
-       and shutting it down if we booted one up.
-       The daemon is started in a separate thread from the junit task, so that
-       it runs in the ant UI.
-       -->
-  <!-- ========================================================== -->
-  <target name="system-tests1"
-    depends="init-system-test-run, probe-local-daemon"
-    description="run system tests"
-    if="system.tests.enabled">
-    <parallel>
-
-      <!-- first thread runs the daemon -->
-      <sequential>
-        <antcall target="start-daemon-if-needed-with-logging"/>
-      </sequential>
-
-      <!-- this is the next thread -->
-      <sequential>
-
-        <!--
-          wait ten seconds for the harness to start
-          without this the first tests will fail as there is no
-          sf daemon around
-        -->
-        <sf-waitfordaemon maxwait="10" timeoutproperty="daemon.missing" />
-        <fail if="daemon.missing">No daemon, or daemon not responding at port ${smartfrog.daemon.port}</fail>
-        <!-- run the tests -->
-        <junit-system-test-run/>
-        <!-- conditionally stop the daemon -->
-        <antcall target="stop-daemon-if-started"/>
-        <!-- end the test thread -->
-      </sequential>
-    </parallel>
-  </target>
-
-
 
   <!-- =================================================================== -->
   <!-- system tests -->
