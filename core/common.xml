@@ -538,8 +538,7 @@
       <path refid="compile.classpath"/>
       <pathelement location="${build.classes.dir}"/>
     </path>
-    <property name="exec.classpath.value" refid="exec.classpath"/>
-    <echo level="verbose">exec.classpath=${exec.classpath.value}</echo>
+    <echo level="verbose">exec.classpath=${toString:exec.classpath}</echo>
   </target>
 
   <target name="declare-tests.compile.classpath"
@@ -549,26 +548,27 @@
       <pathelement location="${junit.jar}"/>
       <pathelement location="${testharness.jar}"/>
     </path>
-    <property name="tests.compile.classpath.value" refid="tests.compile.classpath"/>
-    <echo level="verbose">tests.compile.classpath=${tests.compile.classpath.value}</echo>
+    <echo level="verbose">tests.compile.classpath=${toString:tests.compile.classpath}</echo>
   </target>
 
-  <target name="declare-tests.run.classpath" depends="declare-tests.compile.classpath" unless="ivy.enabled">
+  <target name="declare-tests.run.classpath" depends="declare-tests.compile.classpath"
+      unless="ivy.enabled">
     <path id="tests.run.classpath">
       <path refid="tests.compile.classpath"/>
       <pathelement location="${test.classes.dir}"/>
     </path>
-    <property name="tests.run.classpath.value" refid="tests.run.classpath"/>
-    <echo level="verbose">tests.run.classpath=${tests.run.classpath.value}</echo>
+    <echo level="verbose">tests.run.classpath=${toString:tests.run.classpath}</echo>
   </target>
 
-  <target name="declare-run.classpath" depends="declare-tests.run.classpath" unless="ivy.enabled">
+  <target name="declare-run.classpath" depends="declare-tests.run.classpath"
+      unless="ivy.enabled">
     <path id="run.classpath">
       <path refid="tests.run.classpath"/>
     </path>
   </target>
 
-  <target name="declare-run.classpath-no-tests" depends="declare-exec.classpath" unless="ivy.enabled">
+  <target name="declare-run.classpath-no-tests" depends="declare-exec.classpath"
+      unless="ivy.enabled">
     <path id="run.classpath">
       <path refid="exec.classpath"/>
     </path>
@@ -579,19 +579,20 @@
     are defined-->
   <target name="declare-classpaths"
     depends=
-     "ivy-classpaths,declare-base.compile.classpath,declare-compile.classpath,declare-exec.classpath,declare-tests.compile.classpath,declare-tests.run.classpath,declare-tests.run.classpath,declare-run.classpath-no-tests,declare-run.classpath"/>
+     "ivy-classpaths,declare-base.compile.classpath,declare-compile.classpath,
+     declare-exec.classpath,declare-tests.compile.classpath,
+     declare-tests.run.classpath,declare-tests.run.classpath,
+     declare-run.classpath-no-tests,declare-run.classpath"/>
 
 
   <target name="ivy.compile.classpath" depends="maybe-ivy-resolve" if="ivy.enabled">
     <ivy:cachepath pathid="compile.classpath" conf="compile" />
-    <property name="compile.classpath.value" refid="compile.classpath"/>
-    <echo level="verbose">compile.classpath=${compile.classpath.value}</echo>
+    <echo level="verbose">compile.classpath=${toString:compile.classpath}</echo>
   </target>
 
   <target name="ivy.run.classpath" depends="maybe-ivy-resolve"  if="ivy.enabled">
     <ivy:cachepath pathid="run.classpath" conf="daemon" />
-    <property name="run.classpath.value" refid="run.classpath"/>
-    <echo level="verbose">daemon.classpath=${daemon.classpath.value}</echo>
+    <echo level="verbose">run.classpath=${toString:run.classpath}</echo>
   </target>
 
   <target name="ivy.exec.classpath" depends="ivy.compile.classpath"  if="ivy.enabled">
@@ -600,8 +601,7 @@
       <pathelement location="${target.jar}"/>
       <path refid="ivy.test.classpath"/>
     </path>
-    <property name="exec.classpath.value" refid="exec.classpath"/>
-    <echo level="verbose">exec.classpath=${exec.classpath.value}</echo>
+    <echo level="verbose">exec.classpath=${toString:exec.classpath}</echo>
   </target>
 
   <target name="ivy.tests.run.classpath" depends="ivy.exec.classpath"  if="ivy.enabled">
@@ -609,8 +609,7 @@
       <pathelement location="${test.jar}"/>
       <path refid="exec.classpath"/>
     </path>
-    <property name="tests.run.classpath.value" refid="tests.run.classpath"/>
-    <echo level="verbose">tests.run.classpath=${tests.run.classpath.value}</echo>
+    <echo level="verbose">tests.run.classpath=${toString:tests.run.classpath}</echo>
   </target>
 
   <target name="ivy-classpaths"
@@ -636,13 +635,13 @@
   <!-- and exit if they are not -->
   <!-- ========================================================== -->
 
-  <target name="assert-smartfrog"  depends="init-common"
+  <target name="assert-smartfrog"  depends="init-common,declare-classpaths"
     description="verify smartfrog is present, fail if not">
     <available
       classname="org.smartfrog.SFSystem"
       classpathref="smartfrog.classpath"
       property="sfSystem.present"/>
-    <property name="sfjars.fullpath" refid="smartfrog.classpath"/>
+    <property name="sfjars.fullpath" refid="run.classpath"/>
     <fail unless="sfSystem.present">
       Smartfrog entry point not found in
       ${sfjars.fullpath}

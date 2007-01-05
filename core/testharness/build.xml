@@ -60,16 +60,13 @@ For more information: www.smartfrog.org
   <property name="root.dir" location=".."  />
 
   <!-- Import common stuff -->
-  <import file="${root.dir}/common.xml"/>
-
-  <!-- pre-init overrides -->
-  <!--property name="jarfile.name" value="sf-testharness.jar"/-->
+  <import file="../common.xml"/>
 
   <!-- ========================================================== -->
   <!-- Test settings                                              -->
   <!-- ========================================================== -->
 
-  <target name="init" depends="init-common,init-standard-output-dirs,use-smartfrog-tasks">
+  <target name="init" depends="common.init,use-smartfrog-tasks">
 
     <property name="test.smartfrog.classesdir" location="${test.classes.dir}"/>
     
@@ -82,27 +79,14 @@ For more information: www.smartfrog.org
     <property name="systemtests" value="org/smartfrog/test/system/" />
     <property name="processtests" value="org/smartfrog/test/process/"/>
     <property name="componenttests" value="${systemtests}components/" />
-    
-    
   </target>
-
-  <!-- set up our compile classpath to include junit -->
-  
-<!--  <target name="declare-compile.classpath" depends="declare-base.compile.classpath,assert-junit" >
-    <path id="compile.classpath">
-      <path refid="base.compile.classpath"/>
-      <pathelement location="${junit.jar}"/>
-    </path>    
-  </target>
-  -->
 
   <!-- replace the normal test with a simple noop, because we will
       not have the test harness around in the early stages of the build -->
   <target name="assert-smartfrog-testharness" />
-  
-  <target name="compile-tests"
-      depends="package,declare-tests.compile.classpath,common.compile-tests"/>
-      
+
+  <target name="package-tests" depends="rmi-tests,common.package-tests"
+    description="create the JAR file for the tests"/>
 
   <!-- ========================================================== -->
   <!-- compile the RMI. This is separate from the other compile, so that unit
@@ -122,26 +106,39 @@ For more information: www.smartfrog.org
   <!-- and do not complain if it could not start (or execution timed out) -->
   <!-- ========================================================== -->
   <target name="start-daemon-if-needed-with-logging"
-    depends="use-smartfrog-tasks,probe-local-daemon,declare-extended-smartfrog-tasks,
-      declare-classpaths"
+    depends="use-smartfrog-tasks,probe-local-daemon,init-daemon-with-logging"
     unless="local.daemon.running">
-      <property name="config.dir"
-          location="${test.classes.dir}/org/smartfrog/test/configuration" />
-      <property name="smartfrog.iniFile"
-            location="${config.dir}/default.ini" />
-      <available file="${smartfrog.iniFile}" property="inifile.found"/>
-      <fail unless="inifile.found">No file:${smartfrog.iniFile}</fail> 
-      <sf-startdaemon-debug  failonerror="false" classpathref="run.classpath">
+    <start-logging-daemon/>
+  </target>
+
+
+  <!-- ========================================================== -->
+  <!-- define the presetdef to run the daemon all set up with the -->
+  <!-- right classpath. -->
+  <!-- ========================================================== -->
+  <target name="init-daemon-with-logging"
+    depends="declare-extended-smartfrog-tasks,declare-classpaths"
+    >
+    <property name="config.dir"
+      location="${test.classes.dir}/org/smartfrog/test/configuration" />
+    <property name="smartfrog.iniFile"
+      location="${config.dir}/default.ini" />
+    <available file="${smartfrog.iniFile}" property="inifile.found"/>
+    <fail unless="inifile.found">No file:${smartfrog.iniFile}</fail>
+    <presetdef name="start-logging-daemon">
+      <sf-startdaemon-debug  failonerror="false"
+          classpathref="tests.run.classpath">
         <sysproperty key="java.util.config.logging.config.file"
           file="${config.dir}/logging.properties" />
         <sysproperty key="org.smartfrog.iniFile"
-            file="${smartfrog.iniFile}" />
+          file="${smartfrog.iniFile}" />
         <sysproperty key="org.smartfrog.sfcore.processcompound.sfDefault.sfDefault"
           file="${config.dir}/default.sf" />
       </sf-startdaemon-debug>
+    </presetdef>
   </target>
 
-  
+
     <!-- ========================================================== -->
   <!-- look for the varous components so that we can make test 
   suites conditional on their presence/absence -->
@@ -154,11 +151,6 @@ For more information: www.smartfrog.org
 
     <probe4 resource="org/smartfrog/services/ant/components.sf" property="ant.present"/>
     <probe4 resource="org/smartfrog/services/email/emailer.sf" property="emailer.present"/>
-
-      <!--probe4 resource="org/smartfrog/services/logger/logger.sf"
-      property="logger.present"/-->
-    <probe4 resource="org/smartfrog/services/net/telnet.sf" property="net.present"/>
-
     <probe4 resource="org/smartfrog/services/scripting/scriptPrim.sf"
       property="scripting.present"/>    
     <probe4 resource="org/smartfrog/services/ssh/password.sf"
@@ -167,17 +159,10 @@ For more information: www.smartfrog.org
       property="slp.present"/> 
     <probe4 resource="org/smartfrog/services/installer/sfInstaller.sf"
       property="utils.present"/> 
-      <!--
-    <probe4 resource=""
-      property=""/> 
-    <probe4 resource=""
-      property=""/> 
-    <probe4 resource=""
-      property=""/>  -->
-      </target>
+  </target>
 
       
-  <target name="init-tests" depends="compile-tests">
+  <target name="init-tests" depends="package-tests">
     <!--A list of all tests that fail-->
     <!-- if you add a test here, file a bugrep against it in jira
       and refer to it in this list. That way we can track which tests
@@ -225,6 +210,56 @@ For more information: www.smartfrog.org
   </target>
   
 
+  <!-- refactoring of test run process-->
+  <target name="init-system-test-run" depends="init-tests,probe-for-components">
+    <presetdef name="junit-system-test-run" >
+    <sf-junit
+      errorProperty="test.failed"
+      failureProperty="test.failed"
+      >
+      <sysproperty key="test.smartfrog.classesdir"
+        value="${test.smartfrog.classesdir}" />
+      <syspropertyset >
+        <propertyref prefix="runtime"/>
+      </syspropertyset>
+      <classpath>
+        <path refid="tests.run.classpath"/>
+      </classpath>
+      <!-- #Test case isolation technique -->
+      <test todir="${test.data.dir}" name="${testcase}" if="testcase"/>
+      <batchtest todir="${test.data.dir}" unless="testcase" >
+        <!-- bulk test case -->
+        <fileset dir="${test.classes.dir}">
+          <!-- pull in everything -->
+          <include name="org/smartfrog/test/system/**/*Test.class" />
+
+          <!-- failing tests excluded unless run.failing.tests is set -->
+          <patternset refid="teststhatfail"/>
+
+          <!-- other conditional components -->
+          <exclude name="${componenttests}ssh/**/*Test.class"
+            unless="ssh.present"/>
+          <exclude name="${componenttests}scripting/**/*Test.class"
+            unless="scripting.present"/>
+          <exclude name="${componenttests}net/**/*Test.class"
+            unless="net.present"/>
+          <exclude name="${componenttests}logger/**/*Test.class"
+            unless="logger.present"/>
+          <exclude name="${componenttests}emailer/**/*Test.class"
+            unless="emailer.present"/>
+          <exclude name="${componenttests}ant/**/*Test.class"
+            unless="ant.present"/>
+          <exclude name="${componenttests}slp/**/*Test.class"
+            unless="slp.present"/>
+          <exclude name="${componenttests}utils/**/*Test.class"
+            unless="utils.present"/>
+
+        </fileset>
+      </batchtest>
+    </sf-junit>
+    </presetdef>
+  </target>
+
   <!-- ========================================================== -->
   <!-- system tests are more complex than the unit tests as they need a
        functional smartfrog daemon. We bring this up by
@@ -234,8 +269,8 @@ For more information: www.smartfrog.org
        it runs in the ant UI.
        -->
   <!-- ========================================================== -->
-  <target name="system-tests" 
-    depends="init-tests,rmi-tests,test-package,probe-for-components, probe-local-daemon"
+  <target name="system-tests1"
+    depends="init-system-test-run, probe-local-daemon"
     description="run system tests"
     if="system.tests.enabled">
     <parallel>
@@ -256,50 +291,7 @@ For more information: www.smartfrog.org
         <sf-waitfordaemon maxwait="10" timeoutproperty="daemon.missing" />
         <fail if="daemon.missing">No daemon, or daemon not responding at port ${smartfrog.daemon.port}</fail>
         <!-- run the tests -->
-        <sf-junit
-               errorProperty="test.failed"
-               failureProperty="test.failed"
-               >
-            <sysproperty key="test.smartfrog.classesdir"
-                value="${test.smartfrog.classesdir}" />
-            <syspropertyset >
-              <propertyref prefix="runtime"/>
-            </syspropertyset>                
-          <classpath>
-            <path refid="tests.run.classpath"/>
-          </classpath>
-          <!-- #Test case isolation technique -->
-          <test todir="${test.data.dir}" name="${testcase}" if="testcase"/>
-          <batchtest todir="${test.data.dir}" unless="testcase" >
-            <!-- bulk test case -->
-            <fileset dir="${test.classes.dir}">
-              <!-- pull in everything -->
-              <include name="org/smartfrog/test/system/**/*Test.class" />
-              
-              <!-- failing tests excluded unless run.failing.tests is set -->
-              <patternset refid="teststhatfail"/>
-              
-                <!-- other conditional components -->
-              <exclude name="${componenttests}ssh/**/*Test.class"
-                unless="ssh.present"/>
-              <exclude name="${componenttests}scripting/**/*Test.class"
-                unless="scripting.present"/>
-              <exclude name="${componenttests}net/**/*Test.class"
-                unless="net.present"/>
-              <exclude name="${componenttests}logger/**/*Test.class"
-                unless="logger.present"/>
-              <exclude name="${componenttests}emailer/**/*Test.class"
-      		      unless="emailer.present"/>
-	            <exclude name="${componenttests}ant/**/*Test.class"
-                unless="ant.present"/>
-              <exclude name="${componenttests}slp/**/*Test.class"
-                unless="slp.present"/>
-              <exclude name="${componenttests}utils/**/*Test.class"
-                unless="utils.present"/>
-
-            </fileset>
-          </batchtest>
-        </sf-junit>
+        <junit-system-test-run/>
         <!-- conditionally stop the daemon -->
         <antcall target="stop-daemon-if-started"/>
         <!-- end the test thread -->
@@ -309,24 +301,38 @@ For more information: www.smartfrog.org
 
 
 
-
-  <!-- ========================================================== -->
-  <!-- creates a jar and sticks it into the smartfrog dist library -->
-  <!-- this contains only the tests not the utility classes -->
-  <!-- ========================================================== -->
-  <target name="test-package" depends="compile-tests"
-    description="creates the jar file for the test cases">
-    <!-- Create sfTestCases.jar file -->
-    <property name="testcases.jar" value="sfTestCases-${Version}.jar"/>
-    <property name="testcases.jar.dist.dir"
-      location="${smartfrog.dist.lib.dir}"/>
-    <property name="testcases.jar.file"
-      location="${testcases.jar.dist.dir}/${testcases.jar}"/>
-    <jar jarfile="${testcases.jar.file}"
-         basedir="${test.classes.dir}"
-         includes="**/*" >
-    </jar>
+  <!-- =================================================================== -->
+  <!-- system tests -->
+  <!-- we don't force a failure in this target if the tests failed, because-->
+  <!-- there is existing code to run reports and halt-->
+  <!-- =================================================================== -->
+  <target name="system-tests" depends="common.system-tests,init-daemon-with-logging,
+    init-system-test-run"
+    description="run system tests"
+    if="system.tests.enabled">
+    <sf-functionaltest testTimeout="600" shutdownTime="60">
+      <application>
+        <!-- if the port is in use, this will fail to open the port-->
+        <!-- which is ok as we want to debug. but, the running daemon will-->
+        <!-- always be stopped afterwards-->
+        <start-logging-daemon spawn="false"/>
+      </application>
+      <probe>
+        <socket port="${smartfrog.daemon.port}" server="localhost"/>
+      </probe>
+      <test>
+        <junit-system-test-run/>
+        <!--<fail if="test.failed">Junit failed</fail>-->
+      </test>
+      <teardown>
+        <sf-stopdaemon failonerror="false"/>
+<!--
+        <sf-junitreport data="${test.data.dir}"
+          reports="${test.reports.dir}"
+          />
+-->
+      </teardown>
+    </sf-functionaltest>
   </target>
-
 
 </project>
