@@ -33,8 +33,6 @@ public class TestCompoundsTest extends DeployingTestBase {
 
     private static final String FILES = "org/smartfrog/test/system/assertions/testcompounds/";
 
-
-
     public TestCompoundsTest(String name) {
         super(name);
     }
