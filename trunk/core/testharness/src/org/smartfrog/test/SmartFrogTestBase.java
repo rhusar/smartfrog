@@ -258,7 +258,8 @@ public abstract class SmartFrogTestBase extends TestCase {
                     terminateApplication((Prim)deployedApp);
                 }
                 //then fail
-                fail("We expected an exception here:"+exceptionName
+                fail("We expected an exception here:"
+                        +(exceptionName!=null?exceptionName:"(anonymous)")
                      +" but got this deployment "+deployedApp.toString());
             }
          } catch (Exception fault) {
