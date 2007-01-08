@@ -2,25 +2,37 @@
 <project name="common" basedir="."
      xmlns:ivy="antlib:fr.jayasoft.ivy.ant"
     >
+  <!--
+  /** (C) Copyright Hewlett-Packard Development Company, LP
 
+  This library is free software; you can redistribute it and/or
+  modify it under the terms of the GNU Lesser General Public
+  License as published by the Free Software Foundation; either
+  version 2.1 of the License, or (at your option) any later version.
+
+  This library is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+  Lesser General Public License for more details.
+
+  You should have received a copy of the GNU Lesser General Public
+  License along with this library; if not, write to the Free Software
+  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+  For more information: www.smartfrog.org
+
+  */
+  -->
 <description>
-  This is not a standalone build file; nor is it an XML fragment for 
-  inclusion into other build files. It is a self contained build file
+  This is a build file
   for importing and overriding in subsidiary build files. 
-  
-    This build file is cutting-edge Ant1.6+ scalability at work. It is 
-    not going to run on older versions, and the documentation for what
-    is in use is still sparse. 
-    Best docs so far: http://otn.oracle.com/pub/articles/bodewig_ant1.6.html
-  
+
   When ant imports stuff into a project, the value of ".", the project
   directory is that of the importing project, not the imported. But it sets
   a property ant.file.PROJECTNAME to that of the directory of the imported 
   project, where PROJECTNAME is not the filename, but the name of the project
   in the XML declaration.
-  
-  
-  
+      
 </description>
 
 
@@ -617,6 +629,7 @@
 
 
 
+
   <!-- ========================================================== -->
   <!-- cleanup target -->
   <!-- This MUST work even if clean has already been run; test -->
@@ -991,7 +1004,7 @@
   <!-- compile everything, copy useful files over-->
   <!-- ========================================================== -->
   <target name="compile-tests"
-      depends="package,assert-smartfrog-testharness,declare-tests.compile.classpath">
+      depends="package,assert-smartfrog-testharness,declare-tests.compile.classpath,ivy.exec.classpath">
       <depend
           srcdir="${test.src.dir}"
           destdir="${test.classes.dir}"
@@ -1479,7 +1492,7 @@
     <ivy:configure file="${core.dir}/antbuild/ivy/ivyconf.xml"/>
   </target>
 
-  <target name="ivy-resolve" depends="maybe-ivy-resolve,declare-ivy"
+  <target name="ivy-resolve" depends="maybe-ivy-resolve,ivy-init"
           unless="ivy.enabled">
     <ivy:resolve />
   </target>
