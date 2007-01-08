@@ -53,26 +53,6 @@ public class TestCompoundsTest extends DeployingTestBase {
         return record;
     }
 
-    protected void assertRecordContains(TerminationRecord record,
-                                        String descriptionText,
-                                        String throwableClass,
-                                        String throwableText) {
-        if(descriptionText!=null) {
-            assertContains(record.description,descriptionText);
-        }
-        if(throwableClass !=null || throwableText !=null) {
-            if(record.cause!=null) {
-                assertFaultCauseAndTextContains(record.cause,
-                        throwableClass, throwableText, null);
-            } else {
-                fail("Expected Termination record "+record+" to contain "
-                +" a throwable "+(throwableClass!=null?throwableClass:"")
-                + (throwableText!=null?(" with text"+throwableText):""));
-            }
-
-        }
-    }
-
     public void testUnexpectedFailure() throws Throwable {
         TerminationRecord record = deployToAbnormalTermination("testUnexpectedFailure");
     }

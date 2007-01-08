@@ -349,14 +349,32 @@ public abstract class SmartFrogTestBase extends TestCase {
      * @param cfgDescMsg description (can be null)
      */
     public void assertThrowableNamed(Throwable thrown,String name, String cfgDescMsg) {
-        assertContains(thrown.getClass().getName(),name, cfgDescMsg, extractDiagnosticsInfo(thrown));
+        assertContains(thrown.getClass().getName(),
+                name, cfgDescMsg, recursiveDump(thrown));
     }
 
     /**
-     * extract as much info as we can from a throwable.
-     * @param thrown what was thrown
-     * @return a string describing the throwable; includes a stack trace
+     * Do a recursive dump of what is going wrong
+     * @param thrown
+     * @return
      */
+    private String recursiveDump(Throwable thrown) {
+        StringBuffer dump=new StringBuffer();
+        String info = extractDiagnosticsInfo(thrown);
+        dump.append(info);
+        Throwable nested = thrown.getCause();
+        if (nested != null && nested!=thrown) {
+            dump.append(recursiveDump(nested));
+        }
+        return dump.toString();
+    }
+
+
+    /**
+    * extract as much info as we can from a throwable.
+    * @param thrown what was thrown
+    * @return a string describing the throwable; includes a stack trace
+    */
     protected String extractDiagnosticsInfo(Throwable thrown) {
         StringBuffer buffer=new StringBuffer();
         thrown.getStackTrace();
@@ -378,9 +396,9 @@ public abstract class SmartFrogTestBase extends TestCase {
 
     /**
      * assert that a string contains a substring
-     * @param source
-     * @param substring
-     * @param cfgDescMsg
+     * @param source source to scan
+     * @param substring string to look for
+     * @param cfgDescMsg configuration description
      * @param extraText any extra text, can be null
      */
     public static void assertContains(String source, String substring, String cfgDescMsg,String extraText) {
@@ -395,6 +413,7 @@ public abstract class SmartFrogTestBase extends TestCase {
             if (extraText != null) {
                 System.out.println(extraText);
             }
+            //fail(message+ (extraText!=null?("\n"+extraText):""));
             fail(message);
         }
     }
@@ -402,8 +421,8 @@ public abstract class SmartFrogTestBase extends TestCase {
 
     /**
      * assert that a string contains a substring
-     * @param source
-     * @param substring
+     * @param source source to scan
+     * @param substring string to look for
      */
     public static void assertContains(String source, String substring) {
        assertContains(source,substring,"",null);

@@ -140,7 +140,7 @@ public class LibraryTest extends SmartFrogTestBase {
             file.delete();
         } catch(Throwable thrown) {
             //connection refused exceptions are a sign of being offline
-            assertFaultCauseAndTextContains(thrown,EXCEPTION_SMARTFROG, "connection refused",null);
+            assertFaultCauseAndTextContains(thrown,null, "onnection refused",null);
             System.out.println("No connection to the remote server; ignoring result");
             System.out.println(thrown);
         } finally {
@@ -171,7 +171,7 @@ public class LibraryTest extends SmartFrogTestBase {
                     EXCEPTION_SMARTFROG,
                     LibraryArtifactImpl.ERROR_CHECKSUM_FAILURE);
         } catch (AssertionFailedError thrown) {
-            assertFaultCauseAndTextContains(thrown, EXCEPTION_JUNIT_ASSERTION_FAILED, "connection refused", null);
+            assertFaultCauseAndTextContains(thrown, EXCEPTION_JUNIT_ASSERTION_FAILED, "onnection refused", null);
         }
     }
 }

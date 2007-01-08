@@ -283,7 +283,7 @@ For more information: www.smartfrog.org
     init-system-test-run"
     description="run system tests"
     if="system.tests.enabled">
-    <sf-functionaltest testTimeout="600" shutdownTime="60">
+    <sf-functionaltest testTimeout="600" shutdownTime="20">
       <application>
         <!-- if the port is in use, this will fail to open the port-->
         <!-- which is ok as we want to debug. but, the running daemon will-->
