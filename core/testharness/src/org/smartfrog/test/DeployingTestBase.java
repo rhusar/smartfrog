@@ -60,8 +60,9 @@ public abstract class DeployingTestBase extends SmartFrogTestBase {
      * Delay until a test has finished, sleeping (and yielding the CPU) until
      * that point is reached. There is no timeout.
      * @param testBlock component to spin on
+     * @param timeout how long to wait (in millis)
      * @return the termination record of the component
-     * @throws Throwable
+     * @throws Throwable if something went wrong
      */
     protected TerminationRecord spinUntilFinished(TestBlock testBlock, long timeout) throws Throwable {
         try {
@@ -93,5 +94,33 @@ public abstract class DeployingTestBase extends SmartFrogTestBase {
      */
     protected TerminationRecord spinUntilFinished(TestBlock testBlock) throws Throwable {
         return spinUntilFinished(testBlock,TIMEOUT);
+    }
+
+    /**
+     * Assert that a termination record contains the expected values.
+     * If either the throwableClass or throwableText attributes are non-null, then the record
+     * must contain a fault
+     * @param record termination record
+     * @param descriptionText text to look for in the description (optional; can be null)
+     * @param throwableClass fragment of the class name/package of the exception. (optional; can be null)
+     * @param throwableText text to look for in the fault text. (optional; can be null)
+     */
+    public void assertRecordContains(TerminationRecord record,
+                                        String descriptionText,
+                                        String throwableClass,
+                                        String throwableText) {
+        if(descriptionText!=null) {
+            assertContains(record.description,descriptionText);
+        }
+        if(throwableClass !=null || throwableText !=null) {
+            if(record.cause!=null) {
+                assertFaultCauseAndTextContains(record.cause,
+                        throwableClass, throwableText, null);
+            } else {
+                fail("Expected Termination record "+record+" to contain "
+                +" a throwable "+(throwableClass!=null?throwableClass:"")
+                + (throwableText!=null?(" with text"+throwableText):""));
+            }
+        }
     }
 }
