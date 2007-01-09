@@ -229,12 +229,12 @@ public class EventCompoundImpl extends CompoundImpl implements EventBus,
         if (regs!=null) {
             Context rcxt = regs.sfContext();
 
-            for (Enumeration e = rcxt.keys(); e.hasMoreElements();) {
-                Object k = e.nextElement();
-                Reference l = (Reference) rcxt.get(k);
-                EventRegistration s = (EventRegistration) sfResolve(l);
-                receiveFrom.addElement(s);
-                s.register(this);
+            for (Enumeration keys = rcxt.keys(); keys.hasMoreElements();) {
+                Object key = keys.nextElement();
+                Reference component = (Reference) rcxt.get(key);
+                EventRegistration event = (EventRegistration) sfResolve(component);
+                receiveFrom.addElement(event);
+                event.register(this);
             }
         }
 
