@@ -33,6 +33,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.net.URLConnection;
 import java.rmi.RemoteException;
 
 /**
@@ -42,6 +43,7 @@ public class DownloadImpl extends FileUsingComponentImpl implements Download {
     public static final String ERROR_IN_DOWNLOAD = "error in downloading of url ";
 
     Log log;
+    private static final String CACHE_CONTROL = "Cache-Control";
 
     /**
      * Constructor.
@@ -63,8 +65,6 @@ public class DownloadImpl extends FileUsingComponentImpl implements Download {
         log = sfGetApplicationLog();
         String url = "NOT YET SET";
         String localFile = "NOT YET SET";
-        boolean terminate = false;
-
         try {
             url = (String) sfResolve(ATTR_URL);
             localFile =
@@ -76,15 +76,14 @@ public class DownloadImpl extends FileUsingComponentImpl implements Download {
                             null);
 
             int blocksize = ((Integer) sfResolve(ATTR_BLOCKSIZE)).intValue();
-            terminate = sfResolve(ATTR_TERMINATE, terminate, true);
+            int maxCacheAge=-1;
+            maxCacheAge=sfResolve(ATTR_MAX_CACHE_AGE,maxCacheAge,false);
             if (sfLog().isInfoEnabled()){
                 sfLog().info(" Donwloading '"+url+"' to '"+localFile+"'. Blocksize: "+blocksize);
             }
             File file = new File(localFile);
-
             bind(file);
-
-            download(url, file, blocksize);
+            download(url, file, blocksize, maxCacheAge);
             if (sfLog().isInfoEnabled()){
                 sfLog().info(" Donwload complete. File in: "+ file);
             }
@@ -123,9 +122,10 @@ public class DownloadImpl extends FileUsingComponentImpl implements Download {
      * @param url url to download from
      * @param localFile local file name
      * @param blocksize  block size to download
+     * @param maxCacheAge the max time  (in seconds) that proxies should cache things. -1 = forever.
      * @throws IOException   for IO error
      */
-    public static void download(String url, File localFile, int blocksize)
+    public static void download(String url, File localFile, int blocksize, int maxCacheAge)
             throws IOException {
         // FileOutputStream object.
         FileOutputStream fs = null;
@@ -140,19 +140,19 @@ public class DownloadImpl extends FileUsingComponentImpl implements Download {
         try {
             // open the URL,
             URL endpoint=new URL(url);
-            is = endpoint.openStream();
+            URLConnection connection = endpoint.openConnection();
+            if(maxCacheAge>=0) {
+                connection.addRequestProperty(CACHE_CONTROL,Integer.toString(maxCacheAge));
+            }
+            is = connection.getInputStream();
+
 
             // open the file,
             fs = new FileOutputStream(localFile);
 
             // transfer the data
             do {
-//                if (sfLog().isTraceEnabled()){
-//                    sfLog().trace(" Donwloading a block. ");
-//                }
-
                 bytesRead = is.read(b, 0, blocksize);
-
                 if (bytesRead > 0) {
                     fs.write(b, 0, bytesRead);
                 }
