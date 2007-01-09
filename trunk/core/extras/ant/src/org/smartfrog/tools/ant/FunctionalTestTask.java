@@ -353,7 +353,7 @@ public class FunctionalTestTask extends Task {
             } finally {
                 //wake up our owner, if it is waiting
                 synchronized(this) {
-                    notify();
+                    notifyAll();
                 }
             }
 
