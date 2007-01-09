@@ -23,18 +23,18 @@
  * components for MySQL integration
  */
 
-#include "/org/smartfrog/services/database/core/components.sf";
-//#include "/org/smartfrog/services/os/java/components.sf";
-
-
+#include "/org/smartfrog/services/database/core/components.sf"
+#include "/org/smartfrog/services/os/java/library.sf"
 
 /**
- * HSQLDB is good for embedding and testing
+ * We don't redist MySQL as it has interesting license
+ * ramifications for non-OSS applications, though (LGPL) smartfrog
+ * is free to redist it and retain its license
+ * http://mysql.com
  */
 
 MySqlBinding extends DatabaseBinding {
   driver "com.mysql.jdbc.Driver";
-
 }
 
 /**
@@ -63,4 +63,16 @@ MySqlAdministrator extends MysqlTargetedBinding {
  */
 IsMySqlLive extends ConnectionOpens {
   sfClass "org.smartfrog.services.database.mysql.IsMysqlLive";
+}
+
+
+/**
+ * This is the definition for mysql 5. To use you need to instantiate the JAR component
+ * with the library attribute set to a relevant library
+ */
+mysql5.jar extends JarArtifact {
+    project "mysql";
+    artifact "mysql-connector-java";
+    version "5.0.4";
+    sha1 "ce259b62d08cce86a68a8f17f5f9c8218371b235";
 }
