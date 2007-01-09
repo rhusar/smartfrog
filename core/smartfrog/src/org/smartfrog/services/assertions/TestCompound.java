@@ -19,7 +19,6 @@
  */
 package org.smartfrog.services.assertions;
 
-import java.rmi.Remote;
 
 /**
  * created 22-Sep-2006 16:13:38
