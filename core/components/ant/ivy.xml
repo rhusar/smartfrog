@@ -50,14 +50,15 @@
         changing="true"
         rev="latest.integration"
         conf="test->default"/>
-    <dependency org="ant"
+    <dependency org="org.apache.ant"
         name="ant"
         changing="true"
         rev="${apache.ant.version}"
         conf="compile->default;redist->default"/>
-<!--    <dependency org="ant"
+    <dependency org="org.apache.ant"
         name="ant-optional"
-        rev="${ant.version}"
-        conf="runtime->default"/>-->
+        changing="true"
+        rev="${apache.ant.version}"
+        conf="compile->default;redist->default"/>
   </dependencies>
 </ivy-module>
