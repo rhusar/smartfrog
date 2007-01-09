@@ -32,7 +32,7 @@ JVMARGS=""
 CLASSARGS=""
 
 #sort cmd line args into JVMARGS or CLASSARGS.
-#JVMARGS are declared using -J token 
+#JVMARGS are declared using -J token
 #e.g. -J "-Djava.library.path=/libs -Xmx400M"
 #e.g. -J -Djava.library.path=/libs -J -Xmx400M
 while [ $# -ge 1 ]; do
@@ -58,11 +58,12 @@ done
 
 # For JMX remote agent add: -Dcom.sun.management.jmxremote 
 if test "$SFCODEBASE" && ! test "$SFSECURITY"; then
-        java $JVMARGS "$SFDEFAULTINI" "$SFDEFAULTSF" $SFRMIHOSTNAME "$SFCODEBASE" -Dorg.smartfrog.sfcore.processcompound.sfProcessName=rootProcess org.smartfrog.SFSystem $CLASSARGS
+        CMDLINE="java $JVMARGS $SFDEFAULTINI $SFDEFAULTSF $SFRMIHOSTNAME $SFCODEBASE -Dorg.smartfrog.sfcore.processcompound.sfProcessName=rootProcess org.smartfrog.SFSystem $CLASSARGS"
 elif test "$SFSECURITY" && ! test "$SFCODEBASE"; then
-        java $JVMARGS "$SFDEFAULTINI" "$SFDEFAULTSF" $SFRMIHOSTNAME $SFSECURITY -Dorg.smartfrog.sfcore.processcompound.sfProcessName=rootProcess org.smartfrog.SFSystem $CLASSARGS
+        CMDLINE="java $JVMARGS $SFDEFAULTINI $SFDEFAULTSF $SFRMIHOSTNAME $SFSECURITY -Dorg.smartfrog.sfcore.processcompound.sfProcessName=rootProcess org.smartfrog.SFSystem $CLASSARGS"
 elif test "$SFCODEBASE" && test "$SFSECURITY"; then
-        java $JVMARGS "$SFDEFAULTINI" "$SFDEFAULTSF" $SFRMIHOSTNAME "$SFCODEBASE" $SFSECURITY -Dorg.smartfrog.sfcore.processcompound.sfProcessName=rootProcess org.smartfrog.SFSystem $CLASSARGS
+        CMDLINE="java $JVMARGS $SFDEFAULTINI $SFDEFAULTSF $SFRMIHOSTNAME $SFCODEBASE $SFSECURITY -Dorg.smartfrog.sfcore.processcompound.sfProcessName=rootProcess org.smartfrog.SFSystem $CLASSARGS"
 else
-    java $JVMARGS "$SFDEFAULTINI" "$SFDEFAULTSF" $SFRMIHOSTNAME -Dorg.smartfrog.sfcore.processcompound.sfProcessName=rootProcess org.smartfrog.SFSystem $CLASSARGS
+    CMDLINE="java $JVMARGS $SFDEFAULTINI $SFDEFAULTSF $SFRMIHOSTNAME -Dorg.smartfrog.sfcore.processcompound.sfProcessName=rootProcess org.smartfrog.SFSystem $CLASSARGS"
 fi
+$CMDLINE
