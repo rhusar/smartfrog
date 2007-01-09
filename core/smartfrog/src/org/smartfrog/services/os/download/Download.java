@@ -31,5 +31,6 @@ public interface Download extends Remote{
     String ATTR_BLOCKSIZE = "blocksize";
     String ATTR_URL = "url";
     String ATTR_TERMINATE = "shouldTerminate";
+    String ATTR_MAX_CACHE_AGE ="maxCacheAge";
 
 }

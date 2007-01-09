@@ -49,11 +49,18 @@ DownloadComponent extends WorkflowPrim {
          * terminate after downloading
          */
         sfShouldTerminate extends Boolean;
+
         shouldTerminate extends Boolean;
+
+        maxCacheAge extends Integer {
+            description "max time in seconds for caching. -1 means don't check";
+        }
     }
     sfClass "org.smartfrog.services.os.download.DownloadImpl";
     blocksize 1024;
-    //real termination attribute. shouldTerminate is kept for legazy reasons
+    //cache for an hour
+    maxCacheAge 6000;
+    //real termination attribute. shouldTerminate is kept for legacy reasons
     sfShouldTerminate shouldTerminate;
     shouldTerminate false;
     deleteOnExit false;

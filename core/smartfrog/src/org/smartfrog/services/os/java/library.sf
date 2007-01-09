@@ -138,10 +138,9 @@ Maven1Library extends Library {
 
 
     /**
-     * Maven repository at ibiblio.org. Really we should permit mirrors; or include
-     * the mirror list for easy selection.
+     * Maven repository at ibiblio.org.
      */
-    repositories [| "http://ibiblio.org/maven" |];
+    repositories [| "http://mirrors.ibiblio.org/maven" |];
 
     //cache into the well known maven location
     cacheDir LAZY MavenLocalCacheDirectory:absolutePath;
@@ -184,7 +183,7 @@ Maven2Library extends Library {
      * Maven2 repository at ibiblio.org. Really we should permit mirrors; or include
      * the mirror list for easy selection.
      */
-    repositories [| "http://ibiblio.org/maven2" |];
+    repositories [| "http://mirrors.ibiblio.org/maven2" |];
 
     //cache into the well known maven location
     cacheDir LAZY localCacheDirectory:absolutePath;
@@ -227,11 +226,16 @@ LibraryArtifact extends FileUsingWorkflowComponent {
        // it is taken as a filepath.
         copyTo extends FilenameType;
 
-        //flag for o
+        //flag for download polocies
         downloadIfAbsent extends Boolean;
         downloadAlways extends Boolean;
         failIfNotPresent extends Boolean;
+        //place to copy to after the download.
         copyTo extends OptionalString;
+
+        maxCacheAge extends Integer {
+            description "max time in seconds for caching. -1 means don't check";
+        }
     }
     artifact ATTRIB project;
 
@@ -240,6 +244,10 @@ LibraryArtifact extends FileUsingWorkflowComponent {
     sha1 "";
     //block size
     blocksize 8192;
+
+    //if we do a download, we want it and not some dated version. A limit of ten minutes lets
+    //clients in a cluster share some workload.
+    maxCacheAge = "600";
 
     //dont download if it is present
     downloadAlways false;
@@ -257,6 +265,14 @@ LibraryArtifact extends FileUsingWorkflowComponent {
  */
 JarArtifact extends LibraryArtifact {
     extension "jar";
+}
+
+/**
+ * set the parameters to always download an artifact
+ */
+ForcedDownloadArtifact extends LibraryArtifact {
+    downloadAlways true;
+    maxCacheAge = 0;
 }
 
 /**

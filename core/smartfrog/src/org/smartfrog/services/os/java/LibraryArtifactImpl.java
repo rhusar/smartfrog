@@ -23,6 +23,7 @@ import org.smartfrog.services.filesystem.FileIntf;
 import org.smartfrog.services.filesystem.FileSystem;
 import org.smartfrog.services.filesystem.FileUsingCompoundImpl;
 import org.smartfrog.services.os.download.DownloadImpl;
+import org.smartfrog.services.os.download.Download;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
@@ -96,6 +97,7 @@ public class LibraryArtifactImpl extends FileUsingCompoundImpl
     public static final String ERROR_ARTIFACT_NOT_FOUND = "Artifact not found at ";
 
     private volatile Thread thread;
+    private int maxCacheAge= 600000;
 
     public LibraryArtifactImpl() throws RemoteException {
     }
@@ -137,7 +139,8 @@ public class LibraryArtifactImpl extends FileUsingCompoundImpl
                 failIfNotPresent,
                 true);
         classifier = sfResolve(ATTR_CLASSIFIER, classifier, false);
-        copyTo = FileSystem.lookupAbsoluteFile(this,ATTR_COPYTO,null,null,false,null); 
+        copyTo = FileSystem.lookupAbsoluteFile(this,ATTR_COPYTO,null,null,false,null);
+        maxCacheAge = sfResolve(Download.ATTR_MAX_CACHE_AGE, maxCacheAge, false);
 
         //all info is fetched. So work out our filename and URL.
         //we do this through methods for override points
@@ -341,7 +344,8 @@ public class LibraryArtifactImpl extends FileUsingCompoundImpl
         log.info("Trying to download from " + url);
 
         try {
-            DownloadImpl.download(url, getFile(), blocksize);
+
+            DownloadImpl.download(url, getFile(), blocksize, maxCacheAge);
             return null;
         } catch (MalformedURLException e) {
             throw SmartFrogException.forward(url, e);
