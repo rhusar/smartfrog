@@ -37,7 +37,7 @@
       name="smartfrog"
       changing="true"
       rev="latest.integration"
-      conf="compile,runtime->core;test->services"/>
+      conf="compile,runtime->core;test->examples"/>
    <dependency org="org.apache.ant"
         name="ant-testutil"
         rev="${ant-testutil.version}"
