@@ -26,7 +26,7 @@ For more information: www.smartfrog.org
   */
 #include "/org/smartfrog/components.sf"
 #include "/org/smartfrog/predicates.sf"
-#include "org/smartfrog/services/filesystem/filesystemtemplate.sf"
+#include "/org/smartfrog/services/filesystem/filesystemtemplate.sf"
 
 /*
  * This is the binding to a database.
@@ -70,16 +70,6 @@ DatabaseBinding extends Prim {
 
 
 
-/**
- * We don't redist MySQL as it has interesting license
- * ramifications for non-OSS applications, though (LGPL) smartfrog
- * is free to redist it and retain its license
- * http://mysql.com
- */
-
-MySqlBinding extends DatabaseBinding {
-  driver "com.mysql.jdbc.Driver";
-}
 
 
 

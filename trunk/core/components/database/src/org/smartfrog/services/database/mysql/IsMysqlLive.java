@@ -70,11 +70,13 @@ public class IsMysqlLive extends ConnectionOpenCondition implements Condition {
             return true;
         } catch (NoSuchMethodException e) {
             throw new SmartFrogException("Connection " + connection + "  of type " +clazz
-                +" does not have a method called ping()");
+                +" does not have a method called ping()",e);
         } catch (IllegalAccessException e) {
             throw new SmartFrogException("Connection " + connection + "  of type " + clazz
-                    + " does allow access to the ping() method");
+                    + " does allow access to the ping() method",e);
         } catch (InvocationTargetException e) {
+            //something went wrong with the Ping operation. log it, and return false
+            //as the database connection is clearly not working.
             getLog().debug("When pinging ", e.getCause());
             return false;
         }

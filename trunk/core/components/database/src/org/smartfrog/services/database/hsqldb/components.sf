@@ -26,7 +26,7 @@
 
 #include "/org/smartfrog/services/database/core/components.sf";
 #include "/org/smartfrog/services/os/java/components.sf";
-
+#include "/org/smartfrog/services/os/java/library.sf"
 
 
 /*
@@ -194,8 +194,17 @@ HsqldbWebServerProcess extends Java {
 
 
 /**
- * HSQLDB is good for embedding and testing
+ * The JDBC driver is the database for hsql
  */
+
+
+hsqldb.jar extends JarArtifact {
+    project "hsqldb";
+    artifact "hsqldb";
+    version "1.8.0.7";
+    sha1 "20554954120b3cc9f08804524ec90113a73f3015";
+}
+
 
 HsqldbBinding extends DatabaseBinding {
   driver "org.hsqldb.jdbcDriver";
