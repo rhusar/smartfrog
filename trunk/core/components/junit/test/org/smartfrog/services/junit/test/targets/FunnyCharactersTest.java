@@ -26,6 +26,12 @@ import junit.framework.TestCase;
  */
 public class FunnyCharactersTest extends TestCase {
 
+
+    /** Constructs a test case with the given name. */
+    public FunnyCharactersTest(String name) {
+        super(name);
+    }
+
     public void testAmpersand() {
         fail("[&]");
     }

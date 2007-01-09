@@ -86,51 +86,56 @@ MostTests extends TestBase {
         FailureTest:classes,
         SuccessTest:classes,
         SetupTearDownTests:classes,
+        BadClassnameTest:classes,
         "ThrowingTest",
         "FunnyCharactersTest",
         "OutputTest"];
 }
 
 /**
+ * test that arbitrary exceptions are processed
+ */
+NamedTest extends TestBase {
+    name TBD;
+    classes [name];
+}
+
+
+/**
  * system exit handling
  */
-SystemExitTest extends TestBase {
+SystemExitTest extends NamedTest {
     name "SystemExitTest";
-    classes ["SystemExitTest"];
 }
 
 
 /**
  * test failure
  */
-FailureTest extends TestBase {
+FailureTest extends NamedTest {
     name "FailureTest";
-    classes ["FailureTest"];
 }
 
 
 /**
  * test that arbitrary exceptions are processed
  */
-ThrowingTest extends TestBase {
+ThrowingTest extends NamedTest {
     name "ThrowingTest";
-    classes [name];
 }
 
 /**
  * test success
  */
-SuccessTest extends TestBase {
+SuccessTest extends NamedTest {
     name "SuccessTest";
-    classes [name];
 }
 
 /**
  * test success
  */
-SyspropsTest extends TestBase {
+SyspropsTest extends NamedTest {
     name "SyspropsTest";
-    classes [name];
 }
 
 /**
@@ -141,3 +146,14 @@ SetupTearDownTests extends TestBase {
     classes ["ErrorInSetupTest",
         "ErrorInTeardownTest"];
 }
+
+
+
+/**
+ * This is a classname that we dont know of
+ */
+BadClassnameTest extends NamedTest {
+    name "BadClassnameTest";
+}
+
+

@@ -29,6 +29,7 @@ import junit.framework.TestCase;
  */
 public class SuccessTest extends TestCase {
 
+    
     public SuccessTest(String s) {
         super(s);
     }

@@ -35,9 +35,9 @@ loadJunitClasses extends LoadClass {
   classes [
     "junit.framework.TestResult",
     "org.smartfrog.services.junit.JUnitTestSuiteImpl",
-    "org.smartfrog.services.junit.data.ThrowableTraceInfo",
-    "org.smartfrog.services.junit.log.TestListenerLogImpl",
-    "org.smartfrog.services.junit.TestRunnerComponent"
+    "org.smartfrog.services.xunit.serial.ThrowableTraceInfo",
+    "org.smartfrog.services.xunit.log.TestListenerLogImpl",
+    "org.smartfrog.services.xunit.base.TestRunnerComponent"
   ];
 }
 

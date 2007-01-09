@@ -29,11 +29,17 @@ import junit.framework.TestCase;
 public class ErrorInTeardownTest extends TestCase {
 
 
+    /** Constructs a test case with the given name. */
+    public ErrorInTeardownTest(String name) {
+        super(name);
+    }
+
     /**
      * Tears down the fixture, for example, close a network connection. This
      * method is called after a test is executed.
      */
     protected void tearDown() throws Exception {
+        super.tearDown();
         throw new IllegalArgumentException("tearDown()");
     }
 

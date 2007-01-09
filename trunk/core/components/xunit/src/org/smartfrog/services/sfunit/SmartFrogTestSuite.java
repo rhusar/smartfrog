@@ -1,4 +1,4 @@
-/** (C) Copyright 2004 Hewlett-Packard Development Company, LP
+/** (C) Copyright 2006 Hewlett-Packard Development Company, LP
 
  This library is free software; you can redistribute it and/or
  modify it under the terms of the GNU Lesser General Public
@@ -17,28 +17,20 @@
  For more information: www.smartfrog.org
 
  */
+package org.smartfrog.services.sfunit;
 
-package org.smartfrog.services.junit.test.targets;
-
-import junit.framework.TestCase;
+import org.smartfrog.services.assertions.TestCompound;
+import org.smartfrog.services.xunit.base.TestSuite;
 
 /**
- * Test system.out, system.err output
+ * created 09-Jan-2007 14:48:15
  */
-public class OutputTest extends TestCase {
 
 
-    /** Constructs a test case with the given name. */
-    public OutputTest(String name) {
-        super(name);
-    }
+public interface SmartFrogTestSuite extends TestCompound, TestSuite {
 
-    public void testOut() {
-        System.out.println("printing to System.out");
-    }
-
-    public void testErr() {
-        System.out.println("printing to System.err");
-    }
-
+    /**
+     * flag to request parallel deployments
+     */
+    String ATTR_PARALLEL="parallel";
 }

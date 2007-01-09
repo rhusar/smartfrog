@@ -19,16 +19,15 @@
  */
 package org.smartfrog.services.junit.test.unit;
 
-import junit.framework.TestCase;
 import org.smartfrog.services.xunit.base.TestListener;
-import org.smartfrog.services.xunit.serial.TestInfo;
 import org.smartfrog.services.xunit.listeners.ConsoleListenerComponent;
+import org.smartfrog.services.xunit.serial.TestInfo;
 
 import java.io.PrintStream;
 import java.rmi.RemoteException;
 
 /**
- * created Nov 22, 2004 4:16:27 PM
+ * test that the console listener works
  */
 
 public class ConsoleListenerTest extends AbstractTestInfoTestBase {

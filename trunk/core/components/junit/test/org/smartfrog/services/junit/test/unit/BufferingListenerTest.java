@@ -19,12 +19,10 @@
  */
 package org.smartfrog.services.junit.test.unit;
 
-import junit.framework.TestCase;
 import org.smartfrog.services.xunit.base.TestListener;
-import org.smartfrog.services.xunit.serial.TestInfo;
 import org.smartfrog.services.xunit.listeners.BufferingListener;
 import org.smartfrog.services.xunit.listeners.BufferingListenerComponent;
-import org.smartfrog.services.junit.junit3.JUnit3TestSuiteImpl;
+import org.smartfrog.services.xunit.serial.TestInfo;
 
 import java.rmi.RemoteException;
 

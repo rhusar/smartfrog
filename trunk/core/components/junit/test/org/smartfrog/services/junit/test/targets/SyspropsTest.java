@@ -26,8 +26,7 @@ import junit.framework.TestCase;
  
  */
 public class SyspropsTest extends TestCase {
-    
-    
+
     public void assertPropertySet(String key,String expected) {
         String prop=System.getProperty(key);
         assertNotNull("unset property "+key,prop);

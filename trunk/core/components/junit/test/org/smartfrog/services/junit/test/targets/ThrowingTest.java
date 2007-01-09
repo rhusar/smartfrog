@@ -29,6 +29,14 @@ import junit.framework.TestCase;
  */
 public class ThrowingTest extends TestCase {
 
+
+    /**
+     * No-arg constructor to enable serialization. This method is not intended to be used by mere mortals without
+     * calling setName().
+     */
+    public ThrowingTest() {
+    }
+
     public ThrowingTest(String s) {
         super(s);
     }

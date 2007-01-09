@@ -20,9 +20,9 @@
 package org.smartfrog.services.junit.test.system;
 
 import org.smartfrog.services.xunit.base.TestRunner;
-import org.smartfrog.services.xunit.serial.Statistics;
 import org.smartfrog.services.xunit.listeners.xml.XmlListener;
 import org.smartfrog.services.xunit.listeners.xml.XmlListenerFactory;
+import org.smartfrog.services.xunit.serial.Statistics;
 import org.smartfrog.sfcore.prim.Prim;
 
 import java.io.File;

@@ -21,7 +21,6 @@ package org.smartfrog.services.junit.test.unit;
 
 import junit.framework.TestCase;
 import org.smartfrog.services.xunit.serial.TestInfo;
-import org.smartfrog.services.junit.junit3.JUnit3TestSuiteImpl;
 
 /**
  * created 08-Jan-2007 15:48:06
@@ -30,6 +29,9 @@ import org.smartfrog.services.junit.junit3.JUnit3TestSuiteImpl;
 public abstract class AbstractTestInfoTestBase extends TestCase {
 
     protected TestInfo createTestInfo() {
-        return JUnit3TestSuiteImpl.createTestInfo(this);
+        TestInfo testInfo = new TestInfo(null);
+        testInfo.setClassname(getClass().getName());
+        testInfo.setText(getName());
+        return testInfo;
     }
 }

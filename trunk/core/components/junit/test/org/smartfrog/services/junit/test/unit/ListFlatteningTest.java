@@ -25,7 +25,6 @@ import org.smartfrog.sfcore.common.SmartFrogInitException;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Iterator;
 
 /**
  * created Nov 23, 2004 11:33:33 AM
