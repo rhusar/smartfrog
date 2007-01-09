@@ -17,37 +17,19 @@
  For more information: www.smartfrog.org
 
  */
-package org.smartfrog.services.junit.log;
+package org.smartfrog.services.junit.test.unit;
 
-import org.smartfrog.services.junit.data.LogEntry;
-
-import java.rmi.RemoteException;
-import java.util.ArrayList;
-import java.util.List;
+import junit.framework.TestCase;
+import org.smartfrog.services.xunit.serial.TestInfo;
+import org.smartfrog.services.junit.junit3.JUnit3TestSuiteImpl;
 
 /**
- * This is a component that can listen to log events.
- * It declares that all levels are active (which they are), and saves all
- * logged events to buffers for later examination.
- * created 27-Apr-2006 12:53:07
+ * created 08-Jan-2007 15:48:06
  */
 
-public class TestLogImpl extends AbstractTestLog implements TestLog {
+public abstract class AbstractTestInfoTestBase extends TestCase {
 
-
-    private List<LogEntry> logEntries = new ArrayList();
-
-
-    public TestLogImpl() throws RemoteException {
+    protected TestInfo createTestInfo() {
+        return JUnit3TestSuiteImpl.createTestInfo(this);
     }
-
-    /**
-     * Add an entry to the buffer
-     *
-     * @param entry
-     */
-    public void log(LogEntry entry) {
-        logEntries.add(entry);
-    }
-
 }

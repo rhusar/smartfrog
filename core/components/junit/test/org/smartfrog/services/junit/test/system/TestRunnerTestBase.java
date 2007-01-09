@@ -21,8 +21,8 @@
 
 package org.smartfrog.services.junit.test.system;
 
-import org.smartfrog.services.junit.TestRunner;
-import org.smartfrog.services.junit.data.Statistics;
+import org.smartfrog.services.xunit.base.TestRunner;
+import org.smartfrog.services.xunit.serial.Statistics;
 import org.smartfrog.test.SmartFrogTestBase;
 import org.smartfrog.test.TestHelper;
 import org.w3c.dom.Document;
@@ -102,7 +102,7 @@ public abstract class TestRunnerTestBase extends SmartFrogTestBase {
 
     /**
      * assert that statistics entries are equal, fail if not.
-     * Uses {@link Statistics#isEqual(org.smartfrog.services.junit.data.Statistics)}
+     * Uses {@link org.smartfrog.services.xunit.serial.Statistics#isEqual(org.smartfrog.services.xunit.serial.Statistics)}
      * for the comparison.
      * @param text text to prepand to all messages
      * @param s1 first set of stats, must not be null

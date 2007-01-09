@@ -38,7 +38,7 @@
 
   <property name="root.dir" location="../.."/>
   <!-- Import common stuff -->
-  <import file="${root.dir}/common.xml"/>
+  <import file="../../common.xml"/>
   
   
   <!-- ========================================================== -->
@@ -103,16 +103,15 @@
   <!-- ========================================================== -->
   <!-- set-->
   <!-- ========================================================== -->
-  <target name="init-codebase" depends="init-deploy-properties"
+  <target name="init-codebase" depends="init-deploy-properties,declare-classpaths,package-tests"
     description="deploy">
     <sf-tourl property="codebase">
-      <fileset file="${target.jar}"/>
-      <fileset file="${test.jar}"/>
-      <fileset file="${junit.jar}"/>
+      <path refid="tests.run.classpath" />
     </sf-tourl>
     <echo>
-        deploying to ${deploy.host}
-        codebase=${codebase}</echo>
+deploying to ${deploy.host}
+codebase=${codebase}
+    </echo>
   </target>
   <!-- ========================================================== -->
   <!-- deploy; requires a host -->
