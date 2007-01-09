@@ -27,11 +27,18 @@ import junit.framework.TestCase;
 
 public class ErrorInSetupTest extends TestCase {
 
+
+    /** Constructs a test case with the given name. */
+    public ErrorInSetupTest(String name) {
+        super(name);
+    }
+
     /**
      * Sets up the fixture, for example, open a network connection. This method
      * is called before a test is executed.
      */
     protected void setUp() throws Exception {
+        super.setUp();
         throw new IllegalArgumentException("fail in setUp()");
     }
 

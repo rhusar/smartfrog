@@ -2,11 +2,11 @@ package org.smartfrog.services.junit.test.system;
 
 import org.smartfrog.services.xunit.base.TestListener;
 import org.smartfrog.services.xunit.base.TestRunner;
-import org.smartfrog.services.xunit.serial.Statistics;
-import org.smartfrog.services.xunit.log.TestListenerLog;
 import org.smartfrog.services.xunit.listeners.BufferingListener;
 import org.smartfrog.services.xunit.listeners.BufferingListenerComponent;
 import org.smartfrog.services.xunit.listeners.StatisticsTestListener;
+import org.smartfrog.services.xunit.log.TestListenerLog;
+import org.smartfrog.services.xunit.serial.Statistics;
 import org.smartfrog.sfcore.prim.Prim;
 
 /**

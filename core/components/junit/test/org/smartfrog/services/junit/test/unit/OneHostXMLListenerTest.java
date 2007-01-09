@@ -20,13 +20,13 @@
 package org.smartfrog.services.junit.test.unit;
 
 import org.smartfrog.services.junit.test.system.TestRunnerTestBase;
-import org.smartfrog.services.junit.junit3.JUnit3TestSuiteImpl;
-import org.smartfrog.services.xunit.serial.TestInfo;
 import org.smartfrog.services.xunit.listeners.html.OneHostXMLListener;
+import org.smartfrog.services.xunit.serial.TestInfo;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.Date;
+
 
 /**
  * Test the {@link OneHostXMLListener} class, that is not itself a smartfrog
@@ -42,11 +42,18 @@ public class OneHostXMLListenerTest extends TestRunnerTestBase {
 
     private File tempdir;
 
+    protected TestInfo createTestInfo() {
+        TestInfo testInfo = new TestInfo(null);
+        testInfo.setClassname(getClass().getName());
+        testInfo.setText(getName());
+        return testInfo;
+    }
     /**
      * Sets up the fixture, for example, open a network connection. This method
      * is called before a test is executed.
      */
     protected void setUp() throws Exception {
+        super.setUp();
         tempdir = new File(System.getProperty("java.io.tmpdir"), "junit");
     }
 
@@ -54,7 +61,7 @@ public class OneHostXMLListenerTest extends TestRunnerTestBase {
         File file = new File(tempdir, "testSimple.xml");
         OneHostXMLListener listener = createListener(file, "simple");
         assertTrue("listener is not open", listener.isOpen());
-        TestInfo ti = JUnit3TestSuiteImpl.createTestInfo(this);
+        TestInfo ti = createTestInfo();
         ti.markStartTime();
         listener.startTest(ti);
         assertTrue("listener is not open", listener.isOpen());
@@ -72,20 +79,22 @@ public class OneHostXMLListenerTest extends TestRunnerTestBase {
         OneHostXMLListener listener = createListener(file, "simple");
         assertTrue("listener is not open", listener.isOpen());
         assertTrue("listener is not happy", listener.isHappy());
-        TestInfo ti = JUnit3TestSuiteImpl.createTestInfo(this);
-        listener.startTest(ti);
+        TestInfo testInfo = createTestInfo();
+        listener.startTest(testInfo);
         assertTrue("listener is not open", listener.isOpen());
         Throwable t = new RuntimeException("oops", new Throwable("ne&>sted"));
-        ti.addFaultInfo(t);
-        listener.addError(ti);
+        testInfo.addFaultInfo(t);
+        listener.addError(testInfo);
         assertTrue("listener is not open", listener.isOpen());
-        ti.markEndTime();
-        listener.endTest(ti);
+        testInfo.markEndTime();
+        listener.endTest(testInfo);
         listener.endSuite();
         assertFalse("listener is not closed", listener.isOpen());
 
         validateXmlLog(file);
     }
+
+
 
     public OneHostXMLListener createListener(File file, String suite)
             throws IOException {
