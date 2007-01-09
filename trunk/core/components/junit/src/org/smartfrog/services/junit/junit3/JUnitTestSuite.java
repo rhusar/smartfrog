@@ -19,7 +19,7 @@
  */
 package org.smartfrog.services.junit.junit3;
 
-import org.smartfrog.services.junit.PackagedTestSuite;
+import org.smartfrog.services.xunit.base.PackagedTestSuite;
 
 /**
  * This is the junit specific test suite interface

@@ -20,8 +20,9 @@
 package org.smartfrog.services.junit.test.unit;
 
 import org.smartfrog.services.junit.test.system.TestRunnerTestBase;
-import org.smartfrog.services.junit.data.TestInfo;
-import org.smartfrog.services.junit.listeners.html.OneHostXMLListener;
+import org.smartfrog.services.junit.junit3.JUnit3TestSuiteImpl;
+import org.smartfrog.services.xunit.serial.TestInfo;
+import org.smartfrog.services.xunit.listeners.html.OneHostXMLListener;
 
 import java.io.File;
 import java.io.IOException;
@@ -53,7 +54,7 @@ public class OneHostXMLListenerTest extends TestRunnerTestBase {
         File file = new File(tempdir, "testSimple.xml");
         OneHostXMLListener listener = createListener(file, "simple");
         assertTrue("listener is not open", listener.isOpen());
-        TestInfo ti = new TestInfo(this);
+        TestInfo ti = JUnit3TestSuiteImpl.createTestInfo(this);
         ti.markStartTime();
         listener.startTest(ti);
         assertTrue("listener is not open", listener.isOpen());
@@ -71,7 +72,7 @@ public class OneHostXMLListenerTest extends TestRunnerTestBase {
         OneHostXMLListener listener = createListener(file, "simple");
         assertTrue("listener is not open", listener.isOpen());
         assertTrue("listener is not happy", listener.isHappy());
-        TestInfo ti = new TestInfo(this);
+        TestInfo ti = JUnit3TestSuiteImpl.createTestInfo(this);
         listener.startTest(ti);
         assertTrue("listener is not open", listener.isOpen());
         Throwable t = new RuntimeException("oops", new Throwable("ne&>sted"));

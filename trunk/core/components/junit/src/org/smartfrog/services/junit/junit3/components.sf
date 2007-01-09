@@ -22,7 +22,7 @@
  /**
   * Include the test suite
   */
-#include "/org/smartfrog/services/junit/testsuite.sf"
+#include "/org/smartfrog/services/xunit/base/testsuite.sf"
   
   
   /**

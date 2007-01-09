@@ -24,15 +24,15 @@ import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestResult;
 import junit.framework.TestSuite;
-import org.smartfrog.services.junit.AbstractTestSuite;
-import org.smartfrog.services.junit.RunnerConfiguration;
-import org.smartfrog.services.junit.TestContextInjector;
-import org.smartfrog.services.junit.TestListener;
-import org.smartfrog.services.junit.TestListenerFactory;
-import org.smartfrog.services.junit.Utils;
-import org.smartfrog.services.junit.data.Statistics;
-import org.smartfrog.services.junit.data.TestInfo;
-import org.smartfrog.services.junit.log.TestListenerLog;
+import org.smartfrog.services.xunit.base.AbstractTestSuite;
+import org.smartfrog.services.xunit.base.RunnerConfiguration;
+import org.smartfrog.services.xunit.base.TestContextInjector;
+import org.smartfrog.services.xunit.base.TestListener;
+import org.smartfrog.services.xunit.base.TestListenerFactory;
+import org.smartfrog.services.xunit.utils.Utils;
+import org.smartfrog.services.xunit.serial.TestInfo;
+import org.smartfrog.services.xunit.serial.Statistics;
+import org.smartfrog.services.xunit.log.TestListenerLog;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogInitException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
@@ -672,12 +672,13 @@ public class JUnit3TestSuiteImpl extends AbstractTestSuite implements JUnitTestS
      * @return test informatation
      */
     public TestInfo onStart(Test test) {
-        TestInfo info = new TestInfo(test);
+        TestInfo info = createTestInfo(test);
         String testname = info.getText();
         long start = registerStartTime(testname);
         info.setStartTime(start);
         return info;
     }
+
 
     /**
      * file the start time;  if there already is one, then take that one instead.
@@ -717,7 +718,7 @@ public class JUnit3TestSuiteImpl extends AbstractTestSuite implements JUnitTestS
      */
     public synchronized TestInfo onEnd(Test test, Throwable fault) {
         long endTime = System.currentTimeMillis();
-        TestInfo testInfo = new TestInfo(test, fault);
+        TestInfo testInfo = createTestInfo(test, fault);
         //force a start entry in there
         long startTime = registerStartTime(testInfo.getText());
         testInfo.setStartTime(startTime);
@@ -725,5 +726,26 @@ public class JUnit3TestSuiteImpl extends AbstractTestSuite implements JUnitTestS
         return testInfo;
     }
 
+    public static TestInfo createTestInfo(Test test) {
+        return createTestInfo(test,null);
+    }
 
+
+    public static TestInfo createTestInfo(Test test, Throwable fault) {
+        TestInfo testInfo = new TestInfo(fault);
+        String classname = test.getClass().getName();
+        String text;
+        if (test instanceof TestCase) {
+            //TestCase information is extracted specially
+            TestCase testCase = (TestCase) test;
+            text = testCase.getName();
+        } else {
+            //any other kind of test has no name, just
+            //a string value
+            text = test.toString();
+        }
+        testInfo.setClassname(classname);
+        testInfo.setText(text);
+        return testInfo;
+    }
 }

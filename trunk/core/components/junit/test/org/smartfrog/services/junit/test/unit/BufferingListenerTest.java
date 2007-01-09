@@ -20,10 +20,11 @@
 package org.smartfrog.services.junit.test.unit;
 
 import junit.framework.TestCase;
-import org.smartfrog.services.junit.TestListener;
-import org.smartfrog.services.junit.data.TestInfo;
-import org.smartfrog.services.junit.listeners.BufferingListener;
-import org.smartfrog.services.junit.listeners.BufferingListenerComponent;
+import org.smartfrog.services.xunit.base.TestListener;
+import org.smartfrog.services.xunit.serial.TestInfo;
+import org.smartfrog.services.xunit.listeners.BufferingListener;
+import org.smartfrog.services.xunit.listeners.BufferingListenerComponent;
+import org.smartfrog.services.junit.junit3.JUnit3TestSuiteImpl;
 
 import java.rmi.RemoteException;
 
@@ -31,7 +32,7 @@ import java.rmi.RemoteException;
  * Test that a buffering listerner created Nov 22, 2004 1:49:37 PM
  */
 
-public class BufferingListenerTest extends TestCase {
+public class BufferingListenerTest extends AbstractTestInfoTestBase {
 
 
     /**
@@ -47,7 +48,7 @@ public class BufferingListenerTest extends TestCase {
                 "localhost",
                 null, "testo",
                 System.currentTimeMillis());
-        TestInfo ti = new TestInfo(this);
+        TestInfo ti = createTestInfo();
         ti.markStartTime();
         listener.startTest(ti);
         ti.markEndTime();
@@ -69,7 +70,7 @@ public class BufferingListenerTest extends TestCase {
         TestListener listener = buffer.listen(null, "localhost",
                 null, "testo",
                 System.currentTimeMillis());
-        TestInfo ti = new TestInfo(this);
+        TestInfo ti = createTestInfo();
         ti.markStartTime();
         listener.startTest(ti);
         Throwable t = new RuntimeException("oops", new Throwable("nested"));

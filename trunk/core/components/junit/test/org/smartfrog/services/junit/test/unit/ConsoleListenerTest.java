@@ -20,9 +20,9 @@
 package org.smartfrog.services.junit.test.unit;
 
 import junit.framework.TestCase;
-import org.smartfrog.services.junit.TestListener;
-import org.smartfrog.services.junit.data.TestInfo;
-import org.smartfrog.services.junit.listeners.ConsoleListenerComponent;
+import org.smartfrog.services.xunit.base.TestListener;
+import org.smartfrog.services.xunit.serial.TestInfo;
+import org.smartfrog.services.xunit.listeners.ConsoleListenerComponent;
 
 import java.io.PrintStream;
 import java.rmi.RemoteException;
@@ -31,7 +31,7 @@ import java.rmi.RemoteException;
  * created Nov 22, 2004 4:16:27 PM
  */
 
-public class ConsoleListenerTest extends TestCase {
+public class ConsoleListenerTest extends AbstractTestInfoTestBase {
 
 
     private ConsoleListenerComponent createListener(PrintStream out)
@@ -46,7 +46,7 @@ public class ConsoleListenerTest extends TestCase {
     public void testSuccess() throws Exception {
         ConsoleListenerComponent factory = createListener(null);
         TestListener listener = factory.listen(null, "localhost", null, "test", 0);
-        TestInfo ti = new TestInfo(this);
+        TestInfo ti = createTestInfo();
         ti.markStartTime();
         listener.startTest(ti);
         ti.markEndTime();
@@ -57,7 +57,7 @@ public class ConsoleListenerTest extends TestCase {
     public void testError() throws Exception {
         ConsoleListenerComponent factory = createListener(null);
         TestListener listener = factory.listen(null, "localhost", null, "test", 0);
-        TestInfo ti = new TestInfo(this);
+        TestInfo ti = createTestInfo();
         listener.startTest(ti);
         Throwable t = new RuntimeException("oops", new Throwable("ne&>sted"));
         ti.addFaultInfo(t);
