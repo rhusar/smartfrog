@@ -51,7 +51,8 @@
   <!-- ========================================================== -->
   <target name="init"
     depends="init-standard-output-dirs,use-smartfrog-tasks,use-smartfrog-testharness">
-
+    <echo message="==================================================================="/>
+    <echo message="= ${ant.project.name}"/>
     <property name="deploy.sf" value="files/success.sf"/>
     <property name="default.ini" location="test/files/default.ini"/>
     <property name="default.sf" location="test/files/default.sf"/>
