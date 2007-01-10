@@ -103,11 +103,13 @@
         conf="sfjars->master;redist->redist"/>
 
     <!--SLP-->
+<!--
     <dependency org="org.smartfrog"
         name="sf-slp"
         changing="true"
         rev="latest.integration"
         conf="sfjars->master;redist->redist"/>
+-->
 
 
     <!--ssh-->
