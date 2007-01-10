@@ -57,4 +57,30 @@
       primary key (EVENT_ID));
       #
     ];
-    }
+  }
+
+
+ /**
+  Create any user
+  */
+ CreateUser extends AdminCommand {
+    username TBD;
+    password TBD;
+    sqlCommands [
+     (("CREATE USER " ++ username ) ++ (" PASSWORD " ++ password))
+    ];
+ }
+
+  DropUser extends AdminCommand {
+    username TBD;
+    sqlCommands [
+     ("DROP USER " ++ username )
+    ];
+ }
+
+ DropTable extends AdminCommand {
+    table TBD;
+    sqlCommands [
+     ("DROP TABLE " ++ table)
+    ];
+ }

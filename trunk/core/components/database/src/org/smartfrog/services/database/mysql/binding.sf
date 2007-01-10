@@ -24,4 +24,3 @@
  */
 
 #include "/org/smartfrog/services/database/mysql/daemon.sf"
-#include "/org/smartfrog/services/database/mysql/binding.sf"
