@@ -43,9 +43,13 @@ Terminator extends EventPrim {
     /*
     kill RefToComponent;
 */
+    //terminate the reference normally
     type NORMAL;
+    //we terminate ourselves normally
     selftype NORMAL;
+    //this is a constant
     NORMAL "normal";
+    //this is a constant
     ABNORMAL "abnormal";
     description "terminator action";
     detachFirst false;
