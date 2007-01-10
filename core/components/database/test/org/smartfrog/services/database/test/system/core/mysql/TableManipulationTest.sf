@@ -1,0 +1,61 @@
+
+#include "/org/smartfrog/services/database/test/system/core/hsqldb/components.sf";
+
+
+TableManipulationTest extends TestCompound {
+
+    description "Creates users and tables";
+    sfShouldTerminate false;
+
+    action extends action extends DatabaseAndBinding {
+    }
+
+    tests extends Sequence {
+
+
+        dropUser1 extends DropUser {
+          database LAZY ATTRIB action:binding;
+          username testUser;
+          failOnSqlError false;
+        }
+
+        //forward reference
+        dropTable1 extends dropTable {
+          failOnSqlError false;
+        }
+
+        newuser extends CreateUser {
+          database LAZY PARENT:PARENT:action:binding;
+          username testUser;
+          password testPass;
+        }
+
+
+        events extends CreateEventsTable {
+          database LAZY ATTRIB action:binding;
+        }
+
+        select extends Transaction {
+          database LAZY ATTRIB action:binding;
+          sqlCommands [
+            "SELECT * from events"
+            ];
+        }
+
+        dropTable extends DropTable {
+            database LAZY ATTRIB action:binding;
+            table "events";
+        }
+
+        dropUser2 extends dropUser1 {
+          failOnSqlError true;
+        }
+
+    }
+  }
+
+sfConfig extends TableManipulationTest {
+
+
+
+}

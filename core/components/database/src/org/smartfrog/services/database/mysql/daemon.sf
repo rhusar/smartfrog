@@ -1,0 +1,166 @@
+/** (C) Copyright 2006 Hewlett-Packard Development Company, LP
+
+ This library is free software; you can redistribute it and/or
+ modify it under the terms of the GNU Lesser General Public
+ License as published by the Free Software Foundation; either
+ version 2.1 of the License, or (at your option) any later version.
+
+ This library is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ Lesser General Public License for more details.
+
+ You should have received a copy of the GNU Lesser General Public
+ License along with this library; if not, write to the Free Software
+ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+ For more information: www.smartfrog.org
+
+ */
+
+
+/*
+ * components to  manage the MySQL daemon
+ */
+
+#include "/org/smartfrog/sfcore/workflow/combinators/finally.sf"
+#include "/org/smartfrog/services/os/runshell/components.sf"
+
+  /**
+   * the various names of the mysql programs.
+   */
+  MySqlApplicationNames {
+    mysqladmin    "mysqladmin";
+    mysqldaemon   "mysqld";
+    mysql         "mysql";
+  }
+
+
+  optional extends ifThenElse {
+    condition false;
+    value "";
+    if(condition);
+    then value;
+    else "";
+  }
+
+  /**
+   * run the mysql daemon.
+   */
+  mysqldaemon extends ExecuteProgram {
+    shellCmd MySqlApplicationNames:mysqldaemon;
+    shellArguments arguments;
+    //options
+    ansi false;
+    bigtables false;
+    datadir TBD;
+    defaults "--no-defaults",
+    logdir TBD;
+    low-priority-updates false;
+    skip-networking false;
+    //build the options
+
+    arguments [
+      defaults,
+      IF ansi THEN "--ansi" ELSE "" FI,
+      IF bigtables THEN "--big-tables" ELSE "" FI,
+      ("--datadir=" ++ dataDir),
+      IF low-priority-updates THEN "--low-priority-updates" ELSE "" FI,
+      IF skip-networking THEN "--skip-networking" ELSE "" FI
+    ];
+  }
+
+/*
+  create databasename   Create a new database
+  debug                 Instruct server to write debug information to log
+  drop databasename     Delete a database and all its tables
+  extended-status       Gives an extended status message from the server
+  flush-hosts           Flush all cached hosts
+  flush-logs            Flush all logs
+  flush-status          Clear status variables
+  flush-tables          Flush all tables
+  flush-threads         Flush the thread cache
+  flush-privileges      Reload grant tables (same as reload)
+  kill id,id,...        Kill mysql threads
+  password new-password Change old password to new-password, MySQL 4.1 hashing.
+  old-password new-password Change old password to new-password in old format.
+  ping                  Check if mysqld is alive
+  processlist           Show list of active threads in server
+  reload                Reload grant tables
+  refresh               Flush all tables and close and open logfiles
+  shutdown              Take server down
+  status                Gives a short status message from the server
+  start-slave           Start slave
+  stop-slave            Stop slave
+  variables             Prints variables available
+  version               Get version info from server
+
+*/
+
+  /**
+   * execute a mysqladmin command. Requires that the mysql commands
+   * are on the classpath
+   */
+  mysqladmin extends ExecuteProgram {
+    shellCmd MySqlApplicationNames:mysqladmin;
+    shellArguments arguments;
+    arguments [];
+
+    //define all the commands of mysql admin
+    create "create";
+    debug "debug";
+    drop "drop";
+    extended-status  "extended-status";
+    flush-hosts  "flush-hosts";
+    flush-logs  "flush-logs";
+    flush-status  "flush-status";
+    flush-tables  "flush-tables";
+    flush-threads  "flush-threads";
+    flush-privileges "flush-privileges";
+    password  "password";
+    ping "ping";
+    processlist  "processlist";
+    reload  "reload";
+    refresh  "refresh";
+    shutdown "shutdown";
+    status "status";
+    start-slave "start-slave";
+    stop-slave "stop-slave";
+    variables "variables";
+    version "version";
+  }
+
+  mysqladmin-ping extends mysqladmin {
+    arguments [ping];
+  }
+
+  mysqladmin-reload extends mysqladmin {
+    arguments [reload];
+  }
+
+  mysqladmin-refresh extends mysqladmin {
+    arguments [refresh];
+  }
+/**
+ * Shut down a local mysql daemon by running mysqladmin -shutdown"
+ * This does not need binding info when it goes against the local host;
+ * it runs on user permissions instead
+ */
+  mysqladmin-shutdown extends mysqladmin {
+    arguments [shutdown];
+  }
+
+
+  mysqladmin-status extends mysqladmin {
+    arguments [status];
+  }
+
+
+
+/**
+ * the shutdown operation delayed until termination time. This
+ * is something you can deploy early on and have it do its work when it is undeployed.
+ */
+FinallyTerminateMysql extends Finally {
+  action extends mysqladmin-shutdown;
+}

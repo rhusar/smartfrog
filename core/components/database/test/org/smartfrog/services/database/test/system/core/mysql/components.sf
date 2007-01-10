@@ -30,7 +30,10 @@
  testUser "testUser";
  testPass "secret";
 
- TestDB extends MysqlTargetedBinding {
+
+ Mysqld extends mysqldaemon;
+
+ MysqlBinding extends MysqlTargetedBinding {
    database "diary";
  }
 
@@ -39,4 +42,25 @@
    password testPass;
  }
 
- }
+
+ DatabaseAndBinding extends Parallel {
+
+      mysqld extends Mysqld;
+
+      binding extends MysqlBinding;
+
+  }
+  
+
+ sfConfig {
+
+
+    mysqld extends Mysqld;
+
+    -- extends mysqladmin-status;
+
+    -- extends mysqladmin-shutdown;
+
+    TestUserBinding;
+
+}
