@@ -331,7 +331,11 @@ xs:EventId>http://www.gridforum.org/cddlm/components/2005/02/events/Lifecycle
     }
 
     protected SoapElement createNotificationMessage(AlpineEPR producer, Element message) {
-        SoapElement notificationMessage = new SoapElement("wsnt:"+ WSNT_NOTIFICATION_MESSAGE, Constants.WSRF_WSNT_NAMESPACE);
+        SoapElement notifyElt = new SoapElement("wsnt:" + WSNT_NOTIFY,
+                Constants.WSRF_WSNT_NAMESPACE);
+        SoapElement notificationMessage = new SoapElement("wsnt:"+ WSNT_NOTIFICATION_MESSAGE,
+                Constants.WSRF_WSNT_NAMESPACE);
+        notifyElt.appendChild(notificationMessage);
         SoapElement topicElt = new SoapElement("wsnt:"+ WSNT_TOPIC, Constants.WSRF_WSNT_NAMESPACE);
         WsrfUtils.addSimpleDialectAttribute(topicElt);
         topicElt.appendQName(topic);
@@ -339,7 +343,7 @@ xs:EventId>http://www.gridforum.org/cddlm/components/2005/02/events/Lifecycle
         if (producer != null) {
             notificationMessage.appendChild(
                     producer.toXomInNewNamespace(WSNT_PRODUCER_REFERENCE, Constants.WSRF_WSNT_NAMESPACE,
-                            "wsnt", Constants.WS_ADDRESSING_2004_NAMESPACE, "wsa2004"));
+                            "wsnt", Constants.WS_ADDRESSING_NAMESPACE, "wsa2003"));
         }
         if (message != null) {
             SoapElement messageElt = new SoapElement("wsnt:"+ WSNT_MESSAGE, Constants.WSRF_WSNT_NAMESPACE);

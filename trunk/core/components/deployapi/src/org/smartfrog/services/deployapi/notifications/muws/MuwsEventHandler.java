@@ -59,16 +59,21 @@ public class MuwsEventHandler extends WSNotifyHandler {
      */
     protected boolean notificationReceived(MessageContext messageContext) {
         try {
-            SoapElement request = getRequest(messageContext);
-            SoapElement message = (SoapElement) request.getFirstChildElement(WSNT_MESSAGE, Constants.WSRF_WSNT_NAMESPACE);
+            SoapElement notify = getRequest(messageContext);
+            SoapElement notification = (SoapElement) notify.getFirstChildElement(
+                    WSNT_NOTIFICATION_MESSAGE,
+                    Constants.WSRF_WSNT_NAMESPACE);
+            SoapElement message = (SoapElement) notification.getFirstChildElement(WSNT_MESSAGE,
+                    Constants.WSRF_WSNT_NAMESPACE);
             if (message == null) {
-                throw new AlpineRuntimeException("No wsnt:" + WSNT_MESSAGE+ " found in the request "+request.toXML());
+                throw new AlpineRuntimeException("No wsnt:" + WSNT_MESSAGE+ " found in the request "+ notify
+                        .toXML());
             }
             SoapElement event = (SoapElement) message.getFirstChildElement(MUWS_MANAGEMENT_EVENT,
                                                         Constants.MUWS_P1_NAMESPACE);
             if (event == null) {
                 throw new AlpineRuntimeException("No muws-p1:" + MUWS_MANAGEMENT_EVENT + " found in the request"
-                +request.toXML());
+                + notify.toXML());
             }
             return muwsEventReceived(messageContext,event);
         } catch (AlpineRuntimeException e) {

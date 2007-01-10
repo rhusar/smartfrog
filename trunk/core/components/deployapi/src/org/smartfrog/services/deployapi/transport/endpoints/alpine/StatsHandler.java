@@ -54,7 +54,7 @@ public class StatsHandler extends HandlerBase {
         synchronized (this) {
             requests++;
         }
-        ServerInstance serverInstance = ServerInstance.currentInstance();
+        ServerInstance serverInstance = ServerInstance.getServerInstanceOrNull();
         if (serverInstance != null) {
             serverInstance.incrementRequests();
         }
@@ -64,7 +64,7 @@ public class StatsHandler extends HandlerBase {
         synchronized (this) {
             failures++;
         }
-        ServerInstance serverInstance = ServerInstance.currentInstance();
+        ServerInstance serverInstance = ServerInstance.getServerInstanceOrNull();
         if(serverInstance!=null) {
             serverInstance.incrementFailures();
         }

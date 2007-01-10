@@ -29,8 +29,6 @@ For more information: www.smartfrog.org
 
   AlpineTestSuite extends JUnit3TestSuite {
         name "alpine";
-        enabled true;
-        if enabled;
         //full path to the echo endpoint
         endpoint TBD;
         properties [
@@ -187,42 +185,42 @@ For more information: www.smartfrog.org
     portal extends PortalTestSuite {
       singleTest singleClass;
       endpoint LAZY PARENT:endpoint;
-      enabled PARENT:enabled;
+      if PARENT:enabled;
     }
 
     creation extends CreationTestSuite {
       singleTest singleClass;
       endpoint LAZY PARENT:endpoint;
-      enabled PARENT:enabled;
+      if PARENT:enabled;
     }
 
     initialization extends InitializationTestSuite {
       singleTest singleClass;
       endpoint LAZY PARENT:endpoint;
-      enabled PARENT:enabled;
+      if PARENT:enabled;
     }
 
     lifecycle extends LifecycleTestSuite {
       singleTest singleClass;
       endpoint LAZY PARENT:endpoint;
-      enabled PARENT:enabled;
+      if PARENT:enabled;
     }
 
     notification extends NotificationTestSuite {
       singleTest singleClass;
       endpoint LAZY PARENT:endpoint;
-      enabled PARENT:enabled;
+      if PARENT:enabled;
     }
     informative extends InformativeTestSuite {
       singleTest singleClass;
       endpoint LAZY PARENT:endpoint;
-      enabled PARENT:enabled;
+      if PARENT:enabled;
     }
     
     other extends OtherTestSuite {
       singleTest singleClass;
       endpoint LAZY PARENT:endpoint;
-      enabled PARENT:enabled;
+      if PARENT:enabled;
     }
  }
 

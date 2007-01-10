@@ -49,7 +49,7 @@ public class WSNotifyHandler extends WsrfHandler implements WSNConstants {
             return;
         }
 
-        if (WSNT_NOTIFICATION_MESSAGE.equals(getRequestName(messageContext))) {
+        if (WSNT_NOTIFY.equals(getRequestName(messageContext))) {
             verifyNamespace(getRequest(messageContext),
                     Constants.WSRF_WSNT_NAMESPACE);
 
