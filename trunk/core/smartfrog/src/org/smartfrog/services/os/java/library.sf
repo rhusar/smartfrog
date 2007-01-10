@@ -276,9 +276,8 @@ ForcedDownloadArtifact extends LibraryArtifact {
 }
 
 /**
- * A Maven JAR is autobound to the big maven repository on the network
+ * A Maven JAR is a JAR artifact
  */
 MavenJar extends JarArtifact  {
-    library LAZY Maven2Library;
 }
 
