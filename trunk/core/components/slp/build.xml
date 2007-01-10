@@ -68,39 +68,16 @@ Reference URL:http://ant.apache.org
   <!-- =================================================================== -->
     <target name="init" depends="init-standard-output-dirs">
     <tstamp/>
-    <property name="Name.System" value="slplib"/>
+    <property name="Name.System" value="slp"/>
     <property name="Name.Author" value="Copyright (C) 2004-2006 Glenn Hisdal"/>
     <property name="version" value="smartfrog components"/>
-    <!--property name="Version" value="1.00.000_beta"/-->
     <property name="year" value="2006"/>
 
     <echo message=""/>
     <echo message="==================================================================="/>
     <echo message="= ${Name.System} ${version} ${Name.Author} "/>
     <echo message=""/>
-    <available property="nice.task.present" classname="org.apache.tools.ant.taskdefs.Nice" />
   </target>
-
-  <!-- =================================================================== -->
-  <!-- Help on usage                                                       -->
-  <!-- =================================================================== -->
-  <target name="help" depends="init" description="Help">
-    <echo message=""/>
-    <echo message="-------------------------------------------------------------"/>
-    <echo message="${Name.System} ${version} Build file"/>
-    <echo message="-------------------------------------------------------------"/>
-    <echo message="* General:  "/>
-    <echo message="    build        --> recompiles and creates all packages"/>
-    <echo message="    dist         --> prepares distribution package (Default)"/>
-    <echo message="    compile      --> compiles the contributed source code"/>
-    <echo message="    clean        --> restores the distribution to its clean state"/>
-    <echo message="   "/>
-    <echo message="    help --> this help"/>
-    <echo message="See the comments inside the build.xml file for more details."/>
-    <echo message="-------------------------------------------------------------"/>
-    <echo message=""/>
-  </target>
-
 
   <!-- =================================================================== -->
   <!-- Global properties                                                   -->

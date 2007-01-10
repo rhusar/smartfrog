@@ -8,6 +8,8 @@
 
   <import file="core.xml"/>
 
+  <!--define the published state-->
+  <target name="published" depends="ivy-publish"/>
 
   <target name="ivy-init" depends="init-core,load-version-info,artifact-names">
     <property name="ivy.dir" location="${root.dir}/antbuild/ivy" />
@@ -42,7 +44,7 @@
   <target name="ivy-publish" depends="ready-to-publish">
     <ivy:publish resolver="local" pubrevision="${artifact.version}"
         overwrite="true"
-        artifactspattern="${dist.dir}/[artifact]-[revision].[ext]" />
+        artifactspattern="${dist.dir}/lib/[artifact]-[revision].[ext]" />
   </target>
 
 
@@ -52,5 +54,7 @@
 
   <target name="ivy-install" depends="ivy-publish"
       description="Component built and installed locally"/>
+
+
 
 </project>

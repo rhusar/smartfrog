@@ -415,6 +415,7 @@ For more information: www.smartfrog.org
 
   <target name="ivy-list-order" depends="ivy-init"
     xmlns:ivy="antlib:fr.jayasoft.ivy.ant">
+    <echo>java1.5+=${java1.5+}</echo>
     <pathconvert pathsep="&#10;" refid="child.projects"
       property="child.projects.list" />
     <echo>
