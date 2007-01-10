@@ -1,4 +1,4 @@
-/** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
+/** (C) Copyright 1998-2007 Hewlett-Packard Development Company, LP
 
  This library is free software; you can redistribute it and/or
  modify it under the terms of the GNU Lesser General Public
@@ -41,7 +41,7 @@ import java.util.Vector;
 
 public class RunJavaImpl extends RunShellImpl implements RunJava {
 
-    private final static PlatformHelper platform = PlatformHelper.getLocalPlatform();;
+    private static final PlatformHelper platform = PlatformHelper.getLocalPlatform();
     /**
      * a log
      */
@@ -51,9 +51,8 @@ public class RunJavaImpl extends RunShellImpl implements RunJava {
     }
 
     /**
-     * @throws org.smartfrog.sfcore.common.SmartFrogException
-     *                                  deployment failure
-     * @throws java.rmi.RemoteException In case of network/rmi error
+     * @throws SmartFrogException  deployment failure
+     * @throws RemoteException In case of network/rmi error
      */
     public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
         super.sfDeploy();
@@ -64,10 +63,12 @@ public class RunJavaImpl extends RunShellImpl implements RunJava {
      * Reads SF description = initial configuration.
      * Override this to read/set properties before we read ours, but remember to call
      * the superclass afterwards
+     * @throws SmartFrogException  deployment failure
+     * @throws RemoteException In case of network/rmi error
      */
     protected void readSFAttributes() throws SmartFrogException, RemoteException {
         setupLog();
-        final boolean debugEnabled = true; //log.isDebugEnabled();
+        boolean debugEnabled = log.isDebugEnabled();
         Vector args=new Vector();
         //get classname and classpath and verify that one is defined
         String classname=null;
@@ -248,7 +249,7 @@ public class RunJavaImpl extends RunShellImpl implements RunJava {
      * @throws RemoteException
      */
     private String buildEndorsedDirs() throws SmartFrogResolutionException, RemoteException {
-        final boolean debugEnabled = log.isDebugEnabled();
+        boolean debugEnabled = log.isDebugEnabled();
         log.debug("building endorsed directory parameter");
         Vector pathV = sfResolve(ATTR_ENDORSED_DIRS, (Vector) null, false);
         if(pathV==null) {
