@@ -382,6 +382,7 @@ For more information: www.smartfrog.org
           <exclude name="jmx/build.xml"/>
           <!--These need java 1.5 or later-->
           <exclude name="junit/build.xml" unless="java1.5+"/>
+          <exclude name="xunit/build.xml" unless="java1.5+"/>
           <exclude name="database/build.xml" unless="java1.5+"/>
           <exclude name="xmpp/build.xml" unless="java1.5+"/>
         </fileset>
