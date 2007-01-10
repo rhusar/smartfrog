@@ -140,7 +140,7 @@ Maven1Library extends Library {
     /**
      * Maven repository at ibiblio.org.
      */
-    repositories [| "http://mirrors.ibiblio.org/maven" |];
+    repositories [| "http://mirrors.ibiblio.org/pub/mirrors/maven" |];
 
     //cache into the well known maven location
     cacheDir LAZY MavenLocalCacheDirectory:absolutePath;
@@ -183,7 +183,7 @@ Maven2Library extends Library {
      * Maven2 repository at ibiblio.org. Really we should permit mirrors; or include
      * the mirror list for easy selection.
      */
-    repositories [| "http://mirrors.ibiblio.org/maven2" |];
+    repositories [| "http://mirrors.ibiblio.org/pub/mirrors/maven2" |];
 
     //cache into the well known maven location
     cacheDir LAZY localCacheDirectory:absolutePath;
