@@ -52,13 +52,11 @@
         conf="test->default"/>
     <dependency org="org.apache.ant"
         name="ant"
-        changing="true"
         rev="${apache.ant.version}"
         conf="compile->default;redist->default"/>
-    <dependency org="org.apache.ant"
+<!--    <dependency org="org.apache.ant"
         name="ant-optional"
-        changing="true"
         rev="${apache.ant.version}"
-        conf="compile->default;redist->default"/>
+        conf="compile->default;redist->default"/>-->
   </dependencies>
 </ivy-module>
