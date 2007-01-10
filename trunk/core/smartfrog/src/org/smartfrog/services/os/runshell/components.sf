@@ -71,6 +71,7 @@ ExecuteProgram extends Prim {
    runShellSchema extends RunShellSchema;
    sfClass "org.smartfrog.services.os.runshell.RunShellImpl";
    useExitCmd false;
+   shouldTerminate true;
    terminateOnFailure true;
 }
 
