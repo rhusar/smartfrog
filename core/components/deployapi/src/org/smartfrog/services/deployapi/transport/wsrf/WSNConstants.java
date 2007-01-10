@@ -60,6 +60,7 @@ public interface WSNConstants {
     String MUWS_SOURCE_COMPONENT = "SourceComponent";
     String MUWS_RESOURCE_ID = "ResourceId";
     String WSNT_NOTIFICATION_MESSAGE = "NotificationMessage";
+    String WSNT_NOTIFY = "Notify";
     String WSNT_PRODUCER_REFERENCE = "ProducerReference";
     String WSNT_MESSAGE = "Message";
     String WSNT_TOPIC = "Topic";

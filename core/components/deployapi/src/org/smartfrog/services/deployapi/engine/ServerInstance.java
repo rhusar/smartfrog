@@ -27,6 +27,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.ggf.cddlm.generated.api.CddlmConstants;
 import org.smartfrog.projects.alpine.om.base.SoapElement;
+import org.smartfrog.projects.alpine.faults.AlpineRuntimeException;
 import org.smartfrog.services.deployapi.binding.DescriptorHelper;
 import org.smartfrog.services.deployapi.binding.XomHelper;
 import org.smartfrog.services.deployapi.components.DeploymentServer;
@@ -237,11 +238,21 @@ public class ServerInstance implements WSRPResourceSource {
      * get the current instance; bailing out if none exists
      *
      * @return the current instance
+     * @throws AlpineRuntimeException if needed
      */
     public static ServerInstance currentInstance() {
         if (instance == null) {
-            throw new RuntimeException("No configured ServerInstance");
+            throw new AlpineRuntimeException("No configured ServerInstance");
         }
+        return instance;
+    }
+
+
+    /**
+     * Get the server or null if none is defined
+     * @return the current server instance
+     */
+    public static ServerInstance getServerInstanceOrNull() {
         return instance;
     }
 

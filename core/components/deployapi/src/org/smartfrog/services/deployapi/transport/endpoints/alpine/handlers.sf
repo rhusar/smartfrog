@@ -105,20 +105,6 @@ SystemEndpoint extends DeployApiEndpoint {
 }
 
 
-
-DeployApiEndpoint extends AlpineEndpoint {
-    pivotHandler TBD;
-
-
-     getMessage ##
-      <html>
-      <head><title>Deployment Endpoint</title><head>
-      <body>This a demo endpoint of the HP implementation of the CDDLM Deployment system</body>
-      </html>
-     #;
-
-}
-
 SubscriptionEndpoint extends AlpineEndpoint {
     name "subscriptions";
     path "/subscription/";
