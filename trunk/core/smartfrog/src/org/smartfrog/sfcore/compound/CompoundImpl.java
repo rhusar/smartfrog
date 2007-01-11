@@ -844,9 +844,9 @@ public class CompoundImpl extends PrimImpl implements Compound {
         }
     }
 
-    private Vector childrenToTerminate;
-    private Vector childrenToUpdate;
-    private Vector childrenToCreate;
+    protected Vector childrenToTerminate;
+    protected Vector childrenToUpdate;
+    protected Vector childrenToCreate;
 
     /**
      * Validate whether the component (and its children) can be updated
