@@ -7,7 +7,7 @@
 
   <import file="ivy-mixin.xml" />
 
-  <!-- Declare our maven2-driven libraries to smartfrog core and tasks (nothing else) -->
+  <!-- Declare our libraries to smartfrog core and tasks (nothing else) -->
   <target name="smartfrog-tasks-classpath" 
     depends="ivy-retrieve">
     <ivy:cachepath pathid="smartfrog.tasks.classpath" conf="build" />

@@ -82,9 +82,12 @@
     <property name="javac.include.ant" value="false" />
 
     <property name="smartfrog.daemon.port" value="3800" />
-
-    <!-- assume the sun compiler -->
-    <property name="rmic.compiler" value="sun" />
+    <!--when available, use the forking compiler-->
+    <available property="rmic.compiler" value="forking"
+               classname="org.apache.tools.ant.taskdefs.rmic.ForkingSunRmic"
+        />
+    <!-- fall back to the sun compiler -->
+    <property name="rmic.compiler" value="sun"/>
 
     
     <property name="extras.dir"
@@ -167,6 +170,12 @@
     <property name="Name.System" value="${ant.project.name}"/>
     <property name="Name.Company"
         value="(C) Copyright 1998-${year} Hewlett-Packard Development Company, LP"/>
+
+    <!--copy all proxy settings from the running JVM-->
+    <propertyset id="proxy.settings">
+      <propertyref prefix="http."/>
+      <propertyref prefix="socks."/>
+    </propertyset>
 
   </target>
 
@@ -344,8 +353,11 @@
            showoutput="true"
            timeout="6000000"
            >
-       <jvmarg value="-ea"/>
-       <jvmarg value="-esa"/>
+        <jvmarg value="-ea"/>
+        <jvmarg value="-esa"/>
+        <!--copy all proxy settings from the running JVM-->
+        <syspropertyset refid="proxy.settings"/>
+
         <!-- #Tests take system property parameters -->
         <!-- #Formatters for capture and display -->
         <formatter type="xml"/>
@@ -705,6 +717,8 @@
         <assertions enableSystemAssertions="true">
           <enable/>
         </assertions>
+        <!--copy all proxy settings from the running JVM-->
+        <syspropertyset refid="proxy.settings"/>
           <!-- load in a property file if it is present -->
         <propertyfile file="${runtime.properties}" optional="true"/>
       </sf-startdaemon>

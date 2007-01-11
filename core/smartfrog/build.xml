@@ -143,8 +143,14 @@
   <property name="java.class.path" location="${dist.dir}/${SFjdocs}"/>
   <!--property name="redist" value="redist"/ -->
   <property name="examplesFiles" value="org/smartfrog/examples/**/*"/>
-  <!-- assume the sun compiler -->
+
+  <!--when available, use the forking compiler-->
+  <available property="rmic.compiler" value="forking"
+       classname="org.apache.tools.ant.taskdefs.rmic.ForkingSunRmic"
+      />
+  <!-- fall back to the sun compiler -->
   <property name="rmic.compiler" value="sun"/>
+
   <!-- Compile options for Smartfrog Release -->
   <property name="javac.debug.mode" value="on"/>
   <!-- turn on compile -g -->
@@ -156,6 +162,7 @@
   <property name="javacc.dir" location="javacc"/>
   <!-- Security related files -->
   <property name="manifestName" value="${private}/sealManifest.mf"/>
+
 
 
   <!-- Include here the security-related ant file -->

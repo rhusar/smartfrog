@@ -236,7 +236,12 @@
     <property name="javac.debug.mode" value="true"/> 
     <property name="javac.deprecation.mode" value="true"/> 
     <property name="javac.debug.level" value="lines,vars,source" />
-    <!-- assume the sun compiler -->
+    <!--when available, use the forking compiler-->
+    <available property="rmic.compiler" value="forking"
+               classname="org.apache.tools.ant.taskdefs.rmic.ForkingSunRmic"
+        />
+    <!-- fall back to the sun compiler -->
+    <property name="rmic.compiler" value="sun"/>
     <property name="rmic.compiler" value="sun" />
     <property name="rmic.stub.version" value="1.2" />
     
@@ -291,6 +296,11 @@
            >
        <jvmarg value="-ea"/>
        <jvmarg value="-esa"/>
+        <!--copy all proxy settings from the running JVM-->
+        <syspropertyset>
+          <propertyref prefix="http."/>
+          <propertyref prefix="socks."/>
+        </syspropertyset>
         <!-- #Tests take system property parameters -->
         <!-- #Formatters for capture and display -->
         <formatter type="xml"/>
