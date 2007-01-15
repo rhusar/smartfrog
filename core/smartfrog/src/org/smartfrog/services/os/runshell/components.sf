@@ -22,39 +22,40 @@ For more information: www.smartfrog.org
 #include "/org/smartfrog/predicates.sf"
 
 RunShellSchema extends Schema {
-    shellCmd extends String;
-    exitCmd extends OptionalString;
-    workDir extends OptionalString;
-    envProperties extends OptionalVector;
-    lineReturn extends OptionalString;
-    useExitCmd extends Boolean;
-    waitSignalGoAhead extends OptionalBoolean;
-    // 5- info log, 1 - Critical. Use -1 to avoid log
-    logLevel extends OptionalInteger;
-    printStack extends OptionalBoolean;
     delayBetweenCmds extends OptionalInteger;
-    shouldDetach extends OptionalBoolean;
+    envProperties extends OptionalVector;
+    errorMsgTo extends Optional;
+    exitCmd extends OptionalString;
+    lineReturn extends OptionalString;
+    logLevel extends OptionalInteger {
+      description "Log level: 5- info log, 1 - Critical. Use -1 to avoid logging";
+    }
+    outputMsgTo extends Optional;
+    printStack extends OptionalBoolean;
     processID extends OptionalString;
-    
-    /**
-     * any arguments to the shell
-     */
-     shellArguments extends OptionalVector;
+    processName extends String;
+    shellCmd extends String;
+    shouldDetach extends OptionalBoolean;
+    shouldTerminate extends OptionalBoolean {
+      description "terminate the component when the program finishes";
+    }
+    terminateOnFailure extends OptionalBoolean {
+      description "if shouldTerminate=false, but the program failed, terminate with an error";
+    }
+    useExitCmd extends Boolean;
+
+    waitSignalGoAhead extends OptionalBoolean;
+    workDir extends OptionalString;
+
+    shellArguments extends OptionalVector {
+      description "any arguments to the shell";
+    }
      
      //also, every nested element beginnng with shellCmdAtt  
      //will be added to the list of arguments *after* the shellArguments vector 
      //and every nested element beginnng with shellCmdAtt and ending in 'b' 
      //will be appended to the previous argument.  
 
-    /**
-     * terminate on completion
-     */
-    shouldTerminate extends OptionalBoolean;
-
-    /**
-     terminate if the exec failed (only valid if shouldTerminate=false)
-     */
-    terminateOnFailure extends OptionalBoolean;
 
     //some are runtime only
     /*
