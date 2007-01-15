@@ -46,8 +46,9 @@
   <!-- ========================================================== -->
   <!-- ========================================================== -->
   <target name="init"
-      depends="init-standard-output-dirs,use-smartfrog-tasks,use-smartfrog-testharness">
-
+      depends="common.init,use-smartfrog-tasks,use-smartfrog-testharness">
+    <echo message="==================================================================="/>
+    <echo message="= ${ant.project.name}"/>
   </target>
 
 

@@ -33,6 +33,7 @@ import org.smartfrog.projects.alpine.core.Context;
 import org.smartfrog.projects.alpine.core.ContextConstants;
 import org.smartfrog.projects.alpine.core.MessageContext;
 import org.smartfrog.projects.alpine.faults.SoapException;
+import org.smartfrog.projects.alpine.faults.AlpineRuntimeException;
 import org.smartfrog.projects.alpine.http.HttpBinder;
 import org.smartfrog.projects.alpine.http.HttpConstants;
 import org.smartfrog.projects.alpine.om.soap11.MessageDocument;
@@ -133,9 +134,9 @@ public class HttpTransmitter {
                 } catch (IOException e) {
                     //swallow
                 }
+                //delete the file
+                outputFile.delete();
             }
-            //delete the file
-            outputFile.delete();
             //rethrow
             throw ioe;
         }
@@ -144,7 +145,7 @@ public class HttpTransmitter {
 
     /**
      * Save the current request to a file and then transmit it.
-     * @throws org.smartfrog.projects.alpine.faults.AlpineRuntimeException in case of trouble.
+     * @throws AlpineRuntimeException in case of trouble.
      */
     public void transmit() {
         File outputFile = null;
@@ -167,7 +168,7 @@ public class HttpTransmitter {
      * Transmit a file containing an XML message.
      * the file is not deleted afterwards, so the transport can be used to push up existing messages 
      * @param outputFile file to upload.
-     * @throws org.smartfrog.projects.alpine.faults.AlpineRuntimeException in case of trouble.
+     * @throws AlpineRuntimeException in case of trouble.
      */
     public void transmitPayload(File outputFile) {
         String destination = wsa.getDestination();
