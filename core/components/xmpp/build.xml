@@ -43,6 +43,11 @@
   <import file="${root.dir}/common.xml"/>
 
 
+  <target name="init" depends="common.init">
+    <echo message="==================================================================="/>
+    <echo message="= ${ant.project.name}"/>
+  </target>
+
   <!-- ========================================================== -->
   <!-- create a distro. 
        we want both sf-junit and the test har -->

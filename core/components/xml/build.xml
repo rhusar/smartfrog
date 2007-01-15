@@ -44,6 +44,8 @@
     <property name="deploy.sf" value="files/success.sf"/>
     <property name="default.ini" location="test/files/default.ini"/>
     <property name="default.sf" location="test/files/default.sf"/>
+    <echo message="==================================================================="/>
+    <echo message="= ${ant.project.name}"/>    
   </target>
 
 

@@ -52,7 +52,7 @@
   <!-- ========================================================== -->
   <!-- ========================================================== -->
   <target name="init"
-      depends="core.init-standard-output-dirs,sftasks.smartfrog-tasks,core.core-tasks,core.artifact-names">
+      depends="core.init,sftasks.smartfrog-tasks,core.core-tasks,core.artifact-names">
     <property name="war.dir" location="war"/>
     <property name="webinf.dir" location="${war.dir}/WEB-INF"/>
     <property name="services.dir" location="${webinf.dir}/services"/>
@@ -60,7 +60,8 @@
         value="${artifact.name}-war-${artifact.version}.war"/>
     <property name="target.war"
         location="${dist.dir}/${target.war.name}"/>
-
+    <echo message="==================================================================="/>
+    <echo message="= ${ant.project.name}"/>
   </target>
 
   <target name="default" depends="published"/>
