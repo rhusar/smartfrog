@@ -156,7 +156,7 @@ TerminateTransaction extends Transaction {
 /**
  * This is a condition which checks that a connection to the URL can be opened
  */
-ConnectionOpen extends DatabaseOperation {
+IsJdbcConnectionOpen extends DatabaseOperation {
   sfClass "org.smartfrog.services.database.core.ConnectionOpenCondition";
 }
 

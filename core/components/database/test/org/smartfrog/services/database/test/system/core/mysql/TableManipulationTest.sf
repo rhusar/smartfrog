@@ -1,5 +1,5 @@
 
-#include "/org/smartfrog/services/database/test/system/core/hsqldb/components.sf";
+#include "/org/smartfrog/services/database/test/system/core/mysql/components.sf";
 
 
 TableManipulationTest extends TestCompound {
@@ -7,10 +7,19 @@ TableManipulationTest extends TestCompound {
     description "Creates users and tables";
     sfShouldTerminate false;
 
-    action extends action extends DatabaseAndBinding {
+    action extends DatabaseAndBinding {
     }
 
     tests extends Sequence {
+
+
+        wait extends FailingWaitFor {
+          condition extends IsJdbcConnectionOpen {
+            database LAZY action:binding;
+          }
+         interval 200;
+         timeout 10000;
+        }
 
 
         dropUser1 extends DropUser {

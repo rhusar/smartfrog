@@ -3,7 +3,6 @@
   xmlns:core="http://smartfrog.org/build/core"
   xmlns:ac="antlib:net.sf.antcontrib"
   xmlns:sf="antlib:org.smartfrog.tools.ant"
-  xmlns:m2="antlib:org.apache.maven.artifact.ant"
   >
   
   <description>
@@ -21,30 +20,45 @@
        not to be run on public machines for
        security reasons, unless security is active-->
 
-   <target name="system-tests" depends="init,dist,package-tests,ready-to-test"
-    if="system.tests.enabled"
-    description="run the unit tests if unit.tests.enabled is set">
-    <core:junit
-      errorProperty="test.failed"
-      failureProperty="test.failed"
-      includeAntRuntime="true"
-      >
-      <sysproperty key="test.classes.dir"
-        value="${test.classes.dir}"/>
-      <!--all properties beginning with test-->
-      <syspropertyset>
-        <propertyref prefix="test."/>
-      </syspropertyset>
-      <classpath>
-        <path refid="tests.run.classpath"/>
-      </classpath>
-      <batchtest todir="${test.data.dir}" >
-        <!-- bulk test case -->
-        <fileset dir="${test.classes.dir}">
-          <include name="org/smartfrog/**/system/**/*Test.class"/>
-        </fileset>
-      </batchtest>
-    </core:junit>
-  </target> 
+   <target name="ready-to-system-test"
+     depends="package-tests,ready-to-test,extended-smartfrog-tasks" />
+
+   <target name="system-tests" depends="ready-to-system-test"
+     if="system.tests.enabled"
+     description="run the system tests if system.tests.enabled is set">
+       <sf:functionaltest testTimeout="600" shutdownTime="10">
+         <application>
+           <sf:daemon-debug failonerror="false" spawn="false"
+               classpathref="tests.run.classpath"/>
+         </application>
+         <probe>
+           <socket port="${smartfrog.daemon.port}" server="localhost"/>
+         </probe>
+         <test>
+           <core:junit
+               errorProperty="test.failed"
+               failureProperty="test.failed"
+               includeAntRuntime="true"
+               >
+             <sysproperty key="test.classes.dir"
+                          value="${test.classes.dir}"/>
+             <!--all properties beginning with test-->
+             <classpath>
+               <path refid="tests.run.classpath"/>
+             </classpath>
+             <batchtest todir="${test.data.dir}">
+               <!-- bulk test case -->
+               <fileset dir="${test.classes.dir}">
+                 <include name="org/smartfrog/**/system/**/*Test.class"/>
+               </fileset>
+             </batchtest>
+           </core:junit>
+           <fail if="failure">Junit failed</fail>
+         </test>
+         <teardown>
+           <sf:stopdaemon failonerror="false"/>
+         </teardown>
+       </sf:functionaltest>
+  </target>
   
 </project>    

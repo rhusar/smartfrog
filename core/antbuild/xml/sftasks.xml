@@ -45,7 +45,7 @@
   <!-- ========================================================== -->
   <target name="extended-smartfrog-tasks" 
       depends="sftasks.smartfrog-tasks">
-      
+   <property name="smartfrog.daemon.port" value="3800"/>
    <presetdef name="daemonfound" uri="${sf.antlib.uri}">
       <condition >
         <socket port="${smartfrog.daemon.port}" server="localhost" />

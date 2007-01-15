@@ -30,6 +30,15 @@
 #include "/org/smartfrog/sfcore/workflow/conditional/components.sf"
 
 
+ BlockForJdbcConnection extends FailingWaitFor {
+  database TBD;
+  condition extends IsJdbcConnectionOpen {
+    database LAZY PARENT:database;
+  }
+   interval 200;
+   timeout 2000;
+  }
+
 
  AdminCommand extends Transaction {
  }

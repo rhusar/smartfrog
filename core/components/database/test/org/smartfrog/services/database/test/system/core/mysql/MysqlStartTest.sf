@@ -1,0 +1,17 @@
+
+#include "/org/smartfrog/services/database/test/system/core/mysql/ConnectionOpenTest.sf";
+
+
+
+sfConfig extends MysqlTest {
+
+   description "do nothing but start mysql";
+
+    tests extends Sequence {
+      delay extends Delay {
+        time mysql_startup_delay;
+      }
+
+    }
+
+}
