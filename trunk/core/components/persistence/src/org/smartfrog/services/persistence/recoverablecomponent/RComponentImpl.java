@@ -125,7 +125,8 @@ public class RComponentImpl extends CompoundImpl implements RComponent,
             SmartFrogDeploymentException, RemoteException {
 
         try {
-            if ( isRecovery( cxt ) ) {
+        	sfIsRecovered = isRecovery( cxt );
+            if ( sfIsRecovered ) {
 
                 model = PersistenceModel.constructModel( cxt );
                 stableLog = getStorage( cxt );
@@ -241,6 +242,16 @@ public class RComponentImpl extends CompoundImpl implements RComponent,
 
         sfLifecycleCommitPoint( CommitPoints.POST_RECOVER );
         sfEndLifecycleCommitPoints();
+    }
+    
+    
+    /**
+     * Determines if this component was reconstructed from its persistent storage.
+     * 
+     * @return true if recovered from storage, false if initial deployment
+     */
+    public boolean sfIsRecovered() {
+    	return sfIsRecovered;
     }
 
 

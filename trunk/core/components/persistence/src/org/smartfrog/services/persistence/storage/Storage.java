@@ -23,11 +23,15 @@ import java.io.Serializable;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.rmi.RemoteException;
 import java.util.Vector;
 
 import org.smartfrog.sfcore.common.Context;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
+import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
+import org.smartfrog.sfcore.componentdescription.ComponentDescriptionImpl;
+import org.smartfrog.sfcore.prim.Prim;
 
 
 /**
@@ -40,10 +44,14 @@ public abstract class Storage implements Serializable {
     public static final String UNKNOWN_CLASS = "unknown class";
     public static final String CLASS_ATTRIB = "wfStorageClass";
     public static final String CONFIG_DATA = "wfStorageConfigData";
-    public static final String NAME_ATTRIB = "wfStorageName";
+    public static final String NAME_ATTRIB = "wfStorageDatabaseName";
     public static final String REPO_ATTRIB = "wfStorageRepository";
+    public static final String DBNAME_ATTRIB = "wfStorageDatabaseName";
+    public static final String REGISTER_ATTRIB = "recoveryRegister";
 
-
+    protected ComponentDescription configData;
+    
+ 
     /**
      * Obtains a vector of the stores in the appropriate repository.
      *
@@ -214,18 +222,33 @@ public abstract class Storage implements Serializable {
      * @return Storage
      * @throws SmartFrogDeploymentException
      */
-    public static Storage createNewStorage(Context context) throws
-            StorageException {
+    public static Storage createNewStorage(Context context) throws StorageException {
+    	
+    	Storage newStorage = null;
 
-        Object configObj = context.get(CONFIG_DATA);
-        if (configObj == null) {
-            throw new StorageException("Storage config missing");
-        }
-        if (!(configObj instanceof ComponentDescription)) {
-            throw new StorageException(
-                    "Storage config is not a component description");
-        }
-        return createNewStorage((ComponentDescription) configObj);
+    	Object configObj = context.get(CONFIG_DATA);
+    	if (configObj == null) {
+    		throw new StorageException("Storage config missing");
+    	}
+
+    	if (!(configObj instanceof ComponentDescription)) {
+    		throw new StorageException(
+    		"Storage config is not a component description");
+    	}
+    	
+    	ComponentDescription config = (ComponentDescription)configObj;
+    	
+    	registerIfRequired(config);
+    	
+    	try {
+    		newStorage = createNewStorage(config);
+    	} catch (StorageException ex) {
+    		try { deregisterIfRequired(config); }
+    		catch(Exception e) { e.printStackTrace(); }
+    		throw ex;
+    	}
+    	
+    	return newStorage;
     }
 
 
@@ -276,6 +299,78 @@ public abstract class Storage implements Serializable {
         }
 
     }
+    
+    
+    /**
+     * Registers the storage description with a recovery register if one is defined.
+     * The recoveryRegister is defined if the description contains it as an attribute.
+     * 
+     * @param config - the storage description
+     * @throws StorageException - failed to register
+     */
+    protected static void registerIfRequired(ComponentDescription config) throws StorageException {
+    	
+    	Prim register;
+    	try {
+    		register = config.sfResolve(Storage.REGISTER_ATTRIB, (Prim)null, false);
+    	} catch(Exception e) {
+    		return;
+    	}
+
+    	try {
+    		String dbname = (String)config.sfResolve(Storage.DBNAME_ATTRIB);
+    		if( register != null ) {
+    			ComponentDescription cd = new ComponentDescriptionImpl(null, (Context)config.sfContext().copy(), false);
+    			register.sfAddAttribute(dbname, cd);
+    		}
+    	} catch(Exception e) {
+    		throw new StorageException("Failed to register storage with recovery register", e);
+    	}
+    }
+    
+    
+    /**
+     * Deregisters the storage description from a recovery register if one is defined.
+     * The reoveryRegister is defined if the description contains it as an attribute.
+     * 
+     * @param config - the storage description
+     * @throws StorageException - failed to deregister
+     */
+    protected static void deregisterIfRequired(ComponentDescription config) throws StorageException {
+    	Prim register;
+    	try {
+    		register = config.sfResolve(Storage.REGISTER_ATTRIB, (Prim)null, false);
+    	} catch(Exception e) {
+    		return;
+    	}
+
+    	try {
+    		String dbname = (String)config.sfResolve(Storage.DBNAME_ATTRIB);
+    		if( register != null ) {
+    			register.sfRemoveAttribute(dbname);
+    		}
+    	} catch(Exception e) {
+    		throw new StorageException("Failed to deregister storage from recovery register", e);
+    	}	
+    	
+    	
+    }
+    
+    
+    /**
+     * Tests to see if the object is a storage component description. The object
+     * must be a component description containing a storage class attribute.
+     * 
+     * @param obj
+     * @return true if storage description false if not
+     */
+	public static boolean isStorageDescription(Object obj) {
+		if( !(obj instanceof ComponentDescription ) ) {
+			return false;
+		} else {
+			return ((ComponentDescription)obj).sfContainsAttribute(Storage.CLASS_ATTRIB);
+		}
+	}
 
 
     /**
@@ -326,7 +421,9 @@ public abstract class Storage implements Serializable {
 
     public abstract void abort() throws StorageException;
 
-    public abstract void delete() throws StorageException;
+    public void delete() throws StorageException {
+    	deregisterIfRequired(configData);
+    }
 
     public abstract void disableCommit();
 

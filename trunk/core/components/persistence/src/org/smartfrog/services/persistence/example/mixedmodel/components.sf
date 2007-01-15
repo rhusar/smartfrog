@@ -1,0 +1,49 @@
+#include "org/smartfrog/components.sf"
+#include "org/smartfrog/services/persistence/components.sf"
+#include "org/smartfrog/services/persistence/storage/berkelydb/components.sf"
+
+
+StorageAgent extends Compound {
+	sfClass "org.smartfrog.services.persistence.storage.StorageAgentImpl";
+	sfExport true;
+}
+
+
+
+DeployableBDBStorage extends Storage {
+    sfDeployerClass "org.smartfrog.services.persistence.deployer.StorageRecoveryDeployerImpl";
+
+    wfStorageClass "org.smartfrog.services.persistence.storage.berkelydb.StorageImpl";
+    wfStorageRepository "c:/test/persistence/store";
+    wfStorageDatabaseName TBD;
+}
+
+
+
+MixedModelPersistence extends DATA {
+    sfPersistenceModelClass "org.smartfrog.services.persistence.model.MixedModel";
+}
+
+
+MixedRComponent extends RComponent {
+	
+	sfPersistenceModelConfig MixedModelPersistence;
+	
+	wfStorageConfigData extends DATA DeployableBDBStorage {
+	    wfStorageRepository "c:/test/persistence/store";
+		wfStorageDatabaseName TBD;
+	}
+}
+
+RecoveryRegister extends MixedRComponent {
+	sfClass "org.smartfrog.services.persistence.recovery.RecoveryRegister";
+	sfDeployerClass "org.smartfrog.services.persistence.deployer.StorageOrDescriptionDeployerImpl";
+	sfProcessComponentName "WoodFrogRecoveryAgent";
+	wfStorageConfigData:wfStorageRepository "c:/test/persistence/recoveryRoot/store";
+	wfStorageConfigData:wfStorageDatabaseName "recoveryMgrRoot";
+}
+
+
+
+
+

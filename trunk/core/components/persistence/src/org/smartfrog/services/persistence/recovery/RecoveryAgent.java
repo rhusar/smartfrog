@@ -105,9 +105,10 @@ public class RecoveryAgent extends CompoundImpl implements Compound {
                 System.out.println( "Examining stores" );
                 for ( int i = 0; i < stores.size(); i++ ) {
                     String storeName = ( String ) stores.get( i );
+                    Storage storage = null;
                     try {
                         configData.sfReplaceAttribute( Storage.NAME_ATTRIB, storeName );
-                        Storage storage = Storage.createExistingStorage( configData );
+                        storage = Storage.createExistingStorage( configData );
                         System.out.println( "Recovering " + storeName );
                         if ( !storage.getEntry( RComponent.WFSTATUSENTRY ).
                              equals( RComponent.WFSTATUS_DEAD ) ) {
@@ -119,6 +120,12 @@ public class RecoveryAgent extends CompoundImpl implements Compound {
                         System.err.println( "Component " + storeName + " is apparently running." );
                     } catch ( SmartFrogRuntimeException ex ) {
                         System.err.println( "Component " + storeName + " is apparently running." );
+                    }
+                    try {
+                        if( storage != null ) {
+                            storage.close();
+                        }
+                    } catch ( StorageException ex2 ) {
                     }
                 }
             }
