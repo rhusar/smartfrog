@@ -1,0 +1,21 @@
+#include "org/smartfrog/services/persistence/example/mixedmodel/components.sf"
+
+
+sfConfig extends MixedRComponent {
+
+  sfExport true;
+  registerWithRecoveryRoot true;
+  wfStorageConfigData:wfStorageDatabaseName "bigfred";
+  wfStorageConfigData:recoveryRegister LAZY PROCESS:WoodFrogRecoveryAgent;
+
+  fredschild extends MixedRComponent {
+
+    sfExport true;
+    wfStorageConfigData:wfStorageDatabaseName "littlefred";
+
+  }
+  
+  nonPersistentChild extends Compound {
+     attr1 "this is nothing special";
+  }
+}

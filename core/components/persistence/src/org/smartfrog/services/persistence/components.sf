@@ -51,3 +51,11 @@ RecoveryAgent extends Compound {
     wfStorageConfigData extends DATA Storage;
 }
 
+
+
+
+mycomponent extends RComponent {
+
+    wfStorageConfigData extends BDBStorage;
+
+}
