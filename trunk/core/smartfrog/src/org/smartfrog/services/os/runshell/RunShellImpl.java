@@ -1,4 +1,4 @@
-/** (C) Copyright 1998-2005 Hewlett-Packard Development Company, LP
+/** (C) Copyright 1998-2007 Hewlett-Packard Development Company, LP
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
@@ -47,16 +47,7 @@ import java.util.Vector;
 
 
 /**
- *  This class implements the Compound interface because it can "contain"
- *  Virtual Hosts components. The Apache interface is the Remoteable interface
- *  and the Runnable interface is used to monitor the httpd process. The httpd
- *  process is started in sfStart by setting the apacheState variable to true
- *  and ended in sfTerminate by setting the apacheState variable to false. The
- *  Internet Activator scripts are used to edit the httpd.conf file. These rely
- *  on certain environment variables being set, these variables are defined in
- *  the sf file and are passed to the common.executeScript() method. Adding them
- *  to the sf file avoids the need to hard code these paramters. The scripts are
- *  downloaded from a webserver and are then saved locally.
+ *  This class implements the RunShell component to run a shell of things
  *
  */
 public class RunShellImpl extends PrimImpl implements Prim, RunShell, Runnable {
@@ -169,7 +160,7 @@ public class RunShellImpl extends PrimImpl implements Prim, RunShell, Runnable {
      * @exception  RemoteException In case of network/rmi error
      */
     public synchronized void sfDeploy() throws SmartFrogException,
-    RemoteException {
+        RemoteException {
         try {
             super.sfDeploy();
             helper=new ComponentHelper(this);
@@ -178,8 +169,21 @@ public class RunShellImpl extends PrimImpl implements Prim, RunShell, Runnable {
 
             //Create subProcess
             File workDirFile = new File(workDir);
+            String[] commands = createCmd(shellPrefix, shellCommand, shellCommandAtt);
+            if (log.isDebugEnabled()) {
+                StringBuffer buffer=new StringBuffer();
+                buffer.append("Running in dir ");
+                buffer.append(workDirFile);
+                buffer.append('\n');
+                for(int i=0;i<commands.length;i++) {
+                    buffer.append("  '");
+                    buffer.append(commands[i]);
+                    buffer.append("'\n");
+                }
+                log.debug(buffer);
+            }
             subProcess = runtime.exec(
-                    createCmd(shellPrefix,shellCommand, shellCommandAtt),
+                    commands,
                     envProp,
                     workDirFile);
             dos = new DataOutputStream(subProcess.getOutputStream());
@@ -273,6 +277,8 @@ public class RunShellImpl extends PrimImpl implements Prim, RunShell, Runnable {
      *  Reads SF description = initial configuration.
      * Override this to read/set properties before we read ours, but remember to call
      * the superclass afterwards
+     * @throws SmartFrogException
+     * @throws RemoteException
      */
     protected void readSFAttributes() throws SmartFrogException, RemoteException {
 

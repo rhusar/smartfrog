@@ -31,66 +31,66 @@ import java.util.Vector;
  */
 public interface RunShell extends Remote {
     /** String for process id. */
-    final static String varSFProcessId = "processId";
+    String varSFProcessId = "processId";
     /** String for process name. */
-    final static String varSFProcessName = "processName";
+    String varSFProcessName = "processName";
     /** String for shell command. */
-    final static String varShellCommand = "shellCmd";
+    String varShellCommand = "shellCmd";
 
     /** String for commands. They could be Strings or Vectors of Strings. */
-    final static String varCMDs = "cmd";
+    String varCMDs = "cmd";
 
     /** String for exit command . They could be Strings or
      * Vectors of Strings. */
-    final static String varExitCmd = "exitCmd";
+    String varExitCmd = "exitCmd";
     /**
      * String for exit command. Should I use exitCmd at the end of the script?
      */
-    final static String varUseExitCmd = "useExitCmd";
+    String varUseExitCmd = "useExitCmd";
     /** String for env properties. They could be Strings or
      * Vectors of Strings. */
-    final static String varEnvProp = "envProperties";
+    String varEnvProp = "envProperties";
 
     /**
      * Vector of strings for arguments.
      */
-    final static String varShellArguments = "shellArguments";
+    String varShellArguments = "shellArguments";
 
     /** ProcessWorkingDirectory. */
-    final static String varSFWorkDir = "workDir";
+    String varSFWorkDir = "workDir";
     /** LineReturn. */
-    final static String varLineReturn = "lineReturn";
+    String varLineReturn = "lineReturn";
     /** Delay between commands. */
-    final static String varDelayBetweenCmds = "delayBetweenCmds";
+    String varDelayBetweenCmds = "delayBetweenCmds";
     /** Output message to. */
-    final static String varOutputMsgTo = "outputMsgTo";
+    String varOutputMsgTo = "outputMsgTo";
 
     /** Object that implements org.smartfrog.services.display.PrintMsgInt
      * /sfServices.sfDisplay uses it. */
-    final static String varErrorMsgTo = "errorMsgTo";
+    String varErrorMsgTo = "errorMsgTo";
 
     /** Object that implements org.smartfrog.services.display.PrintErrMsgInt
      * /sfServices.sfDisplay uses it. */
-    final static String varOutputStreamTo = "OutputStreamTo";
+    String varOutputStreamTo = "OutputStreamTo";
 
     /** Object that implements
      * org.smartfrog.services.os.runCmd.OutputStreamInt. */
-    final static String varErrorStreamTo = "errorStreamTo";
+    String varErrorStreamTo = "errorStreamTo";
 
     /** Object that implements
      * org.smartfrog.services.os.runCmd.InfoStreamInt. */
-    final static String varWaitSignalGoAhead = "waitSignalGoAhead";
+    String varWaitSignalGoAhead = "waitSignalGoAhead";
 
    /** Should the batch be done step by step?. This indicates if the process
      * should detach when the spanned shell finishes and before terminating
      * the component*/
-    final static String varShouldDetach = "shouldDetach";
-    final static String varShouldTerminate = "shouldTerminate";
+    String varShouldDetach = "shouldDetach";
+    String varShouldTerminate = "shouldTerminate";
 
     /** Level log. */
-    final static String varLogger = "logLevel";
+    String varLogger = "logLevel";
     /** Print Stack. */
-    final static String varPrintStack = "printStack";
+    String varPrintStack = "printStack";
     /**
      * status attribute; runtime
      */
@@ -124,6 +124,6 @@ public interface RunShell extends Remote {
      */
     public void execBatch(Vector cmds) throws RemoteException;
 
-    //  public static final static String SCHEDULER="scheduler";
+    //  public static String SCHEDULER="scheduler";
     //  public void shutdown();
 }
