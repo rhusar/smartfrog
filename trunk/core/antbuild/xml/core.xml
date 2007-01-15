@@ -301,6 +301,10 @@
           <propertyref prefix="http."/>
           <propertyref prefix="socks."/>
         </syspropertyset>
+        <!-- all test. properties-->
+        <syspropertyset>
+          <propertyref prefix="test."/>
+        </syspropertyset>
         <!-- #Tests take system property parameters -->
         <!-- #Formatters for capture and display -->
         <formatter type="xml"/>
@@ -320,7 +324,9 @@
           </fileset>
           <report format="frames" todir="@{reports}"/>
         </junitreport>
-        <fail if="@{failed}">Unit tests failed see @{reports}</fail>
+        <fail if="@{failed}">Tests failed see
+@{reports}
+        </fail>
       </sequential>
     </macrodef>
     

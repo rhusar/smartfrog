@@ -1,5 +1,6 @@
 <?xml version="1.0"?>
-<project name="database" default="default">
+<project name="database" default="default"
+         xmlns:sf="antlib:org.smartfrog.tools.ant">
 
   <!--
   /** (C) Copyright 2005 Hewlett-Packard Development Company, LP
@@ -57,7 +58,16 @@
   </target>
 -->
 
+  <target name="init" depends="core.init">
+    <echo message="==================================================================="/>
+    <echo message="= ${ant.project.name}"/>
+  </target>
 
-  
+  <target name="failure" depends="extended-smartfrog-tasks">
+    <sf:unknown />
+  </target>
 
+  <target name="failure2" >
+    <unknown />
+  </target>
 </project>

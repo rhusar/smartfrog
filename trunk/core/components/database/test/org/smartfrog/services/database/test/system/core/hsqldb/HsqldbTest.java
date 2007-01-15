@@ -22,7 +22,7 @@ public class HsqldbTest extends DeployingTestBase {
     }
 
 
-    public void testConnectionOpenTestt() throws Throwable {
+    public void testConnectionOpenTest() throws Throwable {
         application = deployExpectingSuccess(
                 "/org/smartfrog/services/database/test/system/core/hsqldb/ConnectionOpenTest.sf",
                 "ConnectionOpenTest");

@@ -12,9 +12,10 @@ TableManipulationTest extends TestCompound {
 
     tests extends Sequence {
 
-/*        delay extends Delay {
-          time 5000;
-        }*/
+        wait extends BlockForJdbcConnection {
+            database LAZY action;
+        }
+
 
         dropUser1 extends DropUser {
           database LAZY ATTRIB action;

@@ -1,0 +1,18 @@
+
+#include "/org/smartfrog/services/database/test/system/core/mysql/ConnectionOpenTest.sf";
+
+
+
+sfConfig extends MysqlTest {
+
+   description "use mysqladmin to shut down mysql";
+
+    tests extends Sequence {
+      delay extends Delay {
+        time mysql_startup_delay;
+        action extends mysqladmin-shutdown;
+      }
+
+    }
+
+}

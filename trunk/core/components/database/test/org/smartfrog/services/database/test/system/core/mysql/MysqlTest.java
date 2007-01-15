@@ -14,19 +14,33 @@ public class MysqlTest extends DeployingTestBase {
     }
 
     public void testTableManipulationTest() throws Throwable {
-        application = deployExpectingSuccess(
-                BASE +"TableManipulationTest.sf",
-                "TableManipulationTest");
-        TestBlock block = (TestBlock) application;
-        expectSuccessfulTermination(block);
+        deployAndTerminate("TableManipulationTest");
     }
 
 
     public void testConnectionOpenTest() throws Throwable {
+        deployAndTerminate("ConnectionOpenTest");
+    }
+
+    public void testIsMysqlLiveTest() throws Throwable {
+        deployAndTerminate("IsMysqlLiveTest");
+    }
+
+    public void testMysqlStartTest() throws Throwable {
+        deployAndTerminate("MysqlStartTest");
+    }
+    
+    public void testShutdownTest() throws Throwable {
+        deployAndTerminate("ShutdownTest");
+    }
+
+    private void deployAndTerminate(String template) throws Throwable {
         application = deployExpectingSuccess(
-                BASE +"ConnectionOpenTest.sf",
-                "ConnectionOpenTest");
+                BASE + template +".sf",
+                template);
         TestBlock block = (TestBlock) application;
         expectSuccessfulTermination(block);
     }
+
+
 }

@@ -46,7 +46,7 @@
        not to be run on public machines for
        security reasons, unless security is active-->
   <!-- ========================================================== -->
-  <target name="system-tests" if="system.tests.enabled" depends="init"
+  <target name="system-tests" if="system.tests.enabled" depends="ready-to-test"
     description="run the system tests">
     <echo message="No system tests"/>
   </target>

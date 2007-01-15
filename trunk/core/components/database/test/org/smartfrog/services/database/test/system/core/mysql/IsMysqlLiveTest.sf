@@ -1,0 +1,17 @@
+
+#include "/org/smartfrog/services/database/test/system/core/mysql/ConnectionOpenTest.sf";
+
+
+
+sfConfig extends MysqlTest {
+
+   description "test the liveness component that pings the database";
+
+    tests extends Sequence {
+
+      wait extends BlockForMysqlLive {
+          database LAZY action:binding;
+      }
+    }
+
+}

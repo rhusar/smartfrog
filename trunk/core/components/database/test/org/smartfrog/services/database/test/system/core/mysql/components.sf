@@ -25,34 +25,87 @@
 
 #include "/org/smartfrog/services/database/test/system/core/components.sf";
 #include "/org/smartfrog/services/database/mysql/components.sf";
+#include "/org/smartfrog/sfcore/workflow/components.sf"
+#include "/org/smartfrog/services/filesystem/components.sf"
 
  memorydb "memory";
  testUser "testUser";
  testPass "secret";
 
 
- Mysqld extends mysqldaemon;
+ Mysqld extends mysqldaemon {
+/*
+  shouldTerminate false;
+  terminateOnFailure false;
+*/
+  skip-innodb true;
+  logLevel 5;
+}
 
- MysqlBinding extends MysqlTargetedBinding {
+ DiaryBinding extends MysqlTargetedBinding {
    database "diary";
  }
 
- TestUserBinding extends TestDB {
+ TestUserBinding extends DiaryBinding {
    username testUser;
    password testPass;
  }
 
+ Datadir extends TempDirWithCleanup {
+  prefix "mysql";
+ }
 
- DatabaseAndBinding extends Parallel {
+ DatabaseAndBinding extends Compound {
 
-      mysqld extends Mysqld;
+      datadir extends Datadir;
 
+      mysqld extends Mysqld {
+        datadir LAZY PARENT:datadir:absolutePath;
+        basedir datadir;
+      }
+
+      //binding extends DiaryBinding;
       binding extends MysqlBinding;
 
   }
-  
 
- sfConfig {
+  /**
+   * how long should we give mysql before giving up?
+   */
+  mysql_startup_delay 5000;
+
+
+  BlockForMysqlConnection extends BlockForJdbcConnection {
+   timeout mysql_startup_delay ;
+  }
+
+  BlockForMysqlLive extends FailingWaitFor {
+    database TBD;
+    condition extends IsMysqlLive {
+      database LAZY PARENT:database;
+    }
+   interval 200;
+   timeout mysql_startup_delay;
+  }
+
+
+MysqlTest extends TestCompound {
+
+    description "test compound for mysql tests";
+
+    sfShouldTerminate false;
+
+    action extends DatabaseAndBinding ;
+
+    database LAZY action:binding;
+
+    tests extends Sequence {
+    }
+
+ }
+
+
+ sfConfig extends Compound {
 
 
     mysqld extends Mysqld;

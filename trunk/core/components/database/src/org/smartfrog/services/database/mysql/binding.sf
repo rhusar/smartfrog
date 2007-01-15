@@ -34,26 +34,29 @@
  * http://mysql.com
  */
 
-MySqlBinding extends DatabaseBinding {
+MysqlBinding extends DatabaseBinding {
+  binding_prefix "jdbc:mysql://";
   driver "com.mysql.jdbc.Driver";
+  url "jdbc:mysql://localhost/";
 }
 
 /**
  * Add host and database names to the binding
  */
-MySqlTargetedBinding extends MysqlBinding {
+MysqlTargetedBinding extends MysqlBinding {
   host locahost;
   //port
   port 3306;
   database "";
-  binding_prefix "jdbc:mysql://";
-  url (((((binding_prefix ++ host) ++ ":" ) ++ port) ++ "/")) ++ database);
+  _db LAZY database;
+
+ // url (((((binding_prefix ++ host) ++ ":" ) ++ port) ++ "/") ++ _db);
 }
 
 /**
  * The administrator account
  */
-MySqlAdministrator extends MysqlTargetedBinding {
+MysqlAdministrator extends MysqlTargetedBinding {
   username "root";
   password "";
 }
@@ -62,7 +65,7 @@ MySqlAdministrator extends MysqlTargetedBinding {
  * Test for a live database
  * Requires a database > 3.22, and a compatible mysql driver.
  */
-IsMySqlLive extends ConnectionOpens {
+IsMysqlLive extends IsJdbcConnectionOpen {
   sfClass "org.smartfrog.services.database.mysql.IsMysqlLive";
 }
 
