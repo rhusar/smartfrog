@@ -118,7 +118,7 @@ public class Transmission implements Callable {
     }
 
     /**
-     * triggers the actuall transmission
+     * triggers the actual transmission
      *
      * @return computed result
      * @throws Exception if unable to compute a result
