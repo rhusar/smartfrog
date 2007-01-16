@@ -85,7 +85,7 @@ public class RunJavaImpl extends RunShellImpl implements RunJava {
         Vector flatSysProperties = flatten(sysProperties, "-D", "=", "");
         Boolean assertions=(Boolean) sfResolve(ATTR_ASSERTIONS,(Boolean)null,false);
         Boolean sysAssertions = (Boolean) sfResolve(ATTR_SYSTEMASSERTIONS, (Boolean) null, false);
-        Vector arguments=sfResolve(ATTR_ASSERTIONS, (Vector) null, false);
+        Vector arguments=sfResolve(ATTR_ARGUMENTS, (Vector) null, false);
 
 
         addArgs(args, flatSysProperties);
