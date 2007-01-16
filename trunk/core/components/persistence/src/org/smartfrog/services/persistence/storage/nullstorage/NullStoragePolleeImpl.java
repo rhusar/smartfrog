@@ -17,24 +17,29 @@
 
  */
 
-#include "org/smartfrog/services/persistence/example/mixedmodel/components.sf"
 
+package org.smartfrog.services.persistence.storage.nullstorage;
 
-sfConfig extends MixedRComponent {
+import java.io.Serializable;
 
-  sfExport true;
-  registerWithRecoveryRoot true;
-  wfStorageConfigData:wfStorageDatabaseName "bigfred";
-  wfStorageConfigData:recoveryRegister LAZY PROCESS:WoodFrogRecoveryAgent;
+import org.smartfrog.services.persistence.storage.StorageException;
+import org.smartfrog.services.persistence.storage.StoragePollee;
+import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 
-  fredschild extends MixedRComponent {
+public class NullStoragePolleeImpl implements StoragePollee {
+	
 
-    sfExport true;
-    wfStorageConfigData:wfStorageDatabaseName "littlefred";
+    public NullStoragePolleeImpl() throws StorageException {
+    	return;
+    }
 
-  }
-  
-  nonPersistentChild extends Compound {
-     attr1 "this is nothing special";
-  }
+	public void close() throws StorageException {
+		// Do nothing
+		return;
+	}
+
+	public Serializable pollEntry(String entryName) throws StorageException {
+		throw new StorageException("Attempt to poll null storage");
+	}
+
 }

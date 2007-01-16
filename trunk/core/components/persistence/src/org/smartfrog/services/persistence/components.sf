@@ -22,6 +22,12 @@ For more information: www.smartfrog.org
 #include "org/smartfrog/services/persistence/storage/components.sf"
 
 
+NullStorage extends Storage {
+    wfStorageClass "org.smartfrog.services.persistence.storage.nullstorage.NullStorageImpl";
+    wfStorageRepository "";
+    wfStorageDatabaseName NULL;       // null means make one up
+}
+
 
 RedeployPersistence extends DATA {
     sfPersistenceModelClass "org.smartfrog.services.persistence.model.RedeployPersistence";
@@ -33,6 +39,11 @@ RebindPersistence extends DATA {
 }
 
 
+NullPersistence extends DATA {
+    sfPersistenceModelClass "org.smartfrog.services.persistence.model.NullModel";
+}
+
+
 RComponent extends Compound {
     sfClass "org.smartfrog.services.persistence.recoverablecomponent.RComponentImpl";
     sfExport true;
@@ -41,10 +52,18 @@ RComponent extends Compound {
     wfStorageConfigData      TBD;
 }
 
+
+NullRComponent extends RComponent {
+    sfPersistenceModelConfig extends DATA NullPersistence;
+    wfStorageConfigData      extends DATA NullStorage;
+}
+
+
 StorageAgent extends Compound{
 	sfClass  "org.smartfrog.services.persistence.storage.StorageAgentImpl";
 	sfExport true;
 }
+
 
 RecoveryAgent extends Compound {
     sfClass             "org.smartfrog.services.persistence.recovery.RecoveryAgent";

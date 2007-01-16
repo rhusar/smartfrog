@@ -20,14 +20,12 @@
 #include "org/smartfrog/services/persistence/example/mixedmodel/components.sf"
 
 
-sfConfig extends MixedRComponent {
+sfConfig extends NullRComponent {
 
   sfExport true;
-  registerWithRecoveryRoot true;
   wfStorageConfigData:wfStorageDatabaseName "bigfred";
-  wfStorageConfigData:recoveryRegister LAZY PROCESS:WoodFrogRecoveryAgent;
 
-  fredschild extends MixedRComponent {
+  fredschild extends NullRComponent {
 
     sfExport true;
     wfStorageConfigData:wfStorageDatabaseName "littlefred";

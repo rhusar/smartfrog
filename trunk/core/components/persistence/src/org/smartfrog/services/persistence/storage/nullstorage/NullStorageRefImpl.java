@@ -17,24 +17,24 @@
 
  */
 
-#include "org/smartfrog/services/persistence/example/mixedmodel/components.sf"
 
+package org.smartfrog.services.persistence.storage.nullstorage;
 
-sfConfig extends MixedRComponent {
+import org.smartfrog.services.persistence.storage.Storage;
+import org.smartfrog.services.persistence.storage.StorageException;
+import org.smartfrog.services.persistence.storage.StoragePollee;
+import org.smartfrog.services.persistence.storage.StorageRef;
 
-  sfExport true;
-  registerWithRecoveryRoot true;
-  wfStorageConfigData:wfStorageDatabaseName "bigfred";
-  wfStorageConfigData:recoveryRegister LAZY PROCESS:WoodFrogRecoveryAgent;
+public class NullStorageRefImpl implements StorageRef {
 
-  fredschild extends MixedRComponent {
+	public Storage getStorage() throws StorageException {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
-    sfExport true;
-    wfStorageConfigData:wfStorageDatabaseName "littlefred";
+	public StoragePollee getStoragePollee() throws StorageException {
+		// TODO Auto-generated method stub
+		return new NullStoragePolleeImpl();
+	}
 
-  }
-  
-  nonPersistentChild extends Compound {
-     attr1 "this is nothing special";
-  }
 }
