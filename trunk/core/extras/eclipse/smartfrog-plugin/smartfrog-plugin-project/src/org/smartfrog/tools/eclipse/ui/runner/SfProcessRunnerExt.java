@@ -91,8 +91,8 @@ class SfProcessRunnerExt
 	String classpath = SmartFrogProjectUtil.getbinPathName(mselectedIFile);
     	if (null == classpath)
     	    return null;
-    	classpath = classpath + Util.getClassSeparator()+ mClassPath + SmartFrogPlugin.getmClassPath(mselectedIFile) ;
-	
+    //	classpath = classpath + Util.getClassSeparator()+ mClassPath + SmartFrogPlugin.getmClassPath(mselectedIFile) ;
+        classpath = mClassPath + SmartFrogPlugin.getmClassPath(mselectedIFile) ;
 	String cmdsStart[] = new String[8];
         cmdsStart[0]= JAVA;
         cmdsStart[1] = "-cp";
