@@ -91,6 +91,7 @@ class SfProcessRunnerExt
 	String classpath = SmartFrogProjectUtil.getbinPathName(mselectedIFile);
     	if (null == classpath)
     	    return null;
+	// removing binPathName from classpath
     //	classpath = classpath + Util.getClassSeparator()+ mClassPath + SmartFrogPlugin.getmClassPath(mselectedIFile) ;
         classpath = mClassPath + SmartFrogPlugin.getmClassPath(mselectedIFile) ;
 	String cmdsStart[] = new String[8];

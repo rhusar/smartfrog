@@ -82,27 +82,12 @@ class SfDaemonRunnerExt
     	
     	String classpath = SmartFrogProjectUtil.getbinPathName(mSelectedIFile);
    
-       try {	
-	File fp = new File("D:\\test-out.txt");	
-
-	FileOutputStream out = new FileOutputStream(fp);
-
-	PrintStream mystream = new PrintStream(out);
-
-	mystream.println("\nCLASSPATH-BIN=======" + classpath);
-		
-	mystream.println("\nMCLASSPATH=======" + mClassPath);
-	
-	mystream.println("\nGETMCLASSPATH=======" + SmartFrogPlugin.getmClassPath(mSelectedIFile));
-
-	} catch (Exception ex) {
-		ex.printStackTrace();
-	}
+       
 	
 	if (null == classpath)
     	    return;
     	//classpath = classpath + Util.getClassSeparator()+mClassPath ;
-    	
+    	// removing binPathName from classpath	
 	//classpath = classpath + Util.getClassSeparator()+ mClassPath + SmartFrogPlugin.getmClassPath(mSelectedIFile) ;
     	classpath = mClassPath + SmartFrogPlugin.getmClassPath(mSelectedIFile) ;
 //        String cmd = JAVA + ISmartFrogConstants.WHITE_SPACE
