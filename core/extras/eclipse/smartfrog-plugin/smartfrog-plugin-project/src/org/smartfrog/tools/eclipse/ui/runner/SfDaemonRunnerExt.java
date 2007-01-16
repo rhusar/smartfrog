@@ -36,6 +36,8 @@ import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.JavaCore;*/
 
 import org.smartfrog.tools.eclipse.SmartFrogPlugin;
+
+import java.io.*;
 /**
  * Launch a local SmartFrog Daemon
  */
@@ -79,10 +81,30 @@ class SfDaemonRunnerExt
 	}*/	
     	
     	String classpath = SmartFrogProjectUtil.getbinPathName(mSelectedIFile);
-    	if (null == classpath)
+   
+       try {	
+	File fp = new File("D:\\test-out.txt");	
+
+	FileOutputStream out = new FileOutputStream(fp);
+
+	PrintStream mystream = new PrintStream(out);
+
+	mystream.println("\nCLASSPATH-BIN=======" + classpath);
+		
+	mystream.println("\nMCLASSPATH=======" + mClassPath);
+	
+	mystream.println("\nGETMCLASSPATH=======" + SmartFrogPlugin.getmClassPath(mSelectedIFile));
+
+	} catch (Exception ex) {
+		ex.printStackTrace();
+	}
+	
+	if (null == classpath)
     	    return;
     	//classpath = classpath + Util.getClassSeparator()+mClassPath ;
-    	classpath = classpath + Util.getClassSeparator()+ mClassPath + SmartFrogPlugin.getmClassPath(mSelectedIFile) ;
+    	
+	//classpath = classpath + Util.getClassSeparator()+ mClassPath + SmartFrogPlugin.getmClassPath(mSelectedIFile) ;
+    	classpath = mClassPath + SmartFrogPlugin.getmClassPath(mSelectedIFile) ;
 //        String cmd = JAVA + ISmartFrogConstants.WHITE_SPACE
 //        + "-cp " + classpath + ISmartFrogConstants.WHITE_SPACE //$NON-NLS-1$
 //        + SfDaemonDefIniFileProperty+ mSfDaemonDefIniFile + ISmartFrogConstants.WHITE_SPACE
