@@ -320,7 +320,7 @@
     -->
     <presetdef name="sf-jar">
       <jar
-        compress="false"
+        compress="true"
         duplicate="preserve"
         >
        </jar>
@@ -709,7 +709,7 @@
     for our needs -->
   <!-- ========================================================== -->
   <target name="declare-extended-smartfrog-tasks"
-      depends="init,use-smartfrog-tasks">
+      depends="init,use-smartfrog-tasks,declare-classpaths">
     <presetdef name="sf-startdaemon-debug">
       <sf-startdaemon classpathref="run.classpath"
         logStackTraces="true" spawn="true">
@@ -1018,7 +1018,7 @@
   <!-- compile everything, copy useful files over-->
   <!-- ========================================================== -->
   <target name="compile-tests"
-      depends="package,assert-smartfrog-testharness,declare-tests.compile.classpath,ivy.exec.classpath">
+      depends="package,assert-smartfrog-testharness,declare-classpaths">
       <depend
           srcdir="${test.src.dir}"
           destdir="${test.classes.dir}"
