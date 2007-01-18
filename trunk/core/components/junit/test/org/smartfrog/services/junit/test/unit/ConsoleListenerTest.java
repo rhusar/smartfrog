@@ -20,7 +20,7 @@
 package org.smartfrog.services.junit.test.unit;
 
 import org.smartfrog.services.xunit.base.TestListener;
-import org.smartfrog.services.xunit.listeners.ConsoleListenerComponent;
+import org.smartfrog.services.xunit.listeners.ConsoleListenerImpl;
 import org.smartfrog.services.xunit.serial.TestInfo;
 
 import java.io.PrintStream;
@@ -33,9 +33,9 @@ import java.rmi.RemoteException;
 public class ConsoleListenerTest extends AbstractTestInfoTestBase {
 
 
-    private ConsoleListenerComponent createListener(PrintStream out)
+    private ConsoleListenerImpl createListener(PrintStream out)
             throws RemoteException {
-        ConsoleListenerComponent listener = new ConsoleListenerComponent();
+        ConsoleListenerImpl listener = new ConsoleListenerImpl();
         if (out != null) {
             listener.setOutputStream(out);
         }
@@ -43,7 +43,7 @@ public class ConsoleListenerTest extends AbstractTestInfoTestBase {
     }
 
     public void testSuccess() throws Exception {
-        ConsoleListenerComponent factory = createListener(null);
+        ConsoleListenerImpl factory = createListener(null);
         TestListener listener = factory.listen(null, "localhost", null, "test", 0);
         TestInfo ti = createTestInfo();
         ti.markStartTime();
@@ -54,7 +54,7 @@ public class ConsoleListenerTest extends AbstractTestInfoTestBase {
     }
 
     public void testError() throws Exception {
-        ConsoleListenerComponent factory = createListener(null);
+        ConsoleListenerImpl factory = createListener(null);
         TestListener listener = factory.listen(null, "localhost", null, "test", 0);
         TestInfo ti = createTestInfo();
         listener.startTest(ti);

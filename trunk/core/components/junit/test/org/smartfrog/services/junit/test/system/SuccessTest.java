@@ -1,4 +1,4 @@
-/** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
+/** (C) Copyright 2007 Hewlett-Packard Development Company, LP
 
  This library is free software; you can redistribute it and/or
  modify it under the terms of the GNU Lesser General Public
@@ -17,21 +17,18 @@
  For more information: www.smartfrog.org
 
  */
-package org.smartfrog.services.junit.junit3;
+package org.smartfrog.services.junit.test.system;
 
-import org.smartfrog.services.xunit.base.PackagedTestSuite;
+/** Test deploying against a localhost Date: 06-Jul-2004 Time: 21:54:25 */
+public class SuccessTest extends TestRunnerTestBase {
 
-/**
- * This is the junit specific test suite interface
- * created 20-May-2004 11:08:18
- */
+    public SuccessTest(String name) {
+        super(name);
+    }
 
 
-public interface JUnitTestSuite extends PackagedTestSuite {
-    /** {@value} */
-    public static final String ATTR_IF = "if";
-    /** {@value} */
-    public static final String ATTR_UNLESS = "unless";
-
+    public void testSuccess() throws Throwable {
+        executeBufferedTestRun("success", 1, 0, 0);
+    }
 
 }

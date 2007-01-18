@@ -30,7 +30,7 @@ public abstract class AbstractTestInfoTestBase extends TestCase {
 
     protected TestInfo createTestInfo() {
         TestInfo testInfo = new TestInfo(null);
-        testInfo.setClassname(getClass().getName());
+        testInfo.setName(getClass().getName());
         testInfo.setText(getName());
         return testInfo;
     }

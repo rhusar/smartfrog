@@ -23,9 +23,7 @@ import org.smartfrog.services.xunit.base.TestRunner;
 import org.smartfrog.services.xunit.listeners.ConsoleListenerFactory;
 import org.smartfrog.sfcore.prim.Prim;
 
-/**
- * created Nov 22, 2004 4:45:26 PM
- */
+/** created Nov 22, 2004 4:45:26 PM */
 
 public class DeployedConsoleListenerTest extends TestRunnerTestBase {
 
@@ -49,6 +47,7 @@ public class DeployedConsoleListenerTest extends TestRunnerTestBase {
                             TestRunner.ATTR_LISTENER,
                             listener,
                             true);
+            assertNotNull(listener);
             boolean finished = spinTillFinished(runner, seconds);
             assertTrue("Test run timed out", finished);
 

@@ -20,7 +20,7 @@ For more information: www.smartfrog.org
 
 #include "/org/smartfrog/services/junit/all.sf"
 #include "/org/smartfrog/services/filesystem/tempfile.sf"
-
+#include "/org/smartfrog/sfcore/workflow/conditional/conditions/components.sf"
 //sfCodeBase PROPERTY org.smartfrog.codebase;
 
 
