@@ -161,7 +161,7 @@ public abstract class SmartFrogTestBase extends TestCase {
      * paramaters -but do not complain if they are missing
      * @param name
      */
-    public SmartFrogTestBase(String name) {
+    protected SmartFrogTestBase(String name) {
         super(name);
     }
 
