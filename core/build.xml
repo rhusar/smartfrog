@@ -485,4 +485,17 @@ ${child.projects.list}
     </subant>
   </target>
 
+  <target name="ivy-build" depends="ivy-init"
+      description="run the build and dependencies of the project specified by the 'project' property
+      and the target of the target property (default=published)">
+    <fail unless="project">
+      Set the project property to the name of the project you want to build (e.g. -Dproject=sf-junit)
+    </fail>
+    <property name="target" value="published"/>
+    <ivy-projects reference="ivy.build.projects" root="${project}"/>
+    <subant  target="${target}" verbose="true">
+      <buildpath refid="ivy.build.projects"/>
+    </subant>
+  </target>
+
 </project>
