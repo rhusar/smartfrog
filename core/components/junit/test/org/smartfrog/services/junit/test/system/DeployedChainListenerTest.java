@@ -24,9 +24,7 @@ import org.smartfrog.services.xunit.listeners.StatisticsTestListener;
 import org.smartfrog.services.xunit.serial.Statistics;
 import org.smartfrog.sfcore.prim.Prim;
 
-/**
- * created Nov 22, 2004 4:45:26 PM
- */
+/** created Nov 22, 2004 4:45:26 PM */
 
 public class DeployedChainListenerTest extends TestRunnerTestBase {
 
@@ -35,30 +33,25 @@ public class DeployedChainListenerTest extends TestRunnerTestBase {
     }
 
     public void testSuccess() throws Throwable {
-        Prim application = null;
 
         int seconds = getTimeout();
-        try {
-            application = deployExpectingSuccess("/files/chain-all.sf", "ChainTest");
+        application = deployExpectingSuccess("/files/chain-all.sf", "ChainTest");
 
-            TestRunner runner = (TestRunner) application.sfResolve(
+        TestRunner runner = (TestRunner) application.sfResolve(
                 "tests",
-                (Prim)null,
+                (Prim) null,
                 true);
-            boolean finished = spinTillFinished(runner, seconds);
-            assertTrue("Test run timed out", finished);
+        boolean finished = spinTillFinished(runner, seconds);
+        assertTrue("Test run timed out", finished);
 
-            StatisticsTestListener statsListener=null;
-            statsListener = (StatisticsTestListener) application.sfResolve(
-                    "statistics",
-                    statsListener,
-                    true);
+        StatisticsTestListener statsListener = null;
+        statsListener = (StatisticsTestListener) application.sfResolve(
+                "statistics",
+                statsListener,
+                true);
 
-            Statistics statistics = runner.getStatistics();
-            Statistics statistics2 = statsListener.getStatistics();
-            assertStatisticsEqual("runner and stats listener",statistics,statistics2);
-        } finally {
-            terminateApplication(application);
-        }
+        Statistics statistics = runner.getStatistics();
+        Statistics statistics2 = statsListener.getStatistics();
+        assertStatisticsEqual("runner and stats listener", statistics, statistics2);
     }
 }

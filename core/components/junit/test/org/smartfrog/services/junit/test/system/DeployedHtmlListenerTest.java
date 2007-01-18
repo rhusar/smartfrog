@@ -26,9 +26,7 @@ import org.smartfrog.sfcore.prim.Prim;
 
 import java.io.File;
 
-/**
- * created Nov 22, 2004 4:31:45 PM
- */
+/** created Nov 22, 2004 4:31:45 PM */
 
 public class DeployedHtmlListenerTest extends TestRunnerTestBase {
     public static final String TEST_SUITE_COMPONENT_NAME = "tests";
@@ -40,22 +38,21 @@ public class DeployedHtmlListenerTest extends TestRunnerTestBase {
 
     public void testAll() throws Throwable {
         String url;
-        Prim deploy = null;
         url = "/files/html-all.sf";
 
         int seconds = getTimeout();
-        try {
-            deploy = deployExpectingSuccess(url, "HtmlTest");
-            TestRunner runner = (TestRunner) deploy;
-            assertTrue(runner != null);
-            HtmlTestListenerFactory listenerFactory = null;
-            listenerFactory =
-                    (HtmlTestListenerFactory) deploy.sfResolve(
-                            TestRunner.ATTR_LISTENER,
-                            listenerFactory,
-                            true);
-            boolean finished = spinTillFinished(runner, seconds);
-            assertTrue("Test run timed out", finished);
+        application = deployExpectingSuccess(url, "HtmlTest");
+        TestRunner runner = (TestRunner) application;
+        assertTrue(runner != null);
+        HtmlTestListenerFactory listenerFactory = null;
+        listenerFactory =
+                (HtmlTestListenerFactory) application.sfResolve(
+                        TestRunner.ATTR_LISTENER,
+                        listenerFactory,
+                        true);
+        assertNotNull(listenerFactory);
+        boolean finished = spinTillFinished(runner, seconds);
+        assertTrue("Test run timed out", finished);
 /*
 
             String path = listenerFactory.lookupFilename(DeployedHtmlListenerTest.SUITENAME);
@@ -64,26 +61,20 @@ public class DeployedHtmlListenerTest extends TestRunnerTestBase {
             assertTrue("File does not exist " + path, new File(path).exists());
 
 */
-            //now fetch from the tests
-            Prim tests;
-            tests =
-                    deploy.sfResolve(DeployedHtmlListenerTest.TEST_SUITE_COMPONENT_NAME,
-                            (Prim) null,
-                            true);
-            String output = tests.sfResolve(XmlListener.ATTR_FILE,
-                    "",
-                    true);
-            File xmlfile = new File(output);
-            assertTrue("File " + output + " not found", xmlfile.exists());
+        //now fetch from the tests
+        Prim tests;
+        tests =
+                application.sfResolve(DeployedHtmlListenerTest.TEST_SUITE_COMPONENT_NAME,
+                        (Prim) null,
+                        true);
+        String output = tests.sfResolve(XmlListener.ATTR_FILE,
+                "",
+                true);
+        File xmlfile = new File(output);
+        assertTrue("File " + output + " not found", xmlfile.exists());
 
-            //validate the file
-            validateXmlLog(xmlfile);
-
-
-        } finally {
-            terminateApplication(deploy);
-        }
-
+        //validate the file
+        validateXmlLog(xmlfile);
     }
 
 }

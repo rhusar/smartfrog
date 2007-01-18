@@ -23,7 +23,8 @@ package org.smartfrog.services.junit.test.system;
 
 import org.smartfrog.services.xunit.base.TestRunner;
 import org.smartfrog.services.xunit.serial.Statistics;
-import org.smartfrog.test.SmartFrogTestBase;
+import org.smartfrog.services.xunit.listeners.BufferingListener;
+import org.smartfrog.test.DeployingTestBase;
 import org.smartfrog.test.TestHelper;
 import org.w3c.dom.Document;
 
@@ -34,23 +35,20 @@ import java.rmi.NoSuchObjectException;
 import java.rmi.RemoteException;
 
 /**
- * this is a parent class for our tests, so that we can share logic about
- * running tests, blocking till they finish, etc. Date: 07-Jul-2004 Time:
- * 20:04:27
+ * this is a parent class for our tests, so that we can share logic about running tests, blocking till they finish, etc.
+ * Date: 07-Jul-2004 Time: 20:04:27
  */
-public abstract class TestRunnerTestBase extends SmartFrogTestBase {
+public abstract class TestRunnerTestBase extends DeployingTestBase {
     public static final String CODEBASE_PROPERTY = "org.smartfrog.codebase";
     public static final String TIMEOUT_PROPERTY = "timeout";
     public static final int TIMEOUT_DEFAULT = 10;
+    private static final String BASE = "/files/";
 
     public TestRunnerTestBase(String name) {
         super(name);
     }
 
-    /**
-     * Sets up the fixture, for example, open a network connection. This method
-     * is called before a test is executed.
-     */
+    /** Sets up the fixture, for example, open a network connection. This method is called before a test is executed. */
     protected void setUp() throws Exception {
         super.setUp();
         assertSystemPropertySet(CODEBASE_PROPERTY);
@@ -58,9 +56,10 @@ public abstract class TestRunnerTestBase extends SmartFrogTestBase {
 
     /**
      * Spin till a component is finished
+     *
      * @param runner
      * @param timeoutSeconds
-     * @return
+     * @return whether it finished or false for timeout
      * @throws InterruptedException
      * @throws RemoteException
      */
@@ -101,19 +100,44 @@ public abstract class TestRunnerTestBase extends SmartFrogTestBase {
     }
 
     /**
-     * assert that statistics entries are equal, fail if not.
-     * Uses {@link org.smartfrog.services.xunit.serial.Statistics#isEqual(org.smartfrog.services.xunit.serial.Statistics)}
+     * assert that statistics entries are equal, fail if not. Uses {@link org.smartfrog.services.xunit.serial.Statistics#isEqual(org.smartfrog.services.xunit.serial.Statistics)}
      * for the comparison.
+     *
      * @param text text to prepand to all messages
-     * @param s1 first set of stats, must not be null
-     * @param s2 second set of stats, must not be null
+     * @param s1   first set of stats, must not be null
+     * @param s2   second set of stats, must not be null
      */
-    protected void assertStatisticsEqual(String text, Statistics s1,Statistics s2) {
-        assertNotNull(text +": empty statistics (first set) ",s1);
-        assertNotNull(text +": empty statistics (second set) ", s2);
-        if(!s1.isEqual(s2)) {
-            fail(text+": not equal: ["+s1+"] ["+s2+"]");
+    protected void assertStatisticsEqual(String text, Statistics s1, Statistics s2) {
+        assertNotNull(text + ": empty statistics (first set) ", s1);
+        assertNotNull(text + ": empty statistics (second set) ", s2);
+        if (!s1.isEqual(s2)) {
+            fail(text + ": not equal: [" + s1 + "] [" + s2 + "]");
         }
     }
 
+    protected void executeBufferedTestRun(String name, int run, int errors, int failures) throws Throwable {
+        application = deployExpectingSuccess(BASE+name+".sf", name);
+        int seconds = getTimeout();
+        TestRunner runner = (TestRunner) application;
+        assertTrue(runner != null);
+        BufferingListener listener = null;
+        listener =
+                (BufferingListener) application.sfResolve(
+                        TestRunner.ATTR_LISTENER,
+                        listener,
+                        true);
+        boolean finished = spinTillFinished(runner, seconds);
+        assertTrue("Test run timed out", finished);
+        assertTrue("expected tests to run", listener.getStartCount() == 1);
+        assertTrue("session started",
+                listener.getSessionStartCount() == 1);
+        assertTrue("session ended",
+                listener.getSessionEndCount() == 1);
+        assertTrue("all tests passed", listener.testsWereSuccessful());
+        Statistics statistics = runner.getStatistics();
+        assertEquals("statistics.testRun"+run, run, statistics.getTestsRun());
+        assertEquals("statistics.errors", errors, statistics.getErrors());
+        assertEquals("statistics.failures",failures,
+                statistics.getFailures());
+    }
 }

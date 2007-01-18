@@ -44,7 +44,7 @@ public class OneHostXMLListenerTest extends TestRunnerTestBase {
 
     protected TestInfo createTestInfo() {
         TestInfo testInfo = new TestInfo(null);
-        testInfo.setClassname(getClass().getName());
+        testInfo.setName(getClass().getName());
         testInfo.setText(getName());
         return testInfo;
     }

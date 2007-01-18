@@ -1,4 +1,4 @@
-/** (C) Copyright 2006 Hewlett-Packard Development Company, LP
+/** (C) Copyright 2007 Hewlett-Packard Development Company, LP
 
  This library is free software; you can redistribute it and/or
  modify it under the terms of the GNU Lesser General Public
@@ -17,18 +17,31 @@
  For more information: www.smartfrog.org
 
  */
+
+
 package org.smartfrog.services.junit.test.system;
 
-/** created 14-Jun-2006 17:20:15 */
+import org.smartfrog.services.xunit.base.TestRunner;
+import org.smartfrog.services.xunit.listeners.BufferingListener;
+import org.smartfrog.services.xunit.serial.Statistics;
 
-public class CheckDependenciesTest extends TestRunnerTestBase {
+/** Test deploying against a localhost Date: 06-Jul-2004 Time: 21:54:25 */
+public class ConditionalTest extends TestRunnerTestBase {
 
-    public CheckDependenciesTest(String name) {
+    public ConditionalTest(String name) {
         super(name);
     }
 
-    public void testDependenciesPresent() throws Throwable {
-        application = deployExpectingSuccess("/files/check-dependencies.sf",
-                "CheckDependencies");
+    public void testConditionalTrue() throws Throwable {
+        executeBufferedTestRun("junit-conditional-true.sf", 0, 0, 0);
     }
+
+    public void testConditionalUnless() throws Throwable {
+        executeBufferedTestRun("junit-conditional-unless.sf", 0, 0, 0);
+    }
+
+    public void testConditionalFalse() throws Throwable {
+        executeBufferedTestRun("junit-conditional-false.sf", 0, 0, 0);
+    }
+
 }

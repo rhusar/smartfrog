@@ -21,7 +21,7 @@ package org.smartfrog.services.junit.test.unit;
 
 import org.smartfrog.services.xunit.base.TestListener;
 import org.smartfrog.services.xunit.listeners.BufferingListener;
-import org.smartfrog.services.xunit.listeners.BufferingListenerComponent;
+import org.smartfrog.services.xunit.listeners.BufferingListenerImpl;
 import org.smartfrog.services.xunit.serial.TestInfo;
 
 import java.rmi.RemoteException;
@@ -57,7 +57,7 @@ public class BufferingListenerTest extends AbstractTestInfoTestBase {
         assertEquals(1, buffer.getStartCount());
         assertEquals(1, buffer.getEndCount());
         TestInfo ti2 = buffer.getEndInfo(0);
-        assertEquals(ti.getClassname(), ti2.getClassname());
+        assertEquals(ti.getName(), ti2.getName());
         assertFalse(ti2.getStartTime() == 0);
         assertFalse(ti2.getEndTime() == 0);
         assertTrue(buffer.testsWereSuccessful());
@@ -83,7 +83,7 @@ public class BufferingListenerTest extends AbstractTestInfoTestBase {
         assertEquals(1, buffer.getErrorCount());
         assertEquals(0, buffer.getFailureCount());
         TestInfo ti2 = buffer.getErrorInfo(0);
-        assertEquals(ti.getClassname(), ti2.getClassname());
+        assertEquals(ti.getName(), ti2.getName());
 /*
         assertFalse(ti2.getStartTime() == 0);
         assertFalse(ti2.getEndTime() == 0);
@@ -94,7 +94,7 @@ public class BufferingListenerTest extends AbstractTestInfoTestBase {
 
     private BufferingListener createFactory() throws RemoteException {
         BufferingListener factory;
-        factory = new BufferingListenerComponent();
+        factory = new BufferingListenerImpl();
         return factory;
     }
 }
