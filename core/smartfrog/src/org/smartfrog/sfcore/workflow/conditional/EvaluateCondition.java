@@ -24,7 +24,14 @@ package org.smartfrog.sfcore.workflow.conditional;
  */
 
 
-public interface TestCondition extends Conditional {
+public interface EvaluateCondition extends Conditional {
 
+    /** {@value} */
     String ATTR_MESSAGE="message";
+
+    /** {@value} */
+    String ATTR_FAIL_ON_FALSE="failOnFalse";
+
+    /** {@value} */
+    String ATTR_RESULT="result";
 }

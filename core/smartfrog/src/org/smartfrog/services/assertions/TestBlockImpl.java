@@ -90,6 +90,13 @@ public class TestBlockImpl extends EventCompoundImpl implements TestBlock {
         return child;
     }
 
+    /**
+     * {@inheritDoc}
+     * @return false always
+     */
+    public boolean isSkipped() {
+        return false;
+    }
 
     /**
      * Registers components referenced in the SendTo sub-component registers

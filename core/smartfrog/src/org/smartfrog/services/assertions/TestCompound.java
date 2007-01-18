@@ -19,14 +19,22 @@
  */
 package org.smartfrog.services.assertions;
 
+import org.smartfrog.sfcore.workflow.conditional.Conditional;
+
 
 /**
  * created 22-Sep-2006 16:13:38
  */
 
 
-public interface TestCompound extends TestBlock {
+public interface TestCompound extends TestBlock, Conditional {
 
+
+    /**
+     * A condition to wait for, before running the tests.
+     * {@value}
+     */
+    String ATTR_WAITFOR ="waitFor";
 
     /**
      * time in milliseconds to undeploy the action; use -1 for no limit.

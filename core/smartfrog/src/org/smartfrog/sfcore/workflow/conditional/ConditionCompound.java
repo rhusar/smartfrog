@@ -66,14 +66,29 @@ public class ConditionCompound extends EventCompoundImpl implements Conditional,
         deployCondition();
     }
 
-    protected void deployCondition() throws SmartFrogResolutionException, RemoteException, SmartFrogDeploymentException {
-        condition = (Condition) deployChildCD(ATTR_CONDITION, true);
+    /**
+     * Override point: is the condition required. IF not, there is no attemtp to deploy it at startup
+     * @return
+     */
+    protected boolean isConditionRequired() {
+        return true;
     }
 
+    /**
+     * Deploy the condition.
+     * @see #isConditionRequired()
+     * @throws SmartFrogResolutionException if the condition is required, and it is not there, or the condition
+     * itself fails to deploy.
+     * @throws RemoteException network problems
+     * @throws SmartFrogDeploymentException deployment problems
+     */
+    protected void deployCondition() throws SmartFrogResolutionException, RemoteException, SmartFrogDeploymentException {
+        condition = (Condition) deployChildCD(ATTR_CONDITION, isConditionRequired());
+    }
 
     /**
      * Get the condition
-     * @return
+     * @return the deployed condition or null if there is none active
      */
     public Condition getCondition() {
         return condition;
@@ -82,20 +97,36 @@ public class ConditionCompound extends EventCompoundImpl implements Conditional,
 
     /**
      * Evaluate the condition by delegating to the underlying condition.
-     *
+     * throws an exception if there is no deployed condition.
      * @return true if it is successful, false if not
      * @throws java.rmi.RemoteException for network problems
      * @throws org.smartfrog.sfcore.common.SmartFrogException
      *                                  for any other problem
      */
     public synchronized boolean evaluate() throws RemoteException, SmartFrogException {
+        if(condition==null) {
+            return onEvaluateNoCondition();
+        }
         return condition.evaluate();
     }
 
     /**
-     * called after our work is done to trigger termination
+     * Override point. Handle a missing condition
+     * @return the value of the condition.
+     * @throws SmartFrogException throws an exception as there is no deployed condition.
+     */
+    protected boolean onEvaluateNoCondition() throws SmartFrogException {
+        throw new SmartFrogException("Cannot evaluate the condition as it is not present, or has not been deployed");
+    }
+
+    /**
+     * called after our work is done to trigger termination if the sfTerminate attribute
+     * recommends it.
      */
     protected synchronized void finish() {
-        new ComponentHelper(this).targetForWorkflowTermination(TerminationRecord.normal(this.name));
+        new ComponentHelper(this).sfSelfDetachAndOrTerminate(TerminationRecord.normal(name));
     }
+
+
+
 }

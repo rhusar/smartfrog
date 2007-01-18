@@ -29,6 +29,10 @@ import java.rmi.Remote;
 
 public interface Conditional extends Remote {
 
+    /**
+     * attribute containing a condition
+     * {@value}
+     * */
     String ATTR_CONDITION="condition";
 
 }
