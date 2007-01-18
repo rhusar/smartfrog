@@ -60,9 +60,8 @@ These are the meaningful targets for this build file:
   <!-- =================================================================== -->
   <target name="init">
     <property name="Name" value="SmartFrog"/>
-    <property name="name" value="(C) Copyright 1998-2006 Hewlett-Packard Development Company, LP"/>
+    <property name="name" value="(C) Copyright 1998-2007 Hewlett-Packard Development Company, LP"/>
     <property name="version" value="DIST"/>
-    <!--property name="Version" value="3.04.014.beta"/-->
     <property name="year" value=""/>
     <echo message=""/>
     <echo message="==================================================================="/>
@@ -157,6 +156,7 @@ These are the meaningful targets for this build file:
   <!-- =================================================================== -->
 
   <target name="fixCRLF" description="adapts CRLF for different OS">
+
      <!-- OS dependant -->
      <fixcrlf srcdir="${dist}/${bin}"
        includes="**/**"
