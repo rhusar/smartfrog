@@ -2,7 +2,7 @@
  /**
   * Include the core smartfrog components.
   */
-#include "/org/smartfrog/components.sf"
+#include "/org/smartfrog/sfcore/workflow/conditional/components.sf"
 
 
 
@@ -18,10 +18,14 @@
 
 TestSuiteSchema extends Schema {
     name extends OptionalString;
-    enabled extends OptionalBoolean;
-    unless extends OptionalBoolean;
-    //list in name, value pairs [[name,value],[n2,v2]]
-    properties extends OptionalVector;
+    
+    condition extends OptionalCondition {
+      description "a condition to evaluate to decide whether to run this test or not";
+    }
+
+    properties extends OptionalVector {
+        description "list of properties to pass to the test suite as name, value pairs [[name,value],[n2,v2]]";
+    }
     tags extends OptionalVector{
       description "A list of text tags to describe the test suite";
     }
@@ -37,10 +41,10 @@ TestSuiteSchema extends Schema {
 /**
  * test suites run the tests; different frameworks can have different suites
  */
-TestSuite extends Prim {
+TestSuite extends EventCompound {
     testSuiteSchema extends TestSuiteSchema;
-    if true;
-    unless false;
+    sfShouldTerminate false;
+
 }
 
 

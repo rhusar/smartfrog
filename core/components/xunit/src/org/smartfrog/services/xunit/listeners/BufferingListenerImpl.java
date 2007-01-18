@@ -35,11 +35,11 @@ import java.util.List;
 /**
  * This class buffers received messages Date: 27-Jun-2004 Time: 21:26:28
  */
-public class BufferingListenerComponent extends PrimImpl
+public class BufferingListenerImpl extends AbstractListenerImpl
         implements BufferingListener {
 
 
-    public BufferingListenerComponent() throws RemoteException {
+    public BufferingListenerImpl() throws RemoteException {
         errors = new ArrayList<TestInfo>();
         failures = new ArrayList<TestInfo>();
         starts = new ArrayList<TestInfo>();
@@ -52,22 +52,6 @@ public class BufferingListenerComponent extends PrimImpl
     private List<LogEntry> messages;
 
     private int sessionStartCount, sessionEndCount;
-
-    /**
-     * Called after instantiation for deployment purposed. Heart monitor is
-     * started and if there is a parent the deployed component is added to the
-     * heartbeat. Subclasses can override to provide additional deployment
-     * behavior.
-     *
-     * @throws org.smartfrog.sfcore.common.SmartFrogException
-     *                                  error while deploying
-     * @throws java.rmi.RemoteException In case of network/rmi error
-     */
-    public synchronized void sfDeploy() throws SmartFrogException,
-            RemoteException {
-        super.sfDeploy();
-
-    }
 
 
     /**

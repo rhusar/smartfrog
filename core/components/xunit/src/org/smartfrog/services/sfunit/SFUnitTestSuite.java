@@ -21,13 +21,14 @@ package org.smartfrog.services.sfunit;
 
 import org.smartfrog.services.assertions.TestCompound;
 import org.smartfrog.services.xunit.base.TestSuite;
+import org.smartfrog.sfcore.workflow.conditional.Conditional;
 
 /**
  * created 09-Jan-2007 14:48:15
  */
 
 
-public interface SmartFrogTestSuite extends TestCompound, TestSuite {
+public interface SFUnitTestSuite extends TestCompound, TestSuite, Conditional {
 
     /**
      * flag to request parallel deployments

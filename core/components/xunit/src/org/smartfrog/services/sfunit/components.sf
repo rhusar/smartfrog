@@ -25,20 +25,12 @@ For more information: www.smartfrog.org
 #include "/org/smartfrog/sfcore/workflow/combinators/sequence.sf"
 
   /**
-   * A smartfrog test suite is complex as it actually deploys its children (which must implement
-   * the appropriate interface)
-   *
-   *
-   *
+   * A smartfrog test suite deploys its children in turn 
    *
    */
-  SmartFrogTestSuite extends PackagedTestSuite {
-    workflowPrimSchema extends WorkflowPrimSchema;
-    eventCompoundSchema extends EventCompoundSchema;
-    sendTo  extends LAZY {}
-    registerWith extends LAZY {}
-    
-    sfClass "org.smartfrog.services.sfunit.SmartFrogTestSuiteImpl";
+  SmartFrogTestSuite extends TestSuite {
+
+    sfClass "org.smartfrog.services.sfunit.SFUnitSuiteImpl";
   }
 
 

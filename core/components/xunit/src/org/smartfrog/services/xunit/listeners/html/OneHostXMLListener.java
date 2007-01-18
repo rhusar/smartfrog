@@ -479,7 +479,7 @@ public class OneHostXMLListener implements XmlListener {
         if(test.getFault()!=null) {
             body=body+'\n'+toXML(test.getFault());
         }
-        String classname = attr("classname", test.getClassname());
+        String classname = attr("classname", test.getName());
         String duration = attr("duration", Long.toString(test.getDuration()));
         return element(tag,
                 classname + " " + duration,

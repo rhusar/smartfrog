@@ -26,10 +26,21 @@ For more information: www.smartfrog.org
  */
 
 TestRunnerSchema extends Schema {
-    listener extends CD;
-    keepGoing extends OptionalBoolean;
-    failOnError extends OptionalBoolean;
-    threadPriority extends OptionalInteger;
+    listener extends CD {
+      description "component to listen for events";
+    }
+    keepGoing extends OptionalBoolean{
+      description "";
+    }
+    failOnError extends OptionalBoolean{
+      description "";
+    }
+    threadPriority extends OptionalInteger {
+      description "";
+    }
+    timeout extends OptionalInteger {
+      description "tmeout in millis; 0 or less for no timeout";
+    }
     singleTest extends OptionalString {
       description "the name of a single test component to run";
     }
@@ -44,11 +55,12 @@ TestRunnerSchema extends Schema {
  * the base test runner has a console listener automatically
  */
 TestRunner extends Compound {
-    sfClass "org.smartfrog.services.junit.TestRunnerComponent";
+    sfClass "org.smartfrog.services.junit.TestRunnerImpl";
     testRunnerSchema extends TestRunnerSchema;
     listener extends ConsoleListener ;
     failOnError true;
     keepGoing true;
     runTests true;
+    timeout 0;
 }
 

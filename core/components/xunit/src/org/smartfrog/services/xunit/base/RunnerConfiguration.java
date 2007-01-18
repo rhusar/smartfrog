@@ -50,7 +50,7 @@ public class RunnerConfiguration implements Serializable, Cloneable {
     private boolean keepGoing = true;
 
     /**
-     * timeout in seconds. less than or equal to zero meand no timeout
+     * timeout in milliseconds. less than or equal to zero means no timeout
      */
     private int timeout = 0;
 
@@ -70,6 +70,14 @@ public class RunnerConfiguration implements Serializable, Cloneable {
         this.keepGoing = keepGoing;
     }
 
+
+    public int getTimeout() {
+        return timeout;
+    }
+
+    public void setTimeout(int timeout) {
+        this.timeout = timeout;
+    }
 
     public TestListenerLog getTestLog() {
         return testLog;

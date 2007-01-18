@@ -36,7 +36,7 @@ import java.rmi.RemoteException;
  * 15:42:31
  */
 
-public class ConsoleListenerComponent extends PrimImpl
+public class ConsoleListenerImpl extends PrimImpl
         implements ConsoleListenerFactory {
 
     /**
@@ -46,7 +46,7 @@ public class ConsoleListenerComponent extends PrimImpl
 
     private PrintStream outputstream = System.out;
 
-    public ConsoleListenerComponent() throws RemoteException {
+    public ConsoleListenerImpl() throws RemoteException {
     }
 
 
@@ -91,7 +91,7 @@ public class ConsoleListenerComponent extends PrimImpl
     private void logTrouble(String message, TestInfo test) {
         StringBuffer buffer = new StringBuffer(128);
         buffer.append(message);
-        buffer.append(test.getClassname());
+        buffer.append(test.getName());
         buffer.append(" on ");
         buffer.append(test.getHostname());
         buffer.append('\n');
@@ -117,14 +117,17 @@ public class ConsoleListenerComponent extends PrimImpl
     }
 
     /**
-     * bind to a caller
+     * Start listening to a test suite
      *
-     * @param suite
+     * @param suite     the test suite that is about to run. May be null,
+     *                  especially during testing.
      * @param hostname  name of host
-     * @param processname
+     * @param processname name of the process
      * @param suitename name of test suite
      * @param timestamp start timestamp (UTC)
      * @return a listener to talk to
+     * @throws RemoteException network problems
+     * @throws SmartFrogException code problems
      */
     public TestListener listen(TestSuite suite, String hostname,
                                String processname, String suitename,
@@ -157,7 +160,7 @@ public class ConsoleListenerComponent extends PrimImpl
 
         public void endTest(TestInfo test) throws RemoteException {
             println("   ending " +
-                    test.getClassname() +
+                    test.getName() +
                     " on " +
                     test.getHostname());
 
@@ -165,7 +168,7 @@ public class ConsoleListenerComponent extends PrimImpl
 
         public void startTest(TestInfo test) throws RemoteException {
             println("Starting " +
-                    test.getClassname() +
+                    test.getName() +
                     " on " +
                     test.getHostname());
         }

@@ -33,6 +33,7 @@ import org.smartfrog.sfcore.utils.ShouldDetachOrTerminate;
 import org.smartfrog.services.xunit.serial.Statistics;
 import org.smartfrog.services.xunit.serial.ThrowableTraceInfo;
 import org.smartfrog.services.xunit.log.TestListenerLog;
+import org.smartfrog.services.assertions.TestBlock;
 
 import java.rmi.RemoteException;
 import java.util.Enumeration;
@@ -40,11 +41,15 @@ import java.util.Enumeration;
 /**
  * This is the test runner. It runs multiple test suites; It keeps all its
  * public state in a configuration object that can be got/cloned and serialized
- * to suites created 15-Apr-2004 15:44:41
+ * to suites created.
+ *
+ * This class implements (incompletely) the {@link TestBlock} interface
+ * This lets the class be hosted inside junit test running code that
+ * has been written for TestBlock instances. 
  */
 
-public class TestRunnerComponent extends CompoundImpl implements TestRunner,
-        Runnable {
+public class TestRunnerImpl extends CompoundImpl implements TestRunner,
+        Runnable, TestBlock {
 
     private Log log;
     private ComponentHelper helper;
@@ -110,7 +115,7 @@ public class TestRunnerComponent extends CompoundImpl implements TestRunner,
      *
      * @throws RemoteException for network problems
      */
-    public TestRunnerComponent() throws RemoteException {
+    public TestRunnerImpl() throws RemoteException {
         helper = new ComponentHelper(this);
     }
 
@@ -316,7 +321,7 @@ public class TestRunnerComponent extends CompoundImpl implements TestRunner,
             }
         } finally {
             //this is here as it can throw an exception
-            sfReplaceAttribute(ATTR_FINISHED, Boolean.TRUE);
+            sfReplaceAttribute(TestRunner.ATTR_FINISHED, Boolean.TRUE);
         }
     }
 
@@ -378,7 +383,7 @@ public class TestRunnerComponent extends CompoundImpl implements TestRunner,
             //unbind from this test
             suiteComponent.bind(null);
         }
-        updateResultAttributes(suiteComponent);
+        updateResultAttributes((Prim)suiteComponent);
         return result;
     }
 
@@ -454,5 +459,56 @@ public class TestRunnerComponent extends CompoundImpl implements TestRunner,
      */
     public Statistics getStatistics() throws RemoteException {
         return statistics;
+    }
+
+
+    /**
+     * @return true only if the test has finished and failed
+     * @throws RemoteException    on network trouble
+     * @throws SmartFrogException on other problems
+     */
+    public boolean isFailed() throws RemoteException, SmartFrogException {
+        return !isSucceeded();
+    }
+
+    /**
+     * @return true iff the test succeeded
+     * @throws RemoteException    on network trouble
+     * @throws SmartFrogException on other problems
+     */
+
+    public boolean isSucceeded() throws RemoteException, SmartFrogException {
+        return statistics.isSuccessful();
+    }
+
+    /**
+     * Get the exit record
+     *
+     * @return the exit record, will be null for an unfinished child
+     * @throws RemoteException    on network trouble
+     * @throws SmartFrogException on other problems
+     */
+    public TerminationRecord getStatus() throws RemoteException, SmartFrogException {
+        return null;
+    }
+
+    /**
+     * return the current action
+     *
+     * @return the child component. this will be null after termination.
+     * @throws RemoteException    on network trouble
+     * @throws SmartFrogException on other problems
+     */
+    public Prim getAction() throws RemoteException, SmartFrogException {
+        return null;
+    }
+
+    /**
+     * turn true if a test is skipped; if some condition caused it not to run
+     *
+     * @return whether or not the test block skipped deployment of children.
+     */
+    public boolean isSkipped() throws RemoteException, SmartFrogException {
+        return false;
     }
 }
