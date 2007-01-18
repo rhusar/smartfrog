@@ -29,6 +29,7 @@ import org.smartfrog.sfcore.common.SmartFrogInitException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.logging.Log;
 import org.smartfrog.sfcore.prim.PrimImpl;
+import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.utils.ComponentHelper;
 
 import java.io.File;
@@ -84,7 +85,7 @@ public abstract class AbstractXmlListenerComponent extends PrimImpl
     /**
      * map from a test suite name to a filename
      *
-     * @param hostname
+     * @param hostname host name
      * @param suitename test suite
      * @return name of output file, or null for no match
      * @throws java.rmi.RemoteException
@@ -158,14 +159,17 @@ public abstract class AbstractXmlListenerComponent extends PrimImpl
     }
 
     /**
-     * bind to a caller
+     * Start listening to a test suite
      *
-     * @param suite
+     * @param suite     the test suite that is about to run. May be null,
+     *                  especially during testing.
      * @param hostname  name of host
-     * @param processname
+     * @param processname name of the process
      * @param suitename name of test suite
      * @param timestamp start timestamp (UTC)
-     * @return a session ID to be used in test responses
+     * @return a listener to talk to
+     * @throws RemoteException network problems
+     * @throws SmartFrogException code problems
      */
     public TestListener listen(TestSuite suite,
                                String hostname,
@@ -197,7 +201,7 @@ public abstract class AbstractXmlListenerComponent extends PrimImpl
                     "Setting " +
                     XmlListener.ATTR_FILE +
                     "attribute on test suite");
-            suite.sfReplaceAttribute(XmlListener.ATTR_FILE,
+            ((Prim)suite).sfReplaceAttribute(XmlListener.ATTR_FILE,
                     destpath);
         }
 

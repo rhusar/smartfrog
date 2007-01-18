@@ -19,10 +19,8 @@ For more information: www.smartfrog.org
 */
 
 /*
- this file declares the junit listeners
+ this file declares the basic xunit listeners
  */
-
-
 
  /**
   * Include the core smartfrog components.
@@ -40,11 +38,21 @@ TestListener extends Prim {
    }
 }
 
+
+/**
+ * The null listener
+ */
+NullListener extends TestListener {
+    sfClass "org.smartfrog.services.xunit.listeners.NullListenerImpl";
+    name "NullListener";
+}
+
+
 /**
  * console listener just outputs to the console
  */
 ConsoleListener extends TestListener {
-    sfClass "org.smartfrog.services.xunit.listeners.ConsoleListenerComponent";
+    sfClass "org.smartfrog.services.xunit.listeners.ConsoleListenerImpl";
     name "ConsoleListener";
 }
 
@@ -52,7 +60,7 @@ ConsoleListener extends TestListener {
  * this is the one used for testing. It buffers stuff and can be queried about it
  */
 BufferingListener extends TestListener {
-    sfClass "org.smartfrog.services.xunit.listeners.BufferingListenerComponent";
+    sfClass "org.smartfrog.services.xunit.listeners.BufferingListenerImpl";
     name "BufferingListener";
 }
 
@@ -63,7 +71,7 @@ BufferingListener extends TestListener {
  * This component collects statistics about tests, but discards the values.
  */
 StatisticsTestListener extends TestListener {
-    sfClass "org.smartfrog.services.xunit.listeners.StatisticsTestListenerComponent";
+    sfClass "org.smartfrog.services.xunit.listeners.StatisticsTestListenerImpl";
     name "StatisticsTestListener";
 }
 
@@ -72,14 +80,13 @@ StatisticsTestListener extends TestListener {
  * the chain listener takes a list of secondary listeners, and relays to all of them.
  */
 
-ChainListenerSchema extends Schema {
-    listeners extends Vector ;
-}
 
 ChainListener extends TestListener {
-    sfClass "org.smartfrog.services.xunit.listeners.ChainListenerComponent";
+    sfClass "org.smartfrog.services.xunit.listeners.ChainListenerImpl";
     name "ChainListener";
-    chainListenerSchema extends ChainListenerSchema;
+    chainListenerSchema extends  Schema {
+        listeners extends Vector ;
+    }
 }
 
 

@@ -210,7 +210,7 @@ public class OneHostHtmlListener extends OneHostXMLListener {
         StringBuffer body=new StringBuffer();
         enter(body,"div",style("testblock"));
         body.append(div(test.getOutcome(),
-                test.getClassname()));
+                test.getName()));
         body.append(div("test-duration","duration " +
                 ""+ test.getDuration()/1000.0
                 +"s"

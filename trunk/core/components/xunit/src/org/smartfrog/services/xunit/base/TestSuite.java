@@ -20,27 +20,19 @@
 package org.smartfrog.services.xunit.base;
 
 import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.sfcore.prim.Prim;
-
-import java.rmi.Remote;
+import org.smartfrog.sfcore.workflow.conditional.Conditional;
 import java.rmi.RemoteException;
 
 
 /**
- * A test suite is anything that is testable created 15-Apr-2004 11:51:51
+ * A test suite is anything that is testable. It extends Conditional as all
+ * test suites are inherently conditional.
+ * 15-Apr-2004 11:51:51
  */
 
 
-public interface TestSuite extends Prim, Remote, TestResultAttributes {
+public interface TestSuite extends TestResultAttributes, Conditional {
 
-    /**
-     * {@value}
-     */
-    public static final String ATTR_IF = "if";
-    /**
-     * {@value}
-     */
-    public static final String ATTR_UNLESS = "unless";
 
     /**
      * Non-marked up text description

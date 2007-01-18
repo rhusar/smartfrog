@@ -28,6 +28,7 @@ import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.logging.Log;
 import org.smartfrog.sfcore.prim.PrimImpl;
+import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.utils.ComponentHelper;
 
 import java.io.File;
@@ -104,7 +105,12 @@ public class XmlTestIndexImpl extends PrimImpl implements XmlTestIndex {
     }
 
 
-    public class BackgroundUpdateThread implements Runnable {
+    /**
+     *  This is currently unused. What is it for?
+     */
+/*
+
+    public static class BackgroundUpdateThread implements Runnable {
         
         int sleepIntervalMillis;
         Thread thread;
@@ -116,16 +122,7 @@ public class XmlTestIndexImpl extends PrimImpl implements XmlTestIndex {
             thread.interrupt();
         }
         
-        /**
-         * When an object implementing interface <code>Runnable</code> is used to
-         * create a thread, starting the thread causes the object's <code>run</code>
-         * method to be called in that separately executing thread.
-         * <p/>
-         * The general contract of the method <code>run</code> is that it may take
-         * any action whatsoever.
-         *
-         * @see Thread#run()
-         */
+
         public void run() {
             
             
@@ -133,7 +130,8 @@ public class XmlTestIndexImpl extends PrimImpl implements XmlTestIndex {
         }
     }
     
-    
+*/
+
     /**
      * run through all the results; return true if any one of them changed
      * (which implies a rebuild of the page is needed)
@@ -145,9 +143,8 @@ public class XmlTestIndexImpl extends PrimImpl implements XmlTestIndex {
             RemoteException {
         total = new Statistics();
         boolean changed=false;
-        Iterator it=results.iterator();
-        while (it.hasNext()) {
-            ResultSet resultSet = (ResultSet) it.next();
+        for (Object result : results) {
+            ResultSet resultSet = (ResultSet) result;
             changed |= resultSet.update(total);
         }
         return changed;
@@ -185,7 +182,7 @@ public class XmlTestIndexImpl extends PrimImpl implements XmlTestIndex {
             boolean changed=false;
             if(suite!=null) {
                 Statistics updated=new Statistics();
-                boolean finished=updated.retrieveResultAttributes(suite);
+                boolean finished=updated.retrieveResultAttributes((Prim) suite);
                 if(finished) {
                     //stop updating
                     suite=null;

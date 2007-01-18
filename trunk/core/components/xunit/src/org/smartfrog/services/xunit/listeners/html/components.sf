@@ -18,14 +18,9 @@ For more information: www.smartfrog.org
 
 */
 
-/*
- this file declares the junit listeners
- */
-
-
 
  /**
-  * Extends the XML listeners
+  * Extends the XML listeners with XHTML support
   */
 #include "/org/smartfrog/services/xunit/listeners/xml/components.sf"
 

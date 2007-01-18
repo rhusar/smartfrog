@@ -34,21 +34,23 @@ import java.rmi.RemoteException;
  * All events are otherwise lost.
  */
 
-public class StatisticsTestListenerComponent extends PrimImpl implements StatisticsTestListener, TestListener {
+public class StatisticsTestListenerImpl extends AbstractListenerImpl implements StatisticsTestListener{
 
-    public StatisticsTestListenerComponent() throws RemoteException {
+    public StatisticsTestListenerImpl() throws RemoteException {
     }
 
     /**
-     * bind to a caller
+     * Start listening to a test suite
      *
      * @param suite     the test suite that is about to run. May be null,
      *                  especially during testing.
      * @param hostname  name of host
-     * @param processname
+     * @param processname name of the process
      * @param suitename name of test suite
      * @param timestamp start timestamp (UTC)
      * @return a listener to talk to
+     * @throws RemoteException network problems
+     * @throws SmartFrogException code problems
      */
     public TestListener listen(TestSuite suite, String hostname, String processname, String suitename, long timestamp)
             throws RemoteException, SmartFrogException {

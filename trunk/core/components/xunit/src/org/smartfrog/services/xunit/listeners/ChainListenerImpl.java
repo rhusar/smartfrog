@@ -37,7 +37,7 @@ import java.util.Vector;
  * created 21-Apr-2006 11:27:58
  */
 
-public class ChainListenerComponent extends PrimImpl implements TestListenerFactory {
+public class ChainListenerImpl extends PrimImpl implements TestListenerFactory {
 
     /**
      * The name of a factory
@@ -48,7 +48,7 @@ public class ChainListenerComponent extends PrimImpl implements TestListenerFact
     private Log log;
     private ComponentHelper helper = new ComponentHelper(this);
 
-    public ChainListenerComponent() throws RemoteException {
+    public ChainListenerImpl() throws RemoteException {
     }
 
 
@@ -89,15 +89,17 @@ public class ChainListenerComponent extends PrimImpl implements TestListenerFact
     }
 
     /**
-     * bind to a caller
+     * Start listening to a test suite
      *
      * @param suite     the test suite that is about to run. May be null,
      *                  especially during testing.
      * @param hostname  name of host
-     * @param processname
+     * @param processname name of the process
      * @param suitename name of test suite
      * @param timestamp start timestamp (UTC)
      * @return a listener to talk to
+     * @throws RemoteException network problems
+     * @throws SmartFrogException code problems
      */
     public TestListener listen(TestSuite suite, String hostname, String processname, String suitename, long timestamp)
             throws RemoteException, SmartFrogException {

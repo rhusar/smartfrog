@@ -20,11 +20,14 @@ For more information: www.smartfrog.org
 
 
  /**
-  * extend the basic listeners
+  * extend the basic listeners with XML support
   */
 #include "/org/smartfrog/services/xunit/listeners/components.sf"
 #include "/org/smartfrog/services/filesystem/filesystemtemplate.sf"
 
+/**
+ * Compoennt to create indices
+ */
 
 XmlTestIndexSchema extends Schema {
   outputDirectory extends FilenameType ;

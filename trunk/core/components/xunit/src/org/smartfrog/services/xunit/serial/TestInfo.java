@@ -56,14 +56,14 @@ public final class TestInfo implements Serializable, Cloneable {
      * A list of tags to file the test
      * @serial
      */
-    private List<String> tags;
+    private ArrayList<String> tags=new ArrayList<String>();
 
     /**
-     * classname of the test
+     * name of the test
      *
      * @serial
      */
-    private String classname;
+    private String name;
 
     /**
      * UTC timestamp of when the test started
@@ -110,7 +110,7 @@ public final class TestInfo implements Serializable, Cloneable {
      * an array of messages, type LogEntry
      * @serial
      */
-    private List/*<LogEntry>*/ messages=new ArrayList();
+    private ArrayList<LogEntry> messages=new ArrayList<LogEntry>();
 
     /**
      * The outcome of the test. This can be one of the outcomes, or
@@ -184,12 +184,12 @@ public final class TestInfo implements Serializable, Cloneable {
         this.text = text;
     }
 
-    public String getClassname() {
-        return classname;
+    public String getName() {
+        return name;
     }
 
-    public void setClassname(String classname) {
-        this.classname = classname;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public void markStartTime() {
@@ -284,16 +284,21 @@ public final class TestInfo implements Serializable, Cloneable {
     }
 
     /**
-     * clone the trace info; include cloning any fault
+     * clone the trace info; include cloning any child entries
      *
      * @return
      * @throws CloneNotSupportedException
      */
+    @Override
+    @SuppressWarnings("unchecked")
     public Object clone() throws CloneNotSupportedException {
         TestInfo cloned = (TestInfo) super.clone();
         if (fault != null) {
             cloned.fault = (ThrowableTraceInfo) cloned.fault.clone();
         }
+        cloned.tags=(ArrayList<String>) tags.clone();
+        cloned.messages=(ArrayList<LogEntry>) messages.clone();
+
         return cloned;
     }
 
@@ -307,8 +312,8 @@ public final class TestInfo implements Serializable, Cloneable {
             TestInfo cloned = (TestInfo) clone();
             return cloned;
         } catch (CloneNotSupportedException e) {
-            //impossible
-            //but we turn into a runtime exception
+            //should be utterly impossible
+            //but we turn into a runtime exception, just in case :)
             throw new RuntimeException(e);
         }
     }
@@ -328,7 +333,7 @@ public final class TestInfo implements Serializable, Cloneable {
      * @return
      */
     public String getTitle() {
-        return getClassname() + "." + getText();
+        return getName() + "." + getText();
     }
 
     /**
@@ -346,5 +351,14 @@ public final class TestInfo implements Serializable, Cloneable {
      */
     public void log(LogEntry entry) {
         messages.add(entry);
+    }
+
+    public static TestInfo skipped(String name) {
+        TestInfo info=new TestInfo();
+        info.setName(name);
+        info.markStartTime();
+        info.setEndTime(info.getStartTime());
+        info.setOutcome(OUTCOME_SKIPPED);
+        return info;
     }
 }
