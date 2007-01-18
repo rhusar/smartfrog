@@ -46,7 +46,14 @@ ConditionalSchema extends Schema {
  */
 
 ConditionalEventCompound extends EventCompound {
-  sfClass "org.smartfrog.sfcore.workflow.conditions.ConditionalEventCompound";
+  sfClass "org.smartfrog.sfcore.workflow.conditional.ConditionCompound";
   conditionalSchema extends ConditionalSchema;
   sfShouldTerminate true;
+}
+
+/**
+ * a conditional event compound with an optional schema
+ */
+OptionalConditionalEventCompound extends ConditionalEventCompound {
+  conditionalSchema:condition extends OptionalCondition;
 }

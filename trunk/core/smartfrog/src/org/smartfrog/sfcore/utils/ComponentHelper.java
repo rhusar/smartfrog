@@ -29,6 +29,7 @@ import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.common.TerminatorThread;
 import org.smartfrog.sfcore.security.SFClassLoader;
+import org.smartfrog.sfcore.processcompound.SFProcess;
 import org.smartfrog.services.filesystem.FileSystem;
 
 import java.rmi.RemoteException;
@@ -127,6 +128,26 @@ public class ComponentHelper {
         } catch (Throwable thr) {
             // TODO: log a message to indicate that sfCompleteName failed!
             return new Reference();
+        }
+    }
+
+    /**
+     * Get the short name of a component.
+     *
+     * @return the final name in the list, or null for no match
+     * @throws RemoteException network trouble
+     */
+    public String shortName() throws RemoteException {
+        Object key;
+        if (owner.sfParent() == null) {
+            key = SFProcess.getProcessCompound().sfAttributeKeyFor(this);
+        } else {
+            key = owner.sfParent().sfAttributeKeyFor(this);
+        }
+        if (key != null) {
+            return key.toString();
+        } else {
+            return null;
         }
     }
 
@@ -455,5 +476,6 @@ public class ComponentHelper {
         }
         return implementsInterface(clazz.getSuperclass(),interfaceName);
     }
+
 
 }

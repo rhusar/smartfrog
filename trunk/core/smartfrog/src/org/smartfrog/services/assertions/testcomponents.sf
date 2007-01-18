@@ -31,22 +31,50 @@ ITS MEDIA, AND YOU HEREBY WAIVE ANY CLAIM IN THIS REGARD.
 */
 
 
-#include "/org/smartfrog/sfcore/workflow/combinators/sequence.sf"
-#include "/org/smartfrog/sfcore/workflow/conditional/conditional.sf"
-
+#include "/org/smartfrog/sfcore/workflow/conditional/components.sf"
+#include "/org/smartfrog/sfcore/workflow/combinators/components.sf"
+#include "/org/smartfrog/sfcore/workflow/conditional/conditions/components.sf"
 
 /*
  this file declares components that can act as test deployers.
 
+ * This is the workflow implemented by this component
+ * sfDeploy:
+ *      -all attributes are read, validated.
+ * sfStart:
+ *   -"condition" is deployed and evaluated. If false, the component skips all other work and goes to
+ *    workflow termination.
+ *   -"action" is deployed.
+ *   -"teardown" is deployed, for starting later
+ *   -"action" is started. 
+ *   -if action deployment or startup raised an exception, if exitType=="normal" then
+ *    the exception is rethrown. If exitType=="abnormal", then exitText is looked for
+ *    in the exception string; a match implies an expected failure => normal termination
+ *   -the action terminator is started
+ *   -the tests are run
+ *
+ * The effect is only run the tests if startup worked.
+ *
+ * sfTerminateWith
+ *  -the teardown component is started
+ *  -the application is terminated
+ *  -the tests are terminated
 
+ * 2007-01: the teardown code is disabled. Use the workflow to better
+ *  choreograph teardown
  */
 
 
 TestCompound extends ActionCompound {
   TestCompoundSchema extends Schema {
     condition extends OptionalCondition {
-      description "a condition to wait for before running the tests";
+      description "a condition to evaluate to decide whether to run this test or not";
     }
+    /*
+    waitFor extends OptionalCondition {
+      description "a condition to wait for, before running the tests";
+    }
+    */
     description extends String {
       description "description of the test";
     }
@@ -137,8 +165,34 @@ ExpectDeploy extends TestCompound {
 
 }
 
+/**
+ * This component uses workflow components to delay the tests
+ * until the waitFor condition evaluates to true.
+ */
 DeploySequence extends TestCompound {
 
+    waitFor extends True;
+    //time in ms to give up
+    waitForTimeout 10000;
+    //interval in ms between checks
+    waitForInterval 200;
+
+    testrun extends Sequence {
+        //insert tests here
+    }
+
+    //override the normal sequence with the waiting one
+    tests extends Sequence {
+
+        wait extends FailingWaitFor {
+          condition PARENT:PARENT:waitFor;
+          interval waitForInterval;
+          timeout waitForTimeout;
+        }
+
+        testrun PARENT:PARENT:sequence;
+
+    }
 }
 
 /**

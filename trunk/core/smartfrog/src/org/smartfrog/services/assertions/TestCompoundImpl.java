@@ -22,11 +22,10 @@ package org.smartfrog.services.assertions;
 import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLivenessException;
-import org.smartfrog.sfcore.logging.LogSF;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.TerminationRecord;
-import org.smartfrog.sfcore.workflow.eventbus.EventCompoundImpl;
 import org.smartfrog.sfcore.workflow.combinators.DelayedTerminator;
+import org.smartfrog.sfcore.workflow.conditional.ConditionCompound;
 import org.smartfrog.sfcore.utils.ComponentHelper;
 import org.smartfrog.sfcore.utils.ShouldDetachOrTerminate;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
@@ -37,13 +36,13 @@ import java.rmi.RemoteException;
  * created 22-Sep-2006 16:43:35
  */
 
-public class TestCompoundImpl extends EventCompoundImpl
+public class TestCompoundImpl extends ConditionCompound
         implements TestCompound {
     private ComponentDescription teardownCD;
     private Prim teardown;
-
+    private ComponentDescription waitForCD;
     private ComponentDescription tests;
-    private Prim testsPrim;
+    private Prim waitFor,testsPrim;
 
     protected static final String ACTION_RUNNING = ATTR_ACTION;
     protected static final String TESTS_RUNNING = ATTR_TESTS;
@@ -60,6 +59,7 @@ public class TestCompoundImpl extends EventCompoundImpl
     private volatile boolean failed = false;
     private volatile boolean succeeded = false;
     private volatile boolean forcedTimeout = false;
+    private volatile boolean skipped = false;
     private volatile TerminationRecord status;
 
     /**
@@ -74,13 +74,13 @@ public class TestCompoundImpl extends EventCompoundImpl
     public TestCompoundImpl() throws RemoteException {
     }
 
-
     /**
      * {@inheritDoc}
-     * @return false
+     *
+     * @return the skipped state
      */
-    protected boolean isOldNotationSupported() {
-        return false;
+    public boolean isSkipped() {
+        return skipped;
     }
 
     /**
@@ -95,14 +95,14 @@ public class TestCompoundImpl extends EventCompoundImpl
     public synchronized void sfDeploy() throws SmartFrogException,
             RemoteException {
         super.sfDeploy();
+        //look for the action
         checkActionDefined();
         name = sfCompleteNameSafe();
+
+        waitForCD = sfResolve(ATTR_WAITFOR, waitForCD, false);
         tests = sfResolve(ATTR_TESTS, tests, false);
         testTimeout = sfResolve(ATTR_TEST_TIMEOUT, 0L, true);
-        teardownCD = sfResolve(ATTR_TEARDOWN, teardownCD, false);
-        if (teardownCD != null) {
-            throw new SmartFrogException("Not yet supported " + ATTR_TEARDOWN);
-        }
+        //teardownCD = sfResolve(ATTR_TEARDOWN, teardownCD, false);
         undeployAfter = sfResolve(ATTR_UNDEPLOY_AFTER, 0L, true);
         expectTerminate = sfResolve(ATTR_EXPECT_TERMINATE, false, true);
         exitType = sfResolve(ATTR_EXIT_TYPE, exitType, true);
@@ -112,27 +112,54 @@ public class TestCompoundImpl extends EventCompoundImpl
 
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
-        LogSF logSF = sfLog();
         Exception exception=null;
+        //deploy and evaluate the condition.
+        //then decide whether to run or not.
+        if (!evaluate()) {
+            skipped=true;
+            sfLog().info("Skipping test run " + name);
+            finish();
+            //end do not deploy anything else
+            return;
+        }
+
         //deploy the action under a terminator, then the assertions, finally teardown afterwards.
         try {
-            actionPrim = deployAction();
-            actionTerminator = new DelayedTerminator(actionPrim, undeployAfter, logSF,
-                    FORCED_TERMINATION,
-                    !expectTerminate);
-            actionTerminator.start();
-        } catch (RemoteException e) {
-            if (TerminationRecord.NORMAL.equals(exitType)) {
-                throw e;
-            }
-            exception=e;
+            actionPrim = deployComponentDescription(ACTION_RUNNING, action);
         } catch (SmartFrogDeploymentException e) {
             //split on normal/abnormal.
-            if(TerminationRecord.NORMAL.equals(exitType)) {
+            if (TerminationRecord.NORMAL.equals(exitType)) {
                 throw e;
             }
             exception = e;
         }
+
+        if(exception==null) {
+            //the teardown CD is deployed at this time, but not started.
+            //it is brought to life during termination.
+            if (teardownCD != null) {
+                teardown = deployComponentDescription(ATTR_TEARDOWN, teardownCD);
+            }
+
+            //if we get here. then it is time to start the action.
+            //exceptions are caught and compared to expectations.
+            try {
+                actionPrim.sfStart();
+            } catch (SmartFrogException e) {
+                //split on normal/abnormal.
+                if (TerminationRecord.NORMAL.equals(exitType)) {
+                    throw e;
+                }
+                exception = e;
+
+            } catch (RemoteException e) {
+                if (TerminationRecord.NORMAL.equals(exitType)) {
+                    throw e;
+                }
+                exception = e;
+            }
+        }
+
         //did we catch something during deployment?
         if (exception!=null) {
             //get the message and check it against expections
@@ -151,13 +178,28 @@ public class TestCompoundImpl extends EventCompoundImpl
                     null,null,exception);
         }
 
+        //start the terminator
+        actionTerminator.start();
+        actionTerminator = new DelayedTerminator(actionPrim, undeployAfter, sfLog(),
+                FORCED_TERMINATION,
+                !expectTerminate);
+
         //now deploy the tests.
         //any failure in tests is something to report, as is any failure of the tests to finish.
 
+        startTests();
+    }
+
+    /**
+     * Start the test runner and a terminator
+     * @throws RemoteException
+     * @throws SmartFrogDeploymentException
+     */
+    private void startTests() throws RemoteException, SmartFrogDeploymentException {
         if(tests !=null) {
             testsPrim = sfCreateNewChild(TESTS_RUNNING, tests, null);
             //the test terminator reports a termination as a failure
-            testsTerminator = new DelayedTerminator(testsPrim, testTimeout, logSF,
+            testsTerminator = new DelayedTerminator(testsPrim, testTimeout, sfLog(),
                     FORCED_TERMINATION,
                     false);
             testsTerminator.start();
@@ -198,6 +240,15 @@ public class TestCompoundImpl extends EventCompoundImpl
      */
     public synchronized void sfTerminateWith(TerminationRecord status) {
         super.sfTerminateWith(status);
+        if (teardown != null) {
+            try {
+                teardown.sfStart();
+            } catch (SmartFrogException e) {
+                sfLog().info("When starting the teardown action", e);
+            } catch (RemoteException e) {
+                sfLog().info("When starting the teardown action", e);
+            }
+        }
         shutdown(actionTerminator);
         shutdown(testsTerminator);
     }
@@ -325,12 +376,6 @@ public class TestCompoundImpl extends EventCompoundImpl
         }
         //trigger termination.
         return terminate;
-    }
-
-
-    protected Prim deployAction() throws RemoteException, SmartFrogDeploymentException {
-        Prim child = sfCreateNewChild(ACTION_RUNNING, action, null);
-        return child;
     }
 
 

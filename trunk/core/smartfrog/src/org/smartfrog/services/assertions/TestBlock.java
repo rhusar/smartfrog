@@ -116,4 +116,11 @@ public interface TestBlock extends Remote {
      * @throws SmartFrogException on other problems
      */
     Prim getAction() throws RemoteException, SmartFrogException;
+
+    /**
+     * turn true if a test is skipped; if some condition caused
+     * it not to run
+     * @return whether or not the test block skipped deployment of children.
+     */
+    boolean isSkipped() throws RemoteException, SmartFrogException;
 }

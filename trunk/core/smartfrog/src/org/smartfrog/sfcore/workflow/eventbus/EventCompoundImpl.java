@@ -37,6 +37,7 @@ import org.smartfrog.sfcore.common.TerminatorThread;
 import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.common.ContextImpl;
 import org.smartfrog.sfcore.common.*;
+import org.smartfrog.sfcore.utils.ComponentHelper;
 
 
 /**
@@ -446,5 +447,30 @@ public class EventCompoundImpl extends CompoundImpl implements EventBus,
         } else {
             return null;
         }
+    }
+
+    /**
+     * Deploy but do not start a component. If something went wrong with sfDeploy(), we start a termination of the errant
+     * component and raise a lifecycle exception.
+     * @param name
+     * @param description
+     * @return the new child
+     * @throws SmartFrogDeploymentException
+     * @throws SmartFrogLifecycleException
+     */
+    protected Prim deployComponentDescription(String name, ComponentDescription description) throws SmartFrogDeploymentException, SmartFrogLifecycleException {
+        Prim child = sfDeployComponentDescription(name, this, (ComponentDescription) description.copy(), new ContextImpl());
+        // it is now a child, so need to guard against double calling of lifecycle...
+        try {
+            child.sfDeploy();
+        } catch (Throwable thrown) {
+            //forget about the finally component as we did not deploy properly.
+            ComponentHelper helper = new ComponentHelper(child);
+            child = null;
+            helper.sfSelfDetachAndOrTerminate(TerminationRecord.ABNORMAL,
+                    "failed to create "+name, null, thrown);
+            throw (SmartFrogLifecycleException) SmartFrogLifecycleException.forward(thrown);
+        }
+        return child;
     }
 }

@@ -28,7 +28,7 @@ import java.rmi.RemoteException;
  * created 30-Nov-2006 13:33:13
  */
 
-public class LivenessTestImpl extends TestConditionImpl implements TestCondition {
+public class LivenessTestImpl extends EvaluateConditionImpl implements EvaluateCondition {
 
 
     public LivenessTestImpl() throws RemoteException {

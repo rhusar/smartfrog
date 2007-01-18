@@ -41,10 +41,7 @@ ITS MEDIA, AND YOU HEREBY WAIVE ANY CLAIM IN THIS REGARD.
  * unless sfShouldTerminate is set to false.
  */
 
-ConditionalEventCompound extends EventCompound {
-  conditionalSchema extends ConditionalSchema;
-  sfShouldTerminate true;
-}
+
 
 /**
  * Deploy one of two children, depending upon the result of the condition
@@ -90,17 +87,26 @@ FailingWaitFor extends WaitFor {
 
 
 /**
- * This component tests the condition at startup, and fails if it
- * is not met
+ * This component tests the condition at startup, and can fail if it
+ * is not met.
+ *
+ * After evaluation, the attribute "result" is set to the outcome. This
+ * lets the component be used to generate a LAZY binding attribute for
+ * feeding in to components that take a simple boolean attribute instead
+ * of a full condition.
  */
-TestCondition extends ConditionalEventCompound {
-  testConditionSchema extends Schema {
+EvaluateCondition extends ConditionalEventCompound {
+  evaluateConditionSchema extends Schema {
+    failOnFalse extends Boolean {
+      description "flag to indicate that the component should terminate with an error on a false condition";
+    }
     message extends String {
       description "error text on failure";
     };
   }
   sfClass "org.smartfrog.sfcore.workflow.conditional.TestConditionImpl";
-  message "Test condition failed";
+  message "Condition evaluated to false";
+  failOnFalse true;
 }
 
 /**
@@ -112,7 +118,7 @@ TestCondition extends ConditionalEventCompound {
  * The component declares itself non-terminating, so that it remains deployed until
  * its parent is terminated.
  */
-LivenessTest extends TestCondition {
+LivenessTest extends EvaluateCondition {
   message "Liveness condition failed";
   sfClass "org.smartfrog.sfcore.workflow.conditional.TestConditionImpl";
   sfShouldTerminate false;

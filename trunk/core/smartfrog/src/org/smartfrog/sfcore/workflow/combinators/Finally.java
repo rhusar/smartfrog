@@ -5,11 +5,11 @@ import org.smartfrog.sfcore.compound.Compound;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLifecycleException;
 import org.smartfrog.sfcore.common.ContextImpl;
+import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.utils.ComponentHelper;
-import org.smartfrog.sfcore.logging.Log;
 
 import java.rmi.RemoteException;
 
@@ -26,7 +26,6 @@ public class Finally extends EventCompoundImpl implements Compound {
 
     private Prim finallyPrim;
     private static final String FINALLY_CHILD_NAME = "action";
-    protected ComponentHelper helper;
 
     /**
      * Constructs Try.
@@ -58,21 +57,9 @@ public class Finally extends EventCompoundImpl implements Compound {
      */
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
-        sfCreateNewChild(FINALLY_CHILD_NAME, action, null);
 
         //Copies component description before deploying it!
-        finallyPrim = sfDeployComponentDescription(FINALLY_CHILD_NAME, this, (ComponentDescription) action.copy(), new ContextImpl());
-        // it is now a child, so need to guard against double calling of lifecycle...
-        try {
-            finallyPrim.sfDeploy();
-        } catch (Throwable thrown) {
-            //forget about the finally component as we did not deploy properly.
-            helper = new ComponentHelper(finallyPrim);
-            finallyPrim = null;
-            helper.sfSelfDetachAndOrTerminate(TerminationRecord.ABNORMAL,
-                    "failed to create", null, thrown);
-            throw (SmartFrogLifecycleException) SmartFrogLifecycleException.forward(thrown);
-        }
+        finallyPrim= deployComponentDescription(FINALLY_CHILD_NAME, action);
     }
 
     public synchronized void sfTerminateWith(TerminationRecord status) {

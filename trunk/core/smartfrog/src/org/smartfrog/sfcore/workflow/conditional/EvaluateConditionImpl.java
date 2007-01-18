@@ -1,4 +1,4 @@
-/** (C) Copyright 2006 Hewlett-Packard Development Company, LP
+/** (C) Copyright 2006-2007 Hewlett-Packard Development Company, LP
 
  This library is free software; you can redistribute it and/or
  modify it under the terms of the GNU Lesser General Public
@@ -27,33 +27,42 @@ import java.rmi.RemoteException;
  * created 30-Nov-2006 13:26:41
  */
 
-public class TestConditionImpl extends ConditionCompound implements TestCondition {
+public class EvaluateConditionImpl extends ConditionCompound implements EvaluateCondition {
     private String message;
+    private boolean failOnFalse;
 
 
-    public TestConditionImpl() throws RemoteException {
+    public EvaluateConditionImpl() throws RemoteException {
 
     }
 
     /**
      * Starts the component by deploying the condition
      *
-     * @throws org.smartfrog.sfcore.common.SmartFrogException
-     *                                  in case of problems creating the child
-     * @throws java.rmi.RemoteException In case of network/rmi error
+     * @throws SmartFrogException in case of problems
+     * @throws RemoteException In case of network/rmi error
      */
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
         message =sfResolve(ATTR_MESSAGE, "",true);
+        failOnFalse = sfResolve(ATTR_FAIL_ON_FALSE, false, true);
+        startupTest();
     }
 
+    /**
+     * This is the test that runs on startup. Override it to change the startup behaviour
+     * @throws SmartFrogException in case of problems
+     * @throws RemoteException In case of network/rmi error
+     */
     protected void startupTest() throws SmartFrogException, RemoteException {
         testCondition();
         finish();
     }
 
     protected void testCondition() throws SmartFrogException, RemoteException {
-        if(!evaluate()) {
+        boolean result = evaluate();
+        sfReplaceAttribute(ATTR_RESULT,Boolean.valueOf(result));
+        if(!result && failOnFalse) {
             throw new SmartFrogException(message);
         }
     }
