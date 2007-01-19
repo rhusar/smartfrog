@@ -28,7 +28,7 @@ For more information: www.smartfrog.org
    * A smartfrog test suite deploys its children in turn 
    *
    */
-  SmartFrogTestSuite extends TestSuite {
+  SFUnitTestSuite extends TestSuite {
 
     sfClass "org.smartfrog.services.sfunit.SFUnitSuiteImpl";
   }
