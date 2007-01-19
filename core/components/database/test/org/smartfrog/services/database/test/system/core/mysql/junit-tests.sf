@@ -19,22 +19,18 @@
  */
 
 #include "/org/smartfrog/services/database/test/system/core/mysql/components.sf";
+#include "/org/smartfrog/services/junit/all.sf"
 
 
-ConnectionOpenTest extends MysqlTest {
+/**
+ * the test suite for running the mysql tests under smartfrog 
+ */
+MysqlJUnitTests extends JUnit3TestSuite {
 
-    description "This test blocks until a connection is open, and fails if this is not possible";
-    
-    tests extends Sequence {
-
-      wait extends BlockForMysqlConnection {
-          database LAZY action:binding;
-      }
-    }
- }
-
-sfConfig extends ConnectionOpenTest {
-
-
+  name "Mysql tests";
+  package "org.smartfrog.services.database.test.system.core.mysql";
+  classes [
+    "MysqlTest"
+    ];
 
 }

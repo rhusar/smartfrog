@@ -3,7 +3,7 @@
 
 
 
-sfConfig extends MysqlTest {
+MysqlStartTest extends MysqlTest {
 
    description "do nothing but start mysql";
 
@@ -15,3 +15,6 @@ sfConfig extends MysqlTest {
     }
 
 }
+
+
+sfConfig extends MysqlStartTest;

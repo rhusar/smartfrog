@@ -3,7 +3,7 @@
 
 
 
-sfConfig extends MysqlTest {
+IsMysqlLiveTest extends MysqlTest {
 
    description "test the liveness component that pings the database";
 
@@ -15,3 +15,6 @@ sfConfig extends MysqlTest {
     }
 
 }
+
+
+sfConfig extends IsMysqlLiveTest;

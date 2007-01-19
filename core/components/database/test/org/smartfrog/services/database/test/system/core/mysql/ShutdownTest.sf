@@ -3,7 +3,7 @@
 
 
 
-sfConfig extends MysqlTest {
+ShutdownTest extends MysqlTest {
 
    description "use mysqladmin to shut down mysql";
 
@@ -16,3 +16,5 @@ sfConfig extends MysqlTest {
     }
 
 }
+
+sfConfig extends ShutdownTest;
