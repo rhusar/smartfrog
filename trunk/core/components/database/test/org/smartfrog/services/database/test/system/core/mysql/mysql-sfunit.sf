@@ -18,23 +18,20 @@
 
  */
 
-#include "/org/smartfrog/services/database/test/system/core/mysql/components.sf";
+#include "/org/smartfrog/services/sfunit/components.sf"
+#include "/org/smartfrog/services/database/test/system/core/mysql/ConnectionOpenTest.sf"
+#include "/org/smartfrog/services/database/test/system/core/mysql/IsMysqlLiveTest.sf"
+#include "/org/smartfrog/services/database/test/system/core/mysql/MysqlStartTest.sf"
+#include "/org/smartfrog/services/database/test/system/core/mysql/ShutdownTest.sf"
+#include "/org/smartfrog/services/database/test/system/core/mysql/TableManipulationTest.sf"
+/*#include ""
+#include ""*/
 
+MysqlSfUnitTests extends SFUnitTestSuite {
 
-ConnectionOpenTest extends MysqlTest {
-
-    description "This test blocks until a connection is open, and fails if this is not possible";
-    
-    tests extends Sequence {
-
-      wait extends BlockForMysqlConnection {
-          database LAZY action:binding;
-      }
-    }
- }
-
-sfConfig extends ConnectionOpenTest {
-
-
-
+  connectionOpenTest extends ConnectionOpenTest;
+  isMysqlLiveTest extends IsMysqlLiveTest;
+  mysqlStartTest extends MysqlStartTest;
+  -- extends ShutdownTest;
+  -- extends TableManipulationTest;
 }
