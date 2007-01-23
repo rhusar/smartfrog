@@ -27,8 +27,8 @@
 EchoEndpoint extends AlpineEndpoint {
     name "echo";
     handlers [
-      EchoHandler:classname,
       MustUnderstandChecker:classname
+      EchoHandler:classname,
     ];
 }
 
@@ -40,8 +40,8 @@ AddressedEchoEndpoint extends AlpineEndpoint {
     handlers [
       LogCurrentMessageHandler:classname,
       AddressHandler:classname,
-      EchoHandler:classname,
       MustUnderstandChecker:classname,
+      EchoHandler:classname,
       LogCurrentMessageHandler:classname
     ];
 }

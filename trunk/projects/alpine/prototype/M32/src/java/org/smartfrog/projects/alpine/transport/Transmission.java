@@ -20,10 +20,7 @@
 package org.smartfrog.projects.alpine.transport;
 
 import org.smartfrog.projects.alpine.core.MessageContext;
-import org.smartfrog.projects.alpine.faults.AlpineRuntimeException;
-import org.smartfrog.projects.alpine.faults.ClientException;
-import org.smartfrog.projects.alpine.faults.FaultConstants;
-import org.smartfrog.projects.alpine.faults.NetworkIOException;
+import org.smartfrog.projects.alpine.faults.*;
 import org.smartfrog.projects.alpine.om.base.SoapElement;
 import org.smartfrog.projects.alpine.om.soap11.MessageDocument;
 import org.smartfrog.projects.alpine.transport.http.HttpTransmitter;
@@ -166,7 +163,8 @@ public class Transmission implements Callable {
             fault.addAddressDetails(getRequest());
             throw fault;
         } catch (java.util.concurrent.TimeoutException timeoutException) {
-            throw org.smartfrog.projects.alpine.faults.TimeoutException.fromConcurrentTimeout(timeoutException);
+            //convert to alpine timeout exception
+            throw TimeoutException.fromConcurrentTimeout(timeoutException);
         } catch (InterruptedException e) {
             throw new ClientException("Interrupted while waiting for response from "+
                     getRequest().getAddressDetails().getTo().toString());
