@@ -56,6 +56,11 @@ public class PortalSession extends WsrfSession {
         super(endpoint, validating, queue);
     }
 
+    /**
+     * Look up a system by ID
+     * @param id resource ID
+     * @return the transmission
+     */
     public Transmission beginLookupSystem(String id) {
         SoapElement resid = XomHelper.apiElement("ResourceId", id);
         SoapElement request;
@@ -66,8 +71,8 @@ public class PortalSession extends WsrfSession {
     /**
      * wait for something to finish. this is where any errors get raised
      *
-     * @param tx
-     * @return
+     * @param tx transmission
+     * @return the system session looked up
      * @throws org.smartfrog.projects.alpine.faults.AlpineRuntimeException
      *          for trouble
      */
