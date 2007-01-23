@@ -62,8 +62,8 @@ DeployApiEndpoint extends AlpineEndpoint {
       StatsHandler:classname,
       LogCurrentMessageHandler:classname,
       AddressHandler:classname,
-      LAZY pivotHandler:classname,
       MustUnderstandChecker:classname,
+      LAZY pivotHandler:classname,
       LogCurrentMessageHandler:classname
     ];
 
@@ -111,8 +111,8 @@ SubscriptionEndpoint extends AlpineEndpoint {
     handlers [
       LogCurrentMessageHandler:classname,
       AddressHandler:classname,
-      SubscriptionService:classname,
       MustUnderstandChecker:classname,
+      SubscriptionService:classname,
       LogCurrentMessageHandler:classname
     ];
     getMessage ##
