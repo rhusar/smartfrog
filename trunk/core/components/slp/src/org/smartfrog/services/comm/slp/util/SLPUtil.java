@@ -100,7 +100,9 @@ public class SLPUtil {
     }
     
     /**
-        Converts a Vector to a String-list. [1,2] => "1, 2"
+        Converts a Vector to a String-list.
+
+        e.g. [1,2] => "1, 2"
      * @param v  Vector
      * @return String   String-list "1, 2"    
     */

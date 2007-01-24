@@ -43,8 +43,9 @@ import org.smartfrog.services.utils.generic.StreamGobbler;
 import org.smartfrog.services.utils.generic.StreamIntf;
 
 /**
- * SmartFrog implementation of telnet component. It uses apache commons net 
- * libraries 1.2.
+ * SmartFrog implementation of telnet component.
+ *
+ * It uses apache commons net libraries 
  * @author Ashish Awasthi
  */ 
 public class TelnetImpl extends PrimImpl implements Telnet, 
