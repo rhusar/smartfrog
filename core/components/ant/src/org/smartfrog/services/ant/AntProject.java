@@ -50,6 +50,7 @@ import org.smartfrog.sfcore.reference.Reference;
  */
 
 /**
+ * A wrapper around an Ant project. 
 // * TODO: References - How are they resolved?
 // * TODO: Split in: Project, Target, Task
 // * TODO: Try to make the different parts remotable

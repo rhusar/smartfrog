@@ -29,7 +29,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 
 /**
- * This component subclasses {@link #TransactionImpl()} to run the transactions
+ * This component subclasses {@link TransactionImpl} to run the transactions
  * during termination, in the main thread. It does nothing at startup.
  * It can be used as a counterpoint to any components that create tables and the like
  * created 28-Nov-2006 14:47:56
@@ -45,11 +45,11 @@ public class TerminationTransactionImpl extends TransactionImpl {
     /**
      * do not run any commands on startup
      *
-     * @throws org.smartfrog.sfcore.common.SmartFrogDeploymentException
+     * @throws SmartFrogDeploymentException
      *                                  for smartfrog problems
-     * @throws org.smartfrog.sfcore.common.SmartFrogResolutionException
+     * @throws SmartFrogResolutionException
      *                                  for smartfrog problems
-     * @throws java.rmi.RemoteException for network problems.
+     * @throws RemoteException for network problems.
      */
     protected void executeStartupCommands()
             throws SmartFrogDeploymentException, SmartFrogResolutionException, RemoteException {
@@ -60,7 +60,7 @@ public class TerminationTransactionImpl extends TransactionImpl {
     /**
      * shut down the component by running the operations
      *
-     * @param status
+     * @param status termination record
      */
     protected synchronized void sfTerminateWith(TerminationRecord status) {
         super.sfTerminateWith(status);

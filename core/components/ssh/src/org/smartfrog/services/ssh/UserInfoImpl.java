@@ -65,6 +65,8 @@ public class UserInfoImpl implements UserInfo {
     }
 
     /**
+     * prompt for a string
+     * @returns false always
      * @see com.jcraft.jsch.UserInfo#prompt
      */
     public boolean prompt(String str) {
@@ -72,6 +74,8 @@ public class UserInfoImpl implements UserInfo {
     }
 
     /**
+     * Retry
+     * @returns false always
      * @see com.jcraft.jsch.UserInfo#retry
      */
     public boolean retry() {

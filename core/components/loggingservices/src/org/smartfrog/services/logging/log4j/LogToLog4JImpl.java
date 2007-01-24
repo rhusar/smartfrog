@@ -336,9 +336,9 @@ public class LogToLog4JImpl implements LogToLog4J, Log, LogMessage, LogLevel, Se
     }
 
     /**
-     * set the output stream for logging. must not be null
+     * set the output stream for logging.
      *
-     * @param outstream
+     * @param outstream output stream - must not be null
      */
     public void setOutstream(PrintStream outstream) {
         assert (outstream != null);

@@ -108,7 +108,7 @@ public abstract class AsyncJdbcOperation extends AbstractJdbcOperation
      * implementation wants to do work in the {@link #performOperation(java.sql.Connection)}
      * method.
      *
-     * @return
+     * @return the worker thread
      */
     protected synchronized Thread startWorkerThread()
             throws SmartFrogDeploymentException {
@@ -175,8 +175,8 @@ public abstract class AsyncJdbcOperation extends AbstractJdbcOperation
      *
      * @param connection the open connection.
      *
-     * @throws java.sql.SQLException
-     * @throws org.smartfrog.sfcore.common.SmartFrogException
+     * @throws SQLException SQL errors
+     * @throws SmartFrogException smartfrog errors
      *
      */
     public void performOperation(Connection connection)

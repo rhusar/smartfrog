@@ -48,6 +48,8 @@ import org.smartfrog.sfcore.logging.Log;
 import org.smartfrog.sfcore.logging.LogFactory;
 
 /**
+ * Email component for smartfrog.
+ * 
  * Emailer component can be used in two modes.
  * 1. As a standard workflow component ( Sends email only once when sfStart
  *    lifecycle method is executed. In this mode other components in the work-
