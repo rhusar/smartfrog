@@ -65,14 +65,12 @@ import org.smartfrog.sfcore.prim.TerminationRecord;
 
 
 /**
- * <p>Title: Anubis Detection Service</p>
- *
- * <p>Description:
+ * Anubis Detection Service.
  *
  * ConnectionSet is the heart of the protocol. This object maintains the
  * local view of the world as a set of connections that it recognises as
  * valid with other nodes. This connection set is the base information that
- * the partition manager uses to determine a valid partition.</p>
+ * the partition manager uses to determine a valid partition.
  *
  * <p>Copyright: Copyright (c) 2002</p>
  * <p>Company: Hewlett-Packard Ltd.</p>

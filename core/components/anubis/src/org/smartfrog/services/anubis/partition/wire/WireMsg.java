@@ -115,10 +115,11 @@ public class WireMsg implements WireSizes {
     }
 
     /**
-     * top level writeWireForm() method. subtypes should implement this method
+     * Top level writeWireForm() method.
+     * subtypes should implement this method
      * to call their super.writeWireForm and then write their own attributes.
      *
-     * @throws WireFormException
+     * @throws WireFormException on trouble
      */
     protected void writeWireForm() throws WireFormException {
         wireForm.putInt(0, getType());

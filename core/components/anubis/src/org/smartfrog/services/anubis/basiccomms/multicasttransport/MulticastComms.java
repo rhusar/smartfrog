@@ -34,7 +34,9 @@ import org.smartfrog.sfcore.logging.LogImplAsyncWrapper;
 
 /**
  * MulticastComms is an abstract class representing an end point
- * for multicast communications. The endpoint is capable of
+ * for multicast communications.
+ *
+ * The endpoint is capable of
  * sending and receiving objects, transfered in packets as object streams.
  * Note that there is a limit to the size of an object when transfered as
  * an object stream.

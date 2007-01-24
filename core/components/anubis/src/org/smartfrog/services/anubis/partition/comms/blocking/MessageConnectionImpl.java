@@ -215,7 +215,9 @@ public class MessageConnectionImpl extends ConnectionComms implements IOConnecti
 
 
     /**
-     * Closing is called by shutdwon(). shutdown is used to terminate the
+     * Close down the connection.
+     * 
+     * Closing is called by {@link #shutdown()}.  shutdown is used to terminate the
      * connection both here (from the "outside") and in the implementation
      * of ConnectionComms (from the "inside"). The connection closes itself
      * from the inside if there is some kind of error on the connection.

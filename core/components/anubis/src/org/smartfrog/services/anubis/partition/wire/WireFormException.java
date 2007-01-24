@@ -20,16 +20,8 @@ For more information: www.smartfrog.org
 package org.smartfrog.services.anubis.partition.wire;
 
 /**
- * Wire form conversion exceptions
- * <p>Title: </p>
+ * Wire form conversion exceptions.
  *
- * <p>Description: </p>
- *
- * <p>Copyright: Copyright (c) 2004</p>
- *
- * <p>Company: </p>
- *
- * @author not attributable
  * @version 1.0
  */
 public class WireFormException extends Exception {
