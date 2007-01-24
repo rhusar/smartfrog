@@ -13,6 +13,12 @@
 
   <target name="ivy-init" depends="init-core,load-version-info,artifact-names">
     <property name="ivy.dir" location="${root.dir}/antbuild/ivy" />
+    <typedef uri="antlib:fr.jayasoft.ivy.ant" onerror="fail"
+             resource="fr/jayasoft/ivy/ant/antlib.xml">
+      <classpath>
+        <pathelement location="${ivy.dir}/lib/ivy-${ivy.version}.jar"/>
+      </classpath>
+    </typedef>
     <fail >
       <condition >
         <not>
@@ -44,10 +50,17 @@
   <target name="ivy-publish" depends="ready-to-publish">
     <ivy:publish resolver="local" pubrevision="${artifact.version}"
         overwrite="true"
+        conf="master"
         artifactspattern="${dist.dir}/lib/[artifact]-[revision].[ext]" />
   </target>
 
+  <target name="ready-to-publish-all" depends="ready-to-publish"/>
 
+  <target name="ivy-publish-all" depends="ready-to-publish">
+    <ivy:publish resolver="local" pubrevision="${artifact.version}"
+         overwrite="true"
+         artifactspattern="${dist.dir}/lib/[artifact]-[revision].[ext]"/>
+  </target>
   <!--
     this target does the local install, copy
   -->

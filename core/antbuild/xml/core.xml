@@ -77,7 +77,7 @@
     <property name="dist.dir" location="dist"/>
     <property name="dist.lib.dir" location="${dist.dir}/lib"/>
     <property name="dist.doc.dir" location="${dist.dir}/docs"/>
-    <property name="dist.jdocs.dir" location="${dist.doc.dir}/jdocs"/>
+    <property name="dist.javadoc.dir" location="${dist.doc.dir}/javadoc"/>
     <property name="dist.bin.dir" location="${dist.dir}/bin"/>
     <property name="dist.src.dir" location="${dist.dir}/src"/>      
       
@@ -213,14 +213,29 @@
     test code (inc deployment descriptors) for deployment onto secure
     boxes
  -->
-    <property name="test.jar.name" value="${artifact.name}-${artifact.version}-test.jar"/>
+    <property name="test.jar.name" value="${artifact.name}-test-${artifact.version}.jar"/>
     <property name="target.jar"
       location="${dist.lib.dir}/${artifact.filename}"/>    
     <property name="test.jar" 
         location="${dist.lib.dir}/${test.jar.name}" />
+
+    <!--name of javadocs zip file-->
+    <property name="javadocs.zip.name"
+              value="${artifact.name}-javadocs-${artifact.version}.zip"/>
+    <property name="javadocs.zip"
+              location="${dist.lib.dir}/${javadocs.zip.name}"/>
+
+    <!--info about the documentation zip-->
+    <property name="documentation.zip.name"
+              value="${artifact.name}-documentation-${artifact.version}.zip"/>
+    <property name="documentation.zip"
+              location="${dist.lib.dir}/${documentation.zip.name}"/>
+
     <echo level="verbose">
       target.jar=${target.jar}
       test.jar=${test.jar}
+      javadocs.zip=${javadocs.zip}
+      documentation.zip=${documentation.zip}
     </echo>
   </target>
     

@@ -11,8 +11,9 @@
   
   <!-- import the core -->
   <import file="sftasks.xml"/>
-  
- <!-- new states -->
+  <import file="javadoc-mixin.xml"/>
+
+  <!-- new states -->
 
   <target name="ready-to-compile"
       depends="init,declare-classpaths,core-tasks">
@@ -33,7 +34,8 @@
   <target name="tests-packaged"
       depends="package-tests" />
 
-
+  <target name="ready-to-publish-all"
+          depends="ready-to-publish,documents-processed"/>
 
 
   <!-- ========================================================== -->
