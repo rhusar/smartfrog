@@ -43,38 +43,22 @@
   <target name="ready-to-javadoc" depends="compiled,javadoc-initialized" />
 
 
-  <target name="javadoc"
+  <target name="javadocs"
           depends="ready-to-javadoc"
       >
-    <!--  Java Docs for all                                                -->
-    <echo message=""/>
-    <echo message="------ Creating Java Docs for ${javadoc.header} [${dist.jdocs.dir}]---------------"/>
-    <mkdir dir="${dist.jdocs.dir}"/>
-    <sf-javadoc
+    <mkdir dir="${dist.javadoc.dir}"/>
+    <m:javadoc
         sourcepath="${src.dir}"
-        destdir="${dist.jdocs.dir}"
-        classpathref="compile.classpath"
+        packagenames="org.smartfrog.*"
+        destdir="${dist.javadoc.dir}"
+        classpathref="exec.classpath"
         >
       <group title="SmartFrog Packages" packages="org.smartfrog.*"/>
-    </sf-javadoc>
+    </m:javadoc>
   </target>
 
-  <target name="javadocs" depends="ready-to-javadoc"
-      description="make the java docs">
-    <javadoc
-        access="private"
-        destdir="${javadoc.dir}"
-        packagenames="d1.*"
-        sourcepath="src"
-        use="true"
-        version="true"
-        windowtitle="${project.name}"
-        failonerror="true">
-      <classpath refid="compile.classpath"/>
-    </javadoc>
-  </target>
 
-  <target name="javadocs-finished" depends="javadocs" />
+  <target name="javadocs-finished" depends="package-javadocs" />
 
 
   <target name="init-docs" depends="initialized" >
@@ -91,7 +75,7 @@
       if="doc.src.dir.found">
     <tstamp/>
     <copy todir="${dist.doc.dir}" overwrite="true">
-      <fileset dir="doc" includes="**/*.html"/>
+      <fileset dir="${doc.src.dir}" includes="**/*.html"/>
       <filterset>
         <filter token="DATE" value="${DSTAMP}"/>
         <filter token="TIME" value="${TSTAMP}"/>
@@ -100,7 +84,7 @@
 
 
     <copy todir="${dist.doc.dir}" overwrite="true">
-      <fileset dir="doc" includes="**/*.txt"/>
+      <fileset dir="${doc.src.dir}" includes="**/*.txt"/>
       <filterset begintoken="[[" endtoken="]]">
         <filter token="DATE" value="${DSTAMP}"/>
         <filter token="TIME" value="${TSTAMP}"/>
@@ -108,12 +92,58 @@
       </filterset>
     </copy>
 
+    <copy todir="${dist.doc.dir}" >
+      <fileset dir="${doc.src.dir}">
+        <include name="doc/**/*.pdf" />
+        <include name="doc/**/*.sx?" />
+      </fileset>
+    </copy>
+
   </target>
 
-  <target name="other-docs-finished" depends="process-other-docs" />
+  <target name="other-docs-finished" depends="process-other-docs,package-documents" />
 
   <!--state in which all other docs are finished.-->
   <target name="documents-processed"
       depends="javadocs-finished,other-docs-finished" />
+
+
+  <!--Package up the javadocs into their own zip file-->
+  <target name="ready-to-package-javadocs" depends="javadocs,artifact-names">
+  </target>
+
+  <target name="package-javadocs" depends="ready-to-package-javadocs"
+          description="package up all the javadocs">
+    <zip destfile="${javadocs.zip}">
+      <zipfileset dir="${dist.javadoc.dir}" includes="**/*.*"
+                  prefix="javadoc"/>
+    </zip>
+  </target>
+
+  <!-- ========================================================== -->
+  <!--  set up the documentation-->
+  <!-- ========================================================== -->
+
+  <target name="init-documents" depends="artifact-names">
+
+  </target>
+
+  <target name="ready-to-package-documents" depends="init-documents">
+
+  </target>
+
+  <target name="package-documents" depends="ready-to-package-documents">
+    <zip destfile="${documentation.zip}"
+         whenempty="create" duplicate="preserve">
+      <!--fileset is set up to work if there are no artifacts-->
+      <zipfileset dir="." >
+        <include name="doc/**/*.html" />
+        <include name="doc/**/*.pdf" />
+        <include name="doc/**/*.sx?" />
+        <include name="doc/**/*.txt" />
+      </zipfileset>
+    </zip>
+  </target>
+
 
 </project>
