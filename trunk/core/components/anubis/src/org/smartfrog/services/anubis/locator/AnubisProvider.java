@@ -22,15 +22,13 @@ package org.smartfrog.services.anubis.locator;
 
 
 /**
- * <p>Title: </p>
- * <p>Description: This is an abstract base class for the provider object. The
- *                 provider is defined by the user by extendeding this class and
- *                 can then be registered with the locator. When a named provider
- *                 registers the locator recognises its presence in the partition.</p>
+ * Abstract base class for the provider object.
  *
- * <p>Copyright: Copyright (c) 2002</p>
- * <p>Company: </p>
- * @author unascribed
+ * This is an abstract base class for the provider object. The
+ * provider is defined by the user by extendeding this class and
+ * can then be registered with the locator. When a named provider
+ * registers the locator recognises its presence in the partition.
+ *
  * @version 1.0
  */
 

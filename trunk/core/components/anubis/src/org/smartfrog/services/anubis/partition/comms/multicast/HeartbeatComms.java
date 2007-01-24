@@ -118,14 +118,16 @@ public class HeartbeatComms extends MulticastComms implements HeartbeatCommsIntf
     }
 
     /**
-     * Change of interface - connection users send objects or messages. sendObject()
-     * is not permitted because the only heartbeats can be sent on a heartbeat
-     * connection. But the method of the base class MulticastComms to send is
+     * Change of interface - connection users send objects or messages.
+     * sendObject(Object) is not permitted because the only heartbeats
+     * can be sent on a heartbeat connection. But the method of the base class
+     * MulticastComms to send is to take an arbitrary Object.
      * sendObject().
      *
      * @param obj
      */
     public void sendObject(Object obj) { return; }
+
     public void sendHeartbeat(HeartbeatMsg msg) {
         try { super.sendObject(msg.toWire()); }
         catch (Exception ex) {

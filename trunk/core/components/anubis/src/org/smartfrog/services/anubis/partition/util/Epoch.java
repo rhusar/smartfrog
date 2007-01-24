@@ -25,7 +25,8 @@ import org.smartfrog.sfcore.prim.PrimImpl;
 
 
 /**
- * epoch. we need an epoch that monotonically increases to identify
+ * The Epoch.
+ * we need an epoch that monotonically increases to identify
  * incarnations of a partition manager. Previously we used a value
  * stored on stable storage, but then we wanted to be able to refresh
  * the storage with a blank image, so we chose time instead.

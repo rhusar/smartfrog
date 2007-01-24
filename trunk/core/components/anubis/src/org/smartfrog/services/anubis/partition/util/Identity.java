@@ -30,7 +30,8 @@ import java.nio.ByteBuffer;
 import org.smartfrog.services.anubis.partition.wire.WireSizes;
 
 /**
- * Identity represents the identity of a parititon manager. The identity
+ * The identity of a partiton manager.
+ * Identity represents the identity of a partiton manager. The identity
  * is based on a magic number (to allow multiple instances in the same
  * network not to conflict), an integer id, and an epoch number to differentiate
  * incarnations of the same manager.

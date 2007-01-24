@@ -30,6 +30,8 @@ import org.smartfrog.sfcore.logging.LogSF;
 
 
 /**
+ * Server of connections.
+ *
  * ConnectionServer is a socket listener server that receives connection
  * requests on a given address, accepts them and creates an endpoint
  * object to handle the connection. The endpoint is created using a
@@ -42,6 +44,7 @@ public class ConnectionServer extends Thread {
     private LogSF             log = LogFactory.getLog(this.getClass().toString());
 
     /**
+     * Default constructor is initually unusable.
      * Constructor - sets a null listening socket and a null connection
      * factory (i.e. an unusable server).
      */
@@ -68,6 +71,7 @@ public class ConnectionServer extends Thread {
 
 
     /**
+     *
      * Constructor - creates a listening socket on the default ip address
      * returned for the given host name (should be this host), using the
      * given port. Initially the default connection factory is assumed.
