@@ -254,9 +254,21 @@ ${java.class.path}=
     test code (inc deployment descriptors) for deployment onto secure
     boxes
  -->
-    <property name="test.jar.name" value="${artifact.name}-${Version}-test.jar"/>
+    <property name="test.jar.name" value="${artifact.name}-test-${Version}.jar"/>
     <property name="test.jar"
         location="${dist.lib.dir}/${test.jar.name}" />
+
+   <!--name of javadocs zip file-->
+   <property name="javadocs.zip.name" value="${artifact.name}-javadocs-${Version}.zip"/>
+   <property name="javadocs.zip"
+     location="${dist.lib.dir}/${javadocs.zip.name}" />
+
+   <!--info about the documentation zip-->
+   <property name="documentation.zip.name"
+     value="${artifact.name}-documentation-${Version}.zip"/>
+   <property name="documentation.zip"
+     location="${dist.lib.dir}/${documentation.zip.name}" />
+
 
     <!-- standard location for distributed stuff; used when locating
       other things -->
@@ -479,9 +491,14 @@ ${java.class.path}=
   <!-- =================================================================== -->
   <!--   Javadocs. uses the compile classpath to set up the javadoc task   -->
   <!-- =================================================================== -->
-  <target name="javadoc"
+
+  <target name="ready-to-javadoc"
           depends="init, generateversion,declare-classpaths,init-javadoc"
-      unless="javadoc.disabled"
+      />
+
+  <target name="javadoc"
+          depends="ready-to-javadoc"
+          unless="javadoc.disabled"
           >
     <!--  Java Docs for all                                                -->
     <echo message=""/>
@@ -495,6 +512,43 @@ ${java.class.path}=
       <group title="SmartFrog Packages" packages="org.smartfrog.*"/>
     </sf-javadoc>
   </target>
+
+  <!--Package up the javadocs into their own zip file-->
+  <target name="ready-to-package-javadocs" depends="javadoc">
+  </target>
+
+  <target name="package-javadocs" depends="ready-to-package-javadocs"
+      description="package up all the javadocs">
+    <zip destfile="${javadocs.zip}">
+      <zipfileset dir="${dist.jdocs.dir}" includes="**/*.*"
+          prefix="javadoc"/>
+    </zip>
+  </target>
+
+  <!-- ========================================================== -->
+  <!--  set up the documentation-->
+  <!-- ========================================================== -->
+
+  <target name="init-documents" depends="init">
+
+  </target>
+
+  <target name="ready-to-package-documents" depends="init-documents">
+
+  </target>
+
+  <target name="package-documents" depends="ready-to-package-documents">
+    <zip destfile="${documentation.zip}"
+         whenempty="create" duplicate="preserve">
+      <!--fileset is set up to work if there are no artifacts-->
+      <zipfileset dir="." >
+        <include name="doc/**/*.html" />
+        <include name="doc/**/*.pdf" />
+        <include name="doc/**/*.sx?" />
+      </zipfileset>
+    </zip>
+  </target>
+
 
   <!-- ========================================================== -->
   <!--
@@ -1534,11 +1588,25 @@ ${build.dir}/ivy/reports
   <!--jars,-->
   <target name="ready-to-publish" depends="checksum-target-jar,ivy-report"/>
 
+  <!--publish all artifacts-->
   <target name="ivy-publish" depends="ready-to-publish"
       xmlns:ivy="antlib:fr.jayasoft.ivy.ant">
     <ivy:publish resolver="local" pubrevision="${Version}"
         overwrite="true"
+        conf="master"
         artifactspattern="${dist.lib.dir}/[artifact]-[revision].[ext]" />
+  </target>
+
+  <target name="ready-to-publish-all"
+          depends="ready-to-publish,package-javadocs,package-documents"/>
+
+  <!--publish everything, rather than just artifacts in the master config-->
+  <target name="ivy-publish-all" depends="ready-to-publish-all"
+          xmlns:ivy="antlib:fr.jayasoft.ivy.ant">
+    <ivy:publish resolver="local" pubrevision="${Version}"
+       overwrite="true"
+       haltonmissing="false"
+       artifactspattern="${dist.lib.dir}/[artifact]-[revision].[ext]" />
   </target>
 
   <target name="published" depends="ivy-publish,m2-install"
