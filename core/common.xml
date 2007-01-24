@@ -221,10 +221,19 @@
           classpathref="smartfrog.classpath"/>
       </not>
       </condition>
-      Smartfrog distribution not found. Please create the smartfrog distribution first.
-      Alternatively, make sure that this project is configured to locate the distribution
-      correctly.
+Smartfrog distribution not found. Please create the smartfrog distribution first.
+Alternatively, make sure that this project is configured to locate the distribution
+correctly.
+
+smartfrog.classpath=
+ ${toString:smartfrog.classpath}
+
+build.sysclasspath=${build.sysclasspath}
+
+${java.class.path}=
+  ${java.class.path}
     </fail>
+
     <!-- load in our version -->
     <loadproperties resource="${smartfrog.version.property.resource}"
       classpathref="smartfrog.classpath"/>
