@@ -36,7 +36,7 @@
         name="smartfrog"
         changing="true"
         rev="latest.integration"
-        conf="services->daemon"/>
+        conf="daemon->services;compile->default;runtime->default"/>
     <dependency org="org.smartfrog"
         name="sf-www"
         changing="true"
