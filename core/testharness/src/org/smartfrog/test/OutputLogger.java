@@ -39,12 +39,12 @@ public class OutputLogger {
     /**
      * output stream
      */
-    private TestOutputStream stdout;
+    private TestOutputStream stdout=new TestOutputStream();
 
     /**
      * errors
      */
-    private TestOutputStream stderr;
+    private TestOutputStream stderr=new TestOutputStream();
 
     /**
      *  cache of std out
@@ -68,7 +68,7 @@ public class OutputLogger {
      */
     private void save() {
         flush();
-        cachedStdOut=System.out;
+        cachedStdOut = System.out;
         cachedStdErr = System.err;
         System.setOut(stdout.createPrintStream());
         System.setErr(stderr.createPrintStream());
@@ -89,13 +89,14 @@ public class OutputLogger {
         flush();
         System.setOut(cachedStdOut);
         System.setErr(cachedStdErr);
-        cachedStdOut=cachedStdErr=null;
+        cachedStdOut=null;
+        cachedStdErr=null;
     }
 
     /**
      * test for the output stream containing a string
-     * @param substring
-     * @return
+     * @param substring string to search for
+     * @return true if the substring is in the cached stream
      */
     public boolean stdoutContains(String substring) {
         return stdout.contains(substring);
@@ -103,8 +104,8 @@ public class OutputLogger {
 
     /**
      * test for the error stream containing a string
-     * @param substring
-     * @return
+     * @param substring string to search for
+     * @return true if the substring is in the cached stream
      */
     public boolean stderrContains(String substring) {
         return stderr.contains(substring);

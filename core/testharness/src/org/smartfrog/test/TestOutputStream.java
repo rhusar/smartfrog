@@ -37,12 +37,16 @@ public class TestOutputStream extends OutputStream {
      */
     private StringBuffer buffer;
 
+    /**
+     * a test output stream bound to a buffer
+     * @param buffer where to store text
+     */
     public TestOutputStream(StringBuffer buffer) {
         this.buffer = buffer;
     }
 
     /**
-     *
+     * a buffering test output stream
      */
     public TestOutputStream() {
         buffer=new StringBuffer();
@@ -50,7 +54,7 @@ public class TestOutputStream extends OutputStream {
 
     /**
      * get the buffer
-     * @return
+     * @return the buffer for this stream
      */
     public StringBuffer getBuffer() {
         return buffer;
@@ -73,8 +77,8 @@ public class TestOutputStream extends OutputStream {
     }
 
     /**
-     * create a printstream from ths
-     * @return
+     * create a printstream from this
+     * @return the new stream
      */
     public PrintStream createPrintStream() {
         return new PrintStream(this);
