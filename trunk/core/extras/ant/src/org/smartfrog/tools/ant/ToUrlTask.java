@@ -274,7 +274,7 @@ public class ToUrlTask extends Task {
     /**
      * convert a file to a URL;
      * @throws BuildException if the file would not convert
-     * @param fileToConvert
+     * @param fileToConvert file to turn to a URL
      * @return the file converted to a URL
      */
     private String toURL(File fileToConvert) {
