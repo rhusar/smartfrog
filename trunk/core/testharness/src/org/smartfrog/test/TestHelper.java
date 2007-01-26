@@ -44,9 +44,9 @@ public class TestHelper {
 
     /**
      * get any test property; these are (currently) extracted from the JVM props
-     * @param property
-     * @param defaultValue
-     * @return
+     * @param property system property
+     * @param defaultValue default value
+     * @return the system property value or the default, if that is undefined
      */
     public static String getTestProperty(String property, String defaultValue) {
         return System.getProperty(property, defaultValue);
@@ -54,8 +54,8 @@ public class TestHelper {
 
     /**
      * get a mandatory property for the test,
-     * @param property
-     * @return
+     * @param property system property
+     * @return the value
      * @throws RuntimeException if the property was not found
      */
     public static String getRequiredTestProperty(String property) {
@@ -68,29 +68,23 @@ public class TestHelper {
 
     /**
      * start a local daemon, return a reference to it that must be disposed when we are done
-     * @param args
-     * @return
-     * @throws Exception
-     * @throws SmartFrogException
-     * @throws RemoteException
-     * @throws ConnectException
+     * @param args daemon arguments
+     * @return a local daemon
+     * @throws Exception if something went wrong
      */
     public static LocalTestDaemon startLocalDaemon(String[] args)
-            throws Exception, SmartFrogException, RemoteException, ConnectException {
+            throws Exception {
         return new LocalTestDaemon(args);
     }
 
     /**
      * start a local daemon, return a reference to it that must be disposed when we are done
-     * @param options
-     * @return
-     * @throws Exception
-     * @throws SmartFrogException
-     * @throws RemoteException
-     * @throws ConnectException
+     * @param options options for the daemon
+     * @return running daemon
+     * @throws Exception if something went wrong
      */
     public static LocalTestDaemon startLocalDaemon(OptionSet options)
-            throws Exception, SmartFrogException, RemoteException, ConnectException {
+            throws Exception {
         return new LocalTestDaemon(options);
     }
 
@@ -103,13 +97,12 @@ public class TestHelper {
 
     /**
      * start a new daemon on demand
-     * @throws Exception
-     * @throws SmartFrogException
-     * @throws RemoteException
-     * @throws ConnectException
+     * @param options options for the daemon
+     * @return the daemon
+     * @throws Exception if something went wrong
      */
     public static synchronized LocalTestDaemon demandStartDaemon(OptionSet options)
-            throws Exception, SmartFrogException, RemoteException, ConnectException {
+            throws Exception {
         if (daemon != null) {
             return daemon;
         }
@@ -119,20 +112,19 @@ public class TestHelper {
 
     /**
      * start a new daemon on demand
-     * @throws Exception
-     * @throws SmartFrogException
-     * @throws RemoteException
-     * @throws ConnectException
+     * @param args daemon arguments
+     * @throws Exception if something went wrong
+     * @return the daemon
      */
     public static synchronized LocalTestDaemon demandStartDaemon(String[] args)
-            throws Exception, SmartFrogException, RemoteException, ConnectException {
+            throws Exception {
         OptionSet options = new OptionSet(args);
         return demandStartDaemon(options);
     }
 
     /**
      * Get the running daemon, or null if there is none yet.
-     * @return
+     * @return the running daemon
      */
     public static LocalTestDaemon getDaemon() {
         return daemon;

@@ -180,8 +180,8 @@ public abstract class SmartFrogTestBase extends TestCase {
 
     /**
      * get a file name relative to the classes dir directory
-     * @param filename
-     * @return
+     * @param filename short name of the file
+     * @return the resolved file
      */
     protected File getRelativeFile(String filename) {
         if(classesDir!=null) {
@@ -355,8 +355,8 @@ public abstract class SmartFrogTestBase extends TestCase {
 
     /**
      * Do a recursive dump of what is going wrong
-     * @param thrown
-     * @return
+     * @param thrown exception to dump
+     * @return a dumped exception
      */
     private String recursiveDump(Throwable thrown) {
         StringBuffer dump=new StringBuffer();
@@ -530,7 +530,7 @@ public abstract class SmartFrogTestBase extends TestCase {
      * log a chained exception if there is one; do nothing if not.
      * There because JUnit 3.8.1 is not aware of chaining (yet), presumably
      * through a need to work with pre1.4 stuff
-     * @param throwable
+     * @param throwable what was thrown
      */
     protected void logChainedException(Throwable throwable) {
         Throwable cause = throwable.getCause();
@@ -541,8 +541,8 @@ public abstract class SmartFrogTestBase extends TestCase {
 
     /**
      * log a throwable
-     *
-     * @param thrown
+     * @param message the text to log
+     * @param thrown what was thrown
      */
     public void logThrowable(String message, Throwable thrown) {
         String info = extractDiagnosticsInfo(thrown);
@@ -558,7 +558,7 @@ public abstract class SmartFrogTestBase extends TestCase {
      * parse a file whose filename is resolved before parsing parsed.
      * @param filename the name of a file, relative to the classes.dir passed in
      * to the test JVM.
-     * @throws SmartFrogException
+     * @throws SmartFrogException any parse time exception
      * @return a parsed file
      */
     protected Phases parseLocalFile(String filename) throws SmartFrogException {
@@ -568,8 +568,8 @@ public abstract class SmartFrogTestBase extends TestCase {
 
     /**
      * parse a smartfrog file; throw an exception if something went wrong
-     * @param file
-     * @throws SmartFrogException
+     * @param file file to parse
+     * @throws SmartFrogException  any parse time exception
      */
     protected Phases parse(File file) throws SmartFrogException {
         String fileUrl;
@@ -590,7 +590,7 @@ public abstract class SmartFrogTestBase extends TestCase {
       * The language of the parser is determined from the file extension; if there
       * is none, then 'sf' is assumed.
      * @param resource resource to parse
-     * @throws SmartFrogException
+     * @throws SmartFrogException  any parse time exception
      */
     protected Phases parse(String resource) throws SmartFrogException {
         Phases phases=null;
@@ -618,7 +618,7 @@ public abstract class SmartFrogTestBase extends TestCase {
 
     /**
      * work out the language of a file by getting the extension
-     * @param filename
+     * @param filename file whose extension wil be examined
      * @return the extension; default is .sf
      */
     protected String determineLanguage(String filename) {
@@ -632,9 +632,10 @@ public abstract class SmartFrogTestBase extends TestCase {
 
     /**
      * deploy something from this directory; expect an exception
-     * @param filename
-     * @param appname
-     * @throws Throwable
+     * @param filename name of the file
+     * @param appname application name to use
+     * @return the expected failure
+     * @throws Throwable if something goes wrong before deployment
      */
     public Throwable deployExpectingAssertionFailure(String filename, String appname) throws Throwable {
         startSmartFrog();
@@ -681,7 +682,7 @@ public abstract class SmartFrogTestBase extends TestCase {
     /**
      * recursive search for the root cause
      *
-     * @param throwable
+     * @param throwable fault to examine
      * @return the assertion or null
      */
     public SmartFrogAssertionException extractAssertionException(Throwable throwable) {
@@ -698,7 +699,7 @@ public abstract class SmartFrogTestBase extends TestCase {
      * terminate a named application.
      * If the application parameter is null or refers to a nonexistent node, nothing happens.
      *
-     * @param application; can be null
+     * @param application application; can be null
      * @throws java.rmi.RemoteException on network trouble other than an already terminated app
      */
     public void terminateApplication(Prim application) throws RemoteException {
@@ -721,11 +722,11 @@ public abstract class SmartFrogTestBase extends TestCase {
     /**
      * get an  attribute from an application
      *
-     * @param target
-     * @param attribute
-     * @return
-     * @throws SmartFrogResolutionException
-     * @throws RemoteException
+     * @param target prim to work with
+     * @param attribute attribute string to use
+     * @return the resolved object
+     * @throws SmartFrogResolutionException resolution problems
+     * @throws RemoteException network problems
      * @throws AssertionError if a condition is not met
      */
     public static Object resolveAttribute(Prim target, String attribute)
@@ -740,9 +741,9 @@ public abstract class SmartFrogTestBase extends TestCase {
 
     /**
      * Create a description of a target/attribute pair
-     * @param target
-     * @param attribute
-     * @return
+     * @param target prim to work with
+     * @param attribute attribute string to use
+     * @return some text about the values
      */
     private static String describe(Prim target,String attribute) {
         try {
@@ -754,11 +755,11 @@ public abstract class SmartFrogTestBase extends TestCase {
 
     /**
      * get a string attribute from an application
-     * @param prim
-     * @param attribute
+     * @param prim prim to work with
+     * @param attribute attribute string to use
      * @return the attribute as a string
-     * @throws SmartFrogResolutionException
-     * @throws RemoteException
+     * @throws SmartFrogResolutionException resolution problems
+     * @throws RemoteException network problems
      * @throws AssertionError if a condition is not met
      */
     public static String resolveStringAttribute(Prim prim,String attribute)
@@ -775,8 +776,8 @@ public abstract class SmartFrogTestBase extends TestCase {
      * @param attribute attribute to resolve
      * @param expectedClass class that is required
      * @return the object
-     * @throws SmartFrogResolutionException
-     * @throws RemoteException
+     * @throws SmartFrogResolutionException resolution problems
+     * @throws RemoteException network problems
      * @throws AssertionError if a condition is not met
      */
     public static Object resolveAttributeWithTypeAssertion(Prim prim,
@@ -796,10 +797,10 @@ public abstract class SmartFrogTestBase extends TestCase {
     /**
      * assert that an attribute exists
      *
-     * @param prim
-     * @param attribute
-     * @throws SmartFrogResolutionException
-     * @throws RemoteException
+     * @param prim app to resolve against
+     * @param attribute attribute to resolve
+     * @throws SmartFrogResolutionException resolution problems
+     * @throws RemoteException network problems
      * @throws AssertionError if a condition is not met
      */
     public static void assertAttributeExists(Prim prim, String attribute)
@@ -809,10 +810,10 @@ public abstract class SmartFrogTestBase extends TestCase {
 
     /**
      * assert that an attribute exists
-     * @param prim
-     * @param attribute
-     * @throws SmartFrogResolutionException
-     * @throws RemoteException
+     * @param prim app to resolve against
+     * @param attribute attribute to resolve
+     * @throws SmartFrogResolutionException resolution problems
+     * @throws RemoteException network problems
      * @throws AssertionError if a condition is not met
      */
     public static void assertStringAttributeExists(Prim prim,String attribute)
@@ -822,11 +823,11 @@ public abstract class SmartFrogTestBase extends TestCase {
 
     /**
      * assert that an attribute exists and equals a specified value
-     * @param prim
-     * @param attribute
-     * @param mustEqual
-     * @throws SmartFrogResolutionException
-     * @throws RemoteException
+     * @param mustEqual string that it must equal
+     * @param prim app to resolve against
+     * @param attribute attribute to resolve
+     * @throws SmartFrogResolutionException resolution problems
+     * @throws RemoteException network problems
      * @throws AssertionError if a condition is not met
      */
     public static void assertAttributeEquals(Prim prim, String attribute,String mustEqual)
@@ -838,11 +839,11 @@ public abstract class SmartFrogTestBase extends TestCase {
     /**
      * assert that an attribute exists and equals a specified value
      *
-     * @param prim
-     * @param attribute
-     * @param mustEqual
-     * @throws SmartFrogResolutionException
-     * @throws RemoteException
+     * @param mustEqual object which must equal
+     * @param prim app to resolve against
+     * @param attribute attribute to resolve
+     * @throws SmartFrogResolutionException resolution problems
+     * @throws RemoteException network problems
      * @throws AssertionError if a condition is not met
      */
     public static void assertAttributeEquals(Prim prim, String attribute,
@@ -854,11 +855,12 @@ public abstract class SmartFrogTestBase extends TestCase {
 
     /**
      * Assert the value of a boolean attribute
-     * @param prim
-     * @param attribute
-     * @param expected
-     * @throws SmartFrogResolutionException
-     * @throws RemoteException
+     * @param expected expected value
+     * @param prim app to resolve against
+     * @param attribute attribute to resolve
+     * @throws SmartFrogResolutionException resolution problems
+     * @throws RemoteException network problems
+     * @throws AssertionError if a condition is not met
      */
     public static void assertAttributeEquals(Prim prim, String attribute,
                                       boolean expected) throws SmartFrogResolutionException,
@@ -869,7 +871,7 @@ public abstract class SmartFrogTestBase extends TestCase {
 
     /**
      * assert that a property is defined
-     * @param property
+     * @param property system property
      */
     public static void assertSystemPropertySet(String property) {
         String value=TestHelper.getTestProperty(property,null);
@@ -878,7 +880,7 @@ public abstract class SmartFrogTestBase extends TestCase {
 
     /**
      * assert that an application is alive;
-     * @param application
+     * @param application target application
      * @throws AssertionError if something failed, wrapping the underlying exception
      */
     protected static void assertLivenessSuccess(Prim application) {
@@ -904,6 +906,10 @@ public abstract class SmartFrogTestBase extends TestCase {
         }
     }
 
+    /**
+     * Teardown tears down the application in {@link #application}
+     * @throws Exception
+     */
     protected void tearDown() throws Exception {
         super.tearDown();
         terminateApplication(application);

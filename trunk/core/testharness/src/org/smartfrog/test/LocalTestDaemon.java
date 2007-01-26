@@ -170,7 +170,7 @@ public class LocalTestDaemon {
 
     /**
      * query terminate flag
-     * @return
+     * @return the current state
      */
     public boolean getTerminateOnCleanup() {
         return terminateOnCleanup;
