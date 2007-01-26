@@ -80,7 +80,7 @@ public class MainFrame
   /**
    *  Description of the Field
    */
-  public final static String version = "v0.8 r02";
+  public final static String version = "v0.8 r04";
   // This has to  be done properly !!!!!!!!!!!!!!! no static. Because of crap log.
   static PrintStream msg = System.out;
   static JLabel statusBar = new JLabel();
@@ -285,6 +285,8 @@ public class MainFrame
   JTextField processNameTextField = new JTextField();
   JTextField hostNameTextField = new JTextField();
   private boolean isWindows = false;
+  private boolean isWindows9x = false;
+  private boolean isWindowsNT = false;
   // True means modified text.
 
   /**
@@ -1380,8 +1382,15 @@ public class MainFrame
           String cmdStart = cmdSFStart;
           String cmdStop = cmdSFStop;
 
-          if (osName.equals("Windows 2000") || osName.equals("Windows NT") ||
-              osName.equals("Windows XP")) {
+          if (isWindows9x) {
+            cmdGeneral = "command.exe /C";
+            dir = ".\\" + batchDir + "\\";
+            if (this.securityCheckBox.isSelected()) {
+              dir = dir + cmdAddSecurity + "\\";
+              cmdStop = dir + cmdAddSecurity + "\\";
+            }
+
+          } else if (isWindowsNT) {
 
             cmdGeneral = "cmd.exe /C";
             dir = ".\\" + batchDir + "\\";
@@ -1391,17 +1400,7 @@ public class MainFrame
               cmdStop = dir + cmdAddSecurity + "\\";
             }
 
-          }
-          else if (osName.equals("Windows 95") || osName.equals("Windows 98")) {
-            cmdGeneral = "command.exe /C";
-            dir = ".\\" + batchDir + "\\";
-            if (this.securityCheckBox.isSelected()) {
-              dir = dir + cmdAddSecurity + "\\";
-              cmdStop = dir + cmdAddSecurity + "\\";
-            }
-
-          }
-          else {
+          }  else {
             cmdGeneral = "bash";
             dir = "./" + batchDir + "/";
             if (this.securityCheckBox.isSelected()) {
@@ -1418,9 +1417,7 @@ public class MainFrame
                 sfFilePath + "\"" + " -e";
           }
           else {
-            if (osName.equals("Windows 2000") || osName.equals("Windows NT") ||
-                osName.equals("Windows XP") || osName.equals("Windows 95") ||
-                osName.equals("Windows 98")) {
+            if (isWindowsNT || isWindows9x) {
               String processName = this.processNameTextField.getText();
               if (this.autoNameCheckBox.isSelected()) {
                 autoNameCounter++;
@@ -1517,12 +1514,11 @@ public class MainFrame
           cmdStart = cmdStart + this.cmdAddSecurity;
           cmdStop = cmdStop + this.cmdAddSecurity;
         }
-        if (osName.equals("Windows 2000") || osName.equals("Windows NT") ||
-            osName.equals("Windows XP")) {
+        if (isWindowsNT) {
           cmdGeneral = "cmd.exe /C";
           dir = ".\\" + batchDir + "\\";
         }
-        else if (osName.equals("Windows 95") || osName.equals("Windows 98")) {
+        else if (isWindows9x) {
           cmdGeneral = "command.exe /C";
           dir = ".\\" + batchDir + "\\";
         }
@@ -1545,9 +1541,7 @@ public class MainFrame
             this.processNameTextField.setText(processName);
           }
 
-          if (osName.equals("Windows 2000") || osName.equals("Windows NT") ||
-              osName.equals("Windows XP") || osName.equals("Windows 95") ||
-              osName.equals("Windows 98")) {
+          if (isWindows) {
 
             cmdStart = cmdGeneral + " " + dir + "smartfrog" + " -a "
                 + "\\\"\"" + processName + "\\\"\"" +
@@ -1689,11 +1683,10 @@ public class MainFrame
       String osName = System.getProperty("os.name");
       String cmdGeneral = "";
       String cmd = batchFile;
-      if (osName.equals("Windows 2000") || osName.equals("Windows NT") ||
-          osName.equals("Windows XP")) {
+      if (isWindowsNT) {
         cmdGeneral = "cmd.exe /C";
       }
-      else if (osName.equals("Windows 95") || osName.equals("Windows 98")) {
+      else if (isWindows9x) {
         cmdGeneral = "command.exe /C";
       }
       else {
@@ -2119,6 +2112,7 @@ public class MainFrame
     System.out.println("Java Ext Dir:   " + System.getProperty("java.ext.dirs"));
     System.out.println("OS Name:        " + System.getProperty("os.name"));
     System.out.println("OS Version:     " + System.getProperty("os.version"));
+    System.out.println("Is Windows:     " + isWindows);            
     System.out.println("User Name:      " + System.getProperty("user.name"));
     System.out.println("User Home:      " + System.getProperty("user.home"));
     System.out.println("User Work Dir:  " + System.getProperty("user.dir"));
@@ -2439,9 +2433,15 @@ public class MainFrame
    *  Description of the Method
    */
   private void customOS() {
-    String OS = System.getProperty("os.name");
-    if (OS.startsWith("Windows")) {
+    String osName = System.getProperty("os.name");
+    if (osName.startsWith("Windows")) {
       isWindows = true;
+      if (osName.toLowerCase().equals("Windows 95") || osName.equals("Windows 98")) {
+         isWindows9x =true;
+      }
+      if (osName.equals("Windows 2000") || osName.startsWith("Windows NT") || osName.equals("Windows XP")|| osName.equals("Windows Vista")){
+         isWindowsNT = true;                            
+      }
     }
     else {
       isWindows = false;
