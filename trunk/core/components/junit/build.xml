@@ -147,7 +147,7 @@ codebase=${codebase}
   <!-- ========================================================== -->
   <!-- system tests -->
   <!-- ========================================================== -->
-  <target name="system-tests" depends="parse,dist,compile-tests,init-codebase"
+  <target name="system-tests" depends="parse,package,package-tests,init-codebase"
     description="run system tests"
     if="system.tests.enabled">
     <parallel>
