@@ -545,6 +545,7 @@ ${java.class.path}=
         <include name="doc/**/*.html" />
         <include name="doc/**/*.pdf" />
         <include name="doc/**/*.sx?" />
+        <include name="doc/**/*.txt" />
       </zipfileset>
     </zip>
   </target>
@@ -1609,7 +1610,7 @@ ${build.dir}/ivy/reports
        artifactspattern="${dist.lib.dir}/[artifact]-[revision].[ext]" />
   </target>
 
-  <target name="published" depends="ivy-publish,m2-install"
+  <target name="published" depends="ivy-publish-all,m2-install"
       description="Publish artifacts to the local repositories"
       />
 

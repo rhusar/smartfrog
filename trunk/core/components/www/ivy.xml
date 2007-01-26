@@ -27,11 +27,14 @@
     <conf name="runtime" description="runtime but not the artifact"
         extends="redist"/>
     <conf name="war" description="compile pathfor the test war"/>
-
+    <conf name="documentation"
+          description="all documentation artifacts"/>
   </configurations>
   <publications>
     <!--get the artifact from our module name-->
     <artifact conf="master"/>
+    <artifact name="sf-www-javadocs" conf="documentation" ext="zip"/>
+    <artifact name="sf-www-documentation" conf="documentation" ext="zip"/>
     <!--the war conf publishes a new artifact-->
 <!--    <artifact name="" conf="war"/>-->
   </publications>
@@ -40,7 +43,7 @@
       name="smartfrog"
       changing="true"
       rev="latest.integration"
-      conf="compile->services;runtime->services;daemon->services;"/>
+      conf="compile,runtime,daemon->services"/>
     <dependency org="org.smartfrog"
         name="sf-tasks"
         changing="true"
