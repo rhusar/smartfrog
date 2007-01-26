@@ -28,11 +28,15 @@
     <conf name="redist" description="redistributals excluding smartfrog artifacts"/>
     <conf name="runtime" description="runtime but not the artifact"
         extends="redist"/>
+    <conf name="documentation"
+        description="all documentation artifacts"/>
 </configurations> 
 
   <publications>
     <!--get the artifact from our module name-->
     <artifact conf="master"/>
+    <artifact name="sf-net-javadocs" conf="documentation" ext="zip"/>
+    <artifact name="sf-net-documentation" conf="documentation" ext="zip"/>
   </publications>
   <dependencies>
     <dependency org="org.smartfrog"

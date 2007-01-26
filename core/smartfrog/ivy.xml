@@ -30,6 +30,8 @@
     <conf name="redist" description="redistributals excluding smartfrog artifacts"/>
     <conf name="runtime" description="runtime but not the artifact"
         extends="redist"/>
+    <conf name="documentation"
+          description="all documentation artifacts"/>
 
     <!--non standard configurations-->
     <conf name="javacc" visibility="private"/>

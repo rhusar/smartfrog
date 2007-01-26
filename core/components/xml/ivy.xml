@@ -37,7 +37,7 @@
       name="smartfrog"
       changing="true"
       rev="latest.integration"
-      conf="compile->services;runtime->services;daemon->services"/>
+      conf="compile,runtime,daemon->services"/>
     <dependency org="org.smartfrog"
         name="sf-tasks"
         changing="true"
@@ -60,11 +60,11 @@
     <dependency org="xom"
         name="xom"
         rev="${xom.version}"
-        conf="compile->master;redist->master"/>
+        conf="compile,redist->master"/>
     <!-- here jaxen is included, but none of its dependencies-->
     <dependency org="jaxen"
         name="jaxen"
         rev="${jaxen.version}"
-        conf="compile->master;redist->master"/>
+        conf="compile,redist->master"/>
   </dependencies>
 </ivy-module>

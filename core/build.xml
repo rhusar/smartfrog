@@ -378,6 +378,8 @@ For more information: www.smartfrog.org
         <fileset dir="components" includes="**/build.xml" >
           <!--no cddlm here-->
           <exclude name="deployapi/build.xml"/>
+          <!--not really that useful-->
+          <exclude name="releasetest/build.xml"/>
           <!--JMX is currently broken-->
           <exclude name="jmx/build.xml"/>
           <!--These need java 1.5 or later-->
