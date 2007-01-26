@@ -58,7 +58,7 @@ To use: ant -f buildRelease release
   <!-- =================================================================== -->
   <!-- Help on usage                                                       -->
   <!-- =================================================================== -->
-  <target name="help" depends="init" description="Process">
+  <target name="help" depends="init" description="help">
     <echo message=""/>
     <echo message="-------------------------------------------------------------"/>
     <echo message="${Name.Testharness} Release file"/>
@@ -77,7 +77,7 @@ To use: ant -f buildRelease release
   <!-- =================================================================== -->
   <!-- Help on usage                                                       -->
   <!-- =================================================================== -->
-  <target name="process" depends="init" description="Help">
+  <target name="process" depends="init" description="print the process">
     <echo message=""/>
     <echo message="-------------------------------------------------------------"/>
     <echo message=" Step by step guide to make a release"/>
@@ -116,11 +116,8 @@ To use: ant -f buildRelease release
    <zip destfile="../releases/${Name.System}.${version}.${DSTAMP}.zip">
        <zipfileset dir="." prefix="${Name.System}.${version}">
           <include name="common.xml"/>
-          <include name="docs/ExceptionTestCases.xls"/>
-          <include name="docs/JunitHarness.html"/>
-          <include name="docs/RSTestHarness.doc"/>
-          <include name="docs/SystemTestCases.xls"/>
-          <include name="docs/XP_and_junit.ppt"/>
+          <include name="doc/*.html"/>
+          <include name="doc/*.sx?"/>
           <include name="test/**"/>
           <include name="testcases/**"/>
           <include name="testcases/build.xml"/>
@@ -138,11 +135,8 @@ To use: ant -f buildRelease release
     
    <tar tarfile="../releases/${Name.System}.${version}.${DSTAMP}.tar">
       <tarfileset dir="." prefix="${Name.System}.${version}">
-        <include name="docs/ExceptionTestCases.xls"/>
-        <include name="docs/JunitHarness.html"/>
-        <include name="docs/RSTestHarness.doc"/>
-        <include name="docs/SystemTestCases.xls"/>
-        <include name="docs/XP_and_junit.ppt"/>
+        <include name="doc/*.html"/>
+        <include name="doc/*.sx?"/>
         <include name="test/**"/>
         <include name="testcases/**"/>
         <include name="testcases/build.xml"/>
