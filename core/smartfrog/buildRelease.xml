@@ -135,7 +135,7 @@ To Be Written
   <property name="release.dir" location="../releases" />
   <property name="release.unzip.dir" location="../releases/expanded" />
 
-the  <!-- where the dated zips go, don't clean -->
+  <!-- where the dated zips go, don't clean -->
   <property name="lib" value="lib"/>
   <property name="docs" value="docs"/>
   <property name="examples" value="examples"/>
@@ -458,14 +458,14 @@ the  <!-- where the dated zips go, don't clean -->
 
     <!--binaries. Does not include bin/security -->
     <tarfileset id="dist.unix.bin.tf" dir="${dist}/bin/"
-        mode="${exec}" prefix="${prefix}/dist/bin">
+        filemode="${exec}" prefix="${prefix}/dist/bin">
       <patternset refid="unix.bin" />
     </tarfileset>
     <tarfileset id="dist.other.bin.tf"
         dir="${dist}/bin/" prefix="${prefix}/dist/bin">
       <patternset refid="other.bin" />
     </tarfileset>
-    <tarfileset id="security.unix.bin.tf" dir="${dist}/bin/security" mode="${exec}"
+    <tarfileset id="security.unix.bin.tf" dir="${dist}/bin/security" filemode="${exec}"
         prefix="${prefix}/dist/bin/security">
       <patternset refid="unix.bin" />
     </tarfileset>
@@ -473,7 +473,7 @@ the  <!-- where the dated zips go, don't clean -->
         prefix="${prefix}/dist/bin/security">
       <patternset refid="other.bin" />
     </tarfileset>
-    <tarfileset id="unix.bin.tf" dir="bin" mode="${exec}"
+    <tarfileset id="unix.bin.tf" dir="bin" filemode="${exec}"
         prefix="${prefix}/bin">
       <patternset refid="unix.bin" />
     </tarfileset>
@@ -501,7 +501,7 @@ the  <!-- where the dated zips go, don't clean -->
 
 
     <presetdef name="make-dist-tar">
-      <tar >
+      <tar longfile="gnu" >
         <tarfileset refid="dist.main.tf" />
         <tarfileset refid="dist.doc.files.tf" />
         <tarfileset refid="dist.unix.bin.tf" />
@@ -531,11 +531,11 @@ the  <!-- where the dated zips go, don't clean -->
   <target name="all-tar" depends="tarfilesets"
       description="all tar">
     <make-dist-tar destfile="${all.tar}" >
-      <tarfileset refid="doc.files.zf"/>
-      <tarfileset refid="unix.bin.zf" />
-      <tarfileset refid="other.bin.zf" />
-      <tarfileset refid="main.zf" />
-      <tarfileset refid="lib.zf" />
+      <tarfileset refid="doc.files.tf"/>
+      <tarfileset refid="unix.bin.tf" />
+      <tarfileset refid="other.bin.tf" />
+      <tarfileset refid="main.tf" />
+      <tarfileset refid="lib.tf" />
     </make-dist-tar>
     <gzip src="${all.tar}" zipfile="${all.tar.gz}"/>
   </target>
@@ -559,7 +559,7 @@ the  <!-- where the dated zips go, don't clean -->
   <!-- =================================================================== -->
   <!-- release                                                             -->
   <!-- =================================================================== -->
-  <target name="release" depends="dist-zip"
+  <target name="release" depends="zip,tar"
       description="Creates zip with release packages">
   </target>
 
