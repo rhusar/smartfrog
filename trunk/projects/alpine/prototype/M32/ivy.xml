@@ -25,13 +25,17 @@
         extends="redist"/>
     <conf name="optional" description="optional extras"/>
     <conf name="all" description="everything" extends="default,optional"/>
-    <conf name="daemon" visibility="private" extends="master,runtime" 
+    <conf name="daemon" visibility="private" extends="default"
           description="the classpath needed to run smartfrog daemons"/>
+    <conf name="documentation"
+          description="all documentation artifacts"/>
   </configurations>
 
   <publications>
     <!--get the artifact from our module name-->
     <artifact conf="master"/>
+    <artifact name="sf-m32-javadocs" conf="documentation" ext="zip"/>
+    <artifact name="sf-m32-documentation" conf="documentation" ext="zip"/>
   </publications>
   <dependencies>
     <dependency org="org.smartfrog"
@@ -45,10 +49,10 @@
         rev="latest.integration"
         conf="compile->master;runtime->default"/>
     <dependency org="org.smartfrog"
-                name="sf-www"
-                changing="true"
-                rev="latest.integration"
-                conf="compile,runtime->default;redist->master"/>
+        name="sf-www"
+        changing="true"
+        rev="latest.integration"
+        conf="compile->default;runtime->runtime;redist->master"/>
     <dependency org="xom"
         name="xom"
         rev="${xom.version}"
