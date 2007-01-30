@@ -31,6 +31,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.viewers.IStructuredSelection;
 
 import org.eclipse.ui.IWorkbench;
+import org.eclipse.jdt.core.IJavaElement;
 
 import org.smartfrog.tools.eclipse.SmartFrogPlugin;
 
@@ -109,5 +110,9 @@ public class ComponentCompundCreationWizard
         throws InterruptedException, CoreException
     {
         mDescriptionPage.createType(monitor);
+    }
+
+    public IJavaElement getCreatedElement() {
+    	return null;
     }
 }
