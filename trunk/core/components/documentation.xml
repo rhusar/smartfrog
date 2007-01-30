@@ -36,7 +36,7 @@ For more information: www.smartfrog.org
 
 
   <property environment="env" />
-   <property name="is.component" value="true"  />
+  <property name="is.component" value="true"  />
 
 
   <!--fail unless="${env.FORREST_HOME}">
@@ -59,8 +59,8 @@ For more information: www.smartfrog.org
 	<target name="init" depends="init-common" >
 		<echo level="verbose">Created forrest project template</echo>
     <property name="comp.home"  location="${smartfrog.components.dir}"/>
-	 <property name="xdocs.skin.dir"  location="${comp.home}/src/documentation/content/xdocs"/>
-	 <property name="xdocs.dir"  location="${comp.home}/src/documentation/content/xdocs/smartfrogdoc"/>
+    <property name="xdocs.skin.dir"  location="${comp.home}/src/documentation/content/xdocs"/>
+    <property name="xdocs.dir"  location="${comp.home}/src/documentation/content/xdocs/smartfrogdoc"/>
     <property name="skin.dir" location="forrest_skin" />
     
 	
@@ -85,17 +85,16 @@ For more information: www.smartfrog.org
 	
   </target>
 
-  <target name="copy-properties" depends="init">
-		<copy todir="${comp.home}" overwrite="true"
-      file="${skin.dir}/forrest.properties" />
-  </target>
+    <target name="copy-properties" depends="init">
+        <copy todir="${comp.home}" overwrite="true" file="${skin.dir}/forrest.properties" />
+    </target>
   
 
   	<target name="seedforrest" depends="seed" description="Creates forrest project template">
 		<echo>Created forrest project template</echo>
 			</target>
 			
-  <target name="prepare-docs" depends="seedforrest,copy-properties">
+    <target name="prepare-docs" depends="seedforrest,copy-properties">
 		<mkdir dir="${xdocs.dir}"/>
 
 		<copy todir="${xdocs.dir}">
@@ -124,8 +123,8 @@ For more information: www.smartfrog.org
 	<!--forrest-component component="anubisdeployer" /-->
 	<forrest-component component="sfinstaller" />
 	<forrest-component component="ant" />
-      <forrest-component component="jetty" />
-      <forrest-component component="www" />
+    <forrest-component component="jetty" />
+    <forrest-component component="www" />
       <!--forrest-component component="xml" /-->
 
 
@@ -149,7 +148,7 @@ For more information: www.smartfrog.org
 
     <target name="generate-site" depends="prepare-docs" >
 	    <!--antcall target="site"/-->
-        <exec dir="${comp.home}" executable="${env.FORREST_HOME}/bin/forrest.bat" os="Windows 2000, Windows_NT, Windows XP">
+        <exec dir="${comp.home}" executable="${env.FORREST_HOME}/bin/forrest.bat" os="Windows 2000, Windows_NT, Windows XP, Windows Vista">
 	   <arg value="site"/>
            <arg value="-Dforrest.jvmargs\=true"/>
            <arg value="-Djava.awt.headless\=true"/>
@@ -161,30 +160,29 @@ For more information: www.smartfrog.org
 	</target>
     
     
-	<target name="copy-forrest-docs" depends="generate-site" >
-		<copy todir="${dist.doc.dir}">
-      <fileset dir="${comp.home}/build/site">
-	     <include name="**/*.*" />
-       <exclude name="samples/*.*"/>
-       <exclude name="test1.html"/>
-       <exclude name="test2.html"/>
-       <exclude name="hello.pdf"/>
-	<exclude name="linkmap.*"/>
-	   
-      </fileset>
-    </copy>
+    <target name="copy-forrest-docs" depends="generate-site" >
+        <copy todir="${dist.doc.dir}">
+            <fileset dir="${comp.home}/build/site">
+                <include name="**/*.*" />
+                <exclude name="samples/*.*"/>
+                <exclude name="test1.html"/>
+                <exclude name="test2.html"/>
+                <exclude name="hello.pdf"/>
+                <exclude name="linkmap.*"/>
+            </fileset>
+        </copy>
 
-    <copy todir="${dist.doc.dir}/smartfrogdoc/">
-        <fileset dir="${skin.dir}">
-	       <include name="overview_html_39c627ce.gif" />
-        </fileset>	
-    </copy>
-	</target>
+        <copy todir="${dist.doc.dir}/smartfrogdoc/">
+            <fileset dir="${skin.dir}">
+               <include name="overview_html_39c627ce.gif" />
+            </fileset>
+        </copy>
+    </target>
 
 	<target name="docs" depends="copy-forrest-docs" description="Document Generation">
 	</target>
   
-  <target name="default" depends="docs" description="Document Generation">
-	</target>
+    <target name="default" depends="docs" description="Document Generation">
+    </target>
     
 </project>
