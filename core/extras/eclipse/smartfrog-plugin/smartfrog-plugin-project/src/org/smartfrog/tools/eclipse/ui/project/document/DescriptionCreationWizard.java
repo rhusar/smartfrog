@@ -29,7 +29,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.viewers.IStructuredSelection;
 
 import org.eclipse.ui.IWorkbench;
-
+import org.eclipse.jdt.core.IJavaElement;
 
 /**
  * Description creation wizard
@@ -76,5 +76,9 @@ public class DescriptionCreationWizard
         throws InterruptedException, CoreException
     {
 //        mDescriptionPage.createType(monitor); // use the full progress monitor
+    }
+
+    public IJavaElement getCreatedElement() {
+    	return null;
     }
 }
