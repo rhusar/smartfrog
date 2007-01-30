@@ -230,7 +230,7 @@ smartfrog.classpath=
 
 build.sysclasspath=${build.sysclasspath}
 
-${java.class.path}=
+java.class.path=
   ${java.class.path}
     </fail>
 
@@ -493,7 +493,7 @@ ${java.class.path}=
   <!-- =================================================================== -->
 
   <target name="ready-to-javadoc"
-          depends="init, generateversion,declare-classpaths,init-javadoc"
+          depends="generateversion,declare-classpaths,init-javadoc"
       />
 
   <target name="javadoc"
@@ -503,6 +503,9 @@ ${java.class.path}=
     <!--  Java Docs for all                                                -->
     <echo message=""/>
     <echo message="------ Creating Java Docs for ${javadoc.header} [${dist.jdocs.dir}]---------------"/>
+    <fail unless="dist.jdocs.dir">
+      We are not properly initialized, as dist.jdocs.dir is undefined.
+    </fail>
     <mkdir dir="${dist.jdocs.dir}"/>
     <sf-javadoc
         sourcepath="${src.dir}"
@@ -575,7 +578,6 @@ ${java.class.path}=
     <mkdir dir="${test.dir}" />
     <mkdir dir="${test.classes.dir}" />
     <mkdir dir="${test.data.dir}" />
-    <mkdir dir="${test.datafiles.dir}" />
     <mkdir dir="${test.reports.dir}" />
 
     <mkdir dir="${dist.dir}"/>
@@ -583,6 +585,9 @@ ${java.class.path}=
     <mkdir dir="${dist.doc.dir}"/>
     <mkdir dir="${dist.bin.dir}"/>
     <mkdir dir="${dist.src.dir}"/>
+    <fail unless="dist.jdocs.dir">
+      We are not properly initialized, as dist.jdocs.dir is undefined.
+    </fail>
     <mkdir dir="${dist.jdocs.dir}"/>
   </target>
 
@@ -669,7 +674,7 @@ ${java.class.path}=
     depends=
      "ivy-classpaths,declare-base.compile.classpath,declare-compile.classpath,
      declare-exec.classpath,declare-tests.compile.classpath,
-     declare-tests.run.classpath,declare-tests.run.classpath,
+     declare-tests.run.classpath,
      declare-run.classpath-no-tests,declare-run.classpath"/>
 
 
@@ -692,10 +697,17 @@ ${java.class.path}=
     <echo level="verbose">exec.classpath=${toString:exec.classpath}</echo>
   </target>
 
-  <target name="ivy.tests.run.classpath" depends="ivy.exec.classpath"  if="ivy.enabled">
+  <target name="ivy.tests.compile.classpath" depends="ivy.exec.classpath"  if="ivy.enabled">
+    <path id="tests.compile.classpath">
+      <path refid="exec.classpath"/>
+    </path>
+    <echo level="verbose">tests.compile.classpath=${tests.compile.classpath}</echo>
+  </target>
+
+  <target name="ivy.tests.run.classpath" depends="ivy.tests.compile.classpath"  if="ivy.enabled">
     <path id="tests.run.classpath">
       <pathelement location="${test.jar}"/>
-      <path refid="exec.classpath"/>
+      <path refid="tests.compile.classpath"/>
     </path>
     <echo level="verbose">tests.run.classpath=${toString:tests.run.classpath}</echo>
   </target>
