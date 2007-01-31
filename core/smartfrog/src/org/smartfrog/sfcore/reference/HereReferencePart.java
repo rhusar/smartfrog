@@ -145,7 +145,12 @@ public class HereReferencePart extends ReferencePart {
     public Object resolve(ReferenceResolver rr, Reference r, int index)
         throws SmartFrogResolutionException {
         // Find here
-        Object result = rr.sfResolveHere(getValue(),false);
+       Object result;
+        if (index == 0) {
+            result = rr.sfResolveHere(getValue(),false);
+        } else {
+            result = rr.sfResolveHereNonlocal(getValue(),false);
+        }
 
         if (result == null) {
             throw SmartFrogResolutionException.notFound(r, null);
@@ -190,7 +195,12 @@ public class HereReferencePart extends ReferencePart {
         throws SmartFrogResolutionException {
         try {
             // Find here
-            Object result = rr.sfResolveHere(getValue(),false);
+          Object result;
+           if (index == 0) {
+               result = rr.sfResolveHere(getValue(),false);
+           } else {
+               result = rr.sfResolveHereNonlocal(getValue(),false);
+           }
 
             if (result == null) {
                 throw SmartFrogResolutionException.notFound(r, null);

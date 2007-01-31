@@ -485,6 +485,44 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
     }
 
     /**
+     * Find an attribute in this context, so long as it is visible anywhere.
+     *
+     * @param name attribute key to resolve
+     * @param mandatory boolean that indicates if this attribute must be
+     *        present in the description. If it is mandatory and not found it
+     *        throws a SmartFrogResolutionException
+     *
+     * @return Object value for attribute
+     *
+     * @throws SmartFrogResolutionException failed to find attribute
+     */
+    public Object sfResolveHereNonlocal(Object name, boolean mandatory)
+        throws SmartFrogResolutionException {
+       try {
+          if (sfGetTags(name).contains("sfLocal")) {
+             if (mandatory) {
+                throw new SmartFrogResolutionException("Accessing local attribute " + name);
+             }
+             return null;
+          }
+       } catch (SmartFrogException e) {
+          if (mandatory) {
+             throw new SmartFrogResolutionException("Error accessing attribute tags " + name, e);
+          }
+          return null;
+       }
+       try {
+            return sfResolveHere(name);
+        } catch (SmartFrogResolutionException e) {
+            if (mandatory) {
+                throw e;
+            }
+        }
+        return null;
+    }
+
+
+    /**
      * Resolves to the parent of this description.
      *
      * @return parent or null if no parent
