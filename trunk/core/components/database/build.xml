@@ -3,7 +3,7 @@
          xmlns:sf="antlib:org.smartfrog.tools.ant">
 
   <!--
-  /** (C) Copyright 2005 Hewlett-Packard Development Company, LP
+  /** (C) Copyright 2007 Hewlett-Packard Development Company, LP
 
   This library is free software; you can redistribute it and/or
   modify it under the terms of the GNU Lesser General Public
@@ -49,25 +49,10 @@
   <!---->
   <target name="default" depends="published" />
 
-  
-  <!-- ========================================================== -->
-  <!-- ========================================================== -->
-<!--
-  <target name="init"
-    depends="init-standard-output-dirs,use-smartfrog-tasks,use-smartfrog-testharness">
-  </target>
--->
 
   <target name="init" depends="core.init">
     <echo message="==================================================================="/>
     <echo message="= ${ant.project.name}"/>
   </target>
 
-  <target name="failure" depends="extended-smartfrog-tasks">
-    <sf:unknown />
-  </target>
-
-  <target name="failure2" >
-    <unknown />
-  </target>
 </project>
