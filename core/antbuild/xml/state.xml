@@ -33,7 +33,11 @@
 
   <target name="ready-to-test" depends="tests-packaged"/>
 
-  <target name="tested" depends="ready-to-test"/>
+  <target name="ready-to-system-test" depends="ready-to-test"/>
+
+  <target name="system-tested" depends="ready-to-system-test"/>
+
+  <target name="tested" depends="system-tested"/>
 
   <target name="test" depends="tested"/>
 

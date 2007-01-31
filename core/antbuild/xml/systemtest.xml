@@ -13,7 +13,21 @@
   <!-- import the core -->
   <import file="unittest.xml"/>
 
- 
+
+  <!-- ========================================================== -->
+  <!-- set up the codebase-->
+  <!-- ========================================================== -->
+  <target name="init-codebase"
+          depends="declare-classpaths,package-tests,extended-smartfrog-tasks"
+          description="set up the codebase">
+    <sf:tourl property="codebase">
+      <path refid="tests.run.classpath" />
+    </sf:tourl>
+    <echo>
+      codebase=${codebase}
+    </echo>
+  </target>
+
   <!-- ========================================================== -->
   <!-- this is an override point -->
   <!-- system tests : anything that is tested on a live daemon 
@@ -21,7 +35,7 @@
        security reasons, unless security is active-->
 
    <target name="ready-to-system-test"
-     depends="package-tests,ready-to-test,extended-smartfrog-tasks" />
+     depends="package-tests,ready-to-test,init-codebase" />
 
    <target name="system-tests" depends="ready-to-system-test"
      if="system.tests.enabled"
@@ -42,6 +56,10 @@
                >
              <sysproperty key="test.classes.dir"
                           value="${test.classes.dir}"/>
+             <sysproperty key="org.smartfrog.codebase" value="${codebase}"/>
+             <syspropertyset>
+               <propertyref prefix="runtime"/>
+             </syspropertyset>
              <!--all properties beginning with test-->
              <classpath>
                <path refid="tests.run.classpath"/>
@@ -60,5 +78,64 @@
          </teardown>
        </sf:functionaltest>
   </target>
-  
-</project>    
+
+
+  <target name="ready-to-parse" depends="init-codebase" />
+
+  <!-- ========================================================== -->
+  <!-- parse the file -->
+  <!-- ========================================================== -->
+  <target name="parse" depends="ready-to-parse"
+          description="parse the deployment descriptor">
+    <property name="parse.quiet" value="true"/>
+    <sf-parse quiet="${parse.quiet}" classpathref="test.classpath">
+      <sysproperty key="org.smartfrog.codebase"
+                   value="${codebase}"/>
+      <!-- test files -->
+      <source dir="${test.src.dir}">
+        <include name="files/*.sf"/>
+        <exclude name="files/components.sf"/>
+      </source>
+    </sf-parse>
+  </target>
+
+
+  <target name="init-deploy-properties" depends="init-codebase">
+    <property name="application.name" value="${ant.project.name}"/>
+    <property name="deploy.host" value="localhost"/>
+    <property name="deploy.timeout" value="localhost"/>
+  </target>
+
+  <target name="ready-to-deploy" depends="init-deploy-properties" />
+
+  <!-- ========================================================== -->
+  <!-- deploy; requires a host -->
+  <!-- ========================================================== -->
+  <target name="deploy" depends="ready-to-deploy"
+          description="deploy">
+
+    <sf:deploy classpathref="test.classpath"
+               logStackTraces="true"
+               host="${deploy.host}"
+               timeout="${deploy.timeout}" >
+      <codebase url="${codebase}"/>
+
+      <application name="${application.name}">
+        #include "/${deploy.sf}"
+        sfCodeBase PROPERTY org.smartfrog.codebase;
+      </application>
+    </sf:deploy>
+  </target>
+
+  <target name="undeploy" depends="init-deploy-properties"
+          description="deploy">
+
+    <sf:undeploy classpathref="run.classpath"
+                 logStackTraces="true"
+                 host="${deploy.host}"
+                 timeout="${deploy.timeout}"
+                 application="${application.name}"/>
+  </target>
+
+
+</project>

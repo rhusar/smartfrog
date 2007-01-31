@@ -1260,7 +1260,7 @@ java.class.path=
        security reasons, unless security is active-->
   <!-- ========================================================== -->
   <target name="system-tests" if="system.tests.enabled"
-          depends="init,package,package-tests"
+          depends="init,package,package-tests,declare-extended-smartfrog-tasks"
     description="run the system tests">
   </target>
 
