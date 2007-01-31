@@ -148,7 +148,7 @@ For more information: www.smartfrog.org
 
     <target name="generate-site" depends="prepare-docs" >
 	    <!--antcall target="site"/-->
-        <exec dir="${comp.home}" executable="${env.FORREST_HOME}/bin/forrest.bat" os="Windows 2000, Windows_NT, Windows XP, Windows Vista">
+        <exec dir="${comp.home}" executable="${env.FORREST_HOME}/bin/forrest.bat" os="Windows 2000, Windows_NT, Windows XP, Windows Vista, Windows NT (unknown)">
 	   <arg value="site"/>
            <arg value="-Dforrest.jvmargs\=true"/>
            <arg value="-Djava.awt.headless\=true"/>
