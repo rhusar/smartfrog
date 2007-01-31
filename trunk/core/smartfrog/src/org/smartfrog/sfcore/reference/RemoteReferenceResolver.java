@@ -102,5 +102,19 @@ public interface RemoteReferenceResolver extends Remote {
     public Object sfResolveHere(Object name, boolean mandatory)
         throws SmartFrogResolutionException, RemoteException;
 
-
+    /**
+     * Find an attribute in this context, so long as it is visible anywhere.
+     *
+     * @param name attribute key to resolve
+     * @param mandatory boolean that indicates if this attribute must be
+     *        present in the description. If it is mandatory and not found it
+     *        throws a SmartFrogResolutionException
+     *
+     * @return Object value for attribute
+     *
+     * @throws SmartFrogResolutionException failed to find attribute
+     * @throws RemoteException In case of network/rmi error
+     */
+    public Object sfResolveHereNonlocal(Object name, boolean mandatory)
+        throws SmartFrogResolutionException, RemoteException;
 }
