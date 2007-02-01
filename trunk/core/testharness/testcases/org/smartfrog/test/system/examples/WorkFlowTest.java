@@ -39,7 +39,7 @@ public class WorkFlowTest
     }
 
     public void testCaseTCP27() throws Throwable {
-        /*
+
         application = deployExpectingSuccess(FILES+"system.sf", "system");
         String applicationName = "TCP27.system.tempname";
         String diag ="";
@@ -63,7 +63,7 @@ public class WorkFlowTest
         assertContains(actual,expected1);
         assertContains(actual,expected2);
         assertContains(actual,expected3);
-        */
+        
     }
 
 }
