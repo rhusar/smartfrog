@@ -39,7 +39,7 @@ public class ConditionalTest extends DeployingTestBase {
         //application = deployExpectingSuccess(FILES + "testPassingIf.sf", "testPassingIf");
         //expectSuccessfulTermination((TestBlock) application);
     }
-/*
+
     public void testPassingWaitFor() throws Throwable {
         application=deployExpectingSuccess(FILES +"testPassingWaitFor.sf","testPassingWaitFor");
         expectSuccessfulTermination((TestBlock) application);
@@ -64,5 +64,5 @@ public class ConditionalTest extends DeployingTestBase {
         assertTrue("No "+WAITFOR_FAILED+" in "+tr,
                 description.indexOf(WAITFOR_FAILED)>=0);
     }
-*/    
+    
 }
