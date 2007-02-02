@@ -230,6 +230,9 @@ For more information: www.smartfrog.org
     <sf-junit
       errorProperty="test.failed"
       failureProperty="test.failed"
+      fork="true"
+      forkmode="once"
+      maxmemory="512m"      
       >
       <sysproperty key="test.smartfrog.classesdir"
         value="${test.smartfrog.classesdir}" />
@@ -288,7 +291,7 @@ For more information: www.smartfrog.org
         <!-- if the port is in use, this will fail to open the port-->
         <!-- which is ok as we want to debug. but, the running daemon will-->
         <!-- always be stopped afterwards-->
-        <start-logging-daemon spawn="false"/>
+        <start-logging-daemon spawn="false" maxmemory="512m" />
       </application>
       <probe>
         <socket port="${smartfrog.daemon.port}" server="localhost"/>
