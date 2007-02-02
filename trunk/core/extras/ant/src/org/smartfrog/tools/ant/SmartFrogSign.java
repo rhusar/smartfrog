@@ -55,20 +55,9 @@ public class SmartFrogSign extends SignJar {
 
 
     /**
-     * Called by the project to let the task initialize properly.
-     * The default implementation is a no-op.
-     *
-     * @throws org.apache.tools.ant.BuildException
-     *          if something goes wrong with the build
-     */
-    public void init() throws BuildException {
-        super.init();
-    }
-
-    /**
      * set a reference to the security types
      *
-     * @param securityRef
+     * @param securityRef security data
      */
     public void setSecurityRef(Reference securityRef) {
         securityHolder.setSecurityRef(securityRef);
@@ -77,7 +66,7 @@ public class SmartFrogSign extends SignJar {
     /**
      * set a security definition
      *
-     * @param security
+     * @param security security data
      */
     public void addSecurity(Security security) {
         securityHolder.addSecurity(security);

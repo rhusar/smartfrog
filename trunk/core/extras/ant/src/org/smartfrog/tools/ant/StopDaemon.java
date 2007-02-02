@@ -46,8 +46,7 @@ public class StopDaemon extends SmartFrogTask {
     }
 
     /**
-     * execution logic
-     *
+     * stop the daemon
      * @throws org.apache.tools.ant.BuildException
      *
      */

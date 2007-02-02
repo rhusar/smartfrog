@@ -69,7 +69,7 @@ public abstract class TaskBase extends Task {
 
     /**
      * get at the debug switch
-     * @return true iff the property {@link SmartFrogJVMProperties.ANT_DEBUG_PROPERTY}
+     * @return true iff the property {@link SmartFrogJVMProperties#ANT_DEBUG_PROPERTY}
      * is true at init time
      */
     public boolean isDebug() {
@@ -82,7 +82,7 @@ public abstract class TaskBase extends Task {
      * must include smartfrog.jar.
      * Default: false.
      *
-     * @param includeAntRuntime
+     * @param includeAntRuntime flag for the ant runtime
      */
     public void setIncludeAntRuntime(boolean includeAntRuntime) {
         this.includeAntRuntime = includeAntRuntime;
@@ -91,7 +91,7 @@ public abstract class TaskBase extends Task {
     /**
      * the classpath to run the parser
      *
-     * @param classpath
+     * @param classpath classpath element
      */
     public void addClasspath(Path classpath) {
         this.classpath = classpath;
@@ -100,7 +100,7 @@ public abstract class TaskBase extends Task {
     /**
      * a reference to the classpath to use to run smartfrog
      *
-     * @param classpathRef
+     * @param classpathRef classpath reference
      */
     public void setClasspathRef(Reference classpathRef) {
         this.classpathRef = classpathRef;
@@ -109,8 +109,8 @@ public abstract class TaskBase extends Task {
     /**
      * create a java task
      *
-     * @param entryPoint
-     * @return
+     * @param entryPoint class to run as main
+     * @return the java task ready to run
      */
     protected Java createJavaTask(String entryPoint) {
         Java java;
@@ -129,7 +129,7 @@ public abstract class TaskBase extends Task {
      * <li>the java.class.path
      * </ol>
      *
-     * @param java
+     * @param java the java task to set up
      */
     protected void setupClasspath(Java java) {
         boolean useRuntimeClasspath = includeAntRuntime;
@@ -146,7 +146,7 @@ public abstract class TaskBase extends Task {
         //now use the runtime classpath if requested.
         if (useRuntimeClasspath) {
             String pathstring;
-            ClassLoader cl = this.getClass().getClassLoader();
+            ClassLoader cl = getClass().getClassLoader();
             if (cl instanceof AntClassLoader) {
                 AntClassLoader acl = (AntClassLoader) cl;
                 pathstring = acl.getClasspath();

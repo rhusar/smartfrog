@@ -44,7 +44,7 @@ public class Codebase {
     /**
      * the URL of the JAR file
      *
-     * @param url
+     * @param url codebase URL
      */
     public void setURL(String url) {
         location = url;
@@ -54,7 +54,7 @@ public class Codebase {
      * provide a URL. This is for the convenience of programmatic access, not
      * ant build files
      *
-     * @param url
+     * @param url codebase URL
      */
     public void setURL(URL url) {
         location = url.toExternalForm();
@@ -66,7 +66,7 @@ public class Codebase {
      * which means it is either on a shared filestore, or you are only
      * deploying to a local daemon.
      *
-     * @param file
+     * @param file file to make a url
      */
     public void setFile(File file) {
         if (!file.exists()) {
@@ -76,7 +76,7 @@ public class Codebase {
             throw new BuildException(ERROR_NOT_JAR_FILE + file);
         }
         try {
-            setURL(file.toURL());
+            setURL(file.toURI().toURL());
         } catch (MalformedURLException e) {
             throw new BuildException(e);
         }
@@ -85,7 +85,7 @@ public class Codebase {
     /**
      * get the location
      *
-     * @return
+     * @return the URL of the codebase
      */
     public String getLocation() {
         return location;
@@ -94,8 +94,8 @@ public class Codebase {
     /**
      * take a list of codebase elements and then turn them into a string
      *
-     * @param codebases
-     * @return
+     * @param codebases the codebase list
+     * @return the codebases as space sparated list
      */
     public static String getCodebaseString(List codebases) {
         StringBuffer results = new StringBuffer();

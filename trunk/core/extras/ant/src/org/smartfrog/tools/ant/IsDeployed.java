@@ -82,7 +82,7 @@ public class IsDeployed extends ProjectComponent implements Condition {
     /**
      * set a reference to the security types
      *
-     * @param securityRef
+     * @param securityRef security data
      */
     public void setSecurityRef(Reference securityRef) {
         securityHolder.setSecurityRef(securityRef);
@@ -91,7 +91,7 @@ public class IsDeployed extends ProjectComponent implements Condition {
     /**
      * set a security definition
      *
-     * @param security
+     * @param security security data
      */
     public void addSecurity(Security security) {
         securityHolder.addSecurity(security);
@@ -101,7 +101,7 @@ public class IsDeployed extends ProjectComponent implements Condition {
      * set the hostname to deploy to (optional, defaults to localhost)
      * Some tasks do not allow this to be set at all.
      *
-     * @param host
+     * @param host hostname
      */
     public void setHost(String host) {
         log("setting host to " + host, Project.MSG_DEBUG);
@@ -112,7 +112,7 @@ public class IsDeployed extends ProjectComponent implements Condition {
      * port of daemon; optional -default is 3800
      * Some tasks do not allow this to be set at all.
      *
-     * @param port
+     * @param port port to use
      */
     public void setPort(Integer port) {
         this.port = port;
@@ -121,7 +121,7 @@ public class IsDeployed extends ProjectComponent implements Condition {
     /**
      * set the name of an application to look for
      *
-     * @param application
+     * @param application application to look for
      */
     public void setApplication(String application) {
         this.application = application;

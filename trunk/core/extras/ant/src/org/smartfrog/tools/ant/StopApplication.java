@@ -53,16 +53,16 @@ public class StopApplication extends SmartFrogTask {
     /**
      * set the app name; optional on some actions
      *
-     * @param application
+     * @param application application to stop
      */
     public void setApplication(String application) {
         this.application = application;
     }
 
     /**
-     * execution logic
+     * stop the application
      *
-     * @throws org.apache.tools.ant.BuildException
+     * @throws org.apache.tools.ant.BuildException on trouble
      *
      */
     public void execute() throws BuildException {

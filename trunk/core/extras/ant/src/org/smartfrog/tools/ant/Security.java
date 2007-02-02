@@ -80,7 +80,7 @@ public class Security extends DataType {
     /**
      * set the name of a keyword store
      *
-     * @param keystore
+     * @param keystore keystore to use
      */
     public void setKeystore(File keystore) {
         this.keystore = keystore;
@@ -88,7 +88,7 @@ public class Security extends DataType {
 
     /**
      * Get the security properties
-     * @return security properties filr or null
+     * @return security properties file or null
      */
     public File getSecurityProperties() {
         return securityProperties;
@@ -109,7 +109,7 @@ public class Security extends DataType {
 
     /**
      * Path to a file containing the security properties
-     * @param securityProperties
+     * @param securityProperties security properties
      */
     public void setSecurityFile(File securityProperties) {
         this.securityProperties = securityProperties;
@@ -123,7 +123,7 @@ public class Security extends DataType {
     /**
      * set a policy file containing security policy information.
      * Optional.
-     * @param policyFile
+     * @param policyFile  policy file containing security policy information.
      */
     public void setPolicyFile(File policyFile) {
         this.policyFile = policyFile;
@@ -135,7 +135,7 @@ public class Security extends DataType {
 
     /**
      * set the alias to use when signing
-     * @param alias
+     * @param alias signing alias
      */
     public void setAlias(String alias) {
         this.alias = alias;
@@ -160,7 +160,7 @@ public class Security extends DataType {
 
     /**
      * Set the enabled flag. Disabled security elements are effectively unused.
-     * @param enabled
+     * @param enabled true for security to be on
      */
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
@@ -182,8 +182,8 @@ public class Security extends DataType {
     /**
      * take a reference in a project and resolve it.
      *
-     * @param project
-     * @param reference
+     * @param project project to resolve against
+     * @param reference reference to resolve
      * @return the security object we were referrring to.
      * @throws BuildException if the reference is to an unsupported type.
      */
@@ -254,6 +254,7 @@ public class Security extends DataType {
 
     /**
      * apply whatever security settings are needed for a daemon.
+     * @param task to apply properties to,
      */
     public void applySecuritySettings(SmartFrogTask task) {
         validate();
@@ -285,7 +286,7 @@ public class Security extends DataType {
 
     /**
      * load the passfile into a properties structure
-     * @return
+     * @return the loaded file
      * @throws IOException
      */
     private Properties loadPassFile() throws IOException {
@@ -296,13 +297,7 @@ public class Security extends DataType {
             securityProps.load(instream);
             return securityProps;
         } finally {
-            if (instream != null) {
-                try {
-                    instream.close();
-                } catch (IOException ioex) {
-                    //ignore
-                }
-            }
+            FileUtils.close(instream);
         }
     }
 

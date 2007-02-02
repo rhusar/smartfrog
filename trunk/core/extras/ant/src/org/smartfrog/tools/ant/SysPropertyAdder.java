@@ -33,7 +33,7 @@ public interface SysPropertyAdder {
 
     /**
      * add a property
-     * @param sysproperty
+     * @param sysproperty system property
      */
     public void addSysproperty(Environment.Variable sysproperty) ;
 

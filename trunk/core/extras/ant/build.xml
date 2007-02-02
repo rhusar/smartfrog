@@ -73,7 +73,32 @@ For more information: www.smartfrog.org
     <delete file="${smartfrog.dist.lib.dir}/${smartfrog.tasks.name}"
       failonerror="false" />
   </target>
-    
+
+  <target name="javadoc"
+          depends="ready-to-javadoc"
+          unless="javadoc.disabled"
+      >
+    <!--  Java Docs for all                                                -->
+    <echo message=""/>
+    <echo message="------ Creating Java Docs for ${javadoc.header} [${dist.jdocs.dir}]---------------"/>
+    <fail unless="dist.jdocs.dir">
+      We are not properly initialized, as dist.jdocs.dir is undefined.
+    </fail>
+    <mkdir dir="${dist.jdocs.dir}"/>
+    <sf-javadoc
+        sourcepath="${src.dir}"
+        destdir="${dist.jdocs.dir}"
+        >
+      <tag name="ant.task" enabled="false"/>
+      <tag name="ant.type" enabled="false"/>
+      <tag name="todo" enabled="false"/>
+      <classpath >
+        <path refid="compile.classpath" />
+        <path path="${java.class.path}" />
+      </classpath>
+      <group title="SmartFrog Packages" packages="org.smartfrog.*"/>
+    </sf-javadoc>
+  </target>
 
   <!-- ========================================================== -->
   <!-- Our override of this target declares that we want to use  -->
@@ -92,7 +117,7 @@ For more information: www.smartfrog.org
       />
   </target>
   
-  
+
   <target name="test1" depends="package,use-smartfrog-tasks">
     <sf-parse />
     <parallel>

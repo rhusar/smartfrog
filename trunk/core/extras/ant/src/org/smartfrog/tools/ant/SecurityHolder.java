@@ -56,7 +56,7 @@ public class SecurityHolder {
     /**
      * set a reference to the security types
      *
-     * @param securityRef
+     * @param securityRef security data
      */
     public void setSecurityRef(Reference securityRef) {
         this.securityRef = securityRef;
@@ -65,7 +65,7 @@ public class SecurityHolder {
     /**
      * set a security definition
      *
-     * @param securityElement
+     * @param securityElement security data
      */
     public void addSecurity(Security securityElement) {
         if (security != null || securityRef != null) {
@@ -92,6 +92,8 @@ public class SecurityHolder {
 
     /**
      * apply whatever security settings are needed
+     * @param task task to configure
+     * @return true if security settings were present and enabled
      */
     public boolean applySecuritySettings(SmartFrogTask task) {
         Security sec = getSecurity(task);

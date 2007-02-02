@@ -82,17 +82,6 @@ public class FaultingWaitForTask extends Task {
         setCheckEvery(DEFAULT_CHECK_TIME);
     }
 
-    /**
-     * Called by the project to let the task initialize properly. The default
-     * implementation is a no-op.
-     *
-     * @throws org.apache.tools.ant.BuildException
-     *          if something goes wrong with the build
-     */
-    public void init() throws BuildException {
-        super.init();
-
-    }
 
     /**
      * Set the maximum length of time to wait, in seconds.
@@ -127,6 +116,7 @@ public class FaultingWaitForTask extends Task {
 
     /**
      * Add an arbitrary condition
+     * @param c condition
      */
     public void add(Condition c) {
         waitFor.add(c);
