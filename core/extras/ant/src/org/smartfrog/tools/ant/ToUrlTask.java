@@ -96,7 +96,7 @@ public class ToUrlTask extends Task {
     /**
      * the name of a file to be converted into a URL
      *
-     * @param file
+     * @param file a file to turn into a URL
      */
     public void setFile(File file) {
         this.file = file;
@@ -106,7 +106,7 @@ public class ToUrlTask extends Task {
      * a fileset of jar files to include in the URL, each
      * separated by the separator
      *
-     * @param fileset
+     * @param fileset files to add
      */
     public void addFileSet(FileSet fileset) {
         filesets.add(fileset);
@@ -114,7 +114,7 @@ public class ToUrlTask extends Task {
 
     /**
      * set the separator for the multi-url option.
-     * @param separator
+     * @param separator separator between urls
      */
     public void setSeparator(String separator) {
         this.separator = separator;
@@ -123,7 +123,7 @@ public class ToUrlTask extends Task {
     /**
      * set this flag to trigger validation that every named file exists.
      * Optional: default=true
-     * @param validate
+     * @param validate flat to trigger check for files
      */
     public void setValidate(boolean validate) {
         this.validate = validate;
@@ -132,7 +132,7 @@ public class ToUrlTask extends Task {
     /**
      * add a path to the URL. All elements in the path
      * will be converted to individual URL entries 
-     * @param path
+     * @param path path to convert to urls
      */
     public void addPath(Path path) {
         paths.add(path);

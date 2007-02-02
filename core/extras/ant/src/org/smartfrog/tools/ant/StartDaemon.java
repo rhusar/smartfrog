@@ -52,14 +52,9 @@ public class StartDaemon extends DeployingTaskBase {
         setFailOnError(true);
     }
 
-    public void init() throws BuildException {
-        super.init();
-    }
-
-
     /**
      * Set the entry point of the daemon. This defaults to that of the command line
-     * @param method
+     * @param method method to run
      */ 
     public void setEntrypoint(String method) {
         getBaseJavaTask().setClassname(method);

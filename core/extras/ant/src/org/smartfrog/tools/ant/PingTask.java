@@ -55,7 +55,7 @@ public class PingTask extends SmartFrogTask {
     /**
      * set the name of the application to ping. Required
      *
-     * @param application
+     * @param application application to ping
      */
     public void setApplication(String application) {
         this.application = application;
@@ -64,7 +64,7 @@ public class PingTask extends SmartFrogTask {
     /**
      * the name of a property to set on a successful ping.
      * Only useful if failonerror is set to false
-     * @param successProperty
+     * @param successProperty true on success
      */
     public void setSuccessProperty(String successProperty) {
         this.successProperty = successProperty;

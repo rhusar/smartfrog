@@ -23,6 +23,7 @@ import org.apache.tools.ant.types.DataType;
 import org.apache.tools.ant.types.Environment;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
+import org.apache.tools.ant.util.FileUtils;
 import org.apache.tools.ant.taskdefs.Java;
 
 import java.io.File;
@@ -92,9 +93,7 @@ public class PropertyFile  extends DataType  implements Cloneable {
         } catch (IOException e) {
             throw new BuildException(ERROR_FILE_LOAD_FAILED+file,e);
         } finally {
-            if(inStream!=null) {
-                try { inStream.close(); } catch (IOException e) { }
-            }
+            FileUtils.close(inStream);
         }
         return props;
     }
@@ -109,7 +108,7 @@ public class PropertyFile  extends DataType  implements Cloneable {
 
     /**
      * add the declared properties to the JVM
-     * @param dest
+     * @param dest recipient of the system properties
      */
     public void addPropertiesToJvm(SysPropertyAdder dest) {
         Properties props=getProperties();
@@ -143,8 +142,8 @@ public class PropertyFile  extends DataType  implements Cloneable {
         }
 
         /**
-         * add all properties to teh list
-         * @param jvm
+         * add all properties to the list
+         * @param jvm JVM to add to
          */
         public void addPropertiesToJvm(SysPropertyAdder jvm) {
             Iterator it=list.iterator();
@@ -156,9 +155,9 @@ public class PropertyFile  extends DataType  implements Cloneable {
 
         /**
          * get an iterator.
-         * @return
+         * @return the iterator
          */
-        public ListIterator listIterator() {
+        public ListIterator iterator() {
             return list.listIterator();
         }
 

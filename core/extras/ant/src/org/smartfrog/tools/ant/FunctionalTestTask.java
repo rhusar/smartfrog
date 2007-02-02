@@ -101,7 +101,7 @@ public class FunctionalTestTask extends Task {
     /**
      * A sequence of operations that are used to tear down the system.
      *
-     * @param teardown
+     * @param teardown teardown sequence
      */
     public void addTeardown(Sequential teardown) {
         if (this.teardown != null) {
@@ -119,7 +119,7 @@ public class FunctionalTestTask extends Task {
      * The sequence of tasks used to define the application. This is for hosting
      * the server in a parallel thread to the test run.
      *
-     * @param application
+     * @param application application sequence
      */
     public void addApplication(Sequential application) {
         if(this.application!=null) {
@@ -150,7 +150,7 @@ public class FunctionalTestTask extends Task {
     /**
      * Add a probe, conditions that have to be met before testing begins.
      *
-     * @param probe
+     * @param probe test to probe
      */
     public void addProbe(FaultingWaitForTask probe) {
         if (this.probe != null) {
@@ -162,13 +162,13 @@ public class FunctionalTestTask extends Task {
     /**
      * Declare a list of junit tasks
      *
-     * @param junit
+     * @param sequence a test sequence
      */
-    public void addTest(Sequential junit) {
+    public void addTest(Sequential sequence) {
         if (test != null) {
             log("Overriding previous definition of <test>");
         }
-        test = junit;
+        test = sequence;
     }
 
     /**
@@ -336,7 +336,7 @@ public class FunctionalTestTask extends Task {
         /**
          * Test for a thread running
          *
-         * @return
+         * @return true if the thread is alove
          */
         private boolean isRunning() {
             return thread.isAlive();

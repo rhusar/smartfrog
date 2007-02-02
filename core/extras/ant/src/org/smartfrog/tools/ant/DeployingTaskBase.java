@@ -59,6 +59,7 @@ public abstract class DeployingTaskBase extends SmartFrogTask {
 
     /**
      * add a new application to the list.
+     * @return the created application
      */
     public Application createApplication() {
         Application application = createNewApplication();
@@ -69,7 +70,7 @@ public abstract class DeployingTaskBase extends SmartFrogTask {
     /**
      * application factory is here for easy overriding
      *
-     * @return
+     * @return the new application.
      */
     protected Application createNewApplication() {
         return new Application(this);
@@ -78,7 +79,7 @@ public abstract class DeployingTaskBase extends SmartFrogTask {
     /**
      * get the count of applications
      *
-     * @return
+     * @return current application count
      */
     protected int getApplicationCount() {
         return applications.size();
@@ -122,8 +123,8 @@ public abstract class DeployingTaskBase extends SmartFrogTask {
 
     /**
      * Create a path from an application
-     * @param application
-     * @return
+     * @param application application
+     * @return a path from its descriptor
      */
     private String makePath(Application application) {
         return "'\"" + application.getDescriptor() + "\"':";
@@ -189,6 +190,10 @@ public abstract class DeployingTaskBase extends SmartFrogTask {
         public static final String ERROR_NO_WRITE = "could not write to: ";
         public static final String APPLICATION_ENCODING = "UTF-8";
 
+        /**
+         * Create a bound application
+         * @param owner owning task
+         */
         public Application(TaskBase owner) {
             this.owner = owner;
         }
@@ -211,7 +216,7 @@ public abstract class DeployingTaskBase extends SmartFrogTask {
         /**
          * name of the app
          *
-         * @param name
+         * @param name application name
          */
         public void setName(String name) {
             this.name = name;
@@ -220,7 +225,7 @@ public abstract class DeployingTaskBase extends SmartFrogTask {
         /**
          * location of the app's descriptor
          *
-         * @param descriptor
+         * @param descriptor resource path to the descripto
          */
         public void setDescriptor(String descriptor) {
             this.descriptor = descriptor;
@@ -230,7 +235,7 @@ public abstract class DeployingTaskBase extends SmartFrogTask {
          * set the file of the app. This is the same as the descriptor, except
          * that it must exist
          *
-         * @param file
+         * @param file descriptor filename
          */
         public void setFile(File file) {
             if (!file.exists()) {
@@ -264,7 +269,7 @@ public abstract class DeployingTaskBase extends SmartFrogTask {
         /**
          * set text inside. This will get saved.
          *
-         * @param text
+         * @param text text to add; properties are expanded
          */
         public void addText(String text) {
             //convert properties

@@ -54,7 +54,7 @@ public class StartApplication extends DeployingTaskBase {
     /**
      * starting smartfrog
      *
-     * @throws BuildException
+     * @throws BuildException on failure
      */
     public void execute() throws BuildException {
         enableFailOnError();

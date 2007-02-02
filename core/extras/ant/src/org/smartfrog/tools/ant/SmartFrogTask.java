@@ -84,7 +84,7 @@ public abstract class SmartFrogTask extends TaskBase implements SysPropertyAdder
     public static final String LOCALHOST_IPV4 = "127.0.0.1";
     public static final String EXIT_AFTER_STARTING = "-e";
 
-    public SmartFrogTask() {
+    protected SmartFrogTask() {
 
     }
 
@@ -198,7 +198,7 @@ public abstract class SmartFrogTask extends TaskBase implements SysPropertyAdder
     /**
      * add a file to the list
      *
-     * @param filename
+     * @param filename file to add
      */
     public void addSourceFile(File filename) {
         sourceFiles.add(filename.toString());
@@ -217,7 +217,7 @@ public abstract class SmartFrogTask extends TaskBase implements SysPropertyAdder
 
     /**
      * add a property file to the JVM
-     * @param propFile
+     * @param propFile property file
      */
     public void addConfiguredPropertyFile(PropertyFile propFile) {
         propFile.addPropertiesToJvm(this);
@@ -227,7 +227,7 @@ public abstract class SmartFrogTask extends TaskBase implements SysPropertyAdder
      * set the hostname to deploy to (optional, defaults to localhost)
      * Some tasks do not allow this to be set at all.
      *
-     * @param host
+     * @param host hostname to deploy to
      */
     public void setHost(String host) {
         log("setting host to " + host, Project.MSG_DEBUG);
@@ -238,7 +238,7 @@ public abstract class SmartFrogTask extends TaskBase implements SysPropertyAdder
      * port of daemon; optional -default is 3800
      * Some tasks do not allow this to be set at all.
      *
-     * @param port
+     * @param port port to talk on
      */
     public void setPort(Integer port) {
         this.port = port;
@@ -247,7 +247,7 @@ public abstract class SmartFrogTask extends TaskBase implements SysPropertyAdder
     /**
      * liveness check in seconds; optional
      *
-     * @param livenessCheckPeriod
+     * @param livenessCheckPeriod how often to check the children's health
      */
     public void setLivenessCheckPeriod(Integer livenessCheckPeriod) {
         this.livenessCheckPeriod = livenessCheckPeriod;
@@ -256,7 +256,7 @@ public abstract class SmartFrogTask extends TaskBase implements SysPropertyAdder
     /**
      * retry count for liveness checks.
      *
-     * @param livenessCheckRetries
+     * @param livenessCheckRetries how many retries before giving up
      */
     public void setLivenessCheckRetries(Integer livenessCheckRetries) {
         this.livenessCheckRetries = livenessCheckRetries;
@@ -265,7 +265,7 @@ public abstract class SmartFrogTask extends TaskBase implements SysPropertyAdder
     /**
      * can this process spawn new processes?
      *
-     * @param allowSpawning
+     * @param allowSpawning can the daemon start new processes?
      */
     public void setAllowSpawning(boolean allowSpawning) {
         this.allowSpawning = Boolean.valueOf(allowSpawning);
@@ -274,7 +274,7 @@ public abstract class SmartFrogTask extends TaskBase implements SysPropertyAdder
     /**
      * when to assume a spawn failed -in seconds.
      *
-     * @param spawnTimeout
+     * @param spawnTimeout timeout in seconds, or null
      */
     public void setSpawnTimeout(Integer spawnTimeout) {
         this.spawnTimeout = spawnTimeout;
@@ -284,7 +284,7 @@ public abstract class SmartFrogTask extends TaskBase implements SysPropertyAdder
     /**
      * the name of a smartfrog file to load on startupe
      *
-     * @param initialSmartFrogFile
+     * @param initialSmartFrogFile smartfrog file to load on startup
      */
     public void setInitialSmartFrogFile(File initialSmartFrogFile) {
         if (initialSmartFrogFile != null && initialSmartFrogFile.length() > 0) {
@@ -303,7 +303,7 @@ public abstract class SmartFrogTask extends TaskBase implements SysPropertyAdder
     /**
      * get the current host
      *
-     * @return
+     * @return the current host value or "" for none defined
      */
     protected String getHost() {
         if (host == null) return "";
@@ -314,7 +314,7 @@ public abstract class SmartFrogTask extends TaskBase implements SysPropertyAdder
     /**
      * Name an ini file can contain data that overrides the basic settings.
      *
-     * @param iniFile
+     * @param iniFile a file for preloading
      */
     public void setIniFile(File iniFile) {
         this.iniFile = iniFile;
@@ -324,7 +324,7 @@ public abstract class SmartFrogTask extends TaskBase implements SysPropertyAdder
     /**
      * should the runtime log stack traces?
      *
-     * @param logStackTraces
+     * @param logStackTraces should stack traces be logged?
      */
     public void setLogStackTraces(boolean logStackTraces) {
         this.logStackTraces = Boolean.valueOf(logStackTraces);
@@ -333,7 +333,7 @@ public abstract class SmartFrogTask extends TaskBase implements SysPropertyAdder
     /**
      * set a reference to the security types
      *
-     * @param securityRef
+     * @param securityRef security data
      */
     public void setSecurityRef(Reference securityRef) {
         securityHolder.setSecurityRef(securityRef);
@@ -342,7 +342,7 @@ public abstract class SmartFrogTask extends TaskBase implements SysPropertyAdder
     /**
      * set a security definition
      *
-     * @param security
+     * @param security security element
      */
     public void addSecurity(Security security) {
         securityHolder.addSecurity(security);
@@ -373,7 +373,7 @@ public abstract class SmartFrogTask extends TaskBase implements SysPropertyAdder
     /**
      * add an argument to the java process
      *
-     * @param value
+     * @param value an argument
      */
     protected void addArg(String value) {
         smartfrog.createArg().setValue(value);
@@ -397,7 +397,7 @@ public abstract class SmartFrogTask extends TaskBase implements SysPropertyAdder
     /**
      * should the build halt on failure? (default=true)
      *
-     * @param failOnError
+     * @param failOnError fail on error flag
      */
     public void setFailOnError(boolean failOnError) {
         this.failOnError = failOnError;
@@ -427,12 +427,16 @@ public abstract class SmartFrogTask extends TaskBase implements SysPropertyAdder
      * sets the spawn flag. makes it hard (no, impossible!) to log outputs.
      * only recommended for long-lived tasks, and complicates failonerror and timeout
      * logic
-     * @param spawn
+     * @param spawn spawn flag
      */
     public void setSpawn(boolean spawn) {
         this.spawn = spawn;
     }
 
+    /**
+     * is spawen set
+     * @return the spawn flag
+     */
     public boolean isSpawn() {
         return spawn;
     }
@@ -461,8 +465,8 @@ public abstract class SmartFrogTask extends TaskBase implements SysPropertyAdder
     /**
      * add a command
      *
-     * @param command
-     * @param name
+     * @param command application command
+     * @param name name
      * @throws BuildException if there is no app name
      */
     protected void addApplicationCommand(String command, String name) {
@@ -475,7 +479,7 @@ public abstract class SmartFrogTask extends TaskBase implements SysPropertyAdder
      * verify the app name is valid by whatever logic we have
      * current asserts that it is non null
      *
-     * @param application
+     * @param application the application name
      * @throws BuildException when unhappy
      */
     protected void verifyApplicationName(String application)
@@ -507,8 +511,8 @@ public abstract class SmartFrogTask extends TaskBase implements SysPropertyAdder
     /**
      * set a sys property on the smartfrog JVM
      *
-     * @param name
-     * @param value
+     * @param name property name
+     * @param value value
      */
     public void addJVMProperty(String name, String value) {
         Environment.Variable property = new Environment.Variable();
@@ -523,7 +527,7 @@ public abstract class SmartFrogTask extends TaskBase implements SysPropertyAdder
      * with the task -it defines a new JVM arg with the
      * string value.
      *
-     * @param argument
+     * @param argument JVM argument
      */
     public void defineJVMArg(String argument) {
         smartfrog.createJvmarg().setValue(argument);
@@ -533,7 +537,7 @@ public abstract class SmartFrogTask extends TaskBase implements SysPropertyAdder
      * part of the ANT interface; this method
      * creates a JVM argument for manipulation
      *
-     * @return
+     * @return create a nested JVM arg
      */
     public Commandline.Argument createJVMarg() {
         return smartfrog.createJvmarg();
@@ -542,8 +546,8 @@ public abstract class SmartFrogTask extends TaskBase implements SysPropertyAdder
     /**
      * set a sys property on the smartfrog JVM if the object used to set the property value is defined
      * and if it is not already declared in the properties list
-     * @param name
-     * @param object: if defined the toString() value is used
+     * @param name property name
+     * @param object if defined the toString() value is used
      */
     public void addSmartfrogPropertyIfDefined(String name, Object object) {
         if (object != null) {
@@ -559,7 +563,8 @@ public abstract class SmartFrogTask extends TaskBase implements SysPropertyAdder
      *
      * @param failureText text when return value==-1
      * @param errorText   text when return value!=0 && !=1-
-     * @throws BuildException if the return value from java!=0
+     * @return the return code from executing java
+     * @throws BuildException if the return value was an error and failonerror!=false
      */
     protected boolean execSmartFrog(String failureText, String errorText) {
         //adopt the classpath
@@ -614,7 +619,7 @@ public abstract class SmartFrogTask extends TaskBase implements SysPropertyAdder
             CommandlineJava commandLine = (CommandlineJava)
                     method.invoke(smartfrog,new Object[0]);
             return commandLine.describeJavaCommand();
-        } catch (Exception e) {
+        } catch (Exception ignore) {
             return null;
         }
     }
@@ -655,6 +660,8 @@ public abstract class SmartFrogTask extends TaskBase implements SysPropertyAdder
      * simpler entry point with a set message on errors
      *
      * @param failureText text when smartfrog returns '1'
+     * @return the result of executing smartfrog
+     * @throws BuildException on trouble, especially when failonerror=true
      */
     protected boolean execSmartFrog(String failureText) {
         return execSmartFrog(failureText, "Problems running smartfrog JVM");
@@ -690,7 +697,7 @@ public abstract class SmartFrogTask extends TaskBase implements SysPropertyAdder
 
     /**
      * set the timeout for execution. This is incompatible with spawning.
-     * @param timeout
+     * @param timeout timeout time
      */
     public void setTimeout(long timeout) {
         this.timeout = timeout;
