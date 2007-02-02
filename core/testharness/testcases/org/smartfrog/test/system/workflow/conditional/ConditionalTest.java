@@ -36,8 +36,8 @@ public class ConditionalTest extends DeployingTestBase {
     }
 
     public void testPassingIf() throws Throwable {
-        //application = deployExpectingSuccess(FILES + "testPassingIf.sf", "testPassingIf");
-        //expectSuccessfulTermination((TestBlock) application);
+        application = deployExpectingSuccess(FILES + "testPassingIf.sf", "testPassingIf");
+        expectSuccessfulTermination((TestBlock) application);
     }
 
     public void testPassingWaitFor() throws Throwable {
