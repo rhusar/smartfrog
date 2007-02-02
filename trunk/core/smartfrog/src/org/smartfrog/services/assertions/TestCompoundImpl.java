@@ -115,7 +115,8 @@ public class TestCompoundImpl extends ConditionCompound
         Exception exception=null;
         //deploy and evaluate the condition.
         //then decide whether to run or not.
-        if (!evaluate()) {
+
+        if (getCondition() !=null && !evaluate()) {
             skipped=true;
             sfLog().info("Skipping test run " + name);
             finish();
@@ -179,10 +180,10 @@ public class TestCompoundImpl extends ConditionCompound
         }
 
         //start the terminator
-        actionTerminator.start();
         actionTerminator = new DelayedTerminator(actionPrim, undeployAfter, sfLog(),
                 FORCED_TERMINATION,
                 !expectTerminate);
+        actionTerminator.start();
 
         //now deploy the tests.
         //any failure in tests is something to report, as is any failure of the tests to finish.
