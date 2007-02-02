@@ -1310,7 +1310,7 @@ java.class.path=
   <target name="smartfrog-dist"
     depends="init-common"
     >
-    <ant dir="${smartfrog.home}" target="dist" inheritall="false"/>
+    <ant dir="${smartfrog.home}" target="published" inheritall="false"/>
   </target>
 
   <!-- ========================================================== -->
