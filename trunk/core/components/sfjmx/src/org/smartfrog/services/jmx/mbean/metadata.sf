@@ -1,0 +1,448 @@
+/** (C) Copyright 1998-2005 Hewlett-Packard Development Company, LP
+
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+For more information: www.smartfrog.org
+
+*/
+
+/*** Description of management information meta-data ***/
+
+/**
+ * Template for the Parameters of a method or constructor
+ */
+Parameter extends LAZY {
+  type "java.lang.String";
+  value "";
+}
+
+/**
+ * Base definition of a notification
+ */
+Notification extends LAZY {
+  type "jmx.mbean.generic";
+  message "This is a notification";
+  userData "null";
+}
+
+/**
+ * TimerNotification description sent by the Timer service in the JMX Agent
+ */
+TimerNotification extends Notification {
+  type "jxm.timer.generic";
+  message "This is a Timer Notification";
+  // date "Sat, 12 Aug 1995 13:30:00 GMT"; // For instance
+  period 0;
+  nbOcurrences 0;
+}
+
+/**
+ * Template for NotificationInfo. Used by ModelMBean
+ */
+NotificationInfo extends LAZY {
+  //name "";                      // Name for the NotificationInfo. It is advisable to use the same as
+                                  // the type, since, given a notification, the only way to find its
+                                  // NotificationInfo is by mean of this name, while the only information
+                                  // that identifies an arrived notification is type. For the same reason,
+                                  // I suggest a notification for every type. Nevertheless it is possible
+                                  // to define several types in the "type" vector.
+
+  descriptorType "notification";  // must be "notification"
+  displayName ATTRIB name;
+  //type ["...", "...", ...];
+  severity 5;                     // 1-5 where 1: fatal 2: severe 3: error 4: warn 5: info
+  log "T";                        // T - log message F - do not log message
+  logfile "jmxNotification.log";  // string fully qualified file name appropriate for operating system
+  visibility 1;                   // 1-4 where 1: always visible 4: rarely visible
+  //presentationString "";        // xml formatted string to allow presentation of data;
+  //messageID "";                 // unique key for message text (to allow translation,analysis)
+  //messageText "";               // text of notification
+}
+
+/**
+ * Common descriptions of NotificationInfo used by ModelMBeans
+ */
+Generic extends NotificationInfo {
+  name "jmx.modelmbean.generic";
+  type ["jmx.modelmbean.generic"];
+  description "A text notification has been issued by the managed resource";
+}
+
+Change extends NotificationInfo {
+  name "jmx.attribute.change";
+  type ["jmx.attribute.change"];
+  description "Indicates that an loading or storing operation has been carried out";
+}
+
+Load extends NotificationInfo {
+  name "jmx.modelmbean.persistence.load";
+  type ["jmx.modelmbean.persistence.load"];
+  visibility 2;
+  description "Indicates that a loading operation has been carried out";
+}
+
+Store extends NotificationInfo {
+  name "jmx.modelmbean.persistence.store";
+  type ["jmx.modelmbean.persistence.store"];
+  visibility 2;
+  description "Indicates that a storing operation has been carried out";
+}
+
+Deploy extends NotificationInfo {
+  name "smartfrog.lifecycle.deploy";
+  type ["smartfrog.lifecycle.deploy"];
+  description "Signifies that a SmartFrog component has been deployed";
+}
+
+Start extends NotificationInfo {
+  name "smartfrog.lifecycle.start";
+  type ["smartfrog.lifecycle.start"];
+  description "Signifies that a SmartFrog component has been started";
+}
+
+Terminate extends NotificationInfo {
+  name "smartfrog.lifecycle.terminate";
+  type ["smartfrog.lifecycle.terminate"];
+  description "Signifies that a SmartFrog component has been terminated";
+}
+
+/**
+ * Template for attributes specified in a DynamicMBean
+ */
+AttributeInfo extends {
+  descriptorType "attribute";
+  //name "...";
+  displayName ATTRIB name;
+  //type "...";
+  readable true;
+  writable true;
+  //getMethod "getName";      // name of operation descriptor for get method
+  //isGetterParameter false;  // This field might be necessary if we have only one getter method
+                              // for a set of attributes and we need to distinguish them
+  //setMethod "setName";      // name of operation descriptor for set method
+  //isSetterParameter false;  // This field might be necessary if we have only one setter method
+                              // for a set of attributes and we need to distinguish them
+  persistPolicy "Never";      // Update|OnTime|NoMoreOftenThan|Always|Never
+  persistPeriod 0;            // seconds - frequency of persist cycle. Used when persistPolicy is"OnTime" or "NoMoreOftenThan".
+  currencyTimeLimit 0;        // how long value is valid, <0 never, =0 always, >0 seconds
+  description "Attribute exposed for management";
+  scope "public";
+}
+
+/**
+ * Template for parameters specified in the operations of a DynamicMBean
+ */
+ParameterInfo extends {
+  descriptorType "parameter";
+  //name "...";
+  //type "...";
+  description "Parameter";
+}
+
+OperationInfo extends {
+  descriptorType "operation";
+  //name "...";
+  //targetObject LAZY component;  // object on which to execute this method
+  //targetType "RMIReference";    // type of object reference for targetObject: ObjectReference|EJBHandle|IOR|RMIReference
+                                  // Not used at the moment. The type is checked in run time.
+  //parameter extends ParameterInfo;
+  role "operation";	// One of "operation", "getter", "setter" or "constructor"
+  impact "UNKNOWN";	// The impact of the method, one of INFO, ACTION, ACTION_INFO, UNKNOWN
+  visibility 1;		// Between 1-4, where 1: always visible, 4: rarely visible
+  currencyTimeLimit 0;    // how long cached value is valid
+  description "Operation exposed for management";
+  scope "public";
+}
+
+/**
+ * Common attribute descriptions
+ */
+// SmartFrog inherent attributes
+SfClass extends AttributeInfo {
+  name "sfClass";
+  type "java.lang.String";
+  writable false;
+  description "The class name that is associated to the component being managed";
+}
+
+SfProcessComponentName extends AttributeInfo {
+  name "sfProcessComponentName";
+  type "java.lang.String";
+  writable false;
+  description "The name given to the application within a specific ProcessCompound";
+}
+
+SfProcessName extends AttributeInfo {
+  name "sfProcessName";
+  type "java.lang.String";
+  writable false;
+  description "The name of the proccess within which this component has been deployed";
+}
+
+SfProcessHost extends AttributeInfo {
+  name "sfProcessHost";
+  type "java.lang.String";
+  writable false;
+  description "The name/address of the host within this component has been desployed";
+}
+
+SfExport extends AttributeInfo {
+  name "sfExport";
+  type "java.lang.Boolean";
+  writable false;
+  description "Specifies if the component exports the Prim remote interface";
+}
+
+// JMX related Attribute
+Domain extends AttributeInfo {
+  name "domain";
+  type "java.lang.String";
+  writable false;
+  description "The domain within which this MBean has been registered";
+}
+
+Name extends AttributeInfo {
+  name "name";
+  type "java.lang.String";
+  writable false;
+  description "Name given to this element or resource";
+}
+
+Type extends AttributeInfo {
+  name "type";
+  type "java.lang.String";
+  writable false;
+  description "MBean type used as a property in its ObjectName";
+}
+
+Description extends AttributeInfo {
+  name "description";
+  type "java.lang.String";
+  writable false;
+  description "Gives a brief description of the resource to be managed";
+}
+
+Readable extends AttributeInfo {
+  name "readable";
+  type "java.lang.Boolean";
+  writable false;
+  description "Indicates if the attribute has read access";
+}
+
+Writable extends AttributeInfo {
+  name "writable";
+  type "java.lang.Boolean";
+  writable false;
+  description "Indicates if the attribute has write access";
+}
+
+// JMX descriptor fields
+DescriptorType extends AttributeInfo {
+  name "descriptorType";
+  type "java.lang.String";
+  writable false;
+  description "Determines the kind of resource to be managed";
+}
+
+Role extends AttributeInfo {
+  name "role";
+  type "java.lang.String";
+  writable false;
+  description "Describe the function of the method";
+}
+
+Severity extends AttributeInfo {
+  name "severity";
+  type "java.lang.Integer";
+  writable false;
+  description "Posible values: 1-5 where 1: fatal 2: severe 3: error 4: warn 5: info";
+}
+
+Log extends AttributeInfo {
+  name "log";
+  type "java.lang.String";
+  writable false;
+  description "Flag indicating if to log the message. T: log message F: do not log message";
+}
+
+Logfile extends AttributeInfo {
+  name "logfile";
+  type "java.lang.String";
+  writable false;
+  description "String fully qualified file name appropriate for operating system";
+}
+
+Visibility extends AttributeInfo {
+  name "visibility";
+  type "java.lang.String";
+  writable false;
+  description "Posible values: 1-4 where 1: always visible 4: rarely visible";
+}
+
+Default extends AttributeInfo {
+  name "default";
+  type "java.lang.Object";
+  writable false;
+  description "default value for attribute";
+}
+
+GetMethod extends AttributeInfo {
+  name "getMethod";
+  type "java.lang.String";
+  writable false;
+  description "name of operation descriptor for get method";
+}
+
+SetMethod extends AttributeInfo {
+  name "setMethod";
+  type "java.lang.String";
+  writable false;
+  description "name of operation descriptor for set method";
+}
+
+ProtocolMap extends AttributeInfo {
+  name "protocolMap";
+  type "java.lang.Object";
+  writable false;
+  description "object which implements the ProtocolMap interface: map of protocol names and protocol hints";
+}
+
+PersistPolicy extends AttributeInfo {
+  name "persistPolicy";
+  type "java.lang.String";
+  writable false;
+  description "Posible values: Update|OnTime|NoMoreOftenThan|Always|Never";
+}
+
+PersistPeriod extends AttributeInfo {
+  name "persistPeriod";
+  type "java.lang.String";
+  writable false;
+  description "seconds - frequency of persist cycle. Used when persistPolicy is OnTime or NoMoreOftenThan";
+}
+
+CurrencyTimeLimit extends AttributeInfo {
+  name "currencyTimeLimit";
+  type "java.lang.Integer";
+  writable false;
+  description "how long value is valid, <0 never, =0 always, >0 seconds";
+}
+
+Iterable extends AttributeInfo {
+  name "iterable";
+  type "java.lang.String";
+  writable false;
+  description "Flag T - object value supports Iterable interface, F - does not support Iterable interface";
+}
+
+PresentationString extends AttributeInfo {
+  name "presentationString";
+  type "java.lang.String";
+  writable false;
+  description "XML formatted string to allow presentation of data";
+}
+
+// Other related attributes
+Class extends AttributeInfo {
+  name "class";
+  type "java.lang.String";
+  writable false;
+  description "The class name of the ModelMBean that is being used to manage the component";
+}
+
+Host extends AttributeInfo {
+  name "host";
+  type "java.lang.String";
+  writable false;
+  description "Name of the host where the component is located";
+}
+
+Port extends AttributeInfo {
+  name "port";
+  type "java.lang.Integer";
+  writable false;
+  description "Contain the port where adaptors/connector are listening at";
+}
+
+SfAgentAddress extends AttributeInfo {
+  name "sfAgentAddress";
+  type "java.lang.String";
+  writable false;
+  description "The address of the JMX Agent where this ModelMBean should be registered";
+}
+
+/**
+ * Common operation descriptions
+ */
+
+// SmartFrog lifecycle methods
+SfDeploy extends OperationInfo {
+  name "sfDeploy";
+  role "operation";
+  impact "ACTION";
+  description "Makes the component to run the sfDeploy method of its lifecycle";
+}
+
+SfStart extends OperationInfo {
+  name "sfStart";
+  role "operation";
+  impact "ACTION";
+  description "Makes the component to run the sfStart method of its lifecycle";
+}
+
+SfDetach extends OperationInfo {
+  name "sfDetach";
+  role "operation";
+  impact "ACTION";
+  description "Request component to detach itself from its parent, and becoming a root component";
+}
+
+SfTerminate extends OperationInfo {
+  name "sfTerminate";
+  parameter1 extends ParameterInfo {
+    name "TerminationRecord";
+    type "org.smartfrog.sfcore.prim.TerminationRecord";
+    description "Describes the reason of termination";
+  }
+  role "operation";
+  impact "ACTION";
+  description "Terminates the application";
+}
+
+SfDetachAndTerminate extends OperationInfo {
+  name "sfDetachAndTerminate";
+  parameter1 extends ParameterInfo {
+    name "TerminationRecord";
+    type "org.smartfrog.sfcore.prim.TerminationRecord";
+    description "Describes the reason of termination";
+  }
+  role "operation";
+  impact "ACTION";
+  description "Detach this component and then terminates it";
+}
+
+SfDeployedHost extends OperationInfo {
+  name "sfDeployedHost";
+  role "getter";
+  impact "INFO";
+  description "Returns the name of the host where this component has been deployed";
+}
+
+SfDeployedProcessName extends OperationInfo {
+  name "sfDeployedProcessName";
+  roleg "getter";
+  impact "INFO";
+  description "Returns the process in which this component is deployed, the name being that defined in the sfProcessName attribute or the string ROOT if in the root process compound";
+}
