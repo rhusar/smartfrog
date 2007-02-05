@@ -622,8 +622,7 @@ java.class.path=
        <include name="lib/**/*.jar"/>
      </fileset>
    </path>
-    <property name="compile.classpath.value" refid="compile.classpath"/>
-    <echo level="verbose">compile.classpath=${compile.classpath.value}</echo>
+    <echo level="verbose">compile.classpath=${toString:compile.classpath}</echo>
   </target>
 
   <target name="declare-exec.classpath" depends="declare-compile.classpath" unless="ivy.enabled">

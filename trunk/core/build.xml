@@ -122,8 +122,8 @@ For more information: www.smartfrog.org
   <!-- =================================================================== -->
 
   <target name="install" depends="main-dist,tasks" 
-	  description="install components distribution(s)">
-	  <antcall target="components"/>
+    description="install components distribution(s)">
+    <antcall target="components"/>
     <forward2 dir="${components.project}" target="install"  />
   </target>
   
@@ -455,10 +455,12 @@ ${child.projects.list}
 
   <target name="ivy-purge-published" depends="ivy-init"
     description="purge all locally published artifacts from the local repository">
+    <!--TODO: steve-->
   </target>
 
   <target name="ivy-purge-cache" depends="ivy-init"
     description="purge all locally published artifacts from the local repository">
+    <!--TODO: steve-->
   </target>
 
 
