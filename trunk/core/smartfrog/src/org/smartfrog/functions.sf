@@ -22,6 +22,7 @@ For more information: www.smartfrog.org
 Function extends {
    phase.function "org.smartfrog.sfcore.languages.sf.ConstructFunction";
    sfFunctionClass "";
+   //sfFunctionLazy false;
 }
 
 vector extends Function{

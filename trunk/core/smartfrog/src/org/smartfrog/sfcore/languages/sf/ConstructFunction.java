@@ -8,6 +8,7 @@ import org.smartfrog.sfcore.common.ContextImpl;
 import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
 import org.smartfrog.sfcore.common.SmartFrogFunctionResolutionException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
+import org.smartfrog.sfcore.reference.Reference;
 
 import java.util.Stack;
 import java.util.Iterator;
@@ -17,6 +18,7 @@ import java.util.Iterator;
  */
 public class ConstructFunction implements PhaseAction {
     final static String functionClass = "sfFunctionClass";
+    final static String functionLazy = "sfFunctionLazy";
     final static String functionPhase = "phase.function";
 
     // do the work
@@ -57,7 +59,14 @@ public class ConstructFunction implements PhaseAction {
         ComponentDescription parent = cd.sfParent();
         if (parent != null) {
             Object name = parent.sfContext().keyFor(cd);
-            parent.sfContext().put(name, new SFApplyReference(comp));
+            Reference newRef = new SFApplyReference(comp);
+             try {
+            // LAZY = false eager;
+               newRef.setEager(!cd.sfResolve(functionLazy,false,false));
+            } catch (SmartFrogRuntimeException e) {
+                throw new SmartFrogFunctionResolutionException("Problem reading ("+functionLazy+"): " + phaseName + " for component: " + cd.sfCompleteName(), e);
+            }
+            parent.sfContext().put(name, newRef );
         }
     }
 
