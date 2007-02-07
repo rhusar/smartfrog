@@ -111,6 +111,8 @@ public class SFApplyReference extends SFReference implements ReferencePhases {
 
         if (getData()) return this;
 
+        if (!eager) throw new SmartFrogLazyResolutionException("function is lazy (sfFunctionLazy)");
+
         if (rr instanceof ComponentDescription)
             comp.setParent((ComponentDescription) rr);
         else if (rr instanceof Prim)
@@ -154,6 +156,7 @@ public class SFApplyReference extends SFReference implements ReferencePhases {
         }
 
         if (isLazy) throw new SmartFrogLazyResolutionException("function has lazy parameter");
+
        
         try {
             Function function = (Function) SFClassLoader.forName(functionClass).newInstance();
@@ -173,18 +176,18 @@ public class SFApplyReference extends SFReference implements ReferencePhases {
      * @return value found on resolving this function
      * @throws SmartFrogResolutionException if reference failed to resolve
      */
+    // This is never called (needed for completeness). At runtime ApplyReference is called.
     public Object resolve(RemoteReferenceResolver rr, int index)
             throws SmartFrogResolutionException {
         //take a new context...
         //     iterate over the attributes of comp- ignoring any beginning with sf;
         //     cache sfFunctionClass attribute;
         //     resolve all non-sf attributes, if they are links
-        //     if any return s LAZY object, set self to lazy and return self, otherwise update copy
+        //     otherwise update copy
         //     and invoke function with copy of CD, return result
         Context forFunction = new ContextImpl();
         String functionClass = null;
         Object result;
-        boolean hasLazy = false;
 
         if (getData()) return this;
 
