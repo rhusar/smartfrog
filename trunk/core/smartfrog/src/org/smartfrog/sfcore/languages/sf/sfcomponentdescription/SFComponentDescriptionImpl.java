@@ -670,14 +670,17 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
              } else
                   newContext.put(key, copyValue(value));
           } catch (SmartFrogException e1) {
-             //shouldn't happen - its for the checking of the tag!
+              throw  ((SmartFrogCompilationException)SmartFrogCompilationException.forward(e1));
           }
 
           try {
-             tags  = sfContext.sfGetTags(key);
-             newContext.sfAddTags(key, tags);
+             if (newContext.sfContainsAttribute(key)){
+                 tags  = sfContext.sfGetTags(key);
+                 newContext.sfAddTags(key, tags);
+             }
           } catch (SmartFrogException e1) {
-                //shouldn't happen
+                 e1.printStackTrace();
+                //It shouldn't happen
           }
        }
 
@@ -696,8 +699,12 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
         if (v instanceof Vector) {
              return copyVector((Vector)v);
         }
-        throw new SmartFrogCompilationException("illegal value in context during conversion to ComponentDesscription " +
-                                                v.toString() + " in component " + sfCompleteName());
+        if (v instanceof ComponentDescription) {
+            throw new SmartFrogCompilationException("illegal value in context during conversion to ComponentDescription. ComponentDescription cannot be used; use SFComponentDescription. Context: " +
+                                                v.toString() + " (Class: "+v.getClass().getCanonicalName()+") in component " + sfCompleteName());
+        }
+        throw new SmartFrogCompilationException("illegal value in context during conversion to ComponentDescription " +
+                                                v.toString() + " (Class: "+v.getClass().getCanonicalName()+") in component " + sfCompleteName());
     }
 
     protected Object copyVector(Vector v) throws SmartFrogCompilationException {
