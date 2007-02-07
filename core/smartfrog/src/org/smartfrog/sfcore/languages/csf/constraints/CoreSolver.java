@@ -3,13 +3,6 @@ package org.smartfrog.sfcore.languages.csf.constraints;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.security.SFClassLoader;
 
-/**
- * Created by IntelliJ IDEA.
- * User: pcg
- * Date: 17-Oct-2005
- * Time: 15:48:22
- * To change this template use File | Settings | File Templates.
- */
 abstract public class CoreSolver implements Solver {
     private static String solverClassname = "org.smartfrog.sfcore.languages.csf.constraints.NullSolver";
 

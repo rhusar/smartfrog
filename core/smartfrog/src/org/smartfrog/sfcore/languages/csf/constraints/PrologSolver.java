@@ -14,13 +14,6 @@ import java.io.InputStream;
 import java.io.IOException;
 import java.util.*;
 
-/**
- * Created by IntelliJ IDEA.
- * User: pcg
- * Date: 21-Oct-2005
- * Time: 14:02:19
- * To change this template use File | Settings | File Templates.
- */
 abstract public class PrologSolver extends CoreSolver {
     private final String theoryFile = "/org/smartfrog/sfcore/languages/csf/constraints/prologTheory.prolog";
     private final String theoryFileProperty = "opt.smartfrog.sfcore.languages.csf.constraints.prologTheoryFile";
@@ -150,6 +143,9 @@ abstract public class PrologSolver extends CoreSolver {
 
     private void collectConstraints() throws Exception {
         top.visit(new ConstraintCollector(), false);
+       System.out.println("unordered constraints " + constraints);
+        Collections.sort(constraints);
+       System.out.println("ordered constraints " + constraints);
     }
 
     private Hashtable solveConstraints(Hashtable bindings) throws SmartFrogResolutionException {
@@ -175,6 +171,7 @@ abstract public class PrologSolver extends CoreSolver {
             totalConstraint.append(",");
         }
         totalConstraint.append("'done'].");
+        System.out.println("solving prolog constraint " + totalConstraint + " with bindings " + bindings);
         Hashtable results = solveQuery(totalConstraint, bindings);
         if (results == null)
             throw new SmartFrogResolutionException("No solution found to constraints");

@@ -330,7 +330,34 @@ TOKEN : /* Literals */
             )
         )* "#")
       >
-    | <SUCHTHAT: ("#suchThat#" (
+    | <SELECTING: ("#selecting#" (
+          (~["#","\\"])
+          | ("\\"
+              ( ["n","t","b","r","f","\\","'","#"]
+              | ["0"-"3"] ["0"-"7"] ["0"-"7"]
+              )
+            )
+        )* "#")
+      >
+     | <BINDING: ("#binding#" (
+          (~["#","\\"])
+          | ("\\"
+              ( ["n","t","b","r","f","\\","'","#"]
+              | ["0"-"3"] ["0"-"7"] ["0"-"7"]
+              )
+            )
+        )* "#")
+      >
+     | <CHECKING: ("#checking#" (
+          (~["#","\\"])
+          | ("\\"
+              ( ["n","t","b","r","f","\\","'","#"]
+              | ["0"-"3"] ["0"-"7"] ["0"-"7"]
+              )
+            )
+        )* "#")
+      >
+     | <CONSTRAINT: ("#constraint:" (["0"-"9"])+ "#" (
           (~["#","\\"])
           | ("\\"
               ( ["n","t","b","r","f","\\","'","#"]
@@ -748,14 +775,20 @@ void BaseComponent(CSFComponentDescription comp) :
 void Constraints(CSFComponentDescription comp) :
 {
     String suchThat = "";
+    int priority = 0;
     Token t;
 }
 {
     (
-       t = <SUCHTHAT> { suchThat = fixEscapes(t.image.substring(10, t.image.length() - 1)); }
+       ( t = <CHECKING>   { priority = 25;  suchThat = fixEscapes(t.image.substring(10, t.image.length() - 1)); }
+       | t = <BINDING>    { priority = 50;  suchThat = fixEscapes(t.image.substring(9, t.image.length() - 1));  }
+       | t = <SELECTING>  { priority = 75; suchThat = fixEscapes(t.image.substring(11, t.image.length() - 1)); }
+       | t = <CONSTRAINT> { priority = (new Integer(t.image.substring(12, t.image.indexOf("#", 12)))).intValue();
+                                           suchThat = fixEscapes(t.image.substring(t.image.indexOf("#", 12) + 1, t.image.length() - 1)); }
+       )
       {
        try {
-            comp.addConstraint(new Constraint(suchThat));
+            comp.addConstraint(new Constraint(suchThat, priority));
        } catch (Exception  se) {
             throw new ParseException("Error creating constraint, exception thrown: " + se);
        }
