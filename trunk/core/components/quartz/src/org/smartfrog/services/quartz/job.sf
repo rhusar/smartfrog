@@ -29,9 +29,9 @@ Job extends Compound {
   sfClass "org.smartfrog.services.quartz.JobImpl";
  //  config  "C:\\sf\\cvs\\2007\\jan30\\svn\\components\\quartz\\src\\org\\smartfrog\\services\\quartz\\config.txt";
   machines ["ebnt171", "host2"]; 
-  Scheduler LAZY HOST localhost:rootProcess:scheduler;
+  scheduler LAZY HOST localhost:rootProcess:scheduler;
   template extends LAZY Collector;
-   
+  application "org/smartfrog/examples/counter/example.sf"; 
 }
 
 sfConfig extends Job;
