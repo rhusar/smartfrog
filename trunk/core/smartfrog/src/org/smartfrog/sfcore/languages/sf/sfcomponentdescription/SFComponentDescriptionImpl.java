@@ -701,10 +701,10 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
         }
         if (v instanceof ComponentDescription) {
             throw new SmartFrogCompilationException("illegal value in context during conversion to ComponentDescription. ComponentDescription cannot be used; use SFComponentDescription. Context: " +
-                                                v.toString() + " (Class: "+v.getClass().getCanonicalName()+") in component " + sfCompleteName());
+                                                v.toString() + " (Class: "+v.getClass().getName()+") in component " + sfCompleteName());
         }
         throw new SmartFrogCompilationException("illegal value in context during conversion to ComponentDescription " +
-                                                v.toString() + " (Class: "+v.getClass().getCanonicalName()+") in component " + sfCompleteName());
+                                                v.toString() + " (Class: "+v.getClass().getName()+") in component " + sfCompleteName());
     }
 
     protected Object copyVector(Vector v) throws SmartFrogCompilationException {
