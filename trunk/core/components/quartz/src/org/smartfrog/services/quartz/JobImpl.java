@@ -29,6 +29,7 @@ import org.quartz.TriggerUtils;
 import org.smartfrog.SFSystem;
 import org.smartfrog.services.quartz.collector.DataSource;
 import org.smartfrog.services.quartz.scheduler.SchedulerImpl;
+import org.smartfrog.services.filesystem.FileSystem;
 import org.smartfrog.sfcore.common.Context;
 import org.smartfrog.sfcore.common.ContextImpl;
 import org.smartfrog.sfcore.common.SmartFrogException;
@@ -43,6 +44,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetAddress;
 import java.rmi.RemoteException;
+import java.rmi.Remote;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -54,15 +56,9 @@ import java.util.Properties;
 import java.util.Vector;
 
 /**
- * Basic example component. The Counter component (in components.sf) is a basic primitive component so its component
- * description class CounterImpl extends PrimImpl (the base class for all the deployed components) which provides the
- * default lifecycle template methods for a primitive component. Although PrimImpl itself implements Prim (the base
- * interface for all the deployed components) CounterImpl also implements Prim because it is necessary for RMI that
- * component also does so; the rmic compiler will otherwise not behave correctly. The CounterImpl class needs to be
- * prepared for RMI for remote deployment This is done by creating and compiling the stubs and skeletons using the rmic
- * compiler. This class is included in rmitargets that is read by the rmic compiler.
+ * extend the compound with some remote job deployment
  */
-public class JobImpl extends CompoundImpl implements Compound {
+public class JobImpl extends CompoundImpl implements Job {
 
     private Scheduler sched = null;
     private String configFile = null;
@@ -92,15 +88,15 @@ public class JobImpl extends CompoundImpl implements Compound {
             RemoteException {
         super.sfDeploy();
 
-        configFile = sfResolve("config", configFile, false);
+        configFile = sfResolve(ATTR_CONFIG, configFile, false);
 
-        sched = ((SchedulerImpl) sfResolve("scheduler", sched, true)).getScheduler();
+        sched = ((SchedulerImpl) sfResolve(ATTR_SCHEDULER, sched, true)).getScheduler();
 
-        template = sfResolve("template", template, true);
+        template = sfResolve(ATTR_TEMPLATE, template, true);
 
-        machines = sfResolve("machines", machines, false);
+        machines = sfResolve(ATTR_MACHINES, machines, false);
 
-        application = sfResolve("application", application, false);
+        application = sfResolve(ATTR_APPLICATION, application, false);
 
         if (configFile != null) {
             readPropertiesFromIniFile();
@@ -125,7 +121,7 @@ public class JobImpl extends CompoundImpl implements Compound {
             // job.getJobDataMap().put("jobSays", "Hello World!");
             //  job.getJobDataMap().put("myFloatValue", 3.141f);
             // find application name from context.ini file
-            job.getJobDataMap().put("application", application);
+            job.getJobDataMap().put(ATTR_APPLICATION, application);
 
             // find hostname from Collector
 
@@ -194,6 +190,8 @@ public class JobImpl extends CompoundImpl implements Compound {
                     readPropertiesFrom(iniFileStream);
                 } catch (IOException ioEx) {
                     throw new SmartFrogException(ioEx);
+                } finally {
+                    FileSystem.close(iniFileStream);
                 }
             }
         } catch (Throwable ex) {
@@ -217,7 +215,7 @@ public class JobImpl extends CompoundImpl implements Compound {
         for (Enumeration e = props.keys(); e.hasMoreElements();) {
             Object key = e.nextElement();
             Object value = props.get(key);
-            if (key.equals("machines")) {
+            if (key.equals(ATTR_MACHINES)) {
                 // log.info("-----------------" + key + "====" + value);
                 String list = value.toString();
                 int length = list.length();
