@@ -20,39 +20,38 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.services.quartz.collector;
 
-import java.rmi.RemoteException;
-import java.util.Vector;
-
-import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.sfcore.common.TerminatorThread;
-import org.smartfrog.sfcore.prim.TerminationRecord;
-import org.smartfrog.sfcore.prim.PrimImpl;
-import org.smartfrog.sfcore.prim.Prim;
-import org.smartfrog.services.quartz.JobImpl;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.smartfrog.services.quartz.JobImpl;
+import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.common.SmartFrogResolutionException;
+import org.smartfrog.sfcore.common.TerminatorThread;
+import org.smartfrog.sfcore.prim.Prim;
+import org.smartfrog.sfcore.prim.PrimImpl;
+import org.smartfrog.sfcore.prim.TerminationRecord;
+
+import java.rmi.RemoteException;
 
 
 /**
  * A compound to collect data from a source and convert into some other form.
  */
 public class CollectorImpl extends PrimImpl implements Prim, Collector {
-    // add references for color, pencil widths
-    protected DataSource source;
-    int resultData;
+    private DataSource source;
+    private int resultData;
 
 
-   private boolean  shouldTerminate = true;
-    String name;
+    private boolean shouldTerminate = true;
+    private String name;
 
     /**
      * Overwrite this method in any case : it turns the value you get into the
      * value you want. Typically this is the place to convert a value into
      * properly scaled pixels for a display, or to compute an average, etc...
      */
-    int currentCollected = 0;
-    String hostname="";
-    Log log = LogFactory.getLog(CollectorImpl.class);
+    private int currentCollected = 0;
+    private String hostname="";
+    private static final Log log = LogFactory.getLog(CollectorImpl.class);
 
     public CollectorImpl() throws RemoteException {
     }
@@ -82,10 +81,7 @@ public class CollectorImpl extends PrimImpl implements Prim, Collector {
         try {
             startCollection();
         } catch (Exception e) {
-            if (!(e instanceof SmartFrogException)) {
-                throw new SmartFrogException("Exception in sfStart of Collector component",
-                    e, this);
-            }
+            throw SmartFrogException.forward("When starting the collector",e);
         }
 
         log.info(name +  "finished collecting");
@@ -108,7 +104,7 @@ public class CollectorImpl extends PrimImpl implements Prim, Collector {
      *
      * @throws Exception DOCUMENT ME!
      */
-    public void startCollection() throws Exception {
+    public void startCollection() throws SmartFrogResolutionException, RemoteException {
         // fill the value vector with zeros;
    //     for (int i = 0; i < numberOfSamples; i++) {
      //       allValues.addElement(new Integer(0));
@@ -145,12 +141,8 @@ public class CollectorImpl extends PrimImpl implements Prim, Collector {
     /**
      * Overwrite this function if you're accessing a given source of data.
      */
-    protected void getData() {
-        try {
+    protected void getData() throws RemoteException {
             convertData(source.getData());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
     public int getResult() throws SmartFrogException, RemoteException{
