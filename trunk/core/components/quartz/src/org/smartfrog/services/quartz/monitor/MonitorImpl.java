@@ -4,8 +4,6 @@ import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.examples.dynamicwebserver.monitor.*;
-import org.smartfrog.examples.dynamicwebserver.monitor.CPUMonitorImpl;
 import org.smartfrog.services.quartz.collector.DataSource;
 import org.smartfrog.examples.dynamicwebserver.logging.LogWrapper;
 import org.smartfrog.examples.dynamicwebserver.logging.Logger;
@@ -28,8 +26,7 @@ import java.rmi.RemoteException;
  * it would be possible for the Control object to query the Monitor component.
  * </p>
  */
-public class MonitorImpl extends PrimImpl implements Prim, Runnable,
-    org.smartfrog.examples.dynamicwebserver.monitor.CPUMonitor, DataSource {
+public class MonitorImpl extends PrimImpl implements Prim, Runnable, Monitor, DataSource {
     static final String cmd = "vmstat -n ";
     Process p = null;
     BufferedReader pOut = null;
