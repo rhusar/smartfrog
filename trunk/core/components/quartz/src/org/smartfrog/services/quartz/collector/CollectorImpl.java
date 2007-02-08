@@ -153,7 +153,7 @@ public class CollectorImpl extends PrimImpl implements Prim, Collector {
         }
     }
 
-    public int getResult() {
+    public int getResult() throws SmartFrogException, RemoteException{
         return resultData;
     }
 }
