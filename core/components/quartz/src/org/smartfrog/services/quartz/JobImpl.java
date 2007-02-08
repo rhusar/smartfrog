@@ -78,6 +78,7 @@ public class JobImpl extends CompoundImpl implements Compound {
     String name= "";
     ComponentDescription template = null;
 
+    String application = null;
     public static Hashtable allValues = new Hashtable();
 
     String componentNamePrefix = "comp";
@@ -94,11 +95,13 @@ public class JobImpl extends CompoundImpl implements Compound {
 
         configFile = sfResolve("config", configFile, false);
      
-     	sched = ((SchedulerImpl) sfResolve("Scheduler", sched, true)).sched;
+     	sched = ((SchedulerImpl) sfResolve("scheduler", sched, true)).sched;
       
         template = sfResolve("template", template, true);
         
 	machines = sfResolve("machines", machines, false);
+
+	application =  sfResolve("application", application, false);
 	
 	if (configFile != null)
 		readPropertiesFromIniFile();
@@ -122,7 +125,7 @@ public class JobImpl extends CompoundImpl implements Compound {
        // job.getJobDataMap().put("jobSays", "Hello World!");
         //  job.getJobDataMap().put("myFloatValue", 3.141f);
         // find application name from context.ini file
-        job.getJobDataMap().put("application", "org/smartfrog/examples/counter/example.sf");
+        job.getJobDataMap().put("application", application);
         
 	// find hostname from Collector
 
