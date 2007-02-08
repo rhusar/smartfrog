@@ -24,10 +24,8 @@ CpuMonitor extends Prim {
     sfClass "org.smartfrog.services.quartz.monitor.MonitorImpl";
 
     // how frequently to poll - in seconds
-    //delay 5;
+    delay 5;
 
-    // reference to a logging component
-    //logTo LAZY ,,,
 }
 
 sfConfig extends CpuMonitor;

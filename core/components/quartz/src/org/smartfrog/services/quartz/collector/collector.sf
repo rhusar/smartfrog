@@ -20,14 +20,18 @@ For more information: www.smartfrog.org
 
 #include "org/smartfrog/components.sf";
 
-Collector extends Prim { 
-        sfClass "org.smartfrog.services.quartz.collector.CollectorImpl";
-        dataSource LAZY cpumonitor;
-      //  dataSource LAZY ATTRIB ... // a data source to poll
-        
+Collector extends WorkflowPrim {
+  collectorSchema extends Schema {
+    dataSource extends Compulsory {
+        description "(LAZY) reference to a component that acts as a data source";
+      }
+  }
+    sfClass "org.smartfrog.services.quartz.collector.CollectorImpl";
+    //terminate after collecting the data
+    sfShouldTerminate true;
 }
 
-sfConfig extends Collector;
+
 
 
 

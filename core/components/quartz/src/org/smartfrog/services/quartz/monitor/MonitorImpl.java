@@ -28,15 +28,16 @@ BARGAIN MADE FOR ANY ASSUMPTIONS OF LIABILITY OR DAMAGES BY
 HEWLETT-PACKARD FOR ANY REASON WHATSOEVER, RELATING TO THE SOFTWARE OR
 ITS MEDIA, AND YOU HEREBY WAIVE ANY CLAIM IN THIS REGARD.
 
-*/package org.smartfrog.services.quartz.monitor;
+*/
+package org.smartfrog.services.quartz.monitor;
 
-import org.smartfrog.examples.dynamicwebserver.logging.LogWrapper;
-import org.smartfrog.examples.dynamicwebserver.logging.Logger;
 import org.smartfrog.services.quartz.collector.DataSource;
+import org.smartfrog.services.filesystem.FileSystem;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.prim.TerminationRecord;
+import org.smartfrog.sfcore.logging.Log;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -58,15 +59,15 @@ import java.util.Vector;
  */
 public class MonitorImpl extends PrimImpl implements Prim, Runnable, Monitor, DataSource {
     private static final String cmd = "vmstat -n ";
-    private Process p = null;
+    private Process process = null;
     private BufferedReader pOut = null;
     private BufferedReader pErr = null;
     private volatile boolean terminated = false;
     private int delay = 5; // number of seconds between samples
-    private LogWrapper logger;
+    private Log log;
     private int perMinute = 60 / delay;
 
-    private String vmstatCmd = org.smartfrog.services.quartz.monitor.MonitorImpl.cmd + delay + ((char) 10);
+    private String vmstatCmd = cmd + delay + "\n";
     private int splitIndex = 14;
 
     private Vector last10 = new Vector(10);
@@ -84,7 +85,7 @@ public class MonitorImpl extends PrimImpl implements Prim, Runnable, Monitor, Da
     }
 
     public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
-        logger = new LogWrapper((Logger) sfResolve(LOGTO, false));
+        log=sfLog();
         delay = sfResolve(DELAY, 5, false);
 
         vmstatCmd = org.smartfrog.services.quartz.monitor.MonitorImpl.cmd + delay + ((char) 10);
@@ -92,7 +93,7 @@ public class MonitorImpl extends PrimImpl implements Prim, Runnable, Monitor, Da
 
         name = sfCompleteName().toString();
 
-        logger.log(name, "cpu monitor deployed");
+        log.info("cpu monitor deployed");
     }
 
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
@@ -101,16 +102,13 @@ public class MonitorImpl extends PrimImpl implements Prim, Runnable, Monitor, Da
         Thread myThread = new Thread(this);
         myThread.start();
 
-        logger.log(name, "cpu monitor started");
+        log.info("cpu monitor started");
     }
 
     public synchronized void sfTerminateWith(TerminationRecord tr) {
-        synchronized (this) {
-            terminated = true;
-        }
-
+        terminated = true;
         super.sfTerminateWith(tr);
-        logger.log(name, "cpu monitor terminated");
+        log.info("cpu monitor terminated");
     }
 
     public int getData() throws RemoteException {
@@ -152,7 +150,7 @@ public class MonitorImpl extends PrimImpl implements Prim, Runnable, Monitor, Da
             }
 
             intLast10 = (int) total / 10;
-            logger.logOptional(name, "|------- averageLast10 = " + intLast10);
+            log.debug("|------- averageLast10 = " + intLast10);
         } else {
             last10.addElement(new Integer(newMin));
         }
@@ -171,7 +169,7 @@ public class MonitorImpl extends PrimImpl implements Prim, Runnable, Monitor, Da
             }
 
             intLast30 = (int) total / 30;
-            logger.logOptional(name, "|------- averageLast30 = " + intLast30);
+            log.debug("|------- averageLast30 = " + intLast30);
         } else {
             last30.addElement(new Integer(newMin));
         }
@@ -190,7 +188,7 @@ public class MonitorImpl extends PrimImpl implements Prim, Runnable, Monitor, Da
             }
 
             intLast60 = (int) total / 60;
-            logger.logOptional(name, "|------- averageLast60 = " + intLast60);
+            log.debug("|------- averageLast60 = " + intLast60);
         } else {
             last60.addElement(new Integer(newMin));
         }
@@ -199,13 +197,13 @@ public class MonitorImpl extends PrimImpl implements Prim, Runnable, Monitor, Da
     }
 
     private synchronized void startProcess() throws IOException {
-        logger.log(name, "starting process");
+        log.info( "starting process");
 
         if (!terminated) {
-            logger.logOptional(name, " running command:" + vmstatCmd);
-            p = Runtime.getRuntime().exec(vmstatCmd);
-            pOut = new BufferedReader(new InputStreamReader(p.getInputStream()));
-            pErr = new BufferedReader(new InputStreamReader(p.getErrorStream()));
+            log.debug(" running command:" + vmstatCmd);
+            process = Runtime.getRuntime().exec(vmstatCmd);
+            pOut = new BufferedReader(new InputStreamReader(process.getInputStream()));
+            pErr = new BufferedReader(new InputStreamReader(process.getErrorStream()));
             pOut.readLine();
             pOut.readLine(); // throw away the header lines...
         }
@@ -234,13 +232,13 @@ public class MonitorImpl extends PrimImpl implements Prim, Runnable, Monitor, Da
                                 (Integer.parseInt(s.trim()));
 
                             totalCPU = totalCPU + current;
-                            logger.logOptional(name,
+                            log.debug(
                                 "monitored value..." + current +
                                 "  total so far " + totalCPU);
                             count++;
 
                             if (count == perMinute) {
-                                logger.logOptional(name,
+                                log.debug(
                                     "updating with average for last minute " +
                                     (totalCPU / perMinute));
                                 updateFigures(totalCPU / perMinute);
@@ -249,34 +247,30 @@ public class MonitorImpl extends PrimImpl implements Prim, Runnable, Monitor, Da
                             }
                         }
                     } catch (IOException e) {
-                        logger.err(name, "ignoring IOException ioe = " + e);
+                        log.error("ignoring IOException ioe = ", e);
                     }
 
                     try {
-                        p.exitValue(); // check termiantion
+                        process.exitValue(); // check termiantion
                         startProcess(); // failed - restart
                     } catch (IllegalThreadStateException e) {
                         // do nothing, not terminated
                     }
                 } catch (Exception e) {
-                    logger.err(name, "Exception in Process (1) = " + e);
+                    log.error("Exception in Process",e);
                 }
             }
         } catch (Exception e) {
+            log.error(e);
         } finally {
-            try {
-                pErr.close();
-            } catch (Exception e) {
-            }
-
-            try {
-                pOut.close();
-            } catch (Exception e) {
-            }
-
-            try {
-                p.destroy();
-            } catch (Exception e) {
+            FileSystem.close(pErr);
+            FileSystem.close(pOut);
+            if (process != null) {
+                try {
+                    process.destroy();
+                    process = null;
+                } catch (Exception ignored) {
+                }
             }
         }
     }

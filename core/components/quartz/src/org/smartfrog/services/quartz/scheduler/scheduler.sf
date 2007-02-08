@@ -22,6 +22,10 @@ For more information: www.smartfrog.org
 
 #include "/org/smartfrog/predicates.sf"
 #include "/org/smartfrog/components.sf"
+
+/**
+ * The scheduler deploys a standard quartz scheduler in the local process
+ */
 Scheduler extends Prim {
    sfClass "org.smartfrog.services.quartz.scheduler.SchedulerImpl";
 }

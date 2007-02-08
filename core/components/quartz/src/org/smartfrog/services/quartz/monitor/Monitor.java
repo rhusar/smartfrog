@@ -44,7 +44,6 @@ import java.rmi.RemoteException;
 public interface Monitor extends Remote {
     /* Attributes for CPUMonitor component */
     public final String DELAY = "delay";
-    public final String LOGTO = "logTo";
 
     public int getCurrent() throws RemoteException;
 

@@ -23,8 +23,6 @@ import org.quartz.Job;
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
-import org.smartfrog.services.sfinterface.SFParseException;
-import org.smartfrog.services.sfinterface.SFSubmitException;
 import org.smartfrog.services.sfinterface.SmartFrogAdapterImpl;
 import org.smartfrog.services.sfinterface.SmartfrogAdapter;
 
@@ -77,8 +75,8 @@ public class HelloJob implements Job {
             log.info("Hello World! - " + new Date());
             log.info("Submission Done " + cd1.toString());
         } catch (Exception ex) {
-            ex.printStackTrace();
- }
-	}
+            log.error(ex);
+        }
+    }
 
 }
