@@ -117,18 +117,6 @@ public class CollectorImpl extends PrimImpl implements Prim, Collector {
 
     }
 
-
-
-    /**
-     * Termination hook : close threads & windows
-     *
-     * @param tr DOCUMENT ME!
-     */
-    public synchronized void sfTerminateWith(TerminationRecord tr) {
-
-        super.sfTerminateWith(tr);
-    }
-
     protected void convertData(int value) {
        // allValues.removeElementAt(0);
         //values are added at the end
