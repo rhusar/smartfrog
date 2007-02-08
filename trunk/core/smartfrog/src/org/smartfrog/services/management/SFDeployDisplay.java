@@ -400,11 +400,11 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
         //Object[] jConsoleparameters = [""];
 
         // get the right constructor method method
-        Constructor jConsoleConstructor = jConsoleClass.getConstructor(null);
+        Constructor jConsoleConstructor = jConsoleClass.getConstructor((Class[]) null);
         Class[] classParameters = {jConsoleInterface};
         Constructor interpreterConstructor = intepreterClass.getConstructor(classParameters);
         // Invoke the constructors
-        Object jConsoleObject = jConsoleConstructor.newInstance(null);
+        Object jConsoleObject = jConsoleConstructor.newInstance((Object[]) null);
         Object[] parameters = {jConsoleObject};
         Object interpreterObject = interpreterConstructor.newInstance(parameters);
         // Invoke method set("prim",this);
