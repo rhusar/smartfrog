@@ -17,80 +17,67 @@
 
 package org.smartfrog.services.quartz;
 
-import java.util.Date;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.quartz.Job;
-import org.quartz.JobDetail;
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
-
 import org.smartfrog.services.sfinterface.SFParseException;
 import org.smartfrog.services.sfinterface.SFSubmitException;
 import org.smartfrog.services.sfinterface.SmartFrogAdapterImpl;
 import org.smartfrog.services.sfinterface.SmartfrogAdapter;
+
+import java.util.Date;
 import java.util.Map;
 
 /**
- * <p>
- * This is just a simple job that says "Hello" to the world.
- * </p>
- * 
+ * <p> This is just a simple job that says "Hello" to the world. </p>
+ *
  * @author Bill Kratzer
  */
 public class HelloJob implements Job {
 
-	
-	private static Log _log = LogFactory.getLog(HelloJob.class);
 
-	/**
-	 * <p>
-	 * Empty constructor for job initilization
-	 * </p>
-	 * <p>
-	 * Quartz requires a public empty constructor so that the
-	 * scheduler can instantiate the class whenever it needs.
-	 * </p>
-	 */
-	public HelloJob() {
-	}
+    private static final Log log = LogFactory.getLog(HelloJob.class);
 
-	/**
-	 * <p>
-	 * Called by the <code>{@link org.quartz.Scheduler}</code> when a
-	 * <code>{@link org.quartz.Trigger}</code> fires that is associated with
-	 * the <code>Job</code>.
-	 * </p>
-	 * 
-	 * @throws JobExecutionException
-	 *             if there is an exception while executing the job.
-	 */
-	public void execute(JobExecutionContext context)
-			throws JobExecutionException {
- try {
-	String instName = context.getJobDetail().getName();
-     	 String instGroup = context.getJobDetail().getGroup();
-	
-      	JobDataMap dataMap = context.getJobDetail().getJobDataMap();
+    /**
+     * <p> Empty constructor for job initilization </p> <p> Quartz requires a public empty constructor so that the
+     * scheduler can instantiate the class whenever it needs. </p>
+     */
+    public HelloJob() {
+    }
 
-      //	String jobSays = dataMap.getString("jobSays");
-     //  float myFloatValue = dataMap.getFloat("myFloatValue");
-		//test_name and hostname should extracted from context
-       String application = dataMap.getString("application");
-       String hostname = dataMap.getString("hostname");
+    /**
+     * <p> Called by the <code>{@link org.quartz.Scheduler}</code> when a <code>{@link org.quartz.Trigger}</code> fires
+     * that is associated with the <code>Job</code>. </p>
+     *
+     * @throws JobExecutionException if there is an exception while executing the job.
+     */
+    public void execute(JobExecutionContext context)
+            throws JobExecutionException {
+        try {
+            String instName = context.getJobDetail().getName();
+            String instGroup = context.getJobDetail().getGroup();
 
-     // System.err.println("Instance " + instName + " of DumbJob says: " + jobSays);
-			// Call Submition API
-		SmartfrogAdapter sfAdap = new SmartFrogAdapterImpl("D:\\cvs\\forge\\2006\\aug21\\core\\smartfrog\\dist");
-	      Map cd1 = sfAdap.submit(application, null, new String[]{hostname});	
-	
-		// Say Hello to the World and display the date/time
-		_log.info("Hello World! - " + new Date());
-		_log.info("Submission Done " + cd1.toString());
- } catch (Exception ex) {
- 	ex.printStackTrace();
+            JobDataMap dataMap = context.getJobDetail().getJobDataMap();
+
+            //	String jobSays = dataMap.getString("jobSays");
+            //  float myFloatValue = dataMap.getFloat("myFloatValue");
+            //test_name and hostname should extracted from context
+            String application = dataMap.getString("application");
+            String hostname = dataMap.getString("hostname");
+
+            // System.err.println("Instance " + instName + " of DumbJob says: " + jobSays);
+            // Call Submition API
+            SmartfrogAdapter sfAdap = new SmartFrogAdapterImpl("D:\\cvs\\forge\\2006\\aug21\\core\\smartfrog\\dist");
+            Map cd1 = sfAdap.submit(application, null, new String[]{hostname});
+
+            // Say Hello to the World and display the date/time
+            log.info("Hello World! - " + new Date());
+            log.info("Submission Done " + cd1.toString());
+        } catch (Exception ex) {
+            ex.printStackTrace();
  }
 	}
 
