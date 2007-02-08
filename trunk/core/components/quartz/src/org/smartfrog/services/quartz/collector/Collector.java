@@ -37,7 +37,7 @@ import java.rmi.Remote;
  * Interface defining the attribute names for the collector component
  * */
 public interface Collector extends Remote {
-    public final String POLLINGPERIOD = "pollingPeriod";
+    //public final String POLLINGPERIOD = "pollingPeriod";
     public final String DATASOURCE = "dataSource";
 
 }

@@ -82,6 +82,11 @@ public class JobImpl extends CompoundImpl implements Compound {
     public JobImpl() throws RemoteException {
     }
 
+    public static void putValue(String name,Object value) {
+        synchronized(allValues) {
+            allValues.put(name, value);
+        }
+    }
 
     public synchronized void sfDeploy() throws SmartFrogException,
             RemoteException {
@@ -127,14 +132,21 @@ public class JobImpl extends CompoundImpl implements Compound {
             log.info("Number of machines to collect data from are=======" + machines.size());
             setTargetInstances(machines.size());
 
+
+            //REVISIT: steve says: I'm not sure what this code does.
+            //it looks like we sort all the values
+            //then enum through the original key set to find the key that matches
+            //the first in the list. Surely there is a more efficient way to do this.
+
+
             //Sort the array based on the values in allValues and then schedule on the first element.
             Collection collect = allValues.values();
             Object[] array = collect.toArray();
             List list = Arrays.asList(array);
             Collections.sort(list);
-            /*  for (int i = 0; i <list.size();i++){
-            log.info("Element in sorted list===========" + (list.get(i)).toString());
-       }*/
+            for (int i = 0; i < list.size(); i++) {
+                log.debug("Element in sorted list===========" + (list.get(i)).toString());
+            }
             Enumeration keys = allValues.keys();
             Object key = null;
             Object value = null;
@@ -147,7 +159,6 @@ public class JobImpl extends CompoundImpl implements Compound {
             }
 
             log.info("Final machine for scheduling is===========" + key.toString());
-            //log.info("Final machine for scheduling is===========" + allValues.toString());
 
             //job.getJobDataMap().put("hostname", "localhost");
             //job.getJobDataMap().put("hostname", machines.elementAt(0).toString());

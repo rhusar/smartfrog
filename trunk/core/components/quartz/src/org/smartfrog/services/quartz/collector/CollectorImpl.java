@@ -29,6 +29,7 @@ import org.smartfrog.sfcore.common.TerminatorThread;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.prim.TerminationRecord;
+import org.smartfrog.sfcore.utils.ComponentHelper;
 
 import java.rmi.RemoteException;
 
@@ -41,7 +42,6 @@ public class CollectorImpl extends PrimImpl implements Prim, Collector {
     private int resultData;
 
 
-    private boolean shouldTerminate = true;
     private String name;
 
     /**
@@ -85,14 +85,7 @@ public class CollectorImpl extends PrimImpl implements Prim, Collector {
         }
 
         log.info(name +  "finished collecting");
-        // check if it should terminate by itself
-            if(shouldTerminate) {
-                log.info("Normal termination :" + sfCompleteNameSafe());
-                TerminationRecord termR = new TerminationRecord("normal",
-                "Collection finished: ",sfCompleteName());
-                TerminatorThread terminator = new TerminatorThread(this,termR);
-                terminator.start();
-            }
+        new ComponentHelper(this).sfSelfDetachAndOrTerminate(null, null, null, null);
     }
 
 
@@ -117,10 +110,14 @@ public class CollectorImpl extends PrimImpl implements Prim, Collector {
 
     }
 
+    /**
+     * The collector stores all values at the tail of JobImpls internal data structures,
+     * which may or may not be good.
+     * @param value
+     */
     protected void convertData(int value) {
-       // allValues.removeElementAt(0);
-        //values are added at the end
-        JobImpl.allValues.put(hostname, new Integer(value));
+        //values are added at the end of JobImpl
+        JobImpl.putValue(hostname, new Integer(value));
         log.info("Value for source  " + source.toString() + "======" + value);
         resultData = value;
 
