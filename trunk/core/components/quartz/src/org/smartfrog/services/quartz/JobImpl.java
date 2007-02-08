@@ -197,7 +197,7 @@ public class JobImpl extends CompoundImpl implements Compound {
                 }
             }
         } catch (Throwable ex) {
-            log.info("--------------ERROR: Could not find config file " + ex.getMessage());
+            log.error("Could not find config file "+configFile, ex);
             throw SmartFrogException.forward(ex);
         }
     }
