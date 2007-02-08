@@ -46,11 +46,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import org.smartfrog.SFSystem;
 import org.smartfrog.services.quartz.scheduler.SchedulerImpl;
-import org.smartfrog.services.quartz.collector.ResourceAllocatorImpl;
 import org.smartfrog.services.quartz.collector.CollectorImpl;
 import java.util.*;
 import java.net.InetAddress;
 import org.smartfrog.services.quartz.collector.DataSource;
+import java.util.Map;
+import java.util.*;
 
 /**
  *  Basic example component.
@@ -71,14 +72,13 @@ public class JobImpl extends CompoundImpl implements Compound {
 
     Scheduler sched = null;
     String configFile = null;
-    //ComponentDescription allocator = null;
-    ResourceAllocatorImpl allocator = null;
-  //  CollectorImpl collector = null;
+    
     Vector machines = new Vector();
+   
     String name= "";
     ComponentDescription template = null;
 
-    public static Map allValues = new Hashtable();
+    public static Hashtable allValues = new Hashtable();
 
     String componentNamePrefix = "comp";
 
@@ -92,13 +92,16 @@ public class JobImpl extends CompoundImpl implements Compound {
     RemoteException {
             super.sfDeploy();
 
-        configFile = sfResolve("config", configFile, true);
-        sched = ((SchedulerImpl) sfResolve("Scheduler", sched, true)).sched;
-      //  allocator = sfResolve("Allocator", allocator, true);
-       // allocator = (ResourceAllocatorImpl) sfResolve("Allocator", allocator, true);
+        configFile = sfResolve("config", configFile, false);
+     
+     	sched = ((SchedulerImpl) sfResolve("Scheduler", sched, true)).sched;
+      
         template = sfResolve("template", template, true);
-//	    loadConfigFile();
-        readPropertiesFromIniFile();
+        
+	machines = sfResolve("machines", machines, false);
+	
+	if (configFile != null)
+		readPropertiesFromIniFile();
 
         name = sfCompleteName().toString();
     }
@@ -116,32 +119,41 @@ public class JobImpl extends CompoundImpl implements Compound {
         // define the job and tie it to our HelloJob class
         JobDetail job = new JobDetail("job1", "group1", HelloJob.class);
 
-        job.getJobDataMap().put("jobSays", "Hello World!");
-          job.getJobDataMap().put("myFloatValue", 3.141f);
+       // job.getJobDataMap().put("jobSays", "Hello World!");
+        //  job.getJobDataMap().put("myFloatValue", 3.141f);
         // find application name from context.ini file
         job.getJobDataMap().put("application", "org/smartfrog/examples/counter/example.sf");
-        // find hostname from Resource Allocator
-        //  allocator.sfReplaceAttribute("servers", machines);
+        
+	// find hostname from Collector
 
-      /*  Context instanceContext = new ContextImpl();
-
-          deploy = sfDeployComponentDescription("allocator", this, allocator, instanceContext);
-                log.info(name +  "   allocator instance created");
-
-                deploy.sfDeploy();
-                log.info(name + "   allocator deployed");
-                deploy.sfStart();
-                log.info(name + "   allocator started");
-        */
-        log.info("Number of machines to collect data from are=======" + machines.size());
-      //  Vector result = allocator.setTargetInstances(machines.size(), machines);
+         log.info("Number of machines to collect data from are=======" + machines.size());
          setTargetInstances(machines.size());
-        log.info("Final machine for scheduling is===========" + allValues.toString());
-         //Sort the array based on the values in allValues and then schedule on the first element.
+         
+	 //Sort the array based on the values in allValues and then schedule on the first element.
+	 Collection collect = allValues.values();
+	 Object [] array = collect.toArray();
+	 List list = Arrays.asList(array);
+	 Collections.sort(list);
+      /*  for (int i = 0; i <list.size();i++){
+	 	log.info("Element in sorted list===========" + (list.get(i)).toString());
+	}*/
+	Enumeration keys = allValues.keys();
+	Object key = null;
+	Object value= null;
+        while(keys.hasMoreElements()) {
+		key = keys.nextElement();
+		value = allValues.get(key);
+		if (value == list.get(0))
+			break;
+	}
+	
+	  log.info("Final machine for scheduling is===========" + key.toString());
+	  //log.info("Final machine for scheduling is===========" + allValues.toString());
+        
           //job.getJobDataMap().put("hostname", "localhost");
-          job.getJobDataMap().put("hostname", machines.elementAt(0).toString());
+          //job.getJobDataMap().put("hostname", machines.elementAt(0).toString());
+          job.getJobDataMap().put("hostname", key.toString());
 
-        // job.context(hostname, test_comp)
         MyJobListener listener = new MyJobListener();
         sched.addJobListener(listener);
          job.addJobListener(listener.getName());
@@ -195,16 +207,29 @@ public class JobImpl extends CompoundImpl implements Compound {
         props.load(is);
 
         Properties sysProps = System.getProperties();
-
+ 	String name= "";
         for (Enumeration e = props.keys(); e.hasMoreElements();) {
             Object key = e.nextElement();
-        Object value = props.get(key);
-            if (key.equals("machines"))
-                machines.addElement(props.get(key));
-            log.info("-----------------" + key + "====" + value);
-        }
+            Object value = props.get(key);
+            if (key.equals("machines")) {
+           // log.info("-----------------" + key + "====" + value);
+		    String list = value.toString();
+		    int length = list.length();
+		    
+		for (int i= 0 ; i < length; i++){
+			if (list.charAt(i) != ':'){
+				 name = name.concat(list.valueOf(list.charAt(i)));
+			}
+		        else {
+			//	log.info("---Adding host---" + name + "----to machines vector");	
+                		machines.addElement(name);
+				name="";
+			}
+		}	
+	      }
 
             }
+    }
 
           // these are internal methods that should not be used directly
     public void setTargetInstances(int target) {
@@ -234,7 +259,7 @@ public class JobImpl extends CompoundImpl implements Compound {
                 DataSource monitor = (DataSource)cp.sfResolve("cpumonitor", true);
                 template.sfReplaceAttribute("dataSource",monitor);
                 template.sfAddAttribute("hostname", server);
-                log.info("Template after replacement" + template.toString());
+                log.info("Template after replacement-----" + template.toString());
 
                 deployed = sfDeployComponentDescription(componentNamePrefix + instance, this, template, instanceContext);
                 log.info(name +  "  instance created" + instance);

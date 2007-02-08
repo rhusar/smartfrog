@@ -21,15 +21,17 @@ For more information: www.smartfrog.org
 
 
 #include "/org/smartfrog/predicates.sf"
+#include "/org/smartfrog/functions.sf"
 #include "org/smartfrog/components.sf"
-#include "org/smartfrog/services/quartz/collector/allocator.sf"
 #include "org/smartfrog/services/quartz/collector/collector.sf";
 
 Job extends Compound {
   sfClass "org.smartfrog.services.quartz.JobImpl";
-   config  "C:\\sf\\cvs\\2006\\aug21-new\\core\\components\\quartz\\src\\org\\smartfrog\\services\\quartz\\config.txt";
-   Scheduler LAZY HOST localhost:rootProcess:scheduler;
-   template extends LAZY Collector;
+ //  config  "C:\\sf\\cvs\\2007\\jan30\\svn\\components\\quartz\\src\\org\\smartfrog\\services\\quartz\\config.txt";
+  machines ["ebnt171", "host2"]; 
+  Scheduler LAZY HOST localhost:rootProcess:scheduler;
+  template extends LAZY Collector;
+   
 }
 
 sfConfig extends Job;

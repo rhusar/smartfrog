@@ -75,13 +75,13 @@ public class HelloJob implements Job {
 	
       	JobDataMap dataMap = context.getJobDetail().getJobDataMap();
 
-      	String jobSays = dataMap.getString("jobSays");
-       float myFloatValue = dataMap.getFloat("myFloatValue");
+      //	String jobSays = dataMap.getString("jobSays");
+     //  float myFloatValue = dataMap.getFloat("myFloatValue");
 		//test_name and hostname should extracted from context
        String application = dataMap.getString("application");
        String hostname = dataMap.getString("hostname");
 
-      System.err.println("Instance " + instName + " of DumbJob says: " + jobSays);
+     // System.err.println("Instance " + instName + " of DumbJob says: " + jobSays);
 			// Call Submition API
 		SmartfrogAdapter sfAdap = new SmartFrogAdapterImpl("D:\\cvs\\forge\\2006\\aug21\\core\\smartfrog\\dist");
 	      Map cd1 = sfAdap.submit(application, null, new String[]{hostname});	
