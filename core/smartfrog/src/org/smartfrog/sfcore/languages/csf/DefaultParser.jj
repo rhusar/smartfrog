@@ -366,6 +366,15 @@ TOKEN : /* Literals */
             )
         )* "#")
       >
+     | <SUCHTHAT: ("#suchThat#" (                     // for backward compatibility
+          (~["#","\\"])
+          | ("\\"
+              ( ["n","t","b","r","f","\\","'","#"]
+              | ["0"-"3"] ["0"-"7"] ["0"-"7"]
+              )
+            )
+        )* "#")
+      >
     | <INTEGER: (("-")? ["0"-"9"] (["0"-"9"])*)
         | "0" >
     | <#FLOAT_BASE:
@@ -780,11 +789,18 @@ void Constraints(CSFComponentDescription comp) :
 }
 {
     (
-       ( t = <CHECKING>   { priority = 25;  suchThat = fixEscapes(t.image.substring(10, t.image.length() - 1)); }
-       | t = <BINDING>    { priority = 50;  suchThat = fixEscapes(t.image.substring(9, t.image.length() - 1));  }
-       | t = <SELECTING>  { priority = 75; suchThat = fixEscapes(t.image.substring(11, t.image.length() - 1)); }
-       | t = <CONSTRAINT> { priority = (new Integer(t.image.substring(12, t.image.indexOf("#", 12)))).intValue();
-                                           suchThat = fixEscapes(t.image.substring(t.image.indexOf("#", 12) + 1, t.image.length() - 1)); }
+       ( (t = <CHECKING> | t = <SUCHTHAT>)           //note important that bininding and suchthat have 8 chars!!!
+            { priority = 25;
+              suchThat = fixEscapes(t.image.substring(10, t.image.length() - 1)); }
+       | t = <BINDING>
+            { priority = 50;
+              suchThat = fixEscapes(t.image.substring(9, t.image.length() - 1));  }
+       | t = <SELECTING>
+            { priority = 75;
+              suchThat = fixEscapes(t.image.substring(11, t.image.length() - 1)); }
+       | t = <CONSTRAINT>
+            { priority = (new Integer(t.image.substring(12, t.image.indexOf("#", 12)))).intValue();
+              suchThat = fixEscapes(t.image.substring(t.image.indexOf("#", 12) + 1, t.image.length() - 1)); }
        )
       {
        try {
