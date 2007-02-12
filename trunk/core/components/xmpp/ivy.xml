@@ -38,8 +38,9 @@
   <dependencies>
     <dependency org="org.smartfrog"
       name="smartfrog"
+      changing="true"
       rev="latest.integration"
-      conf="compile->master;runtime->default"/>
+      conf="compile->services;runtime->services;daemon->services"/>
     <dependency org="org.smartfrog"
         name="sf-tasks"
         changing="true"
