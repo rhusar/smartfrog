@@ -86,6 +86,7 @@ public class NotificationSubscription extends AbstractEventSubscription
     private NotifySession session;
     private int NOTIFY_TIMEOUT;
     private AlpineRuntimeException lastError;
+    private static final String WSNT = "wsnt:";
 
     public NotificationSubscription() {
     }
@@ -164,25 +165,25 @@ public class NotificationSubscription extends AbstractEventSubscription
         if (!WSNConstants.SUBSCRIBE.equals(request.getLocalName())) {
             throw FaultRaiser.raiseBadArgumentFault("wrong element: " + request);
         }
-        Element endref = XomHelper.getElement(request, "wsnt:" + CONSUMER_REFERENCE, true);
+        Element endref = XomHelper.getElement(request, WSNT + CONSUMER_REFERENCE, true);
         addWsntResource(CONSUMER_REFERENCE, endref);
         callback = new AlpineEPR(endref, Constants.WS_ADDRESSING_NAMESPACE);
         callback.validate();
         Element topicExpression =
-                XomHelper.getElement(request, "wsnt:" + TOPIC_EXPRESSION, true);
+                XomHelper.getElement(request, WSNT + TOPIC_EXPRESSION, true);
         WsrfUtils.expectSimpleDialect(topicExpression);
         addWsntResource(TOPIC_EXPRESSION, topicExpression);
         //get the qname from the topic.
         String qnameExpresion = topicExpression.getValue();
         topic = XsdUtils.resolveQName(topicExpression, qnameExpresion, false);
         //check to see if notify messages are wanted
-        String useNotify = XomHelper.getElementValue(request, "wsnt:" + USE_NOTIFY, false);
+        String useNotify = XomHelper.getElementValue(request, WSNT + USE_NOTIFY, false);
         useNotifyMessage = useNotify == null || XomHelper.getXsdBoolValue(useNotify);
         addWsntResource(USE_NOTIFY, Boolean.toString(useNotifyMessage));
 
-        subscriptionPolicy = XomHelper.getElement(request, "wsnt:" + SUBSCRIPTION_POLICY, false);
+        subscriptionPolicy = XomHelper.getElement(request, WSNT + SUBSCRIPTION_POLICY, false);
         addWsntResource(SUBSCRIPTION_POLICY, subscriptionPolicy);
-        String termTime = XomHelper.getElementValue(request, "wsnt:" + INITIAL_TERMINATION_TIME, false);
+        String termTime = XomHelper.getElementValue(request, WSNT + INITIAL_TERMINATION_TIME, false);
         //todo: act on the term time.
 
         //create the session. Dont worry about validating responses, as it is mostly for debugging
@@ -331,12 +332,12 @@ xs:EventId>http://www.gridforum.org/cddlm/components/2005/02/events/Lifecycle
     }
 
     protected SoapElement createNotificationMessage(AlpineEPR producer, Element message) {
-        SoapElement notifyElt = new SoapElement("wsnt:" + WSNT_NOTIFY,
+        SoapElement notifyElt = new SoapElement(WSNT + WSNT_NOTIFY,
                 Constants.WSRF_WSNT_NAMESPACE);
-        SoapElement notificationMessage = new SoapElement("wsnt:"+ WSNT_NOTIFICATION_MESSAGE,
+        SoapElement notificationMessage = new SoapElement(WSNT + WSNT_NOTIFICATION_MESSAGE,
                 Constants.WSRF_WSNT_NAMESPACE);
         notifyElt.appendChild(notificationMessage);
-        SoapElement topicElt = new SoapElement("wsnt:"+ WSNT_TOPIC, Constants.WSRF_WSNT_NAMESPACE);
+        SoapElement topicElt = new SoapElement(WSNT + WSNT_TOPIC, Constants.WSRF_WSNT_NAMESPACE);
         WsrfUtils.addSimpleDialectAttribute(topicElt);
         topicElt.appendQName(topic);
         notificationMessage.appendChild(topicElt);
@@ -346,7 +347,7 @@ xs:EventId>http://www.gridforum.org/cddlm/components/2005/02/events/Lifecycle
                             "wsnt", Constants.WS_ADDRESSING_NAMESPACE, "wsa2003"));
         }
         if (message != null) {
-            SoapElement messageElt = new SoapElement("wsnt:"+ WSNT_MESSAGE, Constants.WSRF_WSNT_NAMESPACE);
+            SoapElement messageElt = new SoapElement(WSNT + WSNT_MESSAGE, Constants.WSRF_WSNT_NAMESPACE);
             notificationMessage.appendChild(
                     messageElt);
             messageElt.appendChild(message);
