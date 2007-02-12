@@ -24,6 +24,7 @@ import org.smartfrog.services.deployapi.binding.XomHelper;
 import org.smartfrog.services.deployapi.engine.Application;
 import org.smartfrog.services.deployapi.transport.endpoints.alpine.AlpineProcessor;
 import org.smartfrog.services.deployapi.transport.endpoints.alpine.WsrfHandler;
+import org.smartfrog.services.deployapi.system.Constants;
 import org.smartfrog.projects.alpine.om.base.SoapElement;
 
 /**
@@ -44,7 +45,7 @@ public class LookupSystemProcessor extends AlpineProcessor {
      * @return the body of the response or null for an empty response
      */
     public Element process(SoapElement rootElement) {
-        String resourceId=XomHelper.getElementValue(rootElement, "api:ResourceId");
+        String resourceId=XomHelper.getElementValue(rootElement, "api:"+ Constants.RESOURCE_ID);
         Application job = lookupJob(resourceId);
         Element address = (Element) job.getEndpointer().copy();
         XomHelper.adopt(address, "lookupSystemResponse");
