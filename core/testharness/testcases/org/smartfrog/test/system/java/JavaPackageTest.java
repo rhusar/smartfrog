@@ -23,9 +23,7 @@ import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.test.SmartFrogTestBase;
 import org.smartfrog.services.os.java.JavaPackage;
 
-/**
- * created Oct 1, 2004 10:54:11 AM
- */
+/** created Oct 1, 2004 10:54:11 AM */
 
 public class JavaPackageTest extends SmartFrogTestBase {
 
@@ -36,15 +34,10 @@ public class JavaPackageTest extends SmartFrogTestBase {
     }
 
     public void testSimplePackage() throws Throwable {
-        Prim application=null;
-        try {
-            application = deployExpectingSuccess(FILES +
-                            "testSimplePackage.sf", "testSimplePackage");
-            assertStringAttributeExists(application,JavaPackage.ATTR_URICLASSPATH);
-            assertAttributeExists(application, JavaPackage.ATTR_URICLASSPATHLIST);
-        } finally {
-            terminateApplication(application);
-        }
+        application = deployExpectingSuccess(FILES +
+                "testSimplePackage.sf", "testSimplePackage");
+        assertStringAttributeExists(application, JavaPackage.ATTR_URICLASSPATH);
+        assertAttributeExists(application, JavaPackage.ATTR_URICLASSPATHLIST);
     }
 
     public void testMissingResource() throws Throwable {
@@ -58,13 +51,8 @@ public class JavaPackageTest extends SmartFrogTestBase {
     }
 
     public void testClassAsResource() throws Throwable {
-        Prim application = null;
-        try {
-            application = deployExpectingSuccess(FILES +
-                    "testClassAsResource.sf", "testClassAsResource");
-        } finally {
-            terminateApplication(application);
-        }
+        application = deployExpectingSuccess(FILES +
+                "testClassAsResource.sf", "testClassAsResource");
     }
 
 }

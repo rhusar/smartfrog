@@ -25,24 +25,9 @@ import org.smartfrog.test.SmartFrogTestBase;
 /**
  */
 public abstract class WebappTestBase extends SmartFrogTestBase {
-    /**
-     * Node of any deployed application
-     */
-    protected Prim application;
 
     protected WebappTestBase(String name) {
         super(name);
-    }
-
-
-    /**
-     * Tears down the fixture, for example, close a network connection. This
-     * method is called after a test is executed.
-     */
-    protected void tearDown() throws Exception {
-        super.tearDown();
-        //terminate the node if it is not null.
-        terminateApplication(application);
     }
 
     /**

@@ -56,16 +56,16 @@ public class TouchFileTest  extends DeployingTestBase {
      * @throws Throwable
      */
     public void testTouchSetTime() throws Throwable {
-        Prim touchapp = deployExpectingSuccess(FILES +
+        application = deployExpectingSuccess(FILES +
                 "testTouchSetTime.sf", "testTouchSetTime");
-        String filename = touchapp.sfResolve(TouchFileIntf.ATTR_FILENAME,
+        String filename = application.sfResolve(TouchFileIntf.ATTR_FILENAME,
                 (String) null,
                 true);
-        long age = touchapp.sfResolve(TouchFileImpl.ATTR_AGE, (long) 0, true);
+        long age = application.sfResolve(TouchFileImpl.ATTR_AGE, (long) 0, true);
         File file = new File(filename);
         assertTrue(file.exists());
         assertEquals(age, file.lastModified());
-        terminateApplication(touchapp);
+        terminateApplication();
         assertFalse(file.exists());
     }
 

@@ -48,7 +48,6 @@ public class JettyTest
     private static final String JETTY_HOME = "jetty.home";
     private static final String RUNTIME_JETTY_HOME = "runtime." + JETTY_HOME;
 
-    private Prim application;
     private static final String ROOT_DOC = "/";//""/jetty/index.html";
 
     public JettyTest(String s) {
@@ -71,17 +70,6 @@ public class JettyTest
         }
     }
 
-
-    /**
-     * Tears down the fixture, for example, close a network connection. This
-     * method is called after a test is executed.
-     */
-    protected void tearDown() throws Exception {
-        super.tearDown();
-        if (application != null) {
-            terminateApplication(application);
-        }
-    }
 
     public void testCaseTCPJettyCore() throws Throwable {
         application = deployExpectingSuccess(FILES + "tcp_jetty_core.sf",

@@ -33,28 +33,21 @@ public class DeployedConsoleListenerTest extends TestRunnerTestBase {
 
     public void testSuccess() throws Throwable {
         String url;
-        Prim deploy = null;
         url = "/files/console-all.sf";
 
         int seconds = getTimeout();
-        try {
-            deploy = deployExpectingSuccess(url, "ConsoleTest");
-            TestRunner runner = (TestRunner) deploy;
-            assertTrue(runner != null);
-            ConsoleListenerFactory listener = null;
-            listener =
-                    (ConsoleListenerFactory) deploy.sfResolve(
-                            TestRunner.ATTR_LISTENER,
-                            listener,
-                            true);
-            assertNotNull(listener);
-            boolean finished = spinTillFinished(runner, seconds);
-            assertTrue("Test run timed out", finished);
-
-
-        } finally {
-            terminateApplication(deploy);
-        }
+        application = deployExpectingSuccess(url, "ConsoleTest");
+        TestRunner runner = (TestRunner) application;
+        assertTrue(runner != null);
+        ConsoleListenerFactory listener = null;
+        listener =
+                (ConsoleListenerFactory) application.sfResolve(
+                        TestRunner.ATTR_LISTENER,
+                        listener,
+                        true);
+        assertNotNull(listener);
+        boolean finished = spinTillFinished(runner, seconds);
+        assertTrue("Test run timed out", finished);
 
     }
 }

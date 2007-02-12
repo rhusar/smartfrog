@@ -86,23 +86,13 @@ public class LibraryTest extends SmartFrogTestBase {
     }
 
     public void testMavenLibrary() throws Throwable {
-        Prim application = null;
-        try {
-            application = deployExpectingSuccess(FILES +
-                    "testMavenLibrary.sf", "testMavenLibrary");
-        } finally {
-            terminateApplication(application);
-        }
+        application = deployExpectingSuccess(FILES +
+                "testMavenLibrary.sf", "testMavenLibrary");
     }
 
     public void testSimpleLibrary() throws Throwable {
-        Prim application = null;
-        try {
-            application = deployExpectingSuccess(FILES +
-                    "testSimpleLibrary.sf", "testSimpleLibrary");
-        } finally {
-            terminateApplication(application);
-        }
+        application = deployExpectingSuccess(FILES +
+                "testSimpleLibrary.sf", "testSimpleLibrary");
     }
 
     public void testEmptyRepository() throws Throwable {
@@ -128,7 +118,6 @@ public class LibraryTest extends SmartFrogTestBase {
      * @throws Throwable
      */
     private void deploySuccessfulDownload(String appName) throws Throwable {
-        Prim application = null;
         try {
             application = deployExpectingSuccess(FILES +
                     appName + ".sf", appName);
@@ -143,8 +132,6 @@ public class LibraryTest extends SmartFrogTestBase {
             assertFaultCauseAndTextContains(thrown,null, "onnection refused",null);
             System.out.println("No connection to the remote server; ignoring result");
             System.out.println(thrown);
-        } finally {
-            terminateApplication(application);
         }
     }
 
