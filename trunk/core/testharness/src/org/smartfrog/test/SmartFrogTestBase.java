@@ -719,6 +719,15 @@ public abstract class SmartFrogTestBase extends TestCase {
         }
     }
 
+    public synchronized void terminateApplication() throws RemoteException {
+        try {
+            terminateApplication(application);
+        } finally {
+            application=null;
+        }
+
+    }
+
     /**
      * get an  attribute from an application
      *

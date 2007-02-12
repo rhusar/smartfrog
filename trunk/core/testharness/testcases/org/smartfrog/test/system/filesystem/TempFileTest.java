@@ -51,7 +51,7 @@ public class TempFileTest extends SmartFrogTestBase {
      * @throws Throwable
      */
     public void testWorking() throws Throwable {
-        Prim application=deployExpectingSuccess(FILES + "tempFileTestWorking.sf", "tempFileTestWorking");
+        application=deployExpectingSuccess(FILES + "tempFileTestWorking.sf", "tempFileTestWorking");
         File file;
         try {
             String filename = application.sfResolve(TempFile.ATTR_FILENAME, (String) null, true);
@@ -65,7 +65,7 @@ public class TempFileTest extends SmartFrogTestBase {
             Prim temp1 = application.sfResolve("temp1", (Prim) null, true);
             String absolutePath = temp1.sfResolve("absolutePath", (String) null, true);
         } finally {
-            terminateApplication(application);
+            terminateApplication();
         }
         assertFalse(file.exists());
     }

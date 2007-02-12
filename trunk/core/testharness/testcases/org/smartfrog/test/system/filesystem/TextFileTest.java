@@ -43,7 +43,7 @@ public class TextFileTest extends SmartFrogTestBase {
      * @throws Throwable
      */
     public void testBasic() throws Throwable {
-        Prim application = deployExpectingSuccess(FILES +
+        application = deployExpectingSuccess(FILES +
                 "textFileBasicTest.sf", "textFileBasicTest");
         File file=null;
         try {
@@ -56,7 +56,6 @@ public class TextFileTest extends SmartFrogTestBase {
             assertLivenessSuccess(application);
             assertStringAttributeExists(application,FileUsingComponent.ATTR_URI);
         } finally {
-            terminateApplication(application);
             //cleanup
             if(file!=null) {
                 file.delete();
@@ -79,7 +78,7 @@ public class TextFileTest extends SmartFrogTestBase {
 
 
     public void testTextFileDirTest() throws Throwable {
-        Prim application = deployExpectingSuccess(FILES +
+        application = deployExpectingSuccess(FILES +
                 "textFileDirTest.sf", "textFileDirTest");
         File file = null;
         try {
@@ -94,7 +93,6 @@ public class TextFileTest extends SmartFrogTestBase {
             String expected = File.separator+PARENT_DIR_NAME;
             assertTrue(filename+"does not contain "+expected,filename.indexOf(expected)>=0);
         } finally {
-            terminateApplication(application);
             //cleanup
             if (file != null) {
                 file.delete();

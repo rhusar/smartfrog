@@ -43,6 +43,7 @@ public class ParallelTest extends DeployingTestBase {
         this.block = block;
     }
 
+    //FIXFIX: RACE CONDITION
     public void testEmptyParallel() throws Throwable {
         application=deployExpectingSuccess(FILES +"testEmptyParallel.sf","testEmptyParallel");
         setBlock(application);

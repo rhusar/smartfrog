@@ -27,9 +27,7 @@ import org.smartfrog.services.filesystem.FileSystem;
 
 import java.io.File;
 
-/**
- * created 05-Apr-2005 16:41:52
- */
+/** created 05-Apr-2005 16:41:52 */
 
 public class FileTest extends SmartFrogTestBase {
 
@@ -45,25 +43,21 @@ public class FileTest extends SmartFrogTestBase {
      * @throws Throwable
      */
     public void testHomedir() throws Throwable {
-        Prim application = deployExpectingSuccess(FILES +
+        application = deployExpectingSuccess(FILES +
                 "testHomedir.sf", "testHomedir");
         File file;
-        try {
-            String filename = application.sfResolve(FileUsingComponent.ATTR_ABSOLUTE_PATH,
-                    (String) null,
-                    true);
-            file = new File(filename);
-            assertTrue(file.exists());
-            assertAttributeEquals(application, FileIntf.ATTR_EXISTS, true);
-            assertAttributeEquals(application,
-                    FileIntf.ATTR_IS_DIRECTORY,
-                    true);
-            assertAttributeExists(application, FileIntf.ATTR_IS_HIDDEN);
-            assertAttributeExists(application, FileIntf.ATTR_LENGTH);
-            assertAttributeExists(application, FileIntf.ATTR_TIMESTAMP);
-        } finally {
-            terminateApplication(application);
-        }
+        String filename = application.sfResolve(FileUsingComponent.ATTR_ABSOLUTE_PATH,
+                (String) null,
+                true);
+        file = new File(filename);
+        assertTrue(file.exists());
+        assertAttributeEquals(application, FileIntf.ATTR_EXISTS, true);
+        assertAttributeEquals(application,
+                FileIntf.ATTR_IS_DIRECTORY,
+                true);
+        assertAttributeExists(application, FileIntf.ATTR_IS_HIDDEN);
+        assertAttributeExists(application, FileIntf.ATTR_LENGTH);
+        assertAttributeExists(application, FileIntf.ATTR_TIMESTAMP);
     }
 
     /**
@@ -72,27 +66,23 @@ public class FileTest extends SmartFrogTestBase {
      * @throws Throwable
      */
     public void testMissingFile() throws Throwable {
-        Prim application = deployExpectingSuccess(FILES +
+        application = deployExpectingSuccess(FILES +
                 "testMissingFile.sf", "testMissingFile");
         File file;
-        try {
-            String filename = application.sfResolve(FileUsingComponent.ATTR_ABSOLUTE_PATH,
-                    (String) null,
-                    true);
-            file = new File(filename);
-            assertFalse(file.exists());
-            assertAttributeEquals(application, FileIntf.ATTR_EXISTS, false);
-            assertAttributeEquals(application,
-                    FileIntf.ATTR_IS_DIRECTORY,
-                    false);
-            assertAttributeExists(application, FileIntf.ATTR_IS_HIDDEN);
-            assertAttributeExists(application, FileIntf.ATTR_LENGTH);
-            assertAttributeExists(application, FileIntf.ATTR_TIMESTAMP);
-            assertEquals(0, application.sfResolve(FileIntf.ATTR_LENGTH, 0L, true));
-            assertEquals(-1, application.sfResolve(FileIntf.ATTR_TIMESTAMP, 0L, true));
-        } finally {
-            terminateApplication(application);
-        }
+        String filename = application.sfResolve(FileUsingComponent.ATTR_ABSOLUTE_PATH,
+                (String) null,
+                true);
+        file = new File(filename);
+        assertFalse(file.exists());
+        assertAttributeEquals(application, FileIntf.ATTR_EXISTS, false);
+        assertAttributeEquals(application,
+                FileIntf.ATTR_IS_DIRECTORY,
+                false);
+        assertAttributeExists(application, FileIntf.ATTR_IS_HIDDEN);
+        assertAttributeExists(application, FileIntf.ATTR_LENGTH);
+        assertAttributeExists(application, FileIntf.ATTR_TIMESTAMP);
+        assertEquals(0, application.sfResolve(FileIntf.ATTR_LENGTH, 0L, true));
+        assertEquals(-1, application.sfResolve(FileIntf.ATTR_TIMESTAMP, 0L, true));
     }
 
 

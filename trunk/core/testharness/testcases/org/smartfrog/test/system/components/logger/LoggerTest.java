@@ -42,7 +42,7 @@ public class LoggerTest
     }
 
     public void testCaseTCP35() throws Throwable {
-        Prim application = deployExpectingSuccess(FILES + "tcp35.sf", "tcp35");
+        application = deployExpectingSuccess(FILES + "tcp35.sf", "tcp35");
         String logsDir;
         String logsFile;
         try {
@@ -51,7 +51,7 @@ public class LoggerTest
             logsDir = logger.sfResolve("logsDir", (String) null, false);
             logsFile = logger.sfResolve("logFile", (String) null, false);
         } finally {
-            terminateApplication(application);
+            terminateApplication();
         }
         File file = new File(logsDir + "\\" + logsFile);
 
@@ -68,7 +68,7 @@ public class LoggerTest
             logsDir = logger.sfResolve("logsDir", (String) null, false);
             logsFile = logger.sfResolve("logFile", (String) null, false);
         } finally {
-            terminateApplication(application);
+            terminateApplication();
         }
 
         File file = new File(logsDir + "\\" + logsFile);
@@ -89,7 +89,7 @@ public class LoggerTest
     }
 
     public void testCaseTCP37() throws Throwable {
-        Prim application = deployExpectingSuccess(FILES + "tcp37.sf", "tcp37");
+        application = deployExpectingSuccess(FILES + "tcp37.sf", "tcp37");
         assertNotNull(application);
         String logsDir;
         String logsFile;
@@ -98,7 +98,7 @@ public class LoggerTest
             logsDir = logger.sfResolve("logsDir", (String) null, false);
             logsFile = logger.sfResolve("logFile", (String) null, false);
         } finally {
-            terminateApplication(application);
+            terminateApplication();
         }
 
         File file1 = new File(logsDir);
@@ -115,7 +115,7 @@ public class LoggerTest
     }
 
     public void testCaseTCP38() throws Throwable {
-        Prim application = deployExpectingSuccess(FILES + "tcp38.sf", "tcp38");
+        application = deployExpectingSuccess(FILES + "tcp38.sf", "tcp38");
         String logsDir;
         String logsFile;
         try {
@@ -124,7 +124,7 @@ public class LoggerTest
             logsDir = logger.sfResolve("logsDir", (String) null, false);
             logsFile = logger.sfResolve("logFile", (String) null, false);
         } finally {
-            terminateApplication(application);
+            terminateApplication();
         }
 
         File file = new File(logsDir + "\\" + logsFile);

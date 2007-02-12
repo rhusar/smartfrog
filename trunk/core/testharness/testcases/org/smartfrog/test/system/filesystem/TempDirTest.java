@@ -44,7 +44,7 @@ public class TempDirTest extends SmartFrogTestBase {
      * @throws Throwable
      */
     public void testTempDirWorking() throws Throwable {
-        Prim application = deployExpectingSuccess(FILES + "tempDirTestWorking.sf", "tempDirTestWorking");
+        application = deployExpectingSuccess(FILES + "tempDirTestWorking.sf", "tempDirTestWorking");
         File dir=null;
         File child=null;
         try {
@@ -56,7 +56,7 @@ public class TempDirTest extends SmartFrogTestBase {
             child = new File(dir,"child");
             child.setLastModified(0);
         } finally {
-            terminateApplication(application);
+            terminateApplication();
         }
         assertFalse("child Not deleted " + child, child.exists());
         assertFalse("Dir Not deleted " + dir,dir.exists());
@@ -76,7 +76,7 @@ public class TempDirTest extends SmartFrogTestBase {
      * @throws Throwable
      */
     public void testTempDirEmptySuffix() throws Throwable {
-        Prim application = deployExpectingSuccess(FILES + "tempDirTestEmptySuffix.sf", "tempDirTestEmptySuffix");
+        application = deployExpectingSuccess(FILES + "tempDirTestEmptySuffix.sf", "tempDirTestEmptySuffix");
         File dir = null;
         try {
             Prim temp1 = application.sfResolve("temp1", (Prim) null, true);
@@ -85,7 +85,7 @@ public class TempDirTest extends SmartFrogTestBase {
             assertTrue("Not found: " + dir, dir.exists());
             assertTrue("Not a directory " + dir, dir.exists());
         } finally {
-            terminateApplication(application);
+            terminateApplication();
         }
         assertFalse("Not deleted " + dir, dir.exists());
     }

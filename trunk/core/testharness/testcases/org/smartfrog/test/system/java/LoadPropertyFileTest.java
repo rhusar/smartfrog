@@ -41,32 +41,21 @@ public class LoadPropertyFileTest extends SmartFrogTestBase {
     }
 
     public void testLoadProperty() throws Throwable {
-        Prim application = null;
-        try {
-            application = deployExpectingSuccess(LoadPropertyFileTest.FILES +
-                    "testLoadProperty.sf", "testLoadProperty");
-        } finally {
-            terminateApplication(application);
-        }
+        application = deployExpectingSuccess(LoadPropertyFileTest.FILES +
+                "testLoadProperty.sf", "testLoadProperty");
     }
 
     public void testLoadPropertyVector() throws Throwable {
-        Prim application = null;
-        try {
-            application = deployExpectingSuccess(LoadPropertyFileTest.FILES +
-                    "testLoadProperty.sf", "testLoadProperty");
-            LoadPropertyFile instance=(LoadPropertyFile) application.sfResolve("test1",true);
-            Vector list=null;
-            list=(Vector) ((Prim)instance).sfResolve(LoadPropertyFile.ATTR_PROPERTIES, true);
-            assertEquals(4,list.size());
-            assertTupleEquals(list, "prop1", "prop1");
-            assertTupleEquals(list, "prop2", "prop2");
-            assertTupleEquals(list, "prop.three", "prop3");
-            assertTupleEquals(list, "4", "prop4");
-
-        } finally {
-            terminateApplication(application);
-        }
+        application = deployExpectingSuccess(LoadPropertyFileTest.FILES +
+                "testLoadProperty.sf", "testLoadProperty");
+        LoadPropertyFile instance = (LoadPropertyFile) application.sfResolve("test1", true);
+        Vector list = null;
+        list = (Vector) ((Prim) instance).sfResolve(LoadPropertyFile.ATTR_PROPERTIES, true);
+        assertEquals(4, list.size());
+        assertTupleEquals(list, "prop1", "prop1");
+        assertTupleEquals(list, "prop2", "prop2");
+        assertTupleEquals(list, "prop.three", "prop3");
+        assertTupleEquals(list, "4", "prop4");
     }
 
     private void assertTupleEquals(List list,String name,String expected) {
