@@ -29,6 +29,7 @@ Collector extends WorkflowPrim {
     sfClass "org.smartfrog.services.quartz.collector.CollectorImpl";
     //terminate after collecting the data
     sfShouldTerminate true;
+    dataSource LAZY cpumonitor;
 }
 
 
