@@ -28,6 +28,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.smartfrog.sfcore.common.Context;
+import org.smartfrog.sfcore.common.SFNull;
 import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
@@ -82,10 +83,18 @@ public abstract class PersistenceModel {
     public static PersistenceModel constructModel(Context context) throws
             SmartFrogDeploymentException {
 
+        /**
+         * configObj will be null if the value not present or SFNull if
+         * set to null in the SF description.
+         * If either are the case construct a NullModel implementation.
+         * Otherwise continue with the configured implementation.
+         */
         Object configObj = context.get(MODELCONFIG_ATTR);
-        if (configObj == null) {
-            throw new SmartFrogDeploymentException(MODELCONFIG_ATTR +
-                    " is not defined - persistence model required");
+        if ( configObj == null  || configObj instanceof SFNull ) {
+        	// @TODO: log the null model creation.
+        	return new NullModel(null);
+//            throw new SmartFrogDeploymentException(MODELCONFIG_ATTR +
+//                    " is not defined - persistence model required");
         }
         if (!(configObj instanceof ComponentDescription)) {
             throw new SmartFrogDeploymentException(MODELCONFIG_ATTR +
