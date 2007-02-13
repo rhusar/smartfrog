@@ -26,7 +26,9 @@ import java.lang.reflect.Method;
 import java.rmi.RemoteException;
 import java.util.Vector;
 
+import org.smartfrog.services.persistence.storage.nullstorage.NullStorageImpl;
 import org.smartfrog.sfcore.common.Context;
+import org.smartfrog.sfcore.common.SFNull;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
@@ -54,6 +56,8 @@ public abstract class Storage implements Serializable {
  
     /**
      * Obtains a vector of the stores in the appropriate repository.
+     * If the context does not contain a storage description or there is
+     * a null in its place then this will use the NullStorageImpl implementation.
      *
      * @param context Context
      * @return Vector
@@ -61,9 +65,16 @@ public abstract class Storage implements Serializable {
      */
     public static Vector getStores(Context context) throws StorageException {
 
+        /**
+         * configObj will be null if the value not present or SFNull if
+         * set to null in the SF description.
+         * If either are the case construct a NullStorageImpl implementation.
+         * Otherwise continue with the configured implementation.
+         */
         Object configObj = context.get(CONFIG_DATA);
-        if (configObj == null) {
-            throw new StorageException("Storage config missing");
+        if (configObj == null || configObj instanceof SFNull ) {
+        	return NullStorageImpl.getStores(context);
+//            throw new StorageException("Storage config missing");
         }
         if (!(configObj instanceof ComponentDescription)) {
             throw new StorageException(
@@ -75,6 +86,8 @@ public abstract class Storage implements Serializable {
 
     /**
      * Obtains a vector of the stores in the appropriate repository.
+     * If the configData has null value then the NullStorageImpl 
+     * implementation will be used.
      *
      * @param className String
      * @param configData ComponentDescription
@@ -84,6 +97,13 @@ public abstract class Storage implements Serializable {
     public static Vector getStores(ComponentDescription configData) throws
             StorageException {
 
+    	/**
+    	 * If configData is null use the NullStorageImpl implementation
+    	 */
+    	if( configData == null ) {
+    		return NullStorageImpl.getStores(configData);
+    	}
+    	
         String className = UNKNOWN_CLASS;
         try {
             className = configData.sfResolve(CLASS_ATTRIB, (String)null, true);
@@ -139,7 +159,9 @@ public abstract class Storage implements Serializable {
     /**
      * Constructs the storage implementation specified in the context. This
      * version uses the constructor that expects to find a pre-existing persisted
-     * component.
+     * component. If the context does not include the storage description or
+     * it includes a null value in place of for the stroage description it
+     * will create a NullStorageImpl implementation of the storage.
      *
      * @param context Context
      * @return Storage
@@ -148,9 +170,16 @@ public abstract class Storage implements Serializable {
     public static Storage createExistingStorage(Context context) throws
             StorageException {
 
+        /**
+         * configObj will be null if the value is null or it is not present.
+         * If either are the case construct a NullStorageImpl implementation.
+         * Otherwise continue with the configured implementation.
+         */
         Object configObj = context.get(CONFIG_DATA);
-        if (configObj == null) {
-            throw new StorageException("Storage config missing");
+        if (configObj == null || configObj instanceof SFNull ) {
+        	// @TODO: log creation of null storage
+        	return new NullStorageImpl();
+//            throw new StorageException("Storage config missing");
         }
         if (!(configObj instanceof ComponentDescription)) {
             throw new StorageException(
@@ -163,7 +192,9 @@ public abstract class Storage implements Serializable {
     /**
      * Constructs the storage implementation specified by name and config. This
      * version uses the constructor that expects to find a pre-existing persisted
-     * component.
+     * component. If the configData parameter is a null value in place of for the 
+     * stroage description it will create a NullStorageImpl implementation of the 
+     * storage.
      *
      * @param className String
      * @param configData ComponentDescription
@@ -173,6 +204,13 @@ public abstract class Storage implements Serializable {
     public static Storage createExistingStorage(ComponentDescription configData) throws
             StorageException {
 
+    	/**
+    	 * If the configData is null construct a NullStorageImpl implementation.
+    	 * Otherwise continue with the configured storage.
+    	 */
+    	if( configData == null ) {
+    		return new NullStorageImpl();
+    	}
         String className = UNKNOWN_CLASS;
         try {
             className = configData.sfResolve(CLASS_ATTRIB, (String)null, true);
@@ -216,7 +254,9 @@ public abstract class Storage implements Serializable {
     /**
      * Constructs the storage implementation specified in the context. this
      * version uses the constructor that expects to create a new persisted
-     * component storage.
+     * component storage. If the context does not include the storage description or
+     * it includes a null value in place of for the stroage description it
+     * will create a NullStorageImpl implementation of the storage.
      *
      * @param context Context
      * @return Storage
@@ -226,9 +266,16 @@ public abstract class Storage implements Serializable {
     	
     	Storage newStorage = null;
 
+        /**
+         * configObj will be null if the value is null or it is not present.
+         * If either are the case construct a NullStorageImpl implementation.
+         * Otherwise continue with the configured implementation.
+         */
     	Object configObj = context.get(CONFIG_DATA);
-    	if (configObj == null) {
-    		throw new StorageException("Storage config missing");
+    	if (configObj == null || configObj instanceof SFNull ) {
+    		// @TODO: log creation of null storage
+    		return new NullStorageImpl();
+//    		throw new StorageException("Storage config missing");
     	}
 
     	if (!(configObj instanceof ComponentDescription)) {
@@ -255,7 +302,9 @@ public abstract class Storage implements Serializable {
     /**
      * Constructs the storage implementation specified by name and config. this
      * version uses the constructor that expects to create a new persisted
-     * component storage.
+     * component storage. If the configData parameter is a null value in place of for the 
+     * stroage description it will create a NullStorageImpl implementation of the 
+     * storage.
      *
      * @param context Context
      * @return Storage
@@ -264,6 +313,14 @@ public abstract class Storage implements Serializable {
     public static Storage createNewStorage(ComponentDescription configData) throws
             StorageException {
 
+    	/**
+    	 * If the configData is null construct a NullStorageImpl implementation.
+    	 * Otherwise continue with the configured storage.
+    	 */
+    	if( configData == null ) {
+    		return new NullStorageImpl();
+    	}
+    	
         String className = UNKNOWN_CLASS;
         try {
             className = configData.sfResolve(CLASS_ATTRIB, (String)null, true);

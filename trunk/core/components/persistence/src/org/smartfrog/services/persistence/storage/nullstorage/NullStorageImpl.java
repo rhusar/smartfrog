@@ -36,6 +36,14 @@ import org.smartfrog.sfcore.componentdescription.ComponentDescription;
  */
 public class NullStorageImpl extends Storage {
 	
+	
+	/**
+	 * constructor
+	 */
+	public NullStorageImpl() {
+		return;
+	}
+	
 
 	/**
 	 * This constructor would normally create a database, the Null storage does not 
