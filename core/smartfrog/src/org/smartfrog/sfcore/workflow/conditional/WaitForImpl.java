@@ -24,6 +24,7 @@ import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.prim.Prim;
 
 import java.rmi.RemoteException;
+import org.smartfrog.sfcore.utils.SmartFrogThread;
 
 /**
  * created 30-Nov-2006 13:35:19
@@ -54,7 +55,7 @@ public class WaitForImpl extends ConditionCompound implements WaitFor, Runnable 
         timeout = sfResolve(ATTR_INTERVAL, interval, true);
         //pick on the current start time.
         end=System.currentTimeMillis()+timeout;
-        thread = new Thread(this);
+        thread = new SmartFrogThread(this);
         thread.start();
     }
 

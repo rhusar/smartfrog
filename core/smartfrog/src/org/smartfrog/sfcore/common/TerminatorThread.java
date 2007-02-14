@@ -26,6 +26,7 @@ import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.logging.LogSF;
 import org.smartfrog.sfcore.logging.LogFactory;
+import org.smartfrog.sfcore.utils.SmartFrogThread;
 
 
 /**
@@ -46,7 +47,7 @@ import org.smartfrog.sfcore.logging.LogFactory;
  * That method has error handling and logging that it is hard to justyf  
  *
  */
-public class TerminatorThread extends Thread {
+public class TerminatorThread extends SmartFrogThread {
     /**
      * Reference to component.
      */
@@ -86,7 +87,7 @@ public class TerminatorThread extends Thread {
      * @param record record why the termination
      */
     public TerminatorThread(Prim target, TerminationRecord record) {
-        this.setName("TerminatorThread");
+        setName("TerminatorThread");
         this.target = target;
         this.record = record;
     }
@@ -178,50 +179,44 @@ public class TerminatorThread extends Thread {
     /**
      * Run method used to trigger the terminatation of the component.
      */
-    public synchronized void run() {
-        try {
-            if (shouldDetach && shouldTerminate && notifyParent){
+    public synchronized void execute() throws Throwable {
+        if (shouldDetach && shouldTerminate && notifyParent) {
+            try {
+                target.sfDetachAndTerminate(record);
+            } catch (Throwable thr) {
+                if (sfLog().isErrorEnabled()) {
+                    sfLog().error("TerminatorThread.sfDetachAndTerminate failed [" + record.toString() + "]", thr);
+                }
+            }
+            return;
+        }
+        if (shouldDetach) {
+            try {
+                target.sfDetach();
+            } catch (Throwable thr) {
+                if (sfLog().isErrorEnabled()) {
+                    sfLog().error("TerminatorThread.sfDetach failed [" + record.toString() + "]", thr);
+                }
+            }
+        }
+        if (shouldTerminate) {
+            if (notifyParent) {
                 try {
-                   target.sfDetachAndTerminate(record);
-               } catch (Throwable thr) {
-                 if (sfLog().isErrorEnabled()){
-                   sfLog().error("TerminatorThread.sfDetachAndTerminate failed [" + record.toString() + "]", thr);
-                 }
-               }
-                return;
-            }
-            if (shouldDetach) {
-                 try {
-                    target.sfDetach();
+                    target.sfTerminate(record);
                 } catch (Throwable thr) {
-                  if (sfLog().isErrorEnabled()){
-                    sfLog().error("TerminatorThread.sfDetach failed [" +record.toString() + "]", thr);
-                  }
-                }
-            }
-            if (shouldTerminate) {
-                if (notifyParent){
-                    try {
-                        target.sfTerminate(record);
-                    } catch (Throwable thr) {
-                      if (sfLog().isErrorEnabled()){
+                    if (sfLog().isErrorEnabled()) {
                         sfLog().error("TerminatorThread.sfTerminate failed [" + record.toString() + "]", thr);
-                      }
-                    }
-
-                } else {
-                    try {
-                        target.sfTerminateQuietlyWith(record);
-                    } catch (Throwable thr) {
-                      if (sfLog().isErrorEnabled()) {
-                        sfLog().error("TerminatorThread.sfTerminateQuietlyWith failed [" + record.toString() + "]", thr);
-                      }
                     }
                 }
-            }
-        } catch (Throwable t) {
-            if (sfLog().isErrorEnabled()){
-              sfLog().error("TerminatorThread.Exception occured during termination:", t);
+
+            } else {
+                try {
+                    target.sfTerminateQuietlyWith(record);
+                } catch (Throwable thr) {
+                    if (sfLog().isErrorEnabled()) {
+                        sfLog().error("TerminatorThread.sfTerminateQuietlyWith failed [" + record.toString() + "]", thr);
+                    }
+                }
             }
         }
     }
