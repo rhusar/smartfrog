@@ -43,6 +43,8 @@ public abstract class AbstractListenerImpl extends PrimImpl implements TestListe
     /**
      * end this test suite. After calling this, caller should discard all references; they may no longer be valid. <i>No
      * further methods may be called</i>
+     * @throws RemoteException    network problems
+     * @throws SmartFrogException other problems
      */
     public void endSuite() throws RemoteException, SmartFrogException {
 

@@ -21,10 +21,6 @@
 
 package org.smartfrog.services.junit.test.system;
 
-import org.smartfrog.services.xunit.base.TestRunner;
-import org.smartfrog.services.xunit.listeners.BufferingListener;
-import org.smartfrog.services.xunit.serial.Statistics;
-
 /** Test deploying against a localhost Date: 06-Jul-2004 Time: 21:54:25 */
 public class ConditionalTest extends TestRunnerTestBase {
 
@@ -33,15 +29,15 @@ public class ConditionalTest extends TestRunnerTestBase {
     }
 
     public void testConditionalTrue() throws Throwable {
-        executeBufferedTestRun("junit-conditional-true.sf", 0, 0, 0);
+        executeBufferedTestRun("junit-conditional-true", 1, 0, 0);
     }
 
     public void testConditionalUnless() throws Throwable {
-        executeBufferedTestRun("junit-conditional-unless.sf", 0, 0, 0);
+        executeBufferedTestRun("junit-conditional-unless", -1, 0, 0);
     }
 
     public void testConditionalFalse() throws Throwable {
-        executeBufferedTestRun("junit-conditional-false.sf", 0, 0, 0);
+        executeBufferedTestRun("junit-conditional-false", -1, 0, 0);
     }
 
 }

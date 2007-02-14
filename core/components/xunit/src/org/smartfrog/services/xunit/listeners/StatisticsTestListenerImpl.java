@@ -25,7 +25,6 @@ import org.smartfrog.services.xunit.serial.Statistics;
 import org.smartfrog.services.xunit.serial.LogEntry;
 import org.smartfrog.services.xunit.serial.TestInfo;
 import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.sfcore.prim.PrimImpl;
 
 import java.rmi.RemoteException;
 
@@ -65,35 +64,41 @@ public class StatisticsTestListenerImpl extends AbstractListenerImpl implements 
      * all references; they may no longer be valid.
      * <i>No further methods may be called</i>
      */
-    public void endSuite() throws RemoteException, SmartFrogException {
+    public void endSuite() {
 
     }
 
     /**
      * An error occurred.
      */
-    public synchronized void addError(TestInfo test) throws RemoteException, SmartFrogException {
+    public void addError(TestInfo test) {
         stats.incErrors();
     }
 
     /**
      * A failure occurred.
      */
-    public synchronized void addFailure(TestInfo test) throws RemoteException, SmartFrogException {
+    public void addFailure(TestInfo test) {
         stats.incFailures();
     }
 
     /**
      * A test ended.
      */
-    public synchronized void endTest(TestInfo test) throws RemoteException, SmartFrogException {
+    public void endTest(TestInfo test) {
         stats.incTestsRun();
     }
 
     /**
      * A test started.
      */
-    public synchronized void startTest(TestInfo test) throws RemoteException, SmartFrogException {
+    /**
+     *
+     * @param test
+     * @throws RemoteException
+     * @throws SmartFrogException
+     */
+    public void startTest(TestInfo test) {
         stats.incTestsStarted();
     }
 
@@ -122,7 +127,11 @@ public class StatisticsTestListenerImpl extends AbstractListenerImpl implements 
         return stats;
     }
 
-    public void log(LogEntry event) throws RemoteException {
+    /**
+     * Log the fact that another message was logged
+     * @param event event to log
+     */
+    public void log(LogEntry event) {
         stats.incLoggedMessages();
     }
 }

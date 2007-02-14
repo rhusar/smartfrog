@@ -80,14 +80,26 @@ public class ConsoleListenerImpl extends PrimImpl
     }
 
 
-    public void println(String s) {
-        outputstream.println(s);
+    /**
+     * Print a line
+     * @param line
+     */
+    public void println(String line) {
+        outputstream.println(line);
     }
 
+    /**
+     * flush the stream
+     */
     public void flush() {
         outputstream.flush();
     }
 
+    /**
+     * Log trouble
+     * @param message mesage
+     * @param test test info
+     */
     private void logTrouble(String message, TestInfo test) {
         StringBuffer buffer = new StringBuffer(128);
         buffer.append(message);
@@ -101,6 +113,10 @@ public class ConsoleListenerImpl extends PrimImpl
         logTrace(test.getFault());
     }
 
+    /**
+     * Log an exception, recursively
+     * @param fault fault to log
+     */
     private void logTrace(ThrowableTraceInfo fault) {
         if (fault == null) {
             return;
@@ -113,7 +129,10 @@ public class ConsoleListenerImpl extends PrimImpl
         }
         flush();
         //recurse
-        logTrace(fault.getCause());
+        ThrowableTraceInfo cause = fault.getCause();
+        if(cause!=null && cause!=fault) {
+            logTrace(cause);
+        }
     }
 
     /**

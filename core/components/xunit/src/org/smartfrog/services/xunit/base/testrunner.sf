@@ -55,7 +55,7 @@ TestRunnerSchema extends Schema {
  * the base test runner has a console listener automatically
  */
 TestRunner extends Compound {
-    sfClass "org.smartfrog.services.junit.TestRunnerImpl";
+    sfClass "org.smartfrog.services.xunit.base.TestRunnerImpl";
     testRunnerSchema extends TestRunnerSchema;
     listener extends ConsoleListener ;
     failOnError true;

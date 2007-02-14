@@ -106,6 +106,7 @@ public class JUnit3TestSuiteImpl extends AbstractTestSuite implements JUnitTestS
     public synchronized void sfStart() throws SmartFrogException,
             RemoteException {
         super.sfStart();
+        log=sfLog();
         readConfiguration();
     }
 

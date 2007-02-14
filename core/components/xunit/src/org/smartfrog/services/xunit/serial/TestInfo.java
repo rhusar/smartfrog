@@ -218,6 +218,7 @@ public final class TestInfo implements Serializable, Cloneable {
 
     /**
      * get the duration of the call
+     * @return the duration (start time - end time)
      */
     public long getDuration() {
         return endTime - startTime;
@@ -286,7 +287,7 @@ public final class TestInfo implements Serializable, Cloneable {
     /**
      * clone the trace info; include cloning any child entries
      *
-     * @return
+     * @return the cloned object
      * @throws CloneNotSupportedException
      */
     @Override
@@ -330,7 +331,7 @@ public final class TestInfo implements Serializable, Cloneable {
     /**
      * get the classname.text of this test
      *
-     * @return
+     * @return the title of this test
      */
     public String getTitle() {
         return getName() + "." + getText();
@@ -353,6 +354,11 @@ public final class TestInfo implements Serializable, Cloneable {
         messages.add(entry);
     }
 
+    /**
+     * Create a skipped test message with the current start time/end time
+     * @param name the name of the test
+     * @return a skipped test
+     */
     public static TestInfo skipped(String name) {
         TestInfo info=new TestInfo();
         info.setName(name);

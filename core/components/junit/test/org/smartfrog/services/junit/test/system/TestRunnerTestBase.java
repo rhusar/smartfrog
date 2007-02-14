@@ -22,8 +22,8 @@
 package org.smartfrog.services.junit.test.system;
 
 import org.smartfrog.services.xunit.base.TestRunner;
-import org.smartfrog.services.xunit.serial.Statistics;
 import org.smartfrog.services.xunit.listeners.BufferingListener;
+import org.smartfrog.services.xunit.serial.Statistics;
 import org.smartfrog.test.DeployingTestBase;
 import org.smartfrog.test.TestHelper;
 import org.w3c.dom.Document;
@@ -115,6 +115,14 @@ public abstract class TestRunnerTestBase extends DeployingTestBase {
         }
     }
 
+    /**
+     * execute a test run to a buffer
+     * @param name the test to run (base-relative; no .sf extension needed)
+     * @param run number of tests to run; -1 means no
+     * @param errors
+     * @param failures
+     * @throws Throwable
+     */
     protected void executeBufferedTestRun(String name, int run, int errors, int failures) throws Throwable {
         application = deployExpectingSuccess(BASE+name+".sf", name);
         int seconds = getTimeout();
@@ -128,16 +136,21 @@ public abstract class TestRunnerTestBase extends DeployingTestBase {
                         true);
         boolean finished = spinTillFinished(runner, seconds);
         assertTrue("Test run timed out", finished);
-        assertTrue("expected tests to run", listener.getStartCount() == 1);
-        assertTrue("session started",
-                listener.getSessionStartCount() == 1);
-        assertTrue("session ended",
-                listener.getSessionEndCount() == 1);
-        assertTrue("all tests passed", listener.testsWereSuccessful());
-        Statistics statistics = runner.getStatistics();
-        assertEquals("statistics.testRun"+run, run, statistics.getTestsRun());
-        assertEquals("statistics.errors", errors, statistics.getErrors());
-        assertEquals("statistics.failures",failures,
-                statistics.getFailures());
+        if(run>=0) {
+            assertTrue("expected tests to run", listener.getStartCount() == 1);
+            assertTrue("session started",
+                    listener.getSessionStartCount() == 1);
+            assertTrue("session ended",
+                    listener.getSessionEndCount() == 1);
+            //assertTrue("all tests passed", listener.testsWereSuccessful());
+            Statistics statistics = runner.getStatistics();
+            assertEquals("statistics.testRun"+run, run, statistics.getTestsRun());
+            assertEquals("statistics.errors", errors, statistics.getErrors());
+            assertEquals("statistics.failures",failures,
+                    statistics.getFailures());
+        } else {
+            assertEquals("expected tests to be skipped and startcount==0",
+                    0,listener.getStartCount());
+        }
     }
 }

@@ -133,7 +133,7 @@ public final class LogEntry implements Serializable, Cloneable {
 
     /**
      * Convert the level enumeration into text
-     * @return
+     * @return the level as a text string
      */
     public String levelToText() {
         switch(level) {

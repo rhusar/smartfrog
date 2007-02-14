@@ -22,18 +22,22 @@ For more information: www.smartfrog.org
 #include "/files/logging-compound.sf"
 
 sfCodeBase PROPERTY org.smartfrog.codebase;
-    /**
-     * run all tests in the suite.
-     * output to an XML listener
-     */
+
 
 sfConfig extends LoggingCompound {
 
 
-  chain extends Chain {
+
+  tests extends TestAll {
+
+      testLog LAZY ATTRIB TestLog;
+
+      //buffer the results
+      listener extends ConsoleListener {
+      }
   }
 
-  chain:tests:testLog LAZY testLog;
+
 
 
 }

@@ -45,9 +45,11 @@ public class ChainListenerImpl extends PrimImpl implements TestListenerFactory {
     public static final String ATTR_LISTENERS="listeners";
 
     private List<TestListenerFactory> factories;
-    private Log log;
-    private ComponentHelper helper = new ComponentHelper(this);
 
+    /**
+     * simple constructor
+     * @throws RemoteException
+     */
     public ChainListenerImpl() throws RemoteException {
     }
 
@@ -58,23 +60,22 @@ public class ChainListenerImpl extends PrimImpl implements TestListenerFactory {
      * heartbeat. Subclasses can override to provide additional deployment
      * behavior.
      *
-     * @throws org.smartfrog.sfcore.common.SmartFrogException
+     * @throws SmartFrogException
      *                                  error while deploying
      * @throws java.rmi.RemoteException In case of network/rmi error
      */
     public synchronized void sfDeploy() throws SmartFrogException,
             RemoteException {
         super.sfDeploy();
-        log = helper.getLogger();
     }
 
     /**
      * Can be called to start components. Subclasses should override to provide
      * functionality Do not block in this call, but spawn off any main loops!
      *
-     * @throws org.smartfrog.sfcore.common.SmartFrogException
+     * @throws SmartFrogException
      *                                  failure while starting
-     * @throws java.rmi.RemoteException In case of network/rmi error
+     * @throws RemoteException In case of network/rmi error
      */
     public synchronized void sfStart() throws SmartFrogException,
             RemoteException {

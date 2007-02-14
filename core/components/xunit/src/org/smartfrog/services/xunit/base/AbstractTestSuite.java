@@ -231,7 +231,7 @@ public abstract class AbstractTestSuite extends ConditionCompound implements Tes
 
     /**
      * Get the test listener factory from this configuration
-     * @return
+     * @return the test listener factory
      */
     protected TestListenerFactory getTestListenerFactory() {
         return getConfiguration().getListenerFactory();

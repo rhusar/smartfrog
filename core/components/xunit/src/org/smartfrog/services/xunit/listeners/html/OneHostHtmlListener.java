@@ -61,6 +61,10 @@ public class OneHostHtmlListener extends OneHostXMLListener {
         return title;
     }
 
+    /**
+     * {@inheritDoc}
+     * @throws IOException IO trouble
+     */
     protected void writeDocumentHeader() throws IOException {
         writeln(XML_DECLARATION);
         //a strict HTML 1.1 document
@@ -104,6 +108,11 @@ public class OneHostHtmlListener extends OneHostXMLListener {
         exit("div");
     }
 
+    /**
+     * {@inheritDoc}
+     * @throws IOException IO trouble
+     */
+
     protected void writeDocumentTail() throws IOException {
         writeSummary();
 
@@ -111,6 +120,11 @@ public class OneHostHtmlListener extends OneHostXMLListener {
         exit("body");
         exit("html");
     }
+
+    /**
+     * {@inheritDoc}
+     * @throws IOException IO trouble
+     */
 
     private void writeSummary() throws IOException {
         enter("div",style("summary") + attr("id", "summary"));
@@ -168,6 +182,11 @@ public class OneHostHtmlListener extends OneHostXMLListener {
         exit("div");
     }
 
+    /**
+     * {@inheritDoc}
+     * @param event event
+     * @throws RemoteException network trouble
+     */
     public void log(LogEntry event) throws RemoteException {
 
         String type = style(event);
@@ -206,6 +225,12 @@ public class OneHostHtmlListener extends OneHostXMLListener {
         return attr("class", style);
     }
 
+    /**
+     * {@inheritDoc}
+     * @param tag element name
+     * @param test test
+     * @return xml variant
+     */
     protected String toXML(String tag, TestInfo test) {
         StringBuffer body=new StringBuffer();
         enter(body,"div",style("testblock"));
@@ -236,7 +261,7 @@ public class OneHostHtmlListener extends OneHostXMLListener {
     /**
     * return a fault tag
     *
-    * @param fault
+    * @param fault fault cause
     * @return empty string if fault is null, else an xml declaration
     */
     protected String toXML(ThrowableTraceInfo fault) {
@@ -284,6 +309,12 @@ public class OneHostHtmlListener extends OneHostXMLListener {
         return result;
     }
 
+    /**
+     * Enter an element
+     * @param buf buffer
+     * @param element element name
+     * @param attrs attributes
+     */
     protected void enter(StringBuffer buf, String element, String attrs) {
         buf.append("<");
         buf.append(element);
@@ -294,6 +325,11 @@ public class OneHostHtmlListener extends OneHostXMLListener {
         buf.append(">\n");
     }
 
+    /**
+     * Exit an element
+     * @param buf buffer 
+     * @param element element name
+     */
     protected void exit(StringBuffer buf, String element) {
         buf.append("</");
         buf.append(element);
