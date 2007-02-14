@@ -78,7 +78,7 @@ public interface TestRunner extends Remote , TestResultAttributes
 
      /**
       * Get the listener factory
-      * @return
+      * @return the factory
       * @throws RemoteException
       */
 
@@ -89,7 +89,7 @@ public interface TestRunner extends Remote , TestResultAttributes
 
     /**
      * run the test
-     *
+     * @return true if the tests were started
      * @throws RemoteException
      */
     boolean startTests() throws RemoteException, SmartFrogException;
@@ -101,5 +101,10 @@ public interface TestRunner extends Remote , TestResultAttributes
      */
     Statistics getStatistics() throws RemoteException;
 
+     /**
+      * test for being finished
+      * @return true if we have finished
+      * @throws RemoteException
+      */
     boolean isFinished() throws RemoteException;
 }

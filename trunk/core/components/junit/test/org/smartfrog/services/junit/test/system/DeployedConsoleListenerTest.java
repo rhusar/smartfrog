@@ -21,7 +21,6 @@ package org.smartfrog.services.junit.test.system;
 
 import org.smartfrog.services.xunit.base.TestRunner;
 import org.smartfrog.services.xunit.listeners.ConsoleListenerFactory;
-import org.smartfrog.sfcore.prim.Prim;
 
 /** created Nov 22, 2004 4:45:26 PM */
 

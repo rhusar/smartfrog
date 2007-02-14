@@ -109,6 +109,7 @@ public class TestRunnerImpl extends CompoundImpl implements TestRunner,
 
     public static final String ERROR_TESTS_IN_PROGRESS = "Component is already running tests";
     public static final String TESTS_FAILED = "Tests Failed";
+    private static final String TEST_WAS_INTERRUPTED = "Test was interrupted";
 
     /**
      * constructor
@@ -194,7 +195,8 @@ public class TestRunnerImpl extends CompoundImpl implements TestRunner,
         shouldDetach = sfResolve(
                 ShouldDetachOrTerminate.ATTR_SHOULD_DETACH, shouldDetach, false);
         singleTest = sfResolve(ATTR_SINGLE_TEST,singleTest,false);
-        configuration.setTestLog((TestListenerLog) sfResolve(ATTR_TESTLOG,(Prim)null,false));
+        TestListenerLog testLog = (TestListenerLog) sfResolve(ATTR_TESTLOG, (Prim) null, false);
+        configuration.setTestLog(testLog);
 
         validate();
         //execute the tests in all the suites attached to this class
@@ -274,6 +276,8 @@ public class TestRunnerImpl extends CompoundImpl implements TestRunner,
             if (!executeTests()) {
                 throw new SmartFrogException(TESTS_FAILED);
             }
+        } catch (InterruptedException e) {
+            catchException(e);
         } catch (RemoteException e) {
             catchException(e);
         } catch (SmartFrogException e) {
@@ -310,8 +314,9 @@ public class TestRunnerImpl extends CompoundImpl implements TestRunner,
      * @return true if the tests worked
      * @throws SmartFrogException for problems
      * @throws RemoteException for network problems
+     * @throws InterruptedException if the tests get blocked
      */
-    public boolean executeTests() throws SmartFrogException, RemoteException {
+    public boolean executeTests() throws SmartFrogException, RemoteException, InterruptedException {
 
         try {
             if(singleTest==null || singleTest.length()==0) {
@@ -326,7 +331,7 @@ public class TestRunnerImpl extends CompoundImpl implements TestRunner,
     }
 
 
-    private boolean executeBatchTests() throws RemoteException, SmartFrogException {
+    private boolean executeBatchTests() throws RemoteException, SmartFrogException, InterruptedException {
         boolean successful = true;
         Enumeration e = sfChildren();
         while (e.hasMoreElements()) {
@@ -336,9 +341,13 @@ public class TestRunnerImpl extends CompoundImpl implements TestRunner,
                 successful &= executeTestSuite(suiteComponent);
             }
             //break out if the thread is interrupted
-            if (Thread.currentThread().isInterrupted()) {
-                log.info("Test was interrupted");
-                return false;
+            Thread thisThread = Thread.currentThread();
+            synchronized(thisThread) {
+                if (thisThread.isInterrupted()) {
+                    thisThread.interrupt();
+                    log.info(TEST_WAS_INTERRUPTED);
+                    throw new InterruptedException(TEST_WAS_INTERRUPTED);
+                }
             }
             if(!successful && !configuration.getKeepGoing()) {
                 //we have failed and asked to stop in this situation
@@ -354,8 +363,10 @@ public class TestRunnerImpl extends CompoundImpl implements TestRunner,
      * @return true iff it worked
      * @throws RemoteException network trouble
      * @throws SmartFrogException other problems
+     * @throws InterruptedException if the test run is interrupted
      */
-    private boolean executeSingleTest() throws SmartFrogException, RemoteException {
+    private boolean executeSingleTest()
+            throws SmartFrogException, RemoteException, InterruptedException {
         Prim child=null;
         child=sfResolve(singleTest,child,false);
         if(child==null) {
@@ -372,8 +383,10 @@ public class TestRunnerImpl extends CompoundImpl implements TestRunner,
      * @return true if the tests were successful
      * @throws RemoteException network trouble
      * @throws SmartFrogException other problems
+     * @throws InterruptedException if the test run is interrupted
      */
-    private boolean executeTestSuite(TestSuite suiteComponent) throws RemoteException, SmartFrogException {
+    private boolean executeTestSuite(TestSuite suiteComponent)
+            throws RemoteException, SmartFrogException, InterruptedException {
         //bind to the configuration. This will set the static properties.
         suiteComponent.bind(getConfiguration());
         boolean result;
@@ -382,8 +395,8 @@ public class TestRunnerImpl extends CompoundImpl implements TestRunner,
         } finally {
             //unbind from this test
             suiteComponent.bind(null);
+            updateResultAttributes((Prim) suiteComponent);
         }
-        updateResultAttributes((Prim)suiteComponent);
         return result;
     }
 
@@ -391,6 +404,7 @@ public class TestRunnerImpl extends CompoundImpl implements TestRunner,
     /**
      * fetch the test results from the Test suite, then update our own values
      *
+     * @param testSuite test suite to patch
      * @throws RemoteException network trouble
      * @throws SmartFrogException other problems
      */

@@ -42,16 +42,16 @@ public interface BufferingListener extends TestListenerFactory {
 
     /**
      * get the number of errors
-     * @return
-     * @throws RemoteException
+     * @return the error count
+     * @throws RemoteException  for network trouble
      */
     int getErrorCount() throws RemoteException;
 
     /**
      * get the error at that point in the list
-     * @param entry
+     * @param entry info about a given entry
      * @return a copy of the error
-     * @throws RemoteException
+     * @throws RemoteException for network trouble
      * @throws IndexOutOfBoundsException if the entry is out of range
      */
     TestInfo getErrorInfo(int entry) throws RemoteException, IndexOutOfBoundsException;
@@ -59,8 +59,8 @@ public interface BufferingListener extends TestListenerFactory {
     /**
      * get the number of starts
      *
-     * @return
-     * @throws RemoteException
+     * @return the start count
+     * @throws RemoteException  for network trouble
      */
     int getStartCount() throws RemoteException;
 
@@ -69,17 +69,16 @@ public interface BufferingListener extends TestListenerFactory {
      *
      * @param entry the list entry beginning at zero
      * @return a copy of the info
-     * @throws RemoteException
+     * @throws RemoteException  for network trouble
      * @throws IndexOutOfBoundsException if the entry is out of range
      */
     TestInfo getStartInfo(int entry) throws RemoteException, IndexOutOfBoundsException;
 
 
     /**
-     * get the number of end
-     *
-     * @return
-     * @throws RemoteException
+     * get the number of ends
+     * @return the end count
+     * @throws RemoteException for network trouble
      */
     int getEndCount() throws RemoteException;
 
@@ -88,7 +87,7 @@ public interface BufferingListener extends TestListenerFactory {
      *
      * @param entry the list entry beginning at zero
      * @return a copy of the info
-     * @throws RemoteException
+     * @throws RemoteException for network trouble
      * @throws IndexOutOfBoundsException if the entry is out of range
      */
     TestInfo getEndInfo(int entry) throws RemoteException, IndexOutOfBoundsException;
@@ -97,8 +96,8 @@ public interface BufferingListener extends TestListenerFactory {
     /**
      * get the number of failures
      *
-     * @return
-     * @throws RemoteException
+     * @return the number of failures
+     * @throws RemoteException for network trouble
      */
     int getFailureCount() throws RemoteException;
 
@@ -107,7 +106,7 @@ public interface BufferingListener extends TestListenerFactory {
      *
      * @param entry the list entry beginning at zero
      * @return a copy of the info
-     * @throws RemoteException
+     * @throws RemoteException for network trouble
      * @throws IndexOutOfBoundsException if the entry is out of range
      */
     TestInfo getFailureInfo(int entry) throws RemoteException, IndexOutOfBoundsException;
@@ -115,7 +114,7 @@ public interface BufferingListener extends TestListenerFactory {
     /**
      * returns true iff all tests passed
      * @return test success flag
-     * @throws RemoteException
+     * @throws RemoteException for network trouble
      */
     boolean testsWereSuccessful() throws RemoteException;
 
@@ -124,14 +123,14 @@ public interface BufferingListener extends TestListenerFactory {
      *
      * @return and interface that should have events reported to it
      *
-     * @throws RemoteException
+     * @throws RemoteException for network trouble
      */
     int getSessionStartCount() throws RemoteException;
 
     /**
      * get the number of times that callers ended listening
-     * @return
-     * @throws RemoteException
+     * @return the number of times that callers ended listening
+     * @throws RemoteException for network trouble
      */
     int getSessionEndCount() throws RemoteException;
 }

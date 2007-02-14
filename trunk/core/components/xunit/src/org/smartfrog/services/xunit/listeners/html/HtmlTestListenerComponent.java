@@ -48,7 +48,7 @@ public class HtmlTestListenerComponent extends AbstractXmlListenerComponent
     /**
      * construct a base interface
      *
-     * @throws java.rmi.RemoteException
+     * @throws RemoteException
      */
     public HtmlTestListenerComponent() throws RemoteException {
         helper=new ComponentHelper(this);
@@ -56,12 +56,9 @@ public class HtmlTestListenerComponent extends AbstractXmlListenerComponent
 
 
     /**
-     * Can be called to start components. Subclasses should override to provide
-     * functionality Do not block in this call, but spawn off any main loops!
-     *
-     * @throws org.smartfrog.sfcore.common.SmartFrogException
-     *                                  failure while starting
-     * @throws java.rmi.RemoteException In case of network/rmi error
+     * {@inheritDoc}
+     * @throws SmartFrogException error while deploying
+     * @throws RemoteException In case of network/rmi error
      */
     public synchronized void sfStart()
             throws SmartFrogException, RemoteException {
@@ -77,17 +74,9 @@ public class HtmlTestListenerComponent extends AbstractXmlListenerComponent
     }
 
     /**
-     * Override point; create a new XML listener
-     *
-     * @param hostname
-     * @param destFile
-     * @param processname
-     * @param suitename
-     * @param start
-     *
-     * @return
-     *
-     * @throws IOException
+     * {@inheritDoc}
+     * @throws SmartFrogException error while deploying
+     * @throws RemoteException In case of network/rmi error
      */
     protected OneHostXMLListener createNewSingleHostListener(String hostname,
                                                              File destFile,
@@ -111,9 +100,8 @@ public class HtmlTestListenerComponent extends AbstractXmlListenerComponent
     /**
      * {@inheritDoc}
      *
-     * @throws org.smartfrog.sfcore.common.SmartFrogException
-     *                                  error while deploying
-     * @throws java.rmi.RemoteException In case of network/rmi error
+     * @throws SmartFrogException error while deploying
+     * @throws RemoteException In case of network/rmi error
      */
     public synchronized void sfDeploy() throws SmartFrogException,
             RemoteException {

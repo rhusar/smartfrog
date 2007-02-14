@@ -1,4 +1,4 @@
-/** (C) Copyright 2004 Hewlett-Packard Development Company, LP
+/** (C) Copyright 2006-2007 Hewlett-Packard Development Company, LP
 
  This library is free software; you can redistribute it and/or
  modify it under the terms of the GNU Lesser General Public
@@ -58,7 +58,7 @@ public class BufferingListenerImpl extends AbstractListenerImpl
      * get the number of errors
      *
      * @return the error count
-     * @throws java.rmi.RemoteException
+     * @throws RemoteException for network trouble
      */
     public synchronized int getErrorCount() throws RemoteException {
         return errors.size();
@@ -69,7 +69,7 @@ public class BufferingListenerImpl extends AbstractListenerImpl
      *
      * @param entry the index of the entry
      * @return a copy of the error
-     * @throws java.rmi.RemoteException
+     * @throws RemoteException  for network trouble
      * @throws IndexOutOfBoundsException if the entry is out of range
      */
     public synchronized TestInfo getErrorInfo(int entry)
@@ -80,8 +80,8 @@ public class BufferingListenerImpl extends AbstractListenerImpl
     /**
      * get the number of starts
      *
-     * @return
-     * @throws java.rmi.RemoteException
+     * @return the number of starts
+     * @throws RemoteException for network trouble
      */
     public synchronized int getStartCount() throws RemoteException {
         return starts.size();
@@ -92,7 +92,7 @@ public class BufferingListenerImpl extends AbstractListenerImpl
      *
      * @param entry the list entry beginning at zero
      * @return a copy of the info
-     * @throws java.rmi.RemoteException
+     * @throws RemoteException for network trouble
      * @throws IndexOutOfBoundsException if the entry is out of range
      */
     public synchronized TestInfo getStartInfo(int entry)
@@ -103,8 +103,8 @@ public class BufferingListenerImpl extends AbstractListenerImpl
     /**
      * get the number of end
      *
-     * @return
-     * @throws java.rmi.RemoteException
+     * @return the end count
+     * @throws RemoteException for network trouble
      */
     public synchronized int getEndCount() throws RemoteException {
         return ends.size();
@@ -115,7 +115,7 @@ public class BufferingListenerImpl extends AbstractListenerImpl
      *
      * @param entry the list entry beginning at zero
      * @return a copy of the info
-     * @throws java.rmi.RemoteException
+     * @throws RemoteException for network trouble
      * @throws IndexOutOfBoundsException if the entry is out of range
      */
     public TestInfo getEndInfo(int entry) throws RemoteException,
@@ -126,8 +126,8 @@ public class BufferingListenerImpl extends AbstractListenerImpl
     /**
      * get the number of failures
      *
-     * @return
-     * @throws java.rmi.RemoteException
+     * @return the failure count
+     * @throws RemoteException for network trouble
      */
     public int getFailureCount() throws RemoteException {
         return failures.size();
@@ -138,7 +138,7 @@ public class BufferingListenerImpl extends AbstractListenerImpl
      *
      * @param entry the list entry beginning at zero
      * @return a copy of the info
-     * @throws java.rmi.RemoteException
+     * @throws RemoteException for network trouble
      * @throws IndexOutOfBoundsException if the entry is out of range
      */
     public TestInfo getFailureInfo(int entry) throws RemoteException,
@@ -150,7 +150,7 @@ public class BufferingListenerImpl extends AbstractListenerImpl
      * returns true iff all tests passed
      *
      * @return test success flag
-     * @throws java.rmi.RemoteException
+     * @throws RemoteException for network trouble
      */
     public boolean testsWereSuccessful() throws RemoteException {
         return getFailureCount() == 0 && getErrorCount() == 0;
@@ -160,7 +160,7 @@ public class BufferingListenerImpl extends AbstractListenerImpl
      * get the number of times that callers started listening
      *
      * @return and interface that should have events reported to it
-     * @throws java.rmi.RemoteException
+     * @throws RemoteException for network trouble
      */
     public int getSessionStartCount() throws RemoteException {
         return sessionStartCount;
@@ -174,7 +174,7 @@ public class BufferingListenerImpl extends AbstractListenerImpl
      * get the number of times that callers ended listening
      *
      * @return
-     * @throws java.rmi.RemoteException
+     * @throws RemoteException for network trouble
      */
     public int getSessionEndCount() throws RemoteException {
         return sessionEndCount;
@@ -235,6 +235,8 @@ public class BufferingListenerImpl extends AbstractListenerImpl
 
         /**
          * An error occurred.
+         * @param test the test
+         * @throws RemoteException for network trouble
          */
         public synchronized void addError(TestInfo test)
                 throws RemoteException {
@@ -245,7 +247,7 @@ public class BufferingListenerImpl extends AbstractListenerImpl
         /**
          * make a clone of any test info
          *
-         * @param test
+         * @param test test to clone
          * @return cloned test information
          */
         private TestInfo cloneTestInfo(TestInfo test) {
@@ -261,6 +263,8 @@ public class BufferingListenerImpl extends AbstractListenerImpl
 
         /**
          * A failure occurred.
+         * @param test the test
+         * @throws RemoteException for network trouble
          */
         public synchronized void addFailure(TestInfo test)
                 throws RemoteException {
@@ -270,6 +274,8 @@ public class BufferingListenerImpl extends AbstractListenerImpl
 
         /**
          * A test ended.
+         * @param test the test
+         * @throws RemoteException for network trouble
          */
         public synchronized void endTest(TestInfo test) throws RemoteException {
             TestInfo cloned = cloneTestInfo(test);
@@ -278,6 +284,8 @@ public class BufferingListenerImpl extends AbstractListenerImpl
 
         /**
          * A test started.
+         * @param test the test
+         * @throws RemoteException for network trouble
          */
         public synchronized void startTest(TestInfo test)
                 throws RemoteException {
@@ -285,6 +293,11 @@ public class BufferingListenerImpl extends AbstractListenerImpl
             starts.add(cloned);
         }
 
+        /**
+         * Log an event
+         * @param event the entry to log
+         * @throws RemoteException for network trouble
+         */
         public void log(LogEntry event) throws RemoteException {
             messages.add(event);
         }

@@ -12,6 +12,7 @@ import org.smartfrog.sfcore.prim.Prim;
 /** created Nov 22, 2004 4:45:26 PM */
 
 public class LoggingChainListenerTest extends TestRunnerTestBase {
+    private static final String TEST_LOG = "TestLog";
 
     public LoggingChainListenerTest(String name) {
         super(name);
@@ -25,7 +26,7 @@ public class LoggingChainListenerTest extends TestRunnerTestBase {
                 "LoggingCompound");
 
         TestListenerLog log = (TestListenerLog) application.sfResolve(
-                "testLog",
+                TEST_LOG,
                 (Prim) null,
                 true);
         BufferingListener factory = new BufferingListenerImpl();
@@ -43,7 +44,7 @@ public class LoggingChainListenerTest extends TestRunnerTestBase {
     public void testSuccess() throws Throwable {
 
         int seconds = getTimeout();
-        application = deployExpectingSuccess("/files/log-chain-all.sf", "LogChainTest");
+        application = deployExpectingSuccess("/files/log-all.sf", "LogAllTest");
 
         TestRunner runner = (TestRunner) application.sfResolve(
                 "tests",

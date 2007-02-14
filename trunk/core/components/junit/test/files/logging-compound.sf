@@ -23,8 +23,7 @@ For more information: www.smartfrog.org
 #include "/org/smartfrog/sfcore/logging/logtoprimimpl.sf"
 
     /**
-     * run all tests in the suite.
-     * output to an XML listener
+     * this logging compound logs to a the test listener log
      */
 
 LoggingCompound extends Compound {
@@ -46,7 +45,7 @@ LoggingCompound extends Compound {
     }
   }
 
-    testLog LAZY log:logTo:logTo;
+  TestLog LAZY log:logTo:logTo;
 
 }
 

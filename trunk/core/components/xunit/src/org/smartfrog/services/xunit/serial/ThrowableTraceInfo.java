@@ -66,9 +66,16 @@ public final class ThrowableTraceInfo implements Serializable, Cloneable {
      */
     private ThrowableTraceInfo cause;
 
+    /**
+     * simple constructor
+     */
     public ThrowableTraceInfo() {
     }
 
+    /**
+     * construct from a fault
+     * @param fault exception to use as a source
+     */
     public ThrowableTraceInfo(Throwable fault) {
         fillInFromThrowable(fault);
     }
@@ -76,7 +83,7 @@ public final class ThrowableTraceInfo implements Serializable, Cloneable {
     /**
      * Copy constructor; will deep copy cause information too. Stack traces are just shared.
      *
-     * @param that
+     * @param that the source of the information
      */
     public ThrowableTraceInfo(ThrowableTraceInfo that) {
         classname = that.classname;
@@ -91,7 +98,7 @@ public final class ThrowableTraceInfo implements Serializable, Cloneable {
     /**
      * fill in our state from a fault
      *
-     * @param fault
+     * @param fault exception to use as a source
      */
     public void fillInFromThrowable(Throwable fault) {
         assert fault != null;
@@ -149,7 +156,7 @@ public final class ThrowableTraceInfo implements Serializable, Cloneable {
      * test for this fault containing an assertion failure;
      * done by looking at the original classname
      *
-     * @return
+     * @return true if a junit3 assertion failure is in the classname
      */
     public boolean isAssertionFailure() {
         boolean b = "junit.framework.AssertionFailedError".equals(classname);
@@ -158,15 +165,22 @@ public final class ThrowableTraceInfo implements Serializable, Cloneable {
 
     }
 
-    public boolean equals(Object o) {
-        if (this == o) {
+
+    /**
+     * Equality test.
+     * Uses the classname and message.
+     * @param that
+     * @return true if there is a match
+     */
+    public boolean equals(Object that) {
+        if (this == that) {
             return true;
         }
-        if (!(o instanceof ThrowableTraceInfo)) {
+        if (!(that instanceof ThrowableTraceInfo)) {
             return false;
         }
 
-        final ThrowableTraceInfo throwableTraceInfo = (ThrowableTraceInfo) o;
+        final ThrowableTraceInfo throwableTraceInfo = (ThrowableTraceInfo) that;
 
         if (!classname.equals(throwableTraceInfo.classname)) {
             return false;
@@ -178,6 +192,11 @@ public final class ThrowableTraceInfo implements Serializable, Cloneable {
         return true;
     }
 
+
+    /**
+     * Hash code
+     * @return a hash code from the classname and the message
+     */
     public int hashCode() {
         int result;
         result = classname.hashCode();
@@ -188,7 +207,7 @@ public final class ThrowableTraceInfo implements Serializable, Cloneable {
     /**
      * deep clone
      *
-     * @return
+     * @return a clone
      * @throws CloneNotSupportedException
      */
     public Object clone() throws CloneNotSupportedException {
@@ -199,6 +218,10 @@ public final class ThrowableTraceInfo implements Serializable, Cloneable {
         return cloned;
     }
 
+    /**
+     * convert to a string
+     * @return
+     */
     public String toString() {
         if (classname == null) {
             return "uninitialized";

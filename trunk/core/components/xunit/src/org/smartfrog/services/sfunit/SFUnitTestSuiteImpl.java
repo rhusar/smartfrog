@@ -57,7 +57,7 @@ public class SFUnitTestSuiteImpl extends AbstractTestSuite
     /**
      * Return true iff the component is finished. Spin on this, with a (delay) between calls
      *
-     * @return
+     * @return true if we have finished
      */
     public boolean isFinished() {
         return finished;
@@ -146,7 +146,7 @@ public class SFUnitTestSuiteImpl extends AbstractTestSuite
      * @throws RemoteException    for network problems
      * @throws SmartFrogException for other problems
      */
-    public boolean runTests() throws RemoteException, SmartFrogException {
+    public boolean runTests() throws RemoteException, SmartFrogException, InterruptedException {
         InetAddress host = sfDeployedHost();
         String hostname = host.getHostName();
         //use our short name
@@ -190,6 +190,8 @@ public class SFUnitTestSuiteImpl extends AbstractTestSuite
      *
      * @param testBlock component to test
      * @return true if the test worked
+     * @throws SmartFrogException smartfrog problems
+     * @throws RemoteException network problems
      */
     private synchronized boolean testOneChild(TestBlock testBlock) throws SmartFrogException, RemoteException {
         activeTest = (Prim) testBlock;
@@ -197,6 +199,7 @@ public class SFUnitTestSuiteImpl extends AbstractTestSuite
         try {
             activeTest.sfStart();
             //now we wait for the child to terminate
+            //TODO: block, without breaking synchronization
             return true;
         } catch (SmartFrogException e) {
             caught = e;
@@ -211,7 +214,9 @@ public class SFUnitTestSuiteImpl extends AbstractTestSuite
     /**
      * Deploy a child; return false if there were none left
      *
-     * @return
+     * @return whether the test was run or not
+     * @throws SmartFrogException smartfrog problems
+     * @throws RemoteException network problems
      */
     private synchronized boolean deployNextChild() throws SmartFrogException, RemoteException {
         if (testChildrenIterator.hasNext()) {
@@ -227,11 +232,11 @@ public class SFUnitTestSuiteImpl extends AbstractTestSuite
      * component.</li> <li> if it is the last - terminate normally. </li> <li> If starting the next component raised an
      * error, terminate abnormally</li> </ol> Abnormal child terminations are relayed up.
      *
-     * @param status exit record of the component
+     * @param record exit record of the component
      * @param comp   child component that is terminating
      * @return true whenever a child component is not started
      */
-    protected boolean onChildTerminated(TerminationRecord status, Prim comp) {
+    protected boolean onChildTerminated(TerminationRecord record, Prim comp) {
         if (activeTest == comp) {
             //cast it
             TestBlock test = (TestBlock) activeTest;
@@ -275,8 +280,8 @@ public class SFUnitTestSuiteImpl extends AbstractTestSuite
                 caught = e;
             }
             //terminate with an error if we caught something
-            TerminationRecord record = TerminationRecord.abnormal("Failed to start next test", sfCompleteName, caught);
-            sfTerminate(status);
+            TerminationRecord newRecord = TerminationRecord.abnormal("Failed to start next test", sfCompleteName, caught);
+            sfTerminate(newRecord);
             //and notify the caller we are handling it ourselves
             return false;
         } else {

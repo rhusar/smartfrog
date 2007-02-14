@@ -34,7 +34,7 @@ ITS MEDIA, AND YOU HEREBY WAIVE ANY CLAIM IN THIS REGARD.
  * declare all the xunit stuff, even things from subsidiary directories
  */
 
-#include "/org/smartfrog/services/xunit/base/testrunner.sf"
+#include "/org/smartfrog/services/xunit/base/components.sf"
 #include "/org/smartfrog/services/xunit/log/testlistenerlogimpl.sf"
 #include "/org/smartfrog/services/xunit/listeners/html/components.sf"
 #include "/org/smartfrog/services/xunit/timeouts/components.sf"

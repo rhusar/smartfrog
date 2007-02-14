@@ -30,10 +30,6 @@ For more information: www.smartfrog.org
 #include "/org/smartfrog/services/xunit/base/testsuite.sf"
 //test runner
 #include "/org/smartfrog/services/xunit/base/testrunner.sf"
-//include logging
-#include "/org/smartfrog/services/xunit/base/log/testlistenerlogimpl.sf"
-//base listeners
-#include "/org/smartfrog/services/xunit/base/listeners/components.sf";
 
 
 
