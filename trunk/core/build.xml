@@ -351,19 +351,28 @@ For more information: www.smartfrog.org
   <!-- =================================================================== -->
   <target name="cddlm" depends="ivy-cddlm" />
 
+
+  <target name="ivy-properties">
+    <property name="ivy.dir" location="${user.home}/.ivy" />
+    <property name="ivy.cache.dir" location="${ivy.dir}/cache" />
+    <property name="ivy.local.dir" location="${ivy.dir}/local" />
+    <property name="ivy.package.name" value="org.smartfrog" />
+  </target>
+
   <!-- =================================================================== -->
   <!-- Create an ordered list of all ivy-enabled projects-->
   <!-- Non-ivy projects are ignored-->
   <!-- we also ignore the deployapi components, as their build is more complex-->
   <!-- =================================================================== -->
-  <target name="ivy-init" depends="init"
+
+  <target name="ivy-init" depends="init,ivy-properties"
           xmlns:ivy="antlib:fr.jayasoft.ivy.ant">
-      <typedef uri="antlib:fr.jayasoft.ivy.ant" onerror="fail"
-          resource="fr/jayasoft/ivy/ant/antlib.xml">
-        <classpath>
-          <pathelement location="antbuild/ivy/lib/ivy-${ivy.version}.jar"/>
-        </classpath>
-      </typedef>
+    <typedef uri="antlib:fr.jayasoft.ivy.ant" onerror="fail"
+        resource="fr/jayasoft/ivy/ant/antlib.xml">
+      <classpath>
+        <pathelement location="antbuild/ivy/lib/ivy-${ivy.version}.jar"/>
+      </classpath>
+    </typedef>
     <mkdir dir="external" />
     <ivy:configure file="antbuild/ivy/ivyconf.xml"/>
     <presetdef name="ivy-projects">
@@ -387,6 +396,7 @@ For more information: www.smartfrog.org
           <exclude name="xunit/build.xml" unless="java1.5+"/>
           <exclude name="database/build.xml" unless="java1.5+"/>
           <exclude name="xmpp/build.xml" unless="java1.5+"/>
+          <exclude name="concurrent/build.xml" unless="java1.5+"/>
         </fileset>
         <!--place for symlinks to external projects you want included-->
         <fileset dir="external" includes="**/build.xml"/>
@@ -453,14 +463,19 @@ ${child.projects.list}
     description="purge all locally published artifacts from the local repository">
   </target>
 
-  <target name="ivy-purge-published" depends="ivy-init"
+  <target name="ivy-purge-published" depends="ivy-properties"
     description="purge all locally published artifacts from the local repository">
-    <!--TODO: steve-->
+    <delete>
+      <fileset dir="${ivy.local.dir}" includes="${ivy.package.name}/**" />
+    </delete>
   </target>
 
-  <target name="ivy-purge-cache" depends="ivy-init"
-    description="purge all locally published artifacts from the local repository">
-    <!--TODO: steve-->
+  <target name="ivy-purge-cache" depends="ivy-properties"
+    description="purge all smartfrog artifacts from the cache">
+    <delete>
+      <fileset dir="${ivy.cache.dir}" includes="${ivy.package.name}/**" />
+      <fileset dir="${ivy.cache.dir}" includes="resolved-${ivy.package.name}-*" />
+    </delete>
   </target>
 
 
