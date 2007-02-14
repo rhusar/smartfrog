@@ -1356,7 +1356,7 @@ java.class.path=
   <!-- this is an override point -->
   <!-- default target -->
   <!-- ========================================================== -->
-  <target name="default" depends="dist"
+  <target name="default" depends="published"
     description="default target creates a distribution" />
 
 
@@ -1591,9 +1591,10 @@ java.class.path=
   </target>
 
   <target name="ivy-report" depends="ivy-resolve" >
-    <ivy:report todir="${build.dir}/ivy/reports"/>
+    <property name="ivy.report.dir" location="${build.dir}/ivy/reports"/>
+    <ivy:report todir="${ivy.report.dir}"/>
     <echo> published Ivy report to
-${build.dir}/ivy/reports
+${ivy.report.dir}
     </echo>
   </target>
 
