@@ -88,7 +88,7 @@
   <target name="parse" depends="ready-to-parse"
           description="parse the deployment descriptor">
     <property name="parse.quiet" value="true"/>
-    <sf-parse quiet="${parse.quiet}" classpathref="test.classpath">
+    <sf:parse quiet="${parse.quiet}" classpathref="tests.run.classpath">
       <sysproperty key="org.smartfrog.codebase"
                    value="${codebase}"/>
       <!-- test files -->
@@ -96,7 +96,7 @@
         <include name="files/*.sf"/>
         <exclude name="files/components.sf"/>
       </source>
-    </sf-parse>
+    </sf:parse>
   </target>
 
 
@@ -114,7 +114,7 @@
   <target name="deploy" depends="ready-to-deploy"
           description="deploy">
 
-    <sf:deploy classpathref="test.classpath"
+    <sf:deploy classpathref="tests.run.classpath"
                logStackTraces="true"
                host="${deploy.host}"
                timeout="${deploy.timeout}" >
