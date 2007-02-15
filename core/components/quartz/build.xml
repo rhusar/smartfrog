@@ -24,14 +24,17 @@ For more information: www.smartfrog.org
 -->
 
 <description>
-    Build file for ssh SmartFrog components.
+    Build file for quartz SmartFrog components.
 </description>
 
 
   <property name="is.component" value="true"/>
   <!-- override point -->
   <property file="build.properties"/>
-  <!--<property name="ivy.enabled" value="true"/>-->
+  <!--
+  <property name="ivy.enabled" value="true"/>
+  -->
+  <property name="ivy.enabled" value="true"/>
 
   <property name="root.dir" location="../.."/>
   <!-- Import common stuff -->

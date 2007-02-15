@@ -102,6 +102,12 @@
         rev="latest.integration"
         conf="sfjars->master;redist->redist"/>
 
+<!--    <dependency org="org.smartfrog"
+      name="sf-jmx"
+      changing="true"
+      rev="latest.integration"
+      conf="sfjars->master;redist->redist"/>-->
+
     <!--SLP-->
 <!--
     <dependency org="org.smartfrog"
