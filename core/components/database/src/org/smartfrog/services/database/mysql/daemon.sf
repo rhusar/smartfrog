@@ -37,6 +37,13 @@
     shellCmd TBD;
     processName shellCmd;
     shellArguments arguments;
+    //default socket path on unix systems
+    socketpath_unix "/tmp/mysql.sock";
+    //default named pipe name on NT systems
+    socketpath_nt "MySql";
+    socketpath socketpath_unix;
+    socketpath_argument ("--socket=" ++ socketpath);
+
     arguments TBD;
   }
 
@@ -60,13 +67,10 @@
     defaults "--no-defaults";
     low-priority-updates false;
     skip-external-locking true;
+    skip-grant-tables false;
     skip-innodb false;
     skip-networking false;
-    //default socket path on unix systems
-    socketpath_unix "/tmp/mysql.sock";
-    //default named pipe name on NT systems
-    socketpath_nt "MySql";
-    socketpath socketpath_unix;
+
     //build the options
     sqlmodes SQL_STRICT_ALL_TABLES;
     //some of the many SQL modes
@@ -99,9 +103,10 @@
       ("--bind-address=" ++ bindaddress),
       IF low-priority-updates THEN "--low-priority-updates" ELSE "" FI,
       IF skip-external-locking THEN "--skip-external-locking" ELSE "" FI,
+      IF skip-grant-tables THEN "--skip-grant-tables" ELSE "" FI,
       IF skip-innodb THEN "--skip-innodb" ELSE "" FI,
       IF skip-networking THEN "--skip-networking" ELSE "" FI,
-      ("--socket=" ++ socketpath),
+      socketpath_argument,
       ("--sql-mode=" ++ sqlmodes),
       ("--transaction-isolation=" ++ transaction-isolation)
     ];
@@ -149,7 +154,6 @@
    */
   mysqladmin extends MysqlApplication {
     shellCmd mysqladmin;
-    arguments [];
 
     //define all the commands of mysql admin
     create "create";
@@ -176,15 +180,15 @@
   }
 
   mysqladmin-ping extends mysqladmin {
-    arguments [ping];
+    arguments [socketpath_argument, ping];
   }
 
   mysqladmin-reload extends mysqladmin {
-    arguments [reload];
+    arguments [socketpath_argument,reload];
   }
 
   mysqladmin-refresh extends mysqladmin {
-    arguments [refresh];
+    arguments [socketpath_argument,refresh];
   }
 /**
  * Shut down a local mysql daemon by running mysqladmin -shutdown"
@@ -192,12 +196,12 @@
  * it runs on user permissions instead
  */
   mysqladmin-shutdown extends mysqladmin {
-    arguments [shutdown];
+    arguments [socketpath_argument,shutdown];
   }
 
 
   mysqladmin-status extends mysqladmin {
-    arguments [status];
+    arguments [socketpath_argument,status];
   }
 
 
