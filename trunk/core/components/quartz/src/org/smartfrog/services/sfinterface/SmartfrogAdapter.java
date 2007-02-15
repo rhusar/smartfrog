@@ -53,11 +53,11 @@ public interface SmartfrogAdapter {
      * @param hosts
      * @throws SFParseException          if the SF in the inputStream is invalid, or if map doesnt contain
      *                                   some mendatory attribute.
-     * @throws SFMutiHostSubmitException if the file and attributes are proper but runtime submission fails
+     * @throws SFMultiHostSubmitException if the file and attributes are proper but runtime submission fails
      *                                   on one or more nodes due to any error.
      */
     public Map submit(String descriptionFile, Map attributes, String[] hosts)
-            throws SFParseException, SFMutiHostSubmitException;
+            throws SFParseException, SFMultiHostSubmitException;
 
 
     /**
