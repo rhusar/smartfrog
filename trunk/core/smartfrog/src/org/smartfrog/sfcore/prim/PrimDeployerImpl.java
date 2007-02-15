@@ -90,7 +90,7 @@ public class PrimDeployerImpl implements ComponentDeployer, MessageKeys {
         try {
             // create instance
             final Class primClass = getPrimClass();
-            Prim dComponent = (Prim) primClass.newInstance();
+            Prim dComponent = createPrimInstance(primClass);
 
             // deploy component after wiping out the parentage of any
             // descriptions in the context. Prim is not a valid parent, so
@@ -119,6 +119,19 @@ public class PrimDeployerImpl implements ComponentDeployer, MessageKeys {
         } catch (Throwable t) {
             throw new SmartFrogDeploymentException(null, t, null, cxt);
        }
+    }
+
+    /**
+     *  Create a instance of Prim from primClass
+     * @param primClass
+     * @return Prim instance
+     * @throws Exception
+     * @throws InstantiationException
+     * @throws IllegalAccessException
+     */
+    protected Prim createPrimInstance(Class primClass) throws Exception {
+        Prim dComponent = (Prim) primClass.newInstance();
+        return dComponent;
     }
 
     /**
