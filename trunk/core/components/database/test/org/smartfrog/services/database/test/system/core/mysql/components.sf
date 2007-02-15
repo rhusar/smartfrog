@@ -28,10 +28,13 @@
 #include "/org/smartfrog/sfcore/workflow/components.sf"
 #include "/org/smartfrog/services/filesystem/components.sf"
 
- memorydb "memory";
- testUser "testUser";
- testPass "secret";
+Settings extends {
+   memorydb "memory";
+   testUser "testUser";
+   testPass "secret";
+   socketpath "/tmp/mysqld.sock";
 
+ }
 
  Mysqld extends mysqldaemon {
 /*
@@ -39,6 +42,8 @@
   terminateOnFailure false;
 */
   skip-innodb true;
+  skip-grant-tables true;
+  skip-networking true;
   logLevel 5;
 }
 
@@ -47,8 +52,8 @@
  }
 
  TestUserBinding extends DiaryBinding {
-   username testUser;
-   password testPass;
+   username Settings:testUser;
+   password Settings:testPass;
  }
 
  Datadir extends TempDirWithCleanup {
@@ -58,6 +63,7 @@
  DatabaseAndBinding extends Compound {
 
       datadir extends Datadir;
+
 
       mysqld extends Mysqld {
         datadir LAZY PARENT:datadir:absolutePath;
@@ -110,9 +116,13 @@ MysqlTest extends TestCompound {
 
     mysqld extends Mysqld;
 
-    -- extends mysqladmin-status;
+    -- extends mysqladmin-status {
+      socketpath Settings:socketpath;
+    }
 
-    -- extends mysqladmin-shutdown;
+    -- extends mysqladmin-shutdown {
+      socketpath Settings:socketpath;
+    }
 
     TestUserBinding;
 
