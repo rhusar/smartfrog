@@ -51,7 +51,7 @@ public class DefaultRootLocatorImpl implements RootLocator, MessageKeys {
   *  will not let us do the unbind/bind (no remote modifications allowed)
   *
   */
- private static class AsyncResetProcessCompound extends Thread {
+ private class AsyncResetProcessCompound extends Thread {
 
      private ProcessCompound pc;
 
@@ -81,22 +81,9 @@ public class DefaultRootLocatorImpl implements RootLocator, MessageKeys {
      }
 
      public void run() {
-         try {
-             if (bind){
-                //Bind
-                registry.bind(defaultName, pc);
-             }else {
-                //Unbind
-                registry.unbind(defaultName);
-             }
-         } catch (Exception e) {
-             // to be thrown in getProcessCompound
-             String msg = "unbinding";
-             if (bind) {msg = "binding";}
-             ex = SmartFrogRuntimeException.forward("Exception while "+msg
-                                             + "root ProcessCompound", e);
-         }
+         bindAction(pc, bind, ex);
      }
+
 
      /**
       * Gets the new Process compound or rethrows any exception that
@@ -134,6 +121,29 @@ public class DefaultRootLocatorImpl implements RootLocator, MessageKeys {
     public DefaultRootLocatorImpl() {
     }
 
+    /**
+     * Method that bind/unbinds to the "directory service" used by the locator. This method is called asynchronously by the locator.
+     * Overwrite point for other locators.
+     * @param pc ProcessCompound that will be registered/unregistered in the directory service
+     * @param bind boolean to determine if it should register or unregister?
+     * @param ex If any exception is thown during bind/unbind then it shold be stored here.
+     */
+    protected void bindAction(ProcessCompound pc, boolean bind, SmartFrogException ex) {
+         try {
+             if (bind){
+                //Bind
+                registry.bind(defaultName, pc);
+             }else {
+                //Unbind
+                registry.unbind(defaultName);
+             }
+         } catch (Exception e) {
+             // to be thrown in getProcessCompound
+             String msg = "unbinding";
+             if (bind) {msg = "binding";}
+             ex = SmartFrogRuntimeException.forward("Exception while "+msg  + "root ProcessCompound", e);
+         }
+     }
     /**
      * Gets the port of RMI registry on which input process compound is running or
      * if ProcessCompound is null then the 'sfRootLocatorPort' is read from
