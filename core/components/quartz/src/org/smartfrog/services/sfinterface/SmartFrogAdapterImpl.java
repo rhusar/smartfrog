@@ -4,13 +4,10 @@ package org.smartfrog.services.sfinterface;
 import org.smartfrog.SFSystem;
 import org.smartfrog.sfcore.common.*;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
-import org.smartfrog.sfcore.componentdescription.ComponentDescriptionImpl;
-import org.smartfrog.sfcore.deployer.SFDeployer;
 import org.smartfrog.sfcore.logging.LogFactory;
 import org.smartfrog.sfcore.logging.LogSF;
 import org.smartfrog.sfcore.parser.Phases;
 import org.smartfrog.sfcore.parser.SFParser;
-import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.processcompound.ProcessCompound;
 import org.smartfrog.sfcore.processcompound.SFProcess;
@@ -175,14 +172,15 @@ public class SmartFrogAdapterImpl implements SmartfrogAdapter {
      * @param hosts           String[]
      * @throws SFParseException          if the SF in the inputStream is invalid, or if map doesnt
      *                                   contain some mendatory attribute.
-     * @throws SFMutiHostSubmitException if the file and attributes are proper but runtime
+     * @throws SFMultiHostSubmitException if the file and attributes are proper but runtime
      *                                   submission fails on one or more nodes due to any error.
      *                                   <p/>
      *                                   org.smartfrog.services.avalanche.repository.smartfrog.SmartfrogAdapter method
      */
-    public Map submit(String descriptionFile, Map attributes, String[] hosts) throws SFParseException, SFMutiHostSubmitException {
+    public Map submit(String descriptionFile, Map attributes, String[] hosts) throws SFParseException,
+        SFMultiHostSubmitException {
 
-        SFMutiHostSubmitException multiHostException = null;
+        SFMultiHostSubmitException multiHostException = null;
         Map resultSet = new HashMap();
         String hostN = "";
 
@@ -197,7 +195,7 @@ public class SmartFrogAdapterImpl implements SmartfrogAdapter {
              resultSet.put(hostN, submit(descriptionFile, attributes, hostN));
             } catch (Throwable thr) {
                 if (multiHostException == null) {
-                    multiHostException = new SFMutiHostSubmitException(resultSet.toString());
+                    multiHostException = new SFMultiHostSubmitException(resultSet.toString());
                 }
             }
         }
@@ -213,9 +211,10 @@ public class SmartFrogAdapterImpl implements SmartfrogAdapter {
 
 
 
-    public Map submit(String descriptionFile, Map attributes, Map hosts) throws SFParseException, SFMutiHostSubmitException {
+    public Map submit(String descriptionFile, Map attributes, Map hosts) throws SFParseException,
+        SFMultiHostSubmitException {
 
-        SFMutiHostSubmitException multiHostException = null;
+        SFMultiHostSubmitException multiHostException = null;
         Map resultSet = new HashMap();
         String hostN = "";
 
