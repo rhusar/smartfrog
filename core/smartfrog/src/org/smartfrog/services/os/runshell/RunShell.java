@@ -107,6 +107,13 @@ public interface RunShell extends Remote {
     String varTerminateOnFailure = "terminateOnFailure";
 
     /**
+     * Should we print the command on failure? The default is false, so that
+     * nothing sensitive appears in logs.
+     * {@value}
+     */
+    String varPrintCommandOnFailure = "printCommandOnFailure";
+
+    /**
      *  Executes the given command.
      *
      * @param  cmd  command to be exceuted

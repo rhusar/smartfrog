@@ -24,7 +24,7 @@ TableManipulationTest extends TestCompound {
 
         dropUser1 extends DropUser {
           database LAZY ATTRIB action:binding;
-          username testUser;
+          username Settings:testUser;
           failOnSqlError false;
         }
 
@@ -35,8 +35,8 @@ TableManipulationTest extends TestCompound {
 
         newuser extends CreateUser {
           database LAZY PARENT:PARENT:action:binding;
-          username testUser;
-          password testPass;
+          username Settings:testUser;
+          password Settings:testPass;
         }
 
 

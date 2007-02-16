@@ -36,6 +36,7 @@
     mysqlcheck    "mysqlcheck";
     shellCmd TBD;
     processName shellCmd;
+    printCommandOnFailure true;
     shellArguments arguments;
     //default socket path on unix systems
     socketpath_unix "/tmp/mysql.sock";
@@ -80,6 +81,11 @@
     SQL_STRICT_TRANS_TABLES "STRICT_TRANS_TABLES";
     SQL_TRADITIONAL "TRADITIONAL";
 
+    TX_READ_UNCOMMITTED "READ-UNCOMMITTED";
+    TX_READ-COMMITTED "READ-COMMITTED";
+    TX_REPEATABLE-READ "REPEATABLE-READ";
+    TX_SERIALIZABLE "SERIALIZABLE";
+
     /*
      --transaction-isolation=level
 
@@ -88,11 +94,6 @@
               SERIALIZABLE. See Section 4.6, “SET TRANSACTION Syntax”.
     */
     transaction-isolation TX_SERIALIZABLE;
-    TX_READ_UNCOMMITTED "READ-UNCOMMITTED";
-    TX_READ-COMMITTED "READ-COMMITTED";
-    TX_REPEATABLE-READ "REPEATABLE-READ";
-    TX_SERIALIZABLE "SERIALIZABLE";
-
 
     arguments [
       defaults,

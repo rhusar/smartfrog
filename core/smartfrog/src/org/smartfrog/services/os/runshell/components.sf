@@ -31,6 +31,7 @@ RunShellSchema extends Schema {
       description "Log level: 5- info log, 1 - Critical. Use -1 to avoid logging";
     }
     outputMsgTo extends Optional;
+    printCommandOnFailure extends OptionalBoolean;
     printStack extends OptionalBoolean;
     processID extends OptionalString;
     processName extends String;
@@ -74,6 +75,7 @@ ExecuteProgram extends Prim {
    useExitCmd false;
    shouldTerminate true;
    terminateOnFailure true;
+   printCommandOnFailure false;
 }
 
 /**
