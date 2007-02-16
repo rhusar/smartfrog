@@ -1027,7 +1027,7 @@ public class CompoundImpl extends PrimImpl implements Compound {
      * @throws java.rmi.RemoteException
      * @throws SmartFrogUpdateException
      */
-    public void sfUpdateComponent(ComponentDescription desc) throws RemoteException, SmartFrogUpdateException {
+    public void sfUpdateComponent(ComponentDescription desc) throws RemoteException, SmartFrogException {
         boolean ready;
 
         try {

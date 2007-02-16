@@ -1633,7 +1633,7 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
      * @throws java.rmi.RemoteException
      * @throws org.smartfrog.sfcore.common.SmartFrogUpdateException
      */
-    public void sfUpdateComponent(ComponentDescription desc) throws RemoteException, SmartFrogUpdateException {
+    public void sfUpdateComponent(ComponentDescription desc) throws RemoteException, SmartFrogException {
         boolean ready;
 
         try {
@@ -1661,7 +1661,7 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
                 String message = "error in update, abandoning";
                 if (sfLog().isWarnEnabled()) sfLog().warn(message,e);
                 throw new SmartFrogUpdateException(message, e);
-            }    
+            }
         }
 
         if (ready) {
