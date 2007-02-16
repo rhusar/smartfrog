@@ -58,7 +58,11 @@ public final class Statistics implements Serializable, Cloneable {
 
     /**
      * write all our state to the results order it so that we set the finished
-     * last
+     * attribute last
+     * @param node note to add to
+     * @param finished flag if the run is finished
+     * @throws SmartFrogRuntimeException any failure to set an attribute
+     * @throws RemoteException networkin problems
      */
     public synchronized void updateResultAttributes(Prim node, boolean finished)
             throws SmartFrogRuntimeException, RemoteException {
@@ -76,11 +80,10 @@ public final class Statistics implements Serializable, Cloneable {
     /**
      * extract test info from a Prim class
      *
-     * @param node
+     * @param node node to work on
      * @return true if the prim thinks it has finished.
-     * @throws org.smartfrog.sfcore.common.SmartFrogResolutionException
-     *
-     * @throws RemoteException
+     * @throws SmartFrogResolutionException failure to resolve something
+     * @throws RemoteException networking problems
      */
     public boolean retrieveResultAttributes(Prim node)
             throws SmartFrogResolutionException, RemoteException {
@@ -101,7 +104,7 @@ public final class Statistics implements Serializable, Cloneable {
     /**
      * add one set of statistics to another
      *
-     * @param that
+     * @param that the other statistics source
      */
     public synchronized void add(Statistics that) {
         addErrors(that.getErrors());
@@ -118,9 +121,9 @@ public final class Statistics implements Serializable, Cloneable {
     /**
      * extract test info from a prim class and add it to our state
      *
-     * @param node
-     * @throws SmartFrogResolutionException
-     * @throws RemoteException
+     * @param node node to work on
+     * @throws SmartFrogResolutionException failure to resolve something
+     * @throws RemoteException networking problems
      */
     public void retrieveAndAdd(Prim node) throws SmartFrogResolutionException,
             RemoteException {
@@ -217,7 +220,7 @@ public final class Statistics implements Serializable, Cloneable {
      * get number of tests that did not succeed, the sum
      * of failures+errors. Synchronised.
      *
-     * @return
+     * @return the number of unsuccessful tests
      */
     public synchronized int getUnsuccessfulTests() {
         return getFailures() + getErrors();
