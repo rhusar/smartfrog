@@ -121,7 +121,7 @@ public class RunShellImpl extends PrimImpl implements Prim, RunShell, Runnable {
     /** String for Termination type. */
     private String terminationType = "";
     /** TerminationRecord object. */
-    private TerminationRecord termR;
+    private TerminationRecord terminationRecord;
     /** Flag indicating detachment. */
     private boolean shouldDetach = false;
     /**
@@ -135,6 +135,11 @@ public class RunShellImpl extends PrimImpl implements Prim, RunShell, Runnable {
      * field is false.
      */
     private boolean terminateOnFailure=false;
+    /**
+     * Should we print the command on failure? The default is false, so that
+     * nothing sensitive appears in logs.
+     */
+    private boolean printCommandOnFailure;
 
     /** logger value. */
     private int logger = 2;
@@ -144,6 +149,7 @@ public class RunShellImpl extends PrimImpl implements Prim, RunShell, Runnable {
 
     /** helper */
     private ComponentHelper helper;
+    private String fullShellCommand;
 
     /**
      *  Constructor.
@@ -170,18 +176,16 @@ public class RunShellImpl extends PrimImpl implements Prim, RunShell, Runnable {
             //Create subProcess
             File workDirFile = new File(workDir);
             String[] commands = createCmd(shellPrefix, shellCommand, shellCommandAtt);
+            fullShellCommand = arrayToString(commands, "  '", "'\n");
             if (log.isDebugEnabled()) {
                 StringBuffer buffer=new StringBuffer();
                 buffer.append("Running in dir ");
                 buffer.append(workDirFile);
                 buffer.append('\n');
-                for(int i=0;i<commands.length;i++) {
-                    buffer.append("  '");
-                    buffer.append(commands[i]);
-                    buffer.append("'\n");
-                }
+                buffer.append(fullShellCommand);
                 log.debug(buffer);
             }
+            fullShellCommand = arrayToString(commands, " '", "' ");
             subProcess = runtime.exec(
                     commands,
                     envProp,
@@ -231,37 +235,49 @@ public class RunShellImpl extends PrimImpl implements Prim, RunShell, Runnable {
      */
     public void run() {
         int exitVal = 0;
+        boolean failed=false;
         try {
-            exitVal = subProcess.waitFor();
-
             // wait until process finishes
-            if (exitVal == 0) {
-                terminationType = "normal";
-            } else {
-                terminationType = "abnormal";
-            }
-
+            exitVal = subProcess.waitFor();
+            //evaluate the result
+            failed = didProcessFail(exitVal);
             sfReplaceAttribute(varStatus, "finished");
             sfReplaceAttribute(varExitValue,new Integer(exitVal));
+            terminationType = failed ? TerminationRecord.ABNORMAL : TerminationRecord.NORMAL;
             if (sfLog().isTraceEnabled()) sfLog().trace("Finished: " + terminationType + ", ExitVal: " + exitVal);
 
             //Thread.sleep(3*1000);
         } catch (Exception ex) {
-            terminationType = "abnormal";
-            if (sfLog().isErrorEnabled()) sfLog().error(ex.getMessage(), ex);
+            failed=true;
+            terminationType= TerminationRecord.ABNORMAL;
+            if (sfLog().isErrorEnabled()) {
+                sfLog().error(ex.getMessage(), ex);
+            }
 
             try {
-              sfReplaceAttribute(varStatus, "terminated");
+                sfReplaceAttribute(varStatus, "terminated");
             }
             catch (Exception ex1) {
-              //Ignore
+                //Ignore
                 helper.logIgnoredException(ex1);
             }
         }
 
-        termR = (new TerminationRecord(terminationType,
-                "Shell finished: " + getNotifierId(), null));
-        TerminatorThread terminator = new TerminatorThread(this,termR);
+        if (failed && printCommandOnFailure) {
+            sfLog().error(fullShellCommand);
+        }
+        StringBuffer details=new StringBuffer("Command ");
+        details.append(shellCommand);
+        details.append(" finished: ");
+        details.append(getNotifierId());
+        if(failed && printCommandOnFailure) {
+            details.append("\ncommand=");
+            details.append(fullShellCommand);
+        }
+        terminationRecord = (new TerminationRecord(terminationType,
+                details.toString(), null));
+
+        TerminatorThread terminator = new TerminatorThread(this, terminationRecord);
         if (shouldDetach)   {
             terminator.detach();
         }
@@ -271,6 +287,17 @@ public class RunShellImpl extends PrimImpl implements Prim, RunShell, Runnable {
             }
         }
         terminator.start();
+    }
+
+
+    /**
+     * This is something for subclasses to override if they have very
+     * special logic as to what constitutes success and failure
+     * @param exitVal the exit code
+     * @return true if this is to be interpreted as a failure
+     */
+    protected boolean didProcessFail(int exitVal) {
+        return exitVal != 0;
     }
 
     /**
@@ -320,6 +347,7 @@ public class RunShellImpl extends PrimImpl implements Prim, RunShell, Runnable {
 
         printMsgImp  =   (PrintMsgInt) sfResolve(varOutputMsgTo, printMsgImp , false);
         printErrMsgImp = (PrintErrMsgInt) sfResolve(varErrorMsgTo, printErrMsgImp , false);
+        printCommandOnFailure = sfResolve(varPrintCommandOnFailure,false,false);
 
     }
 
@@ -329,10 +357,10 @@ public class RunShellImpl extends PrimImpl implements Prim, RunShell, Runnable {
      *  This sets a flag that will start the httpd process running.
      *
      * @exception  SmartFrogException starting failure
-     * @exception  RemoteException In cas eof network/rmi error
+     * @exception  RemoteException In case of network/rmi error
      */
-    public synchronized void sfStart() throws SmartFrogException,
-    RemoteException {
+    public synchronized void sfStart()
+            throws SmartFrogException,RemoteException {
         super.sfStart();
         sfReplaceAttribute(varStatus, "running");
         execBatch(cmds);
@@ -363,7 +391,7 @@ public class RunShellImpl extends PrimImpl implements Prim, RunShell, Runnable {
      *
      * @param  cmd  command to be exceuted
      */
-    public synchronized void execCmd(String cmd) {
+    public void execCmd(String cmd) {
         if (cmd==null) return;
         cmd = cmd + lineReturn;
 
@@ -377,16 +405,18 @@ public class RunShellImpl extends PrimImpl implements Prim, RunShell, Runnable {
             if (sfLog().isTraceEnabled()) sfLog().trace("No delay between two consecutive cmds.");
         }
 
-        if (dos != null) {
-            try {
-                if (sfLog().isDebugEnabled()) sfLog().debug("Executing: " + cmd);
-                dos.writeBytes(cmd);
-                dos.flush();
-            } catch (IOException ex) {
-                if (sfLog().isErrorEnabled()) sfLog().error(ex);
+        synchronized(this) {
+            if (dos != null) {
+                try {
+                    if (sfLog().isDebugEnabled()) sfLog().debug("Executing: " + cmd);
+                    dos.writeBytes(cmd);
+                    dos.flush();
+                } catch (IOException ex) {
+                    if (sfLog().isErrorEnabled()) sfLog().error(ex);
+                }
+            } else {
+                if (sfLog().isErrorEnabled()) sfLog().error("Error: Stream closed. Shell probably terminated.");
             }
-        } else {
-            if (sfLog().isErrorEnabled()) sfLog().error("Error: Stream closed. Shell probably terminated.");
         }
     }
 
@@ -395,7 +425,7 @@ public class RunShellImpl extends PrimImpl implements Prim, RunShell, Runnable {
      *
      * @param  commands  vector of commands to be executed
      */
-    public synchronized void execBatch(Vector commands) {
+    public  void execBatch(Vector commands) {
 
         if ((commands==null)||(commands.isEmpty())) return;
 
@@ -404,14 +434,15 @@ public class RunShellImpl extends PrimImpl implements Prim, RunShell, Runnable {
 
         for (Enumeration e = commands.elements(); e.hasMoreElements();) {
             element = e.nextElement();
-
             if (element instanceof String) {
                 execCmd((String) element);
             }
         }
 
-        if (useExitCmd) {
-            execCmd(exitCmd);
+        synchronized(this) {
+            if (useExitCmd) {
+                execCmd(exitCmd);
+            }
         }
 
         if (sfLog().isDebugEnabled()) sfLog().debug("Executing Batch: DONE." + commands);
@@ -481,19 +512,21 @@ public class RunShellImpl extends PrimImpl implements Prim, RunShell, Runnable {
      *  Read all shell Attributes in Vectors. If and attribute name ends with
      *  'b' then it is added to the previous one!
      *  We also read in the shell arguments list as is.
-     *@return    a vector conatining all shell attributes
+     * @return    a vector containing all shell attributes
+     * @throws SmartFrogResolutionException if an attribute is missing
+     * @throws RemoteException on network problems
      */
     private Vector readShellAttributes() throws SmartFrogResolutionException, RemoteException {
         Vector shellCommandAttrs = new Vector();
-        Object key = null;
-        String auxString = "";
+        Object key;
+        String auxString;
 
         //read in an argument list
-        Vector arguments=(Vector)sfResolve(varShellArguments,(Vector)null,false);
+        Vector arguments=sfResolve(varShellArguments,(Vector)null,false);
         if(arguments!=null) {
             shellCommandAttrs.addAll(arguments);
         }
-        //System.out.println("reading Cmd Attributes...");
+        //now read in all components call Att and add them as arguments too
         for (Enumeration e = sfContext().keys(); e.hasMoreElements();) {
             key = e.nextElement();
 
@@ -506,7 +539,7 @@ public class RunShellImpl extends PrimImpl implements Prim, RunShell, Runnable {
                             //shellCommandAtt = shellCommandAtt + "" +
                 //sfResolve((String)key);
                 //former code when shellCommandAtt was a String
-                            auxString = (String) shellCommandAttrs.lastElement() +
+                            auxString = shellCommandAttrs.lastElement() +
                                 (sfResolve((String) key)).toString();
                             shellCommandAttrs.remove(shellCommandAttrs.size() - 1);
                             shellCommandAttrs.add(auxString);
@@ -583,7 +616,7 @@ public class RunShellImpl extends PrimImpl implements Prim, RunShell, Runnable {
             System.arraycopy(cmd, 0, result, 0, i);
 
             cmd = result;
-            if (sfLog().isDebugEnabled()) sfLog().debug("CreatedCmd:" + arrayToString(cmd));
+            if (sfLog().isDebugEnabled()) sfLog().debug("CreatedCmd:" + arrayToString(cmd, "'", "'"));
         } catch (Exception e) {
             if (sfLog().isErrorEnabled()) sfLog().trace("SFRunCommand.createCmd:Error creating Cmd.(" + e.getMessage() +")",e);
         }
@@ -594,16 +627,19 @@ public class RunShellImpl extends PrimImpl implements Prim, RunShell, Runnable {
     /**
      *  Converts array to string
      *
-     *@param  array  array
+     * @param  array  array
+     * @param prefix
+     * @param suffix
      *@return        array converted to string
      */
-    private String arrayToString(String[] array) {
+    private String arrayToString(String[] array, String prefix, String suffix) {
         int i = 0;
         StringBuffer stringB = new StringBuffer();
 
         while (i < array.length) {
+            stringB.append(prefix);
             stringB.append(array[i++]);
-            stringB.append(' ');
+            stringB.append(suffix);
         }
 
         return stringB.toString();
