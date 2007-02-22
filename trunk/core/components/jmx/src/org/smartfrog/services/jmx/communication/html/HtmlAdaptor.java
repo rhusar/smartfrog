@@ -35,12 +35,12 @@ import javax.management.*;
 //import openjmx.adaptor.http.AdaptorSocketFactory;
 //import openjmx.adaptor.http.ssl.SSLFactory;
 
-import mx4j.adaptor.http.HttpAdaptor;
-import mx4j.adaptor.http.HttpAdaptorMBean;
-import mx4j.adaptor.http.XSLTProcessor;
-import mx4j.adaptor.http.ProcessorMBean;
-import mx4j.adaptor.AdaptorServerSocketFactory;  //AdaptorSocketFactory;
-import mx4j.adaptor.ssl.SSLAdaptorServerSocketFactory; //import mx4j.adaptor.http.ssl.SSLFactory;
+import mx4j.tools.adaptor.http.HttpAdaptor;
+import mx4j.tools.adaptor.http.HttpAdaptorMBean;
+import mx4j.tools.adaptor.http.XSLTProcessor;
+import mx4j.tools.adaptor.http.ProcessorMBean;
+import mx4j.tools.adaptor.AdaptorServerSocketFactory;  //AdaptorSocketFactory;
+import mx4j.tools.adaptor.ssl.SSLAdaptorServerSocketFactory; //import mx4j.adaptor.http.ssl.SSLFactory;
 
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimImpl;
@@ -224,7 +224,7 @@ public class HtmlAdaptor extends PrimImpl implements Prim, HtmlAdaptorMBean, MBe
      *@return    HTTPServer's port
      */
     public int getPort() {
-        return httpAdaptor.getPort().intValue();
+        return httpAdaptor.getPort();
     }
 
 
@@ -238,7 +238,7 @@ public class HtmlAdaptor extends PrimImpl implements Prim, HtmlAdaptorMBean, MBe
         if (isActive()) {
             throw new IllegalStateException("You should stop this HTMLAdaptor first");
         }
-        httpAdaptor.setPort(new Integer(port));
+        httpAdaptor.setPort(port);
     }
 
 
@@ -410,7 +410,7 @@ public class HtmlAdaptor extends PrimImpl implements Prim, HtmlAdaptorMBean, MBe
         super.sfDeploy();
         try {
             httpAdaptor.setHost ((String) sfResolveHere("host"));
-            httpAdaptor.setPort((Integer) sfResolveHere("port"));
+            httpAdaptor.setPort(((Integer) sfResolveHere("port")).intValue());
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -433,7 +433,7 @@ public class HtmlAdaptor extends PrimImpl implements Prim, HtmlAdaptorMBean, MBe
             pathInJar = (String) sfResolve("pathInJar");
         } catch (Exception e) {}
 
-        QueryExp xmlExp = Query.match(Query.classattr(), Query.value("mx4j.adaptor.http.XSLTProcessor"));
+        QueryExp xmlExp = Query.match(Query.classattr(), Query.value("mx4j.tools.adaptor.http.XSLTProcessor"));
         Set mbeanSet = null;
         try {
           mbeanSet = server.queryNames(new ObjectName("*:*"), xmlExp);
@@ -465,7 +465,8 @@ public class HtmlAdaptor extends PrimImpl implements Prim, HtmlAdaptorMBean, MBe
                     xsltProcessor.setPathInJar(pathInJar);
                 }
                 httpAdaptor.setProcessor(xsltProcessor);
-                ObjectName xsltName = new ObjectName(server.getDefaultDomain()+":name=XSLTProcessor,type=sf.jmx.srv.xml,server="+mbeanServerId);
+                //ObjectName xsltName = new ObjectName(server.getDefaultDomain()+":name=XSLTProcessor,type=sf.jmx.srv.xml,server="+mbeanServerId);
+                ObjectName xsltName = new ObjectName(server.getDefaultDomain()+":name=XSLTProcessor,type=sf.jmx.srv.xml");
                 server.registerMBean(xsltProcessor, xsltName);
             }
             catch (Exception e) { e.printStackTrace(); }

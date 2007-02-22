@@ -26,6 +26,7 @@ import java.rmi.Naming;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import javax.management.*;
+import javax.management.loading.ClassLoaderRepository;
 import org.smartfrog.services.jmx.notification.RemoteNotificationListenerWrapper;
 import org.smartfrog.services.jmx.communication.ConnectorClient;
 import org.smartfrog.services.jmx.communication.HeartBeatNotification;
@@ -959,4 +960,33 @@ public class RmiConnectorClient implements ConnectorClient {
 //        }
     }
 
+    public String [] getDomains() {
+    	return new String[0];
+    }
+    
+    public ClassLoaderRepository getClassLoaderRepository() {
+    	return null;
+    }
+
+ 	public void removeNotificationListener(ObjectName name, ObjectName listener, NotificationFilter filter, Object handback) throws
+InstanceNotFoundException, ListenerNotFoundException { 
+       
+    }
+
+ public ClassLoader getClassLoaderFor(ObjectName mbeanName) throws
+InstanceNotFoundException {
+        return null; 
+
+    }
+
+    public ClassLoader getClassLoader(ObjectName loaderName) throws
+InstanceNotFoundException {
+        return null; 
+    }
+    
+ public void removeNotificationListener(ObjectName name,
+NotificationListener listener, NotificationFilter filter, Object
+handback) throws InstanceNotFoundException, ListenerNotFoundException {
+    }
+    
 }

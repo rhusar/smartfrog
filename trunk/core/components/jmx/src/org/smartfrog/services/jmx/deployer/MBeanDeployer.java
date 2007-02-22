@@ -350,7 +350,11 @@ public class MBeanDeployer extends CompoundImpl implements Compound, MBeanDeploy
                 throw new Exception("RemoteStub of ModelMBean managed resource not found");
             }
         }
-        server.registerMBean(mbeanInstance, mbeanObjectName);
+	Object[] params = {new Boolean(true)};
+	String[] signature = {"boolean"};
+	String mbeanClass = "org.smartfrog.sfcore.compound.CompoundImpl";
+//	server.createMBean(mbeanClass, mbeanObjectName, null, params, signature);
+       server.registerMBean(mbeanInstance, mbeanObjectName);
 
         // Put the MBean in the hashtable along with its ObjectName
         registeredMBeans.put(mbeanInstance, mbeanObjectName);
@@ -433,10 +437,9 @@ public class MBeanDeployer extends CompoundImpl implements Compound, MBeanDeploy
         if (sfIsRemote(managedResource)) {
             resourceType = "RMIReference";
         }
-
         // Create and register an instance of the ModelMBean
         server.createMBean(modelMBeanClass, modelMBeanName);
-        server.invoke(modelMBeanName, "setModelMBeanInfo", new Object[]{modelMBeanInfo},
+       server.invoke(modelMBeanName, "setModelMBeanInfo", new Object[]{modelMBeanInfo},
                 new String[]{"javax.management.modelmbean.ModelMBeanInfo"});
         server.invoke(modelMBeanName, "setManagedResource", new Object[]{managedResource, resourceType},
                 new String[]{"java.lang.Object", "java.lang.String"});
@@ -510,6 +513,8 @@ public class MBeanDeployer extends CompoundImpl implements Compound, MBeanDeploy
                 throw new Exception("RemoteStub of ModelMBean managed resource not found");
             }
         }
+
+	System.out.println("Dynamic MBean registred with Name-=======" + mbeanName);
         server.createMBean( "org.smartfrog.services.jmx.mbean.PrimDynamicMBean",
                             mbeanName,
                             new Object[]{prim},
@@ -605,7 +610,7 @@ public class MBeanDeployer extends CompoundImpl implements Compound, MBeanDeploy
           System.err.println("***************ToDo FIX *********** SeverID"+ server.toString());
           //mBeanServerId = (String) server.invoke(new ObjectName("JMImplementation:type=MBeanServerDelegate"), "getMBeanServerId", new Object[] {}, new String[] {});
 
-          registerMBean(this);
+    //     registerMBean(this);
 
           createPrimDynamicMBeans();
 

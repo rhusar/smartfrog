@@ -104,19 +104,28 @@ public class TreePanel extends JPanel implements TreeSelectionListener {
         if (name == null) {
             this.clear();
         } else {
+		System.out.println("Setting Name for Tree Panel=====" + name.toString());
             try {
                 m_beanName = name;
                 ObjectInstance objectInstance = m_browser.getMBeanServer().getObjectInstance(m_beanName);
                 Class sfMBeanClass = Class.forName("org.smartfrog.services.jmx.modelmbean.SFModelMBean");
+		System.out.println("SFMBeanClass in Tree Panel=====" + sfMBeanClass.toString());
                 Class mbeanClass = Class.forName(objectInstance.getClassName());
+		System.out.println("Class for MBean in Tree Panel=====" + mbeanClass.toString());
                 if (sfMBeanClass.isAssignableFrom(mbeanClass)) {
-                    if (((ModelMBeanInfo) m_browser.getMBeanServer().getMBeanInfo(m_beanName)).getOperation("sfGetRoot") != null) {
+		System.out.println("Classes match");
+		ModelMBeanInfo info = (ModelMBeanInfo) m_browser.getMBeanServer().getMBeanInfo(m_beanName);
+		ModelMBeanOperationInfo opInfo = info.getOperation("sfGetRoot");
+	         	
+		System.out.println("Info====" + opInfo.toString());
+                 //   if (((ModelMBeanInfo) m_browser.getMBeanServer().getMBeanInfo(m_beanName)).getOperation("sfGetRoot") != null) {
                         SFAttribute root = (SFAttribute) m_browser.doAction(new InvokeAction("sfGetRoot", new Object[0], new String[0]));
+			System.out.println("TreePanel Name-=====" + m_beanName.toString());
                         m_tree.setModel(new DeployTreeModel(new SFNode(m_browser, m_beanName, null, root)));
 
-                    }
+                 //   }
                 } else {
-                    this.clear();
+                   this.clear();
                 }
             } catch (InstanceNotFoundException infe) {
                 JOptionPane.showMessageDialog(this.m_browser, infe);
@@ -246,7 +255,11 @@ public class TreePanel extends JPanel implements TreeSelectionListener {
         if (e.getModifiers() == Event.META_MASK) {
             int row = m_tree.getRowForLocation(e.getX(), e.getY());
             m_tree.setSelectionRow(row);
-            SFNode node = (SFNode) m_tree.getLastSelectedPathComponent();
+            //SFNode node = (SFNode) m_tree.getLastSelectedPathComponent();
+	    DeployTreeModel model = (DeployTreeModel) m_tree.getModel();
+	    System.out.println("Tree Panel model======" + model.toString());
+            SFNode node = (SFNode) model.getRoot();
+	    System.out.println("Tree Panel node======" + node.toString());
             //if (node == null || !node.isComponent()) return;
             TreePopupMenu treePopup = new TreePopupMenu(m_browser, node);
             treePopup.show(m_tree, e.getX(), e.getY());

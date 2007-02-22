@@ -41,7 +41,7 @@ For more information: www.smartfrog.org
   * a method to start generarion that can be invoke using JMX
   */
 SleepyGenerator extends NetElem {
-  sfClass "com.hp.sfServices.jmx.example.SleepyGenerator";
+  sfClass "org.smartfrog.services.jmx.example.SleepyGenerator";
   outputs:value extends Output;
   number 0;
 }
@@ -51,7 +51,7 @@ SleepyGenerator extends NetElem {
   * the last result in the a SF attribute so that it can be monitored using JMX
   */
 StorePrinter extends Printer {
-  sfClass "com.hp.sfServices.jmx.example.StorePrinter";
+  sfClass "org.smartfrog.services.jmx.example.StorePrinter";
   result 0;
 }
 // end basic components.
@@ -87,7 +87,7 @@ SfAgentAddress extends concat {
          -- ":";
          port "3800";
          -- "/";
-         agentJMXName "MasterAgentFF";
+         agentJMXName "RMIConnectorServer";
 }
 
  //LAZY Reference to create Reference at RunTime.
@@ -108,8 +108,8 @@ SfAgentAddressLAZYReference extends LazyReference {
     // reference to sfCompleteName of jmxAgent.
     sfAgentAddress LAZY HOST localhost:rootProcess:AGENT:masterAgentJMX;
     sfMBeans extends Compound {
-      generator LAZY ROOT:simpleArithNet:generator;
-      printer LAZY ROOT:simpleArithNet:printer;
+      generator LAZY ROOT:SimpleArithNet:generator;
+      printer LAZY ROOT:SimpleArithNet:printer;
     }
   }
 
@@ -127,6 +127,8 @@ SfAgentAddressLAZYReference extends LazyReference {
     //sfAgentAddress "rmi://localhost:3800/MasterAgentFF";
     sfAgentAddress extends SfAgentAddress;
     dynamicMBeans extends Compound {
+     // generator LAZY HOST localhost:rootProcess:ex2:simpleArithNet:generator;
+     // printer LAZY HOST localhost:rootProcess:ex2:simpleArithNet:printer;
       generator LAZY ROOT:simpleArithNet:generator;
       printer LAZY ROOT:simpleArithNet:printer;
     }
@@ -146,14 +148,14 @@ sfConfig extends Compound {
   simpleArithNet extends SimpleArithNet;
 
   // MBeanDeployer using sfReference in localhost
-  arithMBeanDeployerLocalREF extends ArithMBeanDeployerLocalREF;
+ // arithMBeanDeployerLocalREF extends ArithMBeanDeployerLocalREF;
 
   // MBeanDeployer using LAZYReference to create sfReference in remotehost
   // Check  LAZYReference
-  arithMBeanDeployerRemoteLAZY_REF extends ArithMBeanDeployerRemoteLAZY_REF{
+ /* arithMBeanDeployerRemoteLAZY_REF extends ArithMBeanDeployerRemoteLAZY_REF{
       //LAZY Reference is deployed in remote host so that sfHost will get the right remote name. Cool!
       addressLAZYReference:sfProcessHost ATTRIB host2;
-  }
+  }*/
 
   // MBeanDeployer using RMI url (string) in localhost
  arithMBeanDeployerLOCAL_RMI extends ArithMBeanDeployerLOCAL_RMI;

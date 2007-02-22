@@ -35,7 +35,7 @@ sfConfig extends SFJMXAgent {
     constructor extends {
       address extends Parameter{
         class "org.smartfrog.services.jmx.communication.ServerAddress";
-        value ["rmi", "dhcp-27-213", 3800, "RMIConnectorServer"];
+        value ["rmi", "eb97201", 3800, "RMIConnectorServer"];
       }
       pattern extends Parameter {
         class "javax.management.ObjectName";

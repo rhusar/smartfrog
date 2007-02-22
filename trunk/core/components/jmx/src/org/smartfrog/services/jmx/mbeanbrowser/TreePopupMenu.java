@@ -146,6 +146,7 @@ public class TreePopupMenu extends JPopupMenu {
      */
     void jAddMenuItem_actionPerformed(ActionEvent e) {
         try {
+		System.out.println("SFNODE====" + m_sfNode.toString());
             OperationDialog attrDialog = new OperationDialog(m_browser, m_sfNode, "sfAddAttribute", null, true);
             attrDialog.show();
         } catch (Throwable throwable) {

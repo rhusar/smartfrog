@@ -19,13 +19,18 @@ For more information: www.smartfrog.org
 */
 
 #include "org/smartfrog/components.sf"
+#include "org/smartfrog/predicates.sf"
 
 MBeanBrowser extends Prim {
   sfClass "org.smartfrog.services.jmx.mbeanbrowser.MBeanBrowser";
   sfExport true;
-  url "rmi://localhost:3800/RMIConnectorServer";
-  connectWhenStarted false;
+  //url "rmi://localhost:3800/RMIConnectorServer";
+  url "rmi://eb97201:3800/RMIConnectorServer";
+  //connectWhenStarted false;
+  connectWhenStarted true;
   sfDetach false;
   heartBeatPeriod 1000; // By default, the frequency with wich the connection is checked is 1 second
   heartBeatRetries 3;   // By default, the retries before considering a connection lost is 5
 }
+
+sfConfig extends MBeanBrowser;

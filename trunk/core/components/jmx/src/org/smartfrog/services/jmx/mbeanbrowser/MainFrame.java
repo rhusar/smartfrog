@@ -122,6 +122,7 @@ public class MainFrame extends JFrame {
     public MainFrame(ServerAddress url) {
         enableEvents(AWTEvent.WINDOW_EVENT_MASK);
         try {
+	    System.out.println("Creating MainFrame");
             jbInit();
             serverAddress = url;
             notifFrame = new NotificationFrame(null);
@@ -135,8 +136,9 @@ public class MainFrame extends JFrame {
             this.jSettingButton.setToolTipText("Settings ["+serverAddress+"]");
             this.setTitle(this.getTitle() + " ["+serverAddress.toString()+"]");
         } catch (Exception e) {
-            if (debug) {e.printStackTrace();}
-            else {System.err.println(e.toString());}
+            //if (debug) {e.printStackTrace();}
+            //else {System.err.println(e.toString());}
+	    e.printStackTrace();
         }
     }
 
@@ -615,7 +617,7 @@ public class MainFrame extends JFrame {
      */
     public void setMBean(ObjectName mbeanName) {
         String title = "";
-
+System.out.println("MainFrame Name-=====" + mbeanName.toString());
         try {
             if (mbeanName != null) {
                 connectorClient.getObjectInstance(mbeanName);
@@ -624,6 +626,7 @@ public class MainFrame extends JFrame {
             queryPanel.setMBean(mbeanName);
             propertyPanel.setMBean(mbeanName);
             operationPanel.setMBean(mbeanName);
+System.out.println("Setting Tree Panel Name-=====" + mbeanName.toString());
             treePanel.setMBean(mbeanName);
         } catch (InstanceNotFoundException e) {
             queryPanel.requery();

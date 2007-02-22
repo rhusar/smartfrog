@@ -41,7 +41,7 @@ sfConfig extends Compound {
    * Component to register MBeans in a remote JMX Agent
    */
   remoteMBeanDeployer extends MBeanDeployer {
-    sfAgentAddress "rmi://dhcp-27-213:3800/RMIConnectorServer"; // Register in a remote JMX Agent
+    sfAgentAddress "rmi://eb97201:3800/RMIConnectorServer"; // Register in a remote JMX Agent
     sfMBeans extends Compound {
       arithManager LAZY ATTRIB manager;
     }

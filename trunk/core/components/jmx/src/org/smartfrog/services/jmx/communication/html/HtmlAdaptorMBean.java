@@ -21,10 +21,10 @@ For more information: www.smartfrog.org
 package org.smartfrog.services.jmx.communication.html;
 
 import javax.management.ObjectName;
-import mx4j.adaptor.http.XSLTProcessor;
-import mx4j.adaptor.http.ProcessorMBean;
-import mx4j.adaptor.AdaptorServerSocketFactory;  //AdaptorSocketFactory;
-import mx4j.adaptor.ssl.SSLAdaptorServerSocketFactory; //import mx4j.adaptor.http.ssl.SSLFactory;
+import mx4j.tools.adaptor.http.XSLTProcessor;
+import mx4j.tools.adaptor.http.ProcessorMBean;
+import mx4j.tools.adaptor.AdaptorServerSocketFactory;  //AdaptorSocketFactory;
+import mx4j.tools.adaptor.ssl.SSLAdaptorServerSocketFactory; //import mx4j.adaptor.http.ssl.SSLFactory;
 
 import org.smartfrog.services.jmx.communication.CommunicatorMBean;
 

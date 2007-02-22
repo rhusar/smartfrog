@@ -77,22 +77,36 @@ ArithManageableMetaData extends ManageableMetadata { // "ManageableMetadata" is 
   sendBothValues extends SendBothValues;
 }
 
+
+SfAgentAddress extends concat {
+//sfAgentAddress "rmi://localhost:3800/MasterAgentFF";
+			-- "rmi://";
+		   host "localhost";
+         -- ":";
+         port "3800";
+         -- "/";
+         agentJMXName "RMIConnectorServer";
+}
+
+
 sfConfig extends Compound {
 
   deploymentAnalyzer extends DeploymentAnalyzer {
     sfManageable extends LAZY ArithManageableMetaData;
   }
 
-  arithMBeanDeployer1 extends MBeanDeployer {
-    sfAgentAddress LAZY HOST localhost:Agents:subAgent1;
-    sfMBeans extends Compound {
+/*  arithMBeanDeployer1 extends MBeanDeployer {
+   // sfAgentAddress LAZY HOST localhost:Agents:subAgent1;
+   sfAgentAddress extends SfAgentAddress;    
+   sfMBeans extends Compound {
       leftGenerator LAZY ROOT:manager:leftGenerator;
       rightGenerator LAZY ROOT:manager:rightGenerator;
     }
   }
-
+*/
   arithMBeanDeployer2 extends MBeanDeployer {
-    sfAgentAddress LAZY HOST localhost:Agents:subAgent2;
+   // sfAgentAddress LAZY HOST localhost:Agents:subAgent2;
+   sfAgentAddress extends SfAgentAddress;    
     modelMBeans extends LAZY {
       deploymentModelMBean extends DeploymentModelMBean {
         properties:name "ArithDeployment";
@@ -100,7 +114,7 @@ sfConfig extends Compound {
       }
     }
     sfMBeans extends Compound {
-      arithManager LAZY ATTRIB manager;
+      arithManager LAZY ROOT:manager;
       printer LAZY ROOT:manager:printer;
     }
   }
