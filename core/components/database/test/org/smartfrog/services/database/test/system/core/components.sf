@@ -24,6 +24,7 @@
  */
 
 #include "/org/smartfrog/services/database/core/components.sf"
+#include "/org/smartfrog/services/database/core/operations.sf"
 #include "/org/smartfrog/services/assertions/components.sf"
 #include "/org/smartfrog/sfcore/workflow/combinators/sequence.sf"
 #include "/org/smartfrog/sfcore/workflow/combinators/delay.sf"
@@ -40,21 +41,12 @@
   }
 
 
- AdminCommand extends Transaction {
- }
-
-
-
- UserCommand extends Transaction {
- }
-
-
 
  /**
   * Create an events table with various attributes
   * this is an implicit test of multi-line SQL.
   */
- CreateEventsTable extends AdminCommand {
+ CreateEventsTable extends Transaction {
     sqlCommands [
     ##CREATE TABLE events (
       EVENT_ID varchar(64) not null,
@@ -72,7 +64,8 @@
  /**
   Create any user
   */
- CreateUser extends AdminCommand {
+/*
+ CreateUser extends Transaction {
     username TBD;
     password TBD;
     sqlCommands [
@@ -80,16 +73,17 @@
     ];
  }
 
-  DropUser extends AdminCommand {
+  DropUser extends Transaction {
     username TBD;
     sqlCommands [
      ("DROP USER " ++ username )
     ];
  }
 
- DropTable extends AdminCommand {
+ DropTable extends Transaction {
     table TBD;
     sqlCommands [
      ("DROP TABLE " ++ table)
     ];
  }
+*/
