@@ -24,6 +24,7 @@ LogToLog4JImpl extends {
 
 
 /*
+   This comes in too early for schema use
    logToLog4JSchema extends Schema {
     ignoreSetLogLevel extends OptionalBoolean;
     setIniLog4JLoggerLevel extends OptionalBoolean;
