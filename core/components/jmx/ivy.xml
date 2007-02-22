@@ -45,6 +45,11 @@
       rev="latest.integration"
       conf="compile,runtime,daemon->services"/>
     <dependency org="org.smartfrog"
+      name="smartfrog"
+      changing="true"
+      rev="latest.integration"
+      conf="compile,runtime,daemon->examples"/>
+    <dependency org="org.smartfrog"
         name="sf-tasks"
         rev="latest.integration"
         conf="build->default"/>
@@ -58,6 +63,10 @@
         conf="compile,redist->default"/>
     <dependency org="mx4j"
         name="mx4j-remote"
+        rev="${mx4j.version}"
+        conf="compile,redist->default"/>
+    <dependency org="mx4j"
+        name="mx4j-tools"
         rev="${mx4j.version}"
         conf="compile,redist->default"/>
   </dependencies>
