@@ -162,9 +162,12 @@ public class Sequence extends EventCompoundImpl implements Compound {
         } else {
             //abnormal terminations
             if (sfLog().isErrorEnabled()) {
-                sfLog().error(name + "- error in previous sequenced component, aborting. ",
-                        SmartFrogException.forward(status.cause),
-                        status);
+                StringBuffer text=new StringBuffer();
+                text.append(name);
+                text.append("- error in child component\n");
+                text.append(status.toString());
+                text.append("\n");
+                sfLog().error(text.toString(),status.cause);
             }
             terminate = true;
         }
