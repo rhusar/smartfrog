@@ -125,7 +125,7 @@
   <!-- where all the jar files go -->
   <property name="signedLib" value="signedLib"/>
   <!-- all protected files -->
-  <property name="docs" value="docs"/>
+  <property name="docs" value="doc"/>
   <property name="jdocs" value="${docs}/jdocs"/>
   <property name="SFjdocs" value="${docs}/SFjdocs"/>
   <property name="dist.lib.dir" location="${dist.dir}/${lib}"/>
