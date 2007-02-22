@@ -96,11 +96,11 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
 
 
     /**
-     * Gets the corresponding method of java.lang.Object.
+     * Gets the corresponding method of {@link Log}
      *
      * @param method A method name.
      * @param args An array with the arguments of that method.
-     * @return A  corresponding method of java.lang.Object.
+     * @return A  corresponding method of the Log class
      */
     public static Method getObjectMethod(String method, Class[] args) {
         try {
@@ -1113,7 +1113,16 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
      * @param tr log this TerminationRecord
      */
     public void info(Object message, SmartFrogException t, TerminationRecord tr){
-        info(message,(Throwable)t);
+        info(message + stringify(tr),(Throwable)t);
+    }
+
+    /**
+     * Append a termination record to a log message.
+     * @param tr termination record --can be null.
+     * @return a string including the preceeding newline
+     */
+    private String stringify(TerminationRecord tr) {
+        return "\n" + tr != null ? tr.toString() : "";
     }
 
 
@@ -1136,7 +1145,7 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
      * @param tr log this TerminationRecord
      */
     public void warn(Object message, SmartFrogException t, TerminationRecord tr){
-        warn(message,(Throwable)t);
+        warn(message + stringify(tr),(Throwable)t);
     }
 
 
@@ -1159,7 +1168,7 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
      * @param tr log this TerminationRecord
      */
     public void error(Object message, SmartFrogException t, TerminationRecord tr){
-        error(message,(Throwable)t);
+        error(message+stringify(tr),(Throwable)t);
     }
 
 
