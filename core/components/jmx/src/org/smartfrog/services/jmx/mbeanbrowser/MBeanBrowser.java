@@ -35,7 +35,8 @@ import org.smartfrog.services.jmx.communication.ConnectionFactory;
 import org.smartfrog.services.jmx.communication.ServerAddress;
 import java.util.Vector;
 
-import com.sun.management.jmx.*;
+//import com.sun.management.jmx.*;
+import mx4j.*;
 import java.rmi.RemoteException;
 
 /**
@@ -70,11 +71,11 @@ public class MBeanBrowser extends PrimImpl implements Prim, Serializable {
     public MBeanBrowser() throws Exception {
         // Parse system properties to check if LEVEL_TRACE and/or LEVEL_DEBUG are set
         // and enable the TRACE level accordingly
-        try {
-            Trace.parseTraceProperties();
-        } catch (IOException e) {
+        //try {
+            //Trace.parseTraceProperties();
+     /*   } catch (IOException e) {
             e.printStackTrace();
-        }
+        }*/
     }
 
 
@@ -88,18 +89,21 @@ public class MBeanBrowser extends PrimImpl implements Prim, Serializable {
     public void init(String args[]) throws Exception {
         if ((args != null) && (args.length > 0)) {
             ServerAddress url = checkArguments(args);
-            //System.out.println(url.getHost()+":"+url.getPort()+"/"+url.getName());
+            System.out.println(url.getHost()+":"+url.getPort()+"/"+url.getResource());
             frame = new MainFrame(url);
+            System.out.println("GOT MAINFRAME FROM URL");
         } else {
             frame = new MainFrame();
         }
         //Validate frames that have preset sizes
         //Pack frames that have useful preferred size info, e.g. from their layout
+	    System.out.println("I M HERE         5");
         if (packFrame) {
             frame.pack();
         } else {
             frame.validate();
         }
+	    System.out.println("I M HERE         6");
         //Center the window
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         frame.setSize((int) screenSize.getWidth() * 4 / 5, (int) screenSize.getHeight() * 4 / 5);
@@ -135,11 +139,16 @@ public class MBeanBrowser extends PrimImpl implements Prim, Serializable {
                 args = new String[]{mbeanbrowser.URL};
             }
             // If there is no arguments, we use the default url
+	    System.out.println("I M HERE         1");
             mbeanbrowser.init(args);
+	    System.out.println("I M HERE         2");
             if (mbeanbrowser.frame!=null){
                 mbeanbrowser.frame.systemExit=true; // Will do a system.exit when window closed.
             }
+
+	    System.out.println("I M HERE         3");
             mbeanbrowser.setConfig();
+	    System.out.println("I M HERE         4");
        } catch (java.net.MalformedURLException me) {
             System.err.println( "Error: "+ me.getMessage()+ ". URL example: rmi://localhost:3800/RMIConnectorServer"+usage);
        } catch (java.lang.IllegalArgumentException ae) {
@@ -265,13 +274,17 @@ public class MBeanBrowser extends PrimImpl implements Prim, Serializable {
     public static ComponentDescription getMBeanBrowserDescription() throws Exception {
         InputStream is = SFClassLoader.getResourceAsStream("org/smartfrog/services/jmx/mbeanbrowser/MBeanBrowser.sf");
         Phases descr = (new SFParser("sf").sfParse(is));
-        Vector phases = new Vector();
-        phases.add("type");
-        phases.add("link");
-        descr.sfResolvePhases(phases);
-        return (ComponentDescription)
-             (descr.sfAsComponentDescription()).
-                  sfResolve(new Reference(ReferencePart.here("MBeanBrowser")));
+        //Vector phases = new Vector();
+   //     phases.add("type");
+     //   phases.add("link");
+       // descr.sfResolvePhases(phases);
+       ComponentDescription cd = descr.sfAsComponentDescription();
+       //System.out.println("COMP====" + cd.toString());
+     //  ComponentDescription comp = (ComponentDescription) cd.sfResolveHere(new Reference(ReferencePart.here("MBeanBrowser")));
+       Reference ref = Reference.fromString("MBeanBrowser"); 	
+       Object comp = cd.sfResolve(ref);
+      System.out.println("DESCR====" + comp.toString());       
+       return (ComponentDescription) comp;
     }
 
 

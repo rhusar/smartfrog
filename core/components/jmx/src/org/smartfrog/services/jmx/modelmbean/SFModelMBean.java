@@ -30,7 +30,8 @@ import javax.management.*;
 import javax.management.modelmbean.*;
 import org.smartfrog.sfcore.prim.*;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
-import com.sun.management.jmx.Trace;
+//import com.sun.management.jmx.Trace;
+import mx4j.*;
 import org.smartfrog.services.jmx.notification.RemoteNotificationBroadcaster;
 import org.smartfrog.services.jmx.notification.RemoteNotificationListenerWrapper;
 
@@ -1715,7 +1716,8 @@ public class SFModelMBean extends RequiredModelMBean implements ModelMBean, MBea
      *@return    Description of the Return Value
      */
     private boolean tracing() {
-        return Trace.isSelected(Trace.LEVEL_TRACE, Trace.INFO_MODELMBEAN);
+     //   return Trace.isSelected(Trace.LEVEL_TRACE, Trace.INFO_MODELMBEAN);
+     return false;
     }
 
 
@@ -1727,8 +1729,8 @@ public class SFModelMBean extends RequiredModelMBean implements ModelMBean, MBea
      *@param  inText    Description of the Parameter
      */
     private void trace(String inClass, String inMethod, String inText) {
-        //System.out.println("TRACE: " + inClass + ":" + inMethod + ": " + inText);
-        Trace.send(Trace.LEVEL_TRACE, Trace.INFO_MODELMBEAN, inClass, inMethod, Integer.toHexString(this.hashCode()) + " " + inText);
+        System.out.println("TRACE: " + inClass + ":" + inMethod + ": " + inText);
+      //  Trace.send(Trace.LEVEL_TRACE, Trace.INFO_MODELMBEAN, inClass, inMethod, Integer.toHexString(this.hashCode()) + " " + inText);
     }
 
 

@@ -28,7 +28,7 @@ import java.io.*;
 import java.text.DateFormat;
 import java.net.InetAddress;
 import javax.management.*;
-import javax.management.modelmbean.*;
+//import javax.management.modelmbean.*;
 
 import org.smartfrog.sfcore.prim.*;
 import org.smartfrog.sfcore.compound.*;
@@ -40,7 +40,8 @@ import org.smartfrog.sfcore.processcompound.*;
 import org.smartfrog.services.jmx.communication.ConnectionFactory;
 import org.smartfrog.services.jmx.communication.ConnectorClient;
 import org.smartfrog.services.jmx.common.Utilities;
-import com.sun.management.jmx.*;
+//import com.sun.management.jmx.*;
+import mx4j.*;
 import java.net.UnknownHostException;
 
 /**
@@ -79,14 +80,16 @@ public class SFJMXAgentImpl extends CompoundImpl implements Compound, SFJMXAgent
     public SFJMXAgentImpl() throws RemoteException, Exception {
         // Parse system properties to check if LEVEL_TRACE and/or LEVEL_DEBUG are set
         // and enable the TRACE level accordingly
-        try {
-            Trace.parseTraceProperties();
-        } catch (IOException e) {
+      //  try {
+            //Trace.parseTraceProperties();
+        /*} catch (IOException e) {
             e.printStackTrace();
-        }
+        }*/
 
         // CREATE the MBeanServer
-        server = MBeanServerFactory.createMBeanServer("SmartFrog");
+       //server = MBeanServerFactory.createMBeanServer("SmartFrog");
+       
+//	server = Registry.getServer();
     }
 
 
@@ -183,7 +186,9 @@ public class SFJMXAgentImpl extends CompoundImpl implements Compound, SFJMXAgent
      *@return                Description of the Return Value
      *@exception  Exception  Description of the Exception
      */
-    private Object intantiateMBean(String mbeanClass, ComponentDescription constructor) throws Exception {
+    private Object intantiateMBean(String mbeanClass, ObjectName objectName, ComponentDescription constructor) throws Exception {
+
+	    System.out.println("IN INTANTIATEMBEAN");
         // Search for constructor parameters
         Context constructorContext = null;
         if (constructor != null) {
@@ -239,7 +244,8 @@ public class SFJMXAgentImpl extends CompoundImpl implements Compound, SFJMXAgent
             }
             signature[i++] = paramClass;
         }
-        return server.instantiate(mbeanClass, parameters, signature);
+       // return server.instantiate(mbeanClass, parameters, signature);
+        return server.createMBean(mbeanClass, objectName, null, parameters, signature);
     }
 
 
@@ -322,16 +328,20 @@ public class SFJMXAgentImpl extends CompoundImpl implements Compound, SFJMXAgent
             if (!properties.containsKey("type")) {
                 properties.put("type", "sf.jmx.mbean.generic");
             }
-            if (!properties.containsKey("server")) {
+          /*  if (!properties.containsKey("server")) {
                 properties.put("server", localServerId);
-            }
+            }*/
 
+	    System.out.println("Serve Id===" + localServerId);
+	    System.out.println("Serve domain===" + domain);
+	    System.out.println("Name===" + properties.get("name"));
             // Build ObjectName and instantiate
             Object mbeanInstance = null;
             ObjectName mbeanObjectName = null;
             try {
                 mbeanObjectName = new ObjectName(domain, (Hashtable) properties);
-                mbeanInstance = intantiateMBean(className, (ComponentDescription) mbeanContext.get("constructor"));
+               // mbeanObjectName = new ObjectName(domain);
+                mbeanInstance = intantiateMBean(className, mbeanObjectName, (ComponentDescription) mbeanContext.get("constructor"));
             } catch (MalformedObjectNameException mone) {
                 if (sfLog().isErrorEnabled()){ sfLog().error("Could not create an ObjectName for MBean: " + (String)properties.get("name"),mone);}
                 continue;
@@ -374,7 +384,7 @@ public class SFJMXAgentImpl extends CompoundImpl implements Compound, SFJMXAgent
 
             // Register the MBean
             try {
-                server.registerMBean(mbeanInstance, mbeanObjectName);
+                //server.registerMBean(mbeanInstance, mbeanObjectName);
                 if (sfLog().isDebugEnabled()){ sfLog().debug(mbeanObjectName + " registered");}
             } catch (Exception e) {
                 if (sfLog().isErrorEnabled()){ sfLog().error("Could not register MBean: " + mbeanObjectName,e);}
@@ -422,14 +432,14 @@ public class SFJMXAgentImpl extends CompoundImpl implements Compound, SFJMXAgent
             }
 
             //Test if the property matches a compliant MBean class
-            try {
-                Introspector.testCompliance(mbeanInstance.getClass());
+        /*    try {
+                MBeanIntrospector.testCompliance(mbeanInstance.getClass());
             } catch (NotCompliantMBeanException ncbe) {
                 echo("Not compliant MBean. It will not be registered within the MBeanServer: " + beanKey);
                 echo(ncbe.toString());
                 continue;
             }
-
+*/
             // Search for the domain
             String domain;
             try {
@@ -470,9 +480,9 @@ public class SFJMXAgentImpl extends CompoundImpl implements Compound, SFJMXAgent
             if (!properties.containsKey("type")) {
                 properties.put("type", "sf.jmx.mbean");
             }
-            if (!properties.containsKey("server")) {
+          /*  if (!properties.containsKey("server")) {
                 properties.put("server", localServerId);
-            }
+            }*/
 
             // Build ObjectName and register
             ObjectName mbeanObjectName = null;
@@ -568,6 +578,7 @@ public class SFJMXAgentImpl extends CompoundImpl implements Compound, SFJMXAgent
 
     public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
         super.sfDeploy();
+       server = MBeanServerFactory.createMBeanServer("SmartFrog");
         // Search for a name (Default name is "sfJMXAgent")
         nameRef = sfCompleteNameSafe();
         try {

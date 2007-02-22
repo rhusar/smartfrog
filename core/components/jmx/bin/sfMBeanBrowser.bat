@@ -1,4 +1,4 @@
-@echo off
+@echo on
 setlocal
 
 if defined SFHOME goto continue1
@@ -7,7 +7,8 @@ if defined SFHOME goto continue1
   cd bin
 :continue1
 
-call %SFHOME%\bin\setClassPath
+call "%SFHOME%\bin\setSFProperties"
+rem call %SFHOME%\bin\setClassPath.bat
 
 echo %CLASSPATH%
 

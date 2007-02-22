@@ -51,7 +51,7 @@ HtmlAdaptor extends Communicator {
   // Templates for the HTML code
   //rootDirectory "C:\\Program Files\\SmartFrog\\lib\\sfJMX.jar";
   rootDirectory ".\\lib\\sfJMX.jar";
-  pathInJar "mx4j/adaptor/http/xsl";
+  pathInJar "mx4j/tools/adaptor/http/xsl";
 
   // Authentication features
   authentication "none"; // Possible values: none / basic/ digest
@@ -80,7 +80,7 @@ XSLTProcessor extends MBean {
   description "This processor takes the XML tree and transform it to HTML by means of XSLT";
   properties:name "XSLTProcessor";
   properties:type "sf.jmx.srv.xml";
-  class "mx4j.adaptor.http.XSLTProcessor";
+  class "mx4j.tools.adaptor.http.XSLTProcessor";
 }
 
 /**
