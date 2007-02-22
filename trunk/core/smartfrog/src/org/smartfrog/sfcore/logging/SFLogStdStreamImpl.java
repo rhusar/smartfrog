@@ -28,6 +28,8 @@ import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.prim.PrimImpl;
+import org.smartfrog.sfcore.utils.SmartFrogThread;
+
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.IOException;
@@ -47,9 +49,9 @@ public class SFLogStdStreamImpl extends PrimImpl implements Prim, SFLogStdStream
     /**
      * This class redirect InputStream to logTo.info or logTo.err (outputStream).
      */
-    public class StreamGobbler extends Thread {
-        InputStream is;
-        boolean out = true;
+    public class StreamGobbler extends SmartFrogThread {
+        private InputStream is;
+        private boolean out = true;
 
         /**
          * Constructs StreamGobbler with the input stream and type of stream
@@ -58,7 +60,7 @@ public class SFLogStdStreamImpl extends PrimImpl implements Prim, SFLogStdStream
          * @param typeS Type of the stream
          */
         public StreamGobbler(InputStream is, String typeS) {
-            this.setName("StreamGobbler("+typeS+")");
+            setName("StreamGobbler("+typeS+")");
             this.is = is;
 
             if (typeS.equals("err")) {
