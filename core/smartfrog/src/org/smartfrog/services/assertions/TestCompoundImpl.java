@@ -125,36 +125,41 @@ public class TestCompoundImpl extends ConditionCompound
         }
 
         //deploy the action under a terminator, then the assertions, finally teardown afterwards.
+        final boolean isNormalTerminationExpected = TerminationRecord.NORMAL.equals(exitType);
         try {
             actionPrim = deployComponentDescription(ACTION_RUNNING, action);
         } catch (SmartFrogDeploymentException e) {
-            //split on normal/abnormal.
-            if (TerminationRecord.NORMAL.equals(exitType)) {
+            //did we expect a normal termination?
+            if (isNormalTerminationExpected) {
+                //if so, it didnt happen. rethrow the exception
                 throw e;
             }
+            //we expected failure, so cache it for-post mortem analsysis
             exception = e;
         }
 
         if(exception==null) {
+            //a null exception meant the action was deployed successfully
+
             //the teardown CD is deployed at this time, but not started.
             //it is brought to life during termination.
             if (teardownCD != null) {
                 teardown = deployComponentDescription(ATTR_TEARDOWN, teardownCD);
             }
 
-            //if we get here. then it is time to start the action.
+            //if we get here. then it is time to actually start the action.
             //exceptions are caught and compared to expectations.
             try {
                 actionPrim.sfStart();
             } catch (SmartFrogException e) {
                 //split on normal/abnormal.
-                if (TerminationRecord.NORMAL.equals(exitType)) {
+                if (isNormalTerminationExpected) {
                     throw e;
                 }
                 exception = e;
 
             } catch (RemoteException e) {
-                if (TerminationRecord.NORMAL.equals(exitType)) {
+                if (isNormalTerminationExpected) {
                     throw e;
                 }
                 exception = e;
