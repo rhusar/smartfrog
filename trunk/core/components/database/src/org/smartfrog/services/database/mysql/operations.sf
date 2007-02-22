@@ -18,12 +18,22 @@
 
  */
 
-
 /*
- * components for MySQL integration
+ * This contains some useful transactions.
+ * They need to be bound to a database before they become useful
  */
 
+#include "/org/smartfrog/services/database/core/operations.sf"
+ /**
 
-#include "/org/smartfrog/services/database/mysql/daemon.sf"
-#include "/org/smartfrog/services/database/mysql/binding.sf"
+ MySQL uses a different syntax to create a user
+  Create any user
+  */
+ CreateUser extends Transaction {
+    username TBD;
+    password TBD;
+    sqlCommands [
+     (("CREATE USER " ++ username ) ++ ((" IDENTIFIED BY '" ++ password) ++ "'"))
+    ];
+ }
 

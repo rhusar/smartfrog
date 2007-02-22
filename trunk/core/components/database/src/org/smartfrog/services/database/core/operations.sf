@@ -34,6 +34,19 @@
     ];
  }
 
+/**
+ * Mysql 5.0 doesnt like the PASSWORD option
+ */
+ CreateUserNoPassword extends Transaction {
+    username TBD;
+    sqlCommands [
+     ("CREATE USER " ++ username )
+    ];
+ }
+
+ /**
+  * drop a user
+  */
   DropUser extends Transaction {
     username TBD;
     sqlCommands [
@@ -41,6 +54,9 @@
     ];
  }
 
+ /**
+  * drop a table
+  */
  DropTable extends Transaction {
     table TBD;
     sqlCommands [

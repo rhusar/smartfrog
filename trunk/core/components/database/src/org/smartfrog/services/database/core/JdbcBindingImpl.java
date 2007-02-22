@@ -87,7 +87,7 @@ public class JdbcBindingImpl extends PrimImpl implements JdbcBinding {
         if (driver != null) {
             helper.loadClass(driver);
         }
-        sfLog().info("Binding to "+url+" with driver "+driver+" as "+user);
+        sfLog().info("Binding to "+url+" with driver "+driver+" as "+user!=null?"user":"(anonymous)");
 
         connectionProperties = new Properties();
         if (user != null) {

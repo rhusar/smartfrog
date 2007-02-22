@@ -5,12 +5,24 @@
 
 MysqlStartTest extends MysqlTest {
 
-   description "do nothing but start mysql";
+   description "do nothing but start mysql and check it has created a socket";
 
     tests extends Sequence {
+
+      //pause for a bit
       delay extends Delay {
         time mysql_startup_delay;
       }
+
+      //look for the socket
+      socketTest extends AssertSocketExists {
+
+      }
+
+        action extends mysqladmin-shutdown {
+          silent false;
+        }
+
 
     }
 

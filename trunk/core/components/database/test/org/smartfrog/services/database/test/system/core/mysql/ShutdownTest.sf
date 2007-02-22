@@ -5,12 +5,14 @@
 
 ShutdownTest extends MysqlTest {
 
-   description "use mysqladmin to shut down mysql";
+   description "use non-silent mysqladmin to shut down mysql; failure could mean mysql didnt start";
 
     tests extends Sequence {
       delay extends Delay {
         time mysql_startup_delay;
-        action extends mysqladmin-shutdown;
+        action extends mysqladmin-shutdown {
+          silent false;
+        }
       }
 
     }

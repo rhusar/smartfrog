@@ -43,7 +43,10 @@
     //default named pipe name on NT systems
     socketpath_nt "MySql";
     socketpath socketpath_unix;
+    //this sets up the socket path
     socketpath_argument ("--socket=" ++ socketpath);
+    //with it passed down to the app after the arguments vector
+    shellCmdAttributeSocketPath socketpath_argument ;
 
     arguments TBD;
   }
@@ -61,7 +64,7 @@
     //data dir
     datadir TBD;
     //temp dir is bound to temp dir of host
-    tmpdir LAZY PROPERTY tmp.dir;
+    tmpdir LAZY PROPERTY java.io.tmpdir;
     //options
     bigtables false;
     bindaddress "0.0.0.0";
@@ -97,7 +100,7 @@
 
     arguments [
       defaults,
-      ("--basedir=" ++ basedir),
+      // ("--basedir=" ++ basedir),
       ("--datadir=" ++ datadir),
       ("--tmpdir=" ++ tmpdir),
       IF bigtables THEN "--big-tables" ELSE "" FI,
@@ -107,7 +110,6 @@
       IF skip-grant-tables THEN "--skip-grant-tables" ELSE "" FI,
       IF skip-innodb THEN "--skip-innodb" ELSE "" FI,
       IF skip-networking THEN "--skip-networking" ELSE "" FI,
-      socketpath_argument,
       ("--sql-mode=" ++ sqlmodes),
       ("--transaction-isolation=" ++ transaction-isolation)
     ];
@@ -178,6 +180,12 @@
     stop-slave "stop-slave";
     variables "variables";
     version "version";
+
+    //whether the program should report an error if it cannot connect to the database
+    silent false;
+
+    //use RunShell attributes to autoappend the silent flag
+    shellCmdAttSilent  IF silent THEN "-silent" ELSE "" FI;
   }
 
   mysqladmin-ping extends mysqladmin {
@@ -197,12 +205,12 @@
  * it runs on user permissions instead
  */
   mysqladmin-shutdown extends mysqladmin {
-    arguments [socketpath_argument,shutdown];
+    arguments [shutdown];
   }
 
 
   mysqladmin-status extends mysqladmin {
-    arguments [socketpath_argument,status];
+    arguments [status];
   }
 
 
@@ -210,9 +218,13 @@
 /**
  * the shutdown operation delayed until termination time. This
  * is something you can deploy early on and have it do its work when it is undeployed.
+ * It does a silent shutdown so if mysql is not found, this component
+ * still terminates normally
  */
 FinallyTerminateMysql extends Finally {
-  action extends mysqladmin-shutdown;
+  action extends mysqladmin-shutdown {
+    silent true;
+  }
 }
 
  /**
@@ -242,7 +254,6 @@ FinallyTerminateMysql extends Finally {
     no-defaults "--no-defaults";
     quick "--quick";
     repair "--repair";
-    silent "--silent";
     tables "--tables";
     verbose "--verbose";
   }

@@ -25,15 +25,17 @@
 
 #include "/org/smartfrog/services/database/test/system/core/components.sf";
 #include "/org/smartfrog/services/database/mysql/components.sf";
+#include "/org/smartfrog/services/database/mysql/operations.sf"
 #include "/org/smartfrog/sfcore/workflow/components.sf"
 #include "/org/smartfrog/services/filesystem/components.sf"
+#include "/org/smartfrog/services/logging/log4j/logtolog4jimpl.sf"
+#include "/org/smartfrog/sfcore/logging/logimpl.sf"
+#include "/org/smartfrog/sfcore/logging/components.sf"
 
 Settings extends {
    memorydb "memory";
    testUser "testUser";
    testPass "secret";
-   socketpath "/tmp/mysqld.sock";
-
  }
 
  Mysqld extends mysqldaemon {
@@ -43,8 +45,9 @@ Settings extends {
 */
   skip-innodb true;
   skip-grant-tables true;
-  skip-networking true;
+  skip-networking false;
   logLevel 5;
+  //socketpath Settings:socketpath;
 }
 
  DiaryBinding extends MysqlTargetedBinding {
@@ -56,24 +59,55 @@ Settings extends {
    password Settings:testPass;
  }
 
+
+/**
+ * this component can test for sockets existing
+ */
+ AssertSocketExists extends FileOrDirMustExist {
+  filename Mysqld:socketpath;
+ }
+
  Datadir extends TempDirWithCleanup {
-  prefix "mysql";
+   prefix "mysql";
  }
 
  DatabaseAndBinding extends Compound {
 
-      datadir extends Datadir;
+/*
+  log extends SFLog {
+    logName "org.smartfrog.org.smartfrog.services.database";
+    //log against our parent
+    logFrom LAZY PARENT;
+    //now log4j kicks in
+    logTo extends LogToLog4JImpl {
+
+      resource "log4j.properties";
+      setIniLog4JLoggerLevel true;
+    }
+    logLevel LOG_LEVEL_DEBUG;
+  }*/
+  
+//  setup extends Sequence {
+    //create the data directory on demand
+    datadir extends Datadir;
+
+    //deploy mysql
+    mysqld extends Mysqld {
+      datadir LAZY PARENT:datadir:absolutePath;
+      basedir datadir;
+
+    }
 
 
-      mysqld extends Mysqld {
-        datadir LAZY PARENT:datadir:absolutePath;
-        basedir datadir;
-      }
+//  }
 
-      //binding extends DiaryBinding;
-      binding extends MysqlBinding;
+  //lazy reference to mysql daemon
+//  mysqld LAZY setup:mysqld;
 
-  }
+  //this is the mysql binding
+  binding extends MysqlBinding;
+
+}
 
   /**
    * how long should we give mysql before giving up?
@@ -90,8 +124,8 @@ Settings extends {
     condition extends IsMysqlLive {
       database LAZY PARENT:database;
     }
-   interval 200;
-   timeout mysql_startup_delay;
+    interval 200;
+    timeout mysql_startup_delay;
   }
 
 
@@ -111,19 +145,20 @@ MysqlTest extends TestCompound {
  }
 
 
- sfConfig extends Compound {
+ sfConfig extends DatabaseAndBinding {
 
-
-    mysqld extends Mysqld;
-
+/*
     -- extends mysqladmin-status {
-      socketpath Settings:socketpath;
+      //socketpath Settings:socketpath;
     }
 
     -- extends mysqladmin-shutdown {
-      socketpath Settings:socketpath;
+        silent true;
+        //socketpath Settings:socketpath;
     }
-
     TestUserBinding;
+    
+    */
+
 
 }
