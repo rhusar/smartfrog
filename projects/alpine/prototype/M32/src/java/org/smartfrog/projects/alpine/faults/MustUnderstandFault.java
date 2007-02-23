@@ -29,6 +29,10 @@ import org.smartfrog.projects.alpine.om.soap11.SoapConstants;
 public class MustUnderstandFault extends SoapException {
 
     private Element header;
+    /**
+     * the text in the messge
+     * {@value}
+     */
     public static final String NOT_UNDERSTOOD = "A mustUnderstand header was not understood by the endpoint :";
 
     public MustUnderstandFault(String soapNamespace,
@@ -39,6 +43,15 @@ public class MustUnderstandFault extends SoapException {
                 NOT_UNDERSTOOD +header.getQualifiedName(),
                 null);
         this.header=header;
+    }
+
+
+    /**
+     * The header
+     * @return the specific header
+     */
+    public Element getHeader() {
+        return header;
     }
 
 }

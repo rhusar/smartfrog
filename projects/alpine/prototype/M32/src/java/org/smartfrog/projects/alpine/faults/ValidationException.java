@@ -9,14 +9,28 @@ package org.smartfrog.projects.alpine.faults;
  */
 public class ValidationException extends AlpineRuntimeException {
 
+
+    /**
+     * {@inheritDoc}
+     * @param message message
+     */
     public ValidationException(String message) {
         super(message);
     }
 
+    /**
+     * {@inheritDoc}
+     * @param message message
+     * @param cause underlying cause
+     */
     public ValidationException(String message, Throwable cause) {
         super(message, cause);
     }
 
+    /**
+     * {@inheritDoc}
+     * @param cause underlying cause
+     */
     public ValidationException(Throwable cause) {
         super(cause);
     }

@@ -26,14 +26,27 @@ package org.smartfrog.projects.alpine.faults;
 
 public class TimeoutException extends ClientException {
 
+    /**
+     * {@inheritDoc}
+     * @param message message
+     * @param cause underlying cause
+     */
     public TimeoutException(String message, Throwable cause) {
         super(message, cause);
     }
 
+    /**
+     * {@inheritDoc}
+     * @param cause underlying cause
+     */
     public TimeoutException(Throwable cause) {
         super(cause);
     }
 
+    /**
+     * {@inheritDoc}
+     * @param message message
+     */
     public TimeoutException(String message) {
         super(message);
     }

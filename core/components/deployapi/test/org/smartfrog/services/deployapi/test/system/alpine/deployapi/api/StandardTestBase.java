@@ -40,11 +40,11 @@ import java.net.URISyntaxException;
  * created 11-Apr-2006 14:56:59
  */
 
-public abstract class StandardTestBase extends AlpineTestBase  {
+public abstract class StandardTestBase extends AlpineTestBase {
 
 
-    protected int delay=0;
-    private static final String TEST_DELAY = "test.delay.seconds" ;
+    protected int delay = 0;
+    private static final String TEST_DELAY = "test.delay.seconds";
     /**
      * {@value}
      */
@@ -57,17 +57,16 @@ public abstract class StandardTestBase extends AlpineTestBase  {
     }
 
     /**
-     * Sets up the fixture, for example, open a network connection.
-     * This method is called before a test is executed.
+     * Sets up the fixture, for example, open a network connection. This method is called before a test is executed.
      */
     protected void setUp() throws Exception {
         super.setUp();
-        String delayTime= getJunitParameter(TEST_DELAY, false);
-        if(delayTime!=null && delayTime.length()>0) {
-            delay=Integer.valueOf(delayTime);
+        String delayTime = getJunitParameter(TEST_DELAY, false);
+        if (delayTime != null && delayTime.length() > 0) {
+            delay = Integer.valueOf(delayTime);
         }
-        if(delay>0) {
-            Thread.sleep(delay*1000);
+        if (delay > 0) {
+            Thread.sleep(delay * 1000);
         }
     }
 
@@ -93,7 +92,7 @@ public abstract class StandardTestBase extends AlpineTestBase  {
 
     public void sleep(int seconds) {
         try {
-            Thread.sleep(seconds*1000);
+            Thread.sleep(seconds * 1000);
         } catch (InterruptedException e) {
             fail("Sleep interrupted");
         }
@@ -103,12 +102,12 @@ public abstract class StandardTestBase extends AlpineTestBase  {
      * Create an addFile Request from the resource on the classpath.
      *
      * @param cdlResource resource
-     * @param name name to turn into a URI
+     * @param name        name to turn into a URI
      * @return a request with the payload inline
-     * @throws org.xml.sax.SAXException
-     * @throws java.io.IOException
-     * @throws nu.xom.ParsingException
-     * @throws java.net.URISyntaxException
+     * @throws SAXException       parse problem
+     * @throws IOException        IO problem
+     * @throws ParsingException   parse problem
+     * @throws URISyntaxException bad URI
      */
     protected SoapElement createAddFileRequest(String cdlResource, String name) throws SAXException, IOException,
             ParsingException, URISyntaxException {
@@ -126,6 +125,15 @@ public abstract class StandardTestBase extends AlpineTestBase  {
         return request;
     }
 
+    /**
+     * Load a CDL Document and parse it under the Alpine SOAP parser
+     *
+     * @param cdlResource
+     * @return a loaded document
+     * @throws SAXException     parse problem
+     * @throws IOException      IO problem
+     * @throws ParsingException parse problem
+     */
     public Document loadCdlDocument(String cdlResource) throws SAXException, IOException, ParsingException {
         SoapMessageParser parser = createXmlParser();
         Document document = parser.parseResource(cdlResource);
@@ -133,32 +141,38 @@ public abstract class StandardTestBase extends AlpineTestBase  {
     }
 
     /**
-     * Throw an exception if the {@link #TEST_IMPLEMENTED} system property
-     * does not resolve
+     * Throw an exception if the {@link #TEST_IMPLEMENTED} system property does not resolve
      */
     protected void failNotImplemented() {
         String implemented = getJunitParameter(TEST_IMPLEMENTED, false);
-        if(implemented==null) {
+        if (implemented == null) {
             fail("This test has not been implemented, which may mean that the"
-                + " underlying features have not been implemented in the client");
+                    + " underlying features have not been implemented in the client");
         }
     }
 
 
     /**
      * load a CDL document and initialize the system inline with it
+     *
      * @param cdlResource path to the resource containing the descriptor
      * @throws Exception if something went wrong.
      */
-    protected void initializeSystem(String cdlResource) throws Exception{
-        assertNotNull("No system",getSystem());
+    protected void initializeSystem(String cdlResource) throws Exception {
+        assertNotNull("No system", getSystem());
         Document document = loadCdlDocument(cdlResource);
-        Element cdl=(Element) document.getRootElement().copy();
+        Element cdl = (Element) document.getRootElement().copy();
         SoapElement request = getDescriptorHelper().createInitRequestInline(CddlmConstants.XML_CDL_NAMESPACE, cdl, null);
         getSystem().initialize(request);
         getSystem().setTimeout(getSubscribeWaitTimeout());
     }
 
+    /**
+     * initialize and run a system from a CDL Resource
+     *
+     * @param cdlResource path to the resource containing the descriptor
+     * @throws Exception if something went wrong.
+     */
     protected void runSystem(String cdlResource) throws Exception {
         initializeSystem(cdlResource);
         getSystem().run();
@@ -166,9 +180,10 @@ public abstract class StandardTestBase extends AlpineTestBase  {
 
     /**
      * Get the junit parameter for waiting
+     *
      * @return
      */
     protected int getSubscribeWaitTimeout() {
-        return getJunitParameter(PROPERTY_WAIT_TIMEOUT,SUBSCRIBE_WAIT_TIMEOUT,false);
+        return getJunitParameter(PROPERTY_WAIT_TIMEOUT, SUBSCRIBE_WAIT_TIMEOUT, false);
     }
 }

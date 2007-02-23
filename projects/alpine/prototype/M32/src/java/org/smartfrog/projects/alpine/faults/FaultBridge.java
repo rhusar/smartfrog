@@ -35,7 +35,10 @@ public class FaultBridge {
     private String namespace;
 
 
-
+    /**
+     * Create a bridge
+     * @param namespace namespace to sue
+     */
     public FaultBridge(String namespace) {
         this.namespace = namespace;
     }
@@ -77,6 +80,11 @@ public class FaultBridge {
         return new SoapException(fault);
     }
 
+    /**
+     * Turn a throwable into an exception
+     * @param thrown what got thrown
+     * @return a {@link SoapException}
+     */
     public AlpineRuntimeException convertThrowableToAlpineException(Throwable thrown) {
         //create a fault
         Fault fault = createFault(thrown);
@@ -85,6 +93,11 @@ public class FaultBridge {
         return soapException;
     }
 
+    /**
+     * Create a Fault element from a thrown element
+     * @param thrown what was thrown
+     * @return a matching {Fault}
+     */
     private Fault createFault(Throwable thrown) {
         Fault fault=new Fault(SoapConstants.ELEMENT_FAULT,namespace);
         fault.addThrowable(thrown);
@@ -94,7 +107,7 @@ public class FaultBridge {
     /**
      * If throwable implements {@link SoapFaultSource} we extract the
      * fault from the source, otherwise we create a new fault
-     * @param thrown
+     * @param thrown what was thrown
      * @return a fault
      */ 
     public Fault extractFaultFromThrowable(Throwable thrown) {

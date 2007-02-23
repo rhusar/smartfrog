@@ -31,7 +31,6 @@ import org.smartfrog.projects.alpine.transport.TransmitQueue;
 import org.smartfrog.projects.alpine.wsa.AlpineEPR;
 import org.smartfrog.projects.alpine.wsa.MessageIDSource;
 import org.smartfrog.projects.alpine.xmlutils.XsdUtils;
-import org.smartfrog.projects.alpine.core.MessageContext;
 import org.smartfrog.services.deployapi.system.Constants;
 import org.smartfrog.services.deployapi.transport.wsrf.WsrfUtils;
 
@@ -83,9 +82,9 @@ public abstract class WsrfSession extends Session {
 
     /**
      * construct a new session
-     * @param endpoint
-     * @param validating
-     * @param queue
+     * @param endpoint endpoint
+     * @param validating should you validate docs
+     * @param queue queue to use
      */
     protected WsrfSession(AlpineEPR endpoint, boolean validating, TransmitQueue queue) {
         super(endpoint, null, validating);
@@ -135,6 +134,7 @@ public abstract class WsrfSession extends Session {
      * A ClientException is raised if it is the wrong type
      * @param tx           transmission containing the response and the To: address in the request
      * @param expectedType qname of the expected root element of the message
+     * @return the response
      */
     protected Element extractResponse(Transmission tx, QName expectedType) {
         MessageDocument response = tx.getResponse();
@@ -155,7 +155,7 @@ public abstract class WsrfSession extends Session {
     /**
      * Start a WSRF_RP GetResourceProperty request
      *
-     * @param property
+     * @param property qname of the property to look up
      * @return the started transmission
      */
     public Transmission beginGetResourceProperty(QName property) {
@@ -169,7 +169,7 @@ public abstract class WsrfSession extends Session {
         }
         request.addNamespaceDeclaration(prefix, property.getNamespaceURI());
         //and the value
-        request.appendChild(prefix + ":" + property.getLocalPart());
+        request.appendChild(prefix + ':' + property.getLocalPart());
         return queue(getSoapAction(request), request);
     }
 
@@ -215,7 +215,7 @@ public abstract class WsrfSession extends Session {
         Transmission tx = beginGetResourceProperty(property);
         List<Element> elements = endGetResourceProperty(tx);
         AlpineRuntimeException fault=null;
-        if (elements.size()==0) {
+        if (elements.isEmpty()) {
             if(!required) {
                 return null;
             } else {
@@ -241,8 +241,8 @@ public abstract class WsrfSession extends Session {
 
     /**
      * Get the text value of a resource property
-     * @param property
-     * @return
+     * @param property property to retrieve
+     * @return the value or null for an empty response
      */
     public String getResourcePropertyValue(QName property) {
         Element e=getResourcePropertySingle(property);
@@ -271,7 +271,7 @@ public abstract class WsrfSession extends Session {
             }
             child.addNamespaceDeclaration(prefix, property.getNamespaceURI());
             //and the value
-            child.appendChild(prefix + ":" + property.getLocalPart());
+            child.appendChild(prefix + ':' + property.getLocalPart());
             //add the child to the graph
             request.appendChild(child);
         }
@@ -283,7 +283,7 @@ public abstract class WsrfSession extends Session {
      * end the transmission. This returns the payload, which contains the
      * nested elements which can then be asked for by qname.
      * @param tx
-     * @return
+     * @return the result
      */
     public Element endGetMultipleResourceProperties(Transmission tx) {
         tx.blockForResult(getTimeout());
@@ -309,7 +309,7 @@ public abstract class WsrfSession extends Session {
      * End a destroy operation by awaiting the result, then verifying that
      * the answer was of the right type
      *
-     * @param tx
+     * @param tx transmission to wait for
      */
     public void endDestroy(Transmission tx) {
         tx.blockForResult(getTimeout());
@@ -360,6 +360,12 @@ public abstract class WsrfSession extends Session {
         return endSubscribe(beginSubscribe(topic, callback, useNotify, expiryTime));
     }
 
+    /**
+     * Invoke an operation with blocking
+     * @param operation the operation to invoke
+     * @param request the request
+     * @return the response
+     */
     public MessageDocument invokeBlocking(String operation,SoapElement request) {
         Transmission transmission = queue(operation, request);
         return transmission.blockForResult(getTimeout());

@@ -41,7 +41,7 @@ public class SoapException extends AlpineRuntimeException implements SoapFaultSo
 
     /**
      * message is extracted from the fault string
-     * @param fault
+     * @param fault the fault
      */ 
     public SoapException(Fault fault) {
         super(fault.getFaultString()!=null? fault.getFaultString():
@@ -49,13 +49,14 @@ public class SoapException extends AlpineRuntimeException implements SoapFaultSo
         this.fault = fault;
         soapNamespace=fault.getNamespaceURI();
         if(fault.getFaultString()==null) {
+            //TODO, handle a null fault string
 
         }
     }
 
     /**
      * Create a full fault
-     * @param soapNamespace
+     * @param soapNamespace namespace to use
      * @param faultcode faultcode
      * @param faultActor actor
      * @param message message (to use as FaultString)
@@ -130,10 +131,11 @@ public class SoapException extends AlpineRuntimeException implements SoapFaultSo
      * return the fault we were built with
      *
      * @return a fault
-     * @param soapNamespace
+     * @param namespace SOAP namespace expected
+     * Will warn to the log if the wrong namespace is asked for
      */
-    public Fault GenerateSoapFault(String soapNamespace) {
-        if(!(soapNamespace.equals(soapNamespace))) {
+    public Fault GenerateSoapFault(String namespace) {
+        if(!(soapNamespace.equals(namespace))) {
             log.warn("Different xmlns for fault");
         }
         return (Fault) fault.copy();
