@@ -19,15 +19,35 @@
  */
 package org.smartfrog.services.deployapi.test.system.alpine.deployapi.api.deploy_invalid;
 
-import org.smartfrog.services.deployapi.test.system.alpine.deployapi.api.UnimplementedTestBase;
+import org.smartfrog.services.deployapi.test.system.alpine.deployapi.api.StandardTestBase;
+import org.smartfrog.projects.alpine.faults.AlpineRuntimeException;
+import org.ggf.cddlm.generated.api.CddlmConstants;
 
 /**
+ * What happens when we deploy an invalid document. Expect failure.
  * created 04-May-2006 13:46:55
  */
 
-public class Api_29_init_invalid_cdl_Test extends UnimplementedTestBase {
+public class Api_29_init_invalid_cdl_Test extends StandardTestBase {
 
     public Api_29_init_invalid_cdl_Test(String name) {
         super(name);
+    }
+
+    /**
+     * Sets up the fixture, for example, open a network connection. This method is called before a test is executed.
+     */
+    protected void setUp() throws Exception {
+        super.setUp();
+        createSystem(null);
+    }
+
+    public void testBadCDL() throws Exception {
+        try {
+            initializeSystem(CddlmConstants.INTEROP_API_TEST_DOC_2_PARSE_TIME_ERROR);
+            fail("expected failure");
+        } catch (AlpineRuntimeException e) {
+            log.info("caught "+e,e);
+        }
     }
 }

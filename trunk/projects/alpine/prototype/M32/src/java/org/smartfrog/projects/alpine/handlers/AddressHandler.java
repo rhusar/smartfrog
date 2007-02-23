@@ -30,6 +30,11 @@ import org.smartfrog.projects.alpine.om.soap11.MessageDocument;
 
 public class AddressHandler extends HandlerBase {
 
+    /**
+     * handle an address event
+     * @param messageContext incoming message
+     * @param endpointContext endpoint info
+     */
     public void processMessage(MessageContext messageContext, EndpointContext endpointContext) {
         MessageDocument request = messageContext.getRequest();
         request.bindAddressing();

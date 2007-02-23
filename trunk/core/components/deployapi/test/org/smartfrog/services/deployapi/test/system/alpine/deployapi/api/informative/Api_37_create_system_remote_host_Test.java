@@ -19,15 +19,22 @@
  */
 package org.smartfrog.services.deployapi.test.system.alpine.deployapi.api.informative;
 
-import org.smartfrog.services.deployapi.test.system.alpine.deployapi.api.UnimplementedTestBase;
+import org.smartfrog.services.deployapi.test.system.alpine.deployapi.api.StandardTestBase;
+import org.smartfrog.services.deployapi.alpineclient.model.SystemSession;
 
 /**
  * created 04-May-2006 13:46:55
  */
 
-public class Api_37_create_system_remote_host_Test extends UnimplementedTestBase {
+public class Api_37_create_system_remote_host_Test extends StandardTestBase {
 
     public Api_37_create_system_remote_host_Test(String name) {
         super(name);
+    }
+
+
+    public void testCreateSystemWithHost() throws Exception {
+        SystemSession system = getPortal().create("remote-host");
+        system.destroy();
     }
 }

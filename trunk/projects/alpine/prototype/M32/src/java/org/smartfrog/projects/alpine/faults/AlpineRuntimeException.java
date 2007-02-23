@@ -40,19 +40,35 @@ import java.util.List;
  */
 public class AlpineRuntimeException extends RuntimeException implements SoapFaultSource {
 
+    /**
+     * List of details
+     */
+    private List<Element> details = new ArrayList<Element>();
+
+    /**
+     * create from a message and a nested fault
+     * @param message message
+     * @param cause underlying cause
+     */
     public AlpineRuntimeException(String message, Throwable cause) {
         super(message, cause);
     }
 
+    /**
+     * Create from a throwable
+     * @param cause underlying cause
+     */
     public AlpineRuntimeException(Throwable cause) {
         super(cause);
     }
 
+    /**
+     * Create from a text message
+     * @param message message
+     */
     public AlpineRuntimeException(String message) {
         super(message);
     }
-
-    private List<Element> details = new ArrayList<Element>();
 
     /**
      * Constructs a new runtime exception with <code>null</code> as its detail
@@ -67,7 +83,7 @@ public class AlpineRuntimeException extends RuntimeException implements SoapFaul
      * subclass this to add more detail than just the message, stack trace,
      *
      * @return a fault
-     * @param soapNamespace
+     * @param soapNamespace namespace to generate
      */
     public Fault GenerateSoapFault(String soapNamespace) {
         Fault fault = new Fault(SoapConstants.ELEMENT_FAULT, soapNamespace);
@@ -94,7 +110,7 @@ public class AlpineRuntimeException extends RuntimeException implements SoapFaul
      * This is an override point, subclasses can add stuff to a fault that already
      * has been preconfigured by the base class
      *
-     * @param fault
+     * @param fault fault details
      */
     public void addExtraDetails(Fault fault) {
 
@@ -103,7 +119,7 @@ public class AlpineRuntimeException extends RuntimeException implements SoapFaul
     /**
      * add some fault detail
      *
-     * @param detail
+     * @param detail new element to dadd
      */
     public void addDetail(Element detail) {
         details.add(detail);
@@ -125,7 +141,7 @@ public class AlpineRuntimeException extends RuntimeException implements SoapFaul
      * would only hide the underlying fault.
      *
      * @param epr the endpoint
-     * @param wsaNamespace
+     * @param wsaNamespace addressing namespace
      */
     public void addAddressDetails(AlpineEPR epr, String wsaNamespace) {
         if (epr != null) {
@@ -139,7 +155,7 @@ public class AlpineRuntimeException extends RuntimeException implements SoapFaul
     }
 
     /**
-     * Add an address to a fault. As with {@link #addAddressDetails(org.smartfrog.projects.alpine.wsa.AlpineEPR, String)}
+     * Add an address to a fault. As with {@link #addAddressDetails(AlpineEPR, String)}
      * the call gracefully handles a null message, or missing address details.
      *
      * @param message message to extract the destination from.
@@ -158,7 +174,7 @@ public class AlpineRuntimeException extends RuntimeException implements SoapFaul
 
     public String toString() {
         Fault fault = GenerateSoapFault(SoapConstants.URI_SOAPAPI);
-        return XsdUtils.printToString(fault) + "\n";
+        return XsdUtils.printToString(fault) + '\n';
     }
 
 

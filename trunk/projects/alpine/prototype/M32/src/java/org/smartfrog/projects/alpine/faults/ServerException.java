@@ -27,22 +27,35 @@ import org.smartfrog.projects.alpine.om.soap11.SoapConstants;
  */
 public class ServerException extends AlpineRuntimeException {
 
+    /**
+     * {@inheritDoc}
+     * @param message message
+     * @param cause underlying cause
+     */
     public ServerException(String message, Throwable cause) {
         super(message, cause);
     }
 
+    /**
+     * {@inheritDoc}
+     * @param cause underlying cause
+     */
     public ServerException(Throwable cause) {
         super(cause);
     }
 
+    /**
+     * {@inheritDoc}
+     * @param message message
+     */
     public ServerException(String message) {
         super(message);
     }
 
     /**
-     * Override point: get a fault code. the default is {@link SoapConstants#FAULTCODE_SERVER};
+     * Override point: return {@link SoapConstants#FAULTCODE_SERVER};
      *
-     * @return the string to be used in the fault code
+     * @return return {@link SoapConstants#FAULTCODE_SERVER};
      */
     protected String getFaultCode() {
         return SoapConstants.FAULTCODE_SERVER;

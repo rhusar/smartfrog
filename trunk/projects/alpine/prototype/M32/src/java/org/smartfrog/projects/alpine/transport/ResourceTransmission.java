@@ -38,16 +38,19 @@ public class ResourceTransmission extends FileTransmission {
         InputStream ins= context.getLoader().loadResource(resource);
         File outputFile = null;
         OutputStream outToFile = null;
-        outputFile = File.createTempFile("alpine", ".xml");
-        outToFile=new FileOutputStream(outputFile);
-        int b;
-        while((b=ins.read())>=0) {
-            outToFile.write(b);
+        try {
+            outputFile = File.createTempFile("alpine", ".xml");
+            outToFile=new FileOutputStream(outputFile);
+            int b;
+            while((b=ins.read())>=0) {
+                outToFile.write(b);
+            }
+            outToFile.flush();
+            setFile(outputFile);
+        } finally {
+            outToFile.close();
+            ins.close();
         }
-        outToFile.flush();
-        outToFile.close();
-        ins.close();
-        setFile(outputFile);
     }
 
 
