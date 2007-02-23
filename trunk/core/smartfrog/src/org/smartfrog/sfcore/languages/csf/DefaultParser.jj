@@ -30,6 +30,10 @@ import org.smartfrog.sfcore.reference.RootReferencePart;
 import org.smartfrog.sfcore.reference.AttribReferencePart;
 import org.smartfrog.sfcore.reference.ThisReferencePart;
 
+import org.smartfrog.sfcore.componentdescription.ComponentDescription;
+import org.smartfrog.sfcore.common.Context;
+
+
 import org.smartfrog.sfcore.common.SFNull;
 import org.smartfrog.sfcore.common.SFByteArray;
 import org.smartfrog.sfcore.common.SmartFrogException;
@@ -743,7 +747,7 @@ CSFComponentDescription ComponentType(String componentClass) :
       SFParser.componentFactory(componentClass);
 }
 {
-  (EagerComponent(component)|LazyComponent(component)|DataComponent(component))
+  (EagerComponent(component)|DataComponent(component))
     { return component; }
 }
 
@@ -754,31 +758,73 @@ void EagerComponent(CSFComponentDescription comp) :
   BaseComponent(comp) { comp.setEager(true); }
 }
 
-void LazyComponent(CSFComponentDescription comp) :
-{
-}
-{
-  <LAZY> BaseComponent(comp) { comp.setEager(false); }
-}
-
 void DataComponent(CSFComponentDescription comp) :
 {
 }
 {
-  <DATA> BaseComponent(comp) { comp.setEager(false); }
+  (<DATA> | <LAZY>) BaseComponent(comp) { comp.setEager(false); }
 }
 
 
 void BaseComponent(CSFComponentDescription comp) :
 {
-  SFReference prototype = null;
+}
+{ (
+  <SEMICOLON>
+  | (<NULL> (BaseComponentRest(comp) | <SEMICOLON>))
+  | (BaseComponentLinkType(comp) (BaseComponentRest(comp)  | <SEMICOLON>))
+  | (BaseComponentAttributesType(comp) [BaseComponentRest(comp)]) // for backward compat...
+  )
+  {    // fix the case when the extends is only of a single {...} as assumptions have been made that
+       // type resolution is not required in this case - true before multiple extends!
+       // This is done by moving contexts, as the contained CD may be of the wrong node type!
+       if (comp.getTypes().size() == 1) {
+          Object type = comp.getTypes().firstElement();
+          if (type instanceof CSFComponentDescription) {
+               CSFComponentDescription cdType = (CSFComponentDescription) type;
+               Context cxt = cdType.sfContext();
+               comp.setContext(cxt);
+
+               // re-parent any descriptions in super sfContext
+               for (Enumeration e = cxt.keys(); e.hasMoreElements(); ) {
+                   Object key = e.nextElement();
+                   Object value = cxt.get(key);
+                   if (value instanceof CSFComponentDescription) {
+                       ((CSFComponentDescription) value).setParent(comp);
+                   }
+               }
+               comp.setTypes(new Vector());
+               comp.setConstraints(cdType.getConstraints());
+          }
+       }
+  }
+}
+
+
+void BaseComponentRest(CSFComponentDescription comp) :
+{
 }
 {
-  [ <NULL> | prototype = LinkReference() {prototype.setEager(true);}]
-  ( Constraints(comp) <SEMICOLON>| (<LBRACE> AttributesNoEOF(comp) <RBRACE>) Constraints(comp) )
-  {
-    comp.setType(prototype);
-  }
+  (<COMMA>  (BaseComponentLinkType(comp)|BaseComponentAttributesType(comp)|<NULL>) (BaseComponentRest(comp)  | <SEMICOLON>))
+  | (BaseComponentAttributesType(comp)) // for backward compat...
+}
+
+void BaseComponentLinkType(CSFComponentDescription comp) :
+{
+   SFReference prototype = null;
+}
+{
+   prototype = LinkReference()
+   {prototype.setEager(true); comp.addType(prototype);}
+}
+
+void BaseComponentAttributesType (CSFComponentDescription comp) :
+{
+   CSFComponentDescriptionImpl compType = new CSFComponentDescriptionImpl(new Vector(), null, null, true);
+}
+{
+   <LBRACE> AttributesNoEOF(compType) <RBRACE> Constraints(compType)
+   {comp.addType(compType);}
 }
 
 void Constraints(CSFComponentDescription comp) :
@@ -789,7 +835,7 @@ void Constraints(CSFComponentDescription comp) :
 }
 {
     (
-       ( (t = <CHECKING> | t = <SUCHTHAT>)           //note important that bininding and suchthat have 8 chars!!!
+       ( (t = <CHECKING> | t = <SUCHTHAT>)           //note important that checking and suchthat have 8 chars!!!
             { priority = 25;
               suchThat = fixEscapes(t.image.substring(10, t.image.length() - 1)); }
        | t = <BINDING>

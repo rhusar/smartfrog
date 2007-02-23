@@ -64,7 +64,7 @@ public class Constraint implements Copying, Comparable {
     public Constraint(String query, int priority) {
        setQuery(query);
        setPriority(priority);
-       System.out.println("building constraint " + priority + " " + query);
+       //System.out.println("building constraint " + priority + " " + query);
     }
 
 
