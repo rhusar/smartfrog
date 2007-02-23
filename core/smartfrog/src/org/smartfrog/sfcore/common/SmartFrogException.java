@@ -323,8 +323,9 @@ public class SmartFrogException extends Exception implements Serializable {
         if (getMessage()==null){
             strb.append ((getCause() == null)  ? "" : getCauseMessage(nm));
         } else {
-            strb.append ((((getCause() == null) ) ? "" : (nm+"cause: " +
-            getCauseMessage(nm))));
+            if (!((getCause().toString().equals(getMessage())))) {
+                strb.append ((((getCause() == null) ) ? "" : (nm+"cause: " + getCauseMessage(nm))));
+            }
         }
         strb.append ((((this.containsKey(DATA))) ? (nm+DATA+  ": "
                                                     + get(DATA)) : "" ));
@@ -373,9 +374,15 @@ public class SmartFrogException extends Exception implements Serializable {
     public String toStringAll(String nm) {
         StringBuffer strb = new StringBuffer();
         strb.append ("ALL: "+ shortClassName() +": ");
-        strb.append ((((getMessage() == null) ? "" : getMessage())));
-        strb.append ((((getCause() == null) ) ? "" : (nm+"  cause: " +
-                        getCause())));
+
+        if ((getMessage()!=null)&& (!((getCause().toString().equals(getMessage()))))) {
+            //Only print message when message != cause
+            strb.append (getMessage());
+            strb.append ((((getCause() == null) ) ? "" : (nm+"cause: " + getCauseMessage(nm))));
+        } else {
+            strb.append ((((getCause() == null) ) ? "" : (getCauseMessage(nm))));
+        }
+        
         strb.append ((((cxt == null) ||
             (cxt.size() == 0)) ? "" : (nm+"  context: " + nm +cxt.toString()+nm)));
         return strb.toString();
