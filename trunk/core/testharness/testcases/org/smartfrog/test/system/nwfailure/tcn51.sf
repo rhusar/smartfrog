@@ -26,6 +26,6 @@ For more information: www.smartfrog.org
  */
 
 sfConfig extends Compound {
-    sfProcessHost "www.google.com";
+    sfProcessHost "www.smartfrog.org";
     noop extends Noop;
 }
