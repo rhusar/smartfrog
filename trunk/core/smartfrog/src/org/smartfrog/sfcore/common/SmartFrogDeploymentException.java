@@ -226,13 +226,15 @@ public class SmartFrogDeploymentException extends SmartFrogRuntimeException impl
     public String toString(String nm) {
         StringBuffer strb = new StringBuffer();
         strb.append (""+ shortClassName() +": ");
-        strb.append ((((getMessage() == null) ? "" : getMessage())));
-        if (getMessage()==null){
-            strb.append ((getCause() == null)  ? "" : getCauseMessage(nm));
+
+        if ((getMessage()!=null)&& (!((getCause().toString().equals(getMessage()))))) {
+            //Only print message when message != cause
+            strb.append ((((getMessage() == null) ? "" : getMessage())));
+            strb.append ((((getCause() == null) ) ? "" : (nm+"cause: " + getCauseMessage(nm))));
         } else {
-            strb.append ((((getCause() == null) ) ? "" : (nm+"cause: " +
-            getCauseMessage(nm))));
+            strb.append ((((getCause() == null) ) ? "" : (getCauseMessage(nm))));
         }
+
         strb.append ((((this.containsKey(REFERENCE)
                        && (this.get(REFERENCE)!=null)
                        &&(((Reference)this.get(REFERENCE)).size()!=0)))

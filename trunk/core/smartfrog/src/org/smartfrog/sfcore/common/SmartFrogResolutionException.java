@@ -454,11 +454,15 @@ public class SmartFrogResolutionException extends SmartFrogRuntimeException
         strb.append((((this.containsKey(DATA))) ?
                     (nm+DATA+  ": " + get(DATA)) : ""));
 
-       //strb.append ((((getMessage() == null) ? "" : getMessage())));
-       if (getMessage()==null){
-           strb.append ((getCause() == null)  ? nm+"Cause: " : getCauseMessage(nm));
-       } else {
-           strb.append (nm+ "Cause: "+getMessage());
+        boolean indent = !strb.toString().equals(":: ");
+        if ((getMessage()!=null)&& (!((getCause().toString().equals(getMessage()))))) {
+            //Only print message when message != cause
+            strb.append ((indent ) ? nm : "");
+            strb.append (getMessage());
+            strb.append ((((getCause() == null) ) ? "" : (nm+"cause: " + getCauseMessage(nm))));
+        } else {
+            strb.append (((((getCause() != null)&&indent) ) ? nm : ""));
+            strb.append ((((getCause() == null) ) ? "" : (getCauseMessage(nm))));
         }
 
       } catch (Throwable thr) {
