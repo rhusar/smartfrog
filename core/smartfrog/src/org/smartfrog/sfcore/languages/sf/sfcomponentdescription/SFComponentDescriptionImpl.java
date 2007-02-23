@@ -63,52 +63,72 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
     *  description. This means that the attributes of the (super)type are
     *  inherited by this component in a structural copy
     */
-   public Reference type;
+   public Vector types = new Vector();
 
 
     /**
      *  Constuctor.
      *
-     *@param  type    supertype for component
+     *@param  types    supertypes for component
      *@param  parent  parent component
      *@param  cxt     context for description
      *@param  eager   eager flag
      */
-    public SFComponentDescriptionImpl(Reference type, SFComponentDescription parent, Context cxt, boolean eager) {
+    public SFComponentDescriptionImpl(Vector types, SFComponentDescription parent, Context cxt, boolean eager) {
        super(parent, cxt, eager);
-       this.type = type;
+       if (types != null) this.types = types;
     }
 
 
    /**
-    *  Get prototype for this description. This is the component from which
+    *  Get prototypes for this description. This is the component from which
     *  attributes get copied into this description.
     *
-    * @return    type for this description
+    * @return    types for this description
     *
-    * @see #setType
+    * @see #setTypes
     */
-   public Reference getType() {
-      return type;
+   public Vector getTypes() {
+      return types;
    }
 
 
    /**
-    *  Set new type for this component.
+    *  Set new types for this component.
     *
-    * @param  t  new prototype for description
+    * @param  t  new prototype sfor description
     *
     * @return    old type
     *
-    * @see #getType
+    * @see #getTypes
     */
-   public Reference setType(Reference t) {
-      Reference ot = type;
-      type = t;
+   public Vector setTypes(Vector t) {
+      Vector ot = types;
+      types = t;
 
       return ot;
    }
 
+
+   /**
+    *  add a new type for this component.
+    *
+    * @param  type  new prototype for description
+    *
+    */
+   public void addType(Reference type) {
+      types.add(type);
+   }
+
+   /**
+    *  add a new set of attributes for this component.
+    *
+    * @param  type  new set of attributes for description
+    *
+    */
+   public void addType(SFComponentDescription type) {
+      types.add(type);
+   }
 
    /**
     *  Creates a deep copy of the compiled component. Parent, type and eager
@@ -122,7 +142,7 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
    public Object copy() {
       SFComponentDescription res = null;
       res = (SFComponentDescription) clone();
-      res.setType(type);
+      res.setTypes((Vector) types.clone());
       res.setContext((Context) sfContext.copy());
       res.setParent(parent);
       res.setEager(eager);
@@ -367,10 +387,15 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
     * @throws  SmartFrogResolutionException failed to type resolve
     */
    public void doTypeResolve(ResolutionState resState) throws SmartFrogResolutionException {
-      if (!resolveType(resState)) {
-         return;
-      }
-
+/*
+      System.out.println("-----------------------");
+      System.out.println("resolving " + sfCompleteName());
+      System.out.println("context: " + sfContext());
+      System.out.println("types: " + types);
+      System.out.println("parent " + sfParent());
+      System.out.println("parent parent " + sfParent().sfParent());
+*/
+      if (!resolveTypes(resState)) return;
       for (Enumeration e = sfContext.keys(); e.hasMoreElements(); ) {
          Object key = e.nextElement();
          Object value = sfContext.get(key);
@@ -398,6 +423,30 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
       }
    }
 
+   /**
+    *  Does the type resolution for all the types. Looks for super type relative to this
+    *  description if the first element of the type reference is a
+    *  HereReferencePart (ie. not a PARENT or ROOT). Subtypes supertype into
+    *  this description if found.
+    *
+    *@param  resState  resolution state to maintain unresolved types
+    *@return whether all types resolved
+    *@throw SmartFrogTypeResolutionException an error in the subtyping process, such as
+    * the override of a final attribute
+    */
+   protected boolean resolveTypes(ResolutionState resState) throws SmartFrogTypeResolutionException {
+      boolean ok = true;
+      for (int i = types.size() - 1; ok && i>=0;  i--) {
+         Object o = types.elementAt(i);
+         if (o instanceof Reference)
+           ok &= resolveType(resState, (Reference) o);
+         else
+           ok &= resolveType(resState, (SFComponentDescription) o);
+         if (ok) types.remove(i);
+      }
+      return ok;
+   }
+
 
    /**
     *  Does the actual type resolution. Looks for super type relative to this
@@ -406,35 +455,56 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
     *  this description if found.
     *
     *@param  resState  resolution state to maintain unresolved types
-    *@return           true if resolved, false if not
+    *@return whther the resolution succeeded
     *@throw SmartFrogTypeResolutionException an error in the subtyping process, such as
     * the override of a final attribute
     */
-   protected boolean resolveType(ResolutionState resState) throws SmartFrogTypeResolutionException {
-      Reference superTypeRef = type;
-
-      if (superTypeRef == null) {
-         return true;
-      }
-
+   protected boolean resolveType(ResolutionState resState, Reference type) throws SmartFrogTypeResolutionException {
       try {
-         SFComponentDescription superType = (SFComponentDescription) sfResolve(superTypeRef);
+         SFComponentDescription superType = (SFComponentDescription) sfResolve(type);
          superType.doTypeResolve(resState);
 
          if (!resState.moreToResolve()) {
             subtype(superType);
             resState.haveResolved(true);
-            superTypeRef = type;
          }
       } catch (SmartFrogTypeResolutionException te) {
          throw te; // this was from the sutyping - possibly a override of sfFinal
       } catch (Exception excpt) {
-         resState.addUnresolved(superTypeRef, sfCompleteName(), null, excpt);
+         excpt.printStackTrace();
+         resState.addUnresolved(type, sfCompleteName(), null, excpt);
+         return false;
       }
-
-      return superTypeRef == null;
+      return true;
    }
 
+   /**
+    *  Does the actual type resolution. Looks for super type relative to this
+    *  description if the first element of the type reference is a
+    *  HereReferencePart (ie. not a PARENT or ROOT). Subtypes supertype into
+    *  this description if found.
+    *
+    *@param  resState  resolution state to maintain unresolved types
+    *@return whther the resolution succeeded
+    *@throw SmartFrogTypeResolutionException an error in the subtyping process, such as
+    * the override of a final attribute
+    */
+
+   protected boolean resolveType(ResolutionState resState, SFComponentDescription type) throws SmartFrogTypeResolutionException {
+      try {
+         //type.doTypeResolve(resState);
+
+         if (!resState.moreToResolve()) {
+            subtype(type);
+            resState.haveResolved(true);
+         }
+      } catch (SmartFrogTypeResolutionException te) {
+         throw te; // this was from the sutyping - possibly a override of sfFinal
+      } catch (Exception excpt) {
+         throw new SmartFrogTypeResolutionException("error type resolving component in " + sfCompleteName() + " data: " + type);
+      }
+      return true;
+   }
 
    /**
     *  Subtypes a supertype ino this component. Copies the type of the superType
@@ -487,9 +557,6 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
 
       // set sfContext
       sfContext = sContext;
-
-      // set supertype
-      type = superType.getType();
    }
 
 
@@ -628,10 +695,34 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
      * @throws IOException failure while writing
      */
     public void writeOn(Writer ps, int indent) throws IOException {
-        ps.write("extends "+(getEager()?"":"LAZY ")+((getType()==null)?"":getType().toString()));
+         writeOn(ps, indent, true);
+    }
+
+    /**
+     * Writes this component description on a writer with or without "extends".
+     *
+     * @param ps writer to write on
+     * @param indent the indent to use for printing offset
+     * @param includeExtends print the "extends [DATA]" bit
+     *
+     * @throws IOException failure while writing
+     */
+    protected void writeOn(Writer ps, int indent, boolean includeExtends) throws IOException {
+        if (includeExtends) ps.write("extends "+ (getEager()?"":"DATA "));
+        boolean first = true;
+        for (Enumeration e = getTypes().elements(); e.hasMoreElements(); ) {
+           Object elem = e.nextElement();
+           if (!first) ps.write(", ");
+           if (elem instanceof SFComponentDescriptionImpl) {
+              ((SFComponentDescriptionImpl) elem).writeOn(ps, indent+1, false);
+           } else {
+              ps.write(elem.toString());
+           }
+           first = false;
+        }
 
         if (sfContext.size()>0) {
-            ps.write(" {\n");
+            ps.write("{\n");
             sfContext.writeOn(ps, indent+1);
             tabPad(ps, indent); ps.write('}');
         } else {

@@ -53,8 +53,10 @@ public class NullSolver extends CoreSolver implements Solver {
         top = cd;
         try {
             findUnbound();
+        } catch (SmartFrogResolutionException e) {
+           throw e;
         } catch (Exception e) {
-            throw new SmartFrogResolutionException("Error updating description with variable bindings during constraint resolution", e);
+           throw new SmartFrogResolutionException("Error: null solver updating description with variable bindings during constraint resolution", e);
         }
     }
 
@@ -85,7 +87,7 @@ public class NullSolver extends CoreSolver implements Solver {
         unbounds = new Vector();
         top.visit(new NullSolver.BindingMapper(), false);
         if (unbounds.size() > 0) {
-            throw new SmartFrogResolutionException("Unbound variable(s) in attribute " + unbounds);
+            throw new SmartFrogResolutionException("Unbound variable(s) in attribute with NULL solver " + unbounds);
         }
     }
 

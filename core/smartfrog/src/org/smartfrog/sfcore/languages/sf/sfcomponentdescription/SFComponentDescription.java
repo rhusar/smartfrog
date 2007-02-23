@@ -23,6 +23,8 @@ import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.parser.Phases;
 import org.smartfrog.sfcore.reference.Reference;
 
+import java.util.Vector;
+
 /**
  *  Defines the context interface used by Components. Context implementations
  *  need to respect the ordering and copying requirements imposed by Components.
@@ -31,24 +33,40 @@ import org.smartfrog.sfcore.reference.Reference;
 public interface SFComponentDescription extends ComponentDescription,
       ComponentResolver, Phases {
    /**
-    *  Get prototype for this description. This is the component from which
+    *  Get prototypes for this description. This are the components from which
     *  attributes get copied into this description.
     *
-    * @return    type for this description
+    * @return    types for this description
     *
-    * @see #setType
+    * @see #setTypes
     */
-   public Reference getType();
+   public Vector getTypes();
 
 
    /**
-    *  Set new type for this component.
+    *  Set new types for this component.
+    *
+    * @param  type  new prototypes for description
+    *
+    * @return       old types
+    *
+    * @see #getTypes
+    */
+   public Vector setTypes(Vector type);
+
+   /**
+    *  add a new type for this component.
     *
     * @param  type  new prototype for description
     *
-    * @return       old type
-    *
-    * @see #getType
     */
-   public Reference setType(Reference type);
+   public void addType(Reference type);
+
+      /**
+    *  add a new set of attributes for this component.
+    *
+    * @param  type  new set of attributes for description
+    *
+    */
+    public void addType(SFComponentDescription type);
 }

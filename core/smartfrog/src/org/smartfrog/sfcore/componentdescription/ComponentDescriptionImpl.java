@@ -86,9 +86,11 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
      * @param cxt context for description
      * @param eager eager flag
      */
-    public ComponentDescriptionImpl(ComponentDescription parent, Context cxt,
-        boolean eager) {
-        this.sfContext = cxt;
+    public ComponentDescriptionImpl(ComponentDescription parent, Context cxt, boolean eager) {
+        if (cxt == null)  //@todo remove all the new ContextImpl() throughout the code, replace by null!
+           this.sfContext = new ContextImpl();        
+        else
+           this.sfContext = cxt;
         this.parent = parent;
         this.eager = eager;
     }

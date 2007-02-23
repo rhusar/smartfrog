@@ -53,13 +53,13 @@ public class CSFComponentDescriptionImpl extends SFComponentDescriptionImpl
     /**
      * Constuctor.
      *
-     * @param type   supertype for component
+     * @param types   supertypes for component
      * @param parent parent component
      * @param cxt    context for description
      * @param eager  eager flag
      */
-    public CSFComponentDescriptionImpl(Reference type, CSFComponentDescription parent, Context cxt, boolean eager) {
-        super(type, parent, cxt, eager);
+    public CSFComponentDescriptionImpl(Vector types, CSFComponentDescription parent, Context cxt, boolean eager) {
+        super(types, parent, cxt, eager);
     }
 
 
@@ -96,7 +96,7 @@ public class CSFComponentDescriptionImpl extends SFComponentDescriptionImpl
     public Object copy() {
         CSFComponentDescription res = null;
         res = (CSFComponentDescription) clone();
-        res.setType(type);
+        res.setTypes(types);
         res.setContext((Context) sfContext.copy());
         res.setParent(parent);
         res.setEager(eager);

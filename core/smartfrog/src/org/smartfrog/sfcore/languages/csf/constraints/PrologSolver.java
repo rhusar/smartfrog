@@ -42,7 +42,7 @@ abstract public class PrologSolver extends CoreSolver {
      */
     public void solve(CSFComponentDescription cd) throws SmartFrogResolutionException {
         top = cd;
-        System.out.println("solving");
+        //System.out.println("solving");
 
         // create the theory
         try {
@@ -59,7 +59,7 @@ abstract public class PrologSolver extends CoreSolver {
         try {
             collectConstraints();
         } catch (Exception e) {
-            throw new SmartFrogResolutionException("Error collectiong constraints during contraint resolution", e);
+            throw new SmartFrogResolutionException("Error collecting constraints during constraint resolution", e);
         }
 
         // solve the constraints
@@ -143,9 +143,9 @@ abstract public class PrologSolver extends CoreSolver {
 
     private void collectConstraints() throws Exception {
         top.visit(new ConstraintCollector(), false);
-       System.out.println("unordered constraints " + constraints);
+        //System.out.println("unordered constraints " + constraints);
         Collections.sort(constraints);
-       System.out.println("ordered constraints " + constraints);
+       //System.out.println("ordered constraints " + constraints);
     }
 
     private Hashtable solveConstraints(Hashtable bindings) throws SmartFrogResolutionException {
@@ -171,7 +171,7 @@ abstract public class PrologSolver extends CoreSolver {
             totalConstraint.append(",");
         }
         totalConstraint.append("'done'].");
-        System.out.println("solving prolog constraint " + totalConstraint + " with bindings " + bindings);
+        //System.out.println("solving prolog constraint " + totalConstraint + " with bindings " + bindings);
         Hashtable results = solveQuery(totalConstraint, bindings);
         if (results == null)
             throw new SmartFrogResolutionException("No solution found to constraints");
