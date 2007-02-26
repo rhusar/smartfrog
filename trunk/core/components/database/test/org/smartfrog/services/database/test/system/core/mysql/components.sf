@@ -33,9 +33,15 @@
 #include "/org/smartfrog/sfcore/logging/components.sf"
 
 Settings extends {
-   memorydb "memory";
+   db "diary";
    testUser "testUser";
    testPass "secret";
+   undeployTimeout 5000;
+   //how long should we give mysql before giving up?
+   mysql_startup_delay 10000;
+   mysql_startup_timeout 20000;
+   poll_interval 200;
+
  }
 
  Mysqld extends mysqldaemon {
@@ -51,7 +57,8 @@ Settings extends {
 }
 
  DiaryBinding extends MysqlTargetedBinding {
-   database "diary";
+   host "localhost";
+   database Settings:db;
  }
 
  TestUserBinding extends DiaryBinding {
@@ -95,7 +102,6 @@ Settings extends {
     mysqld extends Mysqld {
       datadir LAZY PARENT:datadir:absolutePath;
       basedir datadir;
-
     }
 
 
@@ -107,31 +113,29 @@ Settings extends {
   //this is the mysql binding
   binding extends MysqlBinding;
 
+  diary extends DiaryBinding;
 }
 
-  /**
-   * how long should we give mysql before giving up?
-   */
-  mysql_startup_delay 5000;
 
 
   BlockForMysqlConnection extends BlockForJdbcConnection {
-   timeout mysql_startup_delay ;
+    interval Settings:poll_interval;
+    timeout Settings:mysql_startup_timeout;
   }
 
-  BlockForMysqlLive extends FailingWaitFor {
-    database TBD;
+  BlockForMysqlLive extends BlockForMysqlConnection {
     condition extends IsMysqlLive {
       database LAZY PARENT:database;
     }
-    interval 200;
-    timeout mysql_startup_delay;
   }
 
 
 MysqlTest extends TestCompound {
 
     description "test compound for mysql tests";
+
+  //autoshutdown
+    undeployAfter Settings:undeployTimeout;
 
     sfShouldTerminate false;
 

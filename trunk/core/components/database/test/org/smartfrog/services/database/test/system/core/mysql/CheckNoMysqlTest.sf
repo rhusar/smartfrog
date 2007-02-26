@@ -30,34 +30,28 @@ ITS MEDIA, AND YOU HEREBY WAIVE ANY CLAIM IN THIS REGARD.
 
 */
 
-#include "/org/smartfrog/services/database/test/system/core/mysql/ConnectionOpenTest.sf";
+#include "/org/smartfrog/services/database/test/system/core/mysql/components.sf";
 
+CheckNoMysqlTest extends TestCompound {
 
+    description "check that mysql is not already running; fail if the port is in use";
 
-MysqlStartTest extends MysqlTest {
+    sfShouldTerminate false;
 
-   description "do nothing but start mysql and check it has created a socket";
+    action extends MysqlBinding;
 
-    tests extends Sequence {
+    database LAZY action;
 
-      //pause for a bit
-      delay extends Delay {
-        time Settings:mysql_startup_delay;
-      }
-
-      //look for the socket
-      socketTest extends AssertSocketExists {
-
-      }
-
-        action extends mysqladmin-shutdown {
-          silent false;
+    tests extends EvaluateCondition {
+      condition extends Not {
+        condition extends IsMysqlLive {
+          database LAZY PARENT:ATTRIB database;
         }
-
-
+      }
+      message "Mysqld is already running on this machine and port";
     }
 
-}
+ }
 
 
-sfConfig extends MysqlStartTest;
+sfConfig extends CheckNoMysqlTest;

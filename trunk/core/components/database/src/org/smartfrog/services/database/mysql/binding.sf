@@ -41,16 +41,17 @@ MysqlBinding extends DatabaseBinding {
 }
 
 /**
- * Add host and database names to the binding
+ * Add host, port and database names to the binding
+ * Note that SmartFrog requires a ++ to have spaces between things as it can be
+ * used in a reference name
  */
 MysqlTargetedBinding extends MysqlBinding {
-  host locahost;
+  host "locahost";
   //port
   port 3306;
   database "";
   _db LAZY database;
-
- // url (((((binding_prefix ++ host) ++ ":" ) ++ port) ++ "/") ++ _db);
+  url (((((binding_prefix ++ host) ++ ":" ) ++ port) ++ "/") ++ _db);
 }
 
 /**

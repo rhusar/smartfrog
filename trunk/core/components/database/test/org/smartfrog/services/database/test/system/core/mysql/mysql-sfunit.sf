@@ -24,11 +24,14 @@
 #include "/org/smartfrog/services/database/test/system/core/mysql/MysqlStartTest.sf"
 #include "/org/smartfrog/services/database/test/system/core/mysql/ShutdownTest.sf"
 #include "/org/smartfrog/services/database/test/system/core/mysql/TableManipulationTest.sf"
-/*#include ""
-#include ""*/
+#include "/org/smartfrog/services/database/test/system/core/mysql/CheckNoMysqlTest.sf"
+/*
+#include ""
+*/
 
 MysqlSfUnitTests extends SFUnitTestSuite {
 
+  -- extends CheckNoMysqlTest;
   connectionOpenTest extends ConnectionOpenTest;
   isMysqlLiveTest extends IsMysqlLiveTest;
   mysqlStartTest extends MysqlStartTest;

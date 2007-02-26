@@ -1,4 +1,4 @@
-/** (C) Copyright 2006 Hewlett-Packard Development Company, LP
+/** (C) Copyright 2007 Hewlett-Packard Development Company, LP
 
  This library is free software; you can redistribute it and/or
  modify it under the terms of the GNU Lesser General Public
@@ -37,3 +37,22 @@
     ];
  }
 
+ /**
+  * create a database
+  */
+ CreateDatabase extends Transaction {
+    name TBD;
+    sqlCommands [
+     ("CREATE DATABASE " ++ name)
+    ];
+ }
+
+ /**
+  * drop a database
+  */
+ DropDatabase extends Transaction {
+    name TBD;
+    sqlCommands [
+     ("DROP DATABASE " ++ name)
+    ];
+ }

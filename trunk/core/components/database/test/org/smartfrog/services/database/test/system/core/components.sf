@@ -61,29 +61,3 @@
   }
 
 
- /**
-  Create any user
-  */
-/*
- CreateUser extends Transaction {
-    username TBD;
-    password TBD;
-    sqlCommands [
-     (("CREATE USER " ++ username ) ++ (" PASSWORD " ++ password))
-    ];
- }
-
-  DropUser extends Transaction {
-    username TBD;
-    sqlCommands [
-     ("DROP USER " ++ username )
-    ];
- }
-
- DropTable extends Transaction {
-    table TBD;
-    sqlCommands [
-     ("DROP TABLE " ++ table)
-    ];
- }
-*/

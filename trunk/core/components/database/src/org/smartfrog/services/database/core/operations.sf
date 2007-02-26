@@ -25,6 +25,7 @@
 
  /**
   Create any user
+
   */
  CreateUser extends Transaction {
     username TBD;
@@ -63,3 +64,4 @@
      ("DROP TABLE " ++ table)
     ];
  }
+
