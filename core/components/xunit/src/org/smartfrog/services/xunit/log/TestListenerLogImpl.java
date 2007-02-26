@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * This relays all log events to anythng listening for it
  * created 18-May-2006 15:37:08
  */
 

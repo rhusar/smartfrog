@@ -13,25 +13,36 @@ public class MysqlTest extends DeployingTestBase {
         super(name);
     }
 
-    public void testTableManipulationTest() throws Throwable {
-        deployAndTerminate("TableManipulationTest");
-    }
 
+    public void testCheckNoMysql() throws Throwable {
+        deployAndTerminate("CheckNoMysqlTest");
+    }
 
     public void testConnectionOpenTest() throws Throwable {
         deployAndTerminate("ConnectionOpenTest");
     }
 
-    public void testIsMysqlLiveTest() throws Throwable {
+    public void testIsMysqlLive() throws Throwable {
         deployAndTerminate("IsMysqlLiveTest");
     }
 
-    public void testMysqlStartTest() throws Throwable {
+    public void testMysqlStart() throws Throwable {
         deployAndTerminate("MysqlStartTest");
     }
     
-    public void testShutdownTest() throws Throwable {
+    public void testShutdown() throws Throwable {
         deployAndTerminate("ShutdownTest");
+    }
+
+    public void testTableManipulation() throws Throwable {
+        deployAndTerminate("TableManipulationTest");
+    }
+
+    /*
+     *@skip: only works if you deploy mysql in grant-tables mode
+     */
+    public void NotestUserManipulation() throws Throwable {
+        deployAndTerminate("UserManipulationTest");
     }
 
     private void deployAndTerminate(String template) throws Throwable {

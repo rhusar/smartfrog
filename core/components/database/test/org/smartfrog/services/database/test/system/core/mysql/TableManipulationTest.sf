@@ -1,3 +1,35 @@
+/** (C) Copyright 200
+7 Hewlett-Packard Development Company, LP
+
+Disclaimer of Warranty
+
+The Software is provided "AS IS," without a warranty of any kind. ALL
+EXPRESS OR IMPLIED CONDITIONS, REPRESENTATIONS AND WARRANTIES,
+INCLUDING ANY IMPLIED WARRANTY OF MERCHANTABILITY, FITNESS FOR A
+PARTICULAR PURPOSE, OR NON-INFRINGEMENT, ARE HEREBY
+EXCLUDED. SmartFrog is not a Hewlett-Packard Product. The Software has
+not undergone complete testing and may contain errors and defects. It
+may not function properly and is subject to change or withdrawal at
+any time. The user must assume the entire risk of using the
+Software. No support or maintenance is provided with the Software by
+Hewlett-Packard. Do not install the Software if you are not accustomed
+to using experimental software.
+
+Limitation of Liability
+
+TO THE EXTENT NOT PROHIBITED BY LAW, IN NO EVENT WILL HEWLETT-PACKARD
+OR ITS LICENSORS BE LIABLE FOR ANY LOST REVENUE, PROFIT OR DATA, OR
+FOR SPECIAL, INDIRECT, CONSEQUENTIAL, INCIDENTAL OR PUNITIVE DAMAGES,
+HOWEVER CAUSED REGARDLESS OF THE THEORY OF LIABILITY, ARISING OUT OF
+OR RELATED TO THE FURNISHING, PERFORMANCE, OR USE OF THE SOFTWARE, OR
+THE INABILITY TO USE THE SOFTWARE, EVEN IF HEWLETT-PACKARD HAS BEEN
+ADVISED OF THE POSSIBILITY OF SUCH DAMAGES. FURTHERMORE, SINCE THE
+SOFTWARE IS PROVIDED WITHOUT CHARGE, YOU AGREE THAT THERE HAS BEEN NO
+BARGAIN MADE FOR ANY ASSUMPTIONS OF LIABILITY OR DAMAGES BY
+HEWLETT-PACKARD FOR ANY REASON WHATSOEVER, RELATING TO THE SOFTWARE OR
+ITS MEDIA, AND YOU HEREBY WAIVE ANY CLAIM IN THIS REGARD.
+
+*/
 
 #include "/org/smartfrog/services/database/test/system/core/mysql/components.sf";
 
@@ -21,43 +53,40 @@ TableManipulationTest extends TestCompound {
          timeout 10000;
         }
 
-
-        dropUser1 extends DropUser {
-          database LAZY ATTRIB action:binding;
-          username Settings:testUser;
+        dropDBNoError extends dropDB {
           failOnSqlError false;
+        }
+
+        mkdb extends CreateDatabase {
+          database LAZY ATTRIB action:binding;
+          name Settings:db;
         }
 
         //forward reference
         dropTable1 extends dropTable {
+          database LAZY ATTRIB action:diary;
           failOnSqlError false;
         }
 
-        newuser extends CreateUser {
-          database LAZY PARENT:PARENT:action:binding;
-          username Settings:testUser;
-          password Settings:testPass;
-        }
-
-
         events extends CreateEventsTable {
-          database LAZY ATTRIB action:binding;
+          database LAZY ATTRIB action:diary;
         }
 
         select extends Transaction {
-          database LAZY ATTRIB action:binding;
+          database LAZY ATTRIB action:diary;
           sqlCommands [
             "SELECT * from events"
             ];
         }
 
         dropTable extends DropTable {
-            database LAZY ATTRIB action:binding;
+            database LAZY ATTRIB action:diary;
             table "events";
         }
 
-        dropUser2 extends dropUser1 {
-          failOnSqlError true;
+        dropDB extends DropDatabase {
+          database LAZY ATTRIB action:binding;
+          name Settings:db;
         }
 
     }

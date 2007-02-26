@@ -64,14 +64,8 @@ DatabaseBinding extends Prim {
       classpath extends OptionalCD {
         description "a classpath component describing classes needed by the JDBC driver";
       }
-  };
-
+  }
 }
-
-
-
-
-
 
 /**
  * an operation under a database

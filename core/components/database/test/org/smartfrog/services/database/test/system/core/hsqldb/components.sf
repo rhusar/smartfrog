@@ -26,9 +26,16 @@
 #include "/org/smartfrog/services/database/test/system/core/components.sf";
 #include "/org/smartfrog/services/database/hsqldb/components.sf";
 
- memorydb "memory";
- testUser "testUser";
- testPass "secret";
+
+Settings extends {
+   memorydb "memory";
+   testUser "testUser";
+   testPass "secret";
+ }
+
+ memorydb Settings:memorydb;
+ testUser Settings:testUser;
+ testPass Settings:testPass;
 
  TestDB extends HsqldbBinding {
    url "jdbc:hsqldb:mem:test";

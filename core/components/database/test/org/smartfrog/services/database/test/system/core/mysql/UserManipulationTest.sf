@@ -30,34 +30,50 @@ ITS MEDIA, AND YOU HEREBY WAIVE ANY CLAIM IN THIS REGARD.
 
 */
 
-#include "/org/smartfrog/services/database/test/system/core/mysql/ConnectionOpenTest.sf";
+#include "/org/smartfrog/services/database/test/system/core/mysql/components.sf";
 
 
+UserManipulationTest extends TestCompound {
 
-MysqlStartTest extends MysqlTest {
+    description "Creates users and tables";
+    sfShouldTerminate false;
 
-   description "do nothing but start mysql and check it has created a socket";
+    action extends DatabaseAndBinding {
+    }
 
     tests extends Sequence {
 
-      //pause for a bit
-      delay extends Delay {
-        time Settings:mysql_startup_delay;
-      }
 
-      //look for the socket
-      socketTest extends AssertSocketExists {
-
-      }
-
-        action extends mysqladmin-shutdown {
-          silent false;
+        wait extends FailingWaitFor {
+          condition extends IsJdbcConnectionOpen {
+            database LAZY action:binding;
+          }
+          interval Settings:poll_interval;
+          timeout Settings:mysql_startup_timeout;
         }
 
 
+        dropUser1 extends DropUser {
+          database LAZY ATTRIB action:binding;
+          username Settings:testUser;
+          failOnSqlError false;
+        }
+
+        newuser extends CreateUserNoPassword {
+          database LAZY PARENT:PARENT:action:binding;
+          username Settings:testUser;
+          password Settings:testPass;
+        }
+
+        dropUser2 extends dropUser1 {
+          failOnSqlError true;
+        }
+
     }
+  }
+
+sfConfig extends UserManipulationTest {
+
+
 
 }
-
-
-sfConfig extends MysqlStartTest;
