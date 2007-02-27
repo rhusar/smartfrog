@@ -65,18 +65,6 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
     */
    public Vector types = new Vector();
 
-    /**
-     *  Constuctor, provided for backward compatibility
-     *
-     *@param  type    supertype for component
-     *@param  parent  parent component
-     *@param  cxt     context for description
-     *@param  eager   eager flag
-     */
-    public SFComponentDescriptionImpl(Reference type, SFComponentDescription parent, Context cxt, boolean eager) {
-       super(parent, cxt, eager);
-       if (type == null) types.add(type);
-    }
 
     /**
      *  Constuctor.
@@ -342,7 +330,7 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
                  MessageUtil.formatMessage(CANNOT_OVERRIDE_FINAL, sfCompleteName(), key)
             );
       }
-      
+
       // Found destination
       resState.haveResolved(true);
 
