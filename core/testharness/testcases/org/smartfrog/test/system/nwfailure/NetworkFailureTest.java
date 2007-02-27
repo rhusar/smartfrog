@@ -45,15 +45,33 @@ public class NetworkFailureTest extends SmartFrogTestBase {
                 "no-such-hostname");
     }
 
+    /**
+     * This test can fail for different reasons on Java 6 from Java 5, or
+     * maybe this is triggered by differences in proxy setup.
+     * <pre>
+     * java.rmi.ConnectIOException: Exception creating connection to: 192.6.19.80;
+     * nested exception is: java.net.NoRouteToHostException: connect timed out: 192.6.19.80
+     * </pre>
+     * @throws Exception
+     */
     public void testConnectionRefusedTCN51() throws Exception {
 
-        deployExpectingException(FILES + "tcn51.sf",
+        Throwable thrown = deployExpectingException(FILES + "tcn51.sf",
                 "tcn51",
                 "SmartFrogDeploymentException",
-                "Connection refused",
-                "java.rmi.ConnectException",
-                "Connection refused");
-
+                null,
+                null,
+                null);
+        Throwable nested=thrown.getCause();
+        assertNotNull("No nested cause",nested);
+        String message = nested.getMessage();
+        assertNotNull("No nested message", message);
+        String faulttype=nested.getClass().getName();
+        if("java.rmi.ConnectException".equals(faulttype)) {
+            assertContains(message, "Connection refused");
+        } else {
+            assertEquals("java.rmi.ConnectIOException",faulttype);
+        }
     }
 
     public void testConnectionRefusedTCN51b() throws Exception {
@@ -64,6 +82,5 @@ public class NetworkFailureTest extends SmartFrogTestBase {
                 "Connection refused to host: 216.239.59.99",
                 "java.rmi.ConnectException",
                 "Connection refused");
-
     }
 }

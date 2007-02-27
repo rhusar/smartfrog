@@ -22,7 +22,7 @@ For more information: www.smartfrog.org
 #include "org/smartfrog/test/system/nwfailure/component.sf"
 
 /*
- * try deploying to google. Something in the router chain will reject this
+ * try deploying to smartfrog.org . Something in the router chain will reject this
  */
 
 sfConfig extends Compound {
