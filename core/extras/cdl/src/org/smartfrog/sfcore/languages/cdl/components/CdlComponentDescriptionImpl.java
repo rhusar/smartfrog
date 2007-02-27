@@ -64,9 +64,8 @@ public final class CdlComponentDescriptionImpl extends SFComponentDescriptionImp
 
     public static final String PHASE_BUILD = "build";
 
-
-    public CdlComponentDescriptionImpl(Reference type, CdlComponentDescription parent, Context cxt, boolean eager) {
-        super(type, parent, cxt, eager);
+    public CdlComponentDescriptionImpl(Vector types, SFComponentDescription parent, Context cxt, boolean eager) {
+        super(types, parent, cxt, eager);
     }
 
     public CdlComponentDescriptionImpl(QName name, CdlComponentDescription parent) {
