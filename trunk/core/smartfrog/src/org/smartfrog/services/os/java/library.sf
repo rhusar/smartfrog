@@ -247,7 +247,7 @@ LibraryArtifact extends FileUsingWorkflowComponent {
 
     //if we do a download, we want it and not some dated version. A limit of ten minutes lets
     //clients in a cluster share some workload.
-    maxCacheAge "600";
+    maxCacheAge 600;
 
     //dont download if it is present
     downloadAlways false;
