@@ -124,7 +124,6 @@ public interface Context extends Tags, PrettyPrinting, Copying, Serializable {
 
     /**
      * Returns the first key which has a particular value in the table.
-     * Deprecated: sfAttributeFor should be used instead.
      * @param value value to find in table
      *
      * @return key for value or null if none
@@ -148,15 +147,26 @@ public interface Context extends Tags, PrettyPrinting, Copying, Serializable {
 
 
     /**
-     * Returns the first attribute which has a particular equal value in the table.
+     * Returns the first attribute which has a particular value "equal" in the table.
      *
      * @param value value to find in table
      *
      * @return attibute object for value or null if none
      */
-    public Object sfAttributeForEqual(Object value);
+    public Object sfAttributeKeyForEqual(Object value);
 
     /**
+     * Returns true if the context contains value reference (==).
+     * Replaces contains()
+     * @param value object to check
+     *
+     * @return true if context contains value, false otherwise
+    *  @throws NullPointerException  if the value is <code>null</code>.
+     */
+    public boolean sfContainsRefValue(Object value);
+
+    /**
+
      * Returns the attribute key for a given value.
      *
      * @param value value to look up the key for
@@ -167,10 +177,11 @@ public interface Context extends Tags, PrettyPrinting, Copying, Serializable {
     public Object sfAttributeKeyFor(Object value);
 
     /**
+
      * Returns true if the context contains value.
      * Replaces contains()
      *
-     * @param value object to check
+     * @param value object to check for equality
      *
      * @return true if context contains value, false otherwise
      */
