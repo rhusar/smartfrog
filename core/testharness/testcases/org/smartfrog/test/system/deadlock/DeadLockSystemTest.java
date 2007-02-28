@@ -52,7 +52,7 @@ public class DeadLockSystemTest extends SmartFrogTestBase {
                 EXCEPTION_DEPLOYMENT,
                 "Possible cause: cyclic reference",
                 EXCEPTION_RESOLUTION,
-                "SmartFrogResolutionException:: , Error during parsing of 'org/smartfrog/test/system/deadlock/tcn19.sf'. Parser error while resolving phases [SmartFrogLinkResolutionException:: , source: HERE sfConfig:component1, data: [], Failed to resolve 'attr component2:attr'. Possible cause: cyclic reference"
+                "SmartFrogResolutionException:: Error during parsing of 'org/smartfrog/test/system/deadlock/tcn19.sf'. Parser error while resolving phases [SmartFrogLinkResolutionException:: , source: HERE sfConfig:component1, data: [], Failed to resolve 'attr component2:attr'. Possible cause: cyclic reference"
                  );
     }
 }
