@@ -407,8 +407,8 @@ public abstract class SmartFrogTestBase extends TestCase {
         final boolean contained = source.indexOf(substring)>=0;
 
         if(!contained) {
-            String message = "- Did not find ["+substring+"] in ["+source+"]"+
-                (cfgDescMsg!=null?("\n, Result:"+cfgDescMsg):"");
+            String message = "- Did not find \n["+substring+"] \nin \n["+source+"]"+
+                (cfgDescMsg!=null?("\n, Result:\n"+cfgDescMsg):"");
             System.out.println(message);
             if (extraText != null) {
                 System.out.println(extraText);
