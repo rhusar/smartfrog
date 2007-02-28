@@ -79,7 +79,7 @@ public class ContextImpl extends OrderedHashtable implements Context,
         for (Enumeration e = keys(); e.hasMoreElements();) {
             Object theKey = e.nextElement();
 
-            if (get(theKey).equals(value)) {
+            if (get(theKey) == (value)) {
                 return theKey;
             }
         }
@@ -539,7 +539,7 @@ public class ContextImpl extends OrderedHashtable implements Context,
                 throw ex;
             } catch (java.lang.StackOverflowError thr) {
                    StringBuffer msg = new StringBuffer("Failed to pretty print value. Possible cause: cyclic reference.");
-                   msg.append("Cause: ");
+                   msg.append("Cause:#<0># ");
                    msg.append(thr.getCause().toString());
                    throw new java.io.IOException(msg.toString());
             }
@@ -601,7 +601,7 @@ public class ContextImpl extends OrderedHashtable implements Context,
      * Default is to turn into string using normal toString() call
      *
      * @param obj Object to be given in String form
-     * @return String 
+     * @return String
      * @throws IOException failure while writing
      */
     public static String getBasicValueFor (Object obj) throws IOException {
@@ -724,7 +724,7 @@ public class ContextImpl extends OrderedHashtable implements Context,
     * each properly dealt with. Other values are copied using serialize/deserialize
     * if they implement serialization - note that because of this transient data will
     * not be copied. It also copies the attributeTags.
-    * 
+    *
     * This overrides the one in OrderedHashtable.
     *
     * @return copy of hashtable
