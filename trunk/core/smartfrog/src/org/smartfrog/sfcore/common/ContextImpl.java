@@ -56,23 +56,32 @@ public class ContextImpl extends OrderedHashtable implements Context,
 
     /**
      * Returns the first key for which the value is the given one.
-     * Deprecated: replaced by sfAttributeFor(value);
+     * Deprecated: replaced by sfAttributeKeyFor(value);
      * @param value value to look up
      *
      * @return key for value or null if not found
      */
     public Object keyFor(Object value) {
-        return sfAttributeFor(value);
+        if (!contains(value)) {
+            return null;
+        }
+        for (Enumeration e = keys(); e.hasMoreElements();) {
+            Object theKey = e.nextElement();
+            if (get(theKey)==(value)) {
+                return theKey;
+            }
+        }
+        return null;
     }
 
     /**
-     * Returns the first attribute which has a particular value in the table.
+     * Returns the first attribute which has an equal value to "value" in the table.
      *
      * @param value value to find in table
      *
      * @return attibute object for value or null if none
      */
-    public Object sfAttributeFor(Object value){
+    public Object sfAttributeForEqual(Object value){
         if (!contains(value)) {
             return null;
         }
@@ -244,7 +253,7 @@ public class ContextImpl extends OrderedHashtable implements Context,
 
 
      /**
-      * Returns the attribute key given a value.
+      * * Returns the first key for which the value is the given one.
       *
       * @param value value to look up key for
       *
@@ -411,6 +420,26 @@ public class ContextImpl extends OrderedHashtable implements Context,
          throw new SmartFrogContextException("Attribute " + name + " does not exists for validating tag's existance");
       return sfGetTags(name).contains(tag);
    }
+
+    /**
+     * Compares the specified Object with this Context Tags for equality
+     *
+     * @param  o object to be compared for equality with this Context
+     * @return true if the specified Object is equal to this Map.
+     */
+    public synchronized boolean equalsTags (Object o) {
+    	if (o == attributeTags)
+	        return true;
+
+	    if (!(o instanceof Map))
+	        return false;
+
+        if (!attributeTags.equals(o)){
+            return false;
+        }
+
+        return true;
+    }
 
     /**
      * Returns a string representation of the component. This will give a
@@ -625,9 +654,8 @@ public class ContextImpl extends OrderedHashtable implements Context,
     }
 
 
-
     // ///////////////////////////////////////////////////////////////////////////////////
-    // reimplementation of the hash table and oreder hash table methods to deal with the tags
+    // reimplementation of the hash table and order hash table methods to deal with the tags
     // ///////////////////////////////////////////////////////////////////////////////////
 
 
@@ -734,4 +762,45 @@ public class ContextImpl extends OrderedHashtable implements Context,
       // this is already copying attributeTags
       return super.copy();
    }
+
+
+    /**
+     * Compares the specified Object with this Context for equality,
+     * as per the definition in the Map interface.
+     *
+     * @param  o object to be compared for equality with this Context
+     * @return true if the specified Object is equal to this Map.
+     */
+    public synchronized boolean equals(Object o) {
+
+        if (o == this)
+	        return true;
+
+        if (!(o instanceof Context))
+                    return false;
+
+        // Compares HashMap
+        if (!super.equals(o))
+         return false;
+
+
+        // Compares Tags
+        if (!((o instanceof ContextImpl) && (((ContextImpl)o).equalsTags(attributeTags)))){
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * Returns the hash code value for this Context
+     *
+     */
+    public synchronized int hashCode() {
+        // Simple hashcode using Joshua Bloch's recommendation
+        int result = 17;
+        result = 37 * result + attributeTags.hashCode();
+        result = 37 * result + super.hashCode();
+        return result;
+    }
+
 }
