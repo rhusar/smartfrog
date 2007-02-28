@@ -128,6 +128,7 @@ public interface Context extends Tags, PrettyPrinting, Copying, Serializable {
      * @param value value to find in table
      *
      * @return key for value or null if none
+     * @deprecated sfAttributeKeyFor should be used instead.
      */
     public Object keyFor(Object value);
 
@@ -145,14 +146,25 @@ public interface Context extends Tags, PrettyPrinting, Copying, Serializable {
      */
     public Object clone();
 
+
     /**
-     * Returns the first attribute which has a particular value in the table.
+     * Returns the first attribute which has a particular equal value in the table.
      *
      * @param value value to find in table
      *
      * @return attibute object for value or null if none
      */
-    public Object sfAttributeFor(Object value);
+    public Object sfAttributeForEqual(Object value);
+
+    /**
+     * Returns the attribute key for a given value.
+     *
+     * @param value value to look up the key for
+     *
+     * @return key for given value or null if not found
+     *
+     */
+    public Object sfAttributeKeyFor(Object value);
 
     /**
      * Returns true if the context contains value.
@@ -219,17 +231,6 @@ public interface Context extends Tags, PrettyPrinting, Copying, Serializable {
      * @throws SmartFrogContextException when name is null
      */
     public Object sfRemoveAttribute(Object name) throws SmartFrogContextException;
-
-
-    /**
-     * Returns the attribute key for a given value.
-     *
-     * @param value value to look up the key for
-     *
-     * @return key for given value or null if not found
-     *
-     */
-    public Object sfAttributeKeyFor(Object value);
 
 
     /**
