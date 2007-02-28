@@ -88,7 +88,7 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
      */
     public ComponentDescriptionImpl(ComponentDescription parent, Context cxt, boolean eager) {
         if (cxt == null)  //@todo remove all the new ContextImpl() throughout the code, replace by null!
-           this.sfContext = new ContextImpl();        
+           this.sfContext = new ContextImpl();
         else
            this.sfContext = cxt;
         this.parent = parent;
@@ -146,7 +146,7 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
             } else {
                 sfCompleteName.addElement(new HereReferencePart("*copy*"));
                if (((sfLog()!= null) && sfLog().isTraceEnabled())){
-                    sfLog().trace("Internal error generating CD complete name - CD is a copy: "+sfCompleteName); //or child not named in parent yet 
+                    sfLog().trace("Internal error generating CD complete name - CD is a copy: "+sfCompleteName); //or child not named in parent yet
                }
             }
         return sfCompleteName;
@@ -1333,4 +1333,22 @@ public void sfAddTags(Object name, Set tags) throws SmartFrogException {
    public boolean sfContainsTag(Object name, String tag) throws SmartFrogException {
       return sfContext.sfContainsTag(name, tag);
    }
+
+
+    /**
+     * Returns the hash code value for this ComponentDescription
+     *
+     */
+    public synchronized int hashCode() {
+        // Simple hashcode using Joshua Bloch's recommendation
+        int result = 17;
+        result = 37 * result + sfContext.hashCode();
+        result = 37 * result + (eager ? 0 :1 );
+        if (primParent==null) {
+          result = 37 * result + parent.hashCode();
+        } else {
+           result = 37 * result + primParent.hashCode();
+        }
+        return result;
+    }
 }
