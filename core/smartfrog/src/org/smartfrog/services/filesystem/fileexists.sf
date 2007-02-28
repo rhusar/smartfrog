@@ -28,13 +28,13 @@
  * file size is less than this value
  */
 
-FileExists {
-
-  FileExistsSchema extends Schema {
+FileExists extends Conditional {
+  sfClass "org.smartfrog.services.filesystem.FileExistsImpl";
+  FileExistsSchema extends FileUsingComponentSchema {
       //the minimum size
       minSize extends Integer;
   }
 
   //no minimum size check.
-  minSize=-1;
+  minSize -1;
 }

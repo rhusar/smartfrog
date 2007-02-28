@@ -22,39 +22,56 @@ import java.rmi.Remote;
  */
 public interface Assert extends Remote {
 
-    public static final String IS_TRUE = "isTrue";
-    public static final String IS_FALSE = "isFalse";
-    public static final String REFERENCE = "reference";
-    public static final String HAS_ATTRIBUTE ="hasAttribute";
-    public static final String EVALUATES_TRUE = "evaluatesTrue";
-    public static final String EVALUATES_FALSE = "evaluatesFalse";
-    public static final String CHECK_ON_STARTUP = "checkOnStartup";
-    public static final String FILE_EXISTS = "fileExists";
-    public static final String DIR_EXISTS = "dirExists";
-    public String ATTRIBUTE_EQUALS = "attributeEquals";
+    /** {@value} */
+    public String ATTR_IS_TRUE = "isTrue";
+    /** {@value} */
+    public String ATTR_IS_FALSE = "isFalse";
+    /** {@value} */
+    public String ATTR_REFERENCE = "reference";
+    /** {@value} */
+    public String ATTR_HAS_ATTRIBUTE ="hasAttribute";
+    /** {@value} */
+    public String ATTR_EVALUATES_TRUE = "evaluatesTrue";
+    /** {@value} */
+    public String ATTR_EVALUATES_FALSE = "evaluatesFalse";
+    /** {@value} */
+    public String ATTR_CHECK_ON_STARTUP = "checkOnStartup";
+    /** {@value} */
+    public String ATTR_FILE_EXISTS = "fileExists";
+    /** {@value} */
+    public String ATTR_DIR_EXISTS = "dirExists";
+    /** {@value} */
+    public String ATTR_ATTRIBUTE_EQUALS = "attributeEquals";
 
     /**
      * first equality string
+     * {@value}
      */
-    public String EQUALS_STRING1 = "equalsString1";
+    public String ATTR_EQUALS_STRING1 = "equalsString1";
 
     /**
      * second equality string
+     * {@value}
      */
-    public String EQUALS_STRING2 = "equalsString2";
+    public String ATTR_EQUALS_STRING2 = "equalsString2";
 
-    public String EQUALITY_IGNORES_CASE = "equalityIgnoresCase";
+    /** {@value} */
+    public String ATTR_EQUALITY_IGNORES_CASE = "equalityIgnoresCase";
 
     /**
      * check when we start up
+     * {@value}
      */
-    public static final String CHECK_ON_LIVENESS = "checkOnLiveness";
+    public String ATTR_CHECK_ON_LIVENESS = "checkOnLiveness";
 
-    public static final String MESSAGE="message";
+    /** {@value} */
+    public String ATTR_MESSAGE ="message";
 
-    //value of a vector element to test
-    public static final String ATTR_VECTOR_VALUE="attributeVectorValue";
+    //
+    /** value of a vector element to test {@value} */
+    public String ATTR_VECTOR_VALUE="attributeVectorValue";
     //the index to look for
-    public static final String ATTR_VECTOR_INDEX="attributeVectorIndex";
+    /** the index to look for {@value} */
+    public String ATTR_VECTOR_INDEX="attributeVectorIndex";
 
 }
