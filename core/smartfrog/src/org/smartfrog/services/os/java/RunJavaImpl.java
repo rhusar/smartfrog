@@ -76,27 +76,29 @@ public class RunJavaImpl extends RunShellImpl implements RunJava {
         classname=sfResolve(ATTR_CLASSNAME,classname,false);
         jar= platform.convertFilename(sfResolve(ATTR_JARFILE, jar, false));
 
-        Vector environment = sfResolve(ATTR_ENVIRONMENT, (Vector) null, false);
+        Vector environment = sfResolve(ATTR_ENVIRONMENT, (Vector) null, true);
         Vector flatEnv = flatten(environment, null, "=", null);
 
-        Vector jvmArgs=sfResolve(ATTR_JVM_ARGS,(Vector)null,false);
+        Vector jvmArgs=sfResolve(ATTR_JVM_ARGS,(Vector)null,true);
 
-        Vector sysProperties=sfResolve(ATTR_SYSPROPERTIES, (Vector) null, false);
+        Vector sysProperties=sfResolve(ATTR_SYSPROPERTIES, (Vector) null, true);
         Vector flatSysProperties = flatten(sysProperties, "-D", "=", "");
-        Boolean assertions=(Boolean) sfResolve(ATTR_ASSERTIONS,(Boolean)null,false);
-        Boolean sysAssertions = (Boolean) sfResolve(ATTR_SYSTEMASSERTIONS, (Boolean) null, false);
-        Vector arguments=sfResolve(ATTR_ARGUMENTS, (Vector) null, false);
+        boolean assertions=sfResolve(ATTR_ASSERTIONS,false,true);
+        boolean sysAssertions = sfResolve(ATTR_SYSTEMASSERTIONS, false, true);
+        Vector arguments=sfResolve(ATTR_ARGUMENTS, (Vector) null, true);
 
 
+        //now set up the JVM arguments, starting with system properties
         addArgs(args, flatSysProperties);
+        //and other JVM argumetns
         addArgs(args, jvmArgs);
 
         //assertions
-        if(assertions!=null && assertions.booleanValue()) {
+        if(assertions) {
             log.debug("enable application assertions");
             args.add("-ea:...");
         }
-        if (sysAssertions != null && sysAssertions.booleanValue()) {
+        if (sysAssertions) {
             log.debug("enable system assertions");
             args.add("-esa");
         }
@@ -162,8 +164,8 @@ public class RunJavaImpl extends RunShellImpl implements RunJava {
 
     /**
      * set our log var if it is null
-     * @throws SmartFrogException
-     * @throws RemoteException
+     * @throws SmartFrogException if failed
+     * @throws RemoteException In case of Remote/nework error
      */
     private void setupLog() throws SmartFrogException, RemoteException {
         if(log==null) {
@@ -186,10 +188,10 @@ public class RunJavaImpl extends RunShellImpl implements RunJava {
     /**
      * take a vector of name value pairs like [["a",true],["b",3]] and create something like
      * ["a=true","b=3"] with configurable prefix, joiner and suffix strings
-     * @param source
-     * @param prefix
-     * @param joiner
-     * @param suffix
+     * @param source list source
+     * @param prefix prefix for every element
+     * @param joiner string to use between each pair
+     * @param suffix any suffix to use at the end
      * @return a merged/flattened array or null if an empty list came in
      * @throws SmartFrogInitException
      */
@@ -227,8 +229,8 @@ public class RunJavaImpl extends RunShellImpl implements RunJava {
 
     /**
      * recursive support for classpaths, lets us cross reference more easily.
-     * @param mandatory
-     * @return
+     * @param mandatory is this path mandatory
+     * @return the classpath string
      * @throws SmartFrogResolutionException
      * @throws RemoteException
      */
@@ -251,15 +253,12 @@ public class RunJavaImpl extends RunShellImpl implements RunJava {
     private String buildEndorsedDirs() throws SmartFrogResolutionException, RemoteException {
         boolean debugEnabled = log.isDebugEnabled();
         log.debug("building endorsed directory parameter");
-        Vector pathV = sfResolve(ATTR_ENDORSED_DIRS, (Vector) null, false);
-        if(pathV==null) {
-            if(debugEnabled ) {
-                log.debug(ATTR_ENDORSED_DIRS+" is unset");
-            }
+        Vector pathV = sfResolve(ATTR_ENDORSED_DIRS, (Vector) null, true);
+        if(pathV.isEmpty()) {
             return null;
         }
-        Vector classpathFlat=RunJavaUtils.recursivelyFlatten(pathV);
-        Iterator entries=classpathFlat.iterator();
+        Vector endorsed=RunJavaUtils.recursivelyFlatten(pathV);
+        Iterator entries=endorsed.iterator();
         StringBuffer result= new StringBuffer();
         while (entries.hasNext()) {
             Object entry = entries.next();

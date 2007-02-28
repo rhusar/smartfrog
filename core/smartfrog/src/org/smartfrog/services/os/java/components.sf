@@ -62,26 +62,35 @@ JavaSchema extends Schema {
     classname extends OptionalString;
     jar extends OptionalString;
     maxMemory extends OptionalInteger;
-    environment extends OptionalVector;
-    sysProperties extends OptionalVector;
-    endorsedDirs extends OptionalVector;
+    environment extends Vector;
+    sysProperties extends Vector;
+    endorsedDirs extends Vector;
     classpath extends OptionalVector;
-    assertions extends OptionalVector;
-    jvmargs extends OptionalVector;
+    assertions extends Boolean;
+    systemAssertions extends Boolean;
+    jvmargs extends Vector;
     jvm extends String;
-    arguments extends OptionalVector;
+    arguments extends Vector;
 }
 
 Java extends ExecuteProgram {
     javaSchema extends JavaSchema;
     sfClass "org.smartfrog.services.os.java.RunJavaImpl";
-    processName "java";
     jvm "java";
+    processName "java";
+
+    arguments [];
+    assertions false;
+    endorsedDirs [];
+    environment [];
+    jvmargs [];
     //bind the shell command to the jvm command
     shellCmd ATTRIB jvm;
     shouldDetach false;
     shouldTerminate false;
-   
+    sysProperties [];
+    systemAssertions false;
+
 }
 
 
