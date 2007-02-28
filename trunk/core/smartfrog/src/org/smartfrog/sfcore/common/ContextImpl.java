@@ -32,8 +32,7 @@ import java.io.*;
  * enumeration returning methods.
  *
  */
-public class ContextImpl extends OrderedHashtable implements Context,
-    Serializable, PrettyPrinting, Copying {
+public class ContextImpl extends OrderedHashtable implements Context, Serializable, PrettyPrinting, Copying {
 
    Map attributeTags = new HashMap();
 
@@ -55,40 +54,31 @@ public class ContextImpl extends OrderedHashtable implements Context,
     }
 
     /**
-     * Returns the first key for which the value is the given one.
-     * Deprecated: replaced by sfAttributeKeyFor(value);
+     * Returns the first key for which the value is the given one (==).
      * @param value value to look up
      *
      * @return key for value or null if not found
+     * @deprecated replaced by sfAttributeKeyFor(value);
      */
     public Object keyFor(Object value) {
-        if (!contains(value)) {
-            return null;
-        }
-        for (Enumeration e = keys(); e.hasMoreElements();) {
-            Object theKey = e.nextElement();
-            if (get(theKey)==(value)) {
-                return theKey;
-            }
-        }
-        return null;
-    }
 
-    /**
-     * Returns the first attribute which has an equal value to "value" in the table.
+        return sfAttributeKeyFor(value);
+    }
+   /**
+     * Returns the first attribute which has a particular "equal" value  in the table.
      *
      * @param value value to find in table
      *
      * @return attibute object for value or null if none
      */
-    public Object sfAttributeForEqual(Object value){
+    public Object sfAttributeKeyForEqual(Object value){
         if (!contains(value)) {
             return null;
         }
         for (Enumeration e = keys(); e.hasMoreElements();) {
             Object theKey = e.nextElement();
 
-            if (get(theKey) == (value)) {
+            if (get(theKey).equals(value)) {
                 return theKey;
             }
         }
@@ -96,7 +86,7 @@ public class ContextImpl extends OrderedHashtable implements Context,
     }
 
     /**
-     * Returns true if the context contains value.
+     * Returns true if the context contains an equal value.
      * Replaces contains()
      * @param value object to check
      *
@@ -106,6 +96,26 @@ public class ContextImpl extends OrderedHashtable implements Context,
        return containsValue(value);
     }
 
+   /**
+     * Returns true if the context contains value reference (==).
+     * Replaces contains()
+     * @param value object to check
+     *
+     * @return true if context contains value, false otherwise
+    *  @throws NullPointerException  if the value is <code>null</code>.
+     */
+    public boolean sfContainsRefValue(Object value){
+       if (value == null) {
+         throw new NullPointerException();
+       }
+       for (Enumeration e = keys(); e.hasMoreElements();) {
+           Object theKey = e.nextElement();
+            if (get(theKey) == (value)) {
+                return true;
+            }
+        }
+        return false;
+    }
 
     /**
      * Returns true if the context contains attribute.
@@ -253,7 +263,7 @@ public class ContextImpl extends OrderedHashtable implements Context,
 
 
      /**
-      * * Returns the first key for which the value is the given one.
+      * Returns the attribute key given a value. Uses == for the comparison
       *
       * @param value value to look up key for
       *
@@ -262,7 +272,17 @@ public class ContextImpl extends OrderedHashtable implements Context,
 
      // perhaps this should be synchronized... but causes problems with sfCompleteName if it is
      public Object sfAttributeKeyFor(Object value) {
-         return this.keyFor(value);
+         if (!contains(value)) {
+            return null;
+        }
+        for (Enumeration e = keys(); e.hasMoreElements();) {
+            Object theKey = e.nextElement();
+
+            if (get(theKey) == (value)) {
+                return theKey;
+            }
+        }
+        return null;
      }
 
 
