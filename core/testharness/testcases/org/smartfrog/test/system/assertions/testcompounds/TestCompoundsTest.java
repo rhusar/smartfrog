@@ -53,6 +53,13 @@ public class TestCompoundsTest extends DeployingTestBase {
         return record;
     }
 
+    private TerminationRecord deployToNormalTermination(String test) throws Throwable {
+        application = deployExpectingSuccess(TestCompoundsTest.FILES + test + ".sf", test);
+        TerminationRecord record = expectSuccessfulTermination((TestBlock) application);
+        return record;
+    }
+
+
     public void testUnexpectedFailure() throws Throwable {
         TerminationRecord record = deployToAbnormalTermination("testUnexpectedFailure");
     }
@@ -68,8 +75,7 @@ public class TestCompoundsTest extends DeployingTestBase {
     }
 
     public void testSmartFrogException() throws Throwable {
-        deployExpectingException(TestCompoundsTest.FILES + "testSmartFrogException.sf",
-                "testSmartFrogException", SmartFrogException.class.toString(), "SFE");
+        TerminationRecord record = deployToNormalTermination("testSmartFrogException");
+        assertRecordContains(record, null, SmartFrogException.class.toString(), "SFE");
     }
-
 }

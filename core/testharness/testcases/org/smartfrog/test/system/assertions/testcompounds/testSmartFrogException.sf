@@ -33,8 +33,11 @@ ITS MEDIA, AND YOU HEREBY WAIVE ANY CLAIM IN THIS REGARD.
 #include "/org/smartfrog/test/system/assertions/testcompounds/components.sf";
 
 sfConfig extends ExpectDeployFailure {
-    action extends SmartFrogException {
-        message "SFE";
-    }
-
+  sfShouldTerminate false;
+  
+  action extends SmartFrogException {
+      message "SFE";
+  }
+    //the exception that we expect to catch 
+  exceptions [["SmartFrogException","SFE"]];
 }

@@ -36,6 +36,8 @@ ITS MEDIA, AND YOU HEREBY WAIVE ANY CLAIM IN THIS REGARD.
  * This is a big test run
  */
 sfConfig extends ExpectTerminate {
+    sfShouldTerminate false;
+
     action extends Sequence {
     }
 }
