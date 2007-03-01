@@ -1334,6 +1334,38 @@ public void sfAddTags(Object name, Set tags) throws SmartFrogException {
       return sfContext.sfContainsTag(name, tag);
    }
 
+    /**
+     * Compares the specified Object with this ComponentDescription for equality
+     *
+     * @param  o object to be compared for equality with this Hashtable
+     * @return true if the specified Object is equal to this ComponentDescription
+     */
+    public synchronized boolean equals(Object o) {
+        if (o == this)
+            return true;
+
+        if (!(o instanceof ComponentDescription))
+            return false;
+
+        if (eager != ((ComponentDescription)o).getEager() ){
+            return false;
+        }
+
+        if (!((sfContext).equals((((ComponentDescription)o).sfContext())))){
+            return false;
+        }
+
+        if (primParent==null) {
+          if (!(parent.equals(((ComponentDescription)o).sfParent()))){
+            return false;
+          }
+        } else {
+          if (!(primParent.equals(((ComponentDescription)o).sfPrimParent()))){
+            return false;
+          }
+        }        
+        return true;
+    }
 
     /**
      * Returns the hash code value for this ComponentDescription
@@ -1351,4 +1383,5 @@ public void sfAddTags(Object name, Set tags) throws SmartFrogException {
         }
         return result;
     }
+
 }
