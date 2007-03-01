@@ -1336,8 +1336,9 @@ public void sfAddTags(Object name, Set tags) throws SmartFrogException {
 
     /**
      * Compares the specified Object with this ComponentDescription for equality
+     * Does not compare parentage but it compares LAZY.
      *
-     * @param  o object to be compared for equality with this Hashtable
+     * @param  o object to be compared for equality with this ComponentDescription
      * @return true if the specified Object is equal to this ComponentDescription
      */
     public synchronized boolean equals(Object o) {
@@ -1355,32 +1356,36 @@ public void sfAddTags(Object name, Set tags) throws SmartFrogException {
             return false;
         }
 
-        if (primParent==null) {
-          if (!(parent.equals(((ComponentDescription)o).sfParent()))){
-            return false;
-          }
-        } else {
-          if (!(primParent.equals(((ComponentDescription)o).sfPrimParent()))){
-            return false;
-          }
-        }        
         return true;
     }
 
     /**
+     * Checks component description for same parentage
+     * @param o parent to compare with
+     * @return
+     */
+    public boolean isSameParent(ComponentDescription o) {
+        if (primParent==null) {
+          if (!(parent == (((ComponentDescription)o).sfParent()))){
+              return true;
+          }
+        } else {
+          if (!(primParent == (((ComponentDescription)o).sfPrimParent()))){
+              return true;
+          }
+        }
+        return false;
+    }
+
+    /**
      * Returns the hash code value for this ComponentDescription
-     *
+     * Parentage is not included but LAZY is.
      */
     public synchronized int hashCode() {
         // Simple hashcode using Joshua Bloch's recommendation
         int result = 17;
         result = 37 * result + sfContext.hashCode();
         result = 37 * result + (eager ? 0 :1 );
-        if (primParent==null) {
-          result = 37 * result + parent.hashCode();
-        } else {
-           result = 37 * result + primParent.hashCode();
-        }
         return result;
     }
 
