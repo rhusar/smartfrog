@@ -64,5 +64,4 @@ public class ConditionalTest extends DeployingTestBase {
         assertTrue("No "+WAITFOR_FAILED+" in "+tr,
                 description.indexOf(WAITFOR_FAILED)>=0);
     }
-    
 }

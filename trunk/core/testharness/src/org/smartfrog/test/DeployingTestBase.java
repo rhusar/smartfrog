@@ -19,9 +19,7 @@
  */
 package org.smartfrog.test;
 
-import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.TerminationRecord;
-import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.services.assertions.TestBlock;
 
 import java.rmi.RemoteException;
@@ -70,9 +68,8 @@ public abstract class DeployingTestBase extends SmartFrogTestBase {
             while (!testBlock.isFinished() && System.currentTimeMillis() < endtime) {
                 Thread.sleep(SPIN_INTERVAL);
             }
-            assertTrue("timeout waiting for application to finish", testBlock.isFinished());
-            TerminationRecord status = testBlock.getStatus();
-            return status;
+            assertTrue("timeout ("+timeout+"ms) waiting for application to finish", testBlock.isFinished());
+            return testBlock.getStatus();
         } catch (NoSuchObjectException e) {
             //some kind of remoting problem may happen during termination.
             logThrowable("Object has been deleted", e);

@@ -20,14 +20,20 @@ For more information: www.smartfrog.org
 #include "/org/smartfrog/test/system/workflow/conditional/components.sf"
 
 /*
- * test one WaitFor
+ * this test will pass after we have been running for a while
  */
 
 sfConfig extends BaseTestCompound {
 
-
-    action extends BaseWait {
-
-      condition extends True;
-    }
+   action extends  BaseWait {
+      timeout 300000;
+      interval 1000;
+      condition extends RunningFor {
+        milliseconds 100;
+        seconds 5;
+        minutes 0;
+        hours 0;
+        days 0;
+      }
+   }
 }

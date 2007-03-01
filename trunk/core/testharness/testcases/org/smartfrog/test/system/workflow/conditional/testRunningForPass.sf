@@ -20,14 +20,15 @@ For more information: www.smartfrog.org
 #include "/org/smartfrog/test/system/workflow/conditional/components.sf"
 
 /*
- * test one WaitFor
+ * test that a negative delay leads to a RunningFor test that always resolves true
  */
 
 sfConfig extends BaseTestCompound {
+    
+    action extends BaseIf {
 
-
-    action extends BaseWait {
-
-      condition extends True;
+      condition extends RunningFor {
+        minutes -1;
+      };
     }
 }

@@ -20,14 +20,21 @@ For more information: www.smartfrog.org
 #include "/org/smartfrog/test/system/workflow/conditional/components.sf"
 
 /*
- * test one WaitFor
+ * This test will only pass if we are blocked for three plus days
  */
 
 sfConfig extends BaseTestCompound {
+    
+    action extends BaseIf {
 
-
-    action extends BaseWait {
-
-      condition extends True;
+      condition extends Not {
+        condition extends RunningFor {
+          milliseconds 100;
+          seconds 10;
+          minutes 6;
+          hours 5;
+          days 3;
+        }
+      }
     }
 }

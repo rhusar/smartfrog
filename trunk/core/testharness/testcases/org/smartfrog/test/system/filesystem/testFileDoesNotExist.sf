@@ -1,4 +1,4 @@
-/** (C) Copyright 2006 Hewlett-Packard Development Company, LP
+/** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
@@ -17,17 +17,21 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 For more information: www.smartfrog.org
 
 */
-#include "/org/smartfrog/test/system/workflow/conditional/components.sf"
+#include "/org/smartfrog/test/system/filesystem/components.sf"
 
-/*
- * test one WaitFor
- */
+testFileDoesNotExist extends If {
 
-sfConfig extends BaseTestCompound {
+    condition extends FileExists {
+          filename "this.file.does.not.exist";
+        }
 
-
-    action extends BaseWait {
-
-      condition extends True;
+    then extends Terminator {
+      description "should not have found the file";
+      selftype Terminator:ABNORMAL;
     }
+
+}
+
+sfConfig extends testFileDoesNotExist {
+
 }
