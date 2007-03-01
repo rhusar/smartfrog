@@ -136,7 +136,7 @@
     <mkdir dir="${dist.doc.dir}"/>
     <mkdir dir="${dist.bin.dir}"/>
     <mkdir dir="${dist.src.dir}"/>
-    <mkdir dir="${dist.jdocs.dir}"/>
+    <mkdir dir="${dist.javadoc.dir}"/>
   </target>
  
   <!--
@@ -381,8 +381,7 @@
     whatever was there first wins.
     -->
     <presetdef name="jar" uri="${core.uri}">
-      <jar
-        compress="false"
+      <jar compress="true"
         duplicate="preserve"
         >
        </jar>
