@@ -1364,7 +1364,7 @@ public void sfAddTags(Object name, Set tags) throws SmartFrogException {
      * @param o parent to compare with
      * @return
      */
-    public boolean isSameParent(ComponentDescription o) {
+    public boolean hasSameParent(ComponentDescription o) {
         if (primParent==null) {
           if (!(parent == (((ComponentDescription)o).sfParent()))){
               return true;
