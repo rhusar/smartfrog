@@ -1109,11 +1109,15 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
      * <p> Log a message with info log level. </p>
      *
      * @param message log this message
-     * @param t log this cause
-     * @param tr log this TerminationRecord
+     * @param cause log this cause. Can be null, in which case any cause in the termination record is used
+     * @param tr log the TerminationRecord
      */
-    public void info(Object message, SmartFrogException t, TerminationRecord tr){
-        info(message + stringify(tr),(Throwable)t);
+    public void info(Object message, SmartFrogException cause, TerminationRecord tr){
+        Throwable throwable = cause;
+        if(cause==null && tr!=null && tr.cause!=null) {
+            throwable=tr.cause;
+        }
+        info(message + stringify(tr), throwable);
     }
 
     /**

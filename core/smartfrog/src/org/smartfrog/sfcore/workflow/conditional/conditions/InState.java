@@ -19,17 +19,13 @@
  */
 package org.smartfrog.sfcore.workflow.conditional.conditions;
 
-import org.smartfrog.sfcore.prim.PrimImpl;
-import org.smartfrog.sfcore.workflow.conditional.Condition;
-import org.smartfrog.sfcore.common.SmartFrogException;
-
 import java.rmi.RemoteException;
 
 /**
  * created 30-Nov-2006 11:36:34
  */
 
-public class InState extends TargetedConditionImpl implements TargetedCondition {
+public class InState extends AbstractTargetedCondition implements TargetedCondition {
 
     public final String ATTR_STATES="states";
 

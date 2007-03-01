@@ -34,4 +34,5 @@ public interface EvaluateCondition extends Conditional {
 
     /** {@value} */
     String ATTR_RESULT="result";
+    
 }

@@ -27,4 +27,5 @@ Retry extends ActionCompound {
         }
     }
     retry 1;
+    count 0;
 }

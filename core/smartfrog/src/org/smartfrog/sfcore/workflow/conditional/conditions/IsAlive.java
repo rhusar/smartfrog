@@ -28,7 +28,7 @@ import java.rmi.RemoteException;
  * created 30-Nov-2006 12:50:51
  */
 
-public class IsAlive extends TargetedConditionImpl implements TargetedCondition {
+public class IsAlive extends AbstractTargetedCondition implements TargetedCondition {
 
 
     public IsAlive() throws RemoteException {

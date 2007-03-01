@@ -29,7 +29,7 @@ import java.util.Locale;
  * created 30-Nov-2006 12:38:02
  */
 
-public class StringEquals extends TwoArgumentConditionImpl implements TwoArgumentCondition {
+public class StringEquals extends AbstractTwoArgumentCondition implements TwoArgumentCondition {
 
     public final String ATTR_CASE_SENSITIVE="caseSensitive";
 

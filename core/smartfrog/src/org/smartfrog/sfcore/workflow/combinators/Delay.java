@@ -155,7 +155,7 @@ public class Delay extends EventCompoundImpl implements Compound, Runnable {
                 if (!terminated && !isWorkflowTerminating()) {
                     if(action!=null) {
                         try {
-                            sfCreateNewChild(name + "_actionRunning", action, null);
+                            sfCreateNewChild("running", action, null);
                         } catch (Exception e) {
                             sfTerminate(TerminationRecord.abnormal(
                                     "error in launching delayed component", name, e));

@@ -28,14 +28,14 @@ import java.rmi.RemoteException;
  * created 30-Nov-2006 12:38:34
  */
 
-public abstract class TwoArgumentConditionImpl extends PrimImpl implements TwoArgumentCondition {
+public abstract class AbstractTwoArgumentCondition extends PrimImpl implements TwoArgumentCondition {
 
     /**
      *  The values resolved at start time
      */
     private  Object left,right;
 
-    protected TwoArgumentConditionImpl() throws RemoteException {
+    protected AbstractTwoArgumentCondition() throws RemoteException {
     }
 
 

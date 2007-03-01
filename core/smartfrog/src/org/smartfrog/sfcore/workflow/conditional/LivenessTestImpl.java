@@ -49,8 +49,7 @@ public class LivenessTestImpl extends EvaluateConditionImpl implements EvaluateC
      * check is still done.
      *
      * @param source source of ping
-     * @throws org.smartfrog.sfcore.common.SmartFrogLivenessException
-     *          liveness failed
+     * @throws SmartFrogLivenessException liveness failed
      */
     public void sfPing(Object source) throws SmartFrogLivenessException, RemoteException {
         super.sfPing(source);

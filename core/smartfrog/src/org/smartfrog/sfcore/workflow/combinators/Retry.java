@@ -23,6 +23,8 @@ package org.smartfrog.sfcore.workflow.combinators;
 import java.rmi.RemoteException;
 
 import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
+import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.compound.Compound;
 import org.smartfrog.sfcore.prim.Prim;
@@ -50,9 +52,12 @@ import org.smartfrog.sfcore.workflow.eventbus.EventCompoundImpl;
  */
 public class Retry extends EventCompoundImpl implements Compound {
 
-    private static Reference retryRef = new Reference("retry");
+    public static final String ATTR_RETRY = "retry";
+    public static final String ATTR_COUNT = "count";
+    private static Reference retryRef = new Reference(ATTR_RETRY);
     private int retry;
     private int currentRetries = 0;
+    public static final String ERROR_NEGATIVE_COUNT = "A negative "+ATTR_RETRY+" value is not supported";
 
     /**
      * Constructs Retry.
@@ -74,6 +79,9 @@ public class Retry extends EventCompoundImpl implements Compound {
         super.sfDeploy();
         checkActionDefined();
         retry = ((Integer) sfResolve(retryRef)).intValue();
+        if(retry<0) {
+            throw new SmartFrogDeploymentException (ERROR_NEGATIVE_COUNT);
+        }
     }
 
     /**
@@ -84,8 +92,7 @@ public class Retry extends EventCompoundImpl implements Compound {
      */
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
-
-        sfCreateNewChild(name+"_retryActionRunning", (ComponentDescription) action.copy(), null);
+        redeployAction();
     }
 
 
@@ -101,38 +108,79 @@ public class Retry extends EventCompoundImpl implements Compound {
     protected boolean onChildTerminated(TerminationRecord status, Prim comp) {
         boolean forward = true;
         try {
+            //remove the child
             sfRemoveChild(comp);
 
             if (!status.isNormal()) {
-                if (currentRetries++ < retry) {
-                    if (sfLog().isDebugEnabled()) {
-                        sfLog().debug("Retry: " + name + " " + currentRetries + " /" + retry);
+                //abnormal exit. Check the retry count
+                if (currentRetries < retry) {
+                    //yes, we can retry.
+                    //increment the counter
+                    //log it
+                    if (sfLog().isInfoEnabled()) {
+                        sfLog().info("Retry child "+ makeName(currentRetries)+" terminated ",
+                                null,status);
                     }
-                    sfCreateNewChild(name + "_retryActionRunning_" + currentRetries,
-                            (ComponentDescription) action.copy(), null);
+
+                    currentRetries++;
+
+                    if (sfLog().isDebugEnabled()) {
+                        sfLog().debug("Retry: " + getName() + " " + currentRetries + " /" + retry);
+                    }
+                    //redeploy
+                    String newchild=redeployAction();
+                    if (sfLog().isDebugEnabled()) {
+                        sfLog().debug("Retry: " + getName() + " started " + newchild);
+                    }
+
+                    //and do not forward up the termination
                     forward = false;
                 } else {
                     if (sfLog().isDebugEnabled()) {
-                        sfLog().debug(
-                                sfCompleteNameSafe().toString() + "terminated incorrectly: too many retries - fail ");
+                        sfLog().debug(getName() + "terminated incorrectly: too many retries - fail ");
                     }
-                    sfTerminate(TerminationRecord.abnormal("too many retries...", name));
-                    forward = false;
+                    //sfTerminate(TerminationRecord.abnormal(ERROR_TOO_MANY_RETRIES, name));
+                    //return true so that the current status code is forwarded
+                    forward = true;
                 }
             } else {
                 if (sfLog().isDebugEnabled()) {
-                    sfLog().debug(sfCompleteNameSafe().toString() + "terminated correctly - no need to retry  ");
+                    sfLog().debug(getName() + "terminated correctly - no need to retry  ");
                 }
 
 
             }
         } catch (Exception e) {
             if (sfLog().isErrorEnabled()) {
-                sfLog().error("Error in restarting next component " + name, e);
+                sfLog().error("Error in restarting next component " + getName(), e);
             }
-            sfTerminate(TerminationRecord.abnormal("Error in restarting next component (" + e.toString() + ")", name));
+            sfTerminate(TerminationRecord.abnormal("Error in restarting next component (" + e.toString() + ")", getName()));
             forward = false;
         }
         return forward;
+    }
+
+    /**
+     * clone and redeploy the action
+     * @return the name of the new child
+     * @throws RemoteException network problems
+     * @throws SmartFrogDeploymentException deployment problems
+     */
+    private String redeployAction() throws RemoteException, SmartFrogRuntimeException {
+        String newname= makeName(currentRetries);
+        int count=currentRetries+1;
+        sfReplaceAttribute(ATTR_COUNT,new Integer(count));
+        sfCreateNewChild(newname,
+                (ComponentDescription) action.copy(), null);
+        return newname;
+    }
+
+    /**
+     * make the name of a new child
+     * @param retries
+     * @return the name of the next child to deploy
+     */
+    private String makeName(int retries) {
+        return "running_" + retries;
     }
 }

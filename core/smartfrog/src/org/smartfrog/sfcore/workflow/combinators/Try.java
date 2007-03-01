@@ -48,8 +48,7 @@ import org.smartfrog.sfcore.workflow.eventbus.EventCompoundImpl;
  */
 public class Try extends EventCompoundImpl implements Compound {
 
-    private int currentRetries = 0;
-    private boolean primary = true;
+    private Prim actionPrim;
 
     /**
      * Constructs Try.
@@ -58,6 +57,18 @@ public class Try extends EventCompoundImpl implements Compound {
      */
     public Try() throws java.rmi.RemoteException {
         super();
+    }
+
+
+    /**
+     * This is an override point. The original set of event components suppored the 'old' notation, in which actions
+     * were listed in the {@link #ATTR_ACTIONS element} New subclasses do not need to remain backwards compatible and
+     * should declare this fact by returning false from this method
+     *
+     * @return false
+     */
+    protected boolean isOldNotationSupported() {
+        return false;
     }
 
     /**
@@ -82,7 +93,7 @@ public class Try extends EventCompoundImpl implements Compound {
      */
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
-        sfCreateNewChild(sfCompleteNameSafe()+"_tryActionRunning", action, null);
+        actionPrim = deployChildCD(ATTR_ACTION,true);
     }
 
 
@@ -99,18 +110,17 @@ public class Try extends EventCompoundImpl implements Compound {
      * @return true whenever a child component is not started
      */
     protected boolean onChildTerminated(TerminationRecord status, Prim comp) {
-        //get and reset the primary flag in a thread safe manner. 
-        boolean isPrimary;
-        synchronized(this) {
-            isPrimary=primary;
-            primary=false;
-        }
-        if (isPrimary) {
+        //get and reset the primary flag in a thread safe manner.
 
+        boolean isAction;
+        synchronized(this) {
+            isAction = actionPrim==comp;
+        }
+        if (isAction) {
             try {
                 sfRemoveChild(comp);
                 if (sfLog().isDebugEnabled()) {
-                    sfLog().debug("Try carrying out nextAction for status '" + status.errorType + "'");
+                    sfLog().debug("Try carrying out next Action for status '" + status.errorType + "'");
                 }
                 ComponentDescription nextAction = (ComponentDescription) sfResolve(status.errorType);
                 if (sfLog().isDebugEnabled()) {
@@ -128,7 +138,7 @@ public class Try extends EventCompoundImpl implements Compound {
                 return false;
             }
         } else {
-            //not the primary
+            //not the action
             return true;
         }
     }

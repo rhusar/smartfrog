@@ -26,7 +26,7 @@ import java.rmi.RemoteException;
  * created 30-Nov-2006 14:43:08
  */
 
-public class OrCompoundCondition extends CompoundConditionImpl {
+public class OrCompoundCondition extends AbstractCompoundCondition {
 
 
     public OrCompoundCondition() throws RemoteException {

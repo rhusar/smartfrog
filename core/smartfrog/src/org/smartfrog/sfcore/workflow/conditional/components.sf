@@ -104,7 +104,7 @@ EvaluateCondition extends ConditionalEventCompound {
       description "error text on failure";
     };
   }
-  sfClass "org.smartfrog.sfcore.workflow.conditional.TestConditionImpl";
+  sfClass "org.smartfrog.sfcore.workflow.conditional.EvaluateConditionImpl";
   message "Condition evaluated to false";
   failOnFalse true;
 }
@@ -120,7 +120,8 @@ EvaluateCondition extends ConditionalEventCompound {
  */
 LivenessTest extends EvaluateCondition {
   message "Liveness condition failed";
-  sfClass "org.smartfrog.sfcore.workflow.conditional.TestConditionImpl";
+  //delay in milliseconds before we start evaluating this test and caring if it fails.
+  sfClass "org.smartfrog.sfcore.workflow.conditional.LivenessTestImpl";
   sfShouldTerminate false;
 }
 

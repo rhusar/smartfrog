@@ -28,10 +28,10 @@ import java.util.NoSuchElementException;
 import org.smartfrog.sfcore.common.Context;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
-import org.smartfrog.sfcore.compound.Compound;
 import org.smartfrog.sfcore.compound.CompoundImpl;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.prim.Prim;
+import org.smartfrog.sfcore.prim.Liveness;
 import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.common.TerminatorThread;
 import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
@@ -83,9 +83,10 @@ public class EventCompoundImpl extends CompoundImpl implements EventBus,
         return true;
     }
 
-    /*
+    /**
     * Method that overwrites compoundImpl behavior and delays loading eager components to sfStart phase.
     * If action or actions atributes are present then it behaves like compound and loads all eager components.
+     * @throws SmartFrogDeploymentException for deployment problems
     */
     protected void sfDeployWithChildren() throws SmartFrogDeploymentException {
       if (isOldNotationSupported() && sfContext().containsKey(ATTR_ACTIONS)){
@@ -124,7 +125,7 @@ public class EventCompoundImpl extends CompoundImpl implements EventBus,
     /**
      * Registers an EventSink for forwarding of events.
      *
-     * @param sink org.smartfrog.sfcore.workflow.eventbus.EventSink
+     * @param sink the EventSink
      * @see EventRegistration
      */
     public synchronized void register(EventSink sink) {
@@ -140,7 +141,7 @@ public class EventCompoundImpl extends CompoundImpl implements EventBus,
     /**
      * Deregistera an EventSink for forwarding of events.
      *
-     * @param sink org.smartfrog.sfcore.workflow.eventbus.EventSink
+     * @param sink the EventSink
      * @see EventRegistration
      */
     synchronized public void deregister(EventSink sink) {
@@ -180,7 +181,7 @@ public class EventCompoundImpl extends CompoundImpl implements EventBus,
      * Default implementation of the EventBus sendEvent method to forward all
      * events to registered EventSinks. Errors are ignored.
      *
-     * @param event java.lang.String
+     * @param event the event to send
      */
     public synchronized void sendEvent(Object event) {
         for (Enumeration e = sendTo.elements(); e.hasMoreElements();) {
@@ -243,8 +244,6 @@ public class EventCompoundImpl extends CompoundImpl implements EventBus,
             actions = ((ComponentDescription)sfResolve(actionsRef,true)).sfContext();
             actionKeys = actions.keys();
             sfLog().warn(" 'actions' workflow notation is deprecated");
-        } else {
-            // actions and actionKeys created during sfDeployWith
         }
 
         action = (ComponentDescription)sfResolve(actionRef, false);
@@ -310,7 +309,7 @@ public class EventCompoundImpl extends CompoundImpl implements EventBus,
     * This is an override point; it is where subclasses get to change their workflow
     * depending on what happens underneath.
     * It is only called outside of component termination, i.e. when {@link #isWorkflowTerminating()} is
-    * false, and when the comp parameter is a child, that is <code>sfContainsChild(comp)</code> holds.
+    * false, and when the comp parameter is a child, that is {@link #sfContainsChild(Liveness)} holds.
     * If the the method returns true, we terminate the component.
     * <p>
     * Always return false if you start new components from this method!
@@ -330,7 +329,7 @@ public class EventCompoundImpl extends CompoundImpl implements EventBus,
      * This is an override point; it is where subclasses get to change their workflow
      * depending on what happens underneath.
      * It is only called outside of component termination, i.e. when {@link #isWorkflowTerminating()} is
-     * false, and when <code>sfContainsChild(comp)</code> is false.
+     * false, and when {@link #sfContainsChild(Liveness)} is false.
      * It is not normally overridden, but is there to provide complete coverage.
      * @param status exit record of the component
      * @param comp   non-child component that is terminating
@@ -351,11 +350,12 @@ public class EventCompoundImpl extends CompoundImpl implements EventBus,
     public synchronized void sfTerminateWith(TerminationRecord status) {
         /* unregister from all remote registrations */
         for (Enumeration e = receiveFrom.elements(); e.hasMoreElements();) {
-            EventRegistration s = (EventRegistration) e.nextElement();
+            EventRegistration sink = (EventRegistration) e.nextElement();
 
             try {
-                s.deregister(this);
+                sink.deregister(this);
             } catch (RemoteException ex) {
+                sfLog().ignore("when deregestering "+sink,ex);
             }
         }
 
@@ -364,8 +364,8 @@ public class EventCompoundImpl extends CompoundImpl implements EventBus,
 
     /**
      * force a check for the action in, though the schema should have caught it
-     * @throws org.smartfrog.sfcore.common.SmartFrogResolutionException if the action is not defined
-     * @throws java.rmi.RemoteException for network problems
+     * @throws SmartFrogResolutionException if the action is not defined
+     * @throws RemoteException for network problems
      */
     protected void checkActionDefined() throws SmartFrogResolutionException,
         RemoteException {
@@ -383,8 +383,16 @@ public class EventCompoundImpl extends CompoundImpl implements EventBus,
 
 
     /**
+     * Get the name; valid after {@link #sfDeploy()}
+     * @return the reference to this component
+     */
+    public Reference getName() {
+        return name;
+    }
+
+    /**
      * Get the component descriptions of all actions
-     * @return
+     * @return all actions
      */
     public Context getActions() {
         return actions;
@@ -392,8 +400,8 @@ public class EventCompoundImpl extends CompoundImpl implements EventBus,
 
     /**
      * Create the children synchronously.
-     * @throws java.rmi.RemoteException
-     * @throws org.smartfrog.sfcore.common.SmartFrogException
+     * @throws RemoteException for network problems
+     * @throws SmartFrogException for other problems
      */
     protected void synchCreateChildren() throws RemoteException, SmartFrogException {
         actionKeys = getActions().keys();
@@ -428,38 +436,40 @@ public class EventCompoundImpl extends CompoundImpl implements EventBus,
     }
 
     /**
-     * Helper method to deploy any component of a given name. It's template is replaced in the graph
+     * Helper method to deploy and start any component of a given name. It's template is replaced in the graph
      * by the running component
      *
-     * @param name     attribute to look up
+     * @param childname     attribute to look up
      * @param required flag to indicate the component is required
      * @return the component or null if there was no attribute and required was false.
-     * @throws org.smartfrog.sfcore.common.SmartFrogResolutionException
-     * @throws java.rmi.RemoteException
-     * @throws org.smartfrog.sfcore.common.SmartFrogDeploymentException
+     * @throws SmartFrogResolutionException unable to resolve the child and required==true
+     * @throws RemoteException network problems
+     * @throws SmartFrogDeploymentException unable to deploy the child
      */
-    protected Prim deployChildCD(String name, boolean required)
+    protected Prim deployChildCD(String childname, boolean required)
             throws SmartFrogResolutionException, RemoteException, SmartFrogDeploymentException {
         ComponentDescription cd = null;
-        cd = sfResolve(name, cd, false);
+        cd = sfResolve(childname, cd, false);
         if (cd != null) {
-            return sfCreateNewChild(name, cd, null);
+            return sfCreateNewChild(childname, cd, null);
         } else {
             return null;
         }
     }
 
     /**
-     * Deploy but do not start a component. If something went wrong with sfDeploy(), we start a termination of the errant
-     * component and raise a lifecycle exception.
-     * @param name
-     * @param description
+     * Deploy but do not start a component. If something went wrong with the {@link Prim#sfDeploy()},
+     * we start a termination of the errant component and raise a lifecycle exception.
+     * @param childname the name of the component
+     * @param description the component description to use (a copy is made before deployment)
      * @return the new child
-     * @throws SmartFrogDeploymentException
-     * @throws SmartFrogLifecycleException
+     * @throws SmartFrogDeploymentException if it could not deploy
+     * @throws SmartFrogLifecycleException if something got thrown during deployment
      */
-    protected Prim deployComponentDescription(String name, ComponentDescription description) throws SmartFrogDeploymentException, SmartFrogLifecycleException {
-        Prim child = sfDeployComponentDescription(name, this, (ComponentDescription) description.copy(), new ContextImpl());
+    protected Prim deployComponentDescription(String childname, ComponentDescription description)
+            throws SmartFrogDeploymentException, SmartFrogLifecycleException {
+        Prim child = sfDeployComponentDescription(childname, this,
+                (ComponentDescription) description.copy(), new ContextImpl());
         // it is now a child, so need to guard against double calling of lifecycle...
         try {
             child.sfDeploy();
@@ -468,7 +478,7 @@ public class EventCompoundImpl extends CompoundImpl implements EventBus,
             ComponentHelper helper = new ComponentHelper(child);
             child = null;
             helper.sfSelfDetachAndOrTerminate(TerminationRecord.ABNORMAL,
-                    "failed to create "+name, null, thrown);
+                    "failed to create "+ childname, null, thrown);
             throw (SmartFrogLifecycleException) SmartFrogLifecycleException.forward(thrown);
         }
         return child;

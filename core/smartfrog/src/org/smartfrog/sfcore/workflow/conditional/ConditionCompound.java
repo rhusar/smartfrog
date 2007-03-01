@@ -57,18 +57,25 @@ public class ConditionCompound extends EventCompoundImpl implements Conditional,
     /**
      * Starts the component by deploying the condition
      *
-     * @throws org.smartfrog.sfcore.common.SmartFrogException
-     *                         in case of problems creating the child
+     * @throws SmartFrogException in case of problems creating the child
      * @throws RemoteException In case of network/rmi error
      */
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
+        deployConditionAtStartup();
+    }
+
+    /**
+     * Override point: where the condition is deployed at startup.
+     * The default action is to call {@link #deployCondition()}
+     */
+    protected void deployConditionAtStartup() throws SmartFrogException, RemoteException{
         deployCondition();
     }
 
     /**
-     * Override point: is the condition required. IF not, there is no attemtp to deploy it at startup
-     * @return
+     * Override point: is the condition required. IF not, there is no attempt to deploy it at startup
+     * @return true
      */
     protected boolean isConditionRequired() {
         return true;
