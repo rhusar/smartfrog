@@ -52,19 +52,20 @@ public class RunningForImpl extends PrimImpl implements Condition, RunningFor {
         minutes = sfResolve(ATTR_MINUTES, 0L, true);
         seconds = sfResolve(ATTR_SECONDS, 0L, true);
         milliseconds = sfResolve(ATTR_MILLISECONDS, 0L, true);
-        long delay=days;
-        delay=delay*24+hours;
-        delay=delay*60+minutes;
-        delay=delay*60+seconds;
-        delay=delay*1000+milliseconds;
-        endTime=startTime+delay;
+        long delay = days;
+        delay = delay * 24 + hours;
+        delay = delay * 60 + minutes;
+        delay = delay * 60 + seconds;
+        delay = delay * 1000 + milliseconds;
+        endTime = startTime + delay;
 
-        if(sfLog().isDebugEnabled()) {
-            if(delay>0)
-                sfLog().debug("RunningFor will pass after "+delay
-                    +"milliseconds");
-            else
-                sfLog().debug("RunningFor will always pass; delay="+delay);
+        if (delay > 0) {
+            if (sfLog().isDebugEnabled()) {
+                sfLog().debug("RunningFor will pass after " + delay
+                        + "milliseconds");
+            } else {
+                sfLog().debug("RunningFor will always pass; delay=" + delay);
+            }
         }
     }
 
@@ -78,6 +79,7 @@ public class RunningForImpl extends PrimImpl implements Condition, RunningFor {
      */
     public boolean evaluate() throws RemoteException, SmartFrogException {
         long now = System.currentTimeMillis();
-        return now >= endTime;
+        boolean overrun = now >= endTime;
+        return overrun;
     }
 }

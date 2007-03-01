@@ -29,7 +29,7 @@ import java.lang.ref.WeakReference;
 import java.rmi.RemoteException;
 
 /**
- * Component to shut down a task after a delay.
+ * Thread to shut down a Component after a delay.
  * We retain a (weak) reference to a prim. The component can go off the graph
  * and we can still find it, but we don't preclude distributed GC taking place and killing the reference.
  * This stops accidental retention of a terminator thread from keeping the prim around.

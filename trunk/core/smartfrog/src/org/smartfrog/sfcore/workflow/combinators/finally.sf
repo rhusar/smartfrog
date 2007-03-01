@@ -20,7 +20,7 @@ For more information: www.smartfrog.org
 #include "org/smartfrog/sfcore/workflow/eventbus/eventbus.sf"
 
 /**
- * This component runs an action when a termination request
+ * This component runs its action when a termination request
  * is received. The action is deployed on startup, but it is
  * only moved into the started state when the Try component
  * is to be terminated.

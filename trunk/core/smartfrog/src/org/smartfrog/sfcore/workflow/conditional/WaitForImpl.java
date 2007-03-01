@@ -52,9 +52,7 @@ public class WaitForImpl extends ConditionCompound implements WaitFor, Runnable 
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
         interval=sfResolve(ATTR_INTERVAL,interval,true);
-        timeout = sfResolve(ATTR_INTERVAL, interval, true);
-        //pick on the current start time.
-        end=System.currentTimeMillis()+timeout;
+        timeout = sfResolve(ATTR_TIMEOUT, timeout, true);
         thread = new SmartFrogThread(this);
         thread.start();
     }
@@ -90,6 +88,9 @@ public class WaitForImpl extends ConditionCompound implements WaitFor, Runnable 
     public void run() {
 
         try {
+            //pick on the current start time.
+            end = System.currentTimeMillis() + timeout;
+
             Throwable fault=null;
             try {
                 boolean timedout = false;
@@ -98,7 +99,8 @@ public class WaitForImpl extends ConditionCompound implements WaitFor, Runnable 
                 while(!test && !timedout) {
                     Thread.sleep(interval);
                     test = evaluate();
-                    timedout = System.currentTimeMillis() > end;
+                    long now = System.currentTimeMillis();
+                    timedout = now > end;
                 }
                 //we have either timed out or the test has passed.
                 //chose the branch to test

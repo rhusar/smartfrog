@@ -68,8 +68,8 @@ public class Terminator extends EventPrimImpl implements Prim {
         boolean detachFirst = ((Boolean) sfResolve(DETACH_FIRST)).
                                                             booleanValue();
         term = new TerminationRecord(selftype,description,id);
-        Prim kill = sfResolve(KILL,(Prim)null,false);
-        if(kill!=null) {
+        Prim kill = sfResolve(KILL, (Prim) null, false);
+        if (kill != null) {
             try {
                 String killName = kill.sfCompleteName().toString();
                 String terminator = sfCompleteNameSafe().toString();

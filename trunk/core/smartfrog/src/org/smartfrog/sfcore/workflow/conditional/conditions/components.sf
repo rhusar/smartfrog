@@ -65,6 +65,20 @@ False extends Value {
 }
 
 /**
+ * The RunningFor condition will pass once the component has been started for
+ * the specified amount of time. It is useful in an And statement in which a test
+ * should be delayed until a certain period of time has expired.
+ */
+RunningFor extends Conditional {
+  sfClass "org.smartfrog.sfcore.workflow.conditional.conditions.RunningForImpl";
+  days 0;
+  hours 0;
+  minutes 0;
+  seconds 0;
+  milliseconds 0;
+}
+
+/**
  * templates that are targeted at another component
  */
 /*TargetedCondition extends Prim {

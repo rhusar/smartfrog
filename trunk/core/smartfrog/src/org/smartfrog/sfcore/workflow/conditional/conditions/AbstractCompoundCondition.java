@@ -33,10 +33,10 @@ import java.util.Enumeration;
  * created 30-Nov-2006 14:13:51
  */
 
-public abstract class CompoundConditionImpl extends ConditionCompound {
+public abstract class AbstractCompoundCondition extends ConditionCompound {
 
 
-    protected CompoundConditionImpl() throws RemoteException {
+    protected AbstractCompoundCondition() throws RemoteException {
     }
 
 

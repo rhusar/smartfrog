@@ -58,7 +58,6 @@ import org.smartfrog.sfcore.workflow.eventbus.EventCompoundImpl;
  *
  */
 public class RandomSequence extends EventCompoundImpl implements Compound {
-    private boolean loop;
     private int seed;
     private Random random;
     private Vector actionKeysVector;

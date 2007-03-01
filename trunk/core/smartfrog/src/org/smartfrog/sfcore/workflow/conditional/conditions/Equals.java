@@ -28,7 +28,7 @@ import java.rmi.RemoteException;
  * created 30-Nov-2006 12:38:02
  */
 
-public class Equals extends TwoArgumentConditionImpl implements TwoArgumentCondition {
+public class Equals extends AbstractTwoArgumentCondition implements TwoArgumentCondition {
 
 
     public Equals() throws RemoteException {

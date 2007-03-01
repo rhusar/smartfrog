@@ -29,11 +29,11 @@ import java.rmi.RemoteException;
  * created 30-Nov-2006 12:48:34
  */
 
-public abstract class TargetedConditionImpl extends PrimImpl implements TargetedCondition {
+public abstract class AbstractTargetedCondition extends PrimImpl implements TargetedCondition {
 
     private Prim target;
 
-    protected TargetedConditionImpl() throws RemoteException {
+    protected AbstractTargetedCondition() throws RemoteException {
     }
 
     /**
