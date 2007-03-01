@@ -35,6 +35,16 @@
       
 </description>
 
+  <fail>
+    <condition>
+      <not>
+        <available property="is.ant.17"
+          classname="org.apache.tools.ant.types.resources.FileResourceIterator"/>
+      </not>
+    </condition>
+    This version of Ant is not supported.
+    Please upgrade to Ant1.7 or later and build this project again
+  </fail>
 
   <!-- ========================================================== -->
   <!-- this is the simple definitions part of the common init -->
