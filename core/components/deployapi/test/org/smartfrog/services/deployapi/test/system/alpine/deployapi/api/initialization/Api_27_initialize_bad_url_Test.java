@@ -32,9 +32,9 @@ import nu.xom.Element;
  * Create a system , then destroy it immediately.
  */
 
-public class Api_26_initialize_bad_url_Test extends StandardTestBase {
+public class Api_27_initialize_bad_url_Test extends StandardTestBase {
 
-    public Api_26_initialize_bad_url_Test(String name) {
+    public Api_27_initialize_bad_url_Test(String name) {
         super(name);
     }
 
