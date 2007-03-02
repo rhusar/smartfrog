@@ -80,7 +80,6 @@ DatabaseOperation extends WorkflowPrim {
     }
   }
   autocommit true;
-  sfShouldTerminate true;
 }
 
 
@@ -130,6 +129,7 @@ Transaction extends DatabaseOperation {
   }
 
   sfClass "org.smartfrog.services.database.core.TransactionImpl";
+  sfShouldTerminate true;
   delimiter ";";
   escapeProcessing false;
   expectedStatementCount -1;
@@ -138,12 +138,29 @@ Transaction extends DatabaseOperation {
   printHeaders true;
 }
 
+/**
+ * A CounterTransaction issues a sequence of CounterCommands to
+ * the database (synchronously) when undeploying.
+ * Failures of these commands are reported and the sequence halts.
+ */
+CounterTransaction extends Transaction {
+  counterTransactionSchema extends Schema {
+    counterCommands extends Vector {
+      description "a list of commands to execute when undeploying ";
+    };
+  }
+  //we do not terminate
+  sfShouldTerminate false;
+  counterCommands [];
+}
 
 /**
  * This component runs the SQL commands synchronously during termination.
  * It is where to put shutdown operations like "DROP TABLE table1"
  */
 TerminateTransaction extends Transaction {
+  //we do not terminate
+  sfShouldTerminate false;
   sfClass "org.smartfrog.services.database.core.TerminationTransactionImpl";
 }
 
