@@ -31,12 +31,12 @@ import org.smartfrog.services.deployapi.test.system.alpine.deployapi.api.Standar
  * Create a system , then destroy it immediately.
  */
 
-public class Api_27_unknown_languages_rejected_Test extends StandardTestBase {
+public class Api_26_unknown_languages_rejected_Test extends StandardTestBase {
 
 
 
 
-    public Api_27_unknown_languages_rejected_Test(String name) {
+    public Api_26_unknown_languages_rejected_Test(String name) {
         super(name);
     }
 
