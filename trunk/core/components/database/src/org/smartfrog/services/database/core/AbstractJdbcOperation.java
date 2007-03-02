@@ -19,13 +19,13 @@
  */
 package org.smartfrog.services.database.core;
 
-import org.smartfrog.sfcore.prim.PrimImpl;
-import org.smartfrog.sfcore.prim.Prim;
-import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
+import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
-import org.smartfrog.sfcore.logging.LogFactory;
 import org.smartfrog.sfcore.logging.Log;
+import org.smartfrog.sfcore.logging.LogFactory;
+import org.smartfrog.sfcore.prim.Prim;
+import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.utils.ComponentHelper;
 
 import java.rmi.RemoteException;
@@ -39,7 +39,7 @@ import java.util.Properties;
  * created 05-Dec-2006 15:10:03
  */
 
-public class AbstractJdbcOperation extends PrimImpl implements JdbcOperation {
+public abstract class AbstractJdbcOperation extends PrimImpl implements JdbcOperation {
     private JdbcBinding database;
     private boolean autocommit = false;
     private Log log;
@@ -53,8 +53,8 @@ public class AbstractJdbcOperation extends PrimImpl implements JdbcOperation {
      * Can be called to start components. Subclasses should override to provide
      * functionality Do not block in this call, but spawn off any main loops!
      *
-     * @throws org.smartfrog.sfcore.common.SmartFrogException failure while starting
-     * @throws java.rmi.RemoteException    In case of network/rmi error
+     * @throws SmartFrogException failure while starting
+     * @throws RemoteException    In case of network/rmi error
      */
     public synchronized void sfStart()
             throws SmartFrogException, RemoteException {
@@ -70,9 +70,9 @@ public class AbstractJdbcOperation extends PrimImpl implements JdbcOperation {
      * jdbc options.
      *
      * @return a new database connection
-     * @throws org.smartfrog.sfcore.common.SmartFrogDeploymentException
-     * @throws org.smartfrog.sfcore.common.SmartFrogResolutionException
-     * @throws java.rmi.RemoteException
+     * @throws SmartFrogDeploymentException  failure while starting
+     * @throws SmartFrogResolutionException  failure to resolve the attributes
+     * @throws RemoteException In case of network/rmi error
      */
     protected Connection connect() throws
             SmartFrogDeploymentException,
@@ -135,9 +135,9 @@ public class AbstractJdbcOperation extends PrimImpl implements JdbcOperation {
      * Gets an instance of the required driver.
      * @param driver the driver classname
      * @return the driver instance
-     * @throws org.smartfrog.sfcore.common.SmartFrogDeploymentException to wrap failures to create an instance
-     * @throws org.smartfrog.sfcore.common.SmartFrogResolutionException if the class would not load
-     * @throws java.rmi.RemoteException on network problems
+     * @throws SmartFrogDeploymentException to wrap failures to create an instance
+     * @throws SmartFrogResolutionException if the class would not load
+     * @throws RemoteException on network problems
      */
     private Driver loadDriver(String driver) throws
             SmartFrogDeploymentException,
@@ -162,7 +162,7 @@ public class AbstractJdbcOperation extends PrimImpl implements JdbcOperation {
     /**
      * Commit the operation and close the database
      * @param connection  connection to close
-     * @throws org.smartfrog.sfcore.common.SmartFrogDeploymentException
+     * @throws SmartFrogDeploymentException if something went wrong at this point
      */
     public void commitAndClose(Connection connection)
             throws SmartFrogDeploymentException {
@@ -212,7 +212,7 @@ public class AbstractJdbcOperation extends PrimImpl implements JdbcOperation {
 
     /**
      * check the connection
-     * @throws SmartFrogDeploymentException if the connection wont start
+     * @throws SmartFrogDeploymentException if the connection won't start
      * @throws SmartFrogResolutionException if there is something wrong with the settings
      * @throws RemoteException on network problems
      */

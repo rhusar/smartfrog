@@ -22,7 +22,6 @@ package org.smartfrog.services.database.core;
 import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.sfcore.prim.TerminationRecord;
 
 import java.rmi.RemoteException;
 import java.sql.Connection;
@@ -45,10 +44,8 @@ public class TerminationTransactionImpl extends TransactionImpl {
     /**
      * do not run any commands on startup
      *
-     * @throws SmartFrogDeploymentException
-     *                                  for smartfrog problems
-     * @throws SmartFrogResolutionException
-     *                                  for smartfrog problems
+     * @throws SmartFrogDeploymentException for smartfrog problems
+     * @throws SmartFrogResolutionException for smartfrog problems
      * @throws RemoteException for network problems.
      */
     protected void executeStartupCommands()
@@ -56,31 +53,32 @@ public class TerminationTransactionImpl extends TransactionImpl {
         //do nothing
     }
 
-
     /**
-     * shut down the component by running the operations
+     * Override point: termination commands. All exceptions should be caught and printed here.
      *
-     * @param status termination record
+     * @throws SmartFrogException SmartFrog problems
+     * @throws RemoteException    network problems
+     * @throws SQLException       SQL problems
      */
-    protected synchronized void sfTerminateWith(TerminationRecord status) {
-        super.sfTerminateWith(status);
-        Throwable caught = null;
+    protected void runTerminationCommands() throws SmartFrogException, RemoteException, SQLException {
         Connection connection = null;
         try {
             connection = connect();
+            executeCommands(connection, getCommands().iterator());
             performOperation(connection);
             commitAndClose(connection);
-        } catch (SQLException e) {
-            caught = e;
-        } catch (SmartFrogException e) {
-            caught = e;
-        } catch (RemoteException e) {
-            caught = e;
         } finally {
             closeQuietly(connection);
         }
-        if(caught!=null) {
-            sfLog().ignore("Caught while terminating the application",caught);
-        }
     }
+
+    /**
+     * Override point: Return true if the component has termination time SQL commands to run
+     *
+     * @return true if we have commmands
+     */
+    protected boolean hasTerminationCommands() {
+        return getCommands() != null && getCommands().size() > 0;
+    }
+
 }

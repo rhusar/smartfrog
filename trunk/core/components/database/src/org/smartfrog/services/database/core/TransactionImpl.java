@@ -45,6 +45,7 @@ import org.smartfrog.services.filesystem.FileSystem;
 import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
+import org.smartfrog.sfcore.prim.TerminationRecord;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -73,7 +74,7 @@ import java.util.Vector;
 public class TransactionImpl extends AsyncJdbcOperation implements Transaction {
     public static final String ERROR_NO_COMMANDS = "No commands declared";
     public static final String ERROR_TOO_MANY_COMMANDS = "Too many command attributes";
-    private List<String> commands;
+    private List<String> commands=new ArrayList<String>();
     private boolean escapeProcessing = false;
     private String delimiter;
     private int expectedStatementCount = -1;
@@ -86,6 +87,16 @@ public class TransactionImpl extends AsyncJdbcOperation implements Transaction {
 
     public TransactionImpl() throws RemoteException {
     }
+
+
+    /**
+     * Get the command list
+     * @return the list of commands (may be empty) 
+     */
+    public List<String> getCommands() {
+        return commands;
+    }
+
 
     /**
      * The startup operation is to read the commands in then execute them by way of {@link #executeStartupCommands()}.
@@ -110,6 +121,59 @@ public class TransactionImpl extends AsyncJdbcOperation implements Transaction {
         executeStartupCommands();
     }
 
+
+    /**
+     * stop the worker thread if it is running.
+     *
+     * @param status
+     */
+    protected synchronized void sfTerminateWith(TerminationRecord status) {
+        super.sfTerminateWith(status);
+        checkAndRunTerminationCommands();
+    }
+
+    /**
+     * Check for and run the termination commands. Any exceptions raised by {@link #runTerminationCommands()} are logged
+     * at the warn level but otherwise ignored
+     */
+    protected void checkAndRunTerminationCommands() {
+        Throwable caught = null;
+        if (hasTerminationCommands()) {
+            try {
+                runTerminationCommands();
+            } catch (SQLException e) {
+                caught = e;
+            } catch (SmartFrogException e) {
+                caught = e;
+            } catch (RemoteException e) {
+                caught = e;
+            }
+            if (caught != null) {
+                sfLog().warn("Caught while terminating the component", caught);
+            }
+        }
+    }
+
+    /**
+     * Override point: termination commands.
+     * All exceptions should be caught and printed here.
+     * The default implementation does nothing.
+     * @throws SmartFrogException SmartFrog problems
+     * @throws RemoteException    network problems
+     * @throws SQLException       SQL problems
+     */
+    protected void runTerminationCommands() throws SmartFrogException, RemoteException, SQLException {
+
+    }
+
+    /**
+     * Override point: Return true if the component has termination time SQL commands to run
+     *
+     * @return false
+     */
+    protected boolean hasTerminationCommands() {
+        return false;
+    }
     /**
      * Execute any commands to run during {@link #sfStart()}.
      * This delegates to {@link #startCommandThread()}
@@ -205,15 +269,8 @@ public class TransactionImpl extends AsyncJdbcOperation implements Transaction {
                         e);
             }
         } else {
-            if (commandList != null) {
-                //the commands are copied to the command list as strings.
-                commands = new ArrayList<String>(commandList.size());
-                for (Object o : commandList) {
-                    commands.add(o.toString());
-                }
-            } else {
-                //no commands at all. That's not really allowed.
-                commands = new ArrayList<String>(0);
+            commands=stringify(commandList);
+            if (commandList == null) {
                 command = "";
             }
         }
@@ -226,13 +283,34 @@ public class TransactionImpl extends AsyncJdbcOperation implements Transaction {
         }
     }
 
+
+    /**
+     * Turn a vector of commands into a more strongly typed array list
+     * @param commandList commands; can be null
+     * @return the equivalent ArrayList. A null command list results an empty list
+     */
+    protected ArrayList<String> stringify(Vector commandList) {
+        ArrayList<String> result;
+        if (commandList != null) {
+            //the commands are copied to the command list as strings.
+            result = new ArrayList<String>(commandList.size());
+            for (Object o : commandList) {
+                result.add(o.toString());
+            }
+        } else {
+            //no commands at all. That's not really allowed.
+            result = new ArrayList<String>(0);
+        }
+        return result;
+    }
+
     /**
      * this runs in the other tread. Run the commands one by one
      *
      * @param connection the open connection.
      *
-     * @throws SQLException
-     * @throws SmartFrogException
+     * @throws SQLException SQL execution problems
+     * @throws SmartFrogException for smartfrog problems
      */
     public void performOperation(Connection connection)
             throws SQLException, SmartFrogException {
@@ -248,7 +326,7 @@ public class TransactionImpl extends AsyncJdbcOperation implements Transaction {
      *
      * @return a (possibly empty) list of commands.
      *
-     * @throws IOException
+     * @throws IOException if the string cannot be read reliably
      */
     public List<String> crackCommands(String sql, String commandDelimiter)
             throws IOException {
@@ -293,8 +371,8 @@ public class TransactionImpl extends AsyncJdbcOperation implements Transaction {
      * string, as long as the toString() method of each iterated value returns a
      * single SQL command (without delimeter)
      *
-     * @param connection
-     * @param commandIterator
+     * @param connection  connection to use
+     * @param commandIterator iterator over the commands to run
      *
      * @throws SmartFrogDeploymentException
      */
@@ -374,16 +452,22 @@ public class TransactionImpl extends AsyncJdbcOperation implements Transaction {
         }
     }
 
-    protected void processNoResults(Statement statement) {
+    /**
+     * Override point: action on no results
+     * @param statement the statement to process
+     * @throws SQLException if needed
+     */
+    protected void processNoResults(Statement statement) throws SQLException {
         sfLog().info("--no results--");
     }
 
     /**
      * Override point, act on the results
      *
+     * @param statement the statement to process
      * @param results the results of the operation
      *
-     * @throws SQLException
+     * @throws SQLException if needed
      */
     protected void processResults(Statement statement,ResultSet results)
             throws SQLException {
