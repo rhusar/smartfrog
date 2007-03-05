@@ -1043,7 +1043,8 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
      * @param tr log this TerminationRecord
      */
     public void err(Object message, SmartFrogException t, TerminationRecord tr){
-       err(message.toString()+", TR:"+tr.toString(),(Throwable)t);
+
+       err(message.toString()+"\n "+ LogUtils.stringify(tr), LogUtils.extractCause(t, tr));
     }
 
 
@@ -1067,7 +1068,7 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
      * @param tr log this TerminationRecord
      */
     public void trace(Object message, SmartFrogException t, TerminationRecord tr){
-        trace(message, (Throwable)t);
+        trace(message + "\n " + LogUtils.stringify(tr), LogUtils.extractCause(t, tr));
     }
 
 
@@ -1090,7 +1091,7 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
      * @param tr log this TerminationRecord
      */
     public void debug(Object message, SmartFrogException t, TerminationRecord tr){
-        debug(message,(Throwable)t);
+        debug(message + "\n " + LogUtils.stringify(tr), LogUtils.extractCause(t, tr));
     }
 
 
@@ -1113,20 +1114,7 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
      * @param tr log the TerminationRecord
      */
     public void info(Object message, SmartFrogException cause, TerminationRecord tr){
-        Throwable throwable = cause;
-        if(cause==null && tr!=null && tr.cause!=null) {
-            throwable=tr.cause;
-        }
-        info(message + stringify(tr), throwable);
-    }
-
-    /**
-     * Append a termination record to a log message.
-     * @param tr termination record --can be null.
-     * @return a string including the preceeding newline
-     */
-    private String stringify(TerminationRecord tr) {
-        return "\n" + tr != null ? tr.toString() : "";
+        info(message + LogUtils.stringify(tr), LogUtils.extractCause(cause, tr));
     }
 
 
@@ -1149,7 +1137,7 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
      * @param tr log this TerminationRecord
      */
     public void warn(Object message, SmartFrogException t, TerminationRecord tr){
-        warn(message + stringify(tr),(Throwable)t);
+        warn(message + "\n " + LogUtils.stringify(tr), LogUtils.extractCause(t, tr));
     }
 
 
@@ -1172,7 +1160,7 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
      * @param tr log this TerminationRecord
      */
     public void error(Object message, SmartFrogException t, TerminationRecord tr){
-        error(message+stringify(tr),(Throwable)t);
+        error(message + "\n " + LogUtils.stringify(tr), LogUtils.extractCause(t, tr));
     }
 
 

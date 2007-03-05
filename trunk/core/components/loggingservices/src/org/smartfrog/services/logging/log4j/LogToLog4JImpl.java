@@ -35,6 +35,7 @@ import org.smartfrog.sfcore.logging.Log;
 import org.smartfrog.sfcore.logging.LogImpl;
 import org.smartfrog.sfcore.logging.LogLevel;
 import org.smartfrog.sfcore.logging.LogMessage;
+import org.smartfrog.sfcore.logging.LogUtils;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 
 import javax.xml.parsers.FactoryConfigurationError;
@@ -609,8 +610,8 @@ public class LogToLog4JImpl implements LogToLog4J, Log, LogMessage, LogLevel, Se
      * @param message log this message
      */
     public void err(Object message, SmartFrogException t, TerminationRecord tr) {
-        err(message, t);
-        outstream.println(tr.toString());
+        err(message, LogUtils.extractCause(t, tr));
+        outstream.println(LogUtils.stringify(tr));
     }
 
     /**

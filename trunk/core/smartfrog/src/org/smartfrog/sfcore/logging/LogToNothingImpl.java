@@ -443,8 +443,8 @@ public class LogToNothingImpl implements LogToNothing, Log, LogMessage, LogLevel
      * @param tr log this TerminationRecord
      */
     public void err(Object message, SmartFrogException t, TerminationRecord tr) {
-        err(message, t);
-        errstream.println(tr.toString());
+        err(message, LogUtils.extractCause(t, tr));
+        errstream.println(LogUtils.stringify(tr));
     }
 
     /**
@@ -455,7 +455,7 @@ public class LogToNothingImpl implements LogToNothing, Log, LogMessage, LogLevel
      * @param t log this cause
      */
     public void err(Object message, SmartFrogException t) {
-        err(message, t);
+        err(message, (Throwable)t);
     }
 }
 
