@@ -38,7 +38,7 @@
   <fail>
     <condition>
       <not>
-        <available property="is.ant.17"
+        <available
           classname="org.apache.tools.ant.types.resources.FileResourceIterator"/>
       </not>
     </condition>
