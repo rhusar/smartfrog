@@ -704,7 +704,7 @@ public class CompoundImpl extends PrimImpl implements Compound {
         }
 
         // the following, checking children, should only happen if the source is
-        // its own livenes sender or
+        // its own liveness sender or
         // it is the parent checking and I don't have my own check
 
         sfPingChildren();
