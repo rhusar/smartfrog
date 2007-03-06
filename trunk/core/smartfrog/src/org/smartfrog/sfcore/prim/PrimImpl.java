@@ -1082,6 +1082,7 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
             sfParentageChanged();
         } catch (SmartFrogResolutionException ex){
             //@Todo: log
+            sfLog().ignore("unknown at detach time",ex);
             //ignore
         }
 
@@ -1101,7 +1102,6 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
             sfParent = null;
             terminateNotifying(status, null);
         } catch (Exception ex) {
-            //Logger.logQuietly(ex);
             if (sfLog().isIgnoreEnabled()){ sfLog().ignore(ex); }
         }
     }
