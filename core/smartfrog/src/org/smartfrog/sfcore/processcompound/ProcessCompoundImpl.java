@@ -29,6 +29,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.Iterator;
+import java.net.InetAddress;
 
 import org.smartfrog.SFSystem;
 import org.smartfrog.sfcore.common.Logger;
@@ -712,12 +713,13 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
     /**
      * Returns the complete name for this component from the root of the
      * application.
-     *
+     * sfCompleteName is cached.
+     * @TODO: clean cache when re-parenting
      * @return reference of attribute names to this component
      *
      * @throws RemoteException In case of network/rmi error
      */
-     //sfCompleteName is cached. @TODO: clean cache when re-parenting
+
     public Reference sfCompleteName() throws RemoteException {
         if (sfCompleteName==null){
             Reference r;
@@ -727,12 +729,10 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
 
             try {
                 // read sfHost attribute. Faster that using sfDeployedHost().
-                canonicalHostName = ((java.net.InetAddress)sfResolveHere(canonicalHostName,false)).getCanonicalHostName();
+                InetAddress address = ((InetAddress) sfResolveHere(canonicalHostName, false));
+                canonicalHostName = address!=null?address.getCanonicalHostName(): sfDeployedHost().getCanonicalHostName();
             } catch (SmartFrogResolutionException srex){
               //@todo log ignore.
-            } catch (NullPointerException exSfHost) {
-                //Problem here a null exc thrown.
-                canonicalHostName = this.sfDeployedHost().getCanonicalHostName();
             }
 
             if (sfParent==null) {
