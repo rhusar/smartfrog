@@ -30,4 +30,11 @@ public interface ExceptionThrower extends Remote {
 
     public String ATTR_MESSAGE="message";
 
+    /** {@value} */
+    public String ATTR_THROW_ON_STARTUP = "throwOnStartup";
+    /** {@value} */
+    public String ATTR_THROW_ON_DEPLOY = "throwOnDeploy";
+    /** {@value} */
+    public String ATTR_THROW_ON_PING = "throwOnPing";
+
 }
