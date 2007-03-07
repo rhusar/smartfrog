@@ -43,7 +43,7 @@ public class ParallelTest extends DeployingTestBase {
         this.block = block;
     }
 
-    //FIXFIX: RACE CONDITION
+    //FIXFIX: RACE CONDITION?
     public void testEmptyParallel() throws Throwable {
         application=deployExpectingSuccess(FILES +"testEmptyParallel.sf","testEmptyParallel");
         setBlock(application);
@@ -54,9 +54,7 @@ public class ParallelTest extends DeployingTestBase {
     public void testSimpleParallel() throws Throwable {
         application = deployExpectingSuccess(FILES + "testSimpleParallel.sf", "testSimpleParallel");
         setBlock(application);
-        expectSuccessfulTermination(block);
-        //Prim toggle=(Prim) (application.sfResolve("toggle"));
-        assertAttributeEquals(application,"value",true);
+        expectSuccesfulTermAndToggle();
     }
 
     public void testEmptyParallelTerminating() throws Throwable {
@@ -64,5 +62,74 @@ public class ParallelTest extends DeployingTestBase {
                 "testEmptyParallelTerminating");
         block = (TestBlock) application;
         expectSuccessfulTermination(block);
+    }
+
+    public void testStartFailingParallel() throws Throwable {
+        application = deployExpectingSuccess(FILES + "testStartFailingParallel.sf",
+                "testStartFailingParallel");
+        block = (TestBlock) application;
+        expectAbnormalTermination(block);
+    }
+
+    public void testStartFailingParallelAsync() throws Throwable {
+        application = deployExpectingSuccess(FILES + "testStartFailingParallelAsync.sf",
+                "testStartFailingParallelAsync");
+        block = (TestBlock) application;
+        expectAbnormalTermination(block);
+    }
+
+    public void testStartFailingParallelAsyncNoChild() throws Throwable {
+        application = deployExpectingSuccess(FILES + "testStartFailingParallelAsyncNoChild.sf",
+                "testStartFailingParallelAsyncNoChild");
+        block = (TestBlock) application;
+        expectAbnormalTermination(block);
+    }
+    public void testStartFailingParallelNoTerminate() throws Throwable {
+        application = deployExpectingSuccess(FILES + "testStartFailingParallelNoTerminate.sf",
+                "testStartFailingParallelNoTerminate");
+        block = (TestBlock) application;
+        expectAbnormalTermination(block);
+    }
+
+    public void testStartFailingParallelNoTerminateAsync() throws Throwable {
+        application = deployExpectingSuccess(FILES + "testStartFailingParallelNoTerminateAsync.sf",
+                "testStartFailingParallelNoTerminateAsync");
+        block = (TestBlock) application;
+        expectSuccesfulTermAndToggle();
+    }
+
+    private void expectSuccesfulTermAndToggle() throws Throwable {
+        expectSuccessfulTermination(block);
+        assertAttributeEquals(application, "value", true);
+    }
+
+
+    public void testFailingParallelAsync() throws Throwable {
+        application = deployExpectingSuccess(FILES + "testFailingParallelAsync.sf",
+                "testFailingParallelAsync");
+        block = (TestBlock) application;
+        expectAbnormalTermination(block);
+    }
+
+    public void testFailingParallelAsyncNoChild() throws Throwable {
+        application = deployExpectingSuccess(FILES + "testFailingParallelAsyncNoChild.sf",
+                "testFailingParallelAsyncNoChild");
+        setBlock(application);
+        expectSuccesfulTermAndToggle();
+    }
+
+
+    public void testFailingParallel() throws Throwable {
+        application = deployExpectingSuccess(FILES + "testFailingParallel.sf",
+                "testFailingParallel");
+        block = (TestBlock) application;
+        expectAbnormalTermination(block);
+    }
+
+    public void testFailingParallelNoChild() throws Throwable {
+        application = deployExpectingSuccess(FILES + "testFailingParallelNoChild.sf",
+                "testFailingParallelNoChild");
+        setBlock(application);
+        expectSuccesfulTermAndToggle();
     }
 }

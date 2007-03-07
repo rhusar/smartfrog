@@ -23,3 +23,60 @@ For more information: www.smartfrog.org
 #include "/org/smartfrog/sfcore/workflow/combinators/sequence.sf"
 #include "/org/smartfrog/services/filesystem/touchfile.sf"
 #include "/org/smartfrog/sfcore/workflow/combinators/parallel.sf"
+
+
+/**
+ * Throws an exception in sfStart(), used to test that something didnt deploy.
+ */
+ThrowExceptionOnDeploy extends SmartFrogException {
+  message "simulated exception";
+  throwOnStartup false;
+  throwOnDeploy true;
+}
+
+TestBlockBase extends TestBlock {
+ testblock LAZY THIS;
+}
+
+TestBlockWithStartupException extends TestBlockBase {
+
+
+  action extends Parallel {
+
+       toggle1 extends ToggleToTrueWorkflow {
+          target testblock;
+       }
+
+       throw extends ThrowExceptionOnDeploy;
+
+  }
+
+}
+
+TestBlockWithStartupExceptionNoToggle extends TestBlockBase {
+
+
+  action extends Parallel {
+
+       throw extends ThrowExceptionOnDeploy;
+
+  }
+
+}
+
+
+TestBlockWithFailure extends TestBlockBase {
+
+  delay 2;
+  action extends Parallel {
+
+       fail extends FailAbnormal {
+        delay testblock:delay;
+       }
+
+       toggle1 extends ToggleToTrueWorkflow {
+          target testblock;
+       }
+  }
+
+}
