@@ -62,6 +62,7 @@ public class EventCompoundImpl extends CompoundImpl implements EventBus,
     private boolean oldNotation = true;
     private static final Reference actionsRef = new Reference(ATTR_ACTIONS);
     private static final Reference actionRef =  new Reference(ATTR_ACTION);
+    public static final String ERROR_NO_CHILDREN_TO_DEPLOY = "Found no children to deploy";
 
     /**
      * Constructs EventCompoundImpl.
@@ -413,7 +414,7 @@ public class EventCompoundImpl extends CompoundImpl implements EventBus,
                 if (sfLog().isDebugEnabled()) sfLog().debug("Creating "+key);
             }
         } catch (NoSuchElementException ignored){
-           throw new SmartFrogRuntimeException ("Found no children to deploy",this);
+           throw new SmartFrogRuntimeException (ERROR_NO_CHILDREN_TO_DEPLOY,this);
         }
 
         //Actions are now children of this component, they are deployed and

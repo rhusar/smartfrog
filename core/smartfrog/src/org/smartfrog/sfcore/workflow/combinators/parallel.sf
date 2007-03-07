@@ -38,9 +38,13 @@ Parallel extends ActionsCompound {
         description ##flag which indicates that the parallel component
           should terminate immediately if there are no children to deploy#;
       }
+      terminateOnAbnormalChildTermination extends OptionalBoolean;
+      terminateOnAbnormalChildDeploy extends OptionalBoolean;
     }  
     // Deploy children in parallel? Set to true to deploy every child component
     //in a new thread
     asynchCreateChild false;
     terminateOnEmptyDeploy false;
+    terminateOnAbnormalChildTermination true;
+    terminateOnAbnormalChildDeploy true;
 }
