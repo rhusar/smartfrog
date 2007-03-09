@@ -25,10 +25,9 @@ import java.rmi.RemoteException;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
-import java.util.Timer;
-import java.util.TimerTask;
-
 import org.smartfrog.services.anubis.Anubis;
+import org.smartfrog.services.anubis.locator.util.ActiveTimeQueue;
+import org.smartfrog.services.anubis.locator.util.TimeQueueElement;
 import org.smartfrog.services.anubis.partition.comms.MessageConnection;
 import org.smartfrog.services.anubis.partition.protocols.partitionmanager.PartitionProtocol;
 import org.smartfrog.services.anubis.partition.test.node.TestMgr;
@@ -57,7 +56,7 @@ public class PartitionManager
     boolean            testable          = false;
     TestMgr            testManager       = null;
     LogSF              log               = null;
-    Timer              timer             = null;
+    ActiveTimeQueue    timer = null;
     boolean            terminated        = false;
 
     public PartitionManager() throws RemoteException {
@@ -68,7 +67,7 @@ public class PartitionManager
         try {
             super.sfDeploy();
             log               = new LogImplAsyncWrapper(this.sfGetApplicationLog());
-            timer             = new Timer(true);
+            timer             = new ActiveTimeQueue();
             me                = Config.getIdentity(this, "identity");
             partitionProtocol = (PartitionProtocol)sfResolve("partitionProtocol");
         }
@@ -80,6 +79,7 @@ public class PartitionManager
     public void sfStart() throws SmartFrogException, RemoteException  {
         try {
             super.sfStart();
+            timer.start();
 
             if( log.isInfoEnabled() )
                 log.info("Started partition manager at " + me + " " + Anubis.version);
@@ -92,7 +92,7 @@ public class PartitionManager
     public void sfTerminateWith(TerminationRecord status) {
         if( log.isInfoEnabled() )
             log.info("Terminating partition manager at " + me);
-        timer.cancel();
+        timer.terminate();
         terminated = true;
         super.sfTerminateWith(status);
     }
@@ -126,14 +126,14 @@ public class PartitionManager
     private void safePartitionNotification(PartitionNotification pn, View view, int leader) {
         long         timein  = System.currentTimeMillis();
         long         timeout = 0;
-        class TimeoutErrorLogger extends TimerTask {
+        class TimeoutErrorLogger extends TimeQueueElement {
             View view;
             int  leader;
             TimeoutErrorLogger(View v, int l) {
                 view   = v;
                 leader = l;
             }
-            public void run() {
+            public void expired() {
                 if( log.isErrorEnabled() )
                     log.error("User API Upcall took >200ms in " +
                               "partitionNotification(view, leader) where view=" +
@@ -143,7 +143,7 @@ public class PartitionManager
         TimeoutErrorLogger timeoutErrorLogger = new TimeoutErrorLogger(view, leader);
 
 
-        timer.schedule(timeoutErrorLogger, (timein+200) );
+        timer.add(timeoutErrorLogger, (timein+200) );
         try {
             pn.partitionNotification(view, leader);
         } catch (Throwable ex) {
@@ -153,7 +153,7 @@ public class PartitionManager
                                view + ", leader=" + leader, ex);
         }
         timeout = System.currentTimeMillis();
-        timeoutErrorLogger.cancel();
+        timer.remove(timeoutErrorLogger);
         if( log.isTraceEnabled() )
             log.trace("User API Upcall took " + (timeout - timein) +
                       "ms in partitionNotification(view, leader) where view=" +
@@ -180,7 +180,7 @@ public class PartitionManager
     private void safeObjectNotification(PartitionNotification pn, Object obj, int sender, long time) {
         long         timein  = System.currentTimeMillis();
         long         timeout = 0;
-        class TimeoutErrorLogger extends TimerTask {
+        class TimeoutErrorLogger extends TimeQueueElement {
             Object obj;
             int    sender;
             long   time;
@@ -189,7 +189,7 @@ public class PartitionManager
                 sender = s;
                 time   = t;
             }
-            public void run() {
+            public void expired() {
                 if( log.isErrorEnabled() )
                     log.error("User API Upcall took >200ms in " +
                               "objectNotification(obj, sender, time) where obj=" +
@@ -199,7 +199,7 @@ public class PartitionManager
         TimeoutErrorLogger timeoutErrorLogger = new TimeoutErrorLogger(obj, sender, time);
 
 
-        timer.schedule(timeoutErrorLogger, (timein+200) );
+        timer.add(timeoutErrorLogger, (timein+200) );
         try {
             pn.objectNotification(obj, sender, time);
         } catch (Throwable ex) {
@@ -209,7 +209,7 @@ public class PartitionManager
                           obj + ", sender=" + sender + ", time=" +time, ex);
         }
         timeout = System.currentTimeMillis();
-        timeoutErrorLogger.cancel();
+        timer.remove(timeoutErrorLogger);
         if( log.isTraceEnabled() )
             log.trace("User API Upcall took " + (timeout - timein) +
                       "ms in objectNotification(obj, sender, time) where obj=" +
