@@ -32,6 +32,11 @@ public interface JdbcBinding extends Remote {
      */
     public static final String ATTR_PROPERTIES = "properties";
 
+    /**
+     * Get the properties of the connection
+     * @return the properties of this JDBC binding
+     * @throws RemoteException
+     */
     Properties createConnectionProperties() throws RemoteException;
 
     /**

@@ -20,14 +20,13 @@
 package org.smartfrog.services.database.mysql;
 
 import org.smartfrog.services.database.core.ConnectionOpenCondition;
-import org.smartfrog.sfcore.workflow.conditional.Condition;
 import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.workflow.conditional.Condition;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.rmi.RemoteException;
 import java.sql.Connection;
-import java.sql.SQLException;
-import java.lang.reflect.Method;
-import java.lang.reflect.InvocationTargetException;
 
 /**
  * A subclass of {@link ConnectionOpenCondition} which issues a ping command against the database.

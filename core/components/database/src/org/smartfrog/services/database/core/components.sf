@@ -61,9 +61,9 @@ DatabaseBinding extends Prim {
         description "list of name,value pairs for the JDBC connection";
       };
 
-      classpath extends OptionalCD {
+/*      classpath extends OptionalCD {
         description "a classpath component describing classes needed by the JDBC driver";
-      }
+      }*/
   }
 }
 
@@ -92,18 +92,7 @@ DatabaseOperation extends WorkflowPrim {
  */
 Transaction extends DatabaseOperation {
   transactionSchema extends Schema {
-    sql extends OptionalString {
-      description "inline commands seperated by the delimiter";
-    }
-    sqlCommands extends OptionalVector {
-        description "a list of commands to execute, each undelimited command in a separate element";
-      };
-    sqlFile extends OptionalFilenameType {
-      description "UTF-8 encoded file containing SQL commands to run";
-    }
-    sqlResource extends OptionalString {
-      description "name of UTF-8 encoded text resource containing SQL commands to run";
-    }
+
     delimiter extends String {
       description "delimiter char between SQL statements, usually ;";
     }
@@ -125,6 +114,18 @@ Transaction extends DatabaseOperation {
     }
     printHeaders extends Boolean {
       description "should the column headers be printed?";
+    }
+    sql extends OptionalString {
+      description "inline commands seperated by the delimiter";
+    }
+    sqlCommands extends OptionalVector {
+        description "a list of commands to execute, each undelimited command in a separate element";
+      };
+    sqlFile extends OptionalFilenameType {
+      description "UTF-8 encoded file containing SQL commands to run";
+    }
+    sqlResource extends OptionalString {
+      description "name of UTF-8 encoded text resource containing SQL commands to run";
     }
   }
 
