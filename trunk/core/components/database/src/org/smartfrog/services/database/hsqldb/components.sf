@@ -93,7 +93,7 @@ For information on secure sockets, see: http://java.sun.com/products/jsse/k2:
 
 HsqldbServerProcess extends Java {
     database TBD;
-    database.name;
+    database.name TBD;
     address "any";
     port "9001";
     processName "hsqldb";
@@ -179,7 +179,7 @@ For information on secure sockets, see: http://java.sun.com/products/jsse/k2:~
 
 HsqldbWebServerProcess extends Java {
     database TBD;
-    database.name;
+    database.name TBD;
     address "any";
     port "8080";
     processName "hsqldb";

@@ -53,7 +53,14 @@
     sqlCommands [
      ("DROP USER " ++ username )
     ];
- }
+  }
+
+  DropUserOnTermination extends TerminationTransaction {
+    username TBD;
+    sqlCommands [
+     ("DROP USER " ++ username )
+    ];
+  }
 
  /**
   * drop a table
@@ -65,3 +72,24 @@
     ];
  }
 
+ /**
+  * drop a table
+  */
+ DropTableOnTermination extends TerminationTransaction {
+    table TBD;
+    sqlCommands [
+     ("DROP TABLE " ++ table)
+    ];
+ }
+
+
+  CreateAndDropUser extends CounterTransaction {
+    username TBD;
+    password TBD;
+    sqlCommands [
+     (("CREATE USER " ++ username ) ++ (" PASSWORD " ++ password))
+    ];
+    counterCommands [
+     ("DROP USER " ++ username )
+    ];
+  }

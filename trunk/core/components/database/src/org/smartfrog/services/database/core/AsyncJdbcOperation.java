@@ -22,19 +22,12 @@ package org.smartfrog.services.database.core;
 import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLivenessException;
-import org.smartfrog.sfcore.common.SmartFrogResolutionException;
-import org.smartfrog.sfcore.logging.Log;
-import org.smartfrog.sfcore.logging.LogFactory;
-import org.smartfrog.sfcore.prim.PrimImpl;
+import org.smartfrog.sfcore.prim.Liveness;
 import org.smartfrog.sfcore.prim.TerminationRecord;
-import org.smartfrog.sfcore.prim.Prim;
-import org.smartfrog.sfcore.utils.ComponentHelper;
 
 import java.rmi.RemoteException;
 import java.sql.Connection;
-import java.sql.Driver;
 import java.sql.SQLException;
-import java.util.Properties;
 
 /**
  * This represents a JDBC operation that runs in a background thread
@@ -77,10 +70,9 @@ public abstract class AsyncJdbcOperation extends AbstractJdbcOperation
      *
      * @param source source of call
      *
-     * @throws org.smartfrog.sfcore.common.SmartFrogLivenessException
+     * @throws SmartFrogLivenessException
      *                                  component is terminated
-     * @throws java.rmi.RemoteException for consistency with the {@link
-     *                                  org.smartfrog.sfcore.prim.Liveness}
+     * @throws RemoteException for consistency with the {@link Liveness}
      *                                  interface
      */
     public void sfPing(Object source)

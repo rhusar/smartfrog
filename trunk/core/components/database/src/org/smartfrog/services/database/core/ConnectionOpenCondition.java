@@ -19,8 +19,8 @@
  */
 package org.smartfrog.services.database.core;
 
-import org.smartfrog.sfcore.workflow.conditional.Condition;
 import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.workflow.conditional.Condition;
 
 import java.rmi.RemoteException;
 import java.sql.Connection;
@@ -42,9 +42,8 @@ public class ConnectionOpenCondition extends AbstractJdbcOperation implements Co
      * Evaluate the condition.
      *
      * @return true if it is successful, false if not
-     * @throws java.rmi.RemoteException for network problems
-     * @throws org.smartfrog.sfcore.common.SmartFrogException
-     *                                  for any other problem
+     * @throws RemoteException for network problems
+     * @throws SmartFrogException for any other problem
      */
     public boolean evaluate() throws RemoteException, SmartFrogException {
         //do a quick connect to see that we are ok

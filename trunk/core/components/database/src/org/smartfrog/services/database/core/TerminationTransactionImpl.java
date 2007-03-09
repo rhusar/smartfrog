@@ -20,8 +20,8 @@
 package org.smartfrog.services.database.core;
 
 import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
-import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 
 import java.rmi.RemoteException;
 import java.sql.Connection;
@@ -78,7 +78,7 @@ public class TerminationTransactionImpl extends TransactionImpl {
      * @return true if we have commmands
      */
     protected boolean hasTerminationCommands() {
-        return getCommands() != null && getCommands().size() > 0;
+        return getCommands() != null && !getCommands().isEmpty();
     }
 
 }

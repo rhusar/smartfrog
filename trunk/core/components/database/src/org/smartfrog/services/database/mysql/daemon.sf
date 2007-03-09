@@ -271,7 +271,7 @@ FinallyTerminateMysql extends Finally {
 /**
  Repair a database defined with the database parameter
  */
-  mysqlcheck-repair-databases extends mysqlcheck {
+  mysqlcheck-repair-database extends mysqlcheck {
     database TBD;
     arguments [
       auto-repair,

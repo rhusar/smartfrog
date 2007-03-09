@@ -1,17 +1,13 @@
 package org.smartfrog.services.database.core;
 
-import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
-import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.reference.Reference;
 
 import java.rmi.RemoteException;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.Vector;
-import java.util.Iterator;
 import java.util.ArrayList;
+import java.util.Vector;
 
 /**
  * This component subclasses {@link TransactionImpl} to run the transactions at startup, and the transactions listed in
