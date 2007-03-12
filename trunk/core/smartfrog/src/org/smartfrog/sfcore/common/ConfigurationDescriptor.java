@@ -1,4 +1,4 @@
-/** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
+/** (C) Copyright 1998-2007 Hewlett-Packard Development Company, LP
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
@@ -41,6 +41,11 @@ import java.io.PrintWriter;
  *  Creating a Configuration Descriptor with options
  */
 public class ConfigurationDescriptor implements MessageKeys{
+    private static final String SF_PARSE_TIME = "sfParseTime";
+    private static final String SF_DEPLOY_TIME = "sfDeployTime";
+    private static final String ATTR_PARSE_REPORT = "parseReport";
+    private static final String ATTR_DIAGNOSTICS_REPORT = "diagnosticsReport";
+
     /**
      * an enumeration of our options
      */
@@ -171,15 +176,14 @@ public class ConfigurationDescriptor implements MessageKeys{
       *   Special Options for SF1 Language
       */
      public static class SF1Options {
-         static String SFCONFIGREF = "sfConfigRef";
+         static final String SFCONFIGREF = "sfConfigRef";
      }
 
     /**
-     * To String
+     * To String -delegates to {@link #toString(String)}
      * @return  String
      */
     public String toString() {
-        //return toString(", \n");
         return toString(", ");
     }
 
@@ -191,34 +195,39 @@ public class ConfigurationDescriptor implements MessageKeys{
     public String toString(String separator){
         StringBuffer str = new StringBuffer();
         if (getName()!=null) {
-            str.append(" name:"); str.append(getName().toString());
+            str.append(" name:"); str.append(getName());
         }
         str.append(separator);
-        str.append(" type:"); str.append(Action.type[actionType].toString());
+        str.append(" type:"); str.append(Action.type[actionType]);
 
         if (getUrl()!=null) {
             str.append(separator);
-            str.append(" url:"); str.append(getUrl().toString());
+            str.append(" url:"); str.append(getUrl());
         }
-        if ((getDeployReference()!=null)&&(getDeployReference().size()>0)) {
+        if (getDeployReference()!=null && getDeployReference().size()>0) {
             str.append(separator);
-            str.append(" depRef:"); str.append(getDeployReference().toString());
+            str.append(" depRef:");
+            str.append(getDeployReference().toString());
         }
         if (getHost()!=null) {
             str.append(separator);
-            str.append(" host:"); str.append(getHost().toString());
+            str.append(" host:");
+            str.append(getHost());
         }
         if (getSubProcess()!=null) {
             str.append(separator);
-            str.append(" subProc:"); str.append(getSubProcess().toString());
+            str.append(" subProc:");
+            str.append(getSubProcess());
         }
 
         str.append(separator);
-        str.append(" resultType:"); str.append(Result.type[resultType].toString());
+        str.append(" resultType:");
+        str.append(Result.type[resultType]);
 
         if (resultMessage!=null) {
             str.append(separator);
-            str.append(" resultMessage:");  str.append(resultMessage.toString());
+            str.append(" resultMessage:");
+            str.append(resultMessage);
             }
         if (resultException!=null) {
           str.append(separator);
@@ -251,13 +260,13 @@ public class ConfigurationDescriptor implements MessageKeys{
           if ((resultObject!=null)&&(resultObject instanceof Prim)){
             try {
               message.append("'");
-              message.append(getResultObjectName().toString());
+              message.append(getResultObjectName());
               message.append("'");
             } catch(Exception ex){
                try {
                  if (getName()!=null) {
                      //This will happen when a component is terminated.
-                     message.append(getName().toString());
+                     message.append(getName());
                      message.append("'");
                  }
                } catch (Exception ex1){
@@ -267,33 +276,39 @@ public class ConfigurationDescriptor implements MessageKeys{
             }
           } else if (getName()!=null) {
               message.append("'");
-              message.append(getName().toString());
+              message.append(getName());
               message.append("'");
           }
 
-          if ((getUrl()!=null)&& !(getUrl().trim().equals(""))) {
+          if ((getUrl() != null) && !isEmpty(getUrl())) {
               message.append(separator);
-              message.append(" ["); message.append(getUrl().toString()+"]");
+              message.append(" [");
+              message.append(getUrl());
+              message.append("]");
           }
           if (getDeployReference()!=null) {
               message.append(separator);
-              message.append(" deployReference: "); message.append(getDeployReference().toString());
+              message.append(" deployReference: ");
+              message.append(getDeployReference().toString());
           }
           if (getHost()!=null) {
               message.append(separator);
-              message.append(" host:"); message.append(getHost().toString());
+              message.append(" host:");
+              message.append(getHost());
           }
           if (getSubProcess()!=null) {
               message.append(separator);
-              message.append(" subProcess:"); message.append(getSubProcess().toString());
+              message.append(" subProcess:");
+              message.append(getSubProcess());
           }
 
           if (Logger.logStackTrace) {
-            if ( (this.resultObject != null) && (this.resultObject instanceof Prim)) {
+            if ( (resultObject != null) && (resultObject instanceof Prim)) {
               try {
-                Object time = ( (Prim)this.resultObject).sfResolveHere("sfParseTime");
+                Object time = ( (Prim)resultObject).sfResolveHere(SF_PARSE_TIME);
                 message.append(separator);
-                message.append(" parse time: " + time);
+                message.append(" parse time: ");
+                message.append(time);
               }
               catch (Exception ex1) {
                 //Logger.logQuietly(ex1);
@@ -303,11 +318,12 @@ public class ConfigurationDescriptor implements MessageKeys{
               }
             }
 
-            if ( (this.resultObject != null) && (this.resultObject instanceof Prim)) {
+            if ( (resultObject != null) && (resultObject instanceof Prim)) {
               try {
-                Object time = ( (Prim)this.resultObject).sfResolveHere("sfDeployTime");
+                Object time = ( (Prim)resultObject).sfResolveHere(SF_DEPLOY_TIME);
                 message.append(separator);
-                message.append(" deploy time: " + time);
+                message.append(" deploy time: ");
+                message.append(time);
               }
               catch (Exception ex1) {
                 //Logger.logQuietly(ex1);
@@ -316,8 +332,8 @@ public class ConfigurationDescriptor implements MessageKeys{
             }
           }
 
-          if (this.resultType==Result.SUCCESSFUL){
-              switch (this.getActionType()) {
+          if (resultType==Result.SUCCESSFUL){
+              switch (getActionType()) {
                 case (ConfigurationDescriptor.Action.DEPLOY):
                     {
                     result= MessageUtil.formatMessage(MSG_DEPLOY_SUCCESS, message.toString());
@@ -341,18 +357,20 @@ public class ConfigurationDescriptor implements MessageKeys{
                     break;
                 case ConfigurationDescriptor.Action.PING: {
                     result = MessageUtil.formatMessage(MSG_PING_SUCCESS,
-                                                       name.toString(),
-                                                       host.toString(),
-                                                       this.getResultMessage().toString());
+                                                       name,
+                                                       host,
+                                                       getResultMessage());
                     }
                     break;
                  case ConfigurationDescriptor.Action.PARSE: {
-                      result = "Parsed :"+this.getUrl() +"\n"+ this.getContextAttribute("parseReport").toString();
+                      result = "Parsed :"+getUrl() + lineSeparator
+                              + getContextAttribute(ATTR_PARSE_REPORT).toString();
                       }
                      break;
 
                  case ConfigurationDescriptor.Action.DIAGNOSTICS: {
-                    result = "Diagnostics report for "+this.getName()+"\n"+ this.getContextAttribute("diagnosticsReport").toString();
+                    result = "Diagnostics report for "+getName()+ lineSeparator
+                            + getContextAttribute(ATTR_DIAGNOSTICS_REPORT).toString();
                     }
                      break;
 
@@ -365,9 +383,9 @@ public class ConfigurationDescriptor implements MessageKeys{
                 default:
                     // Unknown action.
                     messageError = new StringBuffer();
-                    messageError.append(""); messageError.append(Result.type[resultType].toString());
+                    messageError.append(Result.type[resultType]);
                     messageError.append(" when trying ");
-                    messageError.append(Action.type[actionType].toString());
+                    messageError.append(Action.type[actionType]);
                     messageError.append(" of ");
                     messageError.append(message);
                     result= messageError.toString();
@@ -375,38 +393,48 @@ public class ConfigurationDescriptor implements MessageKeys{
             }
           } else {
               messageError = new StringBuffer();
-              messageError.append(""); messageError.append(Result.type[resultType].toString());
+              messageError.append(Result.type[resultType]);
               messageError.append(" when trying ");
-              messageError.append(Action.type[actionType].toString());
+              messageError.append(Action.type[actionType]);
               messageError.append(" of ");
               messageError.append(message);
               result= messageError.toString();
           }
           if ((Logger.logStackTrace)||
-              (((resultMessage!=null)||(resultException!=null))&&(this.resultType!=Result.SUCCESSFUL))) {
+              (((resultMessage != null) || (resultException != null)) && (resultType != Result.SUCCESSFUL))) {
                   messageError = new StringBuffer();
                   messageError.append(lineSeparator);
                   messageError.append("Result:");
                   lineSeparator=lineSeparator+"  ";
-                  if ((resultMessage!=null)&&(!(resultMessage.toString().trim().equals("")))) {
+                  if (resultMessage!=null && !isEmpty(resultMessage)) {
                      messageError.append(lineSeparator);
-                     messageError.append("* Message: '"+ resultMessage.toString().replaceAll("\n",lineSeparator+"    ")+"'");
+                     messageError.append("* Message: '");
+                     messageError.append(resultMessage.replaceAll("\n",lineSeparator+"    "));
+                     messageError.append("'");
                   }
                   if (resultException!=null) {
                       messageError.append(lineSeparator);
-                      messageError.append("* Exception: '"+parseException(resultException,lineSeparator+"  ")+"'");
+                      messageError.append("* Exception: '");
+                      messageError.append(parseException(resultException, lineSeparator + "  "));
+                      messageError.append("'");
                       if (Logger.logStackTrace) {
                          messageError.append(lineSeparator);
-                         messageError.append("* StackTrace: '"+parseExceptionStackTrace(resultException,lineSeparator+"    ")+"'");
+                         messageError.append("* StackTrace: '");
+                         messageError.append(parseExceptionStackTrace(resultException, lineSeparator + "    "));
+                         messageError.append("'");
                        }
                   }
-                  if ((originalSFACT!=null)&&Logger.logStackTrace) {
-                    messageError.append(lineSeparator);
-                    messageError.append("* Command line SFACT: '" + originalSFACT+"'");
-                  }
-                  if ((originalSFACT!=null)&&Logger.logStackTrace) {
+                  if (originalSFACT!=null && Logger.logStackTrace) {
                       messageError.append(lineSeparator);
-                      messageError.append("* To String: '" + this.toString(separator) + "'");
+                      messageError.append("* Command line SFACT: '");
+                      messageError.append(originalSFACT);
+                      messageError.append("'");
+                  }
+                  if (originalSFACT!=null && Logger.logStackTrace) {
+                      messageError.append(lineSeparator);
+                      messageError.append("* To String: '");
+                      messageError.append(toString(separator));
+                      messageError.append("'");
                   }
                   result = result + messageError.toString();
            }
@@ -459,34 +487,39 @@ public class ConfigurationDescriptor implements MessageKeys{
      */
     public static String parseExceptionStackTrace(Throwable thr, String lineSeparator) {
 
-      if (thr==null) return "";
-
-      final StringWriter sw = new StringWriter(1024);
-      final PrintWriter out = new PrintWriter(sw, false);
-
-      StringBuffer messageError = new StringBuffer();
-      messageError.append(lineSeparator);
-      //thr.fillInStackTrace();
-      thr.printStackTrace(out);
-
-      LineNumberReader in = new LineNumberReader( new StringReader(sw.toString()));
-
-      try {
-        String result;
-        while ( (result = in.readLine()) != null) {
-          messageError.append(result.toString() + lineSeparator);
+        if (thr == null) {
+            return "";
         }
-      } catch (IOException ex) {
-        // this should REALLY never happen
-        throw new RuntimeException(ex.toString());
-      }
 
-      if (thr instanceof SmartFrogException) {
-        //messageError.append(lineSeparator);
-        messageError.append( ( (SmartFrogException) thr).toStringAll(lineSeparator));
-      }
-      //messageError.append(lineSeparator+" --- StackTrace sfex Begins --");
-      return messageError.toString();
+        final StringWriter sw = new StringWriter(1024);
+        PrintWriter out=null;
+        LineNumberReader in=null;
+        StringBuffer messageError = new StringBuffer(lineSeparator);
+        try {
+            out = new PrintWriter(sw, false);
+            thr.printStackTrace(out);
+            out.close();
+            in = new LineNumberReader(new StringReader(sw.toString()));
+            String result;
+            while ((result = in.readLine()) != null) {
+                messageError.append(result);
+                messageError.append(lineSeparator);
+            }
+        } catch (IOException ex) {
+            // this should REALLY never happen
+            throw new RuntimeException(ex.toString(),ex);
+        } finally {
+            if (in != null)
+                try {in.close();} catch (IOException ignored) {}
+            if (out!= null) {
+                out.close();
+            }
+        }
+        if (thr instanceof SmartFrogException) {
+            //messageError.append(lineSeparator);
+            messageError.append(((SmartFrogException) thr).toStringAll(lineSeparator));
+        }
+        return messageError.toString();
     }
 
     /**
@@ -536,7 +569,7 @@ public class ConfigurationDescriptor implements MessageKeys{
      */
     public ConfigurationDescriptor (String deploymentURL) throws SmartFrogInitException {
         try {
-            this.originalSFACT = deploymentURL;
+            originalSFACT = deploymentURL;
             if (SFSystem.sfLog().isDebugEnabled()){SFSystem.sfLog().debug("Parsing SFACT: ["+originalSFACT+"]");               }
 
             if (deploymentURL==null) {
@@ -553,14 +586,14 @@ public class ConfigurationDescriptor implements MessageKeys{
 
             //GET SUBPROCESS_NAME (6th Element)
             try {
-                this.setSubProcess(getAndCutLastFieldTempURL(separator));
+                setSubProcess(getAndCutLastFieldTempURL(separator));
             } catch (Exception ex) {
                 throw new SmartFrogInitException( "Error parsing SUBPROCESS_NAME in: "+ deploymentURL+"("+ex.getMessage()+")", ex);
             }
 
             //GET HOST_NAME (5th Element)
             try {
-                this.setHost(getAndCutLastFieldTempURL(separator));
+                setHost(getAndCutLastFieldTempURL(separator));
             } catch (Exception ex) {
                 throw new SmartFrogInitException("Error parsing HOST in: "+ deploymentURL+"("+ex.getMessage()+")", ex);
             }
@@ -569,7 +602,7 @@ public class ConfigurationDescriptor implements MessageKeys{
             //If it contains : has to be between double quotes(")
             //ex. ...:"componentOne:componentTwo":...
             try {
-                this.setDeployReference(getAndCutLastFieldTempURL(separator));
+                setDeployReference(getAndCutLastFieldTempURL(separator));
             } catch (Exception ex) {
                 throw new SmartFrogInitException("Error parsing DEPLOY_REFERENCE in: "+ deploymentURL +"("+ex.getMessage()+")", ex);
             }
@@ -577,14 +610,14 @@ public class ConfigurationDescriptor implements MessageKeys{
             //GET URL (3rd Element)
              //(Everything that is left at the end)
              try {
-                 this.setUrl(getAndCutLastFieldTempURL(separator));
+                 setUrl(getAndCutLastFieldTempURL(separator));
              } catch (Exception ex) {
                  throw new SmartFrogInitException( "Error parsing DEPLOY_REFERENCE in: "+ deploymentURL+"("+ex.getMessage()+")", ex);
             }
 
             //GET ACTION(2nd Element)
             try {
-                this.setActionType(getAndCutLastFieldTempURL(separator));
+                setActionType(getAndCutLastFieldTempURL(separator));
             } catch (Exception ex) {
                 throw new SmartFrogInitException("Error parsing ACTION_TYPE in: "+ deploymentURL +"("+ex.getMessage()+")", ex);
             }
@@ -611,14 +644,14 @@ public class ConfigurationDescriptor implements MessageKeys{
                     field = tempURL;
                 }
                 if (SFSystem.sfLog().isTraceEnabled()) {SFSystem.sfLog().trace("  Extracted ["+field+"] from ["+tempURL+"]"); }
-                this.setName(field);
+                setName(field);
             } catch (Exception ex) {
-                if (SFSystem.sfLog().isErrorEnabled()) SFSystem.sfLog().error(ex);
+                SFSystem.sfLog().error(ex);
                 throw new SmartFrogInitException("Error parsing NAME in: "+ deploymentURL+"("+ex.getMessage()+")", ex);
             }
-            if (SFSystem.sfLog().isDebugEnabled()){SFSystem.sfLog().debug("Parsing SFACT results: ["+this.toString()+"]");}
+            if (SFSystem.sfLog().isDebugEnabled()){SFSystem.sfLog().debug("Parsing SFACT results: ["+this+"]");}
         } catch (Throwable thr){
-           this.resultException = thr;
+           resultException = thr;
            throw (SmartFrogInitException)SmartFrogInitException.forward(thr);
         }
     }
@@ -663,8 +696,8 @@ public class ConfigurationDescriptor implements MessageKeys{
      */
     public ConfigurationDescriptor (String name, String url){
         if (url == null) return;
-        this.setUrl(url);
-        this.setName(name);
+        setUrl(url);
+        setName(name);
     }
 
     /**
@@ -678,12 +711,11 @@ public class ConfigurationDescriptor implements MessageKeys{
      */
     public ConfigurationDescriptor (String name, String url,int actionType,String host, String subProcess)
             throws SmartFrogInitException{
-
-        this.setActionType(actionType);
-        this.setUrl(url);
-        this.setName(name);
-        this.setHost(host);
-        this.setSubProcess(subProcess);
+        setActionType(actionType);
+        setUrl(url);
+        setName(name);
+        setHost(host);
+        setSubProcess(subProcess);
     }
 
     /**
@@ -701,19 +733,29 @@ public class ConfigurationDescriptor implements MessageKeys{
      * @param host host were to apply action. Can be null and then no rootProcess is used.
      * @param subProcess subProcess were to apply action. Can be null.
      * @throws SmartFrogInitException when a parameter is wrongly defined
+     * @throws SmartFrogResolutionException if something cannot be resolved
      */
     public ConfigurationDescriptor (String name, String url,int actionType,
                                     String deployReference ,String host, String subProcess)
             throws SmartFrogInitException, SmartFrogResolutionException {
 
-        this.setActionType(actionType);
-        this.setUrl(url);
-        this.setName(name);
+        setActionType(actionType);
+        setUrl(url);
+        setName(name);
         // Deploy Reference is a particular case for SF1 and therefore added to
         // options
-        this.setDeployReference(deployReference);
-        this.setHost(host);
-        this.setSubProcess(subProcess);
+        setDeployReference(deployReference);
+        setHost(host);
+        setSubProcess(subProcess);
+    }
+
+    /**
+     * Test for a non-null string being empty
+     * @param string string to trim and check the size
+     * @return true if there is nothing but white space in the string
+     */
+    private static boolean isEmpty(String string) {
+        return string.trim().length()==0;
     }
 
     /**
@@ -738,10 +780,10 @@ public class ConfigurationDescriptor implements MessageKeys{
      */
     public void setDeployReference(String reference) throws SmartFrogResolutionException{
 
-        if (reference.trim().equals("")){
+        if (isEmpty(reference)){
             return;
         }
-         this.getOptions().put(SF1Options.SFCONFIGREF,
+        getOptions().put(SF1Options.SFCONFIGREF,
                                   Reference.fromString(reference));
     }
 
@@ -765,21 +807,18 @@ public class ConfigurationDescriptor implements MessageKeys{
             try {
                 throw new SmartFrogInitException("Result type unknown");
             } catch (Exception ex) {
-                //Logger.log(ex);
-                if (SFSystem.sfLog().isTraceEnabled()){
-                  SFSystem.sfLog().trace(ex);
-               }
+              SFSystem.sfLog().trace(ex);
             }
-        } else this.resultType = type;
-        if (message!=null) this.resultMessage = message;
-        if (thr!=null) this.resultException = thr;
+        } else resultType = type;
+        if (message!=null) resultMessage = message;
+        if (thr!=null) resultException = thr;
     }
 
     /**
      * Sets result as SUCCESSFULL
      */
     public void setSuccessfulResult(){
-      this.resultType=Result.SUCCESSFUL;
+      resultType=Result.SUCCESSFUL;
     }
 
     /**
@@ -790,7 +829,7 @@ public class ConfigurationDescriptor implements MessageKeys{
      * @throws SmartFrogInitException  if the type is not valid
      */
     public void setActionType(int type) throws SmartFrogInitException {
-        this.actionType = type;
+        actionType = type;
         switch(actionType) {
             case Action.DEPLOY:
                 action=new ActionDeploy();
@@ -856,10 +895,11 @@ public class ConfigurationDescriptor implements MessageKeys{
      *
      */
     public String getResultMessage() {
-        if (this.resultMessage!=null)
+        if (resultMessage !=null) {
             return resultMessage;
-        else if (this.resultException!=null)
+        } else if (resultException !=null) {
             return resultException.getMessage();
+        }
         return "no message";
     }
 
@@ -884,10 +924,10 @@ public class ConfigurationDescriptor implements MessageKeys{
                 resultObject = action.execute(targetProcess, this);
             }
         } catch (SmartFrogException sex){
-             this.setResult(ConfigurationDescriptor.Result.FAILED,null,sex);
+             setResult(ConfigurationDescriptor.Result.FAILED,null,sex);
              throw sex;
          } catch (RemoteException rex){
-             this.setResult(ConfigurationDescriptor.Result.FAILED,null,rex);
+             setResult(ConfigurationDescriptor.Result.FAILED,null,rex);
              throw rex;
         }
         return resultObject;
@@ -906,15 +946,15 @@ public class ConfigurationDescriptor implements MessageKeys{
      * @return String  name of resultObject
      */
     public String getResultObjectName() {
-      if ((resultObject!=null)&&(resultObject instanceof Prim)){
-        try {
-          return (( (Prim) resultObject).sfCompleteName().toString());
-        } catch (RemoteException ex) {
-          //Note that if the object was terminated this call will throw an exception.
-          return null;
+        if ((resultObject != null) && (resultObject instanceof Prim)) {
+            try {
+                return (((Prim) resultObject).sfCompleteName().toString());
+            } catch (RemoteException ex) {
+                //Note that if the object was terminated this call will throw an exception.
+                return null;
+            }
         }
-      }
-      return null;
+        return null;
     }
 
 
@@ -923,9 +963,9 @@ public class ConfigurationDescriptor implements MessageKeys{
      * @param name component name
      */
     public void setName(String name) {
-      if (name.trim().equals("")){
-        return;
-      }
+        if (isEmpty(name)) {
+            return;
+        }
         this.name = name;
     }
 
@@ -963,8 +1003,7 @@ public class ConfigurationDescriptor implements MessageKeys{
      * @param host hostname
      */
     public void setHost(String host) {
-        if (host==null) return;
-        if (host.trim().equals("")) return;
+        if (host==null || isEmpty(host)) return;
         this.host = host;
     }
 
@@ -977,12 +1016,12 @@ public class ConfigurationDescriptor implements MessageKeys{
     }
 
     /**
-     * set subProcess where to apply action. Can be null.
+     * Set the subProcess where to apply action.
+     * Can be null or white space, in which case it is ignored
      * @param subProcess subProcess name
      */
     public void setSubProcess(String subProcess) {
-        if (subProcess==null) return;
-        if (subProcess.trim().equals("")) return;
+        if (subProcess==null || isEmpty(subProcess)) return;
         this.subProcess = subProcess;
     }
 
@@ -1009,7 +1048,7 @@ public class ConfigurationDescriptor implements MessageKeys{
      * @param value value
      */
     public void setOption(Object name, Object value) {
-       this.options.put(name, value);
+       options.put(name, value);
     }
 
     /**
@@ -1018,7 +1057,7 @@ public class ConfigurationDescriptor implements MessageKeys{
      * @return Object value
      */
     public Object getOption(Object name){
-       return this.options.get(name);
+       return options.get(name);
     }
 
     /**
@@ -1044,7 +1083,9 @@ public class ConfigurationDescriptor implements MessageKeys{
      * @return Context
      */
     public Context setContextAttribute(Object name, Object value) {
-        if (this.context==null) this.context=new ContextImpl();
+        if (context==null) {
+            context=new ContextImpl();
+        }
         context.put(name,value);
         return context;
     }
