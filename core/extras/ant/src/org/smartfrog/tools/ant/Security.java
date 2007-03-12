@@ -274,6 +274,7 @@ public class Security extends DataType {
     /**
      * apply whatever settings are needed for signing a jar file
      * @param signJar task to configure
+     * @throws IOException if something happens when reading/writing files
      */
     public void applySecuritySettings(SignJar signJar) throws IOException {
         validateForSigning();
@@ -287,7 +288,7 @@ public class Security extends DataType {
     /**
      * load the passfile into a properties structure
      * @return the loaded file
-     * @throws IOException
+     * @throws IOException if something happens when reading/writing files
      */
     private Properties loadPassFile() throws IOException {
         Properties securityProps=new Properties();

@@ -302,13 +302,7 @@ public abstract class DeployingTaskBase extends SmartFrogTask {
             } catch (IOException e) {
                 throw new BuildException(ERROR_NO_WRITE + tempfile, e);
             } finally {
-                if (writer != null) {
-                    try {
-                        writer.close();
-                    } catch (IOException ignored) {
-
-                    }
-                }
+                FileUtils.close(writer);
             }
 
         }
