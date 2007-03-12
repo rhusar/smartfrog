@@ -37,12 +37,12 @@ public class SelfConnection extends BitView implements Connection, HeartbeatProt
     private Candidate         candidate = null;
     private ConnectionAddress address   = null;
 
-    public SelfConnection(Identity id, View v, ConnectionAddress addr) {
+    public SelfConnection(Identity id, View v, ConnectionAddress addr, boolean preferred) {
             me        = id;
             address   = addr;
             view      = v.toBitSet();
             stable    = v.isStable();
-            candidate = new CandidateImpl(me, me);
+            candidate = new CandidateImpl(me, me, preferred);
     }
 
     /**
@@ -79,6 +79,7 @@ public class SelfConnection extends BitView implements Connection, HeartbeatProt
      * @return Indentity
      */
     public Identity  getId()               { return getSender(); }
+    public boolean   isPreferred()           { return candidate.isPreferred(); }
     public Identity  getVote()                { return candidate.getVote(); }
     public void      setVote(Identity v)      { candidate.setVote(v); }
     public void      setVote(Candidate c)     { candidate.setVote(c); }

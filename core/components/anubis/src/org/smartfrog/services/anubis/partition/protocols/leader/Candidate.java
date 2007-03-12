@@ -25,6 +25,7 @@ import org.smartfrog.services.anubis.partition.util.Identity;
 public interface Candidate {
     public Identity  getId();
     public Identity  getVote();
+    public boolean   isPreferred();
     public void      setVote(Identity v);
     public void      setVote(Candidate c);
     public void      clearReceivedVotes();

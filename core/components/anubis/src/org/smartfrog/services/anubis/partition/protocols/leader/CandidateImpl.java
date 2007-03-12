@@ -28,6 +28,7 @@ public class CandidateImpl implements Candidate {
      * Candidate information
      */
     private Identity me            = null;
+    private boolean  preferred     = false;
     private Identity vote          = null;
     private int      count         = 0;
 
@@ -36,10 +37,12 @@ public class CandidateImpl implements Candidate {
      *
      * @param id - own id
      * @param v  - voting for candidate v
+     * @param preferred - is this a preferred node
      */
-    public CandidateImpl(Identity id, Identity v) {
+    public CandidateImpl(Identity id, Identity v, boolean preferred) {
         me   = id;
         vote = v;
+        this.preferred = preferred;
     }
 
     /**
@@ -48,12 +51,24 @@ public class CandidateImpl implements Candidate {
      */
     public Identity  getId()                  { return me;}
     public Identity  getVote()                { return vote;}
+    public boolean	 isPreferred()            { return preferred; }
     public void      setVote(Identity v)      { vote = v; }
     public void      setVote(Candidate c)     { vote = c.getId(); }
     public void      clearReceivedVotes()     { count = -1; }
     public void      receiveVote(Candidate c) { count++; }
     public int       countReceivedVotes()     { return count; }
     public boolean   winsAgainst(Candidate c) {
+    	/*
+    	 * preferred always win against non-preferred.
+    	 * otherwise the rules are the same for arbiters as for 
+    	 * regular candidates.
+    	 */
+    	if( this.isPreferred() && !c.isPreferred() ) {
+    		return true;
+    	}
+    	if( !this.isPreferred() && c.isPreferred() ) {
+    		return false;
+    	}
         return (   (this.countReceivedVotes() > c.countReceivedVotes())
                 || (this.countReceivedVotes() == c.countReceivedVotes()
                     && this.getId().id > c.getId().id)  );

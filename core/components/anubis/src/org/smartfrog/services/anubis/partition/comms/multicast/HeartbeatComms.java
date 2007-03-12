@@ -126,7 +126,7 @@ public class HeartbeatComms extends MulticastComms implements HeartbeatCommsIntf
      *
      * @param obj
      */
-    public void sendObject(Object obj) { return; }
+    //public void sendObject(Object obj) { return; }
 
     public void sendHeartbeat(HeartbeatMsg msg) {
         try { super.sendObject(msg.toWire()); }

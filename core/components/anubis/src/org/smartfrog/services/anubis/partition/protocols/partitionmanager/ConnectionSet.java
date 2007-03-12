@@ -149,6 +149,7 @@ public class ConnectionSet extends CompoundImpl
             log = new LogImplAsyncWrapper(LogFactory.getLog(this.getClass().
                 toString()));
             me = Config.getIdentity(this, "identity");
+            boolean isPreferredLeaderNode = ((Boolean)sfResolve("preferred", Boolean.FALSE, false)).booleanValue();
             partitionProtocol = (PartitionProtocol) sfResolve( "partitionProtocol");
 
             /**
@@ -165,7 +166,7 @@ public class ConnectionSet extends CompoundImpl
             IOConnectionServerFactory factory = (IOConnectionServerFactory)sfResolve("connectionServerFactory");
             connectionServer = (IOConnectionServer)factory.create(connectionAddress, me, this);
 
-            SelfConnection self = new SelfConnection(me, connectionView, connectionServer.getAddress());
+            SelfConnection self = new SelfConnection(me, connectionView, connectionServer.getAddress(), isPreferredLeaderNode);
 
             /**
              * Heartbeat and leader protocols
@@ -195,6 +196,7 @@ public class ConnectionSet extends CompoundImpl
             heartbeat.setMsgLinks(msgLinks);
             heartbeat.setView(connectionView);
             heartbeat.setViewNumber(viewNumber);
+            heartbeat.setIsPreferred(isPreferredLeaderNode);
 
             /**
              * Start connected to self
