@@ -70,6 +70,7 @@ ConnectionSet extends Compound {
     contactAddress           ATTRIB anubisParameters:contactAddress;
     heartbeatProtocolFactory ATTRIB anubisParameters:heartbeatProtocolFactory;
     leaderProtocolFactory    ATTRIB anubisParameters:leaderProtocolFactory;
+    preferred                ATTRIB anubisParameters:preferred;
     heartbeatInterval        ATTRIB anubisParameters:heartbeatInterval;
     heartbeatTimeout         ATTRIB anubisParameters:heartbeatTimeout;
 }

@@ -33,6 +33,7 @@ public class HeartbeatMsg extends TimedMsg implements Heartbeat {
 
     private long              viewNumber    = -1;
     private long              viewTimeStamp = View.undefinedTimeStamp;
+	private boolean           preferred     = false;
     private Identity          candidate     = null;
     private long              msgLinksNumber = 0;
     private NodeIdSet            msgLinks      = null;
@@ -53,7 +54,10 @@ public class HeartbeatMsg extends TimedMsg implements Heartbeat {
     static final private int viewTimeStampIdx = viewNumberIdx + viewNumberSz;
     static final private int viewTimeStampSz = longSz;
 
-    static final private int candidateIdx = viewTimeStampIdx + viewTimeStampSz;
+    static final private int isPreferredIdx = viewTimeStampIdx + viewTimeStampSz; 
+    static final private int isPreferredSz = booleanSz;
+    
+    static final private int candidateIdx = isPreferredIdx + isPreferredSz;
     static final private int candidateSz = ConnectionAddress.connectionAddressWireSz;
 
     static final private int msgLinksNumberIdx = candidateIdx + candidateSz;
@@ -113,6 +117,7 @@ public class HeartbeatMsg extends TimedMsg implements Heartbeat {
 
     public HeartbeatMsg(HeartbeatMsg hb) {
         super( hb.getSender(), hb.getSenderAddress() );
+        this.setIsPreferred(hb.getIsPreferred());
         this.setCandidate(hb.getCandidate());
         this.setTime(hb.getTime());
         this.setView(hb.getView());
@@ -142,6 +147,14 @@ public class HeartbeatMsg extends TimedMsg implements Heartbeat {
 
     public void setViewNumber(long n) {
         viewNumber = n;
+    }
+    
+    public void setIsPreferred(boolean preferred) {
+    	this.preferred = preferred;
+    }
+    
+    public boolean getIsPreferred() {
+    	return preferred;
     }
 
 
@@ -233,10 +246,15 @@ public class HeartbeatMsg extends TimedMsg implements Heartbeat {
         super.writeWireForm();
 
         /**
-         * view number, view time stamp, candidate, msgLinksNumber
+         * view number, view time stamp, isPreferred, candidate, msgLinksNumber
          */
         wireForm.putLong(viewNumberIdx, viewNumber);
         wireForm.putLong(viewTimeStampIdx, viewTimeStamp);
+        if( preferred ) {
+        	wireForm.putInt(isPreferredIdx, 1);
+        } else {
+        	wireForm.putInt(isPreferredIdx, 0);
+        }
         candidate.writeWireForm(wireForm, candidateIdx);
         wireForm.putLong(msgLinksNumberIdx, msgLinksNumber);
 
@@ -278,6 +296,7 @@ public class HeartbeatMsg extends TimedMsg implements Heartbeat {
         viewNumber = wireForm.getLong(viewNumberIdx);
         viewTimeStamp = wireForm.getLong(viewTimeStampIdx);
         msgLinksNumber = wireForm.getLong(msgLinksNumberIdx);
+        preferred = (wireForm.getInt(isPreferredIdx) == 1);
 
         /**
          * Do not unmarshall candidate, msgLinks, view or test interface
@@ -292,6 +311,7 @@ public class HeartbeatMsg extends TimedMsg implements Heartbeat {
     public String toString() {
         String str = "[" + super.toString() + " | ";
         str += "view#=" + viewNumber +", viewTS=" + viewTimeStamp + ", ";
+        str += "isPreferred#=" + preferred + ", ";
         str += ( candidateUnmarshalled ? "cand=" + candidate : "CANDIDATE_MARSHALLED" ) + ", ";
         str += "links#=" + msgLinksNumber + ", ";
         str += ( msgLinksUnmarshalled ? "links=" + msgLinks : "LINKS_MARSHALLED" ) + ", ";

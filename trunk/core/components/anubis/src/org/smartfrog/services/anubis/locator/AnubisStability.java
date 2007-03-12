@@ -89,6 +89,14 @@ abstract public class AnubisStability {
     }
 
     abstract public void stability(boolean isStabile, long timeRef);
+    
+    public synchronized boolean isStable() {
+    	return lastWasStable;
+    }
+    
+    public synchronized long timeReference() {
+    	return lastTimeRef;
+    }
 
     public String toString() {
         return "[Stability notification interface]";

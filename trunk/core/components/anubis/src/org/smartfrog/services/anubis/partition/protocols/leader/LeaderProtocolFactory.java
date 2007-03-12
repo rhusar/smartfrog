@@ -30,10 +30,10 @@ import org.smartfrog.sfcore.prim.PrimImpl;
 public class LeaderProtocolFactory extends PrimImpl implements Prim {
     public LeaderProtocolFactory() throws Exception {}
     public Candidate createCandidate(Heartbeat hb) {
-        return new CandidateImpl(hb.getSender(), hb.getCandidate());
+        return new CandidateImpl(hb.getSender(), hb.getCandidate(), hb.getIsPreferred());
     }
-    public Candidate createCandidate(Identity id, Identity vote) {
-        return new CandidateImpl(id, vote);
+    public Candidate createCandidate(Identity id, Identity vote, boolean preferred) {
+        return new CandidateImpl(id, vote, preferred);
     }
     public LeaderMgr createMgr(Map candidates, Candidate localCandidate) {
         return new LeaderMgr(candidates, localCandidate);

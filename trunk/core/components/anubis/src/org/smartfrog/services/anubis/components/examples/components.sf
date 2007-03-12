@@ -50,3 +50,5 @@ AnubisPartitionNotices extends Prim {
     sfClass      "org.smartfrog.services.anubis.components.examples.PartitionNotices";
     partitionManager LAZY PROCESS:anubis:partitionManager;
 }
+
+

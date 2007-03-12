@@ -134,6 +134,7 @@ public class HeartbeatProtocolAdapter
      * @return  Identity
      */
     public Identity          getId()               { return candidate.getId(); }
+    public boolean           isPreferred()           { return candidate.isPreferred(); }
     public Identity          getVote()                { return candidate.getVote(); }
     public void              setVote(Identity v)      { candidate.setVote(v); }
     public void              setVote(Candidate c)     { candidate.setVote(c); }
