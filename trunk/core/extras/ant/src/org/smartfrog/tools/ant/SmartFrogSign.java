@@ -94,7 +94,7 @@ public class SmartFrogSign extends SignJar {
             return;
         }
         try {
-            sec.applySecuritySettings((SignJar)this);
+            sec.applySecuritySettings(this);
         } catch (IOException e) {
             throw new BuildException(ERROR_COULD_NOT_APPLY_SETTINGS
                     +sec.toString(),e);
