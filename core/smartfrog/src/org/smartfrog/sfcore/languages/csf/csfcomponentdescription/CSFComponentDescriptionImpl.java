@@ -26,7 +26,6 @@ import org.smartfrog.sfcore.languages.sf.Phase;
 import org.smartfrog.sfcore.languages.sf.sfcomponentdescription.SFComponentDescription;
 import org.smartfrog.sfcore.languages.sf.sfcomponentdescription.SFComponentDescriptionImpl;
 import org.smartfrog.sfcore.parser.Phases;
-import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.common.*;
 
 import java.io.IOException;
@@ -70,9 +69,8 @@ public class CSFComponentDescriptionImpl extends SFComponentDescriptionImpl
      * @return the previous constraints
      */
     public Vector setConstraints(Vector constraints) {
-        Vector c = constraints;
-        this.constraints = constraints;
-        return c;
+       this.constraints = constraints;
+       return constraints;
     }
 
     /**
@@ -94,9 +92,8 @@ public class CSFComponentDescriptionImpl extends SFComponentDescriptionImpl
      * @return copy of component
      */
     public Object copy() {
-        CSFComponentDescription res = null;
-        res = (CSFComponentDescription) clone();
-        res.setTypes(types);
+        CSFComponentDescription res = (CSFComponentDescription) clone();
+        res.setTypes((Vector) types.clone());
         res.setContext((Context) sfContext.copy());
         res.setParent(parent);
         res.setEager(eager);
@@ -104,7 +101,7 @@ public class CSFComponentDescriptionImpl extends SFComponentDescriptionImpl
         Vector copiedConstraints = new Vector();
         for (Enumeration e = constraints.elements(); e.hasMoreElements();) {
             Constraint c = (Constraint) e.nextElement();
-            copiedConstraints.add((Constraint) c.copy());
+            copiedConstraints.add(c.copy());
         }
         res.setConstraints(copiedConstraints);
 
@@ -219,7 +216,7 @@ public class CSFComponentDescriptionImpl extends SFComponentDescriptionImpl
         super.subtype(superType);
         for (Enumeration e = ((CSFComponentDescription) superType).getConstraints().elements(); e.hasMoreElements();) {
             Constraint c = (Constraint) e.nextElement();
-            constraints.add((Constraint) c.copy());
+            constraints.add(c.copy());
         }
     }
 
@@ -235,7 +232,7 @@ public class CSFComponentDescriptionImpl extends SFComponentDescriptionImpl
     public void writeOn(Writer ps, int indent) throws IOException {
         super.writeOn(ps, indent);
         for (Enumeration e = constraints.elements(); e.hasMoreElements();) {
-            ps.write(((Constraint) e.nextElement()).toString());
+            ps.write((e.nextElement()).toString());
         }
     }
 }

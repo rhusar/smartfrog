@@ -65,7 +65,7 @@ public class SFParser implements StreamLanguageParser {
      * Default SF parser Include Handler class
      */
     public static final String defaultSFIncludeHandlerClass =
-            "org.smartfrog.sfcore.languages.sf.DefaultIncludeHandler";
+            "org.smartfrog.sfcore.languages.csf.DefaultIncludeHandler";
 
     /**
      * Factory class name system property key. This is the propBase +
