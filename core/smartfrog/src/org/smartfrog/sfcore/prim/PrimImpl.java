@@ -23,6 +23,7 @@ package org.smartfrog.sfcore.prim;
 import java.net.InetAddress;
 import java.rmi.NoSuchObjectException;
 import java.rmi.RemoteException;
+import java.rmi.Remote;
 import java.rmi.server.RemoteStub;
 import java.util.Enumeration;
 import java.util.Iterator;
@@ -484,7 +485,13 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
 
     // perhaps this should be synchronized... but causes problems with sfCompleteName if it is
     public Object sfAttributeKeyFor(Object value) {
-        return sfContext.sfAttributeKeyFor(value);
+        if (value instanceof Remote) {
+            //When using stubs we need to compare equality
+            return sfContext.sfAttributeKeyForEqual(value);
+        } else {
+            // == for non remote objects.
+            return sfContext.sfAttributeKeyFor(value);
+        }
     }
 
     /**
@@ -497,7 +504,13 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
      * @throws RemoteException In case of Remote/nework error
      */
     public boolean sfContainsValue(Object value) throws RemoteException{
-        return sfContext.sfContainsRefValue(value);
+        if (value instanceof Remote) {
+            //When using stubs we need to compare equality
+            return sfContext.sfContainsValue(value);
+        } else {
+            // == for non remote objects.
+            return sfContext.sfContainsRefValue(value);
+        }
     }
 
 
