@@ -144,7 +144,20 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
             if (key!=null) {
                 sfCompleteName.addElement(ReferencePart.here(key));
             } else {
-                sfCompleteName.addElement(new HereReferencePart("*copy*"));
+                //NOTE: this is a best effort name. It will not work if there are two attributes with equal
+                // descriptions because it will always use the name of the first one. Not so relevant because
+                // we cannot make changes in a copy that would have effect in the remote component.
+                String name = "";
+                try {
+                    // we only obtain a copy when going through a remote object
+                    if (cdParent instanceof Prim){
+                        Object keyName = ((Prim)cdParent).sfContext().sfAttributeKeyForEqual(this);
+                        if (keyName!=null) name=keyName.toString();
+                    }
+                } catch (Throwable e) {
+                    if (sfLog().isIgnoreEnabled()) { sfLog().ignore("Problem trying to get the real name of a copied CD",e);}
+                }
+                sfCompleteName.addElement(new HereReferencePart(name+"*copy*"));
                if (((sfLog()!= null) && sfLog().isTraceEnabled())){
                     sfLog().trace("Internal error generating CD complete name - CD is a copy: "+sfCompleteName); //or child not named in parent yet
                }
