@@ -266,7 +266,13 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
 
     // perhaps this should be synchronized... but causes problems with sfCompleteName if it is
     public Object sfAttributeKeyFor(Object value) {
-        return sfContext.sfAttributeKeyFor(value);
+        if (value instanceof Remote) {
+            //When using stubs we need to compare equality
+            return sfContext.sfAttributeKeyForEqual(value);
+        } else {
+            // == for non remote objects.
+            return sfContext.sfAttributeKeyFor(value);
+        }
     }
 
     /**
@@ -277,7 +283,13 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
      * @return true if context contains value, false otherwise
      */
     public boolean sfContainsValue(Object value) {
-       return sfContext.contains(value);
+        if (value instanceof Remote) {
+            //When using stubs we need to compare equality
+            return sfContext.sfContainsValue(value);
+        } else {
+            // == for non remote objects.
+            return sfContext.sfContainsRefValue(value);
+        }
     }
 
 
