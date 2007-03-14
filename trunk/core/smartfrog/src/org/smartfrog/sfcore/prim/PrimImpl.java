@@ -488,7 +488,7 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
     }
 
     /**
-     * Returns true if the context contains value.
+     * Returns true if the context contains a ref to value.
      *
      * @param value object to check
      *
@@ -497,7 +497,7 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
      * @throws RemoteException In case of Remote/nework error
      */
     public boolean sfContainsValue(Object value) throws RemoteException{
-       return sfContext.contains(value);
+        return sfContext.sfContainsRefValue(value);
     }
 
 
@@ -510,7 +510,7 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
      * @throws RemoteException In case of Remote/nework error
      */
     public boolean sfContainsAttribute(Object attribute) throws RemoteException {
-       return sfContext.containsKey(attribute);
+       return sfContext.sfContainsAttribute(attribute);
     }
 
     /**
