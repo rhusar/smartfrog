@@ -22,6 +22,7 @@ package org.smartfrog.services.assertions;
 import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLivenessException;
+import org.smartfrog.sfcore.common.SmartFrogExtractedException;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.workflow.combinators.DelayedTerminator;
@@ -358,11 +359,11 @@ public class TestCompoundImpl extends ConditionCompound
             //update internal data structures
             finished = true;
             if (error != null) {
-                status = error;
+                setStatus(error);
                 failed = true;
                 succeeded = false;
             } else {
-                status = childStatus;
+                setStatus(childStatus);
                 failed = false;
                 succeeded = true;
             }
@@ -370,19 +371,20 @@ public class TestCompoundImpl extends ConditionCompound
 
         //if the error record is non null, terminate ourselves with the new record
         if (error != null) {
-            status=error;
+            setStatus(error);
             failed=true;
             sfTerminate(error);
             //dont forward, as we are terminating with an error
             terminate = false;
         } else {
-            status = childStatus;
+            setStatus(childStatus);
             finished=true;
             succeeded=true;
         }
         //trigger termination.
         return terminate;
     }
+
 
 
     /**
@@ -429,5 +431,17 @@ public class TestCompoundImpl extends ConditionCompound
      */
     public Prim getAction() {
         return actionPrim;
+    }
+
+    /**
+     * Set the status for the component. This method remarshalls any exception into a form which
+     * can be used to send over the wire cleanly
+     * @param status
+     */
+    protected void setStatus(TerminationRecord status) {
+        this.status = status;
+        if(status.cause!=null) {
+            status.cause= SmartFrogExtractedException.convert(status.cause);
+        }
     }
 }
