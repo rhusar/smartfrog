@@ -3,9 +3,7 @@ package org.smartfrog.services.database.test.system.core.mysql;
 import org.smartfrog.test.DeployingTestBase;
 import org.smartfrog.services.assertions.TestBlock;
 
-/**
- * Mysql tests
- */
+/** Mysql tests */
 public class MysqlTest extends DeployingTestBase {
     private static final String BASE = "/org/smartfrog/services/database/test/system/core/mysql/";
 
@@ -29,7 +27,7 @@ public class MysqlTest extends DeployingTestBase {
     public void testMysqlStart() throws Throwable {
         deployAndTerminate("MysqlStartTest");
     }
-    
+
     public void testShutdown() throws Throwable {
         deployAndTerminate("ShutdownTest");
     }
@@ -38,19 +36,38 @@ public class MysqlTest extends DeployingTestBase {
         deployAndTerminate("TableManipulationTest");
     }
 
-    /*
-     *@skip: only works if you deploy mysql in grant-tables mode
+    public void testIssueWarnings() throws Throwable {
+        deployAndTerminate("IssueWarningsTest");
+    }
+
+    /**
+     * Test that this raises an exception that we can marshall
+     *
+     * @throws Throwable
      */
+    public void testMissingDatabase() throws Throwable {
+        TestBlock block = deploy("MissingDatabaseTest");
+        expectAbnormalTermination(block);
+    }
+
+    /*
+    *@skip: only works if you deploy mysql in grant-tables mode
+    */
     public void NotestUserManipulation() throws Throwable {
         deployAndTerminate("UserManipulationTest");
     }
 
     private void deployAndTerminate(String template) throws Throwable {
+        TestBlock block = deploy(template);
+        expectSuccessfulTermination(block);
+    }
+
+    private TestBlock deploy(String template) throws Throwable {
         application = deployExpectingSuccess(
-                BASE + template +".sf",
+                BASE + template + ".sf",
                 template);
         TestBlock block = (TestBlock) application;
-        expectSuccessfulTermination(block);
+        return block;
     }
 
 

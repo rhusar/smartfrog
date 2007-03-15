@@ -32,6 +32,9 @@ import java.rmi.RemoteException;
 import java.sql.Connection;
 import java.sql.Driver;
 import java.sql.SQLException;
+import java.sql.SQLWarning;
+import java.sql.Statement;
+import java.sql.ResultSet;
 import java.util.Properties;
 
 /**
@@ -228,15 +231,69 @@ public abstract class AbstractJdbcOperation extends PrimImpl implements JdbcOper
         }
     }
 
+    /**
+     * Get the component helper
+     * @return the component helper created in sfDeploy()
+     */
     protected ComponentHelper getHelper() {
         return helper;
     }
 
+    /**
+     * query the autocommit flag
+     * @return
+     */
     public boolean isAutocommit() {
         return autocommit;
     }
 
+    /**
+     * set the autocommit flag
+     * @param autocommit the new value
+     */
     public void setAutocommit(boolean autocommit) {
         this.autocommit = autocommit;
+    }
+
+    /**
+     * Log warnings
+     * @param statement the statement that was executed
+     * @param results results (can be null)
+     * @return the number of warnings printed
+     * @throws SQLException if something goes wrong extracting the warnings.
+     */
+    protected int logWarnings(Statement statement, ResultSet results) throws SQLException {
+        return logWarnings(statement.getWarnings())
+                +(results!=null?logWarnings(results.getWarnings()):0);
+    }
+
+    /**
+     * Recursive log of all warnings returned by an operation
+     * @param warning a possibly null warning
+     * @return the number of warnings
+     */
+    protected int logWarnings(SQLWarning warning) {
+        if (warning == null) {
+            return 0;
+        }
+        logOneWarning(warning);
+        SQLWarning nextWarning = warning.getNextWarning();
+        if (warning != nextWarning) {
+            return 1+logWarnings(nextWarning);
+        } else {
+            return 1;
+        }
+    }
+
+    /**
+     * Override point: log one warning
+     * @param warning the warning to print
+     */
+    protected void logOneWarning(SQLWarning warning) {
+        Log l = getLog();
+        l.warn("Warning:");
+        l.warn(warning.getMessage());
+        l.warn("SQL State: " + warning.getSQLState());
+        l.warn("Error Code: " + warning.getErrorCode());
     }
 }

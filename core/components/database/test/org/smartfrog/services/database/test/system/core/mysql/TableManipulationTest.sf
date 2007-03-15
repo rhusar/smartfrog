@@ -45,21 +45,16 @@ TableManipulationTest extends TestCompound {
     tests extends Sequence {
 
 
-        wait extends FailingWaitFor {
-          condition extends IsJdbcConnectionOpen {
+        wait extends BlockForMysqlLive {
             database LAZY action:binding;
-          }
-         interval 200;
-         timeout 10000;
         }
 
-        dropDBNoError extends dropDB {
-          failOnSqlError false;
-        }
-
-        mkdb extends CreateDatabase {
+        dropDBNoError extends DropDiaryDatabase {
           database LAZY ATTRIB action:binding;
-          name Settings:db;
+        }
+
+        mkdb extends CreateDiaryDatabase {
+          database LAZY ATTRIB action:binding;
         }
 
         //forward reference
@@ -84,9 +79,8 @@ TableManipulationTest extends TestCompound {
             table "events";
         }
 
-        dropDB extends DropDatabase {
-          database LAZY ATTRIB action:binding;
-          name Settings:db;
+        dropDB extends dropDBNoError {
+          failOnSqlError true;
         }
 
     }

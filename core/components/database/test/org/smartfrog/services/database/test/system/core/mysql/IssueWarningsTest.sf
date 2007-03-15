@@ -1,4 +1,5 @@
-/** (C) Copyright 2007 Hewlett-Packard Development Company, LP
+/** (C) Copyright 200
+7 Hewlett-Packard Development Company, LP
 
 Disclaimer of Warranty
 
@@ -33,9 +34,10 @@ ITS MEDIA, AND YOU HEREBY WAIVE ANY CLAIM IN THIS REGARD.
 #include "/org/smartfrog/services/database/test/system/core/mysql/components.sf";
 
 
-UserManipulationTest extends TestCompound {
+IssueWarningsTest extends TestCompound {
 
-    description "Creates users and tables";
+    description "Issue SQL statements that cause mysql to issue warnings";
+
     sfShouldTerminate false;
 
     action extends DatabaseAndBinding {
@@ -45,30 +47,34 @@ UserManipulationTest extends TestCompound {
 
 
         wait extends BlockForMysqlLive {
-            database LAZY action:binding;
+          database LAZY action:binding;
         }
 
-
-        dropUser1 extends DropUser {
+        dropDBNoError extends DropDiaryDatabase {
           database LAZY ATTRIB action:binding;
-          username Settings:testUser;
-          failOnSqlError false;
         }
 
-        newuser extends CreateUserNoPassword {
-          database LAZY PARENT:PARENT:action:binding;
-          username Settings:testUser;
-          password Settings:testPass;
+        mkdb extends CreateDiaryDatabase {
+          database LAZY ATTRIB action:binding;
         }
 
-        dropUser2 extends dropUser1 {
+        ambiguous extends Transaction {
+          database LAZY ATTRIB action:diary;
+          sqlCommands [
+            "CREATE SCHEMA test",
+            "CREATE TABLE test.x (id INT)",
+            "CREATE TABLE test.y (id INT, col1 VARCHAR(10))",
+            "DROP SCHEMA test"
+            ];
+        }
+
+        dropDB extends dropDBNoError {
           failOnSqlError true;
         }
-
-    }
+     }
   }
 
-sfConfig extends UserManipulationTest {
+sfConfig extends IssueWarningsTest {
 
 
 

@@ -28,7 +28,7 @@
 #include "/org/smartfrog/services/database/mysql/operations.sf"
 #include "/org/smartfrog/sfcore/workflow/components.sf"
 #include "/org/smartfrog/services/filesystem/components.sf"
-#include "/org/smartfrog/services/logging/log4j/logtolog4jimpl.sf"
+//#include "/org/smartfrog/services/logging/log4j/logtolog4jimpl.sf"
 #include "/org/smartfrog/sfcore/logging/logimpl.sf"
 #include "/org/smartfrog/sfcore/logging/components.sf"
 
@@ -128,6 +128,25 @@ Settings extends {
       database LAZY PARENT:database;
     }
   }
+
+
+  CreateDiaryDatabase extends CreateDatabase {
+    name Settings:db;
+  }
+
+ /**
+ drop the diary database and do not complain
+ about SQL errors (i.e. if it is missing)
+ */
+  DropDiaryDatabase extends DropDatabase {
+    name Settings:db;
+    failOnSqlError false;
+  }
+
+  CreateAndDropDiaryDatabase extends CreateAndDropDatabase {
+    name Settings:db;
+  }
+
 
 
 MysqlTest extends TestCompound {
