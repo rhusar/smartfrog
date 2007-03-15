@@ -26,6 +26,7 @@ import org.smartfrog.sfcore.workflow.combinators.DelayedTerminator;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
+import org.smartfrog.sfcore.common.SmartFrogExtractedException;
 import org.smartfrog.sfcore.utils.ComponentHelper;
 
 import java.rmi.RemoteException;
@@ -164,6 +165,10 @@ public class TestBlockImpl extends EventCompoundImpl implements TestBlock {
             return;
         }
         finished=true;
+        //guarantee that the cause is shareable
+        if (record.cause != null) {
+            record.cause = SmartFrogExtractedException.convert(record.cause);
+        }
         status = record;
         succeeded=record.isNormal();
         failed=!succeeded;

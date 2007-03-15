@@ -194,7 +194,7 @@ public class SmartFrogException extends Exception implements Serializable {
             }
             for (Enumeration e = params.keys(); e.hasMoreElements();) {
                 Object key = e.nextElement();
-                this.put(key, params.get(key));
+                put(key, params.get(key));
             }
         }
     }
@@ -330,11 +330,11 @@ public class SmartFrogException extends Exception implements Serializable {
         } else {
             strb.append ((((getCause() == null) ) ? "" : (getCauseMessage(nm))));
         }
-        strb.append ((((this.containsKey(DATA))) ? (nm+DATA+  ": "
+        strb.append ((((containsKey(DATA))) ? (nm+DATA+  ": "
                                                     + get(DATA)) : "" ));
-        strb.append ((((this.containsKey(PRIM_COMPLETE_NAME))) ? (nm+PRIM_COMPLETE_NAME+
+        strb.append ((((containsKey(PRIM_COMPLETE_NAME))) ? (nm+PRIM_COMPLETE_NAME+
                                                   ": " + get(PRIM_COMPLETE_NAME)) : "" ));
-        strb.append ((((this.containsKey(PRIM_CONTEXT))) ? (nm+PRIM_CONTEXT+
+        strb.append ((((containsKey(PRIM_CONTEXT))) ? (nm+PRIM_CONTEXT+
                                                   ": " + "included") : "" ));
         return strb.toString();
     }
@@ -346,13 +346,15 @@ public class SmartFrogException extends Exception implements Serializable {
      */
     public String getCauseMessage(String nm) {
         String causeText="";
-        Throwable cause = this.getCause();
+        Throwable cause = getCause();
         if ((!(nm.startsWith(","))||(!nm.startsWith(":")))){
              nm=nm+"   ";
         }
         if (cause instanceof SmartFrogException){
            causeText = ((SmartFrogException)cause).toString(nm);
-        } else causeText=cause.toString();
+        } else {
+            causeText=cause.toString();
+        }
 
         return causeText;
     }
@@ -376,7 +378,7 @@ public class SmartFrogException extends Exception implements Serializable {
      */
     public String toStringAll(String nm) {
         StringBuffer strb = new StringBuffer();
-        strb.append ("ALL: "+ shortClassName() +": ");
+        strb.append("ALL: ").append(shortClassName()).append(": ");
 
         if ((getMessage()!=null)&& (!((getCause().toString().equals(getMessage()))))) {
             //Only print message when message != cause
@@ -398,7 +400,7 @@ public class SmartFrogException extends Exception implements Serializable {
      */
     protected String shortClassName (){
       return getClass().getName().substring(
-              this.getClass().getName().lastIndexOf('.')+1);
+              getClass().getName().lastIndexOf('.')+1);
     }
 
 }
