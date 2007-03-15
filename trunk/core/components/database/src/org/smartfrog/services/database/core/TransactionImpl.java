@@ -400,13 +400,15 @@ public class TransactionImpl extends AsyncJdbcOperation implements Transaction {
 
         try {
             Statement statement = connection.createStatement();
-            if(sfLog().isInfoEnabled())
+            if(sfLog().isInfoEnabled()) {
                 sfLog().info(command);
-            
+            }
+
             statement.setEscapeProcessing(escapeProcessing);
             boolean hasResultSet;
             int updateCount;
             int updateCountTotal = 0;
+            int warningCount=0;
 
             hasResultSet = statement.execute(command);
             updateCount = statement.getUpdateCount();
@@ -418,10 +420,15 @@ public class TransactionImpl extends AsyncJdbcOperation implements Transaction {
                     }
                     processNoResults(statement);
                 } else {
+                    warningCount += logWarnings(resultSet.getWarnings());
                     processResults(statement, resultSet);
                 }
                 hasResultSet = statement.getMoreResults();
                 if (hasResultSet) {
+                    //close the previous result set
+                    closeResultSetQuietly(resultSet);
+                    resultSet=null;
+                    //get the next data
                     updateCount = statement.getUpdateCount();
                     resultSet = statement.getResultSet();
                 }
@@ -431,10 +438,7 @@ public class TransactionImpl extends AsyncJdbcOperation implements Transaction {
             }
 
             SQLWarning warning = connection.getWarnings();
-            while (warning != null) {
-                getLog().warn(warning.toString());
-                warning = warning.getNextWarning();
-            }
+            warningCount += logWarnings(warning);
             connection.clearWarnings();
         } catch (SQLException e) {
             getLog().error("Failed to execute: " + command, e);
@@ -442,12 +446,20 @@ public class TransactionImpl extends AsyncJdbcOperation implements Transaction {
                 throw translate("When executing " + command, e);
             }
         } finally {
-            if (resultSet != null) {
-                try {
-                    resultSet.close();
-                } catch (SQLException e) {
-                    getLog().error("when clsing the result set", e);
-                }
+            closeResultSetQuietly(resultSet);
+        }
+    }
+
+    /**
+     * Close a result set 'quietly' if is not null
+     * @param resultSet result set; can be null
+     */
+    protected void closeResultSetQuietly(ResultSet resultSet) {
+        if (resultSet != null) {
+            try {
+                resultSet.close();
+            } catch (SQLException e) {
+                getLog().error("when closing the result set", e);
             }
         }
     }

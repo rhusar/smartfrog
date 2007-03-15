@@ -93,3 +93,39 @@
      ("DROP USER " ++ username )
     ];
   }
+
+
+
+ /**
+  * create a database
+  */
+ CreateDatabase extends Transaction {
+    name TBD;
+    sqlCommands [
+     ("CREATE DATABASE " ++ name)
+    ];
+ }
+
+ /**
+  * drop a database
+  */
+ DropDatabase extends Transaction {
+    name TBD;
+    sqlCommands [
+     ("DROP DATABASE " ++ name)
+    ];
+ }
+
+
+ /**
+  * Create a database when deployed; drop it when terminated
+  */
+ CreateAndDropDatabase extends CounterTransaction {
+    name TBD;
+    sqlCommands [
+     ("CREATE DATABASE " ++ name)
+    ];
+    counterCommands [
+     ("DROP DATABASE " ++ name)
+    ];
+ }

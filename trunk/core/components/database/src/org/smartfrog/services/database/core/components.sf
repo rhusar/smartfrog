@@ -159,7 +159,7 @@ CounterTransaction extends Transaction {
  * This component runs the SQL commands synchronously during termination.
  * It is where to put shutdown operations like "DROP TABLE table1"
  */
-TerminateTransaction extends Transaction {
+TerminationTransaction extends Transaction {
   //we do not terminate
   sfShouldTerminate false;
   sfClass "org.smartfrog.services.database.core.TerminationTransactionImpl";

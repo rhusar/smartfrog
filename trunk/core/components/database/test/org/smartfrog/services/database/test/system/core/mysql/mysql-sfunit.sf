@@ -37,4 +37,5 @@ MysqlSfUnitTests extends SFUnitTestSuite {
   mysqlStartTest extends MysqlStartTest;
   -- extends ShutdownTest;
   -- extends TableManipulationTest;
+  -- extends IssueWarningsTest;
 }
