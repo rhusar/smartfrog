@@ -1,9 +1,23 @@
+release 3_10_043 dev
+--------------------
+2007-Mar-01 Mod: Workflow components improved. Lots of changes.
+2007-Feb-28 Add: Hashcode() and Equals() added to ComponentDescription and Context
+2007-Feb-27 Add: Updated workflow; new CounterAction and RunningFor components
+2007-Feb-23 Add: Multiple extension
+2007-Feb-05 Add: New build process using IVY.
+2007-Jan-26 Add: Added support for Vista
+2007-Jan-09 Mod: Build migrated to Ant 1.7
+2007-Jan-02 Add: new sfTemp and sfFinal tags implemented
+2007-Jan-01 Add: TAGS implemented in the language.
+2006-Dec-08 Mod: PROPERTY and IPROPERTY will try to find values in System properties first and, if failed, will try the Environment properties (it only works for Java 1.5). IProperty now uses the "sf" parser to translate the string value into the right Object instead of trying Integer only.
+2006-Dec-08 Mod: IPROPERTY now uses the "sf" parser to translate the string value into the right Object instead of trying Integer only.
+
 release 3_10_016
 ----------------
 2006-Nov-13 Release date
 2006-Nov-09 Mod: Old Persistence component removed from services
 2006-Nov-09 Add: Documentation for Autoloader component 
-2006-Nov-02 Add: New workflow Tester component added for running tests deployments in services. 
+2006-Nov-02 Add: New workflow Tester component added for running tests deployments in services.
 2006-Nov-01 Mod: Some tuning and reworking of the workflow components.  Parallel can be made to terminate on startup if there are no children. Not 100% sure that Sequence exits when a child fails half way through.
 2006-Oct-26 Fix: Documentation modified for SVN references.
 2006-Oct-26 Fix: Javadocs fixed.
