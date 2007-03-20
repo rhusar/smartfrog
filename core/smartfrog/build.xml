@@ -580,7 +580,7 @@
   <target name="secureBuild" depends="build,jars,signJars"/>
 
   <!-- =================================================================== -->
-  <!--  create security buld file                                          -->
+  <!--  create security build file                                          -->
   <!-- =================================================================== -->
   <target name="buildSetup">
     <copy tofile="${dist.dir}/build.xml" file="releaseBuild.xml"/>
@@ -593,17 +593,22 @@
 
 
   <target name="gump"
-    depends="published"
+    depends="dist"
     description="the target that apache gump runs" />
 
   <!-- =================================================================== -->
   <!--  DIST                                                               -->
   <!-- =================================================================== -->
   <target name="dist"
-      depends="build,initdist,jars,copylibs,copybins,copyPrivate,copydocs,
-      copyexamples,copyTestCA,buildSetup,srczip"
-      description="Prepares distribution package">
+      depends="ready-to-dist,published"
+      description="Prepares distribution package,and publishes it the local repository">
   </target>
+
+  <target name="ready-to-dist"
+      depends="build,jars,copylibs,copybins,copyPrivate,copydocs,
+      copyexamples,copyTestCA,buildSetup,srczip"
+      />
+
   <!-- =================================================================== -->
   <!--  SECUREDIST                                                         -->
   <!-- =================================================================== -->
@@ -861,6 +866,7 @@ ${ivy.reports.dir}
         overwrite="true"
         artifactspattern="${dist.dir}/lib/[artifact]-[revision].[ext]" />
   </target>
+
 
   <target name="published" depends="ivy-publish,m2-install"
       description="Publish artifacts to the local repositories"
