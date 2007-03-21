@@ -38,6 +38,8 @@ public class TempFileImpl extends FileUsingComponentImpl implements TempFile {
 
     public static final String ERROR_PREFIX_EMPTY = ATTR_PREFIX+ " can not be an empty string";
 
+    private boolean createOnDeploy;
+
     /**
      * create a temporary file instance; do no real work (yet)
      * @throws RemoteException In case of network/rmi error
@@ -53,13 +55,25 @@ public class TempFileImpl extends FileUsingComponentImpl implements TempFile {
      */
     public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
         super.sfDeploy();
+        createOnDeploy= sfResolve(ATTR_CREATE_ON_DEPLOY, createOnDeploy, true);
+        if(createOnDeploy) {
+            createTempFile();
+        }
+    }
+
+    /**
+     * Create the temporary file
+     * @throws SmartFrogException error while deploying
+     * @throws RemoteException In case of network/rmi error
+     */
+    private void createTempFile() throws RemoteException, SmartFrogException {
         String prefix = sfResolve(ATTR_PREFIX, "", true);
         if(prefix.length()==0) {
             throw new SmartFrogException(ERROR_PREFIX_EMPTY,this);
         }
         String suffix = sfResolve(ATTR_SUFFIX, (String) null, false);
         String dir;
-        dir=FileSystem.lookupAbsolutePath(this,ATTR_DIRECTORY,null,null,false,null);
+        dir= FileSystem.lookupAbsolutePath(this,ATTR_DIRECTORY,null,null,false,null);
 
         String text = sfResolve(ATTR_TEXT, (String) null, false);
 
@@ -94,6 +108,11 @@ public class TempFileImpl extends FileUsingComponentImpl implements TempFile {
     public synchronized void sfStart()
             throws SmartFrogException, RemoteException {
         super.sfStart();
+        if (!createOnDeploy) {
+            //create the temp file now
+            createTempFile();
+        }
+
         //maybe terminate
         new ComponentHelper(this).sfSelfDetachAndOrTerminate(null,
                 "Created temp file " + file,

@@ -21,6 +21,7 @@ package org.smartfrog.services.filesystem;
 
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.prim.TerminationRecord;
+import org.smartfrog.sfcore.utils.ComponentHelper;
 
 import java.rmi.RemoteException;
 
@@ -31,6 +32,7 @@ import java.rmi.RemoteException;
 
 public class TempDirImpl extends FileUsingComponentImpl implements TempFile {
     private boolean delete=false;
+    private boolean createOnDeploy;
 
     /**
      * Constructor.
@@ -46,28 +48,39 @@ public class TempDirImpl extends FileUsingComponentImpl implements TempFile {
      * heartbeat. Subclasses can override to provide additional deployment
      * behavior.
      *
-     * @throws org.smartfrog.sfcore.common.SmartFrogException
+     * @throws SmartFrogException
      *                                  error while deploying
-     * @throws java.rmi.RemoteException In case of network/rmi error
+     * @throws RemoteException In case of network/rmi error
      */
     public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
         super.sfDeploy();
-        readAttributesAndCreateDir();
+        createOnDeploy = sfResolve(ATTR_CREATE_ON_DEPLOY, createOnDeploy, true);
+        if (createOnDeploy) {
+            readAttributesAndCreateDir();
+        }
     }
 
     /**
      * start the component
      *
-     * @throws org.smartfrog.sfcore.common.SmartFrogException error wile starting
+     * @throws SmartFrogException error wile starting
      *
-     * @throws java.rmi.RemoteException  In case of network/rmi error
+     * @throws RemoteException  In case of network/rmi error
      */
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
+        if (!createOnDeploy) {
+            readAttributesAndCreateDir();
+        }
+        //maybe terminate
+        new ComponentHelper(this).sfSelfDetachAndOrTerminate(null,
+                "Created temp dir " + file,
+                null,
+                null);
     }
 
     /**
-     *
+     * create the temporary directory
      * @throws RemoteException In case of network/rmi error
      * @throws SmartFrogException error while reading attributes
      */

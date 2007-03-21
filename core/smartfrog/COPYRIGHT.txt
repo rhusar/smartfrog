@@ -36,5 +36,6 @@ See the License for the specific language governing permissions and
 limitations under the License.
 
 File to which this apply are:
-org.smartfrog.sfcore.common.Diagnostics
-org.smartfrog.sfcore.logging.LogToStreamsImpl
+  org.smartfrog.sfcore.common.Diagnostics
+  org.smartfrog.sfcore.logging.LogToStreamsImpl
+  org.smartfrog.services.database.core.TransactionImpl

@@ -32,26 +32,34 @@ public interface TempFile extends FileUsingComponent {
     /**
      * any optional text
      */
-    public static final String ATTR_TEXT = "text";
+    String ATTR_TEXT = "text";
     /**
      * text encoding {@value}
     */
-    public static final String ATTR_TEXT_ENCODING = "encoding";
+    String ATTR_TEXT_ENCODING = "encoding";
 
     /**
      * temp filename prefix {@value}
     */
-    public static final String ATTR_PREFIX="prefix";
+    String ATTR_PREFIX="prefix";
     /**
      * temp filename suffix {@value}
     */
-    public static final String ATTR_SUFFIX = "suffix";
+    String ATTR_SUFFIX = "suffix";
     /**
      * temp file directory {@value}
     */
-    public static final String ATTR_DIRECTORY = "dir";
+    String ATTR_DIRECTORY = "dir";
     //this is the filename that is created
-    //public static final String ATTR_FILENAME = "filename";
+    //String ATTR_FILENAME = "filename";
+
+    /**
+     * Flag to control whether the file is created at deploy time or system start.
+     * Early creation lets us publish our attribute for others, but may mean that
+     * not everything is set up.
+     * {@value}
+     */
+    String ATTR_CREATE_ON_DEPLOY = "createOnDeploy";
 
     /**
      * get the filename of this file
