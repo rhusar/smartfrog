@@ -79,13 +79,13 @@ public class DownloadImpl extends FileUsingComponentImpl implements Download {
             int maxCacheAge=-1;
             maxCacheAge=sfResolve(ATTR_MAX_CACHE_AGE,maxCacheAge,false);
             if (sfLog().isInfoEnabled()){
-                sfLog().info(" Donwloading '"+url+"' to '"+localFile+"'. Blocksize: "+blocksize);
+                sfLog().info(" Downloading '"+url+"' to '"+localFile+"'. Blocksize: "+blocksize);
             }
             File file = new File(localFile);
             bind(file);
             download(url, file, blocksize, maxCacheAge);
             if (sfLog().isInfoEnabled()){
-                sfLog().info(" Donwload complete. File in: "+ file);
+                sfLog().info(" Download complete. File in: "+ file);
             }
 
             new ComponentHelper(this).sfSelfDetachAndOrTerminate(null,
