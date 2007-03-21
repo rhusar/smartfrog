@@ -158,11 +158,10 @@ public final class ThrowableTraceInfo implements Serializable, Cloneable {
      *
      * @return true if a junit3 assertion failure is in the classname
      */
-    public boolean isAssertionFailure() {
+    public boolean isJunit3AssertionFailure() {
         boolean b = "junit.framework.AssertionFailedError".equals(classname);
         b |= "junit.framework.ComparisionFailedError".equals(classname);
         return b;
-
     }
 
 
