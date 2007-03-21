@@ -43,7 +43,7 @@ public class TestBlockImpl extends EventCompoundImpl implements TestBlock {
     private volatile boolean forcedTimeout = false;
     private volatile TerminationRecord status;
     private DelayedTerminator actionTerminator;
-    private volatile Prim child;
+    private volatile Prim actionPrim;
     public static final String ERROR_STARTUP_FAILURE = "Failed to start up action";
 
     public TestBlockImpl() throws RemoteException {
@@ -88,7 +88,7 @@ public class TestBlockImpl extends EventCompoundImpl implements TestBlock {
      * @return the child component. this will be null after termination.
      */
     public Prim getAction() {
-        return child;
+        return actionPrim;
     }
 
     /**
@@ -128,9 +128,9 @@ public class TestBlockImpl extends EventCompoundImpl implements TestBlock {
         long timeout = sfResolve(ATTR_TIMEOUT,0L,true);
         boolean expectTimeout=sfResolve(ATTR_EXPECTTIMEOUT,false,true);
         try {
-            child=sfCreateNewChild(ACTION,action, null);
+            actionPrim =sfCreateNewChild(ACTION,action, null);
             if(timeout>0) {
-                actionTerminator=new DelayedTerminator(child, timeout, sfLog(),"timeout",expectTimeout);
+                actionTerminator=new DelayedTerminator(actionPrim, timeout, sfLog(),"timeout",expectTimeout);
                 actionTerminator.start();
             }
         } catch (RemoteException e) {
@@ -202,10 +202,10 @@ public class TestBlockImpl extends EventCompoundImpl implements TestBlock {
      */
     protected boolean onChildTerminated(TerminationRecord status, Prim comp)
             throws SmartFrogRuntimeException, RemoteException {
-        if(comp==child) {
+        if(comp == actionPrim) {
             //this is the action terminating,
             //forget about our now-terminated child (it cannot be serialized any more)
-            child=null;
+            actionPrim =null;
             //log the closure and continue
             end(status);
             return false;

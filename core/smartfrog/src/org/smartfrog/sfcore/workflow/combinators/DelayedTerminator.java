@@ -140,25 +140,25 @@ public class DelayedTerminator implements Runnable {
             log.debug("Interrupted " + description);
         }
 
+        Prim target=null;
+        TerminationRecord record=null;
         synchronized (this) {
             try {
                 if (shutdown) {
-
                     //initiated shutdown
                     log.debug("initiated shutdown " + description);
                 }
 
                 if (shouldTerminate) {
                     //termination time
-                    Prim target = getTarget();
+                    target = getTarget();
                     if (target == null) {
                         log.debug("Target no longer exists for " + description);
                     } else {
                         try {
                             if (target.sfIsStarted()) {
-                                forcedShutdown = true;
-                                TerminationRecord record = createTerminationRecord(target);
-                                target.sfTerminate(record);
+                                setForcedShutdown(true);
+                                record = createTerminationRecord(target);
                             }
                         } catch (RemoteException e) {
                             terminationFault = e;
@@ -169,6 +169,15 @@ public class DelayedTerminator implements Runnable {
                 //cease to exist
                 self = null;
                 primref = null;
+            }
+            //now do a shutdown, outside the sychronized area. This means we have updated our expectations before
+            //we actually force the termination
+            if(record!=null) {
+                try {
+                    target.sfTerminate(record);
+                } catch (RemoteException e) {
+                    terminationFault = e;
+                }
             }
         }
 
@@ -193,5 +202,10 @@ public class DelayedTerminator implements Runnable {
      */
     public synchronized boolean isForcedShutdown() {
         return forcedShutdown;
+    }
+
+
+    public synchronized void setForcedShutdown(boolean forcedShutdown) {
+        this.forcedShutdown = forcedShutdown;
     }
 }
