@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <project name="release" default="default"
-    xmlns:ivy="antlib:fr.jayasoft.ivy.ant">
+    xmlns:ivy="antlib:fr.jayasoft.ivy.ant"
+    xmlns:iz="http://www.izforge.com/">
 
   <description>
     This build file aggregates artifacts from other projects to cut a release
@@ -17,11 +18,47 @@
   <property name="root.dir" location=".."/>
 
   <!-- Import common stuff -->
-  <import file="${root.dir}/common.xml"/>
+  <import file="../common.xml"/>
 
+
+  <target name="init" depends="common.init">
+    <property name="izpack.jar" location="${dist.bin.dir}/smartfrog-install-${smartfrog.version}.jar" />
+  </target>
   <target name="default" depends="published" />
 
-  <target name="published" depends="ivy-report"/>
+  <target name="published" depends="ivy-report,izpack"/>
 
+
+  <target name="declare-izpack" depends="ivy-resolve">
+    <ivy:cachepath pathid="izpack.classpath" conf="izpack" />
+    <taskdef name="izpack" classpathref="izpack.classpath"
+        uri="http://www.izforge.com/"
+        classname="com.izforge.izpack.ant.IzPackTask"/>
+  </target>
+
+  <target name="prepare-resources" depends="ivy-retrieve">
+    <copy todir="${ivy.lib.dir}/res">
+      <fileset dir="izpack/res" includes="**/*" />
+    </copy>
+  </target>
+
+  <target name="prepare-executables" depends="ivy-retrieve">
+  </target>
+
+  <target name="ready-to-izpack"
+      depends="declare-izpack,prepare-resources,prepare-executables"/>
+
+  <target name="izpack" depends="ready-to-izpack">
+
+    <iz:izpack input="izpack/smartfrog-install.xml"
+        output="${izpack.jar}"
+        installerType="standard"
+        basedir="${ivy.lib.dir}"/>
+  </target>
+
+
+  <target name="run" depends="izpack" >
+    <java jar="${izpack.jar}" fork="true" />
+  </target>
 
 </project>

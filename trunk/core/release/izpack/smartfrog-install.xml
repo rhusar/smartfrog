@@ -1,0 +1,126 @@
+<?xml version="1.0" ?>
+<installation version="1.0">
+  <info>
+    <appname>SmartFrog</appname>
+    <appversion>3.11.000.beta</appversion>
+    <authors>
+      <author name="SmartFrog Developers" email="smartfrog-developer@lists.sourceforge.net"/>
+    </authors>
+    <url>http://smartfrog.org/</url>
+    <javaversion>1.4</javaversion>
+  </info>
+  <guiprefs height="600" resizable="yes" width="800">
+  </guiprefs>
+  <variables>
+    <variable name="VERSION" value="3.11.000.beta"/>
+    <variable name="YEAR" value="2007"/>
+    <variable name="InstallerFrame.logfilePath" value="Default"/>
+    <!-- This automatically checks the "Create Desktop Shortcuts" button. Default value is "False". -->
+    <variable name="desktopshortcutcheckboxenabled" value="false"/>
+  </variables>
+
+
+  <locale>
+    <langpack iso3="eng"/>
+  </locale>
+  <resources>
+    <resources>
+      <res id="HtmlInfoPanel.info" src="res/info.html" parse="yes" type="xml"/>
+      <res id="HTMLLicencePanel.licence" src="res/licence.html" parse="yes" type="xml"/>
+    </resources>
+  </resources>
+  <panels>
+    <panel classname="HelloPanel"/>
+    <panel classname="HTMLInfoPanel"/>
+    <!-- see res/HTMLLicencePanel.licence -->
+    <panel classname="HTMLLicencePanel"/>
+    <panel classname="PacksPanel"/>
+    <panel classname="TargetPanel"/>
+    <panel classname="InstallPanel"/>
+    <panel classname="FinishPanel"/>
+  </panels>
+
+  <packs>
+    <pack name="Core" required="yes">
+      <description>SmartFrog core files.</description>
+      <fileset dir="package-core" targetdir="$INSTALL_PATH"
+          includes="**/*"/>
+    </pack>
+    <pack name="Examples" required="no">
+      <description>examples</description>
+      <fileset dir="package-examples" targetdir="$INSTALL_PATH"
+          includes="**/*"/>
+    </pack>
+    <pack name="package-ant" required="no">
+      <description>package-ant</description>
+      <fileset dir="package-ant" targetdir="$INSTALL_PATH"
+          includes="**/*"/>
+    </pack>
+    <pack name="package-anubis" required="no">
+      <description>package-anubis</description>
+      <fileset dir="package-anubis" targetdir="$INSTALL_PATH"
+          includes="**/*"/>
+    </pack>
+    <pack name="package-database" required="no">
+      <description>package-database</description>
+      <fileset dir="package-database" targetdir="$INSTALL_PATH"
+          includes="**/*"/>
+    </pack>
+    <pack name="package-jmx" required="no">
+      <description>package-jmx</description>
+      <fileset dir="package-jmx" targetdir="$INSTALL_PATH"
+          includes="**/*"/>
+    </pack>
+    <pack name="package-logging" required="no">
+      <description>package-logging</description>
+      <fileset dir="package-logging" targetdir="$INSTALL_PATH"
+          includes="**/*"/>
+    </pack>
+    <pack name="package-networking" required="no">
+      <description>package-networking</description>
+      <fileset dir="package-networking" targetdir="$INSTALL_PATH"
+          includes="**/*"/>
+    </pack>
+    <pack name="package-scheduling" required="no">
+      <description>package-scheduling</description>
+      <fileset dir="package-scheduling" targetdir="$INSTALL_PATH"
+          includes="**/*"/>
+    </pack>
+    <pack name="package-scripting" required="no">
+      <description>package-scripting</description>
+      <fileset dir="package-scripting" targetdir="$INSTALL_PATH"
+          includes="**/*"/>
+    </pack>
+    <pack name="package-testing" required="no">
+      <description>package-testing</description>
+      <fileset dir="package-testing" targetdir="$INSTALL_PATH"
+          includes="**/*"/>
+      <depends packname="package-logging"/>
+    </pack>
+    <pack name="package-www" required="no">
+      <description>package-www</description>
+      <fileset dir="package-www" targetdir="$INSTALL_PATH"
+          includes="**/*"/>
+    </pack>
+    <pack name="package-xml" required="no">
+      <description>package-xml</description>
+      <fileset dir="package-xml" targetdir="$INSTALL_PATH"
+          includes="**/*"/>
+    </pack>
+    <pack name="package-xmpp" required="no">
+      <description>package-</description>
+      <fileset dir="package-xmpp" targetdir="$INSTALL_PATH"
+          includes="**/*"/>
+    </pack>
+<!--    <pack name="package-extras" required="no">
+      <description>package-extras</description>
+      <fileset dir="package-extras" targetdir="$INSTALL_PATH"
+          includes="**/*"/>
+    </pack>
+    <pack name="package-gui" required="no">
+      <description>package-gui</description>
+      <fileset dir="package-gui" targetdir="$INSTALL_PATH"
+          includes="**/*"/>
+    </pack>-->
+  </packs>
+</installation>

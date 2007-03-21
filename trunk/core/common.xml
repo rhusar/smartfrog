@@ -249,6 +249,7 @@ java.class.path=
       classpathref="smartfrog.classpath"/>
     <fail unless="sf.build.version">No property sf.build.version found in resource ${smartfrog.version.property.resource}</fail>
     <property name="Version" value="${sf.build.version}" />
+    <property name="smartfrog.version" value="${sf.build.version}" />
 
     <!-- this is an override point; components call this -component -->
     <property name="jarfile.suffix" value=""/>

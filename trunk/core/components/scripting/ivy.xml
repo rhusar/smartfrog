@@ -55,8 +55,8 @@
         changing="true"
         rev="latest.integration"
         conf="test->default"/>
-<!-- Getting errors here.
-    <dependency org="org.beanshell"
+ <!--Getting errors here.-->
+<!--    <dependency org="org.beanshell"
         name="bsh"
         rev="${bsh.version}"
         conf="compile->default;redist->default"/>-->
