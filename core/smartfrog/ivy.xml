@@ -21,13 +21,16 @@
     <conf name="test" extends="unittest,systemtest"
         description="the classpath needed to run tests"/>
     <conf name="core" description="the core smartfrog JAR only"/>
-    <conf name="services" description="the core and sfServices JAR" extends="core"/>
-    <conf name="examples" description="the core, sfSercies and sfExamples JARs"
-        extends="services"/>
+    <conf name="services"
+        description="the core and sfServices JAR" extends="core,services-master"/>
+    <conf name="services-master" description="the sfServices JAR" />
+    <conf name="examples-master" description="sfExamples JAR" />
+    <conf name="examples" description="the core, sfServices and sfExamples JARs"
+        extends="services,examples-master"/>
 
     <conf name="master" description="contains the artifact but no dependencies"
        extends="services"/>
-    <conf name="redist" description="redistributals excluding smartfrog artifacts"/>
+    <conf name="redist" description="redistributables excluding smartfrog artifacts"/>
     <conf name="runtime" description="runtime but not the artifact"
         extends="redist"/>
     <conf name="documentation"
@@ -39,14 +42,13 @@
   <publications>
     <!--get the artifact from our module name-->
     <artifact name="${smartfrog.title}" conf="core"/>
-    <artifact name="${sf-services.title}" conf="services"/>
-    <artifact name="${sf-examples.title}" conf="examples"/>
+    <artifact name="${sf-services.title}" conf="services-master"/>
+    <artifact name="${sf-examples.title}" conf="examples-master"/>
   </publications>
   <dependencies>
 
     <!--javacc is used for the javacc task-->
-    <!--<dependency org="net.java.dev.javacc" name="javacc" rev="3.2"-->
-        <!--conf="javacc->default"/>-->
-    <!---->
+    <dependency org="net.java.dev.javacc" name="javacc" rev="3.2"
+        conf="javacc->default"/>
   </dependencies>
 </ivy-module>

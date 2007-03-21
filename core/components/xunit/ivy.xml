@@ -52,5 +52,10 @@
         name="sf-testharness" changing="true"
         rev="latest.integration"
         conf="test->default"/>
+    <dependency org="org.smartfrog"
+        name="sf-loggingservices"
+        changing="true"
+        rev="latest.integration"
+        conf="daemon->default;compile->default;runtime->runtime;redist->redist"/>    
   </dependencies>
 </ivy-module>
