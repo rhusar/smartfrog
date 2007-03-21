@@ -34,7 +34,9 @@ TempFileSchema extends DeletableFileSchema {
     //encoding of the optional text. Only needed when text is set
     encoding extends String;
     //should the file be deleted
-    deleteOnExit extends OptionalBoolean;
+    deleteOnExit extends Boolean;
+    //should the file be created early or late
+    createOnDeploy extends Boolean;
 }
 
 /**
@@ -47,6 +49,7 @@ TempFile extends FileUsingWorkflowComponent {
     //default encoding is utf8
     encoding "UTF-8";
     deleteOnExit false;
+    createOnDeploy true;
 }
 
 /**
