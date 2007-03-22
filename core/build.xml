@@ -225,11 +225,18 @@ For more information: www.smartfrog.org
       </exec>
     </target>
 
+  <!--
+    CC target to publish everything.
+     we do it in this separate task to add in any other dependencies,
+     like listing the build order (for better diags)
+  -->
+  <target name="cc-published" depends="ivy-list-order,published" />
+
   <!-- =================================================================== -->
   <!-- incremental Cruise Control build                                    -->
   <!-- =================================================================== -->
-       <target name="cc-incremental"
-        depends="svnupdate,published,dist"/>
+   <target name="cc-incremental"
+        depends="svnupdate,cc-published,dist"/>
 
     <!-- =================================================================== -->
     <!-- Cruise control test suite                                           -->
@@ -241,14 +248,14 @@ For more information: www.smartfrog.org
   <!-- full clean Cruise Control build                                     -->
   <!-- =================================================================== -->
     <target name="cc-full"
-        depends="svnupdate,clean,release,cc-incremental,cc-test, mavenReport" 
+        depends="svnupdate,clean,cc-init,release,cc-incremental,cc-test, mavenReport"
         description="cruise control full build, with checkout"/>
 
   <!-- =================================================================== -->
   <!-- full clean Cruise Control build without Checkout                    -->
   <!-- =================================================================== -->
     <target name="cc"
-        depends="clean,published,release,dist,cc-test,mavenReportNoSVNUpdate"
+        depends="clean,cc-init,cc-published,release,dist,cc-test,mavenReportNoSVNUpdate"
         description="cruise control full build, with NO checkout"/>
 
   <!-- =================================================================== -->
@@ -377,8 +384,10 @@ For more information: www.smartfrog.org
     <ivy:configure file="antbuild/ivy/ivyconf.xml"/>
     <presetdef name="ivy-projects">
       <ivy:buildlist skipbuildwithoutivy="true">
-        <fileset dir="." includes="*/build.xml">
-          <exclude name="release/build.xml" unless="java1.5+"/>
+        <fileset file="smartfrog/build.xml" />
+        <fileset file="testharness/build.xml" />
+        <fileset dir="release">
+          <include name="build.xml" if="java1.5+"/>
         </fileset>
         <fileset dir="extras" includes="**/build.xml">
           <!--no CDL -->
@@ -391,7 +400,6 @@ For more information: www.smartfrog.org
           <exclude name="deployapi/build.xml"/>
           <!--not really that useful-->
           <exclude name="releasetest/build.xml"/>
-          <!--JMX is currently broken-->
           <!--These need java 1.5 or later-->
           <exclude name="concurrent/build.xml" unless="java1.5+"/>
           <exclude name="database/build.xml" unless="java1.5+"/>
@@ -427,8 +435,7 @@ For more information: www.smartfrog.org
 
   <target name="published" depends="ivy-publish"/>
 
-  <target name="ivy-list-order" depends="ivy-init"
-    xmlns:ivy="antlib:fr.jayasoft.ivy.ant">
+  <target name="ivy-list-order" depends="ivy-init">
     <echo>java1.5+=${java1.5+}</echo>
     <pathconvert pathsep="&#10;" refid="child.projects"
       property="child.projects.list" />
