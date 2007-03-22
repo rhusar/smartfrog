@@ -60,9 +60,11 @@ These are the meaningful targets for this build file:
   <!-- =================================================================== -->
   <target name="init">
     <property name="Name" value="SmartFrog"/>
+    <tstamp>
+      <format property="year" pattern="yyyy"/>
+    </tstamp>
     <property name="name" value="(C) Copyright 1998-2007 Hewlett-Packard Development Company, LP"/>
     <property name="version" value="DIST"/>
-    <property name="year" value=""/>
     <echo message=""/>
     <echo message="==================================================================="/>
     <echo message="= ${Name} ${version}"/>
@@ -104,40 +106,31 @@ These are the meaningful targets for this build file:
   <!-- =================================================================== -->
   <!-- Global properties                                                   -->
   <!-- =================================================================== -->
-     <property name="dist" value="."/>
-     <property name="bin" value="bin"/>
-     <property name="lib" value="lib"/>
-     <property name="testCA" value="testCA"/>
-     <property name="signedLib" value="signedLib"/> <!-- dir to export jar files -->
-     <property name="private" value="private"/> <!-- all protected files -->
-     <property name="build" value="classes"/> <!-- all protected files -->
-     <property name="src" value="src"/> <!-- all protected files -->
-     <property name="debugmode" value="on"/> <!-- turn on compile -g -->
-     <property name="jdocs" value="jdocs"/>
-     <property name="dist.lib.dir" location="${dist}/${lib}"/>
-     <property name="rmic.compiler" value="sun"/>
-     <!-- Sercurity related files -->
-     <property name="manifestName" value="${private}/sealManifest.mf"/>
+   <property name="dist" value="."/>
+   <property name="bin" value="bin"/>
+   <property name="lib" value="lib"/>
+   <property name="testCA" value="testCA"/>
+   <property name="signedLib" value="signedLib"/> <!-- dir to export jar files -->
+   <property name="private" value="private"/> <!-- all protected files -->
+   <property name="build" value="classes"/> <!-- all protected files -->
+   <property name="src" value="src"/> <!-- all protected files -->
+   <property name="debugmode" value="on"/> <!-- turn on compile -g -->
+   <property name="jdocs" value="jdocs"/>
+   <property name="dist.lib.dir" location="${dist}/${lib}"/>
+   <property name="rmic.compiler" value="sun"/>
+   <!-- Sercurity related files -->
+   <property name="manifestName" value="${private}/sealManifest.mf"/>
 
-<!-- Include here the security-related ant file -->
-&security;
-<!-- End of security-related ant file -->
-
-  <!-- =================================================================== -->
-  <!-- Initialization path (Libs needed for compiling)                     -->
-  <!-- =================================================================== -->
-  <!--path id="smartfrog.class.path">
-     <pathelement path="${classpath}"/>
-     <pathelement location="lib/smartfrog-${Version}.jar"/>
-     <pathelement location="lib/sfServices-${Version}.jar"/>
-     <pathelement location="lib/sfExamples-${Version}.jar"/>
-  </path-->
+  <!-- ================================================================== -->
+  <!-- Import the security-related ant file -->
+  <!-- ================================================================== -->
+  <import file="private/buildSecurity.xml"/>
 
   <!-- =================================================================== -->
   <!--  Creates directories                                                -->
   <!-- =================================================================== -->
   <target name="initbuild"  depends="init">
-     <mkdir dir="${build}"/>
+    <mkdir dir="${build}"/>
   </target>
 
 
@@ -198,7 +191,7 @@ These are the meaningful targets for this build file:
   <!-- =================================================================== -->
   <target name="build" depends="copyFiles,initbuild,generateversion" description="Compiles source code">
     <!-- Compile the java code from ${src} into ${build} -->
-    <javac srcdir="${src}" destdir="${build}" debug="${debugmode}" compiler="javac1.4" source="1.4">
+    <javac srcdir="${src}" destdir="${build}" debug="${debugmode}" source="1.4">
       <!--classpath refid="smartfrog.class.path"/-->
       <classpath>
       	<pathelement path="${classpath}"/>
@@ -236,16 +229,17 @@ These are the meaningful targets for this build file:
   <!-- running Version.java to generate version information               -->
   <!-- ================================================================== -->
   <target name="generateversion" depends="init">
-  <java classname="org.smartfrog.Version"
-	 failonerror="true" fork="true"
-	 outputproperty="Version">
-	 <arg value="-b"/>
-	 <classpath>
-	   <fileset dir="${dist.lib.dir}">
-        	 <include name="**/*.jar"/>
-      	   </fileset>
-	 </classpath>
-  </java>
+    <java classname="org.smartfrog.Version"
+        failonerror="true"
+        fork="true"
+        outputproperty="Version">
+      <arg value="-b"/>
+      <classpath>
+        <fileset dir="${dist.lib.dir}">
+          <include name="**/*.jar"/>
+        </fileset>
+      </classpath>
+    </java>
   </target> 
   
   <!-- =================================================================== -->
