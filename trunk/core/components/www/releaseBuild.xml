@@ -21,9 +21,7 @@ For more information: www.smartfrog.org
 
 */
 -->
-<!DOCTYPE project [
-     <!ENTITY security SYSTEM "private/buildSecurity.xml">
-]>
+
 <!-- ===========================================================================
 
 
