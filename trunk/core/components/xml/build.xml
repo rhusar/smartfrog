@@ -33,7 +33,7 @@
   <property file="build.properties"/>
   <property name="is.component" value="true"/>
   <property name="ivy.enabled" value="true"/>
-  <property name="javac.java.version" value="true"/>
+  <property name="javac.java.version" value="1.5"/>
   <!-- Import common stuff -->
   <import file="../../common.xml"/>
   
