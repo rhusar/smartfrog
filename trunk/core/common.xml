@@ -231,7 +231,7 @@
           classpathref="smartfrog.classpath"/>
       </not>
       </condition>
-Smartfrog distribution not found. Please create the smartfrog distribution first.
+SmartFrog distribution not found. Please create the SmartFrog distribution first.
 Alternatively, make sure that this project is configured to locate the distribution
 correctly.
 
