@@ -1,41 +1,37 @@
 <?xml version="1.0"?>
-<!--
-/** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
+<project name="Release" default="process" basedir=".">
+  <!--
+  /** (C) Copyright 1998-2007 Hewlett-Packard Development Company, LP
 
-This library is free software; you can redistribute it and/or
-modify it under the terms of the GNU Lesser General Public
-License as published by the Free Software Foundation; either
-version 2.1 of the License, or (at your option) any later version.
+  This library is free software; you can redistribute it and/or
+  modify it under the terms of the GNU Lesser General Public
+  License as published by the Free Software Foundation; either
+  version 2.1 of the License, or (at your option) any later version.
 
-This library is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-Lesser General Public License for more details.
+  This library is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+  Lesser General Public License for more details.
 
-You should have received a copy of the GNU Lesser General Public
-License along with this library; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+  You should have received a copy of the GNU Lesser General Public
+  License along with this library; if not, write to the Free Software
+  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-For more information: www.smartfrog.org
+  For more information: www.smartfrog.org
 
-*/
--->
-<!DOCTYPE project [
-     <!ENTITY security SYSTEM "./private/buildSecurity.xml">
-]>
+  */
+  -->
 
-<!-- ===========================================================================
-Introduction
-============
-To use: ant -f buildRelease release
 
-Installing the build tools
-==========================
-To Be Written
 
--->
-<project name="SmartFrog" default="process" basedir=".">
+  <description>
+    This build file creates the release artifacts for the SmartFrog project
+    Introduction
+    ============
+    To use: ant -f buildRelease release
 
+
+  </description>
   <!-- =================================================================== -->
   <!-- Initialization target                                               -->
   <!-- =================================================================== -->
@@ -43,13 +39,14 @@ To Be Written
     <tstamp/>
     <property name="Name.Framework" value="SmartFrog Framework"/>
     <property name="Name.System" value="SmartFrog"/>
-    <property name="year" value="2007"/>
-    <property name="Name.Company" value="(C) Copyright 1998-2007 Hewlett-Packard Development Company, LP"/>
+    <tstamp>
+      <format property="year" pattern="yyyy"/>
+    </tstamp>
+    <property name="Name.Company" value="(C) Copyright 1998-${year} Hewlett-Packard Development Company, LP"/>
 
     <echo message=""/>
     <echo message="==================================================================="/>
-    <echo message="= ${Name.Framework} - ${Name.Company} "/>
-    <echo message="==================================================================="/>
+    <echo message="In the release project"/>
   </target>
 
   <!-- =================================================================== -->
@@ -115,12 +112,6 @@ To Be Written
     <echo message=""/>
   </target>
 
-  <!-- =================================================================== -->
-  <!-- Initialization path (Libs needed for compiling)                     -->
-  <!-- =================================================================== -->
-  <path id="smartfrog.class.path">
-       <pathelement path="${classpath}"/>
-  </path>
 
   <!-- =================================================================== -->
   <!-- Global properties                                                   -->
@@ -586,7 +577,7 @@ To Be Written
          <patternset refid="docs.pattern" />
        </tarfileset>
        <!--tarfileset dir="." prefix="${prefix}">
-	  <include name="${dist}/lib/**/*-${version}.jar"/>
+	      <include name="${dist}/lib/**/*-${version}.jar"/>
        </tarfileset-->
        <tarfileset dir="." mode="755" prefix="${prefix}">
          <include name="${dist}/bin/**"/>
@@ -595,7 +586,8 @@ To Be Written
          <exclude name="${dist}/bin/**/*.ini"/>
         </tarfileset>
      </tar>
-    <gzip src="${release.dir}/${prefix}.${DSTAMP}_DIST.tar" zipfile="${release.dir}/${prefix}.${DSTAMP}_DIST.tar.gz"/>
+    <gzip src="${release.dir}/${prefix}.${DSTAMP}_DIST.tar"
+        zipfile="${release.dir}/${prefix}.${DSTAMP}_DIST.tar.gz"/>
     <delete file="${release.dir}/${prefix}.${DSTAMP}_DIST.tar"/>
 
     <tar tarfile="${release.dir}/${prefix}.${DSTAMP}_ALL.tar" >

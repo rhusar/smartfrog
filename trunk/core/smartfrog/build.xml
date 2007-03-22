@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <!--
-  /** (C) Copyright 1998-2006 Hewlett-Packard Development Company, LP
+  /** (C) Copyright 1998-2007 Hewlett-Packard Development Company, LP
   This library is free software; you can redistribute it and/or
   modify it under the terms of the GNU Lesser General Public
   License as published by the Free Software Foundation; either
@@ -15,26 +15,29 @@
   For more information: www.smartfrog.org
   */
 -->
-<!DOCTYPE project [
-     <!ENTITY security SYSTEM "private/buildSecurity.xml">
-]>
 <project name="SmartFrog" default="all" basedir="." xmlns:ivy="antlib:fr.jayasoft.ivy.ant">
   <description>
     Introduction
     ============
     The build script for SmartFrog framework.
-    To run the build script ant must be installed
-    and ant executable should be in the system path.
+    It requires
+      -Java1.4 or later. Java 1.5 is recommended
+      -Ant 1.7 or later
+      -Ivy 1.4.1 (from jayasoft.fr, or soon, apache.org)
+
     A copy of JavaCC is needed if the language itself is changed.
 
     Installing the build tools
     ==========================
-    Please go though the installation guide and install ant 1.6.5 or later.
+    Please go though the installation guide and install Ant1.7 or later.
     Reference URL:http://ant.apache.org
 
     For JavaCC, download it from https://javacc.dev.java.net/ and install the
     relevant JAR files into the javacc subdirectory
 </description>
+
+
+
   <!-- =================================================================== -->
   <!-- Initialization target                                               -->
   <!-- =================================================================== -->
@@ -50,13 +53,19 @@
     <echo level="verbose">
       ===================================================================
       = ${Name.System} ${version}
-      &quot;
-
       = ${Name.Company}
       ===================================================================
-      (${ant.version})
     </echo>
-    <available property="nice.task.present" classname="org.apache.tools.ant.taskdefs.Nice"/>
+    <fail>
+      <condition>
+        <not>
+          <available
+              classname="org.apache.tools.ant.types.resources.FileResourceIterator"/>
+        </not>
+      </condition>
+      This version of Ant is not supported.
+      Please upgrade to Ant1.7 or later and build this project again
+    </fail>
   </target>
   <!-- =================================================================== -->
   <!-- Help on usage                                                       -->
@@ -165,9 +174,17 @@
 
 
 
-  <!-- Include here the security-related ant file -->
-  &security;
-  <!-- End of security-related ant file -->
+  <!-- ================================================================== -->
+  <!-- Import the security-related ant file -->
+  <!-- ================================================================== -->
+  <import file="${private}/buildSecurity.xml"/>
+
+  <target name="ready-to-create-CA" depends="copyPrivate,security.ready-to-create-CA">
+
+  </target>
+
+
+
   <!-- ================================================================== -->
   <!-- running Version.java to generate version information               -->
   <!-- ================================================================== -->
@@ -221,7 +238,9 @@
   <!--  Generte Forrest Docs -->
   <!-- =================================================================== -->
 
-  <target name="generatedoc" depends="init, dist, jdocs" description="Document Generation" if="env.FORREST_HOME">
+  <target name="generatedoc" depends="init, dist, jdocs"
+      description="Document Generation"
+      if="env.FORREST_HOME">
 	  <ant antfile="documentation.xml" inheritall="false"/> 
     <!-- Forrest build dir -->
   </target>
@@ -229,7 +248,8 @@
   <!-- =================================================================== -->
   <!--  Release                                                            -->
   <!-- =================================================================== -->
-  <target name="release" depends="clean, dist,jdocs, generatedoc" description="Creates clean new release">  </target>
+  <target name="release" depends="clean, dist,jdocs, generatedoc"
+      description="Creates clean new release"/>
   <!-- =================================================================== -->
   <!--                                                                     -->
   <!-- =================================================================== -->
@@ -300,6 +320,7 @@
   <target name="compile-rmi" depends="rmi" />
 
   <target name="compile" depends="compile-rmi" description="Compiles the source code"/>
+
   <!-- =================================================================== -->
   <!--   Copy default.sf and default.ini files to "src/org/smartfrog" directory -->
   <!--   so that they can be used with security on                         -->
@@ -376,7 +397,7 @@
   <!-- =================================================================== -->
   <!--                                                                     -->
   <!-- =================================================================== -->
-  <target name="copylibs" depends="initdist">
+  <target name="copylibs" depends="initbuild">
     <copy todir="${dist.lib.dir}">
       <fileset dir="${lib}">
         <include name="**/*.jar"/>
@@ -386,7 +407,7 @@
   <!-- =================================================================== -->
   <!--                                                                     -->
   <!-- =================================================================== -->
-  <target name="copyPrivate" depends="initdist">
+  <target name="copyPrivate" depends="initbuild">
     <copy todir="${dist.private.dir}">
       <fileset dir="${private}">
         <include name="**/*"/>
@@ -397,7 +418,7 @@
   <!-- =================================================================== -->
   <!--                                                                     -->
   <!-- =================================================================== -->
-  <target name="copyTestCA" depends="initdist">
+  <target name="copyTestCA" depends="initbuild">
     <copy todir="${dist.testCA.dir}">
       <fileset dir="${testCA}">
         <include name="**/*"/>
@@ -605,7 +626,7 @@
   </target>
 
   <target name="ready-to-dist"
-      depends="build,jars,copylibs,copybins,copyPrivate,copydocs,
+      depends="build,jars,copybins,copyPrivate,copydocs,
       copyexamples,copyTestCA,buildSetup,srczip"
       />
 
