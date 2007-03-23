@@ -2,7 +2,7 @@
 <project name="components" default="default" basedir=".">
 
 <!--
-/** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
+/** (C) Copyright 1998-2007 Hewlett-Packard Development Company, LP
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
@@ -399,7 +399,7 @@ For more information: www.smartfrog.org
   
   <target name="web-buildrelease" depends="main-buildrelease"
     description="web components release">
-    <delegate target="maybe-buildrelease" buildpathref="web.path" antfile="buildRelease.xml"/>
+    <delegate target="maybe-buildrelease" buildpathref="web.path" />
   </target>
 
   <target name="xml" depends="init"
