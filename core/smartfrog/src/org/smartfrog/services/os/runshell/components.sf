@@ -35,6 +35,9 @@ RunShellSchema extends Schema {
     printStack extends OptionalBoolean;
     processID extends OptionalString;
     processName extends String;
+    startEarly extends Boolean {
+      description "set to true to start the program when the component is deployed, rather than when it is started";
+    }
     shellCmd extends String;
     shouldDetach extends OptionalBoolean;
     shouldTerminate extends OptionalBoolean {
@@ -75,6 +78,7 @@ ExecuteProgram extends Prim {
     logLevel 2;
     printCommandOnFailure false;
     printStack  false;
+    startEarly false;
      //also, every nested element beginnng with shellCmdAtt
      //will be added to the list of arguments *after* the shellArguments vector
      //and every nested element beginnng with shellCmdAtt and ending in 'b'
@@ -110,8 +114,10 @@ RunShellScripts extends ExecuteProgram {
    // cmdBatch ["cd ..",cd -","ls"];
 
    exitCmd "exit 0";
+   startEarly true;
    useExitCmd true; // Should I use exitCmd at the end of the script?
    terminateOnFailure false;
+
 
    //outputMsgTo obj      // Object that implements org.smartfrog.services.display.PrintMsgInt       //services.display.SFDisplay uses it
    //errorMsgTo  obj      // Object that implements org.smartfrog.services.display.PrintErrMsgInt    //services.display.SFDisplay uses it

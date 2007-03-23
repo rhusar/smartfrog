@@ -30,6 +30,7 @@ import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLifecycleException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.common.TerminatorThread;
+import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.prim.TerminationRecord;
@@ -72,6 +73,8 @@ public class RunShellImpl extends PrimImpl implements Prim, RunShell, Runnable {
     private String lineReturn = "\n";
 
     //desired
+
+    private boolean startEarly =false;
 
     /**
      * The String for working directory.
@@ -167,68 +170,80 @@ public class RunShellImpl extends PrimImpl implements Prim, RunShell, Runnable {
      * @exception  RemoteException In case of network/rmi error
      */
     public synchronized void sfDeploy() throws SmartFrogException,
-        RemoteException {
-        try {
-            super.sfDeploy();
-            helper=new ComponentHelper(this);
-            log=sfLog();
-            readSFAttributes();
-
-            //Create subProcess
-            File workDirFile = new File(workDir);
-            String[] commands = createCmd(shellPrefix, shellCommand, shellCommandAtt);
-            if (log.isDebugEnabled()) {
-                fullShellCommand = arrayToString(commands, "  '", "'\n");
-                StringBuffer buffer=new StringBuffer();
-                buffer.append("Running in dir ");
-                buffer.append(workDirFile);
-                buffer.append('\n');
-                buffer.append(fullShellCommand);
-                log.debug(buffer);
+            RemoteException {
+        super.sfDeploy();
+        helper = new ComponentHelper(this);
+        log = sfLog();
+        readSFAttributes();
+        if (startEarly) {
+            try {
+                execute();
+            } catch (Throwable t) {
+                throw SmartFrogLifecycleException.sfDeploy(t.getMessage(), t, this);
             }
-            fullShellCommand = arrayToString(commands, " '", "' ");
-            subProcess = runtime.exec(
-                    commands,
-                    envProp,
-                    workDirFile);
-            dos = new DataOutputStream(subProcess.getOutputStream());
-
-            StreamGobbler outputGobbler;
-            StreamGobbler errorGobbler;
-            OutputStream outputStream = null;
-
-            // any output?
-            if (outputStreamObj != null) {
-                outputStream = outputStreamObj.getOutputStream();
-            }
-            outputGobbler = new StreamGobbler(subProcess.getInputStream(),
-                    "[" + getNotifierId() + "] " + "OUT",
-                    outputStream, printMsgImp);
-
-            // any error message?
-            if (errorStreamObj != null) {
-                outputStream = errorStreamObj.getOutputStream();
-            } else {
-                outputStream = null;
-            }
-            errorGobbler = new StreamGobbler(subProcess.getErrorStream(),
-                    "[" + getNotifierId() + "] " + "ERR",
-                    outputStream, printErrMsgImp);
-
-            errorGobbler.setPassType(false);
-            outputGobbler.setPassType(false);
-
-            // kick them off
-            errorGobbler.start();
-            outputGobbler.start();
-            thread = new Thread(this);
-
-            //Start listener
-            thread.start();
-            sfReplaceAttribute(varStatus, "deployed");
-        } catch (Throwable t) {
-            throw SmartFrogLifecycleException.sfDeploy(t.getMessage(),t,this);
         }
+    }
+
+
+
+    /**
+     * This is the method that does the excution
+     * @throws IOException
+     * @throws SmartFrogRuntimeException
+     */
+    private void execute() throws IOException, SmartFrogRuntimeException {
+        //Create subProcess
+        File workDirFile = new File(workDir);
+        String[] commands = createCmd(shellPrefix, shellCommand, shellCommandAtt);
+        if (log.isDebugEnabled()) {
+            fullShellCommand = arrayToString(commands, "  '", "'\n");
+            StringBuffer buffer=new StringBuffer();
+            buffer.append("Running in dir ");
+            buffer.append(workDirFile);
+            buffer.append('\n');
+            buffer.append(fullShellCommand);
+            log.debug(buffer);
+        }
+        fullShellCommand = arrayToString(commands, " '", "' ");
+        subProcess = runtime.exec(
+                commands,
+                envProp,
+                workDirFile);
+        dos = new DataOutputStream(subProcess.getOutputStream());
+
+        StreamGobbler outputGobbler;
+        StreamGobbler errorGobbler;
+        OutputStream outputStream = null;
+
+        // any output?
+        if (outputStreamObj != null) {
+            outputStream = outputStreamObj.getOutputStream();
+        }
+        outputGobbler = new StreamGobbler(subProcess.getInputStream(),
+                "[" + getNotifierId() + "] " + "OUT",
+                outputStream, printMsgImp);
+
+        // any error message?
+        if (errorStreamObj != null) {
+            outputStream = errorStreamObj.getOutputStream();
+        } else {
+            outputStream = null;
+        }
+        errorGobbler = new StreamGobbler(subProcess.getErrorStream(),
+                "[" + getNotifierId() + "] " + "ERR",
+                outputStream, printErrMsgImp);
+
+        errorGobbler.setPassType(false);
+        outputGobbler.setPassType(false);
+
+        // kick them off
+        errorGobbler.start();
+        outputGobbler.start();
+        thread = new Thread(this);
+
+        //Start listener
+        thread.start();
+        sfReplaceAttribute(varStatus, "deployed");
     }
 
     /**
@@ -338,16 +353,14 @@ public class RunShellImpl extends PrimImpl implements Prim, RunShell, Runnable {
         }
 
         processName = sfResolve(varSFProcessName,processName,true);
-
+        startEarly =sfResolve(varStartEarly, startEarly,true);
         outputStreamObj = (OutputStreamIntf) sfResolve(varOutputStreamTo, outputStreamObj , false);
         errorStreamObj  = (StreamIntf) sfResolve(varErrorStreamTo, errorStreamObj , false);
 
         printMsgImp  =   (PrintMsgInt) sfResolve(varOutputMsgTo, printMsgImp , false);
         printErrMsgImp = (PrintErrMsgInt) sfResolve(varErrorMsgTo, printErrMsgImp , false);
         printCommandOnFailure = sfResolve(varPrintCommandOnFailure,false,true);
-
     }
-
 
 
     /**
@@ -359,6 +372,13 @@ public class RunShellImpl extends PrimImpl implements Prim, RunShell, Runnable {
     public synchronized void sfStart()
             throws SmartFrogException,RemoteException {
         super.sfStart();
+        if (!startEarly) {
+            try {
+                execute();
+            } catch (Throwable t) {
+                throw SmartFrogLifecycleException.sfStart(t.getMessage(), t, this);
+            }
+        }
         sfReplaceAttribute(varStatus, STATUS_RUNNING);
         execBatch(cmds);
     }
