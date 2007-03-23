@@ -114,6 +114,12 @@ public interface RunShell extends Remote {
     String varPrintCommandOnFailure = "printCommandOnFailure";
 
     /**
+     * start the shell on sfDeploy() rather than sfStart()
+     * {@value}
+     */
+    String varStartEarly = "startEarly";
+
+    /**
      *  Executes the given command.
      *
      * @param  cmd  command to be exceuted

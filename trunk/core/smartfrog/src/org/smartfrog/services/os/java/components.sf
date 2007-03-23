@@ -84,6 +84,8 @@ Java extends ExecuteProgram {
     endorsedDirs [];
     environment [];
     jvmargs [];
+    //force run this late
+    startEarly false;
     //bind the shell command to the jvm command
     shellCmd ATTRIB jvm;
     shouldDetach false;
