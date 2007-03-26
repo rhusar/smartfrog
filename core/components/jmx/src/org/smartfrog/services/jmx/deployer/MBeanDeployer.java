@@ -103,7 +103,7 @@ public class MBeanDeployer extends CompoundImpl implements Compound, MBeanDeploy
 
 
     public InetAddress getSFProcessName() throws RemoteException {
-        return (InetAddress) sfDeployedHost();
+        return sfDeployedHost();
     }
 
     public String getSFDeployedHost() throws RemoteException {

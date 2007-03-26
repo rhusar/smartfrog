@@ -24,6 +24,7 @@ import java.util.Date;
 import java.rmi.*;
 import javax.management.*;
 import org.smartfrog.services.jmx.notification.RemoteNotificationListener;
+import org.smartfrog.sfcore.logging.LogSF;
 
 /**
  *  Description of the Class
@@ -61,18 +62,19 @@ public class RemoteListenerPrimImpl extends RemotePrimImpl implements RemoteNoti
         String message = notification.getMessage();
         Object userData = notification.getUserData();
         String timestamp = (new Date(notification.getTimeStamp())).toString();
-        System.out.println(sfCompleteName() + ": notification received");
-        System.out.println("\tSeq number:\t\t" + sequenceNumber);
-        System.out.println("\tType:\t\t" + type);
-        System.out.println("\tsource:\t\t" + source);
-        System.out.println("\tmessage:\t\t" + message);
-        System.out.println("\tuserData:\t\t" + userData);
-        System.out.println("\ttimestamp:\t\t" + type);
+        LogSF log = sfLog();
+        log.info(sfCompleteName() + ": notification received");
+        log.info("\tSeq number:\t\t" + sequenceNumber);
+        log.info("\tType:\t\t" + type);
+        log.info("\tsource:\t\t" + source);
+        log.info("\tmessage:\t\t" + message);
+        log.info("\tuserData:\t\t" + userData);
+        log.info("\ttimestamp:\t\t" + type);
         if (notification instanceof AttributeChangeNotification) {
             AttributeChangeNotification acn = (AttributeChangeNotification) notification;
-            System.out.println("\tAttribute:\t\t" + acn.getAttributeName());
-            System.out.println("\tOld value:\t\t" + acn.getOldValue());
-            System.out.println("\tOld value:\t\t" + acn.getNewValue());
+            log.info("\tAttribute:\t\t" + acn.getAttributeName());
+            log.info("\tOld value:\t\t" + acn.getOldValue());
+            log.info("\tOld value:\t\t" + acn.getNewValue());
         }
     }
 }

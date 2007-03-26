@@ -35,8 +35,8 @@ public class NotificationListenerWrapper implements NotificationListener, Serial
      * in an MBean of a remote JMX Agent and the local wrapped
      * NotificationListener receive their notification.
      *
-     * @param nl
-     * @return
+     * @param listener listener
+     * @return a new (exported) listener
      */
     public static NotificationListener createWrapper(NotificationListener listener) throws RemoteException {
         RemoteNotificationListenerWrapper remoteListenerWrapper = new RemoteNotificationListenerWrapper(listener);
@@ -93,7 +93,7 @@ public class NotificationListenerWrapper implements NotificationListener, Serial
  *
      *@version        1.0
      */
-    class NotificationHandler extends Thread {
+    static class NotificationHandler extends Thread {
         RemoteNotificationListener remoteListener;
         Notification notification;
         Object handback;

@@ -284,21 +284,21 @@ public class Cascader extends PrimImpl implements Prim, Serializable, CascaderMB
             } catch (java.net.UnknownHostException uex){
                if (sfCompleteName==null) try {sfCompleteName= this.sfCompleteName().toString();} catch (Exception ex) { }
                String message = "unknown host "+host;
-               System.err.println(sfCompleteName+ " " +message);
+               sfLog().error(sfCompleteName+ " " +message,uex);
             } catch (java.net.ConnectException cex) {
                 if (sfCompleteName==null) try {sfCompleteName= this.sfCompleteName().toString();} catch (Exception ex) { }
                 String url = host.toString();
                 try {url= ConnectionFactory.createServerAddress(protocol, host, port, resource).toString();} catch (Exception ex) { }
                 String message = "Error connecting to ["+url+"]";
-                System.err.println (sfCompleteName+ " " +message);
+                sfLog().error(sfCompleteName+ " " +message,cex);
             } catch (java.rmi.NotBoundException nex){
-                 if (sfCompleteName==null) try {sfCompleteName= this.sfCompleteName().toString();} catch (Exception ex) { }
-                 String message = "not found "+resource+". "+nex.toString();
-                 System.err.println (sfCompleteName+ " " +message);
-             } catch (Exception e) {
-                 if (sfCompleteName==null) try {sfCompleteName= this.sfCompleteName().toString();} catch (Exception ex) { }
-                 System.err.println(sfCompleteName+ " " + e.toString());
-             }
+                if (sfCompleteName==null) try {sfCompleteName= this.sfCompleteName().toString();} catch (Exception ex) { }
+                String message = "not found "+resource+". "+nex.toString();
+                sfLog().error(sfCompleteName+ " " +message,nex);
+            } catch (Exception e) {
+                if (sfCompleteName==null) try {sfCompleteName= this.sfCompleteName().toString();} catch (Exception ex) { }
+                sfLog().error(sfCompleteName+ " " + e.toString(),e);
+            }
 
         }
         return mBeanServerId;
@@ -378,9 +378,9 @@ public class Cascader extends PrimImpl implements Prim, Serializable, CascaderMB
         } catch (java.net.ConnectException cex) {
             String url = host.toString();
             try {url= ConnectionFactory.createServerAddress(protocol, host, port, resource).toString();} catch (Exception ex) { }
-            if (sfLog().isErrorEnabled()){ sfLog().error ("Error connecting to ["+url+"]");}
+            if (sfLog().isErrorEnabled()){ sfLog().error ("Error connecting to ["+url+"]",cex);}
         } catch (Exception e) {
-            if (sfLog().isErrorEnabled()){ sfLog().error("Could not start: " + e.toString());}
+            if (sfLog().isErrorEnabled()){ sfLog().error("Could not start: " + e.toString(),e);}
         }
     }
 
@@ -524,7 +524,6 @@ public class Cascader extends PrimImpl implements Prim, Serializable, CascaderMB
                         );
                 mbeans.add(remoteName);
             } catch (Exception e) {
-                e.printStackTrace();
                 if (sfLog().isErrorEnabled()){ sfLog().error("Could not create MBeanProxy for remote MBean: " + remoteName,e);}
             }
         } else if (mbsNotif.getType().equals(MBeanServerNotification.UNREGISTRATION_NOTIFICATION)) {
@@ -533,7 +532,6 @@ public class Cascader extends PrimImpl implements Prim, Serializable, CascaderMB
                     mbeans.remove(remoteName);
                     mbeanServer.unregisterMBean(remoteName);
                 } catch (Exception e) {
-                    e.printStackTrace();
                     if (sfLog().isErrorEnabled()){ sfLog().error("Could not unregister MBeanProxy for remote MBean: " + remoteName,e);}
                 }
             }

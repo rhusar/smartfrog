@@ -24,23 +24,17 @@ For more information: www.smartfrog.org
 -->
 
 <description>
-     Build file for Jetty.
-     After deploying point your browser at http://localhost:8080 to see the web
-     site.
+     Build file for jmx.
 
-     There is also a debug servlet that can change the debug setting of a
-     running server.  It is configured by the component HttpServerAdmin and is 
-     run on port 8081 as part of the standard Jetty demo.
-     
      
 </description>
 
-  <property name="is.component" value="false"  />
+  <property name="is.component" value="true"  />
    <!-- override point -->
   <property file="build.properties" />
   <property name="root.dir" location="../../"  />
   <property name="ivy.enabled" value="false"/>
-  <property name="Name.System" value="sfJMX"/>
+  <property name="Name.System" value="sf-jmx"/>
   <!-- Import common stuff -->
   <!--available file="../../common.xml" property="root.dir" value="../.."/--> 
   <import file="${root.dir}/common.xml"/>
