@@ -329,14 +329,6 @@ public class RComponentImpl extends CompoundImpl implements RComponent,
             }
 
             /**
-             * Legacy from the interface - this could be folded into the
-             * storage implementation and the interface reduced.
-             */
-            if ( !stableLog.hasEntry( ( String ) name ) ) {
-                stableLog.createEntry( ( String ) name, ATTRIBUTESDIRECTORY );
-            }
-
-            /**
              * Special case for component descriptions - prim parent is not
              * serializable, so cut it off and replace it after storing.
              * Note that the prim parent should be this component.
@@ -392,19 +384,12 @@ public class RComponentImpl extends CompoundImpl implements RComponent,
                 sfReplaceAttribute( SFCHILDREN, sfChildren );
                 model.childAdded( this, ( Prim ) value, ( String ) name );
             }
+            
             /**
              * Some attributes may be volatile.
              */
             if ( model.isVolatile( ( String ) name ) ) {
                 return retvalue;
-            }
-
-            /**
-             * Legacy from the interface - this could be folded into the
-             * storage implementation and the interface reduced.
-             */
-            if ( !stableLog.hasEntry( ( String ) name ) ) {
-                stableLog.createEntry( ( String ) name, ATTRIBUTESDIRECTORY );
             }
 
             /**
@@ -415,14 +400,14 @@ public class RComponentImpl extends CompoundImpl implements RComponent,
             if ( value instanceof ComponentDescription ) {
                 try {
                     ( ( ComponentDescription ) value ).setPrimParent( null );
-                    stableLog.addEntry( ( String ) name, ( Serializable ) value );
+                    stableLog.replaceEntry( ( String ) name, ( Serializable ) value );
                     ( ( ComponentDescription ) value ).setPrimParent( this );
                 } catch ( StorageException ex ) {
                     ( ( ComponentDescription ) value ).setPrimParent( this );
                     throw ex;
                 }
             } else {
-                stableLog.addEntry( ( String ) name, ( Serializable ) value );
+                stableLog.replaceEntry( ( String ) name, ( Serializable ) value );
             }
             commit();
         } catch ( StorageException exc ) {
@@ -452,19 +437,13 @@ public class RComponentImpl extends CompoundImpl implements RComponent,
 
         try {
             /**
-             * sfRemoveAttribute does not need the same hack as replace
-             * because sfRemoveChild does call sfRemoveAttribute itself
+             * some attributes may be volatile
              */
             if ( model.isVolatile( name ) ) {
                 return retvalue;
             }
 
-            /**
-             * remove the attribute entry from storage
-             */
-            if ( stableLog.hasEntry( ( String ) name ) ) {
-                stableLog.deleteEntry( ( String ) name );
-            }
+            stableLog.removeEntry( ( String ) name );
             commit();
         } catch ( StorageException exc ) {
             throw new SmartFrogRuntimeException(
@@ -668,7 +647,6 @@ public class RComponentImpl extends CompoundImpl implements RComponent,
                 String entryname = ( String ) attributes.next();
                 Serializable value = ( Serializable ) values.next();
                 if ( !model.isVolatile( entryname ) ) {
-                    stableLog.createEntry( entryname, ATTRIBUTESDIRECTORY );
                     stableLog.addEntry( entryname, value );
                 }
             }

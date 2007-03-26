@@ -34,8 +34,6 @@ public interface RComponent extends Compound {
     public static String WFSTATUS_DEAD = "WOODFROG_WFDEAD";
     public static String WFSTATUS_STARTED = "WOODFROG_WFSTARTED";
 
-    public static String ATTRIBUTESDIRECTORY = "WOODFROG_SFATTRIBUTES";
-
     public static String CHILDRENSDIRECTORY = "WOODFROG_SFCHILDREN";
     public static String LIFECYCLECHILDREN = "WOODFROG_WFLIFECYCLECHILDREN";
     public static String SFCHILDREN = "WOODFROG_WFSFCHILDREN";
