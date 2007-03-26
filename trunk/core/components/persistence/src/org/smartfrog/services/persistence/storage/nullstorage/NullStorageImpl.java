@@ -67,7 +67,7 @@ public class NullStorageImpl extends Storage {
      * @throws StorageException
      */
     public NullStorageImpl(String dbname, ComponentDescription configData) throws
-    StorageException {
+    		StorageException {
     	return;
     }
 
@@ -89,6 +89,23 @@ public class NullStorageImpl extends Storage {
 		return;
 	}
 
+    /**
+     * The null storage does not replace entries - dummy method
+     */
+	public void replaceEntry(String entryname, Serializable value) throws StorageException {
+		// Do nothing
+		return;
+	}
+
+	
+    /**
+     * The null storage does not delete entries - dummy method
+     */
+	public void removeEntry(String entryname) throws StorageException {
+		// Do nothing
+		return;
+	}
+
 	
     /**
      * The null storage does not perform a close - dummy method
@@ -103,24 +120,6 @@ public class NullStorageImpl extends Storage {
      * The null storage does not perform commits - dummy method
      */
 	public void commit() throws StorageException {
-		// Do nothing
-		return;
-	}
-
-	
-    /**
-     * The null storage does not create entries - dummy method
-     */
-	public void createEntry(String entryname, String directory) throws StorageException {
-		// Do nothing
-		return;
-	}
-
-	
-    /**
-     * The null storage does not delete entries - dummy method
-     */
-	public void deleteEntry(String entryname) throws StorageException {
 		// Do nothing
 		return;
 	}
@@ -157,7 +156,7 @@ public class NullStorageImpl extends Storage {
      * The null storage does not have entries - dummy method
      * returns empty array of objects
      */
-	public Object[] getEntries(String directory) throws StorageException {
+	public Object[] getEntries() throws StorageException {
 		// Return empty array
 		return new Object[0];
 	}
@@ -180,16 +179,6 @@ public class NullStorageImpl extends Storage {
 	public StorageRef getStorageRef() throws StorageException {
 		// TODO Auto-generated method stub
 		return new NullStorageRefImpl();
-	}
-
-	
-    /**
-     * The null storage does not have entires - dummy method
-     * returns false
-     */
-	public boolean hasEntry(String entryname) throws StorageException {
-		// has no entries
-		return false;
 	}
 
 }

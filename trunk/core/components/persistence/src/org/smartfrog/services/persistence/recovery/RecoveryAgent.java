@@ -146,7 +146,7 @@ public class RecoveryAgent extends CompoundImpl implements Compound {
      */
     private void restoreFromStorage( Storage storage ) {
         try {
-            Object[] v = storage.getEntries( RComponent.ATTRIBUTESDIRECTORY );
+            Object[] v = storage.getEntries();
             ContextImpl cntxt = new ContextImpl();
             for ( int i = 0; i < v.length; i++ ) {
                 String entryname = ( String ) v[i];

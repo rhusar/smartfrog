@@ -55,7 +55,7 @@ public class StorageRecoveryDeployerImpl extends PrimProcessDeployerImpl {
              * Construct a new component description from the storage
              */
             Storage storage = Storage.createExistingStorage( desc );
-            Object[] v = storage.getEntries( RComponent.ATTRIBUTESDIRECTORY );
+            Object[] v = storage.getEntries();
             ContextImpl cntxt = new ContextImpl();
             for ( int i = 0; i < v.length; i++ ) {
                 String entryname = ( String ) v[i];

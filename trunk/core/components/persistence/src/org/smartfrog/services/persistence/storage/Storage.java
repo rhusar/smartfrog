@@ -430,17 +430,6 @@ public abstract class Storage implements Serializable {
 	}
 
 
-    /**
-     * Creates a new entry in the storage space and associates it to a directory
-     *
-     * @param entryname
-     * @throws StorageException
-     */
-    public abstract void createEntry(String entryname, String directory) throws
-            StorageException;
-
-
-    public abstract boolean hasEntry(String entryname) throws StorageException;
 
     /**
      * Inserts a new record in the storage space for the specified entry
@@ -454,16 +443,15 @@ public abstract class Storage implements Serializable {
             StorageException;
 
     /**
-     * Deletes an indexed record of the given entry from the storage space
+     * Inserts a new record in the storage space for the specified entry
+     * The entry must have been created before, otherwise an exception is thrown.
      *
-     * @param index Pointer to the internal object that should be deleted
+     * @param obj Object value that should be written
      *
      * @throws StorageException In case some failure happens
      */
-    public abstract void deleteEntry(String entryname) throws StorageException;
-
-
-    //public void doGarbageCollection (long version) throws StorageException;
+    public abstract void replaceEntry(String entryname, Serializable value) throws
+            StorageException;
 
     /**
      * Recovers an entry from stable storage
@@ -473,6 +461,16 @@ public abstract class Storage implements Serializable {
      */
     public abstract Serializable getEntry(String entryname) throws
             StorageException;
+
+    /**
+     * Deletes an indexed record of the given entry from the storage space
+     *
+     * @param index Pointer to the internal object that should be deleted
+     *
+     * @throws StorageException In case some failure happens
+     */
+    public abstract void removeEntry(String entryname) throws StorageException;
+
 
     public abstract void commit() throws StorageException;
 
@@ -486,10 +484,8 @@ public abstract class Storage implements Serializable {
 
     public abstract void enableCommit();
 
-    public abstract Object[] getEntries(String directory) throws
+    public abstract Object[] getEntries() throws
             StorageException;
-
-    //public long getLastVersion() throws StorageException;
 
     public abstract StorageRef getStorageRef() throws StorageException;
 
