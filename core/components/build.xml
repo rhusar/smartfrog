@@ -81,8 +81,7 @@ For more information: www.smartfrog.org
   <target name="init" depends="init-common-simpledefinitions" >
 
     <property name="version" value="COMPONENTS"/>
-    <!--property name="Version" value="1.00.000_beta"/-->
-  <loadproperties srcFile="version.properties"/>
+    <loadproperties srcFile="version.properties"/>
     <fail unless="component.version">No property component.version found in file version.properties</fail>
     <property name="Version" value="${component.version}" />
     <!-- add new components here, in alphabetical order. this is
@@ -399,7 +398,8 @@ For more information: www.smartfrog.org
   
   <target name="web-buildrelease" depends="main-buildrelease"
     description="web components release">
-    <delegate target="maybe-buildrelease" buildpathref="web.path" />
+    <!--slo turned this off as it is not providing any benefit-->
+    <!--<delegate target="maybe-buildrelease" buildpathref="web.path" />-->
   </target>
 
   <target name="xml" depends="init"
