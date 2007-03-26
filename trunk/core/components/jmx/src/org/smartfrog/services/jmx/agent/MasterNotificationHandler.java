@@ -130,11 +130,15 @@ public class MasterNotificationHandler extends PrimImpl implements Prim, MasterN
                     boolean active = false;
                     mbeanServer.addNotificationListener(discName, this, null, null);
                     discMBeans.addElement(discName);
-                } catch (Exception e) { e.printStackTrace(); }
+                } catch (Exception e) {
+                    sfLog().info(e);
+                }
             }
             isActive = true;
         }
-        catch (Exception e) { e.printStackTrace(); }
+        catch (Exception e) {
+            sfLog().info(e);
+        }
     }
 
     public void stop() {
@@ -202,7 +206,7 @@ public class MasterNotificationHandler extends PrimImpl implements Prim, MasterN
             host = commDesc.getHost();
             port = commDesc.getPort();
             servicename = commDesc.getServiceName();
-            System.out.println("DiscoveryNotification: "+protocol+"://"+host+":"+port+"/"+servicename);
+            sfLog().info("DiscoveryNotification: "+protocol+"://"+host+":"+port+"/"+servicename);
 
             // Build ServerAddress for Cascader
             sa = ConnectionFactory.createServerAddress(protocol, host, port, servicename);
@@ -220,11 +224,10 @@ public class MasterNotificationHandler extends PrimImpl implements Prim, MasterN
                 mbeanServer.registerMBean(cascader, objectName);
                 cascader.start();
                 subagents.addElement(mBeanServerId);
-                System.out.println("Cascader created for MBeanServer: "+mBeanServerId);
+                sfLog().info("Cascader created for MBeanServer: "+mBeanServerId);
             }
         } catch (Exception ex) {
-            System.out.println("Could not start cascader: " + ex.toString());
-            ex.printStackTrace();
+            sfLog().info("Could not start cascader: ",ex);
         }
     }
 
@@ -240,7 +243,9 @@ public class MasterNotificationHandler extends PrimImpl implements Prim, MasterN
         try {
           pattern = (String) sfResolve("objectNamePattern");
         }
-        catch (Exception e) { e.printStackTrace(); }
+        catch (Exception e) {
+            sfLog().ignore(pattern);
+        }
     }
 
     public synchronized void sfStart() throws SmartFrogException, RemoteException {

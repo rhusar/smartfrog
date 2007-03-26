@@ -36,7 +36,6 @@ import javax.management.*;
 //import openjmx.adaptor.http.ssl.SSLFactory;
 
 import mx4j.tools.adaptor.http.HttpAdaptor;
-import mx4j.tools.adaptor.http.HttpAdaptorMBean;
 import mx4j.tools.adaptor.http.XSLTProcessor;
 import mx4j.tools.adaptor.http.ProcessorMBean;
 import mx4j.tools.adaptor.AdaptorServerSocketFactory;  //AdaptorSocketFactory;

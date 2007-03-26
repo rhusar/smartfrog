@@ -318,7 +318,7 @@ public class RmiConnectorServer extends PrimImpl implements Prim, Serializable, 
             }
             if (isActive()) sendStateNotification(true);
         } catch (Exception e) {
-            e.printStackTrace();
+            sfLog().warn(e);
         }
     }
 
@@ -371,10 +371,14 @@ public class RmiConnectorServer extends PrimImpl implements Prim, Serializable, 
         super.sfDeploy();
         try {
             port = ((Integer) sfResolveHere("port")).intValue();
-        } catch (Exception e) {}
+        } catch (Exception e) {
+            sfLog().ignore(e);
+        }
         try {
             serviceName = (String) sfResolveHere("name");
-        } catch (Exception e) {}
+        } catch (Exception e) {
+            sfLog().ignore(e);
+        }
     }
 
 

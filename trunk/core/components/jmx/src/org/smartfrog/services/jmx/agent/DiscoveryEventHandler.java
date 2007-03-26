@@ -97,7 +97,7 @@ public class DiscoveryEventHandler extends EventPrimImpl {
         String localServerId = null;
         ServerAddress sa = null;
         try {
-            System.out.println("Received event from ResultsCollector: " + e);
+            sfLog().info("Received event from ResultsCollector: " + e);
             String urlStr = e.substring(0, e.indexOf('['));
             String attributes = e.substring(e.indexOf('[')+1, e.indexOf(']'));
             StringTokenizer st = new StringTokenizer(attributes, ", ");
@@ -121,7 +121,7 @@ public class DiscoveryEventHandler extends EventPrimImpl {
             host = url.getHost();
             port = url.getPort();
             resource = url.getURLPath();
-            System.out.println(protocol+"://"+host+"/"+port+"/"+resource);
+            sfLog().info(protocol+"://"+host+"/"+port+"/"+resource);
             // We do nothing if we do not have agent where register the Cascader o this Agent is not a master
             localServerId = agent.getMBeanServerId();
             sa = ConnectionFactory.createServerAddress(protocol, host, port, resource);
@@ -141,10 +141,9 @@ public class DiscoveryEventHandler extends EventPrimImpl {
               subagents = new Vector();
             }
             subagents.addElement(mBeanServerId);
-            System.out.println("Cascader created for MBeanServer: "+mBeanServerId);
+            sfLog().info("Cascader created for MBeanServer: "+mBeanServerId);
         } catch (Exception ex) {
-            System.out.println("Could not start cascader: " + ex.toString());
-            ex.printStackTrace();
+            sfLog().warn("Could not start cascader: " + ex.toString(),ex);
         }
     }
 
@@ -161,11 +160,15 @@ public class DiscoveryEventHandler extends EventPrimImpl {
         try {
           agent = (SFJMXAgentImpl) sfResolve("jmxAgent");
         }
-        catch (Exception e) { System.out.println("DiscoveryEventHandler: Could not find JMX Agent"); }
+        catch (Exception e) {
+            sfLog().warn("DiscoveryEventHandler: Could not find JMX Agent");
+        }
         try {
             master = (Boolean) agent.sfResolve("master");
         }
-        catch (Exception e) { }
+        catch (Exception e) {
+            sfLog().ignore(e);
+        }
     }
 
 
