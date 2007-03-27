@@ -1,27 +1,30 @@
 package org.smartfrog.sfcore.languages.csf.constraints;
 
-import org.smartfrog.sfcore.componentdescription.CDVisitor;
-import org.smartfrog.sfcore.componentdescription.ComponentDescription;
+import java.util.Collections;
+import java.util.Enumeration;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.Stack;
+import java.util.Vector;
+
+import org.smartfrog.SFSystem;
+import org.smartfrog.sfcore.common.SFNull;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
-import org.smartfrog.sfcore.common.SFNull;
+import org.smartfrog.sfcore.componentdescription.CDVisitor;
+import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.languages.csf.csfcomponentdescription.CSFComponentDescription;
 import org.smartfrog.sfcore.languages.csf.csfcomponentdescription.FreeVar;
-import org.smartfrog.sfcore.security.SFClassLoader;
 import org.smartfrog.sfcore.reference.Reference;
 
-import java.io.InputStream;
-import java.io.IOException;
-import java.util.*;
-
 abstract public class PrologSolver extends CoreSolver {
-    private final String theoryFile = "/org/smartfrog/sfcore/languages/csf/constraints/prologTheory.prolog";
+	private final String theoryFile = "theoryFile.pl";
     private final String theoryFileProperty = "opt.smartfrog.sfcore.languages.csf.constraints.prologTheoryFile";
     private final String varNameBase = "SFV";
     private final char referenceDelimiter = '@';
     private CSFComponentDescription top;
-    private Hashtable bindings = null;
-    private Hashtable initialBindings = new Hashtable();
+    private Hashtable bindings;
+    private Hashtable initialBindings;
     private Vector constraints = new Vector();
     private Vector allVariables = new Vector(); // all variables in the description, should be empty after mapping back...
 
@@ -42,31 +45,40 @@ abstract public class PrologSolver extends CoreSolver {
      */
     public void solve(CSFComponentDescription cd) throws SmartFrogResolutionException {
         top = cd;
-        //System.out.println("solving");
+        System.out.println("solving:"+cd);
 
+        String filename = System.getProperty(theoryFileProperty);
+        if (filename==null) {
+        	filename = SFSystem.getEnv("SFHOME");
+        	if (filename==null){
+        		throw new SmartFrogResolutionException("Environment variable SFHOME must be set. Context: constraint processing");
+        	}
+        	filename += "/../"+"constraints"+"/"+theoryFile;
+	    }
+        System.out.println(filename);
+       
         // create the theory
         try {
-            String filename = System.getProperty(theoryFileProperty);
-            if (filename == null) filename = theoryFile;
-            InputStream prologStream = SFClassLoader.getResourceAsStream(filename);
-            //System.out.println(filename);
-            prepareTheory(prologStream);
+            prepareTheory(filename);
         } catch (Exception e) {
-            throw new SmartFrogResolutionException("unable to parse base theory for constraint resolution", e);
+            throw new SmartFrogResolutionException("Unable to parse base theory for constraint resolution. ", e);
         }
 
         // collect and process the constraints
+        initialBindings = new Hashtable();
         try {
             collectConstraints();
         } catch (Exception e) {
             throw new SmartFrogResolutionException("Error collecting constraints during constraint resolution", e);
         }
 
+        if (constraints.size()==0) return;
+        
         // solve the constraints
-        bindings = solveConstraints(initialBindings);
-
-        if (bindings == null) {
-            throw new SmartFrogResolutionException("Constraint resolution failed - probable inconsistency in constraints");
+        try {
+        	solveConstraints(initialBindings);
+        } catch (Exception e) {
+            throw new SmartFrogResolutionException("Error in solving constraints, probable inconsistency", e);
         }
 
         // map values back
@@ -75,6 +87,8 @@ abstract public class PrologSolver extends CoreSolver {
         } catch (Exception e) {
             throw new SmartFrogResolutionException("Error updating description with variable bindings during constraint resolution", e);
         }
+        
+        System.out.println("solving:"+cd);
     }
 
     /**
@@ -144,49 +158,60 @@ abstract public class PrologSolver extends CoreSolver {
     private void collectConstraints() throws Exception {
         top.visit(new ConstraintCollector(), false);
         //System.out.println("unordered constraints " + constraints);
-        Collections.sort(constraints);
-       //System.out.println("ordered constraints " + constraints);
+        //Need to adjust search priorities
+	int highest=0;
+	for (int i=0;i<constraints.size();i++){
+	    int priority = ((Constraint) constraints.get(i)).getPriority();
+	    if (priority>highest) highest=priority;
+	}
+	for (int i=0;i<constraints.size();i++){
+		Constraint constraint = (Constraint) constraints.get(i);
+	    int priority = constraint.getPriority();
+	    if (priority<0) {
+		constraint.setPriority((priority * -1) + highest); //switch sign and start from highest
+	    }
+	}
+	Collections.sort(constraints);
+        //System.out.println("ordered constraints " + constraints);
     }
 
-    private Hashtable solveConstraints(Hashtable bindings) throws SmartFrogResolutionException {
+    private void solveConstraints(Hashtable initialBindings) throws Exception {
         StringBuffer totalConstraint = new StringBuffer();
 
-        for (Enumeration b = bindings.keys(); b.hasMoreElements();) {
+        totalConstraint.append(" SFVRESULT = [");
+        boolean first=true;
+        for (Enumeration n = allVariables.elements(); n.hasMoreElements();) {
+        	if (first) first=false;
+        	else totalConstraint.append(", ");
+            String fv = freeVariableName((FreeVar) n.nextElement());
+            totalConstraint.append(fv);
+        }
+        totalConstraint.append("]");
+        
+        for (Enumeration b = initialBindings.keys(); b.hasMoreElements();) {
+        	totalConstraint.append(", ");
             String name = (String) b.nextElement();
             totalConstraint.append(name);
             totalConstraint.append("=");
-            totalConstraint.append(bindings.get(name).toString());
-            totalConstraint.append(",");
+            totalConstraint.append(initialBindings.get(name).toString());
         }
 
         for (Enumeration e = constraints.elements(); e.hasMoreElements();) {
+        	totalConstraint.append(", ");
             String query = ((Constraint) e.nextElement()).getQuery();
             totalConstraint.append(query);
-            totalConstraint.append(", ");
         }
-        totalConstraint.append(" SFVRESULT = [");
-        for (Enumeration n = allVariables.elements(); n.hasMoreElements();) {
-            String fv = freeVariableName((FreeVar) n.nextElement());
-            totalConstraint.append(fv);
-            totalConstraint.append(",");
-        }
-        totalConstraint.append("'done'].");
-        //System.out.println("solving prolog constraint " + totalConstraint + " with bindings " + bindings);
-        Hashtable results = solveQuery(totalConstraint, bindings);
-        if (results == null)
-            throw new SmartFrogResolutionException("No solution found to constraints");
-        else {
-            Vector resultVector = (Vector) results.get("SFVRESULT");
-            //System.out.println(results);
-            //System.out.println(resultVector);
-            //System.out.println(allVariables);
-            results = new Hashtable();
-            for (int k = 0; k < allVariables.size(); k++) {
-                results.put(freeVariableName((FreeVar)allVariables.elementAt(k)), resultVector.elementAt(k));
-            }
-            //System.out.println(results);
-            return results;
-        }
+        totalConstraint.append(".");
+        
+        //System.out.println("solving prolog constraint " + totalConstraint);
+        
+        solveQuery(totalConstraint);
+        
+        bindings = new Hashtable();
+
+        for (int k = 0; k < allVariables.size(); k++) {
+            bindings.put(freeVariableName((FreeVar)allVariables.elementAt(k)), getBinding(k));
+        } 
     }
 
     private void mapBindings() throws Exception {
@@ -348,8 +373,7 @@ abstract public class PrologSolver extends CoreSolver {
         }
     }
 
-    abstract public void prepareTheory(InputStream prologStream) throws IOException ;
-
-
-    abstract public Hashtable solveQuery(StringBuffer totalConstraint, Hashtable bindings);
+    abstract public void prepareTheory(String prologFile) throws Exception;
+    abstract public void solveQuery(StringBuffer totalConstraint) throws Exception;
+    abstract public Object getBinding(int var);
 }

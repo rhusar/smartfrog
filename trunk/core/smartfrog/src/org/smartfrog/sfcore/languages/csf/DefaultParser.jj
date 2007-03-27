@@ -43,9 +43,6 @@ import java.util.Enumeration;
 import java.util.Set;
 import java.util.HashSet;
 
-
-
-
 public class DefaultParser {
   protected IncludeHandler includeHandler;
   static int nextId = 0;
@@ -100,6 +97,8 @@ public class DefaultParser {
             fixed.append('\r'); break;
           case 'f':
             fixed.append('\f'); break;
+          case '=':
+            fixed.append("\\="); break;
           case '0': case '1': case '2': case '3':
           case '4': case '5': case '6': case '7':
             int i = ((s.charAt(index) - '0') * 64) +
@@ -334,50 +333,68 @@ TOKEN : /* Literals */
             )
         )* "#")
       >
-    | <SELECTING: ("#selecting#" (
-          (~["#","\\"])
+    | <SELECTING: ("#selecting(" (               // for backward compatibility
+          (~[")","\\"])
           | ("\\"
-              ( ["n","t","b","r","f","\\","'","#"]
+              ( ["n","t","b","r","f","\\","'",")","="]
               | ["0"-"3"] ["0"-"7"] ["0"-"7"]
               )
             )
-        )* "#")
+        )* ")")
       >
-     | <BINDING: ("#binding#" (
-          (~["#","\\"])
+     | <BINDING: ("#binding(" (                        // for backward compatibility
+          (~[")","\\"])
           | ("\\"
-              ( ["n","t","b","r","f","\\","'","#"]
+              ( ["n","t","b","r","f","\\","'",")","="]
               | ["0"-"3"] ["0"-"7"] ["0"-"7"]
               )
             )
-        )* "#")
+        )* ")")
       >
-     | <CHECKING: ("#checking#" (
-          (~["#","\\"])
+     | <CHECKING: ("#checking(" (                      // for backward compatibility
+          (~[")","\\"])
           | ("\\"
-              ( ["n","t","b","r","f","\\","'","#"]
+              ( ["n","t","b","r","f","\\","'",")","="]
               | ["0"-"3"] ["0"-"7"] ["0"-"7"]
               )
             )
-        )* "#")
+        )* ")")
       >
-     | <CONSTRAINT: ("#constraint:" (["0"-"9"])+ "#" (
-          (~["#","\\"])
+     | <CONSTRAINT: ("#constraint:" (["0"-"9"])+ "(" (
+          (~[")","\\"])
           | ("\\"
-              ( ["n","t","b","r","f","\\","'","#"]
+              ( ["n","t","b","r","f","\\","'",")","="]
               | ["0"-"3"] ["0"-"7"] ["0"-"7"]
               )
             )
-        )* "#")
+        )* ")")
       >
-     | <SUCHTHAT: ("#suchThat#" (                     // for backward compatibility
-          (~["#","\\"])
+     | <DECL: ("#decl(" (
+          (~[")","\\"])
           | ("\\"
-              ( ["n","t","b","r","f","\\","'","#"]
+              ( ["n","t","b","r","f","\\","'",")","="]
               | ["0"-"3"] ["0"-"7"] ["0"-"7"]
               )
             )
-        )* "#")
+        )* ")")
+      >
+     | <SEARCH: ("#search:" (["0"-"9"])+ "(" (
+          (~[")","\\"])
+          | ("\\"
+              ( ["n","t","b","r","f","\\","'",")","="]
+              | ["0"-"3"] ["0"-"7"] ["0"-"7"]
+              )
+            )
+        )* ")")
+      >
+     | <SUCHTHAT: ("#suchThat(" (                     // for backward compatibility
+          (~[")","\\"])
+          | ("\\"
+              ( ["n","t","b","r","f","\\","'",")","="]
+              | ["0"-"3"] ["0"-"7"] ["0"-"7"]
+              )
+            )
+        )* ")")
       >
     | <INTEGER: (("-")? ["0"-"9"] (["0"-"9"])*)
         | "0" >
@@ -835,18 +852,24 @@ void Constraints(CSFComponentDescription comp) :
 }
 {
     (
-       ( (t = <CHECKING> | t = <SUCHTHAT>)           //note important that checking and suchthat have 8 chars!!!
+       ( (t = <CHECKING> | t = <SUCHTHAT>)           //note important that checking and suchthat have 8 chars!!!:-)
             { priority = 25;
               suchThat = fixEscapes(t.image.substring(10, t.image.length() - 1)); }
+       | t = <DECL>
+            { priority = 0;
+              suchThat = fixEscapes(t.image.substring(6, t.image.length() - 1));  }
+       | t = <CONSTRAINT>
+            { priority = (new Integer(t.image.substring(12, t.image.indexOf("#", 12)))).intValue();
+              suchThat = fixEscapes(t.image.substring(t.image.indexOf("#", 12) + 1, t.image.length() - 1)); }
+       | t = <SEARCH>
+            { priority = -(new Integer(t.image.substring(8, t.image.indexOf("#", 8)))).intValue();
+              suchThat = fixEscapes(t.image.substring(t.image.indexOf("#", 8) + 1, t.image.length() - 1)); }
        | t = <BINDING>
             { priority = 50;
               suchThat = fixEscapes(t.image.substring(9, t.image.length() - 1));  }
        | t = <SELECTING>
             { priority = 75;
               suchThat = fixEscapes(t.image.substring(11, t.image.length() - 1)); }
-       | t = <CONSTRAINT>
-            { priority = (new Integer(t.image.substring(12, t.image.indexOf("#", 12)))).intValue();
-              suchThat = fixEscapes(t.image.substring(t.image.indexOf("#", 12) + 1, t.image.length() - 1)); }
        )
       {
        try {

@@ -69,7 +69,7 @@ public class Constraint implements Copying, Comparable {
 
 
     public String toString() {
-        return new StringBuffer().append(" #constraint:" + priority + "#").append(query).append("#").toString();
+        return "#constraint:"+priority+"("+query+")";
     }
 
     /**
@@ -211,7 +211,7 @@ public class Constraint implements Copying, Comparable {
       if (o == null) throw new NullPointerException();
       
       if (getPriority() == ((Constraint)o).getPriority()) return 0;
-      else if (getPriority() > ((Constraint)o).getPriority()) return -1;
+      else if (getPriority() < ((Constraint)o).getPriority()) return -1;
       else return 1;
    }
 }
