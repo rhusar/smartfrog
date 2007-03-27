@@ -406,6 +406,7 @@
       </fileset>
     </copy>
   </target>
+
   <!-- =================================================================== -->
   <!--                                                                     -->
   <!-- =================================================================== -->
@@ -629,7 +630,7 @@
 
   <target name="ready-to-dist"
       depends="build,jars,copybins,copyPrivate,copydocs,
-      copyexamples,copyTestCA,buildSetup,srczip"
+      copylibs,copyexamples,copyTestCA,buildSetup,srczip"
       />
 
   <!-- =================================================================== -->
@@ -802,11 +803,9 @@
 ]]></echo>
        </sequential>
      </macrodef>
-
-
      <m2-makepom target="${target.pom}" artifact="smartfrog"/>
-    <m2-makesfpom target="${sf-services.pom}" artifact="sfServices"/>
-    <m2-makesfpom target="${sf-examples.pom}" artifact="sfExamples"/>
+     <m2-makesfpom target="${sf-services.pom}" artifact="sfServices"/>
+     <m2-makesfpom target="${sf-examples.pom}" artifact="sfExamples"/>
    </target>
 
 
