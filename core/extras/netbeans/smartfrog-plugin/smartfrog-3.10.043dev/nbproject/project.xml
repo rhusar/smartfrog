@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://www.netbeans.org/ns/project/1">
+    <type>org.netbeans.modules.apisupport.project</type>
+    <configuration>
+        <data xmlns="http://www.netbeans.org/ns/nb-module-project/2">
+            <code-name-base>org.smartfrog</code-name-base>
+            <suite-component/>
+            <module-dependencies/>
+            <public-packages>
+                <package>org.smartfrog</package>
+                <package>org.smartfrog.sfcore.common</package>
+                <package>org.smartfrog.sfcore.componentdescription</package>
+                <package>org.smartfrog.sfcore.compound</package>
+                <package>org.smartfrog.sfcore.deployer</package>
+                <package>org.smartfrog.sfcore.languages.csf</package>
+                <package>org.smartfrog.sfcore.languages.csf.constraints</package>
+                <package>org.smartfrog.sfcore.languages.csf.csfcomponentdescription</package>
+                <package>org.smartfrog.sfcore.languages.sf</package>
+                <package>org.smartfrog.sfcore.languages.sf.functions</package>
+                <package>org.smartfrog.sfcore.languages.sf.sfcomponentdescription</package>
+                <package>org.smartfrog.sfcore.languages.sf.sfreference</package>
+                <package>org.smartfrog.sfcore.logging</package>
+                <package>org.smartfrog.sfcore.parser</package>
+                <package>org.smartfrog.sfcore.prim</package>
+                <package>org.smartfrog.sfcore.processcompound</package>
+                <package>org.smartfrog.sfcore.reference</package>
+                <package>org.smartfrog.sfcore.security</package>
+                <package>org.smartfrog.sfcore.utils</package>
+                <package>org.smartfrog.sfcore.workflow.combinators</package>
+                <package>org.smartfrog.sfcore.workflow.components</package>
+                <package>org.smartfrog.sfcore.workflow.conditional</package>
+                <package>org.smartfrog.sfcore.workflow.conditional.conditions</package>
+                <package>org.smartfrog.sfcore.workflow.eventbus</package>
+            </public-packages>
+            <class-path-extension>
+                <runtime-relative-path>ext/smartfrog-3.10.043dev.jar</runtime-relative-path>
+                <binary-origin>release/modules/ext/smartfrog-3.10.043dev.jar</binary-origin>
+            </class-path-extension>
+        </data>
+    </configuration>
+</project>
