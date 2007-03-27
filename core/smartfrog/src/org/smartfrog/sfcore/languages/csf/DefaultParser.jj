@@ -99,6 +99,8 @@ public class DefaultParser {
             fixed.append('\f'); break;
           case '=':
             fixed.append("\\="); break;
+          case '#':        //this case is captured by the default, but is here for explicitness
+            fixed.append('#'); break;  
           case '0': case '1': case '2': case '3':
           case '4': case '5': case '6': case '7':
             int i = ((s.charAt(index) - '0') * 64) +
@@ -333,68 +335,68 @@ TOKEN : /* Literals */
             )
         )* "#")
       >
-    | <SELECTING: ("#selecting(" (               // for backward compatibility
-          (~[")","\\"])
+    | <SELECTING: ("#selecting#" (               // for backward compatibility
+          (~["#","\\"])
           | ("\\"
-              ( ["n","t","b","r","f","\\","'",")","="]
+              ( ["n","t","b","r","f","\\","'","#","="]
               | ["0"-"3"] ["0"-"7"] ["0"-"7"]
               )
             )
-        )* ")")
+        )* "#")
       >
-     | <BINDING: ("#binding(" (                        // for backward compatibility
-          (~[")","\\"])
+     | <BINDING: ("#binding#" (                        // for backward compatibility
+          (~["#","\\"])
           | ("\\"
-              ( ["n","t","b","r","f","\\","'",")","="]
+              ( ["n","t","b","r","f","\\","'","#","="]
               | ["0"-"3"] ["0"-"7"] ["0"-"7"]
               )
             )
-        )* ")")
+        )* "#")
       >
-     | <CHECKING: ("#checking(" (                      // for backward compatibility
-          (~[")","\\"])
+     | <CHECKING: ("#checking#" (                      // for backward compatibility
+          (~["#","\\"])
           | ("\\"
-              ( ["n","t","b","r","f","\\","'",")","="]
+              ( ["n","t","b","r","f","\\","'","#","="]
               | ["0"-"3"] ["0"-"7"] ["0"-"7"]
               )
             )
-        )* ")")
+        )* "#")
       >
-     | <CONSTRAINT: ("#constraint:" (["0"-"9"])+ "(" (
-          (~[")","\\"])
+     | <CONSTRAINT: ("#constraint:" (["0"-"9"])+ "#" (
+          (~["#","\\"])
           | ("\\"
-              ( ["n","t","b","r","f","\\","'",")","="]
+              ( ["n","t","b","r","f","\\","'","#","="]
               | ["0"-"3"] ["0"-"7"] ["0"-"7"]
               )
             )
-        )* ")")
+        )* "#")
       >
-     | <DECL: ("#decl(" (
-          (~[")","\\"])
+     | <DECL: ("#decl#" (
+          (~["#","\\"])
           | ("\\"
-              ( ["n","t","b","r","f","\\","'",")","="]
+              ( ["n","t","b","r","f","\\","'","#","="]
               | ["0"-"3"] ["0"-"7"] ["0"-"7"]
               )
             )
-        )* ")")
+        )* "#")
       >
-     | <SEARCH: ("#search:" (["0"-"9"])+ "(" (
-          (~[")","\\"])
+     | <SEARCH: ("#search:" (["0"-"9"])+ "#" (
+          (~["#","\\"])
           | ("\\"
-              ( ["n","t","b","r","f","\\","'",")","="]
+              ( ["n","t","b","r","f","\\","'","#","="]
               | ["0"-"3"] ["0"-"7"] ["0"-"7"]
               )
             )
-        )* ")")
+        )* "#")
       >
-     | <SUCHTHAT: ("#suchThat(" (                     // for backward compatibility
-          (~[")","\\"])
+     | <SUCHTHAT: ("#suchThat#" (                     // for backward compatibility
+          (~["#","\\"])
           | ("\\"
-              ( ["n","t","b","r","f","\\","'",")","="]
+              ( ["n","t","b","r","f","\\","'","#","="]
               | ["0"-"3"] ["0"-"7"] ["0"-"7"]
               )
             )
-        )* ")")
+        )* "#")
       >
     | <INTEGER: (("-")? ["0"-"9"] (["0"-"9"])*)
         | "0" >
