@@ -288,6 +288,7 @@
     <javacc target="${src.dir}/org/smartfrog/sfcore/languages/sf/DefaultParser.jj" javacchome="${javacc.dir}"/>
     <javacc target="${src.dir}/org/smartfrog/sfcore/languages/csf/DefaultParser.jj" javacchome="${javacc.dir}"/>
   </target>
+
   <!-- =================================================================== -->
   <!--   Compiles source directory                                         -->
   <!-- =================================================================== -->
@@ -302,9 +303,10 @@
     </javac>
   </target>
 
-  <!-- this is an override point -->
+  <!-- =================================================================== -->
   <!-- RMI compile by looking for all remote classes in the
        compiled project-->
+  <!-- =================================================================== -->
   <target name="rmi" depends="compile-source" description="create the RMI classes">
       <rmic
           stubversion="1.2"
@@ -850,13 +852,36 @@
   </target>
 
 
-  <target name="ivy-init" depends="init,target-names"    >
+  <target name="ivy-properties" depends="init,target-names"    >
     <property name="ivy.dir" location="${build.extra.dir}/ivy" />
     <property name="ivy.lib.dir" location="${ivy.dir}/lib" />
     <property name="ivy.version" value="1.4.1" />
+    <property name="ivy.resource" value="fr/jayasoft/ivy/ant/antlib.xml" />
     <property name="ivy.reports.dir" location="${build.dir}/ivy/reports"/>
+    <property name="ivy.jar"
+        location="../antbuild/ivy/lib/ivy-${ivy.version}.jar"/>
+    <available property="ivy.jar.found" file="${ivy.jar}" />
+    <available property="ivy.resource.found" resource="${ivy.resource}" />
+    <condition property="ivy.found" >
+      <or >
+        <isset property="ivy.jar.found"/>
+        <isset property="ivy.resource.found"/>
+      </or>
+    </condition>
+  </target>
+
+  <target name="ivy-warn-no-ivy" depends="ivy-properties" unless="ivy.found">
+    <echo level="error">
+      No Ivy file found:
+      ${ivy.jar}
+      Artifacts created in this build will not be published.
+    </echo>
+  </target>
+
+  <target name="ivy-init" depends="ivy-warn-no-ivy" if="ivy.jar.found">
+
     <typedef uri="antlib:fr.jayasoft.ivy.ant" onerror="fail"
-             resource="fr/jayasoft/ivy/ant/antlib.xml">
+             resource="${ivy.resource}">
       <classpath>
         <pathelement location="../antbuild/ivy/lib/ivy-${ivy.version}.jar"/>
       </classpath>
@@ -864,15 +889,15 @@
     <ivy:configure file="ivyconf.xml"/>
   </target>
 
-  <target name="ivy-resolve" depends="ivy-init">
+  <target name="ivy-resolve" depends="ivy-init" if="ivy.found">
     <ivy:resolve />
   </target>
 
-  <target name="ivy-retrieve" depends="ivy-resolve">
+  <target name="ivy-retrieve" depends="ivy-resolve" if="ivy.found">
     <ivy:retrieve pattern="${ivy.lib.dir}/[conf]/[artifact]-[revision].[ext]" sync="true" />
   </target>
 
-  <target name="ivy-report" depends="ivy-resolve">
+  <target name="ivy-report" depends="ivy-resolve" if="ivy.found">
     <ivy:report todir="${ivy.reports.dir}"/>
     <echo> published Ivy report to 
 ${ivy.reports.dir}
@@ -882,7 +907,7 @@ ${ivy.reports.dir}
   <!--jars,-->
   <target name="ready-to-publish" depends="jars,ivy-report"/>
 
-  <target name="ivy-publish" depends="ready-to-publish">
+  <target name="ivy-publish" depends="ready-to-publish" if="ivy.found">
     <ivy:publish resolver="local" pubrevision="${Version}"
         overwrite="true"
         artifactspattern="${dist.dir}/lib/[artifact]-[revision].[ext]" />
