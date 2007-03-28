@@ -115,9 +115,6 @@ public class TelnetImpl extends PrimImpl implements Telnet,
                     fout = new FileOutputStream(logFile, false);
                 }
             }catch (IOException ioex) {
-                // TODO: Use logger 
-              //  System.out.println("Error in opening log file:"
-                //        +ioex.getMessage());
                 sfLog().error("Error in opening log file:"
                         +ioex.getMessage());
             }  
@@ -130,7 +127,6 @@ public class TelnetImpl extends PrimImpl implements Telnet,
             boolean operationStatus = waitForString(inpStream, "login:", 
                                                 timeout);
             if (operationStatus) {
-                //System.out.println("Login :"+ operationStatus);
                 String loginName = user+"\n";
                 opStream.write(loginName.getBytes());
                 opStream.flush();
@@ -143,7 +139,6 @@ public class TelnetImpl extends PrimImpl implements Telnet,
 		}
             }
             if (operationStatus) {
-                //System.out.println("Password :"+ operationStatus);
                 String passWd = password+"\n";
                 opStream.write(passWd.getBytes());
                 opStream.flush();
@@ -155,8 +150,6 @@ public class TelnetImpl extends PrimImpl implements Telnet,
                 throw new SmartFrogLifecycleException(
                         "Unable to login in remote machine");
             } else {
-                //TODO: Use logger
-                //System.out.println("login Successful in host:"+ host);
 		if (sfLog().isInfoEnabled())
                		 sfLog().info("login Successful in host:"+ host);
             }
