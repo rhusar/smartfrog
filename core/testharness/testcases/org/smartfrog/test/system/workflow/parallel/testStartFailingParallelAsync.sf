@@ -23,9 +23,9 @@
 
 /**
  * deploy a parallel component.
- * Expect it to terminate once there are no active children
+ * Expect the component to fail with an exception
  */
-sfConfig  extends TestBlockWithStartupException /* NoToggle */ {
+sfConfig  extends TestBlockWithStartupException {
 
   description "Throw an exception on startup; async startup";
 
