@@ -35,6 +35,21 @@ For more information: www.smartfrog.org
   <import file="../../common.xml"/>
 <!--  <import file="${root.dir}/common.xml"/>-->
 
+  <target name="zip" depends="prepare-for-dist"
+      description="Create a zip file distribution" >
+  </target>
+
+  <target name="tar" depends="prepare-for-dist"
+      description="Create a tar file distribution" >
+  </target>
+
+  <target name="installed" depends="common.installed,update-core"
+      description="Place the system in a state in which the components are installed for reuse"/>
+
+  <target name="all" description="build, test and publish the code"
+      depends="test,published,dist">
+  </target>
+
   <!-- this is done so that the jarfile generated is bound to our project name with
     no -components suffix-->
   <property name="jarfile.suffix" value=""/>
@@ -117,23 +132,6 @@ For more information: www.smartfrog.org
   </target>
   
 
-  <target name="test1" depends="package,use-smartfrog-tasks">
-    <sf-parse />
-    <parallel>
-      <sf-startdaemon 
-        taskTimeout="30"
-        classpathref="smartfrog.tasks.classpath"
-        />
-      <sequential>
-        <sleep seconds="5"/>
-        <sf-stopdaemon hostname="localhost"
-          failonerror="true"
-          classpathref="smartfrog.tasks.classpath"/>
-      </sequential>
-    </parallel>
-    
-  </target>
-  
   <target name="stopdaemon" depends="package,use-smartfrog-tasks">
     <sf-stopdaemon 
       classpathref="smartfrog.tasks.classpath"/>
@@ -303,24 +301,15 @@ For more information: www.smartfrog.org
   
 </target>
 
-<target name="zip" depends="prepare-for-dist" 
-  description="Create a zip file distribution" >
-</target>
 
-<target name="tar" depends="prepare-for-dist" 
-  description="Create a tar file distribution" >
-</target>
-
-  <!--patch the new ant tasks into the core-->
+    <!--patch the new ant tasks into the core-->
   <target name="update-core" depends="package">
     <delete>
       <fileset dir="${root.dir}/smartfrog/lib"
-        includes="sf-tasks*.jar" />
+          includes="sf-tasks*.jar"/>
     </delete>
-    <copy file="${target.jar}" todir="${root.dir}/smartfrog/lib" />
+    <copy file="${target.jar}" todir="${root.dir}/smartfrog/lib"/>
   </target>
 
-  <target name="installed" depends="common.installed,update-core"
-      description="Place the system in a state in which the components are installed for reuse"/>
 
-</project>   
+</project>
