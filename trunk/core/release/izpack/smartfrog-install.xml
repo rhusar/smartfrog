@@ -42,32 +42,57 @@
 
   <packs>
     <pack name="Core" required="yes">
-      <description>SmartFrog core files.</description>
+      <description>SmartFrog core files.
+        This includes the JAR files needed to run SmartFrog, and the batch files and shell scripts
+        that start SmartFrog. It also includes the Ant tasks needed to invoke SmartFrog from a build.
+      </description>
       <fileset dir="package-core" targetdir="$INSTALL_PATH"
           includes="**/*"/>
     </pack>
     <pack name="Examples" required="no">
-      <description>examples</description>
+      <description>
+        These are the example files that come with SmartFrog, showing how to use
+        SmartFrog to deploy complex systems.
+      </description>
       <fileset dir="package-examples" targetdir="$INSTALL_PATH"
           includes="**/*"/>
     </pack>
     <pack name="package-ant" required="no">
-      <description>package-ant</description>
+      <description>
+        This package contains the JAR file sf-ant.jar, which contains
+        components that can run Ant tasks during deployment.
+        The package also contains the Ant JAR files, which are
+        licensed under the Apache Software Foundation License, version
+        2.0.
+      </description>
       <fileset dir="package-ant" targetdir="$INSTALL_PATH"
           includes="**/*"/>
     </pack>
     <pack name="package-anubis" required="no">
-      <description>package-anubis</description>
+      <description>
+        Anubis is a tuple-space like system for partition-aware
+        messaging between components, which can be used to build
+        fault-tolerant systems.
+      </description>
       <fileset dir="package-anubis" targetdir="$INSTALL_PATH"
           includes="**/*"/>
     </pack>
+<!--
     <pack name="package-database" required="no">
-      <description>package-database</description>
+      <description>
+        The sf-database JAR contains the components needed to talk to a database
+        during deployment, or when terminating a deployment. It has special component templates.
+        to start and administer MySQL.
+      </description>
       <fileset dir="package-database" targetdir="$INSTALL_PATH"
           includes="**/*"/>
     </pack>
+-->
     <pack name="package-jmx" required="no">
-      <description>package-jmx</description>
+      <description>
+        The sf-jmx package can integrate JMX MBeans with SmartFrog, and
+        export SmartFrog components as MBeans.
+      </description>
       <fileset dir="package-jmx" targetdir="$INSTALL_PATH"
           includes="**/*"/>
     </pack>
@@ -82,7 +107,8 @@
           includes="**/*"/>
     </pack>
     <pack name="package-scheduling" required="no">
-      <description>package-scheduling</description>
+      <description>Scheduling.
+      Contains the Quartz library and a component for scheduling work.</description>
       <fileset dir="package-scheduling" targetdir="$INSTALL_PATH"
           includes="**/*"/>
     </pack>
@@ -91,24 +117,33 @@
       <fileset dir="package-scripting" targetdir="$INSTALL_PATH"
           includes="**/*"/>
     </pack>
-    <pack name="package-testing" required="no">
+<!--    <pack name="package-testing" required="no">
       <description>package-testing</description>
       <fileset dir="package-testing" targetdir="$INSTALL_PATH"
           includes="**/*"/>
       <depends packname="package-logging"/>
-    </pack>
+    </pack>-->
     <pack name="package-www" required="no">
-      <description>package-www</description>
+      <description>WWW support.
+      This package contains components to deploy web applications on different
+        Java web servers, from jetty to JBoss. It also contains a LivenessPage
+        component that can monitor the health of a remote site.
+      </description>
       <fileset dir="package-www" targetdir="$INSTALL_PATH"
           includes="**/*"/>
     </pack>
     <pack name="package-xml" required="no">
-      <description>package-xml</description>
+      <description>XML support.
+      This package contains Xom and components to create a XOM graph from
+      a component description.</description>
       <fileset dir="package-xml" targetdir="$INSTALL_PATH"
           includes="**/*"/>
     </pack>
     <pack name="package-xmpp" required="no">
-      <description>package-</description>
+      <description>Jabber support: components to register with a Jabber server and
+        relay notification methods. These can be used to communicate over long distances,
+        or track the availability of remote systems.
+      </description>
       <fileset dir="package-xmpp" targetdir="$INSTALL_PATH"
           includes="**/*"/>
     </pack>

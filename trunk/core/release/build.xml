@@ -49,7 +49,6 @@
       depends="declare-izpack,prepare-resources,prepare-executables"/>
 
   <target name="izpack" depends="ready-to-izpack">
-
     <iz:izpack input="izpack/smartfrog-install.xml"
         output="${izpack.jar}"
         installerType="standard"
