@@ -24,8 +24,7 @@ For more information: www.smartfrog.org
 <description>
   Build file for Ant tasks for Smartfrog
 
-  To build and run the tests, you need ant-testutil.jar, which you get
-  by running "ant test-jar" in Ant or ant-testutil.jar
+  To build and run the tests, you need ant-testutil.jar, which Ivy will retrieve
   
 </description>
 
@@ -169,13 +168,9 @@ For more information: www.smartfrog.org
     match the version of ant used. 
     </echo>
   </target>
-  
-<!--     <target name="compile-tests" 
-      depends="want-testutil,common.compile-tests"
-      if="testutil.found"/> -->
+
   <target name="compile-tests" 
-      depends="init,want-testutil,package,use-smartfrog-tasks"
-      if="testutil.found">
+      depends="init,package,use-smartfrog-tasks">
     
     <sf-javac-with-ant 
       srcdir="${test.src.dir}"
@@ -217,8 +212,7 @@ For more information: www.smartfrog.org
   </target>  
 
   <target name="test" depends="run-tests"
-    description="run unit tests"
-    if="testutil.found">
+    description="run unit tests">
     
     <!-- generate the reports-->
     <sf-test-report data="${test.data.dir}"
