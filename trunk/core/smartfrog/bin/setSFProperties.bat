@@ -19,6 +19,10 @@ rem set SFJVM=javaw.exe
 set SFJVM=java.exe
 :jvmnext
 
+rem To define the prefix to componentname with username
+rem set USERNAMEPREFIX_ON=ENABLED
+
+
 rem -------------------End user properties-------------------------
 
 if exist "%SFHOME%\jvm\bin\%SFJVM%" set path="%SFHOME%\jre\bin";%path%

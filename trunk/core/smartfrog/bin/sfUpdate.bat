@@ -12,7 +12,16 @@ if (%3) == () goto usage
 
 call "%SFHOME%\bin\setSFProperties"
 
-%SFJVM% %SFCMDPARAMETERS% org.smartfrog.SFSystem -a \"%2\":UPDATE:\"%3\"::%1: -e
+if defined USERNAMEPREFIX_ON goto modify
+set APPNAME=%2
+goto execute
+
+:modify
+set APPNAME="%USERNAME%_%2"
+
+:execute
+rem %SFJVM% %SFCMDPARAMETERS% org.smartfrog.SFSystem -a \"%2\":UPDATE:\"%3\"::%1: -e
+%SFJVM% %SFCMDPARAMETERS% org.smartfrog.SFSystem -a \"%APPNAME%\":UPDATE:\"%3\"::%1: -e
 
 GOTO end
 :usage

@@ -12,8 +12,17 @@ if (%2) == () goto usage
 
 call "%SFHOME%\bin\setSFProperties"
 
+if defined USERNAMEPREFIX_ON goto modify
+set APPNAME=%2
+goto execute
+
+:modify
+set APPNAME="%USERNAME%_%2"
+
+:execute
 echo "Terminating %1"
-%SFJVM% %SFCMDPARAMETERS% org.smartfrog.SFSystem -a \"%2\":TERMINATE:::%1: -e
+rem %SFJVM% %SFCMDPARAMETERS% org.smartfrog.SFSystem -a \"%2\":TERMINATE:::%1: -e
+%SFJVM% %SFCMDPARAMETERS% org.smartfrog.SFSystem -a \"%APPNAME%\":TERMINATE:::%1: -e
 
 GOTO end
 :usage
