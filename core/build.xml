@@ -525,4 +525,14 @@ ${child.projects.list}
     </subant>
   </target>
 
+
+
+  <!-- ========================================================== -->
+  <!-- print meaningful diagnostics -->
+  <!-- ========================================================== -->
+  <target name="diagnostics" depends="init"
+      description="build file diagnostics">
+    <diagnostics/>
+  </target>
+  
 </project>
