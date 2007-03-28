@@ -19,6 +19,9 @@ if test "$SFJVM"; then
     export SFJVM=java
 fi
 
+# To define the prefix to componentname with username
+ # export USERNAMEPREFIX_ON=ENABLED
+
 # -------------------End user properties-------------------------
 
 if test -f "$SFHOME/jvm/bin/$SFJVM"; then 
