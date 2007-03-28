@@ -1348,7 +1348,7 @@ java.class.path=
   <!-- ========================================================== -->
  <target name="diagnostics" depends="init"
     description="build file diagnostics">
-    <echoproperties format="xml"/>
+    <diagnostics/>
   </target>
 
  <target name="diag2" depends="init,verify-prerequisites">
@@ -1557,6 +1557,8 @@ java.class.path=
     <property name="ivy.reports.dir" location="${build.dir}/ivy/reports"/>
     <property name="ivy.jar"
         location="${core.dir}/antbuild/ivy/lib/ivy-${ivy.version}.jar"/>
+    <property name="ivy.ibiblio.root"
+        value="http://www.ibiblio.org/maven2/"/>
     <available property="ivy.jar.found" file="${ivy.jar}" />
     <available property="ivy.resource.found" resource="${ivy.resource}" />
     <condition property="ivy.found" >
@@ -1598,6 +1600,29 @@ java.class.path=
   <target name="maybe-ivy-resolve" depends="maybe-ivy-init"
           if="ivy.enabled" >
     <ivy:resolve />
+  </target>
+
+  <target name="ivy-probe-repository"
+      description="check that the repository is reachable"
+      depends="ivy-properties">
+    <property name="ivy.probe.path"
+        value="${ivy.ibiblio.root}org/apache/ant/"/>
+    <echo>Probing ${ivy.probe.path}</echo>
+    <condition property="ivy.repository.reachable">
+      <or>
+<!--
+        <isreachable url="${ivy.ibiblio.root}" timeout="10"/>
+-->
+        <http url="${ivy.probe.path}" />
+      </or>
+    </condition>
+  </target>
+
+  <target name="ivy-require-repository" depends="ivy-probe-repository"
+      unless="ivy.repository.reachable">
+    <fail>
+      Unable to reach ${ivy.ibiblio.root}
+    </fail>
   </target>
 
   <!--This is a trick. by running the same stuff
