@@ -1343,7 +1343,6 @@ java.class.path=
   </target>
 
   <!-- ========================================================== -->
-  <!-- this is an override point -->
   <!-- print meaningful diagnostics -->
   <!-- ========================================================== -->
  <target name="diagnostics" depends="init"
