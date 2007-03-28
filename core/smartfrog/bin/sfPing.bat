@@ -11,8 +11,15 @@ if (%1) == (-?) goto help
 call "%SFHOME%\bin\setSFProperties"
 
 if (%2) == () goto next
+
+if defined USERNAMEPREFIX_ON goto modify
 set COMPONENT=%2
 goto execute
+
+:modify
+set COMPONENT="%USERNAME%_%2"
+goto execute
+
 :next
 set COMPONENT="rootProcess"
 
