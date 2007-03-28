@@ -10,7 +10,7 @@
           http://ibiblio.lsu.edu/main/pub/packages/maven2
           http://www.ibiblio.net/pub/packages/maven2
   -->
-  <property name="ibiblio-maven2-root"
+  <property name="ivy.ibiblio.root"
       value="http://www.ibiblio.org/maven2/" override="false"/>
   <property name="maven2.pattern"
       value="[organisation]/[module]/[revision]/[module]-[revision]" />
@@ -34,7 +34,7 @@
       <ivy pattern="${root.dir}/antbuild/repository/${maven2.pattern}.xml"/>
     </filesystem>
     <ibiblio name="maven2"
-        root="${ibiblio-maven2-root}"
+        root="${ivy.ibiblio.root}"
         pattern="${maven2.pattern.ext}"
         m2compatible="true"
         />
@@ -51,7 +51,7 @@
   <modules>
     <module organisation="org.smartfrog" name=".*" resolver="internal"/>
     <module organisation="org.ggf" name=".*" resolver="internal"/>
-    <!-- here so that I can build the antbook at the same time-->
+    <!-- here so that Steve can build the antbook at the same time-->
     <module organisation="org.antbook" name=".*" resolver="internal"/>
   </modules>
 </ivyconf>
