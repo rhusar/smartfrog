@@ -46,9 +46,6 @@ For more information: www.smartfrog.org
   <target name="installed" depends="common.installed,update-core"
       description="Place the system in a state in which the components are installed for reuse"/>
 
-  <target name="all" description="build, test and publish the code"
-      depends="test,published,dist">
-  </target>
 
   <!-- this is done so that the jarfile generated is bound to our project name with
     no -components suffix-->
@@ -312,4 +309,5 @@ For more information: www.smartfrog.org
   </target>
 
 
+  
 </project>
