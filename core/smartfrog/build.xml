@@ -877,8 +877,7 @@
     </echo>
   </target>
 
-  <target name="ivy-init" depends="ivy-warn-no-ivy" if="ivy.jar.found">
-
+  <target name="ivy-init" depends="ivy-warn-no-ivy" if="ivy.jar.found" unless="ivy.resource.found">
     <typedef uri="antlib:fr.jayasoft.ivy.ant" onerror="fail"
              resource="${ivy.resource}">
       <classpath>
@@ -917,5 +916,13 @@ ${ivy.reports.dir}
       description="Publish artifacts to the local repositories"
       />
 
+
+  <!-- ========================================================== -->
+  <!-- print meaningful diagnostics -->
+  <!-- ========================================================== -->
+  <target name="diagnostics" depends="init"
+      description="build file diagnostics">
+    <diagnostics/>
+  </target>
 </project>
 <!-- End of file -->
