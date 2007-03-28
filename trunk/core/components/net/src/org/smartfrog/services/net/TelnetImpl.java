@@ -41,7 +41,7 @@ import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.services.utils.generic.OutputStreamIntf;
 import org.smartfrog.services.utils.generic.StreamGobbler;
 import org.smartfrog.services.utils.generic.StreamIntf;
-
+import org.smartfrog.sfcore.logging.LogSF;
 /**
  * SmartFrog implementation of telnet component.
  *
@@ -71,7 +71,9 @@ public class TelnetImpl extends PrimImpl implements Telnet,
     private String logFile = null;
     private Reference pwdProviderRef = new Reference("passwordProvider");
     private PasswordProvider pwdProvider = null;
-    private boolean shouldTerminate = true;  // default 
+    private boolean shouldTerminate = true;  // default
+    protected LogSF logCore = null;
+    protected LogSF logApp = null; 
 
     /**
      * Constructs TelnetImpl object.
@@ -114,7 +116,9 @@ public class TelnetImpl extends PrimImpl implements Telnet,
                 }
             }catch (IOException ioex) {
                 // TODO: Use logger 
-                System.out.println("Error in opening log file:"
+              //  System.out.println("Error in opening log file:"
+                //        +ioex.getMessage());
+                sfLog().error("Error in opening log file:"
                         +ioex.getMessage());
             }  
             
@@ -152,7 +156,9 @@ public class TelnetImpl extends PrimImpl implements Telnet,
                         "Unable to login in remote machine");
             } else {
                 //TODO: Use logger
-                System.out.println("login Successful in host:"+ host);
+                //System.out.println("login Successful in host:"+ host);
+		if (sfLog().isInfoEnabled())
+               		 sfLog().info("login Successful in host:"+ host);
             }
             
             client.registerSpyStream(fout);
@@ -166,13 +172,15 @@ public class TelnetImpl extends PrimImpl implements Telnet,
                 cmd = cmd + "\n";
                 opStream.write(cmd.getBytes());
                 opStream.flush();
-                try {
-                    Thread.sleep(1000);
+             /*   try {
+                    //Thread.sleep(1000);
+                    this.wait(1000);
                 }catch (InterruptedException e) {
                     //ignore
-                }
-                
-                // wait for prompt to return.
+		    if (sfLog().isInfoEnabled()) sfLog().error("", e);
+		}
+*/
+		// wait for prompt to return.
                 boolean getPrompt = waitForString(inpStream, shellPrompt, timeout);         // CJB
                 
                 // check if command was successfully executed
