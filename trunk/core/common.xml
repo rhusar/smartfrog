@@ -1207,12 +1207,6 @@ java.class.path=
     description="create a distribution">
   </target>
 
-
-  <target name="all" description="build, test and publish the code"
-      depends="test,published,dist">
-  </target>
-
-
   <target name="all" description="build, test and publish the code"
       depends="test,published,dist">
   </target>
