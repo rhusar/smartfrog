@@ -434,7 +434,7 @@ java.class.path=
       <attribute name="failed"/>
       <sequential>
         <sf-junitreport data="@{data}" reports="@{reports}" />
-        <fail if="@{failed}">Unit tests failed see:
+        <fail if="@{failed}">Tests failed see:
           @{reports}</fail>
       </sequential>
     </macrodef>
@@ -1207,6 +1207,15 @@ java.class.path=
     description="create a distribution">
   </target>
 
+
+  <target name="all" description="build, test and publish the code"
+      depends="test,published,dist">
+  </target>
+
+
+  <target name="all" description="build, test and publish the code"
+      depends="test,published,dist">
+  </target>
 
   <!-- =================================================================== -->
   <!-- a clean distribution                                               -->
