@@ -218,7 +218,7 @@ For more information: www.smartfrog.org
   <!-- =================================================================== -->
   <!-- update code from SVN. Can overwrite this file too!                  -->
   <!-- =================================================================== -->
-    <target name="svnupdate" depends="cc-init"
+    <target name="svnupdate" depends="cc-init" unless="skip.svn"
       description="update SVN; needs SVN on the command line">
       <exec executable="svn" failonerror="false">
         <arg line="update" />
@@ -357,6 +357,9 @@ For more information: www.smartfrog.org
   <!-- cddlm compile is handed down-->
   <!-- =================================================================== -->
   <target name="cddlm" depends="ivy-cddlm" />
+
+  <target name="bamboo-build-all" depends="published"
+    description="entry point for Bamboo CI system" />
 
 
   <target name="ivy-properties">
