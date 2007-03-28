@@ -35,8 +35,8 @@
         description="ant components"/>
     <conf name="package-anubis"
         description="anubis components"/>
-    <conf name="package-database"
-        description="database components"/>
+<!--    <conf name="package-database"
+        description="database components"/>-->
     <conf name="package-jmx"
         description="jmx components"/>
     <conf name="package-logging"
@@ -47,8 +47,8 @@
         description="scheduling components"/>
     <conf name="package-scripting"
         description="scripting components"/>
-    <conf name="package-testing"
-        description="testing components"/>
+<!--    <conf name="package-testing"
+        description="testing components"/>-->
     <conf name="package-www"
         description="www components"/>
     <conf name="package-xml"
