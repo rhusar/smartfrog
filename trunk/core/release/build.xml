@@ -20,6 +20,7 @@
 
   <property name="jarfile.suffix" value="-resources"/>
   <property name="jarfile.extension" value="jar"/>
+  <property name="project.name" value="sf-${ant.project.name}" />
   <property name="artifact.name" value="${project.name}" />
   <property name="jarfile.stub" value="${artifact.name}${jarfile.suffix}" />
 
@@ -43,30 +44,51 @@
         classname="com.izforge.izpack.ant.IzPackTask"/>
   </target>
 
-  <target name="prepare-resources" depends="ivy-retrieve">
-    <copy todir="${ivy.lib.dir}/res">
-      <fileset dir="izpack/res" includes="**/*" />
+  <target name="prepare-resources" depends="init">
+    <copy todir="${build.dir}/res">
+      <fileset dir="src/res" includes="*" />
     </copy>
   </target>
 
   <target name="prepare-executables" depends="ivy-retrieve">
   </target>
 
-  <target name="ready-to-izpack"
-      depends="declare-izpack,prepare-resources,prepare-executables,packaged"/>
 
-  <target name="izpack" depends="ready-to-izpack">
-    <iz:izpack input="izpack/smartfrog-install.xml"
-        output="${izpack.jar}"
-        installerType="standard"
-        basedir="${ivy.lib.dir}"/>
+  <target name="expand-izpack" depends="init">
+    <copy todir="${build.dir}" overwrite="true">
+      <fileset file="izpack/smartfrog-install.xml" />
+      <filterchain>
+        <expandproperties/>
+      </filterchain>
+    </copy>
+    <property name="izpack.xml" location="${build.dir}/smartfrog-install.xml" />
   </target>
 
+  <target name="validate-izpack" depends="expand-izpack">
+    <xmlvalidate file="${izpack.xml}" warn="false"/>
+  </target>
+
+
+  <target name="ready-to-izpack"
+      depends="declare-izpack,prepare-resources,prepare-executables,packaged,expand-izpack"/>
+  
+  <target name="izpack" depends="ready-to-izpack">
+    <iz:izpack input="${build.dir}/smartfrog-install.xml"
+        output="${izpack.jar}"
+        installerType="standard"
+        basedir="${build.dir}"/>
+  </target>
 
   <target name="run" depends="izpack" >
     <java jar="${izpack.jar}" fork="true" >
       <sysproperty key="TRACE" value="true" />
     </java>
+  </target>
+
+  <target name="unzip" depends="izpack" >
+    <property name="unzip.dir" location="${build.dir}/unzip" />
+    <mkdir dir="${unzip.dir}" />
+    <unzip src="${izpack.jar}" dest="${unzip.dir}"/>
   </target>
 
 </project>
