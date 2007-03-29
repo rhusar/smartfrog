@@ -211,8 +211,12 @@
     <propertyfile
         file="${sf.version.file}"
         comment="This is machine generated. Do Not Edit!">
-      <entry  key="sf.build.date" type="date"  pattern="dd MMM yyyy, HH:mm:ss"  value="now"/>
+      <entry  key="sf.build.date" type="date"  pattern="yyyy-MM-dd HH:mm:ss"  value="now"/>
       <entry  key="sf.build.version" value = "${Version}"/>
+      <entry key="sf.majorRelease" value="${sf.majorRelease}"/>
+      <entry key="sf.minorRelease" value="${sf.minorRelease}"/>
+      <entry key="sf.build" value="${sf.build}"/>
+      <entry key="sf.status" value="${sf.status}"/>
     </propertyfile>
     <property file="${sf.version.file}"/>
     <copy file="${sf.version.file}" todir="${build.classes.dir}/org/smartfrog" />
