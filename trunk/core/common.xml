@@ -92,12 +92,8 @@
     <property name="javac.include.ant" value="false" />
 
     <property name="smartfrog.daemon.port" value="3800" />
-    <!--when available, use the forking compiler-->
-    <available property="rmic.compiler" value="forking"
-               classname="org.apache.tools.ant.taskdefs.rmic.ForkingSunRmic"
-        />
-    <!-- fall back to the sun compiler -->
-    <property name="rmic.compiler" value="sun"/>
+    <!--use the forking compiler-->
+    <property name="rmic.compiler" value="forking"/>
 
     
     <property name="extras.dir"
@@ -1187,6 +1183,10 @@ java.class.path=
     description="create the JAR files">
    </target>
 
+  <target name="packaged" depends="package"
+      description="create the JAR files">
+  </target>
+
   <!-- ========================================================== -->
   <!-- this is an override point -->
   <!-- create the test jar ${test.jar}-->
@@ -1531,6 +1531,8 @@ java.class.path=
         <isset property="ivy.resource.found"/>
       </or>
     </condition>
+    <mkdir dir="${ivy.reports.dir}" />
+    <mkdir dir="${ivy.lib.dir}" />
   </target>
 
   <target name="maybe-declare-ivy" if="ivy.enabled"
