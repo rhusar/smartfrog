@@ -2,6 +2,7 @@
 <installation version="1.0">
   <info>
     <appname>SmartFrog</appname>
+    <appsubpath>hp/smartfrog</appsubpath>
     <appversion>3.11.000.beta</appversion>
     <authors>
       <author name="SmartFrog Developers" email="smartfrog-developer@lists.sourceforge.net"/>
@@ -11,12 +12,39 @@
   </info>
   <guiprefs height="600" resizable="yes" width="800">
   </guiprefs>
+
+  <!--
+      * $INSTALL_PATH : the installation path on the target system, as chosen by the user
+    * $APPLICATIONS_DEFAULT_ROOT : the default path for applications
+    * $JAVA_HOME : the JavaTM virtual machine home path
+    * $CLASS_PATH : the Class Path used mainly for Java Applications
+    * $USER_HOME : the user's home directory path
+    * $USER_name : the user name
+    * $APP_name : the application name
+    * $APP_URL : the application URL
+    * $APP_VER : the application version
+    * $ISO3_LANG : the ISO3 language code of the selected langpack.
+    * $IP_ADDRESS : the IP Address of the local machine.
+    * $HOST_NAME : the HostName of the local machine.
+    * $FILE_SEPARATOR : the file separator on the installation system
+    * $DesktopShortcutCheckboxEnabled : When set to true, it automatically
+    checks the "Create Desktop Shortcuts" button.
+    To see how to use it, go to The Variables Element <variables> Be careful this variable is case sensitve !
+    * $InstallerFrame.logfilePath : The path to the install log.
+    This file contains the paths of all installed files.
+    If set to "default" then the "$INSTALL_PATH/Uninstaller/install.log" path will be used.
+    If this variable is not set, no install.log will be created.
+
+    Environment variables can be accessed via the syntax ${ENV[variable]}.
+    The curly braces are mandatory. Note that variable names are case-sensitive and usually in UPPER CASE.
+  -->
+
   <variables>
     <variable name="VERSION" value="3.11.000.beta"/>
     <variable name="YEAR" value="2007"/>
-    <variable name="InstallerFrame.logfilePath" value="Default"/>
+    <variable name="InstallerFrame.logfilePath" value="default"/>
     <!-- This automatically checks the "Create Desktop Shortcuts" button. Default value is "False". -->
-    <variable name="desktopshortcutcheckboxenabled" value="false"/>
+    <variable name="$DesktopShortcutCheckboxEnabled" value="false"/>
   </variables>
 
 
@@ -36,11 +64,14 @@
     <panel classname="HTMLLicencePanel"/>
     <panel classname="PacksPanel"/>
     <panel classname="TargetPanel"/>
+<!--    <panel classname="DataCheckPanel"/>-->
     <panel classname="InstallPanel"/>
+    <panel classname="SummaryPanel"/>
     <panel classname="FinishPanel"/>
   </panels>
 
   <packs>
+    
     <pack name="Core" required="yes">
       <description>SmartFrog core files.
         This includes the JAR files needed to run SmartFrog, and the batch files and shell scripts
@@ -49,7 +80,8 @@
       <fileset dir="package-core" targetdir="$INSTALL_PATH"
           includes="**/*"/>
     </pack>
-    <pack name="Examples" required="no">
+
+    <pack name="Examples" required="no" preselected="yes">
       <description>
         These are the example files that come with SmartFrog, showing how to use
         SmartFrog to deploy complex systems.
@@ -57,7 +89,8 @@
       <fileset dir="package-examples" targetdir="$INSTALL_PATH"
           includes="**/*"/>
     </pack>
-    <pack name="package-ant" required="no">
+
+    <pack name="package-ant" required="no" >
       <description>
         This package contains the JAR file sf-ant.jar, which contains
         components that can run Ant tasks during deployment.
@@ -68,7 +101,7 @@
       <fileset dir="package-ant" targetdir="$INSTALL_PATH"
           includes="**/*"/>
     </pack>
-    <pack name="package-anubis" required="no">
+<!--    <pack name="package-anubis" required="no">
       <description>
         Anubis is a tuple-space like system for partition-aware
         messaging between components, which can be used to build
@@ -76,7 +109,7 @@
       </description>
       <fileset dir="package-anubis" targetdir="$INSTALL_PATH"
           includes="**/*"/>
-    </pack>
+    </pack>-->
 <!--
     <pack name="package-database" required="no">
       <description>
@@ -88,6 +121,7 @@
           includes="**/*"/>
     </pack>
 -->
+<!--
     <pack name="package-jmx" required="no">
       <description>
         The sf-jmx package can integrate JMX MBeans with SmartFrog, and
@@ -96,11 +130,15 @@
       <fileset dir="package-jmx" targetdir="$INSTALL_PATH"
           includes="**/*"/>
     </pack>
-    <pack name="package-logging" required="no">
+-->
+
+    <pack name="package-logging" required="no" preselected="yes">
       <description>package-logging</description>
       <fileset dir="package-logging" targetdir="$INSTALL_PATH"
           includes="**/*"/>
     </pack>
+
+<!--
     <pack name="package-networking" required="no">
       <description>package-networking</description>
       <fileset dir="package-networking" targetdir="$INSTALL_PATH"
@@ -117,12 +155,14 @@
       <fileset dir="package-scripting" targetdir="$INSTALL_PATH"
           includes="**/*"/>
     </pack>
+-->
 <!--    <pack name="package-testing" required="no">
       <description>package-testing</description>
       <fileset dir="package-testing" targetdir="$INSTALL_PATH"
           includes="**/*"/>
       <depends packname="package-logging"/>
     </pack>-->
+<!--
     <pack name="package-www" required="no">
       <description>WWW support.
       This package contains components to deploy web applications on different
@@ -147,6 +187,7 @@
       <fileset dir="package-xmpp" targetdir="$INSTALL_PATH"
           includes="**/*"/>
     </pack>
+-->
 <!--    <pack name="package-extras" required="no">
       <description>package-extras</description>
       <fileset dir="package-extras" targetdir="$INSTALL_PATH"

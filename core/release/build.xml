@@ -17,6 +17,12 @@
 
   <property name="root.dir" location=".."/>
 
+
+  <property name="jarfile.suffix" value="-resources"/>
+  <property name="jarfile.extension" value="jar"/>
+  <property name="artifact.name" value="${project.name}" />
+  <property name="jarfile.stub" value="${artifact.name}${jarfile.suffix}" />
+
   <!-- Import common stuff -->
   <import file="../common.xml"/>
 
@@ -24,6 +30,7 @@
   <target name="init" depends="common.init">
     <property name="izpack.jar" location="${dist.bin.dir}/smartfrog-install-${smartfrog.version}.jar" />
   </target>
+  
   <target name="default" depends="published" />
 
   <target name="published" depends="ivy-report,izpack"/>
@@ -46,7 +53,7 @@
   </target>
 
   <target name="ready-to-izpack"
-      depends="declare-izpack,prepare-resources,prepare-executables"/>
+      depends="declare-izpack,prepare-resources,prepare-executables,packaged"/>
 
   <target name="izpack" depends="ready-to-izpack">
     <iz:izpack input="izpack/smartfrog-install.xml"
@@ -57,7 +64,9 @@
 
 
   <target name="run" depends="izpack" >
-    <java jar="${izpack.jar}" fork="true" />
+    <java jar="${izpack.jar}" fork="true" >
+      <sysproperty key="TRACE" value="true" />
+    </java>
   </target>
 
 </project>
