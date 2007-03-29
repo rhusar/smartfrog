@@ -219,12 +219,14 @@
   </locale>
   
   <resources>
-    <res id="HtmlInfoPanel.info" src="res/info.html" parse="yes" type="xml"/>
+    <res id="InfoPanel.info" src="res/info.txt" parse="yes" type="plain"/>
+    <res id="HTMLInfoPanel.info" src="res/info.html" parse="yes" type="xml"/>
     <res id="HTMLLicencePanel.licence" src="res/license.html" parse="yes" type="xml"/>
   </resources>
 
   <panels>
     <panel classname="HelloPanel"/>
+    <!--<panel classname="InfoPanel"/>-->
     <panel classname="HTMLInfoPanel"/>
     <!-- see res/HTMLLicencePanel.licence -->
     <panel classname="HTMLLicencePanel"/>
