@@ -856,9 +856,10 @@
     <property name="ivy.lib.dir" location="${ivy.dir}/lib" />
     <property name="ivy.version" value="1.4.1" />
     <property name="ivy.resource" value="fr/jayasoft/ivy/ant/antlib.xml" />
-    <property name="ivy.reports.dir" location="${build.dir}/ivy/reports"/>
+    <property name="ivy.reports.dir" location="${ivy.dir}/reports"/>
+    <property name="antbuild.dir" location="../antbuild" />
     <property name="ivy.jar"
-        location="../antbuild/ivy/lib/ivy-${ivy.version}.jar"/>
+        location="${antbuild.dir}/ivy/lib/ivy-${ivy.version}.jar"/>
     <available property="ivy.jar.found" file="${ivy.jar}" />
     <available property="ivy.resource.found" resource="${ivy.resource}" />
     <condition property="ivy.found" >
@@ -881,7 +882,7 @@
     <typedef uri="antlib:fr.jayasoft.ivy.ant" onerror="fail"
              resource="${ivy.resource}">
       <classpath>
-        <pathelement location="../antbuild/ivy/lib/ivy-${ivy.version}.jar"/>
+        <pathelement location="${antbuild.dir}/ivy/lib/ivy-${ivy.version}.jar"/>
       </classpath>
     </typedef>
     <ivy:configure file="ivyconf.xml"/>
