@@ -41,29 +41,29 @@ public class SFReplaceFileVar extends PrimImpl implements Prim {
 
     // Attributes
     /**
-     *  Description of the Field
+     *  File name @value
      */
     protected String fileName = ".";
     /**
-     *  Description of the Field
+     *  File name for result
      */
     protected String newFileName = null;
 
     /**
-     *  Description of the Field
+     *  Should terminate default @value
      */
     protected boolean shouldTerminate = true;
     /**
-     *  Description of the Field
+     *  Should detach default @value
      */
     protected boolean shouldDetach = false;
 
     /**
-     *  Description of the Field
+     *  Data parser
      */
     protected DataParser dataParser = null;
     /**
-     *  Description of the Field
+     *  Variable parser used for replacing
      */
     protected ParserVar parserVar = null;
 
@@ -78,14 +78,6 @@ public class SFReplaceFileVar extends PrimImpl implements Prim {
     static final String appendVariables = "append";
     //prefix to any variable to be included in dataAppend
 
-    // 5- info log, 1 - Critical. Use -1 to avoid log
-    int logger = -1;
-    boolean printStack = false;
-
-    // Level log
-    static final String varLogger = "logLevel";
-    static final String varPrintStack = "printStack";
-
 
     /**
      *  Constructor for the SFRunCommand object
@@ -95,20 +87,6 @@ public class SFReplaceFileVar extends PrimImpl implements Prim {
     public SFReplaceFileVar() throws RemoteException {
         super();
     }
-
-
-    /**
-     *  Sets the logLevel attribute of the SFRunCommand object
-     *
-     *@param  logLevel  The new logLevel value
-     */
-    public void setLogLevel(int logLevel) {
-        this.logger = logLevel;
-        if (parserVar!=null){
-            parserVar.setLogLevel(logger);
-        }
-    }
-
 
     /**
      *  Sets the shouldTerminate attribute of the SFRunCommand object
@@ -137,7 +115,7 @@ public class SFReplaceFileVar extends PrimImpl implements Prim {
 
 
     /**
-     *  Description of the Method
+     *  Deploy Method
      *
      *@exception  Exception  Description of Exception
      */
@@ -151,7 +129,7 @@ public class SFReplaceFileVar extends PrimImpl implements Prim {
 
 
     /**
-     *  Description of the Method
+     *  Start Method
      *
      *@exception  Exception  Description of Exception
      */
@@ -164,7 +142,6 @@ public class SFReplaceFileVar extends PrimImpl implements Prim {
 
         if ((dataParser.isValid()) && ((dataParser.getDataReplace() != null) || (dataParser.getDataAppend() != null))) {
             parserVar = new ParserVar(this, dataParser);
-            parserVar.setLogLevel(this.logger);
         }
         if (parserVar != null) {
             parserVar.start();
@@ -176,7 +153,7 @@ public class SFReplaceFileVar extends PrimImpl implements Prim {
 
 
     /**
-     *  Description of the Method
+     *  Terminate Method
      *
      *@param  r  Description of Parameter
      */
@@ -188,7 +165,7 @@ public class SFReplaceFileVar extends PrimImpl implements Prim {
 
 
     /**
-     *  Description of the Method
+     *  To kill any remaining threads
      */
     public void kill() {
         if (parserVar != null) {
@@ -201,28 +178,10 @@ public class SFReplaceFileVar extends PrimImpl implements Prim {
     }
 
     /**
-     *  Description of the Method
+     *  Read configuration attributes
      */
     private void readSFAttributes() {
         try {
-
-            try {
-                this.logger = ((Integer) sfResolve(varLogger)).intValue();
-                this.setLogLevel(logger);
-            } catch (SmartFrogResolutionException e) {
-                if (sfLog().isErrorEnabled()) sfLog().error(varLogger + " not found.",e);
-            } catch (Exception ex){
-                 if (sfLog().isErrorEnabled()) sfLog().error(ex);
-            }
-
-            try {
-                Object printStackObj = sfResolve(varPrintStack);
-                if (printStackObj instanceof Boolean) {
-                    this.printStack = (((Boolean) printStackObj).booleanValue());
-                }
-            } catch (SmartFrogResolutionException e) {
-                if (sfLog().isErrorEnabled()) sfLog().error(varPrintStack + " not found.",e);
-            }
 
             try {
                 fileName = (String) sfResolve(varSFfileName);
@@ -296,8 +255,9 @@ public class SFReplaceFileVar extends PrimImpl implements Prim {
                         //}
                     }
                 } catch (Exception ex) {
-                    //TOOD: replace with real logging
-                    ex.printStackTrace();
+                    if (sfLog().isErrorEnabled()){
+                        sfLog().debug(ex);
+                    }
                 }
             }
         }

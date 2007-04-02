@@ -260,7 +260,7 @@ public class ReplaceVar {
 //----------------------------------------------------------------------------
 
   /**
-   *
+   * Set settings
    * @param data  the hashmap
 
    */
@@ -281,7 +281,7 @@ public class ReplaceVar {
 
 //----------------------------------------------------------------------------
    /**
-   *
+   * Set settings when cached
    * @param data   hashmap to write
 
    */
@@ -300,7 +300,7 @@ public class ReplaceVar {
 
 
     /**
-     *
+     * Set settings
      * @param data
      */
   public void setSetting(Vector data) {
@@ -321,7 +321,7 @@ public class ReplaceVar {
 
   //----------------------------------------------------------------------------
   /**
-   *
+   * Set settings when cached
    * @param data
    */
   public void setSettingCached(Vector data) {
@@ -348,7 +348,7 @@ public class ReplaceVar {
  //----------------------------------------------------------------------------
 
     /**
-     *
+     * Append data
      * @param data
      */
   public void append(Vector data) {
@@ -368,7 +368,7 @@ public class ReplaceVar {
   }
 
     /**
-     *
+     * Append data when cached
      * @param data
      */
   public void appendCached(Vector data) {
@@ -481,28 +481,28 @@ public class ReplaceVar {
     }//next
   }
     /**Main method*/
-  public static void main(String[] args) {
-    ReplaceVar replaceVar = null;
-    try {
-      String fileName="";
-      boolean runAll = false;
-      int numberParameters=args.length;
-      if((args!=null)&&(numberParameters>2)) {
-            System.out.println("Parsing...");
-            System.out.println("  - File: "+args[0]);
-            System.out.println("  - Key: "+args[1]+", Value:"+args[2]);
-            replaceVar = new ReplaceVar (args[0]);
-            replaceVar.setSetting(args[1],args[2]);
-            //Parse
-      }  else {
-        System.err.println("Help ReplaceVar: java org.smartfrog.services.filesystem.replacevar.ReplaceVar <file> <key> <value>");
-      }
-    }
-    catch(Exception e) {
-      System.out.println("ReplaceVar Error - Exit!!");
-      e.printStackTrace();
-    } finally {
-       //System.out.println("...SFGui finished.");
-    }
-  } //End main
+//  public static void main(String[] args) {
+//    ReplaceVar replaceVar = null;
+//    try {
+//      String fileName="";
+//      boolean runAll = false;
+//      int numberParameters=args.length;
+//      if((args!=null)&&(numberParameters>2)) {
+//            System.out.println("Parsing...");
+//            System.out.println("  - File: "+args[0]);
+//            System.out.println("  - Key: "+args[1]+", Value:"+args[2]);
+//            replaceVar = new ReplaceVar (args[0]);
+//            replaceVar.setSetting(args[1],args[2]);
+//            //Parse
+//      }  else {
+//        System.err.println("Help ReplaceVar: java org.smartfrog.services.filesystem.replacevar.ReplaceVar <file> <key> <value>");
+//      }
+//    }
+//    catch(Exception e) {
+//      System.out.println("ReplaceVar Error - Exit!!");
+//      e.printStackTrace();
+//    } finally {
+//       //System.out.println("...SFGui finished.");
+//    }
+//  } //End main
 }
