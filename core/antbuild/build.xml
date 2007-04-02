@@ -1,0 +1,120 @@
+<project name="antbuild" default="publish">
+
+
+<description>
+  This build file creates the source tree needed for a complete build of SmartFrog;
+  a place to add in new components, with a common.xml file to use for the core building.
+
+  The output is an artifact that is then published for importing into the release
+  process, to create a new directory tree.
+
+  One decision that has been made here is that we snapshot the local sandbox, and not
+  the trunk or a branch of the SVN repository. This increases the risk that what is
+  published does not match what is in the repository, but enables developers
+  to release their own custom branch of SmartFrog.
+
+  To use this module safely, create a source tree in a clean checkout of SmartFrog; one
+  in which you do no coding.
+
+
+</description>
+
+  <import file="xml/ivy-mixin.xml" />
+
+
+  <target name="filesets" depends="init">
+
+    <!---->
+    <fileset id="root.fileset" dir="..">
+      <include name="build.xml" />
+      <include name="common.xml" />
+      <include name="components/libraries.properties" />
+    </fileset>
+
+    <fileset id="forrest.fileset" dir="..">
+      <include name="forrestsite/documentation.xml" />
+      <include name="components/forrest_skin/*" />
+    </fileset>
+
+    <fileset id="release.fileset" dir="../release">
+      <include name="build.xml" />
+      <include name="ivy.xml" />
+      <include name="izpack/*.xml" />
+      <include name="src/*" />
+    </fileset>
+
+    <fileset id="components.fileset" dir="../components">
+      <include name="*.xml" />
+      <include name="build.example.properties" />
+    </fileset>
+
+    <fileset id="antbuild.fileset" dir=".">
+      <include name="*.xml" />
+      <include name="xml/**/*.xml" />
+      <include name="xml/checkstyle/checkstyle-config" />
+      <include name="xml/checkstyle/*.xsl" />
+      <include name="ivy/**/*.jar" />
+      <include name="ivy/*.xsl" />
+      <include name="ivy/*.xml" />
+      <include name="ivy/*.xsd" />
+      <include name="doc/*.sxw" />
+      <include name="doc/*.ppt" />
+    </fileset>
+
+  </target>
+<!--
+  <target name="init">
+    <property name="build.dir" location="build" />
+    <property name="dist.dir" location="dist" />
+    <property name="dist.lib.dir" location="${dist.dir}/lib" />
+  </target>-->
+
+  <target name="package-names" depends="load-version-info">
+    <property name="minimal.zip"
+        location="${dist.lib.dir}/sf-antbuild-minimal-${smartfrog.version}.zip"   />
+    <property name="full.zip"
+        location="${dist.lib.dir}/sf-antbuild-full-${smartfrog.version}.zip"   />
+    <property name="prefix" value="core" />
+  </target>
+
+  <target name="ready-to-package" depends="filesets,package-names"/>
+
+  <target name="minimal-zip" depends="ready-to-package">
+    <zip compress="9" destFile="${minimal.zip}">
+      <zipfileset prefix="${prefix}" refid="root.fileset" />
+    </zip>
+  </target>
+
+  <target name="minimal-unzip" depends="minimal-zip">
+    <property name="minimal.unzip.dir" location="${build.dir}/minimal"/>
+    <mkdir dir="${minimal.unzip.dir}" />
+    <unzip src="${minimal.zip}"
+        dest="${minimal.unzip.dir}"/>
+  </target>
+
+  <target name="full-zip" depends="ready-to-package">
+    <zip compress="9" destFile="${full.zip}">
+      <zipfileset prefix="${prefix}" refid="root.fileset" />
+      <zipfileset prefix="${prefix}" refid="forrest.fileset" />
+      <zipfileset prefix="${prefix}/release" refid="release.fileset" />
+      <zipfileset prefix="${prefix}/components" refid="components.fileset" />
+      <zipfileset prefix="${prefix}/antbuild" refid="antbuild.fileset" />
+    </zip>
+  </target>
+
+
+  <target name="full-unzip" depends="full-zip">
+    <property name="full.unzip.dir" location="${build.dir}/full"/>
+    <mkdir dir="${full.unzip.dir}" />
+    <unzip src="${full.zip}"
+        dest="${full.unzip.dir}"/>
+  </target>
+
+  <target name="unzip" depends="full-unzip,minimal-unzip"
+      description="create the zip files, then unzip them"/>
+
+  <target name="packaged" depends="minimal-zip,full-zip">
+    
+  </target>
+
+</project>
