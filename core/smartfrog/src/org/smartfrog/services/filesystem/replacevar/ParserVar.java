@@ -31,6 +31,9 @@ import java.util.*;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.prim.TerminationRecord;
+import org.smartfrog.sfcore.logging.Log;
+import org.smartfrog.sfcore.logging.LogSF;
+import org.smartfrog.sfcore.logging.LogFactory;
 
 /**
  */
@@ -39,11 +42,6 @@ public class ParserVar extends Thread {
    Prim sfObj = null;
    DataParser dataParser=null;
 
-   // Default 2
-   // 5- info log, 0 - Critical. Use -1 to avoid log
-   public int logger = 2;
-   boolean printStack = false;
-
    //Should teminate process if spanned process finishes?
    String status = "stopped";
    long delay = (0 * 1000);
@@ -51,11 +49,22 @@ public class ParserVar extends Thread {
 
    // Process executed
    Thread process = null;
+
+   LogSF log = null;
+
    /**
     *  Constructor for the RunProcess object
     *
     */
    public ParserVar(Prim sfObj,DataParser dataParser) {
+      String name = "ParserVar";
+      try {
+         name = sfObj.sfCompleteName()+"_"+name;
+      } catch (Exception ex){
+        //ignore, not important
+      }
+      this.log = LogFactory.getLog(name);
+      this.setName(name);
       this.sfObj = sfObj;
       this.dataParser=dataParser;
    }
@@ -82,16 +91,6 @@ public class ParserVar extends Thread {
    }
 
    /**
-    *  Sets the logLevel attribute of the RunProcess object
-    *
-    *@param  logLevel  The new logLevel value
-    */
-   public void setLogLevel(int logLevel) {
-      this.logger = logLevel;
-   }
-
-
-   /**
     *  Gets the status attribute of the RunProcess object
     *
     *@return    The status value
@@ -111,7 +110,7 @@ public class ParserVar extends Thread {
 
 
    /**
-    *  Description of the Method
+    *  Finish
     */
    public void finish() {
       this.status = "stopped";
@@ -119,7 +118,7 @@ public class ParserVar extends Thread {
 
    TerminationRecord termR;
    /**
-    *  Description of the Method
+    *  Terminate
     */
    public void terminate() {
       if ((this.sfObj != null) && (this.sfObj instanceof PrimImpl)) {
@@ -128,36 +127,30 @@ public class ParserVar extends Thread {
            // Proper termination of a component!
            Runnable terminator = new Runnable() {
 	      public void run() {
-            log("ReplaceVar terminated.",2);
+            if (log.isDebugEnabled()) log.debug ("ReplaceVar terminated.");
 		      ((PrimImpl) sfObj).sfTerminate(termR);
 	      }
 	   };
            new Thread(terminator).start();
 
          } catch (Exception ex) {
-            System.out.println("ParserVar.terminate:" + ex.getMessage());
-            if (printStack) {
-               ex.printStackTrace();
-            }
+             if (log.isErrorEnabled()) log.error ("Problem during termination > " + ex.getMessage() + "", ex);
          }
         //this.log("ReplaceVar terminated.",2);
       } else {
-        this.log("ReplaceVar: Wrong component to terminate.",2);
+        if (log.isDebugEnabled()) log.debug ("ReplaceVar: Wrong component to terminate.");
       }
    }
 
    /**
-    *  Description of the Method
+    *  Detach
     */
    public void detach() {
       if ((this.sfObj != null) && (this.sfObj instanceof Prim)) {
          try {
             this.sfObj.sfDetach();
          } catch (Exception ex) {
-            System.out.println("ParserVar.detach ("+this.dataParser.getFileName()+"):" + ex.getMessage());
-            if (printStack) {
-               ex.printStackTrace();
-            }
+            if (log.isErrorEnabled()) log.error ("ParserVar.detach ("+this.dataParser.getFileName()+"):" + ex.getMessage(), ex);
          }
       }
    }
@@ -171,55 +164,28 @@ public class ParserVar extends Thread {
          try {
             //this.log("Command Start: "+command,3);
             //this.log("RunProcessInfo > " + this.toString(), 5);
-            this.log("Parsing > " + this.dataParser.getFileName() + " ", 3);
+              if (log.isDebugEnabled()) log.debug ("Parsing > " + this.dataParser.getFileName() + " ");
             ReplaceVar replaceVar = new ReplaceVar (dataParser.getFileName(),dataParser.getNewFileName(), false);
             //First: append
             replaceVar.append(dataParser.getDataAppend());
-            this.log("Append. > " + dataParser.getFileName() + "", 3);
+            if (log.isDebugEnabled()) log.debug ("Append. > " + dataParser.getFileName() + "");
             //Second: replace
             replaceVar.setSetting(dataParser.getDataReplace());
-            this.log("Replace. > " + dataParser.getFileName() + "", 3);
+            if (log.isDebugEnabled()) log.debug ("Replace. > " + dataParser.getFileName() + "");
             replaceVar.flush(); //This sould be handle in the component. REVIEW. TODO
-            this.log("Finished Parsing > " + dataParser.getFileName() + "", 3);
+            if (log.isDebugEnabled()) log.debug ("Finished Parsing > " + dataParser.getFileName() + "");
             Thread.sleep(delay);
          } catch (Exception ex) {
-            this.log("Problem parsing > " + ex.getMessage() + "", 1);
-            if (printStack) {
-               ex.printStackTrace();
-            }
+            if (log.isErrorEnabled()) log.error ("Problem parsing > " + ex.getMessage() + "", ex);
          }
          this.finish();
          try {
             if (dataParser.shouldDetach()) detach();
             if (dataParser.shouldTerminate()) terminate();
-            this.log("Terminating > " + dataParser.getFileName() + "", 3);
+            if (log.isDebugEnabled()) log.debug ("Terminating > " + dataParser.getFileName() + "");
          } catch (Exception e) {
-             if (printStack) {
-               e.printStackTrace();
-             }
+             if (log.isErrorEnabled()) log.error ("Error during termination:"+ e.getMessage() + "", e);
          }
    }
-
-   /**
-    *  Description of the Method
-    *
-    *@param  message   Description of Parameter
-    *@param  severity  Description of Parameter
-    */
-   void log(String message, int severity) {
-      //System.out.println( "["+this.nameProcess+"] "+message,"RUNProcess",severity);
-      try {
-         //if (logger != false ) {
-         if (logger >= severity) {
-            System.out.println("[" + "" + "] " + message + ", ParserVar, " + severity);
-         }
-      } catch (Exception e) {
-         if (printStack) {
-            e.printStackTrace();
-         }
-      }
-   }
-
-
 
 }

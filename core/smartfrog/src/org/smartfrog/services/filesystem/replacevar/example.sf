@@ -40,7 +40,6 @@ sfConfig extends Compound{
       varReplace1 ["hello","$hola"];
       varReplace3 ["ciao","hello"];
       shouldDetach true;
-      logLevel 5;
    }
 
    append extends SFReplaceFileVar {

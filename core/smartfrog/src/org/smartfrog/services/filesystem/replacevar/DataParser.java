@@ -24,10 +24,6 @@ import java.util.Vector;
 
 /**
  * Title:        Data object for the ParserVar
- * Description:
- * Copyright:    Copyright (c) 2001
- * Company:      HP Labs Bristol
- * @author Julio Guijarro
  * @version 1.0
  */
 
