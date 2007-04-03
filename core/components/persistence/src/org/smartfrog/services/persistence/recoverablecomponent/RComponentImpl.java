@@ -264,25 +264,22 @@ public class RComponentImpl extends CompoundImpl implements RComponent,
     public synchronized void sfTerminateWith( TerminationRecord status ) {
         try {
             /**
-             * Discard any data that has not been committed, then disable
-             * commits so that anything done by the model termination
-             * method gets done atomically.
+             * Discard any data that has not been committed, then enable
+             * commits. close and delete are required to have effect
+             * regardless of commit enablement.
              */
             abort();
-            disableCommit();
+            enableCommit();
 
             if ( model.leaveTombStone( this, status ) ) {
                 /**
-                 * if the storage is to be retained commit any changes and
-                 * close it
+                 * if the storage is to be retained close it
                  */
-                enableCommit();
-                commit();
                 stableLog.close();
 
             } else {
                 /**
-                 * If the storage is to be deleted just do the delete
+                 * If the storage is to be removed delete it
                  */
                 stableLog.delete();
             }
