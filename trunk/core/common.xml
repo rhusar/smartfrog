@@ -1617,7 +1617,7 @@ java.class.path=
   <target name="ivy-report" depends="ivy-resolve" >
     <ivy:report todir="${ivy.reports.dir}"/>
     <echo> published Ivy report to
-${ivy.report.dir}
+${ivy.reports.dir}
     </echo>
   </target>
 
