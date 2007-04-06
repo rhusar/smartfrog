@@ -5,7 +5,7 @@
 # ------------------------------------------------------
 
 # Uncomment to enable Dynamic ClassLoading
-export SFDYNAMICCLASSLOADING_ON=ENABLED
+# export SFDYNAMICCLASSLOADING_ON=ENABLED
 
 # Uncomment to enable Security
 #export SFSECURITY_ON=ENABLED
@@ -55,6 +55,9 @@ if test "$SFSECURITY"; then
     export SFLIBPATH="$SFHOME/signedLib"
 fi
 for i in "$SFLIBPATH"/*.jar; do CLASSPATH=$i:$CLASSPATH; done
+CLASSPATH=$SFLIBPATH/log4j.properties:$CLASSPATH
+CLASSPATH=$SFLIBPATH/commons-logging.properties:$CLASSPATH
+CLASSPATH=$SFLIBPATH:$CLASSPATH
 export CLASSPATH
 
 if test "$SFUSERHOME"; then
@@ -89,4 +92,9 @@ fi
 
 if test "$SFUSERCLASSPATH"; then
     export CLASSPATH=$SFUSERCLASSPATH:$CLASSPATH
+fi
+
+# CYGWIN
+if [ -f ${SHELL}.exe ]; then
+  CLASSPATH=`cygpath -pw "$CLASSPATH"`
 fi
