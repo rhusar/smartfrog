@@ -171,7 +171,11 @@
 		<copy file="lib/xml-apis.jar" todir="${avalanche.home}/temp/smartfrog/dist/lib"/>
 		<copy file="lib/xml-apis-1.0.jar" todir="${avalanche.home}/temp/smartfrog/dist/lib"/>
 		<copy file="lib/sfinterface-3.0.0.jar" todir="${avalanche.home}/temp/smartfrog/dist/lib"/>
-        <copy file="lib/sf-quartz.jar" todir="${avalanche.home}/temp/smartfrog/dist/lib"/>
+		<copy file="lib/sf-quartz.jar" todir="${avalanche.home}/temp/smartfrog/dist/lib"/>
+		<delete file="${avalanche.home}/temp/smartfrog/dist/bin/sfDaemon"/>
+		<delete file="${avalanche.home}/temp/smartfrog/dist/bin/setSFProperties"/>
+		<copy file="boot\smartfrog\dist\bin\sfDaemon" todir="${avalanche.home}/temp/smartfrog/dist/bin"/>
+		<copy file="boot\smartfrog\dist\bin\setSFProperties" todir="${avalanche.home}/temp/smartfrog/dist/bin"/>
     </target>
 
 	<target name="securitySetup">
@@ -270,8 +274,8 @@
 		 
 	</target>
 	
-	<!-- target name="start" depends="createbundle" -->
-	<target name="start">
+	<target name="start" depends="createbundle">
+	<!-- target name="start" -->
 		<exec dir="bin" executable="cmd" os="Windows XP, Windows NT">
 			<arg value="/c"/>
 			<arg line="start.bat"/>
