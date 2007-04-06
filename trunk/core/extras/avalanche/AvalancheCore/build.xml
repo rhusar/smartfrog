@@ -67,6 +67,12 @@
     </target>
 	
 	<target name="compile-src" depends="scomp" description="Compile Avalanche Sources">
+
+		<!--Copy smartFrog jars-->
+		<copy todir="lib">
+			<fileset dir="${smartfrog.home}/dist/lib" includes="**/*.jar"/>
+		</copy>
+		
 		<javac compiler="${javac.compiler}" srcdir="${src.dir}" includes="**/*.java" 
 			destdir="${build.classes.dir}" debug="${javac.debug.mode}" debuglevel="${javac.debug.level}"
 			includeAntRuntime="false" source="${javac.java.version}" target="${javac.java.version}">
