@@ -36,6 +36,10 @@
     <conf name="package-examples"
         description="examples package"/>
 
+    <conf name="package-antbuild-minimal"
+        description="minimal directory layout"/>
+    <conf name="package-antbuild-full"
+        description="full build tree"/>
     <!--Component bundles-->
     <conf name="package-ant"
         description="ant components"/>
@@ -67,6 +71,7 @@
         description="extra things"/>
     <conf name="package-gui"
         description="gui tools"/>
+
   </configurations>
 
   <publications>
@@ -84,6 +89,10 @@
         rev="latest.integration"
         conf="sfjars->master;redist->redist;package-core->master"/>
 
+    <dependency org="org.smartfrog"
+        name="sf-antbuild" changing="true"
+        rev="latest.integration"
+        conf="package-antbuild-minimal->minimal;package-antbuild-full->full"/>    
 
     <!-- ant component. do we omit the ant dist?-->
     <dependency org="org.smartfrog"
