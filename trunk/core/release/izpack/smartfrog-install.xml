@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
-    <!-- this file gets passed through Ant's property expander before
-    izpack gets to see it. Whenever you have $ and { next to each other, and you
-    want izpack to see it, double escape the $$ symbol.-->
-<!--<!DOCTYPE installation [
+    <!--@DOCTYPE-INSERT-POINT@-->
+<!--uncomment to turn on validation-->
+<!--
+<!DOCTYPE installation [
 <!ELEMENT installation (preinstall?, info, properties?, variables?,
     guiprefs?, locale, resources?, panels,
     listeners?, packs, jar*, native*, postinstall?)>
@@ -161,7 +161,12 @@
 <!ELEMENT jar EMPTY>
 <!ATTLIST jar src CDATA #REQUIRED>
 <!ATTLIST jar stage (install|uninstall|both) "install">
-    ]>-->
+    ]>
+-->
+    <!-- this file gets passed through Ant's property expander before
+    izpack gets to see it. Whenever you have $ and { next to each other, and you
+    want izpack to see it, double escape the $$ symbol.-->
+
 <installation version="1.0">
 
 
@@ -209,6 +214,15 @@
     <variable name="InstallerFrame.logfilePath" value="default"/>
     <!-- This automatically checks the "Create Desktop Shortcuts" button. Default value is "False". -->
     <variable name="DesktopShortcutCheckboxEnabled" value="false"/>
+
+    <!--some shortcuts for expanding things-->
+    <variable name="base.dir" value="$INSTALL_PATH"/>
+    <variable name="sfhome.dir" value="$base.dir/sfhome"/>
+    <variable name="lib.dir" value="$sfhome/lib"/>
+    <variable name="bin.dir" value="$sfhome/bin"/>
+    <variable name="doc.dir" value="$sfhome/doc"/>
+    <variable name="ivy.dir" value="$ivy/lib"/>
+    <variable name="core.dir" value="$base.dir/core"/>
   </variables>
 
   <guiprefs height="600" resizable="yes" width="800">
@@ -246,7 +260,7 @@
         This includes the JAR files needed to run SmartFrog, and the batch files and shell scripts
         that start SmartFrog. It also includes the Ant tasks needed to invoke SmartFrog from a build.
       </description>
-      <fileset dir="ivy/lib/package-core" targetdir="$INSTALL_PATH"
+      <fileset dir="ivy/lib/package-core" targetdir="$INSTALL_PATH/lib"
           includes="**/*"/>
     </pack>
 
@@ -255,9 +269,33 @@
         These are the example files that come with SmartFrog, showing how to use
         SmartFrog to deploy complex systems.
       </description>
-      <fileset dir="ivy/lib/package-examples" targetdir="$INSTALL_PATH"
+      <fileset dir="ivy/lib/package-examples" targetdir="$INSTALL_PATH/lib"
           includes="**/*"/>
     </pack>
+
+    <pack name="package-minimal-source-tree" required="yes">
+      <description>
+        This is a minimal source tree needed for handling the source packages that come
+        with components...it does not contain everything needed to build the SmartFrog
+        framework
+      </description>
+      <file src="ivy/lib/package-antbuild-minimal/sf-antbuild-minimal-${smartfrog.version}.zip"
+          targetdir="$INSTALL_PATH"
+          unpack="true" />
+    </pack>
+
+    <pack name="package-full-source-tree"
+        required="no" preselected="yes">
+      <description>
+        This installs the source tree and libraries needed for building SmartFrog
+        and its components. 
+      </description>
+      <file src="ivy/lib/package-antbuild-full/sf-antbuild-full-${smartfrog.version}.zip"
+          targetdir="$INSTALL_PATH"
+          unpack="true"/>
+    </pack>
+
+<!--
 
     <pack name="package-ant" required="no" >
       <description>
@@ -270,7 +308,11 @@
       <fileset dir="ivy/lib/package-ant" targetdir="$INSTALL_PATH"
           includes="**/*"/>
     </pack>
-<!--    <pack name="package-anubis" required="no">
+
+-->
+
+
+    <!--    <pack name="package-anubis" required="no">
       <description>
         Anubis is a tuple-space like system for partition-aware
         messaging between components, which can be used to build
@@ -303,8 +345,22 @@
 
     <pack name="package-logging" required="no" preselected="yes">
       <description>package-logging</description>
-      <fileset dir="ivy/lib/package-logging" targetdir="$INSTALL_PATH"
-          includes="**/*"/>
+      <file src="ivy/lib/package-logging/sf-loggingservices-${smartfrog.version}.jar"
+          targetdir="$INSTALL_PATH/lib"
+          />
+      <file src="ivy/lib/package-logging/commons-logging-${commons-logging.version}.jar"
+          targetdir="$INSTALL_PATH/lib"
+          />
+      <file src="ivy/lib/package-logging/log4j-${log4j.version}.jar"
+          targetdir="$INSTALL_PATH/lib"
+          />
+
+      <file src="ivy/lib/package-logging/sf-loggingservices-javadocs-${smartfrog.version}.zip"
+          targetdir="$INSTALL_PATH"
+          unpack="true"/>
+      <file src="ivy/lib/package-logging/sf-loggingservices-documentation-${smartfrog.version}.zip"
+          targetdir="$INSTALL_PATH"
+          unpack="true"/>
     </pack>
 
 <!--
