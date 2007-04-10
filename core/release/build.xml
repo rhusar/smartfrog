@@ -9,7 +9,8 @@
 
   <!--we are a component -->
   <property name="is.component" value="true"/>
-  <property name="ivy.enabled" value="true"/>
+  <!--we disable Ivy to let us use a copy of izpack in the lib dir-->
+  <!--<property name="ivy.enabled" value="true"/>-->
 
   <!-- override point -->
   <property file="build.properties"/>
@@ -23,6 +24,8 @@
   <property name="project.name" value="sf-${ant.project.name}" />
   <property name="artifact.name" value="${project.name}" />
   <property name="jarfile.stub" value="${artifact.name}${jarfile.suffix}" />
+  <property name="ivy.retrieve.pattern"
+      value="[conf]/[artifact]-[revision].[ext]" />
 
   <!-- Import common stuff -->
   <import file="../common.xml"/>
@@ -36,10 +39,16 @@
 
   <target name="published" depends="ivy-report,izpack"/>
 
-
+<!--
   <target name="declare-izpack" depends="ivy-resolve">
     <ivy:cachepath pathid="izpack.classpath" conf="izpack" />
     <taskdef name="izpack" classpathref="izpack.classpath"
+        uri="http://www.izforge.com/"
+        classname="com.izforge.izpack.ant.IzPackTask"/>
+  </target>
+  -->
+  <target name="declare-izpack" depends="declare-classpaths">
+    <taskdef name="izpack" classpathref="compile.classpath"
         uri="http://www.izforge.com/"
         classname="com.izforge.izpack.ant.IzPackTask"/>
   </target>
@@ -65,7 +74,13 @@
   </target>
 
   <target name="validate-izpack" depends="expand-izpack">
-    <xmlvalidate file="${izpack.xml}" warn="false"/>
+    <loadfile srcFile="izpack/doctype.txt" property="doctype.txt" />
+    <copy file="${izpack.xml}" tofile="build/izpack-dtd.xml" overwrite="true">
+      <filterset begintoken="&lt;--@" endtoken="@--&gt;">
+        <filter token="DOCTYPE-INSERT-POINT" value="${doctype.txt}"/>
+      </filterset>
+    </copy>
+    <xmlvalidate file="build/izpack-dtd.xml" warn="false"/>
   </target>
 
 
