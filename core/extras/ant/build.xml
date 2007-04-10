@@ -35,6 +35,16 @@ For more information: www.smartfrog.org
   <import file="../../common.xml"/>
 <!--  <import file="${root.dir}/common.xml"/>-->
 
+
+  <!-- ========================================================== -->
+  <!-- this is the gump entry point; it does packaging and but no tests!-->
+  <!-- this keeps the gump compile target separate from the tests run-->
+  <!-- ========================================================== -->
+  <target name="gump"
+      depends="dist,published"
+      description="target for gump builds"
+      />
+
   <target name="zip" depends="prepare-for-dist"
       description="Create a zip file distribution" >
   </target>
@@ -45,6 +55,7 @@ For more information: www.smartfrog.org
 
   <target name="installed" depends="common.installed,update-core"
       description="Place the system in a state in which the components are installed for reuse"/>
+
 
 
   <!-- this is done so that the jarfile generated is bound to our project name with
