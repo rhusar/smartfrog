@@ -172,8 +172,8 @@
 
   <info>
     <appname>SmartFrog</appname>
-    <appversion>${Version}</appversion>
-    <appsubpath>hp/smartfrog</appsubpath>
+    <appversion>${smartfrog.version}</appversion>
+    <appsubpath>smartfrog</appsubpath>
     <authors>
       <author name="SmartFrog Developers" email="smartfrog-developer@lists.sourceforge.net"/>
     </authors>
@@ -214,15 +214,6 @@
     <variable name="InstallerFrame.logfilePath" value="default"/>
     <!-- This automatically checks the "Create Desktop Shortcuts" button. Default value is "False". -->
     <variable name="DesktopShortcutCheckboxEnabled" value="false"/>
-
-    <!--some shortcuts for expanding things-->
-    <variable name="base.dir" value="$INSTALL_PATH"/>
-    <variable name="sfhome.dir" value="$base.dir/sfhome"/>
-    <variable name="lib.dir" value="$sfhome/lib"/>
-    <variable name="bin.dir" value="$sfhome/bin"/>
-    <variable name="doc.dir" value="$sfhome/doc"/>
-    <variable name="ivy.dir" value="$ivy/lib"/>
-    <variable name="core.dir" value="$base.dir/core"/>
   </variables>
 
   <guiprefs height="600" resizable="yes" width="800">
@@ -239,14 +230,13 @@
   </resources>
 
   <panels>
-    <panel classname="HelloPanel"/>
-    <!--<panel classname="InfoPanel"/>-->
+    <!--<panel classname="HelloPanel"/>-->
     <panel classname="HTMLInfoPanel"/>
     <!-- see res/HTMLLicencePanel.licence -->
     <panel classname="HTMLLicencePanel"/>
     <panel classname="PacksPanel"/>
     <panel classname="TargetPanel"/>
-<!--    <panel classname="DataCheckPanel"/>-->
+    <panel classname="DataCheckPanel"/>
     <panel classname="SummaryPanel"/>
     <panel classname="InstallPanel"/>
     <panel classname="FinishPanel"/>
@@ -255,170 +245,460 @@
   
   <packs>
     
-    <pack name="Core" required="yes">
-      <description>SmartFrog core files.
-        This includes the JAR files needed to run SmartFrog, and the batch files and shell scripts
-        that start SmartFrog. It also includes the Ant tasks needed to invoke SmartFrog from a build.
+    <pack name="SmartFrog Core" required="yes">
+      <description>
+SmartFrog core files.
+This package contains the JAR files needed to run SmartFrog, and the batch files and shell scripts
+that start SmartFrog.
+It also includes
+   1. the Ant tasks needed to invoke SmartFrog from an Ant build.
+   2. the sfServices JAR that contains the base components of a SmartFrog deployment.
       </description>
-      <fileset dir="ivy/lib/package-core" targetdir="$INSTALL_PATH/lib"
-          includes="**/*"/>
+      <file src="ivy/lib/package-core/sf-core-install-${smartfrog.version}.zip"
+          targetdir="$INSTALL_PATH"
+          unpack="true"/>
+      <!--these are all the executables that should be marked as +x in unix. -->
+<!--      <executable stage="never" targetfile="$INSTALL_PATH/bin/sfDaemon" failure="warn" />
+      <executable stage="never" targetfile="$INSTALL_PATH/bin/sfDetachAndTerminate" failure="warn"/>
+      <executable stage="never" targetfile="$INSTALL_PATH/bin/sfDiag" failure="warn"/>
+      <executable stage="never" targetfile="$INSTALL_PATH/bin/sfDiagnostics" failure="warn"/>
+      <executable stage="never" targetfile="$INSTALL_PATH/bin/sfGui" failure="warn"/>
+      <executable stage="never" targetfile="$INSTALL_PATH/bin/sfParse" failure="warn"/>
+      <executable stage="never" targetfile="$INSTALL_PATH/bin/sfPing" failure="warn"/>
+      <executable stage="never" targetfile="$INSTALL_PATH/bin/sfRun" failure="warn"/>
+      <executable stage="never" targetfile="$INSTALL_PATH/bin/sfStart" failure="warn"/>
+      <executable stage="never" targetfile="$INSTALL_PATH/bin/sfStop" failure="warn"/>
+      <executable stage="never" targetfile="$INSTALL_PATH/bin/sfStopDaemon" failure="warn"/>
+      <executable stage="never" targetfile="$INSTALL_PATH/bin/sfTerminate" failure="warn"/>
+      <executable stage="never" targetfile="$INSTALL_PATH/bin/sfUpdate" failure="warn"/>
+      <executable stage="never" targetfile="$INSTALL_PATH/bin/sfVersion" failure="warn"/>
+      <executable stage="never" targetfile="$INSTALL_PATH/bin/smartfrog" failure="warn"/>-->
     </pack>
 
-    <pack name="Examples" required="no" preselected="yes">
+<!--    <pack name="SmartFrog Examples" required="no" preselected="yes">
       <description>
-        These are the example files that come with SmartFrog, showing how to use
-        SmartFrog to deploy complex systems.
+These are the example files that come with SmartFrog, showing how to use
+SmartFrog to deploy complex systems.
       </description>
-      <fileset dir="ivy/lib/package-examples" targetdir="$INSTALL_PATH/lib"
-          includes="**/*"/>
-    </pack>
+      <file src="ivy/lib/package-examples/sfExamples-${smartfrog.version}.jar"
+          targetdir="$INSTALL_PATH/lib" />
+    </pack>-->
 
-    <pack name="package-minimal-source-tree" required="yes">
+    <pack name="minimal-source-tree" required="yes">
       <description>
-        This is a minimal source tree needed for handling the source packages that come
-        with components...it does not contain everything needed to build the SmartFrog
-        framework
+This is a minimal source tree needed for handling the source packages that come
+with components -it does not contain everything needed to build the SmartFrog
+framework
       </description>
       <file src="ivy/lib/package-antbuild-minimal/sf-antbuild-minimal-${smartfrog.version}.zip"
           targetdir="$INSTALL_PATH"
           unpack="true" />
     </pack>
 
-    <pack name="package-full-source-tree"
+    <pack name="full-source-tree"
         required="no" preselected="yes">
       <description>
-        This installs the source tree and libraries needed for building SmartFrog
-        and its components. 
+This installs the source tree and libraries needed for building SmartFrog
+and its components.
       </description>
       <file src="ivy/lib/package-antbuild-full/sf-antbuild-full-${smartfrog.version}.zip"
           targetdir="$INSTALL_PATH"
           unpack="true"/>
     </pack>
 
-<!--
 
-    <pack name="package-ant" required="no" >
+    <pack name="Ant" required="no" preselected="no">
       <description>
-        This package contains the JAR file sf-ant.jar, which contains
-        components that can run Ant tasks during deployment.
-        The package also contains the Ant JAR files, which are
-        licensed under the Apache Software Foundation License, version
-        2.0.
+This package contains the JAR file sf-ant.jar, which contains
+components that can run Ant tasks during deployment.
+
+The package also contains the Ant ${apache.ant.version} JAR files:
+  ant-${apache.ant.version}.jar
+  ant-launcher-${apache.ant.version}.jar
+It does not contain any of the Ant optional libraries, or their dependencies.
       </description>
-      <fileset dir="ivy/lib/package-ant" targetdir="$INSTALL_PATH"
-          includes="**/*"/>
+      <file src="ivy/lib/package-ant/sf-ant-${smartfrog.version}.jar"
+          targetdir="$INSTALL_PATH/lib"
+          />
+      <file src="ivy/lib/package-ant/sf-ant-javadocs-${smartfrog.version}.zip"
+          targetdir="$INSTALL_PATH"
+          unpack="true"/>
+      <file src="ivy/lib/package-ant/sf-ant-documentation-${smartfrog.version}.zip"
+          targetdir="$INSTALL_PATH"
+          unpack="true"/>
+      <file src="ivy/lib/package-ant/ant-${apache.ant.version}.jar"
+          targetdir="$INSTALL_PATH/lib"
+          />
+      <file src="ivy/lib/package-ant/ant-launcher-${apache.ant.version}.jar"
+          targetdir="$INSTALL_PATH/lib"
+          />
     </pack>
 
--->
 
-
-    <!--    <pack name="package-anubis" required="no">
+    <pack name="Anubis" required="no" preselected="no">
       <description>
-        Anubis is a tuple-space like system for partition-aware
-        messaging between components, which can be used to build
-        fault-tolerant systems.
+Anubis is a tuple-space like system for partition-aware
+messaging between components, which can be used to build
+fault-tolerant systems.
       </description>
-      <fileset dir="ivy/lib/package-anubis" targetdir="$INSTALL_PATH"
-          includes="**/*"/>
-    </pack>-->
-<!--
-    <pack name="package-database" required="no">
-      <description>
-        The sf-database JAR contains the components needed to talk to a database
-        during deployment, or when terminating a deployment. It has special component templates.
-        to start and administer MySQL.
-      </description>
-      <fileset dir="ivy/lib/package-database" targetdir="$INSTALL_PATH"
-          includes="**/*"/>
+      <file src="ivy/lib/package-anubis/sf-anubis-${smartfrog.version}.jar"
+          targetdir="$INSTALL_PATH/lib"
+          />
+      <file src="ivy/lib/package-anubis/sf-anubis-javadocs-${smartfrog.version}.zip"
+          targetdir="$INSTALL_PATH"
+          unpack="true"/>
+      <file src="ivy/lib/package-anubis/sf-anubis-documentation-${smartfrog.version}.zip"
+          targetdir="$INSTALL_PATH"
+          unpack="true"/>
     </pack>
--->
-<!--
-    <pack name="package-jmx" required="no">
-      <description>
-        The sf-jmx package can integrate JMX MBeans with SmartFrog, and
-        export SmartFrog components as MBeans.
-      </description>
-      <fileset dir="ivy/lib/package-jmx" targetdir="$INSTALL_PATH"
-          includes="**/*"/>
-    </pack>
--->
 
-    <pack name="package-logging" required="no" preselected="yes">
-      <description>package-logging</description>
+    <pack name="Database" required="no" preselected="no">
+      <description>
+The sf-database package contains the components needed to talk to a database
+during deployment, or when terminating a deployment. It has special component templates.
+to start and administer MySQL.
+
+This package does not include any JDBC drivers. The appropriate JDBC driver for the
+target system must be installed/added to the sfCodeBase attribute of the components,
+in order for JDBC connectivity to work.
+      </description>
+      <file src="ivy/lib/package-database/sf-database-${smartfrog.version}.jar"
+          targetdir="$INSTALL_PATH/lib"
+          />
+      <file src="ivy/lib/package-database/sf-database-javadocs-${smartfrog.version}.zip"
+          targetdir="$INSTALL_PATH"
+          unpack="true"/>
+      <file src="ivy/lib/package-database/sf-database-documentation-${smartfrog.version}.zip"
+          targetdir="$INSTALL_PATH"
+          unpack="true"/>
+    </pack>
+
+    <pack name="JMX" required="no" preselected="no">
+      <description>
+The sf-jmx package can integrate JMX MBeans with SmartFrog, and
+export SmartFrog components as MBeans.
+
+The MX4J JARs (version ${mx4j.version}) are included:
+    mx4j-${mx4j.version}.jar
+    mx4j-remote-${mx4j.version}.jar
+    mx4j-jmx-${mx4j.version}.jar
+    mx4j-tools-${mx4j.version}.jar
+      </description>
+      <file src="ivy/lib/package-jmx/sf-jmx-${smartfrog.version}.jar"
+          targetdir="$INSTALL_PATH/lib"
+          />
+      <file src="ivy/lib/package-jmx/sf-jmx-javadocs-${smartfrog.version}.zip"
+          targetdir="$INSTALL_PATH"
+          unpack="true"/>
+      <file src="ivy/lib/package-jmx/sf-jmx-documentation-${smartfrog.version}.zip"
+          targetdir="$INSTALL_PATH"
+          unpack="true"/>
+      <file src="ivy/lib/package-jmx/mx4j-${mx4j.version}.jar"
+          targetdir="$INSTALL_PATH/lib"
+          />
+      <file src="ivy/lib/package-jmx/mx4j-remote-${mx4j.version}.jar"
+          targetdir="$INSTALL_PATH/lib"
+          />
+      <file src="ivy/lib/package-jmx/mx4j-jmx-${mx4j.version}.jar"
+          targetdir="$INSTALL_PATH/lib"
+          />
+      <file src="ivy/lib/package-jmx/mx4j-tools-${mx4j.version}.jar"
+          targetdir="$INSTALL_PATH/lib"
+          />
+
+    </pack>
+
+    <pack name="Logging" required="no" preselected="yes">
+      <description>
+SmartFrog Logging services.
+
+As well as logging components, this package contains commons-logging-${commons-logging.version}.jar
+and log4j-${log4j.version}.jar. Packages that include third-party libraries that use either logging
+API, have a dependency upon this package.
+      </description>
       <file src="ivy/lib/package-logging/sf-loggingservices-${smartfrog.version}.jar"
           targetdir="$INSTALL_PATH/lib"
           />
-      <file src="ivy/lib/package-logging/commons-logging-${commons-logging.version}.jar"
-          targetdir="$INSTALL_PATH/lib"
-          />
-      <file src="ivy/lib/package-logging/log4j-${log4j.version}.jar"
-          targetdir="$INSTALL_PATH/lib"
-          />
-
       <file src="ivy/lib/package-logging/sf-loggingservices-javadocs-${smartfrog.version}.zip"
           targetdir="$INSTALL_PATH"
           unpack="true"/>
       <file src="ivy/lib/package-logging/sf-loggingservices-documentation-${smartfrog.version}.zip"
           targetdir="$INSTALL_PATH"
           unpack="true"/>
+      <file src="ivy/lib/package-logging/commons-logging-${commons-logging.version}.jar"
+          targetdir="$INSTALL_PATH/lib"
+          />
+      <file src="ivy/lib/package-logging/log4j-${log4j.version}.jar"
+          targetdir="$INSTALL_PATH/lib"
+          />
     </pack>
 
-<!--
-    <pack name="package-networking" required="no">
-      <description>package-networking</description>
+    <pack name="Networking" required="no" preselected="no">
+      <description>
+SmartFrog networking components, including DNS, FTP, email and SSH support
+
+The components use the following bundled libraries:
+    activation-${activation.version}.jar
+    commons-net-${commons-net.version}.jar
+    dnsjava-${dnsjava.version}.jar
+    jsch-${jsch.version}.jar
+    mail-${mail.version}.jar
+    oro-${oro.version}.jar
+
+      </description>
       <fileset dir="ivy/lib/package-networking" targetdir="$INSTALL_PATH"
           includes="**/*"/>
+      <description>SmartFrog Logging services</description>
+      <file src="ivy/lib/package-networking/sf-dns-${smartfrog.version}.jar"
+          targetdir="$INSTALL_PATH/lib"
+          />
+      <file src="ivy/lib/package-networking/sf-dns-javadocs-${smartfrog.version}.zip"
+          targetdir="$INSTALL_PATH"
+          unpack="true"/>
+      <file src="ivy/lib/package-networking/sf-dns-documentation-${smartfrog.version}.zip"
+          targetdir="$INSTALL_PATH"
+          unpack="true"/>
+      <file src="ivy/lib/package-networking/sf-dns-${smartfrog.version}.jar"
+          targetdir="$INSTALL_PATH/lib"
+          />
+      <file src="ivy/lib/package-networking/sf-dns-javadocs-${smartfrog.version}.zip"
+          targetdir="$INSTALL_PATH"
+          unpack="true"/>
+      <file src="ivy/lib/package-networking/sf-dns-documentation-${smartfrog.version}.zip"
+          targetdir="$INSTALL_PATH"
+          unpack="true"/>
+
+      <file src="ivy/lib/package-networking/dnsjava-${dnsjava.version}.jar"
+          targetdir="$INSTALL_PATH/lib"
+          />
+
+      
+      <file src="ivy/lib/package-networking/sf-net-${smartfrog.version}.jar"
+          targetdir="$INSTALL_PATH/lib"
+          />
+      <file src="ivy/lib/package-networking/sf-net-javadocs-${smartfrog.version}.zip"
+          targetdir="$INSTALL_PATH"
+          unpack="true"/>
+      <file src="ivy/lib/package-networking/sf-net-documentation-${smartfrog.version}.zip"
+          targetdir="$INSTALL_PATH"
+          unpack="true"/>
+      <file src="ivy/lib/package-networking/commons-net-${commons-net.version}.jar"
+          targetdir="$INSTALL_PATH/lib"
+          />
+      <file src="ivy/lib/package-networking/oro-${oro.version}.jar"
+          targetdir="$INSTALL_PATH/lib"
+          />
+
+      <file src="ivy/lib/package-networking/sf-emailer-${smartfrog.version}.jar"
+          targetdir="$INSTALL_PATH/lib"
+          />
+      <file src="ivy/lib/package-networking/sf-emailer-javadocs-${smartfrog.version}.zip"
+          targetdir="$INSTALL_PATH"
+          unpack="true"/>
+      <file src="ivy/lib/package-networking/sf-emailer-documentation-${smartfrog.version}.zip"
+          targetdir="$INSTALL_PATH"
+          unpack="true"/>
+      <file src="ivy/lib/package-networking/mail-${mail.version}.jar"
+          targetdir="$INSTALL_PATH/lib"
+          />
+      <file src="ivy/lib/package-networking/activation-${activation.version}.jar"
+          targetdir="$INSTALL_PATH/lib"
+          />
+
+      <file src="ivy/lib/package-networking/sf-ssh-${smartfrog.version}.jar"
+          targetdir="$INSTALL_PATH/lib"
+          />
+      <file src="ivy/lib/package-networking/sf-ssh-javadocs-${smartfrog.version}.zip"
+          targetdir="$INSTALL_PATH"
+          unpack="true"/>
+      <file src="ivy/lib/package-networking/sf-ssh-documentation-${smartfrog.version}.zip"
+          targetdir="$INSTALL_PATH"
+          unpack="true"/>
+      <file src="ivy/lib/package-networking/jsch-${jsch.version}.jar"
+          targetdir="$INSTALL_PATH/lib"
+          />
     </pack>
-    <pack name="package-scheduling" required="no">
-      <description>Scheduling.
-      Contains the Quartz library and a component for scheduling work.</description>
-      <fileset dir="ivy/lib/package-scheduling" targetdir="$INSTALL_PATH"
-          includes="**/*"/>
+
+    <pack name="Quartz" required="no" preselected="no">
+      <description>
+Work scheduling. These components can be used to schedule work to a pool of machines,
+using Quartz to queue the jobs. A CPU monitor component provides information about the
+current system state, using the Unix/Linux vmstat command as a source of information.
+
+Contains the Quartz library version quartz-${quartz.version}.jar.
+      </description>
+      <file src="ivy/lib/package-quartz/sf-quartz-${smartfrog.version}.jar"
+          targetdir="$INSTALL_PATH/lib"
+          />
+      <file src="ivy/lib/package-quartz/sf-quartz-javadocs-${smartfrog.version}.zip"
+          targetdir="$INSTALL_PATH"
+          unpack="true"/>
+      <file src="ivy/lib/package-quartz/sf-quartz-documentation-${smartfrog.version}.zip"
+          targetdir="$INSTALL_PATH"
+          unpack="true"/>
+      <file src="ivy/lib/package-quartz/quartz-${quartz.version}.jar"
+          targetdir="$INSTALL_PATH/lib"
+          />
+
+      <depends packname="Logging"/>
     </pack>
-    <pack name="package-scripting" required="no">
-      <description>package-scripting</description>
-      <fileset dir="ivy/lib/package-scripting" targetdir="$INSTALL_PATH"
-          includes="**/*"/>
+
+    <pack name="Scripting" required="no" preselected="no">
+      <description>
+Scripting support.
+This component does not contain any of the libraries that are needed.
+      </description>
+      <file src="ivy/lib/package-scripting/sf-scripting-${smartfrog.version}.jar"
+          targetdir="$INSTALL_PATH/lib"
+          />
+      <file src="ivy/lib/package-scripting/sf-scripting-javadocs-${smartfrog.version}.zip"
+          targetdir="$INSTALL_PATH"
+          unpack="true"/>
+      <file src="ivy/lib/package-scripting/sf-scripting-documentation-${smartfrog.version}.zip"
+          targetdir="$INSTALL_PATH"
+          unpack="true"/>
     </pack>
--->
-<!--    <pack name="package-testing" required="no">
-      <description>package-testing</description>
+
+   <pack name="xunit" required="no" preselected="no">
+      <description>the base testing components. This contains the sfunit test components
+      for testing deployments, and the listeners/reporters for running tests.
+      For JUnit testing, include the junit3 components.</description>
+     <file src="ivy/lib/package-testing/sf-xunit-${smartfrog.version}.jar"
+         targetdir="$INSTALL_PATH/lib"
+         />
+     <file src="ivy/lib/package-testing/sf-xunit-javadocs-${smartfrog.version}.zip"
+         targetdir="$INSTALL_PATH"
+         unpack="true"/>
+     <file src="ivy/lib/package-testing/sf-xunit-documentation-${smartfrog.version}.zip"
+         targetdir="$INSTALL_PATH"
+         unpack="true"/>
+     <depends packname="Logging"/>
+   </pack>
+
+    <pack name="JUnit3" required="no" preselected="no">
+      <description>
+        This contains the components for running JUnit ${junit.version} tests, and the
+        junit-${junit.version}.jar.
+      </description>
       <fileset dir="ivy/lib/package-testing" targetdir="$INSTALL_PATH"
           includes="**/*"/>
-      <depends packname="package-logging"/>
-    </pack>-->
-<!--
-    <pack name="package-www" required="no">
+      <depends packname="logging"/>
+      <file src="ivy/lib/package-testing/sf-junit-${smartfrog.version}.jar"
+          targetdir="$INSTALL_PATH/lib"
+          />
+      <file src="ivy/lib/package-testing/sf-junit-javadocs-${smartfrog.version}.zip"
+          targetdir="$INSTALL_PATH"
+          unpack="true"/>
+      <file src="ivy/lib/package-testing/sf-junit-documentation-${smartfrog.version}.zip"
+          targetdir="$INSTALL_PATH"
+          unpack="true"/>
+      <file src="ivy/lib/package-testing/junit-${junit.version}.jar"
+          targetdir="$INSTALL_PATH/lib"
+          />
+      <depends packname="xunit"/>
+    </pack>
+
+
+    <pack name="WWW" required="no" preselected="no">
       <description>WWW support.
-      This package contains components to deploy web applications on different
-        Java web servers, from jetty to JBoss. It also contains a LivenessPage
-        component that can monitor the health of a remote site.
+This package contains components to deploy web applications on different
+Java web servers, from Jetty ${jetty.version} to JBoss. It also contains a LivenessPage
+component that can monitor the health of a remote site.
+
+The bundled libraries are
+    commons-httpclient-${commons-httpclient.version}.jar
+    commons-codec-${commons-codec.version}.jar
+    servlet-api-${servletapi.version}.jar
+    jetty-${jetty.version}.jar
       </description>
-      <fileset dir="ivy/lib/package-www" targetdir="$INSTALL_PATH"
-          includes="**/*"/>
+      <file src="ivy/lib/package-www/sf-www-${smartfrog.version}.jar"
+          targetdir="$INSTALL_PATH/lib"
+          />
+      <file src="ivy/lib/package-www/sf-www-javadocs-${smartfrog.version}.zip"
+          targetdir="$INSTALL_PATH"
+          unpack="true"/>
+      <file src="ivy/lib/package-www/sf-www-documentation-${smartfrog.version}.zip"
+          targetdir="$INSTALL_PATH"
+          unpack="true"/>
+      <file src="ivy/lib/package-www/sf-tomcat-${smartfrog.version}.jar"
+          targetdir="$INSTALL_PATH/lib"
+          />
+      <file src="ivy/lib/package-www/sf-tomcat-javadocs-${smartfrog.version}.zip"
+          targetdir="$INSTALL_PATH"
+          unpack="true"/>
+      <file src="ivy/lib/package-www/sf-tomcat-documentation-${smartfrog.version}.zip"
+          targetdir="$INSTALL_PATH"
+          unpack="true"/>
+
+      <file src="ivy/lib/package-www/sf-jetty-${smartfrog.version}.jar"
+          targetdir="$INSTALL_PATH/lib"
+          />
+      <file src="ivy/lib/package-www/commons-httpclient-${commons-httpclient.version}.jar"
+          targetdir="$INSTALL_PATH/lib"
+          />
+      <file src="ivy/lib/package-www/commons-codec-${commons-codec.version}.jar"
+          targetdir="$INSTALL_PATH/lib"
+          />
+      <file src="ivy/lib/package-www/servlet-api-${servletapi.version}.jar"
+          targetdir="$INSTALL_PATH/lib"
+          />
+      <file src="ivy/lib/package-www/jetty-${jetty.version}.jar"
+          targetdir="$INSTALL_PATH/lib"
+          />
+      <depends packname="logging" />
     </pack>
-    <pack name="package-xml" required="no">
+
+    <pack name="XML" required="no" preselected="no">
       <description>XML support.
-      This package contains Xom and components to create a XOM graph from
-      a component description.</description>
-      <fileset dir="ivy/lib/package-xml" targetdir="$INSTALL_PATH"
-          includes="**/*"/>
-    </pack>
-    <pack name="package-xmpp" required="no">
-      <description>Jabber support: components to register with a Jabber server and
-        relay notification methods. These can be used to communicate over long distances,
-        or track the availability of remote systems.
+This package contains XOM and components to create a XOM graph from
+a component description.
+
+The package contains xom-${xom.version}.jar, which includes the Jaxen runtime.
       </description>
-      <fileset dir="ivy/lib/package-xmpp" targetdir="$INSTALL_PATH"
-          includes="**/*"/>
+      <file src="ivy/lib/package-xml/sf-xml-${smartfrog.version}.jar"
+          targetdir="$INSTALL_PATH/lib"
+          />
+      <file src="ivy/lib/package-xml/sf-xml-javadocs-${smartfrog.version}.zip"
+          targetdir="$INSTALL_PATH"
+          unpack="true"/>
+      <file src="ivy/lib/package-xml/sf-xml-documentation-${smartfrog.version}.zip"
+          targetdir="$INSTALL_PATH"
+          unpack="true"/>
+
+      <file src="ivy/lib/package-xml/xom-${xom.version}.jar"
+          targetdir="$INSTALL_PATH/lib"
+          />
     </pack>
--->
-<!--    <pack name="package-extras" required="no">
+
+    <pack name="XMPP" required="no" preselected="no">
+      <description>
+This package provides Jabber support: components to register with a Jabber server and
+relay notification methods. These can be used to communicate over long distances,
+or track the availability of remote systems.
+
+This package uses smack-${smack.version}.jar for XMPP support.
+      </description>
+      <file src="ivy/lib/package-xmpp/sf-xmpp-${smartfrog.version}.jar"
+          targetdir="$INSTALL_PATH/lib"
+          />
+      <file src="ivy/lib/package-xmpp/sf-xmpp-javadocs-${smartfrog.version}.zip"
+          targetdir="$INSTALL_PATH"
+          unpack="true"/>
+      <file src="ivy/lib/package-xmpp/sf-xmpp-documentation-${smartfrog.version}.zip"
+          targetdir="$INSTALL_PATH"
+          unpack="true"/>
+
+      <file src="ivy/lib/package-xmpp/smack-${smack.version}.jar"
+          targetdir="$INSTALL_PATH/lib"
+          />
+    </pack>
+
+<!--    <pack name="package-extras" required="no" preselected="no">
       <description>package-extras</description>
       <fileset dir="ivy/lib/package-extras" targetdir="$INSTALL_PATH"
           includes="**/*"/>
     </pack>
-    <pack name="package-gui" required="no">
+    <pack name="package-gui" required="no" preselected="no">
       <description>package-gui</description>
       <fileset dir="ivy/lib/package-gui" targetdir="$INSTALL_PATH"
           includes="**/*"/>
