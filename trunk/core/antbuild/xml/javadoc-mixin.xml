@@ -61,9 +61,9 @@
   <target name="javadocs-finished" depends="package-javadocs" />
 
 
-  <target name="init-docs" depends="initialized" >
-    <property name="doc.src.dir" location="doc" />
-    <available property="doc.src.dir.found" file="${doc.src.dir}"/>
+  <target name="init-docs" depends="initialized,init-core" >
+    <property name="doc.dir" location="doc" />
+    <available property="doc.dir.found" file="${doc.dir}"/>
   </target>
 
   <target name="ready-to-process-other-docs" depends="init-docs" />
@@ -72,10 +72,10 @@
     doc processing only if the directory is found
   -->
   <target name="process-other-docs" depends="ready-to-process-other-docs"
-      if="doc.src.dir.found">
+      if="doc.dir.found">
     <tstamp/>
     <copy todir="${dist.doc.dir}" overwrite="true">
-      <fileset dir="${doc.src.dir}" includes="**/*.html"/>
+      <fileset dir="${doc.dir}" includes="**/*.html"/>
       <filterset>
         <filter token="DATE" value="${DSTAMP}"/>
         <filter token="TIME" value="${TSTAMP}"/>
@@ -84,7 +84,7 @@
 
 
     <copy todir="${dist.doc.dir}" overwrite="true">
-      <fileset dir="${doc.src.dir}" includes="**/*.txt"/>
+      <fileset dir="${doc.dir}" includes="**/*.txt"/>
       <filterset begintoken="[[" endtoken="]]">
         <filter token="DATE" value="${DSTAMP}"/>
         <filter token="TIME" value="${TSTAMP}"/>
@@ -93,15 +93,18 @@
     </copy>
 
     <copy todir="${dist.doc.dir}" >
-      <fileset dir="${doc.src.dir}">
-        <include name="doc/**/*.pdf" />
-        <include name="doc/**/*.sx?" />
+      <fileset dir="${doc.dir}">
+        <include name="**/*.pdf" />
+        <include name="**/*.sx?" />
+        <include name="**/*.od?" />
+        <include name="**/*.ppt" />
+        <include name="**/*.doc" />
       </fileset>
     </copy>
 
   </target>
 
-  <target name="other-docs-finished" depends="process-other-docs,package-documents" />
+  <target name="other-docs-finished" depends="package-documents" />
 
   <!--state in which all other docs are finished.-->
   <target name="documents-processed"
@@ -128,19 +131,16 @@
 
   </target>
 
-  <target name="ready-to-package-documents" depends="init-documents">
+  <target name="ready-to-package-documents" depends="process-other-docs">
 
   </target>
 
-  <target name="package-documents" depends="ready-to-package-documents">
+  <target name="package-documents" depends="ready-to-package-documents,artifact-names">
     <zip destfile="${documentation.zip}"
          whenempty="create" duplicate="preserve">
       <!--fileset is set up to work if there are no artifacts-->
-      <zipfileset dir="." >
-        <include name="doc/**/*.html" />
-        <include name="doc/**/*.pdf" />
-        <include name="doc/**/*.sx?" />
-        <include name="doc/**/*.txt" />
+      <zipfileset dir="${dist.doc.dir}" prefix="doc">
+        <include name="**/*" />
       </zipfileset>
     </zip>
   </target>
