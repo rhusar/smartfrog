@@ -29,6 +29,6 @@ import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 public interface ClusterStatus extends Remote{
 
     public void clusterStatus(ComponentDescription status)
-	throws RemoteException;
+            throws RemoteException;
 
 }
