@@ -40,7 +40,7 @@ public class MyJobListener implements JobListener {
     }
 
     public void jobExecutionVetoed(JobExecutionContext context) {
-        log.info("Job execution veoted");
+        log.info("Job execution vetoed");
     }
 
     public void jobWasExecuted(JobExecutionContext context,

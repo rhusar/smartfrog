@@ -49,7 +49,7 @@ public abstract class AbstractJdbcOperation extends PrimImpl implements JdbcOper
     private ComponentHelper helper;
 
 
-    public AbstractJdbcOperation() throws RemoteException {
+    protected AbstractJdbcOperation() throws RemoteException {
     }
 
     /**
@@ -241,7 +241,7 @@ public abstract class AbstractJdbcOperation extends PrimImpl implements JdbcOper
 
     /**
      * query the autocommit flag
-     * @return
+     * @return the current autocommit value
      */
     public boolean isAutocommit() {
         return autocommit;

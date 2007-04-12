@@ -72,7 +72,7 @@ public class SchedulerImpl extends PrimImpl implements Prim {
                     log.info("Shutdown Complete");
                 }
             } catch (Exception ex) {
-                log.error("when shutting down the schedulur",ex);
+                log.error("when shutting down the scheduler",ex);
             } finally {
                 scheduler=null;
             }
