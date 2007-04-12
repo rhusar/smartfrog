@@ -28,8 +28,8 @@
     <conf name="redist" description="redistributals excluding smartfrog artifacts"/>
     <conf name="runtime" description="runtime but not the artifact"
         extends="redist"/>
-    <conf name="izpack" visibility="private"
-        description="izpack libraries"/>
+<!--    <conf name="izpack" visibility="private"
+        description="izpack libraries"/>-->
     <!-- From here on, every Package we bundle in Ivy contains its own configuration -->
     <conf name="package-core"
         description="core smartfrog package"/>
@@ -45,20 +45,20 @@
         description="ant components"/>
     <conf name="package-anubis"
         description="anubis components"/>
-<!--    <conf name="package-database"
-        description="database components"/>-->
+    <conf name="package-database"
+        description="database components"/>
     <conf name="package-jmx"
         description="jmx components"/>
     <conf name="package-logging"
         description="logging components"/>
     <conf name="package-networking"
         description="networking components"/>
-    <conf name="package-scheduling"
+    <conf name="package-quartz"
         description="scheduling components"/>
     <conf name="package-scripting"
         description="scripting components"/>
-<!--    <conf name="package-testing"
-        description="testing components"/>-->
+    <conf name="package-testing"
+        description="testing components"/>
     <conf name="package-www"
         description="www components"/>
     <conf name="package-xml"
@@ -83,7 +83,7 @@
         name="smartfrog"
         changing="true"
         rev="latest.integration"
-        conf="package-examples->examples;redist->redist;package-core->services,documentation"/>
+        conf="package-examples->examples;redist->redist;package-core->services,documentation,installation"/>
     <dependency org="org.smartfrog"
         name="sf-tasks" changing="true"
         rev="latest.integration"
@@ -115,7 +115,7 @@
         changing="true"
         rev="latest.integration"
 
-        conf="package-database->master,redist"/>
+        conf="package-database->master,redist,documentation"/>
 <!--,documentation -->
 
     <!--dns-->
@@ -171,7 +171,7 @@
         name="sf-quartz"
         changing="true"
         rev="latest.integration"
-        conf="package-scheduling->master,redist"/>
+        conf="package-quartz->master,redist,documentation"/>
     <!--,documentation -->
 
     <!--SLP-->
@@ -234,7 +234,7 @@
         changing="true"
         rev="latest.integration"
         conf="package-xmpp->master,redist,documentation"/>
-
+<!--
     <dependency org="izpack"
         name="standalone-compiler"
         rev="${izpack.version}"
@@ -242,6 +242,6 @@
     <dependency org="izpack"
         name="installer"
         rev="${izpack.version}"
-        conf="izpack->default"/>
+        conf="izpack->default"/>-->
   </dependencies>
 </ivy-module>
