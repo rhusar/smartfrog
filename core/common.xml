@@ -1611,7 +1611,11 @@ java.class.path=
   </target>
 
   <target name="ivy-retrieve" depends="ivy-resolve" >
-    <ivy:retrieve pattern="${ivy.lib.dir}/[conf]/[artifact]-[revision].[ext]" sync="true" />
+    <property name="ivy.retrieve.pattern"
+        value="[conf]/[artifact]-[revision].[ext]" />
+    <property name="ivy.retrieve.path"
+        value="${ivy.lib.dir}/${ivy.retrieve.pattern}" />
+    <ivy:retrieve pattern="${ivy.retrieve.path}" sync="true" />
   </target>
 
   <target name="ivy-report" depends="ivy-resolve" >
@@ -1629,7 +1633,7 @@ ${ivy.reports.dir}
       xmlns:ivy="antlib:fr.jayasoft.ivy.ant">
     <ivy:publish resolver="local" pubrevision="${Version}"
         overwrite="true"
-        conf="master"
+          conf="master"
         artifactspattern="${dist.lib.dir}/[artifact]-[revision].[ext]" />
   </target>
 
