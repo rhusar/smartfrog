@@ -50,6 +50,8 @@ public class ClusterStatusMonitor extends PrimImpl implements Prim, ClusterMonit
     private HashSet registrations = new HashSet();
 
     private Thread notifierThread;
+    private static final String ATTR_ANUBIS_LOCATOR = "anubisLocator";
+    private static final String ATTR_HOSTNAME = "hostname";
 
     // /////////////////////////////////////////////////////
     //
@@ -69,8 +71,8 @@ public class ClusterStatusMonitor extends PrimImpl implements Prim, ClusterMonit
 
 
     public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
-	super.sfDeploy();
-	anubis = (AnubisLocator)sfResolve("anubisLocator");
+        super.sfDeploy();
+        anubis = (AnubisLocator) sfResolve(ATTR_ANUBIS_LOCATOR);
         anubis.registerListener(idListener);
     }
 
@@ -82,16 +84,17 @@ public class ClusterStatusMonitor extends PrimImpl implements Prim, ClusterMonit
     }
 
 
-
     public synchronized void sfTerminateWith(TerminationRecord tr) {
-	try {
-	    anubis.deregisterListener(idListener);
-	} catch (Exception e) {}
+        try {
+            anubis.deregisterListener(idListener);
+        } catch (Exception e) {
+        }
         try {
             notifierThread.stop();
-        } catch (Exception e) {}
+        } catch (Exception e) {
+        }
 
-	super.sfTerminateWith(tr);
+        super.sfTerminateWith(tr);
     }
 
 
@@ -106,8 +109,8 @@ public class ClusterStatusMonitor extends PrimImpl implements Prim, ClusterMonit
      * Obtain the current resource information about the cluster
      */
     public ComponentDescription clusterStatus()
-	throws RemoteException {
-	return data;
+            throws RemoteException {
+        return data;
     }
 
     /**
@@ -115,12 +118,12 @@ public class ClusterStatusMonitor extends PrimImpl implements Prim, ClusterMonit
      *
      * @param callback the interface to notify of changes in status
      */
-    public  ComponentDescription registerForClusterStatus(ClusterStatus callback)
-	throws RemoteException {
-	synchronized (registrations) {
-	    registrations.add(callback);
-	    return data;
-	}
+    public ComponentDescription registerForClusterStatus(ClusterStatus callback)
+            throws RemoteException {
+        synchronized (registrations) {
+            registrations.add(callback);
+            return data;
+        }
     }
 
     /**
@@ -129,38 +132,37 @@ public class ClusterStatusMonitor extends PrimImpl implements Prim, ClusterMonit
      * @param callback the interface to remove from tbe notification
      */
     public void deregisterForClusterStatus(ClusterStatus callback)
-	throws RemoteException {
-	synchronized (registrations) {
-	    registrations.remove(callback);
-	}
+            throws RemoteException {
+        synchronized (registrations) {
+            registrations.remove(callback);
+        }
     }
 
-
-
     /*
-     * *******************************************************************************************************************
-     */
+    * *******************************************************************************************************************
+    */
 
-    AnubisListener idListener = new AnubisListener("Cluster") {
-	    Hashtable values = new Hashtable();
-            public void newValue(AnubisValue value) {
-                synchronized (values) {
-                    if (values.containsKey(value)) {
-                        modifyResource((ComponentDescription)value.getValue(), (ComponentDescription)values.get(value));
-                    } else {
-                        addResource((ComponentDescription)value.getValue());
-                    }
-                    values.put(value, value.getValue());
-                }
-            }
+    private AnubisListener idListener = new AnubisListener("Cluster") {
+        private Hashtable values = new Hashtable();
 
-            public void removeValue(AnubisValue value) {
-                synchronized (values) {
-                    removeResource((ComponentDescription)values.get(value));
-                    values.remove(value);
+        public void newValue(AnubisValue value) {
+            synchronized (values) {
+                if (values.containsKey(value)) {
+                    modifyResource((ComponentDescription) value.getValue(), (ComponentDescription) values.get(value));
+                } else {
+                    addResource((ComponentDescription) value.getValue());
                 }
+                values.put(value, value.getValue());
             }
-        };
+        }
+
+        public void removeValue(AnubisValue value) {
+            synchronized (values) {
+                removeResource((ComponentDescription) values.get(value));
+                values.remove(value);
+            }
+        }
+    };
 
     /*
      * *******************************************************************************************************************
@@ -173,40 +175,42 @@ public class ClusterStatusMonitor extends PrimImpl implements Prim, ClusterMonit
 
     private void addResource(ComponentDescription desc) {
         synchronized (data) {
-	    // add to data, indexed by hostname
-	    try {
-		Object hostname = desc.sfResolveHere("hostname", false);
-		if (hostname != null) { // should never be - but in case...
-		    try {
-			data.sfAddAttribute(hostname, desc);
-		    } catch (SmartFrogRuntimeException se) {
-			se.printStackTrace();
-		    }
-		}
-	    } catch (SmartFrogResolutionException re) {
-		//should never happen
-	    }
-	}
+            // add to data, indexed by hostname
+            try {
+                Object hostname = desc.sfResolveHere(ATTR_HOSTNAME, false);
+                if (hostname != null) { // should never be - but in case...
+                    try {
+                        data.sfAddAttribute(hostname, desc);
+                    } catch (SmartFrogRuntimeException se) {
+                        sfLog().warn(se);
+                    }
+                }
+            } catch (SmartFrogResolutionException re) {
+                //should never happen
+                sfLog().ignore(re);
+            }
+        }
         notifyRegistrationsOfStatus();
     }
 
 
     private void removeResource(ComponentDescription desc) {
         synchronized (data) {
-	    // remove index by hostname (note desc is old data...)
-	    try {
-		Object hostname = desc.sfResolveHere("hostname", false);
-		if (hostname != null) { // should never be - but in case...
-		    try {
-			data.sfRemoveAttribute(hostname);
-		    } catch (SmartFrogRuntimeException se) {
-			//shouldn't happen
-			se.printStackTrace();
-		    }
-		}
-	    } catch (SmartFrogResolutionException re) {
-		//should never happen
-	    }
+            // remove index by hostname (note desc is old data...)
+            try {
+                Object hostname = desc.sfResolveHere(ATTR_HOSTNAME, false);
+                if (hostname != null) { // should never be - but in case...
+                    try {
+                        data.sfRemoveAttribute(hostname);
+                    } catch (SmartFrogRuntimeException se) {
+                        //shouldn't happen
+                        sfLog().warn(se);
+                    }
+                }
+            } catch (SmartFrogResolutionException re) {
+                //should never happen
+                sfLog().ignore(re);
+            }
         }
         notifyRegistrationsOfStatus();
     }
@@ -214,20 +218,21 @@ public class ClusterStatusMonitor extends PrimImpl implements Prim, ClusterMonit
 
     private void modifyResource(ComponentDescription newDesc, ComponentDescription oldDesc) {
         synchronized (data) {
-	    // replace index by hostname
-	    try {
-		Object hostname = newDesc.sfResolveHere("hostname", false);
-		if (hostname != null) { // should never be - but in case...
-		    try {
-			data.sfReplaceAttribute(hostname, newDesc);
-		    } catch (SmartFrogRuntimeException se) {
-			//shouldn't happen...
-			se.printStackTrace();
-		    }
-		}
-	    } catch (SmartFrogResolutionException re) {
-		//should never happen
-	    }
+            // replace index by hostname
+            try {
+                Object hostname = newDesc.sfResolveHere(ATTR_HOSTNAME, false);
+                if (hostname != null) { // should never be - but in case...
+                    try {
+                        data.sfReplaceAttribute(hostname, newDesc);
+                    } catch (SmartFrogRuntimeException se) {
+                        //shouldn't happen...
+                        sfLog().warn(se);
+                    }
+                }
+            } catch (SmartFrogResolutionException re) {
+                //should never happen
+                sfLog().ignore(re);
+            }
         }
         notifyRegistrationsOfStatus();
     }
@@ -237,23 +242,25 @@ public class ClusterStatusMonitor extends PrimImpl implements Prim, ClusterMonit
      */
 
     /*
-     *    Notificaiton method
+     *    Notification method
      */
 
-    int statusCounter = 0;
-    Object notificationLock = new Object();
+    private volatile int statusCounter = 0;
+    private Object notificationLock = new Object();
 
     private void doNotifyRegistrationsOfStatus() {
         synchronized (registrations) {
-            for (Iterator i = registrations.iterator(); i.hasNext(); ) {
+            for (Iterator i = registrations.iterator(); i.hasNext();) {
                 ClusterStatus a = null;
                 try {
-                    a = (ClusterStatus)i.next();
+                    a = (ClusterStatus) i.next();
                     a.clusterStatus(data);
                 } catch (Exception e) {
-		    try {
-			deregisterForClusterStatus(a);
-		    } catch (Exception ex) {}
+                    try {
+                        deregisterForClusterStatus(a);
+                    } catch (Exception ex) {
+                        sfLog().warn(ex);
+                    }
                 }
             }
         }
@@ -275,14 +282,17 @@ public class ClusterStatusMonitor extends PrimImpl implements Prim, ClusterMonit
             boolean statusChanged = false;
 
             while (true) {
-                synchronized(notificationLock) {
+                synchronized (notificationLock) {
                     statusChanged = false;
                     if (counter != statusCounter) {
                         counter = statusCounter;
                         statusChanged = true;
                     }
                     if (!statusChanged) {
-                        try {notificationLock.wait();} catch (InterruptedException e) {}
+                        try {
+                            notificationLock.wait();
+                        } catch (InterruptedException e) {
+                        }
                         if (counter != statusCounter) {
                             counter = statusCounter;
                             statusChanged = true;
