@@ -1,7 +1,7 @@
 <?xml version="1.0" ?>
 <?xml-stylesheet type="text/xsl" href="http://ivyrep.jayasoft.org/ivy-doc.xsl"?>
 <ivy-module version="1.0">
-  <info organisation="org.smartfrog" module="sf-quartz">
+  <info organisation="org.smartfrog" module="sf-constraints">
     <license name="MPL"/>
     <ivyauthor name="Hewlett-Packard" url="http://www.smartfrog.org"/>
     <description>Eclipse Solver Plug-in</description>
