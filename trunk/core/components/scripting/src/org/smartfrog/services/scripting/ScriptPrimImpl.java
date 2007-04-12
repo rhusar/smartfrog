@@ -52,8 +52,16 @@ public class ScriptPrimImpl
 
   /** The location of the code */
   private String sfScriptCodeBase = "";
+    public static final String ATTR_SF_TERMINATE_WITH_CODE = "sfTerminateWithCode";
+    public static final String ATTR_SF_START_CODE = "sfStartCode";
+    public static final String ATTR_PORT = "port";
+    public static final String ATTR_SF_SCRIPT_CODE_BASE = "sfScriptCodeBase";
+    public static final String ATTR_ATTRIBUTES_AS_VARIABLES = "attributesAsVariables";
+    public static final String ATTR_SF_DEPLOY_CODE = "sfDeployCode";
+    public static final String SCRIPT_PRIM = "prim";
+    public static final String SCRIPT_STATUS = "status";
 
-  /** Standard RMI constructor */
+    /** Standard RMI constructor */
   public ScriptPrimImpl() throws RemoteException {
     super();
   }
@@ -66,7 +74,7 @@ public class ScriptPrimImpl
   public synchronized void setRemote(String name, Object obj) throws
       SmartFrogException, RemoteException {
     try {
-      this.interpreter.set(name, obj);
+      interpreter.set(name, obj);
     }
     catch (Throwable thr) {
       throw SmartFrogException.forward(thr);
@@ -119,24 +127,21 @@ public class ScriptPrimImpl
     try {
       super.sfDeploy();
 
-      interpreter.set("prim", this);
+      interpreter.set(SCRIPT_PRIM, this);
 
-      boolean attAsVar = this.sfResolve("attributesAsVariables", false, false);
+      boolean attAsVar = sfResolve(ATTR_ATTRIBUTES_AS_VARIABLES, false, false);
 
       if (attAsVar) {
 // go through all the attributes and bind them in the interpreter.
-        for (Enumeration e = this.sfContext().keys(); e.hasMoreElements(); ) {
+        for (Enumeration e = sfContext().keys(); e.hasMoreElements(); ) {
           String attName = (String) e.nextElement();
-          interpreter.set(attName, this.sfContext().get(attName));
+          interpreter.set(attName, sfContext().get(attName));
         }
       }
-      try {
-        sfScriptCodeBase = (String)this.sfResolve("sfScriptCodeBase");
-      }
-      catch (SmartFrogResolutionException rex) {}
+      sfScriptCodeBase = sfResolve(ATTR_SF_SCRIPT_CODE_BASE,"",false);
 
       try {
-        String portS = ( (Integer)this.sfResolve("port")).toString();
+        String portS = ( (Integer)sfResolve(ATTR_PORT)).toString();
         // call beanshell's interpreter own command to launch a server.
         interpreter.eval("server(+" + portS + ");");
         String messageHttp = "Go to: 'http://" +
@@ -150,20 +155,20 @@ public class ScriptPrimImpl
 
       try {
         String sfDeployCodeSource = sfScriptCodeBase +
-            (String)this.sfResolve("sfDeployCode");
+            (String)sfResolve(ATTR_SF_DEPLOY_CODE);
         interpreter.eval(getScript(sfDeployCodeSource));
         // exception handling could be lighter. For script debugging purpose, we'll keep it explicit & heavy
       }
       catch (SmartFrogResolutionException rex) {
       }
       catch (TargetError e) {
-        System.out.println(
+          sfLog().error(
             "The script, or the code called by the script, threw an exception during deploy phase: "
-            + e.getTarget());
+            + e.getTarget(),e);
       }
       catch (EvalError e2) {
-        System.out.println(
-            "There was an error in evaluating the script:" + e2);
+          sfLog().error(
+            "There was an error in evaluating the script:" + e2.getMessage(),e2);
       }
     }
     catch (Exception e) {
@@ -180,19 +185,19 @@ public class ScriptPrimImpl
     super.sfStart();
     try {
       String sfStartCodeSource = sfScriptCodeBase +
-          (String)this.sfResolve("sfStartCode");
+          sfResolve(ATTR_SF_START_CODE);
       interpreter.eval(getScript(sfStartCodeSource));
     }
     catch (SmartFrogResolutionException rex) {
     }
     catch (TargetError e) {
-      System.out.println(
+        sfLog().error(
           "The script, or the code called by the script, threw an exception during start phase: "
-          + e.getTarget());
+          + e.getTarget(),e);
     }
     catch (EvalError e2) {
-      System.out.println(
-          "There was an error in evaluating the script:" + e2);
+        sfLog().error(
+          "There was an error in evaluating the script:" + e2.getMessage(),e2);
     }
   }
 
@@ -202,17 +207,17 @@ public class ScriptPrimImpl
    * @param status the TerminationRecord for this phase.
    */
   public void sfTerminateWith(TerminationRecord status) {
-    try {
-      String sfTerminateWithCodeSource = sfScriptCodeBase +
-          (String)this.sfResolve("sfTerminateWithCode");
-      interpreter.set("status", status);
-      interpreter.eval(getScript(sfTerminateWithCodeSource));
-    }
-    catch (SmartFrogResolutionException rex) {
-    }
-    catch (Exception e) {
-      e.printStackTrace();
-    }
-    super.sfTerminateWith(status);
+      try {
+          String sfTerminateWithCodeSource = sfScriptCodeBase +
+                  sfResolve(ATTR_SF_TERMINATE_WITH_CODE);
+          interpreter.set(SCRIPT_STATUS, status);
+          interpreter.eval(getScript(sfTerminateWithCodeSource));
+      }
+      catch (SmartFrogResolutionException rex) {
+      }
+      catch (Exception e) {
+          sfLog().error(e);
+      }
+      super.sfTerminateWith(status);
   }
 }
