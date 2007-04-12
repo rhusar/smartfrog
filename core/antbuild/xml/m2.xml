@@ -1,4 +1,4 @@
-<project name="m2" basedir="." default="checkstyle"
+<project name="m2" basedir="." default="init-m2"
 
   >
 
@@ -113,8 +113,58 @@
      </copy>
    </target>
 
+
+  <target name="m2-pom-macros" depends="init-m2">
+    <macrodef name="m2-makepom" uri="antlib:org.apache.maven.artifact.ant">
+      <attribute name="artifact"/>
+      <attribute name="target"/>
+      <sequential>
+        <echo message="Creating Pom @{target}" level="verbose"/>
+        <echo file="@{target}"><![CDATA[<project>
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>${m2.groupID}</groupId>
+  <artifactId>@{artifact}</artifactId>
+  <packaging>jar</packaging>
+  <version>${Version}</version>
+</project>
+]]></echo>
+      </sequential>
+    </macrodef>
+
+
+    <!--make a pom that depends upon smartfrog-->
+    <macrodef name="m2-makesfpom" uri="antlib:org.apache.maven.artifact.ant">
+      <attribute name="artifact"/>
+      <attribute name="org" default="org.smartfrog"/>
+      <attribute name="target"/>
+      <attribute name="version" default="${artifact.version}"/>
+      <attribute name="smartfrog.version" default="${artifact.version}"/>
+      <sequential>
+        <echo message="Creating Pom @{target}" level="verbose"/>
+        <echo file="@{target}"><![CDATA[<project>
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>@{org}</groupId>
+  <artifactId>@{artifact}</artifactId>
+  <packaging>jar</packaging>
+  <version>${Version}</version>
+     <dependencies>
+       <dependency>
+         <groupId>org.smartfrog</groupId>
+         <artifactId>smartfrog</artifactId>
+         <version>@{version}</version>
+       </dependency>
+     </dependencies>
+</project>
+]]></echo>
+      </sequential>
+    </macrodef>
+  </target>
+
    <!-- inline creation of a very minimal (zero dependency) pom -->
-   <target name="m2-make-pom" depends="init-m2" unless="project.haspom">
+   <target name="m2-make-pom" depends="m2-pom-macros" unless="project.haspom">
+<!--     <m2-makesfpom target="${target.pom}"
+         artifact="${m2.artifact.name}"
+         version="${artifact.version}" />-->
    <echo message="Creating Pom ${target.pom}" level="verbose"/>
    <echoxml file="${target.pom}">
       <project>

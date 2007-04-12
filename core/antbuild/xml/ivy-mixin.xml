@@ -9,7 +9,7 @@
   <import file="core.xml"/>
 
   <!--define the published state-->
-  <target name="published" depends="ivy-publish"/>
+  <target name="published" depends="ivy-publish-all"/>
 
   <target name="ivy-init" depends="init-core,load-version-info,artifact-names">
     <property name="ivy.dir" location="${root.dir}/antbuild/ivy" />
@@ -45,7 +45,7 @@
     <ivy:report todir="${build.dir}/ivy/report"/>
   </target>
 
-  <target name="ready-to-publish" depends="packaged,ivy-report"/>
+  <target name="ready-to-publish" depends="state.ready-to-publish,ivy-report"/>
 
   <target name="ivy-publish" depends="ready-to-publish">
     <ivy:publish resolver="local" pubrevision="${artifact.version}"
@@ -54,9 +54,9 @@
         artifactspattern="${dist.dir}/lib/[artifact]-[revision].[ext]" />
   </target>
 
-  <target name="ready-to-publish-all" depends="ready-to-publish"/>
+  <target name="ready-to-publish-all" depends="ready-to-publish,documents-processed"/>
 
-  <target name="ivy-publish-all" depends="ready-to-publish">
+  <target name="ivy-publish-all" depends="ready-to-publish-all">
     <ivy:publish resolver="local" pubrevision="${artifact.version}"
          overwrite="true"
          artifactspattern="${dist.dir}/lib/[artifact]-[revision].[ext]"/>
