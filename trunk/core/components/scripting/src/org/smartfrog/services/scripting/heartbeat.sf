@@ -32,22 +32,23 @@ HeartBeat extends ScriptPrim {
 	sfDeployCode ##
 	  // build the thread
 	  deathClock() {
-		run() {
-		  while(global.x){  // refer to global, otherwise x is reset each evaluation.
-			Thread.sleep( ((Integer) beat ).intValue());
-			System.out.println(prim.sfCompleteName()+ " beat");
-                         }
-	       	}
-		stop() {
-			global.x = false;
-		}
-        	return this;
-    	  }
+        run() {
+          while(global.x) {  // refer to global, otherwise x is reset each evaluation.
+            Thread.sleep( ((Integer) beat ).intValue());
+            System.out.println(prim.sfCompleteName()+ " beat");
+          }
+        }
+        stop() {
+          global.x = false;
+        }
+      return this;
+    }
 	  // and launch it...
-   	  deathClock = deathClock();
+ 	  deathClock = deathClock();
 	  prim.interpreter.set("deathClock",deathClock);
-    	  new Thread( deathClock ).start();
+ 	  new Thread( deathClock ).start();
                #;
+               
 	sfTerminateWithCode ##
 	  deathClock.stop();
 	#;

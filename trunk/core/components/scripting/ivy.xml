@@ -55,9 +55,9 @@
         changing="true"
         rev="latest.integration"
         conf="test->default"/>
- <!--Getting errors here.-->
+ <!--Getting errors here...Ivy 1.4.1 cannot handle the beanshell 2.0.4 POMs-->
 <!--    <dependency org="org.beanshell"
-        name="bsh"
+        name="bsh-core"
         rev="${bsh.version}"
         conf="compile->default;redist->default"/>-->
   </dependencies>
