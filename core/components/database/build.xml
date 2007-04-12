@@ -1,6 +1,5 @@
 <?xml version="1.0"?>
-<project name="database" default="default"
-         xmlns:sf="antlib:org.smartfrog.tools.ant">
+<project name="database" default="default">
 
   <!--
   /** (C) Copyright 2007 Hewlett-Packard Development Company, LP
