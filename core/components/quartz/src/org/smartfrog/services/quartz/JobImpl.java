@@ -125,7 +125,7 @@ public class JobImpl extends CompoundImpl implements Job {
 
             // find hostname from Collector
 
-            log.info("Number of machines to collect data from are=======" + machines.size());
+            log.info("Number of machines to collect data from are:" + machines.size());
             setTargetInstances(machines.size());
 
 
@@ -140,8 +140,10 @@ public class JobImpl extends CompoundImpl implements Job {
             Object[] array = collect.toArray();
             List list = Arrays.asList(array);
             Collections.sort(list);
-            for (int i = 0; i < list.size(); i++) {
-                log.debug("Element in sorted list===========" + (list.get(i)).toString());
+            if(log.isDebugEnabled()) {
+                for (int i = 0; i < list.size(); i++) {
+                    log.debug("Element in sorted list: " + (list.get(i)).toString());
+                }
             }
             Enumeration keys = allValues.keys();
             Object key = null;
@@ -154,7 +156,7 @@ public class JobImpl extends CompoundImpl implements Job {
                 }
             }
 
-            log.info("Final machine for scheduling is===========" + key.toString());
+            log.info("Final machine for scheduling is:" + key.toString());
 
             //job.getJobDataMap().put("hostname", "localhost");
             //job.getJobDataMap().put("hostname", machines.elementAt(0).toString());

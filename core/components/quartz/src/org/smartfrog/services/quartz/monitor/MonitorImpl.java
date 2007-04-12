@@ -58,7 +58,7 @@ import java.util.Vector;
  * </p>
  */
 public class MonitorImpl extends PrimImpl implements Prim, Runnable, Monitor, DataSource {
-    private static final String cmd = "vmstat -n ";
+    private static final String VMSTAT_COMMAND = "vmstat -n ";
     private Process process = null;
     private BufferedReader pOut = null;
     private BufferedReader pErr = null;
@@ -67,7 +67,7 @@ public class MonitorImpl extends PrimImpl implements Prim, Runnable, Monitor, Da
     private Log log;
     private int perMinute = 60 / delay;
 
-    private String vmstatCmd = cmd + delay + "\n";
+    private String vmstatCmd = VMSTAT_COMMAND + delay + "\n";
     private int splitIndex = 14;
 
     private Vector last10 = new Vector(10);
@@ -88,7 +88,7 @@ public class MonitorImpl extends PrimImpl implements Prim, Runnable, Monitor, Da
         log=sfLog();
         delay = sfResolve(DELAY, 5, false);
 
-        vmstatCmd = org.smartfrog.services.quartz.monitor.MonitorImpl.cmd + delay + ((char) 10);
+        vmstatCmd =VMSTAT_COMMAND + delay + ((char) 10);
         perMinute = 60 / delay;
 
         name = sfCompleteName().toString();
