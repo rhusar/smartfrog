@@ -47,6 +47,8 @@ public class ClusterDeployerImpl extends PrimProcessDeployerImpl {
     public static final String CLUSTERCOMPOUNDCLASS =
             "org.smartfrog.services.anubisdeployer.ClusterCompoundImpl";
     static String uniqueNameBase;
+    public static final String ATTR_CLUSTER_NODE_MANAGEMENT = "clusterNodeManagement";
+    public static final String ATTR_CLUSTER_STATUS_MONITOR = "clusterStatusMonitor";
 
     static {
         try {
@@ -81,7 +83,7 @@ public class ClusterDeployerImpl extends PrimProcessDeployerImpl {
 
         boolean alreadyAllocated = true;
         try {
-            descr.sfResolve(new Reference(ReferencePart.here("sfReservationId")));
+            descr.sfResolve(new Reference(ReferencePart.here(ClusterCompoundImpl.ATTR_SF_RESERVATION_ID)));
         } catch (Exception e) {
             alreadyAllocated = false;
         }
@@ -128,8 +130,8 @@ public class ClusterDeployerImpl extends PrimProcessDeployerImpl {
 
     private static ComponentDescription allocate(ComponentDescription reqs) {
         //System.out.println("allocating " + reqs);
-        Reference clusterManagementRef = new Reference(ReferencePart.here("clusterNodeManagement"));
-        Reference clusterStatusRef = new Reference(ReferencePart.here("clusterStatusMonitor"));
+        Reference clusterManagementRef = new Reference(ReferencePart.here(ATTR_CLUSTER_NODE_MANAGEMENT));
+        Reference clusterStatusRef = new Reference(ReferencePart.here(ATTR_CLUSTER_STATUS_MONITOR));
 
         ComponentDescription resources = null;
         ProcessCompound pc = SFProcess.getProcessCompound();
@@ -161,6 +163,7 @@ public class ClusterDeployerImpl extends PrimProcessDeployerImpl {
     private static class Gatherer implements CDVisitor {
         static int index = 0;
         ComponentDescription reqs;
+        public static final String ATTR_NAME = "name";
 
         public Gatherer(ComponentDescription reqs) {
             this.reqs = reqs;
@@ -197,10 +200,10 @@ public class ClusterDeployerImpl extends PrimProcessDeployerImpl {
                     if (req != null) {
                         Object id;
                         try {
-                            id = req.sfResolve(new Reference(ReferencePart.here("name")));
+                            id = req.sfResolve(new Reference(ReferencePart.here(ATTR_NAME)));
                         } catch (SmartFrogResolutionException e) {
                             id = newUniqueName();
-                            req.sfContext().put("name", id);
+                            req.sfContext().put(ATTR_NAME, id);
                         }
                         ClusterResourceMapper.accumulateRequirements(reqs, req);
                     }

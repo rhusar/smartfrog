@@ -35,6 +35,9 @@ public class ClusterCompoundImpl extends CompoundImpl implements Compound {
 
     private ClusterNode resourceManager = null;
     private String id = "";
+    public static final String ATTR_CLUSTER_NODE_MANAGER = "clusterNodeManager";
+    public static final String ATTR_SF_RESERVATION_ID = "sfReservationId";
+    public static final String ATTR_SF_CLUSTER_NODE = "sfClusterNode";
 
     // /////////////////////////////////////////////////////
     //
@@ -56,17 +59,15 @@ public class ClusterCompoundImpl extends CompoundImpl implements Compound {
     public synchronized void sfDeployWith(Prim parent, Context comp) throws SmartFrogDeploymentException, RemoteException {
         super.sfDeployWith(parent, comp);
 
-        //System.out.println("deployed context");
-        //System.out.println(comp);
         ComponentDescription reservationInfo = null;
 
         try {
-            reservationInfo = (ComponentDescription)((ComponentDescription) ((ComponentDescription) sfResolve("sfClusterNode", true))).copy();
-            resourceManager = (ClusterNode) sfResolve("clusterNodeManager", true);
-            id = (String) sfResolve("sfReservationId", true);
+            reservationInfo = (ComponentDescription)(( sfResolve(ATTR_SF_CLUSTER_NODE, (ComponentDescription)null,true))).copy();
+            resourceManager = (ClusterNode) sfResolve(ATTR_CLUSTER_NODE_MANAGER, true);
+            id = (String) sfResolve(ATTR_SF_RESERVATION_ID, true);
         } catch (Throwable e) {
-            e.printStackTrace();
-            throw new SmartFrogDeploymentException("Error obtaining cluster node manager or required reservation", e);
+            throw (SmartFrogDeploymentException)
+                    SmartFrogDeploymentException.forward("Error obtaining cluster node manager or required reservation", e);
         }
 
         /*
@@ -77,12 +78,13 @@ public class ClusterCompoundImpl extends CompoundImpl implements Compound {
         try {
             resourceManager.reserveResources(id, reservationInfo, this);
         } catch (Exception e) {
-            e.printStackTrace();
             try {
                 resourceManager.releaseResources(id);
             } catch (Exception ex) {
+                sfLog().ignore(ex);
             }
-            throw new SmartFrogDeploymentException("unable to reserve required resources", e);
+            throw (SmartFrogDeploymentException)
+                    SmartFrogDeploymentException.forward("unable to reserve required resources", e);
         }
     }
 
@@ -92,6 +94,7 @@ public class ClusterCompoundImpl extends CompoundImpl implements Compound {
         try {
             resourceManager.releaseResources(id);
         } catch (Exception e) {
+            sfLog().ignore(ex);
         }
     }
 
