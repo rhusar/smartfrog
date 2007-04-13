@@ -176,7 +176,7 @@ public class SoundPlayerImpl extends FileUsingComponentImpl
         private Thread thread;
 
 
-        public SoundPlayerListener(SoundPlayerImpl owner,
+        private SoundPlayerListener(SoundPlayerImpl owner,
                                    File file,
                                    int loops) {
             this.owner = owner;
@@ -251,7 +251,7 @@ public class SoundPlayerImpl extends FileUsingComponentImpl
          *
          * @param file
          * @param loops
-         * @return
+         * @return true if it started
          */
         private boolean play(File file, int loops) {
 
