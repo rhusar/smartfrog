@@ -38,50 +38,17 @@ For more information: www.smartfrog.org
   <!--available file="../../common.xml" property="root.dir" value="../.."/--> 
   <import file="${root.dir}/common.xml"/>
 
-   <!-- =================================================================== -->
-  <!--   JDocs                                                             -->
-  <!-- =================================================================== -->
-  <target name="jdocs" depends="javadoc" description="Generates the API documentation"/>
 
-  
-  <property name="Name.System" value="Net"/>
-  <!-- ========================================================== -->
-  <!-- ========================================================== -->
-  <target name="init" depends="init-standard-output-dirs,use-smartfrog-tasks">
-          
-    <!-- the compile time path includes net-->
-<!--     <path id="compile.classpath">
-      <path refid="smartfrog.classpath"/>
-      <fileset dir="${net.lib.dir}">
-        <include name="**/*.jar"/>
-      </fileset>
-    </path>
-    
-    <path id="run.classpath">
-      <path refid="compile.classpath"/>
-      <path location="${target.jar}" />
-    </path>  
-     -->
-
-    <tstamp/>
-    <property name="Name.Company" value="(C) Copyright 1998-2006 Hewlett-Packard Development Company, LP"/>
-    <property name="version" value="smartfrog components"/>
-    <!--property name="Version" value="1.00.000_beta"/-->
-    <property name="year" value="2004"/>
-
-    <echo message=""/>
-<echo message="==================================================================="/>
-    <echo message="= ${Name.System} ${version}, ${Name.Company} (${ant.version})"/>
+  <target name="init" depends="common.init">
+    <echo message="==================================================================="/>
+    <echo message="= ${ant.project.name}"/>
   </target>
-  
-  
-
 
 
   <!-- ========================================================== -->
   <!-- create the jar -->
   <!-- ========================================================== -->
-  <target name="dist" depends="common.dist,jdocs"  description="create the jar files">
+  <target name="dist" depends="common.dist,javadoc"  description="create the jar files">
     <copy todir = "${dist.lib.dir}">
         <fileset dir ="${lib.dir}" />
     </copy> 
