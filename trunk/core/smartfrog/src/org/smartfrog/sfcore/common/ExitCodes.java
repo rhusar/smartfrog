@@ -51,7 +51,7 @@ public final class ExitCodes {
     /**
      * value of the error code returned during a failed exit when Control_ALT_Del is pressed {@value}
      */
-    public static final int EXIT_ERROR_CODE_CRTL_ALT_DEL = 130;
+    public static final int EXIT_ERROR_CODE_CTRL_ALT_DEL = 130;
 
     /**
      * Exits from the system.
