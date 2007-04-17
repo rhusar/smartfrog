@@ -21,7 +21,7 @@
 
   <property name="root.dir" location=".." />
   <import file="xml/ivy-mixin.xml" />
-
+  <import file="xml/state.xml" />
 
   <target name="filesets" depends="init">
 
@@ -119,21 +119,6 @@
   </target>
 
 
-  <target name="ivy-publish" depends="ready-to-publish"
-      xmlns:ivy="antlib:fr.jayasoft.ivy.ant">
-<!--
-    <ivy:publish resolver="local" pubrevision="${artifact.version}"
-        overwrite="true"
-        publishivy="true"/>
-    conf="master,full,minimal"
--->
 
-    <ivy:publish resolver="local" pubrevision="${artifact.version}"
-        overwrite="true"
-
-        publishivy="false"
-        artifactspattern="${dist.dir}/lib/[artifact]-[revision].[ext]" />
-  </target>
-  
 
 </project>

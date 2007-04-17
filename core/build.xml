@@ -210,9 +210,7 @@ For more information: www.smartfrog.org
   <!-- =================================================================== -->
     <target name="cc-set-build-priority" depends="init" if="nice.task.present" >
       <property name="cc.nice.value" value="3" />
-      <!-- SLO: this is disabled because in ant1.6.2. the nice class is there, but
-      not the task definition -->
-      <!-- <nice newPriority="${cc.nice.value}" /> -->
+       <nice newPriority="${cc.nice.value}" />
     </target>
 
   <!-- =================================================================== -->
@@ -312,9 +310,9 @@ For more information: www.smartfrog.org
   <!-- release all sub-projects                                              -->
   <!-- =================================================================== -->
   <target name="release" depends="init" description="release">
-    <forward2 dir="${main.project}" target="dist"  />    
-    <forward2 dir="${ant.project}" target="dist"  />    
-    <forward2 dir="${components.project}" target="release" antfile="createRelease.xml"  /> 
+    <forward2 dir="${main.project}" target="dist"  />
+    <forward2 dir="${ant.project}" target="dist"  />
+    <forward2 dir="${components.project}" target="release" antfile="createRelease.xml"  />
   </target>
 
   <!-- =================================================================== -->
@@ -389,8 +387,9 @@ For more information: www.smartfrog.org
       <ivy:buildlist skipbuildwithoutivy="true">
         <fileset file="smartfrog/build.xml" />
         <fileset file="testharness/build.xml" />
+        <fileset file="antbuild/build.xml" />
         <fileset dir="release">
-          <include name="build.xml" if="java1.5+"/>
+          <include name="build.xml" if="java1.5+" unless="do.not.release"/>
         </fileset>
         <fileset dir="extras" includes="**/build.xml">
           <!--no CDL -->
@@ -528,7 +527,13 @@ ${child.projects.list}
     </subant>
   </target>
 
-
+  <!-- ========================================================== -->
+  <!-- this is going to become the full release mechanism, eventually-->
+  <!-- ========================================================== -->
+  <target name="ivy-release" depends="ivy-init"
+      description="run a complete release of SmartFrog using Ivy">
+    <ivy-delegate target="release" />
+  </target>
 
   <!-- ========================================================== -->
   <!-- print meaningful diagnostics -->

@@ -298,7 +298,7 @@
   <!-- =================================================================== -->
   <target name="compile-source" depends="initbuild,createParser" description="Compiles the source code">
     <!-- Compile the java code -->
-    <echo>${javac.java.version} build.compiler=${build.compiler} javac.compiler=${javac.compiler}</echo>
+    <echo level="verbose">${javac.java.version} build.compiler=${build.compiler} javac.compiler=${javac.compiler}</echo>
     <javac compiler="${javac.compiler}" srcdir="${src.dir}"
       includes="**/*.java" destdir="${build.classes.dir}"
       debug="${javac.debug.mode}" debuglevel="${javac.debug.level}"
@@ -643,6 +643,7 @@
   <target name="securedist" depends="dist" description="Updates dist and sign jars if CA initialized">
     <ant dir="${dist.dir}" target="signJars" inheritAll="false"/>
   </target>
+
   <!-- =================================================================== -->
   <!-- src.zip                                                             -->
   <!-- =================================================================== -->
@@ -654,6 +655,7 @@
       </zipfileset>
     </zip>
   </target>
+
   <!-- =================================================================== -->
   <!-- clean                                                               -->
   <!-- =================================================================== -->
@@ -665,6 +667,7 @@
     <delete dir="${dist.dir}" failonerror="false"/>
     <delete dir="${src.dir}/documentation" failonerror="false"/>
   </target>
+
   <!-- =================================================================== -->
   <!-- a clean distribution                                               -->
   <!-- =================================================================== -->
@@ -698,6 +701,10 @@
   <target name="default" depends="all" description="default target for the project; invokes 'all'"/>
 
 
+
+  <!-- =================================================================== -->
+  <!-- define a macro to checksum a jar, then checksum all the output jars-->
+  <!-- =================================================================== -->
   <target name="checksum-target-jar"
     description="checksum our target jars" depends="jars">
 
@@ -907,13 +914,20 @@ ${ivy.reports.dir}
     </echo>
   </target>
 
-  <!--jars,-->
-  <target name="ready-to-publish" depends="jars,ivy-report"/>
+  <!--copy these in to the same dir that the other artifacts go,
+  so that they can be published together-->
+  <target name="copy-target-jars" depends="jars,artifact-names">
+    <copy file="${smartfrog.jar}" todir="${artifacts.dir}" />
+    <copy file="${sf-services.jar}" todir="${artifacts.dir}" />
+    <copy file="${sf-examples.jar}" todir="${artifacts.dir}" />
+  </target>
+
+  <target name="ready-to-publish" depends="copy-target-jars,ivy-report,package-install-artifact"/>
 
   <target name="ivy-publish" depends="ready-to-publish" if="ivy.found">
     <ivy:publish resolver="local" pubrevision="${Version}"
         overwrite="true"
-        artifactspattern="${dist.dir}/lib/[artifact]-[revision].[ext]" />
+        artifactspattern="${artifacts.dir}/[artifact]-[revision].[ext]" />
   </target>
 
 
@@ -921,6 +935,37 @@ ${ivy.reports.dir}
       description="Publish artifacts to the local repositories"
       />
 
+  <target name="artifact-names" depends="target-names">
+    <property name="artifacts.dir" location="${build.extra.dir}/artifacts" />
+    <mkdir  dir="${artifacts.dir}" />
+    <property name="sf-core-install.zip"
+        location="${artifacts.dir}/sf-core-install-${Version}.zip" />
+    <property name="sf-core-source.zip"
+        location="${artifacts.dir}/sf-core-source-${Version}.zip" />
+    <property name="sf-core-documentation.zip"
+        location="${artifacts.dir}/sf-core-documentation-${Version}.zip" />
+    <property name="sf-core-documentation.zip"
+        location="${artifacts.dir}/sf-core-javadocs-${Version}.zip" />
+  </target>
+
+  <target name="package-source-artifact" depends="artifact-names">
+    <zip destfile="${sf-core-source.zip}">
+      <fileset refid="source.pattern"/>
+    </zip>
+  </target>
+
+  <!--the install artifact is a snapshot of the dist tree-->
+  <target name="package-install-artifact" depends="artifact-names,ready-to-dist">
+    <zip destfile="${sf-core-install.zip}">
+      <zipfileset dir="${dist.dir}" includes="**/*"/>
+    </zip>
+  </target>
+
+  <target name="unzip-install-artifact" depends="package-install-artifact" >
+    <unzip src="${sf-core-install.zip}" dest="${artifacts.dir}/install"/>
+  </target>
+
+  <target name="publish-all" depends="published" />  
 
   <!-- ========================================================== -->
   <!-- print meaningful diagnostics -->
@@ -929,5 +974,88 @@ ${ivy.reports.dir}
       description="build file diagnostics">
     <diagnostics/>
   </target>
+
+
+  <!-- =================================================================== -->
+  <!-- define the patterns for different parts of the archives             -->
+  <!-- patterns are not bound to a specific directory, so can be reused    -->
+  <!-- and can be declared before the artifacts actually exist, unlike filesets-->
+  <!-- =================================================================== -->
+  <patternset id="excluded.cruft">
+    <exclude name="**/SVN" />
+    <exclude name="**/svn" />
+    <exclude name="**/*.dfPackage" />
+    <exclude name="**/Cvs" />
+    <exclude name="**/CVS" />
+    <exclude name="**/.#*" />
+    <exclude name="**/*.*~" />
+  </patternset>
+
+  <!--Shell scripts from the bin/ directories-->
+  <patternset id="unix.bin">
+    <include name="smartfrog"/>
+    <include name="sf*"/>
+    <include name="*.pl"/>
+    <include name="*.py"/>
+    <exclude name="*.bat"/>
+    <exclude name="*.cmd"/>
+    <patternset refid="excluded.cruft"/>
+  </patternset>
+
+  <!--everything in the bin dir other than the unix stuff-->
+  <patternset id="other.bin">
+    <include name="*"/>
+    <exclude name="smartfrog"/>
+    <exclude name="sf*"/>
+    <exclude name="*.pl"/>
+    <exclude name="*.py"/>
+    <patternset refid="excluded.cruft"/>
+  </patternset>
+
+  <!-- pattern for documentation; can be applied to doc/ and dist/doc-->
+  <patternset id="docs.pattern">
+    <include name="dir.JPG"/>
+    <include name="*.html"/>
+    <include name="*.pdf"/>
+    <include name="jedit-smartfrog.pdf"/>
+    <include name="antTasksManual/*.html"/>
+    <include name="components/*.pdf"/>
+    <include name="images/**"/>
+    <include name="jdocs/**"/>
+    <include name="skin/**"/>
+    <include name="smartfrogdoc/**"/>
+    <patternset refid="excluded.cruft"/>
+  </patternset>
+
+  <!--directories that security needs -->
+  <patternset id="security.pattern">
+    <include name="private/**"/>
+    <include name="testCA/**"/>
+    <patternset refid="excluded.cruft"/>
+  </patternset>
+
+  <!--all the source files.-->
+  <patternset id="source.pattern">
+    <include name="src/**"/>
+    <include name="private/**"/>
+    <include name="testCA/**"/>
+    <include name="javacc/*"/>
+    <include name="build.xml"/>
+    <include name="releaseBuild.xml"/>
+    <include name="parsertargets"/>
+    <include name="COPYRIGHT.txt"/>
+    <include name="LICENSE.txt"/>
+    <include name="changes.txt"/>
+    <include name="readme.txt"/>
+    <include name="sf-build-version.properties"/>
+    <patternset refid="excluded.cruft"/>
+  </patternset>
+
+  <patternset id="lib.pattern">
+    <include name="lib/**/*.jar"/>
+  </patternset>
+
+
 </project>
+
 <!-- End of file -->

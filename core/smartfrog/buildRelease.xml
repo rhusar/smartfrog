@@ -152,7 +152,6 @@
   <!-- and can be declared before the artifacts actually exist, unlike filesets-->
   <!-- =================================================================== -->
   <patternset id="excluded.cruft">
-    <!-- because some versions of svn-on-windws downt use the .svn dir, and only Ant1.7+ knows that -->
     <exclude name="**/SVN" />
     <exclude name="**/svn" />
     <exclude name="**/*.dfPackage" />
@@ -219,9 +218,6 @@
     <include name="changes.txt"/>
     <include name="readme.txt"/>
     <include name="sf-build-version.properties"/>
-    <!-- ISSUE: what use are these? -->
-    <include name="../testharness/build.xml"/>
-    <include name="../testharness/testcases/build.xml"/>
     <patternset refid="excluded.cruft"/>
   </patternset>
 
