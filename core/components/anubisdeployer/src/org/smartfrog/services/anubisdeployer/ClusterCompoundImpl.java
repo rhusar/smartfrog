@@ -94,7 +94,7 @@ public class ClusterCompoundImpl extends CompoundImpl implements Compound {
         try {
             resourceManager.releaseResources(id);
         } catch (Exception e) {
-            sfLog().ignore(ex);
+            sfLog().ignore(e);
         }
     }
 
