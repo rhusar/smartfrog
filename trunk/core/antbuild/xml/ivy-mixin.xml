@@ -6,10 +6,12 @@
     to do pom-based builds.
   </description>
 
+  
   <import file="core.xml"/>
 
   <!--define the published state-->
   <target name="published" depends="ivy-publish-all"/>
+
 
   <target name="ivy-init" depends="init-core,load-version-info,artifact-names">
     <property name="ivy.dir" location="${root.dir}/antbuild/ivy" />
@@ -47,19 +49,15 @@
 
   <target name="ready-to-publish" depends="state.ready-to-publish,ivy-report"/>
 
-  <target name="ivy-publish" depends="ready-to-publish">
+  <target name="ivy-publish" depends="ready-to-publish-all,ready-to-publish,ivy-resolve">
     <ivy:publish resolver="local" pubrevision="${artifact.version}"
         overwrite="true"
-        conf="master"
         artifactspattern="${dist.dir}/lib/[artifact]-[revision].[ext]" />
   </target>
 
   <target name="ready-to-publish-all" depends="ready-to-publish,documents-processed"/>
 
-  <target name="ivy-publish-all" depends="ready-to-publish-all">
-    <ivy:publish resolver="local" pubrevision="${artifact.version}"
-         overwrite="true"
-         artifactspattern="${dist.dir}/lib/[artifact]-[revision].[ext]"/>
+  <target name="ivy-publish-all" depends="ivy-publish">
   </target>
   <!--
     this target does the local install, copy

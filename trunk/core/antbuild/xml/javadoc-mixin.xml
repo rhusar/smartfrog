@@ -123,6 +123,8 @@
     </zip>
   </target>
 
+  <target name="documents-packaged" depends="package-documents" />
+
   <!-- ========================================================== -->
   <!--  set up the documentation-->
   <!-- ========================================================== -->

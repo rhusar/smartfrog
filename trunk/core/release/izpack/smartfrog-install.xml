@@ -258,7 +258,7 @@ It also includes
           targetdir="$INSTALL_PATH"
           unpack="true"/>
       <!--these are all the executables that should be marked as +x in unix. -->
-<!--      <executable stage="never" targetfile="$INSTALL_PATH/bin/sfDaemon" failure="warn" />
+      <executable stage="never" targetfile="$INSTALL_PATH/bin/sfDaemon" failure="warn" />
       <executable stage="never" targetfile="$INSTALL_PATH/bin/sfDetachAndTerminate" failure="warn"/>
       <executable stage="never" targetfile="$INSTALL_PATH/bin/sfDiag" failure="warn"/>
       <executable stage="never" targetfile="$INSTALL_PATH/bin/sfDiagnostics" failure="warn"/>
@@ -272,7 +272,7 @@ It also includes
       <executable stage="never" targetfile="$INSTALL_PATH/bin/sfTerminate" failure="warn"/>
       <executable stage="never" targetfile="$INSTALL_PATH/bin/sfUpdate" failure="warn"/>
       <executable stage="never" targetfile="$INSTALL_PATH/bin/sfVersion" failure="warn"/>
-      <executable stage="never" targetfile="$INSTALL_PATH/bin/smartfrog" failure="warn"/>-->
+      <executable stage="never" targetfile="$INSTALL_PATH/bin/smartfrog" failure="warn"/>
     </pack>
 
 <!--    <pack name="SmartFrog Examples" required="no" preselected="yes">
@@ -305,6 +305,27 @@ and its components.
           targetdir="$INSTALL_PATH"
           unpack="true"/>
     </pack>
+    
+    <!--doesnt automatically turn everything on, the way I'd hoped-->
+<!--
+    <pack name="Everything" required="no" preselected="no">
+      <description>
+Select this if you want to install all the SmartFrog components in the distribution
+      </description>
+      <depends packname="Ant"/>
+      <depends packname="Anubis"/>
+      <depends packname="Database"/>
+      <depends packname="JMX"/>
+      <depends packname="Logging"/>
+      <depends packname="Networking"/>
+      <depends packname="Quartz"/>
+      <depends packname="Scripting"/>
+      <depends packname="xunit"/>
+      <depends packname="JUnit"/>
+      <depends packname="WWW"/>
+      <depends packname="XML"/>
+      <depends packname="XMPP"/>
+    </pack>-->
 
 
     <pack name="Ant" required="no" preselected="no">
@@ -575,14 +596,13 @@ This component does not contain any of the libraries that are needed.
      <depends packname="Logging"/>
    </pack>
 
-    <pack name="JUnit3" required="no" preselected="no">
+    <pack name="JUnit" required="no" preselected="no">
       <description>
         This contains the components for running JUnit ${junit.version} tests, and the
         junit-${junit.version}.jar.
       </description>
       <fileset dir="ivy/lib/package-testing" targetdir="$INSTALL_PATH"
           includes="**/*"/>
-      <depends packname="logging"/>
       <file src="ivy/lib/package-testing/sf-junit-${smartfrog.version}.jar"
           targetdir="$INSTALL_PATH/lib"
           />
@@ -645,7 +665,7 @@ The bundled libraries are
       <file src="ivy/lib/package-www/jetty-${jetty.version}.jar"
           targetdir="$INSTALL_PATH/lib"
           />
-      <depends packname="logging" />
+      <depends packname="Logging" />
     </pack>
 
     <pack name="XML" required="no" preselected="no">

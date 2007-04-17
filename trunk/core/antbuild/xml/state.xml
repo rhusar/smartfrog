@@ -53,12 +53,18 @@
 
   <target name="javadocs-finished" depends="ready-to-javadoc"/>
 
-  <target name="ready-to-process-other-docs" depends="init-docs" />
+  <target name="ready-to-process-other-docs" depends="ready-to-javadoc" />
 
-  <target name="other-docs-finished" depends="package-documents"/>
+  <target name="other-docs-finished" depends="ready-to-process-other-docs"/>
 
   <target name="documents-processed"
       depends="javadocs-finished,other-docs-finished"/>
+
+  <target name="ready-to-package-documents" depends="documents-processed">
+
+  </target>
+
+  <target name="documents-packaged" depends="ready-to-package-documents" />
 
   <!--publishing ::= saving the artifacts to a (shared) repository-->
   <target name="ready-to-publish" depends="packaged,documents-processed"/>
