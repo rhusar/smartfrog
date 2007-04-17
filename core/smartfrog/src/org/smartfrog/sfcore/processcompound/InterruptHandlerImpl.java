@@ -52,10 +52,19 @@ class InterruptHandlerImpl implements SignalHandler,InterruptHandler {
     private SignalHandler oldHandler;
     protected LogSF log;
 
-    public InterruptHandlerImpl() {
+    InterruptHandlerImpl() {
     }
 
-    public void handle(Signal sig) {
+    /**
+     * Handle a signal from the runtime.
+     * <ol>
+     * <li>if we are not already terminated, we begin a clean shutdown of the program.
+     * <li>
+     * <li>If we receive another signal, do an exit without terminating components, returning
+     *  {@link ExitCodes#EXIT_ERROR_CODE_CTRL_ALT_DEL} as the error code.
+     * @param signal received signal.
+     */
+    public void handle(Signal signal) {
         if (!SFProcess.markProcessCompoundTerminated()) {
             if (SFProcess.processCompound != null) {
                 try {
@@ -79,7 +88,7 @@ class InterruptHandlerImpl implements SignalHandler,InterruptHandler {
             log.out("sfDaemon killed!");
             //http://www.tldp.org/LDP/abs/html/exitcodes.html
             // 130 - Control-C is fatal error signal 2, (130 = 128 + 2)
-            ExitCodes.exitWithError(ExitCodes.EXIT_ERROR_CODE_CRTL_ALT_DEL);
+            ExitCodes.exitWithError(ExitCodes.EXIT_ERROR_CODE_CTRL_ALT_DEL);
         }
     }
 
@@ -98,8 +107,6 @@ class InterruptHandlerImpl implements SignalHandler,InterruptHandler {
         } catch (IllegalArgumentException e) {
             //this happens when binding fails. In this situation, warn, but keep going
             this.log.err("Failed to set control-C handler -is JVM running with -Xrs set?",e);
-//                Logger.log("Failed to set control-C handler -is JVM running with -Xrs set?");
-//                Logger.log(e);
         }
     }
 }
