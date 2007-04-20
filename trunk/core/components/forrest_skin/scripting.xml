@@ -14,18 +14,17 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 -->
-<!--DOCTYPE document PUBLIC "-//APACHE//DTD Documentation V1.3//EN" "http://forrest.apache.org/dtd/document-v13.dtd" -->
 
 <!DOCTYPE document PUBLIC "-//APACHE//DTD Documentation V2.0//EN" "http://forrest.apache.org/dtd/document-v20.dtd">
 <document> 
   <header> 
-    <title>Document Folder for SmartFrogScripting Components</title> 
+    <title>Document Folder for SmartFrog Scripting Components</title>
   </header> 
   <body> 
   	<section>
   	 <title>Welcome to Scripting Component</title>  
 
-	  	<p><a href="scripting_readme.html">SmartFrogScripting User Manual</a></p>
+	  	<p><a href="scripting_readme.html">SmartFrog Scripting User Manual</a></p>
 </section>
   </body> 
  
