@@ -66,7 +66,7 @@ which will be used to configure the chosen Forrest skin.
 
   <!-- mandatory project logo
   default skin: renders it at the top -->
-    <project-url>http://www.SmartFrog.org</project-url>
+    <project-url>http://www.smartfrog.org</project-url>
   
 
   <!-- Alternative static image:-->
@@ -76,7 +76,7 @@ which will be used to configure the chosen Forrest skin.
        default skin: renders it at the top-left corner -->
   <group-name>SmartFrog</group-name>
   <group-description>SmartFrog</group-description>
-  <group-url>http://www.SmartFrog.org/</group-url>
+  <group-url>http://www.smartfrog.org/</group-url>
    <group-logo>images/group.png</group-logo> 
   
   <!-- Alternative static image:
@@ -88,10 +88,10 @@ which will be used to configure the chosen Forrest skin.
   <host-logo>images/sourceforge.gif</host-logo>
 
   <!-- relative url of a favicon file, normally favicon.ico -->
-  <favicon-url></favicon-url>
+  <favicon-url>images/frogb.ico</favicon-url>
 
   <!-- The following are used to construct a copyright statement -->
-  <year>1998-2006</year>
+  <year>1998-2007</year>
   <vendor>Hewlett Packard Company</vendor>
   <!-- The optional copyright-link URL will be used as a link in the
     copyright statement
@@ -421,13 +421,13 @@ which will be used to configure the chosen Forrest skin.
     web pages  
    -->
   <credits>
-    <credit box-location="alt">
+<!--    <credit box-location="alt">
       <name>Built with Apache Forrest</name>
       <url>http://forrest.apache.org/</url>
       <image>images/built-with-forrest-button.png</image>
       <width>88</width>
       <height>31</height>
-    </credit>
+    </credit>-->
     <!-- A credit with @role="pdf" will be used to compose a footer
      for each page in the PDF, using either "name" or "url" or both.
     -->

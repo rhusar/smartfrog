@@ -14,16 +14,16 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 -->
-<!DOCTYPE document PUBLIC "-//APACHE//DTD Documentation V1.3//EN" "http://forrest.apache.org/dtd/document-v13.dtd">
-<document> 
+<!DOCTYPE document PUBLIC "-//APACHE//DTD Documentation V2.0//EN" "http://forrest.apache.org/dtd/document-v20.dtd">
+<document>
   <header> 
     <title>Document Folder for SmartFrog Examples</title> 
-    <notice>Select a Documet</notice>
+    <notice>Select a Document</notice>
     <abstract>Document List</abstract> 
   </header> 
   <body> 
    
-		 <p><link href="sfDynamicWebServerExample.html">Dynamic WebServer Example</link></p>
+		 <p><a href="sfDynamicWebServerExample.html">Dynamic WebServer Example</a></p>
 		
 
   </body> 

@@ -14,7 +14,6 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 -->
-<!--DOCTYPE document PUBLIC "-//APACHE//DTD Documentation V1.3//EN" "http://forrest.apache.org/dtd/document-v13.dtd" -->
 
 <!DOCTYPE document PUBLIC "-//APACHE//DTD Documentation V2.0//EN" "http://forrest.apache.org/dtd/document-v20.dtd">
 <document> 
@@ -25,10 +24,10 @@
   <body> 
    
 	<section>
-  	 <title>Welcome to LoggingServices Component</title> 
+  	 <title>Welcome to Logging Services Components</title> 
    
 	  <p>
-		  <a href="loggingservices_readme.html">LoggingServices User Manual</a>
+		  <a href="loggingservices_readme.html">Logging Services User Manual</a>
 	  </p>
   </section>    
 	

@@ -14,17 +14,17 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 -->
-<!DOCTYPE document PUBLIC "-//APACHE//DTD Documentation V1.3//EN" "http://forrest.apache.org/dtd/document-v13.dtd">
+<!DOCTYPE document PUBLIC "-//APACHE//DTD Documentation V2.0//EN" "http://forrest.apache.org/dtd/document-v20.dtd">
 <document> 
   <header> 
-    <title>Document Folder for JETTY Components</title> 
+    <title>Document Folder for Jetty Components</title> 
     <notice>Select a Document</notice>
     <abstract>Document  List</abstract> 
   </header> 
   <body> 
    
 
-	  	<p><link href="jetty_readme.html">Jetty Component UserManual</link></p>
+	  	<p><a href="jetty_readme.html">Jetty Components User Manual</a></p>
     
   </body> 
  

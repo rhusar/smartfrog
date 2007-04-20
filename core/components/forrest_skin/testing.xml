@@ -15,17 +15,20 @@
   limitations under the License.
 -->
 <!DOCTYPE document PUBLIC "-//APACHE//DTD Documentation V2.0//EN" "http://forrest.apache.org/dtd/document-v20.dtd">
-<document> 
+<document>
   <header> 
-    <title>Document Folder for SSH Components</title> 
-   
+    <title>Testing under SmartFrog</title>
+    <notice>Select a Document</notice>
+    <abstract>Articles about testing under Smartfrog</abstract> 
   </header> 
   <body> 
-   	<section>
-  	 <title>Welcome to SSH Component</title> 
-
-	  	<p><a href="ssh_readme.html">ReadMe</a></p>
-</section>
+    <p><a href=".html"></a></p>
+    <p><a href=".html"></a></p>
+    <p><a href=".html"></a></p>
+    <p><a href=".html"></a></p>
+    <p><a href=".html"></a></p>
+    <p><a href=".html"></a></p>
   </body> 
   
 </document>
+

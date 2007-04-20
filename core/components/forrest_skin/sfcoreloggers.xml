@@ -14,7 +14,8 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 -->
-<!DOCTYPE document PUBLIC "-//APACHE//DTD Documentation V1.3//EN" "http://forrest.apache.org/dtd/document-v13.dtd">
+<!DOCTYPE document PUBLIC "-//APACHE//DTD Documentation V2.0//EN" "http://forrest.apache.org/dtd/document-v20.dtd">
+
 <document> 
   <header> 
     <title>Document Folder for SFCoreLoggers Components</title> 
@@ -26,7 +27,7 @@
 
    
     
-	  	<p><link href="sfcoreloggers_readme.html">SFCoreLoggers User Manual</link></p>
+	  	<p><a href="sfcoreloggers_readme.html">SFCoreLoggers User Manual</a></p>
        
 	
   

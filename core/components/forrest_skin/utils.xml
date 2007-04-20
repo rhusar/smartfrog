@@ -14,8 +14,8 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 -->
-<!DOCTYPE document PUBLIC "-//APACHE//DTD Documentation V1.3//EN" "http://forrest.apache.org/dtd/document-v13.dtd">
-<document> 
+<!DOCTYPE document PUBLIC "-//APACHE//DTD Documentation V2.0//EN" "http://forrest.apache.org/dtd/document-v20.dtd">
+<document>
   <header> 
     <title>Document Folder for Utils Components</title> 
     <notice>Select a Document</notice>
@@ -23,7 +23,7 @@
   </header> 
   <body> 
   	  
-        <p><link href="utils_readme.html">Utils Readme</link></p>
+        <p><a href="utils_readme.html">Utils Readme</a></p>
   
   </body> 
  

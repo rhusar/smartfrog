@@ -14,8 +14,8 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 -->
-<!DOCTYPE document PUBLIC "-//APACHE//DTD Documentation V1.3//EN" "http://forrest.apache.org/dtd/document-v13.dtd">
-<document> 
+<!DOCTYPE document PUBLIC "-//APACHE//DTD Documentation V2.0//EN" "http://forrest.apache.org/dtd/document-v20.dtd">
+<document>
   <header> 
     <title>Document Folder for CDDLM Components</title> 
     <notice>Select a Document</notice>
@@ -25,11 +25,11 @@
    
 
    
-	  	<p><link href="ReadMe.html">ReadMe</link></p>
-        <p><link href="UserManual.html">User Manual</link></p>
-		<p><link href="CDL-implementation-notes.html">CDL-Implementation-notes</link></p>
-		<p><link href="Deployment_API.doc">Deployment API</link></p>
-		<p><link href="ComponentDiscription.html">ComponentDiscription</link></p>
+	  <p><a href="ReadMe.html">ReadMe</a></p>
+    <p><a href="UserManual.html">User Manual</a></p>
+		<p><a href="CDL-implementation-notes.html">CDL-Implementation-notes</a></p>
+		<p><a href="Deployment_API.doc">Deployment API</a></p>
+		<p><a href="ComponentDiscription.html">ComponentDiscription</a></p>
 	
   
   </body> 
