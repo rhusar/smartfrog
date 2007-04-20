@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Stack;
 import java.util.Vector;
 
@@ -18,7 +19,7 @@ import org.smartfrog.sfcore.languages.csf.csfcomponentdescription.FreeVar;
 import org.smartfrog.sfcore.reference.Reference;
 
 abstract public class PrologSolver extends CoreSolver {
-	private final String theoryFile = "theoryFile.pl";
+    private final String theoryFile = "plc.ecl";
     private final String theoryFileProperty = "opt.smartfrog.sfcore.languages.csf.constraints.prologTheoryFile";
     private final String varNameBase = "SFV";
     private final char referenceDelimiter = '@';
@@ -26,6 +27,7 @@ abstract public class PrologSolver extends CoreSolver {
     private Hashtable bindings;
     private Hashtable initialBindings;
     private Vector constraints = new Vector();
+    private Vector allocations = new Vector();
     private Vector allVariables = new Vector(); // all variables in the description, should be empty after mapping back...
 
     /**
@@ -45,7 +47,6 @@ abstract public class PrologSolver extends CoreSolver {
      */
     public void solve(CSFComponentDescription cd) throws SmartFrogResolutionException {
         top = cd;
-        System.out.println("solving:"+cd);
 
         String filename = System.getProperty(theoryFileProperty);
         if (filename==null) {
@@ -55,7 +56,6 @@ abstract public class PrologSolver extends CoreSolver {
         	}
         	filename += "/../"+"constraints"+"/"+theoryFile;
 	    }
-        System.out.println(filename);
        
         // create the theory
         try {
@@ -72,23 +72,282 @@ abstract public class PrologSolver extends CoreSolver {
             throw new SmartFrogResolutionException("Error collecting constraints during constraint resolution", e);
         }
 
-        if (constraints.size()==0) return;
+        if (constraints.size()!=0) {
         
-        // solve the constraints
-        try {
-        	solveConstraints(initialBindings);
-        } catch (Exception e) {
-            throw new SmartFrogResolutionException("Error in solving constraints, probable inconsistency", e);
-        }
+            //System.out.println("solving:"+cd);
 
-        // map values back
-        try {
-            mapBindings();
-        } catch (Exception e) {
-            throw new SmartFrogResolutionException("Error updating description with variable bindings during constraint resolution", e);
-        }
+	    // solve the constraints
+	    try {
+		    solveConstraints(initialBindings);
+	    } catch (Exception e) {
+		throw new SmartFrogResolutionException("Error in solving constraints, probable inconsistency", e);
+	    }
+
+	    // map values back
+	    try {
+		mapBindings();
+	    } catch (Exception e) {
+		throw new SmartFrogResolutionException("Error updating description with variable bindings during constraint resolution", e);
+	    }
         
-        System.out.println("solving:"+cd);
+	    //System.out.println("solving:"+cd);
+
+	}
+
+        int size = allocations.size();
+        System.out.println(""+size);
+        
+		if (allocations.size()!=0){
+			for(int i=0;i<allocations.size();i++){
+			    Constraint c = (Constraint) allocations.get(i);
+			    String attr = c.getQuery();
+			    cd = (CSFComponentDescription) c.getComponent();
+			    
+			    System.out.println("solving:"+cd);
+			    
+			    try {
+			    	runGoal("init.");
+			    } catch (Exception e){
+			    	throw new SmartFrogResolutionException("Problem with initialing constraint solving theory for allocation", e);
+			    }
+			    
+			    Vector producers, consumers, colocations, nocolocations, hosteds, default_host_cap, default_vm_req;
+			    producers= consumers= colocations= nocolocations= hosteds= default_host_cap= default_vm_req= null;
+			    
+			    try {
+				   producers = (Vector) cd.sfResolve("producers");
+				   consumers = (Vector) cd.sfResolve("consumers");
+			    } catch (SmartFrogResolutionException sfre){
+			    	throw new SmartFrogResolutionException("Error in resolving allocation attributes: one/both of producers/consumers are missing", sfre);
+			    }			    
+			    try {
+			    	colocations = (Vector) cd.sfResolve("colocations");
+			    } catch (SmartFrogResolutionException sfre){
+			        ;
+			    }
+			    try {
+			    	nocolocations = (Vector) cd.sfResolve("noncolocations");
+			    } catch (SmartFrogResolutionException sfre){
+			    	;
+			    }	
+			    try {
+			    	hosteds = (Vector) cd.sfResolve("hosted");
+			    } catch (SmartFrogResolutionException sfre){
+			    	;
+			    }	
+			    
+			    try {
+			    	default_host_cap = (Vector) cd.sfResolve("default_host_cap");
+			    } catch (SmartFrogResolutionException sfre){
+			    	;
+			    }	
+			    
+			    try {
+			    	default_vm_req = (Vector) cd.sfResolve("default_vm_req");
+			    } catch (SmartFrogResolutionException sfre){
+			    	;
+			    }	
+			    
+			    //assert producer information...
+			    String assert_s="";
+			    for (int p=0;p<producers.size();p++){
+			    	if (p>0) assert_s+=", ";
+			    	assert_s+=" assert(host_cap(";
+			    	Object producer = producers.get(p);
+			    	if (producer instanceof Vector){
+			    		Vector producera = (Vector) producer;
+				    	String host = (String) producera.get(0);
+				    	assert_s+=host+", [";
+				    	Vector caps = (Vector) producera.get(1);
+				    	for (int ca=0;ca<caps.size();ca++){
+				    		if (ca>0) assert_s+=", ";
+				    		Integer cap = (Integer) caps.get(ca);
+				    		assert_s+=cap.toString();
+				    	}
+				    	assert_s+="]))";
+			    	} else {
+			    		String host = (String) producer;
+			    		assert_s+=host+", nil))";
+			    	}
+			    }
+			    assert_s+=".";
+			    
+			    //System.out.println(assert_s);
+			    
+			    try {
+			    	runGoal(assert_s);
+			    } catch (Exception e){
+			    	throw new SmartFrogResolutionException("Problem with initialing constraint solving theory for allocation: producers", e);
+			    }
+			    
+			    //assert consumer information...
+			    assert_s="";
+			    for (int co=0;co<consumers.size();co++){
+			    	if (co>0) assert_s+=", ";
+			    	assert_s+=" assert(vm_req(";
+			    	Object consumer = consumers.get(co);
+			    	if (consumer instanceof Vector){
+			    		Vector consumera = (Vector) consumer;
+				    	String vm = (String) consumera.get(0);
+				    	assert_s+=vm+", [";
+				    	Vector reqs = (Vector) consumera.get(1);
+				    	for (int re=0;re<reqs.size();re++){
+				    		if (re>0) assert_s+=", ";
+				    		Integer req = (Integer) reqs.get(re);
+				    		assert_s+=req.toString();
+				    	}
+				    	assert_s+="]))";			    		
+			    	} else {
+			    		String vm = (String) consumer;
+			    		assert_s+=vm+", nil))";			    		
+			    	}
+			    }
+			    assert_s+=".";
+			    
+			    //System.out.println(assert_s);
+			    
+			    
+			    try {
+			    	runGoal(assert_s);
+			    } catch (Exception e){
+			    	throw new SmartFrogResolutionException("Problem with initialing constraint solving theory for allocation: consumers", e);
+			    }
+
+			    
+			    assert_s="";
+			    if (colocations!=null){
+			    	for (int cols=0;cols<colocations.size();cols++){
+				    	if (cols>0) assert_s+=", ";
+				    	assert_s+=" assert(colo_list([";
+				    	Vector colocation = (Vector) colocations.get(cols);
+				    	for (int col=0;col<colocation.size();col++){
+				    		if (col>0) assert_s+=", ";
+				    		String col_s = (String) colocation.get(col);
+				    		assert_s+=col_s;
+				    	}
+				    	assert_s+="]))";
+				    }
+				    assert_s+=".";
+				    
+				    try {
+				    	runGoal(assert_s);
+				    } catch (Exception e){
+				    	throw new SmartFrogResolutionException("Problem with initialing constraint solving theory for allocation: colocations", e);
+				    }
+
+			    	
+			    }
+			    			    
+			    assert_s="";
+			    if (nocolocations!=null){
+			    	for (int nocols=0;nocols<nocolocations.size();nocols++){
+				    	if (nocols>0) assert_s+=", ";
+				    	assert_s+=" assert(nocolo_list([";
+				    	Vector nocolocation = (Vector) nocolocations.get(nocols);
+				    	for (int nocol=0;nocol<nocolocation.size();nocol++){
+				    		if (nocol>0) assert_s+=", ";
+				    		String nocol_s = (String) nocolocation.get(nocol);
+				    		assert_s+=nocol_s;
+				    	}
+				    	assert_s+="]))";
+				    }
+				    assert_s+=".";
+				    
+				    try {
+				    	runGoal(assert_s);
+				    } catch (Exception e){
+				    	throw new SmartFrogResolutionException("Problem with initialing constraint solving theory for allocation: noncolocations", e);
+				    }
+	
+			    }
+	
+			    //System.out.println(assert_s);
+			    
+			    assert_s="";
+			    if (hosteds!=null){
+			    	for (int h=0;h<hosteds.size();h++){
+				    	if (h>0) assert_s+=", ";
+				    	assert_s+=" assert(hosted(";
+				    	Vector hosted = (Vector) hosteds.get(h);
+				    	String vm = (String) hosted.get(0);
+				    	String host = (String) hosted.get(1);
+				    	assert_s+=vm+", "+host+"))";
+				    }
+				    assert_s+=".";
+				    
+				    
+				    try {
+				    	runGoal(assert_s);
+				    } catch (Exception e){
+				    	throw new SmartFrogResolutionException("Problem with initialing constraint solving theory for allocation: hosted", e);
+				    }
+	
+	
+			    }
+			    
+			    //System.out.println(assert_s);
+			    
+			    assert_s="";
+			    if (default_vm_req!=null){
+			    	assert_s+=" assert(default_vm_req([";
+			    	for (int dv=0;dv<default_vm_req.size();dv++){
+				    	if (dv>0) assert_s+=", ";
+				    	Integer req = (Integer) default_vm_req.get(dv);
+				    	assert_s+=req.toString();
+				    }
+				    assert_s+="])).";
+				    
+				    try {
+				    	runGoal(assert_s);
+				    } catch (Exception e){
+				    	throw new SmartFrogResolutionException("Problem with initialing constraint solving theory for allocation: default_vm_req", e);
+				    }
+			    }
+			    
+			    //System.out.println(assert_s);
+			    
+			    assert_s="";
+			    if (default_host_cap!=null){
+			    	assert_s+=" assert(default_host_cap([";
+			    	for (int dh=0;dh<default_host_cap.size();dh++){
+				    	if (dh>0) assert_s+=", ";
+				    	Integer cap = (Integer) default_host_cap.get(dh);
+				    	assert_s+=cap.toString();
+				    }
+				    assert_s+="])).";
+				    
+				    try {
+				    	runGoal(assert_s);
+				    } catch (Exception e){
+				    	throw new SmartFrogResolutionException("Problem with initialing constraint solving theory for allocation: default_host_cap", e);
+				    }
+			    }
+			    
+			    //System.out.println(assert_s);
+			    
+				String query_s = "SFRESULT = ASSIGNMENTS, assign(ASSIGNMENTS).";
+				
+				try {
+				    solveQuery(query_s);
+			    } catch (Exception e){
+			    	throw new SmartFrogResolutionException("Problem with initialing constraint solving theory for allocation: hosted", e);
+			    }
+				
+			    try {
+					Vector assignments = getResults();
+					cd.sfAddAttribute(attr, assignments);
+			    } catch (Exception e){
+			    	throw new SmartFrogResolutionException("Problem extracting results from allocation attempt", e);
+			    }
+			    	
+			   System.out.println("solving:"+cd);
+			}
+		}
+		try {
+	    	destroy();
+	    } catch (Exception e){
+	    	throw new SmartFrogResolutionException("Problem with destroying constraint solver", e);
+	    }
     }
 
     /**
@@ -205,7 +464,7 @@ abstract public class PrologSolver extends CoreSolver {
         
         //System.out.println("solving prolog constraint " + totalConstraint);
         
-        solveQuery(totalConstraint);
+        solveQuery(totalConstraint.toString());
         
         bindings = new Hashtable();
 
@@ -308,9 +567,13 @@ abstract public class PrologSolver extends CoreSolver {
             Vector cs = ((CSFComponentDescription) cd).getConstraints();
             for (Enumeration e = cs.elements(); e.hasMoreElements();) {
                 Constraint c = (Constraint) e.nextElement();
-                c.setQuery(processReferences(cd, c.getQuery()));
                 c.setComponent(cd);
-                constraints.add(c);
+                c.setQuery(processReferences(cd, c.getQuery()));
+                if (c.getAllocating()){
+                	allocations.add(c);
+                } else {
+                    constraints.add(c);
+                }
             }
             //collect the variables that require binding
             for (Iterator i = cd.sfValues(); i.hasNext();) {
@@ -374,6 +637,9 @@ abstract public class PrologSolver extends CoreSolver {
     }
 
     abstract public void prepareTheory(String prologFile) throws Exception;
-    abstract public void solveQuery(StringBuffer totalConstraint) throws Exception;
+    abstract public void solveQuery(String totalConstraint) throws Exception;
+    abstract public void runGoal(String totalConstraint) throws Exception;
+    abstract public void destroy() throws Exception;
     abstract public Object getBinding(int var);
+    abstract public Vector getResults();
 }

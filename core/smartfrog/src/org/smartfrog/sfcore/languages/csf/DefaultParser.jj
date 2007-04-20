@@ -344,7 +344,8 @@ TOKEN : /* Literals */
             )
         )* "#")
       >
-     | <BINDING: ("#binding#" (                        // for backward compatibility
+    | <ALLOCATE: ("#allocate(" (["A"-"Z","a"-"z"]) (["A"-"Z","a"-"z","0"-"9"])* ")##")>
+    | <BINDING: ("#binding#" (                        // for backward compatibility
           (~["#","\\"])
           | ("\\"
               ( ["n","t","b","r","f","\\","'","#","="]
@@ -850,6 +851,7 @@ void Constraints(CSFComponentDescription comp) :
 {
     String suchThat = "";
     int priority = 0;
+    boolean allocating = false;
     Token t;
 }
 {
@@ -872,10 +874,16 @@ void Constraints(CSFComponentDescription comp) :
        | t = <SELECTING>
             { priority = 75;
               suchThat = fixEscapes(t.image.substring(11, t.image.length() - 1)); }
+       | t = <ALLOCATE>
+	   { suchThat = t.image.substring(10, t.image.indexOf(")", 10));
+             allocating = true; }
        )
       {
        try {
-            comp.addConstraint(new Constraint(suchThat, priority));
+	   if (allocating)
+	       comp.addConstraint(new Constraint(suchThat));
+           else 
+               comp.addConstraint(new Constraint(suchThat, priority));
        } catch (Exception  se) {
             throw new ParseException("Error creating constraint, exception thrown: " + se);
        }
