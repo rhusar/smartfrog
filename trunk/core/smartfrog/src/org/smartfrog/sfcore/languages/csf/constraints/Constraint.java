@@ -39,7 +39,7 @@ import java.util.Hashtable;
  */
 public class Constraint implements Copying, Comparable {
 
-
+    private boolean allocating = false;
     private String query = null;
     private int priority = 0; //lowest expected, though negative priorties may be given
 
@@ -67,9 +67,17 @@ public class Constraint implements Copying, Comparable {
        //System.out.println("building constraint " + priority + " " + query);
     }
 
+    public Constraint(String attr) {
+       setAllocating(true);
+       setQuery(attr);
+       //System.out.println("building allocation " + query);
+    }
 
     public String toString() {
-        return "#constraint:"+priority+"("+query+")";
+	if (allocating) 
+            return "#allocate("+query+")##";
+	else 
+	    return "#constraint:"+priority+"#"+query+"#";
     }
 
     /**
@@ -144,6 +152,25 @@ public class Constraint implements Copying, Comparable {
         this.query = query;
     }
 
+    /**
+     * Get whether allocating 
+     *
+     * @return allocation answer
+     */
+    public boolean getAllocating() {
+        return allocating;
+    }
+
+    /**
+     * Set allocating 
+     *
+     * @param allocating whether allocating
+     */
+    public void setAllocating(boolean allocating) {
+        this.allocating = allocating;
+    }
+
+
        /**
      * Get the priority for #suchThat:ppp#...#
      *
@@ -163,11 +190,14 @@ public class Constraint implements Copying, Comparable {
     }
 
     public Object copy() {
-        return new Constraint(query, priority);
+	if (allocating)
+	    return new Constraint(query);
+	else 
+	    return new Constraint(query, priority);
     }
 
     public Object clone() {
-        return new Constraint(query, priority);
+        return copy();
     }
 
    /**
