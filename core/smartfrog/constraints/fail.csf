@@ -1,8 +1,8 @@
 #include "org/smartfrog/components.sf"
 
 
-sfConfig extends Compound {
-  JunkTest extends Prim {
+sfConfig extends DATA {
+  JunkTest extends DATA {
     default_vm_req [1];
     default_host_cap [10];
     producers ["h0","h1","h2","h3","h4",["h5",[10]]];
@@ -18,6 +18,5 @@ sfConfig extends Compound {
                  ["v8","v18","v28","v38","v48"],["v9","v19","v29","v39","v49"]];
     noncolocations [["v0","v1"]];
     hosted [["v0","h5"], ["v1", "h5"]];
-    sfClass "junk.Junk2";
   }#allocate(ass3)##
 }
