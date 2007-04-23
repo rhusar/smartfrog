@@ -4,7 +4,7 @@
   <info organisation="org.smartfrog" module="sf-jetty">
     <license name="LGPL"/>
     <ivyauthor name="Hewlett-Packard" url="http://www.smartfrog.org"/>
-    <description>SmartFrog jetty component</description>
+    <description>SmartFrog Jetty components</description>
   </info>
 <!-- FIXME: Ivy 1.4.1 buildlist bug
   <configurations defaultconfmapping="default">

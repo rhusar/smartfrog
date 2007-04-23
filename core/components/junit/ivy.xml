@@ -4,7 +4,7 @@
   <info organisation="org.smartfrog" module="sf-junit">
     <license name="LGPL"/>
     <ivyauthor name="Hewlett-Packard" url="http://www.smartfrog.org"/>
-    <description>Functional testing</description>
+    <description>Components to deploy JUnit 3.8.x components remotely</description>
   </info>
 <!-- FIXME: Ivy 1.4.1 buildlist bug
   <configurations defaultconfmapping="default">
