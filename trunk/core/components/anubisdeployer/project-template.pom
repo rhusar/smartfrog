@@ -1,32 +1,25 @@
 <!-- This POM file is authored by the SmartFrog project.
-  It is not sufficient to build SmartFrog, merely to use it.
-  -->
+    It is not sufficient to build SmartFrog, merely to use it.
+    -->
 <project xmlns="http://maven.apache.org/POM/4.0.0"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.smartfrog</groupId>
-  <artifactId>sf-loggingservices</artifactId>
+  <artifactId>sf-anubisdeployer</artifactId>
   <packaging>jar</packaging>
   <version>${smartfrog.version}</version>
-  <description>
-    SmartFrog logging services
-  </description>
+  <description>Anubis deployer</description>
   <dependencies>
     <dependency>
-      <groupId>commons-logging</groupId>
-      <artifactId>commons-logging-api</artifactId>
-      <version>${commons-logging.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>log4j</groupId>
-      <artifactId>log4j</artifactId>
-      <version>${log4j.version}</version>
+      <groupId>org.smartfrog</groupId>
+      <artifactId>sfServices</artifactId>
+      <version>${smartfrog.version}</version>
     </dependency>
     <dependency>
       <groupId>org.smartfrog</groupId>
-      <artifactId>smartfrog</artifactId>
+      <artifactId>sf-anubis</artifactId>
       <version>${smartfrog.version}</version>
-    </dependency>    
+    </dependency>
   </dependencies>
 </project>

@@ -5,8 +5,7 @@
     <license name="LGPL"/>
     <ivyauthor name="Hewlett-Packard" url="http://www.smartfrog.org"/>
     <description>
-        logging services
-        Created 16-Nov-2006 by slo
+        SmartFrog logging services
     </description>
   </info>
 <!-- FIXME: Ivy 1.4.1 buildlist bug

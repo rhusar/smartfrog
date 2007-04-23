@@ -6,27 +6,20 @@
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.smartfrog</groupId>
-  <artifactId>sf-loggingservices</artifactId>
+  <artifactId>sf-testharness</artifactId>
   <packaging>jar</packaging>
   <version>${smartfrog.version}</version>
-  <description>
-    SmartFrog logging services
-  </description>
+  <description>Smartfrog test harness, for running smartfrog under junit 3.8.x</description>
   <dependencies>
     <dependency>
-      <groupId>commons-logging</groupId>
-      <artifactId>commons-logging-api</artifactId>
-      <version>${commons-logging.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>log4j</groupId>
-      <artifactId>log4j</artifactId>
-      <version>${log4j.version}</version>
-    </dependency>
-    <dependency>
       <groupId>org.smartfrog</groupId>
-      <artifactId>smartfrog</artifactId>
+      <artifactId>sfServices</artifactId>
       <version>${smartfrog.version}</version>
-    </dependency>    
+    </dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>${junit.version}</version>
+    </dependency>
   </dependencies>
 </project>

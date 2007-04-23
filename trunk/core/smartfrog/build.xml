@@ -768,55 +768,26 @@
 
     <property name="sf-examples.pom"
       location="${dist.lib.dir}/${sf-examples.stub}.pom" />
+     <property name="metadata.dir" location="bin/metadata" />
+     <presetdef name="expandingcopy">
+       <copy >
+         <filterchain >
+           <expandproperties />
+         </filterchain>
+       </copy>
+     </presetdef>
+
    </target>
 
 
-   <!-- inline creation of a very minimal (zero dependency) pom -->
+   <!-- create POMs from templates held in the metadata dir -->
    <target name="m2-pom" depends="m2-init" >
-
-    <macrodef name="m2-makepom">
-      <attribute name="artifact"/>
-      <attribute name="target"/>
-      <sequential>
-   <echo message="Creating Pom @{target}" level="verbose"/>
-   <echo file="@{target}"><![CDATA[<project>
-  <modelVersion>4.0.0</modelVersion>
-  <groupId>${m2.groupID}</groupId>
-  <artifactId>@{artifact}</artifactId>
-  <packaging>jar</packaging>
-  <version>${Version}</version>
-</project>
-]]></echo>
-      </sequential>
-    </macrodef>
-
-
-     <!--make a pom that depends upon smartfrog-->
-     <macrodef name="m2-makesfpom">
-       <attribute name="artifact"/>
-       <attribute name="target"/>
-       <sequential>
-         <echo message="Creating Pom @{target}" level="verbose"/>
-         <echo file="@{target}"><![CDATA[<project>
-  <modelVersion>4.0.0</modelVersion>
-  <groupId>${m2.groupID}</groupId>
-  <artifactId>@{artifact}</artifactId>
-  <packaging>jar</packaging>
-  <version>${Version}</version>
-     <dependencies>
-       <dependency>
-         <groupId>${m2.groupID}</groupId>
-         <artifactId>smartfrog</artifactId>
-         <version>${Version}</version>
-       </dependency>
-     </dependencies>
-</project>
-]]></echo>
-       </sequential>
-     </macrodef>
-     <m2-makepom target="${target.pom}" artifact="smartfrog"/>
-     <m2-makesfpom target="${sf-services.pom}" artifact="sfServices"/>
-     <m2-makesfpom target="${sf-examples.pom}" artifact="sfExamples"/>
+     <expandingcopy file="${metadata.dir}/smartfrog.pom"
+       tofile="${smartfrog.pom}"/>
+     <expandingcopy file="${metadata.dir}/sfServices.pom"
+         tofile="${sf-services.pom}"/>
+     <expandingcopy file="${metadata.dir}/sfExamples.pom"
+         tofile="${sf-examples.pom}"/>
    </target>
 
 
@@ -1005,6 +976,7 @@ ${ivy.reports.dir}
   <!--everything in the bin dir other than the unix stuff-->
   <patternset id="other.bin">
     <include name="*"/>
+    <include name="metadata/*"/>
     <exclude name="smartfrog"/>
     <exclude name="sf*"/>
     <exclude name="*.pl"/>

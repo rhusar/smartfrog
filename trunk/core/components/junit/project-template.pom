@@ -6,27 +6,25 @@
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.smartfrog</groupId>
-  <artifactId>sf-loggingservices</artifactId>
+  <artifactId>sf-junit</artifactId>
   <packaging>jar</packaging>
   <version>${smartfrog.version}</version>
-  <description>
-    SmartFrog logging services
-  </description>
+  <description>Components to deploy JUnit 3.8.x components remotely</description>
   <dependencies>
     <dependency>
-      <groupId>commons-logging</groupId>
-      <artifactId>commons-logging-api</artifactId>
-      <version>${commons-logging.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>log4j</groupId>
-      <artifactId>log4j</artifactId>
-      <version>${log4j.version}</version>
+      <groupId>org.smartfrog</groupId>
+      <artifactId>sf-xunit</artifactId>
+      <version>${smartfrog.version}</version>
     </dependency>
     <dependency>
       <groupId>org.smartfrog</groupId>
-      <artifactId>smartfrog</artifactId>
+      <artifactId>sf-xml</artifactId>
       <version>${smartfrog.version}</version>
-    </dependency>    
+    </dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>${junit.version}</version>
+    </dependency>
   </dependencies>
 </project>
