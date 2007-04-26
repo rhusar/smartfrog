@@ -21,25 +21,26 @@
 
   <property name="jarfile.suffix" value="-resources"/>
   <property name="jarfile.extension" value="jar"/>
-  <property name="project.name" value="sf-${ant.project.name}" />
-  <property name="artifact.name" value="${project.name}" />
-  <property name="jarfile.stub" value="${artifact.name}${jarfile.suffix}" />
+  <property name="project.name" value="sf-${ant.project.name}"/>
+  <property name="artifact.name" value="${project.name}"/>
+  <property name="jarfile.stub" value="${artifact.name}${jarfile.suffix}"/>
+  <property name="trace.enabled" value="true"/>
   <property name="ivy.retrieve.pattern"
-      value="[conf]/[artifact]-[revision].[ext]" />
+      value="[conf]/[artifact]-[revision].[ext]"/>
 
   <!-- Import common stuff -->
   <import file="../common.xml"/>
 
 
   <target name="init" depends="common.init">
-    <property name="izpack.jar" location="${dist.bin.dir}/smartfrog-install-${smartfrog.version}.jar" />
+    <property name="izpack.jar" location="${dist.bin.dir}/smartfrog-install-${smartfrog.version}.jar"/>
   </target>
-  
-  <target name="default" depends="published" />
+
+  <target name="default" depends="published"/>
 
   <target name="published" depends="ivy-report,izpack"/>
 
-<!--
+  <!--
   <target name="declare-izpack" depends="ivy-resolve">
     <ivy:cachepath pathid="izpack.classpath" conf="izpack" />
     <taskdef name="izpack" classpathref="izpack.classpath"
@@ -55,7 +56,7 @@
 
   <target name="prepare-resources" depends="init">
     <copy todir="${build.dir}/res">
-      <fileset dir="src/res" includes="*" />
+      <fileset dir="src/res" includes="*"/>
     </copy>
   </target>
 
@@ -65,16 +66,16 @@
 
   <target name="expand-izpack" depends="init">
     <copy todir="${build.dir}" overwrite="true">
-      <fileset file="izpack/smartfrog-install.xml" />
+      <fileset file="izpack/smartfrog-install.xml"/>
       <filterchain>
         <expandproperties/>
       </filterchain>
     </copy>
-    <property name="izpack.xml" location="${build.dir}/smartfrog-install.xml" />
+    <property name="izpack.xml" location="${build.dir}/smartfrog-install.xml"/>
   </target>
 
   <target name="validate-izpack" depends="expand-izpack">
-    <loadfile srcFile="izpack/doctype.txt" property="doctype.txt" />
+    <loadfile srcFile="izpack/doctype.txt" property="doctype.txt"/>
     <copy file="${izpack.xml}" tofile="build/izpack-dtd.xml" overwrite="true">
       <filterset begintoken="&lt;--@" endtoken="@--&gt;">
         <filter token="DOCTYPE-INSERT-POINT" value="${doctype.txt}"/>
@@ -86,7 +87,7 @@
 
   <target name="ready-to-izpack"
       depends="declare-izpack,prepare-resources,prepare-executables,packaged,expand-izpack"/>
-  
+
   <target name="izpack" depends="ready-to-izpack">
     <iz:izpack input="${build.dir}/smartfrog-install.xml"
         output="${izpack.jar}"
@@ -94,16 +95,71 @@
         basedir="${build.dir}"/>
   </target>
 
-  <target name="run" depends="izpack" >
-    <java jar="${izpack.jar}" fork="true" >
-      <sysproperty key="TRACE" value="true" />
+  <target name="ready-to-run" depends="izpack"/>
+
+  <target name="run" depends="ready-to-run">
+    <java jar="${izpack.jar}" fork="true">
+      <sysproperty key="TRACE" value="${trace.enabled}"/>
     </java>
   </target>
 
-  <target name="unzip" depends="izpack" >
-    <property name="unzip.dir" location="${build.dir}/unzip" />
-    <mkdir dir="${unzip.dir}" />
+  <target name="unzip" depends="izpack">
+    <property name="unzip.dir" location="${build.dir}/unzip"/>
+    <mkdir dir="${unzip.dir}"/>
     <unzip src="${izpack.jar}" dest="${unzip.dir}"/>
   </target>
 
+  <!-- hit the switches that declare which bits of the build-->
+  <target name="init-automated-exec" depends="init">
+    <property name="build.install.dir" location="${build.dir}/smartfrog"/>
+    <property name="core.selected" value="true"/>
+    <property name="minimal.selected" value="true"/>
+    <property name="full.selected" value="true"/>
+    <property name="ant.selected" value="true"/>
+    <property name="anubis.selected" value="true"/>
+    <property name="database.selected" value="true"/>
+    <property name="jmx.selected" value="true"/>
+    <property name="logging.selected" value="true"/>
+    <property name="networking.selected" value="true"/>
+    <property name="quartz.selected" value="true"/>
+    <property name="scripting.selected" value="true"/>
+    <property name="xunit.selected" value="true"/>
+    <property name="junit.selected" value="true"/>
+    <property name="www.selected" value="true"/>
+    <property name="xml.selected" value="true"/>
+    <property name="xmpp.selected" value="true"/>
+    <!--
+        <property name=".selected" value="true" />
+    -->
+  </target>
+
+  <target name="copy-automated-template" depends="init-automated-exec">
+    <property name="automated.xml" location="${dist.bin.dir}/automated.xml"/>
+    <copy tofile="${automated.xml}" overwrite="true">
+      <fileset file="izpack/auto-install-template.xml"/>
+      <filterchain>
+        <expandproperties/>
+      </filterchain>
+    </copy>
+  </target>
+
+  <target name="automated-exec" depends="ready-to-run,copy-automated-template">
+    <java jar="${izpack.jar}" fork="true">
+      <sysproperty key="TRACE" value="${trace.enabled}"/>
+      <arg value="${automated.xml}"/>
+    </java>
+  </target>
+
+  <target name="exec-version" depends="automated-exec">
+    <condition property="script"
+        value=".bat" else="">
+      <os family="dos"/>
+    </condition>
+    <exec executable="${build.install.dir}/bin/sfVersion${script}">
+      <env key="SFHOME" value="${build.install.dir}"/>
+    </exec>
+    <exec executable="${build.install.dir}/bin/sfDiag${script}">
+      <env key="SFHOME" value="${build.install.dir}"/>
+    </exec>
+  </target>
 </project>
