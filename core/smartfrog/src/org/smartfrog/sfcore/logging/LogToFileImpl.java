@@ -114,9 +114,9 @@ public class LogToFileImpl extends LogToStreamsImpl implements LogToFile {
             out = new PrintStream(fos);
             if (isDebugEnabled() && this.getClass()
                     .toString()
-                    .endsWith("LogToFileImpl")) {
+                    .endsWith(getShortClassName())) {
                 //This will go to the std output.
-                debug("LogToFileImpl using file name: " + logFile.getAbsolutePath());
+                debug( getShortClassName() +" using file name: " + logFile.getAbsolutePath());
             }
             setOutstream(out);
             if (redirectSystemOutputs) {
@@ -124,7 +124,7 @@ public class LogToFileImpl extends LogToStreamsImpl implements LogToFile {
             }
             if (isTraceEnabled() && this.getClass()
                     .toString()
-                    .endsWith("LogToFileImpl")) {
+                    .endsWith(getShortClassName())) {
                 String msg2 = "Log '" + name + "' " +
                         "\nusing Class ComponentDescription:\n{" + classComponentDescription +
                         "}\n, and using Component ComponentDescription:\n{" + componentComponentDescription + "}";
@@ -135,6 +135,17 @@ public class LogToFileImpl extends LogToStreamsImpl implements LogToFile {
             faultInInitialization(ex);
         }
 
+    }
+
+    private String getShortClassName() {
+        try {
+            String fullName = getClass().getName();
+            fullName = fullName.substring(0, fullName.lastIndexOf("."));
+            return fullName.substring(fullName.lastIndexOf("."));
+        } catch (Exception e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+        return "julioShortName";
     }
 
     /**
