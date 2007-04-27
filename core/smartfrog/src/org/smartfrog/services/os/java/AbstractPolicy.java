@@ -13,61 +13,55 @@
  */
 package org.smartfrog.services.os.java;
 
-import java.rmi.RemoteException;
-
 import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
 import org.smartfrog.sfcore.prim.PrimImpl;
 
-/**
- * base of our policies
- */
+import java.rmi.RemoteException;
+
+/** base of our policies */
 public abstract class AbstractPolicy extends PrimImpl {
 
-    /**
-     * what artifacts are separated by {@value}
-     */
+    /** what artifacts are separated by {@value} */
     public static final String ARTIFACT_SEPARATOR = "-";
 
     /**
-     * Create an artifact filename. This claims to be maven1, but really it
-     * is also maven2, as if there is a classifier, we use that as well. There
-     * just near zero chance of that finding a match against the classic M1 repository.
-     *  
+     * Create an artifact filename. This claims to be maven1, but really it is also maven2, as if there is a classifier,
+     * we use that as well. There just near zero chance of that finding a match against the classic M1 repository.
+     *
      * @param library
      * @return the filename of an artifact using maven separation rules
      */
     protected String createMavenArtifactName(SerializedArtifact library) throws SmartFrogRuntimeException {
-        SerializedArtifact.assertValid(library,false);
-        StringBuffer buffer=new StringBuffer();
+        SerializedArtifact.assertValid(library, false);
+        StringBuffer buffer = new StringBuffer();
         buffer.append(library.artifact);
-        if(nonEmpty(library.version)) {
+        if (nonEmpty(library.version)) {
             buffer.append(ARTIFACT_SEPARATOR);
             buffer.append(library.version);
         }
-        if(nonEmpty(library.classifier)) {
+        if (nonEmpty(library.classifier)) {
             buffer.append(ARTIFACT_SEPARATOR);
             buffer.append(library.classifier);
         }
-        if(nonEmpty(library.extension)) {
+        if (nonEmpty(library.extension)) {
             buffer.append('.');
             buffer.append(library.extension);
         }
         return buffer.toString();
     }
 
-    /**
-     * @throws RemoteException
-     */
-    public AbstractPolicy() throws RemoteException {
+    /** @throws RemoteException  */
+    protected AbstractPolicy() throws RemoteException {
         super();
     }
 
     /**
      * test that a string is not empty
+     *
      * @param s
      * @return true iff the string is non null, and not ""
      */
-    protected  boolean nonEmpty(String s) {
-        return s!=null && s.length()>0;
+    protected boolean nonEmpty(String s) {
+        return s != null && s.length() > 0;
     }
 }

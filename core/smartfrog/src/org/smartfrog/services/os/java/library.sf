@@ -65,6 +65,10 @@ Maven2Policy extends Prim {
     sfClass "org.smartfrog.services.os.java.Maven2Policy";
 }
 
+IvyLocalPolicy extends Prim {
+    sfClass "org.smartfrog.services.os.java.IvyLocalCachePolicy";
+}
+
 /**
  * This is a local file policy only.
  * It tells the library to save stuff flat
@@ -140,11 +144,16 @@ Maven1Library extends Library {
     /**
      * Maven repository at ibiblio.org.
      */
-    repositories [| "http://mirrors.ibiblio.org/pub/mirrors/maven" |];
+    repositories [| LibraryRepositories:Maven1_at_Ibiblio  |];
 
     //cache into the well known maven location
     cacheDir LAZY MavenLocalCacheDirectory:absolutePath;
 
+}
+
+LibraryRepositories {
+   Maven1_at_Ibiblio  "http://mirrors.ibiblio.org/pub/mirrors/maven" ;
+   Maven2_at_Ibiblio  "http://mirrors.ibiblio.org/pub/mirrors/maven2" ;
 }
 
 Maven2Library extends Library {
@@ -183,11 +192,55 @@ Maven2Library extends Library {
      * Maven2 repository at ibiblio.org. Really we should permit mirrors; or include
      * the mirror list for easy selection.
      */
-    repositories [| "http://mirrors.ibiblio.org/pub/mirrors/maven2" |];
+    repositories [| LibraryRepositories:Maven2_at_Ibiblio |];
 
     //cache into the well known maven location
     cacheDir LAZY localCacheDirectory:absolutePath;
 
+}
+
+/**
+ * For Ivy artifacts we use the central M2 repository for remote artifacts,
+ * but the local cache. This currently causes us to miss out on things published
+ * locally but which are not in cache
+ */
+IvyLibrary extends Library {
+    /**
+     * Maven file policy
+     */
+
+    policy
+
+    /**
+     * local policy is maven2
+     */
+    localCachePolicy extends IvyLocalPolicy;
+
+    /**
+     * Remote policy is maven2
+     */
+    remoteCachePolicy extends Maven2Policy;;
+
+
+
+    /**
+     * Well known cache directory
+     */
+    localCacheDirectory extends File {
+        //JVM property user.home
+        dir LAZY PROPERTY user.home;
+        //subdir
+        filename ".ivy/cache";
+    }
+
+    /**
+     * Maven2 repository at ibiblio.org. Really we should permit mirrors; or include
+     * the mirror list for easy selection.
+     */
+    repositories [| LibraryRepositories:Maven2_at_Ibiblio |];
+
+    //cache into the well known maven location
+    cacheDir LAZY localCacheDirectory:absolutePath;
 }
 
 
@@ -281,3 +334,8 @@ ForcedDownloadArtifact extends LibraryArtifact {
 MavenJar extends JarArtifact  {
 }
 
+/**
+ * An Ivy JAR is a JAR artifact
+ */
+IvyJar extends JarArtifact  {
+}
