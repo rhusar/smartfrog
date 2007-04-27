@@ -52,7 +52,7 @@ class InterruptHandlerImpl implements SignalHandler,InterruptHandler {
     private SignalHandler oldHandler;
     protected LogSF log;
 
-    InterruptHandlerImpl() {
+    public InterruptHandlerImpl() {
     }
 
     /**
