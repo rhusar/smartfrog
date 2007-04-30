@@ -243,7 +243,6 @@ public class QueryPanel extends JPanel implements ListSelectionListener, ActionL
         }
     }
 
-}
 
 /**
  *  Description of the Class
@@ -254,7 +253,7 @@ public class QueryPanel extends JPanel implements ListSelectionListener, ActionL
  *
  *@version        1.0
  */
-class QueryPanel_m_list_mouseAdapter extends java.awt.event.MouseAdapter {
+static class QueryPanel_m_list_mouseAdapter extends java.awt.event.MouseAdapter {
 
 
     QueryPanel adaptee;
@@ -278,4 +277,5 @@ class QueryPanel_m_list_mouseAdapter extends java.awt.event.MouseAdapter {
     public void mouseClicked(MouseEvent e) {
         adaptee.m_list_mouseClicked(e);
     }
+}
 }
