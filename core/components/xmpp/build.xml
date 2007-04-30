@@ -67,7 +67,7 @@
   <!-- ========================================================== -->
   <!-- parse the file -->
   <!-- ========================================================== -->
-  <target name="parse" depends="init,dist,init-codebase"
+  <target name="parse" depends="init,dist,package-tests,init-codebase"
       description="parse the deployment descriptor">
     <property name="parse.quiet" value="true"/>
     <sf-parse quiet="${parse.quiet}">
