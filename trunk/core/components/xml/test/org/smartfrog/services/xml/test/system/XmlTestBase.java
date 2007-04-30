@@ -138,7 +138,7 @@ public abstract class XmlTestBase extends SmartFrogTestBase {
 
     /**
      * terminate a deployed app of type xmlnode. no-op if null
-     * @param node
+     * @param node node to terminate
      * @throws RemoteException
      */
     protected void terminateNode(XmlNode node) throws RemoteException {
@@ -147,8 +147,8 @@ public abstract class XmlTestBase extends SmartFrogTestBase {
 
     /**
      * load an XML File
-     * @param file
-     * @param validate
+     * @param file file to load
+     * @param validate flag to ask for a validating parser
      * @return the loaded document.
      * @throws SAXException
      * @throws ParsingException
@@ -165,7 +165,7 @@ public abstract class XmlTestBase extends SmartFrogTestBase {
 
     /**
      * resolve the xmlnode name {@link #ATTR_XML} in the application
-     * @return
+     * @return the resolved node
      * @throws SmartFrogResolutionException
      * @throws RemoteException
      * @throws AssertionFailedError if the application is null
