@@ -28,12 +28,15 @@ import org.xml.sax.XMLReader;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
+import java.util.logging.Logger;
 
 /**
  * Test some aspects of XMLL created 27-Jan-2005 14:05:29
  */
 
 public class XmlParserTest extends TestCase {
+
+    private Logger logger= Logger.getLogger(this.getClass().getName());
 
     public XmlParserTest(String s) {
         super(s);
@@ -68,7 +71,7 @@ public class XmlParserTest extends TestCase {
         assertNotNull("Sax parser factory", factory);
         SAXParser parser = factory.newSAXParser();
         assertNotNull("Sax parser ", parser);
-        System.out.println("Sax 1 Parser=" + parser.getClass().getName());
+        logger.info("Sax 1 Parser=" + parser.getClass().getName());
     }
 
     public void testDomExists() throws ParserConfigurationException {

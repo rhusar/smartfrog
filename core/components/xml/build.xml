@@ -41,9 +41,10 @@
   <!-- ========================================================== -->
   <target name="init"
     depends="init-standard-output-dirs,use-smartfrog-tasks,use-smartfrog-testharness">
-    <property name="deploy.sf" value="files/success.sf"/>
+    <property name="deploy.sf" value="org/smartfrog/services/xml/test/files/deploy.sf"/>
+    <!--
     <property name="default.ini" location="test/files/default.ini"/>
-    <property name="default.sf" location="test/files/default.sf"/>
+    <property name="default.sf" location="test/files/default.sf"/>-->
     <echo message="==================================================================="/>
     <echo message="= ${ant.project.name}"/>    
   </target>
@@ -96,32 +97,11 @@
     <copy-useful-files src="${src.dir}" dest="${build.classes.dir}"/>
   </target>
 
-  <!-- ========================================================== -->
-  <!-- create a distro. 
-       we want both sf-junit and the test har -->
-  <!-- ========================================================== -->
-  <target name="dist" depends="common.dist,jdocs" description="create a distribution">
-<!--
-  <copy todir = "${dist.lib.dir}">
-        <fileset dir ="${lib.dir}" />
-    </copy>  
--->
-     <copy todir = "${dist.doc.dir}">
-        <fileset dir ="${doc.dir}" />
-    </copy>   
-     <copy todir = "${dist.src.dir}">
-        <fileset dir ="${src.dir}">
-            <include name="**/examples/**"/>
-        </fileset>
-           </copy>
-     <copy tofile="${dist.dir}/build.xml" file="releaseBuild.xml"/> 
-   <copy tofile="${dist.dir}/build.example.properties" file="build.example.properties"/>
-  </target>
-    
+
   <!-- ========================================================== -->
   <!-- parse the file -->
   <!-- ========================================================== -->
-  <target name="parse" depends="init,common.dist,init-codebase"
+  <target name="parse" depends="init-codebase,package-tests"
     description="parse the deployment descriptor">
     <property name="parse.quiet" value="true"/>
     <sf-parse quiet="${parse.quiet}">
@@ -155,12 +135,10 @@
   <!-- ========================================================== -->
   <!-- set-->
   <!-- ========================================================== -->
-  <target name="init-codebase" depends="init-deploy-properties,declare-classpaths"
+  <target name="init-codebase" depends="init-deploy-properties,declare-classpaths,package-tests"
     description="set up the codebase property">
     <sf-tourl property="codebase">
-      <fileset file="${target.jar}"/>
-      <fileset file="${test.jar}"/>
-      <path refid="compile.classpath"/>
+      <path refid="tests.run.classpath"/>
     </sf-tourl>
     <echo>
         deploying to ${deploy.host}
@@ -199,7 +177,7 @@
   <!-- ========================================================== -->
   <!-- system tests -->
   <!-- ========================================================== -->
-  <target name="system-tests" depends="parse,dist,compile-tests,init-codebase"
+  <target name="system-tests" depends="parse,dist,package-tests"
     description="run system tests"
     if="system.tests.enabled">
     <parallel>
@@ -253,10 +231,4 @@
     <antcall target="stop-daemon-if-started"/>
   </target>
 
-  <target name="unzip" depends="dist">
-    <property name="target.exploded" location="${build.dir}/exploded" />
-    <unzip src="${target.jar}" dest="${target.exploded}"/>
-  </target>
-
-  <target name="all" depends="dist,unzip,test,published" />
 </project>

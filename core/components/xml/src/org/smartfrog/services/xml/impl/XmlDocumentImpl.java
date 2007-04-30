@@ -209,7 +209,7 @@ public class XmlDocumentImpl extends CompoundXmlNode implements XmlDocument {
         if (sourceFilename != null) {
             File source = new File(sourceFilename);
             FileUsingComponentImpl.bind(this, source);
-            throw new SmartFrogDeploymentException(ERROR_UNSUPPORTED_FEATURE,
+            throw new SmartFrogDeploymentException(ERROR_UNSUPPORTED_FEATURE+": binding to source files",
                     this);
         }
     }
@@ -241,9 +241,9 @@ public class XmlDocumentImpl extends CompoundXmlNode implements XmlDocument {
         File file = new File(filename);
         FileOutputStream fileout;
         fileout = new FileOutputStream(file);
-        OutputStream out;
-        out = new BufferedOutputStream(fileout);
+        OutputStream out=null;
         try {
+            out = new BufferedOutputStream(fileout);
             Serializer serializer = new Serializer(out, encoding);
             serializer.write(getDocument());
         } finally {
