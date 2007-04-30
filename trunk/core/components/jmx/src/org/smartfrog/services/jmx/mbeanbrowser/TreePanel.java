@@ -266,7 +266,6 @@ public class TreePanel extends JPanel implements TreeSelectionListener {
         }
     }
 
-}
 
 /**
  *  Description of the Class
@@ -277,7 +276,7 @@ public class TreePanel extends JPanel implements TreeSelectionListener {
  *
  *@version        1.0
  */
-class TreePanel_m_tree_mouseAdapter extends java.awt.event.MouseAdapter {
+static class TreePanel_m_tree_mouseAdapter extends java.awt.event.MouseAdapter {
 
 
     TreePanel adaptee;
@@ -301,4 +300,5 @@ class TreePanel_m_tree_mouseAdapter extends java.awt.event.MouseAdapter {
     public void mouseClicked(MouseEvent e) {
         adaptee.m_tree_mouseClicked(e);
     }
+}
 }

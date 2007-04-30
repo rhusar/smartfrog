@@ -28,11 +28,8 @@ import javax.swing.table.*;
 import javax.management.*;
 
 /**
- *  Description of the Class
+ *  Swing property Panel
  *
- *@title          sfJMX
- *@description    JMX-based Management Framework for SmartFrog Applications
- *@company        Hewlett Packard
  *
  *@version        1.0
  */
@@ -309,39 +306,35 @@ public class PropertyPanel extends JPanel implements ActionListener, FocusListen
         }
     }
 
-}
-
-/**
- *  Description of the Class
- *
- *@title          sfJMX
- *@description    JMX-based Management Framework for SmartFrog Applications
- *@company        Hewlett Packard
- *
- *@version        1.0
- */
-class PropertyPanel_m_table_mouseAdapter extends java.awt.event.MouseAdapter {
-
-
-    PropertyPanel adaptee;
-
 
     /**
-     *  Constructor for the PropertyPanel_m_table_mouseAdapter object
+     * handle mouseclick events
      *
-     *@param  adaptee  Description of the Parameter
+     * @version 1.0
      */
-    PropertyPanel_m_table_mouseAdapter(PropertyPanel adaptee) {
-        this.adaptee = adaptee;
-    }
+    static class PropertyPanel_m_table_mouseAdapter extends java.awt.event.MouseAdapter {
 
 
-    /**
-     *  Description of the Method
-     *
-     *@param  e  Description of the Parameter
-     */
-    public void mouseClicked(MouseEvent e) {
-        adaptee.m_table_mouseClicked(e);
+        PropertyPanel adaptee;
+
+
+        /**
+         * Constructor for the PropertyPanel_m_table_mouseAdapter object
+         *
+         * @param adaptee Description of the Parameter
+         */
+        PropertyPanel_m_table_mouseAdapter(PropertyPanel adaptee) {
+            this.adaptee = adaptee;
+        }
+
+
+        /**
+         * Description of the Method
+         *
+         * @param e Description of the Parameter
+         */
+        public void mouseClicked(MouseEvent e) {
+            adaptee.m_table_mouseClicked(e);
+        }
     }
 }
