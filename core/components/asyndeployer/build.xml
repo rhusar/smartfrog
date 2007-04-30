@@ -28,7 +28,7 @@ For more information: www.smartfrog.org
 </description>
 
 
-   <property name="is.component" value="true"/>
+  <property name="is.component" value="true"/>
   <property file="build.properties"/>
   <property name="root.dir" location="../.."/>
   <import file="${root.dir}/common.xml"/>
@@ -38,30 +38,4 @@ For more information: www.smartfrog.org
     <echo message="= ${ant.project.name}"/>
   </target>
 
-  <!-- ========================================================== -->
-  <!-- create the jar -->
-  <!-- ========================================================== -->
-  <target name="dist" depends="common.dist" description="create the jar files">
-   <copy todir = "${dist.lib.dir}">
-        <fileset dir ="${lib.dir}" />
-    </copy>  
-     <copy todir = "${dist.doc.dir}">
-        <fileset dir ="${doc.dir}" />
-    </copy>   
-     
-  <!--copy todir="${smartfrog.home}/dist/lib" overwrite="true" >
-     <fileset dir ="${dist.lib.dir}" />
-   </copy>
-      <copy tofile="${smartfrog.home}/dist/bin" overwrite="true" >
-    <fileset file ="${smartfrog.components.dir}/asyndeployer/sfAsynDaemon.*" />
-   </copy>
-      <copy tofile="${smartfrog.home}/dist" overwrite="true" >
-     <fileset file ="${smartfrog.components.dir}/asyndeployer/RootNode.*" />
-   </copy -->
-
- 
-
-    
-
-  </target>
 </project>

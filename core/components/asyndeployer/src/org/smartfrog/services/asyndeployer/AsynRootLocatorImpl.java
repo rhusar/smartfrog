@@ -126,7 +126,7 @@ protected void bindAction(ProcessCompound pc, boolean bind, SmartFrogException e
 		//Registry reg = SFSecurity.getRegistry(hostAddress.getHostAddress(), portNum);
 
 		//ProcessCompound pc = (ProcessCompound) reg.lookup(defaultName);
-		String lookupName = "//"+ hostAddress.getHostName().toString()+"/"+defaultName;
+		String lookupName = "//"+ hostAddress.getHostName()+"/"+defaultName;
 
 		VirtualNode rVirNode= ProActive.lookupVirtualNode("//" + hostAddress.getHostName() + "/RootNode");
 		Node rNode = rVirNode.getNode();

@@ -1,7 +1,7 @@
 <?xml version="1.0" ?>
 <?xml-stylesheet type="text/xsl" href="http://ivyrep.jayasoft.org/ivy-doc.xsl"?>
 <ivy-module version="1.0">
-  <info organisation="org.dado" module="sf-dado">
+  <info organisation="org.smartfrog" module="sf-dado">
     <license name="LGPL"/>
     <ivyauthor name="kumaravel Ganesan" url="http://www.gkvel.org"/>
     <description>
@@ -67,11 +67,18 @@
 
        <!--the jasco dependency-->
            
-    <dependency org="javax.mail"
-                name="mail"
-                rev="${mail.version}"
+    <dependency org="asm"
+                name="asm"
+                rev="${asm.version}"
                 conf="compile,redist->default"/>
-                
-                
+    <dependency org="org.objectweb.fractal"
+        name="fractal"
+        rev="${fractal.version}"
+        conf="compile,redist->default"/>
+    <dependency org="jboss"
+        name="javassist"
+        rev="${javassist.version}"
+        conf="compile,redist->default"/>
+
   </dependencies>
 </ivy-module>
