@@ -23,10 +23,7 @@ package org.smartfrog.sfcore.logging;
 
 import org.smartfrog.sfcore.common.SmartFrogException;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.PrintStream;
-import java.io.FileNotFoundException;
+import java.io.*;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -109,8 +106,20 @@ public class LogToFileImpl extends LogToStreamsImpl implements LogToFile {
             readSFFileAttributes(componentComponentDescription);
             PrintStream out = null;
             logFile = createFile(logFileExtension);
-            FileOutputStream fos = new FileOutputStream(logFile,
-                    append);
+            FileOutputStream fos;
+            try {
+               fos = new FileOutputStream(logFile, append);
+
+            } catch (FileNotFoundException ex) {
+               if (isErrorEnabled()) {
+                   System.err.println("[ERROR] Failed to create log file '"+logFile+"', Reason: "+ex.getMessage()+", creating ramdom log file: ");
+               }
+                // Create TempFile already checks for certail error and returns null if it failed to create temp file
+                logFile = createTempFile ();
+                fos = new FileOutputStream(logFile, append);
+                String msg = "A tempfile file has been created for logging: "+ logFile.getAbsolutePath() +" to replace the user log file that could not be created"";
+                System.err.println("[WARN] "+msg);
+            }
             out = new PrintStream(fos);
             if (isDebugEnabled() && this.getClass()
                     .toString()
@@ -132,7 +141,7 @@ public class LogToFileImpl extends LogToStreamsImpl implements LogToFile {
             }
 //        setLevel(initialLogLevel.intValue());
         } catch (FileNotFoundException ex) {
-            faultInInitialization(ex);
+            faultInInitialization("Could not create logging file.",ex);
         }
 
     }
@@ -145,15 +154,21 @@ public class LogToFileImpl extends LogToStreamsImpl implements LogToFile {
         } catch (Exception e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
-        return "julioShortName";
+        return "failedToGetShortName";
     }
 
     /**
      * Called to handle faults in initialization
      * @param thrown
      */
-    private static void faultInInitialization(Throwable thrown) {
-        thrown.printStackTrace();
+    private void faultInInitialization(String message, Throwable thrown) {
+        try {
+           if (isErrorEnabled()) {
+              error(message,thrown);
+           }
+        } catch (Throwable thr){
+           thrown.printStackTrace();
+        }
     }
 
     /**
@@ -256,6 +271,44 @@ public class LogToFileImpl extends LogToStreamsImpl implements LogToFile {
 
         //Return file
         return new File( fullLogFileName.toString());
+    }
+
+    /**
+     * Creates a ramdom temp file
+     * @return filename
+     * @throws Exception error while creating file
+     */
+    public File createTempFile()  {
+        String tempdir=System.getProperty("java.io.tmpdir");
+        if( tempdir == null ) {
+            if (this.isWarnEnabled()) {
+                System.err.println("[ERROR] java.io.tmpdir is undefined. No temp file is created");
+            }
+            return null;
+        }
+        File tempDirectory=new File(tempdir);
+        if(!tempDirectory.exists()) {
+            if (this.isWarnEnabled()) {
+                System.err.println("[ERROR] java.io.tmpdir directory does not exist: "+ tempdir);
+            }
+            return null;
+        }
+        //create the file
+        long now=System.currentTimeMillis();
+        File tempFile=null;
+
+        try {
+            tempFile = File.createTempFile ("smartfrogTemLog","log",tempDirectory);
+        } catch (IOException e) {
+            System.err.println("[ERROR] Failed to create a temporary file in the temp dir " + tempdir);
+            System.err.println("[ERROR] File  "+ tempFile + " could not be created");
+            if(tempFile!=null && tempFile.exists()) {
+              tempFile.delete();
+          }
+          return null;
+        }
+        //Return file
+        return tempFile;
     }
 
     /**
