@@ -19,9 +19,9 @@
  */
 package org.smartfrog.services.atom.server;
 
-import com.sun.syndication.feed.synd.SyndFeed;
+/*import com.sun.syndication.feed.synd.SyndFeed;
 import com.sun.syndication.io.FeedException;
-import com.sun.syndication.io.SyndFeedOutput;
+import com.sun.syndication.io.SyndFeedOutput;*/
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -35,10 +35,10 @@ public class AtomServlet extends HttpServlet {
     private static final String APPLICATION_XML = "application/xml";
     private static final String ATOM_1_0 = "atom_1.0";
 
-
+/*
     SyndFeed lookupFeed(HttpServletRequest request) {
         return null;
-    }
+    }*/
 
     /**
      * process a GET request
@@ -52,7 +52,7 @@ public class AtomServlet extends HttpServlet {
                          HttpServletResponse response)
             throws ServletException, IOException {
 
-        try {
+/*        try {
             SyndFeed feed = lookupFeed(request);
             feed.setFeedType(ATOM_1_0);
             response.setContentType(APPLICATION_XML);
@@ -64,6 +64,6 @@ public class AtomServlet extends HttpServlet {
             ServletException se =
                     new ServletException("When creating feed", e);
             throw se;
-        }
+        }*/
     }
 }
