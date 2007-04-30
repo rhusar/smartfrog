@@ -37,6 +37,9 @@ import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.io.Serializable;
+import java.io.PrintWriter;
+import java.io.Writer;
+import java.io.StringWriter;
 import java.lang.reflect.Method;
 import java.rmi.RemoteException;
 import java.util.Enumeration;
@@ -264,7 +267,7 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
             }
 
         } catch (Exception ex ){
-            String msg = "Error during initialization of localLog for LogImpl. Next trying to using Default (LogToFile)";
+            String msg = "Error during initialization of localLog for LogImpl. Next trying to use Default (LogToFile)";
             String msg2 = "Log '"+name+"' , values [class,level,codebase]: "+ configurationClass +", "+  configurationLevel +", "+ configurationCodeBase +
                         "\nusing Class ComponentDescription:\n{"+classComponentDescription+
                         "}\n, and using Component ComponentDescription:\n{"+ componentComponentDescription+"}";
@@ -282,6 +285,13 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
                 System.err.println("[FATAL] "+msg+", Reason: "+nex.toString());
                 if (org.smartfrog.sfcore.common.Logger.logStackTrace) nex.printStackTrace();
                 throw nex;
+            } catch (Throwable thr) {
+                msg = "Error during emergency initialization of localLog using default LogToFile for LogImpl. No logger available.";
+                System.err.println("[FATAL] "+msg+", Reason: "+thr.toString());
+                final Writer result = new StringWriter();
+			    PrintWriter printWriter = new PrintWriter(result);
+			    thr.printStackTrace(printWriter);
+                System.err.print("[FATAL] Stack trace: "+printWriter.toString());
             }
         }
         if ((localLog!=null)&&(localLog.isTraceEnabled())) {
