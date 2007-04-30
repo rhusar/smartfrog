@@ -19,6 +19,22 @@
  */
 package org.smartfrog.services.display;
 
+import org.smartfrog.SFSystem;
+import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
+import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.common.SmartFrogResolutionException;
+import org.smartfrog.sfcore.common.TerminatorThread;
+import org.smartfrog.sfcore.logging.LogFactory;
+import org.smartfrog.sfcore.logging.LogSF;
+import org.smartfrog.sfcore.prim.Prim;
+import org.smartfrog.sfcore.prim.TerminationRecord;
+import org.smartfrog.sfcore.processcompound.SFProcess;
+import org.smartfrog.sfcore.reference.Reference;
+
+import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.text.Document;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -34,211 +50,102 @@ import java.io.OutputStream;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 import java.io.PrintStream;
+import java.rmi.RemoteException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import javax.swing.BorderFactory;
-import javax.swing.JCheckBoxMenuItem;
-import javax.swing.JDialog;
-import javax.swing.JFileChooser;
-import javax.swing.JFrame;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTabbedPane;
-import javax.swing.JTextArea;
-import javax.swing.JToggleButton;
-import javax.swing.JToolBar;
-import javax.swing.JTree;
-import javax.swing.Timer;
-import javax.swing.WindowConstants;
-import javax.swing.event.DocumentEvent;
-import javax.swing.text.Document;
 
-import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
-import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.sfcore.common.SmartFrogResolutionException;
-import org.smartfrog.sfcore.common.TerminatorThread;
-import org.smartfrog.sfcore.prim.Prim;
-import org.smartfrog.sfcore.prim.TerminationRecord;
-import org.smartfrog.sfcore.processcompound.SFProcess;
-import org.smartfrog.sfcore.reference.Reference;
-import org.smartfrog.sfcore.logging.LogSF;
-import org.smartfrog.sfcore.logging.LogFactory;
-import org.smartfrog.SFSystem;
-
-import java.awt.*;
-
-import java.rmi.RemoteException;
-
-
-/**
- * Multiuse Simple display object. It is possible to start / stop the data
- * producer.
- */
+/** Multiuse Simple display object. It is possible to start / stop the data producer. */
 public class Display extends JFrame implements ActionListener, KeyListener, FontSize {
-    /**
-     * Class log for static invocations
-     */
+    /** Class log for static invocations */
     static LogSF logStatic = LogFactory.getLog(Display.class);
 
-    /**
-     * Color for non editable screen.
-     */
+    /** Color for non editable screen. */
     public final Color NONEDITCOLOR = new Color(80, 60, 120);
 
-    /**
-     * Color for editable screen.
-     */
+    /** Color for editable screen. */
     public final Color EDITCOLOR = new Color(17, 0, 132);
 
-    /**
-     * Main toolbar on window's top.
-     */
+    /** Main toolbar on window's top. */
     public JToolBar mainToolBar = new JToolBar();
 
-    /**
-     * Main tab panel to hold the screen (and other panels).
-     */
+    /** Main tab panel to hold the screen (and other panels). */
     public JTabbedPane tabPane = new JTabbedPane();
 
-    /**
-     * Layout object.
-     */
+    /** Layout object. */
     protected GridBagLayout gridBagLayout1 = new GridBagLayout();
 
-    /**
-     * Stop / resume button in the toolbar.
-     */
+    /** Stop / resume button in the toolbar. */
     protected JToggleButton stopResume = new JToggleButton();
 
-    /**
-     * Scrollpane to hold the display's screen.
-     */
+    /** Scrollpane to hold the display's screen. */
     protected JScrollPane output = new JScrollPane();
 
-    /**
-     * Display's screen object.
-     */
+    /** Display's screen object. */
     public JTextArea screen = new JTextArea();
 
     // N, S, E, W, NE, NW, SE, SW, C
-    /**
-     * Document screen.
-     */
+    /** Document screen. */
     Document documentScreen;
-    /**
-     * Menu bar.
-     */
+    /** Menu bar. */
     public JMenuBar jMenuBarDisplay = new JMenuBar();
-    /**
-     * Menu file.
-     */
+    /** Menu file. */
     JMenu jMenuDisplayOptions = new JMenu();
-    /**
-     * Check box.
-     */
+    /** Check box. */
     JCheckBoxMenuItem jCheckBoxMenuItemPause = new JCheckBoxMenuItem();
-    /**
-     * Check box AskSaveChages
-     */
+    /** Check box AskSaveChages */
     JCheckBoxMenuItem jCheckBoxMenuItemAskSaveChanges = new JCheckBoxMenuItem();
 
-    /**
-     * Menu item - clean all.
-     */
+    /** Menu item - clean all. */
     JMenuItem jMenuItemCleanAll = new JMenuItem();
 
-    /**
-     * Menu item - increase font size.
-     */
+    /** Menu item - increase font size. */
     JMenuItem jMenuItemIncreaseFontSize = new JMenuItem();
-    /**
-     * Menu item - reduce font size.
-     */
+    /** Menu item - reduce font size. */
     JMenuItem jMenuItemReduceFontSize = new JMenuItem();
-    /**
-     * Menu item - save as.
-     */
+    /** Menu item - save as. */
     JMenuItem jMenuItemSaveAs = new JMenuItem();
-    /**
-     * Menu item - exit.
-     */
+    /** Menu item - exit. */
     JMenuItem jMenuItemExit = new JMenuItem();
-    /**
-     * Menu help.
-     */
+    /** Menu help. */
     JMenu jMenuHelp = new JMenu();
-    /**
-     * Menu item - info.
-     */
+    /** Menu item - info. */
     JMenuItem jMenuItemInfo = new JMenuItem();
-    /**
-     * Menu item - infoprop.
-     */
+    /** Menu item - infoprop. */
     JMenuItem jMenuItemInfoProp = new JMenuItem();
-    /**
-     * Menu item - processcomp.
-     */
+    /** Menu item - processcomp. */
     JMenuItem jMenuItemProcessComp = new JMenuItem();
-    /**
-     * Menu item - about.
-     */
+    /** Menu item - about. */
     JMenuItem jMenuItemAbout = new JMenuItem();
-    /**
-     * File name.
-     */
+    /** File name. */
     String currFileName = null;
-    /**
-     * File chooser.
-     */
+    /** File chooser. */
     JFileChooser jFileChooser1 = null;
-    /**
-     * Timer.
-     */
+    /** Timer. */
     Timer timerScroll = new Timer(1 * 1000, this);
 
-    /**
-     * Scroll check every n seconds.
-     */
+    /** Scroll check every n seconds. */
     boolean screenScrollChanged = false;
 
-    /**
-     * Stop / resume object to control.
-     */
+    /** Stop / resume object to control. */
     private StopResume stopResumeObj;
 
-    /**
-     * Stream to get the key input from the display's screen.
-     */
+    /** Stream to get the key input from the display's screen. */
     private PipedInputStream pipeKeyIn;
 
-    /**
-     * Stream to write keys pressed in the display's screen.
-     */
+    /** Stream to write keys pressed in the display's screen. */
     private PipedOutputStream pipeKeyOut;
 
-    /**
-     * Print Stream to write key characters to pipeKeyOut.
-     */
+    /** Print Stream to write key characters to pipeKeyOut. */
     private PrintStream printKey;
 
-    /**
-     * Stream to display messages in the display's screen.
-     */
+    /** Stream to display messages in the display's screen. */
     private PrintStream out;
 
-    /**
-     * Posible positions for the frame.
-     */
+    /** Posible positions for the frame. */
     private String position = "C";
 
-    /**
-     * To control content in the text area.
-     */
+    /** To control content in the text area. */
     private boolean dirty = false;
     private Prim sfObj = null;
     private boolean systemExit = true;
@@ -260,8 +167,7 @@ public class Display extends JFrame implements ActionListener, KeyListener, Font
 
 
     /**
-     * Constructs Display object with a reference to a SF object to be able to
-     * terminate it!
+     * Constructs Display object with a reference to a SF object to be able to terminate it!
      *
      * @param title         Title of the display window
      * @param sfObj         SmartFrog component
@@ -372,6 +278,7 @@ public class Display extends JFrame implements ActionListener, KeyListener, Font
             Timer t = new Timer(1 * 1000,
                     new ActionListener() {
                         SimpleDateFormat fmt = new SimpleDateFormat("HH:mm:ss");
+
                         public void actionPerformed(ActionEvent evt) {
                             String message = "timer..." + fmt.format(new Date());
                             if (logStatic.isInfoEnabled()) logStatic.info("Stdout:" + message);
@@ -380,7 +287,7 @@ public class Display extends JFrame implements ActionListener, KeyListener, Font
 
             t.start();
         } catch (Exception e) {
-            if (logStatic.isErrorEnabled()) logStatic.err("Error in 'full' execution code: " + e,e);
+            if (logStatic.isErrorEnabled()) logStatic.err("Error in 'full' execution code: " + e, e);
         }
     }
 
@@ -414,8 +321,7 @@ public class Display extends JFrame implements ActionListener, KeyListener, Font
 
 
     /**
-     * Provides the output stream to use in order to display messages in this
-     * display's screen
+     * Provides the output stream to use in order to display messages in this display's screen
      *
      * @return The outputStream value
      */
@@ -425,8 +331,7 @@ public class Display extends JFrame implements ActionListener, KeyListener, Font
 
 
     /**
-     * Provides the print stream to use in order to display messages in this
-     * display's screen
+     * Provides the print stream to use in order to display messages in this display's screen
      *
      * @return The printStream value
      */
@@ -457,18 +362,14 @@ public class Display extends JFrame implements ActionListener, KeyListener, Font
     }
 
 
-    /**
-     * Cleans added panels.
-     */
+    /** Cleans added panels. */
     public void cleanAddedPanels() {
         tabPane.removeAll();
         tabPane.add(output, "output");
     }
 
 
-    /**
-     * Toggles stop / resume button state internally
-     */
+    /** Toggles stop / resume button state internally */
     public void pushStopResume() {
         if (stopResumeObj == null) {
             return;
@@ -498,7 +399,7 @@ public class Display extends JFrame implements ActionListener, KeyListener, Font
         try {
             printKey.print(key);
         } catch (Exception ex) {
-            if (sfLog().isErrorEnabled()) sfLog().error("Error printing key: "+ex.toString(),ex);
+            if (sfLog().isErrorEnabled()) sfLog().error("Error printing key: " + ex.toString(), ex);
         }
     }
 
@@ -562,9 +463,7 @@ public class Display extends JFrame implements ActionListener, KeyListener, Font
     }
 
 
-    /**
-     * Scrolls down the screen.
-     */
+    /** Scrolls down the screen. */
     public void scrollDownScreen() {
         try {
             // Moving scrollbar to the end of the doc
@@ -604,8 +503,7 @@ public class Display extends JFrame implements ActionListener, KeyListener, Font
 
 
     /**
-     * Checks if file is dirty. If so get user to make a "Save? yes/no/cancel"
-     * decision.
+     * Checks if file is dirty. If so get user to make a "Save? yes/no/cancel" decision.
      *
      * @return boolean true or false
      */
@@ -669,9 +567,7 @@ public class Display extends JFrame implements ActionListener, KeyListener, Font
     }
 
 
-    /**
-     * Saves as file.
-     */
+    /** Saves as file. */
     void SaveAs() {
         if (saveAsFile()) {
             // What ever is necessary!
@@ -719,9 +615,7 @@ public class Display extends JFrame implements ActionListener, KeyListener, Font
     }
 
 
-    /**
-     * Cleans the file.
-     */
+    /** Cleans the file. */
     void cleanAll() {
         // Handle the File|New menu item.
         if (okToAbandon()) {
@@ -836,9 +730,7 @@ public class Display extends JFrame implements ActionListener, KeyListener, Font
     }
 
 
-    /**
-     * Exits from the screen
-     */
+    /** Exits from the screen */
     void exit() {
         if (okToAbandon()) {
             //System.out.println("Display finished.");
@@ -919,8 +811,7 @@ public class Display extends JFrame implements ActionListener, KeyListener, Font
                     }
                 }
             } else if (systemExit) {
-                sfLog().out("Not part for SF System. Press <ENTER> to finish...");
-                //System.out.println("Not part for SF System. Press <ENTER> to finish...");
+                sfLog().out("Exiting console");
                 System.exit(0);
             }
 
@@ -936,8 +827,6 @@ public class Display extends JFrame implements ActionListener, KeyListener, Font
             this.dispose();
             //TOCHECK: Should it call terminate, detach and terminate? or  not?
         }
-        //System.exit(0);
-        //this.setVisible(true);
     }
 
 
@@ -961,14 +850,12 @@ public class Display extends JFrame implements ActionListener, KeyListener, Font
     }
 
 
-    /**
-     * Displays the SF system info.
-     */
+    /** Displays the SF system info. */
     void info() {
         out.println("");
         out.println("*******************************************************");
         out.println("* " + org.smartfrog.Version.versionString() +
-                  "\n* (C)Copyright Hewlett-Packard Development Company, LP ");
+                "\n* (C)Copyright Hewlett-Packard Development Company, LP ");
         out.println("*******************************************************");
         out.println("* Java Version:   " + System.getProperty("java.version"));
         out.println("* Java Home:      " + System.getProperty("java.home"));
@@ -983,7 +870,8 @@ public class Display extends JFrame implements ActionListener, KeyListener, Font
         out.println("* User Work Dir:  " + System.getProperty("user.dir"));
 
         try {
-            java.net.InetAddress localhost = SFProcess.sfDeployedHost();;
+            java.net.InetAddress localhost = SFProcess.sfDeployedHost();
+            ;
             out.println("* LocalHost Name: " + localhost.getHostName());
             out.println("* LocalHost Add:  " + localhost.getHostAddress());
 
@@ -1000,9 +888,7 @@ public class Display extends JFrame implements ActionListener, KeyListener, Font
     }
 
 
-    /**
-     * Displays system properties.
-     */
+    /** Displays system properties. */
     void infoProperties() {
         //    log("\nRunning: "
         //           +"\n  -SF v"+org.smartfrog.Version.versionString
@@ -1027,9 +913,7 @@ public class Display extends JFrame implements ActionListener, KeyListener, Font
     }
 
 
-    /**
-     * Displays information about process compound
-     */
+    /** Displays information about process compound */
     void infoProcessCompound() {
         try {
 
@@ -1059,9 +943,7 @@ public class Display extends JFrame implements ActionListener, KeyListener, Font
     }
 
 
-    /**
-     * Starts the management console
-     */
+    /** Starts the management console */
     void startMngConsole() {
         if (sfObj == null) {
             this.modalErrorDialog("startMngConsole",
@@ -1075,7 +957,7 @@ public class Display extends JFrame implements ActionListener, KeyListener, Font
         try {
             hostName = SFProcess.getProcessCompound().sfDeployedHost().getCanonicalHostName();
         } catch (RemoteException e) {
-            hostName =""; //Ignored.
+            hostName = ""; //Ignored.
         }
 
         //New option dialgog
@@ -1083,8 +965,8 @@ public class Display extends JFrame implements ActionListener, KeyListener, Font
         if (hostName == null) return;
 
         try {
-                java.net.InetAddress.getByName(hostName);
-                SFProcess.getRootLocator().getRootProcessCompound(java.net.InetAddress.getByName(hostName), port);
+            java.net.InetAddress.getByName(hostName);
+            SFProcess.getRootLocator().getRootProcessCompound(java.net.InetAddress.getByName(hostName), port);
         } catch (java.net.UnknownHostException uex) {
             this.modalErrorDialog("startMngConsole",
                     "Couldn't start SFMngConsole for resource " + hostName +
@@ -1113,7 +995,7 @@ public class Display extends JFrame implements ActionListener, KeyListener, Font
             }
             String nameDisplay = "sfManagementConsole ";
             mngConsole = org.smartfrog.services.management.SFDeployDisplay.
-                    startConsole(nameDisplay, height, width, positionDisplay, showRootProcess, showCDasChild,showScripting, hostName, port, false);
+                    startConsole(nameDisplay, height, width, positionDisplay, showRootProcess, showCDasChild, showScripting, hostName, port, false);
         } catch (java.net.UnknownHostException uex) {
             if (mngConsole != null) {
                 mngConsole.dispose();
@@ -1173,8 +1055,9 @@ public class Display extends JFrame implements ActionListener, KeyListener, Font
         if (s == null) return s; //User cancelled!
         if ((s != null) && (s.length() > 0)) {
             return s;
-        } else
+        } else {
             return defaultValue;
+        }
     }
 
 
@@ -1454,14 +1337,14 @@ public class Display extends JFrame implements ActionListener, KeyListener, Font
     public void setFontSize(int fontSize) {
         Object selected = getSelectedInTab();
         if (selected instanceof JTextArea) {
-            Font font = ((JTextArea)selected).getFont();
-           ((JTextArea)selected).setFont(new java.awt.Font(font.getName(), 0, screen.getFont().getSize()+1));
+            Font font = ((JTextArea) selected).getFont();
+            ((JTextArea) selected).setFont(new java.awt.Font(font.getName(), 0, screen.getFont().getSize() + 1));
         } else if (selected instanceof FontSize) {
-           ((FontSize)selected).setFontSize(fontSize);
+            ((FontSize) selected).setFontSize(fontSize);
         } else {
-            WindowUtilities.showError(this,"Cannot set font size, wrong component selected.\n Selected "+selected );
-            if (sfLog().isErrorEnabled()){
-                sfLog().error("Cannot set font size, wrong component selected.\n Selected "+selected );
+            WindowUtilities.showError(this, "Cannot set font size, wrong component selected.\n Selected " + selected);
+            if (sfLog().isErrorEnabled()) {
+                sfLog().error("Cannot set font size, wrong component selected.\n Selected " + selected);
             }
         }
     }
@@ -1469,14 +1352,15 @@ public class Display extends JFrame implements ActionListener, KeyListener, Font
     public void increaseFontSize() {
         Object selected = getSelectedInTab();
         if (selected instanceof JTextArea) {
-            Font font = ((JTextArea)selected).getFont();
-           ((JTextArea)selected).setFont(new java.awt.Font(font.getName(), 0, screen.getFont().getSize()+1));
+            Font font = ((JTextArea) selected).getFont();
+            ((JTextArea) selected).setFont(new java.awt.Font(font.getName(), 0, screen.getFont().getSize() + 1));
         } else if (selected instanceof FontSize) {
-           ((FontSize)selected).increaseFontSize();;
+            ((FontSize) selected).increaseFontSize();
+            ;
         } else {
-            WindowUtilities.showError(this,"Cannot increase font, wrong component selected.\n Selected "+selected );
-            if (sfLog().isErrorEnabled()){
-                sfLog().error("Cannot increase font, wrong component selected.\n Selected "+selected );
+            WindowUtilities.showError(this, "Cannot increase font, wrong component selected.\n Selected " + selected);
+            if (sfLog().isErrorEnabled()) {
+                sfLog().error("Cannot increase font, wrong component selected.\n Selected " + selected);
             }
         }
     }
@@ -1485,15 +1369,17 @@ public class Display extends JFrame implements ActionListener, KeyListener, Font
     public void reduceFontSize() {
         Object selected = getSelectedInTab();
         if (selected instanceof JTextArea) {
-            Font font = ((JTextArea)selected).getFont();
-            if (font.getSize()>1)
-               ((JTextArea)selected).setFont(new java.awt.Font(font.getName(), 0, screen.getFont().getSize()-1));
+            Font font = ((JTextArea) selected).getFont();
+            if (font.getSize() > 1) {
+                ((JTextArea) selected).setFont(new java.awt.Font(font.getName(), 0, screen.getFont().getSize() - 1));
+            }
         } else if (selected instanceof FontSize) {
-           ((FontSize)selected).reduceFontSize();;
+            ((FontSize) selected).reduceFontSize();
+            ;
         } else {
-            WindowUtilities.showError(this,"Cannot reduce font, wrong component selected.\n Selected "+selected );
-            if (sfLog().isErrorEnabled()){
-                sfLog().error("Cannot reduce font, wrong component selected.\n Selected "+selected );
+            WindowUtilities.showError(this, "Cannot reduce font, wrong component selected.\n Selected " + selected);
+            if (sfLog().isErrorEnabled()) {
+                sfLog().error("Cannot reduce font, wrong component selected.\n Selected " + selected);
             }
         }
 
@@ -1503,16 +1389,16 @@ public class Display extends JFrame implements ActionListener, KeyListener, Font
     protected Object getSelectedInTab() {
         Object selected = tabPane.getSelectedComponent();
         if (selected instanceof JScrollPane) {
-            Object aux = ((JScrollPane)selected).getViewport().getComponent(0);
-            if (aux!=null) {
-               selected =  aux;
+            Object aux = ((JScrollPane) selected).getViewport().getComponent(0);
+            if (aux != null) {
+                selected = aux;
             }
         }
         return selected;
     }
 
-    public void setAskSaveChanges(boolean askSaveChanges){
-       jCheckBoxMenuItemAskSaveChanges.setSelected(askSaveChanges);
+    public void setAskSaveChanges(boolean askSaveChanges) {
+        jCheckBoxMenuItemAskSaveChanges.setSelected(askSaveChanges);
     }
 
     public static Image createImage(String imagesPath) {
@@ -1557,7 +1443,7 @@ public class Display extends JFrame implements ActionListener, KeyListener, Font
             pipeKeyOut = new PipedOutputStream(pipeKeyIn);
             printKey = new PrintStream(pipeKeyOut);
         } catch (Exception e) {
-            if (sfLog().isErrorEnabled()) sfLog().error("Error connecting pipes:: "+e.toString(),e);
+            if (sfLog().isErrorEnabled()) sfLog().error("Error connecting pipes:: " + e.toString(), e);
         }
 
         // Timer for autoScroll
@@ -1576,15 +1462,11 @@ public class Display extends JFrame implements ActionListener, KeyListener, Font
 
 //End Display class methods.
 
-    /**
-     * Class Display_jMenuItemExit_actionAdapter
-     */
+    /** Class Display_jMenuItemExit_actionAdapter */
     static class Display_jMenuItemExit_actionAdapter
             implements java.awt.event.ActionListener {
 
-        /**
-         * Display object.
-         */
+        /** Display object. */
         Display adaptee;
 
 
@@ -1608,16 +1490,12 @@ public class Display extends JFrame implements ActionListener, KeyListener, Font
         }
     }
 
-    /**
-     * Class Display_jMenuItemAbout_actionAdapter
-     */
+    /** Class Display_jMenuItemAbout_actionAdapter */
     static class Display_jMenuItemAbout_actionAdapter
             implements java.awt.event.ActionListener {
 
 
-        /**
-         * Display object.
-         */
+        /** Display object. */
         Display adaptee;
 
 
@@ -1641,16 +1519,12 @@ public class Display extends JFrame implements ActionListener, KeyListener, Font
         }
     }
 
-    /**
-     * Display_jMenuItemInfo_actionAdapter
-     */
+    /** Display_jMenuItemInfo_actionAdapter */
     static class Display_jMenuItemInfo_actionAdapter
             implements java.awt.event.ActionListener {
 
 
-        /**
-         * Display object.
-         */
+        /** Display object. */
         Display adaptee;
 
 
@@ -1674,16 +1548,12 @@ public class Display extends JFrame implements ActionListener, KeyListener, Font
         }
     }
 
-    /**
-     * Display_jMenuItemCleanAll_actionAdapter
-     */
+    /** Display_jMenuItemCleanAll_actionAdapter */
     static class Display_jMenuItemCleanAll_actionAdapter
             implements java.awt.event.ActionListener {
 
 
-        /**
-         * Display object.
-         */
+        /** Display object. */
         Display adaptee;
 
 
@@ -1708,17 +1578,12 @@ public class Display extends JFrame implements ActionListener, KeyListener, Font
     }
 
 
-
-    /**
-     * Display_jMenuItemIncreaseFontSize_actionAdapter
-     */
+    /** Display_jMenuItemIncreaseFontSize_actionAdapter */
     static class Display_jMenuItemIncreaseFontSize_actionAdapter
             implements java.awt.event.ActionListener {
 
 
-        /**
-         * Display object.
-         */
+        /** Display object. */
         Display adaptee;
 
 
@@ -1743,16 +1608,12 @@ public class Display extends JFrame implements ActionListener, KeyListener, Font
     }
 
 
-    /**
-     * Display_jMenuItemReduceFontSize_actionAdapter
-     */
+    /** Display_jMenuItemReduceFontSize_actionAdapter */
     static class Display_jMenuItemReduceFontSize_actionAdapter
             implements java.awt.event.ActionListener {
 
 
-        /**
-         * Display object.
-         */
+        /** Display object. */
         Display adaptee;
 
 
@@ -1776,16 +1637,12 @@ public class Display extends JFrame implements ActionListener, KeyListener, Font
         }
     }
 
-    /**
-     * Display_jMenuItemSaveAs_actionAdapter
-     */
+    /** Display_jMenuItemSaveAs_actionAdapter */
     static class Display_jMenuItemSaveAs_actionAdapter
             implements java.awt.event.ActionListener {
 
 
-        /**
-         * Display object.
-         */
+        /** Display object. */
         Display adaptee;
 
 
@@ -1809,16 +1666,12 @@ public class Display extends JFrame implements ActionListener, KeyListener, Font
         }
     }
 
-    /**
-     * Display_documentScreen_documentAdapter
-     */
+    /** Display_documentScreen_documentAdapter */
     static class Display_documentScreen_documentAdapter
             implements javax.swing.event.DocumentListener {
 
 
-        /**
-         * Display object.
-         */
+        /** Display object. */
         Display adaptee;
 
 
@@ -1862,15 +1715,11 @@ public class Display extends JFrame implements ActionListener, KeyListener, Font
         }
     }
 
-    /**
-     * Display_this_windowAdapter
-     */
+    /** Display_this_windowAdapter */
     static class Display_this_windowAdapter extends java.awt.event.WindowAdapter {
 
 
-        /**
-         * Display object.
-         */
+        /** Display object. */
         Display adaptee;
 
 
@@ -1904,16 +1753,12 @@ public class Display extends JFrame implements ActionListener, KeyListener, Font
         }
     }
 
-    /**
-     * Display_jMenuItemInfoProp_actionAdapter
-     */
+    /** Display_jMenuItemInfoProp_actionAdapter */
     static class Display_jMenuItemInfoProp_actionAdapter
             implements java.awt.event.ActionListener {
 
 
-        /**
-         * Display object.
-         */
+        /** Display object. */
         Display adaptee;
 
 
@@ -1937,16 +1782,12 @@ public class Display extends JFrame implements ActionListener, KeyListener, Font
         }
     }
 
-    /**
-     * Display_jMenuItemProcessComp_actionAdapter
-     */
+    /** Display_jMenuItemProcessComp_actionAdapter */
     static class Display_jMenuItemProcessComp_actionAdapter
             implements java.awt.event.ActionListener {
 
 
-        /**
-         * Display object.
-         */
+        /** Display object. */
         Display adaptee;
 
 
@@ -1972,12 +1813,12 @@ public class Display extends JFrame implements ActionListener, KeyListener, Font
     }
 
     public LogSF sfLog() {
-      try {
-          if (sfObj!=null) {
-              return LogFactory.getLog(sfObj);
-          }
-      } catch (Exception ex){
-      }
-      return logStatic;
+        try {
+            if (sfObj != null) {
+                return LogFactory.getLog(sfObj);
+            }
+        } catch (Exception ex) {
+        }
+        return logStatic;
     }
 }
