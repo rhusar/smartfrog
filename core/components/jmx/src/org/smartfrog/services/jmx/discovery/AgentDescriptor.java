@@ -6,9 +6,9 @@ import java.io.Serializable;
 /**
  *  Provides a description of a given discovered JMX Agent
  *
- *@title          sfJMX
- *@description    JMX-based Management Framework for SmartFrog Applications
- *@company        Hewlett Packard
+ *          sfJMX
+ *   JMX-based Management Framework for SmartFrog Applications
+ *       Hewlett Packard
  *@author         Serrano
  *@version        1.0
  */

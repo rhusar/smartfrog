@@ -34,9 +34,9 @@ import org.smartfrog.services.jmx.agent.AgentNotFoundException;
 /**
  *  Description of the Class
  *
- *@title          sfJMX
- *@description    JMX-based Management Framework for SmartFrog Applications
- *@company        Hewlett Packard
+ *          sfJMX
+ *   JMX-based Management Framework for SmartFrog Applications
+ *       Hewlett Packard
  *
  *@version        1.0
  */

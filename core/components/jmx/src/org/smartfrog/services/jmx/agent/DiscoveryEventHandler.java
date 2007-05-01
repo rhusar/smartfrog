@@ -44,9 +44,9 @@ import org.smartfrog.sfcore.common.SmartFrogException;
  * listening for new service registrations in the SLP Directory Agent. This DiscoveryEventHandler
  * creates a new CascaderMBean to master every SubAgent found by the SLP UA.
  *
- *@title          sfJMX
- *@description    JMX-based Management Framework for SmartFrog Applications
- *@company        Hewlett Packard
+ *          sfJMX
+ *   JMX-based Management Framework for SmartFrog Applications
+ *       Hewlett Packard
  *
  *@version        1.0
  */

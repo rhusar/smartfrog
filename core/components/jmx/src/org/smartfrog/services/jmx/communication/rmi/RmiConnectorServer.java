@@ -33,9 +33,9 @@ import org.smartfrog.sfcore.common.SmartFrogException;
 /**
  *  Description of the Class
  *
- *@title          sfJMX
- *@description    JMX-based Management Framework for SmartFrog Applications
- *@company        Hewlett Packard
+ *          sfJMX
+ *   JMX-based Management Framework for SmartFrog Applications
+ *       Hewlett Packard
 sfResolve *
  *@version        1.0
  */

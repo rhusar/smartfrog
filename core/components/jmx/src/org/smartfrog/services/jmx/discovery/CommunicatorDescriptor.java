@@ -27,9 +27,9 @@ import javax.management.ObjectName;
  *  Provides a description of a given advertised service <p>
  *
  *
- *@title          sfJMX
- *@description    JMX-based Management Framework for SmartFrog Applications
- *@company        Hewlett Packard
+ *          sfJMX
+ *   JMX-based Management Framework for SmartFrog Applications
+ *       Hewlett Packard
  *@author         Serrano
  *@version        1.0
  */
