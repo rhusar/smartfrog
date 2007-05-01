@@ -36,9 +36,9 @@ import org.smartfrog.sfcore.componentdescription.*;
 /**
  * This class parse SF ComponentDescriptions matchin JMX metadata
  *
- *@title          sfJMX
- *@description    JMX-based Management Framework for SmartFrog Applications
- *@company        Hewlett Packard
+ *          sfJMX
+ *   JMX-based Management Framework for SmartFrog Applications
+ *       Hewlett Packard
  *
  *@version        1.0
  */

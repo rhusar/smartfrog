@@ -40,9 +40,9 @@ import org.smartfrog.services.jmx.common.*;
  *  framework for SmartFrog applications using JMX technology. Copyright:
  *  Copyright (c) 2001 Company: Hewlett Packard
  *
- *@title          sfJMX
- *@description    JMX-based Management Framework for SmartFrog Applications
- *@company        Hewlett Packard
+ *          sfJMX
+ *   JMX-based Management Framework for SmartFrog Applications
+ *       Hewlett Packard
  *
  *@version        1.0
  */

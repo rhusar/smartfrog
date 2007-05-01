@@ -30,35 +30,30 @@ import org.smartfrog.services.www.JavaWebApplicationServer;
 public interface JettyIntf extends JavaWebApplicationServer {
 
     /**
-     * jetty home attribute
-     * @value
+     * jetty home attribute. Value: @value
      */
     public static final String ATTR_JETTY_HOME = "jettyhome";
 
 
     /**
-     * cached jetty server
-     * @value
+     * cached jetty server attribute. Value: @value
      */
     public static final String ATTR_JETTY_SERVER = "Jetty Server";
 
     /**
-     * logging flag.
-     * @value
+     * logging flag attribute. Value: @value
      */
 
     public static final String ATTR_ENABLE_LOGGING="enableLogging";
 
     /**
-     * log dir.
-     * @value
+     * log dir attribute. Value: @value
      */
 
     public static final String ATTR_LOGDIR="logDir";
 
     /**
-     * log pattern. 
-     * @value
+     * log pattern attribute. Value: @value
      */
 
     public static final String ATTR_LOGPATTERN="logPattern";

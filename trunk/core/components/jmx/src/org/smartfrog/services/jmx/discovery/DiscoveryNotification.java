@@ -38,9 +38,9 @@ import javax.management.Notification;
  *
  *  Company: Hewlett Packard</p>
  *
- *@title          sfJMX
- *@description    JMX-based Management Framework for SmartFrog Applications
- *@company        Hewlett Packard
+ *          sfJMX
+ *   JMX-based Management Framework for SmartFrog Applications
+ *       Hewlett Packard
  *@author         Serrano
  *@version        1.0
  */

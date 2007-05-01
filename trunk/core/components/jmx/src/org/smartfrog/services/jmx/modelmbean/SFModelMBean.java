@@ -50,9 +50,9 @@ import org.smartfrog.services.jmx.notification.RemoteNotificationListenerWrapper
  *  thrown notifications are those received by the MBean locally so that a remote listener be able
  *  to receive the same notifications as a local component.
  *
- *  @title          sfJMX
- *  @description    JMX-based Management Framework for SmartFrog Applications
- *  @company        Hewlett Packard
+ *            sfJMX
+ *     JMX-based Management Framework for SmartFrog Applications
+ *         Hewlett Packard
  *
  *  @version        1.0
  */

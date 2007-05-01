@@ -29,9 +29,8 @@ import org.smartfrog.sfcore.common.SmartFrogException;
  *  Title: sfJMX Description: JMX-based Management Framework for SmartFrog
  *  Applications Copyright: Copyright (c) 2001 Company: Hewlett Packard
  *
- *@title          sfJMX
- *@description    JMX-based Management Framework for SmartFrog Applications
- *@company        Hewlett Packard
+ *          sfJMX
+ *   JMX-based Management Framework for SmartFrog Applications
  *
  *@version        1.0
  */
