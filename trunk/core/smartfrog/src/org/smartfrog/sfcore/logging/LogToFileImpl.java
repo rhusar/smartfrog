@@ -117,7 +117,7 @@ public class LogToFileImpl extends LogToStreamsImpl implements LogToFile {
                 // Create TempFile already checks for certail error and returns null if it failed to create temp file
                 logFile = createTempFile ();
                 fos = new FileOutputStream(logFile, append);
-                String msg = "A tempfile file has been created for logging: "+ logFile.getAbsolutePath() +" to replace the user log file that could not be created"";
+                String msg = "A tempfile file has been created for logging: "+ logFile.getAbsolutePath() +" to replace the user log file that could not be created";
                 System.err.println("[WARN] "+msg);
             }
             out = new PrintStream(fos);
