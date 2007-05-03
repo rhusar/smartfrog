@@ -21,7 +21,7 @@ public interface RemoteTags extends Remote {
     *
     * @throws SmartFrogException the attribute does not exist;
     */
-   public void sfSetTags(Object name, Set tags) throws SmartFrogException, RemoteException;
+   public void sfSetTags(Object name, Set tags) throws SmartFrogContextException, RemoteException;
 
    /**
     * Get the TAGS for an attribute. TAGS are simply uninterpreted strings associated
@@ -32,7 +32,7 @@ public interface RemoteTags extends Remote {
     *
     * @throws SmartFrogException the attribute does not exist;
     */
-   public Set sfGetTags(Object name) throws SmartFrogException, RemoteException;
+   public Set sfGetTags(Object name) throws SmartFrogContextException, RemoteException;
 
    /**
     * add a tag to the tag set of an attribute
@@ -42,7 +42,7 @@ public interface RemoteTags extends Remote {
     *
     * @throws SmartFrogException the attribute does not exist;
     */
-   public void sfAddTag(Object name, String tag) throws SmartFrogException, RemoteException;
+   public void sfAddTag(Object name, String tag) throws SmartFrogContextException, RemoteException;
 
    /**
     * remove a tag from the tag set of an attribute if it exists
@@ -53,7 +53,7 @@ public interface RemoteTags extends Remote {
     * @throws SmartFrogException the attribute does not exist;
     *
     */
-   public void sfRemoveTag(Object name, String tag) throws SmartFrogException, RemoteException;
+   public void sfRemoveTag(Object name, String tag) throws SmartFrogContextException, RemoteException;
 
          /**
     * add a tag to the tag set of an attribute
@@ -63,7 +63,7 @@ public interface RemoteTags extends Remote {
     * @throws SmartFrogException
     *          the attribute does not exist;
     */
-   public void sfAddTags(Object name, Set tags) throws SmartFrogException, RemoteException;
+   public void sfAddTags(Object name, Set tags) throws SmartFrogContextException, RemoteException;
 
    /**
     * remove a tag from the tag set of an attribute if it exists
@@ -73,7 +73,7 @@ public interface RemoteTags extends Remote {
     * @throws SmartFrogException
     *          the attribute does not exist;
     */
-   public void sfRemoveTags(Object name, Set tags)  throws SmartFrogException, RemoteException;
+   public void sfRemoveTags(Object name, Set tags)  throws SmartFrogContextException, RemoteException;
 
    /**
     * Return whether or not a tag is in the list of tags for an attribute
@@ -84,6 +84,6 @@ public interface RemoteTags extends Remote {
     * @return whether or not the attribute has that tag
     * @throws SmartFrogException the attribute does not exist
     */
-   public boolean sfContainsTag(Object name, String tag) throws SmartFrogException, RemoteException;
+   public boolean sfContainsTag(Object name, String tag) throws SmartFrogContextException, RemoteException;
 
 }
