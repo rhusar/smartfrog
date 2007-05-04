@@ -1269,7 +1269,7 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
     * @throws SmartFrogException
     *          the attribute does not exist;
     */
-   public void sfSetTags(Object name, Set tags) throws SmartFrogException {
+   public void sfSetTags(Object name, Set tags) throws SmartFrogContextException {
       sfContext.sfSetTags(name, tags);
    }
 
@@ -1282,7 +1282,7 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
     * @throws SmartFrogException
     *          the attribute does not exist;
     */
-   public Set sfGetTags(Object name) throws SmartFrogException {
+   public Set sfGetTags(Object name) throws SmartFrogContextException {
       return sfContext.sfGetTags(name);
    }
 
@@ -1294,7 +1294,7 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
     * @throws SmartFrogException
     *          the attribute does not exist;
     */
-   public void sfAddTag(Object name, String tag) throws SmartFrogException {
+   public void sfAddTag(Object name, String tag) throws SmartFrogContextException {
       sfContext.sfAddTag(name, tag);
    }
 
@@ -1306,7 +1306,7 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
     * @throws SmartFrogException
     *          the attribute does not exist;
     */
-   public void sfRemoveTag(Object name, String tag) throws SmartFrogException {
+   public void sfRemoveTag(Object name, String tag) throws SmartFrogContextException {
       sfContext.sfRemoveTag(name, tag);
    }
 
@@ -1318,7 +1318,7 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
     * @throws SmartFrogException
     *          the attribute does not exist;
     */
-public void sfAddTags(Object name, Set tags) throws SmartFrogException {
+public void sfAddTags(Object name, Set tags) throws SmartFrogContextException {
       sfContext.sfAddTags(name, tags);
    }
 
@@ -1330,7 +1330,7 @@ public void sfAddTags(Object name, Set tags) throws SmartFrogException {
     * @throws SmartFrogException
     *          the attribute does not exist;
     */
-   public void sfRemoveTags(Object name, Set tags) throws SmartFrogException {
+   public void sfRemoveTags(Object name, Set tags) throws SmartFrogContextException {
       sfContext.sfRemoveTags(name, tags);
    }
 
@@ -1342,7 +1342,7 @@ public void sfAddTags(Object name, Set tags) throws SmartFrogException {
     * @throws SmartFrogException
     *          the attribute does not exist;
     */
-   public Iterator sfTags(Object name) throws SmartFrogException {
+   public Iterator sfTags(Object name) throws SmartFrogContextException {
       return sfContext.sfTags(name);
    }
 
@@ -1355,7 +1355,7 @@ public void sfAddTags(Object name, Set tags) throws SmartFrogException {
     * @throws SmartFrogException
     *          the attribute does not exist
     */
-   public boolean sfContainsTag(Object name, String tag) throws SmartFrogException {
+   public boolean sfContainsTag(Object name, String tag) throws SmartFrogContextException {
       return sfContext.sfContainsTag(name, tag);
    }
 
