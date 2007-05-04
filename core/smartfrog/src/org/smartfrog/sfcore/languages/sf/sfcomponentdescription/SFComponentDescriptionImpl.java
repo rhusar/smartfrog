@@ -790,18 +790,25 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
         if (v instanceof Vector) {
              return copyVector((Vector)v);
         }
+       /*
         if (v instanceof ComponentDescription) {
             throw new SmartFrogCompilationException("illegal value in context during conversion to ComponentDescription. ComponentDescription cannot be used; use SFComponentDescription. Context: " +
                                                 v.toString() + " (Class: "+v.getClass().getName()+") in component " + sfCompleteName());
         }
-        throw new SmartFrogCompilationException("illegal value in context during conversion to ComponentDescription " +
+        */
+        throw new SmartFrogCompilationException("Non-primitive value found during conversion to ComponentDescription " +
                                                 v.toString() + " (Class: "+v.getClass().getName()+") in component " + sfCompleteName());
     }
 
     protected Object copyVector(Vector v) throws SmartFrogCompilationException {
         Vector res = new Vector();
         for (int i = 0; i < v.size(); i++) {
-            res.add(copyValue(v.elementAt(i)));
+           try {
+               res.add(copyValue(v.elementAt(i)));
+           } catch (Exception e) {
+               throw new SmartFrogCompilationException("Error in vector during conversion to ComponentDescription. Vector: " +
+                                                v.toString() + " in component " + sfCompleteName(), e);
+           }
         }
         return res;
     }
