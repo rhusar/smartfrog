@@ -182,7 +182,7 @@ public class Reference implements Copying, Cloneable, Serializable {
         if (res != null) {
             res.ref.removeAllElements();
 
-            for (int i = start; i < len; i++)
+            for (int i = start; i < (start + len); i++)
                 res.addElement(elementAt(i));
         }
 
