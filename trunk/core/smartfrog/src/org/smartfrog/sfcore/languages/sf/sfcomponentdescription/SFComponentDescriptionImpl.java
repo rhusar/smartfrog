@@ -730,6 +730,14 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
         }
     }
 
+    /**
+     * Subclasses can override this method to return alternative componentDescription implementations
+     * 
+     */
+    protected ComponentDescription createComponentDescription(final ComponentDescription parent, final Context context, final boolean eager) {
+    	return new ComponentDescriptionImpl(parent, context, eager);
+    }
+    
    /**
     *  Return a component description as required by the deployer.
     *  Works by side-effect on the SFComponentDescription for efficiency.
@@ -741,7 +749,7 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
        ComponentDescription res = null;
        // parent only necessary for the root - gets overwritten below
        ContextImpl newContext = new ContextImpl();
-       res = new ComponentDescriptionImpl(null, newContext, eager);
+       res = createComponentDescription(null, newContext, eager);
 
        for (Enumeration e = sfContext.keys(); e.hasMoreElements(); ) {
            Object key = e.nextElement();
