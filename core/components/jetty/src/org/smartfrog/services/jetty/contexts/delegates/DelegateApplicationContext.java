@@ -127,7 +127,8 @@ public abstract class DelegateApplicationContext
     }
 
     /**
-     * undeploy a context. if the server is already stopped, this the
+     * undeploy a context.
+     * If the server is already stopped, this the
      * undeployment is skipped without an error. The {@link #context} field is
      * set to null, to tell the system to skip this in future.
      *
