@@ -36,8 +36,10 @@ import java.io.StringWriter;
 import java.io.PrintWriter;
 import java.io.IOException;
 import java.util.Vector;
+import java.util.Set;
 
 import org.smartfrog.sfcore.common.ContextImpl;
+import org.smartfrog.sfcore.common.SmartFrogContextException;
 import org.smartfrog.sfcore.logging.LogSF;
 import org.smartfrog.sfcore.logging.LogFactory;
 import org.smartfrog.services.display.FontSize;
@@ -248,7 +250,7 @@ public class DeployTreePanel extends JPanel implements TreeSelectionListener, Fo
         if (treeNode instanceof DeployEntry) {
             //System.out.println("TreeNode: "+treeNode);
             Object[][] data = ((DeployEntry) treeNode).getAttributes();
-            String[] title = { "Attribute", "Value" };
+            String[] title = { "Attribute", "Value","Tag(s)" };
             table.setModel(new DefaultTableModel(data, title));
             this.completeName.setText (((DeployEntry) treeNode).getDN());
 
@@ -276,9 +278,9 @@ public class DeployTreePanel extends JPanel implements TreeSelectionListener, Fo
     public void refresh() {
         this.jTextArea1.setText("");
         this.completeName.setText(" ");
-        String[] title = { "Attribute", "Value" };
+        String[] title = { "Attribute", "Value", "Tag(s)" };
         Object[][] data = {
-            { " ", " " }
+            { " ", " ","" }
         };
         this.table.setModel(new DefaultTableModel(data, title));
         updateTable();
@@ -318,7 +320,7 @@ public class DeployTreePanel extends JPanel implements TreeSelectionListener, Fo
             int[] rows = new int[selectedRows.size()];
             int index = 0;
             for (int i = 0; i < selectedRows.size();) {
-                System.out.println("Selected: i " + i + " - " + ((Integer) selectedRows.elementAt(i)).intValue());
+                //System.out.println("Selected: i " + i + " - " + ((Integer) selectedRows.elementAt(i)).intValue());
                 rows[index++] = ((Integer) selectedRows.elementAt(i)).intValue();
             }
             systemViewTree.setSelectionRows(rows);
@@ -393,10 +395,12 @@ public class DeployTreePanel extends JPanel implements TreeSelectionListener, Fo
      */
     void resolveAttrib(Object attribName) {
       Object value;
+      String tags="";
       StringBuffer solvedValue = new StringBuffer();
       try {
           Object node = getNode();
           value = sfResolveHere(attribName, node);
+          tags = sfGetTags(attribName, node).toString();
           String solvedValueClass = "class not found";
           String stackTrace = null;
           try {
@@ -426,6 +430,7 @@ public class DeployTreePanel extends JPanel implements TreeSelectionListener, Fo
           String tempString = "";
           StringBuffer text = new StringBuffer();
           text.append("* Attribute: "+attribName);
+          text.append("\n * Tags: "+tags);
           text.append("\n * Value: ");
           tempString = value.toString();
           try {
@@ -525,6 +530,24 @@ public class DeployTreePanel extends JPanel implements TreeSelectionListener, Fo
         value = ((ComponentDescription)node).sfResolve(attribName.toString());
     }
     return value;
+   }
+
+    /**
+     * Get tags for an attribute
+     * @param attribName attribute name
+     * @param node Node
+     * @return Set Tags
+     * @throws SmartFrogContextException error in resolving
+     * @throws RemoteException in case of remote/network error
+     */
+   private Set sfGetTags(Object attribName, Object node) throws SmartFrogContextException, RemoteException {
+    Set tags=null;
+    if (node instanceof Prim){
+        tags = ((Prim)node).sfGetTags(attribName);
+    } else if (node instanceof ComponentDescription){
+        tags = ((ComponentDescription)node).sfGetTags(attribName);
+    }
+    return tags;
    }
 
     /**

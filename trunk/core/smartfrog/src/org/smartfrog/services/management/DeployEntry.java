@@ -345,14 +345,12 @@ public class DeployEntry implements Entry {
      *@return    The attributes value
      */
     public Object[][] getAttributes() {
-        String[][] empty = {
-            { "", "" }
-        };
+        //Attribute,value,tag
+        String[][] empty = { { "", "","" }  };
 
         try {
 
             Context context = null;
-
             if (entry instanceof Prim){
                 context = ((Prim) entry).sfContext();
             } else if (entry instanceof ComponentDescription){
@@ -362,27 +360,33 @@ public class DeployEntry implements Entry {
             }
             String name = "";
             Object value = null;
+            String tags ="";
             String solvedValue = null;
-            Object[][] data = new Object[this.sizeAttributes()][2];
+            Object[][] data = new Object[this.sizeAttributes()][3];
             int index = 0;
 
             for (Enumeration e = context.keys(); e.hasMoreElements();) {
                 try {
                     name = "";
                     value = null;
+                    tags ="";
                     name = e.nextElement().toString();
                     value = context.get(name);
+                    tags = context.sfGetTags(name).toString();
                     if (!isChild(value)) {
                         try {
                             value = ContextImpl.getBasicValueFor(value);
-                        } catch (Exception ex1) { /*ignore*/ }
+                        } catch (Exception ex1) { if (sfLog().isIgnoreEnabled()) sfLog().ignore(ex1);/*ignore*/ }
+
                         try {
                             data[index][0] = name;
                             data[index][1] = value;
+                            data[index][2] = tags;
                         } catch (Exception ex) {
                             if (sfLog().isErrorEnabled()) sfLog().error("sfManagementConsole.deployEntry.getAttributes: error reading "+name+" >"+ex.getMessage());
                             data[index][0] = name;
                             data[index][1] = "Error:"+ex.toString();
+                            data[index][2] = tags;
                             index++;
                             throw ex;
                         }
