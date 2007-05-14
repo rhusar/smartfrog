@@ -36,7 +36,8 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Class to let ant task derivatives run smartfrog. How it invokes smartfrog is an implementation detail;
+ * Class to let ant task derivatives run smartfrog.
+ * How it invokes smartfrog is an implementation detail;
  * it may be calling the Java task, it may be calling smartfrog direct.
  * What is not a detail is that the combined classpath of ant+ any classpath parameters must include
  * all the relevant smartfrog JAR files.
@@ -395,7 +396,8 @@ public abstract class SmartFrogTask extends TaskBase implements SysPropertyAdder
     }
 
     /**
-     * should the build halt on failure? (default=true)
+     * should the build halt on failure?
+     * (default=true)
      *
      * @param failOnError fail on error flag
      */
@@ -424,7 +426,8 @@ public abstract class SmartFrogTask extends TaskBase implements SysPropertyAdder
     }
 
     /**
-     * sets the spawn flag. makes it hard (no, impossible!) to log outputs.
+     * sets the spawn flag.
+     * Makes it hard (no, impossible!) to log outputs.
      * only recommended for long-lived tasks, and complicates failonerror and timeout
      * logic
      * @param spawn spawn flag
