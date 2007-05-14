@@ -23,6 +23,9 @@ import com.jcraft.jsch.UserInfo;
 
 /**
  *  Implements UserInfo interface required by Jsch.
+ *  Some of these methods are not in the current version of UserInfo; they are retained
+ *  for historical compatibility, and, as they return false, incur no development/maintenance
+ *  costs. At some point they may be deleted.
  *  @see com.jcraft.jsch.UserInfo
  *  @author Ashish Awasthi
  */
@@ -30,9 +33,7 @@ public class UserInfoImpl implements UserInfo {
 
     private String name;
     private String password = null;
-    private String keyfile;
     private String passphrase = null;
-    private boolean firstTime = true;
     private boolean trustAllCertificates = false;
 
     public UserInfoImpl() {
@@ -67,7 +68,6 @@ public class UserInfoImpl implements UserInfo {
     /**
      * prompt for a string
      * @returns false always
-     * @see com.jcraft.jsch.UserInfo#prompt
      */
     public boolean prompt(String str) {
         return false;
@@ -76,7 +76,6 @@ public class UserInfoImpl implements UserInfo {
     /**
      * Retry
      * @returns false always
-     * @see com.jcraft.jsch.UserInfo#retry
      */
     public boolean retry() {
         return false;
@@ -111,14 +110,14 @@ public class UserInfoImpl implements UserInfo {
      * @param trust whether to trust or not.
      */
     public void setTrust(boolean trust) {
-        this.trustAllCertificates = trust;
+        trustAllCertificates = trust;
     }
 
     /**
      * @return whether to trust or not.
      */
     public boolean getTrust() {
-        return this.trustAllCertificates;
+        return trustAllCertificates;
     }
 
     /**
