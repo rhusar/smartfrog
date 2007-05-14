@@ -141,7 +141,7 @@ public class HeartbeatComms extends MulticastComms implements HeartbeatCommsIntf
      * This will be called from the connection set - ignoring is used in a
      * critical section in deliverObject() that uses connectionSet as its
      * monitor.
-     * @param ignoringUpdate
+     * @param ignoringUpdate a view
      */
     public void setIgnoring(View ignoringUpdate){
         synchronized(ingnoringMonitor) {

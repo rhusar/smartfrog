@@ -127,10 +127,12 @@ public class MulticastComms extends Thread {
 
 
   /**
+   * Send an array of bytes.
    * The send function is synchronized to prevent multiple sends concurrent
    * sends (is this necessary??) Can not deadlock - multiple threads will take
    * turns to send, the receive loop (run) will block sends unless it is nested
    * in the deliverObject method, which is ok.
+   * @param bytes bytes to send
    */
   public synchronized void sendObject(byte[] bytes) {
       try {
@@ -151,6 +153,7 @@ public class MulticastComms extends Thread {
 
   /**
    * convert the input buffer to a string - for debug purposes.
+   * @return a stringified inBytes
    */
   private String inputToString() {
       return new String(inBytes);
@@ -158,7 +161,8 @@ public class MulticastComms extends Thread {
 
 
   /**
-   * returns an string representing the status of this thread
+   * Get the status of this thread.
+   * @return a string representing the status of this thread
    */
   public String getThreadStatusString() {
       StringBuffer buffer = new StringBuffer();
