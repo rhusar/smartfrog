@@ -109,7 +109,7 @@ public class HostExistsImpl extends PrimImpl implements HostExists, Condition {
 
 
     /**
-     * Liveness call in to check if this component is still alive.      *
+     * Check if this component is still alive.
      * @param source source of call
      *
      * @throws SmartFrogLivenessException
@@ -128,7 +128,7 @@ public class HostExistsImpl extends PrimImpl implements HostExists, Condition {
 
 
     /**
-     * check for the host existing
+     * check for the host existing.
      *
      * @return true if it is successful, false if not
      * @throws java.rmi.RemoteException for network problems

@@ -572,7 +572,8 @@ public class LivenessPageChecker implements LivenessPage {
     }
 
     /**
-     * enabled flag. overrides other options
+     * query the enabled flag. 
+     * Overrides other options
      *
      * @return current value
      */
@@ -581,7 +582,8 @@ public class LivenessPageChecker implements LivenessPage {
     }
 
     /**
-     * enabled flag. overrides other options
+     * set the enabled flag.
+     * overrides other options
      *
      * @param enabled new value
      */

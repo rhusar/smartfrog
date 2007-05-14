@@ -112,7 +112,8 @@ public abstract class ApplicationServerContextImpl extends PrimImpl
     }
 
     /**
-     * undeploy us if bound, do nothing if not. the context handle is reset, so
+     * Undeploy us if bound, do nothing if not.
+     * The context handle is reset, so
      * we no longer consider ourselves bound
      *
      * @throws SmartFrogException
@@ -151,7 +152,7 @@ public abstract class ApplicationServerContextImpl extends PrimImpl
      *
      * @throws SmartFrogLivenessException component is terminated
      * @throws RemoteException            for consistency with the {@link
-     *                                    org.smartfrog.sfcore.common.Liveness} interface
+     *                                    org.smartfrog.sfcore.prim.Liveness} interface
      */
     public void sfPing(Object source)
             throws SmartFrogLivenessException, RemoteException {
