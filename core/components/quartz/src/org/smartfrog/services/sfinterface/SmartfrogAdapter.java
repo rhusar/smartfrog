@@ -15,7 +15,8 @@ import java.util.Map;
 public interface SmartfrogAdapter {
 
     /**
-     * Submits a deployment request on a single host. No monitoring parent component is
+     * Submits a deployment request on a single host.
+     * No monitoring parent component is
      * created on the calling node. . Description file need not contain values of all the needed attributes,
      * some of the attribute whose value needs to be dynamically decided on Avalanche server before
      * submission, can be passed in this map.
@@ -32,7 +33,8 @@ public interface SmartfrogAdapter {
             throws SFParseException, SFSubmitException, SmartFrogRuntimeException;
 
     /**
-     * Submits a deployment request on multiple hosts, It validates the description file,
+     * Submits a deployment request on multiple host.
+     * It validates the description file,
      * performs the necessary attribute replacements and submits the description directly
      * to the smartfrog daemon running on these hosts. No monitoring parent component is
      * created on the calling node. It is not necessary to have a smartfrog daemon running
@@ -61,7 +63,8 @@ public interface SmartfrogAdapter {
 
 
     /**
-     * submits a deployment request on the local host, the description is submitted to a
+     * submits a deployment request on the local host.
+     * The description is submitted to a
      * local smartfrog daemon
      * -- This method will primarily be used in host ignition using sfSelfInstaller. --
      *
