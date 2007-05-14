@@ -94,8 +94,9 @@ public class TestOutputStream extends OutputStream {
     }
 
     /**
-     * test for containment; i.e. is the string
-     * found in the current buffer.
+     * test for containment- is the string
+     * found in the current buffer?
+     * 
      * @param substring string to search for
      * @return true if found
      */
