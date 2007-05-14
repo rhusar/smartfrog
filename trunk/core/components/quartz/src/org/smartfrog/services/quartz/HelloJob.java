@@ -40,15 +40,17 @@ public class HelloJob implements Job {
     private static final Log log = LogFactory.getLog(HelloJob.class);
 
     /**
-     * <p> Empty constructor for job initilization </p> <p> Quartz requires a public empty constructor so that the
-     * scheduler can instantiate the class whenever it needs. </p>
+     * Empty constructor for job initilization.
+     * Quartz requires a public empty constructor so that the
+     * scheduler can instantiate the class whenever it needs.
      */
     public HelloJob() {
     }
 
     /**
-     * <p> Called by the <code>{@link org.quartz.Scheduler}</code> when a <code>{@link org.quartz.Trigger}</code> fires
-     * that is associated with the <code>Job</code>. </p>
+     * Execute the job.
+     * Called by the <code>{@link org.quartz.Scheduler}</code> when a <code>{@link org.quartz.Trigger}</code> fires
+     * that is associated with the <code>Job</code>.
      *
      * @throws JobExecutionException if there is an exception while executing the job.
      */
