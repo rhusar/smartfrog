@@ -35,14 +35,14 @@ public class SmartFrogJVMProperties {
     }
 
     /**
-     * prefix for any ant magic properties
-     * @value ant.tasks.smartfrog.
+     * prefix for any ant magic properties.
+     * {@value}
      */
     public static final String ANT_MAGIC_PROPERTY_PREFIX = "ant.tasks.smartfrog.";
 
     /**
-     * property that should be set to true for extra debugging
-     * @value ant.tasks.smartfrog.debug
+     * property that should be set to true for extra debugging.
+     * {@value}
      */
     public static final String ANT_DEBUG_PROPERTY = ANT_MAGIC_PROPERTY_PREFIX + "debug";
 
@@ -54,14 +54,20 @@ public class SmartFrogJVMProperties {
     public static final String PROCESS_NAME =       SmartFrogCoreProperty.propBaseSFProcess + SmartFrogCoreKeys.SF_PROCESS_NAME;
 
     /**
-     * classloader
+     * classloader.
+     * {@value}
      * @see org.smartfrog.sfcore.security.SFClassLoader#SF_CODEBASE_PROPERTY
      */
     protected static final String CODEBASE =       SFClassLoader.SF_CODEBASE_PROPERTY;
     /**
-     * the name of a root process
+     * the name of a root process.
+     * {@value}
      */
     public static final String ROOT_PROCESS =      SmartFrogCoreKeys.SF_ROOT_PROCESS;
+    /**
+     * the name of a process compound.
+     * {@value}
+     */
     public static final String PROCESS_COMPOUND=   SmartFrogCoreProperty.propBaseSFProcess;
 
     /**
@@ -73,73 +79,96 @@ public class SmartFrogJVMProperties {
     public static final String LOG_STACK_TRACE =  Logger.loggerPropertyBase+"."+Logger.ATR_LOG_STACK_TRACE;
 
     /**
-     * @value "org.smartfrog.sfcore.processcompound.sfRootLocatorPort";
+     * {@value}
      */
 
     public static final String ROOT_LOCATOR_PORT = SmartFrogCoreProperty.propBaseSFProcess + SmartFrogCoreKeys.SF_ROOT_LOCATOR_PORT;
 
     /**
-     * @value org.smartfrog.sfcore.processcompound.sfLivenessDelay
+     * {@value}
      */
     public static final String LIVENESS_DELAY =    SmartFrogCoreProperty.propBaseSFProcess + SmartFrogCoreKeys.SF_LIVENESS_DELAY;
 
     /**
-     * @value org.smartfrog.sfcore.processcompound.sfLivenessFactor
+     * {@value}
      */
     public static final String LIVENESS_FACTOR =   SmartFrogCoreProperty.propBaseSFProcess + SmartFrogCoreKeys.SF_LIVENESS_FACTOR;
 
     /**
-     * @value org.smartfrog.sfcore.processcompound.fProcessAllow
+     * {@value}
      */
     public static final String PROCESS_ALLOW =     SmartFrogCoreProperty.propBaseSFProcess + SmartFrogCoreKeys.SF_PROCESS_ALLOW;
 
     /**
-     * @value org.smartfrog.sfcore.processcompound.sfProcessTimeout
+     * {@value}
      */
     public static final String PROCESS_TIMEOUT =   SmartFrogCoreProperty.propBaseSFProcess + SmartFrogCoreKeys.SF_PROCESS_TIMEOUT;
 
     /**
-     * @value org.smartfrog.sfcore.processcompound.sfDefault.sfDefault
+     * {@value}
      */
     public static final String SF_DEFAULT =        SmartFrogCoreProperty.propBaseSFProcess +  "sfDefault.sfDefault";
 
+    /**
+     * {@value}
+     */
     public static final String INIFILE =           SmartFrogCoreProperty.iniFile;
 
     /**
-     * @value org.smartfrog.sfcore.security.keyStorePassword
+     * {@value}
      */
     public static final String KEYSTORE_PASSWORD = SFSecurityProperties.propKeyStorePasswd;
 
     /**
-     * @value org.smartfrog.sfcore.security.keyStoreName
+     * {@value}
      */
     public static final String KEYSTORE_NAME =      SFSecurityProperties.propKeyStoreName;
 
     /**
-     * @value org.smartfrog.sfcore.security.propFile
+     * {@value}
      */
     public static final String KEYSTORE_PROPFILE = SFSecurityProperties.propPropertiesFileName;
 
+    /**
+     * {@value}
+     */
     public static final String SECURITY_ENABLED =  SFSecurityProperties.propSecurityOn;
 
     /**
      * entry point to smartfrog
-     * @value "org.smartfrog.SFSystem";
+     * {@value}
      */
     public static final String SMARTFROG_ENTRY_POINT = "org.smartfrog.SFSystem";
 
-
+    /**
+     * {@value}
+     */
     public static final String GUI_ENTRY_POINT = "org.smartfrog.tools.gui.browser.SFGui";
 
+    /**
+     * {@value}
+     */
     public static final String MANAGEMENT_ENTRY_POINT = "org.smartfrog.services.management.SFDeployDisplay";
 
     /**
      * parser entry point
-     * @value org.smartfrog.SFParse
+     * {@value}
      */
     public static final String PARSER_ENTRY_POINT = "org.smartfrog.SFParse";
+    /**
+     * {@value}
+     */
     public static final String PARSER_OPTION_QUIET = "-q";
+    /**
+     * {@value}
+     */
     public static final String PARSER_OPTION_VERBOSE = "-v";
+    /**
+     * {@value}
+     */
     public static final String PARSER_OPTION_FILENAME = "-f";
+    /**
+     * {@value}
+     */
     public static final String PARSER_OPTION_R = "-r";
 }

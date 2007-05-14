@@ -68,7 +68,7 @@ public abstract class TaskBase extends Task {
 
 
     /**
-     * get at the debug switch
+     * get at the debug switch.
      * @return true iff the property {@link SmartFrogJVMProperties#ANT_DEBUG_PROPERTY}
      * is true at init time
      */
@@ -77,8 +77,12 @@ public abstract class TaskBase extends Task {
     }
 
     /**
+     * Set the include ant run time policy.
+     *
      * If a new classpath is passed in, should the existing one
-     * (used when declaring the task) be included? If it is not, the new classpath
+     * (used when declaring the task) be included?
+     *
+     * If it is not, the new classpath
      * must include smartfrog.jar.
      * Default: false.
      *
