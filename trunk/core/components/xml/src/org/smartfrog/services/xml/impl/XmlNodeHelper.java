@@ -79,7 +79,7 @@ public final class XmlNodeHelper implements XmlNode {
     /**
      * set the node
      *
-     * @param node
+     * @param node the new node
      */
     public void setNode(Node node) {
         this.node = node;
@@ -88,7 +88,7 @@ public final class XmlNodeHelper implements XmlNode {
     /**
      * get the current node value
      *
-     * @return
+     * @return the current node
      */
     public Node getNode() {
         return node;
@@ -97,7 +97,7 @@ public final class XmlNodeHelper implements XmlNode {
     /**
      * set the XML
      *
-     * @param xml
+     * @param xml xml string
      */
     public void setXml(String xml) {
         this.xml = xml;
