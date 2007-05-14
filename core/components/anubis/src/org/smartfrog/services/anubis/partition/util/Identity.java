@@ -70,7 +70,8 @@ public class Identity implements Serializable, Cloneable, WireSizes {
   }
 
   /**
-   * defines the equality relation for identities - used in containers
+   * Equality test: does not use epoch.
+   * Defines the equality relation for identities - used in containers
    * e.g. hash tables. - note: does not use epoch for equality!!!!
    * TWO IDENTITIES ARE EQUIVALENT IF THE HAVE THE SAME ID AND MAGIC NUMBER
    */

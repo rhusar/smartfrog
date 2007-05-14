@@ -235,6 +235,7 @@ public class MessageConnectionImpl extends ConnectionComms implements IOConnecti
     }
 
     /**
+     * Shut down the connection.
      * Terminate is used to instruct the implementation to shutdown the
      * connection. announceTerm is set to false so that the closing()
      * method does not call back to the messageConnection.
