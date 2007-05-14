@@ -83,7 +83,8 @@ public class SoundPlayerImpl extends FileUsingComponentImpl
     }
 
     /**
-     * Can be called to start components. Subclasses should override to provide
+     * Can be called to start components.
+     * Subclasses should override to provide
      * functionality Do not block in this call, but spawn off any main loops!
      *
      * @throws org.smartfrog.sfcore.common.SmartFrogException
