@@ -31,6 +31,8 @@ import org.smartfrog.sfcore.parser.SFParser;
 import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.logging.LogSF;
 import org.smartfrog.sfcore.logging.LogFactory;
+import org.smartfrog.sfcore.common.ContextImpl;
+
 import javax.swing.*;
 import java.awt.*;
 import java.io.StringWriter;
@@ -64,32 +66,8 @@ public class NewAttributeDialog extends JDialog {
     private GridBagLayout gridBagLayout1 = new GridBagLayout();
     /** Set of attributes. */
     private Object[] attribute = null;
-    /** Component types. */
-    private String[] componentTypes = {"AnyValue"};
 
-
-    /** Integer value for string. */
-    static final int STRING = 8;
-    /** Integer value for integer. */
-    static final int INTEGER = 1;
-    /** Integer value for boolean. */
-    static final int BOOLEAN = 2;
-    /** Integer value for component description. */
-    static final int COMPONENT_DESCRIPTION = 3;
-    /** Integer value for reference. */
-    static final int REFERENCE = 4;
-    /** Integer value for long. */
-    static final int LONG = 5;
-    /** Integer value for float. */
-    static final int FLOAT = 6;
-    /** Integer value for double. */
-    static final int DOUBLE = 7;
-    /** Integer value for PRIMVALUE. */
-    static final int ANYVALUE = 0;
-
-    //final int VECTOR = 3;
-    private JComboBox TypejComboBox = new JComboBox(componentTypes);
-  JLabel jLabel1 = new JLabel();
+    JLabel jLabel1 = new JLabel();
 
     /**
      * Constructs NewAttributeDialog with frame, title , modal and set of
@@ -115,7 +93,7 @@ public class NewAttributeDialog extends JDialog {
                 }
 
                 if (attribute[1] != null) {
-                    String value = attribute[1].toString();
+                      String value = ContextImpl.getBasicValueFor(attribute[1]);
                     if  (attribute[1] instanceof ComponentDescription) {
                        StringWriter sw = new StringWriter();
                         try {
@@ -134,9 +112,6 @@ public class NewAttributeDialog extends JDialog {
         }
     }
 
-    //    public Object[] NewAttributeDialog() {
-    //        this(null, "", false);
-    //    }
     /**
      * Initializes the UI.
      * @throws Exception if there is any error during initialization
@@ -206,9 +181,7 @@ public class NewAttributeDialog extends JDialog {
         if ((this.NamejTextField.getText() != null) &&
                 (!this.NamejTextField.getText().equals(""))) {
             attribute[0] = this.NamejTextField.getText();
-            attribute[1] = this.createValueObject(this.TypejComboBox.
-                getSelectedIndex(),(String) this.ValuejTextArea.
-                getText());
+            attribute[1] = parseValue(ValuejTextArea.getText(),"sf");
         } else {
             attribute[0] = null;
             attribute[1] = null;
@@ -217,74 +190,6 @@ public class NewAttributeDialog extends JDialog {
         this.dispose();
     }
 
-    /**
-     * Creates object from type and string value.
-     * @param type of the object
-     * @param valueStr value in string
-     * @return the object created using type and value
-     */
-    Object createValueObject(int type, String valueStr) {
-        try {
-            switch (type) {
-                case ANYVALUE:
-                    return parseValue(valueStr,"sf");
-                case STRING:
-                    return new String(valueStr);
-
-                case INTEGER:
-                    return Integer.valueOf(valueStr);
-
-                case BOOLEAN:
-                    return Boolean.valueOf(valueStr);
-
-                case COMPONENT_DESCRIPTION:
-                    return parsePhase("raw", valueStr, "sf");
-
-                case REFERENCE:
-                    try {
-                        return Reference.fromString(valueStr);
-                    } catch (Exception ex) {
-                        if (sfLog().isErrorEnabled()) sfLog().error (ex);
-                        return null;
-                    }
-
-                    case LONG:
-                        return Long.valueOf(valueStr);
-
-                case FLOAT:
-                    return Float.valueOf(valueStr);
-                case DOUBLE:
-                    return Double.valueOf(valueStr);
-            }
-        } catch (Exception ex) {
-            if (sfLog().isErrorEnabled()) sfLog().error (ex);
-        }
-
-        return null;
-    }
-    /**
-     * Selects the combo box
-     * @param value of object
-     */
-    void selectComboIndex(Object value) {
-        if (value instanceof String) {
-            this.TypejComboBox.setSelectedIndex(STRING);
-        } else if ((value instanceof Integer)) {
-            this.TypejComboBox.setSelectedIndex(INTEGER);
-        } else if ((value instanceof Boolean)) {
-            this.TypejComboBox.setSelectedIndex(BOOLEAN);
-        } else if ((value instanceof ComponentDescription)) {
-            this.TypejComboBox.setSelectedIndex(COMPONENT_DESCRIPTION);
-        } else if ((value instanceof Reference)) {
-            this.TypejComboBox.setSelectedIndex(REFERENCE);
-        } else if ((value instanceof Long)) {
-            this.TypejComboBox.setSelectedIndex(LONG);
-        } else if ((value instanceof Float)) {
-            this.TypejComboBox.setSelectedIndex(FLOAT);
-        } else if ((value instanceof Double)) {
-            this.TypejComboBox.setSelectedIndex(DOUBLE);
-        }
-    }
     /**
      * Parses the phases.
      * @param phase parsing phase
