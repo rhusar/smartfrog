@@ -31,7 +31,7 @@ import java.io.ObjectOutputStream;
 
 /**
  * Uses the Nux high performance codec
- * @see <a href="http://dsd.lbl.gov/nux/">NUX</a>
+ * {@link <a href="http://dsd.lbl.gov/nux/">NUX</a>}
  * created 27-Jul-2005 13:34:20
  */
 
