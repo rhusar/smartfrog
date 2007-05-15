@@ -392,6 +392,21 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
 
       JTabbedPane scriptingTabPane = null;
 
+      StringBuffer msg = new StringBuffer();
+      msg.append(
+              "Useful commands: \n" +
+              "· print() pretty much same thing as System.out.println(); ex. 'print(help);'\n" +
+              "· show()  toggles on and off automatic display of the result of every line you type\n" +
+              "· source(), run() ? Read a bsh script into this interpreter, or run it in a new interpreter\n" +
+              "· frame() ? Display a GUI component in a Frame or JFrame.\n" +
+              "· load(), save() ? Load or save serializable objects to a file.\n" +
+              "· cd(), cat(), dir(), pwd(), etc. ? Unix?like shell commands\n" +
+              "· exec() ? Run a native application\n" +
+              "· javap() ? Print the methods and fields of an object, similar to the Java javap command.\n" +
+              "· setAccessibility() ? Turn on unrestricted access to private and protected components.\n" +
+              "· classBrowser() Open the class browser. \n" +
+              "· setNameCompletion() Turn on or off name completion in the console. \n");
+
       try {
         Class jConsoleClass = Class.forName("bsh.util.JConsole");
         Class intepreterClass = Class.forName("bsh.Interpreter");
@@ -412,16 +427,34 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
         classParameters = new Class[]{String.class, Object.class};
         Method method = intepreterClass.getMethod("set",classParameters);
         ProcessCompound rootProcess = SFProcess.getRootLocator().getRootProcessCompound(InetAddress.getByName(hostname), port);
-        method.invoke(interpreterObject, new Object[] {"bsh.system.shutdownOnExit",new Boolean(false)});
+
+        method.invoke(interpreterObject, new Object[]{"bsh.system.shutdownOnExit",new Boolean(false)});
         method.invoke(interpreterObject, new Object[]{"rootProcess",rootProcess});
         method.invoke(interpreterObject, new Object[]{"localProcess",SFProcess.getProcessCompound()});
+        method.invoke(interpreterObject, new Object[]{"help",msg.toString()});
         String panelName="";
-        if (sfObj!=null) {
+        if ((sfObj!=null)&& (sfObj instanceof Prim)) {
            method.invoke(interpreterObject, new Object[]{"sfObj",sfObj});
-           method.invoke(interpreterObject, new Object[]{sfObjName,sfObj});
            panelName = sfObjName;
         } else {
             panelName = "rootProcess";
+        }
+        System.out.println("sfObj - "+ sfObj +", name "+ panelName);
+        try {
+            //Echo help message
+            Class[] evalMethodParameters = new Class[]{String.class};
+            Method evalMethod = intepreterClass.getMethod("eval",evalMethodParameters);
+            evalMethod.invoke(interpreterObject, new Object[]{ "print (\"Special SmartFrog objects available through this BeanShell interpreter:\");"} );
+            evalMethod.invoke(interpreterObject, new Object[]{ "print (\"· rootProcess  - \"+ rootProcess.sfCompleteName());"} );
+            if (SFProcess.getProcessCompound()!=null) {
+               evalMethod.invoke(interpreterObject, new Object[]{ "print (\"· localProcess - \"+ localProcess.sfCompleteName());"} );
+            }
+            if ((sfObj!=null)&& (sfObj instanceof Prim)) {
+               evalMethod.invoke(interpreterObject, new Object[]{ "print (\"· sfObj        - \"+ sfObj.sfCompleteName());"} );
+            }
+            evalMethod.invoke(interpreterObject, new Object[]{ "print (help);"} );
+        } catch (Exception ex) {
+            if (sfLogStatic().isErrorEnabled()) sfLogStatic().error("Problem when printing help info on the BeanShell interpreter",ex);
         }
 
         new Thread((Runnable) interpreterObject).start(); // start a thread to call the run() method
