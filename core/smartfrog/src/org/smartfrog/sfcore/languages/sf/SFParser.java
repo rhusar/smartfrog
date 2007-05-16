@@ -1,4 +1,4 @@
-/** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
+/** (C) Copyright 1998-2007 Hewlett-Packard Development Company, LP
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
@@ -287,4 +287,21 @@ public class SFParser implements StreamLanguageParser {
            throw new SmartFrogParseException ("Error parsing primitive value from InputStream", pe);
        }
    }
+
+   /**
+    *  Parses tags from given string. This is NOT a cheap method since a
+    *  new DefaultParser will be constructed to create the reference.
+    *
+    *@param  is                      input stream to parse
+    *@return                         parsed value
+    *@exception  SmartFrogParseException  failure while parsing value
+    */
+   public Object sfParseTags(InputStream is) throws SmartFrogParseException {
+       try {
+           return (new DefaultParser(is, null)).TagsSet();
+       } catch (ParseException pe){
+           throw new SmartFrogParseException ("Error parsing Tags from InputStream", pe);
+       }
+   }
+
 }

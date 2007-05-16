@@ -1,4 +1,4 @@
-/** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
+/** (C) Copyright 1998-2007 Hewlett-Packard Development Company, LP
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
@@ -156,15 +156,17 @@ public class PopUpTable extends JComponent implements ActionListener {
           }
          Object name = null;
          Object value = null;
+         Object tags = null;
 
          if (row == -1) {
             name = "";
          } else {
             name = (tempTable.getValueAt(row, 0));
             value = tempTable.getValueAt(row, 1);
+            tags = tempTable.getValueAt(row, 2);
          }
 
-         modifyAttribute(name, value);
+         modifyAttribute(name, value, tags);
 
          // Entry pointed in the tree
       } else if (source==menuItemInstrospectValue){
@@ -200,18 +202,21 @@ public class PopUpTable extends JComponent implements ActionListener {
     *@param  name   Name of the object
     *@param  value  Value of the object
     */
-   void modifyAttribute(Object name, Object value) {
-      Object[] attribute = new Object[2];
+   void modifyAttribute(Object name, Object value, Object tags) {
+      Object[] attribute = new Object[3];
       attribute[0] = name;
       attribute[1] = value;
+      attribute[2] = tags;
       // try to get the object value
       try {
         TreePath tpath = (tempTree).getSelectionPath();
         Object node = getNode();
         if (node instanceof Prim) {
             attribute[1] = ((Prim)node).sfResolve(name.toString());
+            attribute[2] = ((Prim)node).sfGetTags(name.toString());
         } else if (node instanceof ComponentDescription) {
             attribute[1] = ((ComponentDescription)node).sfResolve(name.toString());
+            attribute[2] = ((ComponentDescription)node).sfGetTags(name.toString());
         }
       } catch (Exception ex) {
           if (sfLog().isIgnoreEnabled()) sfLog().ignore ("Failed to read real value during modify attribute '"+name,ex);
@@ -224,8 +229,8 @@ public class PopUpTable extends JComponent implements ActionListener {
 
       if (attribute != null) {
          if (attribute[0] == null) {
-            if (sfLog().isTraceEnabled()) sfLog().trace ("No attribute to modify");
-            WindowUtilities.showError(this,"No attribute to modify");
+            if (sfLog().isTraceEnabled()) sfLog().trace ("No attribute was modified");
+            WindowUtilities.showError(this,"No attribute was modified");
             return;
          }
          if (attribute[1] == null) {
@@ -237,7 +242,7 @@ public class PopUpTable extends JComponent implements ActionListener {
          try {
             TreePath tpath = (tempTree).getSelectionPath();
             Object node = getNode();
-            modify(node,attribute[0],attribute[1]);
+            modify(node,attribute[0],attribute[1],attribute[2]);
             //((Prim) (((DeployEntry) (tpath.getLastPathComponent())).getEntry())).sfReplaceAttribute(attribute[0],attribute[1]);
          } catch (Exception ex) {
             if (sfLog().isErrorEnabled()) sfLog().error ("Failed to modify '"+name,ex);
@@ -342,10 +347,10 @@ public class PopUpTable extends JComponent implements ActionListener {
     *@param  attribName  Attribute Name
     *@param  value       Attribute value
     */
-   void modify(Object obj, Object attribName, Object value) {
+   void modify(Object obj, Object attribName, Object value, Object tags) {
       if ((obj instanceof Prim)||(obj instanceof ComponentDescription)) {
          try {
-            org.smartfrog.services.management.DeployMgnt.modifyAttribute(obj, attribName, value);
+            org.smartfrog.services.management.DeployMgnt.modifyAttribute(obj, attribName, value, tags);
             parent.refreshTable();
          } catch (Exception ex) {
             if (sfLog().isErrorEnabled()) sfLog().error ("Failed to modify '"+attribName,ex);

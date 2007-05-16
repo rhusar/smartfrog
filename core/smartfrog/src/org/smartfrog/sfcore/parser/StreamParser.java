@@ -98,6 +98,17 @@ public interface StreamParser {
     public Object sfParsePrimitiveValue(InputStream is) throws SmartFrogCompilationException;
 
     /**
+     * Parses tags from an input stream.
+     *
+     * @param is string to parse for a value
+     *
+     * @return parsed value
+     *
+     * @exception org.smartfrog.sfcore.common.SmartFrogParseException failed to parse tags
+     */
+    public Object sfParseTags(InputStream is) throws SmartFrogCompilationException;
+
+    /**
      * Parses a component description from an input stream.
      * All the language phases will have been applied, and the conversion to ComponentDescription
      * carried out.

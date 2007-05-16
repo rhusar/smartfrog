@@ -103,4 +103,16 @@ public interface Parser extends StreamParser {
      * @exception SmartFrogParseException failed to parse primtiive value
      */
      public ComponentDescription sfParseComponentDescription(String txt) throws SmartFrogCompilationException;
+
+    /**
+     * Parses tags from a string.
+     *
+     * @param txt string to parse for a value
+     *
+     * @return parsed value
+     *
+     * @exception SmartFrogParseException failed to parse primtiive value
+     */
+    public Object sfParseTags(String txt) throws SmartFrogCompilationException;
+
 }
