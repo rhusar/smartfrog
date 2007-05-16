@@ -502,6 +502,18 @@ SFReference Reference() :
     { return res; }
 }
 
+ /*
+  * Entry point for tags parser (e.g. for tags in management console)
+  */
+ Object TagsSet() :
+{
+  Set tags = new HashSet();
+}
+{
+    [ <LBRACKET> Tags(tags) <RBRACKET> ] <EOF>
+    { return tags; }
+}
+
 /*
  * Main body of grammar
  */

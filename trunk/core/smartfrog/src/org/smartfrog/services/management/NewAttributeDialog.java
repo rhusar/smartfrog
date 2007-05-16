@@ -1,4 +1,4 @@
-/** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
+/** (C) Copyright 1998-2007 Hewlett-Packard Development Company, LP
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
@@ -32,6 +32,7 @@ import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.logging.LogSF;
 import org.smartfrog.sfcore.logging.LogFactory;
 import org.smartfrog.sfcore.common.ContextImpl;
+import org.smartfrog.services.display.WindowUtilities;
 
 import javax.swing.*;
 import java.awt.*;
@@ -50,12 +51,15 @@ public class NewAttributeDialog extends JDialog {
     private JButton jButtonSave = new JButton();
     /** Cancel Button. */
     private JButton jButtonCancel = new JButton();
-    /** Label type. */
-    private JLabel jLabelType = new JLabel();
+
     /** Label name. */
     private JLabel jLabelName = new JLabel();
     /** Text filed. */
     private JTextField NamejTextField = new JTextField();
+    /** Label name. */
+    private JLabel jLabelTags = new JLabel();
+    /** Text filed. */
+    private JTextField tagsjTextField = new JTextField();
     /** Label value. */
     private JLabel jLabelValue = new JLabel();
     /** Scrool pane. */
@@ -78,8 +82,7 @@ public class NewAttributeDialog extends JDialog {
      * @param modal modal
      * @param attribute set of attributes
      */
-    public NewAttributeDialog(Frame frame, String title, boolean modal,
-        Object[] attribute) {
+    public NewAttributeDialog(Frame frame, String title, boolean modal, Object[] attribute) {
         super(frame, title, modal);
         this.attribute = attribute;
 
@@ -105,6 +108,9 @@ public class NewAttributeDialog extends JDialog {
                         value = sw.toString();
                     }
                     this.ValuejTextArea.setText(value);
+                }
+                if (attribute[2] != null) {
+                    this.tagsjTextField.setText(attribute[2].toString());
                 }
             }
         } catch (Exception ex) {
@@ -132,43 +138,54 @@ public class NewAttributeDialog extends JDialog {
                     jButtonCancel_actionPerformed(e);
                 }
             });
-        //jLabelType.setText("Value");
+
         jLabelName.setText("Name");
-        NamejTextField.setNextFocusableComponent(ValuejTextArea);
+        NamejTextField.setNextFocusableComponent(tagsjTextField);
         NamejTextField.setText("");
+
+        jLabelTags.setText("Tags");
+        tagsjTextField.setNextFocusableComponent(ValuejTextArea);
+        tagsjTextField.setText("");
+
         jLabelValue.setText("Value");
         ValuejTextArea.setNextFocusableComponent(jButtonSave);
         panel.setMinimumSize(new Dimension(550, 300));
         panel.setPreferredSize(new Dimension(550, 300));
         jLabel1.setText("(use SF syntax)");
-    getContentPane().add(panel);
-//        panel.add(TypejComboBox,
-//            new GridBagConstraints(1, 1, 2, 1, 1.0, 0.0,
-//                GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL,
-//                new Insets(15, 13, 0, 23), 151, 0));
+        getContentPane().add(panel);
+        //Name
         panel.add(NamejTextField,
-              new GridBagConstraints(1, 0, 2, 1, 1.0, 0.0
-            ,GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, new Insets(17, 13, 0, 23), 302, 0));
+                new GridBagConstraints(1, 0, 2, 1, 1.0, 0.0
+                , GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, new Insets(17, 13, 0, 23), 302, 0));
         panel.add(jLabelName,
-              new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0
-            ,GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(17, 24, 0, 0), 0, 0));
-       // panel.add(jLabelType,
-        //     new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0
-        //    ,GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(17, 24, 0, 8), 0, 0));
+                new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0
+                , GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(17, 24, 0, 0), 0, 0));
+        //Tags
+        panel.add(jLabelTags,
+                new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0
+                , GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(17, 24, 0, 8), 0, 0));
+        panel.add(tagsjTextField,
+                new GridBagConstraints(1, 1, 2, 1, 1.0, 0.0,
+                GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL,
+                new Insets(15, 13, 0, 23), 151, 0));
+        //Buttons
         panel.add(jButtonCancel,
-              new GridBagConstraints(2, 3, 1, 1, 0.0, 0.0
-            ,GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(16, 22, 13, 89), 0, 0));
+                new GridBagConstraints(2, 4, 1, 1, 0.0, 0.0
+                , GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(16, 22, 13, 89), 0, 0));
         panel.add(jButtonSave,
-              new GridBagConstraints(1, 3, 1, 1, 0.0, 0.0
-            ,GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(16, 85, 13, 0), 12, 0));
-        panel.add(jScrollPane1,
-              new GridBagConstraints(1, 1, 2, 2, 1.0, 1.0
-            ,GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(19, 13, 0, 23), 300, 130));
-    panel.add(jLabelValue, new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0
-            ,GridBagConstraints.SOUTHWEST, GridBagConstraints.NONE, new Insets(13, 24, 0, 0), 0, 0));
-    panel.add(jLabel1, new GridBagConstraints(0, 2, 1, 1, 0.0, 0.0
-            ,GridBagConstraints.NORTHEAST, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
-        jScrollPane1.getViewport().add(ValuejTextArea, null);
+                new GridBagConstraints(1, 4, 1, 1, 0.0, 0.0
+                , GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(16, 85, 13, 0), 12, 0));
+         //Value
+         panel.add(jScrollPane1,
+                  new GridBagConstraints(1, 2, 2, 2, 1.0, 1.0
+                  , GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(19, 13, 0, 23), 300, 130));
+          panel.add(jLabelValue, new GridBagConstraints(0, 2, 1, 1, 0.0, 0.0
+                  , GridBagConstraints.SOUTHWEST, GridBagConstraints.NONE, new Insets(13, 24, 0, 0), 0, 0));
+          panel.add(jLabel1, new GridBagConstraints(0, 3, 1, 1, 0.0, 0.0
+                  , GridBagConstraints.NORTHEAST, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
+
+          jScrollPane1.getViewport().add(ValuejTextArea, null);
+
     }
 
     /**
@@ -178,13 +195,20 @@ public class NewAttributeDialog extends JDialog {
     void jButtonSave_actionPerformed(ActionEvent e) {
         //Save values in parent!
         //Return with attribute value pair. Array[];
-        if ((this.NamejTextField.getText() != null) &&
-                (!this.NamejTextField.getText().equals(""))) {
-            attribute[0] = this.NamejTextField.getText();
-            attribute[1] = parseValue(ValuejTextArea.getText(),"sf");
-        } else {
-            attribute[0] = null;
-            attribute[1] = null;
+        try {
+            if ((this.NamejTextField.getText() != null) &&
+                    (!this.NamejTextField.getText().equals(""))) {
+                attribute[0] = this.NamejTextField.getText();
+                attribute[1] = parseValue(ValuejTextArea.getText(),"sf");
+                attribute[2] = parseTags(tagsjTextField.getText(),"sf");
+            } else {
+                attribute[0] = null;
+                attribute[1] = null;
+                attribute[2] = null;
+            }
+        } catch (Exception e1) {
+             if (sfLog().isErrorEnabled()) sfLog().error (e1);
+             WindowUtilities.showError(this,"Failed to modify attribute '"+attribute.toString()+"'. \n"+e1.toString());
         }
 
         this.dispose();
@@ -282,16 +306,34 @@ public class NewAttributeDialog extends JDialog {
         return null;
     }
 
-
+    /**
+     * Parse
+     * @param textToParse  text to be parsed
+     * @param language language
+     * @return Object
+     */
+    public Object parseTags(String textToParse, String language) {
+        try {
+            SFParser parser = new SFParser(language);
+            return parser.sfParseTags( textToParse);
+        } catch (Throwable ex) {
+            if (sfLog().isErrorEnabled()) sfLog().error (ex);
+        }
+        return null;
+    }
 
     /**
      * Interface Method.
      * @param e event
      */
     void jButtonCancel_actionPerformed(ActionEvent e) {
-        //Return null
-        attribute[0] = null;
-        attribute[1] = null;
+        try {
+            attribute[0] = null;
+            attribute[1] = null;
+            attribute[2] = null;
+        } catch (Exception e1) {
+            if (sfLog().isErrorEnabled()) sfLog().error (e1);
+        }
         this.dispose();
     }
 

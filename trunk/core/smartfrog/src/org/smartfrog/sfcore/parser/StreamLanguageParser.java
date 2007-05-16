@@ -23,7 +23,7 @@ package org.smartfrog.sfcore.parser;
 import java.io.InputStream;
 
 import org.smartfrog.sfcore.common.SmartFrogParseException;
-import org.smartfrog.sfcore.reference.Reference;
+
 
 
 /**
@@ -91,7 +91,18 @@ public interface StreamLanguageParser {
      *
      * @return parsed value
      *
-     * @exception org.smartfrog.sfcore.common.SmartFrogParseException failed to parse primtiive value
+     * @exception org.smartfrog.sfcore.common.SmartFrogParseException failed to parse primitive value
      */
     public Object sfParsePrimitiveValue(InputStream is) throws SmartFrogParseException;
+
+    /**
+     * Parses tags from an input stream.
+     *
+     * @param is string to parse for a value
+     *
+     * @return parsed value
+     *
+     * @exception org.smartfrog.sfcore.common.SmartFrogParseException failed to parse tags
+     */
+    public Object sfParseTags(InputStream is) throws SmartFrogParseException;
 }

@@ -1,4 +1,4 @@
-/** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
+/** (C) Copyright 1998-2007 Hewlett-Packard Development Company, LP
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
@@ -26,12 +26,21 @@ import java.io.InputStream;
 import java.io.IOException;
 
 import org.smartfrog.SFSystem;
-import org.smartfrog.sfcore.common.*;
+import org.smartfrog.sfcore.common.SmartFrogParseException;
+import org.smartfrog.sfcore.common.MessageKeys;
+import org.smartfrog.sfcore.common.MessageUtil;
+import org.smartfrog.sfcore.common.SmartFrogCoreProperty;
+import org.smartfrog.sfcore.common.SmartFrogCompilationException;
+import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
+import org.smartfrog.sfcore.common.SmartFrogException;
+
+
 import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.security.SFClassLoader;
-import org.smartfrog.sfcore.componentdescription.ComponentDescription;
-import org.smartfrog.sfcore.languages.sf.sfcomponentdescription.*;
 
+import org.smartfrog.sfcore.componentdescription.ComponentDescription;
+
+import org.smartfrog.sfcore.languages.sf.sfcomponentdescription.SFComponentDescription;
 
 /**
  * Implements the Parser interface for SmartFrog parsers. This implementation
@@ -280,7 +289,7 @@ public class SFParser implements Parser, MessageKeys {
     }
 
 
-       /**
+   /**
      * Parses any value from an input stream. (the meaning of "any" is language dependant)
      *
      * @param is input stream to parse for a value
@@ -331,8 +340,6 @@ public class SFParser implements Parser, MessageKeys {
            return o;
     }
 
-
-
     /**
      * Parses a primitive value from a string. (the meaning of primitive is language dependant)
      *
@@ -344,6 +351,33 @@ public class SFParser implements Parser, MessageKeys {
      */
     public Object sfParsePrimitiveValue(String txt) throws SmartFrogCompilationException {
         return sfParsePrimitiveValue(new ByteArrayInputStream(txt.getBytes()));
+    }
+
+    /**
+     * Parses tags from an input stream.
+     *
+     * @param is input stream to parse for a value
+     *
+     * @return parsed value
+     *
+     * @exception org.smartfrog.sfcore.common.SmartFrogParseException failed to parse tags
+     */
+    public Object sfParseTags(InputStream is) throws SmartFrogCompilationException {
+           Object o = parser.sfParseTags(is);
+           return o;
+    }
+
+    /**
+     * Parses tags from a string.
+     *
+     * @param txt string to parse for a value
+     *
+     * @return parsed value
+     *
+     * @exception SmartFrogParseException failed to parse any value
+     */
+    public Object sfParseTags(String txt) throws SmartFrogCompilationException {
+        return sfParseTags(new ByteArrayInputStream(txt.getBytes()));
     }
 
     /**

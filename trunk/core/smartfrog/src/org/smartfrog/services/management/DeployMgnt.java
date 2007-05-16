@@ -1,4 +1,4 @@
-/** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
+/** (C) Copyright 1998-2007 Hewlett-Packard Development Company, LP
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
@@ -23,6 +23,8 @@ package org.smartfrog.services.management;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
+
+import java.util.Set;
 
 
 /**
@@ -77,11 +79,17 @@ public class DeployMgnt {
      *@param  attribValue    Value of the attribute
      *@throws  Exception  If any error
      */
-    public static void modifyAttribute(Object obj, Object attribName, Object attribValue) throws Exception {
+    public static void modifyAttribute(Object obj, Object attribName, Object attribValue, Object attribTags) throws Exception {
         if (obj instanceof Prim) {
             ((Prim)obj).sfReplaceAttribute(attribName, attribValue);
+            if (attribTags != null){
+               ((Prim)obj).sfAddTags(attribName,(Set)attribTags);
+            }
         } else if (obj instanceof ComponentDescription){
             ((ComponentDescription)obj).sfReplaceAttribute(attribName, attribValue);
+            if (attribTags != null){
+               ((ComponentDescription)obj).sfAddTags(attribName,(Set)attribTags);
+            }
         }
     }
 
