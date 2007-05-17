@@ -30,7 +30,8 @@ import org.smartfrog.services.jmx.discovery.*;
 import org.smartfrog.sfcore.common.SmartFrogException;
 
 /**
- *  This class register it self with a DiscoveryService and creates a Cascader
+ * Master component for handling notifications.
+ *  This class registers itself with a DiscoveryService and creates a Cascader
  *  for every new discovered JMX Agent
  *
  * <p>Title: SmartFrog</p>
@@ -97,8 +98,8 @@ public class MasterNotificationHandler extends PrimImpl implements Prim, MasterN
      *  MBeanServer. It also retrieve the MBeanServer information from the
      *  MBeanServerDeletate MBean.
      *
-     *@param  mbeanserver    Description of the Parameter
-     *@param  objectname     Description of the Parameter
+     *@param  server    Description of the Parameter
+     *@param  objectName     Description of the Parameter
      *@return                Description of the Return Value
      *@exception  Exception  Description of the Exception
      */
