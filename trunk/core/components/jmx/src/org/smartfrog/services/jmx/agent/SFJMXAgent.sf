@@ -19,7 +19,7 @@ For more information: www.smartfrog.org
 */
 
 #include "org/smartfrog/components.sf"
-#include "org/smartfrog/services/scripting/components.sf"
+//#include "org/smartfrog/services/scripting/components.sf"
 #include "org/smartfrog/services/jmx/mbean/mbean.sf"
 #include "org/smartfrog/services/jmx/communication/Communicator.sf"
 
