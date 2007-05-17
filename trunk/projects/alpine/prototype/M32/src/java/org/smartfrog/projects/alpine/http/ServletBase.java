@@ -52,7 +52,7 @@ public class ServletBase extends HttpServlet {
 
     /**
      * get the svc context
-     * @return
+     * @return the context
      */ 
     public ServletContext getServletContext() {
         return getServletConfig().getServletContext();

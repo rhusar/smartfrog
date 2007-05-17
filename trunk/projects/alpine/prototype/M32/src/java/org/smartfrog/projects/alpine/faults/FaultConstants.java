@@ -59,53 +59,53 @@ public class FaultConstants {
 
     /**
      * QName of invalid element in an element fault.
-     * {@value}
+     * "invalidNode"
      */
     public static final QName QNAME_FAULTDETAIL_INVALID_XML = new QName(NS_URI_ALPINE, "invalidNode");
 
 
     /**
      * QName of stack trace element in an axis fault detail.
-     * {@value}
+     * "stackTrace"
      */
     public static final QName QNAME_FAULTDETAIL_STACKTRACE = new QName(NS_URI_AXIS, "stackTrace");
 
     /**
      * QName of exception Name element in an axis fault detail. Do not use - this is for pre-1.0 server->client
      * exceptions.
-     * {@value}
+     * "exceptionName"
      */
     public static final QName QNAME_FAULTDETAIL_EXCEPTIONNAME = new QName(NS_URI_AXIS, "exceptionName");
 
     /**
      * Flag set if this was a runtime exception, rather than something thrown by the class at the end of the chain.
      * Axis' logging treats runtime exceptions more seriously.
-     * {@value}
+     * "isRuntimeException"
      */
     public static final QName QNAME_FAULTDETAIL_RUNTIMEEXCEPTION = new QName(NS_URI_AXIS, "isRuntimeException");
 
     /**
      * QName of stack trace element in an axis fault detail.
-     * {@value}
+     * "HttpErrorCode"
      */
     public static final QName QNAME_FAULTDETAIL_HTTPERRORCODE = new QName(NS_URI_AXIS, "HttpErrorCode");
 
     /**
      * QName of a nested fault in an axis fault detail.
-     * {@value}
+     * "nestedFault"
      */
     public static final QName QNAME_FAULTDETAIL_NESTEDFAULT = new QName(NS_URI_AXIS, "nestedFault");
 
     /**
      * QName of a hostname in an axis fault detail.
-     * {@value}
+     * "hostname"
      */
     public static final QName QNAME_FAULTDETAIL_HOSTNAME = new QName(NS_URI_AXIS, "hostname");
 
     //QNames of well known faults
     /**
      * The no-service fault value.
-     * {@value}
+     * "Server.NoService"
      */
     public static final QName QNAME_NO_SERVICE_FAULT_CODE
             = new QName(NS_URI_AXIS, "Server.NoService");
@@ -129,7 +129,7 @@ public class FaultConstants {
     public static final String ALPINE_EPR = "epr";
     /**
      * EPR of the fault
-     * {@value}
+     * "epr"
      */
     public static final QName QNAME_FAULTDETAIL_EPR = new QName(NS_URI_ALPINE, ALPINE_EPR);
 
@@ -146,13 +146,13 @@ public class FaultConstants {
 
     /**
      * QNAME for a request message in a fault
-     * {@value}
+     * "request"
      */
     public static final QName QNAME_FAULTDETAIL_REQUEST = new QName(NS_URI_ALPINE, ALPINE_ELEMENT_REQUEST);
 
     /**
      * QNAME for a response message in a fault
-     * {@value}
+     * "response"
      */
     public static final QName QNAME_FAULTDETAIL_RESPONSE = new QName(NS_URI_ALPINE, ALPINE_ELEMENT_RESPONSE);
 }

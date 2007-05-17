@@ -59,7 +59,7 @@ public class AlpineHandlerImpl extends PrimImpl implements AlpineHandler {
     /**
      * Get the classname
      *
-     * @return
+     * @return the class name attribute of this component 
      * @throws org.smartfrog.sfcore.common.SmartFrogResolutionException
      *
      * @throws java.rmi.RemoteException

@@ -87,10 +87,10 @@ public class SoapMessageParser {
     /**
      * parse the file, and throw an exception if we couldnt
      *
-     * @param filename
-     * @return
-     * @throws IOException
-     * @throws ParsingException
+     * @param filename the file to parse
+     * @return a parsed messgae
+     * @throws IOException IO problems
+     * @throws ParsingException invalid XML problems
      */
     public MessageDocument parseFile(String filename) throws IOException,
             ParsingException {
@@ -101,10 +101,10 @@ public class SoapMessageParser {
     /**
      * parse a stream that we are provided
      *
-     * @param instream
-     * @return
-     * @throws IOException
-     * @throws ParsingException
+     * @param instream input stream
+     * @return a parsed message
+     * @throws IOException IO problems
+     * @throws ParsingException invalid XML problems
      */
     public MessageDocument parseStream(InputStream instream) throws IOException,
             ParsingException {
@@ -117,8 +117,8 @@ public class SoapMessageParser {
      *
      * @param resource resource to load
      * @return a parsed document
-     * @throws IOException
-     * @throws ParsingException
+     * @throws IOException IO problems
+     * @throws ParsingException invalid XML problems
      */
     public MessageDocument parseResource(String resource) throws IOException,
             ParsingException {
@@ -126,6 +126,14 @@ public class SoapMessageParser {
         return parseStream(in);
     }
 
+    /**
+     * Parse from a string
+     * @param xml XML to parse
+     * @param uri base URI for the document
+     * @return a parsed document
+     * @throws IOException IO problems
+     * @throws ParsingException invalid XML problems
+     */
     public MessageDocument parseString(String xml, String uri) throws ParsingException, IOException {
         Document doc = builder.build(xml, uri);
         return (MessageDocument) doc;
@@ -134,7 +142,7 @@ public class SoapMessageParser {
     /**
      * Get our resource loader
      *
-     * @return
+     * @return the resource loader
      */
     public ResourceLoader getResourceLoader() {
         return resourceLoader;

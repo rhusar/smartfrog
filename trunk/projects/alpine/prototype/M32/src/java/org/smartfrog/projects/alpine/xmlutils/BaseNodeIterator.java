@@ -87,7 +87,7 @@ public class BaseNodeIterator <E extends Node> implements Iterator<E>,
     /**
      * iterator operator returns a new iterator over us.
      *
-     * @return
+     * @return a new iterator
      */
     public Iterator<E> iterator() {
         return new BaseNodeIterator<E>(parent);

@@ -47,7 +47,7 @@ public class AlpineContext {
     /**
      * get the alpine context from the servlet context ; create it if needed
      *
-     * @return
+     * @return the current context
      */
     public static synchronized AlpineContext getAlpineContext() {
         
@@ -60,7 +60,7 @@ public class AlpineContext {
     /**
      * Create a new alpine context
      *
-     * @return
+     * @return a new context
      */
     private static AlpineContext createAlpineContext() {
         return new AlpineContext();

@@ -35,7 +35,7 @@ public interface NonRemotableHandlerFactory {
     /**
      * Get the factory that can provide message handlers
      *
-     * @return
+     * @return a factory
      * @throws SmartFrogException
      */
     MessageHandlerFactory createFactory() throws SmartFrogException, RemoteException;
