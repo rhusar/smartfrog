@@ -80,4 +80,6 @@
 
   <target name="cleaned" depends="ready-to-clean"/>
 
+  <target name="published-distribution" depends="packaged,published"/>
+
 </project>

@@ -50,6 +50,9 @@ For more information: www.smartfrog.org
     <condition property="java1.5+" >
       <available classname="java.lang.Readable"/>
     </condition>
+    <condition property="java1.6+" >
+      <available classname="javax.lang.model"/>
+    </condition>
     <macrodef name="forward2">
      <attribute name="dir" />
      <attribute name="target" />
@@ -77,8 +80,8 @@ For more information: www.smartfrog.org
   <!-- =================================================================== -->
   <!-- build a distribution of smartfrog.jar, sfExamples.jar               -->
   <!-- =================================================================== -->
-  <target name="main-dist" depends="init" description="build a distribution">
-    <forward2 dir="${main.project}" target="dist"  />
+  <target name="main-dist" depends="ivy-init" description="build a distribution">
+    <ivy-delegate target="published-distribution" />
   </target>
   
   <!-- tracking down quirks in subant -->
@@ -90,20 +93,25 @@ For more information: www.smartfrog.org
   <!-- clean all sub-projects                                              -->
   <!-- =================================================================== -->
   <target name="clean" depends="ivy-clean" description="clean up">
- 
- <!--   <forward2 dir="${test.project}" target="clean"  />
-    <forward2 dir="${components.project}" target="clean"  /> 
-    <forward2 dir="${ant.project}" target="clean"  />
-    <forward2 dir="${main.project}" target="clean"  />
- -->
+
   </target>
 
   <!-- =================================================================== -->
   <!-- ant tasks distribution                                              -->
   <!-- =================================================================== -->
 
-  <target name="tasks" depends="init" description="ant tasks">
-    <forward2 dir="${ant.project}" target="dist"  />
+  <target name="tasks" depends="ivy-init"
+      description="create everything up to the ant tasks">
+    <ivy-build module="sf-tasks" target="published-distribution" />
+  </target>
+
+  <!-- =================================================================== -->
+  <!-- ant tasks distribution                                              -->
+  <!-- =================================================================== -->
+
+  <target name="testharness" depends="ivy-init"
+      description="create everything up to the test harness">
+    <ivy-build module="sf-testharness" target="published-distribution" />
   </target>
 
 
@@ -111,33 +119,21 @@ For more information: www.smartfrog.org
   <!-- components distribution                                            -->
   <!-- =================================================================== -->
 
-  <target name="components" depends="main-dist,tasks" 
-    description="components distribution(s)">
-    <forward2 dir="${components.project}" target="dist"  />
+  <target name="components" depends="ivy-init"
+    description="components distributions">
+    <ivy-delegate target="published-distribution" />
   </target>
 
   <!-- =================================================================== -->
   <!-- install components distribution                                     -->
   <!-- =================================================================== -->
 
-  <target name="install" depends="main-dist,tasks" 
+  <target name="install" depends="ivy-init"
     description="install components distribution(s)">
-    <antcall target="components"/>
-    <forward2 dir="${components.project}" target="install"  />
+    <ivy-delegate target="installed" />
   </target>
   
-  <!-- =================================================================== -->
-  <!-- m2 installation distribution                                        -->
-  <!-- =================================================================== -->
 
-  <target name="m2-install" depends="main-dist,tasks" 
-    description="components installation into the m2 cache">
-    <forward2 dir="${main.project}" target="m2-install"  />
-    <forward2 dir="${ant.project}" target="m2-install"  />
-    <forward2 dir="${test.project}" target="m2-install"  />
-    <forward2 dir="${components.project}" target="m2-install"  />
-  </target>  
-  
   <!-- =================================================================== -->
   <!-- main distribution                                                    -->
   <!-- =================================================================== -->
@@ -149,7 +145,7 @@ For more information: www.smartfrog.org
   <!-- =================================================================== -->
   <!-- test in the ant project                                            -->
   <!-- =================================================================== -->
-  <target name="test-ant" depends="init" description="test in main project">
+  <target name="test-ant" depends="tasks" description="test the Ant tasks">
     <forward2 dir="${ant.project}" target="test"  />
   </target>
 
@@ -157,14 +153,14 @@ For more information: www.smartfrog.org
   <!-- test in the main project                                            -->
   <!-- =================================================================== -->
   <target name="test-main" depends="init" description="test in main project">
-    <forward2 dir="${main.project}" target="sfParseTest"  />
+    <forward2 dir="${main.project}" target="test"  />
   </target>
 
 
   <!-- =================================================================== -->
   <!-- test in the harness                                                 -->
   <!-- =================================================================== -->
-  <target name="test-testharness" depends="init,tasks"
+  <target name="test-testharness" depends="testharness"
     description="test in test harness; only run system tests">
     <forward2 dir="${test.project}" target="test"  />
   </target>
@@ -172,17 +168,21 @@ For more information: www.smartfrog.org
   <!-- =================================================================== -->
   <!-- test in the harness                                                 -->
   <!-- ===================================18================================ -->
-  <target name="test-components" depends="init,tasks"
+  <target name="test-components" depends="install"
     description="test in test harness; only run system tests">
-    <forward2 dir="${components.project}" target="test"  />
-  </target>  
+    <ivy-delegate target="test" />
+  </target>
   
   <!-- =================================================================== -->
   <!-- test all                                                            -->
   <!-- =================================================================== -->
-  <target name="test" depends="test-main,test-ant,test-testharness"
+  <target name="test" depends="test-components"
     description="test everything"/>
 
+
+  <target name="ready-to-test" depends="install"/>
+
+  <target name="tested" depends="test"/>
 
   <!-- the following targets are for use in CruiseControl automated builds;
        rather than for normal command line/IDE work. -->
@@ -239,20 +239,30 @@ For more information: www.smartfrog.org
     <!-- Cruise control test suite                                           -->
     <!-- =================================================================== -->
     <target name="cc-test"
-        depends="test-main,test-testharness,test-ant"/>
+        depends="tested"/>
 
   <!-- =================================================================== -->
+  <!-- full clean Cruise Control build without Checkout                    -->
+  <!-- this is not cutting a release as "release" is not in the list-->
+  <!-- =================================================================== -->
+  <target name="cc-core"
+      depends="clean,ivy-list-order,dist,cc-test,mavenReportNoSVNUpdate"
+      description="cruise control full build, with NO checkout"/>
+
+  <!-- =================================================================== -->
+
   <!-- full clean Cruise Control build                                     -->
+  <!-- was cc-init,release,cc-incremental,cc-test-->
   <!-- =================================================================== -->
     <target name="cc-full"
-        depends="svnupdate,clean,cc-init,release,cc-incremental,cc-test, mavenReport"
+        depends="svnupdate,cc-core,mavenReport"
         description="cruise control full build, with checkout"/>
 
   <!-- =================================================================== -->
   <!-- full clean Cruise Control build without Checkout                    -->
   <!-- =================================================================== -->
     <target name="cc"
-        depends="clean,cc-init,cc-published,release,dist,cc-test,mavenReportNoSVNUpdate"
+        depends="cc-core,mavenReportNoSVNUpdate"
         description="cruise control full build, with NO checkout"/>
 
   <!-- =================================================================== -->
@@ -330,7 +340,7 @@ For more information: www.smartfrog.org
   <!-- luntbuild test suite                                           -->
   <!-- =================================================================== -->
   <target name="luntbuild-test"
-      depends="test-main,test-testharness,test-ant"/>
+      depends="tested"/>
 
   <!-- =================================================================== -->
   <!-- luntbuild release process-->
@@ -374,14 +384,17 @@ For more information: www.smartfrog.org
 
   <target name="ivy-init" depends="init,ivy-properties"
           xmlns:ivy="antlib:fr.jayasoft.ivy.ant">
+    <!--load up ivy-->
     <typedef uri="antlib:fr.jayasoft.ivy.ant" onerror="fail"
         resource="fr/jayasoft/ivy/ant/antlib.xml">
       <classpath>
         <pathelement location="antbuild/ivy/lib/ivy-${ivy.version}.jar"/>
       </classpath>
     </typedef>
+    <!--create the external dir if it is missing-->
     <mkdir dir="external" />
     <ivy:configure file="antbuild/ivy/ivyconf.xml"/>
+
     <presetdef name="ivy-projects">
       <ivy:buildlist skipbuildwithoutivy="true">
         <fileset file="smartfrog/build.xml" />
@@ -407,13 +420,16 @@ For more information: www.smartfrog.org
           <exclude name="junit/build.xml" unless="java1.5+"/>
           <exclude name="xunit/build.xml" unless="java1.5+"/>
           <exclude name="xmpp/build.xml" unless="java1.5+"/>
+          <!--uncommented until it builds-->
+          <exclude name="asyndeployer/build.xml"/>
+
         </fileset>
         <!--place for symlinks to external projects you want included-->
         <fileset dir="external" includes="**/build.xml"/>
       </ivy:buildlist>
     </presetdef>
     <ivy-projects reference="child.projects" />
-    <echo>The order to build the projects is
+    <echo level="verbose">The order to build the projects is
       ${toString:child.projects}
     </echo>
     <!-- build them-->
@@ -423,6 +439,26 @@ For more information: www.smartfrog.org
         <!--<property file="master.properties"/>-->
       </subant>
     </presetdef>
+
+    <!-- this macro builds up and runs the path to
+    a module. in verbose mode, it lists what is needed-->
+    <macrodef name="ivy-build">
+      <attribute name="target" default="" />
+      <attribute name="module" />
+      <sequential>
+        <ivy-projects reference="@{module}.projects" leaf="@{module}"/>
+        <pathconvert pathsep="&#10;" refid="@{module}.projects"
+            property="@{module}.projects.list" />
+        <echo>
+          ${@{module}.projects.list}
+        </echo>
+        <subant  target="@{target}" verbose="true">
+          <buildpath refid="@{module}.projects"/>
+        </subant>
+      </sequential>
+
+    </macrodef>
+
     <!--  C:\Documents and Settings\slo\.ivy\local -->
     <property name="ivy.user.dir" location="${user.home}/.ivy" />
     <property name="ivy.local.dir" location="${ivy.user.dir}/local" />

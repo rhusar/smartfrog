@@ -114,9 +114,8 @@
   <target name="unzip" depends="full-unzip,minimal-unzip"
       description="create the zip files, then unzip them"/>
 
-  <target name="packaged" depends="minimal-zip,full-zip">
-    
-  </target>
+  <target name="package" depends="minimal-zip,full-zip"/>
+  <target name="packaged" depends="package"/>
 
 
 
