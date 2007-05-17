@@ -1097,10 +1097,26 @@ java.class.path=
 
   <!-- ========================================================== -->
   <!-- this is an override point -->
+  <!-- all things that have to be in place before tests are compiled -->
+  <!-- ========================================================== -->
+  <target name="ready-to-compile-tests"
+    depends="package,assert-smartfrog-testharness,declare-classpaths,test-for-test-sources"
+    />
+
+  <!--stops tests being compiled if there are no tests-->
+  <target name="test-for-test-sources" depends="init">
+    <available file="${test.src.dir}"
+      type="dir"
+      property="test.dir.found"/>
+  </target>
+
+  <!-- ========================================================== -->
+  <!-- this is an override point -->
   <!-- compile everything, copy useful files over-->
   <!-- ========================================================== -->
   <target name="compile-tests"
-      depends="package,assert-smartfrog-testharness,declare-classpaths">
+      depends="ready-to-compile-tests"
+      if="test.dir.found">
       <depend
           srcdir="${test.src.dir}"
           destdir="${test.classes.dir}"
