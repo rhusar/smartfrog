@@ -40,6 +40,7 @@ import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.reference.ReferencePart;
 
 /**
+ * Static mapper of resources.
  * Static class holding all the intelligence about matching resources with
  * requirements, and so on... should be redone as "Resource" and  "ResourceSet" classes
  * for a more OO feel...
