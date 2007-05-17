@@ -396,7 +396,7 @@ public abstract class SmartFrogTask extends TaskBase implements SysPropertyAdder
     }
 
     /**
-     * should the build halt on failure?
+     * Set failure policy.
      * (default=true)
      *
      * @param failOnError fail on error flag
@@ -408,7 +408,7 @@ public abstract class SmartFrogTask extends TaskBase implements SysPropertyAdder
 
 
     /**
-     * assertions to enable in the JVM created
+     * assertions to enable in the new JVM.
      *
      * @param asserts assertion set
      */
@@ -417,7 +417,7 @@ public abstract class SmartFrogTask extends TaskBase implements SysPropertyAdder
     }
 
     /**
-     * adds the ini file by setting the appropriate system property
+     * adds the ini file by setting the appropriate system property.
      */
     protected void addIniFile() {
         if (iniFile != null && iniFile.exists()) {

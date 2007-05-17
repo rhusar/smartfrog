@@ -28,7 +28,7 @@ import org.apache.tools.ant.types.Reference;
 /**
  * This is a condition that tests for things being deployed.
  *
- * @todo: implement this
+ * TODO:implement this
  * created 14-May-2004 11:28:52
  */
 
