@@ -128,6 +128,11 @@ public class HeartbeatComms extends MulticastComms implements HeartbeatCommsIntf
      */
     //public void sendObject(Object obj) { return; }
 
+    /**
+     * Send a heartbeat message.
+     * Logs a failure at the error level.
+     * @param msg message to send.
+     */
     public void sendHeartbeat(HeartbeatMsg msg) {
         try { super.sendObject(msg.toWire()); }
         catch (Exception ex) {

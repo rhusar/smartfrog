@@ -51,16 +51,16 @@ import org.smartfrog.sfcore.reference.Reference;
 
 /**
  * A wrapper around an Ant project. 
-// * TODO: References - How are they resolved?
-// * TODO: Split in: Project, Target, Task
-// * TODO: Try to make the different parts remotable
-// * TODO: Integrate build listener and log
-// * TODO: improve error messages
-// * TODO: test typdef and taskdef
-// * TODO: how to do properties
-// * TODO: overload sfResolve for project and even task
-// * TODO: review the creation of an element inside a project (task=null)
-// */
+ * TODO: References - How are they resolved?
+ * TODO: Split in: Project, Target, Task
+ * TODO: Try to make the different parts remotable
+ * TODO: Integrate build listener and log
+ * TODO: improve error messages
+ * TODO: test typdef and taskdef
+ * TODO: how to do properties
+ * TODO: overload sfResolve for project and even task
+ * TODO: review the creation of an element inside a project (task=null)
+ */
 public class AntProject {
 
     private org.apache.tools.ant.Project project = null;
