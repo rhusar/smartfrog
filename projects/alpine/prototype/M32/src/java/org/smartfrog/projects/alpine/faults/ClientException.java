@@ -28,7 +28,7 @@ import org.smartfrog.projects.alpine.om.soap11.SoapConstants;
 public class ClientException extends AlpineRuntimeException {
 
     /**
-     * {@inheritDoc}
+     * Construct an exception.
      * @param message message
      * @param cause underlying cause
      */
@@ -37,7 +37,7 @@ public class ClientException extends AlpineRuntimeException {
     }
 
     /**
-     * {@inheritDoc}
+     * Construct an exception.
      * @param cause underlying cause
      */
     public ClientException(Throwable cause) {
@@ -45,7 +45,7 @@ public class ClientException extends AlpineRuntimeException {
     }
 
     /**
-     * {@inheritDoc}
+     * Construct an exception. 
      * @param message message
      */
     public ClientException(String message) {

@@ -53,7 +53,7 @@ public class AttributeIterator implements Iterator<Attribute>,
 
     /**
      * Get the current element
-     * @return
+     * @return the current element
      * @throws java.util.NoSuchElementException if there isnt one
      */
     private Attribute getCurrent() {
@@ -77,7 +77,7 @@ public class AttributeIterator implements Iterator<Attribute>,
 
     /**
      * Return a new iterator over the element
-     * @return
+     * @return a new iterator
      */
     public Iterator<Attribute> iterator() {
         return new AttributeIterator(element);

@@ -231,7 +231,7 @@ public final class AlpineEPR implements Validatable, AddressingConstants, XomSou
      * @param rootPrefix root prefix without the colon
      * @param wsaNs xmlns for the WSA children
      * @param wsaPrefix prefix for the WSA children
-     * @return
+     * @return the graph in a new namespace
      */
     public SoapElement toXomInNewNamespace(String rootname,
                                            String rootNs,String rootPrefix,

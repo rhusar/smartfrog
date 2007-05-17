@@ -75,7 +75,7 @@ public final class XsdUtils {
     /**
      * Convert a date to an iso timestamp
      * @param timestamp
-     * @return
+     * @return an ISO time formatted string
      */
     public static String toIsoTime(Date timestamp) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
@@ -108,8 +108,8 @@ public final class XsdUtils {
     /**
      * map from, say tns:something to 'tns'
      *
-     * @param string
-     * @return null for no namespace
+     * @param string the string to extract the prefix from
+     * @return the prefix or null for no namespace
      */
     public static String extractNamespacePrefix(String string) {
         int offset = string.indexOf(':');
@@ -124,7 +124,7 @@ public final class XsdUtils {
      * map from, say tns:something to 'something'
      * This is useful in Xom element factories.
      *
-     * @param string
+     * @param string the string to examine
      * @return everything following the : or the whole string if one is not
      *         there
      */
@@ -140,8 +140,8 @@ public final class XsdUtils {
     /**
      * Get the qname of an element
      *
-     * @param element
-     * @return
+     * @param element element to examine
+     * @return a dqname from the parts of an element
      */
     public static QName makeQName(Element element) {
         return new QName(element.getNamespaceURI(), element.getLocalName());
@@ -293,7 +293,7 @@ public final class XsdUtils {
      *
      * @param  element element to search
      * @param namespace name of the elements
-     * @return
+     * @return an iterator over the child elements
      */
     public static BaseElementsIterator<Element> elements(Element element, String local,String namespace) {
         Elements childElements = element.getChildElements(local, namespace);
@@ -305,7 +305,7 @@ public final class XsdUtils {
      *
      * @param  element element to search
      * @param namespace name of the elements
-     * @return
+     * @return an iterator over the child elements
      */
     public static BaseElementsIterator<Element> elements(Element element, String namespace) {
         return elements(element, "",namespace);

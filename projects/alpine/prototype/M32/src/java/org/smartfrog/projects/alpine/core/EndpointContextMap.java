@@ -34,7 +34,7 @@ public class EndpointContextMap {
     
     /**
      * map from a request to an endpoint;
-     * @param request
+     * @param request the incoming request
      * @return the context or null
      */ 
     public EndpointContext lookup(HttpServletRequest request) {
@@ -47,9 +47,9 @@ public class EndpointContextMap {
     
     /**
      * register an endpoint under the path
-     * Also sets the {@link ContextConstants.ATTR_PATH} attribute in the endpoint context 
-     * @param path
-     * @param context
+     * Also sets the {@link ContextConstants#ATTR_PATH} attribute in the endpoint context
+     * @param path path to register on the server
+     * @param context the context of the endpoint
      */ 
     public synchronized void register(String path, EndpointContext context) {
         context.put(ContextConstants.ATTR_PATH,path);
@@ -58,7 +58,7 @@ public class EndpointContextMap {
     
     /**
      * unregister a context
-     * @param context
+     * @param context the context of the endpoint
      * @return true iff the context was found and removed
      */ 
     public synchronized boolean unregister(EndpointContext context) {
@@ -71,8 +71,8 @@ public class EndpointContextMap {
 
     /**
      * Unregister a context by path
-     * @param path
-     * @return
+     * @param path path  on the server
+     * @return true if the path was matched to an endpoint
      */ 
     public boolean unregister(String path) {
         if(map.get(path)==null) {

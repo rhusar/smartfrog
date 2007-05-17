@@ -11,7 +11,7 @@ public class ValidationException extends AlpineRuntimeException {
 
 
     /**
-     * {@inheritDoc}
+     * Construct an exception.
      * @param message message
      */
     public ValidationException(String message) {
@@ -19,7 +19,7 @@ public class ValidationException extends AlpineRuntimeException {
     }
 
     /**
-     * {@inheritDoc}
+     * construct an exception.
      * @param message message
      * @param cause underlying cause
      */
@@ -28,7 +28,7 @@ public class ValidationException extends AlpineRuntimeException {
     }
 
     /**
-     * {@inheritDoc}
+     * construct an exception.
      * @param cause underlying cause
      */
     public ValidationException(Throwable cause) {

@@ -48,7 +48,7 @@ public class Soap11Element extends SoapElement {
 
     /**
      * Get the root document as a message document
-     * @return
+     * @return the message document
      */ 
     public MessageDocument getMessageDocument() {
         return (MessageDocument) getDocument();
@@ -56,7 +56,7 @@ public class Soap11Element extends SoapElement {
     
     /**
      * Get the envelope
-     * @return
+     * @return the envelope in the message
      */ 
     public Envelope getEnvelope() {
         return getMessageDocument().getEnvelope();

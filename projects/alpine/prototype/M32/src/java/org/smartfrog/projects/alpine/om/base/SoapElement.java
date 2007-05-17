@@ -121,7 +121,7 @@ public class SoapElement extends Element implements ValidateXml, SoapConstants {
     /**
      * get our attributes
      *
-     * @return
+     * @return an attribute iterator
      */
     public AttributeIterator attributes() {
         return new AttributeIterator(this);
@@ -131,7 +131,7 @@ public class SoapElement extends Element implements ValidateXml, SoapConstants {
     /**
      * Get the child elements
      *
-     * @return
+     * @return an iterator over all child elements
      */
     public BaseElementsIterator<Element> elements() {
         Elements childElements = getChildElements();
@@ -152,7 +152,7 @@ public class SoapElement extends Element implements ValidateXml, SoapConstants {
      * Get the child elements in a given namespace
      *
      * @param namespace name of the elements
-     * @return
+     * @return an iterator over all elements in the namespace
      */
     public BaseElementsIterator<Element> elements(String namespace) {
         return XsdUtils.elements(this,namespace);
@@ -161,7 +161,7 @@ public class SoapElement extends Element implements ValidateXml, SoapConstants {
     /**
      * Get the QName of an element
      *
-     * @return
+     * @return the element's qualified name
      */
     public QName getQName() {
         return XsdUtils.makeQName(this);
@@ -204,7 +204,7 @@ public class SoapElement extends Element implements ValidateXml, SoapConstants {
     /**
      * Test for an element having a full name matching the qname
      *
-     * @param testName
+     * @param testName the name to look for
      * @return true iff local name and namespace URIs match.
      */
     public boolean isNamed(QName testName) {

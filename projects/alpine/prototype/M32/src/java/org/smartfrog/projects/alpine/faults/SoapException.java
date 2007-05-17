@@ -121,7 +121,7 @@ public class SoapException extends AlpineRuntimeException implements SoapFaultSo
 
     /**
      * Get the fault information
-     * @return
+     * @return the nested fault
      */ 
     public Fault getFault() {
         return fault;

@@ -164,7 +164,7 @@ public class MessageContext extends Context {
     /**
      * Create a message with stub header and body elements
      *
-     * @return
+     * @return a template message
      */
     protected Envelope createMessage() {
         Envelope envelope = new Envelope(SoapConstants.ELEMENT_ENVELOPE,
@@ -178,7 +178,7 @@ public class MessageContext extends Context {
     /**
      * Create a new parser
      *
-     * @return
+     * @return a new parser
      * @throws SAXException
      */
     public SoapMessageParser createParser() throws SAXException {
@@ -188,7 +188,7 @@ public class MessageContext extends Context {
     /**
      * Get the fault actor
      *
-     * @return
+     * @return what role this parser is operating in
      */
     public String getRole() {
         return role;

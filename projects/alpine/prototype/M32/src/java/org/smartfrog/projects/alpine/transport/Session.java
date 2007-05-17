@@ -86,7 +86,7 @@ public class Session {
     /**
      * Bind to an address; creates an AddresDetails instance that can be tweaked.
      *
-     * @param epr
+     * @param epr endpoint
      */
     public void bind(AlpineEPR epr) {
         endpoint = epr;
@@ -194,7 +194,7 @@ public class Session {
     /**
      * Create an outbound transmission
      *
-     * @param action, set to null to use the element local name
+     * @param action set to null to use the element local name
      * @param payload the body of the soap message
      * @return a tx bound to the default destination
      */
@@ -241,7 +241,7 @@ public class Session {
 
     /**
      * Override point for things to get their own soapAction
-     * @param request
+     * @param request the request
      * @return the soap action from the QNAme
      */
     public String getSoapAction(QName request) {

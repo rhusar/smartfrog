@@ -38,7 +38,7 @@ public class InstanceHandlerImpl extends AlpineHandlerImpl implements NonRemotab
     /**
      * Get the factory that can provide message handlers
      *
-     * @return
+     * @return a factory
      * @throws org.smartfrog.sfcore.common.SmartFrogException
      *
      */

@@ -99,7 +99,7 @@ public class Fault extends Soap11Element {
 
     /**
      * Get the value of an element if it is not null
-     * @param element
+     * @param element the element to extract value from
      * @return the element value or null for none.
      */ 
     protected String extractValue(Element element) {
@@ -126,8 +126,9 @@ public class Fault extends Soap11Element {
     }
 
     /**
-     * replace the first child of the same qname with this updated version
-     * @param replacement
+     * replace the first child of the same qname with this updated version.
+     * If there is none matching, the element is still appended.
+     * @param replacement the element to replace a child with the same name/namespace
      */ 
     protected void replace(Element replacement) {
         Element old=getFirstChildElement(replacement.getLocalName(),replacement.getNamespaceURI());
@@ -152,7 +153,7 @@ public class Fault extends Soap11Element {
     
     /**
      * Get our current fault detail
-     * @return
+     * @return the fault detail
      */ 
     public SoapElement getFaultDetail() {
         return (SoapElement)getFirstChildElement(FAULT_DETAIL, getNamespaceURI());
@@ -160,7 +161,7 @@ public class Fault extends Soap11Element {
 
     /**
      * replace any existing fault detail with a new one
-     * @param detail
+     * @param detail the new fault detail
      */ 
     public void setFaultDetail(SoapElement detail) {
         if(detail==null) {
@@ -173,15 +174,15 @@ public class Fault extends Soap11Element {
     /**
      * Append information to the fault detail element. 
      * Everything that is there is left alone.
-     * @param node
+     * @param node a node to append to the fault detail
      */ 
     public void appendToFaultDetail(Node node) {
         demandCreateFaultDetail().appendChild(node);
     }
     
     /**
-     * Verify that the #of child elements of that name is <= 0
-     *
+     * Verify that the #of child elements of that name is <= 1
+     * @param elementName the element which must have a size of less than 1
      * @throws InvalidXmlException if needed
      */
     private void validateChildCount(String elementName) {
@@ -248,8 +249,8 @@ public class Fault extends Soap11Element {
     
     /**
      * look up fault detail by qname
-     * @param qname
-     * @return
+     * @param qname child element to look for
+     * @return the first child with that qname
      */ 
     public Element getFirstFaultDetailChild(QName qname) {
         return demandCreateFaultDetail().getFirstChildElement(qname);

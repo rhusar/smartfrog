@@ -60,7 +60,7 @@ public class FaultBridge {
      * <li>Anything that is a SoapFaultSource has its fault extracted into a SoapException</li>
      * <li>anything else is turned into a SoapException</li>
      * @param thrown what went wrong
-     * @return
+     * @return a translated fault
      */ 
     public AlpineRuntimeException translateFault(Throwable thrown) {
         if(thrown instanceof AlpineRuntimeException) {

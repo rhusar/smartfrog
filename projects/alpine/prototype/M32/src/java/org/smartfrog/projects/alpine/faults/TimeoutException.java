@@ -27,7 +27,7 @@ package org.smartfrog.projects.alpine.faults;
 public class TimeoutException extends ClientException {
 
     /**
-     * {@inheritDoc}
+     * Construct an exception.
      * @param message message
      * @param cause underlying cause
      */
@@ -36,7 +36,7 @@ public class TimeoutException extends ClientException {
     }
 
     /**
-     * {@inheritDoc}
+     * Construct an exception.
      * @param cause underlying cause
      */
     public TimeoutException(Throwable cause) {
@@ -44,7 +44,7 @@ public class TimeoutException extends ClientException {
     }
 
     /**
-     * {@inheritDoc}
+     * Construct an exception.
      * @param message message
      */
     public TimeoutException(String message) {
@@ -62,8 +62,8 @@ public class TimeoutException extends ClientException {
     /**
      * Create one from a concurrent timeout
      *
-     * @param timeout
-     * @return
+     * @param timeout concurrent exception
+     * @return a new instance with the message propagating
      */
     public static TimeoutException fromConcurrentTimeout(java.util.concurrent.TimeoutException timeout) {
         return new TimeoutException(timeout.getMessage());

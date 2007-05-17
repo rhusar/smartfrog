@@ -266,7 +266,6 @@ public class AddressDetails implements Validatable, AddressingConstants {
     /**
      * validate everything, including that the To: address is there
      *
-     * @return
      * @throws ValidationException
      */
     public void checkToIsValid() throws ValidationException {
@@ -280,7 +279,8 @@ public class AddressDetails implements Validatable, AddressingConstants {
      * read everything from the document. After this is done, the extracted elements are
      * copied; they are not live. Changes in the values are not reflected in the message contents
      *
-     * @param message
+     * @param message message to read
+     * @param namespace namespace to expect
      * @return true if a wsa:To element in that xmlns was found.
      */
     public boolean read(MessageDocument message, String namespace) {
@@ -437,7 +437,7 @@ public class AddressDetails implements Validatable, AddressingConstants {
     /**
      * Get the destination address
      *
-     * @return
+     * @return the destination
      */
     public String getDestination() {
         if (to == null) {

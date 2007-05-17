@@ -75,7 +75,7 @@ public class MessageDocument extends Document implements ValidateXml {
     /**
      * Get the address details. This will demand create it if needed.
      *
-     * @return
+     * @return the address details
      */
     public AddressDetails getAddressDetails() {
         if (addressDetails == null) {
@@ -92,7 +92,7 @@ public class MessageDocument extends Document implements ValidateXml {
     /**
      * add a new attachment
      *
-     * @param attachment
+     * @param attachment the attachment
      */
     public void addAttachment(Attachment attachment) {
         getAttachments().add(attachment);
@@ -126,7 +126,7 @@ public class MessageDocument extends Document implements ValidateXml {
     /**
      * Get the body. Fails horribly if there is no envelope/body
      *
-     * @return
+     * @return the envelope body
      */
     public Body getBody() {
         return getEnvelope().getBody();
@@ -147,7 +147,7 @@ public class MessageDocument extends Document implements ValidateXml {
      * Are we a fault.
      * precondition: body!=null;
      *
-     * @return
+     * @return true if there is a fault in the body
      */
     public boolean isFault() {
         Body body = getBody();
@@ -200,8 +200,7 @@ public class MessageDocument extends Document implements ValidateXml {
     }
 
     /**
-     * <p/>
-     * Returns a complete copy of this document. </p>
+     * Returns a complete copy of this document. 
      *
      * @return a deep copy of this <code>Document</code> object
      */

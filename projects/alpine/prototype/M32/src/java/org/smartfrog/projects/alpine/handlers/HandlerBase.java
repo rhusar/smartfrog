@@ -47,7 +47,7 @@ public abstract class HandlerBase implements MessageHandler {
     /**
      * Get the context
      *
-     * @return
+     * @return the current context
      */
     protected Context getContext() {
         return context;
