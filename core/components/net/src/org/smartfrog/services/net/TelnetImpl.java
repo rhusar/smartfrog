@@ -48,7 +48,7 @@ import org.smartfrog.sfcore.logging.LogSF;
  * It uses apache commons net libraries 
  * @author Ashish Awasthi
  */ 
-public class TelnetImpl extends PrimImpl implements Telnet, 
+public class TelnetImpl extends PrimImpl implements Telnet,
                                                 TelnetNotificationHandler {
 
     private final int DEFAULT_TIMEOUT = 30000;
@@ -272,7 +272,7 @@ public class TelnetImpl extends PrimImpl implements Telnet,
         }
    }
     /**
-     * Helper method. waits for a string with timeout
+     * Waits for a string with timeout.
      * @param is Input Stream which is searched
      * @param end String to search
      * @param timeout Timeout 

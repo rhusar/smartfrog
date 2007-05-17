@@ -67,7 +67,7 @@ public class UserInfoImpl implements UserInfo {
 
     /**
      * prompt for a string
-     * @returns false always
+     * @return false always
      */
     public boolean prompt(String str) {
         return false;
@@ -75,7 +75,7 @@ public class UserInfoImpl implements UserInfo {
 
     /**
      * Retry
-     * @returns false always
+     * @return false always
      */
     public boolean retry() {
         return false;
