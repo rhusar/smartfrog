@@ -1192,6 +1192,12 @@ java.class.path=
       description="create the JAR files">
   </target>
 
+  <!--unzip the the target JAR-->
+  <target name="unzip-target" depends="packaged">
+    <property name="target.exploded" location="${build.dir}/exploded" />
+    <unzip src="${target.jar}" dest="${target.exploded}"/>
+  </target>
+
   <!-- ========================================================== -->
   <!-- this is an override point -->
   <!-- create the test jar ${test.jar}-->
@@ -1208,7 +1214,7 @@ java.class.path=
   <!-- this is an override point -->
   <!-- everything for distribution -->
   <!-- ========================================================== -->
-  <target name="dist" depends="package"
+  <target name="dist" depends="packaged"
     description="create a distribution">
   </target>
 
@@ -1654,10 +1660,12 @@ ${ivy.reports.dir}
       description="Publish artifacts to the local repositories"
       />
 
-  <target name="installed" depends="published"
+  <target name="installed" depends="published,install"
     description="Place the system in a state in which the components are installed for reuse" />
+
+  <target name="published-distribution" depends="dist,published"
+      description="create a distribution and publish all artifacts with Ivy"/>
   
-  
-</project>   
+</project>
 
 

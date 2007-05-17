@@ -627,6 +627,10 @@
   <!-- =================================================================== -->
   <!--  DIST                                                               -->
   <!-- =================================================================== -->
+
+  <target name="published-distribution" depends="dist"
+      description="create a distribution and publish all artifacts with Ivy"/>
+
   <target name="dist"
       depends="ready-to-dist,published"
       description="Prepares distribution package,and publishes it the local repository">
@@ -671,7 +675,7 @@
   <!-- =================================================================== -->
   <!-- a clean distribution                                               -->
   <!-- =================================================================== -->
-  <target name="fromclean" depends="clean,sfParseTest,dist"/>
+  <target name="fromclean" depends="clean,test,dist"/>
 
   <!-- =================================================================== -->
   <!-- sfParse parsertargets                                                -->
@@ -691,14 +695,24 @@
       <arg file="parsertargets"/>
     </java>
   </target>
+
+
+  <target name="test" depends="sfParseTest"
+      description="run all tests"/>
+
+  <target name="tested" depends="test"
+      description="enter the tested state"/>
+
   <!-- =================================================================== -->
   <!-- do everything -->
   <!-- =================================================================== -->
-  <target name="all" depends="dist,sfParseTest"
+  <target name="all" depends="dist,test"
       description="creates all the packages required to run smartfrog, and validate any .sf in the package">
   </target>
 
   <target name="default" depends="all" description="default target for the project; invokes 'all'"/>
+
+  <target name="installed" depends="dist" description="install everything ready to run"/>
 
 
 
