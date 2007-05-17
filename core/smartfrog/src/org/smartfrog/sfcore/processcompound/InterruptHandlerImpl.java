@@ -44,7 +44,7 @@ import java.rmi.RemoteException;
  * This is not portable to Non-Sun runtimes (like gcj), because it extends
  * a sun.misc method.
  */
-class InterruptHandlerImpl implements SignalHandler,InterruptHandler {
+public class InterruptHandlerImpl implements SignalHandler,InterruptHandler {
 
     /**
      * The old handler. Nothing is done with this this
