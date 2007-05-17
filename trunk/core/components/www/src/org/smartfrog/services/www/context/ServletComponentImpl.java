@@ -78,7 +78,7 @@ public class ServletComponentImpl extends ServletContextComponentImpl
      *
      * @throws SmartFrogLivenessException component is terminated
      * @throws RemoteException            for consistency with the {@link
-     *                                    org.smartfrog.sfcore.common.Liveness} interface
+     *                                    org.smartfrog.sfcore.prim.Liveness} interface
      */
     public void sfPing(Object source)
             throws SmartFrogLivenessException, RemoteException {

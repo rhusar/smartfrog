@@ -61,8 +61,7 @@ import java.io.File;
 import java.io.IOException;
 
 /**
- * Sound player based on code extracted from Ant's <sound> task. created
- * 13-Oct-2005 11:28:31
+ * Sound player based on code extracted from Ant's <sound> task.
  */
 
 public class SoundPlayerImpl extends FileUsingComponentImpl
