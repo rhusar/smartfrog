@@ -262,7 +262,6 @@ public class MBeanDeployer extends CompoundImpl implements Compound, MBeanDeploy
      * to the remote ConnectorServer.
      *
      * @param address
-     * @return
      * @throws AgentNotFoundException
      */
     public void findMBeanServer(Object address) throws RemoteException, AgentNotFoundException {

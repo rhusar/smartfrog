@@ -83,7 +83,7 @@ public interface MBeanDeployer_StubMBean extends Remote {
      * parameter.
      *
      * @param prim
-     * @return
+     * @return the registration info
      * @throws RemoteException
      * @throws Exception
      */
