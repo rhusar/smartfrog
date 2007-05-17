@@ -246,7 +246,8 @@ public class RequestHandler extends HttpServlet
 	}
 
 	/**
-	 * Performs an HTTP PUT request on the resource specified by the URI. Default behaviour is
+	 * Performs an HTTP PUT request on the resource specified by the URI.
+     * Default behaviour is
 	 * to parse the incoming contents as a {@link ComponentDescription}, {@link Reference} or boxed
 	 * primitive object (that is, Integer, Boolean et cetera) and then act accordingly (that is,
 	 * store as an attribute or deploy as a component). PUT requests may over-write existing attributes
