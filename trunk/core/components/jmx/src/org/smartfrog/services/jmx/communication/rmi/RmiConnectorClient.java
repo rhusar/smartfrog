@@ -65,7 +65,7 @@ public class RmiConnectorClient implements ConnectorClient {
     /**
      * Returns a String representation of this ConnectorClient
      *
-     * @return
+     * @return  String
      */
     public String toString() {
         if (rmiServerAddress != null) {

@@ -114,7 +114,7 @@ public class MBeanDeployer extends CompoundImpl implements Compound, MBeanDeploy
     /**
      *  Indicates if the found MBeanServer is Remote
      *
-     *@return
+     *@return  bolean is a remote server?
      *@throws  RemoteException
      */
     public boolean isServerRemote() throws RemoteException {
@@ -178,7 +178,7 @@ public class MBeanDeployer extends CompoundImpl implements Compound, MBeanDeploy
      *  throw a exception. If the server is local no RemoteStub is required.
      *
      *@param  managedResource
-     *@return
+     *@return  Object RemoteStub is it exists
      *@exception  RemoteException  Description of the Exception
      *@throws  Exception           the MBeanServer is remote but the RemoteStub
      *      of the managed resource could not be found
@@ -198,7 +198,7 @@ public class MBeanDeployer extends CompoundImpl implements Compound, MBeanDeploy
     /**
      *  Returns the ConnectorClient of this component
      *
-     *@return
+     *@return   ConnectorClient or null
      *@exception  Exception     Description of the Exception
      *@throws  RemoteException
      */
@@ -529,7 +529,7 @@ public class MBeanDeployer extends CompoundImpl implements Compound, MBeanDeploy
      *
      *@param  mbeanContext
      *@param  managedResource  Description of the Parameter
-     *@return
+     *@return  ObjectName
      *@throws  Exception
      */
     public ObjectName getObjectNameFrom(Context mbeanContext, Object managedResource) throws Exception {

@@ -268,10 +268,10 @@ public class OperationPanel extends JPanel implements ListSelectionListener, Act
      *  TODO
      *
      *@param  evnt
-     *@resource     MSG_DONE Done.
-     *@resource     MSG_ABORTED Aborted.
-     *@resource     MSG_RESULT Result = {0}.
-     *@resource     MSG_EXCEPTION Exception = {0}.
+     *     MSG_DONE Done.
+     *     MSG_ABORTED Aborted.
+     *     MSG_RESULT Result = {0}.
+     *     MSG_EXCEPTION Exception = {0}.
      */
     public void actionPerformed(ActionEvent evnt) {
         TableCellEditor tce;

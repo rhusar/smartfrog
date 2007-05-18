@@ -42,7 +42,7 @@ public interface DeploymentAnalyzer_StubMBean extends Remote {
      *  Returns the absolute path of the component from which the deployment
      *  tree will be visualized
      *
-     *@return
+     *@return  String representing path
      *@throws  RemoteException
      *@throws  Exception
      */

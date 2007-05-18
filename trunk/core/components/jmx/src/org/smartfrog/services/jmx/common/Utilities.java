@@ -210,7 +210,7 @@ public class Utilities {
      *
      *@param  type
      *@param  value
-     *@return
+     *@return  Object object instance
      */
     public static Object objectFromString(String type, Object value) {
         if (value == null) {

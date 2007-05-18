@@ -164,7 +164,7 @@ public class MetadataParser {
 
     /**
      *
-     * @return
+     * @return   Enumeration Method metadata
      */
     public Enumeration getMethodMetadata() {
         if (methods == null) {
