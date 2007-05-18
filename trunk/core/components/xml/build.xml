@@ -70,8 +70,15 @@
     </echo>
   </target>
 
+  <target name="define-java15-patternsets" depends="check-versions">
+    <patternset id="source.patternset">
+      <include name="**/*.java"/>
+      <exclude name="**/NuxBinaryCodec.java" unless="nux.found"/>
+      <exclude name="**/java5/**/*.java" unless="java1.5+"/>
+    </patternset>
+  </target>
 
-  <target name="ready-to-compile" depends="pre-compile,javac.version"/>
+  <target name="ready-to-compile" depends="pre-compile,javac.version,define-java15-patternsets"/>
 
   <!-- ========================================================== -->
   <!-- this is an override
@@ -90,13 +97,36 @@
         target="${javac.version}"
         destdir="${build.classes.dir}"
         >
-      <include name="**/*.java"/>
-      <exclude name="**/NuxBinaryCodec.java" unless="nux.found"/>
-      <exclude name="**/java5/**/*.java" unless="java1.5+"/>
+          <patternset refid="source.patternset" />
     </sf-javac>
     <copy-useful-files src="${src.dir}" dest="${build.classes.dir}"/>
   </target>
 
+  <target name="javadoc"
+      depends="ready-to-javadoc"
+      unless="javadoc.disabled"
+      >
+    <!--  Java Docs for all  -->
+    <echo>
+      Creating Java Docs for ${javadoc.header} into
+      [${dist.jdocs.dir}]
+      (language level=${javac.java.version})
+    </echo>
+    <fail unless="dist.jdocs.dir">
+      We are not properly initialized, as dist.jdocs.dir is undefined.
+    </fail>
+    <mkdir dir="${dist.jdocs.dir}"/>
+    <sf-javadoc
+        destdir="${dist.jdocs.dir}"
+        classpathref="compile.classpath"
+        source="${javac.version}"
+        >
+        <fileset  dir="${src.dir}">
+          <patternset refid="source.patternset" />
+        </fileset>
+      <group title="SmartFrog Packages" packages="org.smartfrog.*"/>
+    </sf-javadoc>
+  </target>
 
   <!-- ========================================================== -->
   <!-- parse the file -->
