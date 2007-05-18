@@ -76,7 +76,7 @@ public abstract class DelegateApplicationContext
     /**
      * set the context
      *
-     * @param context
+     * @param context the jetty context
      */
     public void setContext(HttpContext context) {
         this.context = context;
@@ -129,7 +129,7 @@ public abstract class DelegateApplicationContext
     /**
      * undeploy a context.
      * If the server is already stopped, this the
-     * undeployment is skipped without an error. The {@link DelegateApplicationContext#context} field is
+     * undeployment is skipped without an error. The context field is
      * set to null, to tell the system to skip this in future.
      *
      * @throws java.rmi.RemoteException
