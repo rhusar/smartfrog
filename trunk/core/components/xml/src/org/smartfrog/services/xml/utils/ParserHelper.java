@@ -114,7 +114,8 @@ public final class ParserHelper implements XmlConstants {
     }
 
     /**
-     * create a parser. look first for xerces, then for the sun version
+     * create a parser.
+     * Look first for xerces, then for the sun version
      *
      * @return a copy of Xerces or other parsser
      * @throws SAXException if no implementation could be loaded
@@ -131,8 +132,8 @@ public final class ParserHelper implements XmlConstants {
     }
 
     /**
-     * set a feature on a parser, log any failure but continue This helps us to
-     * get past variants in xerces version on the classpath
+     * set a feature on a parser, log any failure but continue.
+     * This helps us to get past variants in xerces version on the classpath
      *
      * @param parser parser instance
      * @param name   feature name
