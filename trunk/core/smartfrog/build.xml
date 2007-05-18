@@ -15,11 +15,11 @@
   For more information: www.smartfrog.org
   */
 -->
-<project name="SmartFrog" default="all" basedir="." xmlns:ivy="antlib:fr.jayasoft.ivy.ant">
+<project name="kernel" default="all" basedir="." xmlns:ivy="antlib:fr.jayasoft.ivy.ant">
   <description>
     Introduction
     ============
-    The build script for SmartFrog framework.
+    The build script for the kernel SmartFrog framework.
     It requires
       -Java1.4 or later. Java 1.5 is recommended
       -Ant 1.7 or later

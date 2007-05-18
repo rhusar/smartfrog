@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<project name="Release" default="process" basedir=".">
+<project name="kernel-release" default="process" basedir=".">
   <!--
   /** (C) Copyright 1998-2007 Hewlett-Packard Development Company, LP
 
