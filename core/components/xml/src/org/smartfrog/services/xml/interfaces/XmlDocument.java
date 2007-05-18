@@ -93,7 +93,8 @@ public interface XmlDocument extends XmlNode, FileUsingComponent {
     SerializedXomDocument getXomDocument() throws RemoteException;
 
     /**
-     * set a new Xom document. After this point, the doc graph will diverge
+     * set a new Xom document.
+     * After this point, the doc graph will diverge
      * from that of (any components) used to describe it
      * @param document document to pass in
      * @throws RemoteException In case of network/rmi error

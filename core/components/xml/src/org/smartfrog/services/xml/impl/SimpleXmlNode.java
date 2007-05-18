@@ -77,7 +77,8 @@ public abstract class SimpleXmlNode extends PrimImpl implements XmlNode,
     }
 
     /**
-     * Get the node underneath. Will be null until the node is created.
+     * Get the node underneath.
+     * Will be null until the node is created.
      *
      * @return the node or null
      */
