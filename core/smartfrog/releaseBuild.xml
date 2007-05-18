@@ -54,7 +54,7 @@ These are the meaningful targets for this build file:
  - signJars
 -->
 
-<project  name="SmartFrogDist" default="help" basedir=".">
+<project  name="kernel-dist" default="help" basedir=".">
   <!-- =================================================================== -->
   <!-- Initialization target                                               -->
   <!-- =================================================================== -->
