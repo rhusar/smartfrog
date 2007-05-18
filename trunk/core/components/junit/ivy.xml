@@ -60,11 +60,5 @@
         name="junit"
         rev="${junit.version}"
         conf="compile->master;redist->default"/>
-<!--
-    <dependency org="testng"
-        name="testng"
-        rev="${testng.version}"
-        conf="compile->master;runtime->default"/>
--->
   </dependencies>
 </ivy-module>
