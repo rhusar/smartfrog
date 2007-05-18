@@ -141,7 +141,7 @@ public class PropertyTableModel extends AbstractTableModel {
      *  TODO JavaDoc method getColumnName
      *
      *@param  columnIndex
-     *@return
+     *@return String Column Name (Attribute, Value, Type, ?)
      */
     public String getColumnName(int columnIndex) {
         switch (columnIndex) {
@@ -256,7 +256,7 @@ public class PropertyTableModel extends AbstractTableModel {
      *
      *@param  row
      *@param  col
-     *@return
+     *@return true/false
      */
     public boolean isCellEditable(int row, int col) {
         switch (col) {
@@ -390,7 +390,7 @@ public class PropertyTableModel extends AbstractTableModel {
          *
          *@param  o1
          *@param  o2
-         *@return
+         *@return int
          */
         public int compare(Object o1, Object o2) {
             MBeanAttributeInfo a1 = (MBeanAttributeInfo) o1;

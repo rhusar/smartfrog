@@ -96,7 +96,7 @@ public class SFPropertyTableModel extends AbstractTableModel {
      *  TODO JavaDoc method getColumnName
      *
      *@param  columnIndex
-     *@return
+     *@return String Column Name (Attribute, Value, Type, ?)
      */
     public String getColumnName(int columnIndex) {
         switch (columnIndex) {
@@ -209,7 +209,7 @@ public class SFPropertyTableModel extends AbstractTableModel {
      *
      *@param  row
      *@param  col
-     *@return
+     *@return boolean
      */
     public boolean isCellEditable(int row, int col) {
         switch (col) {

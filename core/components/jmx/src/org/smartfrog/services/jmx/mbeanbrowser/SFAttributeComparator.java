@@ -39,7 +39,7 @@ public class SFAttributeComparator implements Comparator {
      *
      *@param  o1
      *@param  o2
-     *@return
+     *@return int
      */
     public int compare(Object o1, Object o2) {
         SFAttribute a1 = (SFAttribute) o1;

@@ -151,7 +151,7 @@ public class QueryPanel extends JPanel implements ListSelectionListener, ActionL
     /**
      *  TODO
      *
-     *@return
+     *@return  Object Name
      */
     public ObjectName getMBean() {
         ObjectName name = null;

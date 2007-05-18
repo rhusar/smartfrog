@@ -96,7 +96,7 @@ public interface MBeanDeployer_StubMBean extends Remote {
      * to the remote ConnectorServer.
      *
      * @param address
-     * @return
+     * @return ObjectName
      * @throws AgentNotFoundException
      */
     public void findMBeanServer(Object address) throws RemoteException, AgentNotFoundException;

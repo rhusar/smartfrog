@@ -52,7 +52,7 @@ public class OperationListElement {
     /**
      *  TODO
      *
-     *@return
+     *@return MBeanOperationInfo
      */
     public MBeanOperationInfo getOperationInfo() {
         return (m_operationInfo);
@@ -80,7 +80,7 @@ public class OperationListElement {
     /**
      *  TODO
      *
-     *@return
+     *@return  String
      */
     public String toString() {
         return (m_operationInfo.getName());

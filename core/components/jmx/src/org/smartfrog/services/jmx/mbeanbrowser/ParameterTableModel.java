@@ -132,7 +132,7 @@ public class ParameterTableModel extends AbstractTableModel {
      *  TODO JavaDoc method getColumnName
      *
      *@param  columnIndex
-     *@return
+     *@return String Column Name (Type, Parameter, Value, ?)
      */
     public String getColumnName(int columnIndex) {
         switch (columnIndex) {
@@ -171,7 +171,7 @@ public class ParameterTableModel extends AbstractTableModel {
      *
      *@param  row
      *@param  col
-     *@return
+     *@return boolean true/false
      */
     public boolean isCellEditable(int row, int col) {
         switch (col) {
