@@ -507,9 +507,12 @@ java.class.path=
           depends="ready-to-javadoc"
           unless="javadoc.disabled"
           >
-    <!--  Java Docs for all                                                -->
-    <echo message=""/>
-    <echo message="------ Creating Java Docs for ${javadoc.header} [${dist.jdocs.dir}]---------------"/>
+    <!--  Java Docs for all  -->
+    <echo>
+    Creating Java Docs for ${javadoc.header} into
+    [${dist.jdocs.dir}]
+    (language level=${javac.java.version})
+    </echo>
     <fail unless="dist.jdocs.dir">
       We are not properly initialized, as dist.jdocs.dir is undefined.
     </fail>
