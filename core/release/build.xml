@@ -34,6 +34,9 @@
 
   <target name="init" depends="common.init">
     <property name="izpack.jar" location="${dist.bin.dir}/smartfrog-install-${smartfrog.version}.jar"/>
+    <property name="build.rpm.dir" location="${build.dir}/rpm" />
+    <property name="dist.rpm.dir" location="${dist.dir}/rpm" />
+    <property name="target.rpm" location="${dist.rpm.dir}/smartfrog-${smartfrog.version}.rpm" />
   </target>
 
   <target name="default" depends="published"/>
@@ -162,4 +165,19 @@
       <env key="SFHOME" value="${build.install.dir}"/>
     </exec>
   </target>
+
+  <target name="ready-to-rpm" depends="ivy-retrieve,copy-rpm-specs">
+
+  </target>
+
+  <target name="copy-rpm-specs" depends="init">
+    <mkdir dir="${build.rpm.dir}" />
+    <copy todir="${build.rpm.dir}" overwrite="true">
+      <fileset file="metadata/rpm" includes="**/*.spec"/>
+      <filterchain>
+        <expandproperties/>
+      </filterchain>
+    </copy>
+  </target>
+
 </project>
