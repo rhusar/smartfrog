@@ -32,9 +32,9 @@
       <version>${servletapi.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.mortbay.jetty</groupId>
-      <artifactId>jetty</artifactId>
-      <version>${jetty.version}</version>
+      <groupId>org.codehaus.cargo</groupId>
+      <artifactId>cargo-core-uberjar</artifactId>
+      <version>${cargo.version}</version>
     </dependency>
   </dependencies>
 </project>
