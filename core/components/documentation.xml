@@ -55,16 +55,11 @@ For more information: www.smartfrog.org
   the environment variable FORREST_HOME set up to point to it, or
   the property forrest.home set in ${root.dir}/build.properties
   </fail>
-<!--
+  
   <import file="${root.dir}/common.xml"/>
 	<import file="${env.FORREST_HOME}/main/forrest.build.xml"/>
 	<import file="${env.FORREST_HOME}/main/forrest.antproxy.xml"/>
-	-->
 
-  <import file="../common.xml"/>
-  <import file="../../../../../Java/Apache/apache-forrest-0.8/main/forrest.build.xml"/>
-
-	<import file="../../../../../Java/Apache/apache-forrest-0.8/main/forrest.antproxy.xml"/>
 
   <!-- this is here to fix a loop when you pull in forrest into a common.xml project-->
   <target name="init-proxy" />
