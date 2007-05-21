@@ -167,7 +167,7 @@ Maven2Library extends Library {
 
     policy extends Maven2Policy;
 
-    /**
+    /** 
      * local policy is maven2
      */
     localCachePolicy policy;
@@ -208,11 +208,6 @@ Maven2Library extends Library {
  * locally but which are not in cache
  */
 IvyLibrary extends Library {
-    /**
-     * Maven file policy
-     */
-
-    policy
 
     /**
      * local policy is maven2
