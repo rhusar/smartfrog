@@ -6,10 +6,10 @@
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.smartfrog</groupId>
-  <artifactId>sf-jetty</artifactId>
+  <artifactId>sf-cargo</artifactId>
   <packaging>jar</packaging>
   <version>${smartfrog.version}</version>
-  <description></description>
+  <description>SmartFrog Cargo components</description>
   <dependencies>
     <dependency>
       <groupId>org.smartfrog</groupId>
@@ -19,6 +19,11 @@
     <dependency>
       <groupId>org.smartfrog</groupId>
       <artifactId>sf-www</artifactId>
+      <version>${smartfrog.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.smartfrog</groupId>
+      <artifactId>sf-ant</artifactId>
       <version>${smartfrog.version}</version>
     </dependency>
     <dependency>

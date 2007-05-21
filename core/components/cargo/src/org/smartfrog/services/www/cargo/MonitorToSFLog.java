@@ -19,13 +19,14 @@
  */
 package org.smartfrog.services.www.cargo;
 
-import org.codehaus.cargo.util.log.Logger;
+import org.codehaus.cargo.util.log.*;
 import org.smartfrog.sfcore.logging.Log;
 
 
 /**
- * Monitor messages from the container to the SmartFrog log
- * In 0.7, this was a subclass of a monitor thing, but now it uses logger.
+ * Monitor messages from the container to the SmartFrog log In 0.7, this was a subclass of a monitor thing, but now it
+ * uses logger. Cargo 0.9 added the setleve/getlevel info. we discard the setlevel info and generate a level based on
+ * the smartfrog log information
  */
 class MonitorToSFLog implements Logger {
 
@@ -45,5 +46,20 @@ class MonitorToSFLog implements Logger {
 
     public void debug(String string, String category) {
         log.debug(category + ":" + string);
+    }
+    //CARGO-09
+    public void setLevel(LogLevel logLevel) {
+
+    }
+
+
+    public LogLevel getLevel() {
+        if (log.isDebugEnabled()) {
+            return LogLevel.DEBUG;
+        }
+        if (log.isInfoEnabled()) {
+            return LogLevel.INFO;
+        }
+        return LogLevel.WARN;
     }
 }
