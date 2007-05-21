@@ -45,7 +45,7 @@
         name="sf-www"
         changing="true"
         rev="latest.integration"
-        conf="compile->default;runtime->default;systemtest->default"/>
+        conf="compile->default;runtime->default"/>
     <dependency org="org.smartfrog"
         name="sf-tasks"
         changing="true"
