@@ -45,6 +45,7 @@ import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.utils.ComponentHelper;
 
 import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.rmi.RemoteException;
@@ -236,7 +237,12 @@ public class CargoServerImpl extends PrimImpl implements CargoServer, Runnable {
             setConfigurationProperty(ServletPropertySet.PORT, Integer.toString(port));
         }
 
-        configuration.setProperty("home",homedir.getAbsolutePath());
+        try {
+            configuration.setProperty("home",homedir.getCanonicalPath());
+        } catch (IOException e) {
+            throw new SmartFrogDeploymentException("Failed to create a canonical path from "+homedir);
+
+        }
 
         container = (LocalContainer) construct(containerClassname,
                 LocalConfiguration.class,
@@ -252,7 +258,9 @@ public class CargoServerImpl extends PrimImpl implements CargoServer, Runnable {
         } else if (container instanceof InstalledLocalContainer) {
             //set the home stuff
             installed = (InstalledLocalContainer) container;
-            installed.setHome(homedir);
+            //installed.setHome(homedir);
+            //CARGO-09
+            installed.setHome(homedir.getAbsolutePath());
         }
 
         //monitoring relays to smartfrog
@@ -359,8 +367,13 @@ public class CargoServerImpl extends PrimImpl implements CargoServer, Runnable {
      */
     private LocalConfiguration createLocalConfiguration(String name,File dir) throws SmartFrogException,
             RemoteException {
+/*
         Class argclass = File.class;
         Object arg = dir;
+        Object instance = construct(name, argclass, arg);
+*/
+        Class argclass = String.class;
+        Object arg = dir.getAbsolutePath();
         Object instance = construct(name, argclass, arg);
         return (LocalConfiguration) instance;
     }

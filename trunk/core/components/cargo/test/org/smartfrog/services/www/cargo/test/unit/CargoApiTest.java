@@ -39,13 +39,13 @@ import java.io.File;
  */
 
 public class CargoApiTest extends TestCase {
-    private File dir;
+    private String dir;
 
     private static boolean instantiate = false;
 
     protected void setUp() throws Exception {
         super.setUp();
-        dir = new File(".");
+        dir = new File(".").getAbsolutePath();
     }
 
     public void testJBoss3() throws Exception {
