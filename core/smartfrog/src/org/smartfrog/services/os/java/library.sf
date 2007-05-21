@@ -151,7 +151,10 @@ Maven1Library extends Library {
 
 }
 
-LibraryRepositories {
+/**
+ * A non-deploying list of repositories
+ */
+LibraryRepositories extends NULL {
    Maven1_at_Ibiblio  "http://mirrors.ibiblio.org/pub/mirrors/maven" ;
    Maven2_at_Ibiblio  "http://mirrors.ibiblio.org/pub/mirrors/maven2" ;
 }
