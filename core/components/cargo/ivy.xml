@@ -45,7 +45,7 @@
         name="sf-www"
         changing="true"
         rev="latest.integration"
-        conf="compile,runtime,daemon,systemtest->default"/>
+        conf="compile,runtime,daemon,test->default"/>
     <dependency org="org.smartfrog"
         name="sf-tasks"
         changing="true"
@@ -73,6 +73,30 @@
       <exclude org="xml-apis"/>
     </dependency>
     <dependency org="org.codehaus.cargo"
+        name="cargo-core-api-container"
+        rev="${cargo.version}"
+        conf="compile->default;redist->default">
+      <exclude org="ant"/>
+      <exclude org="xalan"/>
+      <exclude org="xerces"/>
+      <exclude org="xml-apis"/>
+    </dependency>
+    <dependency org="org.codehaus.cargo"
+        name="cargo-core-api-module"
+        rev="${cargo.version}"
+        conf="compile->default;redist->default">
+      <exclude org="ant"/>
+      <exclude org="xalan"/>
+      <exclude org="xerces"/>
+      <exclude org="xml-apis"/>
+    </dependency>
+    <dependency org="org.codehaus.cargo"
+        name="cargo-core-api-util"
+        rev="${cargo.version}"
+        conf="compile->default;redist->default">
+      <exclude org="ant"/>
+    </dependency>
+    <dependency org="org.codehaus.cargo"
         name="cargo-core-container-geronimo"
         rev="${cargo.version}"
         conf="redist->default"/>
@@ -92,5 +116,10 @@
         name="cargo-core-container-weblogic"
         rev="${cargo.version}"
         conf="redist->default"/>
+    <!--Jetty is needed for testing-->
+    <dependency org="org.mortbay.jetty"
+        name="jetty"
+        rev="${jetty.version}"
+        conf="test->default"/>
   </dependencies>
 </ivy-module>
