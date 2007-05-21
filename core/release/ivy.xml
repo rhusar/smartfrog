@@ -87,7 +87,7 @@
     <dependency org="org.smartfrog"
         name="sf-tasks" changing="true"
         rev="latest.integration"
-        conf="sfjars->master;redist->redist;package-core->master"/>
+        conf="redist->redist;package-core->master"/>
 
     <dependency org="org.smartfrog"
         name="sf-antbuild" changing="true"
