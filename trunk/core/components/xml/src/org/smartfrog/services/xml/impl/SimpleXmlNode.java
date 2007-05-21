@@ -136,7 +136,8 @@ public abstract class SimpleXmlNode extends PrimImpl implements XmlNode,
     }
 
     /**
-     * Equality test. uses XML logic to compare
+     * Equality test.
+     * Uses XML logic to compare
      * @param o other instance to compare against
      * @return true if there is a match
      */

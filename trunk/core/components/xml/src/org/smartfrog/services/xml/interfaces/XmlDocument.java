@@ -64,7 +64,8 @@ public interface XmlDocument extends XmlNode, FileUsingComponent {
     static final String ATTR_ENCODING = "encoding";
 
     /**
-     * root node must be a Document Node. root extends Compulsory
+     * root node must be a Document Node.
+     * Root extends Compulsory
      */
     static final String ATTR_ROOT = "root";
 
