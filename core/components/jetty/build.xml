@@ -139,7 +139,8 @@ For more information: www.smartfrog.org
       if="system.tests.enabled">
     <sf-functionaltest testTimeout="600" shutdownTime="10">
       <application>
-        <sf-startdaemon-debug failonerror="false" spawn="false"/>
+        <sf-startdaemon-debug failonerror="false" spawn="false"
+            classpathref="tests.run.classpath"/>
       </application>
       <probe>
         <socket port="${smartfrog.daemon.port}" server="localhost"/>
