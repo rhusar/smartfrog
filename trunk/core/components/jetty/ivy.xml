@@ -59,5 +59,11 @@
         name="jetty"
         rev="${jetty.version}"
         conf="compile->default;redist->default"/>
+    <!--testharness for test time-->
+    <dependency org="org.smartfrog"
+        name="sf-testharness"
+        changing="true"
+        rev="latest.integration"
+        conf="test->default"/>
   </dependencies>
 </ivy-module>
