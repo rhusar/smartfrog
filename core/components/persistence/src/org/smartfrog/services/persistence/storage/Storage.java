@@ -89,7 +89,6 @@ public abstract class Storage implements Serializable {
      * If the configData has null value then the NullStorageImpl 
      * implementation will be used.
      *
-     * @param className String
      * @param configData ComponentDescription
      * @return Vector
      * @throws StorageException
@@ -196,7 +195,6 @@ public abstract class Storage implements Serializable {
      * stroage description it will create a NullStorageImpl implementation of the 
      * storage.
      *
-     * @param className String
      * @param configData ComponentDescription
      * @return Storage
      * @throws StorageException
@@ -252,8 +250,8 @@ public abstract class Storage implements Serializable {
 
 
     /**
-     * Constructs the storage implementation specified in the context. this
-     * version uses the constructor that expects to create a new persisted
+     * Constructs the storage implementation specified in the context.
+     * This version uses the constructor that expects to create a new persisted
      * component storage. If the context does not include the storage description or
      * it includes a null value in place of for the stroage description it
      * will create a NullStorageImpl implementation of the storage.
@@ -300,14 +298,13 @@ public abstract class Storage implements Serializable {
 
 
     /**
-     * Constructs the storage implementation specified by name and config. this
-     * version uses the constructor that expects to create a new persisted
+     * Constructs the storage implementation specified by name and config.
+     * This version uses the constructor that expects to create a new persisted
      * component storage. If the configData parameter is a null value in place of for the 
      * stroage description it will create a NullStorageImpl implementation of the 
      * storage.
      *
      * @param context Context
-     * @return Storage
      * @throws SmartFrogDeploymentException
      */
     public static Storage createNewStorage(ComponentDescription configData) throws
@@ -388,7 +385,7 @@ public abstract class Storage implements Serializable {
     
     /**
      * Deregisters the storage description from a recovery register if one is defined.
-     * The reoveryRegister is defined if the description contains it as an attribute.
+     * The recoveryRegister is defined if the description contains it as an attribute.
      * 
      * @param config - the storage description
      * @throws StorageException - failed to deregister
@@ -415,10 +412,11 @@ public abstract class Storage implements Serializable {
     
     
     /**
-     * Tests to see if the object is a storage component description. The object
+     * Tests to see if the object is a storage component description.
+     * The object
      * must be a component description containing a storage class attribute.
      * 
-     * @param obj
+     * @param obj object to test
      * @return true if storage description false if not
      */
 	public static boolean isStorageDescription(Object obj) {
@@ -432,10 +430,11 @@ public abstract class Storage implements Serializable {
 
 
     /**
-     * Inserts a new record in the storage space for the specified entry
+     * Inserts a new record in the storage space for the specified entry.
      * The entry must have been created before, otherwise an exception is thrown.
      *
-     * @param obj Object value that should be written
+     * @param entryname Object value that should be written
+     * @param value new value
      *
      * @throws StorageException In case some failure happens
      */
@@ -443,10 +442,11 @@ public abstract class Storage implements Serializable {
             StorageException;
 
     /**
-     * Inserts a new record in the storage space for the specified entry
+     * Inserts a new record in the storage space for the specified entry.
      * The entry must have been created before, otherwise an exception is thrown.
      *
-     * @param obj Object value that should be written
+     * @param entryname Object value that should be written
+     * @param value new value
      *
      * @throws StorageException In case some failure happens
      */
@@ -456,7 +456,7 @@ public abstract class Storage implements Serializable {
     /**
      * Recovers an entry from stable storage
      *
-     * @param id index of the required entry
+     * @param entryname index of the required entry
      * @return
      */
     public abstract Serializable getEntry(String entryname) throws
@@ -465,7 +465,7 @@ public abstract class Storage implements Serializable {
     /**
      * Deletes an indexed record of the given entry from the storage space
      *
-     * @param index Pointer to the internal object that should be deleted
+     * @param entryname the internal object that should be deleted
      *
      * @throws StorageException In case some failure happens
      */
