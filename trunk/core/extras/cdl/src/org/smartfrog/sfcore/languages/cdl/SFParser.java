@@ -141,4 +141,9 @@ public class SFParser implements StreamLanguageParser {
         throw new SmartFrogParseException("Not implemented");
     }
 
+
+    public Object sfParseTags(InputStream is) throws SmartFrogParseException {
+        //TODO
+        throw new SmartFrogParseException("Not implemented");
+    }
 }
