@@ -37,7 +37,6 @@ import org.smartfrog.sfcore.security.SFGeneralSecurityException;
 import org.smartfrog.sfcore.security.SFSecurity;
 import org.smartfrog.sfcore.security.SFSecurityProperties;
 import org.smartfrog.sfcore.prim.TerminationRecord;
-import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.common.ExitCodes;
 
 import java.io.ByteArrayOutputStream;
@@ -249,7 +248,7 @@ public class SFSystem implements MessageKeys {
         if (str != null) {
             System.err.println(str);
         }
-        ExitCodes.exitWithError(exitCode);
+        exitWithStatus(true,exitCode);
     }
 
 
@@ -364,7 +363,7 @@ public class SFSystem implements MessageKeys {
                     sfLog().error(ex);
                 }
             } catch (Exception ex1) {ex1.printStackTrace();}
-            ExitCodes.exitWithError(ExitCodes.EXIT_ERROR_CODE_GENERAL);
+            exitWith("Failed to initialize SmartFrog", ExitCodes.EXIT_ERROR_CODE_GENERAL);
         }
 
         setRootProcess(null);
@@ -376,35 +375,29 @@ public class SFSystem implements MessageKeys {
         showDiagnostics(opts);
 
         if (opts.errorString != null) {
-            sfLog().out(opts.errorString);
-            ExitCodes.exitWithError(opts.exitCode);
+            exitWith(opts.errorString, ExitCodes.EXIT_ERROR_CODE_GENERAL);
         }
         try {
             setRootProcess(runSmartFrog(opts.cfgDescriptors));
         } catch (SmartFrogException sfex) {
             sfLog().out(sfex);
-            if (Logger.logStackTrace){ printStackTrace(sfex); }
-            ExitCodes.exitWithError(ExitCodes.EXIT_ERROR_CODE_GENERAL);
+            exitWithException(sfex, ExitCodes.EXIT_ERROR_CODE_GENERAL);
         } catch (UnknownHostException uhex) {
             sfLog().err(MessageUtil.formatMessage(MSG_UNKNOWN_HOST, opts.host), uhex);
-            if (Logger.logStackTrace){ printStackTrace(uhex); }
-            ExitCodes.exitWithError(ExitCodes.EXIT_ERROR_CODE_GENERAL);
+            exitWithException(uhex, ExitCodes.EXIT_ERROR_CODE_GENERAL);
         } catch (ConnectException cex) {
             sfLog().err(MessageUtil.formatMessage(MSG_CONNECT_ERR, opts.host), cex);
-            if (Logger.logStackTrace){ printStackTrace(cex); }
-            ExitCodes.exitWithError(ExitCodes.EXIT_ERROR_CODE_GENERAL);
+            exitWithException(cex, ExitCodes.EXIT_ERROR_CODE_GENERAL);
         } catch (RemoteException rmiEx) {
             // log stack trace
             sfLog().err(MessageUtil.formatMessage(MSG_REMOTE_CONNECT_ERR,
                     opts.host), rmiEx);
-            if (Logger.logStackTrace){ printStackTrace(rmiEx); }
-            ExitCodes.exitWithError(ExitCodes.EXIT_ERROR_CODE_GENERAL);
+            exitWithException(rmiEx, ExitCodes.EXIT_ERROR_CODE_GENERAL);
         } catch (Exception ex) {
             //log stack trace
             sfLog().err(MessageUtil.
                     formatMessage(MSG_UNHANDLED_EXCEPTION), ex);
-            if (Logger.logStackTrace){ printStackTrace(ex); }
-            ExitCodes.exitWithError(ExitCodes.EXIT_ERROR_CODE_GENERAL);
+            exitWithException(ex, ExitCodes.EXIT_ERROR_CODE_GENERAL);
         }
 
         //Report Actions successes or failures.
@@ -415,7 +408,7 @@ public class SFSystem implements MessageKeys {
              cfgDesc = (ConfigurationDescriptor)items.nextElement();
              if (cfgDesc.getResultType()==ConfigurationDescriptor.Result.FAILED) {
                  somethingFailed = true;
-		         opts.exitCode =ExitCodes.EXIT_ERROR_CODE_GENERAL;
+		         opts.exitCode = ExitCodes.EXIT_ERROR_CODE_GENERAL;
              }
              sfLog().out(" - "+(cfgDesc).statusString()+"\n");
              if (sfLog().isIgnoreEnabled() && cfgDesc.resultException!=null){
@@ -427,23 +420,28 @@ public class SFSystem implements MessageKeys {
             exitWithStatus(somethingFailed,opts.exitCode);
         } else {
             //sfLog().out(MessageUtil.formatMessage(MSG_SF_READY));
-            if (true) {
-                String name = "";
-                int port =0;
-                try {
-                    if (rootProcess != null) {
-                        name = rootProcess.sfResolve(SmartFrogCoreKeys.SF_PROCESS_NAME, name, false);
-                        port = rootProcess.sfResolve(SmartFrogCoreKeys.SF_ROOT_LOCATOR_PORT, port, false);
-                    }
-                } catch (Exception ex) {
-                    if (sfLog().isIgnoreEnabled()){sfLog().ignore(ex);}
-                    //ignore.
+            String name = "";
+            int port = 0;
+            try {
+                if (rootProcess != null) {
+                    name = rootProcess.sfResolve(SmartFrogCoreKeys.SF_PROCESS_NAME, name, false);
+                    port = rootProcess.sfResolve(SmartFrogCoreKeys.SF_ROOT_LOCATOR_PORT, port, false);
                 }
-                sfLog().out(MessageUtil.formatMessage(MSG_SF_READY, "[" + name + ":"+ port+"]") + " " + new Date(System.currentTimeMillis()));
-            } else {
-                sfLog().out(MessageUtil.formatMessage(MSG_SF_READY, ""));
+            } catch (Exception ex) {
+                if (sfLog().isIgnoreEnabled()) {
+                    sfLog().ignore(ex);
+                }
+                //ignore.
             }
+            sfLog().out(MessageUtil.formatMessage(MSG_SF_READY, "[" + name + ":" + port + "]") + " " + new Date(System.currentTimeMillis()));
         }
+    }
+
+    protected void exitWithException(Exception sfex, int errorcode) {
+        if (Logger.logStackTrace){
+            printStackTrace(sfex);
+        }
+        exitWithStatus(true,errorcode);
     }
 
     /**
