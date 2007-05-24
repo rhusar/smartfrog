@@ -218,6 +218,11 @@
         location="${rpm.image.dir}/BUILD" />
     <newdir name="rpm.RPMS"
         location="${rpm.image.dir}/RPMS" />
+
+    <property name="smartfrog.rpmfiles.tar"
+      location="${rpm.SOURCES}/smartfrog-${smartfrog.version}.tar"/>
+    <property name="smartfrog.rpmfiles.tar.gz"
+        location="${smartfrog.rpmfiles.tar}.gz"/>
   </target>
 
   <target name="copy-rpm-specs" depends="init-rpm">
@@ -256,7 +261,7 @@
     </tar>
   </target>
 
-  <target name="ready-to-rpm" depends="copy-rpm-specs">
+  <target name="ready-to-rpm" depends="copy-rpm-specs,prepare-binary-rpm">
   </target>
   
   <target name="rpm" depends="ready-to-rpm"
@@ -270,16 +275,17 @@
 
   <target name="expand-core" depends="init-rpm,ivy-retrieve">
     <newdir name="core.install.dir"
-      location="${build.rpm.dir}/usr/share/smartfrog" />
+      location="${build.rpm.dir}/root/${rpm.install.dir}" />
     <unzip src="${ivy.lib.dir}/package-core/sf-core-install-${smartfrog.version}.zip"
       dest="${core.install.dir}" />
   </target>
   
-  <target name="prepare-binary-rpm" >
+  <target name="prepare-binary-rpm" depends="expand-core" >
     
-    <tarfile file="">
-      
-    </tarfile>
+    <sf-tar destfile="${smartfrog.rpmfiles.tar}" >
+      <fileset dir="${build.rpm.dir}/root/" includes="**/*" />
+    </sf-tar>
+    <gzip src="${smartfrog.rpmfiles.tar}" destfile="${smartfrog.rpmfiles.tar.gz}" />
   </target>
 
 

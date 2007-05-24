@@ -258,6 +258,8 @@ want izpack to see it, double escape the $$ symbol.-->
           targetdir="$INSTALL_PATH"
           unpack="true"/>
       <!--these are all the executables that should be marked as +x in unix. -->
+      <executable stage="never" targetfile="$INSTALL_PATH/bin/setSFDefaultProperties" failure="warn"/>
+      <executable stage="never" targetfile="$INSTALL_PATH/bin/setSFSecurityProperties" failure="warn"/>
       <executable stage="never" targetfile="$INSTALL_PATH/bin/sfDaemon" failure="warn"/>
       <executable stage="never" targetfile="$INSTALL_PATH/bin/sfDetachAndTerminate" failure="warn"/>
       <executable stage="never" targetfile="$INSTALL_PATH/bin/sfDiag" failure="warn"/>
@@ -291,7 +293,7 @@ SmartFrog to deploy complex systems.
         framework
       </description>
       <file src="ivy/lib/package-antbuild-minimal/sf-antbuild-minimal-${smartfrog.version}.zip"
-          targetdir="$INSTALL_PATH"
+          targetdir="$INSTALL_PATH/source"
           unpack="true"/>
     </pack>
 
@@ -302,7 +304,7 @@ SmartFrog to deploy complex systems.
         and its components.
       </description>
       <file src="ivy/lib/package-antbuild-full/sf-antbuild-full-${smartfrog.version}.zip"
-          targetdir="$INSTALL_PATH"
+          targetdir="$INSTALL_PATH/source"
           unpack="true"/>
     </pack>
 
@@ -535,6 +537,8 @@ Select this if you want to install all the SmartFrog components in the distribut
         current system state, using the Unix/Linux vmstat command as a source of information.
 
         Contains the Quartz library version quartz-${quartz.version}.jar.
+
+        Prerequisite packages: Logging.
       </description>
       <file src="ivy/lib/package-quartz/sf-quartz-${smartfrog.version}.jar"
           targetdir="$INSTALL_PATH/lib"
@@ -571,7 +575,9 @@ Select this if you want to install all the SmartFrog components in the distribut
     <pack name="xunit" required="no" preselected="no">
       <description>the base testing components. This contains the sfunit test components
         for testing deployments, and the listeners/reporters for running tests.
-        For JUnit testing, include the junit3 components.
+        For JUnit 3 testing, include the JUnit package.
+
+        Prerequisite packages: Logging.
       </description>
       <file src="ivy/lib/package-testing/sf-xunit-${smartfrog.version}.jar"
           targetdir="$INSTALL_PATH/lib"
@@ -589,6 +595,7 @@ Select this if you want to install all the SmartFrog components in the distribut
       <description>
         This contains the components for running JUnit ${junit.version} tests, and the
         junit-${junit.version}.jar.
+        Prerequisite packages: xunit, Logging.
       </description>
       <file src="ivy/lib/package-testing/sf-junit-${smartfrog.version}.jar"
           targetdir="$INSTALL_PATH/lib"
@@ -617,6 +624,8 @@ Select this if you want to install all the SmartFrog components in the distribut
         commons-codec-${commons-codec.version}.jar
         servlet-api-${servletapi.version}.jar
         jetty-${jetty.version}.jar
+
+        Prerequisite packages: Logging.
       </description>
       <file src="ivy/lib/package-www/sf-www-${smartfrog.version}.jar"
           targetdir="$INSTALL_PATH/lib"
