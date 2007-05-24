@@ -18,9 +18,9 @@
 
  */
 
-#include "org/smartfrog/components.sf";
-#include "org/smartfrog/services/jetty/components.sf";
-#include "org/smartfrog/services/filesystem/components.sf";
+#include "/org/smartfrog/components.sf";
+#include "/org/smartfrog/services/jetty/components.sf";
+#include "/org/smartfrog/services/filesystem/components.sf";
 
 /**
  * This is an example of jetty component
@@ -33,12 +33,18 @@
 jetty_home PROPERTY jetty.home;
 
 
+/*
+  * serves up the entire temp directory
+*/
 TempDirServletContext extends JettyServletContext {
  contextPath "/";
  resourceBase LAZY PROPERTY java.io.tmpdir;
 }
 
 
+/*
+* A jetty server that serves up the temp directory jetty under java.io.tmpdir
+*/
 TempDirServer extends CoreJettyServer {
   sfSyncTerminate true;
   
@@ -62,6 +68,6 @@ TempDirServer extends CoreJettyServer {
 
 Root extends RootWAR {
  contextPath "/";
- filename ((ROOT:jetty_home)++"/demo/webapps/root");
+ filename ((ROOT:jetty_home) ++ "/demo/webapps/root");
 }
 

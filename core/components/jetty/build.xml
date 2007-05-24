@@ -156,6 +156,7 @@ For more information: www.smartfrog.org
               refid="tests.run.classpath"/>
           <sysproperty key="test.files.dir"
               value="${test.src.dir}/files"/>
+          <!--Root directory for jetty-->
           <sysproperty key="jetty.home"
               value="${test.src.dir}/files/jettyhome"/>
           <syspropertyset>

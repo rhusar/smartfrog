@@ -56,11 +56,11 @@ JettyHttpServer extends CoreJettyServer {
 }
 
 /**
- * add all the example contexts
+ * add the example contexts
  */
 FullJettyServer extends JettyHttpServer {
    contexts extends Compound {
-    server LAZY PARENT;
+     server LAZY PARENT;
    }
 }
 
@@ -114,7 +114,7 @@ JettyServletContexts extends ServletContext {
  handlers extends Handlers {
   context LAZY PARENT;
   }
- servlets extends Servlets {
+ servlets extends BuiltInServlets {
   context LAZY PARENT;
   }
  server LAZY PARENT:server;
@@ -174,29 +174,36 @@ JettyForwardHandler extends JettyHandler {
   declare servlets
 ===========================================*/
 
-Servlets extends Compound {
+BuiltInServlets extends Compound {
  context TBD;
 
- Servlet1 extends InvokerServlet {
+ invoker extends InvokerServlet {
   context LAZY PARENT:context;
  }
- Servlet2 extends DumpServlet{
+ dump extends DumpServlet{
   context LAZY PARENT:context;
  }
- Servlet3 extends SessionServlet{
+ session extends SessionServlet{
   context LAZY PARENT:context;
  }
- Servlet4 extends DispatchServlet{
+ dispatch extends DispatchServlet{
   context LAZY PARENT:context;
  }
- Servlet5 extends JSPServlet{
+ jsp extends JSPServlet{
   context LAZY PARENT:context;
  }
- Servlet6 extends SrcDefaultServlet{
+ src extends SrcDefaultServlet{
   context LAZY PARENT:context;
  }
 }
 
+ThirdPartyServlets extends Compound {
+ context TBD;
+
+ jsp extends JSPServlet{
+  context LAZY PARENT:context;
+ }
+}
 InvokerServlet extends Servlet {
  name "Invoker";
  pathSpec "/servlet/*";
