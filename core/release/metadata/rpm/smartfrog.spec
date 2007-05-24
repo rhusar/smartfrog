@@ -38,13 +38,15 @@
 %define javadir         %{_datadir}/java
 %define javadocdir      %{_datadir}/javadoc
 %define section         free
+
 %define approot         %{_datadir}/smartfrog
-%define basedir         %{prefix}/smartfrog
+%define basedir         ${rpm.install.dir}
 %define bindir          %{basedir}/bin
 %define binsecurity     %{bindir}/security
 %define libdir          %{basedir}/lib
-%define docdir          %{basedir}/doc
-
+%define docdir          %{basedir}/docs
+%define srcdir          %{basedir}/src
+%define examples        %{srcdir}/org/smartfrog/examples
 
 # -----------------------------------------------------------------------------
 
@@ -56,15 +58,19 @@ Release:        ${rpm.release.version}
 Group:          ${rpm.framework}
 License:        LGPL
 URL:            http://www.smartfrog.org/
-Packager:       SmartFrog Team
+Vendor:         ${rpm.vendor}
+Packager:       ${rpm.packager}
 BuildArch:      noarch
 #%{name}-%{version}.tar.gz in the SOURCES dir
-#Source0:
+Source0: %{name}-%{version}.tar.gz 
 # add patches, if any, here
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root
-Prefix: /opt
-Provides: SmartFrog
+#BuildRoot:      %{basedir}
+Prefix: ${rpm.prefix}
+#Provides: SmartFrog
+#Icon: docs/images/frog.gif
 # build and runtime requirements here
+Requires(rpmlib): rpmlib(CompressedFileNames) <= 3.0.4-1 rpmlib(PayloadFilesHavePrefix) <= 4.0-1
 
 %description
 SmartFrog is a technology for describing distributed software systems as
@@ -76,8 +82,8 @@ component configuration parameters, and a runtime environment which
 activates and manages the components to deliver and maintain running systems.
 SmartFrog and its components are implemented in Java.
 
-In this RPM SmartFrog is configured to log to files /var/log/smartfrog_*.log with logLevel=3 (INFO)
-using LogToFileImpl. The GUI is turned off.
+#In this RPM SmartFrog is configured to log to files /var/log/smartfrog_*.log with logLevel=3 (INFO)
+#using LogToFileImpl. The GUI is turned off.
 
 # -----------------------------------------------------------------------------
 
@@ -99,19 +105,19 @@ using LogToFileImpl. The GUI is turned off.
 
 # -----------------------------------------------------------------------------
 
-#%package demo
-#Group:          # same as main package
-#Summary:        Demos for %{name}
-#Requires:       %{name} = %{version}-%{release}
+%package demo
+Group:         ${rpm.framework}
+Summary:        Demos for %{name}
+Requires:       %{name} = %{version}-%{release}
 #
-#%description demo
-#Demonstrations and samples for %{name}.
+%description demo
+Examples for %{name}.
 
 # -----------------------------------------------------------------------------
 
 %prep
-rm -rf $RPM_BUILD_ROOT
-#%setup -q
+%setup -q -c
+
 
 # patches here
 # remove stuff we'll build, eg. jars, javadocs, extra sources here
@@ -119,17 +125,21 @@ rm -rf $RPM_BUILD_ROOT
 # -----------------------------------------------------------------------------
 
 %build
-# yep
+rm -rf $RPM_BUILD_ROOT
+pwd
+mkdir -p $RPM_BUILD_ROOT/usr/share
+cp -dpr . $RPM_BUILD_ROOT
+#ls -l $RPM_BUILD_ROOT/usr/share
 
 # -----------------------------------------------------------------------------
 
 %install
-rm -rf $RPM_BUILD_ROOT
+#rm -rf $RPM_BUILD_ROOT
 
 # jar
-install -d $RPM_BUILD_ROOT%{javadir}
+#install -d $RPM_BUILD_ROOT%{javadir}
 # install jars to $RPM_BUILD_ROOT%{javadir}/ (as %{name}-%{version}.jar)
-(cd $RPM_BUILD_ROOT%{javadir} && for jar in *-%{version}.jar; do ln -sf ${jar} `echo $jar| sed  "s|-%{version}||g"`; done)
+#(cd $RPM_BUILD_ROOT%{javadir} && for jar in *-%{version}.jar; do ln -sf ${jar} `echo $jar| sed  "s|-%{version}||g"`; done)
 
 # javadoc
 #install -d $RPM_BUILD_ROOT%{javadocdir}/%{name}-%{version}/
@@ -187,12 +197,12 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755, -, -) %{binsecurity}/smartfrog
 %attr(755, -, -) %{binsecurity}/sfDaemon
 %attr(755, -, -) %{binsecurity}/sfDetachAndTerminate
-%attr(755, -, -) %{binsecurity}/sfDiag
-%attr(755, -, -) %{binsecurity}/sfDiagnostics
-%attr(755, -, -) %{binsecurity}/sfGui
+#%attr(755, -, -) %{binsecurity}/sfDiag
+#%attr(755, -, -) %{binsecurity}/sfDiagnostics
+#%attr(755, -, -) %{binsecurity}/sfGui
 %attr(755, -, -) %{binsecurity}/sfManagementConsole
 %attr(755, -, -) %{binsecurity}/sfParse
-%attr(755, -, -) %{binsecurity}/sfPing
+#%attr(755, -, -) %{binsecurity}/sfPing
 %attr(755, -, -) %{binsecurity}/sfRun
 %attr(755, -, -) %{binsecurity}/sfStart
 %attr(755, -, -) %{binsecurity}/sfStop
@@ -203,27 +213,33 @@ rm -rf $RPM_BUILD_ROOT
 
 
 #now the files in the lib directory...use ant library versions to include version numbers
-%{libdir}/log4j-${log4.version}.jar
-%{libdir}/sfExamples-${smartfrog.version}.jar
-%{libdir}/sfServices-${smartfrog.version}.jar
-%{libdir}/sf-tasks-${smartfrog.version}.jar
-%{libdir}/smartfrog-${smartfrog.version}.jar
+%dir %{libdir}
+
+#other directories
+%dir %{basedir}/testCA
+%dir %{basedir}/private
+%dir %{basedir}/signedLib
 
 
-%doc # add docs here
+#%doc # add docs here
 #%{javadir}/*
 
 #%files manual
 #%defattr(0644,root,root,0755)
-#%doc # add manual docs here
+
+%doc
+%dir %{docdir}
+%dir %{docdir}/images
+%dir %{docdir}/skin
 
 #%files javadoc
 #%defattr(0644,root,root,0755)
 #%{javadocdir}/%{name}-%{version}
 
-#%files demo
-#%defattr(0644,root,root,0755)
+%files demo
+%defattr(0644,root,root,0755)
 #%{_datadir}/%{name}-%{version}
+%dir %{srcdir}
 
 # -----------------------------------------------------------------------------
 

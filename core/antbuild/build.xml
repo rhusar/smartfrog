@@ -1,11 +1,11 @@
-<project name="antbuild" default="published">
+<project name="antbuild" default="published" basedir=".">
 
 
 <description>
   This build file creates the source tree needed for a complete build of SmartFrog;
   a place to add in new components, with a common.xml file to use for the core building.
 
-  The output is an artifact that is then published for importing into the release
+  The output is artifacts that are then published for importing into the release
   process, to create a new directory tree.
 
   One decision that has been made here is that we snapshot the local sandbox, and not
@@ -71,11 +71,16 @@
   </target>-->
 
   <target name="package-names" depends="load-version-info">
+    <!--this can be set to place the artifacts in a subdirectory in the tar/zip files-->
+    <property name="prefix" value="" />
     <property name="minimal.zip"
-        location="${dist.lib.dir}/sf-antbuild-minimal-${smartfrog.version}.zip"   />
+        location="${dist.lib.dir}/sf-antbuild-minimal-${smartfrog.version}.zip"/>
     <property name="full.zip"
-        location="${dist.lib.dir}/sf-antbuild-full-${smartfrog.version}.zip"   />
-    <property name="prefix" value="core" />
+        location="${dist.lib.dir}/sf-antbuild-full-${smartfrog.version}.zip"/>
+    <property name="minimal.tar"
+        location="${dist.lib.dir}/sf-antbuild-minimal-${smartfrog.version}.tar"   />
+    <property name="full.tar"
+        location="${dist.lib.dir}/sf-antbuild-full-${smartfrog.version}.tar"   />
   </target>
 
   <target name="ready-to-package" depends="filesets,package-names"/>
@@ -114,7 +119,41 @@
   <target name="unzip" depends="full-unzip,minimal-unzip"
       description="create the zip files, then unzip them"/>
 
-  <target name="package" depends="minimal-zip,full-zip"/>
+  <target name="minimal-tar" depends="ready-to-package">
+    <tar destFile="${minimal.tar}" longfile="gnu">
+      <tarfileset prefix="${prefix}" refid="root.fileset" />
+    </tar>
+  </target>
+
+  <target name="minimal-untar" depends="minimal-tar">
+    <property name="minimal.untar.dir" location="${build.dir}/minimal"/>
+    <mkdir dir="${minimal.untar.dir}" />
+    <untar src="${minimal.tar}"
+        dest="${minimal.untar.dir}"/>
+  </target>
+
+  <target name="full-tar" depends="ready-to-package">
+    <tar destFile="${full.tar}" longfile="gnu">
+      <tarfileset prefix="${prefix}" refid="root.fileset" />
+      <tarfileset prefix="${prefix}" refid="forrest.fileset" />
+      <tarfileset prefix="${prefix}/release" refid="release.fileset" />
+      <tarfileset prefix="${prefix}/components" refid="components.fileset" />
+      <tarfileset prefix="${prefix}/antbuild" refid="antbuild.fileset" />
+    </tar>
+  </target>
+
+
+  <target name="full-untar" depends="full-tar">
+    <property name="full.untar.dir" location="${build.dir}/full"/>
+    <mkdir dir="${full.untar.dir}" />
+    <untar src="${full.tar}"
+        dest="${full.untar.dir}"/>
+  </target>
+
+  <target name="untar" depends="full-untar,minimal-untar"
+      description="create the tar files, then untar them"/>
+
+  <target name="package" depends="minimal-zip,full-zip,minimal-tar,full-tar"/>
   <target name="packaged" depends="package"/>
 
 
