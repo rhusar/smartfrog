@@ -178,7 +178,9 @@
       http://www.rpm.org/
       http://www.rpm.org/max-rpm/
       http://www-128.ibm.com/developerworks/linux/library/l-rpm3.html?dwzone=linux
-            
+      http://www.ibm.com/developerworks/library/l-rpm1/
+      http://www.ibm.com/developerworks/library/l-rpm2/
+
     JPackage and layout rules:
       http://www.jpackage.org/develdocs.php
       http://www.pathname.com/fhs/  rules for app/dir layout
@@ -243,6 +245,7 @@
   </target>
 
 
+
   <!-- TODO: package up everything ready for abuse-->
   <target name="rpm-internal-tar" depends="init-rpm,ivy-retrieve">
     <property name="rpm.internal.tar" location="${build.rpm.dir}/smartfrog.tar" />
@@ -250,20 +253,34 @@
       <tarfileset prefix="jars" dir="ivy/lib/package-core/">
 
       </tarfileset>
-
     </tar>
-
   </target>
 
   <target name="ready-to-rpm" depends="copy-rpm-specs">
   </target>
   
-  <target name="rpm" depends="ready-to-rpm">
+  <target name="rpm" depends="ready-to-rpm"
+      description="create an RPM file of the core smartfrog libraries">
     <rpm
         specFile="smartfrog.spec"
         topDir="${rpm.image.dir}"
         cleanBuildDir="true"
         failOnError="true"/>
   </target>
+
+  <target name="expand-core" depends="init-rpm,ivy-retrieve">
+    <newdir name="core.install.dir"
+      location="${build.rpm.dir}/usr/share/smartfrog" />
+    <unzip src="${ivy.lib.dir}/package-core/sf-core-install-${smartfrog.version}.zip"
+      dest="${core.install.dir}" />
+  </target>
+  
+  <target name="prepare-binary-rpm" >
+    
+    <tarfile file="">
+      
+    </tarfile>
+  </target>
+
 
 </project>

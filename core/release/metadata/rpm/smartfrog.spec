@@ -39,25 +39,31 @@
 %define javadocdir      %{_datadir}/javadoc
 %define section         free
 %define approot         %{_datadir}/smartfrog
+%define basedir         %{prefix}/smartfrog
+%define bindir          %{basedir}/bin
+%define binsecurity     %{bindir}/security
+%define libdir          %{basedir}/lib
+%define docdir          %{basedir}/doc
+
 
 # -----------------------------------------------------------------------------
 
-Summary:        SmartFrog Java Deployment Framework
+Summary:        SmartFrog Deployment Framework
 Name:           smartfrog
 Version:        ${smartfrog.version}
 Release:        ${rpm.release.version}
 # group, categories from freshmeat.net
 Group:          ${rpm.framework}
 License:        LGPL
-URL:            http://www.smartfrog.org
+URL:            http://www.smartfrog.org/
 Packager:       SmartFrog Team
 BuildArch:      noarch
 #%{name}-%{version}.tar.gz in the SOURCES dir
 #Source0:
 # add patches, if any, here
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root
-#Prefix: /opt
-#Provides: SmartFrog
+Prefix: /opt
+Provides: SmartFrog
 # build and runtime requirements here
 
 %description
@@ -141,9 +147,71 @@ rm -rf $RPM_BUILD_ROOT
 # -----------------------------------------------------------------------------
 
 %files
-%defattr(0644,root,root,0755)
+%defattr(0644,-,-,0755)
+
+#ROOT directory
+%{basedir}/build.xml
+%{basedir}/changes.txt
+%{basedir}/COPYRIGHT.txt
+%{basedir}/LICENSE.txt
+%{basedir}/parsertargets
+%{basedir}/readme.txt
+%{basedir}/smartfrog-version.properties
+
+#these are config files that should be protected
+%config %{bindir}/default.ini
+%config %{bindir}/default.sf
+
+%attr(755, -, -) %{bindir}/smartfrog
+%attr(755, -, -) %{bindir}/setSFDefaultProperties
+%attr(755, -, -) %{bindir}/setSFDynamicClassLoadingProperties
+%attr(755, -, -) %{bindir}/setSFProperties
+%attr(755, -, -) %{bindir}/setSFSecurityProperties
+%attr(755, -, -) %{bindir}/sfDaemon
+%attr(755, -, -) %{bindir}/sfDetachAndTerminate
+%attr(755, -, -) %{bindir}/sfDiag
+%attr(755, -, -) %{bindir}/sfDiagnostics
+%attr(755, -, -) %{bindir}/sfGui
+%attr(755, -, -) %{bindir}/sfManagementConsole
+%attr(755, -, -) %{bindir}/sfParse
+%attr(755, -, -) %{bindir}/sfPing
+%attr(755, -, -) %{bindir}/sfRun
+%attr(755, -, -) %{bindir}/sfStart
+%attr(755, -, -) %{bindir}/sfStop
+%attr(755, -, -) %{bindir}/sfStopDaemon
+%attr(755, -, -) %{bindir}/sfTerminate
+%attr(755, -, -) %{bindir}/sfUpdate
+%attr(755, -, -) %{bindir}/sfVersion
+#%attr(755, -, -) %{bindir}/
+
+%attr(755, -, -) %{binsecurity}/smartfrog
+%attr(755, -, -) %{binsecurity}/sfDaemon
+%attr(755, -, -) %{binsecurity}/sfDetachAndTerminate
+%attr(755, -, -) %{binsecurity}/sfDiag
+%attr(755, -, -) %{binsecurity}/sfDiagnostics
+%attr(755, -, -) %{binsecurity}/sfGui
+%attr(755, -, -) %{binsecurity}/sfManagementConsole
+%attr(755, -, -) %{binsecurity}/sfParse
+%attr(755, -, -) %{binsecurity}/sfPing
+%attr(755, -, -) %{binsecurity}/sfRun
+%attr(755, -, -) %{binsecurity}/sfStart
+%attr(755, -, -) %{binsecurity}/sfStop
+%attr(755, -, -) %{binsecurity}/sfStopDaemon
+%attr(755, -, -) %{binsecurity}/sfTerminate
+%attr(755, -, -) %{binsecurity}/sfUpdate
+%attr(755, -, -) %{binsecurity}/sfVersion
+
+
+#now the files in the lib directory...use ant library versions to include version numbers
+%{libdir}/log4j-${log4.version}.jar
+%{libdir}/sfExamples-${smartfrog.version}.jar
+%{libdir}/sfServices-${smartfrog.version}.jar
+%{libdir}/sf-tasks-${smartfrog.version}.jar
+%{libdir}/smartfrog-${smartfrog.version}.jar
+
+
 %doc # add docs here
-%{javadir}/*
+#%{javadir}/*
 
 #%files manual
 #%defattr(0644,root,root,0755)
