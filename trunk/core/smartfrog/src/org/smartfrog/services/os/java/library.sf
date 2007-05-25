@@ -217,7 +217,7 @@ IvyLibrary extends Library {
     /**
      * Remote policy is maven2
      */
-    remoteCachePolicy extends Maven2Policy;;
+    remoteCachePolicy extends Maven2Policy;
 
 
 
