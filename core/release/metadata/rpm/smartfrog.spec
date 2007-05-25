@@ -117,6 +117,19 @@ Examples for %{name}.
 
 # -----------------------------------------------------------------------------
 
+%package daemon
+Group:         ${rpm.framework}
+Summary:        init.d and and /etc/ scripts for %{name}
+Requires:       %{name} = %{version}-%{release}
+#
+%description daemon
+This package provides the scripts for /etc/rc.d, /etc/profile.d and /etc/sysconfig for SmartFrog to be available on the command line and as a startup daemon. 
+
+Running the SmartFrog as a daemon is a security risk unless the daemon is set up with security, especially if port 3800 is openened in the firewall. At that point anyone can get a process running as root to run any program they wish.
+
+
+# -----------------------------------------------------------------------------
+
 %prep
 %setup -q -c
 
@@ -133,16 +146,7 @@ cp -dpr . $RPM_BUILD_ROOT
 #ls -l $RPM_BUILD_ROOT/usr/share
 
 
-# -----------------------------------------------------------------------------
-#after installing, we set symlinks
-%post 
-ln -s %{initsmartfrog} %{rcd}/rc0.d/K60smartfrog
-ln -s %{initsmartfrog} %{rcd}/rc1.d/K60smartfrog
-ln -s %{initsmartfrog} %{rcd}/rc2.d/S60smartfrog
-ln -s %{initsmartfrog} %{rcd}/rc3.d/S60smartfrog
-ln -s %{initsmartfrog} %{rcd}/rc4.d/S60smartfrog
-ln -s %{initsmartfrog} %{rcd}/rc5.d/S60smartfrog
-ln -s %{initsmartfrog} %{rcd}/rc6.d/S60smartfrog
+
 
 # jar
 #install -d $RPM_BUILD_ROOT%{javadir}
@@ -159,8 +163,19 @@ ln -s %{initsmartfrog} %{rcd}/rc6.d/S60smartfrog
 
 
 # -----------------------------------------------------------------------------
+#after installing, we set symlinks
+%post daemon 
+ln -s %{initsmartfrog} %{rcd}/rc0.d/K60smartfrog
+ln -s %{initsmartfrog} %{rcd}/rc1.d/K60smartfrog
+ln -s %{initsmartfrog} %{rcd}/rc2.d/S60smartfrog
+ln -s %{initsmartfrog} %{rcd}/rc3.d/S60smartfrog
+ln -s %{initsmartfrog} %{rcd}/rc4.d/S60smartfrog
+ln -s %{initsmartfrog} %{rcd}/rc5.d/S60smartfrog
+ln -s %{initsmartfrog} %{rcd}/rc6.d/S60smartfrog
+
+# -----------------------------------------------------------------------------
 # at uninstall time, we blow away the symlinks
-%postun 
+%postun daemon
 rm %{rcd}/rc0.d/K60smartfrog
 rm %{rcd}/rc1.d/K60smartfrog
 rm %{rcd}/rc2.d/S60smartfrog
@@ -247,10 +262,7 @@ rm -rf $RPM_BUILD_ROOT
 %{basedir}/private
 %{basedir}/signedLib
 
-#and the etc stuff
-%attr(755, root,root) /etc/rc.d/init.d/smartfrog
-%attr(755, root,root) /etc/profile.d/smartfrog.sh
-/etc/sysconfig/smartfrog
+
 
 #%doc # add docs here
 #%{javadir}/*
@@ -277,6 +289,12 @@ rm -rf $RPM_BUILD_ROOT
 #%{_datadir}/%{name}-%{version}
 %{srcdir}
 
+%files daemon
+#and the etc stuff
+%defattr(0644,root,root,0755)
+%attr(755, root,root) /etc/rc.d/init.d/smartfrog
+%attr(755, root,root) /etc/profile.d/smartfrog.sh
+/etc/sysconfig/smartfrog
 # -----------------------------------------------------------------------------
 
 %changelog

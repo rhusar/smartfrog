@@ -50,11 +50,8 @@
   <target name="war.init" depends="init-standard-output-dirs">
     <property name="target.war.name"
               value="sf-testwar-${smartfrog.version}.war"/>
-    <property name="dist.war.dir"
-        location="${dist.dir}/lib"/>
-    <mkdir dir="${dist.war.dir}" />
     <property name="testwar.war"
-              location="${dist.war.dir}/${target.war.name}"/>
+              location="${dist.dir}/lib/${target.war.name}"/>
     <property name="testwar.dir"
               location="testwar"/>
     <property name="testwar.lib.dir"
