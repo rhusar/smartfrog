@@ -282,6 +282,9 @@
   </target>
   
   <target name="prepare-binary-rpm" depends="expand-core" >
+    <expandingcopy todir="${build.rpm.dir}/root/" >
+      <fileset dir="scripts" includes="**/*" />
+    </expandingcopy>
     <sf-tar destfile="${smartfrog.rpmfiles.tar}" >
       <fileset dir="${build.rpm.dir}/root/" includes="**/*" />
     </sf-tar>

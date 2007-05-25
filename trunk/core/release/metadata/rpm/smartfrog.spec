@@ -44,9 +44,11 @@
 %define bindir          %{basedir}/bin
 %define binsecurity     %{bindir}/security
 %define libdir          %{basedir}/lib
-%define docs          %{basedir}/docs
+%define docs            %{basedir}/docs
 %define srcdir          %{basedir}/src
 %define examples        %{srcdir}/org/smartfrog/examples
+%define rcd             /etc/rc.d
+%define initsmartfrog   %{rcd}/init.d/smartfrog
 
 # -----------------------------------------------------------------------------
 
@@ -127,14 +129,20 @@ Examples for %{name}.
 %build
 rm -rf $RPM_BUILD_ROOT
 pwd
-mkdir -p $RPM_BUILD_ROOT/usr/share
 cp -dpr . $RPM_BUILD_ROOT
 #ls -l $RPM_BUILD_ROOT/usr/share
 
-# -----------------------------------------------------------------------------
 
-%install
-#rm -rf $RPM_BUILD_ROOT
+# -----------------------------------------------------------------------------
+#after installing, we set symlinks
+%post 
+ln -s %{initsmartfrog} %{rcd}/rc0.d/K60smartfrog
+ln -s %{initsmartfrog} %{rcd}/rc1.d/K60smartfrog
+ln -s %{initsmartfrog} %{rcd}/rc2.d/S60smartfrog
+ln -s %{initsmartfrog} %{rcd}/rc3.d/S60smartfrog
+ln -s %{initsmartfrog} %{rcd}/rc4.d/S60smartfrog
+ln -s %{initsmartfrog} %{rcd}/rc5.d/S60smartfrog
+ln -s %{initsmartfrog} %{rcd}/rc6.d/S60smartfrog
 
 # jar
 #install -d $RPM_BUILD_ROOT%{javadir}
@@ -148,6 +156,18 @@ cp -dpr . $RPM_BUILD_ROOT
 # demo
 #install -d $RPM_BUILD_ROOT%{_datadir}/%{name}-%{version}
 # cp demos to $RPM_BUILD_ROOT%{_datadir}/%{name}-%{version}/
+
+
+# -----------------------------------------------------------------------------
+# at uninstall time, we blow away the symlinks
+%postun 
+rm %{rcd}/rc0.d/K60smartfrog
+rm %{rcd}/rc1.d/K60smartfrog
+rm %{rcd}/rc2.d/S60smartfrog
+rm %{rcd}/rc3.d/S60smartfrog
+rm %{rcd}/rc4.d/S60smartfrog
+rm %{rcd}/rc5.d/S60smartfrog
+rm %{rcd}/rc6.d/S60smartfrog
 
 # -----------------------------------------------------------------------------
 
@@ -227,6 +247,10 @@ rm -rf $RPM_BUILD_ROOT
 %{basedir}/private
 %{basedir}/signedLib
 
+#and the etc stuff
+%attr(755, root,root) /etc/rc.d/init.d/smartfrog
+%attr(755, root,root) /etc/profile.d/smartfrog.sh
+/etc/sysconfig/smartfrog
 
 #%doc # add docs here
 #%{javadir}/*

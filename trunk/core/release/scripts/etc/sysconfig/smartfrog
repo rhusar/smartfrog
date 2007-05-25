@@ -1,0 +1,22 @@
+#
+# Environment Variables for Smartfrog startup
+#
+
+# Home Directory
+SFHOME=${rpm.prefix}
+
+# DISPLAY setting
+#
+# The following settings run to the virtual desktop for root
+#
+if [[ $$HOME == "" ]]
+then
+	HOME=/root
+fi
+
+if [[ $$DISPLAY == "" ]]
+then
+	DISPLAY=localhost:8
+fi
+
+export HOME DISPLAY
