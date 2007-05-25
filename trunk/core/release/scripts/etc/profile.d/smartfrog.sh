@@ -1,7 +1,7 @@
 #!/bin/sh
 # This file contains environment variables needed by the Smartfrog Daemon
 
-export SFHOME="${rpm.prefix}/smartfrog-${smartfrog.version}"
+export SFHOME="${rpm.install.dir}"
 
 # Add the directory of the SmartFrog executables to the path
 if echo ":$${PATH-}:" | grep ":$${SFHOME}:" > /dev/null 2>&1
