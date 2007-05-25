@@ -18,7 +18,7 @@ then
 fi
 
 # Add Smartfrog and Java to the path
-PATH="$${PATH-}:$${SFHOME}/bin:$${SFHOME}"
+PATH="$${PATH-}:$${SFHOME}/bin"
 
 # Export the Display Variable
 export DISPLAY
