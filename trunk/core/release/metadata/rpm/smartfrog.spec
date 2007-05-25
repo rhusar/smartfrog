@@ -44,7 +44,7 @@
 %define bindir          %{basedir}/bin
 %define binsecurity     %{bindir}/security
 %define libdir          %{basedir}/lib
-%define docdir          %{basedir}/docs
+%define docs          %{basedir}/docs
 %define srcdir          %{basedir}/src
 %define examples        %{srcdir}/org/smartfrog/examples
 
@@ -160,13 +160,17 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(0644,-,-,0755)
 
 #ROOT directory
+%dir %{basedir}
 %{basedir}/build.xml
-%{basedir}/changes.txt
-%{basedir}/COPYRIGHT.txt
-%{basedir}/LICENSE.txt
+%doc %{basedir}/changes.txt
+%doc %{basedir}/COPYRIGHT.txt
+%doc %{basedir}/LICENSE.txt
 %{basedir}/parsertargets
-%{basedir}/readme.txt
+%doc %{basedir}/readme.txt
 %{basedir}/smartfrog-version.properties
+
+
+#Bin directory and beneath
 
 #these are config files that should be protected
 %config %{bindir}/default.ini
@@ -193,7 +197,10 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755, -, -) %{bindir}/sfUpdate
 %attr(755, -, -) %{bindir}/sfVersion
 #%attr(755, -, -) %{bindir}/
-
+%{bindir}/*.bat
+#bin/metadata
+%{bindir}/metadata
+#bin/security
 %attr(755, -, -) %{binsecurity}/smartfrog
 %attr(755, -, -) %{binsecurity}/sfDaemon
 %attr(755, -, -) %{binsecurity}/sfDetachAndTerminate
@@ -210,15 +217,15 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755, -, -) %{binsecurity}/sfTerminate
 %attr(755, -, -) %{binsecurity}/sfUpdate
 %attr(755, -, -) %{binsecurity}/sfVersion
-
+%{binsecurity}/*.bat
 
 #now the files in the lib directory...use ant library versions to include version numbers
-%dir %{libdir}
+%{libdir}
 
 #other directories
-%dir %{basedir}/testCA
-%dir %{basedir}/private
-%dir %{basedir}/signedLib
+%{basedir}/testCA
+%{basedir}/private
+%{basedir}/signedLib
 
 
 #%doc # add docs here
@@ -227,10 +234,15 @@ rm -rf $RPM_BUILD_ROOT
 #%files manual
 #%defattr(0644,root,root,0755)
 
-%doc
-%dir %{docdir}
-%dir %{docdir}/images
-%dir %{docdir}/skin
+%docdir %{docs}
+%{docs}
+%doc %{basedir}/src.zip
+
+# %dir %{docs}
+# %dir %{docs}/images
+# %dir %{docs}/skin
+# %dir %{docs}/components
+# %dir %{docs}/openOfficeEmbeddedImage
 
 #%files javadoc
 #%defattr(0644,root,root,0755)
@@ -239,7 +251,7 @@ rm -rf $RPM_BUILD_ROOT
 %files demo
 %defattr(0644,root,root,0755)
 #%{_datadir}/%{name}-%{version}
-%dir %{srcdir}
+%{srcdir}
 
 # -----------------------------------------------------------------------------
 

@@ -200,8 +200,6 @@
     <property name="rpm.release.version" value="2" />
     <property name="rpm.framework" value="Development/Tools" />    
     <newdir name="build.rpm.dir" location="${build.dir}/rpm" />
-    <newdir name="dist.rpm.dir" location="${dist.dir}/rpm" />
-    <property name="target.rpm" location="${dist.rpm.dir}/smartfrog-${smartfrog.version}.rpm" />
 
 
     <newdir name="build.rpm.metadata.dir"
@@ -218,11 +216,22 @@
         location="${rpm.image.dir}/BUILD" />
     <newdir name="rpm.RPMS"
         location="${rpm.image.dir}/RPMS" />
-
+    <newdir name="rpm.noarch"
+        location="${rpm.RPMS}/noarch" />
     <property name="smartfrog.rpmfiles.tar"
       location="${rpm.SOURCES}/smartfrog-${smartfrog.version}.tar"/>
     <property name="smartfrog.rpmfiles.tar.gz"
         location="${smartfrog.rpmfiles.tar}.gz"/>
+    <property name="rpm.suffix"
+        value="${smartfrog.version}-${rpm.release.version}.rpm" />
+    <newdir name="dist.rpm.dir" location="${dist.dir}/rpm" />
+    <copy todir="${dist.rpm.dir}">
+      <fileset dir="${rpm.noarch}" includes="*.rpm" />
+    </copy>
+    <property name="target.rpm"
+        location="${dist.rpm.dir}/smartfrog-${rpm.suffix}" />
+    <property name="demo.rpm"
+        location="${dist.rpm.dir}/smartfrog-demo-${rpm.suffix}" />
   </target>
 
   <target name="copy-rpm-specs" depends="init-rpm">
@@ -251,15 +260,7 @@
 
 
 
-  <!-- TODO: package up everything ready for abuse-->
-  <target name="rpm-internal-tar" depends="init-rpm,ivy-retrieve">
-    <property name="rpm.internal.tar" location="${build.rpm.dir}/smartfrog.tar" />
-    <tar tarfile="${rpm.internal.tar}">
-      <tarfileset prefix="jars" dir="ivy/lib/package-core/">
 
-      </tarfileset>
-    </tar>
-  </target>
 
   <target name="ready-to-rpm" depends="copy-rpm-specs,prepare-binary-rpm">
   </target>
@@ -281,7 +282,6 @@
   </target>
   
   <target name="prepare-binary-rpm" depends="expand-core" >
-    
     <sf-tar destfile="${smartfrog.rpmfiles.tar}" >
       <fileset dir="${build.rpm.dir}/root/" includes="**/*" />
     </sf-tar>
