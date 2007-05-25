@@ -41,7 +41,7 @@ import java.net.URLConnection;
  * property jetty.home</li> <li>setting the system property
  * runtime.jetty.home</li> </ol>
  */
-public class JettyTest
+public class JettyTCPTest
         extends SmartFrogTestBase {
 
     private static final String FILES = "org/smartfrog/services/www/jetty/test/system/full/";
@@ -50,7 +50,7 @@ public class JettyTest
 
     private static final String ROOT_DOC = "/";//""/jetty/index.html";
 
-    public JettyTest(String s) {
+    public JettyTCPTest(String s) {
         super(s);
     }
 

@@ -49,9 +49,12 @@
   <!-- make the WAR file -->
   <target name="war.init" depends="init-standard-output-dirs">
     <property name="target.war.name"
-              value="sf-testwar-${Version}.war"/>
+              value="sf-testwar-${smartfrog.version}.war"/>
+    <property name="dist.war.dir"
+        location="${dist.dir}/lib"/>
+    <mkdir dir="${dist.war.dir}" />
     <property name="testwar.war"
-              location="${dist.dir}/${target.war.name}"/>
+              location="${dist.war.dir}/${target.war.name}"/>
     <property name="testwar.dir"
               location="testwar"/>
     <property name="testwar.lib.dir"
@@ -88,30 +91,9 @@
     </war>
   </target>
 
-  <target name="war-installed"
-    depends="war,ivy-publish"
-      description="install the war file to the m2 repository"
-      xmlns:m2="antlib:org.apache.maven.artifact.ant">
-<!--
-    <property name="testwar.pom.file" location="${build.dir}/testwar.pom"/>
-    <echo file="${testwar.pom.file}"><![CDATA[<project>
-  <modelVersion>4.0.0</modelVersion>
-  <groupId>${m2.groupID}</groupId>
-  <artifactId>testwar</artifactId>
-  <packaging>war</packaging>
-  <version>0.1-SNAPSHOT</version>
-</project>
-]]></echo>
-    <m2:pom id="testwar.pom" file="${testwar.pom.file}"/>
-    <m2:install file="${testwar.war}">
-      <pom refid="testwar.pom"/>
-    </m2:install>
--->
-  </target>
 
-  <!-- ========================================================== -->
-  <!-- clean -->
-  <!-- ========================================================== -->
+  <target name="ready-to-publish-all"
+    depends="common.ready-to-publish-all,war" />
 
  <target name="dist" depends="common.dist,published,jdocs">
     <copy todir = "${dist.lib.dir}">
