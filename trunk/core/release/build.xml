@@ -225,13 +225,13 @@
     <property name="rpm.suffix"
         value="${smartfrog.version}-${rpm.release.version}.rpm" />
     <newdir name="dist.rpm.dir" location="${dist.dir}/rpm" />
-    <copy todir="${dist.rpm.dir}">
-      <fileset dir="${rpm.noarch}" includes="*.rpm" />
-    </copy>
+
     <property name="target.rpm"
         location="${dist.rpm.dir}/smartfrog-${rpm.suffix}" />
     <property name="demo.rpm"
         location="${dist.rpm.dir}/smartfrog-demo-${rpm.suffix}" />
+    <property name="daemon.rpm"
+        location="${dist.rpm.dir}/smartfrog-daemon-${rpm.suffix}" />
   </target>
 
   <target name="copy-rpm-specs" depends="init-rpm">
@@ -272,6 +272,9 @@
         topDir="${rpm.image.dir}"
         cleanBuildDir="true"
         failOnError="true"/>
+    <copy todir="${dist.rpm.dir}">
+      <fileset dir="${rpm.noarch}" includes="*.rpm" />
+    </copy>
   </target>
 
   <target name="expand-core" depends="init-rpm,ivy-retrieve">
