@@ -3,7 +3,7 @@
 #
 
 # Home Directory
-SFHOME=${rpm.prefix}
+SFHOME=${rpm.install.dir}
 
 # DISPLAY setting
 #
