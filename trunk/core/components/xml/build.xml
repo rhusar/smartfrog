@@ -33,7 +33,7 @@
   <property file="build.properties"/>
   <property name="is.component" value="true"/>
   <property name="ivy.enabled" value="true"/>
-  <property name="javac.java.version" value="1.5"/>
+
   <!-- Import common stuff -->
   <import file="../../common.xml"/>
   
@@ -61,6 +61,7 @@
     <condition property="javac.is.1.4" >
       <equals arg1="${javac.version}" arg2="1.4" />
     </condition>
+    <property name="javac.java.version" value="${javac.version}"/>
   </target>
 
   <target name="javac.version" depends="check-versions" if="javac.is.1.4">
@@ -126,6 +127,29 @@
         </fileset>
       <group title="SmartFrog Packages" packages="org.smartfrog.*"/>
     </sf-javadoc>
+  </target>
+
+
+  <!-- ========================================================== -->
+  <!-- this is an override point -->
+  <!-- compile everything, copy useful files over-->
+  <!-- ========================================================== -->
+  <target name="compile-tests"
+    depends="ready-to-compile-tests"
+    if="test.dir.found">
+    <depend
+      srcdir="${test.src.dir}"
+      destdir="${test.classes.dir}"
+      cache="${build.test.dir}/depends"
+      closure="yes"/>
+    <sf-javac
+      srcdir="${test.src.dir}"
+      destdir="${test.classes.dir}"
+      classpathref="tests.compile.classpath"
+      source="${javac.version}"
+      target="${javac.version}"
+      />
+    <copy-useful-files src="${test.src.dir}" dest="${test.classes.dir}"/>
   </target>
 
   <!-- ========================================================== -->
