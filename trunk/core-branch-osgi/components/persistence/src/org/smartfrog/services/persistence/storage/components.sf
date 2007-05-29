@@ -1,7 +1,0 @@
-#include "org/smartfrog/components.sf"
-
-
-
-Storage extends DATA {
-    wfStorageClass TBD;
-}

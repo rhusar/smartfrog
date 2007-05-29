@@ -1,5 +1,0 @@
-machines=ebnt171:ritu:
-
- 
- 
-
