@@ -1,0 +1,151 @@
+<?xml version="1.0" ?>
+<project name="docs" default="init-docs"
+         xmlns:m="http://smartfrog.org/macro">
+
+  <description>
+    Mixin to create javadocs and other documentation.
+
+    TODO: THIS IS NOT YET READY FOR USE 
+  </description>
+
+
+  <import file="macros-mixin.xml" />
+
+
+  <target name="javadoc-initialized" depends="initialized">
+
+    <property name="javadoc.access" value="protected"/>
+    <property name="javadoc.author" value="false"/>
+    <property name="javadoc.version" value="true"/>
+    <property name="javadoc.use" value="true"/>
+    <property name="javadoc.windowtitle" value="${Name.System}"/>
+    <property name="javadoc.packagenames" value="org.smartfrog.*"/>
+    <property name="javadoc.header" value="${Name.System} ${Version}"/>
+    <property name="javadoc.footer" value="${Name.System} ${Version}"/>
+    <presetdef name="javadoc" uri="${macros-mixin.uri}">
+      <javadoc packagenames="${javadoc.packagenames}"
+               author="${javadoc.author}"
+               version="${javadoc.version}"
+               use="${javadoc.use}"
+               windowtitle="${javadoc.windowtitle}"
+               header="${javadoc.header}"
+               footer="${javadoc.footer}"
+               doctitle="${Name.System}"
+               bottom="${Name.Company}"
+               source="${javac.java.version}"
+               verbose="false"
+          >
+      </javadoc>
+    </presetdef>
+
+  </target>
+
+  <target name="ready-to-javadoc" depends="compiled,javadoc-initialized" />
+
+
+  <target name="javadocs"
+          depends="ready-to-javadoc"
+      >
+    <mkdir dir="${dist.javadoc.dir}"/>
+    <m:javadoc
+        sourcepath="${src.dir}"
+        packagenames="org.smartfrog.*"
+        destdir="${dist.javadoc.dir}"
+        classpathref="exec.classpath"
+        >
+      <group title="SmartFrog Packages" packages="org.smartfrog.*"/>
+    </m:javadoc>
+  </target>
+
+
+  <target name="javadocs-finished" depends="package-javadocs" />
+
+
+  <target name="init-docs" depends="initialized,init-core" >
+    <property name="doc.dir" location="doc" />
+    <available property="doc.dir.found" file="${doc.dir}"/>
+  </target>
+
+  <target name="ready-to-process-other-docs" depends="init-docs" />
+
+  <!--
+    doc processing only if the directory is found
+  -->
+  <target name="process-other-docs" depends="ready-to-process-other-docs"
+      if="doc.dir.found">
+    <tstamp/>
+    <copy todir="${dist.doc.dir}" overwrite="true">
+      <fileset dir="${doc.dir}" includes="**/*.html"/>
+      <filterset>
+        <filter token="DATE" value="${DSTAMP}"/>
+        <filter token="TIME" value="${TSTAMP}"/>
+      </filterset>
+    </copy>
+
+
+    <copy todir="${dist.doc.dir}" overwrite="true">
+      <fileset dir="${doc.dir}" includes="**/*.txt"/>
+      <filterset begintoken="[[" endtoken="]]">
+        <filter token="DATE" value="${DSTAMP}"/>
+        <filter token="TIME" value="${TSTAMP}"/>
+        <filter token="TIMESTAMP" value="${timestamp.isoformat}"/>
+      </filterset>
+    </copy>
+
+    <copy todir="${dist.doc.dir}" >
+      <fileset dir="${doc.dir}">
+        <include name="**/*.pdf" />
+        <include name="**/*.sx?" />
+        <include name="**/*.od?" />
+        <include name="**/*.ppt" />
+        <include name="**/*.doc" />
+      </fileset>
+    </copy>
+
+  </target>
+
+  <target name="other-docs-finished" depends="package-documents" />
+
+  <!--state in which all other docs are finished.-->
+  <target name="documents-processed"
+      depends="javadocs-finished,other-docs-finished" />
+
+
+  <!--Package up the javadocs into their own zip file-->
+  <target name="ready-to-package-javadocs" depends="javadocs,artifact-names">
+  </target>
+
+  <target name="package-javadocs" depends="ready-to-package-javadocs"
+          description="package up all the javadocs">
+    <zip destfile="${javadocs.zip}">
+      <zipfileset dir="${dist.javadoc.dir}" includes="**/*.*"
+                  prefix="javadoc"/>
+    </zip>
+  </target>
+
+  <target name="documents-packaged" depends="package-documents" />
+
+  <!-- ========================================================== -->
+  <!--  set up the documentation-->
+  <!-- ========================================================== -->
+
+  <target name="init-documents" depends="artifact-names">
+
+  </target>
+
+  <target name="ready-to-package-documents" depends="process-other-docs">
+
+  </target>
+
+  <target name="package-documents" depends="ready-to-package-documents,artifact-names">
+    <zip destfile="${documentation.zip}"
+         whenempty="create" duplicate="preserve">
+      <!--fileset is set up to work if there are no artifacts-->
+      <zipfileset dir="${dist.doc.dir}" prefix="doc">
+        <include name="**/*" />
+      </zipfileset>
+    </zip>
+  </target>
+
+
+</project>

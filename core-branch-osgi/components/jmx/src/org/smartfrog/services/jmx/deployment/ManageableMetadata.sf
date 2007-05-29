@@ -1,0 +1,257 @@
+/** (C) Copyright 1998-2005 Hewlett-Packard Development Company, LP
+
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+For more information: www.smartfrog.org
+
+*/
+
+#include "org/smartfrog/services/jmx/mbean/metadata.sf"
+
+ManageableMetadata extends {
+
+  /*** MANAGEABLE ATTRIBUTES ***/
+  sfClass extends SfClass;
+  sfProcessComponentName extends SfProcessComponentName;
+  sfProcessName extends SfProcessName;
+  sfProcessHost extends SfProcessHost;
+  sfExport extends SfExport;
+
+  descriptorType extends DescriptorType;
+  role extends Role;
+  severity extends Severity;
+  log extends Log;
+  logfile extends Logfile;
+  visibility extends Visibility;
+  default extends Default;
+  getMethod extends GetMethod;
+  setMethod extends SetMethod;
+  role extends Role;
+  protocol extends ProtocolMap;
+  persistPolicy extends PersistPolicy;
+  persistPeriod extends PersistPeriod;
+  currencyTimeLimit extends CurrencyTimeLimit;
+  iterable extends Iterable;
+  presentationString extends PresentationString;
+
+  domain extends Domain;
+  name extends Name;
+  type extends Type;
+  description extends Description;
+  readable extends Readable;
+  writable extends Writable;
+  class extends Class;
+  host extends Host;
+  port extends Port;
+  sfAgentAddress extends SfAgentAddress;
+
+  /*** MANAGEABLE METHODS ***/
+  sfDeploy extends SfDeploy;
+  sfStart extends SfStart;
+  sfDetach extends SfDetach;
+  sfTerminate extends SfTerminate;
+  sfDetachAndTerminate extends SfDetachAndTerminate;
+
+  sfGetAttribute extends SfGetAttribute;
+  sfGetRoot extends SfGetRoot;
+  sfGetAttributes extends SfGetAttributes;
+  sfSetAttribute extends SfSetAttribute;
+  sfAddAttribute extends SfAddAttribute;
+  sfRemoveAttribute extends SfRemoveAttribute;
+  sfGetMethods extends SfGetMethods;
+  sfInvokeMethod extends SfInvokeMethod;
+  sfChangeAccess extends SfChangeAccess;
+}
+
+
+/**
+ * Attributes descriptions for DeploymentModelMBean
+ */
+RootPath extends AttributeInfo {
+  name "RootPath";
+  type "java.lang.String";
+  writable false;
+  getMethod "getRootPath";
+  description "Full path of the component from which the deployment tree is visualized";
+}
+
+/**
+ * Operation descriptions for DeploymentModelMBean
+ */
+GetRootPath extends OperationInfo {
+  name "getRootPath";
+  role "getter";
+  impact "ACTION";
+  description "Returns the full path of the root target from which this DeploymentAnalyzer introspects the deployment tree";
+}
+
+SfGetAttribute extends OperationInfo {
+  name "sfGetAttribute";
+  parameter1 extends ParameterInfo {
+    name "Attribute";
+    type "java.lang.String";
+    description "Path of the attribute to be retrieved";
+  }
+  role "getter";
+  impact "INFO";
+  description "Retrieves the value of the attribute specified in the parameter";
+}
+
+SfGetRoot extends OperationInfo {
+  name "sfGetRoot";
+  role "operation";
+  impact "INFO";
+  description "Returns a representant containing information about the root component for this view";
+}
+
+SfGetAttributes extends OperationInfo {
+  name "sfGetAttributes";
+  parameter1 extends ParameterInfo {
+    name "Component";
+    type "java.lang.String";
+    description "Path of the attributes to be retrieved";
+  }
+  role "operation";
+  impact "INFO";
+  description "Retrieves the values of the attributes specified in the parameter";
+}
+
+SfSetAttribute extends OperationInfo {
+  name "sfSetAttribute";
+  parameter1 extends ParameterInfo {
+    name "Attribute";
+    type "java.lang.String";
+    description "Path of the attribute to be modified";
+  }
+  parameter2 extends ParameterInfo {
+    name "Value";
+    type "java.lang.Object";
+    description "New value for the attribute to be set";
+  }
+  role "setter";
+  impact "ACTION";
+  description "Modifies the value of the attribute specified as a parameter";
+}
+
+SfAddAttribute extends OperationInfo {
+  name "sfAddAttribute";
+  parameter1 extends ParameterInfo {
+    name "Attribute";
+    type "java.lang.String";
+    description "Path of the attribute to be modified";
+  }
+  parameter2 extends ParameterInfo {
+    name "Value";
+    type "java.lang.String";
+    description "Initial value for the attribute";
+  }
+  parameter3 extends ParameterInfo {
+    name "Type";
+    type "java.lang.String";
+    description "Specifies the type of the value";
+  }
+  parameter4 extends ParameterInfo {
+    name "Description";
+    type "java.lang.String";
+    description "Specifies a description for the new attribute";
+  }
+  parameter5 extends ParameterInfo {
+    name "Readable";
+    type "boolean";
+    description "Eneables the new attribute to be read";
+  }
+  parameter6 extends ParameterInfo {
+    name "Writable";
+    type "boolean";
+    description "Eneables the new attribute to be modified";
+  }
+  role "operation";
+  impact "INFO";
+  description "Adds a new attribute in the SmartFrog component";
+}
+
+SfRemoveAttribute extends OperationInfo {
+  name "sfRemoveAttribute";
+  parameter1 extends ParameterInfo {
+    name "Attribute";
+    type "java.lang.String";
+    description "Name of the attribute to be removed";
+  }
+  role "operation";
+  impact "ACTION";
+  description "Removes the attribute specified as a parameter";
+}
+
+SfGetMethods extends OperationInfo {
+  name "sfGetMethods";
+  parameter1 extends ParameterInfo {
+    name "Component";
+    type "java.lang.String";
+    description "Path of the component whose methods we want to obtain";
+  }
+  role "operation";
+  impact "INFO";
+  description "Retrieves all the methods in the specified component path";
+}
+
+SfInvokeMethod extends OperationInfo {
+  name "sfInvokeMethod";
+  parameter1 extends ParameterInfo {
+    name "Component";
+    type "java.lang.String";
+    description "Path of the component whose method we want to invoke";
+  }
+  parameter2 extends ParameterInfo {
+    name "Method";
+    type "java.lang.String";
+    description "Name of the method";
+  }
+  parameter3 extends ParameterInfo {
+    name "Parameters";
+    type "java.lang.String";
+    description "List of parameters separated by commas";
+  }
+  parameter4 extends ParameterInfo {
+    name "Signatures";
+    type "java.lang.String";
+    description "List of parameter signatures separated by commas";
+  }
+  role "operation";
+  impact "ACTION_INFO";
+  description "Retrieves all the methods in the specified component path";
+}
+
+SfChangeAccess extends OperationInfo {
+  name "sfChangeAccess";
+  parameter1 extends ParameterInfo {
+    name "Attribute";
+    type "java.lang.String";
+    description "Name of the attribute whose access is going to be modified";
+  }
+  parameter2 extends ParameterInfo {
+    name "Readable";
+    type "boolean";
+    description "Eneables the new attribute to be read";
+  }
+  parameter3 extends ParameterInfo {
+    name "Writable";
+    type "boolean";
+    description "Eneables the new attribute to be modified";
+  }
+  role "operation";
+  impact "ACTION";
+  description "Changes the read/write permission for the specified attribute";
+  scope "administrator";
+}

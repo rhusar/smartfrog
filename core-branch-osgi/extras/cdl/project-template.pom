@@ -1,0 +1,24 @@
+<project>
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.smartfrog</groupId>
+  <artifactId>sf-cdl</artifactId>
+  <packaging>jar</packaging>
+  <version>${Version}</version>
+  <dependencies>
+    <dependency>
+      <groupId>org.ggf</groupId>
+      <artifactId>cddlm</artifactId>
+      <version>${cddlm.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>commons-logging</groupId>
+      <artifactId>commons-logging-api</artifactId>
+      <version>${commons-logging.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.smartfrog</groupId>
+      <artifactId>sf-xml</artifactId>
+      <version>${Version}</version>
+    </dependency>
+  </dependencies>
+</project>
