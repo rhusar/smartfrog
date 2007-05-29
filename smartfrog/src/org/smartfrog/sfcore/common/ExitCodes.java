@@ -75,7 +75,9 @@ public final class ExitCodes {
      * @param code int
      */
     public static void exit(int code) {
-        System.exit(code);
+        //System.exit(code);
+        // TODO Shutdown RMI registry
+        System.out.println("SmartFrog stopping. Exit code: " + code);
     }
 
 
