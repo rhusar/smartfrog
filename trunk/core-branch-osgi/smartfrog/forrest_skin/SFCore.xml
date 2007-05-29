@@ -1,0 +1,87 @@
+<?xml version="1.0"?>
+<!--
+  Copyright 2002-2004 The Apache Software Foundation
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+  -->
+  <!DOCTYPE document PUBLIC "-//APACHE//DTD Documentation V2.0//EN" "http://forrest.apache.org/dtd/document-v20.dtd">
+<document> 
+  <header> 
+	  <title>SmartFrog Core</title>
+	  <abstract>Here is the List of available documents for Smartfrog Core.</abstract>
+  </header> 
+  <body> 
+
+
+      <section id="BuildSmartFrog">
+	    <title>Building SmartFrog System</title>
+	     <p>This document describes how to build the SmartFrog framework from its source files. It describes how to set up the development system, and how to execute the build scripts.
+Links to document : <a href="build.html">HTML</a> , "<a href="http://svn.sourceforge.net/viewvc/*checkout*/smartfrog/trunk/core/smartfrog/docs/build.html">SVN (Online)</a>"   </p>
+    </section>
+
+    <section id="SmartFrogTutorial">
+	    <title>SmartFrog Tutorial</title>
+	     <p>
+This document provides an introduction to SmartFrog, and provides a step-by-step guide to
+system configuration and deployment using the framework. It brings together material from The
+SmartFrog Reference Manual, The SmartFrog User Guide and The SmartFrog API (Javadoc),
+which should be consulted for details.
+Links to document : <a href="SmartFrogTutorial.html">HTML</a> , <a href="SmartFrogTutorial.pdf">PDF</a> and "<a href="http://svn.sourceforge.net/viewvc/*checkout*/smartfrog/trunk/core/smartfrog/docs/SmartFrogTutorial.pdf">SVN (Online)</a>"   </p>
+    </section>
+
+       <section id="QuickReference">
+      <title>Quick Reference</title>
+      <p>Quick Reference to SmartFrog Language
+	      Links to document : <a href="sfQuickRef.html">HTML</a> , <a href="sfQuickRef.pdf">PDF</a>   and
+        <a href="http://svn.sourceforge.net/viewvc/*checkout*/smartfrog/trunk/core/smartfrog/docs/sfQuickRef.pdf">SVN (Online)</a>   </p>
+    </section>
+
+       <section id="UserManual">
+      <title>User Manual</title>
+      <p>This manual is aimed at those wanting to run the SmartFrog framework. It assumes that user is working with the binary distribution of the SmartFrog framework. 
+	      Links to document : <a href="sfUserManual.html">HTML</a> , <a href="sfUserManual.pdf">PDF</a> , <a href="http://svn.sourceforge.net/viewvc/*checkout*/smartfrog/trunk/core/smartfrog/docs/sfUserManual.pdf">SVN (Online)</a>   </p>
+    </section>
+
+ <section id="Reference">
+      <title>Reference Manual</title>
+      <p>
+	      This manual is aimed at those wanting to use and understand the workings of SmartFrog. It is not a basic tutorial, though hopefully it is not too obscure, either. The notation is described fully, as is the component model. The framework, however, is only outlined. For a detailed reference description of the framework APIs, users should refer to the accompanying Javadoc files.
+
+	      Links to document : <a href="sfReference.html">HTML</a> , <a href="sfReference.pdf">PDF</a> , <a href="http://svn.sourceforge.net/viewvc/*checkout*/smartfrog/trunk/core/smartfrog/docs/sfReference.pdf">SVN (Online)</a>   </p>
+    </section>
+
+ <section id="WorkFlow">
+      <title>WorkFlow</title>
+      <p>This document shows how the SmartFrog system has been extended to become a simple and lightweight workflow-like system (known as SmartFlow) for carrying out complex tasks requiring distributed actions on clusters of machines, and where ordering, recovery from failure, etc. are important features. 
+	      Links to document : <a href="sfWorkflow.html">HTML</a> , <a href="sfWorkflow.pdf">PDF</a> , "<a href="http://svn.sourceforge.net/viewvc/*checkout*/smartfrog/trunk/core/smartfrog/docs/sfWorkflow.pdf">SVN (Online)</a>"   </p>
+    </section>
+  <section id="IDEDevelopment">
+      <title>IDE Development</title>
+      <p>This document covers how to work with the SmartFrog source trees from inside IDEs. 
+	      Links to document : <a href="IDE_development.html">HTML </a> , <a href="IDE_development.pdf">PDF</a> , "<a href="http://svn.sourceforge.net/viewvc/*checkout*/smartfrog/trunk/core/smartfrog/docs/IDE_development.pdf">SVN (Online)</a>"   </p>
+    </section>
+ <section id="Logging">
+      <title>Logging</title>
+      <p>SmartFrog has a logging system as part of its fundamental core which can be extended in interesting ways, but which provides the component writer with that consistent interface common for all components and the core of SmartFrog itself.
+	      Links to document : <a href="sfLogging.html">HTML</a> , <a href="sfLogging.pdf">PDF</a> , "<a href="http://svn.sourceforge.net/viewvc/*checkout*/smartfrog/trunk/core/smartfrog/docs/sfLogging.pdf">SVN (Online)</a>"   </p>
+    </section>
+ 	
+  </body>
+</document>
+
+
+		
+     
+
+  
+

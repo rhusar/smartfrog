@@ -1,0 +1,175 @@
+package org.smartfrog.examples.counter;
+
+import java.rmi.RemoteException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.common.SmartFrogResolutionException;
+import org.smartfrog.sfcore.prim.Prim;
+import org.smartfrog.sfcore.prim.PrimImpl;
+import org.smartfrog.sfcore.prim.TerminationRecord;
+import org.smartfrog.sfcore.logging.LogSF;
+
+public class CounterImpl extends PrimImpl implements Prim, Counter, Runnable {
+    int counter = 1;
+    String message = "Hola Mundo!";
+	String newMessage = "Ciao Bel Mondo!";
+    int limit = 2;
+    Thread action = null;
+    int sleeptime=1000;
+    LogSF logCore = null;
+    LogSF logApp = null;
+    private boolean debug = true;
+    private String myName = "CounterImpl";
+    public CounterImpl() throws RemoteException {
+    }
+    /* LifeCycle methods */
+    public synchronized void sfDeploy() throws SmartFrogException,
+    RemoteException {
+            super.sfDeploy();
+            logCore = sfGetProcessLog();
+            logApp = this.sfGetApplicationLog();
+            myName = this.sfCompleteNameSafe().toString();
+            readSFAttributes();
+    }
+    public synchronized void sfStart() throws SmartFrogException,
+    RemoteException {
+        super.sfStart();
+        log("sfStart", "Starting with msg-" + message);
+        System.out.println("********Temporal test for logging*************");
+		System.out.println(newMessage);
+        if (logApp.isTraceEnabled()){
+          System.out.println("TRACE:"+message);
+          logApp.trace(message);
+          System.out.println();
+        }
+        if (logApp.isDebugEnabled()){
+          System.out.println("DEBUG:"+message);
+          logApp.debug(message);
+          System.out.println();
+        }
+        if (logApp.isInfoEnabled()){
+          System.out.println("INFO:"+message);
+          logApp.info(message);
+          System.out.println();
+        }
+        if (logApp.isWarnEnabled()){
+          System.out.println("WARN:"+message);
+          logApp.warn(message);
+          System.out.println();
+        }
+        if (logApp.isErrorEnabled()){
+          System.out.println("ERROR:"+message);
+          logApp.error(message);
+          System.out.println();
+        }
+        if (logApp.isFatalEnabled()){
+          System.out.println("FATAL:"+message);
+          logApp.fatal(message);
+          System.out.println();
+        }
+        if (logApp.isInfoEnabled()){
+          System.out.println(".out:"+message);
+          logApp.out(message);
+          System.out.println();
+          System.out.println(".err:"+message);
+          logApp.err(message);
+          logApp.err(message+1,null);
+          System.out.println();
+        }
+        System.out.println("******************************");
+        action = new Thread(this);
+        action.start();
+    }
+    public synchronized void sfTerminateWith(TerminationRecord t) {
+        log("sfTerminateWith", " Terminating for reason: " + t.toString());
+        if (action != null) {
+            action.interrupt();
+        }
+        super.sfTerminateWith(t);
+    }
+    /* End LifeCycle methods */
+    private void readSFAttributes() throws SmartFrogException, RemoteException {
+        try {
+            limit = sfResolve(ATR_LIMIT, limit, true);
+        } catch (SmartFrogResolutionException e) {
+            error("readSFAttributes","Failed to read mandatory attribute: "+
+                    limit +"Error:"+ e.toString());
+            throw e;
+        }
+        debug = sfResolve(ATR_DEBUG, debug, false);
+        counter = sfResolve(ATR_COUNTER, counter, null, new Integer(limit),
+            false);
+        message = sfResolve(ATR_MESSAGE, message, false);
+        sleeptime = sfResolve(ATR_SLEEP,sleeptime,false);
+        if(sleeptime<0) {
+            throw new SmartFrogResolutionException("Attribute "
+                    +ATR_SLEEP+" cannot be less than zero");
+        }
+    }
+    public void run() {
+        try {
+            while (limit >= counter) {
+                //System.out.println("COUNTER: " + message + " " + counter);
+                String messageSt = ("COUNTER: " + message + " " + counter);
+                System.out.println(messageSt.toString());
+                logApp.out(messageSt);
+                logCore.info(messageSt);
+                logApp.info(messageSt);
+                if(sleeptime>0) {
+                    Thread.sleep(sleeptime);
+                }
+                counter++;
+            }
+        } catch (InterruptedException ie) {
+            exception("run", ie);
+        }
+    }
+    private void error(String method, String message) {
+        if (debug) {
+            StringBuffer msg = new StringBuffer();
+            msg.append (myName);
+            msg.append (".");
+            msg.append (method);
+            msg.append ( " [" );
+            msg.append ((new SimpleDateFormat("HH:mm:ss.SSS z, yyyy/MM/dd").
+                    format(new Date())));
+            msg.append ("]> ");
+            msg.append (message);
+            if (logCore.isErrorEnabled()) logCore.error(msg.toString()+"\n");
+            System.err.println(msg.toString());
+        }
+    }
+    private void log(String method, String message) {
+        if (debug) {
+            StringBuffer msg = new StringBuffer();
+            msg.append (myName);
+            msg.append (".");
+            msg.append (method);
+            msg.append ( " [" );
+            msg.append ((new SimpleDateFormat("HH:mm:ss.SSS z, yyyy/MM/dd").
+                    format(new Date())));
+            msg.append ("]> ");
+            msg.append (message);
+            System.out.println(msg.toString());
+            if (logCore.isInfoEnabled()) logCore.info(msg.toString()+"\n");
+        }
+    }
+    private void exception(String method, Throwable exception) {
+        if (debug) {
+            StringBuffer msg = new StringBuffer();
+            msg.append (myName);
+            msg.append (".");
+            msg.append ( "Exception");
+            msg.append ( " [" );
+            msg.append ((new SimpleDateFormat("HH:mm:ss.SSS z, yyyy/MM/dd").
+                    format(new Date())));
+            msg.append ("]> ");
+            msg.append (message);
+            if (logCore.isErrorEnabled())  logCore.error(msg.toString()+"\n",exception);
+            msg.append("\n StackTrace: ");
+            msg.append(exception.getStackTrace().toString());
+            System.err.println(msg.toString());
+        }
+    }
+}

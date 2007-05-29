@@ -1,0 +1,919 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema targetNamespace="http://gridforum.org/cddlm/serviceAPI/types/2004/10/11/" xmlns:types="http://gridforum.org/cddlm/serviceAPI/types/2004/10/11/" xmlns="http://gridforum.org/cddlm/serviceAPI/types/2004/10/11/" xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+
+  elementFormDefault="qualified">
+  <!--
+xmlns:wsa="http://schemas.xmlsoap.org/ws/2003/03/addressing"
+xmlns:jsdl="http://www.gridforum.org/JSDL"
+  xmlns:wsbf="http://www.ibm.com/xmlns/stdwip/web-services/WS-BaseFaults"
+    -->
+  <!-- ============================================================= -->
+  <xsd:annotation>
+    <xsd:documentation>
+  
+    This is the XSD describing the types of the CDDLM service API
+
+
+    Version: 0.1.
+    This is an initial draft for the first demonstration-grade prototypes.
+    It may change completely in future.
+
+
+    The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL
+    NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED",  "MAY", and
+    "OPTIONAL" in this document are to be interpreted as described in
+    RFC 2119.
+    http://www.ietf.org/rfc/rfc2119.txt
+
+    </xsd:documentation>
+  </xsd:annotation>
+  <!-- ============================================================= -->
+  <!-- ============================================================= -->
+  <!-- BEGIN IMPORTS -->
+  <!-- ============================================================= -->
+  <!--   <xsd:import
+    namespace="http://schemas.xmlsoap.org/ws/2003/03/addressing"
+    schemaLocation="ws-addressing.xsd"/> -->
+  <!-- <xsd:import
+     namespace="http://www.ibm.com/xmlns/stdwip/web-services/WS-BaseFaults"
+     schemaLocation="WS-BaseFaults.xsd"/> -->
+  <!-- ============================================================= -->
+  <!-- END IMPORTS -->
+  <!-- ============================================================= -->
+  <!-- low level type: XML with no validations, namespace = ##other -->
+  <xsd:complexType name="unboundedXMLOtherNamespace">
+    <xsd:sequence>
+      <xsd:any namespace="##other" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
+    </xsd:sequence>
+  </xsd:complexType>
+  <!-- low level type: XML with no validations, namespace = ##any  -->
+  <xsd:complexType name="unboundedXMLAnyNamespace">
+    <xsd:sequence>
+      <xsd:any namespace="##any" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <!-- ============================================================= -->
+  <!-- lifecycle states-->
+  <!-- ============================================================= -->
+  <xsd:simpleType name="lifecycleStateEnum">
+    <xsd:annotation>
+      <xsd:documentation>
+      Enumeration of lifecycle states.
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="undefined">
+        <xsd:annotation>
+          <xsd:documentation>
+            Undefined state.
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:enumeration>
+      <xsd:enumeration value="instantiated">
+        <xsd:annotation>
+          <xsd:documentation>
+            Instantiated component
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:enumeration>
+      <xsd:enumeration value="initialized">
+        <xsd:annotation>
+          <xsd:documentation>
+            Initialized component
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:enumeration>
+      <xsd:enumeration value="running">
+        <xsd:annotation>
+          <xsd:documentation>
+            Running deployment
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:enumeration>
+      <xsd:enumeration value="failed">
+        <xsd:annotation>
+          <xsd:documentation>
+            Application has failed
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:enumeration>
+      <xsd:enumeration value="terminated">
+        <xsd:annotation>
+          <xsd:documentation>
+            Application has terminated
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:enumeration>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <!-- ============================================================= -->
+  <!-- naming rules for application -->
+  <!-- we may want a more restrictive policy, such as
+    <xsd:restriction base="xsd:string">
+      <xsd:pattern value="[\p{L}\-\.][\p{L}\-\.\P{Nd}]*"/>
+    </xsd:restriction>
+  -->
+  <!-- ============================================================= -->
+  <xsd:simpleType name="applicationNameType">
+    <xsd:annotation>
+      <xsd:documentation>
+        This is the policy for the naming of applications
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:NCName"/>
+  </xsd:simpleType>
+  <!-- ============================================================= -->
+  <!-- The response to deployment requests is the URI to a endpoint
+       within the Basic-Services generated component model -->
+  <!-- Commentary: we may want to make this a WS-Addressing endpoint -->
+  <!-- ============================================================= -->
+  <xsd:simpleType name="applicationReferenceType">
+    <xsd:annotation>
+      <xsd:documentation>
+        This is the policy for the naming of applications
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:anyURI"/>
+  </xsd:simpleType>
+  <!-- ============================================================= -->
+  <!-- allows the caller to pass a URL to a deploy descriptor, instead
+       of the body itself. This allows signed descriptors inside
+       files to be used as a source of data -->
+  <!-- ============================================================= -->
+  <xsd:simpleType name="remoteDescriptorType">
+    <xsd:annotation>
+      <xsd:documentation>
+        Descriptors can also be URLs.
+        We extend the URI type in case of future needs to add attributes such as
+        authentication information.
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:anyURI"/>
+  </xsd:simpleType>
+  <!-- ============================================================= -->
+  <!-- BEGIN COMPLEXTYPES -->
+  <!-- ============================================================= -->
+
+  <!-- ============================================================= -->
+  <!-- composite representation of notification enum, address and identifier -->
+  <!-- ============================================================= -->
+  <xsd:complexType name="notificationInformationType">
+    <xsd:annotation>
+      <xsd:documentation>
+      Notification information consists of a selection of a notification mechanism,
+      an identifier that is used in all messages to help identify the conversation,
+      and whatever subscription information that notification mechanism expects.
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="type" type="xsd:anyURI"/>
+      <xsd:element name="identifier" type="xsd:string"/>
+      <xsd:element name="subscription" type="unboundedXMLOtherNamespace"/>
+    </xsd:sequence>
+  </xsd:complexType>
+  <!-- ============================================================= -->
+  <!--
+    we could actually explicitly declare both the smartfrog
+    and CDL types in here, but are not, because we can be independent
+    of all deployment types here
+  -->
+  <!-- ============================================================= -->
+  <xsd:complexType name="deploymentDescriptorType">
+    <xsd:annotation>
+      <xsd:documentation>
+      A deployment descriptor is either arbitrary XML, or a URL to arbitrary XML
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:choice>
+      <xsd:element name="reference" type="xsd:anyURI">
+        <xsd:annotation>
+          <xsd:documentation>
+            A remote reference to the deployment descriptor.
+            This may refer to a descriptor stored inside an application archive,
+            or it may refer to a remote URL that must be retrieved. The security
+            implications of the latter are quite serious, and unless the retrieval
+            path is the local file system, implementations are strongly encouraged
+            not to support it unless the descriptor is signed in some manner.
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="body">
+        <xsd:annotation>
+          <xsd:documentation>
+            The deployment descriptor, inline
+          </xsd:documentation>
+        </xsd:annotation>
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:any namespace="##other" processContents="lax"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+    </xsd:choice>
+    <xsd:attribute name="language" type="xsd:anyURI" use="required">
+      <xsd:annotation>
+        <xsd:documentation>
+        The URI identifying the language of the descriptor.
+        </xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+    <xsd:attribute name="version" type="xsd:string" use="optional">
+      <xsd:annotation>
+        <xsd:documentation>
+          An optional language version string. Optional because some
+          languages may wish to use different URIs for each version,
+          or include any relevant version metadata inside the language
+          document itself.
+        </xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+  </xsd:complexType>
+  <!-- ============================================================= -->
+  <!-- TODO: incorporate JSDL into the specification -->
+  <!-- ============================================================= -->
+  <xsd:complexType name="jsdlType">
+    <xsd:annotation>
+      <xsd:documentation>
+        This is the jsdl content. It should be in the namespace http://www.gridforum.org/JSDL.
+        The reason we are not explicitly declaring the JSDL import is to
+        (a) stop the SOAP stack trying to parse it.
+        (b) decouple the API from changes in the spec.
+        (c) handle WSDL parsers that are no good at taking in extra schemas
+            (like the Mono implementation)
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:choice>
+        <xsd:element name="reference" type="xsd:anyURI">
+          <xsd:annotation>
+            <xsd:documentation>
+            A remote reference to the JSDL description.
+          </xsd:documentation>
+          </xsd:annotation>
+        </xsd:element>
+        <xsd:element name="description">
+          <xsd:annotation>
+            <xsd:documentation>
+            The JSDL submission
+          </xsd:documentation>
+          </xsd:annotation>
+          <xsd:complexType>
+            <xsd:sequence>
+              <xsd:any namespace="##any" processContents="lax"/>
+            </xsd:sequence>
+          </xsd:complexType>
+        </xsd:element>
+      </xsd:choice>
+    </xsd:sequence>
+  </xsd:complexType>
+  <!-- ============================================================= -->
+  <!-- application naming -->
+  <!-- ============================================================= -->
+  <xsd:complexType name="applicationNameOrReferenceType">
+    <xsd:annotation>
+      <xsd:documentation>
+      A type that can contain either an application name or a reference.
+      Names are only unique to a host, but the combination of (host,name) is
+      guaranteed to be unique and valid over multiple deployment.
+      References are only valid for a single deployment.
+      URL information
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:choice>
+      <xsd:element name="name" type="types:applicationNameType"/>
+      <xsd:element name="reference" type="types:applicationReferenceType"/>
+    </xsd:choice>
+  </xsd:complexType>
+  <!-- ============================================================= -->
+  <!-- options -->
+  <!-- ============================================================= -->
+  <xsd:complexType name="optionType">
+    <xsd:annotation>
+      <xsd:documentation>
+        Options are @uri plus (string|integer|boolean|XML)
+        really, all could be XML, but that forces too much parse complexity
+        having string and integer attributes makes it simpler.
+
+        A processor of the options MUST ignore options that it does not recognise
+        and that are marked mustUnderstand==false.
+
+        It MUST fail if it receives an option marked mustUnderstand==true that it
+        does not recognise or can not process in accordance with the
+        normative/descriptive definition of the option.
+
+        It is also illegal to have more than one of the option types defined.
+        If the SOAP runtime does not validate the choice statement, callers
+        must instead.
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:choice>
+      <xsd:element name="string" type="xsd:string"/>
+      <xsd:element name="integer" type="xsd:integer"/>
+      <xsd:element name="boolean" type="xsd:boolean"/>
+      <xsd:element name="data" type="types:unboundedXMLAnyNamespace"/>
+    </xsd:choice>
+    <xsd:attribute name="name" type="xsd:anyURI" use="required"/>
+    <xsd:attribute name="mustUnderstand" type="xsd:boolean" use="optional" default="false"/>
+  </xsd:complexType>
+  <!-- ============================================================= -->
+  <!-- a set of options -->
+  <!-- TODO: add some uniqueness rules -->
+  <!-- ============================================================= -->
+  <xsd:complexType name="optionMapType">
+    <xsd:annotation>
+      <xsd:documentation>
+        A set of options. Only one of each URI is allowed.
+        An option map with duplicate URIs MUST BE rejected.
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="option" type="types:optionType" minOccurs="0" maxOccurs="unbounded"/>
+    </xsd:sequence>
+  </xsd:complexType>
+  <!-- ============================================================= -->
+  <!-- property tuples-->
+  <!-- ============================================================= -->
+  <xsd:complexType name="propertyTupleType">
+    <xsd:annotation>
+      <xsd:documentation>
+        A name/value pair of properties. Names are restricted to NCName type;
+        values are any string. Why restrict name type? For easier incorporation
+        into the language.
+
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="name" type="xsd:NCName"/>
+      <xsd:element name="value" type="xsd:string"/>
+    </xsd:sequence>
+  </xsd:complexType>
+  <!-- ============================================================= -->
+  <!-- a map of property tuples -->
+  <!-- to use this in a deployment, add it under the option -->
+  <!-- http://gridforum.org/cddlm/serviceAPI/options/properties/2004/07/30 -->
+  <!-- ============================================================= -->
+  <xsd:complexType name="propertyMapType">
+    <xsd:annotation>
+      <xsd:documentation>
+        A set of name/value pair of properties.
+       There is no requirement for (name,value) tuples to be unique. Users of the propertyMapType may impose this restriction      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="property" type="types:propertyTupleType" minOccurs="0" maxOccurs="unbounded"/>
+    </xsd:sequence>
+  </xsd:complexType>
+  <!-- ============================================================= -->
+  <!-- Server status -->
+  <!-- this section includes various lists of server information -->
+  <!-- which are returned in the server status response -->
+  <!-- ============================================================= -->
+  <xsd:complexType name="languageListType">
+    <xsd:annotation>
+      <xsd:documentation>
+        This is the list of supported languages
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="language" maxOccurs="unbounded">
+        <xsd:complexType>
+          <xsd:annotation>
+            <xsd:documentation>
+              A language is defined by a name and version, and a namespace.
+              It is the namespace itself that defines the language; the name
+              and version are for the benefit of humans.
+            </xsd:documentation>
+          </xsd:annotation>
+          <xsd:sequence>
+            <xsd:element name="name" type="xsd:string"/>
+            <xsd:element name="version" type="xsd:string"/>
+            <xsd:element name="uri" type="xsd:anyURI"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:complexType name="stringListType">
+    <xsd:annotation>
+      <xsd:documentation>
+        This is a type representing a list of strings
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="item" type="xsd:string" maxOccurs="unbounded"/>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:complexType name="serverInformationType">
+    <xsd:annotation>
+      <xsd:documentation>
+        This is static information about the server itself.
+
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="name" type="xsd:string">
+        <xsd:annotation>
+          <xsd:documentation>
+          Name of the implementation of the server
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="build" type="xsd:string">
+        <xsd:annotation>
+          <xsd:documentation>
+          Build information: version, build number, build date, etc. 
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="home" type="xsd:anyURI">
+        <xsd:annotation>
+          <xsd:documentation>
+        URL to a page providing support and docs for the server
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="location" type="xsd:string">
+        <xsd:annotation>
+          <xsd:documentation>
+          Location string describing server location
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="timezoneUTCOffset" type="xsd:integer">
+        <xsd:annotation>
+          <xsd:documentation>
+            Offset from UTC of the local clock.
+            Provides a location hint and good diagnostics
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="diagnostics" type="types:unboundedXMLAnyNamespace" minOccurs="0">
+        <xsd:annotation>
+          <xsd:documentation>
+            Arbitrary diagnostic information.
+            Components used, result of local health checks etc.
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:complexType name="staticServerStatusType">
+    <xsd:annotation>
+      <xsd:documentation>
+        Static status should be constant for the life of
+        this instance of the service, while dynamic information is viewed as transient.
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="server" type="types:serverInformationType">
+        <xsd:annotation>
+          <xsd:documentation>
+            Server details
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="languages" type="types:languageListType">
+        <xsd:annotation>
+          <xsd:documentation>
+            List of languages
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="notifications" type="types:stringListType">
+        <xsd:annotation>
+          <xsd:documentation>
+            List of supported notifications
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="options" type="types:stringListType">
+        <xsd:annotation>
+          <xsd:documentation>
+            List of options that are understood
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:complexType name="dynamicServerStatusType">
+    <xsd:annotation>
+      <xsd:documentation>
+        Dynamic status contents are undefined; service is free to provide
+        any information they like.
+        This could be declared as a WS-RF property.
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:any namespace="##any" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
+    </xsd:sequence>
+  </xsd:complexType>
+  <!-- ============================================================= -->
+  <!-- serverstatus -->
+  <!-- ============================================================= -->
+  <xsd:complexType name="serverStatusType">
+    <xsd:annotation>
+      <xsd:documentation>
+        This is the server status response. If the endpoint returns with anything
+        then the system is partially alive; a SOAPFault is always a sign of failure
+        from the perspective of the far end or the transport.
+        It consists of static status and
+        dynamic status. Static status should beconstant for the life of
+        this instance of the service, while dynamic information is viewed as transient.
+        Interpretation of a server status into a proper health metric is left to
+        tools of the caller's choice.
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="static" type="types:staticServerStatusType"/>
+      <xsd:element name="dynamic" type="types:dynamicServerStatusType" minOccurs="0"/>
+    </xsd:sequence>
+  </xsd:complexType>
+  <!-- ============================================================= -->
+  <!-- application status -->
+  <!-- ============================================================= -->
+  <xsd:complexType name="applicationStatusType">
+    <xsd:annotation>
+      <xsd:documentation>
+        This is the application status response. If the endpoint returns with anything
+        then the system is partially alive; a SOAPFault is always a sign of failure
+        from the perspective of the far end or the transport.
+        It consists of static status and
+        dynamic status. Static status should beconstant for the life of
+        this instance of the service, while dynamic information is viewed as transient.
+        Interpretation of a server status into a proper health metric is left to
+        tools of the caller's choice.
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="reference" type="types:applicationReferenceType"/>
+      <xsd:element name="name" type="types:applicationNameType" minOccurs="0"/>
+      <xsd:element name="notification" type="types:notificationInformationType" minOccurs="0"/>
+      <xsd:element name="state" type="types:lifecycleStateEnum"/>
+      <xsd:element name="stateInfo" type="xsd:string"/>
+      <xsd:element name="extendedState" type="types:unboundedXMLAnyNamespace" minOccurs="0"/>
+    </xsd:sequence>
+  </xsd:complexType>
+  <!-- ============================================================= -->
+  <!-- list of application is used for enumerating running applications -->
+  <!-- ============================================================= -->
+  <xsd:complexType name="applicationReferenceListType">
+    <xsd:annotation>
+      <xsd:documentation>
+        This is a (potentially empty) list of  applications
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="application" type="types:applicationReferenceType" minOccurs="0" maxOccurs="unbounded"/>
+    </xsd:sequence>
+  </xsd:complexType>
+  <!-- ============================================================= -->
+  <!-- empty elements get used in a few places -->
+  <!-- ============================================================= -->
+  <xsd:complexType name="emptyElementType">
+    <xsd:annotation>
+      <xsd:documentation>
+        This is an empty message
+      </xsd:documentation>
+    </xsd:annotation>
+  </xsd:complexType>
+  <!-- ============================================================= -->
+  <!-- option elements -->
+  <!-- ============================================================= -->
+  <xsd:element name="PropertyMapOption" type="types:propertyMapType">
+    <xsd:annotation>
+      <xsd:appinfo>
+        http://gridforum.org/cddlm/serviceAPI/options/propertyMap/2004/07/30
+      </xsd:appinfo>
+      <xsd:documentation>
+        this is the contents of a property map option
+ </xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+  <!--
+    not needed, we just use boolean on the option instead.
+    <xsd:element name="ValidateOnlyOption" type="xsd:boolean">
+      <xsd:annotation>
+        <xsd:appinfo>
+          http://gridforum.org/cddlm/serviceAPI/options/validateOnly/2004/07/30
+        </xsd:appinfo>
+        <xsd:documentation>
+          this is the contents of a validateOnly option.
+          If set to true, a runtime that understands the message must
+          only validate the message and deployment descriptor, and not execute it.
+        </xsd:documentation>
+      </xsd:annotation>
+    </xsd:element>
+  -->
+  <!-- ============================================================= -->
+  <!-- Requests and responses. These are the complex types that
+  get sent/received as messages-->
+  <!-- ============================================================= -->
+  <!-- ============================================================= -->
+  <!-- ============================================================= -->
+  <xsd:element name="createRequest">
+    <xsd:complexType>
+      <xsd:annotation>
+        <xsd:documentation>
+          This is our request to deploy to a destination, by creating
+          a new application in the 'instantiated' state.
+          Rather than have so many typed options,
+          a core few mandatory options are specified inline, and the rest
+          are referred to in the deployment_options map.
+        </xsd:documentation>
+      </xsd:annotation>
+      <xsd:sequence>
+        <xsd:element name="jsdl" type="types:jsdlType" minOccurs="0">
+          <xsd:annotation>
+            <xsd:documentation/>
+          </xsd:annotation>
+        </xsd:element>
+        <xsd:element name="descriptor" type="types:deploymentDescriptorType">
+          <xsd:annotation>
+            <xsd:documentation>
+          Mandatory deployment descriptor
+            </xsd:documentation>
+          </xsd:annotation>
+        </xsd:element>
+        <xsd:element name="notification" type="types:notificationInformationType" minOccurs="0">
+          <xsd:annotation>
+            <xsd:documentation>
+            optional callback data
+            </xsd:documentation>
+          </xsd:annotation>
+        </xsd:element>
+        <xsd:element name="options" type="types:optionMapType" minOccurs="0">
+          <xsd:annotation>
+            <xsd:documentation>
+            This is for options.
+            </xsd:documentation>
+          </xsd:annotation>
+        </xsd:element>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+  <!-- ============================================================= -->
+  <!-- ============================================================= -->
+  <xsd:element name="createResponse">
+    <xsd:complexType>
+      <xsd:annotation>
+        <xsd:documentation>
+          This is our deployment response.
+          It consists of a reference to the application, which can be used
+          for future references.
+          
+          The application is not yet started. 
+        </xsd:documentation>
+      </xsd:annotation>
+      <xsd:sequence>
+        <xsd:element name="applicationReference" type="types:applicationReferenceType"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+  <!-- ============================================================= -->
+  <!-- request to run the engine -->
+  <!-- ============================================================= -->
+  <xsd:element name="runRequest">
+    <xsd:complexType>
+      <xsd:annotation>
+        <xsd:documentation>
+          Request to run an application.
+          This only valid if the application is in a state from which
+          it can enter the running, which effectively means it can only 
+					be done from the running state.
+
+          TODO: should run be a noop if we are already started?
+        </xsd:documentation>
+      </xsd:annotation>
+      <xsd:sequence>
+        <xsd:element name="application" type="types:applicationReferenceType"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+  <!-- ============================================================= -->
+  <!-- this response means that the request has been submitted, -->
+  <!-- this should only ever return true -->
+  <!-- ============================================================= -->
+  <xsd:element name="runResponse" type="xsd:boolean"/>
+  <!-- ============================================================= -->
+  <!-- terminate an application -->
+  <!-- ============================================================= -->
+  <xsd:element name="terminateRequest">
+    <xsd:complexType>
+      <xsd:annotation>
+        <xsd:documentation>
+          Request to terminate an application.
+					It is not a fault to terminate an application in the terminated
+					state, but it is a fault (no-such-application) to terminate an
+					unknown application.
+        </xsd:documentation>
+      </xsd:annotation>
+      <xsd:sequence>
+        <xsd:element name="application" type="types:applicationReferenceType">
+          <xsd:annotation>
+            <xsd:documentation>
+            Application to terminate.
+            </xsd:documentation>
+          </xsd:annotation>
+        </xsd:element>
+        <xsd:element name="reason" type="xsd:string">
+          <xsd:annotation>
+            <xsd:documentation>
+              Reason for termination. This message
+              may be included in the system logs or otherwise recorded.
+            </xsd:documentation>
+          </xsd:annotation>
+        </xsd:element>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+  <!-- ============================================================= -->
+  <!-- terminate response means that either the request has been submitted, -->
+  <!-- or the request is being ignored, as the request is meant to be
+       idempotent -->
+  <!-- this should only ever return true -->
+  <!-- ============================================================= -->
+  <xsd:element name="terminateResponse" type="xsd:boolean"/>
+  <!-- ============================================================= -->
+  <!-- define/redefine the notification choices-->
+  <!-- ============================================================= -->
+  <xsd:element name="setNotificationRequest">
+    <xsd:complexType>
+      <xsd:annotation>
+        <xsd:documentation>
+          Request to redefine the notification mechanism/address for an application.
+          The new value will remain valid until changed or the application
+          is undeployed.
+
+          Setting the notification must also reset the sequence number, so that
+          the first message received at the endpoint should be numbered 1.
+
+          Naming an application without providing a notification means that the user is
+          unsubscribing; it is not an error if the application does not exist on an unsubscription
+          request, but it is an error if the application does not exist on a subscription.
+        </xsd:documentation>
+      </xsd:annotation>
+      <xsd:sequence>
+        <xsd:element name="application" type="types:applicationReferenceType">
+          <xsd:annotation>
+            <xsd:documentation>
+            URI of application
+            </xsd:documentation>
+          </xsd:annotation>
+        </xsd:element>
+        <xsd:element name="notification" type="types:notificationInformationType" minOccurs="0">
+          <xsd:annotation>
+            <xsd:documentation>
+            notification data
+            </xsd:documentation>
+          </xsd:annotation>
+        </xsd:element>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+  <!-- ============================================================= -->
+  <!-- response from a request to set a notification-->
+  <!-- ============================================================= -->
+  <xsd:element name="setNotificationResponse" type="xsd:boolean"/>
+  <!-- ============================================================= -->
+  <!-- ============================================================= -->
+  <xsd:element name="serverStatusRequest">
+    <xsd:annotation>
+      <xsd:documentation>
+        This is an empty message
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexType/>
+  </xsd:element>
+  <!-- ============================================================= -->
+  <!-- ============================================================= -->
+  <xsd:element name="serverStatusResponse" type="types:serverStatusType"/>
+  <!-- ============================================================= -->
+  <!-- ============================================================= -->
+  <xsd:element name="applicationStatusRequest">
+    <xsd:annotation>
+      <xsd:documentation>
+        Request the status of an individual application
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="application" type="types:applicationReferenceType"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="applicationStatusResponse" type="types:applicationStatusType"/>
+  <!-- ============================================================= -->
+  <!-- ============================================================= -->
+  <xsd:element name="lookupApplicationRequest">
+    <xsd:annotation>
+      <xsd:documentation>
+        Look up an application: pass in the name and get a reference back
+        (or an error, if there is no such application or security prevents
+         the caller seeing it)
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="application" type="types:applicationNameType"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="lookupApplicationResponse" type="types:applicationReferenceType"/>
+  <!-- ============================================================= -->
+  <!-- list applications request/response -->
+  <!-- ============================================================= -->
+  <xsd:element name="listApplicationsRequest" type="types:emptyElementType">
+    <xsd:annotation>
+      <xsd:documentation>
+        List all running applications.
+        Security policy may intervene and only list those the user is
+        authorised to see.
+      </xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+  <xsd:element name="listApplicationsResponse" type="types:applicationReferenceListType">
+    <xsd:annotation>
+      <xsd:documentation>
+        List of active applications
+      </xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+  <!-- ============================================================= -->
+  <!-- callback event message -->
+  <!-- ============================================================= -->
+  <xsd:element name="lifecycleEventRequest">
+    <xsd:complexType>
+      <xsd:annotation>
+        <xsd:documentation>
+        This is the message which gets sent after a state change
+        to a listening endpoint
+        </xsd:documentation>
+      </xsd:annotation>
+      <xsd:sequence>
+        <xsd:element name="identifier" type="xsd:string">
+          <xsd:annotation>
+            <xsd:documentation>
+            identifier passed in when requesting notifications
+            </xsd:documentation>
+          </xsd:annotation>
+        </xsd:element>
+        <xsd:element name="timestamp" type="xsd:integer">
+          <xsd:annotation>
+            <xsd:documentation>
+              UTC timestamp of message sending.
+              time_t, seconds since 1/1/1970.
+              Georgian times may be human readable, but
+              are very unreliable in practise, especially across
+              different platforms.
+            </xsd:documentation>
+          </xsd:annotation>
+        </xsd:element>
+        <xsd:element name="sequenceID" type="xsd:integer">
+          <xsd:annotation>
+            <xsd:documentation>
+              A monotonically increasing sequence number.
+              It is possible that the underlying transport of the
+              messaging infrastructure may deliver messages out of order;
+              that is a feature of the infrastructure and beyond the scope of this
+              schema. Callers are requires to set a sequence ID for all messages
+              related to a particular job that are dispatched.
+            </xsd:documentation>
+          </xsd:annotation>
+        </xsd:element>
+        <xsd:element name="applicationReference" type="types:applicationReferenceType">
+          <xsd:annotation>
+            <xsd:documentation>
+            Application this message in relation to.
+            </xsd:documentation>
+          </xsd:annotation>
+        </xsd:element>
+        <xsd:element name="status" type="types:applicationStatusType">
+          <xsd:annotation>
+            <xsd:documentation>
+            status of application
+            </xsd:documentation>
+          </xsd:annotation>
+        </xsd:element>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+  
+  <!-- ============================================================= -->
+  <!-- response  -->
+  <!-- ============================================================= -->
+  
+  <xsd:element name="lifecycleEventResponse" type="xsd:boolean">
+    <xsd:annotation>
+      <xsd:documentation>
+         Return false if you wish to cease to receive notification events.
+         Return true if you wish to continue to receive events.
+         The sender must not view failure to send as a reason to stop
+         sending messages, as these may be transient.
+      </xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+
+  <!-- ============================================================= -->
+  <!-- end schema-->
+  <!-- ============================================================= -->
+</xsd:schema>

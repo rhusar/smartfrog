@@ -1,0 +1,76 @@
+<?xml version="1.0"?>
+<!--
+  Copyright 2002-2004 The Apache Software Foundation
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+  -->
+  <!DOCTYPE document PUBLIC "-//APACHE//DTD Documentation V2.0//EN" "http://forrest.apache.org/dtd/document-v20.dtd">
+<document> 
+  <header> 
+	  <title>SmartFrog Services</title>
+	   <abstract>Here is the List of available documents for Smartfrog Services.</abstract>
+  </header> 
+  <body> 
+
+ <section id="Java">
+      <title>Java</title>
+      <p>
+	These tasks make it easier to execute Java programs in separate processes. The Java component runs Java Programs. It is an extension of the runshell component, so all attributes associated with that are usable. the exception is the shellCmd attribute, which is rebound to the JVM
+	Links to document : <a href="components/java.html">HTML</a> , <a href="components/java.pdf">PDF</a> , "<a href="http://svn.sourceforge.net/viewvc/*checkout*/smartfrog/trunk/core/smartfrog/docs/components/java.pdf">SVN(Online)</a>"   </p>
+    </section>
+
+    <section id="FileSystem">
+      <title>File System</title>
+      <p>
+	      The file components provide a cross platform way of representing files.  
+	      Links to document : <a href="components/filesystem.html">HTML</a> , <a href="components/filesystem.pdf">PDF</a> , "<a href="http://svn.sourceforge.net/viewvc/*checkout*/smartfrog/trunk/core/smartfrog/docs/components/filesystem.pdf">SVN (Online)</a>"   </p>
+    </section>
+    <section id="Assertions">
+      <title>Assertions</title>
+      <p>The assertion components in SmartFrog aim to provide a way of validating parts of the deployment descriptor. They also enable one to verify that methods invoked on referenced component instances return true or false, which can be used to incorporate more checks into the system's operation.  
+	      Links to document : <a href="components/assertions.html">HTML</a> , <a href="components/assertions.pdf">PDF</a> , "<a href="http://svn.sourceforge.net/viewvc/*checkout*/smartfrog/trunk/core/smartfrog/docs/components/assertions.pdf">SVN (Online)</a>"   </p>
+    </section>
+    <section id="DecPageLoading">
+      <title>Declarative Page Loading</title>
+      <p>This document discusses better ways of packaging JAR files for classloading in SmartFrog
+	      Links to document : <a href="components/declarative_package_loading.html">HTML</a> </p>
+    </section>
+   
+      <section id="ShellScript">
+           <title>ShellScript </title>
+           <p>This document shows how the SmartFrog system can make this process easy through the use of the process management and shell scripting components provided as part of the core release.
+               Links to document : <a href="sfShellScript.html">HTML</a>  , <a href="sfShellScript.pdf">PDF</a> , "<a href="http://svn.sourceforge.net/viewvc/*checkout*/smartfrog/trunk/core/smartfrog/docs/sfShellScript.pdf">SVN (Online) </a>"   </p>
+	 </section>
+
+	 <section id="Autoloader">
+           <title>Autoloader </title>
+	   <p>The SmartFrog component Autoloader provides the facility to load components from file if, and when, components attempt to access them through a reference. The autoloader intercepts reference resolutions and will deploy the resource associated with a specific reference if it has not already been deployed, and then complete the reference resolution.
+               Links to document : <a href="sfAutoloader.html">HTML</a>  , <a href="sfAutoloader.pdf">PDF</a> , "<a href="http://svn.sourceforge.net/viewvc/*checkout*/smartfrog/trunk/core/smartfrog/docs/sfAutoloader.pdf">SVN (Online) </a>"   </p>
+         </section>
+
+          <section id="WebComponents">
+           <title>WebComponents </title>
+           <p>The SmartFrog Web components provide a set of components for defining web applications (WAR applications), Enterprise (EAR) applications and Servlets for deployment onto a Java Application Server such as JBoss, WebLogic or Apache Geronmio, or a Java Web Server such as Jetty or Tomcat. It also includes a liveness page component, that can retrieve an HTTP page from a server as its liveness test, integrating web page visiblity with application liveness.
+               Links to document : <a href="sfWebComponents.html">HTML</a> , "<a href="http://cvs.sourceforge.net/viewcvs.py/*checkout*/smartfrog/core/smartfrog/docs/sfWebComponents.sxw">SVN(Online)</a>"   </p>
+         </section>
+
+    	
+  </body>
+</document>
+
+
+		
+     
+
+  
+

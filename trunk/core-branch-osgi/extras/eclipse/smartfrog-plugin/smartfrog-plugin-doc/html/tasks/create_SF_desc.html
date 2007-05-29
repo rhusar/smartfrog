@@ -1,0 +1,178 @@
+<html>
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+
+<head>
+<meta HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=ISO-8859-1">
+<meta HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+<meta name="GENERATOR" content="Microsoft FrontPage 5.0">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+<link REL="STYLESHEET" HREF="../../book.css" CHARSET="ISO-8859-1" TYPE="text/css">
+<title>Creating a SmartFrog description file</title>
+<style type="text/css">
+<!--
+.style1 {font-family: "Courier New", Courier, mono}
+.style2 {font-family: Verdana, Arial, Helvetica, sans-serif}
+.style3 {font-family: Arial, Helvetica, sans-serif}
+-->
+</style>
+</head>
+
+<body>
+
+<h1>Creating a SmartFrog description file</h1>
+
+<a name="gendesc"></a>
+<h2>General description</h2>
+
+<p>SmartFrog description files are used to describe component collections and 
+component configuration parameters. Components in this context are Java software 
+applications operating in a distributed environment. Component descriptions 
+include such things as where the component is running, how it is configured, its 
+lifecycle sequencing, and its relationship with other components. The 
+description files are written in a specialized language for description 
+notation.</p>
+
+<a name="howto"></a>
+<h2>How to create a SmartFrog description file</h2>
+<h3>Purpose</h3>
+<p>To create a SmartFrog description file in an IDE that provides a specialized 
+editor that allows you to easily create and modify the file.</p>
+<p><strong>NOTE:</strong> In our example, we are using the <span class="style1">example.sf</span> file located in the <em>SmartFrog_Install_Dir</em><span class="style1">\src\org\smartfrog\examples\counter<span class="style2"> <span class="style3">directory</span>.</span></span></p>
+<h3>Procedure</h3>
+<ol>
+  <li>From the Eclipse menu bar, select <b>File</b> &gt; <b>New</b> &gt; <b>SmartFrog 
+  Description</b>. Alternatively, you can select the
+  <img src="../../images/desc_icon.gif" width="22" height="21"> icon from the SmartFrog Eclipse toolbar. Either method opens the following dialog where you can specify a parent folder and name 
+  for your description file:
+  <p><img src="../../images/desc_name.gif"></p>
+  </li>
+  <li>Enter or select the parent folder for the file from the project tree displayed. In our example, we have selected the <span class="style1">src</span> directory. </li>
+  <li>
+  In the <b>File name:</b> field, specify a name.
+In our example, we have specified <span class="style1">example.sf</span> as the file name, which is the name that is used in the counter example. </li>
+  <li>Click <b>Finish</b>. This opens the empty SF file in the editor 
+  pane of the GUI. </p>
+  <p><img src="../../images/desc_editor_empty.gif"></p>
+  </li>
+  <li>
+  Cut and paste the following code into the editor pane. As noted above, we are using the <span class="style1">example.sf</span> file located in the <em>SmartFrog_Install_Dir</em><span class="style1">\src\org\smartfrog\examples\counter<span class="style2"> <span class="style3">directory</span>.</span></span> This description file specifies the value of the <span class="style1">limit</span> attribute, which is a variable in the Java component file that implements the counter application.
+  <p>
+  <pre> #include &quot;org/smartfrog/components.sf&quot;
+ #include &quot;org/smartfrog/examples/counter/components.sf&quot;
+ /**
+  * Counter example 1 creates a component that generates a counter 
+  * between 1 and * 20.
+  * This component is a basic primitive component.
+  */
+  /**
+  * sfConfig is the special attribute that is deployed by SFSystem.
+  * Here it is defined to implement the Counter component.
+  */
+  sfConfig extends Counter {
+  /**
+  * Mandatory attribute &quot;limit&quot; is defined.
+  */
+  limit 20;
+  };</pre>
+<p>
+Immediately, you will see the syntax coloring feature in the editor .
+</p>
+<p>
+Other useful editor features are:</p>
+  <ul>
+    <li>the ability to define  a section of code that you can expand and 
+    collapse</li>
+    <li>content assistance for SmartFrog description notation keywords</li>
+  </ul>
+  </li>
+<li>
+To define a code area that can
+expand and collapse, also called a <i>folding region</i>, highlight the lines of code 
+you want in this region. Right-click in the editor, and select <b>Define Folding 
+Region</b> from its context menu.
+<p><img src="../../images/desc_folding_region.gif"></p>
+This creates a triangle icon to the left of the defined region that allows you
+to expand and collapse that portion of the code.
+</li>
+<li>
+To use the content assist feature, position your cursor in the editor where you 
+want to add content and right-click. Select <b>Content Assist</b> from its 
+context menu. Alternatively, you can click CTRL-Space. This brings up the 
+following pop-up window with SmartFrog keywords that can be used when creating 
+description files.
+<p><img src="../../images/desc_content_assist.gif"></p>
+</li>
+<li>
+To parse the description, 
+select the
+<img src="../../images/SF_GUI_icon.gif" width="25" height="24"> on the SmartFrog Eclipse plug-in toolbar. 
+Refer to the 
+<a href="http://www.smartfrog.org/manuals/current/SFGuiManual.pdf">
+SmartFrog GUI Quick Reference Guide</a>
+for more information on how to use the SmartFrog GUI.
+</li>
+</ol>
+
+
+<a name="sum"></a>
+<h2>Summary</h2>
+
+
+<p>The SmartFrog Eclipse plug-in provides an editor with customized features that allows 
+you to easily create description files for your Java components using the same 
+IDE for both types of files.</p>
+
+
+<p><img border="0" src="../../images/ngrelt.gif" alt="Related tasks" width="159" height="27" /></p>
+<ul>
+<li>
+<a href="create_SF_project.html">Creating a SmartFrog project</a>
+</li>
+<li>
+<a href="create_SF_java.html">Creating a Java component file with SmartFrog interfaces</a>
+</li>
+<li>
+<a href="test_SF_app.html">Testing a SmartFrog application</a>
+</li>
+<li><a href="runconfig_SF_app.html">Creating SmartFrog run configurations</a></li>
+<li>
+  <a href="../tasks/spec_diff_install.html">Specifying SmartFrog properties</a></li>
+</ul>
+<p><img border="0" src="../../images/ngrelc.gif" alt="Related concepts" width="159" height="27" /></p>
+<ul>
+<li>
+<a href="../concepts/concepts.html">SmartFrog introduction</a></li>
+<li><a href="../concepts/concepts_goals.html">SmartFrog goals
+  </a>
+</li>
+<li>
+<a href="../concepts/concepts_approach.html"> SmartFrog approach
+</a>
+</li>
+<li>
+<a href="../concepts/concepts_framework.html">
+SmartFrog framework</a></li>
+</ul>
+<p><img src="../../images/ngrelr.gif" alt="Related reference" width="159" height="27" /></p>
+<ul><li><a href="http://www.hpl.hp.com/research/smartfrog/">SmartFrog Web site</a> </li>
+<li> <a href=
+"http://www.smartfrog.org/manuals/current/sfReference.pdf"> SmartFrog Reference Manual</a> </li>
+<li> <a href=
+"http://www.smartfrog.org/manuals/current/sfUserManual.pdf"> SmartFrog User Manual</a> </li>
+<li> <a href=
+"http://www.smartfrog.org/manuals/current/SFGuiManual.pdf"> SmartFrog GUI Quick Reference Guide (Draft)</a> </li>
+<li> <a href=
+"http://www.smartfrog.org/manuals/current/sfWorkflow.pdf"> SmartFrog Work Flow Manual (Draft)</a> </li>
+<li> <a href=
+"http://www.smartfrog.org/manuals/current/sfDynamicWebServerExample.pdf"> SmartFrog Dynamic Web Server Example</a></li>
+<li>
+<a href="http://eclipse.org">Eclipse Web site</a>
+</li>
+</ul>
+
+<p><img src="../../images/hp_copyright.gif" width="314" height="32"></p>
+
+</body>
+
+</html>
