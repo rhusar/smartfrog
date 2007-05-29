@@ -63,9 +63,10 @@ public class DummySecurityManager extends SecurityManager {
         } catch (SecurityException e) {
             // We allow it anyway ...
             if (debug != null) {
-                debug.println("BADDDD!!! in checkPermission " + perm +
+                debug.println("(1)BADDDD!!! in checkPermission " + perm +
                     " checked");
                 debug.println("Not allowed!!");
+                e.printStackTrace();
             }
         }
     }
@@ -94,9 +95,10 @@ public class DummySecurityManager extends SecurityManager {
         } catch (SecurityException e) {
             // We allow it anyway ...
             if (debug != null) {
-                debug.println("BADDDD!!! in checkPermission " + perm +
+                debug.println("(2)BADDDD!!! in checkPermission " + perm +
                     " checked");
                 debug.println("Not allowed!!");
+                e.printStackTrace();
             }
         }
     }
