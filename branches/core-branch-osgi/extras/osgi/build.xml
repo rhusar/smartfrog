@@ -35,7 +35,9 @@
             <zipfileset dir="build/classes"/>
             <zipfileset dir="build/lib" includes="*.jar"/>
         </jar>
-        <copy file="./build/smartfrog-osgi.jar" todir="C:\\" overwrite="true"/>
+        <copy file="./build/smartfrog-osgi.jar"
+              todir="C:\\knopflerfish_osgi_2.0.1\\knopflerfish.org\\osgi"
+              overwrite="true"/>
         <copy file="./build/smartfrog-osgi.jar"
               todir="C:\\knopflerfish_osgi_2.0.1\\knopflerfish.org\\osgi"
               overwrite="true"/>
