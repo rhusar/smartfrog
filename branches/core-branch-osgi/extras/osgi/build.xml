@@ -1,6 +1,10 @@
 <?xml version="1.0"?>
 <project name="SmartFrog" default="all">
-    <target name="all" depends="init,compile,jar"/>
+    <target name="all" depends="sfdist,init,compile,jar"/>
+
+    <target name="sfdist">
+        <ant dir="../../smartfrog" antfile="build.xml" target="dist"/>
+    </target>
 
     <target name="init">
         <copy todir="build/lib" overwrite="true">
@@ -32,6 +36,9 @@
             <zipfileset dir="build/lib" includes="*.jar"/>
         </jar>
         <copy file="./build/smartfrog-osgi.jar" todir="C:\\" overwrite="true"/>
+        <copy file="./build/smartfrog-osgi.jar"
+              todir="C:\\knopflerfish_osgi_2.0.1\\knopflerfish.org\\osgi"
+              overwrite="true"/>
     </target>
 
     <target name="clean">
