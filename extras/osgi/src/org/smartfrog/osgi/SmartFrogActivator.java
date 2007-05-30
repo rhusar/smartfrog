@@ -18,6 +18,7 @@ public class SmartFrogActivator implements BundleActivator {
 
     public void start(BundleContext bundleContext) throws Exception {
         ServiceReference logServiceReference = bundleContext.getServiceReference("org.osgi.service.log.LogService");
+        // TODO: Handle missing LogService gracefully
         if (logServiceReference != null)
             logService = (LogService) bundleContext.getService(logServiceReference);
 
@@ -32,7 +33,6 @@ public class SmartFrogActivator implements BundleActivator {
         //System.setProperty("java.security.debug","scl");
         //System.setProperty("java.rmi.server.logCalls","true");
         //System.setProperty("sun.rmi.loader.logLevel","VERBOSE");
-
 
         logService.log(LOG_DEBUG, "Current thread context CL: " + Thread.currentThread().getContextClassLoader());
         logService.log(LOG_DEBUG, "System CL " + ClassLoader.getSystemClassLoader());
