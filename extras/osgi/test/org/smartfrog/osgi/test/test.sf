@@ -1,5 +1,0 @@
-#include "org/smartfrog/components.sf"
-
-test extends Prim {
-    message extends OptionalString;
-}
