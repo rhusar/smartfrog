@@ -3,12 +3,12 @@
     <target name="all" depends="sfdist,init,compile,jar"/>
 
     <target name="sfdist">
-        <ant dir="../../smartfrog" antfile="build.xml" target="dist"/>
+        <ant dir="../../../smartfrog" antfile="" target="dist"/>
     </target>
 
     <target name="init">
         <copy todir="build/lib" overwrite="true">
-            <fileset dir="../../smartfrog/dist/lib/">
+            <fileset dir="../../../smartfrog/dist/lib/">
                 <include name="smartfrog*.jar"/>
                 <include name="sfService*.jar"/>
             </fileset>
