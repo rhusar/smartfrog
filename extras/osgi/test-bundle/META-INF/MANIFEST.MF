@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: TestSF
+Bundle-SymbolicName: smartfrog.test
+Bundle-Version: 1.0.0
+Bundle-Description: SmartFrog Test Bundle
+Bundle-Vendor: HP Labs
+Import-Package: org.osgi.framework,
+                org.osgi.service.log,
+                org.smartfrog.sfcore

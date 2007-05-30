@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<project name="SmartFrog Daemon Bundle" default="all">
+<project name="SmartFrog Test Bundle" default="all">
     <property name="sf.core.dir" value="../../../smartfrog"/>
 
     <target name="all" depends="sfdist,init,compile,jar"/>
@@ -12,7 +12,6 @@
         <copy todir="build/lib" overwrite="true">
             <fileset dir="${sf.core.dir}/dist/lib/">
                 <include name="smartfrog*.jar"/>
-                <include name="sfService*.jar"/>
             </fileset>
         </copy>
         <mkdir dir="./build/classes"/>
@@ -23,22 +22,20 @@
                debug="on"
                srcdir="./src">
             <classpath>
-                <fileset dir="lib" includes="*.jar"/>
                 <fileset dir="build/lib" includes="*.jar"/>
             </classpath>
         </javac>
     </target>
 
     <target name="jar">
-        <jar jarfile="./build/smartfrog-osgi.jar"
+        <jar jarfile="./build/smartfrog-test-osgi.jar"
              compress="true"
              includes="**/*"
              manifest="./META-INF/MANIFEST.MF">
             <zipfileset dir="build/classes"/>
-            <zipfileset dir="build/lib" includes="*.jar"/>
         </jar>
 
-        <copy file="./build/smartfrog-osgi.jar"
+        <copy file="./build/smartfrog-test-osgi.jar"
               todir="C:\\knopflerfish_osgi_2.0.1\\knopflerfish.org\\osgi"
               overwrite="true"/>
     </target>

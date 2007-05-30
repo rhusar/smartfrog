@@ -14,7 +14,9 @@ public class TestImpl extends PrimImpl implements Test {
         super.sfStart();
 
         message = (String) sfResolve("message");
-        if (message == null) message = "Default Message !"; 
+        if (message == null) message = "Default Message !";
+
+        sayHello();
     }
 
     public void sayHello() throws RemoteException {
