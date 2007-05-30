@@ -2,14 +2,17 @@ package org.smartfrog.osgi;
 
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
-import org.smartfrog.sfcore.processcompound.ProcessCompound;
-import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.SFSystem;
+import org.smartfrog.sfcore.common.ExitCodes;
+import org.smartfrog.sfcore.prim.TerminationRecord;
+import org.smartfrog.sfcore.processcompound.ProcessCompound;
 
 public class SmartFrogActivator implements BundleActivator {
     private ProcessCompound rootProcess = null;
 
     public void start(BundleContext bundleContext) throws Exception {
+        // TODO: Use OSGi logging service
+
         System.out.println("Starting smartfrog...");
         System.setProperty("org.smartfrog.sfcore.processcompound.sfProcessName","rootProcess");
         System.setProperty("org.smartfrog.sfcore.processcompound.sfDefault.sfDefault",
@@ -29,14 +32,20 @@ public class SmartFrogActivator implements BundleActivator {
         System.out.println("Parent: " + bundleCL.getParent());
         System.out.println("Parent of parent: " + bundleCL.getParent().getParent());
         System.out.println("Parent of parent of parent: " + bundleCL.getParent().getParent().getParent());
+
         System.out.println("Setting the thread context CL to bundle's CL.");
         Thread.currentThread().setContextClassLoader(bundleCL);
+
         rootProcess = SFSystem.runSmartFrog();
+        
         System.out.println("SmartFrog daemon running...");
     }
 
     public void stop(BundleContext bundleContext) throws Exception {
         System.out.println("Stopping smartfrog...");
+
+        // TODO: Find a nicer way to change shutdown behaviour.
+        ExitCodes.exitJVM = false;
         rootProcess.sfTerminate(new TerminationRecord("normal", "Stopping daemon", null));
         System.out.println("SmartFrog daemon stopped.");
     }

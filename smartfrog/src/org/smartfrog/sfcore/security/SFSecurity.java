@@ -51,7 +51,7 @@ public class SFSecurity {
     /** A RMIServerSocketFactory used when security is ff */
     private static SFServerSocketFactory nonSecServerSocketFactory;
 
-
+    private static Registry realRMIRegistry;
     /**
      * Initializes the security using system properties to decide on the level
      * of security required.
@@ -178,12 +178,14 @@ public class SFSecurity {
      */
     public static Registry createRegistry(int port, InetAddress bindAddr) throws RemoteException {
         if (isSecurityOn()) {
-            return LocateRegistry.createRegistry(port,
+            realRMIRegistry = LocateRegistry.createRegistry(port,
                 securityEnv.getEmptyRMIClientSocketFactory(),
                 securityEnv.getRMIServerSocketFactory());
+            return realRMIRegistry;
         } else {
             nonSecServerSocketFactory = new SFServerSocketFactory(bindAddr);
-            return LocateRegistry.createRegistry(port,null,nonSecServerSocketFactory);
+            realRMIRegistry =  LocateRegistry.createRegistry(port,null,nonSecServerSocketFactory);
+            return realRMIRegistry;
         }
     }
 
@@ -209,6 +211,10 @@ public class SFSecurity {
         } else {
             return LocateRegistry.getRegistry(host, port);
         }
+    }
+
+    public static Registry getNonStubRegistry() {
+        return realRMIRegistry;
     }
 
     /**

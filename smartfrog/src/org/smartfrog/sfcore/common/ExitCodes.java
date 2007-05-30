@@ -21,6 +21,13 @@
 
 package org.smartfrog.sfcore.common;
 
+import org.smartfrog.sfcore.logging.LogFactory;
+import org.smartfrog.sfcore.logging.LogSF;
+import org.smartfrog.sfcore.security.SFSecurity;
+
+import java.rmi.registry.Registry;
+import java.rmi.server.UnicastRemoteObject;
+
 /**
  * Exit error codes.
  *
@@ -53,6 +60,11 @@ public final class ExitCodes {
      */
     public static final int EXIT_ERROR_CODE_CTRL_ALT_DEL = 130;
 
+    // TODO: Find a nicer way to change shutdown behaviour.
+    public static boolean exitJVM = false;
+
+    private static final LogSF sfLog = LogFactory.sfGetProcessLog();
+
     /**
      * Exits from the system.
      */
@@ -75,9 +87,24 @@ public final class ExitCodes {
      * @param code int
      */
     public static void exit(int code) {
-        //System.exit(code);
-        // TODO Shutdown RMI registry
-        System.out.println("SmartFrog stopping. Exit code: " + code);
+        sfLog.info("Exiting SmartFrog...");
+        if (exitJVM)
+            System.exit(code);
+        else {
+            shutdownRMIRegistry();
+            sfLog.info("SmartFrog stopped. Exit code: " + code);
+        }
+    }
+
+    private static void shutdownRMIRegistry() {
+        try {
+            Registry registry = SFSecurity.getNonStubRegistry();
+            if (sfLog.isDebugEnabled())
+                sfLog.debug("Shutting down RMI registry : " + registry);
+            UnicastRemoteObject.unexportObject(registry, true);
+        } catch (Throwable t) {
+            sfLog.error("Exception when shutting down registry", t);
+        }
     }
 
 

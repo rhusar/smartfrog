@@ -319,4 +319,5 @@ public interface SmartFrogCoreKeys {
     public final static String SF_DIAGNOSTICS_REPORT = "sfDiagnosticsReport";
 
 
+    public static final String SF_SHUTDOWN_JVM = "sfShutdownJVM";
 }
