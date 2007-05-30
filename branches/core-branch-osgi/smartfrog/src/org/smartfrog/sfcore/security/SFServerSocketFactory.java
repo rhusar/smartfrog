@@ -38,7 +38,7 @@ public class SFServerSocketFactory implements RMIServerSocketFactory {
     private final InetAddress bindAddr;
 
     public int hashCode() {
-        return bindAddr.hashCode();
+        return bindAddr == null ? 0 : bindAddr.hashCode();
     }
     public boolean equals(Object obj) {
         if (obj == this) {
