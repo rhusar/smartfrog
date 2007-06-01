@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<project name="common">
+    <property name="sf.core.dir" value="../../../smartfrog"/>
+
+    <target name="sfdist">
+        <ant dir="${sf.core.dir}" antfile="build.xml" target="dist"/>
+    </target>
+
+    <target name="copyJarAround" depends="jar">
+        <copy file="./build/${bundle.filename}"
+              todir="C:\\knopflerfish_osgi_2.0.1\\knopflerfish.org\\osgi"
+              overwrite="true"/>
+        <copy file="./build/${bundle.filename}"
+              todir="C:\\"
+              overwrite="true"/>
+    </target>
+
+    <target name="clean">
+        <delete dir="./build"/>
+    </target>
+    
+</project>

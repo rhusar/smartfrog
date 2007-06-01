@@ -572,18 +572,24 @@
 
     <property name="sf-examples.title"
         value="sfExamples" />
-
     <property name="sf-examples.stub"
       value="${sf-examples.title}-${Version}" />
     <property name="sf-examples.jar"
       location="${dist.lib.dir}/${sf-examples.stub}.jar" />
+
+    <property name="sf-coresecurity.title"
+        value="sfCoreSecurity" />
+    <property name="sf-coresecurity.stub"
+      value="${sf-coresecurity.title}-${Version}" />
+    <property name="sf-coresecurity.jar"
+      location="${dist.lib.dir}/${sf-coresecurity.stub}.jar" />
 
   </target>
 
   <!--  SmartFrog Jar                                                     -->
   <target name="sfJar" depends="build,target-names">
     <jar jarfile="${smartfrog.jar}" basedir="${build.classes.dir}"
-      includes="**/smartfrog/**" excludes="**/services/**,**/examples/**" manifest="${manifestName}"/>
+      includes="**/smartfrog/**" excludes="**/services/**,**/examples/**,**/security/**" manifest="${manifestName}"/>
   </target>
   <!--  sfServices.jar                                               -->
 
@@ -599,8 +605,13 @@
       basedir="${build.classes.dir}" includes="**/examples/**" manifest="${manifestName}"/>
   </target>
 
-  <target name="jars" depends="initdist,sfJar,sfServicesJar,sfExamplesJar">
+  <target name="sfCoreSecurityJar" depends="build,target-names">
+     <!-- Create sfCoreSecurity.jar file -->
+    <jar jarfile="${sf-coresecurity.jar}"
+      basedir="${build.classes.dir}" includes="**/security/**" manifest="${manifestName}"/> 
   </target>
+
+  <target name="jars" depends="initdist,sfJar,sfServicesJar,sfExamplesJar,sfCoreSecurityJar"/>
 
   <!-- =================================================================== -->
   <!--  build, create jars and signs them.                                 -->

@@ -1,21 +1,21 @@
 <?xml version="1.0"?>
 <project name="SmartFrog Daemon Bundle" default="all">
-    <property name="sf.core.dir" value="../../../smartfrog"/>
+    <property name="bundle.filename" value="smartfrog-daemon.jar"/>
 
-    <target name="all" depends="sfdist,init,compile,jar"/>
+    <import file="../build-common.xml"/>
 
-    <target name="sfdist">
-        <ant dir="${sf.core.dir}" antfile="build.xml" target="dist"/>
-    </target>
+    <target name="all" depends="sfdist,jar,copyJarAround"/>
 
     <target name="init">
+        <mkdir dir="./build/classes"/>
+        <mkdir dir="./build/lib"/>
         <copy todir="build/lib" overwrite="true">
             <fileset dir="${sf.core.dir}/dist/lib/">
                 <include name="smartfrog*.jar"/>
+                <include name="sfCoreSecurity*.jar"/>
                 <include name="sfService*.jar"/>
             </fileset>
         </copy>
-        <mkdir dir="./build/classes"/>
     </target>
 
     <target name="compile" depends="init">
@@ -30,21 +30,13 @@
     </target>
 
     <target name="jar" depends="compile">
-        <jar jarfile="./build/smartfrog-osgi.jar"
+        <jar jarfile="./build/${bundle.filename}"
              compress="true"
              includes="**/*"
              manifest="./META-INF/MANIFEST.MF">
             <zipfileset dir="build/classes"/>
             <zipfileset dir="build/lib" includes="*.jar"/>
         </jar>
-
-        <copy file="./build/smartfrog-osgi.jar"
-              todir="C:\\knopflerfish_osgi_2.0.1\\knopflerfish.org\\osgi"
-              overwrite="true"/>
     </target>
 
-    <target name="clean">
-        <delete dir="./classes"/>
-        <delete dir="./build"/>
-    </target>
 </project>

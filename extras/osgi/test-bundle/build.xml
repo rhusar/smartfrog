@@ -1,12 +1,10 @@
 <?xml version="1.0"?>
 <project name="SmartFrog Test Bundle" default="all">
-    <property name="sf.core.dir" value="../../../smartfrog"/>
+    <property name="bundle.filename" value="smartfrog-test-osgi.jar"/>
 
-    <target name="all" depends="sfdist,init,compile,jar"/>
+    <import file="../build-common.xml"/>
 
-    <target name="sfdist">
-        <ant dir="${sf.core.dir}" antfile="build.xml" target="dist"/>
-    </target>
+    <target name="all" depends="sfdist,jar,copyJarAround"/>
 
     <target name="init">
         <copy todir="build/lib" overwrite="true">
@@ -28,20 +26,12 @@
     </target>
 
     <target name="jar" depends="compile">
-        <jar jarfile="./build/smartfrog-test-osgi.jar"
+        <jar jarfile="./build/${bundle.filename}"
              compress="true"
              includes="**/*"
              manifest="./META-INF/MANIFEST.MF">
             <zipfileset dir="build/classes"/>
         </jar>
-
-        <copy file="./build/smartfrog-test-osgi.jar"
-              todir="C:\\knopflerfish_osgi_2.0.1\\knopflerfish.org\\osgi"
-              overwrite="true"/>
     </target>
 
-    <target name="clean">
-        <delete dir="./classes"/>
-        <delete dir="./build"/>
-    </target>
 </project>
