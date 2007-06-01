@@ -2,7 +2,7 @@ package org.smartfrog.sfcore.security;
 
 public class SmartFrogCorePropertySecurity {
 
-    protected SmartFrogCorePropertySecurity() {}
+    private SmartFrogCorePropertySecurity() {}
 
     /**
      * Base for all smartfrog properties. All properties looked up by classes

@@ -55,6 +55,7 @@ import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.reference.ReferencePart;
 import org.smartfrog.sfcore.security.SFSecurity;
 import org.smartfrog.sfcore.security.SFSecurityProperties;
+import org.smartfrog.sfcore.security.SmartFrogCorePropertySecurity;
 import org.smartfrog.sfcore.common.ExitCodes;
 import org.smartfrog.sfcore.common.JarUtil;
 
@@ -1280,7 +1281,7 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
         for (Enumeration keys = keysVector.elements(); keys.hasMoreElements();) {
             String key = keys.nextElement().toString();
             try {
-              if ( (key.startsWith(SmartFrogCoreProperty.propBase)) &&
+              if ( (key.startsWith(SmartFrogCorePropertySecurity.propBase)) &&
                   (! (key.startsWith(SFSecurityProperties.propBaseSecurity)))) {
                 //Logger.log("Checking: "+name.toString());
                 //Logger.log("Key: "+key.toString());
