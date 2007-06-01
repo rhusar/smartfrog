@@ -1,6 +1,9 @@
 package org.smartfrog.sfcore.security;
 
 public class SmartFrogCorePropertySecurity {
+
+    protected SmartFrogCorePropertySecurity() {}
+
     /**
      * Base for all smartfrog properties. All properties looked up by classes
      * in SmartFrog use this as a base, add the package name and then the
