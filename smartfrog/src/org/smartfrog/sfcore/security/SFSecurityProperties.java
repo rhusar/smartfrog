@@ -24,9 +24,6 @@ import java.io.IOException;
 import java.io.InputStream;
 
 
-import org.smartfrog.sfcore.common.SmartFrogCoreProperty;
-
-
 /**
  * A class that describes all the SF specific security properties that we have
  * introduced.
@@ -36,7 +33,7 @@ public class SFSecurityProperties {
     /** Base property name for all the SF security related properties.
      * @value  org.smartfrog.sfcore.security.
      * */
-    public static final String propBaseSecurity = SmartFrogCoreProperty.propBase +
+    public static final String propBaseSecurity = SmartFrogCorePropertySecurity.propBase +
         "sfcore.security.";
 
     /** Property name to activate SF security features .*/
