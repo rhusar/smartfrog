@@ -20,8 +20,6 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.sfcore.security;
 
-import org.smartfrog.sfcore.common.SmartFrogCoreProperty;
-
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.InputStream;
@@ -50,7 +48,7 @@ public class SFClassLoader {
      * separated URLS) from which we download componenents and their
      * descriptions.
      */
-    public static final String SF_CODEBASE_PROPERTY = SmartFrogCoreProperty.propBase+"codebase";
+    public static final String SF_CODEBASE_PROPERTY = SmartFrogCorePropertySecurity.propBase+"codebase";
 
     /** Space separated urls from which we download the components */
     private static String targetClassBase = null;

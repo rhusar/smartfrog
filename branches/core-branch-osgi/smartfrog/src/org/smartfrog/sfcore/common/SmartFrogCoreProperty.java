@@ -20,10 +20,12 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.sfcore.common;
 
+import org.smartfrog.sfcore.security.SmartFrogCorePropertySecurity;
+
 /**
  * All the properties used in SmartFrog core system should be defined here.
  */
-public class SmartFrogCoreProperty {
+public class SmartFrogCoreProperty extends SmartFrogCorePropertySecurity {
 
 
     /**
@@ -33,16 +35,6 @@ public class SmartFrogCoreProperty {
     }
 
     //System
-
-    /**
-     * Base for all smartfrog properties. All properties looked up by classes
-     * in SmartFrog use this as a base, add the package name and then the
-     * property id to look up.
-     *
-     * Value {@value}
-     * @see org.smartfrog.SFSystem
-     */
-    public static final String propBase = "org.smartfrog.";
 
     /** Property name for class name for standard output stream.
      *
