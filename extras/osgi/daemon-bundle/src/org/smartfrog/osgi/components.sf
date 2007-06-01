@@ -1,0 +1,5 @@
+#include #include "/org/smartfrog/components.sf"
+
+OSGiBundleCompound extends Compound {
+    bundleURL extends String;
+}

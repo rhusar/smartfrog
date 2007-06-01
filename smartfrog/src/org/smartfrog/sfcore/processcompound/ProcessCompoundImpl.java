@@ -128,9 +128,7 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
      * A set that contains the names of the sub-processes that have
      * been requested, but not yet ready
      */
-    protected Set processLocks = new HashSet();;
-
-
+    protected final Set processLocks = new HashSet();
 
 
     public ProcessCompoundImpl() throws RemoteException {

@@ -55,7 +55,7 @@ public class SFRMIClassLoaderSpi extends RMIClassLoaderSpi {
 
     /**
      * Provides the implementation for {@link
-     * RMIClassLoader#loadClass(URL,String)}, {@link
+     * RMIClassLoader#loadClass(java.net.URL,String)}, {@link
      * RMIClassLoader#loadClass(String,String)}, and {@link
      * RMIClassLoader#loadClass(String,String,ClassLoader)}. Loads a class
      * from a codebase URL path, optionally using the supplied loader.

@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: SmartFrog-RMI-Extension
+Bundle-SymbolicName: org.smartfrog.extension.rmiclassloading
+Bundle-Version: 1.0.0
+Fragment-Host: system.bundle; extension=framework
+Bundle-Description: SmartFrog RMI Classloading extension bundle
+Bundle-Vendor: HP Labs
+Bundle-Classpath: smartfrog-rmiclassloading-3.10.051dev.jar,.
+Export-Package: org.smartfrog.sfcore.classloading

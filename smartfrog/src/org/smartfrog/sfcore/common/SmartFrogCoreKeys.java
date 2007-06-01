@@ -319,15 +319,8 @@ public interface SmartFrogCoreKeys {
     public final static String SF_DIAGNOSTICS_REPORT = "sfDiagnosticsReport";
 
     /**
-     * URL of the OSGi bundle that contains this part of the description.
-     * A new ProcessCompound will be created to delegate deployment inside the bundle,
-     * taking the name of the bundle.
-     */
-    public final static String SF_BUNDLE_URL = "sfBundleURL";
-
-    /**
      * Bundle context used to access the OSGi framework services.
      */
-    public final static String SF_BUNDLE_CONTEXT = "sfBundleContext";
+    public final static String SF_CORE_BUNDLE_CONTEXT = "sfCoreBundleContext";
 
 }

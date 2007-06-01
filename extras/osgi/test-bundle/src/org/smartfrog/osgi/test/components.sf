@@ -1,5 +1,7 @@
 #include "org/smartfrog/components.sf"
 
-test extends Prim {
+Test extends Prim {
+    sfClass "org.smartfrog.osgi.test.TestImpl";
+    
     message extends OptionalString;
 }

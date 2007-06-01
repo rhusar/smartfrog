@@ -17,7 +17,7 @@
         <mkdir dir="./build/classes"/>
     </target>
 
-    <target name="compile">
+    <target name="compile" depends="init">
         <javac destdir="./build/classes"
                debug="on"
                srcdir="./src">
@@ -27,7 +27,7 @@
         </javac>
     </target>
 
-    <target name="jar">
+    <target name="jar" depends="compile">
         <jar jarfile="./build/smartfrog-test-osgi.jar"
              compress="true"
              includes="**/*"
