@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<project name="SmartFrog Security Extension Bundle" default="all">
+    <property name="bundle.filename" value="smartfrog-security-extension.jar"/>
+
+    <import file="../build-common.xml"/>
+
+    <target name="all" depends="sfdist,jar,copyJarAround"/>
+
+    <target name="init">
+        <mkdir dir="./build/lib"/>
+        <copy todir="build/lib" overwrite="true">
+            <fileset dir="${sf.core.dir}/dist/lib/">
+                <include name="sfCoreSecurity*.jar"/>
+            </fileset>
+        </copy>
+    </target>
+
+    <target name="jar" depends="init">
+        <jar jarfile="./build/${bundle.filename}"
+             compress="true"
+             includes="**/*"
+             manifest="./META-INF/MANIFEST.MF">
+            <zipfileset dir="build/lib" includes="*.jar"/>
+        </jar>
+    </target>
+
+</project>

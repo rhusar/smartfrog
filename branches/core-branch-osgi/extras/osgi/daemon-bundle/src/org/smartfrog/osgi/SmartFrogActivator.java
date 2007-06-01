@@ -38,30 +38,40 @@ public class SmartFrogActivator implements BundleActivator {
 
         debug("Current thread context CL: " + Thread.currentThread().getContextClassLoader());
         debug("System CL " + ClassLoader.getSystemClassLoader());
-        ClassLoader bundleCL = this.getClass().getClassLoader();
-        debug("This bundle's CL: " + bundleCL);
-        debug("Parent: " + bundleCL.getParent());
-        debug("Parent of parent: " + bundleCL.getParent().getParent());
-        debug("Parent of parent of parent: " + bundleCL.getParent().getParent().getParent());
+        ClassLoader bundleCL = getClass().getClassLoader();
+        printClassLoaderHierarchy(bundleCL);
         debug("Setting the thread context CL to bundle's CL.");
 
+        ClassLoader oldClassLoader = Thread.currentThread().getContextClassLoader();
         Thread.currentThread().setContextClassLoader(bundleCL);
-
         rootProcess = SFSystem.runSmartFrog();
         rootProcess.sfAddAttribute(SmartFrogCoreKeys.SF_CORE_BUNDLE_CONTEXT, bundleContext);
 
         info("SmartFrog daemon running...");
         releaseLogService(bundleContext);
+
+        Thread.currentThread().setContextClassLoader(oldClassLoader);
+    }
+
+    private void printClassLoaderHierarchy(final ClassLoader bundleCL) {
+        ClassLoader curr = bundleCL;
+        int depth = 0;
+        while (curr != null) {
+            debug("Classloader of depth " + depth + " : " + curr);
+            curr = curr.getParent();
+        }
     }
 
     public void stop(BundleContext bundleContext) throws Exception {
-        logService.log(LOG_INFO, "Stopping smartfrog...");
+        getLogService(bundleContext);
+        info("Stopping smartfrog...");
 
         // TODO: Find a nicer way to change shutdown behaviour.
         ExitCodes.exitJVM = false;
         rootProcess.sfTerminate(new TerminationRecord("normal", "Stopping daemon", null));
 
-        logService.log(LOG_INFO, "SmartFrog daemon stopped.");
+        info("SmartFrog daemon stopped.");
+        // Services are released automatically
     }
 
     private void debug(final String message) {

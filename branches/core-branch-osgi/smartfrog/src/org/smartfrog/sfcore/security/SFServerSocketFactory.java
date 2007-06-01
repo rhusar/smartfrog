@@ -46,7 +46,9 @@ public class SFServerSocketFactory implements RMIServerSocketFactory {
             return false;
         }
         SFServerSocketFactory other = (SFServerSocketFactory) obj;
-        return bindAddr.equals(other.bindAddr);
+        return bindAddr == null
+                ? other.bindAddr == null
+                : bindAddr.equals(other.bindAddr);
     }
 
 

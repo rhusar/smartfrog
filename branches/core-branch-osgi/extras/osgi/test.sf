@@ -1,4 +1,6 @@
-#import "org/smartfrog/components.sf"
+#include "org/smartfrog/components.sf"
+#include "org/smartfrog/osgi/components.sf"
+#include "org/smartfrog/osgi/test/components.sf"
 
 sfConfig extends {
     testBundle extends OSGiBundleCompound {
