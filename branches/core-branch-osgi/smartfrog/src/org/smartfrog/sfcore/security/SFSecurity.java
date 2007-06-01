@@ -25,10 +25,8 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.RMISocketFactory;
-import java.rmi.server.RMIClientSocketFactory;
-import java.rmi.server.RMIServerSocketFactory;
 import java.net.InetAddress;
-import org.smartfrog.sfcore.processcompound.SFServerSocketFactory;
+import org.smartfrog.sfcore.security.SFServerSocketFactory;
 
 
 /**
@@ -118,7 +116,7 @@ public class SFSecurity {
 
 //                     InetAddress rmissfBindAddr = InetAddress.getByName("guijarro-j-3.hpl.hp.com");
 //                     RMIClientSocketFactory  rmicsf = new org.smartfrog.sfcore.processcompound.SFClientSocketFactory();
-//                     RMIServerSocketFactory rmissf = new org.smartfrog.sfcore.processcompound.SFServerSocketFactory(rmissfBindAddr);
+//                     RMIServerSocketFactory rmissf = new org.smartfrog.sfcore.processcompound.SFSSLServerSocketFactory(rmissfBindAddr);
 //                     RMISocketFactory rmisf = new SFRMISocketFactory(rmicsf, rmissf);
 
                     System.setSecurityManager(new DummySecurityManager());

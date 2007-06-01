@@ -17,40 +17,41 @@ public class SmartFrogActivator implements BundleActivator {
     private LogService logService = null;
 
     public void start(BundleContext bundleContext) throws Exception {
-        ServiceReference logServiceReference = bundleContext.getServiceReference("org.osgi.service.log.LogService");
-        // TODO: Handle missing LogService gracefully
-        if (logServiceReference != null)
-            logService = (LogService) bundleContext.getService(logServiceReference);
+        getLogService(bundleContext);
 
-        logService.log(LOG_INFO, "Starting smartfrog...");
+        info("Starting smartfrog...");
 
-        System.setProperty("org.smartfrog.sfcore.processcompound.sfProcessName","rootProcess");
+        System.setProperty("org.smartfrog.sfcore.processcompound.sfProcessName", "rootProcess");
         System.setProperty("org.smartfrog.sfcore.processcompound.sfDefault.sfDefault",
                 "org/smartfrog/default.sf");
         System.setProperty("org.smartfrog.iniFile",
                 "org/smartfrog/default.ini");
-        //System.setProperty("org.smartfrog.sfcore.security.debug","true");
-        //System.setProperty("java.security.debug","scl");
-        //System.setProperty("java.rmi.server.logCalls","true");
-        //System.setProperty("sun.rmi.loader.logLevel","VERBOSE");
 
-        logService.log(LOG_DEBUG, "Current thread context CL: " + Thread.currentThread().getContextClassLoader());
-        logService.log(LOG_DEBUG, "System CL " + ClassLoader.getSystemClassLoader());
+        //System.setProperty("org.smartfrog.sfcore.security.debug","true");
+        System.setProperty("java.security.debug", "scl");
+        System.setProperty("sun.rmi.dgc.logLevel", "VERBOSE");
+        System.setProperty("sun.rmi.transport.logLevel", "VERBOSE");
+        System.setProperty("sun.rmi.transport.logLevel", "VERBOSE");
+        System.setProperty("java.rmi.server.logCalls", "true");
+        System.setProperty("sun.rmi.loader.logLevel", "VERBOSE");
+        System.setProperty("sun.rmi.server.exceptionTrace", "true");
+
+        debug("Current thread context CL: " + Thread.currentThread().getContextClassLoader());
+        debug("System CL " + ClassLoader.getSystemClassLoader());
         ClassLoader bundleCL = this.getClass().getClassLoader();
-        logService.log(LOG_DEBUG, "This bundle's CL: " + bundleCL);
-        logService.log(LOG_DEBUG, "Parent: " + bundleCL.getParent());
-        logService.log(LOG_DEBUG, "Parent of parent: " + bundleCL.getParent().getParent());
-        logService.log(LOG_DEBUG, "Parent of parent of parent: " + bundleCL.getParent().getParent().getParent());
-        logService.log(LOG_DEBUG, "Setting the thread context CL to bundle's CL.");
+        debug("This bundle's CL: " + bundleCL);
+        debug("Parent: " + bundleCL.getParent());
+        debug("Parent of parent: " + bundleCL.getParent().getParent());
+        debug("Parent of parent of parent: " + bundleCL.getParent().getParent().getParent());
+        debug("Setting the thread context CL to bundle's CL.");
 
         Thread.currentThread().setContextClassLoader(bundleCL);
 
         rootProcess = SFSystem.runSmartFrog();
-        rootProcess.sfAddAttribute(SmartFrogCoreKeys.SF_BUNDLE_CONTEXT, bundleContext);
+        rootProcess.sfAddAttribute(SmartFrogCoreKeys.SF_CORE_BUNDLE_CONTEXT, bundleContext);
 
-        logService.log(LOG_INFO, "SmartFrog daemon running...");
-
-        System.out.println("SmartFrog daemon running...");
+        info("SmartFrog daemon running...");
+        releaseLogService(bundleContext);
     }
 
     public void stop(BundleContext bundleContext) throws Exception {
@@ -61,5 +62,30 @@ public class SmartFrogActivator implements BundleActivator {
         rootProcess.sfTerminate(new TerminationRecord("normal", "Stopping daemon", null));
 
         logService.log(LOG_INFO, "SmartFrog daemon stopped.");
+    }
+
+    private void debug(final String message) {
+        if (logService != null)
+            logService.log(LOG_DEBUG, message);
+    }
+
+    private void info(final String message) {
+        if (logService != null)
+            logService.log(LOG_INFO, message);
+    }
+
+    private ServiceReference logServiceReference(BundleContext bundleContext) {
+        return bundleContext.getServiceReference("org.osgi.service.log.LogService");
+    }
+
+    private void getLogService(BundleContext bundleContext) {
+        ServiceReference logServiceReference = logServiceReference(bundleContext);
+        if (logServiceReference != null)
+            logService = (LogService) bundleContext.getService(logServiceReference);
+    }
+
+    private void releaseLogService(BundleContext bundleContext) {
+        if (logService != null)
+            bundleContext.ungetService(logServiceReference(bundleContext));
     }
 }

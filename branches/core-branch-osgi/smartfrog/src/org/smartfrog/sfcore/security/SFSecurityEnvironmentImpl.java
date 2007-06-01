@@ -225,7 +225,7 @@ public class SFSecurityEnvironmentImpl implements SFSecurityEnvironment {
      */
     private void initRMISocketFactories() throws SFGeneralSecurityException {
         rmicsf = new SFClientSocketFactory(this);
-        rmissf = new SFServerSocketFactory(rmissfBindAddr,this);
+        rmissf = new SFSSLServerSocketFactory(rmissfBindAddr,this);
         rmisf = new SFRMISocketFactory(rmicsf, rmissf);
     }
 

@@ -61,7 +61,7 @@ public final class ExitCodes {
     public static final int EXIT_ERROR_CODE_CTRL_ALT_DEL = 130;
 
     // TODO: Find a nicer way to change shutdown behaviour.
-    public static boolean exitJVM = false;
+    public static boolean exitJVM = true;
 
     private static final LogSF sfLog = LogFactory.sfGetProcessLog();
 

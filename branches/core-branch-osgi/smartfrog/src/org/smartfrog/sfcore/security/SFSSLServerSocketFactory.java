@@ -31,7 +31,7 @@ import java.rmi.server.RMIServerSocketFactory;
  * can be used to generate RMI server sockets.
  *
  */
-public class SFServerSocketFactory implements RMIServerSocketFactory {
+public class SFSSLServerSocketFactory implements RMIServerSocketFactory {
     /** A security environment that handles the configuration of sockets. */
     private SFSecurityEnvironment secEnv;
 
@@ -46,13 +46,13 @@ public class SFServerSocketFactory implements RMIServerSocketFactory {
         } else if (obj == null || getClass() != obj.getClass()) {
             return false;
         }
-        SFServerSocketFactory other = (SFServerSocketFactory) obj;
+        SFSSLServerSocketFactory other = (SFSSLServerSocketFactory) obj;
         return bindAddr.equals(other.bindAddr);
     }
 
 
     /**
-     * Constructs SFServerSocketFactory with security environment.
+     * Constructs SFSSLServerSocketFactory with security environment.
      * <P>
      * If the bind address is <code>null</code>, then the system will pick up
      * an ephemeral port and a valid local address to bind the socket.
@@ -62,7 +62,7 @@ public class SFServerSocketFactory implements RMIServerSocketFactory {
      * @param secEnv A security environment that handles the configuration of
      *        sockets.
      */
-    public SFServerSocketFactory(InetAddress bindAddr, SFSecurityEnvironment secEnv) {
+    public SFSSLServerSocketFactory(InetAddress bindAddr, SFSecurityEnvironment secEnv) {
         this.bindAddr = bindAddr;
         this.secEnv = secEnv;
     }
