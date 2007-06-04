@@ -39,12 +39,13 @@ public class SFServerSocketFactory implements RMIServerSocketFactory {
     public int hashCode() {
         return bindAddr == null ? 0 : bindAddr.hashCode();
     }
+
     public boolean equals(Object obj) {
-        if (obj == this) {
+        if (obj == this)
             return true;
-        } else if (obj == null || getClass() != obj.getClass()) {
+        else if (obj == null || getClass() != obj.getClass())
             return false;
-        }
+        
         SFServerSocketFactory other = (SFServerSocketFactory) obj;
         return bindAddr == null
                 ? other.bindAddr == null

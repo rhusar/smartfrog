@@ -14,6 +14,7 @@
                 <include name="smartfrog*.jar"/>
                 <include name="sfCoreSecurity*.jar"/>
                 <include name="sfService*.jar"/>
+                <include name="sfExamples*.jar"/>
             </fileset>
         </copy>
     </target>
