@@ -140,53 +140,36 @@ For more information: www.smartfrog.org
   <target name="jdocs" depends="javadoc" description="Generates the API documentation"/>
 
 
-  <!-- =================================================================== -->
+  <!-- ========================================================== -->
   <!-- system tests -->
-  <!-- =================================================================== -->
-  <target name="system-tests" depends="common.system-tests"
-      description="run system tests"
-      if="system.tests.enabled">
-    <sf-functionaltest testTimeout="600" shutdownTime="10">
-      <application>
-        <sf-startdaemon-debug failonerror="false" spawn="false"
-            classpathref="tests.run.classpath"/>
-      </application>
-      <probe>
-        <socket port="${smartfrog.daemon.port}" server="localhost"/>
-      </probe>
+  <!-- ========================================================== -->
+
+
+  <target name="system-tests" depends="ready-to-test"
+      if="run.system.tests" description="run system tests">
+    <sf-system-test>
       <test>
-        <sf-junit
-            includeantruntime="true"
-            filtertrace="${filter.trace}"
-            errorproperty="failure"
-            failureproperty="failure"
-            >
-          <classpath
-              refid="tests.run.classpath"/>
+        <sf-system-test-junit>
           <sysproperty key="test.files.dir"
               value="${test.src.dir}/files"/>
           <!--Root directory for jetty-->
           <sysproperty key="jetty.home"
               value="${test.src.dir}/files/jettyhome"/>
-          <syspropertyset>
-            <propertyref prefix="runtime"/>
-          </syspropertyset>
           <batchtest todir="${test.data.dir}">
             <fileset dir="${test.classes.dir}">
               <include name="**/unit/*Test.class"/>
-              <include name="**/system/**/*Test.class" />
-              <exclude name="**/system/full/*Test.class" unless="jasper.found" />
+              <include name="**/system/**/*Test.class"/>
+              <exclude name="**/system/full/*Test.class" unless="jasper.found"/>
             </fileset>
           </batchtest>
-        </sf-junit>
-        <fail if="failure">Junit failed</fail>
+        </sf-system-test-junit>
+        <fail if="system.test.failed">System Tests failed - see
+${test.reports.dir}
+        </fail>
       </test>
-      <teardown>
-        <sf-stopdaemon failonerror="false"/>
-        <sf-junitreport data="${test.data.dir}"
-            reports="${test.reports.dir}"
-            />
-      </teardown>
-    </sf-functionaltest>
+    </sf-system-test>
+
   </target>
+
+
 </project>
