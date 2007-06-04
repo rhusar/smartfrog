@@ -149,7 +149,7 @@
   </target>
 
   <target name="system-tests" depends="ready-to-test"
-      if="run.system.tests" description="run system tests">
+      if="system.tests.enabled" description="run system tests">
     <sf-system-test-batch-run />
   </target>
 
