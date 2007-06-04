@@ -136,7 +136,7 @@
   <!-- ========================================================== -->
   <target name="compile-tests"
     depends="ready-to-compile-tests"
-    if="test.dir.found">
+    if="java1.5+">
     <depend
       srcdir="${test.src.dir}"
       destdir="${test.classes.dir}"
@@ -231,58 +231,22 @@
   <!-- ========================================================== -->
   <!-- system tests -->
   <!-- ========================================================== -->
-  <target name="system-tests" depends="parse,dist,package-tests"
-    description="run system tests"
-    if="system.tests.enabled">
-    <parallel>
 
-      <!-- first thread runs the daemon -->
-      <sequential>
-        <antcall target="start-daemon-if-needed"/>
-      </sequential>
 
-      <!-- this is the next thread -->
-      <sequential>
-
-        <!--
-          wait ten seconds for the harness to start
-          without this the first tests will fail as there is no
-          sf daemon around
-        -->
-        <sf-waitfordaemon maxwait="10" timeoutproperty="daemon.missing"/>
-        <fail if="daemon.missing">No daemon</fail>
-        <sf-junit
-          errorProperty="test.failed"
-          failureProperty="test.failed"
-          >
-          <classpath>
-            <path refid="tests.run.classpath"/>
-            <!-- <pathelement location="${test.classes.dir}"/> -->
-          </classpath>
-          <sysproperty key="org.smartfrog.codebase" value="${codebase}"/>
-          <syspropertyset>
-            <propertyref prefix="runtime"/>
-          </syspropertyset>
-
-          <!-- #Test case isolation technique -->
-          <test name="${testcase}" if="testcase"/>
-          <batchtest todir="${test.data.dir}" unless="testcase">
-            <!-- bulk test case -->
-            <fileset dir="${test.classes.dir}">
-              <include name="org/smartfrog/services/xml/test/**/*Test.class"/>
-            </fileset>
-          </batchtest>
-        </sf-junit>
-
-        <!-- conditionally stop the daemon -->
-        <antcall target="conditional-daemon-exit"/>
-        <!-- end the test thread -->
-      </sequential>
-    </parallel>
+  <target name="ready-to-test" depends="parse,common.ready-to-test">
+    <condition property="run.system.tests">
+      <and>
+        <isset property="system.tests.enabled"/>
+        <isset property="java1.5+"/>
+      </and>
+    </condition>
   </target>
 
-  <target name="conditional-daemon-exit" unless="no.stop.daemon">
-    <antcall target="stop-daemon-if-started"/>
+
+  <target name="system-tests" depends="ready-to-test"
+      if="run.system.tests" description="run system tests">
+    <sf-system-test-batch-run />
   </target>
+
 
 </project>
