@@ -171,10 +171,7 @@
   <target name="init-codebase" depends="init-deploy-properties,dist"
       description="set up the codebase property">
     <sf-tourl property="codebase">
-      <fileset file="${target.jar}"/>
-      <fileset file="${test.jar}"/>
-      <path refid="libraries.path"/>
-      <path refid="compile.classpath"/>
+      <path refid="tests.run.classpath"/>
     </sf-tourl>
     <echo>
       deploying to ${deploy.host}
@@ -212,59 +209,33 @@
   </target>
 
 
-  <!-- ========================================================== -->
-  <!-- system tests -->
-  <!-- ========================================================== -->
-
 
   <!-- =================================================================== -->
   <!-- system tests -->
   <!-- =================================================================== -->
-  <target name="system-tests" depends="common.system-tests"
-      description="run system tests"
-      if="system.tests.enabled">
-    <sf-functionaltest testTimeout="600" shutdownTime="10">
-      <application>
-        <sf-startdaemon-debug failonerror="false" spawn="false"/>
-      </application>
-      <probe>
-        <socket port="${smartfrog.daemon.port}" server="localhost"/>
-      </probe>
+
+  <target name="system-tests" depends="ready-to-test"
+      if="system.tests.enabled" description="run system tests">
+    <sf-system-test>
       <test>
-        <sf-junit
-            includeantruntime="true"
-            filtertrace="${filter.trace}"
-            errorproperty="failure"
-            failureproperty="failure"
-            >
-          <classpath
-              refid="tests.run.classpath"/>
+        <sf-system-test-junit>
           <sysproperty key="test.files.dir"
               value="${test.src.dir}/files"/>
           <sysproperty key="endpoint"
               value="http://127.0.0.1:6060/alpine"/>
-          <syspropertyset>
-            <propertyref prefix="runtime"/>
-          </syspropertyset>
           <batchtest todir="${test.data.dir}">
             <fileset dir="${test.classes.dir}">
               <include name="**/unit/*Test.class"/>
               <include name="**/system/**/*Test.class"/>
             </fileset>
           </batchtest>
-        </sf-junit>
-        <fail if="failure">Junit failed</fail>
+        </sf-system-test-junit>
+        <fail if="system.test.failed">System Tests failed - see
+          ${test.reports.dir}
+        </fail>
       </test>
-      <teardown>
-        <sf-stopdaemon failonerror="false"/>
-        <sf-junitreport data="${test.data.dir}"
-            reports="${test.reports.dir}"
-            />
-      </teardown>
-    </sf-functionaltest>
+    </sf-system-test>
   </target>
-
-  
 
   <target name="all" depends="dist,unit-tests,installed"/>
 </project>

@@ -74,7 +74,7 @@
     <dependency org="commons-httpclient"
         name="commons-httpclient"
         rev="${commons-httpclient.version}"
-        conf="compile->master;redist->default">
+        conf="compile->master;test,runtime,redist->default">
       <exclude org="commons-logging"/>
       <exclude org="junit"/>
     </dependency>
