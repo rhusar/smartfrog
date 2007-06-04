@@ -129,7 +129,7 @@
       if="system.tests.enabled" description="run system tests">
     <sf-system-test>
       <test>
-        <sf-system-test-junit>
+        <sf-system-test-junit includeantruntime="false">
           <sysproperty key="test.files.dir"
               value="${test.src.dir}/files"/>
           <!--Root directory for jetty-->
