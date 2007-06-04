@@ -1296,6 +1296,78 @@ java.class.path=
   </target>
 
 
+
+  <!--
+  This target defines the task
+  <sf-system-test> which is a functional tests runner ready to
+  run smartfrog, just add tests and go.
+  The classpath of the daemon is set to tests.run.classpath;
+  -->
+  <target name="declare-system-test-tasks" depends="declare-extended-smartfrog-tasks,init-codebase" >
+    <presetdef name="sf-system-test">
+      <sf-functionaltest testTimeout="600" shutdownTime="10">
+        <application>
+          <sf-startdaemon-debug failonerror="false"
+              spawn="false"
+              classpathref="tests.run.classpath"/>
+        </application>
+        <probe>
+          <socket port="${smartfrog.daemon.port}" server="localhost"/>
+        </probe>
+        <teardown>
+          <parallel>
+            <sf-stopdaemon failonerror="false"/>
+            <sf-junitreport data="${test.data.dir}"
+                reports="${test.reports.dir}"
+                />
+          </parallel>
+        </teardown>
+      </sf-functionaltest>
+    </presetdef>
+    <presetdef name="sf-system-test-junit">
+      <sf-junit
+          errorProperty="system.test.failed"
+          failureProperty="system.test.failed"
+          includeAntRuntime="true"
+          >
+        <classpath refid="tests.run.classpath" />
+        <sysproperty key="test.classes.dir"
+            value="${test.classes.dir}"/>
+        <!--all properties beginning with test and runtime, and the codebase-->
+        <syspropertyset>
+          <propertyref prefix="test."/>
+        </syspropertyset>
+        <sysproperty key="org.smartfrog.codebase" value="${codebase}"/>
+        <syspropertyset>
+          <propertyref prefix="runtime"/>
+        </syspropertyset>
+      </sf-junit>
+    </presetdef>
+
+    <presetdef name="sf-system-test-batch-run">
+      <sf-system-test>
+        <test>
+          <sf-system-test-junit>
+            <batchtest todir="${test.data.dir}" unless="testcase">
+              <fileset dir="${test.classes.dir}">
+                <include name="org/smartfrog/**/test/**/*Test.class"/>
+              </fileset>
+            </batchtest>
+          </sf-system-test-junit>
+          <fail if="system.test.failed">System Tests failed - see
+            ${test.reports.dir}
+          </fail>
+        </test>
+      </sf-system-test>
+    </presetdef>
+
+
+  </target>
+
+  <target name="ready-to-test" depends="init,package,dist,package-tests,declare-system-test-tasks">
+
+  </target>
+
   <!-- ========================================================== -->
   <!-- this is an override point -->
   <!-- system tests : anything that is tested on a live daemon
@@ -1303,7 +1375,7 @@ java.class.path=
        security reasons, unless security is active-->
   <!-- ========================================================== -->
   <target name="system-tests" if="system.tests.enabled"
-          depends="init,package,package-tests,declare-extended-smartfrog-tasks"
+          depends="ready-to-test"
     description="run the system tests">
   </target>
 
@@ -1311,7 +1383,7 @@ java.class.path=
   <!-- this is an override point -->
   <!-- unit tests : anything which does not need deployment to run-->
   <!-- ========================================================== -->
-  <target name="unit-tests" depends="init,package,package-tests"
+  <target name="unit-tests" depends="ready-to-test"
       if="unit.tests.enabled"
     description="run the unit tests">
   </target>
