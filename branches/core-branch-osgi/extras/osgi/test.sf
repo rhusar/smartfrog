@@ -3,6 +3,7 @@
 #include "org/smartfrog/osgi/test/components.sf"
 
 sfConfig extends {
+
     testBundle extends OSGiBundleCompound {
         bundleURL "file:smartfrog-test-osgi.jar";
 
@@ -10,4 +11,5 @@ sfConfig extends {
             message "Servez à ce monsieur, le vieux petit juge blond assis au fond, une bière hollandaise et des kiwis, parce qu'il y tient.";
         }
     }
+    
 }
