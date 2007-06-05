@@ -28,6 +28,7 @@ public class SmartFrogActivator implements BundleActivator {
                 "org/smartfrog/default.ini");
 
         //System.setProperty("org.smartfrog.sfcore.security.debug","true");
+
         System.setProperty("java.security.debug", "scl");
         System.setProperty("sun.rmi.dgc.logLevel", "VERBOSE");
         System.setProperty("sun.rmi.transport.logLevel", "VERBOSE");
@@ -58,6 +59,7 @@ public class SmartFrogActivator implements BundleActivator {
         int depth = 0;
         while (curr != null) {
             debug("Classloader of depth " + depth + " : " + curr);
+            depth++;
             curr = curr.getParent();
         }
     }

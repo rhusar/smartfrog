@@ -4,32 +4,89 @@ import org.smartfrog.sfcore.compound.CompoundImpl;
 import org.smartfrog.sfcore.compound.Compound;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
+import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
+import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.prim.TerminationRecord;
+import org.smartfrog.sfcore.logging.LogSF;
+import org.smartfrog.sfcore.reference.Reference;
+import org.smartfrog.sfcore.reference.ReferencePart;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
 import org.osgi.framework.Bundle;
 
 import java.rmi.RemoteException;
+import java.util.Enumeration;
+import java.util.Dictionary;
 
+@SuppressWarnings({"ClassTooDeepInInheritanceTree"})
 public class OSGiBundleCompound extends CompoundImpl implements Compound {
     private static final String BUNDLE_URL = "bundleURL";
     private Bundle childBundle = null;
 
     public OSGiBundleCompound() throws RemoteException {}
 
-    public synchronized void sfStart() throws SmartFrogException, RemoteException {
-        super.sfStart();
+    protected synchronized void sfDeployWithChildren() throws SmartFrogDeploymentException {
+        LogSF log = sfLog();
+        log.debug("Deploying OSGiBundleCompound...");
 
-        BundleContext daemonBundleContext = (BundleContext) sfResolve(SmartFrogCoreKeys.SF_CORE_BUNDLE_CONTEXT);
-        String bundleURL = (String) sfResolve(BUNDLE_URL);
-
+        BundleContext daemonBundleContext;
+        String bundleURL;
         try {
+            daemonBundleContext = (BundleContext) sfResolve(new Reference(
+                    ReferencePart.attrib(SmartFrogCoreKeys.SF_CORE_BUNDLE_CONTEXT)
+            ));
+            bundleURL = (String) sfResolve(BUNDLE_URL);
+        } catch (SmartFrogResolutionException e) {
+            throw new SmartFrogDeploymentException(e, this);
+        } catch (RemoteException e) {
+            throw new SmartFrogDeploymentException(e, this);
+        }
+
+
+        if (log.isDebugEnabled())
+            log.debug("Trying to install bundle from URL : "
+                    + bundleURL
+                    + ". BundleContext for daemon bundle :"
+                    + daemonBundleContext);
+        try {
+
             childBundle = daemonBundleContext.installBundle(bundleURL);
-        } catch(BundleException e) {
-            throw new SmartFrogException("Bundle installation from URL : "
+            childBundle.start();
+            if (log.isDebugEnabled()) {
+                log.debug("Bundle ID : " + childBundle.getBundleId());
+                log.debug("Bundle Headers :");
+                Dictionary headers = childBundle.getHeaders();
+                Enumeration e = headers.keys();
+                while (e.hasMoreElements()) {
+                    Object key = e.nextElement();
+                    log.debug(key + " = " + headers.get(key));
+                }
+            }
+            log.info("Bundle from URL : " + bundleURL + " installed properly.");
+            log.debug("1. Bundle state code : " + childBundle.getState());
+
+        } catch (BundleException e) {
+
+            if (childBundle != null) {
+                try {
+                    childBundle.uninstall();
+                    log.info("Bundle from URL :"
+                            + bundleURL
+                            + " has been uninstalled because it failed to start properly.");
+                } catch (BundleException e2) {
+                    log.error("Bundle installed, failed to start but could not be uninstalled.", e2);
+                }
+            }
+
+            throw new SmartFrogDeploymentException("Bundle installation from URL : "
                     + bundleURL
                     + " failed", e);
         }
+
+        log.debug("Calling parent sfDeployWithChildren to deploy children.");
+        super.sfDeployWithChildren();
+
+        log.debug("OSGiBundleCompound deployed.");
     }
 
 
@@ -44,10 +101,11 @@ public class OSGiBundleCompound extends CompoundImpl implements Compound {
     protected synchronized void sfTerminateWith(TerminationRecord status) {
         super.sfTerminateWith(status);
 
-        try {
-            childBundle.uninstall();
-        } catch (BundleException e) {
-            sfLog().error("Failed to uninstall child bundle", new SmartFrogException(e), status);
-        }
+//  Disabled for now to see the results of the deployment
+//        try {
+//            childBundle.uninstall();
+//        } catch (BundleException e) {
+//            sfLog().error("Failed to uninstall child bundle", new SmartFrogException(e), status);
+//        }
     }
 }

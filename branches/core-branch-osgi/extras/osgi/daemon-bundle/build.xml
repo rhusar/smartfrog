@@ -12,7 +12,6 @@
         <copy todir="build/lib" overwrite="true">
             <fileset dir="${sf.core.dir}/dist/lib/">
                 <include name="smartfrog*.jar"/>
-                <include name="sfCoreSecurity*.jar"/>
                 <include name="sfService*.jar"/>
                 <include name="sfExamples*.jar"/>
             </fileset>
@@ -37,6 +36,7 @@
              manifest="./META-INF/MANIFEST.MF">
             <zipfileset dir="build/classes"/>
             <zipfileset dir="build/lib" includes="*.jar"/>
+            <zipfileset dir="src" includes="*.sf"/>
         </jar>
     </target>
 
