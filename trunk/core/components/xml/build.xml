@@ -153,7 +153,7 @@
   </target>
 
   <!-- ========================================================== -->
-  <!-- parse the file -->
+  <!-- parse test files -->
   <!-- ========================================================== -->
   <target name="parse" depends="init-codebase,package-tests"
     description="parse the deployment descriptor">
@@ -166,14 +166,17 @@
       <source dir="${test.src.dir}/org/smartfrog/services/xml/test/files/"
         >
         <include name="testDocument.sf" />
+      </source>
+    </sf-parse>
+    <sf-parse quiet="${parse.quiet}">
+      <classpath path="${target.jar}:${test.jar}"/>
+      <sysproperty key="org.smartfrog.codebase"
+          value="${codebase}"/>
+      <!-- source files -->
+      <source dir="${test.src.dir}/org/smartfrog/services/xml/test/files/"
+          >
         <include name="textNode.sf" />
       </source>
-      <!-- test files -->
-      <!--       <source dir="${test.src.dir}">
-              <include name="**/*.sf"/>
-              <exclude name="files/components.sf"/>
-            </source>
-       -->
     </sf-parse>
   </target>
 
@@ -189,15 +192,16 @@
   <!-- ========================================================== -->
   <!-- set-->
   <!-- ========================================================== -->
-  <target name="init-codebase" depends="init-deploy-properties,declare-classpaths,package-tests"
+<!--  <target name="init-codebase" depends="init-deploy-properties,declare-classpaths,package-tests"
     description="set up the codebase property">
-    <sf-tourl property="codebase">
+    <makeurl property="codebase">
       <path refid="tests.run.classpath"/>
-    </sf-tourl>
+    </makeurl>
     <echo>
         deploying to ${deploy.host}
         codebase=${codebase}</echo>
-  </target>
+  </target>-->
+
   <!-- ========================================================== -->
   <!-- deploy; requires a host -->
   <!-- ========================================================== -->
