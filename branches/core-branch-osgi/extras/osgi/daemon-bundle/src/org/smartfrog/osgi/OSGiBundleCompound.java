@@ -84,7 +84,43 @@ public class OSGiBundleCompound extends CompoundImpl implements Compound {
         }
 
         log.debug("Calling parent sfDeployWithChildren to deploy children.");
-        super.sfDeployWithChildren();
+        log.debug("T.cT().getContextClassLoader() = " + Thread.currentThread().getContextClassLoader());
+        log.debug("getClass().getClassLoader() = " + getClass().getClassLoader());
+        log.debug("getClass() = " + getClass());
+        try {
+            System.out.println("Trying childBundle.loadClass...");
+            childBundle.loadClass("org.smartfrog.osgi.test.TestImpl");
+            System.out.println("childBundle.loadClass OK");
+        } catch (Throwable e) {
+            e.printStackTrace();
+        }
+
+        try {
+            System.out.println("Trying SmartFrogActivator.class.getClassLoader().loadClass...");
+            SmartFrogActivator.class.getClassLoader().loadClass("org.smartfrog.osgi.test.TestImpl");
+            System.out.println("SmartFrogActivator.class.getClassLoader().loadClass OK");
+        } catch (Throwable e) {
+            e.printStackTrace();
+        }
+
+
+        try {
+            System.out.println("Trying daemonBundle.loadClass...");
+            daemonBundleContext.getBundle().loadClass("org.smartfrog.osgi.test.TestImpl");
+            System.out.println("daemonBundle.loadClass OK");
+        } catch (Throwable e) {
+            e.printStackTrace();
+        }
+
+        try {
+            System.out.println("Trying Class.forName...");
+            Class.forName("org.smartfrog.osgi.test.TestImpl");
+            System.out.println("Class.forName OK");
+        } catch (Throwable e) {
+            e.printStackTrace();
+        }
+
+        //super.sfDeployWithChildren();
 
         log.debug("OSGiBundleCompound deployed.");
     }

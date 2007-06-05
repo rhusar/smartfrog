@@ -41,17 +41,23 @@ public class SmartFrogActivator implements BundleActivator {
         debug("System CL " + ClassLoader.getSystemClassLoader());
         ClassLoader bundleCL = getClass().getClassLoader();
         printClassLoaderHierarchy(bundleCL);
-        debug("Setting the thread context CL to bundle's CL.");
 
-        ClassLoader oldClassLoader = Thread.currentThread().getContextClassLoader();
-        Thread.currentThread().setContextClassLoader(bundleCL);
+// Not needed in Equinox as it deals with this nicely :
+// http://wiki.eclipse.org/index.php/Context_Class_Loader_Enhancements
+// Needed in Knopflerfish, not checked in Felix
+//
+//        debug("Setting the thread context CL to bundle's CL.");
+//
+//        ClassLoader oldClassLoader = Thread.currentThread().getContextClassLoader();
+//        Thread.currentThread().setContextClassLoader(bundleCL);
+
         rootProcess = SFSystem.runSmartFrog();
         rootProcess.sfAddAttribute(SmartFrogCoreKeys.SF_CORE_BUNDLE_CONTEXT, bundleContext);
 
         info("SmartFrog daemon running...");
         releaseLogService(bundleContext);
 
-        Thread.currentThread().setContextClassLoader(oldClassLoader);
+//        Thread.currentThread().setContextClassLoader(oldClassLoader);
     }
 
     private void printClassLoaderHierarchy(final ClassLoader bundleCL) {

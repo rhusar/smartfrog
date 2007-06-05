@@ -20,6 +20,8 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.sfcore.security;
 
+import org.smartfrog.sfcore.security.rmispi.SFDebug;
+
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;

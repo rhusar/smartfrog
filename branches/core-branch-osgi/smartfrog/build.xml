@@ -589,7 +589,7 @@
   <!--  SmartFrog Jar                                                     -->
   <target name="sfJar" depends="build,target-names">
     <jar jarfile="${smartfrog.jar}" basedir="${build.classes.dir}"
-      includes="**/smartfrog/**" excludes="**/services/**,**/examples/**,**/security/**" manifest="${manifestName}"/>
+      includes="**/smartfrog/**" excludes="**/services/**,**/examples/**,**/rmispi/**" manifest="${manifestName}"/>
   </target>
   <!--  sfServices.jar                                               -->
 
@@ -608,7 +608,7 @@
   <target name="sfCoreSecurityJar" depends="build,target-names">
      <!-- Create sfCoreSecurity.jar file -->
     <jar jarfile="${sf-coresecurity.jar}"
-      basedir="${build.classes.dir}" includes="**/security/**" manifest="${manifestName}"/> 
+      basedir="${build.classes.dir}" includes="**/rmispi/**" manifest="${manifestName}"/>
   </target>
 
   <target name="jars" depends="initdist,sfJar,sfServicesJar,sfExamplesJar,sfCoreSecurityJar"/>

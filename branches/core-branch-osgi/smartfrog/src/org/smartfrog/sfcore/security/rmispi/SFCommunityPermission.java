@@ -18,7 +18,7 @@ For more information: www.smartfrog.org
 
 */
 
-package org.smartfrog.sfcore.security;
+package org.smartfrog.sfcore.security.rmispi;
 
 import java.security.BasicPermission;
 

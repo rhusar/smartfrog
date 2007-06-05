@@ -20,6 +20,9 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.sfcore.security;
 
+import org.smartfrog.sfcore.security.rmispi.SFRMIClassLoaderSpi;
+import org.smartfrog.sfcore.security.rmispi.SFDebug;
+
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.InputStream;
@@ -289,60 +292,10 @@ public class SFClassLoader {
         CodeSource cs = new CodeSource(con.getURL(), certs);
         Policy pc = Policy.getPolicy();
         PermissionCollection perms = ((pc == null) ? null : pc.getPermissions(cs));
-        quickReject(new ProtectionDomain(cs, perms));
+        SFRMIClassLoaderSpi.quickReject(new ProtectionDomain(cs, perms));
 
         // No security exception, continues...
         return in;
-    }
-
-    /**
-     * Checks that the given protection domain include a permission that
-     * ensures that is coming from a trusted origin (SFCommunityPermission).
-     * If this is not the case, and security is active, it throws a security
-     * exception.
-     *
-     * @param pd a protection domain that needs to be checked.
-     */
-    public static void quickReject(ProtectionDomain pd) {
-        if ((pd != null) && (pd.implies(new SFCommunityPermission()))) {
-            // Resource came from a trusted sourced, no problem.
-            return;
-        }
-
-        if (SFSecurity.isSecurityOn()) {
-            // Didn't pass, we should not load this resource.
-            throw new SecurityException("SFClassLoader:quickReject: " +
-                "access check failed for " + pd);
-        } else {
-            if (debug != null) {
-                debug.println("WARNING!!:quickReject:  " +
-                    "access check failed for " + pd);
-            }
-        }
-    }
-
-    /**
-     * Checks that a class is coming from a trusted origin. If this is not the
-     * case, and security is active, it throws a security exception. This
-     * allows to check the origin of resources even if they do not perform any
-     * security sensitive operation.
-     *
-     * @param cl Class whose origin we want to check.
-     */
-    public static void quickRejectClass(Class cl) {
-        quickReject(cl.getProtectionDomain());
-    }
-
-    /**
-     * Checks that an object comes from a  class of a trusted origin. If this
-     * is not the case, and security is active, it throws a security
-     * exception. This allows to check the origin of resources even if they do
-     * not perform any security sensitive operation.
-     *
-     * @param obj Object whose origin we want to check.
-     */
-    public static void quickRejectObject(Object obj) {
-        quickRejectClass(obj.getClass());
     }
 
     /**
@@ -390,7 +343,7 @@ public class SFClassLoader {
            they are in a different jar file they might not have the same
            priviledges. For this reason, we have to use sealed packages
            and make jar files as self-contained as possible. */
-        quickRejectClass(cl);
+        SFRMIClassLoaderSpi.quickRejectClass(cl);
 
         return cl;
     }
@@ -409,9 +362,9 @@ public class SFClassLoader {
     static Object opHelper(String name, String codebase, boolean isForName)
             throws ClassNotFoundException, IOException {
         if (isForName) {
-            return (Object) forNameHelper(name, codebase);
+            return forNameHelper(name, codebase);
         } else {
-            return (Object) getResourceHelper(name, codebase);
+            return getResourceHelper(name, codebase);
         }
     }
 

@@ -18,11 +18,12 @@ For more information: www.smartfrog.org
 
 */
 
-package org.smartfrog.sfcore.security;
+package org.smartfrog.sfcore.security.rmispi;
 
 import java.net.MalformedURLException;
 import java.rmi.server.RMIClassLoader;
 import java.rmi.server.RMIClassLoaderSpi;
+import java.security.ProtectionDomain;
 
 
 /**
@@ -44,6 +45,8 @@ public class SFRMIClassLoaderSpi extends RMIClassLoaderSpi {
 
     /** Default RMI class loader implementation. */
     RMIClassLoaderSpi defaultProviderInstance = null;
+    /** A flag that states whether SF security checks are active. */
+    private static boolean securityOn = false;
 
     public SFRMIClassLoaderSpi() {
         defaultProviderInstance = RMIClassLoader.getDefaultProviderInstance();
@@ -95,7 +98,7 @@ public class SFRMIClassLoaderSpi extends RMIClassLoaderSpi {
                 name + " cl=" + defaultLoader);
         }
 
-        SFClassLoader.quickRejectClass(result);
+        quickRejectClass(result);
 
         if (debug != null) {
             debug.println("loadclass:#2 codebase=" + codebase + " name=" +
@@ -149,7 +152,7 @@ public class SFRMIClassLoaderSpi extends RMIClassLoaderSpi {
                 " interf=" + interfaces + " cl=" + defaultLoader);
         }
 
-        SFClassLoader.quickRejectClass(result);
+        quickRejectClass(result);
 
         if (debug != null) {
             debug.println("loadProxyClass:#2 codebase=" + codebase +
@@ -195,7 +198,7 @@ public class SFRMIClassLoaderSpi extends RMIClassLoaderSpi {
             debug.println("getClassLoader:#1 codebase=" + codebase);
         }
 
-        SFClassLoader.quickRejectObject(result);
+        quickRejectObject(result);
 
         if (debug != null) {
             debug.println("getClassLoader:#2 codebase=" + codebase);
@@ -218,5 +221,63 @@ public class SFRMIClassLoaderSpi extends RMIClassLoaderSpi {
      */
     public String getClassAnnotation(Class cl) {
         return defaultProviderInstance.getClassAnnotation(cl);
+    }
+
+    /**
+     * Checks that a class is coming from a trusted origin. If this is not the
+     * case, and security is active, it throws a security exception. This
+     * allows to check the origin of resources even if they do not perform any
+     * security sensitive operation.
+     *
+     * @param cl Class whose origin we want to check.
+     */
+    public static void quickRejectClass(Class cl) {
+        quickReject(cl.getProtectionDomain());
+    }
+
+    /**
+     * Checks that an object comes from a  class of a trusted origin. If this
+     * is not the case, and security is active, it throws a security
+     * exception. This allows to check the origin of resources even if they do
+     * not perform any security sensitive operation.
+     *
+     * @param obj Object whose origin we want to check.
+     */
+    public static void quickRejectObject(Object obj) {
+        quickRejectClass(obj.getClass());
+    }
+
+    /**
+     * Checks that the given protection domain include a permission that
+     * ensures that is coming from a trusted origin (SFCommunityPermission).
+     * If this is not the case, and security is active, it throws a security
+     * exception.
+     *
+     * @param pd a protection domain that needs to be checked.
+     */
+    public static void quickReject(ProtectionDomain pd) {
+        if ((pd != null) && (pd.implies(new SFCommunityPermission()))) {
+            // Resource came from a trusted sourced, no problem.
+            return;
+        }
+
+        if (isSecurityOn()) {
+            // Didn't pass, we should not load this resource.
+            throw new SecurityException("SFClassLoader:quickReject: " +
+                "access check failed for " + pd);
+        } else {
+            if (debug != null) {
+                debug.println("WARNING!!:quickReject:  " +
+                    "access check failed for " + pd);
+            }
+        }
+    }
+
+    public static boolean isSecurityOn() {
+        return securityOn;
+    }
+
+    public static void setSecurityOn(boolean securityOn) {
+        SFRMIClassLoaderSpi.securityOn = securityOn;
     }
 }
