@@ -48,11 +48,7 @@ import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.common.SmartFrogException;
 
 /**
- *  Description of the Class
- *
- *          sfJMX
- *   JMX-based Management Framework for SmartFrog Applications
- *       Hewlett Packard
+ *  Implement the HTML Adaptor
  *
  *@version        1.0
  */
@@ -80,7 +76,7 @@ public class HtmlAdaptor extends PrimImpl implements Prim, HtmlAdaptorMBean, MBe
      *  Allows configuring the port and to be started when the MBeanServer has
      *  registered this MBean succesfully
      *
-     * @param startWhenRegistered
+     * @param port network port
      */
     public HtmlAdaptor(int port) throws RemoteException {
         setPort(port);
@@ -159,7 +155,6 @@ public class HtmlAdaptor extends PrimImpl implements Prim, HtmlAdaptorMBean, MBe
     /**
      * Removes a listener from a registered MBean.
      *
-     * @param name The name of the MBean on which the listener should be removed.
      * @param listener The listener object which will handle the notifications emitted by the registered MBean.
      * This method will remove all the information related to this listener.
      *
@@ -347,7 +342,7 @@ public class HtmlAdaptor extends PrimImpl implements Prim, HtmlAdaptorMBean, MBe
      * Adds an authorization
      *
      * @param username authorized username
-     * @param username authorized password
+     * @param password authorized password
      */
     public void addAuthorization(String username, String password) {
         httpAdaptor.addAuthorization(username, password);

@@ -45,13 +45,8 @@ import org.smartfrog.services.jmx.modelmbean.SFModelMBeanInfoBuilder;
 import org.smartfrog.services.jmx.common.Utilities;
 
 /**
- *  Description of the Class
+ *  MBean deployer compound
  *
- *          sfJMX
- *   JMX-based Management Framework for SmartFrog Applications
- *       Hewlett Packard
- *
- *@version        1.0
  */
 public class MBeanDeployer extends CompoundImpl implements Compound, MBeanDeployerMBean {
 
@@ -483,7 +478,7 @@ public class MBeanDeployer extends CompoundImpl implements Compound, MBeanDeploy
     /**
      *  Description of the Method
      *
-     *@param  mbeanInstance  Description of the Parameter
+     *@param  prim  prim to register
      *@return                Description of the Return Value
      *@exception  Exception  Description of the Exception
      */

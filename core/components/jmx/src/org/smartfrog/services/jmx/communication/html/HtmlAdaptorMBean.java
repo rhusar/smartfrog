@@ -29,12 +29,7 @@ import mx4j.tools.adaptor.ssl.SSLAdaptorServerSocketFactory; //import mx4j.adapt
 import org.smartfrog.services.jmx.communication.CommunicatorMBean;
 
 /**
- *  Description of the Interface
- *
- *          sfJMX
- *   JMX-based Management Framework for SmartFrog Applications
- *       Hewlett Packard
- *
+ *  HTML adaptor
  *@version        1.0
  */
 public interface HtmlAdaptorMBean extends CommunicatorMBean {
@@ -61,7 +56,7 @@ public interface HtmlAdaptorMBean extends CommunicatorMBean {
      * set between the setProcessor and setPostProcessorName will be the
      * valid one. The MBean will be verified to be of instance HttpPostProcessor
      *
-     * @param processor a processor object
+     * @param processorName a processor object
      */
     public void setProcessorName(ObjectName processorName);
 
@@ -98,7 +93,7 @@ public interface HtmlAdaptorMBean extends CommunicatorMBean {
      * Adds an authorization
      *
      * @param username authorized username
-     * @param username authorized password
+     * @param password authorized password
      */
     public void addAuthorization(String username, String password);
 

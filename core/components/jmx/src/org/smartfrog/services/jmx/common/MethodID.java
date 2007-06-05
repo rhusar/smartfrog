@@ -8,10 +8,6 @@ import java.io.Serializable;
  *  can be overloaded.
  *
  *
- *@version        1.0
- *@Title          sfJMX
- *@Description    JMX-based Management Framework for SmartFrog Applications
- *@Company        Hewlett Packard
  */
 
 public class MethodID implements Serializable {

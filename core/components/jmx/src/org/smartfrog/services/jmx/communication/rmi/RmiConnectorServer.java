@@ -31,13 +31,7 @@ import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.common.SmartFrogException;
 
 /**
- *  Description of the Class
- *
- *          sfJMX
- *   JMX-based Management Framework for SmartFrog Applications
- *       Hewlett Packard
-sfResolve *
- *@version        1.0
+ *  Prim implementation that acts as an RmiConnectorServer
  */
 public class RmiConnectorServer extends PrimImpl implements Prim, Serializable, RmiConnectorServerMBean, MBeanRegistration, NotificationBroadcaster {
 
@@ -184,7 +178,6 @@ public class RmiConnectorServer extends PrimImpl implements Prim, Serializable, 
     /**
      * Removes a listener from a registered MBean.
      *
-     * @param name The name of the MBean on which the listener should be removed.
      * @param listener The listener object which will handle the notifications emitted by the registered MBean.
      * This method will remove all the information related to this listener.
      *

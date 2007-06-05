@@ -51,10 +51,7 @@ import org.smartfrog.sfcore.common.Context;
 import org.smartfrog.services.jmx.common.Utilities;
 
 /**
- * <p>Title: JMX Framework for SmartFrog</p>
- * <p>Description: Creation of a management framework for SmartFrog applications using JMX technology.</p>
- * <p>Copyright: Copyright (c) 2001</p>
- * <p>Company: Hewlett Packard</p>
+ * A dynamic mbean that is bound to a prim
  *
  * @version 1.0
  */

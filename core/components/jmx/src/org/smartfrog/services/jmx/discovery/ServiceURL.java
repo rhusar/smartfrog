@@ -56,8 +56,9 @@ public class ServiceURL implements java.io.Serializable{
 
 /**
  * Builds a service URL object .
- * @param serviceURL - The service URL as a string.
+ * @param sURL - The service URL as a string.
  * @param iLifetime - the service lifetime.
+ * @throws IllegalArgumentException if the lifetime is out of range, or the URL is invald
  */
   public ServiceURL(String sURL, int iLifetime) throws IllegalArgumentException {
     String _URLPath = "";
