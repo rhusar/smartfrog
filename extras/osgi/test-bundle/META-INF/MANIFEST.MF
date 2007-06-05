@@ -9,6 +9,8 @@ Import-Package: org.osgi.framework,
                 org.smartfrog.sfcore,
                 org.smartfrog.sfcore.prim,
                 org.smartfrog.sfcore.common,
-                org.smartfrog.sfcore.reference
+                org.smartfrog.sfcore.reference,
+                org.smartfrog.sfcore.compound,
+                org.smartfrog.sfcore.componentdescription
 Export-Package: org.smartfrog.osgi.test;
-                    uses="org.smartfrog.sfcore,org.smartfrog.sfcore.referenceorg.smartfrog.sfcore.common,org.smartfrog.sfcore.prim"
+                    uses="org.smartfrog.sfcore,org.smartfrog.sfcore.referenceorg.smartfrog.sfcore.common,org.smartfrog.sfcore.prim,org.smartfrog.sfcore.compound,org.smartfrog.sfcore.componentdescription"
