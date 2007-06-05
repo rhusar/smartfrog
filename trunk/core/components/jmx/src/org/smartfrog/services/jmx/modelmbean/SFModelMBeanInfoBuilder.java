@@ -705,10 +705,11 @@ public class SFModelMBeanInfoBuilder {
 
 
     /**
-     *@param  targetObject
-     *@param  finder        Description of the Parameter
-     *@param  opMetadata    Description of the Parameter
-     *@return
+     * extract metadata from the opMetadata parameter; prints stack traces to stdout on case of trouble.
+     *@param  targetObject target object
+     *@param  finder        Finder
+     *@param  opMetadata    metadata (can be null)
+     *@return an array of operation info. will be empty if opMetadata is null
      */
     public ModelMBeanOperationInfo[] getOperationInfoFromMetadata(MBeanDeployerMBean finder, Object targetObject, Enumeration opMetadata) {
         if (opMetadata == null) {
@@ -729,7 +730,7 @@ public class SFModelMBeanInfoBuilder {
      *@param  targetObject
      *@param  opCtxt
      *@param  finder         Description of the Parameter
-     *@return
+     *@return information about the target object 
      *@exception  Exception  Description of the Exception
      */
     public ModelMBeanOperationInfo getOperationInfoFrom(MBeanDeployerMBean finder, Object targetObject, Context opCtxt) throws Exception {

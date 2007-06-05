@@ -27,12 +27,8 @@ import javax.management.*;
 import org.smartfrog.sfcore.common.SmartFrogException;
 
 /**
- * <p>Title: SmartFrog</p>
- * <p>Description: </p>
- * <p>Copyright: Copyright (c) 2002</p>
- * <p>Company: Hewlett Packard</p>
+ * Discovery service component.
  * @author Serrano
- * @version 1.0
  */
 
 public abstract class DiscoveryService extends PrimImpl implements Prim, DiscoveryServiceMBean, NotificationBroadcaster, MBeanRegistration {
@@ -127,7 +123,6 @@ public abstract class DiscoveryService extends PrimImpl implements Prim, Discove
     /**
      * Removes a listener from a registered MBean.
      *
-     * @param name The name of the MBean on which the listener should be removed.
      * @param listener The listener object which will handle the notifications emitted by the registered MBean.
      * This method will remove all the information related to this listener.
      *
@@ -248,7 +243,8 @@ public abstract class DiscoveryService extends PrimImpl implements Prim, Discove
     /**
      *  Starts the AdvertisingService
      *
-     *@exception  Exception  Description of the Exception
+     * @throws SmartFrogException trouble
+     * @throws RemoteException network trouble
      */
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
