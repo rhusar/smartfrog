@@ -134,9 +134,11 @@
   <!-- this is an override point -->
   <!-- compile everything, copy useful files over-->
   <!-- ========================================================== -->
+<!--
   <target name="compile-tests"
     depends="ready-to-compile-tests"
-    if="java1.5+">
+    if="java1.5+"
+      >
     <depend
       srcdir="${test.src.dir}"
       destdir="${test.classes.dir}"
@@ -151,6 +153,7 @@
       />
     <copy-useful-files src="${test.src.dir}" dest="${test.classes.dir}"/>
   </target>
+-->
 
   <!-- ========================================================== -->
   <!-- parse test files -->
