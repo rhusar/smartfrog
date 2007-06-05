@@ -82,31 +82,31 @@ For more information: www.smartfrog.org
     <target name="parse" depends="init,package"
         description="parse the deployment descriptor">
       <sf-parse quiet="true" file="${src.dir}/org/smartfrog/services/jmx/example/sfJMXAgent.sf"
-        classpathref="exec.classpath">
+        classpathref="tests.run.classpath">
       </sf-parse>
       <sf-parse quiet="true" file="${src.dir}/org/smartfrog/services/jmx/example/sfmbean.sf"
-        classpathref="exec.classpath">
+        classpathref="tests.run.classpath">
       </sf-parse>
       <sf-parse quiet="true" file="${src.dir}/org/smartfrog/services/jmx/example/dynamicmbean.sf"
-        classpathref="exec.classpath">
+        classpathref="tests.run.classpath">
       </sf-parse>
       <sf-parse quiet="true" file="${src.dir}/org/smartfrog/services/jmx/example/modelmbean.sf"
-        classpathref="exec.classpath">
+        classpathref="tests.run.classpath">
       </sf-parse>
       <sf-parse quiet="true" file="${src.dir}/org/smartfrog/services/jmx/example/mbeanDeployer/jmxSubagents.sf"
-        classpathref="exec.classpath">
+        classpathref="tests.run.classpath">
       </sf-parse>
       <sf-parse quiet="true" file="${src.dir}/org/smartfrog/services/jmx/example/mbeanDeployer/simpleMBeanDeployerExample.sf"
-        classpathref="exec.classpath">
+        classpathref="tests.run.classpath">
       </sf-parse>
       <sf-parse quiet="true" file="${src.dir}/org/smartfrog/services/jmx/example/mbeanDeployer/jmxSimpleMasterAgent.sf"
-        classpathref="exec.classpath">
+        classpathref="tests.run.classpath">
       </sf-parse>
       <sf-parse quiet="true" file="${src.dir}/org/smartfrog/services/jmx/example/arithNetManager/launchSubagents.sf"
-        classpathref="exec.classpath">
+        classpathref="tests.run.classpath">
       </sf-parse>
       <sf-parse quiet="true" file="${src.dir}/org/smartfrog/services/jmx/example/arithNetManager/launchArithExample.sf"
-        classpathref="exec.classpath">
+        classpathref="tests.run.classpath">
       </sf-parse>
     </target>
 
