@@ -17,11 +17,12 @@ import org.osgi.framework.Bundle;
 import java.rmi.RemoteException;
 import java.util.Enumeration;
 import java.util.Dictionary;
+import java.io.Serializable;
 
 @SuppressWarnings({"ClassTooDeepInInheritanceTree"})
-public class OSGiBundleCompound extends CompoundImpl implements Compound {
+public class OSGiBundleCompound extends CompoundImpl implements Compound, Serializable {
     private static final String BUNDLE_URL = "bundleURL";
-    private Bundle childBundle = null;
+    private transient Bundle childBundle = null;
 
     public OSGiBundleCompound() throws RemoteException {}
 
@@ -87,40 +88,8 @@ public class OSGiBundleCompound extends CompoundImpl implements Compound {
         log.debug("T.cT().getContextClassLoader() = " + Thread.currentThread().getContextClassLoader());
         log.debug("getClass().getClassLoader() = " + getClass().getClassLoader());
         log.debug("getClass() = " + getClass());
-        try {
-            System.out.println("Trying childBundle.loadClass...");
-            childBundle.loadClass("org.smartfrog.osgi.test.TestImpl");
-            System.out.println("childBundle.loadClass OK");
-        } catch (Throwable e) {
-            e.printStackTrace();
-        }
 
-        try {
-            System.out.println("Trying SmartFrogActivator.class.getClassLoader().loadClass...");
-            SmartFrogActivator.class.getClassLoader().loadClass("org.smartfrog.osgi.test.TestImpl");
-            System.out.println("SmartFrogActivator.class.getClassLoader().loadClass OK");
-        } catch (Throwable e) {
-            e.printStackTrace();
-        }
-
-
-        try {
-            System.out.println("Trying daemonBundle.loadClass...");
-            daemonBundleContext.getBundle().loadClass("org.smartfrog.osgi.test.TestImpl");
-            System.out.println("daemonBundle.loadClass OK");
-        } catch (Throwable e) {
-            e.printStackTrace();
-        }
-
-        try {
-            System.out.println("Trying Class.forName...");
-            Class.forName("org.smartfrog.osgi.test.TestImpl");
-            System.out.println("Class.forName OK");
-        } catch (Throwable e) {
-            e.printStackTrace();
-        }
-
-        //super.sfDeployWithChildren();
+        super.sfDeployWithChildren();
 
         log.debug("OSGiBundleCompound deployed.");
     }
@@ -137,11 +106,10 @@ public class OSGiBundleCompound extends CompoundImpl implements Compound {
     protected synchronized void sfTerminateWith(TerminationRecord status) {
         super.sfTerminateWith(status);
 
-//  Disabled for now to see the results of the deployment
-//        try {
-//            childBundle.uninstall();
-//        } catch (BundleException e) {
-//            sfLog().error("Failed to uninstall child bundle", new SmartFrogException(e), status);
-//        }
+        try {
+            childBundle.uninstall();
+        } catch (BundleException e) {
+            sfLog().error("Failed to uninstall child bundle", new SmartFrogException(e), status);
+        }
     }
 }
