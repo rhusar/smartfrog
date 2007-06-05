@@ -10,6 +10,7 @@ Bundle-Classpath: smartfrog-3.10.051dev.jar,
                   sfExamples-3.10.051dev.jar,
                   .
 Bundle-Activator: org.smartfrog.osgi.SmartFrogActivator
+DynamicImport-Package: *
 Import-Package: org.osgi.framework,
                 org.osgi.service.log; resolution:=optional,
                 org.smartfrog.sfcore.security; version=1.0.0

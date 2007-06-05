@@ -3,8 +3,8 @@ Bundle-ManifestVersion: 2
 Bundle-Name: SmartFrog-Security-Extension
 Bundle-SymbolicName: org.smartfrog.extension.security
 Bundle-Version: 1.0.0
-Fragment-Host: system.bundle; extension=framework
-Bundle-Description: SmartFrog Security and Classloading extension bundle
+Fragment-Host: system.bundle; extension=bootclasspath
+Bundle-Description: SmartFrog RMI Classloading extension bundle
 Bundle-Vendor: HP Labs
 Bundle-Classpath: sfCoreSecurity-3.10.051dev.jar
 Export-Package: org.smartfrog.sfcore.security; version=1.0.0
