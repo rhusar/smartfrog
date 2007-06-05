@@ -43,14 +43,8 @@ import org.smartfrog.services.jmx.notification.RemoteNotificationListener;
 import org.smartfrog.services.jmx.notification.RemoteNotificationBroadcasterSupport;
 
 /**
- *  Description of the Class
- *
- *          sfJMX
- *   JMX-based Management Framework for SmartFrog Applications
- *       Hewlett Packard
- *
- *@version        1.0
- *@created        25 January 2002
+ *  Deployment analyzer compound
+ * created        25 January 2002
  */
 public class DeploymentAnalyzer extends CompoundImpl implements Compound, DeploymentAnalyzerMBean, RemoteNotificationBroadcaster {
 
