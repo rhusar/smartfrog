@@ -141,25 +141,12 @@ For more information: www.smartfrog.org
   <!-- =================================================================== -->
   <!-- system tests -->
   <!-- =================================================================== -->
-  <target name="system-tests" depends="common.system-tests"
-      description="run system tests"
-      if="system.tests.enabled">
-    <sf-functionaltest testTimeout="600" shutdownTime="10">
-      <application>
-        <sf-startdaemon-debug failonerror="false" spawn="false"/>
-      </application>
-      <probe>
-        <socket port="${smartfrog.daemon.port}" server="localhost"/>
-      </probe>
+
+  <target name="system-tests" depends="ready-to-test"
+      if="system.tests.enabled" description="run system tests">
+    <sf-system-test>
       <test>
-        <sf-junit
-            includeantruntime="true"
-            filtertrace="${filter.trace}"
-            errorproperty="failure"
-            failureproperty="failure"
-            >
-          <classpath
-              refid="tests.run.classpath"/>
+        <sf-system-test-junit includeantruntime="false">
           <sysproperty key="test.files.dir"
               value="${test.src.dir}/files"/>
           <sysproperty key="sfJMX.home"
@@ -173,15 +160,10 @@ For more information: www.smartfrog.org
               <include name="**/system/**/*Test.class" />
             </fileset>
           </batchtest>
-        </sf-junit>
-        <fail if="failure">Junit failed</fail>
+        </sf-system-test-junit>
+        <sf-system-test-validate />
       </test>
-      <teardown>
-        <sf-stopdaemon failonerror="false"/>
-        <sf-junitreport data="${test.data.dir}"
-            reports="${test.reports.dir}"
-            />
-      </teardown>
-    </sf-functionaltest>
+    </sf-system-test>
   </target>
+
 </project>

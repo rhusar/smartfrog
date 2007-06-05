@@ -144,9 +144,7 @@
             </fileset>
           </batchtest>
         </sf-system-test-junit>
-        <fail if="system.test.failed">System Tests failed - see
-          ${test.reports.dir}
-        </fail>
+        <sf-system-test-validate />
       </test>
     </sf-system-test>
   </target>
