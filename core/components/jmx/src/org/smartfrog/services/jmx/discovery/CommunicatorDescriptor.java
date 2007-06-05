@@ -24,12 +24,9 @@ import java.io.Serializable;
 import javax.management.ObjectName;
 
 /**
- *  Provides a description of a given advertised service <p>
+ *  Provides a description of a given advertised service.
  *
  *
- *          sfJMX
- *   JMX-based Management Framework for SmartFrog Applications
- *       Hewlett Packard
  *@author         Serrano
  *@version        1.0
  */
