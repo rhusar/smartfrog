@@ -1295,6 +1295,26 @@ java.class.path=
     <echo>reports in ${test.reports.dir}</echo>
   </target>
 
+  <!-- ========================================================== -->
+  <!-- set up any properties for deployment -->
+  <!-- ========================================================== -->
+  <target name="init-deploy-properties" depends="init">
+    <property name="deploy.host" value="localhost"/>
+    <property name="application.name" value="${project.name}"/>
+  </target>
+
+  <!-- ========================================================== -->
+  <!-- set the property codebasel this can be overridden-->
+  <!-- ========================================================== -->
+  <target name="init-codebase" depends="declare-classpaths,init-deploy-properties"
+      description="set up the codebase property">
+    <makeurl property="codebase">
+      <path refid="tests.run.classpath"/>
+    </makeurl>
+    <echo level="verbose">
+      deploying to ${deploy.host}
+      codebase=${codebase}</echo>
+  </target>
 
 
   <!--
