@@ -27,6 +27,8 @@ import java.rmi.registry.Registry;
 import java.rmi.server.RMISocketFactory;
 import java.net.InetAddress;
 import org.smartfrog.sfcore.security.SFServerSocketFactory;
+import org.smartfrog.sfcore.security.rmispi.SFCommunityPermission;
+import org.smartfrog.sfcore.security.rmispi.SFRMIClassLoaderSpi;
 
 
 /**
@@ -40,9 +42,6 @@ import org.smartfrog.sfcore.security.SFServerSocketFactory;
 public class SFSecurity {
     /** A flag that ensures only one initialization. */
     private static boolean alreadyInit = false;
-
-    /** A flag that states whether SF security checks are active. */
-    private static boolean securityOn = false;
 
     /** A security environment shared by all the local SF components */
     private static SFSecurityEnvironment securityEnv;
@@ -59,10 +58,10 @@ public class SFSecurity {
     synchronized public static void initSecurity()
         throws SFGeneralSecurityException {
         try {
-            if (alreadyInit == false) {
+            if (!alreadyInit) {
                 // Add the new RMIClassLoaderSpi
                 System.setProperty("java.rmi.server.RMIClassLoaderSpi",
-                    "org.smartfrog.sfcore.security." + "SFRMIClassLoaderSpi");
+                    "org.smartfrog.sfcore.security.rmispi.SFRMIClassLoaderSpi");
                 SFSecurityProperties.readSecurityProperties();
 
                 if (Boolean.getBoolean(SFSecurityProperties.propSecurityOn)) {
@@ -111,7 +110,7 @@ public class SFSecurity {
                           we have to be *very* careful on what RMIClientSocketFactory
                           classes are available in our codebase...*/
                     RMISocketFactory.setSocketFactory(securityEnv.getRMISocketFactory());
-                    securityOn = true;
+                    SFRMIClassLoaderSpi.setSecurityOn(true);
                 } else {
 
 //                     InetAddress rmissfBindAddr = InetAddress.getByName("guijarro-j-3.hpl.hp.com");
@@ -120,7 +119,7 @@ public class SFSecurity {
 //                     RMISocketFactory rmisf = new SFRMISocketFactory(rmicsf, rmissf);
 
                     System.setSecurityManager(new DummySecurityManager());
-                    securityOn = false;
+                    SFRMIClassLoaderSpi.setSecurityOn(false);
                     //Notification moved to SFSyten after the ini file is read.
                 }
             }
@@ -159,7 +158,7 @@ public class SFSecurity {
      * @return whether the SF security is active.
      */
     synchronized public static boolean isSecurityOn() {
-        return securityOn;
+        return SFRMIClassLoaderSpi.isSecurityOn();
     }
 
     /**

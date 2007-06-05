@@ -18,7 +18,9 @@ For more information: www.smartfrog.org
 
 */
 
-package org.smartfrog.sfcore.security;
+package org.smartfrog.sfcore.security.rmispi;
+
+import org.smartfrog.sfcore.security.SFSecurityProperties;
 
 
 /**

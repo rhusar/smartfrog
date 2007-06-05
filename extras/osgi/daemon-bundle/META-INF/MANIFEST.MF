@@ -8,12 +8,13 @@ Bundle-Vendor: HP Labs
 Bundle-Classpath: smartfrog-3.10.051dev.jar,
                   sfServices-3.10.051dev.jar,
                   sfExamples-3.10.051dev.jar,
+                  sfCoreSecurity-3.10.051dev.jar,
                   .
 Bundle-Activator: org.smartfrog.osgi.SmartFrogActivator
 DynamicImport-Package: *
 Import-Package: org.osgi.framework,
-                org.osgi.service.log; resolution:=optional,
-                org.smartfrog.sfcore.security; version=1.0.0
+                org.osgi.service.log; resolution:=optional                
 Export-Package: org.smartfrog.sfcore; version=1.0.0,
-                org.smartfrog.services; version=1.0.0
-
+                org.smartfrog.sfcore.prim; version=1.0.0,
+                org.smartfrog.sfcore.common; version=1.0.0,
+                org.smartfrog.sfcore.reference; version=1.0.0

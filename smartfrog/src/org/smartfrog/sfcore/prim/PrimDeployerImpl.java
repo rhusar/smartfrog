@@ -162,18 +162,22 @@ public class PrimDeployerImpl implements ComponentDeployer, MessageKeys {
      * @exception Exception failed to load class
      */
     protected Class getPrimClass() throws Exception {
+        System.out.println("getPrimClass");
         String targetCodeBase=null;
         String targetClassName=null;
         Object obj=null;
         try {
             // extract code base
+            System.out.println("getSfCodeBase");
             targetCodeBase = getSfCodeBase(target);
 
             // extract class name
+            System.out.println("sfResolve(refClass)");
             obj =  target.sfResolve(refClass);
             targetClassName = (String) obj;
 
             // We look in the default code base if everything else fails.
+            System.out.println("SFClassLoader.forName");
             return SFClassLoader.forName(targetClassName,targetCodeBase, true);
         } catch (SmartFrogResolutionException resex) {
             resex.put(SmartFrogRuntimeException.SOURCE, target.sfCompleteName());

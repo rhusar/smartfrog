@@ -449,7 +449,8 @@ public class CompoundImpl extends PrimImpl implements Compound {
      * @throws SmartFrogDeploymentException
      */
     protected void sfDeployWithChildren() throws SmartFrogDeploymentException {
-      try { // if an exception is thrown in the super call - the termination is already handled
+        System.out.println("sfDeployWithChildren");
+        try { // if an exception is thrown in the super call - the termination is already handled
           for (Enumeration e = sfContext().keys(); e.hasMoreElements(); ) {
               Object key = e.nextElement();
               Object elem = sfContext.get(key);

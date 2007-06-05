@@ -11,6 +11,7 @@
         <copy todir="build/lib" overwrite="true">
             <fileset dir="${sf.core.dir}/dist/lib/">
                 <include name="sfCoreSecurity*.jar"/>
+                <include name="smartfrog*.jar"/>
             </fileset>
         </copy>
     </target>
