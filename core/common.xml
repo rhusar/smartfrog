@@ -1381,6 +1381,12 @@ java.class.path=
       </sf-system-test>
     </presetdef>
 
+    <!-- define the system test post processor-->
+    <presetdef name="sf-system-test-validate">
+      <fail if="system.test.failed">System Tests failed - see
+${test.reports.dir}
+      </fail>
+    </presetdef>
 
   </target>
 
