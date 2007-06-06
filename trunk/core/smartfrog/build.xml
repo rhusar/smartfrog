@@ -845,8 +845,6 @@
       target="${sf-examples.jar}"
       pom="${sf-examples.pom}"
       />
-
-
   </target>
 
 
