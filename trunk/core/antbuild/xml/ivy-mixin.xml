@@ -1,4 +1,4 @@
-<project name="ivy-mixin" 
+<project name="ivy" 
     xmlns:ivy="antlib:fr.jayasoft.ivy.ant">
 
   <description>
@@ -33,6 +33,10 @@
     <!--copy ivy artifacts -->
     <property name="ivy.lib.dir" location="${build.dir}/ivy/lib" />
     <ivy:configure file="${ivy.dir}/ivyconf.xml"/>
+    <property name="ivy.retrieve.pattern"
+        value="[conf]/[artifact]-[revision].[ext]"/>
+    <property name="ivy.publish.pattern"
+        value="[artifact]-[revision].[ext]"/>
   </target>
 
   <target name="ivy-resolve" depends="ivy-init">
@@ -40,7 +44,8 @@
   </target>
 
   <target name="ivy-retrieve" depends="ivy-resolve">
-    <ivy:retrieve pattern="${ivy.lib.dir}/[conf]/[artifact]-[revision].[ext]" sync="true" />
+
+    <ivy:retrieve pattern="${ivy.lib.dir}/${ivy.retrieve.pattern}" sync="true" />
   </target>
 
   <target name="ivy-report" depends="ivy-resolve">
@@ -52,7 +57,7 @@
   <target name="ivy-publish" depends="ready-to-publish-all,ready-to-publish,ivy-resolve">
     <ivy:publish resolver="local" pubrevision="${artifact.version}"
         overwrite="true"
-        artifactspattern="${dist.dir}/lib/[artifact]-[revision].[ext]" />
+        artifactspattern="${dist.dir}/lib/${ivy.publish.pattern}" />
   </target>
 
   <target name="ready-to-publish-all" depends="ready-to-publish,documents-processed"/>
@@ -66,6 +71,7 @@
   <target name="ivy-install" depends="ivy-publish"
       description="Component built and installed locally"/>
 
+  <target name="ivy-published" depends="ivy-publish" />
 
 
 </project>

@@ -4,7 +4,10 @@
     xmlns:iz="http://www.izforge.com/">
 
   <description>
-    This build file aggregates artifacts from other projects to cut a release
+    This build file aggregates artifacts from other projects to cut a release.
+
+    It does not use common.xml; it uses the mixin/state xml files instead, because its work
+    bears no resemblance to a normal build.
   </description>
 
   <!--we are a component -->
@@ -32,19 +35,6 @@
   <import file="../common.xml"/>
 
 
-  <property name="root.dir" location="../.."/>
-  <property name="antbuild.dir" location="${root.dir}/antbuild"/>
-  <property name="xml.dir" location="${antbuild.dir}/xml"/>
-
-
-  <!-- Import common stuff -->
-<!--  <import file="${xml.dir}/systemtest.xml"/>
-  <import file="${xml.dir}/gui.xml"/>
-  <import file="${xml.dir}/ivy-mixin.xml"/>
-  <import file="${xml.dir}/dist.xml"/>
-  <import file="${xml.dir}/state.xml"/>
-  -->
-
   <target name="init" depends="common.init">
     <property name="izpack.jar" location="${dist.bin.dir}/smartfrog-install-${smartfrog.version}.jar"/>
     <!--presetdef for a copy with expansion of all properties in scope-->
@@ -67,7 +57,7 @@
 
   <target name="default" depends="published"/>
 
-  <target name="published" depends="ivy-report,izpack"/>
+  <target name="published" depends="ivy-report,dist"/>
 
   <!--
   <target name="declare-izpack" depends="ivy-resolve">
@@ -77,10 +67,16 @@
         classname="com.izforge.izpack.ant.IzPackTask"/>
   </target>
   -->
-  <target name="declare-izpack" depends="declare-classpaths">
-    <taskdef name="izpack" classpathref="compile.classpath"
+  <target name="declare-izpack" depends="init">
+    <taskdef name="izpack"
         uri="http://www.izforge.com/"
-        classname="com.izforge.izpack.ant.IzPackTask"/>
+        classname="com.izforge.izpack.ant.IzPackTask">
+      <classpath>
+        <fileset dir="lib">
+          <include name="**/*.jar"/>
+        </fileset>
+      </classpath>
+    </taskdef>
   </target>
 
   <target name="prepare-resources" depends="init">
@@ -364,4 +360,5 @@
 
 
   <target name="dist" depends="common.dist,maven-artifacts,rpm,izpack" />
+  
 </project>

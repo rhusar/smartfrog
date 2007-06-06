@@ -31,7 +31,7 @@ For more information: www.smartfrog.org
     </echo>
   </target>
 
-    <!-- =================================================================== -->
+  <!-- =================================================================== -->
   <!-- any common initialisations                                          -->
   <!-- =================================================================== -->
   <target name="init">
@@ -427,8 +427,6 @@ For more information: www.smartfrog.org
           <exclude name="xunit/build.xml" unless="java1.5+"/>
           <exclude name="xml/build.xml" unless="java1.5+"/>
           <exclude name="xmpp/build.xml" unless="java1.5+"/>
-
-
         </fileset>
         <!--place for symlinks to external projects you want included-->
         <fileset dir="external" includes="**/build.xml"/>

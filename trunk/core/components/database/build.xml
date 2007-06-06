@@ -41,7 +41,6 @@
   <!-- Import common stuff -->
   <import file="${xml.dir}/systemtest.xml"/>
   <import file="${xml.dir}/gui.xml"/>
-  <import file="${xml.dir}/ivy-mixin.xml"/>
   <import file="${xml.dir}/dist.xml"/>
   <import file="${xml.dir}/state.xml"/>
 
