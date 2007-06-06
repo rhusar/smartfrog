@@ -171,4 +171,8 @@ public class SecureRemoteObject {
         throws java.rmi.NoSuchObjectException {
         return UnicastRemoteObject.unexportObject(obj, force);
     }
+
+    public static void cleanShutdown() {
+        setAlreadyInit(false);
+    }
 }

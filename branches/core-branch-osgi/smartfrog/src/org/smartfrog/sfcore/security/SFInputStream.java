@@ -42,7 +42,7 @@ public class SFInputStream extends FilterInputStream {
      * executing the rmi call, so that it can be recovered while in the method
      * invocation.
      */
-    static ThreadLocal currentSocket = new ThreadLocal();
+    static final ThreadLocal currentSocket = new ThreadLocal();
 
     /** A socket associated with this input stream. */
     private SFSocket sfs;
@@ -79,7 +79,7 @@ public class SFInputStream extends FilterInputStream {
      * @see java.io.FilterInputStream#in
      */
     public int read() throws IOException {
-        currentSocket.set((Object) sfs);
+        currentSocket.set(sfs);
 
         return super.read();
     }
@@ -106,7 +106,7 @@ public class SFInputStream extends FilterInputStream {
      * @see java.io.FilterInputStream#in
      */
     public int read(byte[] b, int off, int len) throws IOException {
-        currentSocket.set((Object) sfs);
+        currentSocket.set(sfs);
 
         return super.read(b, off, len);
     }
