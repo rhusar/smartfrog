@@ -33,7 +33,8 @@ import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 
 /**
- * <p>WFOriginalPersistence is the original WoodFrog persistence model. This
+ * WFOriginalPersistence is the original WoodFrog persistence model.
+ * This
  * model assumes that children handle their own recovery and that references
  * to them rebind themselves. Children attributes are non-volatile and will be
  * serialized to the persistent storage.</p>
@@ -141,7 +142,7 @@ public class WFOriginalPersistence extends PersistenceModel {
     /**
      * {@inheritDoc}
      *
-     * <p>WFOriginalPersistence Comit points are after start and after recovery</p>
+     * <p>WFOriginalPersistence Commit points are after start and after recovery</p>
      *
      */
     public boolean isCommitPoint(Prim component, String point) throws
