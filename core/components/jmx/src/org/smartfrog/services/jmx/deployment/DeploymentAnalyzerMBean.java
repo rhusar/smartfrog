@@ -21,11 +21,7 @@ For more information: www.smartfrog.org
 package org.smartfrog.services.jmx.deployment;
 
 /**
- *  Description of the Interface
- *
- *          sfJMX
- *   JMX-based Management Framework for SmartFrog Applications
- *       Hewlett Packard
+ * interface that extends DeploymentAnalyzer_StubMBean
  *
  *@version        1.0
  */

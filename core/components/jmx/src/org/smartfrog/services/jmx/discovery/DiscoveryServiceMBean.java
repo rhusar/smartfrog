@@ -23,12 +23,9 @@ package org.smartfrog.services.jmx.discovery;
 import java.util.Vector;
 
 /**
- * The interface to be implemented by any DiscoveryService
+ * The interface to be implemented by any DiscoveryService.
  *
- * <p>Title: SmartFrog</p>
- * <p>Description: </p>
- * <p>Copyright: Copyright (c) 2002</p>
- * <p>Company: Hewlett Packard</p>
+
  * @author Serrano
  * @version 1.0
  */

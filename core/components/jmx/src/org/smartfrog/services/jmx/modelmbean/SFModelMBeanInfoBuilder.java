@@ -350,7 +350,7 @@ public class SFModelMBeanInfoBuilder {
      *  targetObject.
      *
      *@param  targetObject
-     *@return
+     *@return the attribute info
      *@exception  java.beans.IntrospectionException  Description of the
      *      Exception
      */
@@ -429,9 +429,9 @@ public class SFModelMBeanInfoBuilder {
      *  provided in the Enumeration making checks in the targetObject if
      *  neccesary.
      *
-     *@param  targetObject
-     *@param  atMetadata    Description of the Parameter
-     *@return
+     *@param  targetObject target to work on
+     *@param  atMetadata    an existing enumeration (can be null)
+     *@return the metadata as an array. If the enumeration is null, array is of size 0
      */
     public ModelMBeanAttributeInfo[] getAttributeInfoFromMetadata(Object targetObject, Enumeration atMetadata) {
         if (atMetadata == null) {
@@ -652,7 +652,7 @@ public class SFModelMBeanInfoBuilder {
     /**
      *@param  targetObject                           Description of the
      *      Parameter
-     *@return
+     *@return the operation information as an array
      *@exception  java.beans.IntrospectionException  Description of the
      *      Exception
      */
