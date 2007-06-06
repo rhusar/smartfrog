@@ -93,7 +93,7 @@ For more information: www.smartfrog.org
   <!-- clean all sub-projects                                              -->
   <!-- =================================================================== -->
   <target name="clean" depends="ivy-clean" description="clean up">
-
+    <delete dir="build" />
   </target>
 
   <!-- =================================================================== -->
@@ -318,10 +318,15 @@ For more information: www.smartfrog.org
   <!-- =================================================================== -->
   <!-- release all sub-projects                                              -->
   <!-- =================================================================== -->
-  <target name="release" depends="init" description="release">
+  <target name="old-release" depends="init" description="release">
     <forward2 dir="${main.project}" target="dist"  />
     <forward2 dir="${ant.project}" target="dist"  />
     <forward2 dir="${components.project}" target="release" antfile="createRelease.xml"  />
+  </target>
+
+  <target name="release" depends="clean,ivy-purge,dist"
+      description="create a clean release -purges all artifacts from the ivy repository too"
+     >
   </target>
 
   <!-- =================================================================== -->
@@ -417,13 +422,12 @@ For more information: www.smartfrog.org
           <!--cargo support is on hold until 3.12-->
           <exclude name="cargo/build.xml"/>
           <!--These need java 1.5 or later-->
-          <exclude name="concurrent/build.xml" unless="java1.5+"/>
           <exclude name="database/build.xml" unless="java1.5+"/>
           <exclude name="junit/build.xml" unless="java1.5+"/>
           <exclude name="xunit/build.xml" unless="java1.5+"/>
+          <exclude name="xml/build.xml" unless="java1.5+"/>
           <exclude name="xmpp/build.xml" unless="java1.5+"/>
-          <!--uncommented until it builds-->
-          <exclude name="asyndeployer/build.xml"/>
+
 
         </fileset>
         <!--place for symlinks to external projects you want included-->

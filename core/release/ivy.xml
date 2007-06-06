@@ -71,7 +71,8 @@
         description="extra things"/>
     <conf name="package-gui"
         description="gui tools"/>
-
+    <conf name="package-testharness"
+        description="testharness"/>
   </configurations>
 
   <publications>
@@ -234,14 +235,21 @@
         changing="true"
         rev="latest.integration"
         conf="package-xmpp->master,redist,documentation"/>
-<!--
-    <dependency org="izpack"
-        name="standalone-compiler"
-        rev="${izpack.version}"
-        conf="izpack->default"/>
-    <dependency org="izpack"
-        name="installer"
-        rev="${izpack.version}"
-        conf="izpack->default"/>-->
+
+    <dependency org="org.smartfrog"
+        name="sf-testharness"
+        changing="true"
+        rev="latest.integration"
+        conf="package-testharness->master"/>
+
+    <!--
+<dependency org="izpack"
+    name="standalone-compiler"
+    rev="${izpack.version}"
+    conf="izpack->default"/>
+<dependency org="izpack"
+    name="installer"
+    rev="${izpack.version}"
+    conf="izpack->default"/>-->
   </dependencies>
 </ivy-module>
