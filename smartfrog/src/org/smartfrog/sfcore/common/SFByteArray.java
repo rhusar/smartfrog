@@ -208,7 +208,7 @@ public class SFByteArray implements Serializable {
      */
     private void processBINString(String s, int line, int column) throws SmartFrogParseException {
         array = new byte[s.length() / 8];
-        for (int i = 0; i < s.length(); i = i + 8) {
+        for (int i = 0; i < s.length(); i += 8) {
             int b1 = (mapChar(s.charAt(i)) << 7);
             int b2 = (mapChar(s.charAt(i + 1)) << 6);
             int b3 = (mapChar(s.charAt(i + 2)) << 5);
@@ -227,8 +227,8 @@ public class SFByteArray implements Serializable {
         }
     }
 
-
-    private static char[] indexstring = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
+    private static final char[] indexstring =
+            {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
 
     /**
      * Process the array

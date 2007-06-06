@@ -562,5 +562,7 @@ public class SFProcess implements MessageKeys {
 
     public synchronized static void cleanShutdown() {
         processCompound = null;
+        processCompoundDescription = null;
+        rootLocator = null;
     }
 }

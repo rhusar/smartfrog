@@ -75,7 +75,7 @@ public class ConfigurationDescriptor implements MessageKeys{
         final static public String ACT_UPDATE = "UPDATE";
         final static public int UPDATE = 8;
 
-        static public String[] type= {
+        final static public String[] type = {
                       ACT_DEPLOY,
                       ACT_TERMINATE,
                       ACT_UNDEFINED,
@@ -140,7 +140,7 @@ public class ConfigurationDescriptor implements MessageKeys{
         final static public int FAILED=1;
         final static public int UNDEFINED=2;
         final static public int UNKNOWN=3;
-        static String[] type= {"SUCCESSFUL",
+        final static String[] type = {"SUCCESSFUL",
                                "FAILED",
                                "UNDEFINED",
                                "UNKNOWN"};

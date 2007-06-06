@@ -26,7 +26,6 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.RMISocketFactory;
 import java.net.InetAddress;
-import org.smartfrog.sfcore.security.SFServerSocketFactory;
 import org.smartfrog.sfcore.security.rmispi.SFCommunityPermission;
 import org.smartfrog.sfcore.security.rmispi.SFRMIClassLoaderSpi;
 
@@ -45,8 +44,6 @@ public class SFSecurity {
 
     /** A security environment shared by all the local SF components */
     private static SFSecurityEnvironment securityEnv;
-    /** A RMIServerSocketFactory used when security is ff */
-    private static SFServerSocketFactory nonSecServerSocketFactory;
 
     private static Registry realRMIRegistry;
     /**
@@ -180,8 +177,8 @@ public class SFSecurity {
                 securityEnv.getRMIServerSocketFactory());
             return realRMIRegistry;
         } else {
-            nonSecServerSocketFactory = new SFServerSocketFactory(bindAddr);
-            realRMIRegistry =  LocateRegistry.createRegistry(port,null,nonSecServerSocketFactory);
+            SFServerSocketFactory nonSecServerSocketFactory = new SFServerSocketFactory(bindAddr);
+            realRMIRegistry =  LocateRegistry.createRegistry(port,null, nonSecServerSocketFactory);
             return realRMIRegistry;
         }
     }
@@ -226,5 +223,11 @@ public class SFSecurity {
 
         return ((inSocket != null) ? inSocket.getPeerAuthenticatedSubjects()
                                    : null);
+    }
+
+    public synchronized static void cleanShutdown() {
+        alreadyInit = false;
+        securityEnv = null;
+        realRMIRegistry = null;
     }
 }

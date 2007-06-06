@@ -694,5 +694,6 @@ public class SFSystem implements MessageKeys {
         System.setOut(stdOut);
         alreadySystemInit = false;
         SFProcess.cleanShutdown();
+        SFSecurity.cleanShutdown();
     }
 }
