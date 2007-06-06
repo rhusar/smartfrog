@@ -564,5 +564,6 @@ public class SFProcess implements MessageKeys {
         processCompound = null;
         processCompoundDescription = null;
         rootLocator = null;
+        processCompoundTerminated = false;
     }
 }

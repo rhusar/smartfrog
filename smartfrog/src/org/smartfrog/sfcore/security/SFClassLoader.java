@@ -57,7 +57,7 @@ public class SFClassLoader {
     private static String targetClassBase = null;
 
     /** A debugging utility to print messages. */
-    private static SFDebug debug;
+    private static final SFDebug debug;
 
     /**
      * Initializes the debugging.
@@ -519,5 +519,9 @@ public class SFClassLoader {
      */
     public static Class forName(String className) throws ClassNotFoundException {
         return forName(className, null, true);
+    }
+
+    public static void cleanShutdown() {
+        targetClassBase = null;
     }
 }

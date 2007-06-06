@@ -75,7 +75,7 @@ public class DefaultRootLocatorImpl implements RootLocator, MessageKeys {
       * @param pc ProcessCompound
       * @param bind boolean
       */
-     public AsyncResetProcessCompound(ProcessCompound pc, boolean bind) {
+     private AsyncResetProcessCompound(ProcessCompound pc, boolean bind) {
          this.pc = pc;
          this.bind = bind;
      }
@@ -104,16 +104,16 @@ public class DefaultRootLocatorImpl implements RootLocator, MessageKeys {
 
 
     /** Name under which the root process compound will name itself. */
-    protected static String defaultName = "RootProcessCompound";
+    protected static final String defaultName = "RootProcessCompound";
 
     /** Port for registry. */
-    protected static int registryPort = -1;
+    private int registryPort = -1;
 
     /** Port for registry. */
-    protected static InetAddress registryBindAddr = null;
+    private InetAddress registryBindAddr = null;
 
      /** RMI Registry. */
-    protected static Registry registry = null;
+    private Registry registry = null;
 
     /**
      * Constructs the DefaultRootLocatorImpl object.
@@ -156,7 +156,7 @@ public class DefaultRootLocatorImpl implements RootLocator, MessageKeys {
      * @throws SmartFrogException fails to get the registry port
      * @throws RemoteException In case of network/rmi error
      */
-    protected static int getRegistryPort(ProcessCompound c)
+    protected int getRegistryPort(ProcessCompound c)
         throws SmartFrogException, RemoteException {
         Object portObj=null;
         try {
@@ -194,7 +194,7 @@ public class DefaultRootLocatorImpl implements RootLocator, MessageKeys {
      * @throws SmartFrogException fails to get the registry bind address
      * @throws RemoteException In case of network/rmi error
      */
-    protected static InetAddress getRegistryBindAddress(ProcessCompound c)
+    private InetAddress getRegistryBindAddress(ProcessCompound c)
         throws SmartFrogException, RemoteException {
         Object bindAddr=null;
         try {

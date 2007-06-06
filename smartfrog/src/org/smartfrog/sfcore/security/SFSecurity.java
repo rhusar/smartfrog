@@ -174,13 +174,12 @@ public class SFSecurity {
         if (isSecurityOn()) {
             realRMIRegistry = LocateRegistry.createRegistry(port,
                 securityEnv.getEmptyRMIClientSocketFactory(),
-                securityEnv.getRMIServerSocketFactory());
-            return realRMIRegistry;
+                securityEnv.getRMIServerSocketFactory());            
         } else {
             SFServerSocketFactory nonSecServerSocketFactory = new SFServerSocketFactory(bindAddr);
             realRMIRegistry =  LocateRegistry.createRegistry(port,null, nonSecServerSocketFactory);
-            return realRMIRegistry;
         }
+        return realRMIRegistry;
     }
 
     /**
@@ -229,5 +228,6 @@ public class SFSecurity {
         alreadyInit = false;
         securityEnv = null;
         realRMIRegistry = null;
+        SecureRemoteObject.cleanShutdown();
     }
 }

@@ -75,7 +75,7 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
     /** Log: it cannot be initialized before LogImpl is ready
      * LogImpl uses ComponentDescription.sfResolve to read its initial
      * configuration */
-    private static  LogSF sfLog= null;
+    private static LogSF sfLog = null;
 
 
 

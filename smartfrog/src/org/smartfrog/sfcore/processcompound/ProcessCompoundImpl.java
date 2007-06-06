@@ -511,14 +511,16 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
         }
         //System.out.println("terminating with " + rec.toString());
         if (systemExit) {
+            // TODO:
+            // Not really exiting all the time, see ExitCodes.exitJVM
+            // Use this properly instead            
             try {
                 String name = SmartFrogCoreKeys.SF_PROCESS_NAME;
                 name = sfResolve(SmartFrogCoreKeys.SF_PROCESS_NAME, name, false);
                 sfLog().out(MessageUtil.formatMessage(MSG_SF_DEAD, name)+" "+ new Date(System.currentTimeMillis()));
             } catch (Throwable thr){
             }
-            ExitCodes.exitWithError(ExitCodes.EXIT_CODE_SUCCESS);
-            // Runtime.getRuntime().halt(0);
+            ExitCodes.exitWithError(ExitCodes.EXIT_CODE_SUCCESS);            
         }
     }
 
