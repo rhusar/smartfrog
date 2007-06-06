@@ -22,6 +22,7 @@ package org.smartfrog.sfcore.common;
 
 import java.io.IOException;
 import java.util.Hashtable;
+import java.util.Map;
 
 
 /**
@@ -32,7 +33,7 @@ import java.util.Hashtable;
  */
 public class BaseClassLoader extends ClassLoader {
     /** table of loaded classes */
-    private Hashtable classes = new Hashtable();
+    private Map classes = new Hashtable();
 
     /**
      * Constructor. 

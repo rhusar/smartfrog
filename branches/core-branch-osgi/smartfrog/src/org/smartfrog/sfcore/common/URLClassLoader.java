@@ -25,6 +25,7 @@ import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.Hashtable;
+import java.util.Map;
 
 
 /**
@@ -35,10 +36,10 @@ import java.util.Hashtable;
  */
 public class URLClassLoader extends BaseClassLoader {
     /** Table to maintain loaders for URLs. */
-    protected static Hashtable loaders = new Hashtable();
+    private static final Map loaders = new Hashtable();
 
     /** Base for class download. */
-    protected URL classBase;
+    private URL classBase;
 
     /**
      * Constructor.
