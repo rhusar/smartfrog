@@ -33,10 +33,7 @@ import org.smartfrog.services.jmx.communication.ConnectorClient;
 import org.smartfrog.services.jmx.agent.AgentNotFoundException;
 
 /**
- * <p>Title: JMX Framework for SmartFrog</p>
- * <p>Description: Creation of a management framework for SmartFrog applications using JMX technology.</p>
- * <p>Copyright: Copyright (c) 2001</p>
- * <p>Company: Hewlett Packard</p>
+ * Stub remote MBEan
  *
  * @version 1.0
  */

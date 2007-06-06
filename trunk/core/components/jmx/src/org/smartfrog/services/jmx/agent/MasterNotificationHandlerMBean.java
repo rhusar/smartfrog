@@ -21,10 +21,7 @@ For more information: www.smartfrog.org
 package org.smartfrog.services.jmx.agent;
 
 /**
- * <p>Title: SmartFrog</p>
- * <p>Description: </p>
- * <p>Copyright: Copyright (c) 2002</p>
- * <p>Company: Hewlett Packard</p>
+ * MasterNotificationHandlerMBean
  * @author Serrano
  * @version 1.0
  */
