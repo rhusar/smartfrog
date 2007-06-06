@@ -27,7 +27,9 @@ public class SmartFrogActivator implements BundleActivator {
         System.setProperty("org.smartfrog.iniFile",
                 "org/smartfrog/default.ini");
 
-        //System.setProperty("org.smartfrog.sfcore.security.debug","true");
+        // Uncommenting this triggers an infinite recursion on SecurityManager.checkPermission
+        // when run in an OSGi framework.
+        // System.setProperty("org.smartfrog.sfcore.security.debug","true");
 
         System.setProperty("java.security.debug", "scl");
         System.setProperty("sun.rmi.dgc.logLevel", "VERBOSE");
@@ -77,9 +79,11 @@ public class SmartFrogActivator implements BundleActivator {
         // TODO: Find a nicer way to change shutdown behaviour.
         ExitCodes.exitJVM = false;
         rootProcess.sfTerminate(new TerminationRecord("normal", "Stopping daemon", null));
-
+        SFSystem.cleanShutdown();
+        rootProcess = null; // Triggers garbage collection
+        
         info("SmartFrog daemon stopped.");
-        // Services are released automatically
+        // Services are released automatically by the OSGi framework
     }
 
     private void debug(final String message) {
@@ -103,7 +107,9 @@ public class SmartFrogActivator implements BundleActivator {
     }
 
     private void releaseLogService(BundleContext bundleContext) {
-        if (logService != null)
+        if (logService != null) {
             bundleContext.ungetService(logServiceReference(bundleContext));
+            logService = null;
+        }
     }
 }

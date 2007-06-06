@@ -1,28 +1,27 @@
 package org.smartfrog.osgi;
 
-import org.smartfrog.sfcore.compound.CompoundImpl;
-import org.smartfrog.sfcore.compound.Compound;
-import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
-import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
-import org.smartfrog.sfcore.common.SmartFrogResolutionException;
-import org.smartfrog.sfcore.prim.TerminationRecord;
-import org.smartfrog.sfcore.logging.LogSF;
-import org.smartfrog.sfcore.reference.Reference;
-import org.smartfrog.sfcore.reference.ReferencePart;
+import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
-import org.osgi.framework.Bundle;
+import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
+import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
+import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.common.SmartFrogResolutionException;
+import org.smartfrog.sfcore.compound.Compound;
+import org.smartfrog.sfcore.compound.CompoundImpl;
+import org.smartfrog.sfcore.logging.LogSF;
+import org.smartfrog.sfcore.prim.TerminationRecord;
+import org.smartfrog.sfcore.reference.Reference;
+import org.smartfrog.sfcore.reference.ReferencePart;
 
 import java.rmi.RemoteException;
-import java.util.Enumeration;
 import java.util.Dictionary;
-import java.io.Serializable;
+import java.util.Enumeration;
 
 @SuppressWarnings({"ClassTooDeepInInheritanceTree"})
-public class OSGiBundleCompound extends CompoundImpl implements Compound, Serializable {
+public class OSGiBundleCompound extends CompoundImpl implements Compound {
     private static final String BUNDLE_URL = "bundleURL";
-    private transient Bundle childBundle = null;
+    private Bundle childBundle = null;
 
     public OSGiBundleCompound() throws RemoteException {}
 
@@ -43,29 +42,15 @@ public class OSGiBundleCompound extends CompoundImpl implements Compound, Serial
             throw new SmartFrogDeploymentException(e, this);
         }
 
-
         if (log.isDebugEnabled())
             log.debug("Trying to install bundle from URL : "
                     + bundleURL
                     + ". BundleContext for daemon bundle :"
                     + daemonBundleContext);
         try {
-
             childBundle = daemonBundleContext.installBundle(bundleURL);
             childBundle.start();
-            if (log.isDebugEnabled()) {
-                log.debug("Bundle ID : " + childBundle.getBundleId());
-                log.debug("Bundle Headers :");
-                Dictionary headers = childBundle.getHeaders();
-                Enumeration e = headers.keys();
-                while (e.hasMoreElements()) {
-                    Object key = e.nextElement();
-                    log.debug(key + " = " + headers.get(key));
-                }
-            }
-            log.info("Bundle from URL : " + bundleURL + " installed properly.");
-            log.debug("1. Bundle state code : " + childBundle.getState());
-
+            logBundleDetails(log, bundleURL);
         } catch (BundleException e) {
 
             if (childBundle != null) {
@@ -92,6 +77,21 @@ public class OSGiBundleCompound extends CompoundImpl implements Compound, Serial
         super.sfDeployWithChildren();
 
         log.debug("OSGiBundleCompound deployed.");
+    }
+
+    private void logBundleDetails(LogSF log, String bundleURL) {
+        if (log.isDebugEnabled()) {
+            log.debug("Bundle ID : " + childBundle.getBundleId());
+            log.debug("Bundle Headers :");
+            Dictionary headers = childBundle.getHeaders();
+            Enumeration e = headers.keys();
+            while (e.hasMoreElements()) {
+                Object key = e.nextElement();
+                log.debug(key + " = " + headers.get(key));
+            }
+        }
+        log.info("Bundle from URL : " + bundleURL + " installed properly.");
+        log.debug("Bundle state code : " + childBundle.getState());
     }
 
 

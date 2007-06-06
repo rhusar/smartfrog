@@ -39,11 +39,7 @@ import org.smartfrog.sfcore.security.SFSecurityProperties;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.common.ExitCodes;
 
-import java.io.ByteArrayOutputStream;
-import java.io.DataInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.PrintStream;
+import java.io.*;
 import java.net.UnknownHostException;
 import java.rmi.ConnectException;
 import java.rmi.RemoteException;
@@ -81,8 +77,12 @@ public class SFSystem implements MessageKeys {
     /** A flag that ensures only one system initialization. */
     private static boolean alreadySystemInit = false;
 
+    /** Save System.in and System.out so we can restore things on shutdown */
+    private static InputStream stdIn;
+    private static PrintStream stdOut;
+
     /** Core Log  */
-    private static  LogSF sflog = null;
+    private static LogSF sflog = null;
 
 
     /**
@@ -219,6 +219,9 @@ public class SFSystem implements MessageKeys {
         String outClass = SFSystem.getProperty(SmartFrogCoreProperty.propOutStreamClass);
         String errClass = SFSystem.getProperty(SmartFrogCoreProperty.propErrStreamClass);
 
+        stdIn = System.in;
+        stdOut = System.out;
+
         try {
             if (errClass != null) {
                 System.setErr((PrintStream) SFClassLoader.forName(errClass).newInstance());
@@ -318,8 +321,7 @@ public class SFSystem implements MessageKeys {
 
         try {
             initSystem();
-            Object targetC=configuration.execute(null);
-            return targetC;
+            return configuration.execute(null);
 
         } catch (Throwable thrown) {
             if (configuration.resultException == null) {
@@ -342,9 +344,8 @@ public class SFSystem implements MessageKeys {
      * @param args command line arguments. Please see the usage to get more
      * details
      */
-    public static void main(String[] args) {
-        SFSystem system=new SFSystem();
-        system.execute(args);
+    public static void main(String[] args) {        
+        new SFSystem().execute(args);
     }
 
 
@@ -389,12 +390,10 @@ public class SFSystem implements MessageKeys {
             sfLog().err(MessageUtil.formatMessage(MSG_CONNECT_ERR, opts.host), cex);
             exitWithException(cex, ExitCodes.EXIT_ERROR_CODE_GENERAL);
         } catch (RemoteException rmiEx) {
-            // log stack trace
             sfLog().err(MessageUtil.formatMessage(MSG_REMOTE_CONNECT_ERR,
                     opts.host), rmiEx);
             exitWithException(rmiEx, ExitCodes.EXIT_ERROR_CODE_GENERAL);
         } catch (Exception ex) {
-            //log stack trace
             sfLog().err(MessageUtil.
                     formatMessage(MSG_UNHANDLED_EXCEPTION), ex);
             exitWithException(ex, ExitCodes.EXIT_ERROR_CODE_GENERAL);
@@ -402,7 +401,7 @@ public class SFSystem implements MessageKeys {
 
         //Report Actions successes or failures.
          boolean somethingFailed = false;
-         ConfigurationDescriptor cfgDesc = null;
+         ConfigurationDescriptor cfgDesc;
          for (Enumeration items = opts.cfgDescriptors.elements();
               items.hasMoreElements(); ) {
              cfgDesc = (ConfigurationDescriptor)items.nextElement();
@@ -461,7 +460,7 @@ public class SFSystem implements MessageKeys {
      * Prints StackTrace
      * @param thr Throwable
      */
-    public void printStackTrace(Throwable thr){
+    private void printStackTrace(Throwable thr){
       System.err.println(MessageUtil.formatMessage(MSG_STACKTRACE_FOLLOWS)+"' "+
                          ConfigurationDescriptor.parseExceptionStackTrace(thr,"\n"+"   ")+" '");
     }
@@ -506,16 +505,13 @@ public class SFSystem implements MessageKeys {
             throws SmartFrogException, UnknownHostException, ConnectException,
             RemoteException, SFGeneralSecurityException {
 
-        ProcessCompound process = null;
-
         initSystem();
 
         // Redirect output streams
         setOutputStreams();
 
         // Deploy process Compound
-        process = createRootProcess();
-
+        ProcessCompound process = createRootProcess();
         return process;
     }
 
@@ -583,7 +579,7 @@ public class SFSystem implements MessageKeys {
      * test for the system being initialised already
      * @return true if we have already initialised the system
      */
-    public static boolean isSmartfrogInit() {
+    public synchronized static boolean isSmartfrogInit() {
         return alreadySystemInit;
     }
 
@@ -691,5 +687,12 @@ public class SFSystem implements MessageKeys {
             setRootProcess(null);
         }
 
+    }
+
+    public synchronized static void cleanShutdown() {
+        System.setIn(stdIn);
+        System.setOut(stdOut);
+        alreadySystemInit = false;
+        SFProcess.cleanShutdown();
     }
 }

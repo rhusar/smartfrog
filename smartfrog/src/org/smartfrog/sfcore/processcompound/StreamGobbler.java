@@ -30,8 +30,10 @@ import java.io.InputStreamReader;
  * This class redirect InputStream to System.out.
  */
 public class StreamGobbler extends Thread {
-    InputStream is;
-    boolean out = true;
+    private InputStream inputStream;
+    private boolean useSystemOut = true;
+
+    private volatile boolean continueRunning = true;
 
     /**
      * Constructs StreamGobbler with the input stream and type of stream
@@ -41,10 +43,10 @@ public class StreamGobbler extends Thread {
      */
     public StreamGobbler(InputStream is, String typeS) {
         this.setName("StreamGobbler("+typeS+")");
-        this.is = is;
+        this.inputStream = is;
 
         if (typeS.equals("err")) {
-            this.out = false;
+            this.useSystemOut = false;
         }
     }
 
@@ -53,13 +55,14 @@ public class StreamGobbler extends Thread {
      * Overrides Thread.run.
      */
     public void run() {
+        BufferedReader br = null;
         try {
-            InputStreamReader isr = new InputStreamReader(is);
-            BufferedReader br = new BufferedReader(isr);
-            String line = null;
+            InputStreamReader isr = new InputStreamReader(inputStream);
+            br = new BufferedReader(isr);
+            String line;
 
-            while ((line = br.readLine()) != null) {
-                if (out) {
+            while ((line = br.readLine()) != null && continueRunning) {
+                if (useSystemOut) {
                     System.out.println(line);
                 } else {
                     System.err.println(line);
@@ -67,6 +70,17 @@ public class StreamGobbler extends Thread {
             }
         } catch (IOException ioe) {
             ioe.printStackTrace();
+        } finally {
+            if (br != null)
+                try {
+                    br.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
         }
+    }
+
+    public void stopThread() {
+        continueRunning = false;
     }
 }
