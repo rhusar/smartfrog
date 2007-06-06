@@ -61,11 +61,11 @@ public class SFProcess implements MessageKeys {
     /**
      * Log for SFProcess (Process Log).
      */
-    private static LogSF sfLog= LogFactory.sfGetProcessLog();
+    private static final LogSF sfLog = LogFactory.sfGetProcessLog();
     /**
      * Single instance of process compound for this process
      */
-    protected static ProcessCompound processCompound;
+    private static ProcessCompound processCompound;
 
     /**
      * processCompound description
@@ -560,4 +560,7 @@ public class SFProcess implements MessageKeys {
         return sfLog;
     }
 
+    public synchronized static void cleanShutdown() {
+        processCompound = null;
+    }
 }

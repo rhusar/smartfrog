@@ -66,12 +66,16 @@ public class InterruptHandlerImpl implements SignalHandler,InterruptHandler {
      */
     public void handle(Signal signal) {
         if (!SFProcess.markProcessCompoundTerminated()) {
-            if (SFProcess.processCompound != null) {
+            if (SFProcess.getProcessCompound() != null) {
                 try {
-                    log.out("Terminating sfDaemon gracefully!!");
-                    SFProcess.processCompound.sfTerminate(new TerminationRecord(TerminationRecord.NORMAL,
-                            "sfDaemon forced to terminate ",
-                            SFProcess.processCompound.sfCompleteName()));
+                    log.out("Terminating sfDaemon gracefully.");
+                    SFProcess.getProcessCompound().sfTerminate(
+                            new TerminationRecord(
+                                    TerminationRecord.NORMAL,
+                                    "sfDaemon forced to terminate ",
+                                    SFProcess.getProcessCompound().sfCompleteName()
+                            )
+                    );
                 } catch (RemoteException re) {
                     //log and ignore
                     if (log.isIgnoreEnabled()) {
