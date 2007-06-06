@@ -1619,9 +1619,9 @@ ${test.reports.dir}
 
 
    <!-- inline creation of a very minimal (zero dependency) pom -->
-   <target name="m2-make-pom" depends="m2-init" unless="project.haspom">
-   <echo message="Creating Pom ${target.pom}" level="verbose"/>
-   <echo file="${target.pom}"><![CDATA[<project xmlns:xsi="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <target name="m2-make-pom" depends="m2-init" unless="project.haspom">
+    <echo message="Creating Pom ${target.pom}" level="verbose"/>
+    <echo file="${target.pom}"><![CDATA[<project xmlns:xsi="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>${m2.groupID}</groupId>
   <artifactId>${artifact.name}</artifactId>
