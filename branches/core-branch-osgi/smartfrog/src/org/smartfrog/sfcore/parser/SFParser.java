@@ -113,13 +113,9 @@ public class SFParser implements Parser, MessageKeys {
 
     /* Constructs a parser for the given language */
     private StreamLanguageParser getParser() throws SmartFrogException {
-        /**
-         * Referebce to parser class.
-         */
-        Class parserClass;
 
         try {
-            parserClass = SFClassLoader.forName(languagesPrefix + "." +
+            Class parserClass = SFClassLoader.forName(languagesPrefix + "." +
                     theLanguage + ".SFParser");
 
             return (StreamLanguageParser) parserClass.newInstance();

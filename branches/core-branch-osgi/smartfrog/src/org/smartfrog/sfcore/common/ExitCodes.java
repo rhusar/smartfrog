@@ -63,8 +63,6 @@ public final class ExitCodes {
     // TODO: Find a nicer way to change shutdown behaviour.
     public static boolean exitJVM = true;
 
-    private static final LogSF sfLog = LogFactory.sfGetProcessLog();
-
     /**
      * Exits from the system.
      */
@@ -74,29 +72,22 @@ public final class ExitCodes {
 
     /**
      * Exits from the system.
+     * This is the only place in the framework where System.exit() should be used.
+     * That way a subjclass can change exit behaviour (within limits)
      * @param exitCode int
      */
     public static void exitWithError(int exitCode) {
-        exit(exitCode);
-    }
-
-    /**
-     * Exits from the system.
-     * This is the only place in the framework where System.exit() should be used.
-     * That way a subjclass can change exit behaviour (within limits)
-     * @param code int
-     */
-    public static void exit(int code) {
+        LogSF sfLog = LogFactory.sfGetProcessLog();
         sfLog.info("Exiting SmartFrog...");
         if (exitJVM)
-            System.exit(code);
+            System.exit(exitCode);
         else {
-            shutdownRMIRegistry();
-            sfLog.info("SmartFrog stopped. Exit code: " + code);
+            shutdownRMIRegistry(sfLog);
+            sfLog.info("SmartFrog stopped. Exit code: " + exitCode);
         }
     }
 
-    private static void shutdownRMIRegistry() {
+    private static void shutdownRMIRegistry(LogSF sfLog) {
         try {
             Registry registry = SFSecurity.getNonStubRegistry();
             if (sfLog.isDebugEnabled())

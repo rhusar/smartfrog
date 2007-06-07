@@ -4,7 +4,7 @@
 
 sfConfig extends OSGiBundleCompound {
 
-    bundleURL "file:C:/smartfrog-test-osgi.jar";
+    bundleURL "file:C:/smartfrog-test.jar";
 
     testHello extends Test {
         message "Servez à ce monsieur, le vieux petit juge blond assis au fond, une bière hollandaise et des kiwis, parce qu'il y tient.";

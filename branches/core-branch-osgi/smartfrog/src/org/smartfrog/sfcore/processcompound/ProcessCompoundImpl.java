@@ -496,9 +496,6 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
     public synchronized void sfTerminateWith(TerminationRecord status) {
         super.sfTerminateWith(status);
 
-        outputGobbler.stopThread();
-        errorGobbler.stopThread();
-
         if (sfIsRoot){
             try {
                 SFProcess.getRootLocator().unbindRootProcessCompound();
@@ -522,6 +519,10 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
             }
             ExitCodes.exitWithError(ExitCodes.EXIT_CODE_SUCCESS);            
         }
+
+        // If we don't call System.exit we need to stop them
+        outputGobbler.stopThread();
+        errorGobbler.stopThread();
     }
 
     /**
