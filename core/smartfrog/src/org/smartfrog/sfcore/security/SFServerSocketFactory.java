@@ -38,8 +38,10 @@ public class SFServerSocketFactory implements RMIServerSocketFactory {
     private final InetAddress bindAddr;
 
     public int hashCode() {
-        return bindAddr.hashCode();
+        return bindAddr == null ? 0 : bindAddr.hashCode();
     }
+
+    // bindAddr can be null
     public boolean equals(Object obj) {
         if (obj == this) {
             return true;
@@ -47,7 +49,9 @@ public class SFServerSocketFactory implements RMIServerSocketFactory {
             return false;
         }
         SFServerSocketFactory other = (SFServerSocketFactory) obj;
-        return bindAddr.equals(other.bindAddr);
+        return bindAddr == null
+                ? (other.bindAddr == null)  //checks if obj is null as well.
+                : bindAddr.equals(other.bindAddr);
     }
 
 
