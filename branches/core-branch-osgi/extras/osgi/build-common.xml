@@ -7,9 +7,11 @@
     </target>
 
     <target name="copyJarAround" depends="jar">
+        <!--
         <copy file="./build/${bundle.filename}"
               todir="C:\\knopflerfish_osgi_2.0.1\\knopflerfish.org\\osgi"
               overwrite="true"/>
+        -->
         <copy file="./build/${bundle.filename}"
               todir="C:\\"
               overwrite="true"/>
