@@ -71,19 +71,7 @@ public class ParallelTest extends DeployingTestBase {
         expectAbnormalTermination(block);
     }
 
-    public void testStartFailingParallelAsync() throws Throwable {
-        application = deployExpectingSuccess(FILES + "testStartFailingParallelAsync.sf",
-                "testStartFailingParallelAsync");
-        block = (TestBlock) application;
-        expectAbnormalTermination(block);
-    }
 
-    public void testStartFailingParallelAsyncNoChild() throws Throwable {
-        application = deployExpectingSuccess(FILES + "testStartFailingParallelAsyncNoChild.sf",
-                "testStartFailingParallelAsyncNoChild");
-        block = (TestBlock) application;
-        expectAbnormalTermination(block);
-    }
     public void testStartFailingParallelNoTerminate() throws Throwable {
         application = deployExpectingSuccess(FILES + "testStartFailingParallelNoTerminate.sf",
                 "testStartFailingParallelNoTerminate");
@@ -91,12 +79,6 @@ public class ParallelTest extends DeployingTestBase {
         expectAbnormalTermination(block);
     }
 
-    public void testStartFailingParallelNoTerminateAsync() throws Throwable {
-        application = deployExpectingSuccess(FILES + "testStartFailingParallelNoTerminateAsync.sf",
-                "testStartFailingParallelNoTerminateAsync");
-        block = (TestBlock) application;
-        expectSuccesfulTermAndToggle();
-    }
 
     private void expectSuccesfulTermAndToggle() throws Throwable {
         expectSuccessfulTermination(block);
@@ -104,19 +86,7 @@ public class ParallelTest extends DeployingTestBase {
     }
 
 
-    public void testFailingParallelAsync() throws Throwable {
-        application = deployExpectingSuccess(FILES + "testFailingParallelAsync.sf",
-                "testFailingParallelAsync");
-        block = (TestBlock) application;
-        expectAbnormalTermination(block);
-    }
 
-    public void testFailingParallelAsyncNoChild() throws Throwable {
-        application = deployExpectingSuccess(FILES + "testFailingParallelAsyncNoChild.sf",
-                "testFailingParallelAsyncNoChild");
-        setBlock(application);
-        expectSuccesfulTermAndToggle();
-    }
 
 
     public void testFailingParallel() throws Throwable {
