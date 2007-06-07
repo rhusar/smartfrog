@@ -64,7 +64,7 @@ public class AsynPrimDeployerImpl extends PrimDeployerImpl implements ComponentD
     /**
      *
      * @param primClass
-     * @return
+     * @return a new instance
      * @throws ProActiveException
      * @throws IOException
      */
