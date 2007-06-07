@@ -250,8 +250,8 @@ For more information: www.smartfrog.org
       depends="clean,ivy-list-order,dist,cc-test"
       description="cruise control full build, with NO checkout"/>
 
+  
   <!-- =================================================================== -->
-
   <!-- full clean Cruise Control build                                     -->
   <!-- was cc-init,release,cc-incremental,cc-test-->
   <!-- =================================================================== -->
@@ -380,6 +380,7 @@ For more information: www.smartfrog.org
     <property name="ivy.cache.dir" location="${ivy.dir}/cache" />
     <property name="ivy.local.dir" location="${ivy.dir}/local" />
     <property name="ivy.package.name" value="org.smartfrog" />
+    <property name="ivy.smartfrog.version" value="latest.integration" />
   </target>
 
   <!-- =================================================================== -->
