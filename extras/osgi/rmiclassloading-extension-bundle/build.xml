@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
-<project name="SmartFrog Security Extension Bundle" default="all">
-    <property name="bundle.filename" value="smartfrog-security-extension.jar"/>
+<project name="SmartFrog RMI-SPI Extension Bundle" default="all">
+    <property name="bundle.filename" value="smartfrog-rmispi-extension.jar"/>
 
     <import file="../build-common.xml"/>
 
@@ -10,8 +10,7 @@
         <mkdir dir="./build/lib"/>
         <copy todir="build/lib" overwrite="true">
             <fileset dir="${sf.core.dir}/dist/lib/">
-                <include name="sfCoreSecurity*.jar"/>
-                <include name="smartfrog*.jar"/>
+                <include name="sfCoreSecurity*.jar"/>                
             </fileset>
         </copy>
     </target>

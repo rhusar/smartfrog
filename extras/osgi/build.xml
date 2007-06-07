@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<project name="Smartfrog-OSGi" default="all">
+
+    <target name="all" depends="daemon-bundle,test-bundle,rmispi-bundle"/>
+
+    <target name="daemon-bundle">
+        <ant dir="daemon-bundle" target="all"/>
+    </target>
+    <target name="test-bundle">
+        <ant dir="test-bundle" target="copyJarAround"/>
+    </target>
+    <target name="rmispi-bundle">
+        <ant dir="rmiclassloading-extension-bundle" target="copyJarAround"/>
+    </target>
+
+    <target name="clean">
+        <ant dir="daemon-bundle" target="clean"/>
+        <ant dir="test-bundle" target="clean"/>
+        <ant dir="rmiclassloading-extension-bundle" target="clean"/>
+    </target>
+
+</project>
