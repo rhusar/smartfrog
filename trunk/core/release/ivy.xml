@@ -83,30 +83,30 @@
     <dependency org="org.smartfrog"
         name="smartfrog"
         changing="true"
-        rev="latest.integration"
+        rev="${ivy.smartfrog.version}"
         conf="package-examples->examples;redist->redist;package-core->services,documentation,installation"/>
     <dependency org="org.smartfrog"
         name="sf-tasks" changing="true"
-        rev="latest.integration"
+        rev="${ivy.smartfrog.version}"
         conf="redist->redist;package-core->master"/>
 
     <dependency org="org.smartfrog"
         name="sf-antbuild" changing="true"
-        rev="latest.integration"
+        rev="${ivy.smartfrog.version}"
         conf="package-antbuild-minimal->minimal;package-antbuild-full->full"/>    
 
     <!-- ant component. do we omit the ant dist?-->
     <dependency org="org.smartfrog"
         name="sf-ant"
         changing="true"
-        rev="latest.integration"
+        rev="${ivy.smartfrog.version}"
         conf="package-ant->master,redist,documentation"/>
 
     <!-- anubis -->
     <dependency org="org.smartfrog"
         name="sf-anubis"
         changing="true"
-        rev="latest.integration"
+        rev="${ivy.smartfrog.version}"
         conf="package-anubis->master,redist,documentation"/>
 
 
@@ -114,7 +114,7 @@
     <dependency org="org.smartfrog"
         name="sf-database"
         changing="true"
-        rev="latest.integration"
+        rev="${ivy.smartfrog.version}"
 
         conf="package-database->master,redist,documentation"/>
 <!--,documentation -->
@@ -123,55 +123,55 @@
     <dependency org="org.smartfrog"
         name="sf-dns"
         changing="true"
-        rev="latest.integration"
+        rev="${ivy.smartfrog.version}"
         conf="package-networking->master,redist,documentation"/>
     <!--email -->
     <dependency org="org.smartfrog"
         name="sf-emailer"
         changing="true"
-        rev="latest.integration"
+        rev="${ivy.smartfrog.version}"
         conf="package-networking->master,redist,documentation"/>
 
     <!--net-->
     <dependency org="org.smartfrog"
         name="sf-net"
         changing="true"
-        rev="latest.integration"
+        rev="${ivy.smartfrog.version}"
         conf="package-networking->master,redist,documentation"/>
 
     <!--ssh-->
     <dependency org="org.smartfrog"
         name="sf-ssh"
         changing="true"
-        rev="latest.integration"
+        rev="${ivy.smartfrog.version}"
         conf="package-networking->master,redist,documentation"/>
 
     <!--logging-->
     <dependency org="org.smartfrog"
         name="sf-loggingservices"
         changing="true"
-        rev="latest.integration"
+        rev="${ivy.smartfrog.version}"
         conf="package-logging->master,redist,documentation"/>
 
     <!--scripting -->
     <dependency org="org.smartfrog"
         name="sf-scripting"
         changing="true"
-        rev="latest.integration"
+        rev="${ivy.smartfrog.version}"
         conf="package-scripting->master,redist,documentation"/>
 
 <!--JMX -->
     <dependency org="org.smartfrog"
         name="sf-jmx"
         changing="true"
-        rev="latest.integration"
+        rev="${ivy.smartfrog.version}"
         conf="package-jmx->master,redist,documentation"/>
 
     <!--scheduling-->
     <dependency org="org.smartfrog"
         name="sf-quartz"
         changing="true"
-        rev="latest.integration"
+        rev="${ivy.smartfrog.version}"
         conf="package-quartz->master,redist,documentation"/>
     <!--,documentation -->
 
@@ -180,7 +180,7 @@
         <dependency org="org.smartfrog"
             name="sf-slp"
             changing="true"
-            rev="latest.integration"
+            rev="${ivy.smartfrog.version}"
             conf="package-slp->master,redist,documentation"/>
     -->
 
@@ -189,7 +189,7 @@
     <dependency org="org.smartfrog"
         name="sf-xml"
         changing="true"
-        rev="latest.integration"
+        rev="${ivy.smartfrog.version}"
         conf="package-xml->master,redist,documentation"/>
 
 
@@ -198,48 +198,48 @@
     <dependency org="org.smartfrog"
         name="sf-junit"
         changing="true"
-        rev="latest.integration"
+        rev="${ivy.smartfrog.version}"
         conf="package-testing->master,redist,documentation"/>
     <dependency org="org.smartfrog"
         name="sf-xunit"
         changing="true"
-        rev="latest.integration"
+        rev="${ivy.smartfrog.version}"
         conf="package-testing->master,redist,documentation"/>
 
     <!--web stuff-->
     <dependency org="org.smartfrog"
         name="sf-www"
         changing="true"
-        rev="latest.integration"
+        rev="${ivy.smartfrog.version}"
         conf="package-www->master,redist,documentation"/>
     <dependency org="org.smartfrog"
         name="sf-tomcat"
         changing="true"
-        rev="latest.integration"
+        rev="${ivy.smartfrog.version}"
         conf="package-www->master,redist,documentation"/>
     <dependency org="org.smartfrog"
         name="sf-jetty"
         changing="true"
-        rev="latest.integration"
+        rev="${ivy.smartfrog.version}"
         conf="package-www->master,redist"/>
     <!--
         <dependency org="org.smartfrog"
             name="sf-cargo"
             changing="true"
-            rev="latest.integration"
+            rev="${ivy.smartfrog.version}"
             conf="package-www->master,redist/>
     -->
     <!--XMPP-->
     <dependency org="org.smartfrog"
         name="sf-xmpp"
         changing="true"
-        rev="latest.integration"
+        rev="${ivy.smartfrog.version}"
         conf="package-xmpp->master,redist,documentation"/>
 
     <dependency org="org.smartfrog"
         name="sf-testharness"
         changing="true"
-        rev="latest.integration"
+        rev="${ivy.smartfrog.version}"
         conf="package-testharness->master"/>
 
     <!--

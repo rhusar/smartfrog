@@ -31,6 +31,11 @@
   <property name="ivy.retrieve.pattern"
       value="[conf]/[artifact]-[revision].[ext]"/>
 
+  <!-- override this to get a different release, such as a hard coded version.
+  Doing that
+  -->
+  <property name="ivy.smartfrog.version" value="latest.integration" />
+
   <!-- Import common stuff -->
   <import file="../common.xml"/>
 
@@ -319,30 +324,35 @@
   <target name="package-maven-artifacts" depends="ready-to-package-maven-artifacts">
     <zip destfile="${maven.zip}" duplicate="fail">
       <zipfileset prefix="org/smartfrog" dir="${m2.publish.repository}/org/smartfrog/">
-        <include name="smartfrog/${smartfrog.version}/*" />
-        <include name="sfExamples/${smartfrog.version}/*" />
-        <include name="sfServices/${smartfrog.version}/*" />
-        <include name="sf-tasks/${smartfrog.version}/*" />
-        <include name="sf-testharness/${smartfrog.version}/*" />
-        
-        <include name="sf-ant/${smartfrog.version}/*" />
-        <include name="sf-anubis/${smartfrog.version}/*" />
-        <include name="sf-database/${smartfrog.version}/*" />
-        <include name="sf-dns/${smartfrog.version}/*" />
-        <include name="sf-emailer/${smartfrog.version}/*" />
-        <include name="sf-jmx/${smartfrog.version}/*" />
-        <include name="sf-loggingservices/${smartfrog.version}/*" />
-        <include name="sf-quartz/${smartfrog.version}/*" />
-        <include name="sf-net/${smartfrog.version}/*" />
-        <include name="sf-scripting/${smartfrog.version}/*" />
-        <include name="sf-ssh/${smartfrog.version}/*" />
-        <include name="sf-xml/${smartfrog.version}/*" />
-        <include name="sf-xunit/${smartfrog.version}/*" />
-          <include name="sf-junit/${smartfrog.version}/*" />
-        <include name="sf-www/${smartfrog.version}/*" />
-          <include name="sf-tomcat/${smartfrog.version}/*" />
-          <include name="sf-jetty/${smartfrog.version}/*" />
-          <include name="sf-xmpp/${smartfrog.version}/*" />
+        <!--core and tasks-->
+        <include name="smartfrog/${smartfrog.version}/*"/>
+        <include name="sfExamples/${smartfrog.version}/*"/>
+        <include name="sfServices/${smartfrog.version}/*"/>
+        <include name="sf-tasks/${smartfrog.version}/*"/>
+        <!-- testharness for 3rd parties to test their code-->
+        <include name="sf-testharness/${smartfrog.version}/*"/>
+
+        <!--components-->
+        <include name="sf-ant/${smartfrog.version}/*"/>
+        <include name="sf-anubis/${smartfrog.version}/*"/>
+        <include name="sf-database/${smartfrog.version}/*"/>
+        <include name="sf-dns/${smartfrog.version}/*"/>
+        <include name="sf-emailer/${smartfrog.version}/*"/>
+        <include name="sf-jmx/${smartfrog.version}/*"/>
+        <include name="sf-loggingservices/${smartfrog.version}/*"/>
+        <include name="sf-quartz/${smartfrog.version}/*"/>
+        <include name="sf-net/${smartfrog.version}/*"/>
+        <include name="sf-scripting/${smartfrog.version}/*"/>
+        <include name="sf-ssh/${smartfrog.version}/*"/>
+        <include name="sf-xml/${smartfrog.version}/*"/>
+        <!--testing-->
+        <include name="sf-xunit/${smartfrog.version}/*"/>
+        <include name="sf-junit/${smartfrog.version}/*"/>
+        <!--web bits-->
+        <include name="sf-www/${smartfrog.version}/*"/>
+        <include name="sf-tomcat/${smartfrog.version}/*"/>
+        <include name="sf-jetty/${smartfrog.version}/*"/>
+        <include name="sf-xmpp/${smartfrog.version}/*"/>
       </zipfileset>
 
     </zip>
