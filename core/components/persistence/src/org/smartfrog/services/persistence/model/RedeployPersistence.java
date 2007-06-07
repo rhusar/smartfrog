@@ -35,7 +35,9 @@ import org.smartfrog.sfcore.prim.TerminationRecord;
 
 
 /**
- * <p>RedeployPersistence is a persistence model for components that re-create
+ * Redeployment Persistence model.
+ *
+ RedeployPersistence is a persistence model for components that re-create
  * their children on recovery. This applies to children found in their original
  * component description only, any children added to the component by other
  * means are not recovered, however all children are considered volatile.
@@ -112,9 +114,9 @@ public class RedeployPersistence extends PersistenceModel {
     /**
      * {@inheritDoc}
      *
-     * <p>On recovery the retained children component descriptions are copied back
+     * On recovery the retained children component descriptions are copied back
      * to their original attributes. When deployment continues this will lead
-     * to new copies of the children being deployed.</p>
+     * to new copies of the children being deployed.
      *
      * @param context {@inheritDoc}
      * @throws SmartFrogDeploymentException {@inheritDoc}
