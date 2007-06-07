@@ -79,16 +79,16 @@ public class Reference implements Copying, Cloneable, Serializable {
 
 
     /**
-     * Constructs a reference with a single reference part from a String.
+     * Constructs a reference with a single attrib reference part from a String.
      *
-     * @param referencePart part to be put in reference
+     * @param attributeName part to be put in reference
      */
-    public Reference(Object referencePart) {
-        this(ReferencePart.here(referencePart));
+    public Reference(Object attributeName) {
+        this(ReferencePart.attrib(attributeName));
     }
 
     /**
-     * Constructs a reference with a single reference part from a String
+     * Constructs a reference with a single attrib reference part from a String
      * or from a string in cannonical form using the parser.
      *
      * @param refString to be put/used in reference
@@ -97,11 +97,12 @@ public class Reference implements Copying, Cloneable, Serializable {
      */
     public Reference(String refString, boolean parse) throws SmartFrogResolutionException{
         if (!parse) {
-           ref.addElement(ReferencePart.here(refString));
+           ref.addElement(ReferencePart.attrib(refString));
         } else {
             ref = fromString(refString).ref;
         }
     }
+
     /**
      * Constructs a reference with a single reference part.
      *
