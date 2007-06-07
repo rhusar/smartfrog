@@ -32,6 +32,7 @@ import org.smartfrog.sfcore.processcompound.SFProcess;
 
 
 /**
+ * Implementation of the RComponentProxyLocator.
  * The RComponentProxyLocator is a service that can be used to rebind to
  * a recoverable component (i.e. obtain a reference). This implementation
  * assumes the existence of a (possibly) remote storage agent that can
@@ -56,6 +57,7 @@ public class RComponentProxyLocatorImpl implements RComponentProxyLocator {
 
 
     /**
+     * Test for a component being dead.
      * isDead determines if the target recoverable component has terminated
      * (as opposed to failed). A terminated component will not be recovered.
      * If the target is not dead it may be operable or it may have failed.

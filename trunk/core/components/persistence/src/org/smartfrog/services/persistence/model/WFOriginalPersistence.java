@@ -34,10 +34,9 @@ import org.smartfrog.sfcore.prim.TerminationRecord;
 
 /**
  * WFOriginalPersistence is the original WoodFrog persistence model.
- * This
- * model assumes that children handle their own recovery and that references
+ * This model assumes that children handle their own recovery and that references
  * to them rebind themselves. Children attributes are non-volatile and will be
- * serialized to the persistent storage.</p>
+ * serialized to the persistent storage.
  */
 public class WFOriginalPersistence extends PersistenceModel {
 
@@ -62,7 +61,7 @@ public class WFOriginalPersistence extends PersistenceModel {
     /**
      * {@inheritDoc}
      *
-     * <p>WFOriginalPersistence does not change the initial context.</p>
+     * WFOriginalPersistence does not change the initial context.
      *
      */
     public void initialContext(Context context) throws
@@ -81,7 +80,7 @@ public class WFOriginalPersistence extends PersistenceModel {
     /**
      * {@inheritDoc}
      *
-     * <p>WFOriginalPersistence does not change the recovering context</p>
+     * WFOriginalPersistence does not change the recovering context
      *
      */
     public void recoverContext(Context context) throws
@@ -93,8 +92,8 @@ public class WFOriginalPersistence extends PersistenceModel {
     /**
      * {@inheritDoc}
      *
-     * <p>WFOriginalPersistence does not redeploy - it assumes children recover
-     * themselves</p>
+     * WFOriginalPersistence does not redeploy - it assumes children recover
+     * themselves
      *
      * @return boolean - false
      */
@@ -119,8 +118,8 @@ public class WFOriginalPersistence extends PersistenceModel {
     /**
      * {@inheritDoc}
      *
-     * <p>WFOriginalPersistence leaves a tomb stone behind after termination if
-     * it got past its initial startup, otherwise it doesn't.</p>
+     * WFOriginalPersistence leaves a tomb stone behind after termination if
+     * it got past its initial startup, otherwise it doesn't.
      *
      */
     public boolean leaveTombStone(Prim Component, TerminationRecord tr) {
@@ -142,7 +141,7 @@ public class WFOriginalPersistence extends PersistenceModel {
     /**
      * {@inheritDoc}
      *
-     * <p>WFOriginalPersistence Commit points are after start and after recovery</p>
+     * WFOriginalPersistence Commit points are after start and after recovery
      *
      */
     public boolean isCommitPoint(Prim component, String point) throws
