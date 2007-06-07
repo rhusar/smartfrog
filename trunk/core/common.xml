@@ -171,6 +171,7 @@
 
     <tstamp>
       <format property="year" pattern="yyyy"/>
+      <format property="build.date" pattern="yyyy-MM-yyyy HH:mm" />
     </tstamp>
     <property name="Name.Framework" value="SmartFrog"/>
     <property name="Name.System" value="${ant.project.name}"/>
@@ -1596,6 +1597,10 @@ ${test.reports.dir}
     <mkdir dir="${m1.local.repository}"/>
     <sf-tourl file="${m1.local.repository}"
         property="m1.local.repository.url"/>
+
+    <!--a string that is copied into the pom comments-->
+    <property name="pom.comments"
+      value="Created ${build.date} by ${user.name}" />
   </target>
 
 
@@ -1622,7 +1627,14 @@ ${test.reports.dir}
    <!-- inline creation of a very minimal (zero dependency) pom -->
   <target name="m2-make-pom" depends="m2-init" unless="project.haspom">
     <echo message="Creating Pom ${target.pom}" level="verbose"/>
-    <echo file="${target.pom}"><![CDATA[<project xmlns:xsi="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <echo file="${target.pom}"><![CDATA[<project
+    xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd
+    >
+    <!--
+     ${pom.comments}
+     -->
   <modelVersion>4.0.0</modelVersion>
   <groupId>${m2.groupID}</groupId>
   <artifactId>${artifact.name}</artifactId>

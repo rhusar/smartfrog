@@ -87,7 +87,14 @@
       <attribute name="version" default="${artifact.version}"/>
       <sequential>
         <echo message="Creating Pom @{target}" level="verbose"/>
-        <echo file="@{target}"><![CDATA[<project xmlns:xsi="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+        <echo file="@{target}"><![CDATA[<project
+    xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd
+    >
+    <!--
+     ${pom.comments}
+     -->
   <modelVersion>4.0.0</modelVersion>
   <groupId>${m2.groupID}</groupId>
   <artifactId>@{artifact}</artifactId>
@@ -108,7 +115,14 @@
       <attribute name="smartfrog.version" default="${smartfrog.version}"/>
       <sequential>
         <echo message="Creating Pom @{target}" level="verbose"/>
-        <echo file="@{target}"><![CDATA[<project xmlns:xsi="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+        <echo file="@{target}"><![CDATA[<project
+    xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd
+    >
+    <!--
+     ${pom.comments}
+     -->
   <modelVersion>4.0.0</modelVersion>
   <groupId>@{org}</groupId>
   <artifactId>@{artifact}</artifactId>
