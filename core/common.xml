@@ -1227,6 +1227,7 @@ java.class.path=
       <sf-jar destfile="${test.jar}"
         basedir="${test.classes.dir}"
         whenmanifestonly="create"
+        whenempty="create"
         includes="**/*"/>
       <echo level="verbose">created package ${test.jar}</echo>
   </target>
