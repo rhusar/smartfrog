@@ -541,20 +541,30 @@ public class PopUpTree extends JComponent implements ActionListener {
             String name ="";
             try {
                 name = ((Prim)obj).sfCompleteName().toString();
-                Object tags = ((Prim)obj).sfGetTags(null);
+                Object tags = ((Prim)obj).sfGetTags();
                 tags = JOptionPane.showInputDialog(this,"Edit Tags",tags);
                 Set newTags = (Set)parseTags(tags.toString(),"sf");
-                ((Prim)obj).sfSetTags(null, newTags);
+                ((Prim)obj).sfSetTags(newTags);
             } catch (Exception ex){
-              String msg = "Problem when trying to edit tags on "+name;
+              String msg = "Problem when trying to edit tags on Component "+name;
               if (sfLog().isErrorEnabled()) sfLog().error (msg);
               WindowUtilities.showError(this, msg +"'. \n"+ex.toString());
             }
-            // Refresh Console.
-            // To do: automatic Refresh ;-)
         } else if (obj instanceof ComponentDescription){
-
+             String name ="";
+            try {
+                name = ((ComponentDescription)obj).sfCompleteName().toString();
+                Object tags = ((ComponentDescription)obj).sfGetTags();
+                tags = JOptionPane.showInputDialog(this,"Edit Tags",tags);
+                Set newTags = (Set)parseTags(tags.toString(),"sf");
+                ((ComponentDescription)obj).sfSetTags(newTags);
+            } catch (Exception ex){
+              String msg = "Problem when trying to edit tags on ComponentDescription "+name;
+              if (sfLog().isErrorEnabled()) sfLog().error (msg);
+              WindowUtilities.showError(this, msg +"'. \n"+ex.toString());
+            }
         } else {
+           if (sfLog().isErrorEnabled()) sfLog().error ( "Error when editing tags on object: "+obj.toString()+"\n "+obj.getClass().getName());
            WindowUtilities.showError(this, "Error when editing tags on object: "+obj.toString()+"\n "+obj.getClass().getName());
         }
     }

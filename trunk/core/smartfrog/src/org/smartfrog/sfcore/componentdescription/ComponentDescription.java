@@ -40,7 +40,7 @@ import org.smartfrog.sfcore.common.*;
  * Components.
  * @see Copying
  */
-public interface ComponentDescription extends Tags, PrettyPrinting, Copying, ReferenceResolver, ReferenceResolverHelper {
+public interface ComponentDescription extends Tags, TagsComponent, PrettyPrinting, Copying, ReferenceResolver, ReferenceResolverHelper {
 
     /**
      * Add an attribute to the component description context. Values should be
