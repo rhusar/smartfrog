@@ -16,7 +16,7 @@ public interface RemoteTags extends Remote {
     * Set the TAGS for an attribute. TAGS are simply uninterpreted strings associated
     * with each attribute.
     *
-    * @param name attribute key for tags
+    * @param name attribute key for tags. Use "NULL" to refer to container's tags
     * @param tags a set of tags
     *
     * @throws SmartFrogException the attribute does not exist;
@@ -27,7 +27,7 @@ public interface RemoteTags extends Remote {
     * Get the TAGS for an attribute. TAGS are simply uninterpreted strings associated
     * with each attribute.
     *
-    * @param name attribute key for tags
+    * @param name attribute key for tags. Use "NULL" to refer to container's tags
     * @return the set of tags
     *
     * @throws SmartFrogException the attribute does not exist;
@@ -37,7 +37,7 @@ public interface RemoteTags extends Remote {
    /**
     * add a tag to the tag set of an attribute
     *
-    * @param name attribute key for tags
+    * @param name attribute key for tags. Use "NULL" to refer to container's tags
     * @param tag a tag to add to the set
     *
     * @throws SmartFrogException the attribute does not exist;
@@ -47,7 +47,7 @@ public interface RemoteTags extends Remote {
    /**
     * remove a tag from the tag set of an attribute if it exists
     *
-    * @param name attribute key for tags
+    * @param name attribute key for tags. Use "NULL" to refer to container's tags
     * @param tag a tag to remove from the set
     *
     * @throws SmartFrogException the attribute does not exist;
@@ -58,7 +58,7 @@ public interface RemoteTags extends Remote {
          /**
     * add a tag to the tag set of an attribute
     *
-    * @param name attribute key for tags
+    * @param name attribute key for tags. Use "NULL" to refer to container's tags
     * @param tags  a set of tags to add to the set
     * @throws SmartFrogException
     *          the attribute does not exist;
@@ -68,7 +68,7 @@ public interface RemoteTags extends Remote {
    /**
     * remove a tag from the tag set of an attribute if it exists
     *
-    * @param name attribute key for tags
+    * @param name attribute key for tags. Use "NULL" to refer to container's tags
     * @param tags  a set of tags to remove from the set
     * @throws SmartFrogException
     *          the attribute does not exist;
@@ -78,7 +78,7 @@ public interface RemoteTags extends Remote {
    /**
     * Return whether or not a tag is in the list of tags for an attribute
     *
-    * @param name the name of the attribute
+    * @param name the name of the attribute. Use "NULL" to refer to container's tags
     * @param tag the tag to chack
     *
     * @return whether or not the attribute has that tag
