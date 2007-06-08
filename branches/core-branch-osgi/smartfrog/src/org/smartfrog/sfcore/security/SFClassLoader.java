@@ -392,7 +392,7 @@ public class SFClassLoader {
 
         //First, try the thread context class loader
         result = opHelperWithReporting(name, null, isForName, msg);
-         if (debug != null) {if (result!=null) debug.println("   - Using thread context class loader");};
+         if (debug != null) {if (result!=null) debug.println("   - Using thread context class loader");}
 
         // Second try the default codebase (if enabled)
         if (result==null && (useDefaultCodebase) && (getTargetClassBase() != null)) {
