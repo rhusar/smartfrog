@@ -558,7 +558,7 @@ public class DeployEntry implements Entry {
      */
     public String toString() {
         Object tags = getEntryTags();
-        if ((tags!=null)&&(!tags.toString().equals(""))){
+        if ((tags!=null)&&(!tags.toString().equals(""))&&(!tags.toString().equals("[]"))){
             return getRDN()+" "+getEntryTags();
         }
         return getRDN();

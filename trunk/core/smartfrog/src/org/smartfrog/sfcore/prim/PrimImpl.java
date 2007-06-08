@@ -1707,16 +1707,22 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
 
    // implementation of the RemoteTags interface
 
+    
+
    /**
     * Set the TAGS for an attribute. TAGS are simply uninterpreted strings associated
     * with each attribute.
     *
-    * @param name attribute key for tags
+    * @param name attribute key for tags. Use "NULL" to refer to this object's tags.
     * @param tags a set of tags
     *
     * @throws SmartFrogException the attribute does not exist;
     */
    public void sfSetTags(Object name, Set tags) throws SmartFrogContextException, RemoteException {
+      if (name==null){
+        Object key = sfParent.sfAttributeKeyFor(this);
+        sfParent.sfSetTags(key,tags);
+      } else
       sfContext.sfSetTags(name, tags);
    }
 
@@ -1724,87 +1730,111 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
     * Get the TAGS for an attribute. TAGS are simply uninterpreted strings associated
     * with each attribute.
     *
-    * @param name attribute key for tags
+    * @param name attribute key for tags. Use "NULL" to refer to this object's tags
     * @return the set of tags
     *
     * @throws SmartFrogException the attribute does not exist;
     */
    public Set sfGetTags(Object name) throws SmartFrogContextException, RemoteException {
-      return sfContext.sfGetTags(name);
+      if (name==null){
+        Object key = sfParent.sfAttributeKeyFor(this);
+        return sfParent.sfGetTags(key);
+      } else
+        return sfContext.sfGetTags(name);
    }
 
    /**
     * add a tag to the tag set of an attribute
     *
-    * @param name attribute key for tags
+    * @param name attribute key for tags. Use "NULL" to refer to this object's tag
     * @param tag a tag to add to the set
     *
     * @throws SmartFrogException the attribute does not exist;
     */
    public void sfAddTag(Object name, String tag) throws SmartFrogContextException, RemoteException {
-      sfContext.sfAddTag(name,tag);
+       if (name==null){
+        Object key = sfParent.sfAttributeKeyFor(this);
+        sfParent.sfAddTag(key,tag);
+      } else
+         sfContext.sfAddTag(name,tag);
    }
 
    /**
     * remove a tag from the tag set of an attribute if it exists
     *
-    * @param name attribute key for tags
+    * @param name attribute key for tags. Use "NULL" to refer to this object's tag
     * @param tag a tag to remove from the set
     *
     * @throws SmartFrogException the attribute does not exist;
     *
     */
    public void sfRemoveTag(Object name, String tag) throws SmartFrogContextException, RemoteException {
-      sfContext.sfRemoveTag(name, tag);
+      if (name==null){
+        Object key = sfParent.sfAttributeKeyFor(this);
+        sfParent.sfRemoveTag(key,tag);
+      } else
+         sfContext.sfRemoveTag(name, tag);
    }
 
          /**
     * add a tag to the tag set of an attribute
     *
     * @param name attribute key for tags
-    * @param tags  a set of tags to add to the set
+    * @param tags  a set of tags to add to the set. Use "NULL" to refer to this object's tags
     * @throws SmartFrogException
     *          the attribute does not exist;
     */
    public void sfAddTags(Object name, Set tags) throws SmartFrogContextException, RemoteException {
-      sfContext.sfAddTags(name, tags);
+       if (name==null){
+        Object key = sfParent.sfAttributeKeyFor(this);
+        sfParent.sfAddTags(key,tags);
+      } else
+        sfContext.sfAddTags(name, tags);
    }
 
    /**
     * remove a tag from the tag set of an attribute if it exists
     *
-    * @param name attribute key for tags
+    * @param name attribute key for tags. Use "NULL" to refer to this object's tags
     * @param tags  a set of tags to remove from the set
     * @throws SmartFrogException
     *          the attribute does not exist;
     */
    public void sfRemoveTags(Object name, Set tags)  throws SmartFrogContextException, RemoteException {
-      sfContext.sfRemoveTags(name, tags);
+      if (name==null){
+        Object key = sfParent.sfAttributeKeyFor(this);
+        sfParent.sfRemoveTags(key,tags);
+      } else
+        sfContext.sfRemoveTags(name, tags);
    }
 
    /**
     * Return an iterator over the tags for an attribute - not part of RemoteTags, but is part of Tags
     *
-    * @param name the name of the attribute
+    * @param name the name of the attribute. If name is null then it throws exception
     * @return an iterator over the tags
     *
     * @throws SmartFrogException the attribute does not exist;
     */
    public Iterator sfTags(Object name) throws SmartFrogException {
-      return sfContext.sfTags(name);
+        return sfContext.sfTags(name);
    }
 
    /**
     * Return whether or not a tag is in the list of tags for an attribute
     *
-    * @param name the name of the attribute
+    * @param name the name of the attribute. Use "NULL" to refer to this object's tags
     * @param tag the tag to chack
     *
     * @return whether or not the attribute has that tag
     * @throws SmartFrogException the attribute does not exist
     */
    public boolean sfContainsTag(Object name, String tag) throws SmartFrogContextException, RemoteException {
-      return sfContext.sfContainsTag(name, tag);
+      if (name==null){
+        Object key = sfParent.sfAttributeKeyFor(this);
+        return sfParent.sfContainsTag(key,tag);
+      } else
+        return sfContext.sfContainsTag(name, tag);
    }
 
 }

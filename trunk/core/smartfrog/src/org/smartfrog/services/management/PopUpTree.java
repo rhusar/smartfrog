@@ -34,6 +34,7 @@ import org.smartfrog.sfcore.prim.Prim;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.Set;
 
 
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
@@ -46,6 +47,7 @@ import org.smartfrog.services.display.SFDisplay;
 import org.smartfrog.sfcore.common.*;
 import org.smartfrog.sfcore.processcompound.SFProcess;
 import org.smartfrog.sfcore.processcompound.ProcessCompound;
+import org.smartfrog.sfcore.parser.SFParser;
 
 
 /**
@@ -88,6 +90,9 @@ public class PopUpTree extends JComponent implements ActionListener {
     /** Item for Tree popup menu - add ScriptingPanel. */
     JMenuItem menuItemAddScriptingPanel = new JMenuItem();
 
+    /** Item for Tree popup menu - edit Tags. */
+    JMenuItem menuItemEditTags = new JMenuItem();
+
     /**
      *  Constructs PopUpTree object
      */
@@ -112,6 +117,7 @@ public class PopUpTree extends JComponent implements ActionListener {
         menuItemParentageChanged.setText("sfParentageChanged()");
         menuItemAddScriptingPanel.setText("Add Scripting Panel");
         menuItemIntrospector.setText("Instrospector");
+        menuItemEditTags.setText("Edit Tags");
 
         // Tree: options
         //      popupTree.add(menuItemAddAttribute);
@@ -127,6 +133,7 @@ public class PopUpTree extends JComponent implements ActionListener {
         popupTree.add(menuItemParentageChanged);
         popupTree.add(menuItemAddScriptingPanel);
         popupTree.add(menuItemIntrospector);
+        popupTree.add(menuItemEditTags);
 
         // Add action listeners for tree popup
         menuItemAddAttribute.addActionListener(this);
@@ -143,6 +150,7 @@ public class PopUpTree extends JComponent implements ActionListener {
         menuItemParentageChanged.addActionListener(this);
         menuItemAddScriptingPanel.addActionListener(this);
         menuItemIntrospector.addActionListener(this);
+        menuItemEditTags.addActionListener(this);
     }
 
     /**
@@ -176,8 +184,9 @@ public class PopUpTree extends JComponent implements ActionListener {
             menuItemParentageChanged.setVisible(true);
             menuItemAddScriptingPanel.setVisible(true);
             menuItemIntrospector.setVisible(true);
+            menuItemEditTags.setVisible(true);
         }else if  (getNode()instanceof ComponentDescription){
-          menuItemRemoveAttribute.setVisible(true);
+            menuItemRemoveAttribute.setVisible(true);
             menuItemDetach.setVisible(false);
             menuItemTerminateNormal.setVisible(false);
             menuItemTerminateAbnormal.setVisible(false);
@@ -186,6 +195,7 @@ public class PopUpTree extends JComponent implements ActionListener {
             menuItemParentageChanged.setVisible(false);
             menuItemAddScriptingPanel.setVisible(true);
             menuItemIntrospector.setVisible(true);
+            menuItemEditTags.setVisible(true);
         }
         popupTree.show(comp, x, y);
         this.parent = parent;
@@ -226,6 +236,9 @@ public class PopUpTree extends JComponent implements ActionListener {
             // Entry selected in the tree
         } else if (source == menuItemDetach) {
             detach(node);
+            // Entry selected in the tree
+        } else if (source == menuItemEditTags) {
+            editTags(node);
             // Entry selected in the tree
         } else if (source == menuItemParentageChanged) {
             if (node instanceof Prim){
@@ -513,7 +526,7 @@ public class PopUpTree extends JComponent implements ActionListener {
                 org.smartfrog.services.management.DeployMgnt.detach((Prim) obj);
                 parent.refresh();
             } catch (Exception ex){
-              String msg = "Problem when trying to Detach and Terminate '"+name;
+              String msg = "Problem when trying to Detach and Terminate "+name;
               if (sfLog().isErrorEnabled()) sfLog().error (msg);
               WindowUtilities.showError(this, msg +"'. \n"+ex.toString());
             }
@@ -522,6 +535,47 @@ public class PopUpTree extends JComponent implements ActionListener {
         }
     }
 
+    void editTags (Object obj) {
+         //System.out.println("Detatching: "+obj.toString());
+        if (obj instanceof Prim) {
+            String name ="";
+            try {
+                name = ((Prim)obj).sfCompleteName().toString();
+                Object tags = ((Prim)obj).sfGetTags(null);
+                tags = JOptionPane.showInputDialog(this,"Edit Tags",tags);
+                Set newTags = (Set)parseTags(tags.toString(),"sf");
+                ((Prim)obj).sfSetTags(null, newTags);
+            } catch (Exception ex){
+              String msg = "Problem when trying to edit tags on "+name;
+              if (sfLog().isErrorEnabled()) sfLog().error (msg);
+              WindowUtilities.showError(this, msg +"'. \n"+ex.toString());
+            }
+            // Refresh Console.
+            // To do: automatic Refresh ;-)
+        } else if (obj instanceof ComponentDescription){
+
+        } else {
+           WindowUtilities.showError(this, "Error when editing tags on object: "+obj.toString()+"\n "+obj.getClass().getName());
+        }
+    }
+
+
+
+    /**
+     * Parse
+     * @param textToParse  text to be parsed
+     * @param language language
+     * @return Object
+     */
+    public Object parseTags(String textToParse, String language) {
+        try {
+            SFParser parser = new SFParser(language);
+            return parser.sfParseTags( textToParse);
+        } catch (Throwable ex) {
+            if (sfLog().isErrorEnabled()) sfLog().error (ex);
+        }
+        return null;
+    }
 
     /**
      * Prepares option dialog box
