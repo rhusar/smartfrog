@@ -60,9 +60,6 @@ public final class ExitCodes {
      */
     public static final int EXIT_ERROR_CODE_CTRL_ALT_DEL = 130;
 
-    // TODO: Find a nicer way to change shutdown behaviour.
-    public static boolean exitJVM = true;
-
     /**
      * Exits from the system.
      */
@@ -79,24 +76,7 @@ public final class ExitCodes {
     public static void exitWithError(int exitCode) {
         LogSF sfLog = LogFactory.sfGetProcessLog();
         sfLog.info("Exiting SmartFrog...");
-        if (exitJVM)
-            System.exit(exitCode);
-        else {
-            shutdownRMIRegistry(sfLog);
-            sfLog.info("SmartFrog stopped. Exit code: " + exitCode);
-        }
+        System.exit(exitCode);
     }
-
-    private static void shutdownRMIRegistry(LogSF sfLog) {
-        try {
-            Registry registry = SFSecurity.getNonStubRegistry();
-            if (sfLog.isDebugEnabled())
-                sfLog.debug("Shutting down RMI registry : " + registry);
-            UnicastRemoteObject.unexportObject(registry, true);
-        } catch (Throwable t) {
-            sfLog.error("Exception when shutting down registry", t);
-        }
-    }
-
 
 }

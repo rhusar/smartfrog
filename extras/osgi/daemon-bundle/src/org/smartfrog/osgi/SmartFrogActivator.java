@@ -54,6 +54,7 @@ public class SmartFrogActivator implements BundleActivator {
 //        Thread.currentThread().setContextClassLoader(bundleCL);
 
         rootProcess = SFSystem.runSmartFrog();
+        rootProcess.vmExitOnTermination(false);
         rootProcess.sfAddAttribute(SmartFrogCoreKeys.SF_CORE_BUNDLE_CONTEXT, bundleContext);
 
         info("SmartFrog daemon running...");
@@ -76,8 +77,6 @@ public class SmartFrogActivator implements BundleActivator {
         getLogService(bundleContext);
         info("Stopping smartfrog...");
 
-        // TODO: Find a nicer way to change shutdown behaviour.
-        ExitCodes.exitJVM = false;
         rootProcess.sfTerminate(new TerminationRecord("normal", "Stopping daemon", null));
         SFSystem.cleanShutdown();
         rootProcess = null; // Triggers garbage collection

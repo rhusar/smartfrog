@@ -1,10 +1,14 @@
 <?xml version="1.0"?>
 <project name="SmartFrog Daemon Bundle" default="all">
-    <property name="bundle.filename" value="smartfrog-daemon.jar"/>
+    <property name="bundle.filename" value="smartfrog-daemon.jar"/>    
+    <path id="classpath">
+        <fileset dir="lib" includes="*.jar"/>
+        <fileset dir="build/lib" includes="*.jar"/>
+    </path>
 
     <import file="../build-common.xml"/>
 
-    <target name="all" depends="sfdist,jar,copyJarAround"/>
+    <target name="all" depends="sfJars,jar,copyJarAround"/>
 
     <target name="init">
         <mkdir dir="./build/classes"/>
@@ -19,27 +23,7 @@
         </copy>
     </target>
 
-    <target name="compile" depends="init">
-        <path id="classpath">
-            <fileset dir="lib" includes="*.jar"/>
-            <fileset dir="build/lib" includes="*.jar"/>
-        </path>
-        <javac destdir="./build/classes"
-               debug="on"
-               srcdir="./src">
-            <classpath refid="classpath"/>
-        </javac>
-        <rmic
-          stubversion="1.2"
-          base="./build/classes"
-          verify="true"
-          compiler="sun"
-          includes="**/*.class">
-          <classpath refid="classpath"/>
-        </rmic>
-    </target>
-
-    <target name="jar" depends="compile">
+    <target name="jar" depends="rmic">
         <jar jarfile="./build/${bundle.filename}"
              compress="true"
              includes="**/*"

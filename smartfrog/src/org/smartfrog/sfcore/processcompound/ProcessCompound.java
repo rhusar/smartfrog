@@ -132,12 +132,26 @@ public interface ProcessCompound extends Compound {
 
 
     /**
-     * Sets whether or not the ProcessCompound should terminate the JVM on
-     * exit. This is, by default, set to true. It is used if the
-     * ProcessCompound is created and managed by other code.
+     * Sets whether or not the ProcessCompound should shutdown the
+     * SmartFrog daemon on exit. This is, by default, set to true.
+     * It is used if the ProcessCompound is created and managed by other code.
+     *
+     * @param exit whether or not to shutdown (true = shutdown)
+     * @throws RemoteException if there is any network or remote error
+     */
+    public void systemExitOnTermination(boolean exit) throws RemoteException;
+
+    /**
+     * Sets whether or not the ProcessCompound should exit the JVM on exit.
+     * This is, by default, set to true.
+     * It should only be taken into account if systemExitOnTermination
+     * has been set to true.
+     * It is used if the SmartFrog daemon is run in a managed environment
+     * (e.g. OSGi).
      *
      * @param exit whether or not to exit (true = exit)
      * @throws RemoteException if there is any network or remote error
      */
-    public void systemExitOnTermination(boolean exit) throws RemoteException;
+    public void vmExitOnTermination(boolean exit) throws RemoteException;
+
 }

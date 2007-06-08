@@ -1,10 +1,10 @@
 <?xml version="1.0"?>
-<project name="SmartFrog RMI-SPI Extension Bundle" default="all">
+<project name="RMI-SPI Extension Bundle" default="all">
     <property name="bundle.filename" value="smartfrog-rmispi-extension.jar"/>
 
     <import file="../build-common.xml"/>
 
-    <target name="all" depends="sfdist,jar,copyJarAround"/>
+    <target name="all" depends="sfJars,jar,copyJarAround"/>
 
     <target name="init">
         <mkdir dir="./build/lib"/>
