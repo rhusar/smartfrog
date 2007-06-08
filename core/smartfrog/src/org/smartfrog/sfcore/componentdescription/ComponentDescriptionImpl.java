@@ -1260,249 +1260,313 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
    // implementation of the TAGS interface
 
 
-   /**
-    * Set the TAGS for an attribute. TAGS are simply uninterpreted strings associated
-    * with each attribute.
-    *
-    * @param name attribute key for tags. Use "NULL" to refer to this object's tags
-    * @param tags a set of tags
-    * @throws SmartFrogException
-    *          the attribute does not exist;
-    */
-   public void sfSetTags(Object name, Set tags) throws SmartFrogContextException {
-     if (name==null){
-        if (parent!=null) {
-            Object key = parent.sfAttributeKeyFor(this);
-            parent.sfSetTags(key,tags);
-        }else {
-            try {
-                Object key = primParent.sfAttributeKeyFor(this);
-                primParent.sfSetTags(key,tags);
-            } catch (RemoteException e) {
-                throw (SmartFrogContextException)SmartFrogContextException.forward(e);
-            }
-        }
-      } else
-        sfContext.sfSetTags(name, tags);
-   }
-
-   /**
-    * Get the TAGS for an attribute. TAGS are simply uninterpreted strings associated
-    * with each attribute.
-    *
-    * @param name attribute key for tags. Use "NULL" to refer to this object's tags
-    * @return the set of tags
-    * @throws SmartFrogException
-    *          the attribute does not exist;
-    */
-   public Set sfGetTags(Object name) throws SmartFrogContextException {
-     if (name==null){
-        if (parent!=null) {
-            Object key = parent.sfAttributeKeyFor(this);
-            return parent.sfGetTags(key);
-        }else {
-            try {
-                Object key = primParent.sfAttributeKeyFor(this);
-                return primParent.sfGetTags(key);
-            } catch (RemoteException e) {
-                throw (SmartFrogContextException)SmartFrogContextException.forward(e);
-            }
-        }
-      } else
-         return sfContext.sfGetTags(name);
-   }
-
-   /**
-    * add a tag to the tag set of an attribute
-    *
-    * @param name attribute key for tags. Use "NULL" to refer to this object's tag
-    * @param tag  a tag to add to the set
-    * @throws SmartFrogException
-    *          the attribute does not exist;
-    */
-   public void sfAddTag(Object name, String tag) throws SmartFrogContextException {
-      if (name==null){
-        if (parent!=null) {
-            Object key = parent.sfAttributeKeyFor(this);
-            parent.sfAddTag(key,tag);
-        }else {
-            try {
-                Object key = primParent.sfAttributeKeyFor(this);
-                primParent.sfAddTag(key,tag);
-            } catch (RemoteException e) {
-                throw (SmartFrogContextException)SmartFrogContextException.forward(e);
-            }
-        }
-      } else
-        sfContext.sfAddTag(name, tag);
-   }
-
-   /**
-    * remove a tag from the tag set of an attribute if it exists
-    *
-    * @param name attribute key for tags. Use "NULL" to refer to this object's tag
-    * @param tag  a tag to remove from the set
-    * @throws SmartFrogException
-    *          the attribute does not exist;
-    */
-   public void sfRemoveTag(Object name, String tag) throws SmartFrogContextException {
-      if (name==null){
-        if (parent!=null) {
-            Object key = parent.sfAttributeKeyFor(this);
-            parent.sfRemoveTag(key,tag);
-        }else {
-            try {
-                Object key = primParent.sfAttributeKeyFor(this);
-                primParent.sfRemoveTag(key,tag);
-            } catch (RemoteException e) {
-                throw (SmartFrogContextException)SmartFrogContextException.forward(e);
-            }
-        }
-      } else
-        sfContext.sfRemoveTag(name, tag);
-   }
-
-   /**
-    * add a tag to the tag set of an attribute
-    *
-    * @param name attribute key for tags. Use "NULL" to refer to this object's tags
-    * @param tags a set of tags to add to the set
-    * @throws SmartFrogException
-    *          the attribute does not exist;
-    */
-public void sfAddTags(Object name, Set tags) throws SmartFrogContextException {
-      if (name==null){
-        if (parent!=null) {
-            Object key = parent.sfAttributeKeyFor(this);
-            parent.sfAddTags(key,tags);
-        }else {
-            try {
-                Object key = primParent.sfAttributeKeyFor(this);
-                primParent.sfAddTags(key,tags);
-            } catch (RemoteException e) {
-                throw (SmartFrogContextException)SmartFrogContextException.forward(e);
-            }
-        }
-      } else
-        sfContext.sfAddTags(name, tags);
-   }
-
-   /**
-    * remove a tag from the tag set of an attribute if it exists
-    *
-    * @param name attribute key for tags. Use "NULL" to refer to this object's tag
-    * @param tags a set of tags to remove from the set
-    * @throws SmartFrogException
-    *          the attribute does not exist;
-    */
-   public void sfRemoveTags(Object name, Set tags) throws SmartFrogContextException {
-      if (name==null){
-        if (parent!=null) {
-            Object key = parent.sfAttributeKeyFor(this);
-            parent.sfRemoveTags(key,tags);
-        }else {
-            try {
-                Object key = primParent.sfAttributeKeyFor(this);
-                primParent.sfRemoveTags(key,tags);
-            } catch (RemoteException e) {
-                throw (SmartFrogContextException)SmartFrogContextException.forward(e);
-            }
-        }
-      } else
-         sfContext.sfRemoveTags(name, tags);
-   }
-
-   /**
-    * Return an iterator over the tags for an attribute
-    *
-    * @param name the name of the attribute. Null throws an exception
-    * @return an iterator over the tags
-    * @throws SmartFrogException
-    *          the attribute does not exist;
-    */
-   public Iterator sfTags(Object name) throws SmartFrogContextException {
-         return sfContext.sfTags(name);
-   }
-
-   /**
-    * Return whether or not a tag is in the list of tags for an attribute
-    *
-    * @param name the name of the attribute. Use "NULL" to refer to this object's tag
-    * @param tag  the tag to chack
-    * @return whether or not the attribute has that tag
-    * @throws SmartFrogException
-    *          the attribute does not exist
-    */
-   public boolean sfContainsTag(Object name, String tag) throws SmartFrogContextException {
-      if (name==null){
-        if (parent!=null) {
-            Object key = parent.sfAttributeKeyFor(this);
-            return parent.sfContainsTag(key, tag);
-        }else {
-            try {
-                Object key = primParent.sfAttributeKeyFor(this);
-                return primParent.sfContainsTag(key, tag);
-            } catch (RemoteException e) {
-                throw (SmartFrogContextException)SmartFrogContextException.forward(e);
-            }
-        }
-      } else
-         return sfContext.sfContainsTag(name, tag);
-   }
-
     /**
-     * Compares the specified Object with this ComponentDescription for equality
-     * Does not compare parentage but it compares LAZY.
+     * Set the TAGS for an attribute. TAGS are simply uninterpreted strings associated
+     * with each attribute.
      *
-     * @param  o object to be compared for equality with this ComponentDescription
-     * @return true if the specified Object is equal to this ComponentDescription
+     * @param name attribute key for tags.
+     * @param tags a set of tags
+     * @throws SmartFrogException
+     *          the attribute does not exist;
      */
-    public synchronized boolean equals(Object o) {
-        if (o == this)
-            return true;
-
-        if (!(o instanceof ComponentDescription))
-            return false;
-
-        if (eager != ((ComponentDescription)o).getEager() ){
-            return false;
-        }
-
-        if (!((sfContext).equals((((ComponentDescription)o).sfContext())))){
-            return false;
-        }
-
-        return true;
+    public void sfSetTags(Object name, Set tags) throws SmartFrogContextException {
+         sfContext.sfSetTags(name, tags);
     }
 
     /**
-     * Checks component description for same parentage
-     * @param o parent to compare with
-     * @return
+     * Get the TAGS for an attribute. TAGS are simply uninterpreted strings associated
+     * with each attribute.
+     *
+     * @param name attribute key for tags.
+     * @return the set of tags
+     * @throws SmartFrogException
+     *          the attribute does not exist;
      */
-    public boolean hasSameParent(ComponentDescription o) {
-        if (primParent==null) {
-          if (!(parent == (((ComponentDescription)o).sfParent()))){
-              return true;
-          }
-        } else {
-          if (!(primParent == (((ComponentDescription)o).sfPrimParent()))){
-              return true;
-          }
-        }
-        return false;
+    public Set sfGetTags(Object name) throws SmartFrogContextException {
+          return sfContext.sfGetTags(name);
     }
 
     /**
-     * Returns the hash code value for this ComponentDescription
-     * Parentage is not included but LAZY is.
+     * add a tag to the tag set of an attribute
+     *
+     * @param name attribute key for tags.
+     * @param tag  a tag to add to the set
+     * @throws SmartFrogException
+     *          the attribute does not exist;
      */
-    public synchronized int hashCode() {
-        // Simple hashcode using Joshua Bloch's recommendation
-        int result = 17;
-        result = 37 * result + sfContext.hashCode();
-        result = 37 * result + (eager ? 0 :1 );
-        return result;
+    public void sfAddTag(Object name, String tag) throws SmartFrogContextException {
+         sfContext.sfAddTag(name, tag);
     }
+
+    /**
+     * remove a tag from the tag set of an attribute if it exists
+     *
+     * @param name attribute key for tags.
+     * @param tag  a tag to remove from the set
+     * @throws SmartFrogException
+     *          the attribute does not exist;
+     */
+    public void sfRemoveTag(Object name, String tag) throws SmartFrogContextException {
+         sfContext.sfRemoveTag(name, tag);
+    }
+
+    /**
+     * add a tag to the tag set of an attribute
+     *
+     * @param name attribute key for tags.
+     * @param tags a set of tags to add to the set
+     * @throws SmartFrogException
+     *          the attribute does not exist;
+     */
+     public void sfAddTags(Object name, Set tags) throws SmartFrogContextException {
+         sfContext.sfAddTags(name, tags);
+    }
+
+    /**
+     * remove a tag from the tag set of an attribute if it exists
+     *
+     * @param name attribute key for tags.
+     * @param tags a set of tags to remove from the set
+     * @throws SmartFrogException
+     *          the attribute does not exist;
+     */
+    public void sfRemoveTags(Object name, Set tags) throws SmartFrogContextException {
+          sfContext.sfRemoveTags(name, tags);
+    }
+
+    /**
+     * Return an iterator over the tags for an attribute
+     *
+     * @param name the name of the attribute.
+     * @return an iterator over the tags
+     * @throws SmartFrogException
+     *          the attribute does not exist;
+     */
+    public Iterator sfTags(Object name) throws SmartFrogContextException {
+          return sfContext.sfTags(name);
+    }
+
+    /**
+     * Return whether or not a tag is in the list of tags for an attribute
+     *
+     * @param name the name of the attribute.
+     * @param tag  the tag to chack
+     * @return whether or not the attribute has that tag
+     * @throws SmartFrogException
+     *          the attribute does not exist
+     */
+    public boolean sfContainsTag(Object name, String tag) throws SmartFrogContextException {
+          return sfContext.sfContainsTag(name, tag);
+    }
+
+     // implementation of the TAGSComponent interface
+
+
+    /**
+     * Set the TAGS for this component. TAGS are simply uninterpreted strings associated
+     * with each attribute.
+     *
+     * @param tags a set of tags
+     * @throws SmartFrogException
+     *          the attribute does not exist;
+     */
+    public void sfSetTags( Set tags) throws SmartFrogContextException {
+         if (parent!=null) {
+             Object key = parent.sfAttributeKeyFor(this);
+             parent.sfSetTags(key,tags);
+         }else {
+             try {
+                 Object key = primParent.sfAttributeKeyFor(this);
+                 primParent.sfSetTags(key,tags);
+             } catch (RemoteException e) {
+                 throw (SmartFrogContextException)SmartFrogContextException.forward(e);
+             }
+         }
+    }
+
+    /**
+     * Get the TAGS for this component. TAGS are simply uninterpreted strings associated
+     * with each attribute.
+     *
+     * @return the set of tags
+     * @throws SmartFrogException
+     *          the attribute does not exist;
+     */
+    public Set sfGetTags() throws SmartFrogContextException {
+         if (parent!=null) {
+             Object key = parent.sfAttributeKeyFor(this);
+             return parent.sfGetTags(key);
+         }else {
+             try {
+                 Object key = primParent.sfAttributeKeyFor(this);
+                 return primParent.sfGetTags(key);
+             } catch (RemoteException e) {
+                 throw (SmartFrogContextException)SmartFrogContextException.forward(e);
+             }
+         }
+    }
+
+    /**
+     * add a tag to the tag set of this component
+     *
+     * @param tag  a tag to add to the set
+     * @throws SmartFrogException
+     *          the attribute does not exist;
+     */
+    public void sfAddTag(String tag) throws SmartFrogContextException {
+         if (parent!=null) {
+             Object key = parent.sfAttributeKeyFor(this);
+             parent.sfAddTag(key,tag);
+         }else {
+             try {
+                 Object key = primParent.sfAttributeKeyFor(this);
+                 primParent.sfAddTag(key,tag);
+             } catch (RemoteException e) {
+                 throw (SmartFrogContextException)SmartFrogContextException.forward(e);
+             }
+         }
+    }
+
+    /**
+     * remove a tag from the tag set of this component if it exists
+     *
+     * @param tag  a tag to remove from the set
+     * @throws SmartFrogException
+     *          the attribute does not exist;
+     */
+    public void sfRemoveTag(String tag) throws SmartFrogContextException {
+         if (parent!=null) {
+             Object key = parent.sfAttributeKeyFor(this);
+             parent.sfRemoveTag(key,tag);
+         }else {
+             try {
+                 Object key = primParent.sfAttributeKeyFor(this);
+                 primParent.sfRemoveTag(key,tag);
+             } catch (RemoteException e) {
+                 throw (SmartFrogContextException)SmartFrogContextException.forward(e);
+             }
+         }
+    }
+
+    /**
+     * add a tag to the tag set of this component
+     *
+     * @param tags a set of tags to add to the set
+     * @throws SmartFrogException
+     *          the attribute does not exist;
+     */
+     public void sfAddTags(Set tags) throws SmartFrogContextException {
+         if (parent!=null) {
+             Object key = parent.sfAttributeKeyFor(this);
+             parent.sfAddTags(key,tags);
+         }else {
+             try {
+                 Object key = primParent.sfAttributeKeyFor(this);
+                 primParent.sfAddTags(key,tags);
+             } catch (RemoteException e) {
+                 throw (SmartFrogContextException)SmartFrogContextException.forward(e);
+             }
+         }
+    }
+
+    /**
+     * remove a tag from the tag set of this component if it exists
+     *
+     * @param tags a set of tags to remove from the set
+     * @throws SmartFrogException
+     *          the attribute does not exist;
+     */
+    public void sfRemoveTags(Set tags) throws SmartFrogContextException {
+         if (parent!=null) {
+             Object key = parent.sfAttributeKeyFor(this);
+             parent.sfRemoveTags(key,tags);
+         }else {
+             try {
+                 Object key = primParent.sfAttributeKeyFor(this);
+                 primParent.sfRemoveTags(key,tags);
+             } catch (RemoteException e) {
+                 throw (SmartFrogContextException)SmartFrogContextException.forward(e);
+             }
+         }
+    }
+
+    /**
+     * Return whether or not a tag is in the list of tags for this component
+     *
+     * @param tag  the tag to chack
+     * @return whether or not the attribute has that tag
+     * @throws SmartFrogException
+     *          the attribute does not exist
+     */
+    public boolean sfContainsTag(String tag) throws SmartFrogContextException {
+         if (parent!=null) {
+             Object key = parent.sfAttributeKeyFor(this);
+             return parent.sfContainsTag(key, tag);
+         }else {
+             try {
+                 Object key = primParent.sfAttributeKeyFor(this);
+                 return primParent.sfContainsTag(key, tag);
+             } catch (RemoteException e) {
+                 throw (SmartFrogContextException)SmartFrogContextException.forward(e);
+             }
+         }
+    }
+
+
+    // hash code and equals
+     /**
+      * Compares the specified Object with this ComponentDescription for equality
+      * Does not compare parentage but it compares LAZY.
+      *
+      * @param  o object to be compared for equality with this ComponentDescription
+      * @return true if the specified Object is equal to this ComponentDescription
+      */
+     public synchronized boolean equals(Object o) {
+         if (o == this)
+             return true;
+
+         if (!(o instanceof ComponentDescription))
+             return false;
+
+         if (eager != ((ComponentDescription)o).getEager() ){
+             return false;
+         }
+
+         if (!((sfContext).equals((((ComponentDescription)o).sfContext())))){
+             return false;
+         }
+
+         return true;
+     }
+
+     /**
+      * Checks component description for same parentage
+      * @param o parent to compare with
+      * @return
+      */
+     public boolean hasSameParent(ComponentDescription o) {
+         if (primParent==null) {
+           if (!(parent == (((ComponentDescription)o).sfParent()))){
+               return true;
+           }
+         } else {
+           if (!(primParent == (((ComponentDescription)o).sfPrimParent()))){
+               return true;
+           }
+         }
+         return false;
+     }
+
+     /**
+      * Returns the hash code value for this ComponentDescription
+      * Parentage is not included but LAZY is.
+      */
+     public synchronized int hashCode() {
+         // Simple hashcode using Joshua Bloch's recommendation
+         int result = 17;
+         result = 37 * result + sfContext.hashCode();
+         result = 37 * result + (eager ? 0 :1 );
+         return result;
+     }
 
 }
