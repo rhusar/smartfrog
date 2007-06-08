@@ -11,9 +11,10 @@ Bundle-Classpath: smartfrog-3.10.051dev.jar,
                   sfCoreSecurity-3.10.051dev.jar,
                   .
 Bundle-Activator: org.smartfrog.osgi.SmartFrogActivator
-DynamicImport-Package: *
 Import-Package: org.osgi.framework,
-                org.osgi.service.log; resolution:=optional                
+                org.osgi.service.log; resolution:=optional,
+                org.smartfrog.sfcore.security.rmispi; version=1.0.0
+DynamicImport-Package: *
 Export-Package: org.smartfrog.sfcore; version=1.0.0,
                 org.smartfrog.sfcore.prim; version=1.0.0,
                 org.smartfrog.sfcore.common; version=1.0.0,
