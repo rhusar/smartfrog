@@ -1,10 +1,13 @@
 <?xml version="1.0"?>
-<project name="SmartFrog Test Bundle" default="all">
+<project name="Test Bundle" default="all">
     <property name="bundle.filename" value="smartfrog-test.jar"/>
+    <path id="classpath">
+        <fileset dir="build/lib" includes="*.jar"/>
+    </path>
 
     <import file="../build-common.xml"/>
 
-    <target name="all" depends="sfdist,jar,copyJarAround"/>
+    <target name="all" depends="sfJars,jar,copyJarAround"/>
 
     <target name="init">
         <copy todir="build/lib" overwrite="true">
@@ -15,26 +18,7 @@
         <mkdir dir="./build/classes"/>
     </target>
 
-    <target name="compile" depends="init">
-        <path id="classpath">
-            <fileset dir="build/lib" includes="*.jar"/>
-        </path>
-        <javac destdir="./build/classes"
-               debug="on"
-               srcdir="./src">
-            <classpath refid="classpath"/>
-        </javac>
-        <rmic
-          stubversion="1.2"
-          base="./build/classes"
-          verify="true"
-          compiler="sun"
-          includes="**/*.class">
-          <classpath refid="classpath"/>
-        </rmic>
-    </target>
-
-    <target name="jar" depends="compile">
+    <target name="jar" depends="rmic">
         <jar jarfile="./build/${bundle.filename}"
              compress="true"
              includes="**/*"

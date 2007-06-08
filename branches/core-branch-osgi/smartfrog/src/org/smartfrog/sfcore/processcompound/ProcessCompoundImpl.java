@@ -21,6 +21,8 @@ For more information: www.smartfrog.org
 package org.smartfrog.sfcore.processcompound;
 
 import java.rmi.RemoteException;
+import java.rmi.server.UnicastRemoteObject;
+import java.rmi.registry.Registry;
 import java.util.*;
 import java.net.InetAddress;
 
@@ -51,7 +53,7 @@ import org.smartfrog.sfcore.security.SFSecurityProperties;
 import org.smartfrog.sfcore.security.SmartFrogCorePropertySecurity;
 import org.smartfrog.sfcore.common.ExitCodes;
 import org.smartfrog.sfcore.common.JarUtil;
-
+import org.smartfrog.sfcore.logging.LogSF;
 
 
 /**
@@ -99,10 +101,18 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
     protected boolean sfIsRoot = false;
 
     /**
-     * Whether the ProcessCompound should cause the JVM to exit on termination.
+     * Whether the ProcessCompound should shutdown the SmartFrog daemon
+     * to be shut down on termination.
      * By default set to true.
      */
-    protected boolean systemExit = true;
+    private boolean systemExit = true;
+
+    /**
+     * Whether the ProcessCompound should cause the JVM to exit on termination.
+     * By default set to true.
+     * Is only taken into account if systemExit is true.
+     */
+    private boolean vmExit = true;
 
     /**
      * On liveness check on a process compound checks if it has any components
@@ -500,29 +510,31 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
             try {
                 SFProcess.getRootLocator().unbindRootProcessCompound();
             } catch (Exception ex) {
-                //Logger.logQuietly(ex);
-                if (sfLog().isIgnoreEnabled()){
-                  sfLog().ignore(ex);
-                }
+                sfLog().ignore(ex);                
             }
         }
-        //System.out.println("terminating with " + rec.toString());
+
         if (systemExit) {
-            // TODO:
-            // Not really exiting all the time, see ExitCodes.exitJVM
-            // Use this properly instead            
             try {
                 String name = SmartFrogCoreKeys.SF_PROCESS_NAME;
                 name = sfResolve(SmartFrogCoreKeys.SF_PROCESS_NAME, name, false);
-                sfLog().out(MessageUtil.formatMessage(MSG_SF_DEAD, name)+" "+ new Date(System.currentTimeMillis()));
-            } catch (Throwable thr){
+                sfLog().out(
+                        MessageUtil.formatMessage(MSG_SF_DEAD, name) + " " + new Date()
+                );
+            } catch (Throwable thr) {
+                sfLog().ignore(thr);
             }
-            ExitCodes.exitWithError(ExitCodes.EXIT_CODE_SUCCESS);            
-        }
 
-        // If we don't call System.exit we need to stop them
-        outputGobbler.stopThread();
-        errorGobbler.stopThread();
+            if (vmExit)
+                ExitCodes.exitWithError(ExitCodes.EXIT_CODE_SUCCESS);
+            else {
+                shutdownRMIRegistry(sfLog());
+                // If we didn't call System.exit we need to stop them.
+                // They shouldn't be stopped before not to loose log messages.
+                outputGobbler.stopThread();
+                errorGobbler.stopThread();
+            }
+        }
     }
 
     /**
@@ -642,6 +654,10 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
      */
     public void systemExitOnTermination(boolean exit) throws RemoteException {
         systemExit = exit;
+    }
+
+    public void vmExitOnTermination(boolean exit) throws RemoteException {
+        vmExit = exit;
     }
 
     /**
@@ -1409,4 +1425,14 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
             }
     }
 
+    public static void shutdownRMIRegistry(LogSF sfLog) {
+        try {
+            Registry registry = SFSecurity.getNonStubRegistry();
+            if (sfLog.isDebugEnabled())
+                sfLog.debug("Shutting down RMI registry : " + registry);
+            UnicastRemoteObject.unexportObject(registry, true);
+        } catch (Throwable t) {
+            sfLog.error("Exception when shutting down registry", t);
+        }
+    }
 }

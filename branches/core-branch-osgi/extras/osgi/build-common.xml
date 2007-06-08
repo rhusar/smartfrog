@@ -2,8 +2,8 @@
 <project name="common">
     <property name="sf.core.dir" value="../../../smartfrog"/>
 
-    <target name="sfdist">
-        <ant dir="${sf.core.dir}" antfile="build.xml" target="dist"/>
+    <target name="sfJars">
+        <ant dir="${sf.core.dir}" antfile="build.xml" target="jars"/>
     </target>
 
     <target name="copyJarAround" depends="jar">
@@ -15,6 +15,25 @@
         <copy file="./build/${bundle.filename}"
               todir="C:\\"
               overwrite="true"/>
+    </target>
+
+    <target name="compile" depends="init">
+        <javac destdir="./build/classes"
+               debug="on"
+               srcdir="./src">
+            <classpath refid="classpath"/>
+        </javac>
+    </target>    
+
+    <target name="rmic" depends="compile">
+        <rmic
+          stubversion="1.2"
+          base="./build/classes"
+          verify="true"
+          compiler="sun"
+          includes="**/*.class">
+          <classpath refid="classpath"/>
+        </rmic>
     </target>
 
     <target name="clean">
