@@ -465,6 +465,35 @@ public class DeployEntry implements Entry {
     }
 
     /**
+     *
+     * @return
+     */
+    public Object getEntryTags(){
+       Object parent = null;
+       Object tags = "";
+        try {
+            if (entry instanceof Prim){
+                     parent = ((Prim) entry).sfParent();
+            } else if (entry instanceof ComponentDescription){
+                     parent = (( ComponentDescription) entry).sfParent();
+            } else {
+                     return tags;
+            }
+            if (parent instanceof Prim){
+                     tags = ((Prim)parent).sfGetTags(getRDN());
+            } else if (parent instanceof ComponentDescription){
+                     tags = (( ComponentDescription) parent).sfGetTags(getRDN());
+            }
+            if (tags==null) tags="";
+            return tags;
+
+        } catch (Exception e) {
+            if (sfLog().isErrorEnabled()) sfLog().error("Error DeployEntry.getEntryTags()" +  e.toString(),e);
+            return "[tags error]";
+        }
+
+    }
+    /**
      *  Search for a particular entry in its children tree.
      *
      *@return    The entry value
@@ -528,7 +557,11 @@ public class DeployEntry implements Entry {
      *@return  string representation of the deploy entry
      */
     public String toString() {
-        return this.getRDN();
+        Object tags = getEntryTags();
+        if ((tags!=null)&&(!tags.toString().equals(""))){
+            return getRDN()+" "+getEntryTags();
+        }
+        return getRDN();
     }
 
     /**
@@ -678,7 +711,7 @@ public class DeployEntry implements Entry {
           if ((RDN.equals(""))&&(DN.size()>=1)){
              ReferencePart refP = DN.lastElement();
              if (refP instanceof HereReferencePart){
-               return ((HereReferencePart)refP).toString(-1);  
+               return ((HereReferencePart)refP).toString(-1);
              } else {
                return refP.toString();
              }
