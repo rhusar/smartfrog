@@ -20,7 +20,9 @@
     <target name="compile" depends="init">
         <javac destdir="./build/classes"
                debug="on"
-               srcdir="./src">
+               srcdir="./src"
+               target="1.5"
+               source="1.5">
             <classpath refid="classpath"/>
         </javac>
     </target>    

@@ -4,6 +4,7 @@
     <path id="classpath">
         <fileset dir="lib" includes="*.jar"/>
         <fileset dir="build/lib" includes="*.jar"/>
+        <fileset dir="../common-lib" includes="*.jar"/>
     </path>
 
     <import file="../build-common.xml"/>
