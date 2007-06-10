@@ -1831,8 +1831,16 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
     * @throws SmartFrogException the attribute does not exist;
     */
    public Set sfGetTags() throws SmartFrogContextException, RemoteException {
-        Object key = sfParent.sfAttributeKeyFor(this);
-        return sfParent.sfGetTags(key);
+       Object key = null;
+       if (sfParent!=null) {
+         key = sfParent.sfAttributeKeyFor(this);
+         return sfParent.sfGetTags(key);
+       } else {
+         Prim parent = SFProcess.getProcessCompound();
+         key = parent.sfAttributeKeyFor(this);
+         return parent.sfGetTags(key);
+       }
+
    }
 
    /**
@@ -1843,8 +1851,15 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
     * @throws SmartFrogException the attribute does not exist;
     */
    public void sfAddTag( String tag) throws SmartFrogContextException, RemoteException {
-        Object key = sfParent.sfAttributeKeyFor(this);
-        sfParent.sfAddTag(key,tag);
+       Object key = null;
+       if (sfParent!=null) {
+         key = sfParent.sfAttributeKeyFor(this);
+         sfParent.sfAddTag(key,tag);
+       } else {
+         Prim parent = SFProcess.getProcessCompound();
+         key = parent.sfAttributeKeyFor(this);
+         parent.sfAddTag(key,tag);
+       }
    }
 
    /**
@@ -1856,11 +1871,18 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
     *
     */
    public void sfRemoveTag( String tag) throws SmartFrogContextException, RemoteException {
-        Object key = sfParent.sfAttributeKeyFor(this);
-        sfParent.sfRemoveTag(key, tag);
+       Object key = null;
+       if (sfParent!=null) {
+         key = sfParent.sfAttributeKeyFor(this);
+         sfParent.sfRemoveTag(key,tag);
+       } else {
+         Prim parent = SFProcess.getProcessCompound();
+         key = parent.sfAttributeKeyFor(this);
+         parent.sfRemoveTag(key,tag);
+       }
    }
 
-         /**
+   /**
     * add a tag to the tag set of this component
     *
     * @param tags  a set of tags to add to the set
@@ -1868,8 +1890,15 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
     *          the attribute does not exist;
     */
    public void sfAddTags( Set tags) throws SmartFrogContextException, RemoteException {
-        Object key = sfParent.sfAttributeKeyFor(this);
-        sfParent.sfAddTags(key,tags);
+      Object key = null;
+       if (sfParent!=null) {
+         key = sfParent.sfAttributeKeyFor(this);
+         sfParent.sfAddTags(key,tags);
+       } else {
+         Prim parent = SFProcess.getProcessCompound();
+         key = parent.sfAttributeKeyFor(this);
+         parent.sfAddTags(key,tags);
+       }
    }
 
    /**
@@ -1880,8 +1909,15 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
     *          the attribute does not exist;
     */
    public void sfRemoveTags( Set tags)  throws SmartFrogContextException, RemoteException {
-        Object key = sfParent.sfAttributeKeyFor(this);
-        sfParent.sfRemoveTags(key,tags);
+       Object key = null;
+        if (sfParent!=null) {
+          key = sfParent.sfAttributeKeyFor(this);
+          sfParent.sfRemoveTags(tags);
+        } else {
+          Prim parent = SFProcess.getProcessCompound();
+          key = parent.sfAttributeKeyFor(this);
+          parent.sfRemoveTags(tags);
+        }
    }
 
 
@@ -1894,8 +1930,15 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
     * @throws SmartFrogException the attribute does not exist
     */
    public boolean sfContainsTag(String tag) throws SmartFrogContextException, RemoteException {
-        Object key = sfParent.sfAttributeKeyFor(this);
-        return sfParent.sfContainsTag(key,tag);
+        Object key = null;
+        if (sfParent!=null) {
+          key = sfParent.sfAttributeKeyFor(this);
+          return sfParent.sfContainsTag(tag);
+        } else {
+          Prim parent = SFProcess.getProcessCompound();
+          key = parent.sfAttributeKeyFor(this);
+          return parent.sfContainsTag(tag);
+        }
    }
 
 }

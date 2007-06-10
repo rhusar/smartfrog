@@ -32,19 +32,6 @@ import java.util.Iterator;
 import java.net.InetAddress;
 
 import org.smartfrog.SFSystem;
-import org.smartfrog.sfcore.common.Logger;
-import org.smartfrog.sfcore.common.Context;
-import org.smartfrog.sfcore.common.ContextImpl;
-import org.smartfrog.sfcore.common.TerminatorThread;
-import org.smartfrog.sfcore.common.MessageKeys;
-import org.smartfrog.sfcore.common.MessageUtil;
-import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
-import org.smartfrog.sfcore.common.SmartFrogCoreProperty;
-import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
-import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.sfcore.common.SmartFrogLivenessException;
-import org.smartfrog.sfcore.common.SmartFrogResolutionException;
-import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.componentdescription.ComponentDescriptionImpl;
 import org.smartfrog.sfcore.compound.CompoundImpl;
@@ -55,9 +42,7 @@ import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.reference.ReferencePart;
 import org.smartfrog.sfcore.security.SFSecurity;
 import org.smartfrog.sfcore.security.SFSecurityProperties;
-import org.smartfrog.sfcore.common.ExitCodes;
-import org.smartfrog.sfcore.common.JarUtil;
-
+import org.smartfrog.sfcore.common.*;
 
 
 /**
@@ -1405,10 +1390,115 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
             for (Iterator i = sfProcessEnvVars.sfAttributes(); i.hasNext();) {
                 key = i.next().toString();
                 value = sfProcessEnvVars.sfResolveHere(key);
-                cmd.addElement("-D"+
-                                 key.toString() + "=" +
-                                 value.toString());
+                cmd.addElement("-D"+ key.toString() + "=" + value.toString());
             }
+    }
+
+
+
+    //Tags - Special case for rootProcess: rootProcess does not have tags.
+   /**
+    * Get the TAGS for this process compound. TAGS are simply uninterpreted strings associated
+    * with each attribute. rooProcess returns null. rootProcess does not have tags.
+    *
+    * @return the set of tags
+    *
+    * @throws SmartFrogException the attribute does not exist;
+    */
+   public Set sfGetTags() throws SmartFrogContextException, RemoteException {
+       Object key = null;
+       if (sfParent!=null) {
+         key = sfParent.sfAttributeKeyFor(this);
+         return sfParent.sfGetTags(key);
+       } else {
+          return null;
+       }
+   }
+    /**
+     * add a tag to the tag set of this component
+     *  rootProcess does not have tags.
+     *
+     * @param tag a tag to add to the set
+     *
+     * @throws SmartFrogException the attribute does not exist;
+     */
+    public void sfAddTag( String tag) throws SmartFrogContextException, RemoteException {
+        Object key = null;
+        if (sfParent!=null) {
+          key = sfParent.sfAttributeKeyFor(this);
+          sfParent.sfAddTag(key,tag);
+        } else {
+        }
+    }
+
+    /**
+     * remove a tag from the tag set of this component if it exists
+     * rootProcess does not have tags.
+     *
+     * @param tag a tag to remove from the set
+     *
+     * @throws SmartFrogException the attribute does not exist;
+     *
+     */
+    public void sfRemoveTag( String tag) throws SmartFrogContextException, RemoteException {
+        Object key = null;
+        if (sfParent!=null) {
+          key = sfParent.sfAttributeKeyFor(this);
+          sfParent.sfRemoveTag(key,tag);
+        } else {
+        }
+    }
+
+    /**
+     * add a tag to the tag set of this component
+     *  rootProcess does not have tags.
+     * @param tags  a set of tags to add to the set
+     * @throws SmartFrogException
+     *          the attribute does not exist;
+     */
+    public void sfAddTags( Set tags) throws SmartFrogContextException, RemoteException {
+       Object key = null;
+        if (sfParent!=null) {
+          key = sfParent.sfAttributeKeyFor(this);
+          sfParent.sfAddTags(key,tags);
+        } else {
+        }
+    }
+
+    /**
+     * remove a tag from the tag set of this component if it exists
+     *  rootProcess does not have tags.
+     *
+     * @param tags  a set of tags to remove from the set
+     * @throws SmartFrogException
+     *          the attribute does not exist;
+     */
+    public void sfRemoveTags( Set tags)  throws SmartFrogContextException, RemoteException {
+        Object key = null;
+         if (sfParent!=null) {
+           key = sfParent.sfAttributeKeyFor(this);
+           sfParent.sfRemoveTags(tags);
+         } else {
+         }
+    }
+
+
+    /**
+     * Return whether or not a tag is in the list of tags for this component
+     * rootProcess returns false.  rootProcess does not have tags.
+     * @param tag the tag to chack
+     *
+     * @return whether or not the attribute has that tag
+     * @throws SmartFrogException the attribute does not exist
+     */
+    public boolean sfContainsTag(String tag) throws SmartFrogContextException, RemoteException {
+         Object key = null;
+         if (sfParent!=null) {
+           key = sfParent.sfAttributeKeyFor(this);
+           return sfParent.sfContainsTag(tag);
+         } else {
+           return false;
+         }
     }
 
 }
