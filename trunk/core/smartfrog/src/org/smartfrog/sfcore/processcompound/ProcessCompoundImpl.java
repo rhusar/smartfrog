@@ -1397,22 +1397,32 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
 
 
     //Tags - Special case for rootProcess: rootProcess does not have tags.
+
+  /**
+    * Set the TAGS for this component. TAGS are simply uninterpreted strings associated
+    * with each attribute.
+   * rooProcess does not do anything. rootProcess does not have tags.
+    *
+    * @param tags a set of tags
+    *
+    * @throws SmartFrogException the attribute does not exist;
+    */
+   public void sfSetTags(Set tags) throws SmartFrogContextException, RemoteException {
+       if (sfParent!=null) super.sfSetTags(tags);
+   }
+
    /**
     * Get the TAGS for this process compound. TAGS are simply uninterpreted strings associated
-    * with each attribute. rooProcess returns null. rootProcess does not have tags.
+    * with each attribute.
+    * rooProcess returns null. rootProcess does not have tags.
     *
     * @return the set of tags
     *
     * @throws SmartFrogException the attribute does not exist;
     */
    public Set sfGetTags() throws SmartFrogContextException, RemoteException {
-       Object key = null;
-       if (sfParent!=null) {
-         key = sfParent.sfAttributeKeyFor(this);
-         return sfParent.sfGetTags(key);
-       } else {
-          return null;
-       }
+       if (sfParent!=null) return super.sfGetTags();
+       else return null;
    }
     /**
      * add a tag to the tag set of this component
@@ -1423,12 +1433,7 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
      * @throws SmartFrogException the attribute does not exist;
      */
     public void sfAddTag( String tag) throws SmartFrogContextException, RemoteException {
-        Object key = null;
-        if (sfParent!=null) {
-          key = sfParent.sfAttributeKeyFor(this);
-          sfParent.sfAddTag(key,tag);
-        } else {
-        }
+        if (sfParent!=null) super.sfAddTag(tag);
     }
 
     /**
@@ -1441,12 +1446,7 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
      *
      */
     public void sfRemoveTag( String tag) throws SmartFrogContextException, RemoteException {
-        Object key = null;
-        if (sfParent!=null) {
-          key = sfParent.sfAttributeKeyFor(this);
-          sfParent.sfRemoveTag(key,tag);
-        } else {
-        }
+        if (sfParent!=null) super.sfRemoveTag(tag);
     }
 
     /**
@@ -1457,12 +1457,7 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
      *          the attribute does not exist;
      */
     public void sfAddTags( Set tags) throws SmartFrogContextException, RemoteException {
-       Object key = null;
-        if (sfParent!=null) {
-          key = sfParent.sfAttributeKeyFor(this);
-          sfParent.sfAddTags(key,tags);
-        } else {
-        }
+        if (sfParent!=null)super.sfAddTags(tags);
     }
 
     /**
@@ -1474,14 +1469,8 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
      *          the attribute does not exist;
      */
     public void sfRemoveTags( Set tags)  throws SmartFrogContextException, RemoteException {
-        Object key = null;
-         if (sfParent!=null) {
-           key = sfParent.sfAttributeKeyFor(this);
-           sfParent.sfRemoveTags(tags);
-         } else {
-         }
+         if (sfParent!=null) super.sfRemoveTags(tags);
     }
-
 
     /**
      * Return whether or not a tag is in the list of tags for this component
@@ -1492,13 +1481,8 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
      * @throws SmartFrogException the attribute does not exist
      */
     public boolean sfContainsTag(String tag) throws SmartFrogContextException, RemoteException {
-         Object key = null;
-         if (sfParent!=null) {
-           key = sfParent.sfAttributeKeyFor(this);
-           return sfParent.sfContainsTag(tag);
-         } else {
-           return false;
-         }
+         if (sfParent!=null) return super.sfContainsTag(tag);
+         return false;
     }
 
 }
