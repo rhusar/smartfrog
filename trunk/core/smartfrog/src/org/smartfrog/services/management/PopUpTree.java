@@ -543,8 +543,10 @@ public class PopUpTree extends JComponent implements ActionListener {
                 name = ((Prim)obj).sfCompleteName().toString();
                 Object tags = ((Prim)obj).sfGetTags();
                 tags = JOptionPane.showInputDialog(this,"Edit Tags",tags);
-                Set newTags = (Set)parseTags(tags.toString(),"sf");
-                ((Prim)obj).sfSetTags(newTags);
+                if (tags!=null) {
+                   Set newTags = (Set)parseTags(tags.toString(),"sf");
+                   ((Prim)obj).sfSetTags(newTags);
+                }
             } catch (Exception ex){
               String msg = "Problem when trying to edit tags on Component "+name;
               if (sfLog().isErrorEnabled()) sfLog().error (msg);
@@ -556,8 +558,10 @@ public class PopUpTree extends JComponent implements ActionListener {
                 name = ((ComponentDescription)obj).sfCompleteName().toString();
                 Object tags = ((ComponentDescription)obj).sfGetTags();
                 tags = JOptionPane.showInputDialog(this,"Edit Tags",tags);
-                Set newTags = (Set)parseTags(tags.toString(),"sf");
-                ((ComponentDescription)obj).sfSetTags(newTags);
+                if (tags!=null) {
+                    Set newTags = (Set)parseTags(tags.toString(),"sf");
+                    ((ComponentDescription)obj).sfSetTags(newTags);
+                }
             } catch (Exception ex){
               String msg = "Problem when trying to edit tags on ComponentDescription "+name;
               if (sfLog().isErrorEnabled()) sfLog().error (msg);

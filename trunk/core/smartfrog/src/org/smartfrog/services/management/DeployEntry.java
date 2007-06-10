@@ -473,16 +473,11 @@ public class DeployEntry implements Entry {
        Object tags = "";
         try {
             if (entry instanceof Prim){
-                     parent = ((Prim) entry).sfParent();
+                     tags = ((Prim) entry).sfGetTags();
             } else if (entry instanceof ComponentDescription){
-                     parent = (( ComponentDescription) entry).sfParent();
+                     tags = (( ComponentDescription) entry).sfGetTags();
             } else {
                      return tags;
-            }
-            if (parent instanceof Prim){
-                     tags = ((Prim)parent).sfGetTags(getRDN());
-            } else if (parent instanceof ComponentDescription){
-                     tags = (( ComponentDescription) parent).sfGetTags(getRDN());
             }
             if (tags==null) tags="";
             return tags;
