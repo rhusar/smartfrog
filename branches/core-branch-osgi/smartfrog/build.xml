@@ -695,6 +695,7 @@
     <java classname="org.smartfrog.SFParse" failonerror="true" fork="true">
       <classpath>
         <pathelement location="${smartfrog.jar}"/>
+        <pathelement location="${sf-rmi-spi.jar}"/>
         <pathelement location="${sf-services.jar}"/>
         <pathelement location="${sf-examples.jar}"/>
         <pathelement location="${dist.lib.dir}/sf-scripting.jar"/>

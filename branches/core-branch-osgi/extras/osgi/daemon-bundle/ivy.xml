@@ -28,5 +28,14 @@
       changing="true"
       rev="latest.integration"
       conf="compile->core"/>
+
+      <dependency org="org.osgi"
+                  name="osgi_R4_core"
+                  rev="1.0"
+                  conf="compile->default"/>
+      <dependency org="org.osgi"
+                  name="osgi_R4_compendium"
+                  rev="1.0"
+                  conf="compile->default"/>
   </dependencies>
 </ivy-module>
