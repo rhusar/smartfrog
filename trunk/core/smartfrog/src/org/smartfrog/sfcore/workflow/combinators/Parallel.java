@@ -90,6 +90,8 @@ public class Parallel extends EventCompoundImpl implements Compound {
     public static final String TERMINATION_ERROR_REMOVING_THE_CHILD = "Error removing the child";
     public static final String WORKER_FAILED = "Worker failed";
     public static final String TERMINATE_FAILURE_WHILE_STARTING_SUB_COMPONENTS = "Failure while starting sub-components ";
+    public static final String TERMINATE_FAILED_TO_START_SUB_COMPONENTS = "Failed to start sub-components ";
+    public static final String TERMINATE_PARALLEL_COMPONENT_IS_EMPTY = "Parallel component is empty";
 
     /**
      * Constructs Parallel.
@@ -170,13 +172,13 @@ public class Parallel extends EventCompoundImpl implements Compound {
                     sfLog().error(getName() + " - Failed to start sub-components ", ex);
                 }
                 terminationRecord = TerminationRecord
-                        .abnormal("Failed to start sub-components " + ex, getName(), ex);
+                        .abnormal(TERMINATE_FAILED_TO_START_SUB_COMPONENTS + ex, getName(), ex);
             }
         } else {
             //no actions. Maybe terminate 
             if (terminateIfEmpty) {
                 terminationRecord = new TerminationRecord(TerminationRecord.NORMAL,
-                        "Parallel component is empty", getName());
+                        TERMINATE_PARALLEL_COMPONENT_IS_EMPTY, getName());
             }
         }
         if (terminationRecord != null) {
