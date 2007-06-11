@@ -549,7 +549,7 @@ public class PopUpTree extends JComponent implements ActionListener {
                 }
             } catch (Exception ex){
               String msg = "Problem when trying to edit tags on Component "+name;
-              if (sfLog().isErrorEnabled()) sfLog().error (msg);
+              if (sfLog().isErrorEnabled()) sfLog().error (msg,ex);
               WindowUtilities.showError(this, msg +"'. \n"+ex.toString());
             }
         } else if (obj instanceof ComponentDescription){
@@ -564,7 +564,7 @@ public class PopUpTree extends JComponent implements ActionListener {
                 }
             } catch (Exception ex){
               String msg = "Problem when trying to edit tags on ComponentDescription "+name;
-              if (sfLog().isErrorEnabled()) sfLog().error (msg);
+              if (sfLog().isErrorEnabled()) sfLog().error (msg,ex);
               WindowUtilities.showError(this, msg +"'. \n"+ex.toString());
             }
         } else {

@@ -1821,11 +1821,11 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
        Object key = null;
        if (sfParent!=null) {
          key = sfParent.sfAttributeKeyFor(this);
-         sfParent.sfSetTags(tags);
+         sfParent.sfSetTags(key,tags);
        } else {
          Prim parent = SFProcess.getProcessCompound();
          key = parent.sfAttributeKeyFor(this);
-         parent.sfSetTags(tags);
+         parent.sfSetTags(key, tags);
        }
    }
 
