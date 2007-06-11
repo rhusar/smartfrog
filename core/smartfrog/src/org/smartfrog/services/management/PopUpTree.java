@@ -586,7 +586,7 @@ public class PopUpTree extends JComponent implements ActionListener {
             SFParser parser = new SFParser(language);
             return parser.sfParseTags( textToParse);
         } catch (Throwable ex) {
-            String msg = "Error when parsing tags: "+textToParse+"\n "+ex.toString();
+            String msg = "Error when trying to parse tags: "+textToParse+"\n "+ex.toString();
             if (sfLog().isErrorEnabled()) sfLog().error (msg, ex);
             WindowUtilities.showError(this, msg);
         }
