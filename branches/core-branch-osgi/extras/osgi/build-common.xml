@@ -2,10 +2,6 @@
 <project name="common">
     <property name="sf.core.dir" value="../../../smartfrog"/>
 
-    <target name="sfJars">
-        <ant dir="${sf.core.dir}" antfile="build.xml" target="jars"/>
-    </target>
-
     <target name="copyJarAround" depends="jar">
         <!--
         <copy file="./build/${bundle.filename}"
