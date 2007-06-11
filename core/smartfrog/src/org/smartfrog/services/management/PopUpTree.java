@@ -545,7 +545,7 @@ public class PopUpTree extends JComponent implements ActionListener {
                 tags = JOptionPane.showInputDialog(this,"Edit Tags",tags);
                 if (tags!=null) {
                    Set newTags = (Set)parseTags(tags.toString(),"sf");
-                   ((Prim)obj).sfSetTags(newTags);
+                   if (newTags!=null) ((Prim)obj).sfSetTags(newTags);
                 }
             } catch (Exception ex){
               String msg = "Problem when trying to edit tags on Component "+name;
@@ -560,7 +560,7 @@ public class PopUpTree extends JComponent implements ActionListener {
                 tags = JOptionPane.showInputDialog(this,"Edit Tags",tags);
                 if (tags!=null) {
                     Set newTags = (Set)parseTags(tags.toString(),"sf");
-                    ((ComponentDescription)obj).sfSetTags(newTags);
+                    if (newTags!=null) ((ComponentDescription)obj).sfSetTags(newTags);
                 }
             } catch (Exception ex){
               String msg = "Problem when trying to edit tags on ComponentDescription "+name;
@@ -586,7 +586,9 @@ public class PopUpTree extends JComponent implements ActionListener {
             SFParser parser = new SFParser(language);
             return parser.sfParseTags( textToParse);
         } catch (Throwable ex) {
-            if (sfLog().isErrorEnabled()) sfLog().error (ex);
+            String msg = "Error when parsing tags: "+textToParse+"\n "+ex.toString();
+            if (sfLog().isErrorEnabled()) sfLog().error (msg, ex);
+            WindowUtilities.showError(this, msg);
         }
         return null;
     }
