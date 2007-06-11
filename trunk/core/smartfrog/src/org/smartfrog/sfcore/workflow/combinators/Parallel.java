@@ -79,6 +79,17 @@ public class Parallel extends EventCompoundImpl implements Compound {
     private volatile int pendingDeployments=0;
 
     /**
+     * Termination message.
+     * {@value}
+     */
+    public static final String TERMINATION_ABNORMAL_CHILD = "Terminating normally even though a child terminated abnormally";
+    /**
+     * Termination message.
+     * {@value}
+     */
+    public static final String TERMINATION_ERROR_REMOVING_THE_CHILD = "Error removing the child";
+
+    /**
      * Constructs Parallel.
      *
      * @throws RemoteException In case of network or RMI failure.
@@ -244,7 +255,7 @@ public class Parallel extends EventCompoundImpl implements Compound {
             sfLog().error("Error handling child termination ", e);
             //failure to remove the child is always a problem
             if (normalRecord) {
-                sfTerminate(TerminationRecord.abnormal("error removing the child", getName(), e));
+                sfTerminate(TerminationRecord.abnormal(TERMINATION_ERROR_REMOVING_THE_CHILD, getName(), e));
                 //bail out right now -this simplifies the logic slightly (currently).
                 return false;
             } else {
@@ -269,7 +280,7 @@ public class Parallel extends EventCompoundImpl implements Compound {
                 shouldTerminate = false;
                 if (lastChild) {
                     //trigger a normal termination, even though this component terminated abnormally
-                    sfTerminate(TerminationRecord.normal("terminating normally even though a child terminated abnormally", getName()
+                    sfTerminate(TerminationRecord.normal(TERMINATION_ABNORMAL_CHILD, getName()
                     ));
                 }
             }
@@ -369,7 +380,9 @@ public class Parallel extends EventCompoundImpl implements Compound {
      * @return true if the system has active children, or children about to be deployed.
      */
     private synchronized boolean hasActiveChildren() {
-        return sfChildren().hasMoreElements() || !asynchChildren.isEmpty() || hasPendingDeployments();
+        //If hasPendingDeployments() is appended here, then we check for startup problems;
+        return sfChildren().hasMoreElements() || !asynchChildren.isEmpty() ;
+
     }
 
     /**
