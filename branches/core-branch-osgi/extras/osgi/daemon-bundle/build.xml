@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<project name="SmartFrog-Daemon-Bundle" default="default" basedir=".">
+<project name="daemon-osgi" default="default" basedir=".">
     <!--
     /** (C) Copyright Hewlett-Packard Development Company, LP
 
@@ -34,13 +34,6 @@
     <!-- this is done so that the jarfile generated is bound to our project name with
   no -components suffix-->
     <property name="jarfile.suffix" value=""/>
-
-    <!-- do all prework -->
-    <target name="prepare-for-dist" depends="package">
-
-
-    </target>
-
 
 </project>
 
