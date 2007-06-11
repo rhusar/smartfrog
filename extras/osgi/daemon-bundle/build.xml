@@ -1,38 +1,46 @@
 <?xml version="1.0"?>
-<project name="SmartFrog Daemon Bundle" default="all">
-    <property name="bundle.filename" value="smartfrog-daemon.jar"/>    
-    <path id="classpath">
-        <fileset dir="lib" includes="*.jar"/>
-        <fileset dir="build/lib" includes="*.jar"/>
-        <fileset dir="../common-lib" includes="*.jar"/>
-    </path>
+<project name="SmartFrog-Daemon-Bundle" default="default" basedir=".">
+    <!--
+    /** (C) Copyright Hewlett-Packard Development Company, LP
 
-    <import file="../build-common.xml"/>
+    This library is free software; you can redistribute it and/or
+    modify it under the terms of the GNU Lesser General Public
+    License as published by the Free Software Foundation; either
+    version 2.1 of the License, or (at your option) any later version.
 
-    <target name="all" depends="sfJars,jar,copyJarAround"/>
+    This library is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    Lesser General Public License for more details.
 
-    <target name="init">
-        <mkdir dir="./build/classes"/>
-        <mkdir dir="./build/lib"/>
-        <copy todir="build/lib" overwrite="true">
-            <fileset dir="${sf.core.dir}/dist/lib/">
-                <include name="smartfrog*.jar"/>
-                <include name="sfService*.jar"/>
-                <include name="sfExamples*.jar"/>
-                <include name="sfCoreSecurity*.jar"/>
-            </fileset>
-        </copy>
+    You should have received a copy of the GNU Lesser General Public
+    License along with this library; if not, write to the Free Software
+    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+    For more information: www.smartfrog.org
+
+    */
+    -->
+    <description>
+        Build file for the Smartfrog daemon OSGi bundle
+    </description>
+
+    <property name="root.dir" location="../.."/>
+    <property name="ivy.enabled" value="true"/>
+    <!-- Import common stuff -->
+    <import file="../../../common.xml"/>
+
+
+    <!-- this is done so that the jarfile generated is bound to our project name with
+  no -components suffix-->
+    <property name="jarfile.suffix" value=""/>
+
+    <!-- do all prework -->
+    <target name="prepare-for-dist" depends="package">
+
+
     </target>
 
-    <target name="jar" depends="rmic">
-        <jar jarfile="./build/${bundle.filename}"
-             compress="true"
-             includes="**/*"
-             manifest="./META-INF/MANIFEST.MF">
-            <zipfileset dir="build/classes"/>
-            <zipfileset dir="build/lib" includes="*.jar" excludes="sfCoreSecurity*.jar"/>
-            <zipfileset dir="src" includes="*.sf"/>
-        </jar>
-    </target>
 
 </project>
+

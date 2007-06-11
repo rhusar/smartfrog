@@ -296,14 +296,14 @@
   <!-- =================================================================== -->
   <!--   Compiles source directory                                         -->
   <!-- =================================================================== -->
-  <target name="compile-source" depends="initbuild,createParser" description="Compiles the source code">
+  <target name="compile-source" depends="initbuild,createParser,declare-classpaths" description="Compiles the source code">
     <!-- Compile the java code -->
     <echo level="verbose">${javac.java.version} build.compiler=${build.compiler} javac.compiler=${javac.compiler}</echo>
     <javac compiler="${javac.compiler}" srcdir="${src.dir}"
       includes="**/*.java" destdir="${build.classes.dir}"
       debug="${javac.debug.mode}" debuglevel="${javac.debug.level}"
       includeAntRuntime="false" source="${javac.java.version}" target="${javac.java.version}">
-      <classpath refid="smartfrog.class.path"/>
+      <classpath refid="compile.classpath"/>
     </javac>
   </target>
 
@@ -318,7 +318,7 @@
           verify="true"
           compiler="${rmic.compiler}"
           includes="**/*.class">
-          <classpath refid="smartfrog.class.path"/>
+          <classpath refid="compile.classpath"/>
       </rmic>
   </target>
 
@@ -577,12 +577,12 @@
     <property name="sf-examples.jar"
       location="${dist.lib.dir}/${sf-examples.stub}.jar" />
 
-    <property name="sf-coresecurity.title"
-        value="sfCoreSecurity" />
-    <property name="sf-coresecurity.stub"
-      value="${sf-coresecurity.title}-${Version}" />
-    <property name="sf-coresecurity.jar"
-      location="${dist.lib.dir}/${sf-coresecurity.stub}.jar" />
+    <property name="sf-rmi-spi.title"
+        value="sfRmiSpi" />
+    <property name="sf-rmi-spi.stub"
+      value="${sf-rmi-spi.title}-${Version}" />
+    <property name="sf-rmi-spi.jar"
+      location="${dist.lib.dir}/${sf-rmi-spi.stub}.jar" />
 
   </target>
 
@@ -605,13 +605,13 @@
       basedir="${build.classes.dir}" includes="**/examples/**" manifest="${manifestName}"/>
   </target>
 
-  <target name="sfCoreSecurityJar" depends="build,target-names">
-     <!-- Create sfCoreSecurity.jar file -->
-    <jar jarfile="${sf-coresecurity.jar}"
+  <target name="sfRmiSpiJar" depends="build,target-names">
+     <!-- Create sfRmiSpi.jar file -->
+    <jar jarfile="${sf-rmi-spi.jar}"
       basedir="${build.classes.dir}" includes="**/rmispi/**" manifest="${manifestName}"/>
   </target>
 
-  <target name="jars" depends="initdist,sfJar,sfServicesJar,sfExamplesJar,sfCoreSecurityJar"/>
+  <target name="jars" depends="initdist,sfJar,sfServicesJar,sfExamplesJar,sfRmiSpiJar"/>
 
   <!-- =================================================================== -->
   <!--  build, create jars and signs them.                                 -->
@@ -901,6 +901,7 @@
 
   <target name="ivy-retrieve" depends="ivy-resolve" if="ivy.found">
     <ivy:retrieve pattern="${ivy.lib.dir}/[conf]/[artifact]-[revision].[ext]" sync="true" />
+      <echo>artifacts retrieved to ${ivy.lib.dir}</echo>
   </target>
 
   <target name="ivy-report" depends="ivy-resolve" if="ivy.found">
@@ -909,6 +910,17 @@
 ${ivy.reports.dir}
     </echo>
   </target>
+
+    <target name="declare-classpaths"
+      depends=
+       "ivy.compile.classpath"/>
+
+
+    <target name="ivy.compile.classpath" depends="ivy-resolve">
+      <ivy:cachepath pathid="compile.classpath" conf="compile" />
+      <echo level="verbose">compile.classpath=${toString:compile.classpath}</echo>
+    </target>
+
 
   <!--copy these in to the same dir that the other artifacts go,
   so that they can be published together-->

@@ -1,0 +1,33 @@
+<?xml version="1.0" ?>
+<?xml-stylesheet type="text/xsl" href="http://ivyrep.jayasoft.org/ivy-doc.xsl"?>
+<ivy-module version="1.0">
+  <info organisation="org.smartfrog" module="sf-daemon-bundle">
+    <license name="LGPL"/>
+    <ivyauthor name="Hewlett-Packard" url="http://www.smartfrog.org"/>
+    <description>OSGi Daemon Bundle for SmartFrog</description>
+  </info>
+
+  <configurations defaultconfmapping="default">
+    <conf name="default" extends="compile"
+          description="default configuration contains artifacts"/>
+      <conf name="test"
+          description="the classpath needed to run tests"/>
+      <conf name="daemon" visibility="private"
+                description="the classpath needed to run smartfrog daemons"/>
+          
+    <conf name="compile" visibility="private"
+          description="artifacts needed to compile the application"/>            
+  </configurations>  
+
+  <publications>
+    <!--get the artifact from our module name-->
+    <artifact />
+  </publications>
+  <dependencies>
+    <dependency org="org.smartfrog"
+      name="smartfrog"
+      changing="true"
+      rev="latest.integration"
+      conf="compile->core"/>
+  </dependencies>
+</ivy-module>
