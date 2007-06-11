@@ -25,11 +25,19 @@
         Build file for the Smartfrog daemon OSGi bundle
     </description>
 
-    <property name="root.dir" location="../.."/>
     <property name="ivy.enabled" value="true"/>
     <!-- Import common stuff -->
     <import file="../../../common.xml"/>
 
+    <target name="pre-compile"
+      depends="init,declare-classpaths,assert-smartfrog,assert-prerequisites">
+        <copy todir="${build.classes.dir}">
+            <fileset dir="${user.home}/.ivy/local/">
+                <include name="smartfrog-*.jar"/>
+                <include name="sfServices-*.jar"/>
+            </fileset>            
+        </copy>
+  </target>
 
     <!-- this is done so that the jarfile generated is bound to our project name with
   no -components suffix-->

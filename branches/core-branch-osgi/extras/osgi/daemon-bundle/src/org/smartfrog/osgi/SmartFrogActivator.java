@@ -4,10 +4,7 @@ import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import org.osgi.service.log.LogService;
-import static org.osgi.service.log.LogService.LOG_DEBUG;
-import static org.osgi.service.log.LogService.LOG_INFO;
 import org.smartfrog.SFSystem;
-import org.smartfrog.sfcore.common.ExitCodes;
 import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.processcompound.ProcessCompound;
@@ -88,12 +85,12 @@ public class SmartFrogActivator implements BundleActivator {
 
     private void debug(final String message) {
         if (logService != null)
-            logService.log(LOG_DEBUG, message);
+            logService.log(LogService.LOG_DEBUG, message);
     }
 
     private void info(final String message) {
         if (logService != null)
-            logService.log(LOG_INFO, message);
+            logService.log(LogService.LOG_INFO, message);
     }
 
     private ServiceReference logServiceReference(BundleContext bundleContext) {

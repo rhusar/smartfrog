@@ -20,8 +20,7 @@
   </configurations>  
 
   <publications>
-    <!--get the artifact from our module name-->
-    <artifact />
+    <artifact name="sf-daemon-bundle" conf="compile"/>
   </publications>
   <dependencies>
     <dependency org="org.smartfrog"
