@@ -27,7 +27,7 @@
  */
 sfConfig  extends TestBlockWithStartupExceptionNoToggle {
 
-  description "Throw an exception on startup; async startup, no child termination";
+  description "Throw an exception on startup; async startup, no child-triggered termination";
 
   action:asynchCreateChild true;
   action:terminateOnAbnormalChildTermination false;
