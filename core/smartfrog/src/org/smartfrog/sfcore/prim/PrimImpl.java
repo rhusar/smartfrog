@@ -950,7 +950,9 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
         try {
             target.dumpState(sfContext, this);
         } catch (Exception ex) {
-            // ignore
+             if (sfLog().isIgnoreEnabled()){
+              sfLog().ignore(ex);
+            }
         }
     }
 
