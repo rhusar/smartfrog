@@ -88,6 +88,8 @@ public class Parallel extends EventCompoundImpl implements Compound {
      * {@value}
      */
     public static final String TERMINATION_ERROR_REMOVING_THE_CHILD = "Error removing the child";
+    public static final String WORKER_FAILED = "Worker failed";
+    public static final String TERMINATE_FAILURE_WHILE_STARTING_SUB_COMPONENTS = "Failure while starting sub-components ";
 
     /**
      * Constructs Parallel.
@@ -106,8 +108,12 @@ public class Parallel extends EventCompoundImpl implements Compound {
         return pendingDeployments;
     }
 
+    /**
+     * We have pending deployments if there is at least one in the queue
+     * @return true iff there was a pending deployment when the test was made
+     */
     private boolean hasPendingDeployments() {
-        return getPendingDeployments()>=0;
+        return getPendingDeployments()>0;
     }
 
     private synchronized void setPendingDeployments(int pendingDeployments) {
@@ -306,7 +312,7 @@ public class Parallel extends EventCompoundImpl implements Compound {
                 try {
                     worker.cancel(sfSyncTerminate, true);
                 } catch (Exception ignored) {
-                    sfLog().ignore("when canceling", ignored);
+                    sfLog().ignore("When canceling", ignored);
                 }
             }
         }
@@ -343,14 +349,14 @@ public class Parallel extends EventCompoundImpl implements Compound {
                 results.add(worker.get(0));
                 //if we get here, success.
             } catch (InterruptedException ignored) {
-                sfLog().ignore("Worker failed" + worker, ignored);
+                sfLog().ignore(WORKER_FAILED + worker, ignored);
             } catch (SmartFrogException ex) {
                 //failure: add the exception to the results
                 results.add(ex);
                 //this fault means that we failed to start up
                 //create a term record
                 TerminationRecord terminationRecord = TerminationRecord
-                        .abnormal("Failure while starting sub-components " + ex, getName(), ex);
+                        .abnormal(TERMINATE_FAILURE_WHILE_STARTING_SUB_COMPONENTS + ex, getName(), ex);
                 //and maybe terminate
                 // This may be called more than once, but appears to be harmless in this case.
 
@@ -381,7 +387,7 @@ public class Parallel extends EventCompoundImpl implements Compound {
      */
     private synchronized boolean hasActiveChildren() {
         //If hasPendingDeployments() is appended here, then we check for startup problems;
-        return sfChildren().hasMoreElements() || !asynchChildren.isEmpty() ;
+        return sfChildren().hasMoreElements() || !asynchChildren.isEmpty() || hasPendingDeployments();
 
     }
 
