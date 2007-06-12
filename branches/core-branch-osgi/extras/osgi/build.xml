@@ -1,16 +1,29 @@
 <?xml version="1.0"?>
 <project name="Smartfrog-OSGi" default="all">
 
-    <target name="all" depends="daemon-bundle,test-bundle,rmispi-bundle"/>
+    <target name="all" depends="copyJarsAround"/>
 
     <target name="daemon-bundle">
         <ant dir="daemon-bundle" target="all"/>
     </target>
     <target name="test-bundle">
-        <ant dir="test-bundle" target="copyJarAround"/>
+        <ant dir="test-bundle" target="all"/>
     </target>
     <target name="rmispi-bundle">
-        <ant dir="rmiclassloading-extension-bundle" target="copyJarAround"/>
+        <ant dir="rmiclassloading-extension-bundle" target="all"/>
+    </target>
+
+    <target name="copyJarsAround" depends="daemon-bundle,test-bundle,rmispi-bundle">
+        <!--
+        <copy file="./build/${bundle.filename}"
+              todir="C:\\knopflerfish_osgi_2.0.1\\knopflerfish.org\\osgi"
+              overwrite="true"/>
+        -->
+        <copy todir="C:/" overwrite="true">
+            <fileset file="daemon-bundle/dist/lib/sf-daemon-osgi*.jar"/>
+            <fileset file="rmiclassloading-extension-bundle/dist/lib/sf-rmi-spi-osgi*.jar"/>
+            <fileset file="test-bundle/dist/lib/sf-test-osgi*.jar"/>
+        </copy>
     </target>
 
     <target name="clean">
