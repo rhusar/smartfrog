@@ -381,6 +381,7 @@ For more information: www.smartfrog.org
     <property name="ivy.local.dir" location="${ivy.dir}/local" />
     <property name="ivy.package.name" value="org.smartfrog" />
     <property name="ivy.smartfrog.version" value="latest.integration" />
+    <property name="ivy.jar" location="antbuild/ivy/lib/ivy-${ivy.version}.jar"/>
   </target>
 
   <!-- =================================================================== -->
@@ -392,10 +393,20 @@ For more information: www.smartfrog.org
   <target name="ivy-init" depends="init,ivy-properties"
           xmlns:ivy="antlib:fr.jayasoft.ivy.ant">
     <!--load up ivy-->
+    <fail>
+      <condition>
+        <not>
+          <available file="${ivy.jar}"/>
+        </not>
+      </condition>
+      Unable to locate "${ivy.jar}"
+      Either part of the directory tree is missing, or the ivy version,
+      currently set to "${ivy.version}" is wrong.
+    </fail>
     <typedef uri="antlib:fr.jayasoft.ivy.ant" onerror="fail"
         resource="fr/jayasoft/ivy/ant/antlib.xml">
       <classpath>
-        <pathelement location="antbuild/ivy/lib/ivy-${ivy.version}.jar"/>
+        <pathelement location="${ivy.jar}"/>
       </classpath>
     </typedef>
     <!--create the external dir if it is missing-->
