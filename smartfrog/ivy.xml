@@ -42,7 +42,6 @@
     <conf name="javacc" visibility="private"/>
   </configurations>
   <publications>
-    <!--get the artifact from our module name-->
     <artifact name="${smartfrog.title}" conf="core"/>
     <artifact name="${sf-rmi-spi.title}" conf="core" />
     <artifact name="${sf-services.title}" conf="services-master"/>
