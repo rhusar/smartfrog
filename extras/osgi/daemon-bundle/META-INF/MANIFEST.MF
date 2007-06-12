@@ -5,10 +5,9 @@ Bundle-SymbolicName: org.smartfrog.daemon
 Bundle-Version: 1.0.0
 Bundle-Description: SmartFrog Daemon
 Bundle-Vendor: HP Labs
-Bundle-Classpath: smartfrog-3.10.051dev.jar,
-                  sfServices-3.10.051dev.jar,
-                  sfExamples-3.10.051dev.jar,
-                  sfCoreSecurity-3.10.051dev.jar,
+Bundle-Classpath: smartfrog.jar,
+                  sfServices.jar,
+                  sfExamples.jar,
                   .
 Bundle-Activator: org.smartfrog.osgi.SmartFrogActivator
 Import-Package: org.osgi.framework,

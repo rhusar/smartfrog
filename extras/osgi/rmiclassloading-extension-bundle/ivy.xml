@@ -4,7 +4,7 @@
   <info organisation="org.smartfrog" module="sf-daemon-bundle">
     <license name="LGPL"/>
     <ivyauthor name="Hewlett-Packard" url="http://www.smartfrog.org"/>
-    <description>OSGi Daemon Bundle for SmartFrog</description>
+    <description>OSGi RMI SPI extension bundle for SmartFrog</description>
   </info>
 
   <configurations defaultconfmapping="default">
@@ -14,10 +14,10 @@
           description="the classpath needed to run tests"/>
       <conf name="daemon" visibility="private"
                 description="the classpath needed to run smartfrog daemons"/>
-          
+
     <conf name="compile" visibility="private"
-          description="artifacts needed to compile the application"/>            
-  </configurations>  
+          description="artifacts needed to compile the application"/>
+  </configurations>
 
   <publications>
     <artifact name="sf-daemon-bundle" conf="compile"/>
@@ -27,15 +27,6 @@
       name="smartfrog"
       changing="true"
       rev="latest.integration"
-      conf="compile->core,services,examples"/>
-
-      <dependency org="org.osgi"
-                  name="osgi_R4_core"
-                  rev="1.0"
-                  conf="compile->default"/>
-      <dependency org="org.osgi"
-                  name="osgi_R4_compendium"
-                  rev="1.0"
-                  conf="compile->default"/>
+      conf="compile->core"/>
   </dependencies>
 </ivy-module>
