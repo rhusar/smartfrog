@@ -529,16 +529,14 @@ ${child.projects.list}
 
   <target name="ivy-purge-published" depends="ivy-properties"
     description="purge all locally published artifacts from the local repository">
-    <delete>
-      <fileset dir="${ivy.local.dir}" includes="${ivy.package.name}/**" />
-    </delete>
+    <delete dir="${ivy.local.dir}/${ivy.package.name}" defaultexcludes="false" includeEmptyDirs="true"/>
   </target>
 
   <target name="ivy-purge-cache" depends="ivy-properties"
     description="purge all smartfrog artifacts from the cache">
-    <delete>
-      <fileset dir="${ivy.cache.dir}" includes="${ivy.package.name}/**" />
-      <fileset dir="${ivy.cache.dir}" includes="resolved-${ivy.package.name}-*" />
+    <delete dir="${ivy.cache.dir}/${ivy.package.name}" defaultexcludes="false" includeEmptyDirs="true"/>
+    <delete includeEmptyDirs="true">
+      <fileset dir="${ivy.cache.dir}" includes="resolved-${ivy.package.name}-*" defaultexcludes="false" />
     </delete>
   </target>
 
