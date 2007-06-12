@@ -1639,6 +1639,7 @@ java.class.path=
   <target name="ivy-retrieve" depends="ivy-resolve" >
     <property name="ivy.retrieve.pattern"
         value="[conf]/[artifact]-[revision].[ext]" />
+    <echo level="verbose">ivy.retrieve.pattern=${ivy.retrieve.pattern}</echo>  
     <property name="ivy.retrieve.path"
         value="${ivy.lib.dir}/${ivy.retrieve.pattern}" />
     <ivy:retrieve pattern="${ivy.retrieve.path}" sync="true" />
