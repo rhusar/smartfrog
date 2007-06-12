@@ -6,6 +6,7 @@ Bundle-Description: SmartFrog Test Bundle
 Bundle-Version: 1.0.0
 Bundle-Vendor: HP Labs
 Import-Package: org.osgi.framework,
+                org.smartfrog,
                 org.smartfrog.sfcore,
                 org.smartfrog.sfcore.prim,
                 org.smartfrog.sfcore.common,

@@ -28,6 +28,14 @@
         <!-- Import common stuff -->
         <import file="../../../common.xml"/>
 
+    <target name="createjar" depends="generate-versioned-jar" if="is.component.not.enabled">
+        <sf-jar destfile="${target.jar}"
+                manifest="./META-INF/MANIFEST.MF"
+                basedir="${build.classes.dir}"
+                includes="**/*"/>
+        <echo level="verbose">created package ${target.jar}</echo>
+    </target>
+
         <!-- this is done so that the jarfile generated is bound to our project name with
       no -components suffix-->
         <property name="jarfile.suffix" value=""/>
