@@ -4,7 +4,7 @@
   <info organisation="org.smartfrog" module="sf-daemon-bundle">
     <license name="LGPL"/>
     <ivyauthor name="Hewlett-Packard" url="http://www.smartfrog.org"/>
-    <description>OSGi RMI SPI extension bundle for SmartFrog</description>
+    <description>OSGi Test bundle for SmartFrog</description>
   </info>
 
   <configurations defaultconfmapping="default">
@@ -20,7 +20,7 @@
   </configurations>
 
   <publications>
-    <artifact name="sf-rmi-spi-bundle" conf="compile"/>
+    <artifact name="sf-test-bundle" conf="compile"/>
   </publications>
   <dependencies>
     <dependency org="org.smartfrog"

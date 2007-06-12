@@ -39,6 +39,10 @@
             <echo level="verbose">created package ${target.jar}</echo>
         </target>
 
+    <!-- This bundle has no additional sources, it's just a repackaging of the sf-rmi-spi.jar file -->
+        <target name="javadoc"/>
+        <target name="compile"/>
+
         <!-- this is done so that the jarfile generated is bound to our project name with
       no -components suffix-->
         <property name="jarfile.suffix" value=""/>
