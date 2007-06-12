@@ -3,6 +3,7 @@ package org.smartfrog.osgi;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
+import org.osgi.service.packageadmin.PackageAdmin;
 import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
 import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.common.SmartFrogException;
@@ -21,6 +22,7 @@ import java.util.Enumeration;
 public class OSGiBundleCompound extends CompoundImpl implements Compound {
     private static final String BUNDLE_URL = "bundleURL";
     private Bundle childBundle = null;
+    private BundleContext daemonBundleContext;
 
     public OSGiBundleCompound() throws RemoteException {}
 
@@ -28,7 +30,6 @@ public class OSGiBundleCompound extends CompoundImpl implements Compound {
         LogSF log = sfLog();
         log.debug("Deploying OSGiBundleCompound...");
 
-        BundleContext daemonBundleContext;
         String bundleURL;
         try {
             daemonBundleContext = (BundleContext) sfResolve(new Reference(
@@ -47,7 +48,7 @@ public class OSGiBundleCompound extends CompoundImpl implements Compound {
                     + ". BundleContext for daemon bundle :"
                     + daemonBundleContext);
         try {
-            childBundle = daemonBundleContext.installBundle(bundleURL);
+            childBundle = this.daemonBundleContext.installBundle(bundleURL);
             childBundle.start();
             logBundleDetails(log, bundleURL);
         } catch (BundleException e) {
@@ -104,10 +105,26 @@ public class OSGiBundleCompound extends CompoundImpl implements Compound {
     protected synchronized void sfTerminateWith(TerminationRecord status) {
         super.sfTerminateWith(status);
 
+        PackageAdmin packageAdmin = getPackageAdminService();
+
         try {
             childBundle.uninstall();
+            refreshPackages(packageAdmin);
         } catch (BundleException e) {
             sfLog().error("Failed to uninstall child bundle", new SmartFrogException(e), status);
         }
+    }
+
+    private void refreshPackages(PackageAdmin packageAdmin) {
+        if (packageAdmin != null)
+            packageAdmin.refreshPackages(
+                    new Bundle[] {childBundle, daemonBundleContext.getBundle()}
+            );
+    }
+
+    private PackageAdmin getPackageAdminService() {
+        return (PackageAdmin) daemonBundleContext.getService(
+            daemonBundleContext.getServiceReference("org.osgi.service.packageadmin.PackageAdmin")
+        );
     }
 }

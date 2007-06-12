@@ -12,9 +12,11 @@ Bundle-Classpath: smartfrog.jar,
 Bundle-Activator: org.smartfrog.osgi.SmartFrogActivator
 Import-Package: org.osgi.framework,
                 org.osgi.service.log; resolution:=optional,
+                org.osgi.service.packageadmin,
                 org.smartfrog.sfcore.security.rmispi; version=1.0.0
 DynamicImport-Package: *
-Export-Package: org.smartfrog.sfcore; version=1.0.0,
+Export-Package: org.smartfrog; version=1.0.0,
+                org.smartfrog.sfcore; version=1.0.0,
                 org.smartfrog.sfcore.prim; version=1.0.0,
                 org.smartfrog.sfcore.common; version=1.0.0,
                 org.smartfrog.sfcore.reference; version=1.0.0,

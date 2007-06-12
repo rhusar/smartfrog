@@ -59,6 +59,9 @@ public class SmartFrogActivator implements BundleActivator {
         releaseLogService(bundleContext);
 
         Thread.currentThread().setContextClassLoader(oldClassLoader);
+
+
+        
     }
 
     private void printClassLoaderHierarchy(final ClassLoader bundleCL) {
