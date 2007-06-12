@@ -31,10 +31,13 @@ import java.awt.Frame;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 
 import org.smartfrog.sfcore.prim.Prim;
+import org.smartfrog.sfcore.prim.Dump;
+import org.smartfrog.sfcore.prim.DefaultDumper;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Set;
+import java.io.StringWriter;
 
 
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
@@ -90,6 +93,9 @@ public class PopUpTree extends JComponent implements ActionListener {
     /** Item for Tree popup menu - add ScriptingPanel. */
     JMenuItem menuItemAddScriptingPanel = new JMenuItem();
 
+    /** Item for Tree popup menu - dump State. */
+    JMenuItem menuItemDumpState = new JMenuItem();
+
     /** Item for Tree popup menu - edit Tags. */
     JMenuItem menuItemEditTags = new JMenuItem();
 
@@ -117,6 +123,7 @@ public class PopUpTree extends JComponent implements ActionListener {
         menuItemParentageChanged.setText("sfParentageChanged()");
         menuItemAddScriptingPanel.setText("Add Scripting Panel");
         menuItemIntrospector.setText("Instrospector");
+        menuItemDumpState.setText("Dump State");
         menuItemEditTags.setText("Edit Tags");
 
         // Tree: options
@@ -133,6 +140,7 @@ public class PopUpTree extends JComponent implements ActionListener {
         popupTree.add(menuItemParentageChanged);
         popupTree.add(menuItemAddScriptingPanel);
         popupTree.add(menuItemIntrospector);
+        popupTree.add(menuItemDumpState);
         popupTree.add(menuItemEditTags);
 
         // Add action listeners for tree popup
@@ -150,6 +158,7 @@ public class PopUpTree extends JComponent implements ActionListener {
         menuItemParentageChanged.addActionListener(this);
         menuItemAddScriptingPanel.addActionListener(this);
         menuItemIntrospector.addActionListener(this);
+        menuItemDumpState.addActionListener(this);
         menuItemEditTags.addActionListener(this);
     }
 
@@ -184,6 +193,7 @@ public class PopUpTree extends JComponent implements ActionListener {
             menuItemParentageChanged.setVisible(true);
             menuItemAddScriptingPanel.setVisible(true);
             menuItemIntrospector.setVisible(true);
+            menuItemDumpState.setVisible(true);
             menuItemEditTags.setVisible(true);
         }else if  (getNode()instanceof ComponentDescription){
             menuItemRemoveAttribute.setVisible(true);
@@ -195,6 +205,7 @@ public class PopUpTree extends JComponent implements ActionListener {
             menuItemParentageChanged.setVisible(false);
             menuItemAddScriptingPanel.setVisible(true);
             menuItemIntrospector.setVisible(true);
+            menuItemDumpState.setVisible(false);
             menuItemEditTags.setVisible(true);
         }
         popupTree.show(comp, x, y);
@@ -237,6 +248,9 @@ public class PopUpTree extends JComponent implements ActionListener {
         } else if (source == menuItemDetach) {
             detach(node);
             // Entry selected in the tree
+        } else if (source == menuItemDumpState) {
+            dumpState(node,source);
+            // Entry selected in the tree
         } else if (source == menuItemEditTags) {
             editTags(node);
             // Entry selected in the tree
@@ -252,88 +266,130 @@ public class PopUpTree extends JComponent implements ActionListener {
             }
             // Entry selected in the tree
         } else if (source == menuItemDumpContext) {
-            StringBuffer message=new StringBuffer();
-            String name = "error";
-            if (node instanceof Prim) {
-                try {
-                    Prim objPrim = ((Prim)node);
-                    message.append(objPrim.sfDiagnosticsReport());
-                    name = ((Prim)objPrim).sfCompleteName().toString();
-                } catch (Exception ex) {
-                    message.append("\n Error: "+ex.toString());
-                }
-            } else {
-                try {
-                    ComponentDescription objCD = ((ComponentDescription)node);
-                    message.append(((ComponentDescriptionImpl)objCD).sfDiagnosticsReport());
-                    name = ((ComponentDescription)objCD).sfCompleteName().toString();
-                } catch (Exception ex) {
-                    message.append("\n Error: "+ex.toString());
-                }
-
-            }
-            modalDialog("Context info for "+ name ,  message.toString(), "", source);
+            diagnosticsReport(node, source);
         } else if (source == menuItemIntrospector) {
 
-            StringBuffer message=new StringBuffer();
-            String name = "error";
-            if (node instanceof Prim) {
-                try {
-                    Prim objPrim = ((Prim)node);
-                    name = ((Prim)objPrim).sfCompleteName().toString();
-                } catch (Exception ex) {
-                    message.append("\n Error: "+ex.toString());
-                }
-            } else {
-                try {
-                    ComponentDescription objCD = ((ComponentDescription)node);
-                    name = ((ComponentDescription)objCD).sfCompleteName().toString();
-                } catch (Exception ex) {
-                    message.append("\n Error: "+ex.toString());
-                }
-
-            }
-            modalDialog("Introspection "+ name ,  introspect(node), "", source);
+            instrospect(node, source);
         }  else if (source == menuItemAddScriptingPanel) {
-            StringBuffer message=new StringBuffer();
-            String name = "error";
-            String hostname = "localhost";
-            int port = 3800;
-            if (node instanceof Prim) {
-                try {
-                    Prim objPrim = ((Prim)node);
-                    name = ((Prim)objPrim).sfCompleteName().toString();
-                    name = name.substring(name.lastIndexOf("."));
-                    hostname = objPrim.sfResolve("sfHost",hostname,false);
-                    ProcessCompound pc = SFProcess.getProcessCompound();
-                    if (pc!=null) {
-                     port = pc.sfResolve("sfRootLocatorPort",port,false);
-                    }
-                } catch (Exception ex) {
-                    message.append("\n Error: "+ex.toString());
-                }
-            } else {
-                try {
-                    ComponentDescription objCD = ((ComponentDescription)node);
-                    name = ((ComponentDescription)objCD).sfCompleteName().toString();
-                    name = name.substring(name.lastIndexOf("."));
-                } catch (Exception ex) {
-                    message.append("\n Error: "+ex.toString());
-                }
-
-            }
-
-            try {
-                Object obj = (parent.getParent());
-                SFDeployDisplay.addScriptingPanel(((JTabbedPane)(obj)) ,name ,node, hostname ,port );
-            } catch (Exception e1) {
-                if (sfLog().isErrorEnabled()) sfLog().error (e1);
-                WindowUtilities.showError(this,e1.toString());
-            }
+            addScriptingPanel(node);
 
         }
 
     }
+
+    private void addScriptingPanel(Object node) {
+        StringBuffer message=new StringBuffer();
+        String name = "error";
+        String hostname = "localhost";
+        int port = 3800;
+        if (node instanceof Prim) {
+            try {
+                Prim objPrim = ((Prim)node);
+                name = ((Prim)objPrim).sfCompleteName().toString();
+                name = name.substring(name.lastIndexOf("."));
+                hostname = objPrim.sfResolve("sfHost",hostname,false);
+                ProcessCompound pc = SFProcess.getProcessCompound();
+                if (pc!=null) {
+                 port = pc.sfResolve("sfRootLocatorPort",port,false);
+                }
+            } catch (Exception ex) {
+                message.append("\n Error: "+ex.toString());
+            }
+        } else {
+            try {
+                ComponentDescription objCD = ((ComponentDescription)node);
+                name = ((ComponentDescription)objCD).sfCompleteName().toString();
+                name = name.substring(name.lastIndexOf("."));
+            } catch (Exception ex) {
+                message.append("\n Error: "+ex.toString());
+            }
+
+        }
+
+        try {
+            Object obj = (parent.getParent());
+            SFDeployDisplay.addScriptingPanel(((JTabbedPane)(obj)) ,name ,node, hostname ,port );
+        } catch (Exception e1) {
+            if (sfLog().isErrorEnabled()) sfLog().error (e1);
+            WindowUtilities.showError(this,e1.toString());
+        }
+    }
+
+    private void instrospect(Object node, Object source) {
+        StringBuffer message=new StringBuffer();
+        String name = "error";
+        if (node instanceof Prim) {
+            try {
+                Prim objPrim = ((Prim)node);
+                name = ((Prim)objPrim).sfCompleteName().toString();
+            } catch (Exception ex) {
+                message.append("\n Error: "+ex.toString());
+            }
+        } else {
+            try {
+                ComponentDescription objCD = ((ComponentDescription)node);
+                name = ((ComponentDescription)objCD).sfCompleteName().toString();
+            } catch (Exception ex) {
+                message.append("\n Error: "+ex.toString());
+            }
+
+        }
+        modalDialog("Introspection "+ name ,  introspect(node), "", source);
+    }
+
+    private void diagnosticsReport(Object node, Object source) {
+        StringBuffer message=new StringBuffer();
+        String name = "error";
+        if (node instanceof Prim) {
+            try {
+                Prim objPrim = ((Prim)node);
+                message.append(objPrim.sfDiagnosticsReport());
+                name = ((Prim)objPrim).sfCompleteName().toString();
+            } catch (Exception ex) {
+                message.append("\n Error: "+ex.toString());
+            }
+        } else {
+            try {
+                ComponentDescription objCD = ((ComponentDescription)node);
+                message.append(((ComponentDescriptionImpl)objCD).sfDiagnosticsReport());
+                name = ((ComponentDescription)objCD).sfCompleteName().toString();
+            } catch (Exception ex) {
+                message.append("\n Error: "+ex.toString());
+            }
+
+        }
+        modalDialog("Context info for "+ name ,  message.toString(), "", source);
+    }
+
+    private void dumpState (Object node, Object source) {
+        StringBuffer message=new StringBuffer();
+        String name = "error";
+        if (node instanceof Prim) {
+            try {
+                Prim objPrim = ((Prim)node);
+                message.append ("\n*************** State *****************\n");
+                Dump dumpObj = new DefaultDumper();
+                objPrim.sfDumpState(dumpObj);
+                message.append (dumpObj.toString());
+                name = ((Prim)objPrim).sfCompleteName().toString();                
+            } catch (Exception ex) {
+                message.append("\n Error: "+ex.toString());
+            }
+        } else {
+            try {
+                ComponentDescription objCD = ((ComponentDescription)node);
+                message.append(((ComponentDescriptionImpl)objCD).sfDiagnosticsReport());
+                name = ((ComponentDescription)objCD).sfCompleteName().toString();
+            } catch (Exception ex) {
+                message.append("\n Error: "+ex.toString());
+            }
+
+        }
+        modalDialog("State for "+ name ,  message.toString(), "", source);
+
+    }
+
+
 
     public static String introspect(Object node) {
         StringBuffer message = new StringBuffer();
