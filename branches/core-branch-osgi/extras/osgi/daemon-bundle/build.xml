@@ -29,15 +29,17 @@
     <!-- Import common stuff -->
     <import file="../../../common.xml"/>
 
-    <target name="pre-compile"
-      depends="init,declare-classpaths,assert-smartfrog,assert-prerequisites">
-        <copy todir="${build.classes.dir}">
-            <fileset dir="${user.home}/.ivy/local/">
-                <include name="smartfrog-*.jar"/>
-                <include name="sfServices-*.jar"/>
-            </fileset>            
-        </copy>
-  </target>
+    <target name="createjar" depends="generate-versioned-jar" if="is.component.not.enabled">        
+        <sf-jar destfile="${target.jar}"
+                manifest="./META-INF/MANIFEST.MF">
+            <zipfileset dir="${build.classes.dir}"/>
+            <zipfileset dir="${user.home}/.ivy/local/org.smartfrog/smartfrog/${smartfrog.version}/jars/">
+                <include name="smartfrog.jar"/>
+                <include name="sfServices.jar"/>
+            </zipfileset>
+        </sf-jar>
+        <echo level="verbose">created package ${target.jar}</echo>
+    </target>
 
     <!-- this is done so that the jarfile generated is bound to our project name with
   no -components suffix-->
