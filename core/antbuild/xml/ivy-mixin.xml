@@ -33,7 +33,7 @@
     <!--copy ivy artifacts -->
     <property name="ivy.lib.dir" location="${build.dir}/ivy/lib" />
     <ivy:configure file="${ivy.dir}/ivyconf.xml"/>
-    <property name="ivy.retrieve.pattern"
+    <property name="ivy.artifact.retrieve.pattern"
         value="[conf]/[artifact]-[revision].[ext]"/>
     <property name="ivy.publish.pattern"
         value="[artifact]-[revision].[ext]"/>
@@ -44,8 +44,7 @@
   </target>
 
   <target name="ivy-retrieve" depends="ivy-resolve">
-
-    <ivy:retrieve pattern="${ivy.lib.dir}/${ivy.retrieve.pattern}" sync="true" />
+    <ivy:retrieve pattern="${ivy.lib.dir}/${ivy.artifact.retrieve.pattern}" sync="true" />
   </target>
 
   <target name="ivy-report" depends="ivy-resolve">
