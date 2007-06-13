@@ -1309,7 +1309,7 @@ java.class.path=
   <!-- ========================================================== -->
   <!-- set the property codebasel this can be overridden-->
   <!-- ========================================================== -->
-  <target name="init-codebase" depends="declare-classpaths,init-deploy-properties"
+  <target name="init-codebase" depends="declare-classpaths,init-deploy-properties,package-tests"
       description="set up the codebase property">
     <makeurl property="codebase">
       <path refid="tests.run.classpath"/>
