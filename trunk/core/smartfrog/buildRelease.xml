@@ -38,7 +38,7 @@
   <target name="init">
     <tstamp/>
     <property name="Name.Framework" value="SmartFrog Framework"/>
-    <property name="Name.System" value="SmartFrog"/>
+    <property name="Name.System" value="smartfrog"/>
     <tstamp>
       <format property="year" pattern="yyyy"/>
     </tstamp>
@@ -46,7 +46,7 @@
 
     <echo message=""/>
     <echo message="==================================================================="/>
-    <echo message="In the release project"/>
+    <echo message="In the kernel-release project"/>
   </target>
 
   <!-- =================================================================== -->
@@ -267,7 +267,7 @@
   <!-- initrelease                                                             -->
   <!-- =================================================================== -->
   <target name="initrelease">
-	  <mkdir dir="../releases"/>
+	  <mkdir dir="${release.dir}"/>
     <java classname="org.smartfrog.Version"
         failonerror="true" fork="true"
         outputproperty="version">
@@ -565,7 +565,7 @@
        <tarfileset dir="." prefix="${prefix}" >
          <exclude name="${dist}/bin/**"/>
 	       <include name="${dist}/**"/>
-	 <!--exclude name="${dist}/lib/**"/-->
+	       <!--exclude name="${dist}/lib/**"/-->
          <exclude name="${dist}/classes/**"/>
          <exclude name="${dist}/docs/**"/>
          <patternset refid="excluded.cruft"/>
@@ -590,11 +590,11 @@
     <tar tarfile="${release.dir}/${prefix}.${DSTAMP}_ALL.tar" >
       <tarfileset dir="." prefix="${prefix}">
         <include name="bin/**/*.sf"/>
-       e <include name="bin/**/*.bat"/>
+        <include name="bin/**/*.bat"/>
         <include name="bin/**/*.ini"/>
       	<include name="lib/**"/>
-	<!--include name="lib/*-${version}.jar"/>
-	<include name="lib/readme.txt"/-->
+	      <!--include name="lib/*-${version}.jar"/>
+	      <include name="lib/readme.txt"/-->
         <patternset refid="source.pattern"/>
        </tarfileset>
        <tarfileset dir="bin" prefix="${prefix}/bin" mode="755">
@@ -618,14 +618,14 @@
        <tarfileset dir="." prefix="${prefix}">
          <exclude name="${dist}/bin/**"/>
 	       <include name="${dist}/**"/>
-	 <!--exclude name="${dist}/lib/**"/-->
+	        <!--exclude name="${dist}/lib/**"/-->
          <exclude name="${dist}/classes/**"/>
          <exclude name="${dist}/classes/**"/>
          <exclude name="${dist}/docs/**"/>
         </tarfileset>
        <!--tarfileset dir="." prefix="${prefix}">
-	  <include name="${dist}/lib/**/*-${version}.jar"/>
-       </tarfileset-->
+	        <include name="${dist}/lib/**/*-${version}.jar"/>
+        </tarfileset-->
        <tarfileset dir="." mode="755" prefix="${prefix}">
          <include name="${dist}/bin/**"/>
          <exclude name="${dist}/bin/**/*.sf"/>
