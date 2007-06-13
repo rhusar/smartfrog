@@ -14,6 +14,7 @@
   <import file="unittest.xml"/>
 
 
+
   <!-- ========================================================== -->
   <!-- set up the codebase-->
   <!-- ========================================================== -->
@@ -28,6 +29,80 @@
     </echo>
   </target>
 
+
+  <!--
+  This target defines the task
+  <sf-system-test> which is a functional tests runner ready to
+  run smartfrog, just add tests and go.
+  The classpath of the daemon is set to tests.run.classpath;
+  -->
+  <target name="declare-system-test-tasks" depends="init-codebase">
+    <presetdef name="system-test" uri="${core.uri}">
+      <sf:functionaltest testTimeout="600" shutdownTime="10">
+        <application>
+          <sf:daemon-debug failonerror="false"
+              spawn="false"
+              classpathref="tests.run.classpath"/>
+        </application>
+        <probe>
+          <socket port="${smartfrog.daemon.port}" server="localhost"/>
+        </probe>
+        <teardown>
+          <parallel>
+            <sf:stopdaemon failonerror="false"/>
+            <core:test-report data="${test.data.dir}"
+                reports="${test.reports.dir}"
+                />
+          </parallel>
+        </teardown>
+      </sf:functionaltest>
+    </presetdef>
+
+    <presetdef name="system-test-junit" uri="${core.uri}">
+      <core:junit
+          errorProperty="system.test.failed"
+          failureProperty="system.test.failed"
+          includeAntRuntime="true"
+          >
+        <classpath refid="tests.run.classpath"/>
+        <sysproperty key="test.classes.dir"
+            value="${test.classes.dir}"/>
+        <!--all properties beginning with test and runtime, and the codebase-->
+        <syspropertyset>
+          <propertyref prefix="test."/>
+        </syspropertyset>
+        <sysproperty key="org.smartfrog.codebase" value="${codebase}"/>
+        <syspropertyset>
+          <propertyref prefix="runtime"/>
+        </syspropertyset>
+      </core:junit>
+    </presetdef>
+
+
+
+    <!-- define the system test post processor-->
+    <presetdef name="system-test-validate" uri="${core.uri}">
+      <fail if="system.test.failed">System Tests failed - see
+        ${test.reports.dir}
+      </fail>
+    </presetdef>
+
+    <presetdef name="system-test-batch-run" uri="${core.uri}">
+      <core:system-test>
+        <test>
+          <core:system-test-junit>
+            <batchtest todir="${test.data.dir}" unless="testcase">
+              <fileset dir="${test.classes.dir}">
+                <include name="org/smartfrog/**/test/**/*Test.class"/>
+              </fileset>
+            </batchtest>
+          </core:system-test-junit>
+          <core:system-test-validate />
+        </test>
+      </core:system-test>
+    </presetdef>
+  </target>
+
   <!-- ========================================================== -->
   <!-- this is an override point -->
   <!-- system tests : anything that is tested on a live daemon 
@@ -35,48 +110,12 @@
        security reasons, unless security is active-->
 
    <target name="ready-to-system-test"
-     depends="package-tests,ready-to-test,init-codebase" />
+     depends="package-tests,ready-to-test,init-codebase,declare-system-test-tasks" />
 
    <target name="system-tests" depends="ready-to-system-test"
      if="system.tests.enabled"
      description="run the system tests if system.tests.enabled is set">
-       <sf:functionaltest testTimeout="600" shutdownTime="10">
-         <application>
-           <sf:daemon-debug failonerror="false" spawn="false"
-               classpathref="tests.run.classpath"/>
-         </application>
-         <probe>
-           <socket port="${smartfrog.daemon.port}" server="localhost"/>
-         </probe>
-         <test>
-           <core:junit
-               errorProperty="test.failed"
-               failureProperty="test.failed"
-               includeAntRuntime="true"
-               >
-             <sysproperty key="test.classes.dir"
-                          value="${test.classes.dir}"/>
-             <sysproperty key="org.smartfrog.codebase" value="${codebase}"/>
-             <syspropertyset>
-               <propertyref prefix="runtime"/>
-             </syspropertyset>
-             <!--all properties beginning with test-->
-             <classpath>
-               <path refid="tests.run.classpath"/>
-             </classpath>
-             <batchtest todir="${test.data.dir}">
-               <!-- bulk test case -->
-               <fileset dir="${test.classes.dir}">
-                 <include name="org/smartfrog/**/system/**/*Test.class"/>
-               </fileset>
-             </batchtest>
-           </core:junit>
-           <fail if="failure">Junit failed</fail>
-         </test>
-         <teardown>
-           <sf:stopdaemon failonerror="false"/>
-         </teardown>
-       </sf:functionaltest>
+     <core:system-test-batch-run />
   </target>
 
 
