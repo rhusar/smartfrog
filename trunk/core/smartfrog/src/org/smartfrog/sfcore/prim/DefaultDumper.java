@@ -48,7 +48,7 @@ public class DefaultDumper implements Dump, Dumper {
     long timeout = (1*15*1000L); //(2*60*1000L);
 
 
-    public void DefaultDumper (Prim from){
+    public DefaultDumper (Prim from){
         try {
             rootRef = from.sfCompleteName();
             System.out.println("Created DefaultDumper for:"+from.sfCompleteName());
