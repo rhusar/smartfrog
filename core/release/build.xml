@@ -28,7 +28,7 @@
   <property name="artifact.name" value="${project.name}"/>
   <property name="jarfile.stub" value="${artifact.name}${jarfile.suffix}"/>
   <property name="trace.enabled" value="true"/>
-  <property name="ivy.retrieve.pattern"
+  <property name="ivy.artifact.retrieve.pattern"
       value="[conf]/[artifact]-[revision].[ext]"/>
 
   <!-- override this to get a different release, such as a hard coded version.
@@ -39,25 +39,19 @@
   <!-- Import common stuff -->
   <import file="../common.xml"/>
 
+  <!-- main distribution target-->
+  <target name="dist" depends="common.dist,maven-artifacts,rpm,izpack,release-kernel" />
+
 
   <target name="init" depends="common.init">
     <property name="izpack.jar" location="${dist.bin.dir}/smartfrog-install-${smartfrog.version}.jar"/>
     <!--presetdef for a copy with expansion of all properties in scope-->
-    <presetdef name="expandingcopy">
-      <copy overwrite="true">
-        <filterchain>
-          <expandproperties/>
-        </filterchain>
-      </copy>
-    </presetdef>
-    <macrodef name="newdir">
-      <attribute name="name"/>
-      <attribute name="location"/>
-      <sequential>
-        <property name="@{name}" location="@{location}" />
-        <mkdir dir="@{location}" />
-      </sequential>
-    </macrodef>
+
+
+    <newdir name="dist.rpm.dir" location="${dist.dir}/rpm" />
+    <property name="kernel.dir" location="../smartfrog"/>
+    <newdir name="release.dir" location="${build.dir}/releases" />
+
   </target>
 
   <target name="default" depends="published"/>
@@ -91,8 +85,14 @@
   </target>
 
   <target name="prepare-executables" depends="ivy-retrieve">
+    <property name="sf-core-install.zip"
+        location="${ivy.lib.dir}/package-core-install/sf-core-install-${smartfrog.version}.zip"/>
   </target>
 
+  <target name="locate-core-install" depends="ivy-properties">
+    <property name="sf-core-install.zip"
+        location="${ivy.lib.dir}/package-core-install/sf-core-install-${smartfrog.version}.zip"/>
+  </target>
 
   <target name="expand-izpack" depends="init">
     <expandingcopy todir="${build.dir}" >
@@ -244,7 +244,6 @@
         location="${smartfrog.rpmfiles.tar}.gz"/>
     <property name="rpm.suffix"
         value="${smartfrog.version}-${rpm.release.version}.rpm" />
-    <newdir name="dist.rpm.dir" location="${dist.dir}/rpm" />
 
     <property name="target.rpm"
         location="${dist.rpm.dir}/smartfrog-${rpm.suffix}" />
@@ -295,10 +294,10 @@
     </copy>
   </target>
 
-  <target name="expand-core" depends="init-rpm,ivy-retrieve">
+  <target name="expand-core" depends="init-rpm,prepare-executables">
     <newdir name="core.install.dir"
       location="${build.rpm.dir}/root/${rpm.install.dir}" />
-    <unzip src="${ivy.lib.dir}/package-core/sf-core-install-${smartfrog.version}.zip"
+    <unzip src="${sf-core-install.zip}"
       dest="${core.install.dir}" />
   </target>
   
@@ -369,6 +368,135 @@
   <target name="maven-artifacts" depends="expand-maven-artifacts" />
 
 
-  <target name="dist" depends="common.dist,maven-artifacts,rpm,izpack" />
-  
+  <!--
+    this target calls the kernel's release process to create some release artifacts
+    that we can then redistribute. It is here because core/smartfrog's build process is somewhat standalone
+  -->
+
+  <target name="release-kernel" depends="init"
+      description="delegate to the core/smartfrog/buildRelease.xml">
+
+    <ant dir="${kernel.dir}"
+      antfile="buildRelease.xml"
+      inheritall="false"
+      inheritrefs="false"
+      target="release"
+      >
+        <property name="release.dir" location="${release.dir}" />
+      </ant>
+  </target>
+
+  <!-- targets below derived from ch07 examples of AiA -->
+  <target name="check-scp">
+    <fail>
+      SCP support not found; the scp task needs
+      1. ant-jsch.jar
+      2. jsch.jar from
+      http://www.jcraft.com/jsch/
+      <condition>
+        <not>
+          <typefound name="scp"/>
+        </not>
+      </condition>
+    </fail>
+  </target>
+
+
+   <target name="check-ftp" >
+    <fail>
+      FTP not present: get commons-net from
+      http://jakarta.apache.org/commons/net/
+      <condition>
+        <not><typefound name="ftp" /></not>
+      </condition>
+    </fail>
+  </target>
+
+
+  <target name="load-server-settings">
+    <property name="server.dir"
+        location="metadata/servers/" />
+    <fail unless="server">
+      Set the "server" property to the name of a server
+      whose connection settings are in a property file under
+      ${server.dir}!
+    </fail>
+    <property name="ssh.propfile"
+        location="${server.dir}/${server}.properties" />
+    <loadproperties srcfile="${ssh.propfile}" />
+  </target>
+
+  <target name="upload-init" depends="init,init-rpm,check-scp,load-server-settings,check-ftp,locate-core-install">
+    <property name="ssh.trust" value="yes" />
+    <newdir  name="tmp.dir" location="${build.dir}/tmp" />
+    <newdir  name="upload.dir" location="${build.dir}/upload" />
+    <copy todir="${upload.dir}" flatten="true">
+      <fileset dir="${dist.rpm.dir}" includes="*.rpm" />
+      <fileset file="${izpack.jar}" />
+    </copy>
+    <copy todir="${upload.dir}/smartfrog-core-distribution.zip"
+        file="${sf-core-install.zip}" />
+    <copy todir="${upload.dir}" >
+      <fileset dir="${release.dir}" includes="*.zip,*.gz" />
+    </copy>
+    <fileset id="upload.fileset" dir="${upload.dir}">
+      <include name="*.zip"/>
+      <include name="*.rpm"/>
+      <include name="*.deb"/>
+      <include name="*.tar.gz"/>
+    </fileset>
+  </target>
+
+
+  <!-- insert trust="true" to turn on trust -->
+  <target name="scp-upload" depends="upload-init" if="ssh.enabled">
+    <echo>SCP target is ${ssh.server}</echo>
+    <sshexec host="${ssh.server}"
+        username="${ssh.user}"
+        passphrase="${ssh.passphrase}"
+        trust="${ssh.trust}"
+        keyfile="${ssh.keyfile}"
+        command="mkdir -p ${ssh.dir}"/>
+    <property name="ssh.path"
+        value="${ssh.user}@${ssh.server}:${ssh.dir}" />
+    <scp remoteToDir="${ssh.path}"
+        passphrase="${ssh.passphrase}"
+        keyfile="${ssh.keyfile}"
+        trust="${ssh.trust}"
+        verbose="${ssh.verbose}" >
+      <fileset refid="upload.fileset"/>
+    </scp>
+    <sshexec host="${ssh.server}"
+        username="${ssh.user}"
+        passphrase="${ssh.passphrase}"
+        trust="${ssh.trust}"
+        keyfile="${ssh.keyfile}"
+        command="chmod a+r ${ssh.dir}/*"/>
+  </target>
+
+  <target name="ftp-upload" depends="upload-init" if="ftp.enabled">
+    <echo>FTP target is ${ftp.server}</echo>
+    <ftp server="${ftp.server}"
+        userid="${ftp.user}"
+        password="${ftp.password}"
+        action="mkdir"
+        remotedir="${ftp.dir}"/>
+    <ftp server="${ftp.server}"
+        userid="${ftp.user}"
+        password="${ftp.password}"
+        action="put"
+        remotedir="${ftp.dir}">
+      <fileset refid="upload.fileset"/>
+    </ftp>
+  </target>
+
+  <target name="can-upload"
+      depends="load-server-settings,check-ftp,check-scp" />
+
+  <target name="upload" depends="can-upload,dist,scp-upload,ftp-upload"
+      description="create the release artifacts and then upload"/>
+
+  <target name="upload-no-rebuild" depends="can-upload,scp-upload,ftp-upload"
+      description="upload the existing artifacts"/>
+
 </project>
