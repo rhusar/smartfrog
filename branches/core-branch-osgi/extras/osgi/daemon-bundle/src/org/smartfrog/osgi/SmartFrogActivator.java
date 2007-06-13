@@ -12,6 +12,7 @@ import org.smartfrog.sfcore.security.SFSynchronousUserBundleListener;
 
 public class SmartFrogActivator implements BundleActivator {
     private ProcessCompound rootProcess = null;
+    // TODO : Use Declarative Services for log service
     private LogService logService = null;
 
     public void start(BundleContext bundleContext) throws Exception {
@@ -56,7 +57,7 @@ public class SmartFrogActivator implements BundleActivator {
         rootProcess.vmExitOnTermination(false);
         rootProcess.sfAddAttribute(SmartFrogCoreKeys.SF_CORE_BUNDLE_CONTEXT, bundleContext);
 
-        bundleContext.addBundleListener(new SFSynchronousUserBundleListener());
+        bundleContext.addBundleListener(new SFSynchronousUserBundleListener(bundleContext));
 
         info("SmartFrog daemon running...");
         releaseLogService(bundleContext);

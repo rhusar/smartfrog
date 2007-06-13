@@ -22,6 +22,7 @@ package org.smartfrog.sfcore.security;
 
 import org.smartfrog.sfcore.security.rmispi.SFRMIClassLoaderSpi;
 import org.smartfrog.sfcore.security.rmispi.SFDebug;
+import org.osgi.framework.Bundle;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -36,6 +37,9 @@ import java.security.PermissionCollection;
 import java.security.Policy;
 import java.security.ProtectionDomain;
 import java.security.cert.Certificate;
+import java.util.Collection;
+import java.util.ArrayList;
+import java.util.Iterator;
 
 
 /**
@@ -58,6 +62,8 @@ public class SFClassLoader {
 
     /** A debugging utility to print messages. */
     private static final SFDebug debug;
+
+    static final Collection userBundles = new ArrayList();
 
     /**
      * Initializes the debugging.
@@ -321,7 +327,11 @@ public class SFClassLoader {
                 ex.printStackTrace();
             }
         }
-        return getURLAsStream(cl.getResource(resourceInJar));
+        try {
+            return getURLAsStream(cl.getResource(resourceInJar));
+        } catch (ClassNotFoundException e) {
+            return tryUserBundlesForResource(resourceInJar);
+        }
     }
 
     /**
@@ -336,8 +346,12 @@ public class SFClassLoader {
      */
     static Class forNameHelper(String className, String codebase)
         throws ClassNotFoundException {
-        Class cl = Class.forName(className, true, getClassLoader(codebase));
-
+        Class cl;
+        try {
+            cl = Class.forName(className, true, getClassLoader(codebase));
+        } catch (ClassNotFoundException e) {
+            cl = tryUserBundlesForClass(className);
+        }
         /* The classes referenced by cl, and loaded by the same class loader
            when cl is linked, are not checked here. This implies that if
            they are in a different jar file they might not have the same
@@ -346,6 +360,32 @@ public class SFClassLoader {
         SFRMIClassLoaderSpi.quickRejectClass(cl);
 
         return cl;
+    }
+
+    private static Class tryUserBundlesForClass(String className) throws ClassNotFoundException {
+        Iterator it = userBundles.iterator();
+        while (it.hasNext()) {
+            try {
+                return ((Bundle) it.next()).loadClass(className);
+            } catch (ClassNotFoundException e) {
+                if (! it.hasNext()) throw e;
+            }
+        }
+        throw new ClassNotFoundException("Class not found : " + className);
+    }
+
+    private static InputStream tryUserBundlesForResource(String resourceInJar) throws ClassNotFoundException, IOException {
+        Iterator it = userBundles.iterator();
+        while (it.hasNext()) {
+            try {
+                return getURLAsStream(
+                        ((Bundle) it.next()).getResource(resourceInJar)
+                );
+            } catch (ClassNotFoundException e) {
+                if (! it.hasNext()) throw e;
+            }
+        }
+        throw new ClassNotFoundException("Resource not found : " + resourceInJar);
     }
 
     /**
@@ -523,5 +563,6 @@ public class SFClassLoader {
 
     public static void cleanShutdown() {
         targetClassBase = null;
+        userBundles.clear();
     }
 }
