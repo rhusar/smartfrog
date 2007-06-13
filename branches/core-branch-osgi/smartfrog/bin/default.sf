@@ -41,7 +41,7 @@ DefaultDisplay extends  Display {
     nameDisplay "sfDaemon Display"; // Window Title
     positionDisplay "NE";         // Window position: North-West
     fontSize 12;                  // Display font size
-    redirectStd false;             // Redirect std output and error to this wind.
+    redirectStd true;             // Redirect std output and error to this wind.
     showIP true;                  // Show IP address in window title
     showSfProcess true;           // Show sfProcess name in  window title
     terminateSFProcessOnExit true; // Terminates sfDaemon when window is closed
@@ -50,7 +50,7 @@ DefaultDisplay extends  Display {
 DefaultManagementDisplay extends DeployManagement { 
     nameDisplay "sfDaemon Management Display"; // Window Title
     positionDisplay "NE";         // Window position: North-West
-    redirectStd true;             // Redirect std output and error to this wind.
+    redirectStd false;             // Redirect std output and error to this wind.
     showIP true;                  // Show IP address in window title
     showSfProcess true;           // Show sfProcess name in  window title
     terminateSFProcessOnExit true; // Terminates sfDaemon when window is closed

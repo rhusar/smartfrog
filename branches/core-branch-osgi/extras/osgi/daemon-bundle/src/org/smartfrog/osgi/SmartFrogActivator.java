@@ -8,6 +8,7 @@ import org.smartfrog.SFSystem;
 import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.processcompound.ProcessCompound;
+import org.smartfrog.sfcore.security.SFSynchronousUserBundleListener;
 
 public class SmartFrogActivator implements BundleActivator {
     private ProcessCompound rootProcess = null;
@@ -55,12 +56,12 @@ public class SmartFrogActivator implements BundleActivator {
         rootProcess.vmExitOnTermination(false);
         rootProcess.sfAddAttribute(SmartFrogCoreKeys.SF_CORE_BUNDLE_CONTEXT, bundleContext);
 
+        bundleContext.addBundleListener(new SFSynchronousUserBundleListener());
+
         info("SmartFrog daemon running...");
         releaseLogService(bundleContext);
 
         Thread.currentThread().setContextClassLoader(oldClassLoader);
-
-
         
     }
 
