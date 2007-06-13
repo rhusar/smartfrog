@@ -22,10 +22,7 @@
     <abstract>Document  List</abstract> 
   </header> 
   <body> 
-   
-
-	  	<p><a href="jetty_readme.html">Jetty Components User Manual</a></p>
-    
-  </body> 
+    <p><a href="jetty_readme.html">Jetty Components User Manual</a></p>
+  </body>
  
 </document>

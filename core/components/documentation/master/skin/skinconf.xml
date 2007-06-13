@@ -357,7 +357,7 @@ which will be used to configure the chosen Forrest skin.
        portrait).
        Supported text alignments are left, right, justify (default left).
     -->
-    <page size="letter" orientation="portrait" text-align="left"/>
+    <page size="a4" orientation="portrait" text-align="left"/>
 
     <!-- 
        Pattern of the page numbering in the footer - Default is "Page x".

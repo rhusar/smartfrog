@@ -29,10 +29,7 @@
     This build file runs Forrest, from http://forrest.apache.org
 
     Forrest is built on Cocoon and Ant, and must be installed on the machine, otherwise this
-    project just prints at error level and publishes empty artifacts.
-
-    Why publish empty zip files? So that things downstream will still build even
-    if Forrest is out of the running.
+    project fails with an error message
 
 
   </description>
@@ -55,9 +52,9 @@
 
   <fail unless="env.FORREST_HOME">
     forrest.home is not defined.
-    To create the documentation, you need Forrest 1.5.x on your system, and
+    To create the documentation, you need Forrest 0.7 or later on your system, and
     the environment variable FORREST_HOME set up to point to it, or
-    the property forrest.home set in ${root.dir}/build.properties
+    the property env.FORREST_HOME set in ${root.dir}/build.properties
   </fail>
 
   <import file="../../antbuild/xml/core.xml" />
@@ -75,12 +72,12 @@
 
 	<import file="../../../forrest/main/forrest.antproxy.xml"/>
 -->
-
+  <property name="forrest.src.dir" location="build/src"/>
+  <property name="documentation.dir" location="${forrest.src.dir}/documentation"/>
 
   <target name="init" depends="core.init,forrest.init">
     <echo level="verbose">Created forrest project template</echo>
-    <property name="forrest.src.dir" location="src"/>
-    <property name="documentation.dir" location="${forrest.src.dir}/documentation"/>
+
     <property name="comp.home" location="."/>
     <property name="xdocs.skin.dir" location="${forrest.src.dir}/content/xdocs"/>
     <property name="xdocs.dir" location="${xdocs.skin.dir}/smartfrogdoc"/>
@@ -118,7 +115,7 @@
   </target>
 
   <target name="clean" depends="core.clean">
-    <delete dir="src" />
+    <delete dir="${forrest.src.dir}" />
   </target>
 
   <target name="mkdirs" depends="init">
@@ -137,13 +134,11 @@
 
   <target name="prepare-docs" depends="seedforrest,copy-properties">
 
-
     <copy todir="${xdocs.dir}">
       <fileset dir="${src.skin.dir}">
         <include name="SFComponents.xml"/>
-        <include name="overview_html_39c627ce.gif"/>
+        <include name="*.gif"/>
       </fileset>
-
     </copy>
 
     <copy todir="${xdocs.skin.dir}" overwrite="true">
@@ -238,7 +233,7 @@
 
     <copy todir="${dist.doc.dir}/smartfrogdoc/">
       <fileset dir="${src.skin.dir}">
-        <include name="overview_html_39c627ce.gif"/>
+        <include name="*.gif"/>
       </fileset>
     </copy>
   </target>
@@ -249,8 +244,8 @@
   <target name="default" depends="docs" description="Document Generation">
   </target>
 
-  <target name="validate-xdocs">
+<!--  <target name="validate-xdocs">
     <echo>Skipping forrest.validate-xdocs</echo>
-  </target>
+  </target>-->
 
 </project>

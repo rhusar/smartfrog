@@ -18,8 +18,7 @@
 
 <tabs software="SmartFrog"
   title="SmartFrog"
-  copyright="HP"
-  xmlns:xlink="http://www.w3.org/1999/xlink">
+  copyright="HP">
 
   <!-- The rules for tabs are:
     @dir will always have '/@indexfile' added.

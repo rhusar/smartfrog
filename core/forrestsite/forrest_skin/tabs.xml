@@ -20,7 +20,7 @@
 <tabs software="Smartfrog"
   title="Smartfrog"
   copyright="HP"
-  xmlns:xlink="http://www.w3.org/1999/xlink">
+  >
 
   <!-- The rules for tabs are:
     @dir will always have '/@indexfile' added.
@@ -36,15 +36,15 @@
   <tab id="home" label="Home" dir="" indexfile="index.html"/>
 
 
-  <tab  id="SFCoreDocs" label="SmartFrog Core" dir="smartfrogdoc" indexfile="sfcore.html"> </tab>
-  <tab  id="ServiceDocs" label="Core Services" dir="smartfrogdoc" indexfile="service.html"> </tab>
-  <tab id="SFComponents" label="Optional Services" dir="smartfrogdoc" indexfile="SFComponents.html"></tab>
-<tab  id="AnttasksDocs" label="Ant Tasks" dir="smartfrogdoc" indexfile="anttasks.html"> </tab>
-  <tab  id="Extras" label="Extras" dir="smartfrogdoc" indexfile="extras.html">  </tab>
-  <tab  id="Examples" label="Examples" dir="smartfrogdoc" indexfile="examples.html">    </tab>
-  <tab  id="JavaDocs" label="Java Docs" dir="smartfrogdoc" indexfile="jdocs_index.html">   </tab>
-  <tab  id="Copyright" label="Copyright" dir="smartfrogdoc" indexfile="Copyright.html">    </tab>
-  <tab  id="licenseDoc" label="License Terms" dir="smartfrogdoc" indexfile="lpgl.html">  </tab>
+  <tab  id="SFCoreDocs" label="SmartFrog Core" dir="smartfrogdoc" indexfile="sfcore.html"/>
+  <tab  id="ServiceDocs" label="Core Services" dir="smartfrogdoc" indexfile="service.html"/>
+  <tab id="SFComponents" label="Optional Services" dir="smartfrogdoc" indexfile="SFComponents.html"/>
+  <tab  id="AnttasksDocs" label="Ant Tasks" dir="smartfrogdoc" indexfile="anttasks.html"/>
+  <tab  id="Extras" label="Extras" dir="smartfrogdoc" indexfile="extras.html"/>
+  <tab  id="Examples" label="Examples" dir="smartfrogdoc" indexfile="examples.html"/>
+  <tab  id="JavaDocs" label="Java Docs" dir="smartfrogdoc" indexfile="jdocs_index.html"/>
+  <tab  id="Copyright" label="Copyright" dir="smartfrogdoc" indexfile="Copyright.html"/>
+  <tab  id="licenseDoc" label="License Terms" dir="smartfrogdoc" indexfile="lpgl.html"/>
 
   <!-- Add new tabs here, eg:
   <tab label="How-Tos" dir="community/howto/"/>
