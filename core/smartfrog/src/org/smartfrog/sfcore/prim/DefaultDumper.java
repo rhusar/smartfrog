@@ -67,7 +67,6 @@ public class DefaultDumper implements Dump, Dumper {
      * @throws java.rmi.RemoteException In case of Remote/nework error
      */
     public void dumpState(Object state, Prim from) throws RemoteException {
-
        Integer numberOfChildren = new Integer(0);
        if (from instanceof Compound) {
           int numberC = 0;
