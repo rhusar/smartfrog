@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<project name="sfinstaller" default="default">
+<project name="installer" default="default">
 
 <!--
 /** (C) Copyright 1998-2007 Hewlett-Packard Development Company, LP
