@@ -19,21 +19,16 @@ public class XmlListenerComponent
     /**
      * construct a base interface
      *
-     * @throws RemoteException
+     * @throws RemoteException as its parent can
      */
     public XmlListenerComponent() throws RemoteException {
     }
 
 
     /**
-     * Override point; create a new XML listener
-     * @param hostname
-     * @param destFile
-     * @param processname
-     * @param suitename
-     * @param start
-     * @return
-     * @throws IOException
+     * {@inheritDoc}
+
+     * @throws IOException for problems
      */
     protected OneHostXMLListener createNewSingleHostListener(String hostname,
                                                              File destFile,

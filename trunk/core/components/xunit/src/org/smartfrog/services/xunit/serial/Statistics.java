@@ -229,7 +229,7 @@ public final class Statistics implements Serializable, Cloneable {
     /**
      * test for success, which means no errors or failures
      *
-     * @return
+     * @return true if the test was successful
      */
     public boolean isSuccessful() {
         return getUnsuccessfulTests() == 0;

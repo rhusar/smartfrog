@@ -173,7 +173,7 @@ public class BufferingListenerImpl extends AbstractListenerImpl
     /**
      * get the number of times that callers ended listening
      *
-     * @return
+     * @return the number of sessions ended
      * @throws RemoteException for network trouble
      */
     public int getSessionEndCount() throws RemoteException {

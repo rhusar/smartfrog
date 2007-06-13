@@ -219,7 +219,7 @@ public final class ThrowableTraceInfo implements Serializable, Cloneable {
 
     /**
      * convert to a string
-     * @return
+     * @return the string value
      */
     public String toString() {
         if (classname == null) {
