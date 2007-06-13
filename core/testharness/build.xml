@@ -191,6 +191,10 @@ For more information: www.smartfrog.org
         so Cruise Control doesn't fail-->
       <exclude name="${systemtests}/assertions/testcompounds/TestCompoundsTest.*"
           unless="run.failing.tests" />
+      <!-- SFOS-154; test failing on VMWare only. Possible race condition-->
+      <exclude name="${systemtests}/workflow/parallel/ParallelAsyncTest.*"
+          unless="run.failing.tests" />
+
     </patternset>
   </target>
   
