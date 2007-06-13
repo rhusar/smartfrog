@@ -87,9 +87,7 @@
       <sysproperty key="org.smartfrog.codebase"
         value="${codebase}"/>
       <!-- source files -->
-      <source dir="${src.dir}"
-        includes="org/smartfrog/services/xunit/example.sf">
-      </source>
+      <source file="test/org/smartfrog/services/sfunit/test/system/example.sf" />
       <!-- test files -->
 <!--      <source dir="${test.src.dir}">
         <include name="files/*.sf"/>
@@ -107,108 +105,7 @@
     <property name="application.name" value="${project.name}"/>
   </target>
 
-  <!-- ========================================================== -->
-  <!-- set-->
-  <!-- ========================================================== -->
-  <target name="init-codebase" depends="init-deploy-properties,declare-classpaths"
-          description="deploy">
-    <sf-tourl property="codebase">
-      <path refid="tests.run.classpath" />
-    </sf-tourl>
-    <echo>
-      deploying to ${deploy.host}
-      codebase=${codebase}
-    </echo>
-  </target>
-  
-  <!-- ========================================================== -->
-  <!-- deploy; requires a host -->
-  <!-- ========================================================== -->
-  <target name="deploy" depends="parse,init-codebase,init-deploy-properties"
-    description="deploy">
-
-    <sf-deploy classpathref="run.classpath"
-      logStackTraces="true"
-      host="${deploy.host}"
-      timeout="30000"
-      >
-      <codebase url="${codebase}"/>
-
-      <application name="${application.name}">
-              #include "/${deploy.sf}"
-              sfCodeBase PROPERTY org.smartfrog.codebase;
-      </application>
-    </sf-deploy>
-  </target>
-
-  <target name="undeploy" depends="init-deploy-properties"
-    description="deploy">
-
-    <sf-undeploy classpathref="run.classpath"
-      logStackTraces="true"
-      host="${deploy.host}"
-      timeout="30000"
-      application="${application.name}"/>
-  </target>
-    
-
-  <!-- ========================================================== -->
-  <!-- system tests -->
-  <!-- ========================================================== -->
-  <target name="system-tests" depends="parse,dist,compile-tests,init-codebase"
-    description="run system tests"
-    if="system.tests.enabled">
-    <parallel>
-
-      <!-- first thread runs the daemon -->
-      <sequential>
-        <antcall target="start-daemon-if-needed"/>
-      </sequential>
-
-      <!-- this is the next thread -->
-      <sequential>
-
-        <!--
-          wait ten seconds for the harness to start
-          without this the first tests will fail as there is no
-          sf daemon around
-        -->
-        <sf-waitfordaemon maxwait="10" timeoutproperty="daemon.missing"/>
-        <fail if="daemon.missing">No daemon</fail>
-        <sf-junit
-          errorProperty="test.failed"
-          failureProperty="test.failed"
-          >
-          <classpath>
-            <path refid="tests.run.classpath"/>
-            <pathelement location="${test.classes.dir}"/>
-          </classpath>
-          <sysproperty key="org.smartfrog.codebase" value="${codebase}"/>
-          <syspropertyset>
-            <propertyref prefix="runtime"/>
-          </syspropertyset>
-
-          <!-- #Test case isolation technique -->
-          <test name="${testcase}" if="testcase"/>
-          <batchtest todir="${test.data.dir}" unless="testcase">
-            <!-- bulk test case -->
-            <fileset dir="${test.classes.dir}">
-              <include name="org/smartfrog/services/junit/test/system/**/*Test.class"/>
-            </fileset>
-          </batchtest>
-        </sf-junit>
-
-        <!-- conditionally stop the daemon -->
-        <antcall target="conditional-daemon-exit"/>
-        <!-- end the test thread -->
-      </sequential>
-    </parallel>
-  </target>
-
-  <target name="conditional-daemon-exit" unless="no.stop.daemon">
-    <antcall target="stop-daemon-if-started"/>
-  </target>
 
 
-  <target name="all" depends="m2-install,test" /> 
+
 </project>
