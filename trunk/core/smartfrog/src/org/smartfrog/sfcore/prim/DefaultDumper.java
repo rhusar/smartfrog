@@ -23,12 +23,14 @@ package org.smartfrog.sfcore.prim;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.componentdescription.ComponentDescriptionImpl;
 import org.smartfrog.sfcore.common.*;
+import org.smartfrog.sfcore.compound.Compound;
 
 import java.rmi.RemoteException;
-import java.util.Hashtable;
-import java.util.Date;
-import java.util.Set;
-import java.util.HashSet;
+import java.util.*;
+import java.io.Writer;
+import java.io.FileWriter;
+import java.io.File;
+import java.io.IOException;
 
 
 public class DefaultDumper implements Dump {
@@ -41,8 +43,12 @@ public class DefaultDumper implements Dump {
 
     Hashtable visiting = new Hashtable();
 
+    protected Long visitingLocks = new Long(1);
+
+    long timeout = (10*60*1000L);
+
+
     public void DefaultDumper (Context context){
-         //cd = new ComponentDescriptionImpl(null,context,false);
     }
 
    /**
@@ -55,61 +61,42 @@ public class DefaultDumper implements Dump {
      * @throws java.rmi.RemoteException In case of Remote/nework error
      */
     public void dumpState(Object state, Prim from) throws RemoteException {
-       visiting("");
-
-//       System.out.println("\n *******************************");
-//       System.out.println("***"+from.sfCompleteName()+" \n"+state);
-//       System.out.println("\n *******************************");
-//       System.out.println("------Before------");
-//       System.out.println("From \n"+from.sfCompleteName()+"");
-//       System.out.println("---");
-//       System.out.println("cd\n"+cd);
-//       System.out.println("---");
-//       System.out.println("lastCD\n"+lastCD);
-//       System.out.println("---");
-//       System.out.println("lastChild (what we added)\n"+lastChild);
-//       System.out.println("--end-Before------");
+       Integer numberOfChildren = new Integer(0);
+       if (from instanceof Compound) {
+          int numberC = 0;
+          for (Enumeration e = ((Compound)from).sfChildren(); e.hasMoreElements();) {
+            e.nextElement();  
+            numberC++;
+          }
+          numberOfChildren = new Integer (numberC);
+       }
+       visiting(from.sfCompleteName().toString(),numberOfChildren);
        Context stateClone =  (Context)((Context)state).clone();
        if (cd==null){
            cd = new ComponentDescriptionImpl(null,(Context)stateClone,false);
            lastCD = cd;
-           System.out.println("Created new cd for: "+from.sfCompleteName()+"\n"+cd.toString());
        } else {
            if (lastCD.sfContainsValue(from)){
-//               System.out.println("for: "+from.sfCompleteName()+" using lastCD.");
            } else if (lastChild.sfContainsValue(from)) {
                lastCD=lastChild;
-//               System.out.println("for: "+from.sfCompleteName()+" using lastChild.");
            } else if  (lastCD.sfParent().sfContainsValue(from)) {
                 lastCD=lastCD.sfParent();
-//               System.out.println("for: "+from.sfCompleteName()+" using lastParent.");
            } else {
-//               System.out.println("I don't know what is going on" + from.sfCompleteName());
+               // log warning
            }
            Object key = lastCD.sfAttributeKeyFor(from);
            lastChild = new ComponentDescriptionImpl (lastCD,stateClone,false);
            try {
              lastCD.sfReplaceAttribute(key,lastChild);
-             System.out.println("lastChild (what we added) "+"name "+ key +" \n"+lastChild.toString());
            } catch (SmartFrogRuntimeException e) {
                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
            }
        }
-//       System.out.println("------after------");
-//       System.out.println("From \n"+from.sfCompleteName()+"");
-//       System.out.println("---");
-//       System.out.println("cd\n"+cd);
-//       System.out.println("---");
-//       System.out.println("lastCD\n"+lastCD);
-//       System.out.println("---");
-//       System.out.println("lastChild (what we added)\n"+lastChild);
-//       System.out.println("---end after----");
-//       System.out.println("\n *******************************");
        visited(from.sfCompleteName().toString());
    }
 
 
-    protected Long visitingLocks = new Long(0);
+
     /**
       * Tries to get the the String once  the object finished visiting all nodes
       * or until given timeout expires.
@@ -122,37 +109,30 @@ public class DefaultDumper implements Dump {
       * @throws RemoteException if there is any network or remote error
      *
       */
-     public String toString( long timeout) throws Exception {
+     public ComponentDescription getComponentDescription ( long timeout) throws SmartFrogException {
          long endTime = (new Date()).getTime()+timeout;
-         Thread.sleep(10);
          synchronized (visitingLocks) {
-             //System.out.println("will I wait? #"+visitingLocks);
              while (visitingLocks.longValue()!=0L) {
                      // try to return the String if not visiting logs.
                      // if name in locks => process not ready, pretend not found...
                      if (visitingLocks.longValue()==0L){
-                         //System.out.println("No wait #"+visitingLocks);
-                         return getStringCD();
+                         return cd;
                      } else {
                          // not found, wait for leftover timeout
                         long now = (new Date()).getTime();
                         if (now>=endTime) {
-                         throw new SmartFrogException("Description creation Timeout");
+                         throw new SmartFrogException("Description creation Timeout ("+ (timeout/1000) +"sec)");
                         }
                          try {
-                             //System.out.println("Waiting: #"+visitingLocks);
                              visitingLocks.wait(endTime-now);
-                             //System.out.println("Finished waiting: #"+visitingLocks);
                          } catch (InterruptedException e) {
-                             //System.out.println(" Done with waiting (expired): #"+visitingLocks);
-                             return getStringCD();
+                             return cd;
                          }
 
                      }
             }
         }
-        //System.out.println(" no more waiting return actual cd");
-        return getStringCD();
+        return cd;
     }
 
      /**
@@ -161,11 +141,10 @@ public class DefaultDumper implements Dump {
       * @throws RemoteException if there is any network or remote error
       *
       */
-     public void visiting(String name) throws RemoteException {
+     public void visiting(String name, Integer numberOfChildren) throws RemoteException {
          // Notify any waiting threads that an attribute was added
          synchronized (visitingLocks) {
-             visitingLocks= new Long (visitingLocks.longValue()+1);
-             //System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Visiting in progress: "+visitingLocks + " "+name);
+             visitingLocks= new Long (visitingLocks.longValue() + numberOfChildren.longValue());
          }
      }
 
@@ -181,18 +160,46 @@ public class DefaultDumper implements Dump {
          // Notify any waiting threads that an attribute was added
          synchronized (visitingLocks) {
              visitingLocks= new Long (visitingLocks.longValue()-1);
-             //System.out.println("------------------------------- Visiting in remaining: "+visitingLocks+ " "+name);
              if (visitingLocks.longValue()==0) {
-               // System.out.println("Done all visits");
+                //done with all visits
                 visitingLocks.notifyAll();
              }
          }
      }
 
-    protected String getStringCD(){
-        return "sfConfig extends {\n" +
-          cd.toString()
-        + "}";
+    protected String getCDAsString(long timeout) {
+        try {
+            return "sfConfig extends {\n" + getComponentDescription(timeout).toString() + "}";
+        } catch (Exception e) {
+            return e.getMessage();
+        }
+    }
+
+
+    /**
+      * Tries to get the the String once the object finished visiting all nodes
+      * or until given timeout expires.
+      *
+      * @param timeout max time to wait in millis
+      *
+      * @return The string representation of the description
+      *
+      * @throws Exception attribute not found after timeout
+      * @throws RemoteException if there is any network or remote error
+     *
+      */
+     public String toString ( long timeout) throws Exception {
+        return getCDAsString(timeout);
+    }
+
+    /** This modifies the defult timeout used to
+     *  wait for the dump operation to complete.
+     *
+     * @param timeout
+     */
+    public void setTimeout(long timeout) {
+        this.timeout=timeout;
+
     }
 
     /**
@@ -200,30 +207,39 @@ public class DefaultDumper implements Dump {
      * description of the component which is parseable, and deployable
      * again... Unless someone removed attributes which are essential to
      * startup that is. Large description trees should be written out using
-     * writeOn since memory for large strings runs out quick!
+     * writeOn since memory for large strings runs out quick! toString() times out
      *
      * @return string representation of component
      */
     public String toString() {
        try {
-//       System.out.println("------------------");
-//       System.out.println("---TO STring before: ---");
-//       System.out.println("------------------");
-         String cdStr = toString(5*1000L);
-//       System.out.println("------------------");
-//       System.out.println("---TO STring after: ---");
-//       System.out.println("------------------");
-//       System.out.println("cd\n"+cd);
-//       System.out.println("---");
-//       System.out.println("lastCD\n"+lastCD);
-//       System.out.println("---");
-//       System.out.println("lastChild (what we added)\n"+lastChild);
-//       System.out.println("--end--toString---");
-         return cdStr;    
+         String cdStr = toString(timeout);
+         return cdStr;
        } catch (Exception ex){
            ex.printStackTrace();
            return (ex.toString());
        }
+    }
+
+    public void toFile(String directory, String fileName){
+        Writer out = null;
+
+        try {
+            out = new FileWriter(new File(directory, fileName));
+            try {
+                ((PrettyPrinting)getComponentDescription(timeout)).writeOn(out, 1);
+            } catch (SmartFrogException e) {
+                out.write(e.getMessage());
+            }
+        } catch (IOException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        } finally {
+            try {
+                out.close();
+            } catch (IOException e) {
+                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            }
+        }
     }
 
 }
