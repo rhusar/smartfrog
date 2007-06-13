@@ -1,5 +1,7 @@
 <?xml version="1.0"?>
-<project name="junit" default="default" xmlns:sf="antlib:org.smartfrog.tools.ant">
+<project name="junit" default="default"
+    xmlns:sf="antlib:org.smartfrog.tools.ant"
+    xmlns:core="http://smartfrog.org/build/core">
 
   <!--
   /** (C) Copyright 2006-2007 Hewlett-Packard Development Company, LP
@@ -55,6 +57,25 @@
     <echo message="= ${ant.project.name}"/>
   </target>
 
+  <target name="system-tests" depends="ready-to-system-test"
+      if="system.tests.enabled"
+      description="run the system tests if system.tests.enabled is set">
+    <core:system-test>
+      <test>
+        <core:system-test-junit>
+          <batchtest todir="${test.data.dir}" unless="testcase">
+            <fileset dir="${test.classes.dir}">
+              <include name="org/smartfrog/**/test/*Test.class"/>
+              <exclude name="**/LoggingChainListenerTest.class" unless="run.failing.tests" />
+              <!--these are the tests that we expect to fail, because they are called in the test runs-->
+              <exclude name="org/smartfrog/**/test/targets/*Test.class"/>
+            </fileset>
+          </batchtest>
+        </core:system-test-junit>
+        <core:system-test-validate />
+      </test>
+    </core:system-test>
+  </target>
 
 
 
