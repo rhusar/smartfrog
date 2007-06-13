@@ -1228,7 +1228,6 @@ java.class.path=
       <sf-jar destfile="${test.jar}"
         basedir="${test.classes.dir}"
         whenmanifestonly="create"
-        whenempty="create"
         includes="**/*"/>
       <echo level="verbose">created package ${test.jar}</echo>
   </target>
@@ -1288,7 +1287,7 @@ java.class.path=
 
   <!-- ========================================================== -->
   <!-- this is an override point -->
-  <!-- generate test reports; ignore failur results-->
+  <!-- generate test reports; ignore failure results-->
   <!-- ========================================================== -->
 
   <target name="reports-no-failure" depends="init"
@@ -1760,10 +1759,10 @@ ${test.reports.dir}
   </target>
 
   <target name="ivy-retrieve" depends="ivy-resolve" >
-    <property name="ivy.retrieve.pattern"
+    <property name="ivy.artifact.retrieve.pattern"
         value="[conf]/[artifact]-[revision].[ext]" />
     <property name="ivy.retrieve.path"
-        value="${ivy.lib.dir}/${ivy.retrieve.pattern}" />
+        value="${ivy.lib.dir}/${ivy.artifact.retrieve.pattern}" />
     <ivy:retrieve pattern="${ivy.retrieve.path}" sync="true" />
   </target>
 
