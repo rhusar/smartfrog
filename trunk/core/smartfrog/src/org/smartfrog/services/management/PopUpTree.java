@@ -31,9 +31,7 @@ import java.awt.Frame;
 import org.smartfrog.sfcore.prim.*;
 
 import java.rmi.RemoteException;
-import java.util.ArrayList;
 import java.util.Set;
-import java.io.StringWriter;
 
 
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
@@ -41,9 +39,6 @@ import org.smartfrog.sfcore.componentdescription.ComponentDescriptionImpl;
 import org.smartfrog.sfcore.logging.LogSF;
 import org.smartfrog.sfcore.logging.LogFactory;
 import org.smartfrog.services.display.WindowUtilities;
-import org.smartfrog.services.display.Display;
-import org.smartfrog.services.display.SFDisplay;
-import org.smartfrog.sfcore.common.*;
 import org.smartfrog.sfcore.processcompound.SFProcess;
 import org.smartfrog.sfcore.processcompound.ProcessCompound;
 import org.smartfrog.sfcore.parser.SFParser;
@@ -374,10 +369,10 @@ public class PopUpTree extends JComponent implements ActionListener {
             try {
                 Prim objPrim = ((Prim)node);
                 message.append ("\n*************** State *****************\n");
-                Dump dumpObj = new DefaultDumper();
+                Dump dumpObj = new DefaultDumper(objPrim);
                 objPrim.sfDumpState(dumpObj);
                 message.append (dumpObj.toString());
-                name = ((Prim)objPrim).sfCompleteName().toString();                
+                name = ((Prim)objPrim).sfCompleteName().toString();
             } catch (Exception ex) {
                 message.append("\n Error: "+ex.toString());
             }

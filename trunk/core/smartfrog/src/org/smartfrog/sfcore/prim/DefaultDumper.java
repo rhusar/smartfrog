@@ -24,6 +24,9 @@ import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.componentdescription.ComponentDescriptionImpl;
 import org.smartfrog.sfcore.common.*;
 import org.smartfrog.sfcore.compound.Compound;
+import org.smartfrog.sfcore.reference.Reference;
+import org.smartfrog.sfcore.reference.ReferencePart;
+import org.smartfrog.sfcore.reference.HereReferencePart;
 
 import java.rmi.RemoteException;
 import java.util.*;
@@ -35,20 +38,23 @@ import java.io.IOException;
 
 public class DefaultDumper implements Dump, Dumper {
 
+    Reference rootRef = null;
+
     ComponentDescription cd = null;
 
-    ComponentDescription lastCD =null;
-
-    ComponentDescription lastChild = null;
-
-    Hashtable visiting = new Hashtable();
     protected Long visitingLock = new Long(1); //Lock
     protected Long visitingLocks = new Long(1); //Counter
 
-    long timeout = (2*60*1000L); //(2*60*1000L);
+    long timeout = (1*15*1000L); //(2*60*1000L);
 
 
-    public void DefaultDumper (Context context){
+    public void DefaultDumper (Prim from){
+        try {
+            rootRef = from.sfCompleteName();
+            System.out.println("Created DefaultDumper for:"+from.sfCompleteName());
+        } catch (RemoteException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
     }
 
    /**
@@ -61,49 +67,39 @@ public class DefaultDumper implements Dump, Dumper {
      * @throws java.rmi.RemoteException In case of Remote/nework error
      */
     public void dumpState(Object state, Prim from) throws RemoteException {
+
        Integer numberOfChildren = new Integer(0);
        if (from instanceof Compound) {
           int numberC = 0;
           for (Enumeration e = ((Compound)from).sfChildren(); e.hasMoreElements();) {
-            e.nextElement();  
+            e.nextElement();
             numberC++;
           }
           numberOfChildren = new Integer (numberC);
        }
        visiting(from.sfCompleteName().toString(),numberOfChildren);
-       Context stateClone =  (Context)((Context)state).clone();
-       if (cd==null){
-           //cd = ComponentDescriptionImpl
-           cd = new ComponentDescriptionImpl(null,(Context)stateClone,false);
-           lastCD = cd;
+
+       Context stateCopy =  (Context)((Context)state).copy();
+       if (rootRef.equals(from)){
+           cd = new ComponentDescriptionImpl(null,(Context)stateCopy,false);
+           System.out.println("New CD: "+rootRef+" \n"+cd+"\n "+from.sfCompleteName());
        } else {
-           if (lastCD.sfContainsValue(from)){
-           } else if (lastChild.sfContainsValue(from)) {
-               lastCD=lastChild;
-           } else if  ( (lastCD.sfParent()!=null) && (lastCD.sfParent().sfContainsValue(from)) ) {
-                lastCD=lastCD.sfParent();
-           } else {
-               System.out.println("I don't know where I am. "+ from.sfCompleteName().toString());
-               System.out.println("CD\n"+cd);
-               System.out.println("lastCD\n"+lastCD);
-               System.out.println("lastChild\n"+lastChild);
-               System.out.println("parent\n"+lastCD.sfParent());
-               System.out.println("Was I done?");
-               return;
+           System.out.println("Serching placeHolder: "+from.sfCompleteName());
+           Reference searchRef =  (Reference)from.sfCompleteName().copy();
+           System.out.println("Ref original:"+rootRef+"\n "+from.sfCompleteName());
+           System.out.println("Ref before:"+searchRef+"\n "+from.sfCompleteName());
+           for (Enumeration e = rootRef.elements(); e.hasMoreElements();) {
+               searchRef.removeElement((ReferencePart)e.nextElement());
            }
+           System.out.println("Relative Ref:"+searchRef+"\n "+from.sfCompleteName());
+           String name = ((HereReferencePart)(searchRef.lastElement())).getValue().toString();
+           searchRef.removeElement(searchRef.lastElement());
+           System.out.println("Relative Ref to CD:"+searchRef+"\n "+from.sfCompleteName());
            try {
-             Object key = lastCD.sfAttributeKeyFor(from);
-             if (key==null) {
-               System.out.println("CD\n"+cd);
-               System.out.println("lastCD\n"+lastCD);
-               System.out.println("lastChild\n"+lastChild);
-               System.out.println("parent\n"+lastCD.sfParent());
-               System.out.println("Was I done?");
-                 throw new RemoteException (" DumpState failed to find key for "+ from.sfCompleteName().toString());
-             }
-             lastChild = new ComponentDescriptionImpl (lastCD,stateClone,false);
-             lastCD.sfReplaceAttribute(key,lastChild);
-           } catch (SmartFrogRuntimeException e) {
+               ComponentDescription placeHolder = (ComponentDescription)cd.sfResolve(searchRef);
+               ComponentDescription child =new ComponentDescriptionImpl (placeHolder,stateCopy,false);
+               placeHolder.sfReplaceAttribute(name, child);
+           } catch (SmartFrogException e) {
                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
            }
        }
@@ -147,7 +143,7 @@ public class DefaultDumper implements Dump, Dumper {
                      }
             }
             return cd;
-        }        
+        }
     }
 
      /**
@@ -160,7 +156,7 @@ public class DefaultDumper implements Dump, Dumper {
          // Notify any waiting threads that an attribute was added
          synchronized (visitingLock) {
              visitingLocks= new Long (visitingLocks.longValue() + numberOfChildren.longValue());
-             System.out.println("new # "+visitingLocks+" "+name);
+             System.out.println("Visiting #"+visitingLocks+ " "+name);
          }
      }
 
