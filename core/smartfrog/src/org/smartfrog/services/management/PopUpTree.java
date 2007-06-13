@@ -28,11 +28,7 @@ import javax.swing.*;
 import javax.swing.tree.TreePath;
 import java.awt.Frame;
 
-import org.smartfrog.sfcore.prim.TerminationRecord;
-
-import org.smartfrog.sfcore.prim.Prim;
-import org.smartfrog.sfcore.prim.Dump;
-import org.smartfrog.sfcore.prim.DefaultDumper;
+import org.smartfrog.sfcore.prim.*;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
@@ -95,6 +91,8 @@ public class PopUpTree extends JComponent implements ActionListener {
 
     /** Item for Tree popup menu - dump State. */
     JMenuItem menuItemDumpState = new JMenuItem();
+     /** Item for Tree popup menu - dump State to File. */
+    JMenuItem menuItemDumpStateToFile = new JMenuItem();
 
     /** Item for Tree popup menu - edit Tags. */
     JMenuItem menuItemEditTags = new JMenuItem();
@@ -124,6 +122,7 @@ public class PopUpTree extends JComponent implements ActionListener {
         menuItemAddScriptingPanel.setText("Add Scripting Panel");
         menuItemIntrospector.setText("Instrospector");
         menuItemDumpState.setText("Dump State");
+        menuItemDumpStateToFile.setText("Dump State to File");
         menuItemEditTags.setText("Edit Tags");
 
         // Tree: options
@@ -141,6 +140,7 @@ public class PopUpTree extends JComponent implements ActionListener {
         popupTree.add(menuItemAddScriptingPanel);
         popupTree.add(menuItemIntrospector);
         popupTree.add(menuItemDumpState);
+        popupTree.add(menuItemDumpStateToFile);
         popupTree.add(menuItemEditTags);
 
         // Add action listeners for tree popup
@@ -159,6 +159,7 @@ public class PopUpTree extends JComponent implements ActionListener {
         menuItemAddScriptingPanel.addActionListener(this);
         menuItemIntrospector.addActionListener(this);
         menuItemDumpState.addActionListener(this);
+        menuItemDumpStateToFile.addActionListener(this);
         menuItemEditTags.addActionListener(this);
     }
 
@@ -194,6 +195,7 @@ public class PopUpTree extends JComponent implements ActionListener {
             menuItemAddScriptingPanel.setVisible(true);
             menuItemIntrospector.setVisible(true);
             menuItemDumpState.setVisible(true);
+            menuItemDumpStateToFile.setVisible(true);
             menuItemEditTags.setVisible(true);
         }else if  (getNode()instanceof ComponentDescription){
             menuItemRemoveAttribute.setVisible(true);
@@ -206,6 +208,7 @@ public class PopUpTree extends JComponent implements ActionListener {
             menuItemAddScriptingPanel.setVisible(true);
             menuItemIntrospector.setVisible(true);
             menuItemDumpState.setVisible(false);
+            menuItemDumpStateToFile.setVisible(false);
             menuItemEditTags.setVisible(true);
         }
         popupTree.show(comp, x, y);
@@ -250,6 +253,8 @@ public class PopUpTree extends JComponent implements ActionListener {
             // Entry selected in the tree
         } else if (source == menuItemDumpState) {
             dumpState(node,source);
+        } else if (source == menuItemDumpStateToFile) {
+            dumpStateToFile(node,source);
             // Entry selected in the tree
         } else if (source == menuItemEditTags) {
             editTags(node);
@@ -364,6 +369,7 @@ public class PopUpTree extends JComponent implements ActionListener {
     private void dumpState (Object node, Object source) {
         StringBuffer message=new StringBuffer();
         String name = "error";
+        //Only works for Prims.
         if (node instanceof Prim) {
             try {
                 Prim objPrim = ((Prim)node);
@@ -375,21 +381,32 @@ public class PopUpTree extends JComponent implements ActionListener {
             } catch (Exception ex) {
                 message.append("\n Error: "+ex.toString());
             }
-        } else {
-            try {
-                ComponentDescription objCD = ((ComponentDescription)node);
-                message.append(((ComponentDescriptionImpl)objCD).sfDiagnosticsReport());
-                name = ((ComponentDescription)objCD).sfCompleteName().toString();
-            } catch (Exception ex) {
-                message.append("\n Error: "+ex.toString());
-            }
-
         }
         modalDialog("State for "+ name ,  message.toString(), "", source);
 
     }
 
+    private void dumpStateToFile (Object node, Object source) {
 
+        String name = "error";
+        //This only works for Prims
+        if (node instanceof Prim) {
+            try {
+                Prim objPrim = ((Prim)node);
+                Dump dumpObj = new DefaultDumper();
+                objPrim.sfDumpState(dumpObj);
+                //Get directory
+                name = ((Prim)objPrim).sfCompleteName().toString();
+                String fileName = modalOptionDialog ("Save to","file:","\\dump.sf");
+                if (fileName == null) return;
+                ((DefaultDumper)dumpObj).getCDtoFile(fileName);
+            } catch (Exception ex) {
+                if (sfLog().isErrorEnabled()) sfLog().error (ex);
+                WindowUtilities.showError(this,ex.toString());
+            }
+        }
+
+    }
 
     public static String introspect(Object node) {
         StringBuffer message = new StringBuffer();
@@ -656,7 +673,7 @@ public class PopUpTree extends JComponent implements ActionListener {
      *@param  message  message to be displayed
      *@param defaultValue default value
      */
-    public static void modalDialog(String title, String message,
+    public void modalDialog(String title, String message,
             String defaultValue, Object source) {
         /**
          *  Scrollpane to hold the display's screen.
@@ -672,8 +689,39 @@ public class PopUpTree extends JComponent implements ActionListener {
         pane.setResizable(true);
         pane.getContentPane().add(scrollPane);
         scrollPane.getViewport().add(screen, null);
+        WindowUtilities.center(parent,parentFrame);
         pane.show(true);
     }
+
+      /**
+   * Prepares option dialog box
+   *
+   *@param  title    title displayed on the dialog box
+   *@param  message  message to be displayed
+   *@param defaultValue default value
+   *@return formatted string
+   */
+  private String modalOptionDialog(String title, String message,
+                                   String defaultValue) {
+
+    String s = (String) JOptionPane.showInputDialog (
+        parent,
+        message,
+        title,
+        JOptionPane.PLAIN_MESSAGE,
+        null,
+        null,
+        defaultValue);
+    if (s == null) {
+      return null; //User cancelled!
+    }
+    if ( (s != null) && (s.length() > 0)) {
+      return s;
+    } else {
+      return defaultValue;
+    }
+  }
+
    /** Log for this class, created using class name*/
     LogSF sfLog = LogFactory.getLog("sfManagementConsole");
 

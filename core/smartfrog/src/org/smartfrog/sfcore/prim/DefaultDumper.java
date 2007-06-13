@@ -33,7 +33,7 @@ import java.io.File;
 import java.io.IOException;
 
 
-public class DefaultDumper implements Dump {
+public class DefaultDumper implements Dump, Dumper {
 
     ComponentDescription cd = null;
 
@@ -42,10 +42,10 @@ public class DefaultDumper implements Dump {
     ComponentDescription lastChild = null;
 
     Hashtable visiting = new Hashtable();
+    protected Long visitingLock = new Long(1); //Lock
+    protected Long visitingLocks = new Long(1); //Counter
 
-    protected Long visitingLocks = new Long(1);
-
-    long timeout = (10*60*1000L);
+    long timeout = (2*60*1000L); //(2*60*1000L);
 
 
     public void DefaultDumper (Context context){
@@ -73,20 +73,35 @@ public class DefaultDumper implements Dump {
        visiting(from.sfCompleteName().toString(),numberOfChildren);
        Context stateClone =  (Context)((Context)state).clone();
        if (cd==null){
+           //cd = ComponentDescriptionImpl
            cd = new ComponentDescriptionImpl(null,(Context)stateClone,false);
            lastCD = cd;
        } else {
            if (lastCD.sfContainsValue(from)){
            } else if (lastChild.sfContainsValue(from)) {
                lastCD=lastChild;
-           } else if  (lastCD.sfParent().sfContainsValue(from)) {
+           } else if  ( (lastCD.sfParent()!=null) && (lastCD.sfParent().sfContainsValue(from)) ) {
                 lastCD=lastCD.sfParent();
            } else {
-               // log warning
+               System.out.println("I don't know where I am. "+ from.sfCompleteName().toString());
+               System.out.println("CD\n"+cd);
+               System.out.println("lastCD\n"+lastCD);
+               System.out.println("lastChild\n"+lastChild);
+               System.out.println("parent\n"+lastCD.sfParent());
+               System.out.println("Was I done?");
+               return;
            }
-           Object key = lastCD.sfAttributeKeyFor(from);
-           lastChild = new ComponentDescriptionImpl (lastCD,stateClone,false);
            try {
+             Object key = lastCD.sfAttributeKeyFor(from);
+             if (key==null) {
+               System.out.println("CD\n"+cd);
+               System.out.println("lastCD\n"+lastCD);
+               System.out.println("lastChild\n"+lastChild);
+               System.out.println("parent\n"+lastCD.sfParent());
+               System.out.println("Was I done?");
+                 throw new RemoteException (" DumpState failed to find key for "+ from.sfCompleteName().toString());
+             }
+             lastChild = new ComponentDescriptionImpl (lastCD,stateClone,false);
              lastCD.sfReplaceAttribute(key,lastChild);
            } catch (SmartFrogRuntimeException e) {
                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
@@ -111,7 +126,7 @@ public class DefaultDumper implements Dump {
       */
      public ComponentDescription getComponentDescription ( long timeout) throws SmartFrogException {
          long endTime = (new Date()).getTime()+timeout;
-         synchronized (visitingLocks) {
+         synchronized (visitingLock) {
              while (visitingLocks.longValue()!=0L) {
                      // try to return the String if not visiting logs.
                      // if name in locks => process not ready, pretend not found...
@@ -124,15 +139,15 @@ public class DefaultDumper implements Dump {
                          throw new SmartFrogException("Description creation Timeout ("+ (timeout/1000) +"sec)");
                         }
                          try {
-                             visitingLocks.wait(endTime-now);
+                             visitingLock.wait(endTime-now);
                          } catch (InterruptedException e) {
                              return cd;
                          }
 
                      }
             }
-        }
-        return cd;
+            return cd;
+        }        
     }
 
      /**
@@ -143,8 +158,9 @@ public class DefaultDumper implements Dump {
       */
      public void visiting(String name, Integer numberOfChildren) throws RemoteException {
          // Notify any waiting threads that an attribute was added
-         synchronized (visitingLocks) {
+         synchronized (visitingLock) {
              visitingLocks= new Long (visitingLocks.longValue() + numberOfChildren.longValue());
+             System.out.println("new # "+visitingLocks+" "+name);
          }
      }
 
@@ -158,11 +174,11 @@ public class DefaultDumper implements Dump {
       */
      public void visited(String name) throws RemoteException {
          // Notify any waiting threads that an attribute was added
-         synchronized (visitingLocks) {
+         synchronized (visitingLock) {
              visitingLocks= new Long (visitingLocks.longValue()-1);
              if (visitingLocks.longValue()==0) {
                 //done with all visits
-                visitingLocks.notifyAll();
+                visitingLock.notifyAll();
              }
          }
      }
@@ -221,16 +237,20 @@ public class DefaultDumper implements Dump {
        }
     }
 
-    public void toFile(String directory, String fileName){
+    public void getCDtoFile(String fileName){
         Writer out = null;
 
         try {
-            out = new FileWriter(new File(directory, fileName));
+            out = new FileWriter(new File(fileName));
+            out.write("sfConfig ");
             try {
-                ((PrettyPrinting)getComponentDescription(timeout)).writeOn(out, 1);
+                ComponentDescription cd = getComponentDescription(timeout);
+                cd.setEager(true);
+                ((PrettyPrinting)cd).writeOn(out, 1);
             } catch (SmartFrogException e) {
                 out.write(e.getMessage());
             }
+            out.write("\n}");
         } catch (IOException e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         } finally {
