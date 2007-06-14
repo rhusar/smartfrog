@@ -45,13 +45,12 @@ public class DefaultDumper implements Dump, Dumper {
     protected Long visitingLock = new Long(1); //Lock
     protected Long visitingLocks = new Long(1); //Counter
 
-    long timeout = (1*15*1000L); //(2*60*1000L);
+    long timeout = (1*30*15*1000L); //(2*60*1000L);
 
 
     public DefaultDumper (Prim from){
         try {
             rootRef = from.sfCompleteName();
-            System.out.println("Created DefaultDumper for:"+from.sfCompleteName());
         } catch (RemoteException e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
@@ -77,31 +76,27 @@ public class DefaultDumper implements Dump, Dumper {
           numberOfChildren = new Integer (numberC);
        }
        visiting(from.sfCompleteName().toString(),numberOfChildren);
-
-       Context stateCopy =  (Context)((Context)state).copy();
-       if (rootRef.equals(from)){
+       Context stateCopy =  (Context)((Context)state).clone();
+       if (rootRef == from.sfCompleteName()){
            cd = new ComponentDescriptionImpl(null,(Context)stateCopy,false);
-           System.out.println("New CD: "+rootRef+" \n"+cd+"\n "+from.sfCompleteName());
+           System.out.println("New CD: "+rootRef+"\n "+from.sfCompleteName());
        } else {
-           System.out.println("Serching placeHolder: "+from.sfCompleteName());
+           System.out.println("From: "+from.sfCompleteName());
            Reference searchRef =  (Reference)from.sfCompleteName().copy();
-           System.out.println("Ref original:"+rootRef+"\n "+from.sfCompleteName());
-           System.out.println("Ref before:"+searchRef+"\n "+from.sfCompleteName());
            for (Enumeration e = rootRef.elements(); e.hasMoreElements();) {
                searchRef.removeElement((ReferencePart)e.nextElement());
            }
-           System.out.println("Relative Ref:"+searchRef+"\n "+from.sfCompleteName());
            String name = ((HereReferencePart)(searchRef.lastElement())).getValue().toString();
            searchRef.removeElement(searchRef.lastElement());
-           System.out.println("Relative Ref to CD:"+searchRef+"\n "+from.sfCompleteName());
            try {
                ComponentDescription placeHolder = (ComponentDescription)cd.sfResolve(searchRef);
-               ComponentDescription child =new ComponentDescriptionImpl (placeHolder,stateCopy,false);
+               ComponentDescription child =new ComponentDescriptionImpl (placeHolder,stateCopy,true);
                placeHolder.sfReplaceAttribute(name, child);
            } catch (SmartFrogException e) {
                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
            }
        }
+       //System.out.println("***************************\nFrom: "+from.sfCompleteName()+"\n"+cd+"\n**************************");
        visited(from.sfCompleteName().toString());
    }
 
