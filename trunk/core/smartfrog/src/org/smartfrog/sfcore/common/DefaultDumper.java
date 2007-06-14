@@ -29,6 +29,8 @@ import org.smartfrog.sfcore.reference.ReferencePart;
 import org.smartfrog.sfcore.reference.HereReferencePart;
 import org.smartfrog.sfcore.prim.Dump;
 import org.smartfrog.sfcore.prim.Prim;
+import org.smartfrog.sfcore.logging.LogSF;
+import org.smartfrog.sfcore.logging.LogFactory;
 
 import java.rmi.RemoteException;
 import java.util.*;
@@ -40,13 +42,22 @@ import java.io.IOException;
 
 public class DefaultDumper implements Dump, Dumper {
 
-    Reference rootRef = null;
+    private Reference rootRef = null;
 
-    ComponentDescription cd = null;
+    private ComponentDescription cd = null;
 
-    protected Long visitingLock = new Long(1); //Lock
-    protected Long visitingLocks = new Long(1); //Counter
+    private Long visitingLock = new Long(1); //Lock
+    private Long visitingLocks = new Long(1); //Counter
 
+
+    /**
+     * Special keys that are created by the runtime and that should be removed to have a deployable description.
+     * Value: @value
+     */
+    private String[] sfKeysToBeRemoved = new String[] {"sfHost", "sfProcess", "sfLog", "sfBootDate","sfParseTime","sfDeployTime"};
+
+    /** Default timeout (@value msecs), in large distributed deployments
+     * it could need more time to reach the final result*/
     long timeout = (1*30*15*1000L); //(2*60*1000L);
 
 
@@ -54,7 +65,7 @@ public class DefaultDumper implements Dump, Dumper {
         try {
             rootRef = from.sfCompleteName();
         } catch (RemoteException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            if (sfLog().isErrorEnabled()) sfLog().error(e);
         }
     }
 
@@ -79,29 +90,51 @@ public class DefaultDumper implements Dump, Dumper {
        }
        visiting(from.sfCompleteName().toString(),numberOfChildren);
        Context stateCopy =  (Context)((Context)state).clone();
+
+       //Remove non desired sf keys
+       for (int i=0; i< this.sfKeysToBeRemoved.length; i++){
+           if (stateCopy.sfContainsAttribute(sfKeysToBeRemoved[i])) {
+               try {
+                   stateCopy.sfRemoveAttribute(sfKeysToBeRemoved[i]);
+               } catch (SmartFrogContextException e) {
+                   if (sfLog().isWarnEnabled()) sfLog().warn(e);
+               }
+           }
+       }
+
        if (rootRef == from.sfCompleteName()){
            cd = new ComponentDescriptionImpl(null,(Context)stateCopy,false);
-           System.out.println("New CD: "+rootRef+"\n "+from.sfCompleteName());
+           //if (sfLog().isInfoEnabled()) sfLog().info("New CD: "+rootRef+"\n "+from.sfCompleteName());
        } else {
-           System.out.println("From: "+from.sfCompleteName());
+           //if (sfLog().isInfoEnabled()) sfLog().info("From: "+from.sfCompleteName());
            Reference searchRef =  (Reference)from.sfCompleteName().copy();
            for (Enumeration e = rootRef.elements(); e.hasMoreElements();) {
                searchRef.removeElement((ReferencePart)e.nextElement());
            }
            String name = ((HereReferencePart)(searchRef.lastElement())).getValue().toString();
            searchRef.removeElement(searchRef.lastElement());
-           try {
-               ComponentDescription placeHolder = (ComponentDescription)cd.sfResolve(searchRef);
-               ComponentDescription child =new ComponentDescriptionImpl (placeHolder,stateCopy,true);
-               placeHolder.sfReplaceAttribute(name, child);
-           } catch (SmartFrogException e) {
-               e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-           }
+           modifyCD(searchRef, name, stateCopy);
        }
        //System.out.println("***************************\nFrom: "+from.sfCompleteName()+"\n"+cd+"\n**************************");
        visited(from.sfCompleteName().toString());
    }
 
+    /** Method that updates the component description. It creates a component description for context and
+     * places it in whereRef named name.
+     *
+     * @param whereRef Where in CD to place the new context
+     * @param name  attribute name
+     * @param contextCopy context for the new component description node
+     */
+    public void modifyCD(Reference whereRef,String name, Context contextCopy ) {
+        try {
+            ComponentDescription placeHolder = (ComponentDescription)cd.sfResolve(whereRef);
+            ComponentDescription child =new ComponentDescriptionImpl(placeHolder, contextCopy,true);
+            placeHolder.sfReplaceAttribute(name, child);
+        } catch (SmartFrogException e) {
+            if (sfLog().isErrorEnabled()) sfLog().error(e);
+        }
+    }
 
 
     /**
@@ -152,7 +185,7 @@ public class DefaultDumper implements Dump, Dumper {
          // Notify any waiting threads that an attribute was added
          synchronized (visitingLock) {
              visitingLocks= new Long (visitingLocks.longValue() + numberOfChildren.longValue());
-             System.out.println("Visiting #"+visitingLocks+ " "+name);
+             //if (sfLog().isInfoEnabled()) sfLog().info("Visiting #"+visitingLocks+ " "+name);
          }
      }
 
@@ -179,6 +212,7 @@ public class DefaultDumper implements Dump, Dumper {
         try {
             return "sfConfig extends {\n" + getComponentDescription(timeout).toString() + "}";
         } catch (Exception e) {
+            if (sfLog().isWarnEnabled()) sfLog().warn(e);
             return e.getMessage();
         }
     }
@@ -200,13 +234,21 @@ public class DefaultDumper implements Dump, Dumper {
         return getCDAsString(timeout);
     }
 
-    /** This modifies the defult timeout used to
+    /** This modifies the default timeout used to
      *  wait for the dump operation to complete.
      *
      * @param timeout
      */
     public void setTimeout(long timeout) {
         this.timeout=timeout;
+
+    }
+
+    /** This modifies the default set of sfKeys that are removed from every context.
+     * @param sfKeysToBeRemoved
+     */
+    public void sfKeysToBeRemoved (String[] sfKeysToBeRemoved) {
+        this.sfKeysToBeRemoved = sfKeysToBeRemoved;
 
     }
 
@@ -224,7 +266,7 @@ public class DefaultDumper implements Dump, Dumper {
          String cdStr = toString(timeout);
          return cdStr;
        } catch (Exception ex){
-           ex.printStackTrace();
+           if (sfLog().isErrorEnabled()) sfLog().error(ex);
            return (ex.toString());
        }
     }
@@ -242,16 +284,23 @@ public class DefaultDumper implements Dump, Dumper {
             } catch (SmartFrogException e) {
                 out.write(e.getMessage());
             }
-            out.write("\n}");
         } catch (IOException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            if (sfLog().isErrorEnabled()) sfLog().error(e);
         } finally {
             try {
                 out.close();
             } catch (IOException e) {
-                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                if (sfLog().isErrorEnabled()) sfLog().error(e);
             }
         }
+    }
+
+        /**
+     *
+     * @return LogSF
+     */
+    public LogSF sfLog(){
+        return LogFactory.sfGetProcessLog();
     }
 
 }
