@@ -1,16 +1,18 @@
 <?xml version="1.0"?>
 <project name="Smartfrog-OSGi" default="all">
-
+    <property file="build.properties" />
+    <property name="smartfrog.home" value="../../../smartfrog/"/>
+    
     <target name="all" depends="copyJarsAround"/>
 
-    <target name="daemon-bundle">
-        <ant dir="daemon-bundle" target="all"/>
+    <target name="daemon-bundle" depends="smartfrog-dist">
+        <ant dir="daemon-bundle" target="all" inheritall="false"/>
     </target>
     <target name="test-bundle">
-        <ant dir="test-bundle" target="all"/>
+        <ant dir="test-bundle" target="all" inheritall="false"/>
     </target>
     <target name="rmispi-bundle">
-        <ant dir="rmiclassloading-extension-bundle" target="all"/>
+        <ant dir="rmiclassloading-extension-bundle" target="all" inheritall="false"/>
     </target>
 
     <target name="copyJarsAround" depends="daemon-bundle,test-bundle,rmispi-bundle">
@@ -32,4 +34,9 @@
         <ant dir="rmiclassloading-extension-bundle" target="clean"/>
     </target>
 
+    <target name="smartfrog-dist">
+        <ant dir="${smartfrog.home}" target="published" inheritall="false">
+            <property name="javadocs.disabled" value="${javadoc.disabled}"/>
+        </ant>
+    </target>
 </project>
