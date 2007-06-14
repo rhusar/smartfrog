@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <project name="Smartfrog-OSGi" default="all">
     <property name="smartfrog.home" value="../../../smartfrog/"/>
-    <property name="javadocs.disabled" value="true"/>
+    <property name="javadoc.disabled" value="true"/>
 
     <target name="all" depends="copyJarsAround"/>
 
