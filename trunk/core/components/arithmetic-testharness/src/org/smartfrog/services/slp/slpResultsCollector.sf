@@ -1,4 +1,4 @@
-#include "org.smartfrog.sfcore.workflow.components.sf"
+#include "/org/smartfrog/sfcore/workflow/components.sf"
 
 /**
  * This extension of EventPrim is an utility component to collect, store, and convert results
