@@ -506,8 +506,16 @@
   <!-- =================================================================== -->
   <!--   JDocs                                                             -->
   <!-- =================================================================== -->
-  <target name="jdocs" depends="initdist,generateversion,jjdocs"
-      description="Generates the API documentation">
+
+
+  <target name="ready-to-javadoc"
+          depends="initdist,generateversion,jjdocs"
+      />
+
+  <target name="jdocs" depends="ready-to-javadoc"
+          unless="javadoc.disabled"
+      description="Generates the API documentation"
+          >
     <!--  Java Docs for all                                                -->
     <echo message=""/>
     <echo message="------------Creating Java Docs for ${Name.System} ${version} [${dist.dir}/${jdocs}]---------"/>
@@ -530,7 +538,7 @@
     </javadoc>
   </target>
 
-  <target name="jjdocs" depends="initdist">
+  <target name="jjdocs" depends="initdist" unless="javadoc.disabled">
     <!--  Java doc for the grammars -->
     <java classname="jjdoc" failonerror="true">
       <arg value="-OUTPUT_FILE=${docs}/DefaultParser.html"/>
