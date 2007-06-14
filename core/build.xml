@@ -434,6 +434,7 @@ For more information: www.smartfrog.org
           <exclude name="releasetest/build.xml"/>
           <!--cargo support is on hold until 3.12-->
           <exclude name="cargo/build.xml"/>
+          <exclude name="arithmetic-testharness/build.xml"/>
           <!--These need java 1.5 or later-->
           <exclude name="database/build.xml" unless="java1.5+"/>
           <exclude name="junit/build.xml" unless="java1.5+"/>

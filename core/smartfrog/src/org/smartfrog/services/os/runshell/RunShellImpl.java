@@ -151,7 +151,6 @@ public class RunShellImpl extends PrimImpl implements Prim, RunShell, Runnable {
     private Log log;
 
     /** helper */
-    private ComponentHelper helper;
     private String fullShellCommand;
     public static final String STATUS_RUNNING = "running";
 
@@ -172,7 +171,6 @@ public class RunShellImpl extends PrimImpl implements Prim, RunShell, Runnable {
     public synchronized void sfDeploy() throws SmartFrogException,
             RemoteException {
         super.sfDeploy();
-        helper = new ComponentHelper(this);
         log = sfLog();
         readSFAttributes();
         if (startEarly) {
@@ -309,11 +307,29 @@ public class RunShellImpl extends PrimImpl implements Prim, RunShell, Runnable {
 
 
     /**
-     * This is something for subclasses to override if they have very
-     * special logic as to what constitutes success and failure
-     * @param exitVal the exit code
-     * @return true if this is to be interpreted as a failure
+     * This method is here so that subclasses (such as the arithmetic testharness)
+     * can get a now-private field
+     * @return the current output stream
      */
+    protected OutputStreamIntf getOutputStreamObj() {
+        return outputStreamObj;
+    }
+
+    /**
+     * This method is here so that subclasses (such as the arithmetic testharness)
+     * can set a now-private field
+     * @param outputStreamObj new value
+     */
+    public void setOutputStreamObj(OutputStreamIntf outputStreamObj) {
+        this.outputStreamObj = outputStreamObj;
+    }
+
+    /**
+    * This is something for subclasses to override if they have very
+    * special logic as to what constitutes success and failure
+    * @param exitVal the exit code
+    * @return true if this is to be interpreted as a failure
+    */
     protected boolean didProcessFail(int exitVal) {
         return exitVal != 0;
     }
