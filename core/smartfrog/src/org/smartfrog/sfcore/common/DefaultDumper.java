@@ -18,15 +18,17 @@ For more information: www.smartfrog.org
 
 */
 
-package org.smartfrog.sfcore.prim;
+package org.smartfrog.sfcore.common;
 
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.componentdescription.ComponentDescriptionImpl;
-import org.smartfrog.sfcore.common.*;
+import org.smartfrog.sfcore.common.Dumper;
 import org.smartfrog.sfcore.compound.Compound;
 import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.reference.ReferencePart;
 import org.smartfrog.sfcore.reference.HereReferencePart;
+import org.smartfrog.sfcore.prim.Dump;
+import org.smartfrog.sfcore.prim.Prim;
 
 import java.rmi.RemoteException;
 import java.util.*;

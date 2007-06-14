@@ -42,6 +42,7 @@ import org.smartfrog.services.display.WindowUtilities;
 import org.smartfrog.sfcore.processcompound.SFProcess;
 import org.smartfrog.sfcore.processcompound.ProcessCompound;
 import org.smartfrog.sfcore.parser.SFParser;
+import org.smartfrog.sfcore.common.DefaultDumper;
 
 
 /**
