@@ -1,4 +1,4 @@
-#include "org.smartfrog.services/slp/slpadvertiser.sf"
+#include "/org/smartfrog/services/slp/slpadvertiser.sf"
 
 /**
  * This extension of SLPAdvertiser advertises the root process compound of this host.
