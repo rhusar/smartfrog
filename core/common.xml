@@ -119,7 +119,6 @@
     <property name="test.dir" location="${build.dir}/test"/>
     <property name="test.classes.dir" location="${build.test.dir}/classes"/>
     <property name="test.data.dir" location="${build.test.dir}/data"/>
-    <property name="test.datafiles.dir" location="test/files"/>
     <property name="test.reports.dir" location="${build.test.dir}/reports"/>
   
     <property name="dist.dir" location="dist"/>
