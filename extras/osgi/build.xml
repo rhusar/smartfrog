@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <project name="Smartfrog-OSGi" default="all">
-    <property name="smartfrog.home" value="../../../smartfrog/"/>
+    <property name="smartfrog.home" value="../../smartfrog/"/>
     <property name="javadoc.disabled" value="true"/>
 
     <target name="all" depends="copyJarsAround"/>
@@ -21,7 +21,7 @@
               todir="C:\\knopflerfish_osgi_2.0.1\\knopflerfish.org\\osgi"
               overwrite="true"/>
         -->
-        <copy todir="C:/" overwrite="true">
+        <copy todir="${user.home}/Dev/equinox" overwrite="true">
             <fileset file="daemon-bundle/dist/lib/sf-daemon-osgi*.jar"/>
             <fileset file="rmiclassloading-extension-bundle/dist/lib/sf-rmi-spi-osgi*.jar"/>
             <fileset file="test-bundle/dist/lib/sf-test-osgi*.jar"/>
