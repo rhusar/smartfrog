@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<cdl:cdl xmlns:cdl="http://www.gridforum.org/namespaces/2005/02/cddlm/CDL-1.0"
+    xmlns:cmp="http://www.gridforum.org/cddlm/components/2005/02"
+    xmlns:sf="http://www.gridforum.org/cddlm/smartfrog/2005/02"
+    xmlns:sfi="http://smartfrog.org/types/2006/01/"
+    xmlns:base="http://smartfrog.org/services/cdl/base/"
+    xmlns:demo="http://smartfrog.org/services/cdl/demo/"
+    xmlns:jboss="http://smartfrog.org/services/cdl/demo/jboss">
+
+
+  <cdl:documentation>
+    This file defines JBoss and web components.
+    It is not platform neutral, as it calls the shell/batch runtime to
+    run different programs.
+  </cdl:documentation>
+
+  <cdl:import location="classpath:/org/smartfrog/services/cddlm/cdl/demo/jboss.cdl"/>
+
+  <cdl:configuration>
+
+  </cdl:configuration>
+
+  <cdl:system>
+    <system cdl:extends="jboss:System">
+    </system>
+  </cdl:system>
+
+
+</cdl:cdl>

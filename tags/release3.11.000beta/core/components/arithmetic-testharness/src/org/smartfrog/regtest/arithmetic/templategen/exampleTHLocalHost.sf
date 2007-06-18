@@ -1,0 +1,60 @@
+#include "org/smartfrog/components.sf"
+#include "org/smartfrog/sfcore/workflow/components.sf"
+
+plain extends NULL {
+#include "org/smartfrog/tools/testharness/templategen/templateLocalHost.sf"
+}
+
+//secure extends NULL {
+//#include "org/smartfrog/tools/testharness/templategen/templateSecureSerrano.sf"
+//}
+//dynamicLoad extends NULL  {
+//#include "org/smartfrog/tools/testharness/templategen/templateDLSerrano.sf"
+//}
+//secureDynamicLoad extends NULL  {
+//#include "org/smartfrog/tools/testharness/templategen/templateSecureDLSerrano.sf"
+//}
+
+allTests extends Sequence {
+  actions extends LAZY {
+    test1 extends Timeout {
+      time ATTRIB maxTimePerTest;
+      action extends  LAZY ATTRIB plain:TemplateLocalHost {
+        //appName "org/smartfrog/regtest/arithmetic/templategen/exampleTH_TinyLH.sf";
+        appName "org/smartfrog/regtest/arithmetic/templategen/example_tiny.sf";
+
+      }
+    }
+
+//
+//    test2 extends Timeout {
+//      time ATTRIB maxTimePerTest;
+//      action extends LAZY  ATTRIB secure:TemplateSerrano {
+//        appName "org/smartfrog/regtest/arithmetic/templategen/example1TH_1.sf";
+//      }
+//    }
+//
+//    test3 extends Timeout {
+//      time ATTRIB maxTimePerTest;
+//      action extends LAZY  ATTRIB  dynamicLoad:TemplateSerrano {
+//        appName "org/smartfrog/regtest/arithmetic/templategen/example1TH_1.sf";
+//      }
+//    }
+//
+//    test4 extends Timeout {
+//      time ATTRIB maxTimePerTest;
+//      action extends LAZY  ATTRIB secureDynamicLoad:TemplateSerrano {
+//        appName "org/smartfrog/regtest/arithmetic/templategen/example1TH_1.sf";
+//      }
+//    }
+
+  }
+}
+Compound extends Prim {
+  sfClass "org.smartfrog.sfcore.compound.CompoundImpl";
+  sfSyncTerminate true;
+}
+sfConfig extends Compound {
+  maxTimePerTest 300000000;
+  all extends allTests;
+}

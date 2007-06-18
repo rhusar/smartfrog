@@ -1,0 +1,10 @@
+#include "org/smartfrog/components.sf"
+#include "org/smartfrog/services/net/ftp.sf"
+
+sfConfig extends FTPClient {
+	FTP:username "ritu";
+	FTP:localFiles ["D:\\temp\\one.txt","D:\\temp\\two.txt"];
+	FTP:remoteFiles ["/home/ritu/tmp/test1",
+                     "/home/ritu/tmp/test2"];
+	PasswordProvider:passwordFile "password.txt";
+}
