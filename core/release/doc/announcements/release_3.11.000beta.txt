@@ -1,5 +1,5 @@
-SmartFrog 3.11.0000beta
-=======================
+SmartFrog 3.11.000beta
+======================
 
 This is a new release of SmartFrog, the Java-based, LPGL-licensed distributed
 deployment framework developed by HP Laboratories. SmartFrog enables
@@ -8,7 +8,10 @@ aspects of the system so that they are all consistently configured, and managing
 the life-cycle of the application as a whole. The project's home page is
 http://smartfrog.org/
 
-This release is 3.11.0000beta; the first beta of the 3.11 release, built on Java 1.5
+The artifacts are available at
+http://sourceforge.net/project/showfiles.php?group_id=87384&package_id=176308&release_id=516351
+
+This release is 3.11.000beta; the first beta of the 3.11 release, built on Java 1.5
 from revision 4328 of the SVN repository. This release has an extended language
 with the ability to tag attributes, and includes the following items:
 
@@ -68,13 +71,16 @@ Again, we hope to broaden the contents of the RPM packaging and perhaps
 supplement with a .deb distribution. 
 
 All the JAR files are also published to a repository that is compatible with
-Apache Maven and Ivy. Add http://smartfrog.sourceforge.net/repository/ to your
-repository list to pull SmartFrog artifacts into your Ivy or Maven based build. 
+Apache Maven and Ivy. Add
+  http://smartfrog.sourceforge.net/repository/
+to your repository list to pull SmartFrog artifacts into your Ivy- or Maven- based build.
+
 There are also SmartFrog components to retrieve artifacts from such a repository
 (the Library components under /org/smartfrog/services/os/java/library.sf ),
 which can be used for dynamic download of SmartFrog and other artifacts.
 
 The files and SHA1 checksums are:
+
 9a5e7da61309fb4e214a1812d2f9d9da4db1a867  sf.3.11.000beta.20070614_all.tar.gz
 d3f7488d7afad967b508c1ba8769f52a500a4f65  sf.3.11.000beta.20070614_all.zip
 bd06a2d61fea78f4297eb693872debc8db28c3c5  sf.3.11.000beta.20070614_dist.tar.gz
