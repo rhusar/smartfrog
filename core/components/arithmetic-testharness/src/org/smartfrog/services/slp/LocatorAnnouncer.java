@@ -1,6 +1,7 @@
 package org.smartfrog.services.slp;
 
 import org.smartfrog.sfcore.prim.*;
+import org.smartfrog.sfcore.workflow.components.OnEvent;
 import org.smartfrog.sfcore.workflow.eventbus.EventPrimImpl;
 import org.smartfrog.sfcore.common.SmartFrogException;
 
@@ -99,34 +100,34 @@ public class LocatorAnnouncer extends EventPrimImpl implements Prim{
   /**
    * Get a pointer on the locator
    */
-  public void sfDeploy() throws SmartFrogException, RemoteException {
-      super.sfDeploy();
-      retryInterval = ((Integer) this.sfResolve("retryInterval")).intValue();
-      activeWait = Boolean.valueOf((String) sfResolve("activeWait")).booleanValue();
-      keepLooking = Boolean.valueOf((String) sfResolve("keepLooking")).booleanValue();
-      try {
-          locatorAccessPoint = (Prim) this.sfResolve("locator");
-      } catch (Exception e) {
-          e.printStackTrace();
-      }
+    public void sfDeploy() throws SmartFrogException, RemoteException{
+    super.sfDeploy();
+    retryInterval = ((Integer) this.sfResolve("retryInterval")).intValue();
+    activeWait = Boolean.valueOf((String)sfResolve("activeWait")).booleanValue();
+    keepLooking = Boolean.valueOf((String)sfResolve("keepLooking")).booleanValue();
+    try {
+      locatorAccessPoint = (Prim)this.sfResolve("locator");
+    } catch (Exception e ){
+      e.printStackTrace();
+    }
   }
 
 
-    /**
+  /**
    * Retrieve the results attribute in
-     */
+   */
     public void sfStart() throws SmartFrogException, RemoteException {
-        super.sfStart();
-        System.out.println("ExampleLocator : Locator access point started ");
-        Thread serviceURLFinder = null;
-        if (keepLooking) {
-            serviceURLFinder = new KeepLooking();
-        } else if (activeWait) {
-            serviceURLFinder = new FindAndDie();
-        } else {
-            serviceURLFinder = new TryAndDie();
-        }
-        serviceURLFinder.start();
-
+    super.sfStart();
+    System.out.println( "ExampleLocator : Locator access point started ");
+    Thread serviceURLFinder = null;
+    if (keepLooking){
+      serviceURLFinder = new KeepLooking();
+    } else if (activeWait) {
+      serviceURLFinder = new FindAndDie();
+    } else {
+      serviceURLFinder = new TryAndDie();
     }
+    serviceURLFinder.start();
+
+  }
 }

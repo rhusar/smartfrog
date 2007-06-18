@@ -7,31 +7,31 @@ package org.smartfrog.tools.testharness.templategen;
 public class Daemon {
 
   /** A host in which this daemon is located.*/
-  public String host;
+  String host;
 
   /** A logical name for this daemon.*/
-  public String name;
+  String name;
 
   /** PrincipalMonitoredDaemon or just plain MonitoredDaemon*/
-  public String type;
+  String type;
 
   /** Smartfrog home directory for this daemon.*/
-  public String sfHome;
+  String sfHome;
 
   /** OS (Windows or Linux) of the daemon.*/
-  public String os;
+  String os;
 
   /** A daemon with special behaviour like hosting a web server.*/
-  public static final String PRINCIPAL_TYPE="PrincipalMonitoredDaemon";
+  public final static String PRINCIPAL_TYPE="PrincipalMonitoredDaemon";
 
   /** A common daemon type.*/
-  public static final String NORMAL_TYPE="MonitoredDaemon";
+  public final static String NORMAL_TYPE="MonitoredDaemon";
 
   /** An identifier for a windows machine. */
-  public static final String WINDOWS="windows";
+  public final static String WINDOWS="windows";
 
   /** An identifier for a linux machine. */
-  public static final String LINUX="linux";
+  public final static String LINUX="linux";
 
 
   public Daemon(String name,String host, String sfHome, String os,

@@ -693,7 +693,7 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
      * @throws IOException failure while writing
      */
     public void writeOn(Writer ps, int indent) throws IOException {
-        ps.write("extends " + (getEager() ? "" : "DATA "));
+        ps.write("extends " + (getEager() ? "" : "LAZY "));
 
         if (sfContext.size() > 0) {
             ps.write(" {\n");

@@ -1,4 +1,4 @@
-#include "/org/smartfrog/services/slp/slpadvertiser.sf"
+#include "org.smartfrog.services/slp/slpadvertiser.sf"
 /**
  * This extension of the generic SmartFrog SLP advertiser specifically 
  * advertises components. The 'toAdvertise' attributes should point to a list

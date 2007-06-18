@@ -119,6 +119,7 @@
     <property name="test.dir" location="${build.dir}/test"/>
     <property name="test.classes.dir" location="${build.test.dir}/classes"/>
     <property name="test.data.dir" location="${build.test.dir}/data"/>
+    <property name="test.datafiles.dir" location="test/files"/>
     <property name="test.reports.dir" location="${build.test.dir}/reports"/>
   
     <property name="dist.dir" location="dist"/>
@@ -170,7 +171,7 @@
 
     <tstamp>
       <format property="year" pattern="yyyy"/>
-      <format property="build.date" pattern="yyyy-MM-dd HH:mm" />
+      <format property="build.date" pattern="yyyy-MM-yyyy HH:mm" />
     </tstamp>
     <property name="Name.Framework" value="SmartFrog"/>
     <property name="Name.System" value="${ant.project.name}"/>
@@ -478,7 +479,6 @@ java.class.path=
     <!-- rmic configuration -->
     <presetdef name="sf-rmic">
       <rmic
-        compiler="${rmic.compiler}"
         verify="true"
         stubversion="1.2" />
     </presetdef>
@@ -1468,14 +1468,11 @@ java.class.path=
 
   <!-- ========================================================== -->
   <!-- shortcut for testing -->
-  <!-- creates a distribution but without any javadocs (for speed)-->
   <!-- ========================================================== -->
   <target name="smartfrog-dist"
     depends="init-common"
     >
-    <ant dir="${smartfrog.home}" target="published" inheritall="false">
-      <property name="javadoc.disabled" value="true" />
-    </ant>
+    <ant dir="${smartfrog.home}" target="published" inheritall="false"/>
   </target>
 
   <!-- ========================================================== -->

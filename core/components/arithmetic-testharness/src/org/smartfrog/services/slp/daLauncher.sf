@@ -1,4 +1,4 @@
-#include "/org/smartfrog/sfcore/components.sf"
+#include "org.smartfrog.sfcore/components.sf"
 
 /**
  * This component launches an SLP Directory Agent. 

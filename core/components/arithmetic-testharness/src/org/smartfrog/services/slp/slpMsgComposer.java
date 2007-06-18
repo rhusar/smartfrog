@@ -1,4 +1,3 @@
-
 package org.smartfrog.services.slp;
 /**
  * Compose various SLPv2 messages (protocol stack)

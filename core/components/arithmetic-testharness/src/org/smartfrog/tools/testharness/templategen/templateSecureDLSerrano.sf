@@ -1,13 +1,13 @@
 
     
 
-#include "/org/smartfrog/components.sf"
-#include "/org/smartfrog/sfcore/workflow/components.sf"
+#include "org/smartfrog/components.sf"
+#include "org/smartfrog/sfcore/workflow/components.sf"
  
-#include "/org/smartfrog/services/runcmd/components.sf"
+#include "org/smartfrog/services/runcmd/components.sf"
 
-#include "/org/smartfrog/tools/testharness/components.sf"
-#include "/org/smartfrog/services/trace/components.sf"
+#include "org/smartfrog/tools/testharness/components.sf"
+#include "org/smartfrog/services/trace/components.sf"
 
 TestRunCommand extends RunCommand {
     //shellCmd ATTRIB shellcmd;

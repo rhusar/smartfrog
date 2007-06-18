@@ -1,4 +1,4 @@
-#include "/org/smartfrog/services/slp/slpResultsCollector.sf"
+#include "org.smartfrog.services/slp/slpResultsCollector.sf"
 /**
  * This extension of SLPResultsCollector converts the stored service:url results into 
  * LAZY references to the corresponding components.

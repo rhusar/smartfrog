@@ -1,4 +1,4 @@
-#include "/org/smartfrog/sfcore/workflow/components.sf";
+#include "org.smartfrog.sfcore.workflow.components.sf";
 
 /**
  * An 'abstract' component to use generally with a SLPResultsCollector :

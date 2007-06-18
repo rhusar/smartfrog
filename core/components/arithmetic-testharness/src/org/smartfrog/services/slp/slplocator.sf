@@ -1,4 +1,4 @@
-#include "/org/smartfrog/sfcore/components.sf"
+#include "org.smartfrog.sfcore/components.sf"
 
 /**
  * Configures a User Agent that provides access to the service location facility. 
@@ -10,7 +10,7 @@
  * Smartfrog DA reference may be provided directly through the 'useDA' attribute 
  * 
  * - Bear in mind that this component only provides serviceURLs discovery, which is why only the 
- * service type has to be provided. Extensions of this component ï¿½not written in the 
+ * service type has to be provided. Extensions of this component –not written in the 
  * current release- could also perform attributes discovery, et. 
  * - 'sfServiceDescription' or 'sfServiceQuery' may be used to refine the query. 
  * If both are provided only 'sfServiceQuery' is used.
