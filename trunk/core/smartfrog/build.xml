@@ -154,12 +154,7 @@
   <!--property name="redist" value="redist"/ -->
   <property name="examplesFiles" value="org/smartfrog/examples/**/*"/>
 
-  <!--when available, use the forking compiler-->
-  <available property="rmic.compiler" value="forking"
-       classname="org.apache.tools.ant.taskdefs.rmic.ForkingSunRmic"
-      />
-  <!-- fall back to the sun compiler -->
-  <property name="rmic.compiler" value="sun"/>
+  <property name="rmic.compiler" value="forking"/>
 
   <!-- Compile options for Smartfrog Release -->
   <property name="javac.debug.mode" value="on"/>
