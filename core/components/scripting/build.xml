@@ -37,9 +37,7 @@ The build script for SmartFrog Scripting component.
 
 
   <property name="is.component" value="true"  />
-<!--
   <property name="ivy.enabled" value="true"/>
--->
 
   <!-- Import common stuff -->
   <!--available file="../../common.xml" property="root.dir" value="../.."/-->
