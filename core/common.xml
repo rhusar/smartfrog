@@ -170,7 +170,7 @@
 
     <tstamp>
       <format property="year" pattern="yyyy"/>
-      <format property="build.date" pattern="yyyy-MM-yyyy HH:mm" />
+      <format property="build.date" pattern="yyyy-MM-dd HH:mm" />
     </tstamp>
     <property name="Name.Framework" value="SmartFrog"/>
     <property name="Name.System" value="${ant.project.name}"/>
@@ -478,6 +478,7 @@ java.class.path=
     <!-- rmic configuration -->
     <presetdef name="sf-rmic">
       <rmic
+        compiler="${rmic.compiler}"
         verify="true"
         stubversion="1.2" />
     </presetdef>
