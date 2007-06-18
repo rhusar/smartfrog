@@ -511,4 +511,35 @@
   <target name="upload-no-rebuild" depends="can-upload,scp-upload,ftp-upload"
       description="upload the existing artifacts"/>
 
+  <target name="svn-init" depends="init">
+    <fail unless="svn.revision">
+      The property svn.revision must be set to define which revision to use
+    </fail>
+    <property name="svn.tag" value="release${smartfrog.version}" />
+    <property name="svn.message"
+      value="release ${smartfrog.version} from revision ${svn.revision} on ${build.date} by ${user.name}" />
+    <echo>SVN message="${svn.message}"</echo>
+    <property name="svn.url" value="https://smartfrog.svn.sourceforge.net/svnroot/smartfrog/" />
+  </target>
+
+  <!--
+  Issue a command like
+    svn copy https://smartfrog.svn.sourceforge.net/svnroot/smartfrog/trunk -r 4328 \
+           https://smartfrog.svn.sourceforge.net/svnroot/smartfrog/tags/release-1.0 \
+      -m "release3.11.000beta1"
+
+  -->
+  <target name="svn-tag" depends="svn-init">
+    <exec failonerror="true"
+        executable="svn">
+      <arg value="copy"/>
+      <arg value="${svn.url}/trunk"/>
+      <arg value="-r"/>
+      <arg value="${svn.revision}"/>
+      <arg value="${svn.url}/tags/${svn.tag}"/>
+      <arg value="-m" />
+      <arg value="${svn.message}"/>
+    </exec>
+  </target>
+
 </project>
