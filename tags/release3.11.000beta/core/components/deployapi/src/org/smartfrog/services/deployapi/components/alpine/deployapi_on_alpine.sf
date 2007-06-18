@@ -1,0 +1,84 @@
+/** (C) Copyright 2006 Hewlett-Packard Development Company, LP
+
+ This library is free software; you can redistribute it and/or
+ modify it under the terms of the GNU Lesser General Public
+ License as published by the Free Software Foundation; either
+ version 2.1 of the License, or (at your option) any later version.
+
+ This library is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ Lesser General Public License for more details.
+
+ You should have received a copy of the GNU Lesser General Public
+ License along with this library; if not, write to the Free Software
+ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+ For more information: www.smartfrog.org
+
+ */
+
+
+#include "/org/smartfrog/services/deployapi/transport/endpoints/alpine/handlers.sf"
+#include "/org/smartfrog/services/deployapi/components/deploymentserver.sf";
+#include "/org/smartfrog/projects/alpine/config/smartfrog/alpine_server_on_jetty.sf"
+
+DeployServer extends AlpineServerOnJetty {
+
+    home LAZY PROPERTY java.io.tmpdir;
+
+    port TBD;
+    //wardir TBD;
+    hostname LAZY engine:servletContext:ipaddr;
+    location "test system";
+    livenessEnabled true;
+
+
+    /**
+     * the engine that does the work
+     */
+    engine extends DeploymentServer {
+      port PARENT:port;
+      server LAZY  jettyServer;
+      location LAZY PARENT:location;
+      hostname PARENT:hostname;
+      servicesPath "alpine/";
+      systemServlet "system/";
+    }
+
+    portal extends PortalEndpoint {
+      servlet LAZY alpine;
+    }
+
+    system extends SystemEndpoint {
+      servlet LAZY alpine;
+    }
+
+    subscriptionEndpoint extends SubscriptionEndpoint {
+      servlet LAZY alpine;
+    }
+    //subscriptions extends
+
+    //fetch the page every so often, just to see that we are happy
+    liveness extends LivenessPage {
+        enabled PARENT:livenessEnabled;
+        host LAZY PARENT:hostname;
+        port PARENT:port;
+        page LAZY echo:absolutePath;
+        checkFrequency 1;
+    }
+
+}
+
+
+sfConfig extends DeployServer {
+
+
+    port 6061;
+
+    livenessEnabled false;
+}
+
+
+
+

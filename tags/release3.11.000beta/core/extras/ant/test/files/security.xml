@@ -1,0 +1,119 @@
+<?xml version="1.0"?>
+<project name="security" default="init-security" >
+
+<description>
+ Tests for starting security
+ 
+ command line invocation
+
+
+ant -lib ../../build/dist/lib/sf-tasks.jar -lib ../../../../smartfrog/dist/lib/smartfrog.jar -lib ../../../../smartfrog/dist/lib/sfExamples.jar -f security.xml testResource
+ant -lib ..\..\build\dist\lib\sf-tasks.jar -lib ..\..\..\..\smartfrog\dist\lib\smartfrog.jar -lib ..\..\..\..\smartfrog\dist\lib\sfExamples.jar -f security.xml testResource
+
+</description>
+
+  <import file="test-common.xml" />
+
+
+
+  <property name="host1.keystore" location="host1-keys.st"/>
+  <property name="host1.properties" location="host1-SFSecurity.properties"/>
+  <property name="host1.alias" location="self"/>
+  
+  <property name="build.dir" location="build"/>
+
+  
+  <target name="init">
+    <mkdir dir="${build.dir}" />
+    <sf-security id="host1" 
+      keystore="${host1.keystore}"
+      securityFile="${host1.properties}"
+      alias="${host1.alias}"
+      />
+    <sf-security id="empty" />
+  </target>
+
+  <target name="setup" depends="init" />
+
+  <target name="teardown">
+    <delete dir="${build.dir}"/>
+  </target>
+
+  <!--create the jar-->
+  <target name="create-jar" depends="init">
+    <property name="jar.file" location="${build.dir}/source.jar" />
+    <jar destfile="${jar.file}" basedir="." includes="*.xml" >
+    </jar>
+  </target>
+
+  <target name="testMissingSecurity" depends="create-jar">
+    <sf-sign jar="${jar.file}">
+    </sf-sign>
+  </target>
+
+  <target name="testEmpty" depends="create-jar">
+    <sf-sign jar="${jar.file}" >
+      <security />
+    </sf-sign>
+  </target>
+
+  <target name="testEmpty2" depends="create-jar">
+    <sf-sign jar="${jar.file}" securityref="empty" >
+    </sf-sign>
+  </target>  
+  
+  
+  <target name="testNoProperties" depends="create-jar">
+    <sf-sign jar="${jar.file}">
+      <security
+        keystore="${host1.keystore}"
+      />
+    </sf-sign>
+  </target>
+
+  <target name="testNoKeystore" depends="create-jar">
+    <sf-sign jar="${jar.file}">
+      <security
+        securityFile="${host1.properties}"
+      />
+    </sf-sign>
+  </target>
+
+  <target name="testSignOneJar" depends="create-jar">
+    <sf-sign jar="${jar.file}">
+      <security refid="host1" />
+    </sf-sign>
+  </target>
+  
+  <target name="testSignFilesetNoAlias" depends="create-jar">
+    <sf-sign >
+      <security
+        securityFile="${host1.properties}"
+        keystore="${host1.keystore}"
+      />
+      <fileset file="${jar.file}" />
+    </sf-sign>
+  </target>
+
+  <target name="testSignFileset" depends="create-jar">
+    <sf-sign >
+      <security refid="host1" />
+      <fileset file="${jar.file}" />
+    </sf-sign>
+  </target>
+
+  
+  <target name="testRun" depends="create-jar">
+    <sf-sign jar="${jar.file}">
+      <security refid="host1" />
+    </sf-sign>
+  </target>
+  
+  <target name="keystore-list" >
+   <exec executable="keytool">
+    <arg value="-list"/>
+    <arg value="-keystore"/>
+    <arg file="${host1.keystore}" />
+   </exec>
+  </target>
+</project>

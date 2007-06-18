@@ -1,0 +1,78 @@
+/** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
+
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+For more information: www.smartfrog.org
+
+*/
+
+#include "/org/smartfrog/components.sf"
+#include "/org/smartfrog/examples/arithnet/netComponents.sf"
+#include "/org/smartfrog/sfcore/workflow/components.sf"
+
+/*
+ * example 4 is example 1 (two components) with the following changes
+ * It uses two hosts:
+ *   hostG is the host for the generator
+ *   hostP is the host for the printer
+ * There is a timer (DoNothing) which terminates normally after a certain time
+ * The example is run twice, each for 10 seconds, one with the generator on one
+ * host and the printer on the other then v.v.
+ * This uses the SmartFlow combinator Sequence and the Timer component
+ */
+
+
+Example4Base extends Compound {
+     generator extends Generator {
+         sfProcessHost ATTRIB hostG;
+         outputs:value:to LAZY ATTRIB printer:inputs:printVal;
+         interval 1;
+         min 1;
+         max 10;
+     }
+     printer extends Printer {
+         sfProcessHost ATTRIB hostP;
+     }
+     timer extends DoNothing {
+         time ATTRIB runtime; // time in millisecs
+     }
+}
+
+Example4 extends Sequence {
+//     actions extends LAZY  {
+         case1 extends Example4Base {
+               hostG ATTRIB host1;
+               hostP ATTRIB host2;
+               runtime 10000;
+         }
+         case2 extends Example4Base {
+               hostG ATTRIB host2;
+               hostP ATTRIB host1;
+               runtime 10000;
+         }
+//     }
+}
+
+
+sfConfig extends Compound {
+        host1 "localhost";
+        host2 "localhost";
+
+        sfProcessComponentName "default";
+
+        example extends Example4;
+}
+
+
