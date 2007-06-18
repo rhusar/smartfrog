@@ -1057,7 +1057,7 @@ java.class.path=
   <!-- target to get its dependencies right -->
   <!-- ========================================================== -->
   <target name="pre-compile"
-      depends="init,declare-classpaths,assert-smartfrog,assert-prerequisites">
+      depends="init,init-common,declare-classpaths,assert-smartfrog,assert-prerequisites">
   </target>
 
   <!-- ========================================================== -->

@@ -1,18 +1,43 @@
 <?xml version="1.0"?>
 <project name="Smartfrog-OSGi" default="all">
-    <property name="smartfrog.home" value="../../smartfrog/"/>
-    <property name="javadoc.disabled" value="true"/>
 
+    <property file="build.properties" />
+
+    <target name="init">
+        <fileset id="child.projects" dir="." >
+            <include name="*/build.xml" />
+        </fileset>
+    </target>
+    
     <target name="all" depends="copyJarsAround"/>
 
-    <target name="daemon-bundle" depends="smartfrog-dist">
-        <ant dir="daemon-bundle" target="all" inheritall="false"/>
+
+    <target name="bundles" depends="smartfrog-dist">
+        <subant  target="dist" >
+            <fileset refid="child.projects" />
+            <property name="javadocs.disabled" value="${javadoc.disabled}"/>
+        </subant>
     </target>
+
+
+    <target name="daemon-bundle" depends="smartfrog-dist">
+        <subant  target="dist" >
+            <fileset file="daemon-bundle/build.xml" />
+            <property name="javadocs.disabled" value="${javadoc.disabled}"/>
+        </subant>
+    </target>
+
     <target name="test-bundle">
-        <ant dir="test-bundle" target="all" inheritall="false"/>
+        <subant target="dist" inheritall="false">
+            <fileset file="test-bundle/build.xml" />
+            <property name="javadocs.disabled" value="${javadoc.disabled}"/>
+        </subant>
     </target>
     <target name="rmispi-bundle">
-        <ant dir="rmiclassloading-extension-bundle" target="all" inheritall="false"/>
+        <subant target="dist" inheritall="false">
+            <fileset file="rmiclassloading-extension-bundle/build.xml" />
+            <property name="javadocs.disabled" value="${javadoc.disabled}"/>
+        </subant>
     </target>
 
     <target name="copyJarsAround" depends="daemon-bundle,test-bundle,rmispi-bundle">
@@ -28,15 +53,16 @@
         </copy>
     </target>
 
-    <target name="clean">
-        <ant dir="daemon-bundle" target="clean"/>
-        <ant dir="test-bundle" target="clean"/>
-        <ant dir="rmiclassloading-extension-bundle" target="clean"/>
+    <target name="clean" depends="init">
+        <subant  target="clean" >
+            <fileset refid="child.projects" />
+        </subant>        
     </target>
 
-    <target name="smartfrog-dist">
-        <ant dir="${smartfrog.home}" target="published" inheritall="false">
+    <target name="smartfrog-dist" depends="init">
+        <subant target="published" >
+            <fileset file="${sf.home}/build.xml" />
             <property name="javadocs.disabled" value="${javadoc.disabled}"/>
-        </ant>
+        </subant>
     </target>
 </project>
