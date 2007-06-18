@@ -34,29 +34,29 @@ import org.smartfrog.sfcore.reference.Reference;
  */
 public class Generator extends NetElemImpl implements Remote {
 
-    String name = "Generator";
+    private String name = "Generator";
 
     /**
      * Seed value for the generator.
      */
-    int seed;
+    private int seed;
     /**
      * Delay value for the generator.
      */
-    int delay;
+    private int delay;
 
     /**
      * Difference value for the generator.
      */
-    int diff;
+    private int diff;
     /**
      * Minimum value for the generator.
      */
-    int min;
+    private int min;
     /**
      * Generator thread.
      */
-    Thread generator;
+    private Thread generator;
 
     /**
      * Constructs Generator object
@@ -82,7 +82,7 @@ public class Generator extends NetElemImpl implements Remote {
             seed = ((Integer) sfResolve("seed")).intValue();
             delay = ((Integer) sfResolve("interval")).intValue();
             name = this.sfCompleteNameSafe().toString();
-            generator = new TheGenerator();
+            generator = new TheGenerator(this);
             generator.start();
 	    //generator.join();    //Mod Idia Team
         } catch (Exception ex) {
@@ -108,26 +108,59 @@ public class Generator extends NetElemImpl implements Remote {
         super.sfTerminateWith(tr);
     }
 
+
+    public String getName() {
+        return name;
+    }
+
+    public int getSeed() {
+        return seed;
+    }
+
+    public int getDelay() {
+        return delay;
+    }
+
+    public int getDiff() {
+        return diff;
+    }
+
+
+    public void setDiff(int diff) {
+        this.diff = diff;
+    }
+
+    public int getMin() {
+        return min;
+    }
+
     /**
      * Inner class that acts as a thread and adds an integer to the current
      * value vector maintained by the parent object NetElemImpl with the
      * help of seed, diff and min values.
      */
-    class TheGenerator extends Thread {
+    private static class TheGenerator extends Thread {
+        private Generator owner;
+
+
+        public TheGenerator(Generator owner) {
+            this.owner = owner;
+        }
+
         /**
          * Interface method for thread.
          */
         public void run() {
-            Random r = new Random(seed);
-            this.setName(name);
+            Random r = new Random(owner.getSeed());
+            this.setName(owner.getName());
             while (true) {
-                diff = 10;
-                int v = Math.abs((r.nextInt() % diff)) + min;
+                owner.setDiff(10);
+                int v = Math.abs((r.nextInt() % owner.getDiff())) + owner.getMin();
                 System.out.println("\n\n*****************************************"
-                                  +"\n  GENERATOR:"+" Result: "+ v +", "+sfCompleteNameSafe());
-                addValue(v);
+                                  +"\n  GENERATOR:"+" Result: "+ v +", "+owner.getName());
+                owner.addValue(v);
                 try {
-                    sleep(delay * 1000);
+                    sleep(owner.getDelay() * 1000);
                 } catch (Exception e) {
                     System.out.println("DEBUG TERMINATE RUN ,"+e.toString());
                 }
