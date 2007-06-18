@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<cdl:cdl xmlns:cdl="http://www.gridforum.org/namespaces/2005/02/cddlm/CDL-1.0"
+    xmlns:cmp="http://www.gridforum.org/cddlm/components/2005/02"
+    xmlns:sf="http://www.gridforum.org/cddlm/smartfrog/2005/02"
+    xmlns:sfi="http://smartfrog.org/types/2006/01/"
+    xmlns:base="http://smartfrog.org/services/cdl/base/"
+    xmlns:demo="http://smartfrog.org/services/cdl/demo/">
+
+  <cdl:documentation>
+    Start an OS
+  </cdl:documentation>
+  <cdl:import location="classpath:/org/smartfrog/services/cddlm/cdl/demo/components.cdl"/>
+
+
+  <cdl:system>
+
+    <!-- underware -->
+    <open cdl:extends="demo:Open">
+      <filename>C:\Projects\Machines\os\vmimage.vmx</filename>
+    </open>
+<!--
+    <jsdl-execute cdl:extends="jsdl:execute">
+      <jsdl-file cdl:ref="/runtime/jsdlfile"/>
+    </jsdl-execute>-->
+  </cdl:system>
+</cdl:cdl>

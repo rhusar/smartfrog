@@ -1,0 +1,92 @@
+/** (C) Copyright 1998-2006 Hewlett-Packard Development Company, LP
+
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+For more information: www.smartfrog.org
+
+*/
+
+
+ /**
+  * Extends the XML listeners with XHTML support
+  */
+#include "/org/smartfrog/services/xunit/listeners/xml/components.sf"
+
+
+/**
+ * The HTML test listener
+ */
+
+HtmlTestListenerSchema extends Schema {
+    /**
+     * page title
+     */
+    title extends OptionalString;
+    /**
+     * URL To an optional CSS sheet
+     * This takes priority over cssResource or cssData
+     */
+    cssURL extends OptionalString;
+
+    /**
+     * CSS data inline in a smartfrog file.
+     * This takes priority over cssResource
+     */
+
+     cssData extends OptionalString;
+
+    /**
+     * resource name of optional CSS data file, this is pasted in inline
+     * it is also assumed to be UTF8 when read from the file, so put an @charset "UTF-8"; declaration
+     * at the top to make it clear that this is the fact
+     */
+    cssResource  extends OptionalString;
+
+
+}
+
+
+/**
+ * This component collects results and publishes (static) HTML pages
+ * to a location
+ */
+HtmlTestListener extends XmlListener {
+    sfClass "org.smartfrog.services.xunit.listeners.html.HtmlTestListenerComponent";
+    xmlListenerSchema extends XmlListenerSchema;
+    htmlTestListenerSchema extends HtmlTestListenerSchema;
+    name "HtmlTestListener";
+    suffix ".html";
+    indexFile "index.html";
+    publishFrequency 30;
+    title "Test Statistics";
+    cssResource "/org/smartfrog/services/xunit/listeners/html/report.css";
+}
+
+/**
+ * this is still work in progress; something to create index pages
+ */
+HtmlTestIndexSchema extends HtmlTestListenerSchema  {
+}
+
+HtmlTestIndex extends XmlTestIndex {
+    sfClass "org.smartfrog.services.xunit.listeners.html.HtmlTestIndexImpl";
+    htmlTestIndexSchema extends HtmlTestIndexSchema ;
+    indexFile "index.html";
+    publishFrequency 30;
+    title "Test Statistics";
+    cssResource HtmlTestListener:cssResource;
+}
+
+
