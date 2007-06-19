@@ -7,8 +7,17 @@ import org.smartfrog.services.assertions.TestBlock;
 public class MysqlTest extends DeployingTestBase {
     private static final String BASE = "/org/smartfrog/services/database/test/system/core/mysql/";
 
+    private boolean mysqlPresent;
+    public static final String MYSQL_PRESENT = "test.mysql.present";
+
     public MysqlTest(String name) {
         super(name);
+    }
+
+
+    protected void setUp() throws Exception {
+        super.setUp();
+        mysqlPresent=Boolean.getBoolean(MYSQL_PRESENT);
     }
 
 
@@ -17,27 +26,27 @@ public class MysqlTest extends DeployingTestBase {
     }
 
     public void testConnectionOpenTest() throws Throwable {
-        deployAndTerminate("ConnectionOpenTest");
+        deployAndTerminateMysql("ConnectionOpenTest");
     }
 
     public void testIsMysqlLive() throws Throwable {
-        deployAndTerminate("IsMysqlLiveTest");
+        deployAndTerminateMysql("IsMysqlLiveTest");
     }
 
     public void testMysqlStart() throws Throwable {
-        deployAndTerminate("MysqlStartTest");
+        deployAndTerminateMysql("MysqlStartTest");
     }
 
     public void testShutdown() throws Throwable {
-        deployAndTerminate("ShutdownTest");
+        deployAndTerminateMysql("ShutdownTest");
     }
 
     public void testTableManipulation() throws Throwable {
-        deployAndTerminate("TableManipulationTest");
+        deployAndTerminateMysql("TableManipulationTest");
     }
 
     public void testIssueWarnings() throws Throwable {
-        deployAndTerminate("IssueWarningsTest");
+        deployAndTerminateMysql("IssueWarningsTest");
     }
 
     /**
@@ -46,20 +55,30 @@ public class MysqlTest extends DeployingTestBase {
      * @throws Throwable
      */
     public void testMissingDatabase() throws Throwable {
-        TestBlock block = deploy("MissingDatabaseTest");
-        expectAbnormalTermination(block);
+        if(mysqlPresent) {
+            TestBlock block = deploy("MissingDatabaseTest");
+            expectAbnormalTermination(block);
+        }
     }
 
     /*
     *@skip: only works if you deploy mysql in grant-tables mode
     */
     public void NotestUserManipulation() throws Throwable {
-        deployAndTerminate("UserManipulationTest");
+        deployAndTerminateMysql("UserManipulationTest");
     }
 
     private void deployAndTerminate(String template) throws Throwable {
         TestBlock block = deploy(template);
         expectSuccessfulTermination(block);
+    }
+
+    private void deployAndTerminateMysql(String template) throws Throwable {
+        if (mysqlPresent) {
+            deployAndTerminate(template);
+        } else {
+            System.out.println("Skipping test "+template+" as mysql is not found");
+        }
     }
 
     private TestBlock deploy(String template) throws Throwable {

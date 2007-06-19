@@ -51,6 +51,12 @@
   <target name="init" depends="core.init">
     <echo message="==================================================================="/>
     <echo message="= ${ant.project.name}"/>
+
+    <!--work out if mysql is around-->
+    <available property="test.mysql.present"
+        file="mysqld" filepath="${env.PATH}"/>
+    <available property="test.mysql.present"
+        file="mysqld.exe" filepath="${env.Path}"/>
   </target>
 
 </project>
