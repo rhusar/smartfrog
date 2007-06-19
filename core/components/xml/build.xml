@@ -129,32 +129,6 @@
     </sf-javadoc>
   </target>
 
-
-  <!-- ========================================================== -->
-  <!-- this is an override point -->
-  <!-- compile everything, copy useful files over-->
-  <!-- ========================================================== -->
-<!--
-  <target name="compile-tests"
-    depends="ready-to-compile-tests"
-    if="java1.5+"
-      >
-    <depend
-      srcdir="${test.src.dir}"
-      destdir="${test.classes.dir}"
-      cache="${build.test.dir}/depends"
-      closure="yes"/>
-    <sf-javac
-      srcdir="${test.src.dir}"
-      destdir="${test.classes.dir}"
-      classpathref="tests.compile.classpath"
-      source="${javac.version}"
-      target="${javac.version}"
-      />
-    <copy-useful-files src="${test.src.dir}" dest="${test.classes.dir}"/>
-  </target>
--->
-
   <!-- ========================================================== -->
   <!-- parse test files -->
   <!-- ========================================================== -->
@@ -162,7 +136,7 @@
     description="parse the deployment descriptor">
     <property name="parse.quiet" value="true"/>
     <sf-parse quiet="${parse.quiet}">
-      <classpath path="${target.jar}:${test.jar}"/>
+      <classpath refid="tests.run.classpath"/>
       <sysproperty key="org.smartfrog.codebase"
         value="${codebase}"/>
       <!-- source files -->
@@ -192,18 +166,6 @@
     <property name="application.name" value="${project.name}"/>
   </target>
 
-  <!-- ========================================================== -->
-  <!-- set-->
-  <!-- ========================================================== -->
-<!--  <target name="init-codebase" depends="init-deploy-properties,declare-classpaths,package-tests"
-    description="set up the codebase property">
-    <makeurl property="codebase">
-      <path refid="tests.run.classpath"/>
-    </makeurl>
-    <echo>
-        deploying to ${deploy.host}
-        codebase=${codebase}</echo>
-  </target>-->
 
   <!-- ========================================================== -->
   <!-- deploy; requires a host -->

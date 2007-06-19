@@ -41,26 +41,11 @@
 
   <!-- Import common stuff -->
   <import file="${root.dir}/common.xml"/>
-
+  <import file="../../common.xml"/>
 
   <target name="init" depends="common.init">
     <echo message="==================================================================="/>
     <echo message="= ${ant.project.name}"/>
-  </target>
-
-  <!-- ========================================================== -->
-  <!-- create a distro. 
-       we want both sf-junit and the test har -->
-  <!-- ========================================================== -->
-  <!--target name="dist" depends="package,package-tests"-->
-  <target name="dist" depends="package"
-      description="create a distribution">
-
-  </target>
-
-  <target name="dist-tests" depends="package,package-tests"
-      description="create a distribution including SF tests">
-
   </target>
 
 
@@ -71,7 +56,7 @@
       description="parse the deployment descriptor">
     <property name="parse.quiet" value="true"/>
     <sf-parse quiet="${parse.quiet}">
-      <classpath path="${target.jar}:${test.jar}"/>
+      <classpath refid="tests.run.classpath"/>
       <sysproperty key="org.smartfrog.codebase"
           value="${codebase}"/>
       <sysproperty key="xmpp.password" value=""/>
@@ -92,21 +77,8 @@
     <property name="application.name" value="${project.name}"/>
   </target>
 
-  <!-- ========================================================== -->
-  <!-- set-->
-  <!-- ========================================================== -->
-  <target name="init-codebase" depends="init-deploy-properties"
-      description="deploy">
-    <makeurl property="codebase">
-      <fileset file="${target.jar}"/>
-      <fileset file="${test.jar}"/>
-      <fileset file="${junit.jar}"/>
-    </makeurl>
-    <echo>
-      deploying to ${deploy.host}
-      codebase=${codebase}
-    </echo>
-  </target>
+
+
   <!-- ========================================================== -->
   <!-- deploy; requires a host -->
   <!-- ========================================================== -->
