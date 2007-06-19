@@ -9,10 +9,10 @@ Bundle-Classpath: smartfrog.jar,
                   sfServices.jar,
                   sfExamples.jar,
                   .
-Bundle-Activator: org.smartfrog.osgi.SmartFrogActivator
+Service-Component: OSGI-INF/daemon.xml
 Import-Package: org.osgi.framework,
                 org.osgi.service.log; resolution:=optional,
-                org.osgi.service.packageadmin,
+                org.osgi.service.component,
                 org.smartfrog.sfcore.security.rmispi; version=1.0.0
 Export-Package: org.smartfrog; version=1.0.0,
                 org.smartfrog.sfcore; version=1.0.0,

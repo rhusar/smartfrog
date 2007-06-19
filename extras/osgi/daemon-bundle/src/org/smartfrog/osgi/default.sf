@@ -1,4 +1,4 @@
-/** (C) Copyright 1998-2003 Hewlett-Packard Development Company, LP
+/** (C) Copyright 1998-2007 Hewlett-Packard Development Company, LP
 
 Disclaimer of Warranty
 
@@ -36,21 +36,10 @@ ITS MEDIA, AND YOU HEREBY WAIVE ANY CLAIM IN THIS REGARD.
 #include "org/smartfrog/services/management/components.sf" 
 
 
-// Default sfDaemon Display
-DefaultDisplay extends  Display {
-    nameDisplay "sfDaemon Display"; // Window Title
-    positionDisplay "NE";         // Window position: North-West
-    fontSize 12;                  // Display font size
-    redirectStd true;             // Redirect std output and error to this wind.
-    showIP true;                  // Show IP address in window title
-    showSfProcess true;           // Show sfProcess name in  window title
-    terminateSFProcessOnExit true; // Terminates sfDaemon when window is closed
-};
-
-DefaultManagementDisplay extends DeployManagement { 
+DefaultManagementDisplay extends Display {
     nameDisplay "sfDaemon Management Display"; // Window Title
     positionDisplay "NE";         // Window position: North-West
-    redirectStd true;             // Redirect std output and error to this wind.
+    redirectStd false;             // Redirect std output and error to this wind.
     showIP true;                  // Show IP address in window title
     showSfProcess true;           // Show sfProcess name in  window title
     terminateSFProcessOnExit true; // Terminates sfDaemon when window is closed
@@ -69,7 +58,7 @@ DisplayTrace extends TraceDisplay{
 
 DefaultCompound extends Compound {
     sfProcessComponentName "sfDefault";
-    display extends DefaultDisplay;
+    display extends DefaultManagementDisplay;
 }
 
 DefaultManagementCompound extends DefaultCompound { 
