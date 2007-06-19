@@ -1352,7 +1352,7 @@ java.class.path=
   <!-- ========================================================== -->
   <target name="init-codebase" depends="declare-classpaths,init-deploy-properties,package-tests"
       description="set up the codebase property">
-    <makeurl property="codebase">
+    <makeurl property="codebase" validate="false">
       <path refid="tests.run.classpath"/>
     </makeurl>
     <echo level="verbose">
