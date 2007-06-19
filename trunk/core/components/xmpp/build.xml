@@ -41,7 +41,6 @@
 
   <!-- Import common stuff -->
   <import file="${root.dir}/common.xml"/>
-  <import file="../../common.xml"/>
 
   <target name="init" depends="common.init">
     <echo message="==================================================================="/>
