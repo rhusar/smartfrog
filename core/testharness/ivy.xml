@@ -25,8 +25,11 @@
     <conf name="runtime" description="runtime but not the artifact"
         extends="redist"/>
     <conf name="documentation"
-          description="all documentation artifacts"/>    
-  </configurations>  
+          description="all documentation artifacts"/>
+    <conf name="test-helpers" visibility="private"
+      description="everything needed inside the daemon for testing" />
+
+  </configurations>
   <publications>
     <!--get the artifact from our module name-->
     <artifact conf="master"/>
@@ -38,7 +41,7 @@
       name="smartfrog"
       changing="true"
       rev="latest.integration"
-      conf="compile->examples;runtime->examples"/>
+      conf="compile,daemon,runtime->examples"/>
     <dependency org="org.smartfrog"
         name="sf-tasks"
         changing="true"
@@ -47,6 +50,6 @@
     <dependency org="junit"
         name="junit"
         rev="${junit.version}"
-        conf="compile->default;redist->default"/>
+        conf="compile,redist,test-helpers->default"/>
   </dependencies>
 </ivy-module>
