@@ -24,7 +24,7 @@ For more information: www.smartfrog.org
 #include "/org/smartfrog/services/os/java/classpath.sf"
 
 TestDirectoryClasspath extends DirectoryClasspath {
-    directory ((LAZY PROPERTY user.home) ++ ".ivy" );
+    directory ((LAZY PROPERTY user.home) ++ (LAZY PROPERTY file.separator) ++ "/.ivy" );
     //recurse into subdirs
     recursive false;
     //bind early (on deploy) or late (on startup)

@@ -21,7 +21,8 @@
 #include "/org/smartfrog/components.sf"
 #include "/org/smartfrog/predicates.sf"
 #include "/org/smartfrog/services/os/runshell/components.sf"
-#include "/org/smartfrog/services/filesystem/components.sf"
+#include "/org/smartfrog/services/os/java/library.sf"
+
 
 /**
  * A classpath takes a list of libraries
@@ -72,7 +73,7 @@ LibraryClasspathSchema extends ClasspathSchema {
 }
 
 LibraryClasspath extends Classpath {
-    libraryClasspathSchema extends LibraryClasspath;
+    libraryClasspathSchema extends LibraryClasspathSchema;
      sfClass "org.smartfrog.services.os.java.LibraryClasspathImpl";
 
 }
@@ -80,7 +81,6 @@ LibraryClasspath extends Classpath {
  * SFOS-13 implies this is not implemented.
  */
 Maven2Classpath extends LibraryClasspath {
-    maven2ClasspathSchema extends Maven2ClasspathSchema;
 
     repository extends Maven2Library;
 
