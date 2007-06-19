@@ -48,6 +48,8 @@ import org.smartfrog.sfcore.common.SFMarshalledObject;
 import org.smartfrog.sfcore.common.*;
 import java.rmi.*;
 import org.smartfrog.sfcore.reference.HereReferencePart;
+import org.smartfrog.sfcore.languages.sf.PhaseNames;
+
 import java.io.InputStream;
 
 
@@ -1196,14 +1198,18 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
         String tempClassName = className.replace('.','/');
         String urlDescription = tempClassName+"."+languageExtension;
         Reference selectedRef = new Reference (tempClassName.substring(tempClassName.lastIndexOf("/")+1));
-        Vector phases = new Vector();
+
+        Vector phases = null;
         if (newPhases!=null){
             phases = newPhases;
         } else {
-            phases.add("type");
-            phases.add("function");
-            phases.add("link");
-            phases.add("predicate");
+            Phases top = null;
+            top = new SFParser(languageExtension).sfParseResource( urlDescription.toLowerCase());
+            phases = top.sfGetPhases();
+            //This only works for SF 1 language. This should be more generic.
+            if ((languageExtension.equals("sf"))&&(phases.contains(PhaseNames.SFCONFIG))){
+                phases.remove(PhaseNames.SFCONFIG);
+            }
         }
         // Get componentDescription and
         ComponentDescription cmpDesc = ComponentDescriptionImpl.sfComponentDescription(
