@@ -251,7 +251,7 @@ java.class.path=
     <property name="jarfile.suffix" value=""/>
     <property name="jarfile.extension" value="jar"/>
     <property name="artifact.name" value="${project.name}" />
-    <property name="jarfile.stub" value="${artifact.name}${jarfile.suffix}-${Version}" />
+    <property name="jarfile.stub" value="${artifact.name}${jarfile.suffix}-${smartfrog.version}" />
     <property name="jarfile.name" value="${jarfile.stub}.${jarfile.extension}"/>
 
     <property name="target.jar"
@@ -261,18 +261,18 @@ java.class.path=
     test code (inc deployment descriptors) for deployment onto secure
     boxes
  -->
-    <property name="test.jar.name" value="${artifact.name}-test-${Version}.jar"/>
+    <property name="test.jar.name" value="${artifact.name}-test-${smartfrog.version}.jar"/>
     <property name="test.jar"
         location="${dist.lib.dir}/${test.jar.name}" />
 
    <!--name of javadocs zip file-->
-   <property name="javadocs.zip.name" value="${artifact.name}-javadocs-${Version}.zip"/>
+   <property name="javadocs.zip.name" value="${artifact.name}-javadocs-${smartfrog.version}.zip"/>
    <property name="javadocs.zip"
      location="${dist.lib.dir}/${javadocs.zip.name}" />
 
    <!--info about the documentation zip-->
    <property name="documentation.zip.name"
-     value="${artifact.name}-documentation-${Version}.zip"/>
+     value="${artifact.name}-documentation-${smartfrog.version}.zip"/>
    <property name="documentation.zip"
      location="${dist.lib.dir}/${documentation.zip.name}" />
 
@@ -493,8 +493,8 @@ java.class.path=
     <property name="javadoc.use" value="true"/>
     <property name="javadoc.windowtitle" value="${Name.System}"/>
     <property name="javadoc.packagenames" value="org.smartfrog.*"/>
-    <property name="javadoc.header" value="${Name.System} ${Version}"/>
-    <property name="javadoc.footer" value="${Name.System} ${Version}"/>
+    <property name="javadoc.header" value="${Name.System} ${smartfrog.version}"/>
+    <property name="javadoc.footer" value="${Name.System} ${smartfrog.version}"/>
     <presetdef name="sf-javadoc" >
       <javadoc packagenames="${javadoc.packagenames}"
           author="${javadoc.author}"
@@ -624,8 +624,12 @@ java.class.path=
 
   <!--  assert that junit exists and fail if it is not there-->
   <target name="assert-junit" depends="init" >
-    <available file="${junit.jar}" property="junit.found"/>
     <fail unless="junit.found">
+      <condition>
+        <not>
+          <available file="${junit.jar}"/>
+        </not>
+      </condition>
      Not found: ${junit.jar}
     </fail>
   </target>
@@ -701,11 +705,16 @@ java.class.path=
     are defined-->
   <target name="declare-classpaths"
     depends=
-     "ivy-classpaths,declare-base.compile.classpath,declare-compile.classpath,
+     "ivy-classpaths,ivy.build.classpath,
+     declare-base.compile.classpath,declare-compile.classpath,
      declare-exec.classpath,declare-tests.compile.classpath,
      declare-tests.run.classpath,
      declare-run.classpath-no-tests,declare-run.classpath"/>
 
+  <target name="ivy.build.classpath" depends="maybe-ivy-resolve" if="ivy.enabled">
+    <ivy:cachepath pathid="build.classpath" conf="build" />
+    <echo level="verbose">build.classpath=${toString:build.classpath}</echo>
+  </target>
 
   <target name="ivy.compile.classpath" depends="maybe-ivy-resolve" if="ivy.enabled">
     <ivy:cachepath pathid="compile.classpath" conf="compile" />
@@ -767,16 +776,18 @@ java.class.path=
 
   <target name="assert-smartfrog"  depends="init-common,declare-classpaths"
     description="verify smartfrog is present, fail if not">
-    <available
-      classname="org.smartfrog.SFSystem"
-      classpathref="smartfrog.classpath"
-      property="sfSystem.present"/>
-    <property name="sfjars.fullpath" refid="run.classpath"/>
-    <fail unless="sfSystem.present">
+    <fail >
+      <condition>
+        <not>
+          <available
+              classname="org.smartfrog.SFSystem"
+              classpathref="smartfrog.classpath"
+              />
+        </not>
+      </condition>
       Smartfrog entry point not found in
-      ${sfjars.fullpath}
+      ${toString:smartfrog.classpath}
     </fail>
-    <echo level="verbose">Smartfrog found in ${smartfrog.dist.lib.dir}</echo>
   </target>
 
   <!-- ========================================================== -->
@@ -785,23 +796,39 @@ java.class.path=
 
   <target name="verify-smartfrog"  depends="assert-smartfrog" />
 
-  <!-- ========================================================== -->
-  <!-- probe for tasks and use them if they are found; fail if not -->
-  <!-- ========================================================== -->
-  <target name="use-smartfrog-tasks" depends="init-common"
-    description="declare the classpath and imports for the smartfrog tasks">
+  <!--
+  this is the pre-ivy way of setting up the ant tasks...from
+  ivy you are expected to use ivy itself to find sf-tasks.jar
+  -->
+  <target name="use-smartfrog-tasks-classic" depends="init-common"
+      unless="ivy.enabled"
+      description="declare the classpath and imports for the smartfrog tasks">
     <path id="smartfrog.tasks.classpath">
       <path refid="smartfrog.core.classpath"/>
       <pathelement location="${smartfrog.tasks.jar}"/>
     </path>
+  </target>
+
+  <target name="use-smartfrog-tasks-ivy" depends="ivy.build.classpath"
+      if="ivy.enabled"
+      description="declare the classpath and imports for the smartfrog tasks">
+    <path id="smartfrog.tasks.classpath">
+      <path refid="build.classpath"/>
+    </path>
+  </target>
+  
+  <!-- ========================================================== -->
+  <!-- probe for tasks and use them if they are found; fail if not -->
+  <!-- ========================================================== -->
+  <target name="use-smartfrog-tasks" depends="use-smartfrog-tasks-classic,use-smartfrog-tasks-ivy"
+    description="declare the classpath and imports for the smartfrog tasks">
     <available
       classname="org.smartfrog.tools.ant.Parse"
       classpathref="smartfrog.tasks.classpath"
       property="sfTasks.present"/>
-    <property name="sftasks.fullpath" refid="smartfrog.tasks.classpath"/>
     <fail unless="sfTasks.present">
       Smartfrog tasks not found in
-      ${sftasks.fullpath}
+      ${toString:smartfrog.tasks.classpath}
     </fail>
     <typedef
       resource="org/smartfrog/tools/ant/tasks.properties"
@@ -814,7 +841,7 @@ java.class.path=
     for our needs -->
   <!-- ========================================================== -->
   <target name="declare-extended-smartfrog-tasks"
-      depends="init,use-smartfrog-tasks,declare-classpaths">
+      depends="init,use-smartfrog-tasks">
     <presetdef name="sf-startdaemon-debug">
       <sf-startdaemon classpathref="run.classpath"
         logStackTraces="true" spawn="true">
@@ -1178,7 +1205,7 @@ java.class.path=
     <get-version outputproperty="maxVersion">
       <arg value="-max"/>
     </get-version>-->
-    <property name="jar.name" value="${artifact.name}${jarfile.suffix}-${Version}.${jarfile.extension}"/>
+    <property name="jar.name" value="${artifact.name}${jarfile.suffix}-${smartfrog.version}.${jarfile.extension}"/>
     <property name="target.jar"
         location="${dist.lib.dir}/${jar.name}"/>
     <sf-jar destfile="${target.jar}"
@@ -1198,11 +1225,6 @@ java.class.path=
       <entry key="sf.minorRelease" value="${sf.minorRelease}"/>
       <entry key="sf.build" value="${sf.build}"/>
       <entry key="sf.status" value="${sf.status}"/>
-<!--
-      <entry key="sf.build.version" value="${CVersion}"/>
-      <entry key="sf.min.version" value="${minVersion}"/>
-      <entry key="sf.max.version" value="${maxVersion}"/>
--->
     </propertyfile>
     <echo level="verbose">version=${sf.build.version}</echo>
     <!--property name="Version" value="${sfversion}"/-->
@@ -1625,7 +1647,7 @@ java.class.path=
 
 
    <!-- look for local then remote definitions of library versions -->
-  <target name="load-versions" depends="init">
+  <target name="load-versions" depends="common.init">
     <property file="libraries.properties"/>
     <property file="${smartfrog.components.dir}/libraries.properties"/>
   </target>
