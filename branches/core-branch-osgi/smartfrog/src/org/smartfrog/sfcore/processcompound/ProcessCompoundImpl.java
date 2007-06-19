@@ -54,6 +54,9 @@ import org.smartfrog.sfcore.security.SmartFrogCorePropertySecurity;
 import org.smartfrog.sfcore.common.ExitCodes;
 import org.smartfrog.sfcore.common.JarUtil;
 import org.smartfrog.sfcore.logging.LogSF;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.BundleException;
 
 
 /**
@@ -514,6 +517,9 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
             }
         }
 
+        if (sfLog().isDebugEnabled())
+            sfLog().debug("ProcessCompoundImpl terminating. systemExit = " + systemExit + ", vmExit = " + vmExit);    
+
         if (systemExit) {
             try {
                 String name = SmartFrogCoreKeys.SF_PROCESS_NAME;
@@ -525,10 +531,23 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
                 sfLog().ignore(thr);
             }
 
-            if (vmExit)
+            if (vmExit) {
                 ExitCodes.exitWithError(ExitCodes.EXIT_CODE_SUCCESS);
-            else {
+            } else {
                 shutdownRMIRegistry(sfLog());
+                SFSystem.cleanShutdown();
+                // TODO: OSGi-specific, move to a shutdown hook somewhere
+                try {
+                    Bundle daemonBundle = (
+                            (BundleContext) sfResolve(SmartFrogCoreKeys.SF_CORE_BUNDLE_CONTEXT)
+                    ).getBundle();
+                    daemonBundle.stop();
+                    System.out.println("Bundle stopped.");
+                } catch (Exception e) {
+                    // Logging system already gone, so have to use System.err
+                    System.err.println("Could not stop bundle. Exception:");
+                    e.printStackTrace();
+                }
                 // If we didn't call System.exit we need to stop them.
                 // They shouldn't be stopped before not to loose log messages.
                 outputGobbler.stopThread();

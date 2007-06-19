@@ -1,8 +1,7 @@
 package org.smartfrog.osgi;
 
-import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
-import org.osgi.framework.ServiceReference;
+import org.osgi.service.component.ComponentContext;
 import org.osgi.service.log.LogService;
 import org.smartfrog.SFSystem;
 import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
@@ -10,34 +9,18 @@ import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.processcompound.ProcessCompound;
 import org.smartfrog.sfcore.security.SFSynchronousUserBundleListener;
 
-public class SmartFrogActivator implements BundleActivator {
+public class SmartFrogActivator {
     private ProcessCompound rootProcess = null;
-    // TODO : Use Declarative Services for log service
-    private LogService logService = null;
+    private LogService logService;
 
-    public void start(BundleContext bundleContext) throws Exception {
-        getLogService(bundleContext);
+    public void activate(ComponentContext componentContext) throws Exception {
 
         info("Starting smartfrog...");
 
-        System.setProperty("org.smartfrog.sfcore.processcompound.sfProcessName", "rootProcess");
-        System.setProperty("org.smartfrog.sfcore.processcompound.sfDefault.sfDefault",
-                "org/smartfrog/default.sf");
-        System.setProperty("org.smartfrog.iniFile",
-                "org/smartfrog/default.ini");
-
-        // Uncommenting this triggers an infinite recursion on SecurityManager.checkPermission
-        // when run in an OSGi framework.
-        // System.setProperty("org.smartfrog.sfcore.security.debug","true");
-
-        System.setProperty("java.security.debug", "scl");
-        System.setProperty("sun.rmi.dgc.logLevel", "VERBOSE");
-        System.setProperty("sun.rmi.transport.logLevel", "VERBOSE");
-        System.setProperty("sun.rmi.transport.logLevel", "VERBOSE");
-        System.setProperty("java.rmi.server.logCalls", "true");
-        System.setProperty("sun.rmi.loader.logLevel", "VERBOSE");
-        System.setProperty("sun.rmi.server.exceptionTrace", "true");
-
+        System.getProperties().load(
+                getClass().getResourceAsStream("system.properties")
+        );
+        
         debug("Current thread context CL: " + Thread.currentThread().getContextClassLoader());
         debug("System CL " + ClassLoader.getSystemClassLoader());
         ClassLoader bundleCL = getClass().getClassLoader();
@@ -55,12 +38,12 @@ public class SmartFrogActivator implements BundleActivator {
 
         rootProcess = SFSystem.runSmartFrog();
         rootProcess.vmExitOnTermination(false);
+        final BundleContext bundleContext = componentContext.getBundleContext();
         rootProcess.sfAddAttribute(SmartFrogCoreKeys.SF_CORE_BUNDLE_CONTEXT, bundleContext);
 
         bundleContext.addBundleListener(new SFSynchronousUserBundleListener(bundleContext));
 
         info("SmartFrog daemon running...");
-        releaseLogService(bundleContext);
 
         Thread.currentThread().setContextClassLoader(oldClassLoader);
         
@@ -76,42 +59,34 @@ public class SmartFrogActivator implements BundleActivator {
         }
     }
 
-    public void stop(BundleContext bundleContext) throws Exception {
-        getLogService(bundleContext);
+    public void deactivate(ComponentContext componentContext) throws Exception {
         info("Stopping smartfrog...");
 
         rootProcess.sfTerminate(new TerminationRecord("normal", "Stopping daemon", null));
-        SFSystem.cleanShutdown();
         rootProcess = null; // Triggers garbage collection
-        
         info("SmartFrog daemon stopped.");
-        // Services are released automatically by the OSGi framework
+    }
+
+    public void setLog(LogService log) {
+        logService = log;
+    }
+
+    public void unsetLog(LogService log) {
+        logService = null;
     }
 
     private void debug(final String message) {
         if (logService != null)
             logService.log(LogService.LOG_DEBUG, message);
+        else
+            System.out.println("DEBUG: " + message);
     }
 
     private void info(final String message) {
         if (logService != null)
             logService.log(LogService.LOG_INFO, message);
+        else
+            System.out.println("INFO: " + message);
     }
 
-    private ServiceReference logServiceReference(BundleContext bundleContext) {
-        return bundleContext.getServiceReference("org.osgi.service.log.LogService");
-    }
-
-    private void getLogService(BundleContext bundleContext) {
-        ServiceReference logServiceReference = logServiceReference(bundleContext);
-        if (logServiceReference != null)
-            logService = (LogService) bundleContext.getService(logServiceReference);
-    }
-
-    private void releaseLogService(BundleContext bundleContext) {
-        if (logService != null) {
-            bundleContext.ungetService(logServiceReference(bundleContext));
-            logService = null;
-        }
-    }
 }

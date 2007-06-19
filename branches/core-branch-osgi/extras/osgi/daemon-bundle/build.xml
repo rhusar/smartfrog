@@ -28,10 +28,11 @@
     <!-- Import common stuff -->
     <import file="../../../common.xml"/>
 
-    <target name="createjar" depends="generate-versioned-jar" if="is.component.not.enabled">        
+    <target name="createjar" depends="generate-versioned-jar" if="is.component.not.enabled">
         <sf-jar destfile="${target.jar}"
                 manifest="./META-INF/MANIFEST.MF">
             <zipfileset dir="${build.classes.dir}"/>
+            <zipfileset dir="${basedir}" includes="OSGI-INF/*"/>
             <zipfileset dir="${user.home}/.ivy/local/org.smartfrog/smartfrog/${smartfrog.version}/jars/">
                 <include name="smartfrog.jar"/>
                 <include name="sfServices.jar"/>
