@@ -516,6 +516,7 @@
       The property svn.revision must be set to define which revision to use
     </fail>
     <property name="svn.tag" value="release${smartfrog.version}" />
+    <echo>SVN tag="${svn.tag}"</echo>
     <property name="svn.message"
       value="release ${smartfrog.version} from revision ${svn.revision} on ${build.date} by ${user.name}" />
     <echo>SVN message="${svn.message}"</echo>
@@ -529,16 +530,36 @@
       -m "release3.11.000beta1"
 
   -->
-  <target name="svn-tag" depends="svn-init">
+  <target name="svn-tag" depends="svn-init"
+  description="Tag a version of the SVN repository; set svn.revision to the specific revision required">
+    <echo>issuing SVN command</echo>
     <exec failonerror="true"
         executable="svn">
       <arg value="copy"/>
-      <arg value="${svn.url}/trunk"/>
       <arg value="-r"/>
       <arg value="${svn.revision}"/>
+      <arg value="${svn.url}/trunk"/>
       <arg value="${svn.url}/tags/${svn.tag}"/>
       <arg value="-m" />
       <arg value="${svn.message}"/>
+    </exec>
+  </target>
+
+<!--
+svn delete  https://smartfrog.svn.sourceforge.net/svnroot/smartfrog/tags/something \
+             -m "Removing unwanted tag."
+-->
+  <target name="svn-deletetag" depends="svn-init"
+    description="remove an unwanted tag; set svn.tag to the specific tag name, or have it worked out from svn.revision">
+    <property name="svn.delete.message"
+      value="removing revision ${svn.revision} on ${build.date} by ${user.name}" />
+    <echo>issuing SVN command</echo>
+    <exec failonerror="true"
+        executable="svn">
+      <arg value="delete"/>
+      <arg value="${svn.url}/tags/${svn.tag}"/>
+      <arg value="-m" />
+      <arg value="${svn.delete.message}"/>
     </exec>
   </target>
 
