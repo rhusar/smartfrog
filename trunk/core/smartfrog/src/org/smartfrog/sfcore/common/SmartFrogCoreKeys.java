@@ -318,5 +318,9 @@ public interface SmartFrogCoreKeys {
      */
     public final static String SF_DIAGNOSTICS_REPORT = "sfDiagnosticsReport";
 
-
+    /**
+     * Tag to mark an attribute as final, after which placement fails
+     * Value {@value}
+     */
+    public static final String SF_FINAL= "sfFinal";
 }
