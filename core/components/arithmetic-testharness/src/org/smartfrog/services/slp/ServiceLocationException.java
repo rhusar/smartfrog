@@ -129,13 +129,13 @@ public class ServiceLocationException extends java.lang.Exception {
 /**
  * Return the error code.
  *
- * @Returns: The integer error code.
+ * @return The integer error code.
  */
   public short getErrorCode() {
     return errorCode;
   }
 /**
- * Return the localized message, in the default locale.
+ * @return the localized message, in the default locale.
  */
   public String getMessage() {
     return super.getMessage();

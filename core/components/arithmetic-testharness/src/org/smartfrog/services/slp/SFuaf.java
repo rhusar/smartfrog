@@ -469,7 +469,7 @@ public class SFuaf extends ua {
  * @param locale the locale of the service
  * @param query the query on service attributes
  * @return an Enumeration of ServiceURL objects matching the query
- * @throw ServiceLocationException if the operation fails
+ * @throws ServiceLocationException if the operation fails
  */
   public synchronized ServiceLocationEnumeration findServices(ServiceType serviceType,
                                                   Vector scopeNames,
@@ -492,7 +492,7 @@ public class SFuaf extends ua {
  * @param namingAuthority the naming authority of the service types to be found
  * @param scopeNames the scopes in which the service types should be found
  * @return an Enumeration of ServiceType objects matching the query
- * @throw ServiceLocationException if the operation fails
+ * @throws ServiceLocationException if the operation fails
  */
   public synchronized ServiceLocationEnumeration findServiceTypes(String namingAuthority,
                                                   Vector scopeNames) throws ServiceLocationException {
@@ -509,7 +509,7 @@ public class SFuaf extends ua {
  * @param locale the locale of the service locator
  * @param attributeIds  a vector of the desired service attributes (empty if you want them all)
  * @return a ServiceLocationEnumeration of ServiceLocationAttribute objects matching the attributeIds
- * @throw ServiceLocationException if the operation fails
+ * @throws ServiceLocationException if the operation fails
  */
   public synchronized ServiceLocationEnumeration findAttributes(ServiceURL serviceURL,
                                                   Vector scopeNames,
@@ -535,7 +535,7 @@ public class SFuaf extends ua {
  * @param locale the locale of the service locator
  * @param attributeIds  a vector of strings identifying the desired service attributes
  * @return a ServiceLocationEnumeration of ServiceLocationAttribute objects matching the attributeIds
- * @throw ServiceLocationException if the operation fails
+ * @throws ServiceLocationException if the operation fails
  */
   public synchronized ServiceLocationEnumeration findAttributes(ServiceType serviceType,
                                                   Vector scopeNames,
@@ -558,7 +558,7 @@ public class SFuaf extends ua {
  * @param scopeNames the scopes of the service
  * @param locale the locale of the service agent
  * @param serviceLocationAttributes a vector of ServiceLocationAttribute objects describing the service
- * @throw ServiceLocationException if the operation fails
+ * @throws ServiceLocationException if the operation fails
  */
   public synchronized void  register(ServiceURL serviceURL,
                                   Vector scopeNames,
@@ -580,7 +580,7 @@ public class SFuaf extends ua {
  * @param scopeNames the scopes of the service
  * @param locale the locale of the service agent
  * @param serviceLocationAttributes a vector of ServiceLocationAttribute objects to add to the advertisement
- * @throw ServiceLocationException if the operation fails
+ * @throws ServiceLocationException if the operation fails
  */
   public synchronized void  addAttributes(ServiceURL serviceURL,
                                       Vector scopeNames,
@@ -595,7 +595,7 @@ public class SFuaf extends ua {
  * SA and the DA.
  * @param serviceURL the URL of the service to deregister
  * @param scopeNames the scopes which this Service Agent is configured with.
- * @throw ServiceLocationException if the operation fails
+ * @throws ServiceLocationException if the operation fails
  */
 
   public synchronized void deregister(ServiceURL serviceURL,Vector scopeNames) throws ServiceLocationException {//, Vector scopeNames)
@@ -610,7 +610,7 @@ public class SFuaf extends ua {
  * Deregister the service advertisement in all provided scopes and for all
  * locales in which it was advertised.
  * @param serviceURL the URL of the service to deregister
- * @throw ServiceLocationException if the operation fails
+ * @throws ServiceLocationException if the operation fails
  */
 
 //  public synchronized void deregister(ServiceURL serviceURL) throws ServiceLocationException {//, Vector scopeNames)
@@ -625,7 +625,7 @@ public class SFuaf extends ua {
  * @param serviceURL the URL of the service advertised
  * @param scopeNames the scopes of the service agent
  * @param serviceLocationAttributes the vector of ServiceLocationAttribute objects indicating the ids to remove from the advertisement
- * @throw ServiceLocationException if the operation fails
+ * @throws ServiceLocationException if the operation fails
  */
   public synchronized void deleteAttributes(ServiceURL serviceURL,
                                           Vector scopeNames,

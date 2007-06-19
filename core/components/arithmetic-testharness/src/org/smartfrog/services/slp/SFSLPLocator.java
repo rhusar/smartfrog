@@ -183,7 +183,7 @@ public class SFSLPLocator extends PrimImpl implements Prim{
    * Returns a Locator object for the locale specified for this component.
    * Performs any implementation-specific operations.
    * @return an object instance of Locator
-   * @throw ServiceLocationException if operation fails.
+   * @throws ServiceLocationException if operation fails.
    */
   public Locator getLocator() throws ServiceLocationException{
     Locator loco = ServiceLocationManager.getLocator(this.locale);

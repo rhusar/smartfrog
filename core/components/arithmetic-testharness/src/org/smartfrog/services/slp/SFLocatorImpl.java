@@ -53,6 +53,8 @@ public class SFLocatorImpl extends SFuaf implements Locator {
   }
   /**
    * Create a locator with the specified locale.
+   * @param locale locale (can be null)
+   * @throws Exception on failure
    */
   public SFLocatorImpl(Locale locale) throws Exception {
     scopes = ServiceLocationManager.findScopes();
@@ -74,9 +76,9 @@ public class SFLocatorImpl extends SFuaf implements Locator {
  * @param scopeNames the scopes in which the services should be found
  * @param query the query on service attributes
  * @return an Enumeration of ServiceURL objects matching the query
- * @throw ServiceLocationException if the operation fails
+ * @throws ServiceLocationException if the operation fails
  */
- public ServiceLocationEnumeration findServices(ServiceType serviceType,Vector scopeNamess,String query) throws ServiceLocationException {
+ public ServiceLocationEnumeration findServices(ServiceType serviceType,Vector scopeNames,String query) throws ServiceLocationException {
     return super.findServices(serviceType,scopes,locale,query);
   }
  /**
@@ -86,7 +88,7 @@ public class SFLocatorImpl extends SFuaf implements Locator {
  * @param namingAuthority the naming authority of the service types to be found
  * @param scopeNames the scopes in which the service types should be found
  * @return an Enumeration of ServiceType objects matching the query
- * @throw ServiceLocationException if the operation fails
+ * @throws ServiceLocationException if the operation fails
  */
   public ServiceLocationEnumeration findServiceTypes(String namingAuthority,Vector scopeNames) throws ServiceLocationException {
     if (namingAuthority == null) {
@@ -102,7 +104,7 @@ public class SFLocatorImpl extends SFuaf implements Locator {
  * @param scopeNames the scopes of the service
  * @param attributeIds  a vector of the desired service attributes (empty if you want them all)
  * @return a ServiceLocationEnumeration of ServiceLocationAttribute objects matching the attributeIds
- * @throw ServiceLocationException if the operation fails
+ * @throws ServiceLocationException if the operation fails
  */
   public ServiceLocationEnumeration findAttributes(ServiceURL serviceURL, Vector scopeNames, Vector attributeIds) throws ServiceLocationException {
     return super.findAttributes(serviceURL,scopes,locale,attributeIds);
@@ -112,10 +114,10 @@ public class SFLocatorImpl extends SFuaf implements Locator {
  * service type in the specified locale.
  * The attributes id returned match the id patterns in the parameter Vector
  * @param serviceType the type of the service
- * @param scopeNames the scopes of the service type
+ * @param scopeBNames the scopes of the service type
  * @param attributeIds  a vector of strings identifying the desired service attributes
  * @return a ServiceLocationEnumeration of ServiceLocationAttribute objects matching the attributeIds
- * @throw ServiceLocationException if the operation fails
+ * @throws ServiceLocationException if the operation fails
  */
   public ServiceLocationEnumeration findAttributes(ServiceType serviceType,Vector scopeBNames, Vector attributeIds) throws ServiceLocationException {
     return super.findAttributes(serviceType,scopes,locale, attributeIds);

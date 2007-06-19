@@ -72,7 +72,7 @@ public class SFAdvertiserImpl extends SFuaf implements Advertiser {
  * attributes and in the language locale the service agent was created.
  * @param serviceURL the complete URL of the service
  * @param serviceLocationAttributes a vector of ServiceLocationAttribute objects describing the service
- * @throw ServiceLocationException if the operation fails
+ * @throws ServiceLocationException if the operation fails
  */
 
   public void register(ServiceURL serviceURL,Vector serviceLocationAttributes) throws ServiceLocationException{
@@ -83,7 +83,7 @@ public class SFAdvertiserImpl extends SFuaf implements Advertiser {
  * Add attributes to a service advertisement in the locale of this service advertiser
  * @param serviceURL the URL of the service
  * @param serviceLocationAttributes a vector of ServiceLocationAttribute objects to add to the advertisement
- * @throw ServiceLocationException if the operation fails
+ * @throws ServiceLocationException if the operation fails
  */
   public void addAttributes(ServiceURL serviceURL, Vector serviceLocationAttributes) throws ServiceLocationException {
     super.addAttributes(serviceURL, scopes, getLocale(), serviceLocationAttributes);
@@ -93,7 +93,7 @@ public class SFAdvertiserImpl extends SFuaf implements Advertiser {
  * Deregister the service advertisement in all configured scopes and for all
  * locales in which it was advertised.
  * @param serviceURL the URL of the service to deregister
- * @throw ServiceLocationException if the operation fails
+ * @throws ServiceLocationException if the operation fails
  */
   public void deregister(ServiceURL serviceURL) throws ServiceLocationException {
     super.deregister(serviceURL,scopes);
@@ -103,7 +103,7 @@ public class SFAdvertiserImpl extends SFuaf implements Advertiser {
  * Remove attributes from all service advertisement where they appear.
  * @param serviceURL the URL of the service advertised
  * @param serviceLocationAttributes the vector of ServiceLocationAttribute objects indicating the ids to remove from the advertisement
- * @throw ServiceLocationException if the operation fails
+ * @throws ServiceLocationException if the operation fails
  */
 
   public void deleteAttributes(ServiceURL serviceURL,

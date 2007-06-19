@@ -35,7 +35,7 @@ public interface RemoteScriptPrim
   /**
    * Evaluate the String as a beanshell script
    * @param script the script as a string.
-   * @throw Exception if the execution of the script fails.
+   * @throws Exception if the execution of the script fails.
    */
   public Object eval(String script) throws SmartFrogException, RemoteException;
 

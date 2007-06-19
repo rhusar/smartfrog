@@ -36,7 +36,7 @@ public class NotifyOutputFilterPrimImpl extends PrimImpl implements NotifyOutput
    *
    *
    * @param sfTag Attribute that name the array of strings.
-   * @param default A default value in case we cannot find it.
+   * @param defaultValue A default value in case we cannot find it.
    * @return An array of strings mapping to that attribute or the
    * suggested default value.
    */
@@ -59,7 +59,8 @@ public class NotifyOutputFilterPrimImpl extends PrimImpl implements NotifyOutput
   /** Deploy the compound. Deployment is defined as iterating over the
    * context and deploying any parsed eager components.
    *
-   * @exception Exception failure deploying compound or sub-component */
+   * @throws Exception failure deploying compound or sub-component
+   */
   public void sfDeploy() throws SmartFrogException, RemoteException {
     super.sfDeploy();
     try {
