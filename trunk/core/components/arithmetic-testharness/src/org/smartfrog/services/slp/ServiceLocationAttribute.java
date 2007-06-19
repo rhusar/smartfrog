@@ -49,7 +49,7 @@ public class ServiceLocationAttribute {
  * @param values - Vector of one or more attribute values. Vector contents must be uniform in type
  * and one of Integer, String, Boolean, or byte[].
  * If the attribute is a keyword attribute, then values should be null.
- * @throw IllegalArgumentException if the id is null or empty.
+ * @throws IllegalArgumentException if the id is null or empty.
  */
   public ServiceLocationAttribute(String id,
                                  Vector values) throws IllegalArgumentException {
@@ -67,16 +67,16 @@ public class ServiceLocationAttribute {
  */
   public Vector getValues(){
     if (values != null)
-      return (Vector) this.values.clone();
+      return (Vector) values.clone();
     return null;
   }
 
 /**
  * Return the attribute name.
- * @ the id of this attribute.
+ * @return the id of this attribute.
  */
   public String getId() {
-    return this.id;
+    return id;
   }
 
 
@@ -119,7 +119,7 @@ public class ServiceLocationAttribute {
  * @return a String describing this attribute.
  */
   public String toString(){
-    String res = this.id + "=";
+    String res = id + "=";
     for (Enumeration e = values.elements(); e.hasMoreElements();){
       Object o = e.nextElement();
       res += o.toString();// + " of Type " + o.getClass()+ "; " ;

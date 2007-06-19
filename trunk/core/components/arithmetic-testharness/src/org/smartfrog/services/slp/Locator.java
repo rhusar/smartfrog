@@ -12,18 +12,18 @@ public interface Locator {
  * @param scopes the scopes of the service.
  * @param attributeIds a Vector of ServiceLocationAttribute objects identifying the attributes to match.
  * @return a ServiceLocationEnumeration of ServiceLocationAttribute objects matching the query
- * @throw ServiceLocationException if the operation fails.
+ * @throws ServiceLocationException if the operation fails.
  */
  public abstract ServiceLocationEnumeration findAttributes(ServiceURL URL,
                                        Vector scopes,
                                        Vector attributeIds) throws ServiceLocationException;
 /**
  * Return the attributes for all services matching this service type.
- * @param type the service type.
+ * @param serviceType the service type.
  * @param scopes the scopes of the service.
  * @param attributeIds a Vector of ServiceLocationAttribute objects identifying the attributes to match.
  * @return a ServiceLocationEnumeration of ServiceLocationAttribute objects matching the query
- * @throw ServiceLocationException if the operation fails.
+ * @throws ServiceLocationException if the operation fails.
  */
   public abstract ServiceLocationEnumeration findAttributes( ServiceType serviceType,
                                        Vector scopes,
@@ -39,7 +39,7 @@ public interface Locator {
  * @param scopes the scopes of the service.
  * @param searchFilter a string query identifying the service.
  * @return a ServiceLocationEnumeration of ServiceURL objects matching the query.
- * @throw ServiceLocationException if the operation fails.
+ * @throws ServiceLocationException if the operation fails.
  */
  public abstract ServiceLocationEnumeration findServices(ServiceType serviceType,
                                      Vector scopes,
@@ -54,7 +54,7 @@ public interface Locator {
  * namingAuthority parameter should be null.
  * @param scopes the scopes of the service type.
  * @return a ServiceLocationEnumeration of ServiceType objects matching the query.
- * @throw ServiceLocationException if the operation fails.
+ * @throws ServiceLocationException if the operation fails.
  */
   public abstract ServiceLocationEnumeration findServiceTypes(String namingAuthority,
                                          Vector scopes) throws ServiceLocationException;

@@ -82,7 +82,7 @@ public class ServiceLocationManager {
    * There is no active scope discovery.
    * There is always at least one String in the Vector, the default scope, "DEFAULT".
    * @return a Vector of configured scopes.
-   * @throw ServiceLocationException if the operation fails.
+   * @throws ServiceLocationException if the operation fails.
    */
   public static Vector findScopes() throws ServiceLocationException {
     if (scopes == null)
@@ -113,7 +113,7 @@ public class ServiceLocationManager {
    * @param agentClassName the class of the Agent to instantiate.
    * @param locale the locale object for which this agent will be configured.
    * @return an instance of User or Service Agent.
-   * @throw Exception if the operation fails.
+   * @throws Exception if the operation fails.
    */
   private static Object instantiateSLPAgent(String agentClassName, Locale locale) throws Exception{
     Class[] parameters = new Class[1];
@@ -129,7 +129,7 @@ public class ServiceLocationManager {
    * with the specified locale.
    * @param locale the locale object for which this user agent will be configured.
    * @return an instance of User Agent.
-   * @throw ServiceLocationException if the operation fails.
+   * @throws ServiceLocationException if the operation fails.
    */
   public static Locator getLocator(Locale locale) throws ServiceLocationException {
     if (locale == null)
@@ -151,7 +151,7 @@ public class ServiceLocationManager {
   * with the specified locale.
   * @param locale the locale object for which this service agent will be configured.
   * @return an instance of Service Agent.
-  * @throw ServiceLocationException if the operation fails.
+  * @throws ServiceLocationException if the operation fails.
   */
   public static Advertiser getAdvertiser(Locale locale) throws ServiceLocationException {
     if (locale == null)
