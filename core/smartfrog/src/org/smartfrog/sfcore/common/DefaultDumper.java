@@ -34,13 +34,10 @@ import org.smartfrog.sfcore.logging.LogFactory;
 
 import java.rmi.RemoteException;
 import java.util.*;
-import java.io.Writer;
-import java.io.FileWriter;
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 
 
-public class DefaultDumper implements Dump, Dumper {
+public class DefaultDumper implements Dump, Dumper, Serializable {
 
     private Reference rootRef = null;
 
@@ -295,7 +292,7 @@ public class DefaultDumper implements Dump, Dumper {
         }
     }
 
-        /**
+    /**
      *
      * @return LogSF
      */
