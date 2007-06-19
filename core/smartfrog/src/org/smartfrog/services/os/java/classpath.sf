@@ -51,11 +51,11 @@ Classpath extends WorkflowPrim {
  * in a directory goes on the path
  */
 DirectoryClasspathSchema extends Schema {
-    directory extends FileType;
+    directory extends FilenameType;
     //recurse into subdirs
-    recursive extends boolean;
+    recursive extends Boolean;
     //bind early (on deploy) or late (on startup)
-    earlyBind extends boolean;
+    earlyBind extends Boolean;
 }
 
 DirectoryClasspath extends Classpath {
