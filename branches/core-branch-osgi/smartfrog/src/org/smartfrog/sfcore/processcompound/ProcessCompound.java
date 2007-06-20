@@ -141,17 +141,12 @@ public interface ProcessCompound extends Compound {
      */
     public void systemExitOnTermination(boolean exit) throws RemoteException;
 
+
     /**
-     * Sets whether or not the ProcessCompound should exit the JVM on exit.
-     * This is, by default, set to true.
-     * It should only be taken into account if systemExitOnTermination
-     * has been set to true.
-     * It is used if the SmartFrog daemon is run in a managed environment
-     * (e.g. OSGi).
-     *
-     * @param exit whether or not to exit (true = exit)
+     * Replaces the piece of code that is run at system shutdown. This is used
+     * when the daemon is embedded; the default code calls System.exit().
+     * @param hook The callback that will be run at system shutdown.
      * @throws RemoteException if there is any network or remote error
      */
-    public void vmExitOnTermination(boolean exit) throws RemoteException;
-
+    public void replaceShutdownHook(Runnable hook) throws RemoteException;
 }

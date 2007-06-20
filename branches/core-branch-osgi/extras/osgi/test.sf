@@ -4,10 +4,10 @@
 
 sfConfig extends OSGiBundleCompound {
 
-    bundleURL "file:C:/sf-test-osgi-3.10.051dev.jar";
+    bundleURL "file:sf-test-osgi-3.10.051dev.jar";
 
     testHello extends Test {
-        message "Servez à ce monsieur, le vieux petit juge blond assis au fond, une bière hollandaise et des kiwis, parce qu'il y tient.";
+        message "Servez a ce monsieur, le vieux petit juge blond assis au fond, une biere hollandaise et des kiwis, parce qu'il y tient.";
     }
 
 }

@@ -1,6 +1,8 @@
 package org.smartfrog.osgi;
 
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleException;
 import org.osgi.service.component.ComponentContext;
 import org.osgi.service.log.LogService;
 import org.smartfrog.SFSystem;
@@ -11,82 +13,91 @@ import org.smartfrog.sfcore.security.SFSynchronousUserBundleListener;
 
 public class SmartFrogActivator {
     private ProcessCompound rootProcess = null;
-    private LogService logService;
+    private LogServiceProxy logService = new LogServiceProxy();
+    private boolean alreadyStopping;
 
-    public void activate(ComponentContext componentContext) throws Exception {
+    public synchronized void activate(final ComponentContext componentContext) throws Exception {
 
-        info("Starting smartfrog...");
+        logService.info("Starting smartfrog...");
 
         System.getProperties().load(
                 getClass().getResourceAsStream("system.properties")
         );
+
+        Thread startDaemon = new Thread(new Runnable() {
+            public void run() {
+                final BundleContext bundleContext = componentContext.getBundleContext();
+                final Bundle bundle = bundleContext.getBundle();
+
+                try {
+                    rootProcess = SFSystem.runSmartFrog();
+                    rootProcess.replaceShutdownHook(new Runnable() {
+                        public void run() {
+                            try {
+                                bundle.stop();
+                                logService.info("Bundle stopped.");
+                            } catch (Exception e) {
+                                logService.error("Could not stop bundle", e);
+                            }
+                        }
+                    });
+                    rootProcess.sfAddAttribute(SmartFrogCoreKeys.SF_CORE_BUNDLE_CONTEXT, bundleContext);
+
+                    bundleContext.addBundleListener(new SFSynchronousUserBundleListener(bundleContext));
+
+                    logService.info("SmartFrog daemon running...");
+                } catch (Exception e) {
+                    logService.error("Error during daemon startup", e);
+                    try {
+                        bundle.stop();
+                    } catch (BundleException e1) {
+                        // Fails if the activate method has not returned yet
+                        logService.error("Could not stop after startup error", e1);
+                    }
+                }
+            }
+        });
         
-        debug("Current thread context CL: " + Thread.currentThread().getContextClassLoader());
-        debug("System CL " + ClassLoader.getSystemClassLoader());
         ClassLoader bundleCL = getClass().getClassLoader();
+        printClassLoaderDebug(bundleCL);
+        startDaemon.setContextClassLoader(bundleCL);
+        startDaemon.start();
+    }
+
+    public synchronized void deactivate(final ComponentContext componentContext) throws Exception {
+        if (!alreadyStopping) {
+            alreadyStopping = true;
+            logService.info("Stopping smartfrog...");
+
+            rootProcess.sfTerminate(new TerminationRecord("normal", "Stopping daemon", null));
+            rootProcess = null; // Triggers garbage collection
+            logService.info("SmartFrog daemon stopped.");
+        }
+    }
+
+    private void printClassLoaderDebug(ClassLoader bundleCL) {
+        logService.debug("Current thread context CL: " + Thread.currentThread().getContextClassLoader());
+        logService.debug("System CL " + ClassLoader.getSystemClassLoader());
         printClassLoaderHierarchy(bundleCL);
-
-// Not needed in Equinox as it deals with this nicely :
-// http://wiki.eclipse.org/index.php/Context_Class_Loader_Enhancements
-// Needed in Knopflerfish, not checked in Felix
-// Seems to be needed even in Eclipse after all : start / uninstall / install / start
-// doesn't work without it. 
-        debug("Setting the current thread context CL to the bundle's CL.");
-
-        ClassLoader oldClassLoader = Thread.currentThread().getContextClassLoader();
-        Thread.currentThread().setContextClassLoader(bundleCL);
-
-        rootProcess = SFSystem.runSmartFrog();
-        rootProcess.vmExitOnTermination(false);
-        final BundleContext bundleContext = componentContext.getBundleContext();
-        rootProcess.sfAddAttribute(SmartFrogCoreKeys.SF_CORE_BUNDLE_CONTEXT, bundleContext);
-
-        bundleContext.addBundleListener(new SFSynchronousUserBundleListener(bundleContext));
-
-        info("SmartFrog daemon running...");
-
-        Thread.currentThread().setContextClassLoader(oldClassLoader);
-        
+        logService.debug("Setting the startup thread context CL to the bundle's CL.");
     }
 
     private void printClassLoaderHierarchy(final ClassLoader bundleCL) {
         ClassLoader curr = bundleCL;
         int depth = 0;
         while (curr != null) {
-            debug("Classloader of depth " + depth + " : " + curr);
+            logService.debug("Classloader of depth " + depth + " : " + curr);
             depth++;
             curr = curr.getParent();
         }
     }
 
-    public void deactivate(ComponentContext componentContext) throws Exception {
-        info("Stopping smartfrog...");
-
-        rootProcess.sfTerminate(new TerminationRecord("normal", "Stopping daemon", null));
-        rootProcess = null; // Triggers garbage collection
-        info("SmartFrog daemon stopped.");
-    }
-
     public void setLog(LogService log) {
-        logService = log;
+        logService.setLog(log);
     }
 
     public void unsetLog(LogService log) {
-        logService = null;
-    }
-
-    private void debug(final String message) {
-        if (logService != null)
-            logService.log(LogService.LOG_DEBUG, message);
-        else
-            System.out.println("DEBUG: " + message);
-    }
-
-    private void info(final String message) {
-        if (logService != null)
-            logService.log(LogService.LOG_INFO, message);
-        else
-            System.out.println("INFO: " + message);
+        logService.unsetLog(log);
     }
 
 }
