@@ -10,7 +10,14 @@ sfConfig extends Compound {
 
 	g extends Generator 
 	{
-		messages ["hello", "1" , "ad" , "afrf" , "wr" ,"wr" ,"wr" ,"wr" ,"wr" ,"wr" ,"wr" ,"wr" ,"wr" ,"wr" ,"wr" ,"wr" ,"wr" ,"wr" ,"wr" ,"wr" ,"wr" ,"wr" ,"wr" ,"wr" ,"wr" ,"wr" ,"wr" ,"wr" ,"wr" ,"wr" ,"wr" ,"wr" ,"wr" ,"wr" ,"wr" ,"wr" ,"wr" ,"wr" ,"wr" ,"wr" ,"wr" ,"wr" ,"wr" ,"wr" ,"wr" ,"wr" ,"wr" ,"wr" ,"wr"];
+		messages ["hello", "1" , "ad" , "afrf" ,
+      "wr" ,"wr" ,"wr" ,"wr" ,"wr" ,"wr" ,"wr" ,
+      "wr" ,"wr" ,"wr" ,"wr" ,"wr" ,"wr" ,"wr" ,
+      "wr" ,"wr" ,"wr" ,"wr" ,"wr" ,"wr" ,"wr" ,
+      "wr" ,"wr" ,"wr" ,"wr" ,"wr" ,"wr" ,"wr" ,
+      "wr" ,"wr" ,"wr" ,"wr" ,"wr" ,"wr" ,"wr" ,
+      "wr" ,"wr" ,"wr" ,"wr" ,"wr" ,"wr" ,"wr" ,
+      "wr" ,"wr" ,"wr"];
 
 		printer LAZY loc:result;
 		

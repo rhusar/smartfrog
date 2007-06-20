@@ -2,11 +2,12 @@
 #include "org/smartfrog/services/comm/slp/components.sf"
 
 sfConfig extends Compound {
-loc extends SFSlpLocator {
+  loc extends SFSlpLocator {
 
-}
-g extends Generator {
-printer LAZY loc:result;
-}
+  }
+  
+  g extends Generator {
+    printer LAZY loc:result;
+  }
 
 }

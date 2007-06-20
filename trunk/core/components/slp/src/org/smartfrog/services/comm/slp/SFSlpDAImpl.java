@@ -68,15 +68,11 @@ public class SFSlpDAImpl extends PrimImpl implements Prim, SFSlpDA {
 		properties.setProperty("net.slp.sflog", sfResolve("slp_config_sflog").toString());
         
         // create DA.
-        try {
-            da = new DirectoryAgent(properties);
-			// logging.
-			if(properties.getProperty("net.slp.sflog").equalsIgnoreCase("true")) {
-				slpLog = sfGetLog(properties.getProperty("net.slp.logfile"));
-				da.setSFLog(slpLog);
-			}
-        }catch(ServiceLocationException sle) {
-            throw (SmartFrogException)SmartFrogException.forward(sle);
+        da = new DirectoryAgent(properties);
+        // logging.
+        if (properties.getProperty("net.slp.sflog").equalsIgnoreCase("true")) {
+            slpLog = sfGetLog(properties.getProperty("net.slp.logfile"));
+            da.setSFLog(slpLog);
         }
     }
     
