@@ -142,8 +142,8 @@
       for optional SmartFrog runtime properties</echo>
     <property file="${runtime.properties}" prefix="runtime"/>      
       <!-- turn on the tests. If you dont want this, set one (or both) to false)  in the unit tests-->
-    <property name="system.tests" value="true" />
-    <property name="unit.tests" value="true" />
+    <property name="system.tests" value="false" />
+    <property name="unit.tests" value="false" />
 
     <condition property="system.tests.enabled">
       <istrue value="${system.tests}"/>
@@ -1415,13 +1415,17 @@ java.class.path=
       </fail>
     </presetdef>
 
+    <!--default pattern for system tests-->
+    <property name="sf-system-test-class-pattern"
+      value="org/smartfrog/**/test/**/*Test.class" />
+
     <presetdef name="sf-system-test-batch-run">
       <sf-system-test>
         <test>
           <sf-system-test-junit>
             <batchtest todir="${test.data.dir}" unless="testcase">
               <fileset dir="${test.classes.dir}">
-                <include name="org/smartfrog/**/test/**/*Test.class"/>
+                <include name="${sf-system-test-class-pattern}"/>
               </fileset>
             </batchtest>
           </sf-system-test-junit>
@@ -1446,6 +1450,7 @@ java.class.path=
   <target name="system-tests" if="system.tests.enabled"
           depends="ready-to-test"
     description="run the system tests">
+    <sf-system-test-batch-run />
   </target>
 
   <!-- ========================================================== -->

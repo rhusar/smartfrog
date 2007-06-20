@@ -21,10 +21,10 @@
   <target name="init-codebase"
           depends="declare-classpaths,package-tests,extended-smartfrog-tasks"
           description="set up the codebase">
-    <sf:tourl property="codebase">
+    <makeurl property="codebase" validate="false">
       <path refid="tests.run.classpath" />
-    </sf:tourl>
-    <echo>
+    </makeurl>
+    <echo level="verbose">
       codebase=${codebase}
     </echo>
   </target>
@@ -110,7 +110,7 @@
        security reasons, unless security is active-->
 
    <target name="ready-to-system-test"
-     depends="package-tests,ready-to-test,init-codebase,declare-system-test-tasks" />
+     depends="package-tests,ready-to-test,init-codebase,declare-system-test-tasks,published" />
 
    <target name="system-tests" depends="ready-to-system-test"
      if="system.tests.enabled"

@@ -2,7 +2,7 @@
 <project name="net" default="default">
 
 <!--
-/** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
+/** (C) Copyright 1998-2007 Hewlett-Packard Development Company, LP
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
@@ -31,7 +31,7 @@ For more information: www.smartfrog.org
   <property file="build.properties" />
   <property name="root.dir" location="../../"  />
   <property name="ivy.enabled" value="true"/>
-
+  <property name="system.tests" value="true"/>
   <property name="is.component" value="true"  />
 
   <!-- Import common stuff -->
@@ -44,24 +44,5 @@ For more information: www.smartfrog.org
     <echo message="= ${ant.project.name}"/>
   </target>
 
-
-  <!-- ========================================================== -->
-  <!-- create the jar -->
-  <!-- ========================================================== -->
-  <target name="dist" depends="common.dist,javadoc"  description="create the jar files">
-    <copy todir = "${dist.lib.dir}">
-        <fileset dir ="${lib.dir}" />
-    </copy> 
-    <copy todir = "${dist.doc.dir}">
-        <fileset dir ="${doc.dir}" />
-    </copy>   
-    <copy todir = "${dist.src.dir}">
-      <fileset dir ="${src.dir}">
-        <include name="**/examples/**"/>
-      </fileset>
-    </copy>
-    <copy tofile="${dist.dir}/build.xml" file="releaseBuild.xml"/>
-    <copy tofile="${dist.dir}/build.example.properties" file="build.example.properties"/>
-  </target>
 
 </project>
