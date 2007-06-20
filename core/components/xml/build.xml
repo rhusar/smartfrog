@@ -33,6 +33,21 @@
   <property file="build.properties"/>
   <property name="is.component" value="true"/>
   <property name="ivy.enabled" value="true"/>
+  <property name="system.tests" value="true"/>
+  <condition property="javac.version" value="1.5">
+    <available classname="java.lang.Readable"/>
+  </condition>
+  <property name="javac.version" value="1.4"/>
+  <condition property="javac.is.1.4" >
+    <equals arg1="${javac.version}" arg2="1.4" />
+  </condition>
+  <property name="javac.java.version" value="${javac.version}"/>
+  <condition property="system.tests.enabled">
+    <and>
+      <istrue value="${system.tests.enabled}"/>
+      <isset property="java1.5+"/>
+    </and>
+  </condition>
 
   <!-- Import common stuff -->
   <import file="../../common.xml"/>
@@ -54,14 +69,6 @@
     <available property="nux.found"
         classname="nux.xom.binary.BinaryXMLCodec"/>
     <!-- work out our java version by introspection, fall back to 1.4 if 1.5 is not found -->
-    <condition property="javac.version" value="1.5">
-      <available classname="java.lang.Readable"/>
-    </condition>
-    <property name="javac.version" value="1.4"/>
-    <condition property="javac.is.1.4" >
-      <equals arg1="${javac.version}" arg2="1.4" />
-    </condition>
-    <property name="javac.java.version" value="${javac.version}"/>
   </target>
 
   <target name="javac.version" depends="check-versions" if="javac.is.1.4">
@@ -202,20 +209,7 @@
   <!-- ========================================================== -->
 
 
-  <target name="ready-to-test" depends="parse,common.ready-to-test">
-    <condition property="run.system.tests">
-      <and>
-        <isset property="system.tests.enabled"/>
-        <isset property="java1.5+"/>
-      </and>
-    </condition>
-  </target>
 
-
-  <target name="system-tests" depends="ready-to-test"
-      if="run.system.tests" description="run system tests">
-    <sf-system-test-batch-run />
-  </target>
 
 
 </project>

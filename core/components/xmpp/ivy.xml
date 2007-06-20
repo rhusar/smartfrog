@@ -50,5 +50,10 @@
         name="smack"
         rev="${smack.version}"
         conf="compile,redist->default"/>
+    <dependency org="org.smartfrog"
+        name="sf-testharness"
+        changing="true"
+        rev="latest.integration"
+        conf="test->default"/>    
   </dependencies>
 </ivy-module>

@@ -54,6 +54,7 @@ Reference URL:http://ant.apache.org
 
   <property name="ivy.enabled" value="true"/>
   <property name="is.component" value="true"  />
+  <property name="system.tests" value="true"/>
 
   <!-- Import common stuff -->
   <!--available file="../../common.xml" property="root.dir" value="../.."/--> 
@@ -284,20 +285,6 @@ Reference URL:http://ant.apache.org
 
 
 
-    <!-- =================================================================== -->
-    <!-- sfParse parsertargets                                                -->
-    <!-- =================================================================== -->
-    <target name="sfParseTest"  depends="build,jars">
-      <java classname="org.smartfrog.SFParse"
-          failonerror="true" fork="true"
-          classpathref="tests.run.classpath">
-        <arg value="-R"/>
-        <!--<arg value="-r"/> -->
-        <arg value="-q"/>
-        <arg value="-f"/>
-        <arg file="parsertargets"/>
-     </java>
-    </target>
 
 
 </project>
