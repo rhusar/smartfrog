@@ -294,6 +294,7 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(0644,root,root,0755)
 %attr(755, root,root) /etc/rc.d/init.d/smartfrog
 %attr(755, root,root) /etc/profile.d/smartfrog.sh
+%attr(755, root,root) /etc/profile.d/smartfrog.csh
 /etc/sysconfig/smartfrog
 # -----------------------------------------------------------------------------
 

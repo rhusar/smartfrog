@@ -6,7 +6,7 @@ package org.smartfrog.tools;
  *  Description of the Class
  *
  *@author     julgui
- *@created    23 October 2001
+ *created    23 October 2001
  */
 public class Version {
    /**

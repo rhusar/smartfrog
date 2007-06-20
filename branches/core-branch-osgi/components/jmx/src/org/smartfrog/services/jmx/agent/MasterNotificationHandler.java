@@ -69,9 +69,8 @@ public class MasterNotificationHandler extends PrimImpl implements Prim, MasterN
 
 
     /**
-     *  Description of the Method
+     *  {@inheritDoc}
      *
-     *@param  boolean1  Description of the Parameter
      */
     public void postRegister(Boolean registrationDone) {
         if (!registrationDone.booleanValue()) {
@@ -83,25 +82,18 @@ public class MasterNotificationHandler extends PrimImpl implements Prim, MasterN
 
 
     /**
-     *  Description of the Method
+     *  {@inheritDoc}
      *
-     *@exception  Exception  Description of the Exception
      */
-    public void preDeregister() throws Exception {
+    public void preDeregister()  {
         if (isActive) {
             stop();
         }
     }
 
     /**
-     *  Keeps the ObjectName assigned to this MBean and a reference to the
-     *  MBeanServer. It also retrieve the MBeanServer information from the
-     *  MBeanServerDeletate MBean.
-     *
-     *@param  server    Description of the Parameter
-     *@param  objectName     Description of the Parameter
-     *@return                Description of the Return Value
-     *@exception  Exception  Description of the Exception
+     *  {@inheritDoc}
+     *@exception  Exception  trouble
      */
     public ObjectName preRegister(MBeanServer server, ObjectName objectName) throws Exception {
         // My ObjectName
@@ -115,6 +107,9 @@ public class MasterNotificationHandler extends PrimImpl implements Prim, MasterN
         return objectName;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public void start() {
         // Search for Discovery services
         try {
@@ -142,6 +137,9 @@ public class MasterNotificationHandler extends PrimImpl implements Prim, MasterN
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public void stop() {
         // Unregister from all listeners
         for (Enumeration enuM = discMBeans.elements(); enuM.hasMoreElements(); ) {
@@ -154,18 +152,30 @@ public class MasterNotificationHandler extends PrimImpl implements Prim, MasterN
         isActive = false;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public boolean isActive() {
         return isActive;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public String getPattern() {
         return pattern;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public void setPattern(String newPattern) {
         pattern = newPattern;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public void handleNotification(Notification notification, Object handback) {
         if (!isActive) return;
         if (!(notification instanceof DiscoveryNotification)) return;
@@ -235,9 +245,7 @@ public class MasterNotificationHandler extends PrimImpl implements Prim, MasterN
 // Prim interface
 
     /**
-     *  Description of the Method
-     *
-     *@exception  Exception  Description of the Exception
+     * {@inheritDoc}
      */
     public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
         super.sfDeploy();
@@ -249,15 +257,16 @@ public class MasterNotificationHandler extends PrimImpl implements Prim, MasterN
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
         start();
     }
 
     /**
-     *  Description of the Method
-     *
-     *@param  tr  Description of the Parameter
+     * {@inheritDoc}
      */
     public synchronized void sfTerminateWith(TerminationRecord tr) {
         stop();

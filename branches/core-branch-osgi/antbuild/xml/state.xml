@@ -80,6 +80,12 @@
 
   <target name="cleaned" depends="ready-to-clean"/>
 
-  <target name="published-distribution" depends="packaged,published"/>
+
+  <target name="ready-to-dist" depends="packaged,documents-packaged" />
+
+  <target name="dist" depends="packaged"
+      description="create a distribution"/>
+
+  <target name="published-distribution" depends="dist,published"/>
 
 </project>

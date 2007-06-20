@@ -323,4 +323,10 @@ public interface SmartFrogCoreKeys {
      */
     public final static String SF_CORE_BUNDLE_CONTEXT = "sfCoreBundleContext";
 
+    /**
+     * Tag to mark an attribute as final, after which placement fails
+     * Value {@value}
+     */
+    public static final String SF_FINAL= "sfFinal";
+
 }

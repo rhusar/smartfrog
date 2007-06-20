@@ -10,8 +10,8 @@ import java.rmi.RemoteException;
  * contexts, component descriptions and (in its remote form) prims.
  */
 public interface RemoteTags extends Remote {
-   // TAGS interface for a context
 
+   // TAGS interface for a context
    /**
     * Set the TAGS for an attribute. TAGS are simply uninterpreted strings associated
     * with each attribute.

@@ -20,6 +20,17 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.sfcore.processcompound;
 
+import java.rmi.RemoteException;
+import java.util.Date;
+import java.util.Enumeration;
+import java.util.Properties;
+import java.util.Vector;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.Iterator;
+import java.net.InetAddress;
+
 import org.smartfrog.SFSystem;
 import org.smartfrog.sfcore.common.*;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
@@ -35,8 +46,6 @@ import org.smartfrog.sfcore.security.SFSecurity;
 import org.smartfrog.sfcore.security.SFSecurityProperties;
 import org.smartfrog.sfcore.security.SmartFrogCorePropertySecurity;
 
-import java.net.InetAddress;
-import java.rmi.RemoteException;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.*;
@@ -501,12 +510,12 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
             try {
                 SFProcess.getRootLocator().unbindRootProcessCompound();
             } catch (Exception ex) {
-                sfLog().ignore(ex);                
+                sfLog().ignore(ex);
             }
         }
 
         if (sfLog().isDebugEnabled())
-            sfLog().debug("ProcessCompoundImpl terminating. systemExit = " + systemExit);    
+            sfLog().debug("ProcessCompoundImpl terminating. systemExit = " + systemExit);
 
         if (systemExit) {
             try {
@@ -974,7 +983,7 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
 
         if (process != null)
             startStreamGobblerThreads(process, name);
-        
+
         try {
             // Wait for new compound to appear and try to return it
             ProcessCompound newPc = (ProcessCompound) sfResolveHereOrWait(name, timeout);
@@ -1407,16 +1416,16 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
      */
     protected void addProcessEnvVars(List cmd, ComponentDescription cd)
         throws Exception {
-            ComponentDescription sfProcessEnvVars = (ComponentDescription) cd.sfResolveHere (SmartFrogCoreKeys.SF_PROCESS_ENV_VARS, false);
+            ComponentDescription sfProcessEnvVars = (ComponentDescription) cd.sfResolveHere(
+                    SmartFrogCoreKeys.SF_PROCESS_ENV_VARS, false
+            );
             if (sfProcessEnvVars == null) return;
             Object key;
             Object value;
             for (Iterator i = sfProcessEnvVars.sfAttributes(); i.hasNext();) {
                 key = i.next().toString();
                 value = sfProcessEnvVars.sfResolveHere(key);
-                cmd.add("-D" +
-                        key.toString() + "=" +
-                        value.toString());
+                cmd.add("-D" + key.toString() + "=" + value.toString());
             }
     }
 
@@ -1430,4 +1439,94 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
             sfLog.error("Exception when shutting down registry", t);
         }
     }
+
+    //Tags - Special case for rootProcess: rootProcess does not have tags.
+
+  /**
+    * Set the TAGS for this component. TAGS are simply uninterpreted strings associated
+    * with each attribute.
+   * rooProcess does not do anything. rootProcess does not have tags.
+    *
+    * @param tags a set of tags
+    *
+    * @throws SmartFrogException the attribute does not exist;
+    */
+   public void sfSetTags(Set tags) throws SmartFrogContextException, RemoteException {
+       if (sfParent!=null) super.sfSetTags(tags);
+   }
+
+   /**
+    * Get the TAGS for this process compound. TAGS are simply uninterpreted strings associated
+    * with each attribute.
+    * rooProcess returns null. rootProcess does not have tags.
+    *
+    * @return the set of tags
+    *
+    * @throws SmartFrogException the attribute does not exist;
+    */
+   public Set sfGetTags() throws SmartFrogContextException, RemoteException {
+       if (sfParent!=null) return super.sfGetTags();
+       else return null;
+   }
+    /**
+     * add a tag to the tag set of this component
+     *  rootProcess does not have tags.
+     *
+     * @param tag a tag to add to the set
+     *
+     * @throws SmartFrogException the attribute does not exist;
+     */
+    public void sfAddTag( String tag) throws SmartFrogContextException, RemoteException {
+        if (sfParent!=null) super.sfAddTag(tag);
+    }
+
+    /**
+     * remove a tag from the tag set of this component if it exists
+     * rootProcess does not have tags.
+     *
+     * @param tag a tag to remove from the set
+     *
+     * @throws SmartFrogException the attribute does not exist;
+     *
+     */
+    public void sfRemoveTag( String tag) throws SmartFrogContextException, RemoteException {
+        if (sfParent!=null) super.sfRemoveTag(tag);
+    }
+
+    /**
+     * add a tag to the tag set of this component
+     *  rootProcess does not have tags.
+     * @param tags  a set of tags to add to the set
+     * @throws SmartFrogException
+     *          the attribute does not exist;
+     */
+    public void sfAddTags( Set tags) throws SmartFrogContextException, RemoteException {
+        if (sfParent!=null)super.sfAddTags(tags);
+    }
+
+    /**
+     * remove a tag from the tag set of this component if it exists
+     *  rootProcess does not have tags.
+     *
+     * @param tags  a set of tags to remove from the set
+     * @throws SmartFrogException
+     *          the attribute does not exist;
+     */
+    public void sfRemoveTags( Set tags)  throws SmartFrogContextException, RemoteException {
+         if (sfParent!=null) super.sfRemoveTags(tags);
+    }
+
+    /**
+     * Return whether or not a tag is in the list of tags for this component
+     * rootProcess returns false.  rootProcess does not have tags.
+     * @param tag the tag to chack
+     *
+     * @return whether or not the attribute has that tag
+     * @throws SmartFrogException the attribute does not exist
+     */
+    public boolean sfContainsTag(String tag) throws SmartFrogContextException, RemoteException {
+         if (sfParent!=null) return super.sfContainsTag(tag);
+         return false;
+    }
+
 }

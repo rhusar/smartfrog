@@ -1,15 +1,17 @@
 <!-- This POM file is authored by the SmartFrog project.
-  It is not sufficient to build SmartFrog, merely to use it.
   -->
 <project xmlns="http://maven.apache.org/POM/4.0.0"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <!--
+   ${pom.comments}
+  -->
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.smartfrog</groupId>
   <artifactId>sf-junit</artifactId>
   <packaging>jar</packaging>
   <version>${smartfrog.version}</version>
-  <description>Components to deploy JUnit 3.8.x components remotely</description>
+  <description>Components to deploy ${junit.version} components remotely</description>
   <dependencies>
     <dependency>
       <groupId>org.smartfrog</groupId>

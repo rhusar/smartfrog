@@ -1,7 +1,7 @@
 <?xml version="1.0" ?>
 <?xml-stylesheet type="text/xsl" href="http://ivyrep.jayasoft.org/ivy-doc.xsl"?>
 <ivy-module version="1.0">
-  <info organisation="org.smartfrog" module="sf-sfinstaller">
+  <info organisation="org.smartfrog" module="sf-installer">
     <license name="LGPL"/>
     <ivyauthor name="Hewlett-Packard" url="http://www.smartfrog.org"/>
     <description>
@@ -35,8 +35,8 @@
   <publications>
     <!--get the artifact from our module name-->
     <artifact conf="master"/>
-    <artifact name="sf-sfinstaller-javadocs" conf="documentation" ext="zip"/>
-    <artifact name="sf-sfinstaller-documentation" conf="documentation" ext="zip"/>
+    <artifact name="sf-installer-javadocs" conf="documentation" ext="zip"/>
+    <artifact name="sf-installer-documentation" conf="documentation" ext="zip"/>
   </publications>
   <dependencies>
     <dependency org="org.smartfrog"

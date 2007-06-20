@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 
 <!--
-/** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
+/** (C) Copyright 1998-2007 Hewlett-Packard Development Company, LP
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
@@ -37,10 +37,9 @@ The build script for SmartFrog Scripting component.
 
 
   <property name="is.component" value="true"  />
-<!--
   <property name="ivy.enabled" value="true"/>
--->
-
+  <property name="system.tests" value="true"/>
+  
   <!-- Import common stuff -->
   <!--available file="../../common.xml" property="root.dir" value="../.."/-->
   <import file="${root.dir}/common.xml"/>

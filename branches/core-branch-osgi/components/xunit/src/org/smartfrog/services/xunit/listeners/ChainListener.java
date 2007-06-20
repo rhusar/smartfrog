@@ -61,6 +61,8 @@ public class ChainListener implements TestListener,Iterable<TestListener> {
      * @param processname process of the tests
      * @param suitename name of test suite
      * @param timestamp start timestamp (UTC)
+     * @throws SmartFrogException on smartfrog trouble
+     * @throws RemoteException on network trouble
      */
     public void createAndAddListeners(List<TestListenerFactory> factories,
                                       TestSuite suite,
@@ -86,17 +88,14 @@ public class ChainListener implements TestListener,Iterable<TestListener> {
     }
 
     /**
-     * Iterator operator.
-     * @return
+     * {@inheritDoc}
      */
     public Iterator<TestListener> iterator() {
         return listeners.iterator();
     }
 
     /**
-     * end this test suite. After calling this, caller should discard all
-     * references; they may no longer be valid. <i>No further methods may be
-     * called</i>
+     * {@inheritDoc}
      */
     public void endSuite() throws RemoteException, SmartFrogException {
         Iterator i=iterator();
@@ -107,7 +106,7 @@ public class ChainListener implements TestListener,Iterable<TestListener> {
     }
 
     /**
-     * An error occurred.
+     * {@inheritDoc}
      */
     public void addError(TestInfo test) throws RemoteException,
             SmartFrogException {
@@ -120,7 +119,7 @@ public class ChainListener implements TestListener,Iterable<TestListener> {
     }
 
     /**
-     * A failure occurred.
+     * {@inheritDoc}
      */
     public void addFailure(TestInfo test) throws RemoteException,
             SmartFrogException {
@@ -133,7 +132,7 @@ public class ChainListener implements TestListener,Iterable<TestListener> {
     }
 
     /**
-     * A test ended.
+     * {@inheritDoc}
      */
     public void endTest(TestInfo test) throws RemoteException,
             SmartFrogException {
@@ -145,7 +144,7 @@ public class ChainListener implements TestListener,Iterable<TestListener> {
     }
 
     /**
-     * A test started.
+     * {@inheritDoc}
      */
     public void startTest(TestInfo test) throws RemoteException,
             SmartFrogException {
@@ -156,6 +155,9 @@ public class ChainListener implements TestListener,Iterable<TestListener> {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public void log(LogEntry event) throws RemoteException {
         Iterator i = iterator();
         while (i.hasNext()) {

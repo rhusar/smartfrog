@@ -135,7 +135,7 @@ public class XmlTestIndexImpl extends PrimImpl implements XmlTestIndex {
     /**
      * run through all the results; return true if any one of them changed
      * (which implies a rebuild of the page is needed)
-     * @return
+     * @return true if a result changed
      * @throws SmartFrogResolutionException
      * @throws RemoteException
      */

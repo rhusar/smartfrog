@@ -179,6 +179,16 @@ public abstract class SmartFrogTestBase extends TestCase {
     }
 
     /**
+     * Teardown tears down the application in {@link #application} if it is not null
+     *
+     * @throws Exception
+     */
+    protected void tearDown() throws Exception {
+        super.tearDown();
+        terminateApplication(application);
+    }
+
+    /**
      * get a file name relative to the classes dir directory
      * @param filename short name of the file
      * @return the resolved file
@@ -570,6 +580,7 @@ public abstract class SmartFrogTestBase extends TestCase {
      * parse a smartfrog file; throw an exception if something went wrong
      * @param file file to parse
      * @throws SmartFrogException  any parse time exception
+     * @return the parsed file
      */
     protected Phases parse(File file) throws SmartFrogException {
         String fileUrl;
@@ -591,7 +602,8 @@ public abstract class SmartFrogTestBase extends TestCase {
       * is none, then 'sf' is assumed.
      * @param resource resource to parse
      * @throws SmartFrogException  any parse time exception
-     */
+      * @return the parsed file
+      */
     protected Phases parse(String resource) throws SmartFrogException {
         Phases phases=null;
         InputStream is=null;
@@ -725,7 +737,6 @@ public abstract class SmartFrogTestBase extends TestCase {
         } finally {
             application=null;
         }
-
     }
 
     /**
@@ -915,12 +926,5 @@ public abstract class SmartFrogTestBase extends TestCase {
         }
     }
 
-    /**
-     * Teardown tears down the application in {@link #application}
-     * @throws Exception
-     */
-    protected void tearDown() throws Exception {
-        super.tearDown();
-        terminateApplication(application);
-    }
+
 }

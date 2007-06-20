@@ -45,12 +45,7 @@ import mx4j.*;
 import java.net.UnknownHostException;
 
 /**
- *  Description of the Class
- *
- *          sfJMX
- *   JMX-based Management Framework for SmartFrog Applications
- *       Hewlett Packard
- *
+ *  A compound that represents the remote agent
  *@version        1.0
  */
 public class SFJMXAgentImpl extends CompoundImpl implements Compound, SFJMXAgent, Remote {
@@ -69,6 +64,8 @@ public class SFJMXAgentImpl extends CompoundImpl implements Compound, SFJMXAgent
 
     Reference nameRef;
     String name = "sfJMXAgent";
+    private static final String DESCRIPTION_MBEANS = "descriptionMBeans";
+    private static final String COMPONENT_MBEANS = "componentMBeans";
 
 
     /**
@@ -148,7 +145,6 @@ public class SFJMXAgentImpl extends CompoundImpl implements Compound, SFJMXAgent
                     removeAgentNotificationListener(listener);
                 } catch (Exception ex) {
                     if (sfLog().isErrorEnabled()){ sfLog().error("EventHandler: Could not send AgentTerminatingNotification",ex);}
-                    ex.printStackTrace();
                 }
             }
             agentNotificationListeners.clear();
@@ -188,7 +184,7 @@ public class SFJMXAgentImpl extends CompoundImpl implements Compound, SFJMXAgent
      */
     private Object intantiateMBean(String mbeanClass, ObjectName objectName, ComponentDescription constructor) throws Exception {
 
-	    System.out.println("IN INTANTIATEMBEAN");
+        echo("IN INTANTIATEMBEAN");
         // Search for constructor parameters
         Context constructorContext = null;
         if (constructor != null) {
@@ -256,9 +252,9 @@ public class SFJMXAgentImpl extends CompoundImpl implements Compound, SFJMXAgent
     protected void addDescriptionMBeans() {
         Context descriptionMBeans = null;
         try {
-            descriptionMBeans = ((ComponentDescription) sfResolveHere("descriptionMBeans")).sfContext();
+            descriptionMBeans = ((ComponentDescription) sfResolveHere(DESCRIPTION_MBEANS)).sfContext();
         } catch (Exception e) {
-            e.printStackTrace();
+            sfLog().error("Failed to resolve "+DESCRIPTION_MBEANS,e);
             return;
         }
 
@@ -332,9 +328,9 @@ public class SFJMXAgentImpl extends CompoundImpl implements Compound, SFJMXAgent
                 properties.put("server", localServerId);
             }*/
 
-	    System.out.println("Serve Id===" + localServerId);
-	    System.out.println("Serve domain===" + domain);
-	    System.out.println("Name===" + properties.get("name"));
+            echo("Serve Id===" + localServerId);
+            echo("Serve domain===" + domain);
+            echo("Name===" + properties.get("name"));
             // Build ObjectName and instantiate
             Object mbeanInstance = null;
             ObjectName mbeanObjectName = null;
@@ -347,7 +343,6 @@ public class SFJMXAgentImpl extends CompoundImpl implements Compound, SFJMXAgent
                 continue;
             } catch (Exception e) {
                 if (sfLog().isErrorEnabled()){ sfLog().error("Could not create MBean for MBean: " + (String)properties.get("name"),e);}
-                e.printStackTrace();
                 continue;
             }
 
@@ -415,9 +410,9 @@ public class SFJMXAgentImpl extends CompoundImpl implements Compound, SFJMXAgent
     protected void addComponentMBeans() throws RemoteException, Exception {
         Compound componentMBeans = null;
         try {
-            componentMBeans = ((Compound) sfResolveHere("componentMBeans"));
+            componentMBeans = ((Compound) sfResolveHere(COMPONENT_MBEANS));
         } catch (Exception e) {
-            e.printStackTrace();
+            sfLog().error(COMPONENT_MBEANS,e);
             return;
         }
         for (Enumeration b = componentMBeans.sfContext().keys(); b.hasMoreElements(); ) {
@@ -428,6 +423,7 @@ public class SFJMXAgentImpl extends CompoundImpl implements Compound, SFJMXAgent
                 beanKey = (String) b.nextElement();
                 mbeanInstance = (Prim) componentMBeans.sfResolve(beanKey);
             } catch (Exception e) {
+                sfLog().error("resolving "+beanKey, e);
                 continue;
             }
 

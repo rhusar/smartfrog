@@ -19,15 +19,11 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.services.management;
 
-import java.awt.Component;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import javax.swing.JComponent;
-import javax.swing.JMenuItem;
-import javax.swing.JPopupMenu;
-import javax.swing.JTable;
-import javax.swing.JTree;
+import javax.swing.*;
 import javax.swing.tree.TreePath;
 
 import org.smartfrog.sfcore.prim.Prim;
@@ -191,7 +187,7 @@ public class PopUpTable extends JComponent implements ActionListener {
                  WindowUtilities.showError(this,"Failed to instrospect '"+name+"'. \n"+e1.toString());
              }
          }
-          PopUpTree.modalDialog("Introspection "+ name ,  PopUpTree.introspect(value), "", source);
+         modalDialog("Introspection "+ name ,  PopUpTree.introspect(value), "", source);
       }
    }
 
@@ -360,6 +356,34 @@ public class PopUpTable extends JComponent implements ActionListener {
          WindowUtilities.showError(this,"Only Components or ComponentDescriptions can be modified");
       }
    }
+
+    /**
+     * Prepares option dialog box
+     *
+     *@param  title    title displayed on the dialog box
+     *@param  message  message to be displayed
+     *@param defaultValue default value
+     */
+    public void modalDialog(String title, String message,
+            String defaultValue, Object source) {
+        /**
+         *  Scrollpane to hold the display's screen.
+         */
+        JScrollPane scrollPane = new JScrollPane();
+        /**
+         *  Display's screen object.
+         */
+        JTextArea screen = new JTextArea(message);
+        Frame parentFrame = new Frame();
+        JDialog pane = new JDialog(parentFrame,title,true);
+        pane.setSize(600,400);
+        pane.setResizable(true);
+        pane.getContentPane().add(scrollPane);
+        scrollPane.getViewport().add(screen, null);
+        WindowUtilities.center(parent,parentFrame);
+        pane.show(true);
+    }
+
    /** Log for this class, created using class name*/
     LogSF sfLog = LogFactory.getLog("sfManagementConsole");
 

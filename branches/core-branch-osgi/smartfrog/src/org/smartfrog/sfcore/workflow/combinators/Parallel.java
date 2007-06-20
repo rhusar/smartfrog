@@ -72,6 +72,26 @@ public class Parallel extends EventCompoundImpl implements Compound {
     private boolean terminateOnAbnormalChildDeploy = true;
     private Vector asynchChildren;
     private Vector results;
+    /**
+     * A counter to catch (and ignore) terminations during
+     * asynchronous startups, except for the last one.
+     */
+    private volatile int pendingDeployments=0;
+
+    /**
+     * Termination message.
+     * {@value}
+     */
+    public static final String TERMINATION_ABNORMAL_CHILD = "Terminating normally even though a child terminated abnormally";
+    /**
+     * Termination message.
+     * {@value}
+     */
+    public static final String TERMINATION_ERROR_REMOVING_THE_CHILD = "Error removing the child";
+    public static final String WORKER_FAILED = "Worker failed";
+    public static final String TERMINATE_FAILURE_WHILE_STARTING_SUB_COMPONENTS = "Failure while starting sub-components ";
+    public static final String TERMINATE_FAILED_TO_START_SUB_COMPONENTS = "Failed to start sub-components ";
+    public static final String TERMINATE_PARALLEL_COMPONENT_IS_EMPTY = "Parallel component is empty";
 
     /**
      * Constructs Parallel.
@@ -80,6 +100,31 @@ public class Parallel extends EventCompoundImpl implements Compound {
      */
     public Parallel() throws RemoteException {
         super();
+    }
+
+    /*
+     * These methods are here
+     *
+     */
+    private synchronized int getPendingDeployments() {
+        return pendingDeployments;
+    }
+
+    /**
+     * We have pending deployments if there is at least one in the queue
+     * @return true iff there was a pending deployment when the test was made
+     */
+    private boolean hasPendingDeployments() {
+        return getPendingDeployments()>0;
+    }
+
+    private synchronized void setPendingDeployments(int pendingDeployments) {
+        this.pendingDeployments = pendingDeployments;
+    }
+
+    private synchronized int decrementPendingDeployments() {
+        pendingDeployments--;
+        return pendingDeployments;
     }
 
     /**
@@ -127,13 +172,13 @@ public class Parallel extends EventCompoundImpl implements Compound {
                     sfLog().error(getName() + " - Failed to start sub-components ", ex);
                 }
                 terminationRecord = TerminationRecord
-                        .abnormal("Failed to start sub-components " + ex, getName(), ex);
+                        .abnormal(TERMINATE_FAILED_TO_START_SUB_COMPONENTS + ex, getName(), ex);
             }
         } else {
             //no actions. Maybe terminate 
             if (terminateIfEmpty) {
                 terminationRecord = new TerminationRecord(TerminationRecord.NORMAL,
-                        "Parallel component is empty", getName());
+                        TERMINATE_PARALLEL_COMPONENT_IS_EMPTY, getName());
             }
         }
         if (terminationRecord != null) {
@@ -173,6 +218,7 @@ public class Parallel extends EventCompoundImpl implements Compound {
         asynchChildren = new Vector(size);
         results = new Vector(size);
         actionKeys = actions.keys();
+        setPendingDeployments(size);
         try {
             while (actionKeys.hasMoreElements()) {
                 Object key = actionKeys.nextElement();
@@ -180,10 +226,13 @@ public class Parallel extends EventCompoundImpl implements Compound {
                 ParallelWorker thread = new ParallelWorker(this, key, act, null);
                 asynchChildren.add(thread);
                 if (sfLog().isDebugEnabled()) sfLog().debug("Creating " + key);
+                decrementPendingDeployments();
                 thread.start();
             }
-        } catch (NoSuchElementException ignored) {
+        } catch (NoSuchElementException childless) {
             throw new SmartFrogRuntimeException(ERROR_NO_CHILDREN_TO_DEPLOY, this);
+        } finally {
+            setPendingDeployments(0);
         }
     }
 
@@ -201,7 +250,7 @@ public class Parallel extends EventCompoundImpl implements Compound {
      * @return true if the termination event is to be forwarded up the chain.
      */
     protected boolean onChildTerminated(TerminationRecord record, Prim child) {
-        boolean forward = false;
+        boolean shouldTerminate = false;
         boolean normalRecord = record.isNormal();
         try {
             sfRemoveChild(child);
@@ -213,8 +262,8 @@ public class Parallel extends EventCompoundImpl implements Compound {
             //here's a network error; very unusual and merits propagating
             sfLog().error("Error handling child termination ", e);
             //failure to remove the child is always a problem
-            if(normalRecord) {
-                sfTerminate(TerminationRecord.abnormal("error removing the child", getName(), e));
+            if (normalRecord) {
+                sfTerminate(TerminationRecord.abnormal(TERMINATION_ERROR_REMOVING_THE_CHILD, getName(), e));
                 //bail out right now -this simplifies the logic slightly (currently).
                 return false;
             } else {
@@ -225,29 +274,30 @@ public class Parallel extends EventCompoundImpl implements Compound {
         boolean lastChild = !hasActiveChildren();
         //we forward if this is the last child, or it is an abnormal and we want to forward it
 
-        if(normalRecord ) {
-            forward = lastChild;
+        if (normalRecord) {
+            shouldTerminate = lastChild;
         } else {
             //failure
-            if(terminateOnAbnormalChildTermination) {
-                forward=true;
+            if (terminateOnAbnormalChildTermination) {
+                shouldTerminate = true;
             } else {
                 //we are here if this is a fault we may want to ignore
                 //if this is the last child, we actually raise a new term record
                 //after ignoring this one
                 ignoringChildTermination(record, child);
-                forward=false;
-                if(lastChild) {
+                shouldTerminate = false;
+                if (lastChild) {
                     //trigger a normal termination, even though this component terminated abnormally
-                    sfTerminate(TerminationRecord.normal(getName()));
+                    sfTerminate(TerminationRecord.normal(TERMINATION_ABNORMAL_CHILD, getName()
+                    ));
                 }
             }
         }
-        if (!normalRecord && !forward) {
+        if (!normalRecord && !shouldTerminate) {
             //we want to to ignore this fault
             ignoringChildTermination(record, child);
         }
-        return forward;
+        return shouldTerminate;
     }
 
     /**
@@ -264,7 +314,7 @@ public class Parallel extends EventCompoundImpl implements Compound {
                 try {
                     worker.cancel(sfSyncTerminate, true);
                 } catch (Exception ignored) {
-                    sfLog().ignore("when canceling", ignored);
+                    sfLog().ignore("When canceling", ignored);
                 }
             }
         }
@@ -301,14 +351,14 @@ public class Parallel extends EventCompoundImpl implements Compound {
                 results.add(worker.get(0));
                 //if we get here, success.
             } catch (InterruptedException ignored) {
-                sfLog().ignore("Worker failed" + worker, ignored);
+                sfLog().ignore(WORKER_FAILED + worker, ignored);
             } catch (SmartFrogException ex) {
                 //failure: add the exception to the results
                 results.add(ex);
                 //this fault means that we failed to start up
                 //create a term record
                 TerminationRecord terminationRecord = TerminationRecord
-                        .abnormal("Failure while starting sub-components " + ex, getName(), ex);
+                        .abnormal(TERMINATE_FAILURE_WHILE_STARTING_SUB_COMPONENTS + ex, getName(), ex);
                 //and maybe terminate
                 // This may be called more than once, but appears to be harmless in this case.
 
@@ -333,11 +383,14 @@ public class Parallel extends EventCompoundImpl implements Compound {
      * Test for active children.
      *  What we cannot do is rely on {@link #sfChildren()} not being empty, as there may be active threads
      * that have not got there yet...we have to look at the active thread count and return false if there
-     * are threads there
-     * @return
+     * are threads there.
+     * We also have to check for pending deployments, to prevent the race condition of SFOS-154 from arising
+     * @return true if the system has active children, or children about to be deployed.
      */
     private synchronized boolean hasActiveChildren() {
-        return sfChildren().hasMoreElements() || !asynchChildren.isEmpty();
+        //If hasPendingDeployments() is appended here, then we check for startup problems;
+        return sfChildren().hasMoreElements() || !asynchChildren.isEmpty() || hasPendingDeployments();
+
     }
 
     /**

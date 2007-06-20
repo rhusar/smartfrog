@@ -32,13 +32,13 @@ import org.smartfrog.services.persistence.storage.StorageException;
 
 
 /**
- * <p>
+ * An invocation handler to recoverable components.
+ *
  * References to recoverable components can rebind themselves automatically
  * when the target component is recreated after some failure. These references
  * are implemented as dynamic proxies that use the RComponentProxyInvocationHandler
  * as their invocation handler.
- * </p>
- * <p>
+ *
  * The invocation handler uses three objects: the "direct" object; a "proxy
  * locator" object; and a "local override" object; The direct object is the
  * target recoverable component and the invocation handler actually holds an RMI
@@ -49,7 +49,6 @@ import org.smartfrog.services.persistence.storage.StorageException;
  * can be performed locally instead of invoking the target recoverable component.
  * These include methods that are required to work even with the recoverble component
  * is absent - the method "isDead" is an example.
- * </p>
  */
 public class RComponentProxyInvocationHandler implements InvocationHandler,
         Serializable {
@@ -75,7 +74,8 @@ public class RComponentProxyInvocationHandler implements InvocationHandler,
 
 
     /**
-     * Constructor - sets the direct object to be the component paremeter,
+     * Constructor.
+     * Sets the direct object to be the component paremeter,
      * constructs a proxy locator and constructs an object that will handle
      * invocations that must be done locally (i.e. anything that may need
      * to be done in the absence of the actual object).

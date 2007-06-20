@@ -119,7 +119,6 @@
     <property name="test.dir" location="${build.dir}/test"/>
     <property name="test.classes.dir" location="${build.test.dir}/classes"/>
     <property name="test.data.dir" location="${build.test.dir}/data"/>
-    <property name="test.datafiles.dir" location="test/files"/>
     <property name="test.reports.dir" location="${build.test.dir}/reports"/>
   
     <property name="dist.dir" location="dist"/>
@@ -143,8 +142,8 @@
       for optional SmartFrog runtime properties</echo>
     <property file="${runtime.properties}" prefix="runtime"/>      
       <!-- turn on the tests. If you dont want this, set one (or both) to false)  in the unit tests-->
-    <property name="system.tests" value="true" />
-    <property name="unit.tests" value="true" />
+    <property name="system.tests" value="false" />
+    <property name="unit.tests" value="false" />
 
     <condition property="system.tests.enabled">
       <istrue value="${system.tests}"/>
@@ -171,6 +170,7 @@
 
     <tstamp>
       <format property="year" pattern="yyyy"/>
+      <format property="build.date" pattern="yyyy-MM-dd HH:mm" />
     </tstamp>
     <property name="Name.Framework" value="SmartFrog"/>
     <property name="Name.System" value="${ant.project.name}"/>
@@ -251,7 +251,7 @@ java.class.path=
     <property name="jarfile.suffix" value=""/>
     <property name="jarfile.extension" value="jar"/>
     <property name="artifact.name" value="${project.name}" />
-    <property name="jarfile.stub" value="${artifact.name}${jarfile.suffix}-${Version}" />
+    <property name="jarfile.stub" value="${artifact.name}${jarfile.suffix}-${smartfrog.version}" />
     <property name="jarfile.name" value="${jarfile.stub}.${jarfile.extension}"/>
 
     <property name="target.jar"
@@ -261,18 +261,18 @@ java.class.path=
     test code (inc deployment descriptors) for deployment onto secure
     boxes
  -->
-    <property name="test.jar.name" value="${artifact.name}-test-${Version}.jar"/>
+    <property name="test.jar.name" value="${artifact.name}-test-${smartfrog.version}.jar"/>
     <property name="test.jar"
         location="${dist.lib.dir}/${test.jar.name}" />
 
    <!--name of javadocs zip file-->
-   <property name="javadocs.zip.name" value="${artifact.name}-javadocs-${Version}.zip"/>
+   <property name="javadocs.zip.name" value="${artifact.name}-javadocs-${smartfrog.version}.zip"/>
    <property name="javadocs.zip"
      location="${dist.lib.dir}/${javadocs.zip.name}" />
 
    <!--info about the documentation zip-->
    <property name="documentation.zip.name"
-     value="${artifact.name}-documentation-${Version}.zip"/>
+     value="${artifact.name}-documentation-${smartfrog.version}.zip"/>
    <property name="documentation.zip"
      location="${dist.lib.dir}/${documentation.zip.name}" />
 
@@ -310,6 +310,25 @@ java.class.path=
 
     <echo level="verbose">system.tests.enabled=${system.tests.enabled}</echo>
     <echo level="verbose">unit.tests.enabled=${unit.tests.enabled}</echo>
+
+   <!--preset to copy with ant property expansion (and always overwrite)-->
+   <presetdef name="expandingcopy">
+     <copy overwrite="true">
+       <filterchain>
+         <expandproperties/>
+       </filterchain>
+     </copy>
+   </presetdef>
+
+   <!-- a macro to define a property to a new directory, and create the directory-->
+   <macrodef name="newdir">
+     <attribute name="name"/>
+     <attribute name="location"/>
+     <sequential>
+       <property name="@{name}" location="@{location}" />
+       <mkdir dir="@{location}" />
+     </sequential>
+   </macrodef>
 
     <!-- define a new javac task with new default options -->
     <presetdef name="sf-javac">
@@ -459,6 +478,7 @@ java.class.path=
     <!-- rmic configuration -->
     <presetdef name="sf-rmic">
       <rmic
+        compiler="${rmic.compiler}"
         verify="true"
         stubversion="1.2" />
     </presetdef>
@@ -473,8 +493,8 @@ java.class.path=
     <property name="javadoc.use" value="true"/>
     <property name="javadoc.windowtitle" value="${Name.System}"/>
     <property name="javadoc.packagenames" value="org.smartfrog.*"/>
-    <property name="javadoc.header" value="${Name.System} ${Version}"/>
-    <property name="javadoc.footer" value="${Name.System} ${Version}"/>
+    <property name="javadoc.header" value="${Name.System} ${smartfrog.version}"/>
+    <property name="javadoc.footer" value="${Name.System} ${smartfrog.version}"/>
     <presetdef name="sf-javadoc" >
       <javadoc packagenames="${javadoc.packagenames}"
           author="${javadoc.author}"
@@ -604,8 +624,12 @@ java.class.path=
 
   <!--  assert that junit exists and fail if it is not there-->
   <target name="assert-junit" depends="init" >
-    <available file="${junit.jar}" property="junit.found"/>
     <fail unless="junit.found">
+      <condition>
+        <not>
+          <available file="${junit.jar}"/>
+        </not>
+      </condition>
      Not found: ${junit.jar}
     </fail>
   </target>
@@ -681,11 +705,16 @@ java.class.path=
     are defined-->
   <target name="declare-classpaths"
     depends=
-     "ivy-classpaths,declare-base.compile.classpath,declare-compile.classpath,
+     "ivy-classpaths,ivy.build.classpath,
+     declare-base.compile.classpath,declare-compile.classpath,
      declare-exec.classpath,declare-tests.compile.classpath,
      declare-tests.run.classpath,
      declare-run.classpath-no-tests,declare-run.classpath"/>
 
+  <target name="ivy.build.classpath" depends="maybe-ivy-resolve" if="ivy.enabled">
+    <ivy:cachepath pathid="build.classpath" conf="build" />
+    <echo level="verbose">build.classpath=${toString:build.classpath}</echo>
+  </target>
 
   <target name="ivy.compile.classpath" depends="maybe-ivy-resolve" if="ivy.enabled">
     <ivy:cachepath pathid="compile.classpath" conf="compile" />
@@ -747,16 +776,18 @@ java.class.path=
 
   <target name="assert-smartfrog"  depends="init-common,declare-classpaths"
     description="verify smartfrog is present, fail if not">
-    <available
-      classname="org.smartfrog.SFSystem"
-      classpathref="smartfrog.classpath"
-      property="sfSystem.present"/>
-    <property name="sfjars.fullpath" refid="run.classpath"/>
-    <fail unless="sfSystem.present">
+    <fail >
+      <condition>
+        <not>
+          <available
+              classname="org.smartfrog.SFSystem"
+              classpathref="smartfrog.classpath"
+              />
+        </not>
+      </condition>
       Smartfrog entry point not found in
-      ${sfjars.fullpath}
+      ${toString:smartfrog.classpath}
     </fail>
-    <echo level="verbose">Smartfrog found in ${smartfrog.dist.lib.dir}</echo>
   </target>
 
   <!-- ========================================================== -->
@@ -765,23 +796,39 @@ java.class.path=
 
   <target name="verify-smartfrog"  depends="assert-smartfrog" />
 
-  <!-- ========================================================== -->
-  <!-- probe for tasks and use them if they are found; fail if not -->
-  <!-- ========================================================== -->
-  <target name="use-smartfrog-tasks" depends="init-common"
-    description="declare the classpath and imports for the smartfrog tasks">
+  <!--
+  this is the pre-ivy way of setting up the ant tasks...from
+  ivy you are expected to use ivy itself to find sf-tasks.jar
+  -->
+  <target name="use-smartfrog-tasks-classic" depends="init-common"
+      unless="ivy.enabled"
+      description="declare the classpath and imports for the smartfrog tasks">
     <path id="smartfrog.tasks.classpath">
       <path refid="smartfrog.core.classpath"/>
       <pathelement location="${smartfrog.tasks.jar}"/>
     </path>
+  </target>
+
+  <target name="use-smartfrog-tasks-ivy" depends="ivy.build.classpath"
+      if="ivy.enabled"
+      description="declare the classpath and imports for the smartfrog tasks">
+    <path id="smartfrog.tasks.classpath">
+      <path refid="build.classpath"/>
+    </path>
+  </target>
+  
+  <!-- ========================================================== -->
+  <!-- probe for tasks and use them if they are found; fail if not -->
+  <!-- ========================================================== -->
+  <target name="use-smartfrog-tasks" depends="use-smartfrog-tasks-classic,use-smartfrog-tasks-ivy"
+    description="declare the classpath and imports for the smartfrog tasks">
     <available
       classname="org.smartfrog.tools.ant.Parse"
       classpathref="smartfrog.tasks.classpath"
       property="sfTasks.present"/>
-    <property name="sftasks.fullpath" refid="smartfrog.tasks.classpath"/>
     <fail unless="sfTasks.present">
       Smartfrog tasks not found in
-      ${sftasks.fullpath}
+      ${toString:smartfrog.tasks.classpath}
     </fail>
     <typedef
       resource="org/smartfrog/tools/ant/tasks.properties"
@@ -794,7 +841,7 @@ java.class.path=
     for our needs -->
   <!-- ========================================================== -->
   <target name="declare-extended-smartfrog-tasks"
-      depends="init,use-smartfrog-tasks,declare-classpaths">
+      depends="init,use-smartfrog-tasks">
     <presetdef name="sf-startdaemon-debug">
       <sf-startdaemon classpathref="run.classpath"
         logStackTraces="true" spawn="true">
@@ -1158,7 +1205,7 @@ java.class.path=
     <get-version outputproperty="maxVersion">
       <arg value="-max"/>
     </get-version>-->
-    <property name="jar.name" value="${artifact.name}${jarfile.suffix}-${Version}.${jarfile.extension}"/>
+    <property name="jar.name" value="${artifact.name}${jarfile.suffix}-${smartfrog.version}.${jarfile.extension}"/>
     <property name="target.jar"
         location="${dist.lib.dir}/${jar.name}"/>
     <sf-jar destfile="${target.jar}"
@@ -1178,11 +1225,6 @@ java.class.path=
       <entry key="sf.minorRelease" value="${sf.minorRelease}"/>
       <entry key="sf.build" value="${sf.build}"/>
       <entry key="sf.status" value="${sf.status}"/>
-<!--
-      <entry key="sf.build.version" value="${CVersion}"/>
-      <entry key="sf.min.version" value="${minVersion}"/>
-      <entry key="sf.max.version" value="${maxVersion}"/>
--->
     </propertyfile>
     <echo level="verbose">version=${sf.build.version}</echo>
     <!--property name="Version" value="${sfversion}"/-->
@@ -1223,8 +1265,10 @@ java.class.path=
   <!-- ========================================================== -->
   <target name="package-tests" depends="compile-tests"
       description="create the JAR file for the tests">
+    <!-- the JAR is created, even when empty, as it may be used downstream as an empty artifact-->
       <sf-jar destfile="${test.jar}"
         basedir="${test.classes.dir}"
+        whenmanifestonly="create"
         includes="**/*"/>
       <echo level="verbose">created package ${test.jar}</echo>
   </target>
@@ -1284,7 +1328,7 @@ java.class.path=
 
   <!-- ========================================================== -->
   <!-- this is an override point -->
-  <!-- generate test reports; ignore failur results-->
+  <!-- generate test reports; ignore failure results-->
   <!-- ========================================================== -->
 
   <target name="reports-no-failure" depends="init"
@@ -1295,6 +1339,107 @@ java.class.path=
     <echo>reports in ${test.reports.dir}</echo>
   </target>
 
+  <!-- ========================================================== -->
+  <!-- set up any properties for deployment -->
+  <!-- ========================================================== -->
+  <target name="init-deploy-properties" depends="init">
+    <property name="deploy.host" value="localhost"/>
+    <property name="application.name" value="${project.name}"/>
+  </target>
+
+  <!-- ========================================================== -->
+  <!-- set the property codebasel this can be overridden-->
+  <!-- ========================================================== -->
+  <target name="init-codebase" depends="declare-classpaths,init-deploy-properties,package-tests"
+      description="set up the codebase property">
+    <makeurl property="codebase" validate="false">
+      <path refid="tests.run.classpath"/>
+    </makeurl>
+    <echo level="verbose">
+      deploying to ${deploy.host}
+      codebase=${codebase}</echo>
+  </target>
+
+
+  <!--
+  This target defines the task
+  <sf-system-test> which is a functional tests runner ready to
+  run smartfrog, just add tests and go.
+  The classpath of the daemon is set to tests.run.classpath;
+  -->
+  <target name="declare-system-test-tasks" depends="declare-extended-smartfrog-tasks,init-codebase" >
+    <presetdef name="sf-system-test">
+      <sf-functionaltest testTimeout="600" shutdownTime="10">
+        <application>
+          <sf-startdaemon-debug failonerror="false"
+              spawn="false"
+              classpathref="tests.run.classpath"/>
+        </application>
+        <probe>
+          <socket port="${smartfrog.daemon.port}" server="localhost"/>
+        </probe>
+        <teardown>
+          <parallel>
+            <sf-stopdaemon failonerror="false"/>
+            <sf-junitreport data="${test.data.dir}"
+                reports="${test.reports.dir}"
+                />
+          </parallel>
+        </teardown>
+      </sf-functionaltest>
+    </presetdef>
+    <presetdef name="sf-system-test-junit">
+      <sf-junit
+          errorProperty="system.test.failed"
+          failureProperty="system.test.failed"
+          includeAntRuntime="true"
+          >
+        <classpath refid="tests.run.classpath" />
+        <sysproperty key="test.classes.dir"
+            value="${test.classes.dir}"/>
+        <!--all properties beginning with test and runtime, and the codebase-->
+        <syspropertyset>
+          <propertyref prefix="test."/>
+        </syspropertyset>
+        <sysproperty key="org.smartfrog.codebase" value="${codebase}"/>
+        <syspropertyset>
+          <propertyref prefix="runtime"/>
+        </syspropertyset>
+      </sf-junit>
+    </presetdef>
+
+    <!-- define the system test post processor-->
+    <presetdef name="sf-system-test-validate">
+      <fail if="system.test.failed">System Tests failed - see
+        ${test.reports.dir}
+      </fail>
+    </presetdef>
+
+    <!--default pattern for system tests-->
+    <property name="sf-system-test-class-pattern"
+      value="org/smartfrog/**/test/**/*Test.class" />
+
+    <presetdef name="sf-system-test-batch-run">
+      <sf-system-test>
+        <test>
+          <sf-system-test-junit>
+            <batchtest todir="${test.data.dir}" unless="testcase">
+              <fileset dir="${test.classes.dir}">
+                <include name="${sf-system-test-class-pattern}"/>
+              </fileset>
+            </batchtest>
+          </sf-system-test-junit>
+          <sf-system-test-validate/>
+        </test>
+      </sf-system-test>
+    </presetdef>
+
+
+  </target>
+
+  <target name="ready-to-test" depends="init,package,dist,package-tests,declare-system-test-tasks">
+
+  </target>
 
   <!-- ========================================================== -->
   <!-- this is an override point -->
@@ -1303,15 +1448,16 @@ java.class.path=
        security reasons, unless security is active-->
   <!-- ========================================================== -->
   <target name="system-tests" if="system.tests.enabled"
-          depends="init,package,package-tests,declare-extended-smartfrog-tasks"
+          depends="ready-to-test"
     description="run the system tests">
+    <sf-system-test-batch-run />
   </target>
 
   <!-- ========================================================== -->
   <!-- this is an override point -->
   <!-- unit tests : anything which does not need deployment to run-->
   <!-- ========================================================== -->
-  <target name="unit-tests" depends="init,package,package-tests"
+  <target name="unit-tests" depends="ready-to-test"
       if="unit.tests.enabled"
     description="run the unit tests">
   </target>
@@ -1349,11 +1495,14 @@ java.class.path=
 
   <!-- ========================================================== -->
   <!-- shortcut for testing -->
+  <!-- creates a distribution but without any javadocs (for speed)-->
   <!-- ========================================================== -->
   <target name="smartfrog-dist"
     depends="init-common"
     >
-    <ant dir="${smartfrog.home}" target="published" inheritall="false"/>
+    <ant dir="${smartfrog.home}" target="published" inheritall="false">
+      <property name="javadoc.disabled" value="true" />
+    </ant>
   </target>
 
   <!-- ========================================================== -->
@@ -1441,14 +1590,16 @@ java.class.path=
   <!-- ========================================================== -->
   <!-- init all the maven2 support   -->
   <!-- ========================================================== -->
-   <target name="m2-init" depends="init,init-proxy,declare-extended-smartfrog-tasks,load-versions">
+  <target name="m2-init" depends="init,init-proxy,declare-extended-smartfrog-tasks,load-versions">
     <!-- Maven2 stuff
       All components build into the org.smartfrog group, unless otherwise stated, but
       are their own artifacts.
       -->
-    <property name="m2.repository" location="${user.home}/.m2/repository" />
 
-
+    <property name="m2.repository" location="${user.home}/.m2/repository"/>
+    <!-- and by default, they publish somewhere other than the local repository-->
+    <property name="m2.publish.repository" location="${core.dir}/build/m2/repository"/>
+    <mkdir dir="${m2.publish.repository}" />
     <!-- make the root path of an artifact -->
     <macrodef name="m2-makepath">
       <attribute name="property"/>
@@ -1457,43 +1608,51 @@ java.class.path=
       <attribute name="version"/>
       <sequential>
         <property name="@{property}"
-          location="${m2.repository}/@{groupIDpath}/@{artifactID}/@{version}" />
+            location="${m2.publish.repository}/@{groupIDpath}/@{artifactID}/@{version}"/>
       </sequential>
     </macrodef>
 
-    <property name="m2.groupID" value="org.smartfrog" />
-    <property name="m2.groupID.path" value="org/smartfrog" />
+    <property name="m2.groupID" value="org.smartfrog"/>
+    <property name="m2.groupID.path" value="org/smartfrog"/>
     <m2-makepath property="m2.subdir"
-      groupIDpath="${m2.groupID.path}"
-      artifactID="${artifact.name}"
-      version="${Version}" />
-<!--     <property name="m2.subdir"
-      location="${m2.repository}/${m2.groupID.path}/${artifact.name}/${Version}" />
- -->
+        groupIDpath="${m2.groupID.path}"
+        artifactID="${artifact.name}"
+        version="${Version}"/>
+    <!--     <property name="m2.subdir"
+         location="${m2.repository}/${m2.groupID.path}/${artifact.name}/${Version}" />
+    -->
     <!-- pom setup -->
-     <property name="target.pom"
-         location="${dist.lib.dir}/${jarfile.stub}.pom"/>
-     <property name="project.pom" location="project-template.pom"/>
-     <available property="project.haspom" file="${project.pom}"/>
-     <property name="m2.tasks.uri"
-         value="antlib:org.apache.maven.artifact.ant"/>
-     <available property="m2.tasks.available"
-         resource="org/apache/maven/artifact/ant/antlib.xml"/>
+    <property name="target.pom"
+        location="${dist.lib.dir}/${jarfile.stub}.pom"/>
+    <property name="target.pom.md5"
+        location="${target.pom}.md5"/>
+    <property name="target.jar.md5"
+        location="${target.jar}.md5"/>
+    <property name="project.pom" location="project-template.pom"/>
+    <available property="project.haspom" file="${project.pom}"/>
+    <property name="m2.tasks.uri"
+        value="antlib:org.apache.maven.artifact.ant"/>
+    <available property="m2.tasks.available"
+        resource="org/apache/maven/artifact/ant/antlib.xml"/>
 
-     <property name="m2.ibiblio.repository"
-         value="http://ibiblio.org/maven2"/>
+    <property name="m2.ibiblio.repository"
+        value="http://ibiblio.org/maven2"/>
 
-     <property name="m1.local.repository"
-         location="${user.home}/.maven/repository"/>
-     <!--if there is no m1 repository, create it-->
-     <mkdir dir="${m1.local.repository}"/>
-     <sf-tourl file="${m1.local.repository}"
-         property="m1.local.repository.url"/>
-   </target>
+    <property name="m1.local.repository"
+        location="${user.home}/.maven/repository"/>
+    <!--if there is no m1 repository, create it-->
+    <mkdir dir="${m1.local.repository}"/>
+    <sf-tourl file="${m1.local.repository}"
+        property="m1.local.repository.url"/>
+
+    <!--a string that is copied into the pom comments-->
+    <property name="pom.comments"
+      value="Created ${build.date} by ${user.name}" />
+  </target>
 
 
    <!-- look for local then remote definitions of library versions -->
-  <target name="load-versions" depends="init">
+  <target name="load-versions" depends="common.init">
     <property file="libraries.properties"/>
     <property file="${smartfrog.components.dir}/libraries.properties"/>
   </target>
@@ -1513,9 +1672,16 @@ java.class.path=
 
 
    <!-- inline creation of a very minimal (zero dependency) pom -->
-   <target name="m2-make-pom" depends="m2-init" unless="project.haspom">
-   <echo message="Creating Pom ${target.pom}" level="verbose"/>
-   <echo file="${target.pom}"><![CDATA[<project xmlns:xsi="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <target name="m2-make-pom" depends="m2-init" unless="project.haspom">
+    <echo message="Creating Pom ${target.pom}" level="verbose"/>
+    <echo file="${target.pom}"><![CDATA[<project
+    xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd
+    >
+    <!--
+     ${pom.comments}
+     -->
   <modelVersion>4.0.0</modelVersion>
   <groupId>${m2.groupID}</groupId>
   <artifactId>${artifact.name}</artifactId>
@@ -1526,7 +1692,9 @@ java.class.path=
 
    </target>
 
-   <target name="m2-pom" depends="m2-copy-pom,m2-make-pom" />
+   <target name="m2-pom" depends="m2-copy-pom,m2-make-pom" >
+     <checksum file="${target.pom}" algorithm="md5"/>
+   </target>
 
   <!-- ========================================================== -->
   <!-- this is not  normally for overriding -->
@@ -1539,7 +1707,9 @@ java.class.path=
     <copy file="${target.jar}" todir="${m2.subdir}"/>
     <!-- copy a pom -->
     <copy file="${target.pom}" todir="${m2.subdir}" failonerror="false"/>
-    <copy file="${target.jar}.md5" todir="${m2.subdir}" failonerror="false"/>
+    <!--copy the checksums-->
+    <copy file="${target.pom.md5}" todir="${m2.subdir}" failonerror="false"/>
+    <copy file="${target.jar.md5}" todir="${m2.subdir}" failonerror="false"/>
 
   </target>
 
@@ -1621,9 +1791,12 @@ java.class.path=
     </fail>
   </target>
 
+
+
   <!--This is a trick. by running the same stuff
   as "maybe-ivy-init" with the opposite condition we, guarantee
   that the target code runs once, but only once-->
+
   <target name="ivy-init"
           depends="maybe-ivy-init"
       unless="ivy.enabled">
@@ -1637,11 +1810,11 @@ java.class.path=
   </target>
 
   <target name="ivy-retrieve" depends="ivy-resolve" >
-    <property name="ivy.retrieve.pattern"
+    <property name="ivy.artifact.retrieve.pattern"
         value="[conf]/[artifact]-[revision].[ext]" />
     <echo level="verbose">ivy.retrieve.pattern=${ivy.retrieve.pattern}</echo>  
     <property name="ivy.retrieve.path"
-        value="${ivy.lib.dir}/${ivy.retrieve.pattern}" />
+        value="${ivy.lib.dir}/${ivy.artifact.retrieve.pattern}" />
     <ivy:retrieve pattern="${ivy.retrieve.path}" sync="true" />
   </target>
 
