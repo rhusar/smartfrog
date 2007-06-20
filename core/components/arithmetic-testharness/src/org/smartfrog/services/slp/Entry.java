@@ -54,7 +54,7 @@ class Entry {
         this.arrivalTS = arrivalTS;
         this.acceptDA = acceptDA;
         this.acceptTS = acceptTS;
-        if (attr == null || attr.isEmpty()) {
+	if (attr == null || attr.equals("")) {
             return Const.OK;
         }
         if ((reg_flag & Const.fresh_flag) != 0) { // full SrvReg
@@ -72,7 +72,7 @@ class Entry {
         this.versionTS = versionTS;
         this.acceptDA = acceptDA;
         this.acceptTS = acceptTS;
-        if (tag.isEmpty()) {
+	if (tag.equals("")) {
             deleted = true;
         } else {
             rmAttr(tag);
