@@ -90,11 +90,11 @@ public class GeneratorImpl extends PrimImpl implements Prim,Runnable {
     RemoteException {
         super.sfDeploy();
 
-        // caste resolutions since sfResolve returns Object
+        // cast resolutions since sfResolve returns Object
         printer = (Printer) sfResolve(printerRef);
         messages = (Vector) sfResolve(messagesRef);
-        frequency = ((Integer)sfResolve(frequencyRef)).intValue() * 1000;
         // extract int from Integer and multiple by 1000 to turn to seconds
+        frequency = ((Integer)sfResolve(frequencyRef)).intValue() * 1000;
     }
 
     /**

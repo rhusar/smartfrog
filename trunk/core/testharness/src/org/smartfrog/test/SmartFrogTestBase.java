@@ -737,7 +737,6 @@ public abstract class SmartFrogTestBase extends TestCase {
         } finally {
             application=null;
         }
-
     }
 
     /**
