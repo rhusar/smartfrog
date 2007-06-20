@@ -5,12 +5,18 @@ sfConfig extends Compound {
  
 	loc extends SFSlpLocator {
         	serviceType "service:sf-prim:printer";
-		slp_config_port 1234;	       
+		//slp_config_port 1234;
 	}
 
 	g extends Generator 
 	{
-		messages ["hello", "1" , "ad" , "afrf" , "wr" ,"wr" ,"wr" ,"wr" ,"wr" ,"wr" ,"wr" ,"wr" ,"wr" ,"wr" ,"wr" ,"wr" ,"wr" ,"wr" ,"wr" ,"wr" ,"wr" ,"wr" ,"wr" ,"wr" ,"wr" ,"wr" ,"wr" ,"wr" ,"wr" ,"wr" ,"wr" ,"wr" ,"wr" ,"wr" ,"wr" ,"wr" ,"wr" ,"wr" ,"wr" ,"wr" ,"wr" ,"wr" ,"wr" ,"wr" ,"wr" ,"wr" ,"wr" ,"wr" ,"wr"];
+		messages ["hello", "1" , "ad" , "afrf" ,
+      "wr" ,"wr" ,"wr" ,"wr" ,"wr" ,"wr" ,"wr" ,"wr" ,
+      "wr" ,"wr" ,"wr" ,"wr" ,"wr" ,"wr" ,"wr" ,"wr" ,
+      "wr" ,"wr" ,"wr" ,"wr" ,"wr" ,"wr" ,"wr" ,"wr" ,
+      "wr" ,"wr" ,"wr" ,"wr" ,"wr" ,"wr" ,"wr" ,"wr" ,
+      "wr" ,"wr" ,"wr" ,"wr" ,"wr" ,"wr" ,"wr" ,"wr" ,
+      "wr" ,"wr" ,"wr" ,"wr" ,"wr"];
 
 		printer LAZY loc:result;
 		

@@ -6,15 +6,14 @@
 
 sfConfig extends Compound 
 {
-      p extends Printer{
+  p extends Printer {
 		name "PrinterService";
 	}
 
-	adv extends SFSlpAdvertiser 
-	{
-	serviceType "service:sf-prim:printer";
-	serviceLifetime 60;
-	toAdvertise LAZY p;
+	adv extends SFSlpAdvertiser 	{
+    serviceType "service:sf-prim:printer";
+    serviceLifetime 60;
+    toAdvertise LAZY p;
 	}
 
 }

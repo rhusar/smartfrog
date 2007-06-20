@@ -5,7 +5,8 @@
 
 sfConfig extends Compound {
 	p extends Printer;
+	
 	adv extends SFSlpAdvertiser {
-	toAdvertise LAZY p;
-}
+	  toAdvertise LAZY p;
+  }
 }

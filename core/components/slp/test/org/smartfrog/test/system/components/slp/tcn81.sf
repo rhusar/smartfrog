@@ -6,6 +6,6 @@
 sfConfig extends Compound {
 	p2 extends Printer;
 	adv2 extends SFSlpAdvertiser {
-	serviceType "service:sf-prim:printer";
-}
+	  serviceType "service:sf-prim:printer";
+  }
 }
