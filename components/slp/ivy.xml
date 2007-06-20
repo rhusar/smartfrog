@@ -6,7 +6,6 @@
     <ivyauthor name="Hewlett-Packard" url="http://www.smartfrog.org"/>
     <description>
         Service Location Protocol
-        Created 23-Nov-2006 by slo
     </description>
   </info>
 <!-- FIXME: Ivy 1.4.1 buildlist bug
@@ -43,7 +42,7 @@
       name="smartfrog"
       changing="true"
       rev="latest.integration"
-      conf="compile,runtime,daemon->services"/>
+      conf="compile,runtime,daemon->examples"/>
     <dependency org="org.smartfrog"
         name="sf-tasks"
         changing="true"

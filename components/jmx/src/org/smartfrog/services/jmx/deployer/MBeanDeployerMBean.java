@@ -21,20 +21,7 @@ For more information: www.smartfrog.org
 package org.smartfrog.services.jmx.deployer;
 
 /**
- *  <p>
- *
- *  Title: JMX Framework for SmartFrog</p> <p>
- *
- *  Description: Creation of a management framework for SmartFrog applications
- *  using JMX technology.</p> <p>
- *
- *  Copyright: Copyright (c) 2001</p> <p>
- *
- *  Company: Hewlett Packard</p>
- *
- *          sfJMX
- *   JMX-based Management Framework for SmartFrog Applications
- *       Hewlett Packard
+ *  JMX Framework for SmartFrog
  *
  *@version        1.0
  */

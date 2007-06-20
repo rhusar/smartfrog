@@ -27,7 +27,7 @@ For more information: www.smartfrog.org
  /**
   * Include the core smartfrog components.
   */
-#include "/org/smartfrog/services/junit/all.sf"
+#include "/org/smartfrog/services/xunit/all.sf"
 
 sfConfig extends TestRunner {
 

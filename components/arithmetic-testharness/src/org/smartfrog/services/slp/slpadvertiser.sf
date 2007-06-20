@@ -1,5 +1,5 @@
-#include "org.smartfrog.sfcore/components.sf"
-#include "org.smartfrog.sfcore.workflow.components.sf"
+#include "/org/smartfrog/sfcore/components.sf"
+#include "/org/smartfrog/sfcore/workflow/components.sf"
 
 /**
  * A generic advertiser (service agent) to advertise any kind of service.

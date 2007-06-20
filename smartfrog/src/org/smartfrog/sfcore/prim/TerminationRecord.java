@@ -97,6 +97,17 @@ public final class TerminationRecord implements Serializable {
     }
 
     /**
+     * Utility method. Returns a normal termination record.
+     *
+     * @param description description of the termination
+     * @param id id of component
+     * @return a SFTerminationRecord
+     */
+    public static TerminationRecord normal(String description, Reference id) {
+        return new TerminationRecord(NORMAL, description, id);
+    }
+
+    /**
      * Utility method. Returns an abnormal termination record.
      *
      * @param descr description of abnormal failure

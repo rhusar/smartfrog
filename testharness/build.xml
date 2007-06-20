@@ -61,7 +61,8 @@ For more information: www.smartfrog.org
   <property name="root.dir" location=".."  />
 
   <!-- Import common stuff -->
-  <import file="${root.dir}/common.xml"/>
+ <!-- <import file="${root.dir}/common.xml"/>-->
+  <import file="../common.xml"/>
 
 
   <!--the default target publishes then runs the test. Why so?
@@ -126,57 +127,9 @@ For more information: www.smartfrog.org
   </target>
 
 
-  <!-- ========================================================== -->
-  <!-- define the presetdef to run the daemon all set up with the -->
-  <!-- right classpath. -->
-  <!-- ========================================================== -->
-  <target name="init-daemon-with-logging"
-    depends="declare-extended-smartfrog-tasks,declare-classpaths"
-    >
-    <property name="config.dir"
-      location="${test.classes.dir}/org/smartfrog/test/configuration" />
-    <property name="smartfrog.iniFile"
-      location="${config.dir}/default.ini" />
-    <available file="${smartfrog.iniFile}" property="inifile.found"/>
-    <fail unless="inifile.found">No file:${smartfrog.iniFile}</fail>
-    <presetdef name="start-logging-daemon">
-      <sf-startdaemon-debug  failonerror="false"
-          classpathref="tests.run.classpath">
-        <sysproperty key="java.util.config.logging.config.file"
-          file="${config.dir}/logging.properties" />
-        <sysproperty key="org.smartfrog.iniFile"
-          file="${smartfrog.iniFile}" />
-        <sysproperty key="org.smartfrog.sfcore.processcompound.sfDefault.sfDefault"
-          file="${config.dir}/default.sf" />
-      </sf-startdaemon-debug>
-    </presetdef>
-  </target>
 
-
-    <!-- ========================================================== -->
-  <!-- look for the varous components so that we can make test 
-  suites conditional on their presence/absence -->
-  <!-- ========================================================== -->
-  
-  <target name="probe-for-components" depends="init">
-    <presetdef name="probe4" > 
-      <available classpathref="tests.run.classpath" ignoresystemclasses="true"/>
-    </presetdef>
-
-    <probe4 resource="org/smartfrog/services/ant/components.sf" property="ant.present"/>
-    <probe4 resource="org/smartfrog/services/email/emailer.sf" property="emailer.present"/>
-    <probe4 resource="org/smartfrog/services/scripting/scriptPrim.sf"
-      property="scripting.present"/>    
-    <probe4 resource="org/smartfrog/services/ssh/password.sf"
-      property="ssh.present"/>    
-    <probe4 resource="org/smartfrog/services/comm/slp/sf/SFSlpDA.sf"
-      property="slp.present"/> 
-    <probe4 resource="org/smartfrog/services/installer/sfInstaller.sf"
-      property="utils.present"/> 
-  </target>
-
-      
-  <target name="init-tests" depends="package-tests">
+  <!-- initialise the test run. this includes setting up the classpath and the running jar-->
+  <target name="init-tests" depends="package-tests" >
     <!--A list of all tests that fail-->
     <!-- if you add a test here, file a bugrep against it in jira
       and refer to it in this list. That way we can track which tests
@@ -191,7 +144,26 @@ For more information: www.smartfrog.org
         so Cruise Control doesn't fail-->
       <exclude name="${systemtests}/assertions/testcompounds/TestCompoundsTest.*"
           unless="run.failing.tests" />
+      <!-- SFOS-154; test failing on VMWare only. Possible race condition-->
+      <exclude name="${systemtests}/workflow/parallel/ParallelAsyncTest.*"
+          unless="run.failing.tests" />
     </patternset>
+
+    <ivy:cachepath pathid="testhelpers.classpath" conf="test-helpers"
+        xmlns:ivy="antlib:fr.jayasoft.ivy.ant" />
+    <path id="testharness.daemon.classpath">
+      <!--test running classpath-->
+      <path refid="testhelpers.classpath"/>
+      <!--everything in the smartfrog dir-->
+      <fileset refid="smartfrog.lib.fileset"/>
+      <!--the test classes-->
+      <fileset file="${test.jar}" />
+      <!--the target classes-->
+      <fileset file="${target.jar}" />
+    </path>
+    <echo level="verbose" >
+      testharness.daemon.classpath=${toString:testharness.daemon.classpath}
+    </echo>
   </target>
   
   <!-- ========================================================== -->
@@ -239,9 +211,7 @@ For more information: www.smartfrog.org
       <syspropertyset >
         <propertyref prefix="runtime"/>
       </syspropertyset>
-      <classpath>
-        <path refid="tests.run.classpath"/>
-      </classpath>
+      <classpath refid="testharness.daemon.classpath"/>
       <!-- #Test case isolation technique -->
       <test todir="${test.data.dir}" name="${testcase}" if="testcase"/>
       <batchtest todir="${test.data.dir}" unless="testcase" >
@@ -277,6 +247,65 @@ For more information: www.smartfrog.org
     </presetdef>
   </target>
 
+  <!-- ========================================================== -->
+  <!-- define the presetdef to run the daemon all set up with the -->
+  <!-- right classpath. -->
+  <!-- ========================================================== -->
+  <target name="init-daemon-with-logging"
+      depends="declare-extended-smartfrog-tasks,declare-classpaths,init-tests"
+      >
+    <property name="config.dir"
+        location="${test.classes.dir}/org/smartfrog/test/configuration" />
+    <property name="smartfrog.iniFile"
+        location="${config.dir}/default.ini" />
+    <available file="${smartfrog.iniFile}" property="inifile.found"/>
+    <fail unless="inifile.found">No file:${smartfrog.iniFile}</fail>
+    <presetdef name="start-logging-daemon">
+      <sf-startdaemon-debug failonerror="false"
+          classpathref="testharness.daemon.classpath">
+        <sysproperty key="java.util.config.logging.config.file"
+            file="${config.dir}/logging.properties" />
+        <sysproperty key="org.smartfrog.iniFile"
+            file="${smartfrog.iniFile}" />
+        <sysproperty key="org.smartfrog.sfcore.processcompound.sfDefault.sfDefault"
+            file="${config.dir}/default.sf" />
+      </sf-startdaemon-debug>
+    </presetdef>
+  </target>
+
+
+  <!-- ========================================================== -->
+  <!-- look for the varous components so that we can make test
+  suites conditional on their presence/absence -->
+  <!-- ========================================================== -->
+
+  <target name="probe-for-components" depends="init-tests,package-tests">
+
+
+    <macrodef name="probe4" >
+      <attribute name="resource" />
+      <attribute name="property" />
+      <sequential >
+        <available
+            property="@{property}" resource="@{resource}"
+            classpathref="testharness.daemon.classpath"
+            ignoresystemclasses="true"/>
+        <echo level="verbose" message="@{resource} availability is ${@{property}}"/>
+      </sequential>
+    </macrodef>
+
+    <probe4 resource="org/smartfrog/services/ant/components.sf" property="ant.present"/>
+    <probe4 resource="org/smartfrog/services/email/emailer.sf" property="emailer.present"/>
+    <probe4 resource="org/smartfrog/services/scripting/scriptPrim.sf"
+        property="scripting.present"/>
+    <probe4 resource="org/smartfrog/services/ssh/password.sf"
+        property="ssh.present"/>
+    <probe4 resource="org/smartfrog/services/comm/slp/sf/SFSlpDA.sf"
+        property="slp.present"/>
+    <probe4 resource="org/smartfrog/services/installer/sfInstaller.sf"
+        property="utils.present"/>
+  </target>
+
   <!-- =================================================================== -->
   <!-- system tests -->
   <!-- we don't force a failure in this target if the tests failed, because-->
@@ -291,7 +320,7 @@ For more information: www.smartfrog.org
         <!-- if the port is in use, this will fail to open the port-->
         <!-- which is ok as we want to debug. but, the running daemon will-->
         <!-- always be stopped afterwards-->
-        <start-logging-daemon spawn="false"/>
+        <start-logging-daemon spawn="false" />
       </application>
       <probe>
         <socket port="${smartfrog.daemon.port}" server="localhost"/>

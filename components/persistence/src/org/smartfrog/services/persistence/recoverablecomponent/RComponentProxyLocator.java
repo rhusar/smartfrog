@@ -23,6 +23,7 @@ import java.io.Serializable;
 
 
 /**
+ * local interface to the proxy location service.
  * The RComponentProxyLocator is a service that can be used to rebind to
  * a recoverable component (i.e. obtain a reference)
  */

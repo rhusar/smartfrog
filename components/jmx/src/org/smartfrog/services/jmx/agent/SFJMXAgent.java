@@ -26,10 +26,7 @@ import org.smartfrog.services.jmx.communication.ConnectorClient;
 import javax.management.NotificationListener;
 
 /**
- * <p>Title: JMX Framework for SmartFrog</p>
- * <p>Description: Creation of a management framework for SmartFrog applications using JMX technology.</p>
- * <p>Copyright: Copyright (c) 2001</p>
- * <p>Company: Hewlett Packard</p>
+ * Remote agent interface.
  *
  * @version 1.0
  */

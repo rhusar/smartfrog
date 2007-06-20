@@ -26,12 +26,7 @@ import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.common.SmartFrogException;
 
 /**
- *  Title: sfJMX Description: JMX-based Management Framework for SmartFrog
- *  Applications Copyright: Copyright (c) 2001 Company: Hewlett Packard
- *
- *          sfJMX
- *   JMX-based Management Framework for SmartFrog Applications
- *
+ *  A new exception
  *@version        1.0
  */
 
@@ -50,30 +45,42 @@ public class AgentNotFoundException extends Exception implements Serializable {
     public AgentNotFoundException() { }
 
 
+
     /**
-     *  Constructor for the AgentNotFoundException object
-     *
-     *@param  s  Description of the Parameter
+     * construct an exception
+     * @param remoteAgentAddress remote address
+     * @param reason text message
      */
-
-
     public AgentNotFoundException(Object remoteAgentAddress, String reason) {
         this(remoteAgentAddress, null, reason);
     }
 
 
-    public AgentNotFoundException (Object remoteAgentAddress, Reference source,
-                               String reason) {
-      this(remoteAgentAddress, null, reason, null);
-  }
+    /**
+     * construct an exception
+     * @param remoteAgentAddress remote address
+     * @param source optional source reference
+     * @param reason text message
+     */
+    public AgentNotFoundException(Object remoteAgentAddress, Reference source,
+                                  String reason) {
+        this(remoteAgentAddress, null, reason, null);
+    }
 
-  public AgentNotFoundException (Object remoteAgentAddress, Reference source,
-                             String reason, String extraInfo) {
-    super(reason);
-    this.remoteAgentAddress = remoteAgentAddress;
-    this.source = source;
-    this.extraInfo = extraInfo;
-}
+    /**
+     * construct an exception
+     * @param remoteAgentAddress remote address
+     * @param source optional source reference
+     * @param reason text message
+     * @param extraInfo optional extra information
+     */
+    public AgentNotFoundException(Object remoteAgentAddress, Reference source,
+                                  String reason, String extraInfo) {
+        super(reason);
+        this.remoteAgentAddress = remoteAgentAddress;
+        this.source = source;
+        this.extraInfo = extraInfo;
+    }
 
 
     /** Returns a string representation of the Agent Not Found exception

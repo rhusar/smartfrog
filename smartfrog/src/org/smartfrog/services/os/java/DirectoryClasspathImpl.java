@@ -23,21 +23,7 @@ public class DirectoryClasspathImpl extends AbstractClasspathImpl implements Dir
     }
 
 
-    /**
-     * Can be called to start components. Subclasses should override to provide
-     * functionality Do not block in this call, but spawn off any main loops!
-     *
-     * @throws org.smartfrog.sfcore.common.SmartFrogException
-     *                                  failure while starting
-     * @throws java.rmi.RemoteException In case of network/rmi error
-     */
-    public synchronized void sfStart()
-            throws SmartFrogException, RemoteException {
-        super.sfStart();
-        if(isEarly()) {
-            bind();
-        }
-    }
+
 
 
     /**
@@ -53,6 +39,22 @@ public class DirectoryClasspathImpl extends AbstractClasspathImpl implements Dir
     public synchronized void sfDeploy()
             throws SmartFrogException, RemoteException {
         super.sfDeploy();
+        if (isEarly()) {
+            bind();
+        }
+    }
+
+    /**
+     * Can be called to start components. Subclasses should override to provide functionality Do not block in this call,
+     * but spawn off any main loops!
+     *
+     * @throws org.smartfrog.sfcore.common.SmartFrogException
+     *                                  failure while starting
+     * @throws java.rmi.RemoteException In case of network/rmi error
+     */
+    public synchronized void sfStart()
+            throws SmartFrogException, RemoteException {
+        super.sfStart();
         if (!isEarly()) {
             bind();
         }

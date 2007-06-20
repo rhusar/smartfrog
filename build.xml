@@ -31,11 +31,12 @@ For more information: www.smartfrog.org
     </echo>
   </target>
 
-    <!-- =================================================================== -->
+  <!-- =================================================================== -->
   <!-- any common initialisations                                          -->
   <!-- =================================================================== -->
   <target name="init">
     <property file="build.properties" />
+    <property environment="env" />
     <!-- look for a feature that only came in in ant 1.7alpha -->
     <available property="nice.task.present"
       classname="org.apache.tools.ant.taskdefs.Nice" />
@@ -93,7 +94,7 @@ For more information: www.smartfrog.org
   <!-- clean all sub-projects                                              -->
   <!-- =================================================================== -->
   <target name="clean" depends="ivy-clean" description="clean up">
-
+    <delete dir="build" />
   </target>
 
   <!-- =================================================================== -->
@@ -249,8 +250,8 @@ For more information: www.smartfrog.org
       depends="clean,ivy-list-order,dist,cc-test"
       description="cruise control full build, with NO checkout"/>
 
+  
   <!-- =================================================================== -->
-
   <!-- full clean Cruise Control build                                     -->
   <!-- was cc-init,release,cc-incremental,cc-test-->
   <!-- =================================================================== -->
@@ -318,10 +319,15 @@ For more information: www.smartfrog.org
   <!-- =================================================================== -->
   <!-- release all sub-projects                                              -->
   <!-- =================================================================== -->
-  <target name="release" depends="init" description="release">
+  <target name="old-release" depends="init" description="release">
     <forward2 dir="${main.project}" target="dist"  />
     <forward2 dir="${ant.project}" target="dist"  />
     <forward2 dir="${components.project}" target="release" antfile="createRelease.xml"  />
+  </target>
+
+  <target name="release" depends="clean,ivy-purge,dist"
+      description="create a clean release -purges all artifacts from the ivy repository too"
+     >
   </target>
 
   <!-- =================================================================== -->
@@ -374,6 +380,8 @@ For more information: www.smartfrog.org
     <property name="ivy.cache.dir" location="${ivy.dir}/cache" />
     <property name="ivy.local.dir" location="${ivy.dir}/local" />
     <property name="ivy.package.name" value="org.smartfrog" />
+    <property name="ivy.smartfrog.version" value="latest.integration" />
+    <property name="ivy.jar" location="antbuild/ivy/lib/ivy-${ivy.version}.jar"/>
   </target>
 
   <!-- =================================================================== -->
@@ -385,10 +393,20 @@ For more information: www.smartfrog.org
   <target name="ivy-init" depends="init,ivy-properties"
           xmlns:ivy="antlib:fr.jayasoft.ivy.ant">
     <!--load up ivy-->
+    <fail>
+      <condition>
+        <not>
+          <available file="${ivy.jar}"/>
+        </not>
+      </condition>
+      Unable to locate "${ivy.jar}"
+      Either part of the directory tree is missing, or the ivy version,
+      currently set to "${ivy.version}" is wrong.
+    </fail>
     <typedef uri="antlib:fr.jayasoft.ivy.ant" onerror="fail"
         resource="fr/jayasoft/ivy/ant/antlib.xml">
       <classpath>
-        <pathelement location="antbuild/ivy/lib/ivy-${ivy.version}.jar"/>
+        <pathelement location="${ivy.jar}"/>
       </classpath>
     </typedef>
     <!--create the external dir if it is missing-->
@@ -417,14 +435,13 @@ For more information: www.smartfrog.org
           <!--cargo support is on hold until 3.12-->
           <exclude name="cargo/build.xml"/>
           <!--These need java 1.5 or later-->
-          <exclude name="concurrent/build.xml" unless="java1.5+"/>
           <exclude name="database/build.xml" unless="java1.5+"/>
           <exclude name="junit/build.xml" unless="java1.5+"/>
           <exclude name="xunit/build.xml" unless="java1.5+"/>
+          <exclude name="xml/build.xml" unless="java1.5+"/>
           <exclude name="xmpp/build.xml" unless="java1.5+"/>
-          <!--uncommented until it builds-->
-          <exclude name="asyndeployer/build.xml"/>
-
+          <!-- no docs unless forrest is installed-->
+          <exclude name="documentation/build.xml" unless="env.FORREST_HOME"/>
         </fileset>
         <!--place for symlinks to external projects you want included-->
         <fileset dir="external" includes="**/build.xml"/>
@@ -512,16 +529,14 @@ ${child.projects.list}
 
   <target name="ivy-purge-published" depends="ivy-properties"
     description="purge all locally published artifacts from the local repository">
-    <delete>
-      <fileset dir="${ivy.local.dir}" includes="${ivy.package.name}/**" />
-    </delete>
+    <delete dir="${ivy.local.dir}/${ivy.package.name}" defaultexcludes="false" includeEmptyDirs="true"/>
   </target>
 
   <target name="ivy-purge-cache" depends="ivy-properties"
     description="purge all smartfrog artifacts from the cache">
-    <delete>
-      <fileset dir="${ivy.cache.dir}" includes="${ivy.package.name}/**" />
-      <fileset dir="${ivy.cache.dir}" includes="resolved-${ivy.package.name}-*" />
+    <delete dir="${ivy.cache.dir}/${ivy.package.name}" defaultexcludes="false" includeEmptyDirs="true"/>
+    <delete includeEmptyDirs="true">
+      <fileset dir="${ivy.cache.dir}" includes="resolved-${ivy.package.name}-*" defaultexcludes="false" />
     </delete>
   </target>
 

@@ -73,32 +73,36 @@ public class RemoteTemplateGen {
 
     allDaemons = new Vector();
     Reader r = new BufferedReader(new FileReader(hostsFileName));
-    StreamTokenizer st = new StreamTokenizer(r);
-    //    st.resetSyntax();
-    st.eolIsSignificant(false);
-    // Allow single line coments in the input
-    st.slashSlashComments(true);
-    st.wordChars('A', 'Z');
-    st.wordChars('a', 'z');    
-    st.wordChars('/','/');
-    //    st.wordChars('0', '9');
-    st.wordChars('-','-');
-    st.wordChars('.','.');
-    st.wordChars(':',':');
-    st.wordChars('*','*');
-    st.wordChars('\\','\\');
-    st.whitespaceChars(' ',' ');
-    String tempHostName=null;
-    String tempUser=null;
-    String tempPassword=null;
-    String tempOS = null;
-    
-    while ((tempHostName =getWord(st))!=null) {
-    	tempUser = getWord(st);
-    	tempPassword = getWord(st);
-    	tempOS = getWord(st);
-      	allDaemons.add(new RemoteDaemon(tempHostName,tempUser,tempPassword, tempOS));
-    }
+      try {
+          StreamTokenizer st = new StreamTokenizer(r);
+          //    st.resetSyntax();
+          st.eolIsSignificant(false);
+          // Allow single line coments in the input
+          st.slashSlashComments(true);
+          st.wordChars('A', 'Z');
+          st.wordChars('a', 'z');
+          st.wordChars('/','/');
+          //    st.wordChars('0', '9');
+          st.wordChars('-','-');
+          st.wordChars('.','.');
+          st.wordChars(':',':');
+          st.wordChars('*','*');
+          st.wordChars('\\','\\');
+          st.whitespaceChars(' ',' ');
+          String tempHostName=null;
+          String tempUser=null;
+          String tempPassword=null;
+          String tempOS = null;
+
+          while ((tempHostName =getWord(st))!=null) {
+              tempUser = getWord(st);
+              tempPassword = getWord(st);
+              tempOS = getWord(st);
+                allDaemons.add(new RemoteDaemon(tempHostName,tempUser,tempPassword, tempOS));
+          }
+      } finally {
+          r.close();
+      }
   }
 
 
@@ -108,7 +112,7 @@ public class RemoteTemplateGen {
    * @param st An input StreamTokenizer.
    * @return A word just read from the input.
    */
-  String getWord(StreamTokenizer st) throws Exception {
+  private String getWord(StreamTokenizer st) throws Exception {
     
     int token = st.nextToken();
     if (token == StreamTokenizer.TT_WORD)
@@ -117,69 +121,74 @@ public class RemoteTemplateGen {
       return null;
   }
 
-  /**Instantiates the velocity template.
-   *
+  /**
+   * Instantiates the velocity template.
+   * Closes the output stream in the process -aleays
    * @param out Output stream to dump the template.
    * @exception Exception Error while instantiating the template.
    */
-  void instantiateTemplate(PrintStream out) throws Exception {
-    
-    Velocity.init();
-    VelocityContext context = new VelocityContext();
-    context.put("allDaemons", allDaemons);
-    context.put("installDir", installDir);
-    template = Velocity.getTemplate(templateFileName);
-    BufferedWriter writer = 
-      new BufferedWriter(new OutputStreamWriter(out));
-    if (template != null)
-      template.merge(context, writer);
-    writer.flush();
-    writer.close();    
+  private void instantiateTemplate(PrintStream out) throws Exception {
+
+      BufferedWriter writer =
+              new BufferedWriter(new OutputStreamWriter(out));
+      try {
+          Velocity.init();
+          VelocityContext context = new VelocityContext();
+          context.put("allDaemons", allDaemons);
+          context.put("installDir", installDir);
+          template = Velocity.getTemplate(templateFileName);
+          if (template != null) {
+              template.merge(context, writer);
+          }
+      } finally {
+          writer.flush();
+          writer.close();
+      }
   }
 
 
-  /** Scans command line options.
+    /** Scans command line options.
    *
    *
    * @param args The input command line.
    */
-  void readOptions(String[] args) {
+  private void readOptions(String[] args) {
 
-    String errorString=null;
-    int i;
-    for (i=0;i<args.length & errorString == null;) {
-      try {
-        if (args[i].charAt(0) == optionFlagIndicator) {
-          switch (args[i].charAt(1)) {
-          case '?':
-            errorString = "SFSystem help";
-            break;
-          case 't':
-            templateFileName = args[++i];
-            break;
-          case 'h':
-            hostsFileName = args[++i];
-            break;
-	  case 'd':
-	    installDir = args [++i];
-	    break;
-          case 'o':
-            outputFileName = args[++i];
-            break;
-          default: 
-            errorString = "unknown option " + args[i].charAt(1);
-          }
-        } else {
-          errorString = "illegal option format for option " + args[i];
+        String errorString = null;
+        int i;
+        for (i = 0; i < args.length & errorString == null;) {
+            try {
+                if (args[i].charAt(0) == optionFlagIndicator) {
+                    switch (args[i].charAt(1)) {
+                        case'?':
+                            errorString = "SFSystem help";
+                            break;
+                        case't':
+                            templateFileName = args[++i];
+                            break;
+                        case'h':
+                            hostsFileName = args[++i];
+                            break;
+                        case'd':
+                            installDir = args[++i];
+                            break;
+                        case'o':
+                            outputFileName = args[++i];
+                            break;
+                        default:
+                            errorString = "unknown option " + args[i].charAt(1);
+                    }
+                } else {
+                    errorString = "illegal option format for option " + args[i];
+                }
+                i++;
+            } catch (Exception e) {
+                errorString = "illegal format for options ";
+            }
         }
-        i++;
-      } catch (Exception e) {
-        errorString = "illegal format for options ";
-      }
-    }
-    if (errorString != null) {
-      errorString += usage;
-      throw new IllegalArgumentException(errorString);
+        if (errorString != null) {
+            errorString += usage;
+            throw new IllegalArgumentException(errorString);
     }
   }
   

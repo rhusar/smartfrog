@@ -1,4 +1,4 @@
-/** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
+/** (C) Copyright 1998-2007 Hewlett-Packard Development Company, LP
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
@@ -26,7 +26,6 @@ import java.io.Writer;
 import java.util.Enumeration;
 import java.util.Vector;
 import java.util.Set;
-import java.util.HashSet;
 
 
 import org.smartfrog.sfcore.common.*;
@@ -64,6 +63,7 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
     *  inherited by this component in a structural copy
     */
    public Vector types = new Vector();
+    private static final String PHASE_LIST = "phaseList";
 
 
     /**
@@ -300,6 +300,8 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
     *@param  key       attribute key
     *@param  value     attribute value
     *@param  resState  resolution state
+    * @return tye if the placement worked
+    * @throws SmartFrogPlaceResolutionException if there was a failure to place (including final attributes)
     */
    protected boolean place(Reference key, Object value, Set tags, ResolutionState resState) throws SmartFrogPlaceResolutionException {
       Object nam = ((HereReferencePart) key.lastElement()).getValue();
@@ -320,8 +322,8 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
 
       boolean attrFinal = false;
       try {
-         attrFinal = destDescription.sfContext().sfContainsTag(nam, "sfFinal");
-      } catch (SmartFrogException e) {
+         attrFinal = destDescription.sfContext().sfContainsTag(nam, SmartFrogCoreKeys.SF_FINAL);
+      } catch (SmartFrogException ignored) {
          // leave false
       }
 
@@ -430,8 +432,8 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
     *  this description if found.
     *
     *@param  resState  resolution state to maintain unresolved types
-    *@return whether all types resolved
-    *@throw SmartFrogTypeResolutionException an error in the subtyping process, such as
+    *@return true if all types resolved
+    *@throws SmartFrogTypeResolutionException an error in the subtyping process, such as
     * the override of a final attribute
     */
    protected boolean resolveTypes(ResolutionState resState) throws SmartFrogTypeResolutionException {
@@ -454,9 +456,10 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
     *  HereReferencePart (ie. not a PARENT or ROOT). Subtypes supertype into
     *  this description if found.
     *
-    *@param  resState  resolution state to maintain unresolved types
-    *@return whther the resolution succeeded
-    *@throw SmartFrogTypeResolutionException an error in the subtyping process, such as
+    * @param  resState  resolution state to maintain unresolved types
+    * @param type reference to the supertype
+    * @return whther the resolution succeeded
+    * @throws SmartFrogTypeResolutionException an error in the subtyping process, such as
     * the override of a final attribute
     */
    protected boolean resolveType(ResolutionState resState, Reference type) throws SmartFrogTypeResolutionException {
@@ -484,9 +487,10 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
     *  HereReferencePart (ie. not a PARENT or ROOT). Subtypes supertype into
     *  this description if found.
     *
-    *@param  resState  resolution state to maintain unresolved types
-    *@return whther the resolution succeeded
-    *@throw SmartFrogTypeResolutionException an error in the subtyping process, such as
+    * @param  resState  resolution state to maintain unresolved types
+    * @param type super type to copy from.
+    * @return whther the resolution succeeded
+    * @throws SmartFrogTypeResolutionException an error in the subtyping process, such as
     * the override of a final attribute
     */
 
@@ -512,7 +516,7 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
     *  description into it.
     *
     *@param  superType  super type to copy from
-    *@throw SmartFrogTypeResolutionException an error in the subtyping process, such as
+    *@throws SmartFrogTypeResolutionException an error in the subtyping process, such as
     * the override of a final attribute
     */
    protected void subtype(SFComponentDescription superType) throws SmartFrogTypeResolutionException {
@@ -743,7 +747,7 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
     *  Works by side-effect on the SFComponentDescription for efficiency.
     *  This becomes uniseable after the conversion.
     *
-    *@return    the equivalent component descriptino
+    *@return    the equivalent component description
     */
    public ComponentDescription sfAsComponentDescription() throws SmartFrogCompilationException {
        ComponentDescription res = null;
@@ -914,7 +918,7 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
     */
    public Vector sfGetPhases() {
       if (phases == null) {
-         phases = (Vector) sfContext.get("phaseList");
+         phases = (Vector) sfContext.get(PHASE_LIST);
 
          if (phases == null) {
             phases = new Vector();
@@ -924,7 +928,7 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
             phases.add(PhaseNames.SFCONFIG);
             phases.add(PhaseNames.LINK);
          } else {
-            sfContext.remove("phaseList");
+            sfContext.remove(PHASE_LIST);
          }
       }
 

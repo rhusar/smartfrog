@@ -28,12 +28,10 @@ import javax.swing.*;
 import javax.swing.tree.TreePath;
 import java.awt.Frame;
 
-import org.smartfrog.sfcore.prim.TerminationRecord;
-
-import org.smartfrog.sfcore.prim.Prim;
+import org.smartfrog.sfcore.prim.*;
 
 import java.rmi.RemoteException;
-import java.util.ArrayList;
+import java.util.Set;
 
 
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
@@ -41,11 +39,10 @@ import org.smartfrog.sfcore.componentdescription.ComponentDescriptionImpl;
 import org.smartfrog.sfcore.logging.LogSF;
 import org.smartfrog.sfcore.logging.LogFactory;
 import org.smartfrog.services.display.WindowUtilities;
-import org.smartfrog.services.display.Display;
-import org.smartfrog.services.display.SFDisplay;
-import org.smartfrog.sfcore.common.*;
 import org.smartfrog.sfcore.processcompound.SFProcess;
 import org.smartfrog.sfcore.processcompound.ProcessCompound;
+import org.smartfrog.sfcore.parser.SFParser;
+import org.smartfrog.sfcore.common.DefaultDumper;
 
 
 /**
@@ -88,6 +85,14 @@ public class PopUpTree extends JComponent implements ActionListener {
     /** Item for Tree popup menu - add ScriptingPanel. */
     JMenuItem menuItemAddScriptingPanel = new JMenuItem();
 
+    /** Item for Tree popup menu - dump State. */
+    JMenuItem menuItemDumpState = new JMenuItem();
+     /** Item for Tree popup menu - dump State to File. */
+    JMenuItem menuItemDumpStateToFile = new JMenuItem();
+
+    /** Item for Tree popup menu - edit Tags. */
+    JMenuItem menuItemEditTags = new JMenuItem();
+
     /**
      *  Constructs PopUpTree object
      */
@@ -112,6 +117,9 @@ public class PopUpTree extends JComponent implements ActionListener {
         menuItemParentageChanged.setText("sfParentageChanged()");
         menuItemAddScriptingPanel.setText("Add Scripting Panel");
         menuItemIntrospector.setText("Instrospector");
+        menuItemDumpState.setText("Dump State");
+        menuItemDumpStateToFile.setText("Dump State to File");
+        menuItemEditTags.setText("Edit Tags");
 
         // Tree: options
         //      popupTree.add(menuItemAddAttribute);
@@ -127,6 +135,9 @@ public class PopUpTree extends JComponent implements ActionListener {
         popupTree.add(menuItemParentageChanged);
         popupTree.add(menuItemAddScriptingPanel);
         popupTree.add(menuItemIntrospector);
+        popupTree.add(menuItemDumpState);
+        popupTree.add(menuItemDumpStateToFile);
+        popupTree.add(menuItemEditTags);
 
         // Add action listeners for tree popup
         menuItemAddAttribute.addActionListener(this);
@@ -143,6 +154,9 @@ public class PopUpTree extends JComponent implements ActionListener {
         menuItemParentageChanged.addActionListener(this);
         menuItemAddScriptingPanel.addActionListener(this);
         menuItemIntrospector.addActionListener(this);
+        menuItemDumpState.addActionListener(this);
+        menuItemDumpStateToFile.addActionListener(this);
+        menuItemEditTags.addActionListener(this);
     }
 
     /**
@@ -176,8 +190,11 @@ public class PopUpTree extends JComponent implements ActionListener {
             menuItemParentageChanged.setVisible(true);
             menuItemAddScriptingPanel.setVisible(true);
             menuItemIntrospector.setVisible(true);
+            menuItemDumpState.setVisible(true);
+            menuItemDumpStateToFile.setVisible(true);
+            menuItemEditTags.setVisible(true);
         }else if  (getNode()instanceof ComponentDescription){
-          menuItemRemoveAttribute.setVisible(true);
+            menuItemRemoveAttribute.setVisible(true);
             menuItemDetach.setVisible(false);
             menuItemTerminateNormal.setVisible(false);
             menuItemTerminateAbnormal.setVisible(false);
@@ -186,6 +203,9 @@ public class PopUpTree extends JComponent implements ActionListener {
             menuItemParentageChanged.setVisible(false);
             menuItemAddScriptingPanel.setVisible(true);
             menuItemIntrospector.setVisible(true);
+            menuItemDumpState.setVisible(false);
+            menuItemDumpStateToFile.setVisible(false);
+            menuItemEditTags.setVisible(true);
         }
         popupTree.show(comp, x, y);
         this.parent = parent;
@@ -227,6 +247,14 @@ public class PopUpTree extends JComponent implements ActionListener {
         } else if (source == menuItemDetach) {
             detach(node);
             // Entry selected in the tree
+        } else if (source == menuItemDumpState) {
+            dumpState(node,source);
+        } else if (source == menuItemDumpStateToFile) {
+            dumpStateToFile(node,source);
+            // Entry selected in the tree
+        } else if (source == menuItemEditTags) {
+            editTags(node);
+            // Entry selected in the tree
         } else if (source == menuItemParentageChanged) {
             if (node instanceof Prim){
                 try {
@@ -239,85 +267,139 @@ public class PopUpTree extends JComponent implements ActionListener {
             }
             // Entry selected in the tree
         } else if (source == menuItemDumpContext) {
-            StringBuffer message=new StringBuffer();
-            String name = "error";
-            if (node instanceof Prim) {
-                try {
-                    Prim objPrim = ((Prim)node);
-                    message.append(objPrim.sfDiagnosticsReport());
-                    name = ((Prim)objPrim).sfCompleteName().toString();
-                } catch (Exception ex) {
-                    message.append("\n Error: "+ex.toString());
-                }
-            } else {
-                try {
-                    ComponentDescription objCD = ((ComponentDescription)node);
-                    message.append(((ComponentDescriptionImpl)objCD).sfDiagnosticsReport());
-                    name = ((ComponentDescription)objCD).sfCompleteName().toString();
-                } catch (Exception ex) {
-                    message.append("\n Error: "+ex.toString());
-                }
-
-            }
-            modalDialog("Context info for "+ name ,  message.toString(), "", source);
+            diagnosticsReport(node, source);
         } else if (source == menuItemIntrospector) {
 
-            StringBuffer message=new StringBuffer();
-            String name = "error";
-            if (node instanceof Prim) {
-                try {
-                    Prim objPrim = ((Prim)node);
-                    name = ((Prim)objPrim).sfCompleteName().toString();
-                } catch (Exception ex) {
-                    message.append("\n Error: "+ex.toString());
-                }
-            } else {
-                try {
-                    ComponentDescription objCD = ((ComponentDescription)node);
-                    name = ((ComponentDescription)objCD).sfCompleteName().toString();
-                } catch (Exception ex) {
-                    message.append("\n Error: "+ex.toString());
-                }
-
-            }
-            modalDialog("Introspection "+ name ,  introspect(node), "", source);
+            instrospect(node, source);
         }  else if (source == menuItemAddScriptingPanel) {
-            StringBuffer message=new StringBuffer();
-            String name = "error";
-            String hostname = "localhost";
-            int port = 3800;
-            if (node instanceof Prim) {
-                try {
-                    Prim objPrim = ((Prim)node);
-                    name = ((Prim)objPrim).sfCompleteName().toString();
-                    name = name.substring(name.lastIndexOf("."));
-                    hostname = objPrim.sfResolve("sfHost",hostname,false);
-                    ProcessCompound pc = SFProcess.getProcessCompound();
-                    if (pc!=null) {
-                     port = pc.sfResolve("sfRootLocatorPort",port,false);
-                    }
-                } catch (Exception ex) {
-                    message.append("\n Error: "+ex.toString());
-                }
-            } else {
-                try {
-                    ComponentDescription objCD = ((ComponentDescription)node);
-                    name = ((ComponentDescription)objCD).sfCompleteName().toString();
-                    name = name.substring(name.lastIndexOf("."));
-                } catch (Exception ex) {
-                    message.append("\n Error: "+ex.toString());
-                }
+            addScriptingPanel(node);
 
-            }
+        }
 
+    }
+
+    private void addScriptingPanel(Object node) {
+        StringBuffer message=new StringBuffer();
+        String name = "error";
+        String hostname = "localhost";
+        int port = 3800;
+        if (node instanceof Prim) {
             try {
-                Object obj = (parent.getParent());
-                SFDeployDisplay.addScriptingPanel(((JTabbedPane)(obj)) ,name ,node, hostname ,port );
-            } catch (Exception e1) {
-                if (sfLog().isErrorEnabled()) sfLog().error (e1);
-                WindowUtilities.showError(this,e1.toString());
+                Prim objPrim = ((Prim)node);
+                name = ((Prim)objPrim).sfCompleteName().toString();
+                name = name.substring(name.lastIndexOf("."));
+                hostname = objPrim.sfResolve("sfHost",hostname,false);
+                ProcessCompound pc = SFProcess.getProcessCompound();
+                if (pc!=null) {
+                 port = pc.sfResolve("sfRootLocatorPort",port,false);
+                }
+            } catch (Exception ex) {
+                message.append("\n Error: "+ex.toString());
+            }
+        } else {
+            try {
+                ComponentDescription objCD = ((ComponentDescription)node);
+                name = ((ComponentDescription)objCD).sfCompleteName().toString();
+                name = name.substring(name.lastIndexOf("."));
+            } catch (Exception ex) {
+                message.append("\n Error: "+ex.toString());
             }
 
+        }
+
+        try {
+            Object obj = (parent.getParent());
+            SFDeployDisplay.addScriptingPanel(((JTabbedPane)(obj)) ,name ,node, hostname ,port );
+        } catch (Exception e1) {
+            if (sfLog().isErrorEnabled()) sfLog().error (e1);
+            WindowUtilities.showError(this,e1.toString());
+        }
+    }
+
+    private void instrospect(Object node, Object source) {
+        StringBuffer message=new StringBuffer();
+        String name = "error";
+        if (node instanceof Prim) {
+            try {
+                Prim objPrim = ((Prim)node);
+                name = ((Prim)objPrim).sfCompleteName().toString();
+            } catch (Exception ex) {
+                message.append("\n Error: "+ex.toString());
+            }
+        } else {
+            try {
+                ComponentDescription objCD = ((ComponentDescription)node);
+                name = ((ComponentDescription)objCD).sfCompleteName().toString();
+            } catch (Exception ex) {
+                message.append("\n Error: "+ex.toString());
+            }
+
+        }
+        modalDialog("Introspection "+ name ,  introspect(node), "", source);
+    }
+
+    private void diagnosticsReport(Object node, Object source) {
+        StringBuffer message=new StringBuffer();
+        String name = "error";
+        if (node instanceof Prim) {
+            try {
+                Prim objPrim = ((Prim)node);
+                message.append(objPrim.sfDiagnosticsReport());
+                name = ((Prim)objPrim).sfCompleteName().toString();
+            } catch (Exception ex) {
+                message.append("\n Error: "+ex.toString());
+            }
+        } else {
+            try {
+                ComponentDescription objCD = ((ComponentDescription)node);
+                message.append(((ComponentDescriptionImpl)objCD).sfDiagnosticsReport());
+                name = ((ComponentDescription)objCD).sfCompleteName().toString();
+            } catch (Exception ex) {
+                message.append("\n Error: "+ex.toString());
+            }
+
+        }
+        modalDialog("Context info for "+ name ,  message.toString(), "", source);
+    }
+
+    private void dumpState (Object node, Object source) {
+        StringBuffer message=new StringBuffer();
+        String name = "error";
+        //Only works for Prims.
+        if (node instanceof Prim) {
+            try {
+                Prim objPrim = ((Prim)node);
+                message.append ("\n*************** State *****************\n");
+                Dump dumpObj = new DefaultDumper(objPrim);
+                objPrim.sfDumpState(dumpObj);
+                message.append (dumpObj.toString());
+                name = ((Prim)objPrim).sfCompleteName().toString();
+            } catch (Exception ex) {
+                message.append("\n Error: "+ex.toString());
+            }
+        }
+        modalDialog("State for "+ name ,  message.toString(), "", source);
+
+    }
+
+    private void dumpStateToFile (Object node, Object source) {
+
+        String name = "error";
+        //This only works for Prims
+        if (node instanceof Prim) {
+            try {
+                Prim objPrim = ((Prim)node);
+                Dump dumpObj = new DefaultDumper(objPrim);
+                objPrim.sfDumpState(dumpObj);
+                //Get directory
+                name = ((Prim)objPrim).sfCompleteName().toString();
+                String fileName = modalOptionDialog ("Save to","file:","\\dump.sf");
+                if (fileName == null) return;
+                ((DefaultDumper)dumpObj).getCDtoFile(fileName);
+            } catch (Exception ex) {
+                if (sfLog().isErrorEnabled()) sfLog().error (ex);
+                WindowUtilities.showError(this,ex.toString());
+            }
         }
 
     }
@@ -513,7 +595,7 @@ public class PopUpTree extends JComponent implements ActionListener {
                 org.smartfrog.services.management.DeployMgnt.detach((Prim) obj);
                 parent.refresh();
             } catch (Exception ex){
-              String msg = "Problem when trying to Detach and Terminate '"+name;
+              String msg = "Problem when trying to Detach and Terminate "+name;
               if (sfLog().isErrorEnabled()) sfLog().error (msg);
               WindowUtilities.showError(this, msg +"'. \n"+ex.toString());
             }
@@ -522,6 +604,63 @@ public class PopUpTree extends JComponent implements ActionListener {
         }
     }
 
+    void editTags (Object obj) {
+         //System.out.println("Detatching: "+obj.toString());
+        if (obj instanceof Prim) {
+            String name ="";
+            try {
+                name = ((Prim)obj).sfCompleteName().toString();
+                Object tags = ((Prim)obj).sfGetTags();
+                tags = JOptionPane.showInputDialog(this,"Edit Tags",tags);
+                if (tags!=null) {
+                   Set newTags = (Set)parseTags(tags.toString(),"sf");
+                   if (newTags!=null) ((Prim)obj).sfSetTags(newTags);
+                }
+            } catch (Exception ex){
+              String msg = "Problem when trying to edit tags on Component "+name;
+              if (sfLog().isErrorEnabled()) sfLog().error (msg,ex);
+              WindowUtilities.showError(this, msg +"'. \n"+ex.toString());
+            }
+        } else if (obj instanceof ComponentDescription){
+             String name ="";
+            try {
+                name = ((ComponentDescription)obj).sfCompleteName().toString();
+                Object tags = ((ComponentDescription)obj).sfGetTags();
+                tags = JOptionPane.showInputDialog(this,"Edit Tags",tags);
+                if (tags!=null) {
+                    Set newTags = (Set)parseTags(tags.toString(),"sf");
+                    if (newTags!=null) ((ComponentDescription)obj).sfSetTags(newTags);
+                }
+            } catch (Exception ex){
+              String msg = "Problem when trying to edit tags on ComponentDescription "+name;
+              if (sfLog().isErrorEnabled()) sfLog().error (msg,ex);
+              WindowUtilities.showError(this, msg +"'. \n"+ex.toString());
+            }
+        } else {
+           if (sfLog().isErrorEnabled()) sfLog().error ( "Error when editing tags on object: "+obj.toString()+"\n "+obj.getClass().getName());
+           WindowUtilities.showError(this, "Error when editing tags on object: "+obj.toString()+"\n "+obj.getClass().getName());
+        }
+    }
+
+
+
+    /**
+     * Parse
+     * @param textToParse  text to be parsed
+     * @param language language
+     * @return Object
+     */
+    public Object parseTags(String textToParse, String language) {
+        try {
+            SFParser parser = new SFParser(language);
+            return parser.sfParseTags( textToParse);
+        } catch (Throwable ex) {
+            String msg = "Error when trying to parse tags: "+textToParse+"\n "+ex.toString();
+            if (sfLog().isErrorEnabled()) sfLog().error (msg, ex);
+            WindowUtilities.showError(this, msg);
+        }
+        return null;
+    }
 
     /**
      * Prepares option dialog box
@@ -530,7 +669,7 @@ public class PopUpTree extends JComponent implements ActionListener {
      *@param  message  message to be displayed
      *@param defaultValue default value
      */
-    public static void modalDialog(String title, String message,
+    public void modalDialog(String title, String message,
             String defaultValue, Object source) {
         /**
          *  Scrollpane to hold the display's screen.
@@ -546,8 +685,39 @@ public class PopUpTree extends JComponent implements ActionListener {
         pane.setResizable(true);
         pane.getContentPane().add(scrollPane);
         scrollPane.getViewport().add(screen, null);
+        WindowUtilities.center(parent,parentFrame);
         pane.show(true);
     }
+
+      /**
+   * Prepares option dialog box
+   *
+   *@param  title    title displayed on the dialog box
+   *@param  message  message to be displayed
+   *@param defaultValue default value
+   *@return formatted string
+   */
+  private String modalOptionDialog(String title, String message,
+                                   String defaultValue) {
+
+    String s = (String) JOptionPane.showInputDialog (
+        parent,
+        message,
+        title,
+        JOptionPane.PLAIN_MESSAGE,
+        null,
+        null,
+        defaultValue);
+    if (s == null) {
+      return null; //User cancelled!
+    }
+    if ( (s != null) && (s.length() > 0)) {
+      return s;
+    } else {
+      return defaultValue;
+    }
+  }
+
    /** Log for this class, created using class name*/
     LogSF sfLog = LogFactory.getLog("sfManagementConsole");
 

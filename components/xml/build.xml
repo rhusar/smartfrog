@@ -33,6 +33,21 @@
   <property file="build.properties"/>
   <property name="is.component" value="true"/>
   <property name="ivy.enabled" value="true"/>
+  <property name="system.tests" value="true"/>
+  <condition property="javac.version" value="1.5">
+    <available classname="java.lang.Readable"/>
+  </condition>
+  <property name="javac.version" value="1.4"/>
+  <condition property="javac.is.1.4" >
+    <equals arg1="${javac.version}" arg2="1.4" />
+  </condition>
+  <property name="javac.java.version" value="${javac.version}"/>
+  <condition property="system.tests.enabled">
+    <and>
+      <istrue value="${system.tests.enabled}"/>
+      <isset property="java1.5+"/>
+    </and>
+  </condition>
 
   <!-- Import common stuff -->
   <import file="../../common.xml"/>
@@ -54,14 +69,6 @@
     <available property="nux.found"
         classname="nux.xom.binary.BinaryXMLCodec"/>
     <!-- work out our java version by introspection, fall back to 1.4 if 1.5 is not found -->
-    <condition property="javac.version" value="1.5">
-      <available classname="java.lang.Readable"/>
-    </condition>
-    <property name="javac.version" value="1.4"/>
-    <condition property="javac.is.1.4" >
-      <equals arg1="${javac.version}" arg2="1.4" />
-    </condition>
-    <property name="javac.java.version" value="${javac.version}"/>
   </target>
 
   <target name="javac.version" depends="check-versions" if="javac.is.1.4">
@@ -129,51 +136,31 @@
     </sf-javadoc>
   </target>
 
-
   <!-- ========================================================== -->
-  <!-- this is an override point -->
-  <!-- compile everything, copy useful files over-->
-  <!-- ========================================================== -->
-  <target name="compile-tests"
-    depends="ready-to-compile-tests"
-    if="test.dir.found">
-    <depend
-      srcdir="${test.src.dir}"
-      destdir="${test.classes.dir}"
-      cache="${build.test.dir}/depends"
-      closure="yes"/>
-    <sf-javac
-      srcdir="${test.src.dir}"
-      destdir="${test.classes.dir}"
-      classpathref="tests.compile.classpath"
-      source="${javac.version}"
-      target="${javac.version}"
-      />
-    <copy-useful-files src="${test.src.dir}" dest="${test.classes.dir}"/>
-  </target>
-
-  <!-- ========================================================== -->
-  <!-- parse the file -->
+  <!-- parse test files -->
   <!-- ========================================================== -->
   <target name="parse" depends="init-codebase,package-tests"
     description="parse the deployment descriptor">
     <property name="parse.quiet" value="true"/>
     <sf-parse quiet="${parse.quiet}">
-      <classpath path="${target.jar}:${test.jar}"/>
+      <classpath refid="tests.run.classpath"/>
       <sysproperty key="org.smartfrog.codebase"
         value="${codebase}"/>
       <!-- source files -->
       <source dir="${test.src.dir}/org/smartfrog/services/xml/test/files/"
         >
         <include name="testDocument.sf" />
+      </source>
+    </sf-parse>
+    <sf-parse quiet="${parse.quiet}">
+      <classpath path="${target.jar}:${test.jar}"/>
+      <sysproperty key="org.smartfrog.codebase"
+          value="${codebase}"/>
+      <!-- source files -->
+      <source dir="${test.src.dir}/org/smartfrog/services/xml/test/files/"
+          >
         <include name="textNode.sf" />
       </source>
-      <!-- test files -->
-      <!--       <source dir="${test.src.dir}">
-              <include name="**/*.sf"/>
-              <exclude name="files/components.sf"/>
-            </source>
-       -->
     </sf-parse>
   </target>
 
@@ -186,18 +173,7 @@
     <property name="application.name" value="${project.name}"/>
   </target>
 
-  <!-- ========================================================== -->
-  <!-- set-->
-  <!-- ========================================================== -->
-  <target name="init-codebase" depends="init-deploy-properties,declare-classpaths,package-tests"
-    description="set up the codebase property">
-    <sf-tourl property="codebase">
-      <path refid="tests.run.classpath"/>
-    </sf-tourl>
-    <echo>
-        deploying to ${deploy.host}
-        codebase=${codebase}</echo>
-  </target>
+
   <!-- ========================================================== -->
   <!-- deploy; requires a host -->
   <!-- ========================================================== -->
@@ -231,58 +207,9 @@
   <!-- ========================================================== -->
   <!-- system tests -->
   <!-- ========================================================== -->
-  <target name="system-tests" depends="parse,dist,package-tests"
-    description="run system tests"
-    if="system.tests.enabled">
-    <parallel>
 
-      <!-- first thread runs the daemon -->
-      <sequential>
-        <antcall target="start-daemon-if-needed"/>
-      </sequential>
 
-      <!-- this is the next thread -->
-      <sequential>
 
-        <!--
-          wait ten seconds for the harness to start
-          without this the first tests will fail as there is no
-          sf daemon around
-        -->
-        <sf-waitfordaemon maxwait="10" timeoutproperty="daemon.missing"/>
-        <fail if="daemon.missing">No daemon</fail>
-        <sf-junit
-          errorProperty="test.failed"
-          failureProperty="test.failed"
-          >
-          <classpath>
-            <path refid="tests.run.classpath"/>
-            <!-- <pathelement location="${test.classes.dir}"/> -->
-          </classpath>
-          <sysproperty key="org.smartfrog.codebase" value="${codebase}"/>
-          <syspropertyset>
-            <propertyref prefix="runtime"/>
-          </syspropertyset>
 
-          <!-- #Test case isolation technique -->
-          <test name="${testcase}" if="testcase"/>
-          <batchtest todir="${test.data.dir}" unless="testcase">
-            <!-- bulk test case -->
-            <fileset dir="${test.classes.dir}">
-              <include name="org/smartfrog/services/xml/test/**/*Test.class"/>
-            </fileset>
-          </batchtest>
-        </sf-junit>
-
-        <!-- conditionally stop the daemon -->
-        <antcall target="conditional-daemon-exit"/>
-        <!-- end the test thread -->
-      </sequential>
-    </parallel>
-  </target>
-
-  <target name="conditional-daemon-exit" unless="no.stop.daemon">
-    <antcall target="stop-daemon-if-started"/>
-  </target>
 
 </project>

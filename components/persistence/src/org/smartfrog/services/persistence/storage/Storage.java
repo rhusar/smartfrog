@@ -457,7 +457,7 @@ public abstract class Storage implements Serializable {
      * Recovers an entry from stable storage
      *
      * @param entryname index of the required entry
-     * @return
+     * @return the entry
      */
     public abstract Serializable getEntry(String entryname) throws
             StorageException;

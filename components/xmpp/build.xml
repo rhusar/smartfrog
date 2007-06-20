@@ -30,6 +30,8 @@
   <!--we are a component -->
   <property name="is.component" value="true"/>
   <property name="ivy.enabled" value="true"/>
+  <property name="system.tests" value="true"/>
+
   <!--java 1.5-->
   <property name="javac.java.version" value="1.5"/>
 
@@ -42,36 +44,20 @@
   <!-- Import common stuff -->
   <import file="${root.dir}/common.xml"/>
 
-
   <target name="init" depends="common.init">
     <echo message="==================================================================="/>
     <echo message="= ${ant.project.name}"/>
-  </target>
-
-  <!-- ========================================================== -->
-  <!-- create a distro. 
-       we want both sf-junit and the test har -->
-  <!-- ========================================================== -->
-  <!--target name="dist" depends="package,package-tests"-->
-  <target name="dist" depends="package"
-      description="create a distribution">
-
-  </target>
-
-  <target name="dist-tests" depends="package,package-tests"
-      description="create a distribution including SF tests">
-
   </target>
 
 
   <!-- ========================================================== -->
   <!-- parse the file -->
   <!-- ========================================================== -->
-  <target name="parse" depends="init,dist,package-tests,init-codebase"
+  <target name="parse" depends="init,dist,package-tests,init-codebase,declare-extended-smartfrog-tasks"
       description="parse the deployment descriptor">
     <property name="parse.quiet" value="true"/>
     <sf-parse quiet="${parse.quiet}">
-      <classpath path="${target.jar}:${test.jar}"/>
+      <classpath refid="tests.run.classpath"/>
       <sysproperty key="org.smartfrog.codebase"
           value="${codebase}"/>
       <sysproperty key="xmpp.password" value=""/>
@@ -92,21 +78,8 @@
     <property name="application.name" value="${project.name}"/>
   </target>
 
-  <!-- ========================================================== -->
-  <!-- set-->
-  <!-- ========================================================== -->
-  <target name="init-codebase" depends="init-deploy-properties"
-      description="deploy">
-    <sf-tourl property="codebase">
-      <fileset file="${target.jar}"/>
-      <fileset file="${test.jar}"/>
-      <fileset file="${junit.jar}"/>
-    </sf-tourl>
-    <echo>
-      deploying to ${deploy.host}
-      codebase=${codebase}
-    </echo>
-  </target>
+
+
   <!-- ========================================================== -->
   <!-- deploy; requires a host -->
   <!-- ========================================================== -->
@@ -138,62 +111,14 @@
   </target>
 
 
+
   <!-- ========================================================== -->
   <!-- system tests -->
   <!-- ========================================================== -->
-  <target name="system-tests" depends="parse,dist,compile-tests,init-codebase"
-      description="run system tests"
-      if="system.tests.enabled">
-    <parallel>
 
-      <!-- first thread runs the daemon -->
-      <sequential>
-        <antcall target="start-daemon-if-needed"/>
-      </sequential>
 
-      <!-- this is the next thread -->
-      <sequential>
+  <target name="ready-to-test" depends="parse,common.ready-to-test">
 
-        <!--
-          wait ten seconds for the harness to start
-          without this the first tests will fail as there is no
-          sf daemon around
-        -->
-        <sf-waitfordaemon maxwait="10" timeoutproperty="daemon.missing"/>
-        <fail if="daemon.missing">No daemon</fail>
-        <sf-junit
-            errorProperty="test.failed"
-            failureProperty="test.failed"
-            >
-          <classpath>
-            <path refid="tests.run.classpath"/>
-            <pathelement location="${test.classes.dir}"/>
-          </classpath>
-          <sysproperty key="org.smartfrog.codebase" value="${codebase}"/>
-          <syspropertyset>
-            <propertyref prefix="runtime"/>
-          </syspropertyset>
-
-          <!-- #Test case isolation technique -->
-          <test name="${testcase}" if="testcase"/>
-          <batchtest todir="${test.data.dir}" unless="testcase">
-            <!-- bulk test case -->
-            <fileset dir="${test.classes.dir}">
-              <include
-                  name="org/smartfrog/services/junit/test/system/**/*Test.class"/>
-            </fileset>
-          </batchtest>
-        </sf-junit>
-
-        <!-- conditionally stop the daemon -->
-        <antcall target="conditional-daemon-exit"/>
-        <!-- end the test thread -->
-      </sequential>
-    </parallel>
-  </target>
-
-  <target name="conditional-daemon-exit" unless="no.stop.daemon">
-    <antcall target="stop-daemon-if-started"/>
   </target>
 
 

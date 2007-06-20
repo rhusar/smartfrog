@@ -788,7 +788,7 @@ public class RComponentImpl extends CompoundImpl implements RComponent,
      * !! Not sure if this is good interpretation of inequality - perhaps it
      *    should force an exception ??
      *
-     * @param o object to compare with
+     * @param obj object to compare with
      *
      * @return true if equal, false if not
      */

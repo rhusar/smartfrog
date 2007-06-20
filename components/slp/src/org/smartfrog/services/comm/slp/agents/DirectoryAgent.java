@@ -186,7 +186,8 @@ public class DirectoryAgent implements SlpUdpCallback, SLPMessageCallbacks {
     
     /**
         Does the actual work of creating the DA object from the given properties.
-    */
+     * @throws ServiceLocationException if creation doesnt work
+     */
     private void createDA() throws ServiceLocationException {
         bootTime = (new Date()).getTime();
         database = new SLPDatabase();
@@ -200,12 +201,16 @@ public class DirectoryAgent implements SlpUdpCallback, SLPMessageCallbacks {
             
             tcpListener = new SLPTcpServer(address, CONFIG_SLP_PORT, this);
             tcpListener.start();
-            
-        }catch(Exception e) {
-            if(unicastListener != null) unicastListener.close();
-            if(multicastListener != null) multicastListener.close();
+
+        } catch (Exception e) {
+            if (unicastListener != null) unicastListener.close();
+            if (multicastListener != null) multicastListener.close();
+            if(e instanceof ServiceLocationException) {
+                throw (ServiceLocationException) e;
+            }
             throw new ServiceLocationException(ServiceLocationException.NETWORK_ERROR,
-                                               "DA: Could not create unicast/multicast sockets");
+                    "DA: Could not create unicast/multicast sockets"
+                    , e);
         }
         if(supportedScopes == null) {
             supportedScopes = new Vector();

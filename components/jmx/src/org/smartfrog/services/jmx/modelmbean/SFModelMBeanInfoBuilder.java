@@ -350,7 +350,7 @@ public class SFModelMBeanInfoBuilder {
      *  targetObject.
      *
      *@param  targetObject
-     *@return
+     *@return the attribute info
      *@exception  java.beans.IntrospectionException  Description of the
      *      Exception
      */
@@ -429,9 +429,9 @@ public class SFModelMBeanInfoBuilder {
      *  provided in the Enumeration making checks in the targetObject if
      *  neccesary.
      *
-     *@param  targetObject
-     *@param  atMetadata    Description of the Parameter
-     *@return
+     *@param  targetObject target to work on
+     *@param  atMetadata    an existing enumeration (can be null)
+     *@return the metadata as an array. If the enumeration is null, array is of size 0
      */
     public ModelMBeanAttributeInfo[] getAttributeInfoFromMetadata(Object targetObject, Enumeration atMetadata) {
         if (atMetadata == null) {
@@ -652,7 +652,7 @@ public class SFModelMBeanInfoBuilder {
     /**
      *@param  targetObject                           Description of the
      *      Parameter
-     *@return
+     *@return the operation information as an array
      *@exception  java.beans.IntrospectionException  Description of the
      *      Exception
      */
@@ -705,10 +705,11 @@ public class SFModelMBeanInfoBuilder {
 
 
     /**
-     *@param  targetObject
-     *@param  finder        Description of the Parameter
-     *@param  opMetadata    Description of the Parameter
-     *@return
+     * extract metadata from the opMetadata parameter; prints stack traces to stdout on case of trouble.
+     *@param  targetObject target object
+     *@param  finder        Finder
+     *@param  opMetadata    metadata (can be null)
+     *@return an array of operation info. will be empty if opMetadata is null
      */
     public ModelMBeanOperationInfo[] getOperationInfoFromMetadata(MBeanDeployerMBean finder, Object targetObject, Enumeration opMetadata) {
         if (opMetadata == null) {
@@ -729,7 +730,7 @@ public class SFModelMBeanInfoBuilder {
      *@param  targetObject
      *@param  opCtxt
      *@param  finder         Description of the Parameter
-     *@return
+     *@return information about the target object 
      *@exception  Exception  Description of the Exception
      */
     public ModelMBeanOperationInfo getOperationInfoFrom(MBeanDeployerMBean finder, Object targetObject, Context opCtxt) throws Exception {

@@ -40,12 +40,10 @@ Reference URL:http://ant.apache.org
 
    <!-- override point -->
   <property file="build.properties" />
-  <property name="root.dir" location="../../"  />
-
   <property name="ivy.enabled" value="true"/>
-
   <property name="is.component" value="true"  />
-
+  <property name="system.tests" value="true"/>
+  <property name="root.dir" location="../../"  />
   <!-- Import common stuff -->
   <!--available file="../../common.xml" property="root.dir" value="../.."/--> 
   <import file="${root.dir}/common.xml"/>

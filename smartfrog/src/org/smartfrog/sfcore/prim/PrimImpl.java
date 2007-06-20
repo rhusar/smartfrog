@@ -950,7 +950,9 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
         try {
             target.dumpState(sfContext, this);
         } catch (Exception ex) {
-            // ignore
+             if (sfLog().isIgnoreEnabled()){
+              sfLog().ignore(ex);
+            }
         }
     }
 
@@ -1730,7 +1732,7 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
     * @throws SmartFrogException the attribute does not exist;
     */
    public Set sfGetTags(Object name) throws SmartFrogContextException, RemoteException {
-      return sfContext.sfGetTags(name);
+        return sfContext.sfGetTags(name);
    }
 
    /**
@@ -1742,7 +1744,7 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
     * @throws SmartFrogException the attribute does not exist;
     */
    public void sfAddTag(Object name, String tag) throws SmartFrogContextException, RemoteException {
-      sfContext.sfAddTag(name,tag);
+         sfContext.sfAddTag(name,tag);
    }
 
    /**
@@ -1755,7 +1757,7 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
     *
     */
    public void sfRemoveTag(Object name, String tag) throws SmartFrogContextException, RemoteException {
-      sfContext.sfRemoveTag(name, tag);
+         sfContext.sfRemoveTag(name, tag);
    }
 
          /**
@@ -1767,7 +1769,7 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
     *          the attribute does not exist;
     */
    public void sfAddTags(Object name, Set tags) throws SmartFrogContextException, RemoteException {
-      sfContext.sfAddTags(name, tags);
+        sfContext.sfAddTags(name, tags);
    }
 
    /**
@@ -1779,7 +1781,7 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
     *          the attribute does not exist;
     */
    public void sfRemoveTags(Object name, Set tags)  throws SmartFrogContextException, RemoteException {
-      sfContext.sfRemoveTags(name, tags);
+        sfContext.sfRemoveTags(name, tags);
    }
 
    /**
@@ -1791,7 +1793,7 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
     * @throws SmartFrogException the attribute does not exist;
     */
    public Iterator sfTags(Object name) throws SmartFrogException {
-      return sfContext.sfTags(name);
+        return sfContext.sfTags(name);
    }
 
    /**
@@ -1804,7 +1806,147 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
     * @throws SmartFrogException the attribute does not exist
     */
    public boolean sfContainsTag(Object name, String tag) throws SmartFrogContextException, RemoteException {
-      return sfContext.sfContainsTag(name, tag);
+        return sfContext.sfContainsTag(name, tag);
+   }
+
+ // implementation of the RemoteTagsComponent interface
+
+   /**
+    * Set the TAGS for this component. TAGS are simply uninterpreted strings associated
+    * with each attribute.
+    *
+    * @param tags a set of tags
+    *
+    * @throws SmartFrogException the attribute does not exist;
+    */
+   public void sfSetTags(Set tags) throws SmartFrogContextException, RemoteException {
+       Object key = null;
+       if (sfParent!=null) {
+         key = sfParent.sfAttributeKeyFor(this);
+         sfParent.sfSetTags(key,tags);
+       } else {
+         Prim parent = SFProcess.getProcessCompound();
+         key = parent.sfAttributeKeyFor(this);
+         parent.sfSetTags(key, tags);
+       }
+   }
+
+   /**
+    * Get the TAGS for this component. TAGS are simply uninterpreted strings associated
+    * with each attribute.
+    *
+    * @return the set of tags
+    *
+    * @throws SmartFrogException the attribute does not exist;
+    */
+   public Set sfGetTags() throws SmartFrogContextException, RemoteException {
+       Object key = null;
+       if (sfParent!=null) {
+         key = sfParent.sfAttributeKeyFor(this);
+         return sfParent.sfGetTags(key);
+       } else {
+         Prim parent = SFProcess.getProcessCompound();
+         key = parent.sfAttributeKeyFor(this);
+         return parent.sfGetTags(key);
+       }
+   }
+
+   /**
+    * add a tag to the tag set of this component
+    *
+    * @param tag a tag to add to the set
+    *
+    * @throws SmartFrogException the attribute does not exist;
+    */
+   public void sfAddTag( String tag) throws SmartFrogContextException, RemoteException {
+       Object key = null;
+       if (sfParent!=null) {
+         key = sfParent.sfAttributeKeyFor(this);
+         sfParent.sfAddTag(key,tag);
+       } else {
+         Prim parent = SFProcess.getProcessCompound();
+         key = parent.sfAttributeKeyFor(this);
+         parent.sfAddTag(key,tag);
+       }
+   }
+
+   /**
+    * remove a tag from the tag set of this component if it exists
+    *
+    * @param tag a tag to remove from the set
+    *
+    * @throws SmartFrogException the attribute does not exist;
+    *
+    */
+   public void sfRemoveTag( String tag) throws SmartFrogContextException, RemoteException {
+       Object key = null;
+       if (sfParent!=null) {
+         key = sfParent.sfAttributeKeyFor(this);
+         sfParent.sfRemoveTag(key,tag);
+       } else {
+         Prim parent = SFProcess.getProcessCompound();
+         key = parent.sfAttributeKeyFor(this);
+         parent.sfRemoveTag(key,tag);
+       }
+   }
+
+   /**
+    * add a tag to the tag set of this component
+    *
+    * @param tags  a set of tags to add to the set
+    * @throws SmartFrogException
+    *          the attribute does not exist;
+    */
+   public void sfAddTags( Set tags) throws SmartFrogContextException, RemoteException {
+      Object key = null;
+       if (sfParent!=null) {
+         key = sfParent.sfAttributeKeyFor(this);
+         sfParent.sfAddTags(key,tags);
+       } else {
+         Prim parent = SFProcess.getProcessCompound();
+         key = parent.sfAttributeKeyFor(this);
+         parent.sfAddTags(key,tags);
+       }
+   }
+
+   /**
+    * remove a tag from the tag set of this component if it exists
+    *
+    * @param tags  a set of tags to remove from the set
+    * @throws SmartFrogException
+    *          the attribute does not exist;
+    */
+   public void sfRemoveTags( Set tags)  throws SmartFrogContextException, RemoteException {
+       Object key = null;
+        if (sfParent!=null) {
+          key = sfParent.sfAttributeKeyFor(this);
+          sfParent.sfRemoveTags(tags);
+        } else {
+          Prim parent = SFProcess.getProcessCompound();
+          key = parent.sfAttributeKeyFor(this);
+          parent.sfRemoveTags(tags);
+        }
+   }
+
+
+   /**
+    * Return whether or not a tag is in the list of tags for this component
+    *
+    * @param tag the tag to chack
+    *
+    * @return whether or not the attribute has that tag
+    * @throws SmartFrogException the attribute does not exist
+    */
+   public boolean sfContainsTag(String tag) throws SmartFrogContextException, RemoteException {
+        Object key = null;
+        if (sfParent!=null) {
+          key = sfParent.sfAttributeKeyFor(this);
+          return sfParent.sfContainsTag(tag);
+        } else {
+          Prim parent = SFProcess.getProcessCompound();
+          key = parent.sfAttributeKeyFor(this);
+          return parent.sfContainsTag(tag);
+        }
    }
 
 }

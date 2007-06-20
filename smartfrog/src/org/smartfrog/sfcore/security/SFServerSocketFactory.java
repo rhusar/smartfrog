@@ -32,7 +32,8 @@ import java.rmi.server.RMIServerSocketFactory;
  *
  */
 public class SFServerSocketFactory implements RMIServerSocketFactory {
-
+    /** A security environment that handles the configuration of sockets. */
+    private SFSecurityEnvironment secEnv;
 
     private final InetAddress bindAddr;
 
@@ -40,15 +41,16 @@ public class SFServerSocketFactory implements RMIServerSocketFactory {
         return bindAddr == null ? 0 : bindAddr.hashCode();
     }
 
+    // bindAddr can be null
     public boolean equals(Object obj) {
         if (obj == this)
             return true;
         else if (obj == null || getClass() != obj.getClass())
             return false;
-        
+
         SFServerSocketFactory other = (SFServerSocketFactory) obj;
         return bindAddr == null
-                ? other.bindAddr == null
+                ? (other.bindAddr == null)  //checks if obj is null as well.
                 : bindAddr.equals(other.bindAddr);
     }
 
@@ -61,9 +63,12 @@ public class SFServerSocketFactory implements RMIServerSocketFactory {
      * <P>
      * @param bindAddr bind address for the server socket
      *
+     * @param secEnv A security environment that handles the configuration of
+     *        sockets.
      */
-    public SFServerSocketFactory(InetAddress bindAddr) {
+    public SFServerSocketFactory(InetAddress bindAddr, SFSecurityEnvironment secEnv) {
         this.bindAddr = bindAddr;
+        this.secEnv = secEnv;
     }
 
     /**
@@ -81,6 +86,6 @@ public class SFServerSocketFactory implements RMIServerSocketFactory {
          * for this reason we don't need a SSLServerSocketFactory.
          * However, we have to wrap it to pass the security
          * context. */
-        return new ServerSocket(port, 0, bindAddr);
+        return new SFServerSocket(port, bindAddr, secEnv);
     }
 }
