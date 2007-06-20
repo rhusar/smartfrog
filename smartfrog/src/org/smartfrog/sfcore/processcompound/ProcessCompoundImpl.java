@@ -20,29 +20,12 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.sfcore.processcompound;
 
-import java.rmi.RemoteException;
-import java.rmi.server.UnicastRemoteObject;
-import java.rmi.registry.Registry;
-import java.util.*;
-import java.net.InetAddress;
-
 import org.smartfrog.SFSystem;
-import org.smartfrog.sfcore.common.Logger;
-import org.smartfrog.sfcore.common.Context;
-import org.smartfrog.sfcore.common.ContextImpl;
-import org.smartfrog.sfcore.common.TerminatorThread;
-import org.smartfrog.sfcore.common.MessageKeys;
-import org.smartfrog.sfcore.common.MessageUtil;
-import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
-import org.smartfrog.sfcore.common.SmartFrogCoreProperty;
-import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
-import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.sfcore.common.SmartFrogLivenessException;
-import org.smartfrog.sfcore.common.SmartFrogResolutionException;
-import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
+import org.smartfrog.sfcore.common.*;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.componentdescription.ComponentDescriptionImpl;
 import org.smartfrog.sfcore.compound.CompoundImpl;
+import org.smartfrog.sfcore.logging.LogSF;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.reference.HereReferencePart;
@@ -51,12 +34,12 @@ import org.smartfrog.sfcore.reference.ReferencePart;
 import org.smartfrog.sfcore.security.SFSecurity;
 import org.smartfrog.sfcore.security.SFSecurityProperties;
 import org.smartfrog.sfcore.security.SmartFrogCorePropertySecurity;
-import org.smartfrog.sfcore.common.ExitCodes;
-import org.smartfrog.sfcore.common.JarUtil;
-import org.smartfrog.sfcore.logging.LogSF;
-import org.osgi.framework.Bundle;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.BundleException;
+
+import java.net.InetAddress;
+import java.rmi.RemoteException;
+import java.rmi.registry.Registry;
+import java.rmi.server.UnicastRemoteObject;
+import java.util.*;
 
 
 /**
@@ -138,6 +121,12 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
     protected final Set processLocks = new HashSet();
     private StreamGobbler errorGobbler;
     private StreamGobbler outputGobbler;
+
+    private Runnable shutdownHook = new Runnable() {
+        public void run() {
+            ExitCodes.exitWithError(ExitCodes.EXIT_CODE_SUCCESS);
+        }
+    };
 
 
     public ProcessCompoundImpl() throws RemoteException {
@@ -319,7 +308,6 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
      * ProcessCompound is in the vector set and use that if so. If not tries to use the first one avaible
      * @param portObj Object
      * @return Object Reference to exported object
-     * @throws RemoteException
      * @throws RemoteException
      * @throws SmartFrogException
      */
@@ -518,7 +506,7 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
         }
 
         if (sfLog().isDebugEnabled())
-            sfLog().debug("ProcessCompoundImpl terminating. systemExit = " + systemExit + ", vmExit = " + vmExit);    
+            sfLog().debug("ProcessCompoundImpl terminating. systemExit = " + systemExit);    
 
         if (systemExit) {
             try {
@@ -531,28 +519,16 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
                 sfLog().ignore(thr);
             }
 
-            if (vmExit) {
-                ExitCodes.exitWithError(ExitCodes.EXIT_CODE_SUCCESS);
-            } else {
-                shutdownRMIRegistry(sfLog());
-                SFSystem.cleanShutdown();
-                // TODO: OSGi-specific, move to a shutdown hook somewhere
-                try {
-                    Bundle daemonBundle = (
-                            (BundleContext) sfResolve(SmartFrogCoreKeys.SF_CORE_BUNDLE_CONTEXT)
-                    ).getBundle();
-                    daemonBundle.stop();
-                    System.out.println("Bundle stopped.");
-                } catch (Exception e) {
-                    // Logging system already gone, so have to use System.err
-                    System.err.println("Could not stop bundle. Exception:");
-                    e.printStackTrace();
-                }
-                // If we didn't call System.exit we need to stop them.
-                // They shouldn't be stopped before not to loose log messages.
-                outputGobbler.stopThread();
-                errorGobbler.stopThread();
-            }
+            shutdownRMIRegistry(sfLog());
+            SFSystem.cleanShutdown();
+
+            shutdownHook.run();
+
+            // They shouldn't be stopped before not to loose output
+            // (including output from the hook).
+            outputGobbler.stopThread();
+            errorGobbler.stopThread();
+
         }
     }
 
@@ -675,8 +651,8 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
         systemExit = exit;
     }
 
-    public void vmExitOnTermination(boolean exit) throws RemoteException {
-        vmExit = exit;
+    public void replaceShutdownHook(Runnable hook) {
+        shutdownHook = hook;
     }
 
     /**
@@ -932,7 +908,7 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
      * @exception Exception failed to deploy process
      */
     public ProcessCompound sfResolveProcess(Object name, ComponentDescription cd) throws Exception {
-        ProcessCompound pc = null;
+        ProcessCompound pc;
 
         if (sfParent() == null) { // I am the root
             try {
