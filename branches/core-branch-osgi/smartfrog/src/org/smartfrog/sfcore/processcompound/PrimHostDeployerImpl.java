@@ -76,7 +76,7 @@ public class PrimHostDeployerImpl extends PrimDeployerImpl {
      * @throws Exception if failed to find process compound
      */
     protected ProcessCompound getProcessCompound() throws Exception {
-        InetAddress hostAddress = null;
+        InetAddress hostAddress;
         Object hostname=null;
         try {
             hostname = target.sfResolve(refProcessHost);
@@ -117,12 +117,12 @@ public class PrimHostDeployerImpl extends PrimDeployerImpl {
     protected Prim deploy(Prim parent)
         throws SmartFrogDeploymentException {
         try {
-            ProcessCompound pc = null;
+            ProcessCompound pc;
 
             try {
                 pc = getProcessCompound();
             } catch (Exception e) {
-                throw (SmartFrogDeploymentException)SmartFrogDeploymentException.forward(e);
+                throw (SmartFrogDeploymentException) SmartFrogDeploymentException.forward(e);
             }
 
             ProcessCompound local = SFProcess.getProcessCompound();
