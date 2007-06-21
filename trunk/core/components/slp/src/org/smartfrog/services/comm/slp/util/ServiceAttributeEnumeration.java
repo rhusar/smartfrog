@@ -26,27 +26,29 @@
 
 package org.smartfrog.services.comm.slp.util;
 
-import org.smartfrog.services.comm.slp.ServiceLocationEnumeration;
 import org.smartfrog.services.comm.slp.ServiceLocationAttribute;
+import org.smartfrog.services.comm.slp.ServiceLocationEnumeration;
 
-import java.util.*;
+import java.util.Iterator;
+import java.util.Vector;
 
 public class ServiceAttributeEnumeration implements ServiceLocationEnumeration {
     private Vector elements;
     private int currentElement;
-    
+
     public ServiceAttributeEnumeration() {
         elements = new Vector();
         currentElement = 0;
     }
-    
+
     public ServiceAttributeEnumeration(Vector v) {
         elements = v;
         currentElement = 0;
     }
+
     /**
-        This method is currently the same as nextElement(). It does not block.
-     If the next element does not exist, null is returned.
+     * This method is currently the same as nextElement(). It does not block. If the next element does not exist, null
+     * is returned.
      */
     public Object next() {
         // The call to Locator.findServices is not asynchronous, so when
@@ -54,38 +56,42 @@ public class ServiceAttributeEnumeration implements ServiceLocationEnumeration {
         // For that reason, there is no need to wait here...
         return nextElement();
     }
-    
+
     public Object nextElement() {
-        if(currentElement == elements.size()) return null;
-        else return elements.elementAt(currentElement++);
+        if (currentElement == elements.size()) {
+            return null;
+        } else {
+            return elements.elementAt(currentElement++);
+        }
     }
-    
+
     public boolean hasMoreElements() {
         return (currentElement != elements.size());
     }
+
     /**
-        Adds the given elements to the enumeration.
-     @param v A vector with the elements to add
+     * Adds the given elements to the enumeration.
+     *
+     * @param v A vector with the elements to add
      */
     public void addElements(Vector v) {
-        for(Iterator it=v.iterator(); it.hasNext(); ) {
-            ServiceLocationAttribute a = (ServiceLocationAttribute)it.next();
+        for (Iterator it = v.iterator(); it.hasNext();) {
+            ServiceLocationAttribute a = (ServiceLocationAttribute) it.next();
             ServiceLocationAttribute b = findAttribute(a.getId());
-            if(b != null) {
+            if (b != null) {
                 // merge value vectors.
                 Vector newValues = SLPUtil.mergeVectors(a.getValues(), b.getValues());
                 b.setValues(newValues);
-            }
-            else {
+            } else {
                 elements.add(a);
             }
         }
     }
- 
+
     private ServiceLocationAttribute findAttribute(String id) {
-        for(Iterator it=elements.iterator(); it.hasNext(); ) {
-            ServiceLocationAttribute a = (ServiceLocationAttribute)it.next();
-            if(a.getId().equalsIgnoreCase(id)) {
+        for (Iterator it = elements.iterator(); it.hasNext();) {
+            ServiceLocationAttribute a = (ServiceLocationAttribute) it.next();
+            if (a.getId().equalsIgnoreCase(id)) {
                 return a;
             }
         }

@@ -26,30 +26,31 @@
 
 package org.smartfrog.services.comm.slp.messages;
 
-import java.io.IOException;
-import java.util.Vector;
-import java.util.Locale;
 import org.smartfrog.services.comm.slp.ServiceLocationException;
 import org.smartfrog.services.comm.slp.util.SLPInputStream;
 import org.smartfrog.services.comm.slp.util.SLPOutputStream;
 import org.smartfrog.services.comm.slp.util.SLPUtil;
 
+import java.io.IOException;
+import java.util.Locale;
+import java.util.Vector;
+
 
 /**
-    This class represents a service type request message.
- <pre>
-  0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
- +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- |       Service location header (function = SrvTypeRqst = 9)    |
- +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- |     Length of PRList          |           PRList string       \
- +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- |  length og naming authority   |    Naming authority string    \
- +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- |    Length of scope-list       |         scope-list            \
- +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- </pre>
-*/
+ * This class represents a service type request message.
+ * <pre>
+ * 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+ * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ * |       Service location header (function = SrvTypeRqst = 9)    |
+ * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ * |     Length of PRList          |           PRList string       \
+ * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ * |  length og naming authority   |    Naming authority string    \
+ * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ * |    Length of scope-list       |         scope-list            \
+ * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ * </pre>
+ */
 public class SLPSrvTypeReqMessage extends SLPMessageHeader {
     /** List of previous responders */
     private String PRList;
@@ -59,10 +60,8 @@ public class SLPSrvTypeReqMessage extends SLPMessageHeader {
     private Vector scopes;
     /** String representsation of scope vector */
     private String scopeStr;
-    
-    /**
-        Creates an empty SLPSrvTypeReqMessage.
-    */
+
+    /** Creates an empty SLPSrvTypeReqMessage. */
     public SLPSrvTypeReqMessage() {
         super(SLPMSG_SRVTYPE);
         PRList = "";
@@ -70,44 +69,46 @@ public class SLPSrvTypeReqMessage extends SLPMessageHeader {
         scopes = null; //new Vector();
         scopeStr = "";
     }
-    
+
     /**
-        Creates an SLPSrvTypeReqMessage.
-        @param na The naming authority to use.
-        @param s The scope list
-        @param lang The locale to use.
-    */
+     * Creates an SLPSrvTypeReqMessage.
+     *
+     * @param na   The naming authority to use.
+     * @param s    The scope list
+     * @param lang The locale to use.
+     */
     public SLPSrvTypeReqMessage(String na, Vector s, Locale lang) {
         super(SLPMSG_SRVTYPE, lang);
         PRList = "";
         namingAuth = na;
         scopes = s;
         scopeStr = SLPUtil.vectorToString(scopes);
-        
+
         // calculate length
         length += 6; // constant length fields.
         length += PRList.length();
-        if(na != null) length += na.length();
+        if (na != null) length += na.length();
         length += scopeStr.length();
     }
-    
+
     public void toOutputStream(SLPOutputStream stream) throws ServiceLocationException {
         super.toOutputStream(stream);
         try {
             stream.writeShort(PRList.length()); // length of PRList
             stream.writeString(PRList); // PRList
-            if(namingAuth == null) stream.writeShort(0xFFFF);
-            else {
+            if (namingAuth == null) {
+                stream.writeShort(0xFFFF);
+            } else {
                 stream.writeShort(namingAuth.length());
                 stream.writeString(namingAuth);
             }
             stream.writeShort(scopeStr.length());
             stream.writeString(scopeStr);
-        }catch(IOException ioe) {
+        } catch (IOException ioe) {
             throw new ServiceLocationException(ServiceLocationException.INTERNAL_SYSTEM_ERROR);
         }
     }
-    
+
     public void fromInputStream(SLPInputStream stream) throws ServiceLocationException {
         super.fromInputStream(stream);
         int len = 0;
@@ -115,49 +116,55 @@ public class SLPSrvTypeReqMessage extends SLPMessageHeader {
             len = stream.readShort();
             PRList = stream.readString(len);
             len = stream.readShort();
-            if(len == 0xFFFF) namingAuth = null;
-            else namingAuth = stream.readString(len);
+            if (len == 0xFFFF) {
+                namingAuth = null;
+            } else {
+                namingAuth = stream.readString(len);
+            }
             len = stream.readShort();
             scopeStr = stream.readString(len);
-        }catch(IOException ioe) {
+        } catch (IOException ioe) {
             throw new ServiceLocationException(ServiceLocationException.PARSE_ERROR);
         }
-        
+
         // create scope vector
         scopes = SLPUtil.stringToVector(scopeStr);
     }
-    
+
     /** Returns the previous responders list */
     public String getPRList() {
         return PRList;
     }
-    
+
     /** Returns the naming authority */
     public String getNamingAuthority() {
         return namingAuth;
     }
-    
+
     /** Returns the scope list */
     public Vector getScopes() {
         return scopes;
     }
-    
+
     /** Adds an address to the list of previous responders */
     public void addResponder(String resp) {
         length -= PRList.length();
-        if(PRList.equals("")) PRList = resp;
-        else PRList = PRList + "," + resp;
-        
+        if (PRList.equals("")) {
+            PRList = resp;
+        } else {
+            PRList = PRList + "," + resp;
+        }
+
         length += PRList.length();
     }
-	
-	public String toString() {
-		String s = super.toString();
-		s +=  "PRList: " + PRList + "\n"
-		  + "Naming Auth: " + namingAuth + "\n"
-		  + "Scopes: " + scopeStr + "\n"
-		  + "*** End Of Message ***";
-		
-		return s;
-	}
+
+    public String toString() {
+        String s = super.toString();
+        s += "PRList: " + PRList + "\n"
+                + "Naming Auth: " + namingAuth + "\n"
+                + "Scopes: " + scopeStr + "\n"
+                + "*** End Of Message ***";
+
+        return s;
+    }
 }

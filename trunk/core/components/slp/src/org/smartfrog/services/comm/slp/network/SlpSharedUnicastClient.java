@@ -28,56 +28,57 @@ package org.smartfrog.services.comm.slp.network;
 
 import org.smartfrog.services.comm.slp.ServiceLocationException;
 import org.smartfrog.services.comm.slp.util.SLPInputStream;
-import java.util.Map;
-import java.util.Collections;
-import java.util.TreeMap;
-import java.util.Iterator;
-import java.net.InetAddress;
-import java.net.DatagramPacket;
+
 import java.io.ByteArrayInputStream;
 import java.io.InterruptedIOException;
+import java.net.DatagramPacket;
+import java.net.InetAddress;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.TreeMap;
 
 public class SlpSharedUnicastClient extends SlpUnicastClient {
     private static final int XID_POSITION = 10;
     private Map callbackMap;
-    
+
     public SlpSharedUnicastClient(InetAddress address, int port, int MTU) throws ServiceLocationException {
         super(address, port, MTU, null);
         callbackMap = Collections.synchronizedMap(new TreeMap());
     }
-    
+
     public synchronized boolean send(DatagramPacket p, int id, SlpUdpCallback cb) throws ServiceLocationException {
-        if(callbackMap.containsKey(Integer.toString(id))) {
+        if (callbackMap.containsKey(Integer.toString(id))) {
             return false; // XID is in use !
         }
-        
+
         // register XID and send message
         callbackMap.put(Integer.toString(id), cb);
         send(p);
         return true;
     }
-    
+
     public synchronized void removeCallback(int id) {
         callbackMap.remove(Integer.toString(id));
     }
-    
-    public void run( ) {
+
+    public void run() {
         while (running) {
             try {
                 packet = new DatagramPacket(data, MTU);
                 socket.receive(packet);
-                if(running) {
+                if (running) {
                     // need to find the correct callback object.
                     ByteArrayInputStream stream = new ByteArrayInputStream(packet.getData());
                     SLPInputStream sis = new SLPInputStream(stream);
                     //System.out.println("Getting XID");
                     int xid;
-                    if( (sis.skip(XID_POSITION)) == XID_POSITION) {
+                    if ((sis.skip(XID_POSITION)) == XID_POSITION) {
                         xid = sis.readShort();
                         //System.out.println("XID = " + xid);
-                        callback = (SlpUdpCallback)callbackMap.get(Integer.toString(xid));
-                        if(callback != null) {
-                            if(!callback.udpReceived(packet)) running = false;
+                        callback = (SlpUdpCallback) callbackMap.get(Integer.toString(xid));
+                        if (callback != null) {
+                            if (!callback.udpReceived(packet)) running = false;
                             callback = null;
                         }
                         /*
@@ -94,10 +95,10 @@ public class SlpSharedUnicastClient extends SlpUnicastClient {
             catch (Exception e) {
                 // If we get here, something strange has happened.
                 // Notify callback objects, and kill thread.
-                synchronized(callbackMap) {
+                synchronized (callbackMap) {
                     Iterator iter = callbackMap.values().iterator();
-                    while(iter.hasNext()) {
-                        ((SlpUdpCallback)iter.next()).udpError(e);
+                    while (iter.hasNext()) {
+                        ((SlpUdpCallback) iter.next()).udpError(e);
                     }
                     callbackMap.clear();
                 }
@@ -105,10 +106,11 @@ public class SlpSharedUnicastClient extends SlpUnicastClient {
                 running = false;
             }
         }
-        
+
         // try to close socket.
         try {
             socket.close();
-        }catch(Exception e) { } // ignore error
+        } catch (Exception e) {
+        } // ignore error
     }
 }

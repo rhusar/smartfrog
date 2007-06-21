@@ -26,23 +26,22 @@
 
 package org.smartfrog.services.comm.slp;
 
+import org.smartfrog.sfcore.common.Context;
+import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.logging.LogSF;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.prim.TerminationRecord;
-import org.smartfrog.sfcore.reference.Reference;
-import org.smartfrog.sfcore.reference.ReferencePart;
 import org.smartfrog.sfcore.reference.HereReferencePart;
-import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.sfcore.common.Context;
-import org.smartfrog.sfcore.logging.LogSF;
+import org.smartfrog.sfcore.reference.Reference;
 
 import java.net.InetAddress;
-import java.util.Vector;
-import java.util.Iterator;
-import java.util.Properties;
-import java.util.Locale;
-import java.rmi.server.RemoteStub;
 import java.rmi.RemoteException;
+import java.rmi.server.RemoteStub;
+import java.util.Iterator;
+import java.util.Locale;
+import java.util.Properties;
+import java.util.Vector;
 
 public class SFSlpAdvertiserImpl extends PrimImpl implements Prim, SFSlpAdvertiser {
     /** The Advertiser object */
@@ -59,101 +58,101 @@ public class SFSlpAdvertiserImpl extends PrimImpl implements Prim, SFSlpAdvertis
     protected Object toAdvertise;
     /** Advertise reference ? */
     protected boolean advertiseReference;
-	/** Log */
-	protected LogSF slpLog = null;
-    
+    /** Log */
+    protected LogSF slpLog = null;
+
     // references.
     public static final Reference toAdvertiseRef = new Reference("toAdvertise");
     public static final Reference serviceTypeRef = new Reference("serviceType");
     public static final Reference serviceAttributeRef = new Reference("serviceAttributes");
     public static final Reference serviceLifetimeRef = new Reference("serviceLifetime");
     public static final Reference advertiseReferenceRef = new Reference("advertiseReference");
-    
+
     public SFSlpAdvertiserImpl() throws RemoteException {
         super();
     }
-    
+
     public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
         super.sfDeploy();
-				
+
         // get configureation for SLP
         Properties p = getSlpConfiguration();
-        
+
         // get properties for the service to advertise.
         toAdvertise = sfContext().get("toAdvertise"); //sfResolve(toAdvertiseRef);
-		if(toAdvertise == null) {
-			throw new SmartFrogException("SLP: Could not find 'toAdvertise' attribute");
-		}
-        serviceType = (String)sfResolve(serviceTypeRef);
-        serviceAttributes = (Vector)sfResolve(serviceAttributeRef);
-        serviceLifetime = ((Integer)sfResolve(serviceLifetimeRef)).intValue();
-        advertiseReference = ((Boolean)sfResolve(advertiseReferenceRef)).booleanValue();
-        
+        if (toAdvertise == null) {
+            throw new SmartFrogException("SLP: Could not find 'toAdvertise' attribute");
+        }
+        serviceType = (String) sfResolve(serviceTypeRef);
+        serviceAttributes = (Vector) sfResolve(serviceAttributeRef);
+        serviceLifetime = ((Integer) sfResolve(serviceLifetimeRef)).intValue();
+        advertiseReference = ((Boolean) sfResolve(advertiseReferenceRef)).booleanValue();
+
         // convert attributes to ServiceLocationAttribute objects.
         Iterator iter = serviceAttributes.iterator();
         serviceAttributes = new Vector();
-        while(iter.hasNext()) {
-            Vector v = (Vector)iter.next();
-            String id = (String)v.remove(0); // remove id.
+        while (iter.hasNext()) {
+            Vector v = (Vector) iter.next();
+            String id = (String) v.remove(0); // remove id.
             ServiceLocationAttribute a = new ServiceLocationAttribute(id, v);
             serviceAttributes.add(a);
         }
-        
+
         // check if we want to advertise reference.
-        if(toAdvertise instanceof Reference) {
-            if(advertiseReference) {
+        if (toAdvertise instanceof Reference) {
+            if (advertiseReference) {
                 // build reference to advertise
-                Reference ref = sfCompleteName(); 
-                ref.addElements( (Reference)toAdvertise ); 
+                Reference ref = sfCompleteName();
+                ref.addElements((Reference) toAdvertise);
                 toAdvertise = ref;
-            }
-            else {
+            } else {
                 // get the object to advertise
                 toAdvertise = sfResolve(toAdvertiseRef);
             }
         }
-        
+
         // build URL.
         createServiceURL();
-        
+
         // create advertiser...
         try {
             ServiceLocationManager.setProperties(p);
             advertiser = ServiceLocationManager.getAdvertiser(new Locale(p.getProperty("net.slp.locale")));
-			// create log, if requested.
-			if(p.getProperty("net.slp.sflog").equalsIgnoreCase("true")) {
-				slpLog = sfGetLog(p.getProperty("net.slp.logfile"));
-				advertiser.setSFLog(slpLog);
-			}
-        }catch(ServiceLocationException ex) {
-            throw (SmartFrogException)SmartFrogException.forward(ex);
+            // create log, if requested.
+            if (p.getProperty("net.slp.sflog").equalsIgnoreCase("true")) {
+                slpLog = sfGetLog(p.getProperty("net.slp.logfile"));
+                advertiser.setSFLog(slpLog);
+            }
+        } catch (ServiceLocationException ex) {
+            throw (SmartFrogException) SmartFrogException.forward(ex);
         }
     }
-    
+
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
-    
+
         // advertise service...
         try {
             advertiser.register(serviceURL, serviceAttributes);
-        }catch(ServiceLocationException ex) {
-            throw (SmartFrogException)SmartFrogException.forward(ex);
+        } catch (ServiceLocationException ex) {
+            throw (SmartFrogException) SmartFrogException.forward(ex);
         }
     }
-    
+
     public synchronized void sfTerminateWith(TerminationRecord r) {
         //deregister service
         try {
             advertiser.deregister(serviceURL);
-        }catch(ServiceLocationException ex) { }
-        
+        } catch (ServiceLocationException ex) {
+        }
+
         super.sfTerminateWith(r);
     }
-    
+
     protected Properties getSlpConfiguration() throws SmartFrogException, RemoteException {
-        Properties properties = new Properties();        
-        String s = (String)sfResolve("slp_config_interface", "", false);
-        if(!s.equals("")) properties.setProperty("net.slp.interface", s);
+        Properties properties = new Properties();
+        String s = (String) sfResolve("slp_config_interface", "", false);
+        if (!s.equals("")) properties.setProperty("net.slp.interface", s);
         properties.setProperty("net.slp.multicastMaximumWait", sfResolve("slp_config_mc_max").toString());
         properties.setProperty("net.slp.randomWaitBound", sfResolve("slp_config_rnd_wait").toString());
         properties.setProperty("net.slp.initialTimeout", sfResolve("slp_config_retry").toString());
@@ -169,52 +168,51 @@ public class SFSlpAdvertiserImpl extends PrimImpl implements Prim, SFSlpAdvertis
         properties.setProperty("net.slp.logErrors", sfResolve("slp_config_log_errors").toString());
         properties.setProperty("net.slp.logMsg", sfResolve("slp_config_log_msg").toString());
         properties.setProperty("net.slp.logfile", sfResolve("slp_config_logfile").toString());
-		properties.setProperty("net.slp.sflog", sfResolve("slp_config_sflog").toString());
-        
+        properties.setProperty("net.slp.sflog", sfResolve("slp_config_sflog").toString());
+
         return properties;
     }
-    
+
     protected void createServiceURL() throws SmartFrogException, RemoteException {
-        if(toAdvertise instanceof Prim) {
+        if (toAdvertise instanceof Prim) {
             createRemoteStubURL();
-        }
-        else if(toAdvertise instanceof Number ||
+        } else if (toAdvertise instanceof Number ||
                 toAdvertise instanceof Boolean) {
-            serviceURL = new ServiceURL(serviceType+":///"+toAdvertise.toString(), serviceLifetime);
-        }
-        else if(toAdvertise instanceof InetAddress) {
-            serviceURL = new ServiceURL(serviceType+"://"+((InetAddress)toAdvertise).getCanonicalHostName());
-        }
-        else if(toAdvertise instanceof String) {
+            serviceURL = new ServiceURL(serviceType + ":///" + toAdvertise.toString(), serviceLifetime);
+        } else if (toAdvertise instanceof InetAddress) {
+            serviceURL = new ServiceURL(serviceType + "://" + ((InetAddress) toAdvertise).getCanonicalHostName());
+        } else if (toAdvertise instanceof String) {
             createStringURL();
-        }
-        else {
+        } else {
             // Some object. Put base64 encoded string representation of
             // object in the URLPath.
             serviceURL = new ServiceURL(serviceType, toAdvertise, serviceLifetime);
         }
     }
-    
+
     protected void createRemoteStubURL() throws SmartFrogException {
         RemoteStub s;
-        if(toAdvertise instanceof RemoteStub) s = (RemoteStub)toAdvertise;
-        else s = (RemoteStub)((PrimImpl)toAdvertise).sfExportRef();
-        
+        if (toAdvertise instanceof RemoteStub) {
+            s = (RemoteStub) toAdvertise;
+        } else {
+            s = (RemoteStub) ((PrimImpl) toAdvertise).sfExportRef();
+        }
+
         serviceURL = new ServiceURL(serviceType, s, serviceLifetime);
     }
-    
+
     protected void createStringURL() throws SmartFrogException, RemoteException {
         Context c = sfContext();
         Object value = c.get("toAdvertise");
-        if(value instanceof Reference) {
+        if (value instanceof Reference) {
             // check if we are advertising the process compound.
-            Reference r = (Reference)value;
-            if(r.toString().endsWith("sfProcess")) {
+            Reference r = (Reference) value;
+            if (r.toString().endsWith("sfProcess")) {
                 // advertising process compound. Need to get hostname.
-                r.setElementAt(new HereReferencePart("sfHost"), r.size()-1);
-                InetAddress host = (InetAddress)sfResolve(r);
-                serviceURL = new ServiceURL(serviceType+"://"+host.getCanonicalHostName()+"/"+toAdvertise.toString(),
-                                            serviceLifetime);
+                r.setElementAt(new HereReferencePart("sfHost"), r.size() - 1);
+                InetAddress host = (InetAddress) sfResolve(r);
+                serviceURL = new ServiceURL(serviceType + "://" + host.getCanonicalHostName() + "/" + toAdvertise.toString(),
+                        serviceLifetime);
                 return;
             }
         }
@@ -223,7 +221,7 @@ public class SFSlpAdvertiserImpl extends PrimImpl implements Prim, SFSlpAdvertis
         String adv = toAdvertise.toString();
         String host = adv;
         String path = "";
-        if(adv.indexOf("/") != -1) {
+        if (adv.indexOf("/") != -1) {
             host = adv.substring(0, adv.indexOf("/"));
             path = adv.substring(adv.indexOf("/"));
         }
@@ -231,13 +229,14 @@ public class SFSlpAdvertiserImpl extends PrimImpl implements Prim, SFSlpAdvertis
         try {
             InetAddress a = InetAddress.getByName(host);
             String urlStr = a.getHostName() + path;
-            serviceURL = new ServiceURL(serviceType+"://"+urlStr, serviceLifetime);
+            serviceURL = new ServiceURL(serviceType + "://" + urlStr, serviceLifetime);
             url = true;
-        }catch(Exception ex) { }
-        
-        if(!url) {
+        } catch (Exception ex) {
+        }
+
+        if (!url) {
             // not a url. Just add String to URLPath.
-            serviceURL = new ServiceURL(serviceType+":///"+toAdvertise.toString(), serviceLifetime);
+            serviceURL = new ServiceURL(serviceType + ":///" + toAdvertise.toString(), serviceLifetime);
         }
     }
 }

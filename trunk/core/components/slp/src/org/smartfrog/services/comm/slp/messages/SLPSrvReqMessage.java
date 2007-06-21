@@ -26,70 +26,57 @@
 
 package org.smartfrog.services.comm.slp.messages;
 
-import org.smartfrog.services.comm.slp.ServiceType;
 import org.smartfrog.services.comm.slp.ServiceLocationException;
+import org.smartfrog.services.comm.slp.ServiceType;
 import org.smartfrog.services.comm.slp.util.SLPInputStream;
 import org.smartfrog.services.comm.slp.util.SLPOutputStream;
 import org.smartfrog.services.comm.slp.util.SLPUtil;
 
-import java.util.*;
 import java.io.IOException;
+import java.util.Locale;
+import java.util.Vector;
 
 /**
-    This class represents a SrvReq message.
- <pre>
-  0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
- +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- |        Service location header (function = SrvRqst = 1)       |
- +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- |      length of PRList         |             PRList            \
- +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- |      length of service-type   |            service-type       \
- +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- |      length of scope-list     |            scope-list         \
- +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- | length of predicate string    |   Service request predicate   \
- +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- |   length of SLP SPI string    |        SLP SPI string         \
- +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- </pre>
-*/
+ * This class represents a SrvReq message.
+ * <pre>
+ * 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+ * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ * |        Service location header (function = SrvRqst = 1)       |
+ * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ * |      length of PRList         |             PRList            \
+ * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ * |      length of service-type   |            service-type       \
+ * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ * |      length of scope-list     |            scope-list         \
+ * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ * | length of predicate string    |   Service request predicate   \
+ * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ * |   length of SLP SPI string    |        SLP SPI string         \
+ * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ * </pre>
+ */
 public class SLPSrvReqMessage extends SLPMessageHeader {
-    /**
-        The message type.
-    */
+    /** The message type. */
     private static final int FUNCTION = 1;
-    /**
-        The list of previous responders to this request
-    */
+    /** The list of previous responders to this request */
     private String PRList;
-    /**
-        The service type to look for.
-    */
+    /** The service type to look for. */
     private ServiceType type;
-    /**
-        The scopes in which to search for the service.
-    */
+    /** The scopes in which to search for the service. */
     private Vector scopes;
     /**
-        A search filter to use when finding matches.
-        This may be an empty string, in which case all services of the correct type in a
-        supported scope will be found.
-    */
+     * A search filter to use when finding matches. This may be an empty string, in which case all services of the
+     * correct type in a supported scope will be found.
+     */
     private String searchFilter;
-    /**
-        String representation of the service type.
-    */
+    /** String representation of the service type. */
     private String typeStr;
-    /**
-        String representation of the scope list.
-    */
+    /** String representation of the scope list. */
     private String scopeStr;
-    
+
     private String spiStr;
-    /**
-        Creates an empty SLPSrvReqMessage.
-    */
+
+    /** Creates an empty SLPSrvReqMessage. */
     public SLPSrvReqMessage() {
         super(FUNCTION);
         type = null;
@@ -98,13 +85,15 @@ public class SLPSrvReqMessage extends SLPMessageHeader {
         PRList = "";
         spiStr = "";
     }
+
     /**
-        Creates a SLPSrvReqMessage with the given contents.
-        @param type The service type
-        @param scopes The scopes to search in.
-        @param filter The search filter to use.
-        @param lang The locale for this message.
-    */
+     * Creates a SLPSrvReqMessage with the given contents.
+     *
+     * @param type   The service type
+     * @param scopes The scopes to search in.
+     * @param filter The search filter to use.
+     * @param lang   The locale for this message.
+     */
     public SLPSrvReqMessage(ServiceType type, Vector scopes, String filter, Locale lang) {
         super(FUNCTION, lang);
         this.type = type;
@@ -117,63 +106,58 @@ public class SLPSrvReqMessage extends SLPMessageHeader {
         scopeStr = SLPUtil.vectorToString(scopes);
         // calculate length
         length += PRList.length() + 2; // PRList
-        length += typeStr.length() +2; // service type
-        length += scopeStr.length() + 2 ; // scope list
+        length += typeStr.length() + 2; // service type
+        length += scopeStr.length() + 2; // scope list
         length += searchFilter.length() + 2; // filter.
         length += spiStr.length() + 2; // spi string
     }
-    /**
-        Adds a responder to the list of previous responders.
-    */
+
+    /** Adds a responder to the list of previous responders. */
     public void addResponder(String responder) {
         length -= PRList.length();
-        if(PRList.equals("")) {
+        if (PRList.equals("")) {
             PRList = responder;
-        }
-        else {
+        } else {
             PRList = PRList + "," + responder;
         }
         length += PRList.length();
     }
-    
-    /** Clears the list of previous responders.*/
+
+    /** Clears the list of previous responders. */
     public void clearResponders() {
         length -= PRList.length();
         PRList = "";
     }
-    
-    /**
-        Returns the service type
-    */
+
+    /** Returns the service type */
     public ServiceType getServiceType() {
         return type;
     }
-    /**
-        Returns the scope list
-    */
+
+    /** Returns the scope list */
     public Vector getScopes() {
         return scopes;
     }
-    /**
-        Returns the search filter.
-    */
+
+    /** Returns the search filter. */
     public String getSearchFilter() {
         return searchFilter;
     }
-    /**
-        Returns the list of previous responders.
-    */
+
+    /** Returns the list of previous responders. */
     public String getPRList() {
         return PRList;
     }
+
     /**
-        Writes the message to an ouput stream.
-        @param stream The stream to write to.
-    */
+     * Writes the message to an ouput stream.
+     *
+     * @param stream The stream to write to.
+     */
     public void toOutputStream(SLPOutputStream stream) throws ServiceLocationException {
 //        System.out.println("Scopes: " + scopes.toString());
 //        System.out.println("PRList: " + PRList);
-        
+
         // write to stream
         super.toOutputStream(stream);
         try {
@@ -187,21 +171,23 @@ public class SLPSrvReqMessage extends SLPMessageHeader {
             stream.writeString(searchFilter); // search filter
             stream.writeShort(spiStr.length()); // spi length.
             stream.writeString(spiStr); // spi 
-        }catch(IOException e) {
+        } catch (IOException e) {
             throw new ServiceLocationException(ServiceLocationException.INTERNAL_SYSTEM_ERROR);
         }
     }
+
     /**
-        Reads data from an input stream.
-        @param stream The stream to read from.
-    */
+     * Reads data from an input stream.
+     *
+     * @param stream The stream to read from.
+     */
     public void fromInputStream(SLPInputStream stream) throws ServiceLocationException {
         super.fromInputStream(stream);
         try {
             int prlen = stream.readShort();
             PRList = stream.readString(prlen);
             int stlen = stream.readShort();
-            if(stlen == 0) {
+            if (stlen == 0) {
                 // Service type field can NOT be empty !
                 throw new ServiceLocationException(ServiceLocationException.PARSE_ERROR);
             }
@@ -210,33 +196,32 @@ public class SLPSrvReqMessage extends SLPMessageHeader {
             scopeStr = stream.readString(scopelen);
             int predLen = stream.readShort();
             searchFilter = stream.readString(predLen);
-        
+
             int spiLength = stream.readShort();
             spiStr = stream.readString(spiLength);
-            if(spiLength != 0) {
+            if (spiLength != 0) {
                 // No support for SPI/Authentication blocks at this time...
                 throw new ServiceLocationException(ServiceLocationException.AUTHENTICATION_UNKNOWN);
             }
-        }catch(IOException e) {
+        } catch (IOException e) {
             throw new ServiceLocationException(ServiceLocationException.PARSE_ERROR);
         }
-        
+
         // create scope vector...
         scopes = SLPUtil.stringToVector(scopeStr);
     }
-    /**
-        Writes the contents of the message to stdout.
-    */
+
+    /** Writes the contents of the message to stdout. */
     public String toString() {
         String theString;
         theString =
-            super.toString() + "\n" +
-            "PRList: " + PRList + "\n" +
-            "Service Type: " + type.toString() + "\n" +
-            "Scope list: " + scopes.toString() + "\n" +
-            "Search Filter: " + searchFilter + "\n" +
-            "*** End Of Message ***";
-        
+                super.toString() + "\n" +
+                        "PRList: " + PRList + "\n" +
+                        "Service Type: " + type.toString() + "\n" +
+                        "Scope list: " + scopes.toString() + "\n" +
+                        "Search Filter: " + searchFilter + "\n" +
+                        "*** End Of Message ***";
+
         return theString;
     }
 }
