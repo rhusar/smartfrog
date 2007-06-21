@@ -89,8 +89,7 @@ public class PrimDeployerImpl implements ComponentDeployer, MessageKeys {
 
         try {
             // create instance
-            final Class primClass = getPrimClass();
-            Prim dComponent = createPrimInstance(primClass);
+            Prim dComponent = getPrimInstance();
 
             // deploy component after wiping out the parentage of any
             // descriptions in the context. Prim is not a valid parent, so
@@ -119,6 +118,12 @@ public class PrimDeployerImpl implements ComponentDeployer, MessageKeys {
         } catch (Throwable t) {
             throw new SmartFrogDeploymentException(null, t, null, cxt);
        }
+    }
+
+    protected Prim getPrimInstance() throws Exception {
+        final Class primClass = getPrimClass();
+        Prim dComponent = createPrimInstance(primClass);
+        return dComponent;
     }
 
     /**
@@ -162,9 +167,9 @@ public class PrimDeployerImpl implements ComponentDeployer, MessageKeys {
      * @exception Exception failed to load class
      */
     protected Class getPrimClass() throws Exception {
-        String targetCodeBase=null;
-        String targetClassName=null;
-        Object obj=null;
+        String targetCodeBase = null;
+        String targetClassName;
+        Object obj = null;
         try {
             // extract code base
             targetCodeBase = getSfCodeBase(target);

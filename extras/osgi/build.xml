@@ -13,7 +13,7 @@
 
 
     <target name="bundles" depends="smartfrog-dist">
-        <subant  target="dist" >
+        <subant target="dist" >
             <fileset refid="child.projects" />
             <property name="javadocs.disabled" value="${javadoc.disabled}"/>
         </subant>
@@ -40,7 +40,7 @@
         </subant>
     </target>
 
-    <target name="copyJarsAround" depends="daemon-bundle,test-bundle,rmispi-bundle">
+    <target name="copyJarsAround" depends="bundles">
         <!--
         <copy file="./build/${bundle.filename}"
               todir="C:\\knopflerfish_osgi_2.0.1\\knopflerfish.org\\osgi"
@@ -54,7 +54,7 @@
     </target>
 
     <target name="clean" depends="init">
-        <subant  target="clean" >
+        <subant target="clean" >
             <fileset refid="child.projects" />
         </subant>        
     </target>

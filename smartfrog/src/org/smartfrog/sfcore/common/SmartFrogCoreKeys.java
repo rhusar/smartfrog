@@ -329,4 +329,15 @@ public interface SmartFrogCoreKeys {
      */
     public static final String SF_FINAL= "sfFinal";
 
+    /**
+     * Attribute inside SF_METADATA used to select the ComponentFactory
+     * component used to create a component instance. 
+     */
+    public static final String SF_FACTORY = "sfFactory";
+
+    /**
+     * Attribute (defined as sfMeta extends DATA { ... }) used to
+     * gather all metadata about a component.
+     */
+    public static final String SF_METADATA = "sfMeta";
 }
