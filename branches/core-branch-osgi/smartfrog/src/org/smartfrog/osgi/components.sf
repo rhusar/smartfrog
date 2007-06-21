@@ -4,3 +4,10 @@ OSGiBundleCompound extends Compound {
     sfClass "org.smartfrog.osgi.OSGiBundleCompound";
     bundleURL extends String;
 }
+
+OSGiBundle extends Prim {
+    sfClass "org.smartfrog.osgi.BundleClassLoadingEnvironmentImpl";
+
+    location extends String;
+    cleanupWhenUnused true;
+}

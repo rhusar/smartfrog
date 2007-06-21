@@ -32,8 +32,6 @@ import java.rmi.server.RMIServerSocketFactory;
  *
  */
 public class SFServerSocketFactory implements RMIServerSocketFactory {
-    /** A security environment that handles the configuration of sockets. */
-    private SFSecurityEnvironment secEnv;
 
     private final InetAddress bindAddr;
 
@@ -54,7 +52,6 @@ public class SFServerSocketFactory implements RMIServerSocketFactory {
                 : bindAddr.equals(other.bindAddr);
     }
 
-
     /**
      * Constructs SFServerSocketFactory with security environment.
      * <P>
@@ -62,13 +59,9 @@ public class SFServerSocketFactory implements RMIServerSocketFactory {
      * an ephemeral port and a valid local address to bind the socket.
      * <P>
      * @param bindAddr bind address for the server socket
-     *
-     * @param secEnv A security environment that handles the configuration of
-     *        sockets.
      */
-    public SFServerSocketFactory(InetAddress bindAddr, SFSecurityEnvironment secEnv) {
+    public SFServerSocketFactory(InetAddress bindAddr) {
         this.bindAddr = bindAddr;
-        this.secEnv = secEnv;
     }
 
     /**
@@ -76,9 +69,7 @@ public class SFServerSocketFactory implements RMIServerSocketFactory {
      * anonymous port).
      *
      * @param port The port number
-     *
      * @return The server socket in the specified port
-     *
      * @throws IOException Cannot create server socket.
      */
     public ServerSocket createServerSocket(int port) throws IOException {
@@ -86,6 +77,6 @@ public class SFServerSocketFactory implements RMIServerSocketFactory {
          * for this reason we don't need a SSLServerSocketFactory.
          * However, we have to wrap it to pass the security
          * context. */
-        return new SFServerSocket(port, bindAddr, secEnv);
+        return new ServerSocket(port, 0, bindAddr);
     }
 }
