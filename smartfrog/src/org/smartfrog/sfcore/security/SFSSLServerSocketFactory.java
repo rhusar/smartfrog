@@ -47,7 +47,9 @@ public class SFSSLServerSocketFactory implements RMIServerSocketFactory {
             return false;
         }
         SFSSLServerSocketFactory other = (SFSSLServerSocketFactory) obj;
-        return bindAddr.equals(other.bindAddr);
+        return bindAddr == null
+                ? (other.bindAddr == null)  //checks if obj is null as well.
+                : bindAddr.equals(other.bindAddr);
     }
 
 
