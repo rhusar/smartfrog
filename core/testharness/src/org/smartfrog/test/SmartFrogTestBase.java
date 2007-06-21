@@ -926,5 +926,11 @@ public abstract class SmartFrogTestBase extends TestCase {
         }
     }
 
-
+    protected static void assertInstanceOf(Object instance,Class clazz) {
+        assertNotNull("Null class argument",clazz);
+        assertNotNull("Expected instance of "+clazz+" but got null",instance);
+        if(!clazz.isInstance(instance)) {
+            fail("Object "+instance+" is not an instance of "+clazz);
+        }
+    }
 }
