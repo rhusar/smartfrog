@@ -304,7 +304,8 @@ public class slpMsgComposer {
     }
 
 /**
- * directory agent advertisement <#8>
+ * directory agent advertisement #8
+ * <pre>
  *+-------------------------------+--------------------------------+
  *|     Error Code                |   DA Stateless Boot Timestamp  |
  *+-------------------------------+--------------------------------+
@@ -320,6 +321,7 @@ public class slpMsgComposer {
  *+---------------+---------------+--------------------------------+
  *| # Auth Blocks |       Authentication blocl (if any)            \
  *+---------------+---------------+--------------------------------+
+ * </pre>
  */
     public byte[] DAAdvert(int xid, int flag, String ltag, int ts,
 		String url, String scope, String attr, String spi) {
@@ -338,14 +340,16 @@ public class slpMsgComposer {
     }
 
 /**
- * service type request <#9>
+ * service type request #9
+ * <pre>
  *+-------------------------------+-----------------------------+
- *|     Length of PRList          |     <PRList> string         |
+ *|     Length of PRList          |     [PRList] string         |
  *+-------------------------------+-----------------------------+
- *| Length of Naming Authority    |  <Naming Authority String>  |
+ *| Length of Naming Authority    |  [Naming Authority String]  |
  *+-------------------------------+-----------------------------+
- *| Length of <scope-list>        |    <scope-list> string      |
+ *| Length of [scope-list]        |    [scope-list] string      |
  *+-------------------------------+-----------------------------+
+ * </pre>
  */
     public byte[] SrvTypeRqst(int xid, String ltag, String pr, String na,
 				String scope) {
@@ -364,7 +368,8 @@ public class slpMsgComposer {
     }
 
 /**
- * service type reply (reply for service type request) <#10>
+ * service type reply (reply for service type request).
+ * 
  *+-------------------------------+-------------------------------+
  *|          Error Code           |    Length of <srvType-list>   |
  *+-------------------------------+-------------------------------+

@@ -44,6 +44,7 @@ import java.rmi.*;
 import java.net.*;
 import java.util.*;
 /**
+ * Component that advertises services.
  * A component class to build a service type with its attributes from a
  * SmartFrog description and advertise them through SLP.
  * This Service Agent can be configured to point to a DA, by linking the
@@ -102,13 +103,13 @@ public class SFSLPAdvertiser extends EventPrimImpl implements Prim{
       for (StringTokenizer st = new StringTokenizer(scopes,","); st.hasMoreElements();){
         ServiceLocationManager.addScope(st.nextToken());
       }
-    } catch (SmartFrogResolutionException rex){
+    } catch (SmartFrogResolutionException ignored){
     //if no scopes are specified use ServiceLocation Manager's scopes.
     }
     try {
       String language = (String) sfResolve(refLocale);
       locale = new Locale(language,"");
-    } catch (SmartFrogResolutionException rex) {
+    } catch (SmartFrogResolutionException ignored) {
     }
 
   }
@@ -233,10 +234,14 @@ public class SFSLPAdvertiser extends EventPrimImpl implements Prim{
   }
 
   /**
-  * Constructs an SLP serviceURL from the following attributes in the component's description.
-  * - sfAdvertisedServiceURL
-  * - sfAdvertisedLifetime
-  * - sfAdvertisedAttributes
+  * Constructs an SLP serviceURL from the component description.
+  *
+  * The attributes used are 
+  * <ol>
+  * <li> sfAdvertisedServiceURL</li>
+  * <li> sfAdvertisedLifetime</li>
+  * <li> sfAdvertisedAttributes</li>
+  * </ol>
   * If 'localhost' is found in the address, it is replaced by the actual name of the machine
   * @return the ServiceURL corresponding to the attributes
   * @throws Exception if one of the attributes is missing
