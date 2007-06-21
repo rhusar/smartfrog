@@ -36,6 +36,8 @@ public class FreeVar implements Copying {
     private int id;
 
     private boolean indexFixed;
+    
+    private Object prov_data;
 
     public FreeVar() {
         id = nextId++;
@@ -150,4 +152,13 @@ public class FreeVar implements Copying {
     public Object clone() {
        return new FreeVar();
     }
+
+    public Object getProvData(){
+    	return this.prov_data;
+    }
+    
+    public void setProvData(Object prov_data){
+    	this.prov_data=prov_data;
+    }
+
 }
