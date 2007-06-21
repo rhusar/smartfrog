@@ -1211,7 +1211,8 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
                 phases.remove(PhaseNames.SFCONFIG);
             }
         }
-        // Get componentDescription and
+        // Get componentDescription and Entry
+        
         ComponentDescription cmpDesc = ComponentDescriptionImpl.sfComponentDescription(
                                                                    urlDescription.toLowerCase()
                                                                  , phases
@@ -1405,6 +1406,9 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
          }else {
              try {
                  Object key = primParent.sfAttributeKeyFor(this);
+                 if (key==null) {
+                     throw new SmartFrogContextException ("No name found for "+ sfCompleteNameSafe() +" in "+ primParent.sfCompleteName()+", impossible to get its Tags");
+                 }
                  return primParent.sfGetTags(key);
              } catch (RemoteException e) {
                  throw (SmartFrogContextException)SmartFrogContextException.forward(e);
