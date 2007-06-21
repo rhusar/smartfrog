@@ -29,57 +29,63 @@ package org.smartfrog.services.comm.slp.util;
 import org.smartfrog.services.comm.slp.ServiceLocationEnumeration;
 import org.smartfrog.services.comm.slp.ServiceURL;
 
-import java.util.*;
+import java.util.Iterator;
+import java.util.Vector;
 
 public class ServiceURLEnumeration implements ServiceLocationEnumeration {
     private Vector elements;
     private int currentElement;
-    
+
     public ServiceURLEnumeration() {
         elements = new Vector();
         currentElement = 0;
     }
-    
+
     public ServiceURLEnumeration(Vector v) {
         elements = v;
         currentElement = 0;
     }
+
     /**
-        This method is currently the same as nextElement(). It does not block.
-        If the next element does not exist, null is returned.
-    */
+     * This method is currently the same as nextElement(). It does not block. If the next element does not exist, null
+     * is returned.
+     */
     public Object next() {
         // The call to Locator.findServices is not asynchronous, so when
         // we get a ServiceURLEnumeration, the results are allready collected.
         // For that reason, there is no need to wait here...
         return nextElement();
     }
-    
+
     public Object nextElement() {
-        if(currentElement == elements.size()) return null;
-        else return elements.elementAt(currentElement++);
+        if (currentElement == elements.size()) {
+            return null;
+        } else {
+            return elements.elementAt(currentElement++);
+        }
     }
-    
+
     public boolean hasMoreElements() {
         return (currentElement != elements.size());
     }
+
     /**
-        Adds the given elements to the enumeration.
-        @param v A vector with the elements to add
-    */
+     * Adds the given elements to the enumeration.
+     *
+     * @param v A vector with the elements to add
+     */
     public void addElements(Vector v) {
-        for(Iterator iter=v.iterator(); iter.hasNext(); ) {
-            ServiceURL url = (ServiceURL)iter.next();
-            if(!elements.contains(url)) {
+        for (Iterator iter = v.iterator(); iter.hasNext();) {
+            ServiceURL url = (ServiceURL) iter.next();
+            if (!elements.contains(url)) {
                 //elements.add(url);
-                for(int i=0; i<=elements.size(); i++) {
-                    if(i == elements.size()) {
+                for (int i = 0; i <= elements.size(); i++) {
+                    if (i == elements.size()) {
                         elements.add(url);
                         break;
-                    }
-                    else {
-                        ServiceURL u = (ServiceURL)elements.elementAt(i);
-                        if(url.getLifetime() > u.getLifetime()) {
+                    } else {
+                        ServiceURL u = (ServiceURL) elements.elementAt(i);
+                        if (url.getLifetime() > u.getLifetime()) {
                             elements.add(i, url);
                             break;
                         }
@@ -88,4 +94,4 @@ public class ServiceURLEnumeration implements ServiceLocationEnumeration {
             }
         }
     }
- }
+}

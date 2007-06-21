@@ -26,39 +26,36 @@
 
 package org.smartfrog.services.comm.slp.messages;
 
-import org.smartfrog.services.comm.slp.ServiceURL;
 import org.smartfrog.services.comm.slp.ServiceLocationException;
+import org.smartfrog.services.comm.slp.ServiceURL;
 import org.smartfrog.services.comm.slp.util.SLPInputStream;
 import org.smartfrog.services.comm.slp.util.SLPOutputStream;
 import org.smartfrog.services.comm.slp.util.SLPUtil;
 
-import java.util.Vector;
-import java.util.Locale;
-import java.util.Iterator;
 import java.io.IOException;
+import java.util.Iterator;
+import java.util.Locale;
+import java.util.Vector;
 
 /**
-    This class represents an SLP SAAdvert message.
-    It contains the methods required to read a message from an input stream
-    and write it to an output stream.
- <pre>
-  0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
- +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- |         Service location header (function = SAAdvert = 11)    |
- +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- |     Length of URL             |             URL               \
- +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- |      Length of scope-list     |           scope-list          \
- +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- |      Length of attr-list      |           attr-list           \
- +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- | # Auth blocks |      Authentication blocks (if any)           \
- +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- </pre>
- Note that Authentication blocks are currently not supported
- in this implementation.
- 
-*/
+ * This class represents an SLP SAAdvert message. It contains the methods required to read a message from an input
+ * stream and write it to an output stream.
+ * <pre>
+ * 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+ * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ * |         Service location header (function = SAAdvert = 11)    |
+ * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ * |     Length of URL             |             URL               \
+ * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ * |      Length of scope-list     |           scope-list          \
+ * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ * |      Length of attr-list      |           attr-list           \
+ * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ * | # Auth blocks |      Authentication blocks (if any)           \
+ * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ * </pre>
+ * Note that Authentication blocks are currently not supported in this implementation.
+ */
 public class SLPSAAdvMessage extends SLPMessageHeader {
     /** The service url for the SA */
     private ServiceURL url;
@@ -72,11 +69,8 @@ public class SLPSAAdvMessage extends SLPMessageHeader {
     private String attributeStr;
     /** The authblocks used to sign this message */
     private Vector authBlocks;
-    
-    /**
-        Creates a new, empty SLPSAAdvMessage.
-        Used when the contents are to be read from an input stream.
-    */
+
+    /** Creates a new, empty SLPSAAdvMessage. Used when the contents are to be read from an input stream. */
     public SLPSAAdvMessage() {
         super(SLPMSG_SAADV);
         url = null;
@@ -86,36 +80,37 @@ public class SLPSAAdvMessage extends SLPMessageHeader {
         attributeStr = "";
         authBlocks = new Vector();
     }
-    
+
     /**
-        Creates a new SLPSAAdvMessage.
-        @param u The service url
-        @param s The scope vector.
-        @param a The attribute vector.
-        @param lang The locale for the message.
-    */
+     * Creates a new SLPSAAdvMessage.
+     *
+     * @param u    The service url
+     * @param s    The scope vector.
+     * @param a    The attribute vector.
+     * @param lang The locale for the message.
+     */
     public SLPSAAdvMessage(ServiceURL u, Vector s, Vector a, Locale lang) {
         super(SLPMSG_SAADV, lang);
         url = u;
         scopes = s;
         attributes = a;
         authBlocks = new Vector();
-        
+
         // create strings
         scopeStr = SLPUtil.vectorToString(scopes);
         attributeStr = SLPUtil.createAttributeString(attributes);
-        
+
         // calculate length
         length += 7; // length-fields
         length += url.toString().length(); // url
         length += scopeStr.length(); // scope-list
         length += attributeStr.length(); // attribute-list
-        for(Iterator it=authBlocks.iterator(); it.hasNext(); ) {
-            AuthBlock b = (AuthBlock)it.next();
+        for (Iterator it = authBlocks.iterator(); it.hasNext();) {
+            AuthBlock b = (AuthBlock) it.next();
             length += b.getLength();
         }
     }
-    
+
     public void toOutputStream(SLPOutputStream stream) throws ServiceLocationException {
         super.toOutputStream(stream);
         try {
@@ -126,15 +121,15 @@ public class SLPSAAdvMessage extends SLPMessageHeader {
             stream.writeShort(attributeStr.length()); // length of attibute list
             stream.writeString(attributeStr); // attribute list
             stream.writeByte(authBlocks.size()); // #auth blocks
-            for(Iterator it=authBlocks.iterator(); it.hasNext(); ) {
-                AuthBlock b = (AuthBlock)it.next();
+            for (Iterator it = authBlocks.iterator(); it.hasNext();) {
+                AuthBlock b = (AuthBlock) it.next();
                 b.toOutputStream(stream);
             }
-        }catch(IOException ioe) {
+        } catch (IOException ioe) {
             throw new ServiceLocationException(ServiceLocationException.INTERNAL_SYSTEM_ERROR);
         }
     }
-    
+
     public void fromInputStream(SLPInputStream stream) throws ServiceLocationException {
         super.fromInputStream(stream);
         try {
@@ -145,18 +140,18 @@ public class SLPSAAdvMessage extends SLPMessageHeader {
             len = stream.readShort(); // length of attribute list
             attributeStr = stream.readString(len); // attribute list
             len = stream.readByte(); // num auth blocks.
-            for(int i=0; i<len; i++) {
+            for (int i = 0; i < len; i++) {
                 AuthBlock b = new AuthBlock();
                 b.fromInputStream(stream);
                 authBlocks.add(b);
             }
-        }catch(IOException ioe) {
+        } catch (IOException ioe) {
             throw new ServiceLocationException(ServiceLocationException.PARSE_ERROR);
         }
-        
+
         // create scope vector
         scopes = SLPUtil.stringToVector(scopeStr);
-        
+
         // create attribute vector...
         attributes = SLPUtil.parseAttributes(attributeStr);
     }
@@ -165,29 +160,29 @@ public class SLPSAAdvMessage extends SLPMessageHeader {
     public ServiceURL getURL() {
         return url;
     }
-    
+
     /** Returns the scope vector */
     public Vector getScopes() {
         return scopes;
     }
-    
+
     /** Returns the attribute vector */
     public Vector getAttributes() {
         return attributes;
     }
-    
+
     /** returns the authentication blocks */
     public Vector getAuthBlocks() {
         return authBlocks;
     }
-	
-	public String toString() {
-		String s = super.toString();
-		s += "Scope list: " + scopeStr + "\n"
-		  + "Attributes: " + attributeStr + "\n"
-		  + "URL: " + url.toString() + "\n"
-		  + "*** End Of Message ***";
-		
-		return s;
-	}
+
+    public String toString() {
+        String s = super.toString();
+        s += "Scope list: " + scopeStr + "\n"
+                + "Attributes: " + attributeStr + "\n"
+                + "URL: " + url.toString() + "\n"
+                + "*** End Of Message ***";
+
+        return s;
+    }
 }

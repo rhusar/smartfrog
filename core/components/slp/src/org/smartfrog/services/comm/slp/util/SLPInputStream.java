@@ -26,56 +26,54 @@
 
 package org.smartfrog.services.comm.slp.util;
 
-import java.io.*;
+import java.io.DataInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 
 public class SLPInputStream {
     private DataInputStream stream;
-    
+
     public SLPInputStream(/*ByteArray*/InputStream bais) {
         stream = new DataInputStream(bais);
     }
-    
-    /**
-        Reads a byte from the stream
-     */
+
+    /** Reads a byte from the stream */
     public int readByte() throws IOException {
         return stream.readUnsignedByte();
     }
-    
-    /**
-        Reads a short (2 bytes) from the stream
-     */
+
+    /** Reads a short (2 bytes) from the stream */
     public int readShort() throws IOException {
         //return stream.readShort();
         return stream.readUnsignedShort();
     }
-    
-    /**
-        Reads an int (4 bytes) from the stream
-     */
+
+    /** Reads an int (4 bytes) from the stream */
     public int readInt() throws IOException {
         return stream.readInt();
     }
-    
+
     /**
-        Reads a string from the stream.
-     @param length The number of bytes to read into the string.
+     * Reads a string from the stream.
+     *
+     * @param length The number of bytes to read into the string.
      */
     public String readString(int length) throws IOException {
         String s = "";
-        for(int i=0; i<length; i++) {
-            s = s + (char)stream.readByte();
+        for (int i = 0; i < length; i++) {
+            s = s + (char) stream.readByte();
         }
         return s;
     }
-    
+
     /**
-        Skips a number of bytes.
-        @param n the number of bytes to skip.
-        @return the actual number of bytes to skip...
-    */
+     * Skips a number of bytes.
+     *
+     * @param n the number of bytes to skip.
+     * @return the actual number of bytes to skip...
+     */
     public long skip(int n) throws IOException {
         return stream.skip(n);
     }
-        
+
 }

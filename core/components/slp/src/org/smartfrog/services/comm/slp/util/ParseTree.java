@@ -28,179 +28,162 @@ package org.smartfrog.services.comm.slp.util;
 
 import org.smartfrog.services.comm.slp.ServiceLocationAttribute;
 
-import java.util.*;
+import java.util.Iterator;
+import java.util.Vector;
 
 /**
-    Implements a simple parse tree used for matching a predicate to a set of attributes.
-    This is used by the SLPDatabase to find entries matching a predicate.
-    The class supports the following operators:
-    and, or, equals, less, greater.
-*/
+ * Implements a simple parse tree used for matching a predicate to a set of attributes. This is used by the SLPDatabase
+ * to find entries matching a predicate. The class supports the following operators: and, or, equals, less, greater.
+ */
 public class ParseTree {
     private static final String operators = "&|=<>";
     private char op;
     private Vector expr;
     boolean hasStarted;
-    
-    /**
-        Creates a new parse tree (node)
-    */
+
+    /** Creates a new parse tree (node) */
     public ParseTree() {
         hasStarted = false;
         op = ' ';
         expr = new Vector();
     }
-    
-    /**
-        Builds a parse tree from the given predicate string.
-    */
+
+    /** Builds a parse tree from the given predicate string. */
     public int buildTree(String predicate) throws IllegalArgumentException {
         int currPos = 0;
         char currChar;
         hasStarted = false;
         boolean amParsing = true;
         String value = "";
-        while(amParsing && currPos < predicate.length()) {
+        while (amParsing && currPos < predicate.length()) {
             currChar = predicate.charAt(currPos);
-            switch(currChar) {
-                case '(':
-                    if(hasStarted) {
+            switch (currChar) {
+                case'(':
+                    if (hasStarted) {
                         ParseTree newTree = new ParseTree();
                         currPos += newTree.buildTree(predicate.substring(currPos));
                         expr.add(newTree);
-                    }
-                    else {
+                    } else {
                         hasStarted = true;
                     }
                     break;
-                case ')':
-                    if(hasStarted) {
-                        if(!value.equals(""))expr.add(value);
+                case')':
+                    if (hasStarted) {
+                        if (!value.equals("")) expr.add(value);
                         amParsing = false;
-                    }
-                    else {
+                    } else {
                         throw new IllegalArgumentException("Parse Error");
                     }
                     break;
-                case ' ':
-                case '\n':
-                case '\t':
+                case' ':
+                case'\n':
+                case'\t':
                     break; // skip whitespace
                 default:
-                    if(operators.indexOf(currChar) != -1) {
+                    if (operators.indexOf(currChar) != -1) {
                         op = currChar;
-                        if(op == '<' || op == '>') {
-                            if(predicate.charAt(currPos +1) == '=') currPos++;
+                        if (op == '<' || op == '>') {
+                            if (predicate.charAt(currPos + 1) == '=') currPos++;
                         }
-                        if(!value.equals("")) {
+                        if (!value.equals("")) {
                             expr.add(value);
                             value = "";
                         }
-                    }
-                    else {
-                        value = value+currChar;
+                    } else {
+                        value = value + currChar;
                     }
                     break;
             }
             currPos++;
         }
-        return currPos-1;
-    }        
-    
-    /**
-        Tries to find attributes that satisfies the predicate.
-    */
+        return currPos - 1;
+    }
+
+    /** Tries to find attributes that satisfies the predicate. */
     public boolean evaluate(Vector attributes) {
-        switch(op) {
-            case '=':
-            {
+        switch (op) {
+            case'=': {
                 String id = expr.elementAt(0).toString();
                 String v = expr.elementAt(1).toString();
                 Iterator iter = attributes.iterator();
-                while(iter.hasNext()) {
-                    ServiceLocationAttribute a = (ServiceLocationAttribute)iter.next();
-                    if(a.getId().equalsIgnoreCase(id)) {
-                        for(Iterator it=a.getValues().iterator(); it.hasNext(); ) {
-                            if(v.equalsIgnoreCase(it.next().toString())) {
+                while (iter.hasNext()) {
+                    ServiceLocationAttribute a = (ServiceLocationAttribute) iter.next();
+                    if (a.getId().equalsIgnoreCase(id)) {
+                        for (Iterator it = a.getValues().iterator(); it.hasNext();) {
+                            if (v.equalsIgnoreCase(it.next().toString())) {
                                 return true;
                             }
                         }
                     }
                 }
             }
-                break;
-            case '<':
-            {
+            break;
+            case'<': {
                 String id = expr.elementAt(0).toString();
                 String v = expr.elementAt(1).toString();
                 Iterator iter = attributes.iterator();
-                while(iter.hasNext()) {
-                    ServiceLocationAttribute a = (ServiceLocationAttribute)iter.next();
-                    if(a.getId().equalsIgnoreCase(id)) {
+                while (iter.hasNext()) {
+                    ServiceLocationAttribute a = (ServiceLocationAttribute) iter.next();
+                    if (a.getId().equalsIgnoreCase(id)) {
                         Iterator vIter = a.getValues().iterator();
-                        while(vIter.hasNext()) {
-                            if(vIter.next().toString().compareTo(v) >= 0) return true;
+                        while (vIter.hasNext()) {
+                            if (vIter.next().toString().compareTo(v) >= 0) return true;
                         }
                     }
                 }
             }
-                break;
-            case '>':
-            {
+            break;
+            case'>': {
                 String id = expr.elementAt(0).toString();
                 String v = expr.elementAt(1).toString();
                 Iterator iter = attributes.iterator();
-                while(iter.hasNext()) {
-                    ServiceLocationAttribute a = (ServiceLocationAttribute)iter.next();
-                    if(a.getId().equalsIgnoreCase(id)) {
+                while (iter.hasNext()) {
+                    ServiceLocationAttribute a = (ServiceLocationAttribute) iter.next();
+                    if (a.getId().equalsIgnoreCase(id)) {
                         Iterator vIter = a.getValues().iterator();
-                        while(vIter.hasNext()) {
-                            if(vIter.next().toString().compareTo(v) <= 0) return true;
+                        while (vIter.hasNext()) {
+                            if (vIter.next().toString().compareTo(v) <= 0) return true;
                         }
                     }
                 }
             }
-                break;
-            case '&':
-            {
+            break;
+            case'&': {
                 Iterator iter = expr.iterator();
-                while(iter.hasNext()) {
-                    ParseTree t = (ParseTree)iter.next();
-                    if(!t.evaluate(attributes)) return false;
+                while (iter.hasNext()) {
+                    ParseTree t = (ParseTree) iter.next();
+                    if (!t.evaluate(attributes)) return false;
                 }
                 return true;
             }
-                //break;
-            case '|':
-            {
+            //break;
+            case'|': {
                 Iterator iter = expr.iterator();
-                while(iter.hasNext()) {
-                    ParseTree t = (ParseTree)iter.next();
-                    if(t.evaluate(attributes)) return true;
+                while (iter.hasNext()) {
+                    ParseTree t = (ParseTree) iter.next();
+                    if (t.evaluate(attributes)) return true;
                 }
             }
-                break;
+            break;
             default:
                 break;
         }
-        
+
         return false;
     }
-    
-    /**
-        Prints the contents of the parse tree to stdout
-    */
+
+    /** Prints the contents of the parse tree to stdout */
     public void print(String prefix) {
         System.out.println(prefix + op);
         Iterator iter = expr.iterator();
         Object o;
-        while(iter.hasNext()) {
+        while (iter.hasNext()) {
             o = iter.next();
             try {
-                ParseTree t = (ParseTree)o;
-                t.print(prefix+"\t");
-            }catch(Exception e) {
-                System.out.println(prefix+o.toString());
+                ParseTree t = (ParseTree) o;
+                t.print(prefix + "\t");
+            } catch (Exception e) {
+                System.out.println(prefix + o.toString());
             }
         }
     }

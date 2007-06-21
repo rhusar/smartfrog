@@ -26,47 +26,49 @@
 
 package org.smartfrog.services.comm.slp.network;
 
-import java.net.*;
-import java.io.*;
+
 import org.smartfrog.services.comm.slp.ServiceLocationEnumeration;
+import org.smartfrog.services.comm.slp.ServiceLocationException;
 import org.smartfrog.services.comm.slp.agents.SLPMessageCallbacks;
 import org.smartfrog.services.comm.slp.messages.SLPMessageHeader;
-import org.smartfrog.services.comm.slp.util.SLPOutputStream;
 import org.smartfrog.services.comm.slp.util.SLPInputStream;
+import org.smartfrog.services.comm.slp.util.SLPOutputStream;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.InetSocketAddress;
+import java.net.Socket;
 
 public class SLPTcpClient {
     private Socket socket;
     private OutputStream ostream;
     private InputStream istream;
     private SLPMessageCallbacks agent;
-    
+
     public SLPTcpClient(SLPMessageCallbacks a) {
         agent = a;
         socket = new Socket(); // connect when needed.
     }
-    
+
     public void sendSlpMessage(SLPMessageHeader msg, String toAddress, int toPort,
-                               ServiceLocationEnumeration res) {
+                               ServiceLocationEnumeration res) throws IOException, ServiceLocationException {
         SLPOutputStream sos = new SLPOutputStream(new ByteArrayOutputStream());
         // write message to stream
-        try {
-            socket.connect(new InetSocketAddress(toAddress, toPort), 1000);
-            istream = socket.getInputStream();
-            ostream = socket.getOutputStream();
-            // send message...
-            msg.toOutputStream(sos);
-            ostream.write(sos.getByteArray());
-            // get reply...
-            SLPInputStream sis = new SLPInputStream(istream);
-            // read function and version...
-            int version = sis.readByte();
-            int function = sis.readByte();
-            //System.out.println("got reply: function = " + function + ", version = " + version);
-            agent.handleReplyMessage(function, sis, res);
-            socket.close();
-        }catch(Exception ex) {
-            // handle error
-            //ex.printStackTrace();
-        }
+        socket.connect(new InetSocketAddress(toAddress, toPort), 1000);
+        istream = socket.getInputStream();
+        ostream = socket.getOutputStream();
+        // send message...
+        msg.toOutputStream(sos);
+        ostream.write(sos.getByteArray());
+        // get reply...
+        SLPInputStream sis = new SLPInputStream(istream);
+        // read function and version...
+        int version = sis.readByte();
+        int function = sis.readByte();
+        //System.out.println("got reply: function = " + function + ", version = " + version);
+        agent.handleReplyMessage(function, sis, res);
+        socket.close();
     }
 }

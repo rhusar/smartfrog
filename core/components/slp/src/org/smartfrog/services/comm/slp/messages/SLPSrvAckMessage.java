@@ -30,90 +30,87 @@ import org.smartfrog.services.comm.slp.ServiceLocationException;
 import org.smartfrog.services.comm.slp.util.SLPInputStream;
 import org.smartfrog.services.comm.slp.util.SLPOutputStream;
 
-import java.io.*;
-import java.util.*;
+import java.io.IOException;
+import java.util.Locale;
 
 /**
-    This class represents a SrvAck message.
-    It offers the ability to write the message to an output stream, and read
-    data back from an input stream.
- <pre>
-  0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
- +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- |          Service location header (function = SrvAck = 5)      |
- +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- |       Error Code              |
- +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- </pre>
-*/
+ * This class represents a SrvAck message. It offers the ability to write the message to an output stream, and read data
+ * back from an input stream.
+ * <pre>
+ * 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+ * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ * |          Service location header (function = SrvAck = 5)      |
+ * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ * |       Error Code              |
+ * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ * </pre>
+ */
 public class SLPSrvAckMessage extends SLPMessageHeader {
-    /**
-        The message type
-    */
+    /** The message type */
     private static int FUNCTION = SLPMessageHeader.SLPMSG_SRVACK;
-    /**
-        An integer set to the appropriate error code.
-        0 when no error is set.
-    */
+    /** An integer set to the appropriate error code. 0 when no error is set. */
     private int errorCode;
-    /**
-        Creates an empty SLPSrvAckMessage.
-        Use this when the data is to be read from an input stream.
-    */
+
+    /** Creates an empty SLPSrvAckMessage. Use this when the data is to be read from an input stream. */
     public SLPSrvAckMessage() {
         super(FUNCTION);
         errorCode = 0;
         length += 2;
     }
+
     /**
-        Creates an SLPSrvAckMessage with the given error code and locale.
-        @param errorCode The error code to set.
-        @param lang The locale for this message.
-    */
+     * Creates an SLPSrvAckMessage with the given error code and locale.
+     *
+     * @param errorCode The error code to set.
+     * @param lang      The locale for this message.
+     */
     public SLPSrvAckMessage(int errorCode, Locale lang) {
         super(FUNCTION, lang);
         this.errorCode = errorCode;
         length += 2;
     }
-    /**
-        Returns the error code
-    */
+
+    /** Returns the error code */
     public int getErrorCode() {
         return errorCode;
     }
+
     /**
-        Writes the message to an output stream.
-        @param stream The stream to write to.
-    */
+     * Writes the message to an output stream.
+     *
+     * @param stream The stream to write to.
+     */
     public void toOutputStream(SLPOutputStream stream) throws ServiceLocationException {
         // write to stream
         super.toOutputStream(stream);
         try {
             stream.writeShort(errorCode);
-        }catch(IOException e) {
+        } catch (IOException e) {
             throw new ServiceLocationException(ServiceLocationException.INTERNAL_SYSTEM_ERROR);
         }
     }
+
     /**
-        Reads data from an input stream.
-        @param stream The stream to read from.
-    */
+     * Reads data from an input stream.
+     *
+     * @param stream The stream to read from.
+     */
     public void fromInputStream(SLPInputStream stream) throws ServiceLocationException {
         super.fromInputStream(stream);
         try {
             errorCode = stream.readShort();
-        }catch(IOException e) {
+        } catch (IOException e) {
             throw new ServiceLocationException(ServiceLocationException.PARSE_ERROR);
         }
     }
-    
+
     public String toString() {
         String theString;
         theString =
-            super.toString() + "\n" +
-            "Error code: " + errorCode + "\n" +
-            "*** End Of Message ***";
-        
+                super.toString() + "\n" +
+                        "Error code: " + errorCode + "\n" +
+                        "*** End Of Message ***";
+
         return theString;
     }
 }

@@ -35,8 +35,8 @@ import org.smartfrog.sfcore.common.SmartFrogException;
 public class ServiceLocationException extends SmartFrogException {
 
     /**
-     * The location service did not have a registration in the language locale of the request, although it did have one in
-     * another language locale. Not properly used throughout the implementation for the moment
+     * The location service did not have a registration in the language locale of the request, although it did have one
+     * in another language locale. Not properly used throughout the implementation for the moment
      *
      * {@value}
      */
@@ -95,6 +95,7 @@ public class ServiceLocationException extends SmartFrogException {
     /** Could not find what was sought. Set to a high number to avoid conflicts with the standard values. {@value} */
     public static final short LOOKUP_FAILED = 404;
 
+    public static final short UNKNOWN_HOST = 501;
     private short errorCode;
 
     /** Service Location Exception */

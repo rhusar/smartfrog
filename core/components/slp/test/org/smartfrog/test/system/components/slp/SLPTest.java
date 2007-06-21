@@ -24,6 +24,12 @@ package org.smartfrog.test.system.components.slp;
 import org.smartfrog.test.SmartFrogTestBase;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.services.comm.slp.SFSlpLocatorImpl;
+import org.smartfrog.services.comm.slp.SFSlpDA;
+import org.smartfrog.services.comm.slp.SFSlpAdvertiser;
+import org.smartfrog.services.comm.slp.SFSlpLocator;
+import org.smartfrog.examples.helloworld.PrinterImpl;
+import org.smartfrog.examples.helloworld.Printer;
+import org.smartfrog.examples.helloworld.GeneratorImpl;
 
 /**
  *  JUnit test class for test cases related to "SLP" component
@@ -32,17 +38,37 @@ public class SLPTest extends SmartFrogTestBase {
 
     private static final String FILES = "org/smartfrog/test/system/components/slp/";
     private static final int SLEEP_DELAY = 10000;
+    private Prim directoryAgent;
 
     public SLPTest(String s) {
         super(s);
     }
 
 
+    protected void tearDown() throws Exception {
+        terminateApplication(directoryAgent);
+        super.tearDown();
+    }
+
+    /**
+     * deploy the DA into the directoryAgent member variable, and under the name DirectoryAgent.
+     * The DA will be terminated at the end of every test run.
+     * @return the deployed application.
+     * @throws Throwable
+     */
+    protected Prim deployDirectoryAgent() throws Throwable {
+        directoryAgent = deployExpectingSuccess(FILES + "DirectoryAgent.sf","DirectoryAgent");
+        assertInstanceOf(getDirectoryAgent(), SFSlpDA.class);
+        return directoryAgent;
+    }
+
+
+    public Prim getDirectoryAgent() {
+        return directoryAgent;
+    }
+
     public void testCaseTCP38() throws Throwable {
-        application = deployExpectingSuccess("org/smartfrog/services/comm/slp/sf/SFSlpDA.sf", "DirectoryAgentTCP38");
-        assertNotNull(application);
-        String actualSfClass = (String) application.sfResolveHere("sfClass");
-        assertEquals("org.smartfrog.services.comm.slp.SFSlpDAImpl", actualSfClass);
+        deployDirectoryAgent();
     }
 
 /* Testing without serviceType in Service Agant */
@@ -54,7 +80,7 @@ public class SLPTest extends SmartFrogTestBase {
                 EXCEPTION_LIFECYCLE,
                 "sfDeploy",
                 EXCEPTION_RESOLUTION,
-                "Unresolved Reference: HERE serviceType");
+                "HERE serviceType");
         //Unresolved Reference: HERE serviceType
     }
 
@@ -74,7 +100,7 @@ public class SLPTest extends SmartFrogTestBase {
     /* Testing without serviceType in User Agant*/
     public void testCaseTCN82() throws Throwable {
 //		Prim applicationtcn70 = deployExpectingSuccess("org/smartfrog/services/comm/slp/sf/SFSlpDA.sf", "DirectoryAgentTCN82");
-        application = deployExpectingSuccess(FILES + "ServcieProvider.sf", "serviceAgentTCN70");
+        application = deployExpectingSuccess(FILES + "ServiceProvider.sf", "serviceAgentTCN70");
         deployExpectingException(FILES + "tcn82.sf",
                 "tcn170",
                 EXCEPTION_LIFECYCLE,
@@ -89,44 +115,34 @@ public class SLPTest extends SmartFrogTestBase {
         application = deployExpectingSuccess(FILES + "ServiceProvider.sf", "ServiceAgentTCP39");
 
         Prim adv = (Prim) application.sfResolveHere("adv");
-
-        String actualSfClass = (String) adv.sfResolveHere("sfClass");
-        assertEquals("org.smartfrog.services.comm.slp.SFSlpAdvertiserImpl", actualSfClass);
-
-        Prim p = (Prim) application.sfResolveHere("p");
-        String actualPSfClass = (String) p.sfResolveHere("sfClass");
+        assertInstanceOf(adv, SFSlpAdvertiser.class);
+        Prim printer = (Prim) application.sfResolveHere("p");
+        assertInstanceOf(printer, Printer.class);
+        String actualPSfClass = (String) printer.sfResolveHere("sfClass");
         assertEquals("org.smartfrog.examples.helloworld.PrinterImpl", actualPSfClass);
     }
 
     /* Success in locating-Test case */
     public void testCaseTCP40() throws Throwable {
-        Prim directoryAgent = null;
         Prim serviceProvider = null;
         Prim serviceRequestor = null;
         try {
+            deployDirectoryAgent();
             serviceProvider = deployExpectingSuccess(FILES + "ServiceProvider.sf",
                     "testCaseTCP40ServiceProvider");
             serviceRequestor = deployExpectingSuccess(FILES + "ServiceRequestor.sf",
                     "testCaseTCP40ServiceRequestor");
-            directoryAgent = deployExpectingSuccess("org/smartfrog/services/comm/slp/sf/SFSlpDA.sf",
-                    "testCaseTCP40DirectoryAgentSFSlpDA");
             Thread.sleep(SLEEP_DELAY);
             assertNotNull(serviceRequestor);
             Prim loc = (Prim) serviceRequestor.sfResolveHere("loc");
-            String actual_loc_SfClass = (String) loc.sfResolveHere("sfClass");
-            assertEquals("org.smartfrog.services.comm.slp.SFSlpLocatorImpl", actual_loc_SfClass);
+            assertInstanceOf(loc, SFSlpLocator.class);
 
             Prim g = (Prim) serviceRequestor.sfResolve("g");
             String actualSfClass = (String) g.sfResolveHere("sfClass");
             assertEquals("org.smartfrog.examples.helloworld.GeneratorImpl", actualSfClass);
-/*
-		Prim printer  = (Prim)g.sfResolveHere("printer");
-		String actualprinterSfClass = (String)printer.sfResolveHere("sfClass");
-		assertEquals("org.smartfrog.examples.helloworld.PrinterImpl", actualprinterSfClass);
-		*/
+
         } finally {
             terminateApplication(serviceProvider);
-            terminateApplication(directoryAgent);
             terminateApplication(serviceRequestor);
         }
 
@@ -144,20 +160,15 @@ public class SLPTest extends SmartFrogTestBase {
 
     // Testing service life time - Expecting failure  because of life time time out.
     public void testCaseTCN84() throws Throwable {
-        Prim serviceAgent=null;
-        try {
-            application = deployExpectingSuccess("org/smartfrog/services/comm/slp/sf/SFSlpDA.sf", "DirectoryAgentTCN84");
-            serviceAgent = deployExpectingSuccess(FILES + "tcn84_SA.sf", "ServiceAgentTCN84");
-            Thread.sleep(SLEEP_DELAY);
-            deployExpectingException(FILES + "tcn84_UA.sf",
-                    "UserAgentTCP84",
-                    EXCEPTION_LIFECYCLE,
-                    "sfDeploy",
-                    EXCEPTION_RESOLUTION,
-                    SFSlpLocatorImpl.EXCEPTION_NO_SLP_SERVICE);
-        } finally {
-            terminateApplication(serviceAgent);
-        }
+        deployDirectoryAgent();
+        application = deployExpectingSuccess(FILES + "tcn84_SA.sf", "ServiceAgentTCN84");
+        Thread.sleep(SLEEP_DELAY);
+        deployExpectingException(FILES + "tcn84_UA.sf",
+                "UserAgentTCP84",
+                EXCEPTION_LIFECYCLE,
+                "sfDeploy",
+                EXCEPTION_RESOLUTION,
+                SFSlpLocatorImpl.EXCEPTION_NO_SLP_SERVICE);
     }
 
 

@@ -27,121 +27,119 @@
 package org.smartfrog.services.comm.slp.agents;
 
 import org.smartfrog.services.comm.slp.ServiceLocationException;
-import org.smartfrog.services.comm.slp.messages.*;
+import org.smartfrog.services.comm.slp.messages.SLPAttrReqMessage;
+import org.smartfrog.services.comm.slp.messages.SLPAttrRplyMessage;
+import org.smartfrog.services.comm.slp.messages.SLPMessageHeader;
+import org.smartfrog.services.comm.slp.messages.SLPSrvReqMessage;
+import org.smartfrog.services.comm.slp.messages.SLPSrvRplyMessage;
+import org.smartfrog.services.comm.slp.messages.SLPSrvTypeReqMessage;
+import org.smartfrog.services.comm.slp.messages.SLPSrvTypeRplyMessage;
 
 import java.util.Vector;
 
-/**
-    This class implements the handling of requests that are common for the
-    SA and the DA.
-*/
+/** This class implements the handling of requests that are common for the SA and the DA. */
 public class SLPRequestHandlers {
     /**
-        Searches the database for entries matching the request and creates
-        a reply if needed. The method only handles normal service requests.
-        Special requests (service:directory-agent and service:service-agent)
-        are handled directly by the DA and SA classes.
-        @param db The SLP Database to search in.
-        @param msg The received request.
-        @param error An error code - If an error occured while parsing the message
-        @param isUDP Set to true if the request was received by UDP.
-        @return A SLPMessageHeader containing the reply to the message or null
-                if no reply is to be sent.
-    */
-    protected static SLPMessageHeader 
+     * Searches the database for entries matching the request and creates a reply if needed. The method only handles
+     * normal service requests. Special requests (service:directory-agent and service:service-agent) are handled
+     * directly by the DA and SA classes.
+     *
+     * @param db    The SLP Database to search in.
+     * @param msg   The received request.
+     * @param error An error code - If an error occured while parsing the message
+     * @param isUDP Set to true if the request was received by UDP.
+     * @return A SLPMessageHeader containing the reply to the message or null if no reply is to be sent.
+     */
+    protected static SLPMessageHeader
     handleServiceRequest(SLPDatabase db, SLPSrvReqMessage msg, int error, int mtu, boolean isUDP) {
         SLPMessageHeader reply = null;
-        if(error == 0) {
+        if (error == 0) {
             // search database
             Vector matches = db.findEntries(msg.getServiceType(),
-                                            msg.getSearchFilter(),
-                                            msg.getLanguage());
-            if(matches == null) {
+                    msg.getSearchFilter(),
+                    msg.getLanguage());
+            if (matches == null) {
                 // service exists, but not in the given locale
                 error = ServiceLocationException.LANGUAGE_NOT_SUPPORTED;
-            }
-            else {
+            } else {
                 // Either no service matching the request was found, or we have
                 // one or more matching services.
                 // Create a reply if we found a service or the message was not
                 // multicast.
-                if(matches.size() != 0 || (msg.getFlags() & SLPMessageHeader.FLAG_MCAST) == 0) {
+                if (matches.size() != 0 || (msg.getFlags() & SLPMessageHeader.FLAG_MCAST) == 0) {
                     int maxlen = mtu;
-                    if(!isUDP) maxlen = Integer.MAX_VALUE;
+                    if (!isUDP) maxlen = Integer.MAX_VALUE;
                     reply = new SLPSrvRplyMessage(matches, msg.getLanguage(), maxlen);
                     reply.setXID(msg.getXID());
                 }
             }
         }//error
-        
+
         // if we have an error, create a reply if message was not multicast.
-        if(error != 0) {
-            if( (msg.getFlags() & SLPMessageHeader.FLAG_MCAST) == 0) {
+        if (error != 0) {
+            if ((msg.getFlags() & SLPMessageHeader.FLAG_MCAST) == 0) {
                 reply = new SLPSrvRplyMessage(error, msg.getLanguage());
                 reply.setXID(msg.getXID());
             }
         }
-        
+
         return reply;
     }
-    
+
     protected static SLPMessageHeader
     handleServiceTypeRequest(SLPDatabase db, SLPSrvTypeReqMessage msg, int error, int mtu, boolean isUDP) {
         SLPMessageHeader reply = null;
-               
-        if(error == 0) {
+
+        if (error == 0) {
             Vector stypes = db.findServiceTypes(msg.getNamingAuthority());
-            
+
             // create reply if needed.
-            if(stypes.size() != 0 || (msg.getFlags() & SLPMessageHeader.FLAG_MCAST) == 0) {
+            if (stypes.size() != 0 || (msg.getFlags() & SLPMessageHeader.FLAG_MCAST) == 0) {
                 int maxlen = mtu;
-                if(!isUDP) maxlen = Integer.MAX_VALUE;
+                if (!isUDP) maxlen = Integer.MAX_VALUE;
                 reply = new SLPSrvTypeRplyMessage(stypes, msg.getLanguage(), maxlen);
                 reply.setXID(msg.getXID());
             }
-        }
-        else {
+        } else {
             // create reply if unicast...
-            if( (msg.getFlags() & SLPMessageHeader.FLAG_MCAST) == 0) {
+            if ((msg.getFlags() & SLPMessageHeader.FLAG_MCAST) == 0) {
                 reply = new SLPSrvTypeRplyMessage(error, msg.getLanguage());
                 reply.setXID(msg.getXID());
             }
         }
-        
+
         return reply;
     }
-    
+
     protected static SLPMessageHeader
     handleAttributeRequest(SLPDatabase db, SLPAttrReqMessage msg, int error, int mtu, boolean isUDP) {
         SLPMessageHeader reply = null;
-        if(error == 0) {
+        if (error == 0) {
             Vector attributes;
-            if(msg.getURL() != null) {
-                attributes = db.findServiceAttributes(msg.getURL(), 
-                                                      msg.getLanguage(), 
-                                                      msg.getTags());
-            }
-            else {
-                attributes = db.findServiceAttributes(msg.getServiceType(), 
-                                                      msg.getLanguage(), 
-                                                      msg.getTags());
+            if (msg.getURL() != null) {
+                attributes = db.findServiceAttributes(msg.getURL(),
+                        msg.getLanguage(),
+                        msg.getTags());
+            } else {
+                attributes = db.findServiceAttributes(msg.getServiceType(),
+                        msg.getLanguage(),
+                        msg.getTags());
             }
             // create reply if needed.
-            if(attributes.size() != 0 || (msg.getFlags() & SLPMessageHeader.FLAG_MCAST) == 0) {
+            if (attributes.size() != 0 || (msg.getFlags() & SLPMessageHeader.FLAG_MCAST) == 0) {
                 int maxlen = mtu;
-                if(!isUDP) maxlen = Integer.MAX_VALUE;
+                if (!isUDP) maxlen = Integer.MAX_VALUE;
                 reply = new SLPAttrRplyMessage(attributes, msg.getLanguage(), maxlen);
                 reply.setXID(msg.getXID());
             }
-        }
-        else {
+        } else {
             // create reply if unicast...
-            if( (msg.getFlags() & SLPMessageHeader.FLAG_MCAST) == 0 ) {
+            if ((msg.getFlags() & SLPMessageHeader.FLAG_MCAST) == 0) {
                 reply = new SLPAttrRplyMessage(error, msg.getLanguage());
                 reply.setXID(msg.getXID());
             }
         }
-        
+
         return reply;
     }
 }
