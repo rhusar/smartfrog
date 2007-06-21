@@ -1,180 +1,312 @@
-%%Core theory
-:- lib(sd).
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%STATE SCOPING
+
+:- dynamic clause_level/1.
+:- dynamic clause_state/2.
+
+level(L) :- (clause_level(L) -> 
+                             true
+                             ;
+                             L=0).
+
+sos :- (clause_level(L) -> 
+                             retract(clause_level(L)), 
+                             L1 is L+1,
+                             assert(clause_level(L1))
+                             ;
+                             assert(clause_level(1))).
+
+eos :- (clause_level(L) -> 
+                             retract(clause_level(L)), 
+                             L1 is L-1,
+                             assert(clause_level(L1)),
+                             retract_state_level(L)
+                             ;
+                             true).  %being kind
+
+assert_state(C) :- level(L), assert(clause_state(L, C)).
+asserta_state(C) :- level(L), asserta(clause_state(L, C)).
+assertz_state(C) :- level(L), assertz(clause_state(L, C)).
+
+replace_state_level(C) :-
+        C=..[F|Args], 
+        length(Args,N), length(ArgsR,N),
+        CR=..[F|ArgsR],
+        retract_state_level(CR),
+        assert_state(C).
+
+retract_all_state :- retract_all(clause_state(_,_)).
+retract_all_state(C) :- retract_all(clause_state(_,C)).
+retract_all_state_level(C) :- level(L), retract_all(clause_state(L,C)).
+retract_all_state_level :- eos.
+
+retract_state_level(L) :- retract_all(clause_state(L,_)).
+
+retract_state(C) :- level(L), try_retract(L, C).
+try_retract(L, C) :- retract(clause_state(L,C)),!.
+try_retract(0, _) :- writeln("Failed to retract given"
+                                         " clause state at any scope"
+                             " level"); flush(stdout).
+try_retract(L, C) :- L>0, L1 is L-1, try_retract(L1, C).
+
+clause_state(C) :- level(L), try_clause(L, C).
+try_clause(L, C) :- clause_state(L, C).
+try_clause(L, C) :- L>0, L1 is L-1, try_clause(L1, C).
+
+clause_state_level(C) :- level(L), clause_state(L, C).
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%THEORY NAMESPACES
+
+:- dynamic namespace/1.
+:- dynamic root/1.
+
+add_path(PT) :- assert(root(PT)). 
+
+source_compose(FNIn,FNOut) :- 
+        (root(PT) -> concat_strings(PT, FNIn, FNOut); FNOut=FNIn). 
+
+source(FN) :- source_compose(FN,FNO), compile(FNO).
+source(FN, NSS) :- (namespace(NSS) -> 
+                       writeln("Namespace atom provided"
+                            " already in use"), flush(stdout);
+                    source_compose(FN,FNS),
+                    source_compose(NSS, FNT1),
+                    concat_strings(FNT1, FN, FNT),
+                    do_compile(FNS, FNT, NSS),
+                    assert(namespace(NSS))).
+
+
+do_compile(FNS, FNT, NSS) :- open(FNS, read, S),
+                     get_heads(S, [], [], Hs, Cls),
+                     close(S),
+                     concat_strings(NSS, "__", NSS1),
+                     process_clauses(NSS1, Hs, Cls, [], Cls1),
+                     open(FNT, write, OS),
+                     writeclauses(OS, Cls1),
+                     close(OS),
+                     compile(FNT).
+
+writeclauses(_,[]).
+writeclauses(S,[H|T]) :-
+        writeclause(S, H), 
+        writeclauses(S, T).
+
+get_heads(S, HsI, ClsI, HsO, ClsO):- 
+              read(S, C),
+              (C = end_of_file -> HsI=HsO, ClsI=ClsO;
+              (C = (:- _ ) -> get_heads(S, HsI, [C|ClsI],
+                                         HsO, ClsO);
+              (C = (H :- _) ->                   
+                               get_arity(H, F, A);
+                               get_arity(C, F, A)),
+                                                
+                               (member((F,A),HsI) -> HsI1 = HsI;
+                                                     HsI1 = [(F,A)|HsI]),
+                               get_heads(S, HsI1, [C|ClsI], HsO, ClsO))).
+
+get_arity(H, F, Ar) :- 
+        H =.. [F|Args],
+        length(Args, Ar).
+
+process_clauses(_, _, [], Cls, Cls).
+process_clauses(NSs, Hs, [HC|TC], ClsI, ClsO) :-
+        
+        (HC = (:- _ ) -> ClsI1 = [HC|ClsI];  
+                                        
+        (HC = (H :- T) -> process_head(NSs, H, NSH),
+                          convert_tuple_list(T, TL),
+                          process_tail(NSs, Hs, TL, NST), 
+                          convert_tuple_list(NSTT, NST),
+                          NSC = (NSH :- NSTT),
+                          ClsI1 = [NSC | ClsI];
+                          
+                          process_head(NSs, HC, NSH), 
+                          ClsI1 = [NSH | ClsI])),
+                          
+        process_clauses(NSs, Hs, TC, ClsI1, ClsO).
+
+process_head(NSs, H, NSH):-
+        H =..[F|Args],
+        atom_string(F, Fs),
+        concat_strings(NSs, Fs, F1s),
+        atom_string(F1, F1s),
+        NSH =..[F1|Args].
+
+process_func(_, _, assert, [_], assert_state) :- !.
+process_func(_, _, asserta, [_], asserta_state) :- !.
+process_func(_, _, assertz, [_], assertz_state) :- !.
+
+process_func(_, _, ecl_assert, [_], assert) :- !.
+process_func(_, _, ecl_asserta, [_], asserta) :- !.
+process_func(_, _, ecl_assertz, [_], assertz) :- !.
+
+process_func(_, _, retract, [_], retract_state) :- !.
+process_func(_, _, retract_all, [_], retract_all_state) :- !.
+
+process_func(_, _, ecl_retract, [_], retract) :- !.
+process_func(_, _, ecl_retract_all, [_], retract_all) :- !.
+
+process_func(_, _, clause, [_], clause_state) :- !.
+
+process_func(_, _, ecl_clause, [_], clause) :- !.
+
+        
+process_func(NSs, Hs, F, Args, F1):-
+        length(Args, Ar),
+        member((F, Ar), Hs), !,
+        atom_string(F, Fs),
+        concat_strings(NSs, Fs, F1s),
+        atom_string(F1, F1s).
+process_func(_, _, F, _, F).
+
+process_tail(_, _, [], []).
+process_tail(NSs, Hs, [H|T], [NSH|NST1]):-
+        process_tail(NSs, Hs, T, NST1),
+        process_atom(NSs, Hs, H, NSH).
+
+process_atom(NSs, Hs, H, NSH) :-
+        (nonvar(H) -> H =..[F|Args], 
+                    process_func(NSs, Hs, F, Args, NSF), 
+                    process_tail(NSs, Hs, Args, NSA),
+                    NSH =..[NSF|NSA];
+                    NSH=H).
+
+convert_tuple_list((M,Ms), [M,Ms1|MsR]) :- !, convert_tuple_list(Ms, [Ms1|MsR]).
+convert_tuple_list((M), [M]).
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%Preprocessing
 :- lib(hash).
+:- dynamic sfvcnt/1.
 
-:- dynamic colo_list/1, nocolo_list/1, hosted/2, host_cap/2, vm_req/2,
-   hosts/1, vms/1, default_vm_req/1, default_host_cap/1.
-:- dynamic exc/3, pend/3.
-:- local variable(backtracks), variable(deep_fail).
+sfvcnt(1).
 
-init :- retract_all(colo_list(_)), retract_all(nocolo_list(_)), 
-        retract_all(hosted(_,_)), retract_all(host_cap(_,_)),
-        retract_all(vm_req(_,_)), retract_all(hosts(_)),
-        retract_all(vms(_)), 
-        retract_all(default_vm_req(_)), retract_all(default_host_cap(_)), 
-        retract_all(pend(_,_,_)), retract_all(exc(_,_,_)), 
-        assert(hosted(_,_):-false), assert(colo_list(_):-false), assert(nocolo_list(_):-false).
+preprocess(Cxt,G,Gs) :-
+                 hash_create(AttrCount),         
+                 convert_tuple_list(G, GL),
+                 preprocess_goal(AttrCount, Cxt, GL, GLP, GL2, GLS),
+                 append(GLP, GL2, GL3),
+                 append(GL3, GLS, GL1),
+                 convert_tuple_list(G1, GL1),
+                 term_string(G1, Gs).
 
-init_backtracks :-
-        setval(backtracks,0).
+preprocess_sfop_done(sfget,(sfget,_)).
+preprocess_sfop_done(sfset,(_,sfset)).
+preprocess_sfop_done(sfattr,(sfget,sfset)).
 
-get_backtracks(B) :-
-        getval(backtracks,B).
+preprocess_attr(AC, Cxt, F, HGOut, Key, GLP1, GLP, GLS1, GLS):-
+            HGOut=..[sfvar, Cnt], 
+            (hash_get(AC,Key,(Cnt,SFG,SFS)) ->
+                (preprocess_sfop_done(F,(SFG,SFS))->
+                    GLP=GLP1, GLS=GLS1; 
+                    (F==sfget ->   hash_set(AC, Key, (Cnt,sfget,SFS)),
+                                   GLP=[sfget((sfvar(0),Cxt),Key,sfvar(Cnt))|GLP1],GLS=GLS1);
+                    (F==sfset ->   hash_set(AC,Key,(Cnt, SFG, sfset)),
+                                   GLS=[sfset((sfvar(0),Cxt),Key,sfvar(Cnt))|GLS1],GLP=GLP1);
+                    
+                    (SFG==sfget -> GLP=GLP1;GLP=[sfget((sfvar(0),Cxt),Key,sfvar(Cnt))|GLP1]),
+                    (SFS==sfset -> GLS=GLS1;GLS=[sfset((sfvar(0),Cxt),Key,sfvar(Cnt))|GLS1]),
+                    hash_set(AC,Key,(Cnt,sfget,sfset)));
+                %%No entry present
+                incr_cnt(Cnt), 
+                (F==sfget -> hash_set(AC, Key, (Cnt, sfget, nil)),
+                             GLP=[sfget((sfvar(0),Cxt),Key, sfvar(Cnt))|GLP1],GLS=GLS1;
+                (F==sfset -> hash_set(AC, Key, (Cnt,nil,sfset)),
+                             GLS=[sfset((sfvar(0),Cxt),Key, sfvar(Cnt))|GLS1],GLP=GLP1;
 
-count_backtracks :-
-        setval(deep_fail,false).
-count_backtracks :-
-        getval(deep_fail,false),        % may fail
-        setval(deep_fail,true),
-        incval(backtracks), writeln("Backtracking..."),
-        fail.
-
-vm_reqs(V, R) :- 
-        vm_req(V, R),R\==nil,!.
-vm_reqs(V, R) :- 
-        vm_req(V, nil), default_vm_req(R).
-
-host_caps(H, C) :- 
-        host_cap(H, C),C\==nil,!.
-host_caps(H, C) :- 
-        host_cap(H, nil), default_host_cap(C). 
- 
-colo(Key,CList) :- colo_list(CList), CList = [Key | _].
-colo(VM,[VM]) :- vms(VMs), member(VM, VMs), 
-        not (colo_list(CList), member(VM, CList)).
-
-remove_dups(L1, L2):-
-        (fromto((L1,[]), ([H|T],L3), (T,L4), ([],L2))
-         do (member(H,L3) -> L4=L3; L4=[H|L3])). 
-
-initialise(As) :-
-    init_backtracks,
-    hash_create(As),
-    (clause(hosts(_))->true;  
-        findall(Host, host_cap(Host,_), Hosts), assert(hosts(Hosts))),
-    (clause(vms(_))->true;  
-        findall(VM, vm_req(VM,_), VMs), assert(vms(VMs))),
-
-    findall((Key, CList, ResReqs), (colo(Key,CList),
-                                    aggregate_colo_reqs(Key,ResReqs)), Reqs),
-    
-    (
-       foreach((Key, CList, ResReqs), Reqs),
-       param(As)
-       do
-        %%%Ground Assignments...
-        findall(Host, (member(VM, CList), hosted(VM, Host)),KeyHosts1),
-        remove_dups(KeyHosts1, KeyHosts), 
-        (KeyHosts = [HVar] -> true; 
-                              (KeyHosts\=[] -> 
-                                  writeln("Colocated vms have been assigned to different hosts. Failing..."),
-                                  false; true
-                              )
-        ),
-        hash_set(As, Key, (Key,HVar,ResReqs))
-    ). 
+                             hash_set(AC, Key, (Cnt,nil,sfset)),
+                             GLP=[sfget((sfvar(0),Cxt),Key, sfvar(Cnt))|GLP1],
+                             GLS=[sfset((sfvar(0),Cxt),Key, sfvar(Cnt))|GLS1]))).
+                                          
 
 
-aggregate_colo_reqs(Key, Reqs) :-
-        colo(Key,VMs),
-        (fromto((VMs,[]), ([VM|TVMs], Reqs1), 
-                             (TVMs, Reqs2), ([],Reqs)) do
-           vm_reqs(VM, Reqs3),           
-           (Reqs1==[] -> Reqs2=Reqs3; aggregate_req(Reqs1, Reqs3, Reqs2))
-        ).
+preprocess_sfop(sfget).
+preprocess_sfop(sfset).
+preprocess_sfop(sfattr).
 
-aggregate_req(Rs1, Rs2, Rs3) :-
-        ( foreach(R1, Rs1), 
-          foreach(R2, Rs2), foreach(R3, Rs3) do R3 is R1 + R2).
+preprocess_attr_try(AC,Cxt,F,HGOut,Args,GLP1,GLP,GLS1,GLS) :- 
+        (Args=[Key] -> preprocess_attr(AC, Cxt, F, HGOut, Key, GLP1,
+                                       GLP, GLS1, GLS);
+                       (Args=[Key,Var] -> GCxt=(sfvar(0),Cxt); Args=[GCxt,Key,Var]),                   
+                       preprocess_goal(AC, Cxt, [Var], _, [Var1], _),
+                       GLP=GLP1, GLS=GLS1,
+                       HGOut=..[F,GCxt,Key,Var1]).
 
-compile_hosts(AsList, HInfos):-
-        hosts(HNames),
-        (    param(AsList), 
-             foreach(Hn, HNames), 
-             foreach(HInfo, HInfos)
-          do
-             host_caps(Hn, Caps), 
-             aggregate_host_reqs(Hn, AsList, HReqs),
-             (HReqs==[] -> Caps1=Caps;
-                 (  is_enough_resources(HReqs, Caps, Caps1) -> true;
-                    (write("Not enough resources on host: "), write(Hn), 
-                     write(" for prespecified host allocations. Failing... "),
-                     writeln("This behaviour will be improved in constraint"
-                       " version."), false)
-                 )
-              ), 
-              HInfo = (Hn,Caps1)
-         ).
-
-aggregate_host_reqs(Hn, AsList, Reqs):-
-         (param(Hn), fromto((AsList,[]), ([(_,Host,Reqs1)|TAsList], Reqs2), 
-                                         (TAsList,Reqs3), ([],Reqs)) do
-           (Host==Hn -> 
-            (Reqs2==[] -> Reqs3=Reqs1; aggregate_req(Reqs2, Reqs1, Reqs3)); Reqs3=Reqs2)).
-
-is_enough_resources([], [], []).
-is_enough_resources([Req|Reqs], [Cap|Caps], [Cap1|Caps1]):-
-        is_enough_resources(Reqs, Caps, Caps1),
-        (Req=<Cap -> Cap1 is Cap-Req; false).
-
-get_sorted_vm_list(AsList, VMList) :-
-        findall(VM, (member((VM, Host, _), AsList), var(Host)), VMList1),
-        sort(VMList1, VMList).
-
-write_out(As) :-
-        vms(VMs), 
-        ( foreach(VM, VMs), param(As) do
-            colo(Key, CList),
-            member(VM, CList), !,
-            hash_get(As, Key, (_,Host,_)), write(VM),
-            write(" deployed on host "),
-            writeln(Host)). 
-
-assign :- assign(_).
-
-assign(A) :- 
-         (assign_wkr(A) -> writeln("PLACEMENT SUCCESS: Successfully placed VMs."), write_backtracks;
-                           writeln("PLACEMENT FAILED: Could not place VMs."), 
-                           write_backtracks, false).
+preprocess_goal(_, _, [], [], [], []).
+preprocess_goal(AC, Cxt, [HG|TG], GLP, [HGOut|TGOut], GLS) :-
+        preprocess_goal(AC, Cxt, TG, GLP1, TGOut, GLS1),
+        (var(HG) -> incr_cnt(Cnt), HG=HGOut, HGOut=sfvar(Cnt), GLP=GLP1, GLS=GLS1;
+                    HG =..[F|Args],
+                    (F==sfcxt ->
+                        HGOut=(sfvar(0),Cxt), GLP=GLP1, GLS=GLS1;
+                    (F==sfvar ->
+                        HGOut=HG, GLP=GLP1, GLS=GLS1;  
+                        (preprocess_sfop(F)-> preprocess_attr_try(AC,Cxt,F,HGOut,Args,
+                                                GLP1,GLP,GLS1,GLS);
+                            preprocess_goal(AC, Cxt, Args, ArgsP, Args1, ArgsS),
+                            append(GLP1, ArgsP, GLP), append(GLS1, ArgsS, GLS), HGOut =..[F|Args1])))).
 
 
-write_backtracks:-
-        write("Backtrack count: "), get_backtracks(B), writeln(B).
+preprocess2(G,Gs) :- 
+                 hash_create(AttrCount),         
+                 convert_tuple_list(G, GL),
+                 preprocess_goal2(AttrCount, GL, GL1),
+                 convert_tuple_list(G1, GL1),
+                 term_string(G1, Gs).
+
+preprocess_goal2(_, [], []).
+preprocess_goal2(AC, [HG|TG], [HGOut|TGOut]) :-
+        preprocess_goal2(AC, TG, TGOut),
+        (HG = sfvar(Key) ->
+            (hash_get(AC, Key, HGOut) -> true;hash_set(AC, Key, HGOut));
+            HG=..[F|Args],
+            preprocess_goal2(AC, Args, Args1),
+            HGOut=..[F|Args1]).
+
+incr_cnt(Cnt) :-
+               sfvcnt(Cnt),
+               retract(sfvcnt(Cnt)),
+               Cnt1 is Cnt + 1,
+               assert(sfvcnt(Cnt1)).
+        
+       
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%Description hierarchy state
+
+%1
+sfget((SFBinds, Cxt), Attr, Val) :- 
+        sfop(SFBinds, Cxt, sfget, Attr, Val).
+
+sfset((SFBinds, Cxt), Attr, Val) :- 
+        sfop(SFBinds, Cxt, sfset, Attr, Val).
+
+sfop(SFBinds, Cxt, Op, AttrA, Val) :-
+        (atom(AttrA) -> atom_string(AttrA, Attr); AttrA=Attr),
+        CDOpL = [Op, Cxt, Attr, Val],
+        CDOp =..CDOpL,
+        write_exdr(eclipse_to_java, CDOp), 
+        flush(eclipse_to_java), 
+        read_exdr(java_to_eclipse, ValOut),
+        (ValOut=success -> true;
+        (ValOut=success(Ref, Val) -> 
+            (hash_get(SFBinds, Ref, Val)->true;hash_set(SFBinds,Ref,Val));fail)).
+
+sfop(_,_,_,_,_) :-
+        write_exdr(eclipse_to_java, sfundo), 
+        flush(eclipse_to_java), 
+        read_exdr(java_to_eclipse, _), fail.
 
 
-constrain_vm_range(As, Reqs, Exc, HsR):-
-        hosts(Hs),
-        (param(As, Reqs), 
-         fromto((Hs, [], Exc), ([H|T], Hs1, Caps1), (T, Hs2, Caps2),
-                ([], HsR, _)) do
-            hash_get(As, H, Caps),
-            ((not member(Caps, Caps1), 
-              (foreach(Req, Reqs), foreach(Cap, Caps) do Req =< Cap))
-            -> 
-                append(Hs1,[H],Hs2),Caps2=[Caps|Caps1]);
-                Hs2=Hs1, Caps2=Caps1
-        ),!,
-        (HsR=[]->false;true).
+% sflocal(Attrs, Pref) :-
+%         write_exdr(eclipse_to_java, sflocal(Pref)), 
+%         flush(eclipse_to_java), 
+%         read_exdr(java_to_eclipse, sflocal(Attrs, Pref)).
 
-%Trivial satisfaction if singleton...
-update_vms_exceptions(_, _, _, _, _, [_]) :- !.   
-%Or, if first
-update_vms_exceptions(_, VM, _, Caps, Tick, _) :- 
-    not clause(pend(VM,_,Tick)), !, 
-    assert(pend(VM,Caps,Tick)). 
-%Otherwise, copy @HVar-1 to other VM's Exc list
-update_vms_exceptions(AsList, VM, Reqs, Caps, Tick, _) :-
-    clause(pend(VM,Caps1,Tick)), retract(pend(VM,Caps1,Tick)),
-    assert(pend(VM,Caps,Tick)),
-    findall(VM1, (member((VM1,_,Reqs), AsList), VM1\==VM), VMs),
-    (param(Caps1, Tick), foreach(VM1, VMs) do
-      assert(exc(VM1,Caps1,Tick))
-    ),!.
-
-retract_old_asserts(Tick):-
-        findall(_, (pend(V,C,Tick1), Tick1>Tick, 
-                       retract(pend(V,C,Tick1))), _),
-        findall(_,  (exc(V,C,Tick1), Tick1>Tick, 
-                       retract(exc(V,C,Tick1))), _).
+% sflocal(Attrs, Pref, Pos) :-
+%         write_exdr(eclipse_to_java, sflocal(Pref, Pos)), 
+%         flush(eclipse_to_java), 
+%         read_exdr(java_to_eclipse, sflocal(Attrs, Pref, Pos)).
 
 
