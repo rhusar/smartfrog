@@ -105,8 +105,8 @@ public class WFOriginalPersistence extends PersistenceModel {
     /**
      * {@inheritDoc}
      *
-     * <p>WFOriginalPersistence does not restart - it assumes children recover
-     * themselves</p>
+     * WFOriginalPersistence does not restart - it assumes children recover
+     * themselves
      *
      * @return boolean - false
      */
