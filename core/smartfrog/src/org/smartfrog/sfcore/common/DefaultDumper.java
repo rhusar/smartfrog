@@ -37,7 +37,7 @@ import java.util.*;
 import java.io.*;
 
 
-public class DefaultDumper implements Dump, Dumper, Serializable {
+public class DefaultDumper extends java.rmi.server.UnicastRemoteObject implements Dump, Dumper {
 
     private Reference rootRef = null;
 
@@ -57,8 +57,12 @@ public class DefaultDumper implements Dump, Dumper, Serializable {
      * it could need more time to reach the final result*/
     long timeout = (1*30*15*1000L); //(2*60*1000L);
 
+    public DefaultDumper() throws java.rmi.RemoteException {
+        super();
+    }
 
-    public DefaultDumper (Prim from){
+    public DefaultDumper (Prim from) throws java.rmi.RemoteException  {
+        this();
         try {
             rootRef = from.sfCompleteName();
         } catch (RemoteException e) {
@@ -80,6 +84,10 @@ public class DefaultDumper implements Dump, Dumper, Serializable {
      * @throws java.rmi.RemoteException In case of Remote/nework error
      */
     public void dumpState(Object state, Prim from) throws RemoteException {
+       if (rootRef==null){
+            rootRef = from.sfCompleteName();
+       }
+       //Calculate number of children
        Integer numberOfChildren = new Integer(0);
        if (from instanceof Compound) {
           int numberC = 0;
@@ -89,10 +97,12 @@ public class DefaultDumper implements Dump, Dumper, Serializable {
           }
           numberOfChildren = new Integer (numberC);
        }
+       //add number of pending visits
        visiting(from.sfCompleteName().toString(),numberOfChildren);
+
        Context stateCopy =  (Context)((Context)state).clone();
 
-       //Remove non desired sf attribute keys
+       //Filter: Remove non desired sf attribute keys
        for (int i=0; i< this.sfKeysToBeRemoved.length; i++){
            if (stateCopy.sfContainsAttribute(sfKeysToBeRemoved[i])) {
                try {
@@ -102,18 +112,21 @@ public class DefaultDumper implements Dump, Dumper, Serializable {
                }
            }
        }
-
+       // Are we visiting the parent component
        if (rootRef == from.sfCompleteName()){
            cd = new ComponentDescriptionImpl(null,(Context)stateCopy,false);
-           //if (sfLog().isInfoEnabled()) sfLog().info("New CD: "+rootRef+"\n "+from.sfCompleteName());
+           if (sfLog().isInfoEnabled()) sfLog().info("New CD: "+rootRef+"\n "+from.sfCompleteName());
        } else {
-           //if (sfLog().isInfoEnabled()) sfLog().info("From: "+from.sfCompleteName());
+           if (sfLog().isInfoEnabled()) sfLog().info("From: "+from.sfCompleteName());
+           //Calculate relative reference to rootRef
            Reference searchRef =  (Reference)from.sfCompleteName().copy();
            for (Enumeration e = rootRef.elements(); e.hasMoreElements();) {
                searchRef.removeElement((ReferencePart)e.nextElement());
            }
+           //Get name
            String name = ((HereReferencePart)(searchRef.lastElement())).getValue().toString();
            searchRef.removeElement(searchRef.lastElement());
+
            modifyCD(searchRef, name, stateCopy);
        }
        //System.out.println("***************************\nFrom: "+from.sfCompleteName()+"\n"+cd+"\n**************************");
@@ -129,8 +142,11 @@ public class DefaultDumper implements Dump, Dumper, Serializable {
      */
     public void modifyCD(Reference whereRef,String name, Context contextCopy ) {
         try {
+            //Find parent
             ComponentDescription placeHolder = (ComponentDescription)cd.sfResolve(whereRef);
+            //Create child
             ComponentDescription child =new ComponentDescriptionImpl(placeHolder, contextCopy,true);
+            //Add child to parent CD
             placeHolder.sfReplaceAttribute(name, child);
         } catch (SmartFrogException e) {
             if (sfLog().isErrorEnabled()) sfLog().error(e);
@@ -158,24 +174,23 @@ public class DefaultDumper implements Dump, Dumper, Serializable {
          long endTime = (new Date()).getTime()+timeout;
          synchronized (visitingLock) {
              while (visitingLocks.longValue()!=0L) {
-                     // try to return the String if not visiting logs.
-                     // if name in locks => process not ready, pretend not found...
-                     if (visitingLocks.longValue()==0L){
-                         return cd;
-                     } else {
-                         // not found, wait for leftover timeout
-                        long now = (new Date()).getTime();
-                        if (now>=endTime) {
-                         throw new SmartFrogException("Description creation Timeout ("+ (timeout/1000) +"sec)");
-                        }
-                         try {
-                             visitingLock.wait(endTime-now);
-                         } catch (InterruptedException e) {
-                             return cd;
-                         }
-
-                     }
-            }
+                 // try to return the String if not visiting logs.
+                 // if name in locks => process not ready, pretend not found...
+                 if (visitingLocks.longValue()==0L){
+                     return cd;
+                 } else {
+                    // not found, wait for leftover timeout
+                    long now = (new Date()).getTime();
+                    if (now>=endTime) {
+                      throw new SmartFrogException("Description creation Timeout ("+ (timeout/1000) +"secs)");
+                    }//if
+                    try {
+                       visitingLock.wait(endTime-now);
+                    } catch (InterruptedException e) {
+                       return cd;
+                    }//try
+                 }//else
+            }//while
             return cd;
         }
     }
@@ -190,7 +205,7 @@ public class DefaultDumper implements Dump, Dumper, Serializable {
          // Notify any waiting threads that an attribute was added
          synchronized (visitingLock) {
              visitingLocks= new Long (visitingLocks.longValue() + numberOfChildren.longValue());
-             //if (sfLog().isInfoEnabled()) sfLog().info("Visiting #"+visitingLocks+ " "+name);
+             if (sfLog().isInfoEnabled()) sfLog().info("Visiting #"+visitingLocks+ " "+name);
          }
      }
 
