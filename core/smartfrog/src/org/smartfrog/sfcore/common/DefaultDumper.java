@@ -68,7 +68,11 @@ public class DefaultDumper implements Dump, Dumper, Serializable {
 
    /**
      * Components use this methods to dump their state to when requested (using
-     * sfDumpState).
+     * sfDumpState). With this information, this object builds an internal
+     * representation of the component and its children.
+     * This will result in a description of the component which is parseable, and deployable
+     * again... Unless someone removed attributes which are essential to
+     * startup that is.
      *
      * @param state state of component (application specific)
      * @param from source of this call
@@ -88,7 +92,7 @@ public class DefaultDumper implements Dump, Dumper, Serializable {
        visiting(from.sfCompleteName().toString(),numberOfChildren);
        Context stateCopy =  (Context)((Context)state).clone();
 
-       //Remove non desired sf keys
+       //Remove non desired sf attribute keys
        for (int i=0; i< this.sfKeysToBeRemoved.length; i++){
            if (stateCopy.sfContainsAttribute(sfKeysToBeRemoved[i])) {
                try {
@@ -135,15 +139,19 @@ public class DefaultDumper implements Dump, Dumper, Serializable {
 
 
     /**
-      * Tries to get the the String once  the object finished visiting all nodes
-      * or until given timeout expires.
+     * Returns a component description representation of the component and its children.
+     * This will give a description of the component which is parseable, and deployable
+     * again... Unless someone removed attributes which are essential to
+     * startup that is.
+     *
+      * Tries to get the the ComponentDescription once  the object finished visiting all nodes
+      * or until a given timeout expires.
       *
       * @param timeout max time to wait in millis
       *
-      * @return The string representation of the description
+      * @return The component description representing the deployed system
       *
-      * @throws Exception attribute not found after timeout
-      * @throws RemoteException if there is any network or remote error
+      * @throws Exception operation not completed after timeout
      *
       */
      public ComponentDescription getComponentDescription ( long timeout) throws SmartFrogException {
@@ -188,9 +196,7 @@ public class DefaultDumper implements Dump, Dumper, Serializable {
 
      /**
       * Allows a visitor to notify that it has fishished
-      * ready to receive deployment requests.
       *
-
       * @throws RemoteException if there is any network or remote error
       *
       */
@@ -205,6 +211,11 @@ public class DefaultDumper implements Dump, Dumper, Serializable {
          }
      }
 
+    /**
+     * Returns a deployable String representation of the application component description
+     * @param timeout
+     * @return
+     */
     protected String getCDAsString(long timeout) {
         try {
             return "sfConfig extends {\n" + getComponentDescription(timeout).toString() + "}";
@@ -216,7 +227,8 @@ public class DefaultDumper implements Dump, Dumper, Serializable {
 
 
     /**
-      * Tries to get the the String once the object finished visiting all nodes
+      * Tries to get the the String representation of the coponent description
+     *  once the object finished visiting all nodes
       * or until given timeout expires.
       *
       * @param timeout max time to wait in millis
@@ -254,7 +266,8 @@ public class DefaultDumper implements Dump, Dumper, Serializable {
      * description of the component which is parseable, and deployable
      * again... Unless someone removed attributes which are essential to
      * startup that is. Large description trees should be written out using
-     * writeOn since memory for large strings runs out quick! toString() times out
+     * getCDtoFile since memory for large strings runs out quick! toString() times out
+     * by default. See @see setTimeout to change default value.
      *
      * @return string representation of component
      */
@@ -267,6 +280,15 @@ public class DefaultDumper implements Dump, Dumper, Serializable {
            return (ex.toString());
        }
     }
+
+    /**
+     * Returns a string representation of the component stored into a file. This will give a
+     * description of the component which is parseable, and deployable
+     * again... Unless someone removed attributes which are essential to
+     * startup that is. This operation times out
+     * by default. See @see setTimeout to change default value.
+     * It overwrites existing files without warning.
+     */
 
     public void getCDtoFile(String fileName){
         Writer out = null;
@@ -293,7 +315,7 @@ public class DefaultDumper implements Dump, Dumper, Serializable {
     }
 
     /**
-     *
+     * For logging messages.
      * @return LogSF
      */
     public LogSF sfLog(){
