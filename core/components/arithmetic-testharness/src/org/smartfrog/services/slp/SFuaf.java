@@ -443,7 +443,7 @@ public class SFuaf extends ua {
   }
 
 /**
- * Convert SLPAttributes into mslp attribute string
+ * Convert SLPAttributes into mslp attribute string.
  * Assume attributes have single values. // again !
  * @param SLPAttributes a vector of ServiceLocationAttribute objects
  * @param includeValues flag to indicate whether values should be included in the result or not

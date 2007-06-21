@@ -127,7 +127,7 @@ public class slpMsgParser {
     }
 
 /**
- * parse URL entry, to get the lifetime & URL string
+ * parse URL entry, to get the lifetime and URL string
  *+---------------+---------------------------------+----------------+
  *|    Reserved   |          Lifetime               |   URL length   |
  *+---------------+---------------------------------+----------------+
@@ -306,7 +306,8 @@ public class slpMsgParser {
     }
 
 /**
- * directory agent advertisement <#8>
+ * directory agent advertisement #8.
+ *
  *+-------------------------------+--------------------------------+
  *|     Error Code                |   DA Stateless Boot Timestamp  |
  *+-------------------------------+--------------------------------+
@@ -332,7 +333,7 @@ public class slpMsgParser {
     }
 
 /**
- * service type request <#9>
+ * service type request #9.
  *+-------------------------------+-----------------------------+
  *|     length of PRList          |     <PRList> string         |
  *+-------------------------------+-----------------------------+
@@ -355,7 +356,8 @@ public class slpMsgParser {
     }
 
 /**
- * service type reply (reply for service type request) <#10>
+ * service type reply (reply for service type request) #10.
+ *
  *+-------------------------------+-------------------------------+
  *|      Error Code               |    length of <srvType-list>   |
  *+-------------------------------+-------------------------------+
@@ -368,7 +370,8 @@ public class slpMsgParser {
     }
 
 /**
- * DataRqst message <#12>
+ * DataRqst message #12.
+ *
  *+---------------------------------------------------------------+
  *|                          Accept ID                            \
  *+---------------------------------------------------------------+
@@ -379,7 +382,8 @@ public class slpMsgParser {
     }
 
 /**
- * SLP extension parser: MeshFwdExt
+ * SLP extension parser: MeshFwdExt.
+ * 
  *    (1) initialize (turn off previous value)
  *    (2) if MeshFwdExt,
  *           get Fwd-ID & versionTS
