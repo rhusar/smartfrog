@@ -29,8 +29,6 @@
 #
 
 # TODO: menu entries
-# TODO: shell scripts
-# TODO: server stuff, init scripts etc
 
 # if menu entries are created, define Summary here, and use it in the summary
 # tag, and the menu entries' descriptions
@@ -131,6 +129,37 @@ Running the SmartFrog as a daemon is a security risk unless the daemon is set up
 # -----------------------------------------------------------------------------
 
 %prep
+USERNAME="smartfrog"
+GROUPNAME="smartfrog"
+
+# Addition of smartfrog group
+getent group ${GROUPNAME} > /dev/null
+if [ $? -ne 0 ]; then
+        groupadd ${GROUPNAME}> /dev/null 2>&1
+        if [ $? -ne 0 ]; then
+                logger -p auth.err -t %{name} ${GROUPNAME} group could not be created
+                exit 1
+        fi
+else
+                logger -p auth.info -t %{name} ${GROUPNAME} group already exists
+fi
+
+# Creation of smartfrog user account
+# UID value will be fetched from the system
+# Any free least numeric number will get assigned to UID
+# User deletion is left to the System Administartor
+getent passwd $USERNAME > /dev/null 2>&1
+if [ $? -ne 0 ]; then
+        useradd -g ${GROUPNAME} -s /bin/bash -p "*********" -m $USERNAME >> /dev/null
+        if [ $? -ne 0 ]; then
+                logger -p auth.err -t %{name} ${USERNAME} user could not be created
+            exit 2
+        fi
+else
+                logger -p auth.info -t %{name} ${USERNAME} user already exists
+fi
+
+
 %setup -q -c
 
 
@@ -161,28 +190,10 @@ cp -dpr . $RPM_BUILD_ROOT
 #install -d $RPM_BUILD_ROOT%{_datadir}/%{name}-%{version}
 # cp demos to $RPM_BUILD_ROOT%{_datadir}/%{name}-%{version}/
 
-
 # -----------------------------------------------------------------------------
-#after installing, we set symlinks
-%post daemon 
-ln -s %{initsmartfrog} %{rcd}/rc0.d/K60smartfrog
-ln -s %{initsmartfrog} %{rcd}/rc1.d/K60smartfrog
-ln -s %{initsmartfrog} %{rcd}/rc2.d/S60smartfrog
-ln -s %{initsmartfrog} %{rcd}/rc3.d/S60smartfrog
-ln -s %{initsmartfrog} %{rcd}/rc4.d/S60smartfrog
-ln -s %{initsmartfrog} %{rcd}/rc5.d/S60smartfrog
-ln -s %{initsmartfrog} %{rcd}/rc6.d/S60smartfrog
 
-# -----------------------------------------------------------------------------
-# at uninstall time, we blow away the symlinks
-%postun daemon
-rm %{rcd}/rc0.d/K60smartfrog
-rm %{rcd}/rc1.d/K60smartfrog
-rm %{rcd}/rc2.d/S60smartfrog
-rm %{rcd}/rc3.d/S60smartfrog
-rm %{rcd}/rc4.d/S60smartfrog
-rm %{rcd}/rc5.d/S60smartfrog
-rm %{rcd}/rc6.d/S60smartfrog
+
+
 
 # -----------------------------------------------------------------------------
 
@@ -289,6 +300,28 @@ rm -rf $RPM_BUILD_ROOT
 #%{_datadir}/%{name}-%{version}
 %{srcdir}
 
+# -----------------------------------------------------------------------------
+#after installing, we set symlinks
+%post daemon 
+ln -s %{initsmartfrog} %{rcd}/rc0.d/K60smartfrog
+ln -s %{initsmartfrog} %{rcd}/rc1.d/K60smartfrog
+ln -s %{initsmartfrog} %{rcd}/rc2.d/S60smartfrog
+ln -s %{initsmartfrog} %{rcd}/rc3.d/S60smartfrog
+ln -s %{initsmartfrog} %{rcd}/rc4.d/S60smartfrog
+ln -s %{initsmartfrog} %{rcd}/rc5.d/S60smartfrog
+ln -s %{initsmartfrog} %{rcd}/rc6.d/S60smartfrog
+
+# -----------------------------------------------------------------------------
+# at uninstall time, we blow away the symlinks
+%postun daemon
+rm %{rcd}/rc0.d/K60smartfrog
+rm %{rcd}/rc1.d/K60smartfrog
+rm %{rcd}/rc2.d/S60smartfrog
+rm %{rcd}/rc3.d/S60smartfrog
+rm %{rcd}/rc4.d/S60smartfrog
+rm %{rcd}/rc5.d/S60smartfrog
+rm %{rcd}/rc6.d/S60smartfrog
+
 %files daemon
 #and the etc stuff
 %defattr(0644,root,root,0755)
@@ -301,6 +334,8 @@ rm -rf $RPM_BUILD_ROOT
 %changelog
 # to get the date, run:   date +"%a %b %d %y"
 
+* Fri Jun 22 2007 Steve Loughran <steve_l@users.sourceforge.net> 3.11.0000-3
+- fixing permissions of the log directory; creating a new user on demand
 * Tue May 22 2007 Steve Loughran <steve_l@users.sourceforge.net> 3.11.0000-1
 - Built from CERN contributions and the JPackage template
 
