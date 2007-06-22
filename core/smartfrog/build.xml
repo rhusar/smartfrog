@@ -309,6 +309,7 @@
       destdir="${build.classes.dir}"
       debug="${javac.debug.mode}"
       debuglevel="${javac.debug.level}"
+      fork="true"
       includeAntRuntime="false" 
       source="${javac.java.version}" 
       target="${javac.java.version}"
