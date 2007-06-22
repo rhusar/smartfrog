@@ -29,6 +29,8 @@ import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.Vector;
 import java.util.Set;
+import java.lang.reflect.Method;
+import java.lang.reflect.Field;
 
 import org.smartfrog.sfcore.common.Diagnostics;
 import org.smartfrog.sfcore.common.Context;
@@ -151,6 +153,9 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
     /** Reference that caches cannonical name. */
     protected Reference sfCompleteName = null;
 
+
+    /** Name of tag for attribute injection */
+    private final String injectionTag = "sfInject";
 
     /**
      * Used in conjunction with sfDeployWith to set parent and context after
@@ -918,11 +923,62 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
             throw new SmartFrogDeploymentException(MessageUtil.formatMessage(MSG_DEPLOY_COMP_TERMINATED, componentId.toString()),
                     this);
         }
+        injectAttributes(componentId.toString());
         sfDeployHooks.applyHooks(this, null);
         sfIsDeployed = true;
     }
 
-    /**
+   private void injectAttributes(String id) throws SmartFrogException {
+         Iterator i = null;
+         try { i = sfAttributes(); } catch (Exception e) {}
+         while (i.hasNext()) {
+            Object name = i.next();
+
+            boolean needsInjection = false;
+            try { needsInjection = sfContainsTag(name, injectionTag); } catch (Exception e) {}
+            if (needsInjection) {
+               Object value = null;
+               try {
+                  value = sfResolve(new Reference(ReferencePart.here(name)));
+               } catch (Exception e) {
+                    throw new SmartFrogDeploymentException(
+                          MessageUtil.formatMessage(MSG_INJECTION_VALUE_FAILED, id, name), e, this, null
+                        );
+               }
+               try {
+                  String injectorName = "set" + name;
+
+                  Class [] p = null;
+                  try {  p = new Class[] {Class.forName("java.lang.Object")};  } catch (Exception e) {}
+
+                  Method m = getClass().getMethod(injectorName, p);
+                  Object[] values = new Object[] {value};
+                  try {
+                     m.invoke(this, values);
+                  } catch (Exception e) {
+                    throw new SmartFrogDeploymentException(
+                          MessageUtil.formatMessage(MSG_INJECTION_SETMETHOD_FAILED, id, name, value), e, this, null
+                        );
+                  }
+               } catch (NoSuchMethodException nsm) {
+                  try {
+                     Field f = getClass().getField(name.toString());
+                     f.set(this, value);
+                  } catch (NoSuchFieldException nsf) {
+                    throw new SmartFrogDeploymentException(
+                          MessageUtil.formatMessage(MSG_INJECTION_FAILED, id, name), this, null
+                        );
+                  } catch (Exception e) {
+                    throw new SmartFrogDeploymentException(
+                          MessageUtil.formatMessage(MSG_INJECTION_SETFIELD_FAILED, id, name, value), e, this, null
+                        );
+                  }
+               }
+            }
+         }
+   }
+
+   /**
      * Can be called to start components. Subclasses should override to provide
      * functionality Do not block in this call, but spawn off any main loops!
      *
