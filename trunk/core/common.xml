@@ -337,6 +337,7 @@ java.class.path=
     <!-- define a new javac task with new default options -->
     <presetdef name="sf-javac">
        <javac debug="${javac.debug.mode}"
+            fork="true"
             nowarn="true"
             deprecation="${javac.deprecation.mode}"
             source="${javac.java.version}"
