@@ -90,11 +90,15 @@
     <property name="javac.debug.level" value="lines,vars,source" />
     <property name="javac.java.version" value="1.4" />
     <property name="javac.include.ant" value="false" />
+    <property name="javac.max.memory" value="192m" />
 
     <property name="smartfrog.daemon.port" value="3800" />
-    <!--use the forking compiler-->
+    <!--use the forking compiler with tuned memory use and profiling diagnostics-->
     <property name="rmic.compiler" value="forking"/>
-
+    <property name="rmic.max.memory" value="192m" />
+    <property name="rmic.forking.commandline.extras" value="" />
+    <property name="rmic.forking.commandline" 
+      value="-J-Xmx${rmic.max.memory} -J-XX:+HeapDumpOnOutOfMemoryError ${rmic.forking.commandline.extras}"/>
     
     <property name="extras.dir"
       location="${core.dir}/extras"/>
@@ -338,6 +342,7 @@ java.class.path=
             source="${javac.java.version}"
             target="${javac.java.version}"
             includeAntRuntime="${javac.include.ant}"
+            memoryMaximumSize="${javac.max.memory}"
             includes="**/*.java"
             >
        </javac>
@@ -480,7 +485,9 @@ java.class.path=
       <rmic
         compiler="${rmic.compiler}"
         verify="true"
-        stubversion="1.2" />
+        stubversion="1.2" >
+        <compilerarg line="${rmic.forking.commandline}" compiler="forking" /> 
+      </rmic>
     </presetdef>
   </target>
 

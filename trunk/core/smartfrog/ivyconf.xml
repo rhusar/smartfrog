@@ -42,6 +42,6 @@
     </chain>
   </resolvers>
   <modules>
-    <module organisation="org.antbook" name=".*" resolver="internal"/>
+    <module organisation="org.smartfrog" name=".*" resolver="internal"/>
   </modules>
 </ivyconf>
