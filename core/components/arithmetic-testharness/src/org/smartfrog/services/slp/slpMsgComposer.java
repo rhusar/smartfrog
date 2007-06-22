@@ -1,7 +1,7 @@
 
 package org.smartfrog.services.slp;
 /**
- * Compose various SLPv2 messages (protocol stack)
+ * Compose various SLPv2 messages (protocol stack).
  * Return the message in a byte array
  *
  * (c) Columbia University, 2001, All Rights Reserved.
@@ -144,18 +144,20 @@ public class slpMsgComposer {
     }
 
 /**
- * service request <#1>
+ * service request #1
+
  *+----------------------------+---------------------------+
- *| Length of <PRList>         |   <PRList> string         \
+ *| Length of [PRList]         |   [PRList] string         \
  *+----------------------------+---------------------------+
- *| Length of <service-type>   | <service-type> string     \
+ *| Length of [service-type]   | [service-type] string     \
  *+----------------------------+---------------------------+
- *| Length of <scope-list>     | <scope-list> string       \
+ *| Length of [scope-list]     | [scope-list] string       \
  *+----------------------------+---------------------------+
  *| Length of predicate string | service request predicate \
  *+----------------------------+---------------------------+
- *| Length of <SLP SPI> string |   <SLP SPI> string        \
+ *| Length of [SLP SPI] string |   [SLP SPI] string        \
  *+----------------------------+---------------------------+
+
  */
     public byte[] SrvRqst(int xid, int flag, String ltag, String pr,
 		String type, String scope, String pred, String spi) {
@@ -172,11 +174,12 @@ public class slpMsgComposer {
     }
 
 /**
- * service reply (reply for service request) <#2>
+ * service reply (reply for service request) #2.
+
  *+----------------------------+---------------------------+
  *|       Error Code           |    URL entry count        |
  *+----------------------------+---------------------------+
- *|   <URl entry 1>           ...     <URL entry N>        \
+ *|   [URl entry 1]           ...     [URL entry N]        \
  *+----------------------------+---------------------------+
  */
     public byte[] SrvReply(int xid, String ltag, byte[] buf) {
@@ -192,15 +195,15 @@ public class slpMsgComposer {
     }
 
 /**
- * service registration <#3>
+ * service registration #3.
  *+----------------------------------------------------------------+
- *|                          <URL-Entry>                           \
+ *|                          [URL-Entry]                           \
  *+---------------------------------+------------------------------+
- *|  Length of service type string  |     <service-type>           \
+ *|  Length of service type string  |     [service-type]           \
  *+---------------------------------+------------------------------+
- *|  Length of <scope-list>         |     <scope-list>             \
+ *|  Length of [scope-list]         |     [scope-list]             \
  *+---------------------------------+------------------------------+
- *|  Length of attr-list string     |     <attr-list>              \
+ *|  Length of attr-list string     |     [attr-list]              \
  *+----------------+----------------+------------------------------+
  *| # of AttrAuths | (if present) Attribute Authentication Blocks  \
  *+----------------+-----------------------------------------------+
@@ -220,13 +223,13 @@ public class slpMsgComposer {
     }
 
 /**
- * service De-registration <#4>
+ * service De-registration #4
  *+-----------------------------+---------------------------+
- *|  Length of <scope-list>     |        <scope-list>       \
+ *|  Length of [scope-list]     |        [scope-list]       \
  *+-----------------------------+---------------------------+
- *|                         <URL-entry>                     \
+ *|                         [URL-entry]                     \
  *+-----------------------------+---------------------------+
- *|  Length of <tag-list>       |        <tag-list>         \
+ *|  Length of [tag-list]       |        [tag-list]         \
  *+-----------------------------+---------------------------+
  */
     public byte[] SrvDeReg(int xid, String ltag, String scope, String url,
@@ -242,7 +245,7 @@ public class slpMsgComposer {
     }
 
 /**
- * service ack (reply for SrvReg & SrvDeReg) <#5>
+ * service ack (reply for SrvReg & SrvDeReg) #5
  *+-----------------------------+
  *|        Error Code           |
  *+-----------------------------+
@@ -256,18 +259,20 @@ public class slpMsgComposer {
     }
 
 /**
- * attribute request <#6>
+ * attribute request #6.
+ <pre>
  *+-------------------------------+----------------------------+
- *|  Length of PRList             |   <PRList> string          |
+ *|  Length of PRList             |   [PRList] string          |
  *+-------------------------------+----------------------------+
  *|  Length of URL                |         URL                |
  *+-------------------------------+----------------------------+
- *|  Length of <scope-list>       |   <scope-list> string      |
+ *|  Length of [scope-list]       |   [scope-list] string      |
  *+-------------------------------+----------------------------+
- *|  Length of <tag-list> string  |   <tag-list> string        |
+ *|  Length of [tag-list] string  |   [tag-list] string        |
  *+-------------------------------+----------------------------+
- *|  Length of <SLP SPI> string   |   <SLP SPI> string         |
+ *|  Length of [SLP SPI] string   |   [SLP SPI] string         |
  *+-------------------------------+----------------------------+
+ </pre>
  */
     public byte[] AttrRqst(int xid, String ltag, String pr, String url,
 			   String scope, String tag, String spi) {
@@ -284,14 +289,16 @@ public class slpMsgComposer {
     }
 
 /**
- * attribute reply (reply for attribute request) <#7>
+ * attribute reply (reply for attribute request) #7.
+ <pre>
  *+-----------------------------+---------------------------------+
- *|         Error Code          |   Length of <attr-list>         |
+ *|         Error Code          |   Length of [attr-list]         |
  *+-----------------------------+---------------------------------+
- *|                          <attr-list>                          \
+ *|                          [attr-list]                          \
  *+----------------+----------------------------------------------+
  *| # of AttrAuths |  Attribute authentication block (if present) \
  *+----------------+----------------------------------------------+
+ </pre>
  */
     public byte[] AttrReply(int xid, String ltag, int ecode, String buf) {
 	int len = Const.header_len + strlen(ltag) + 3 + strlen(buf);
@@ -304,7 +311,7 @@ public class slpMsgComposer {
     }
 
 /**
- * directory agent advertisement #8
+ * directory agent advertisement #8.
  * <pre>
  *+-------------------------------+--------------------------------+
  *|     Error Code                |   DA Stateless Boot Timestamp  |
@@ -369,12 +376,13 @@ public class slpMsgComposer {
 
 /**
  * service type reply (reply for service type request).
- * 
+ * <pre>
  *+-------------------------------+-------------------------------+
- *|          Error Code           |    Length of <srvType-list>   |
+ *|          Error Code           |    Length of [srvType-list]   |
  *+-------------------------------+-------------------------------+
- *|                       <srvType-list>                          \
+ *|                       [srvType-list]                          \
  *+---------------------------------------------------------------+
+ </pre>
  */
     public byte[] SrvTypeReply(int xid, String ltag, int ecode, String buf) {
 	int len = Const.header_len + strlen(ltag) + 2 + strlen(buf);
@@ -386,7 +394,7 @@ public class slpMsgComposer {
     }
 
 /**
- * DataRqst message <#12>
+ * DataRqst message #12.
  *+---------------------------------------------------------------+
  *|                         Accept ID                             \
  *+---------------------------------------------------------------+
@@ -401,7 +409,8 @@ public class slpMsgComposer {
     }
 
 /**
- * append MeshFwd extension & adjust original message
+ * append MeshFwd extension and adjust original message.
+
  *+--------------------------------+----------------------------------+
  *|  MeshFwd Extension ID = 0x0006 |  Next Extension Offset (NEO)     |
  *+--------------+-----------------+----------------------------------+
@@ -439,7 +448,8 @@ public class slpMsgComposer {
     }
 
 /**
- * adjust source message for the adding extension, need to change:
+ * adjust source message for the adding extension.
+ * need to change:
  *   (1) packet length (add new length)
  *   (2) last extension's NEO links to new one
  */
