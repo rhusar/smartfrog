@@ -67,7 +67,7 @@ ToggleToTrueWorkflow extends ToggleToTrue {
   sfShouldTerminate true;
 }
 
-ToggleToFalseWorkflow extends BooleanTrue {
+ToggleToFalseWorkflow extends ToggleToFalse {
   sfShouldTerminate true;
 }
 
