@@ -203,13 +203,20 @@ public class GridSecurity extends SecurityConstants {
 		props.setProperty("-host", hostName);
 		
 		CertUtils utils = new CertUtils(globusLoc);
-		utils.gridCertReq(props);		
+		//utils.gridCertReq(props);		
+		utils.gridCertReq(props, null);		
 	}
 	
-	public void reqUserCert(Properties props) 
+/*	public void reqUserCert(Properties props) 
 			throws GT4SecurityException {
 		CertUtils utils = new CertUtils(globusLoc);
 		utils.gridCertReq(props);
+	}
+*/
+	public void reqUserCert(Properties props, String user) 
+			throws GT4SecurityException {
+		CertUtils utils = new CertUtils(globusLoc);
+		utils.gridCertReq(props, user);
 	}
 	
 	public void installSignedCert(String signedCertStr, File destDir, 
@@ -326,17 +333,18 @@ public class GridSecurity extends SecurityConstants {
 		//cmd = cmd + " -subject -file " + userCert;
 		cmd = cmd + " -subject -file " + certFilePath;
 		
-		File uCert = new File(userCert);
+		//File uCert = new File(userCert);
+		File uCert = new File(certFilePath);
 		if (!uCert.exists()) {
-			log.error("Cannot get user subject... " + userCert +
+			log.error("Cannot get user subject... " + certFilePath +
 					" does not exist");
-			throw new GT4SecurityException("Cannot get user subject... " + userCert +
+			throw new GT4SecurityException("Cannot get user subject... " + certFilePath +
 			" does not exist");
 		}
 		if (!uCert.canRead()) {
-			log.error("Cannot get user subject... " + userCert +
+			log.error("Cannot get user subject... " + certFilePath +
 					" does not have read permissions");
-			throw new GT4SecurityException("Cannot get user subject... " + userCert +
+			throw new GT4SecurityException("Cannot get user subject... " + certFilePath +
 			" does not have read permissions");
 		}
 		
