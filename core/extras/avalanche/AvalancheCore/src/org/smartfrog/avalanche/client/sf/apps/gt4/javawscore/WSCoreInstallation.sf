@@ -11,12 +11,12 @@ For more information: www.smartfrog.org
 */
 #include "/org/smartfrog/components.sf"
 #include "/org/smartfrog/sfcore/workflow/components.sf"
-#include "org.smartfrog/avalanche/client/sf/compress/uncompress.sf"
-#include "org.smartfrog/avalanche/client/sf/apps/gt4/javawscore/JavaWSCore.sf"
-#include "org.smartfrog/avalanche/client/sf/apps/gt4/javawscore/DeployToTomcat.sf"
-#include "org.smartfrog/avalanche/client/sf/ftp/FTPDownload.sf"
+#include "/org/smartfrog/avalanche/client/sf/compress/uncompress.sf"
+#include "/org/smartfrog/avalanche/client/sf/apps/gt4/javawscore/JavaWSCore.sf"
+#include "/org/smartfrog/avalanche/client/sf/apps/gt4/javawscore/DeployToTomcat.sf"
+#include "org/smartfrog/avalanche/client/sf/ftp/FTPDownload.sf"
 
-WSCoreInstallation extends Sequence {
+/*WSCoreInstallation extends Sequence {
 		gzFileName "";
 		tempTarFileName "";
 		
@@ -56,5 +56,48 @@ sfConfig extends Parallel {
 		gt4setup extends WSCoreInstallation {
 			gzFileName ATTRIB srcFile ;
 		}
+	}
+}*/
+
+WSCoreInstallation extends Sequence {
+	gzFileName "";
+	tempTarFileName "";
+	
+	outputDirectoryBase "";
+	
+	globusLoc "";
+	buildFilepath ""; 
+	tomcatLoc "";
+	
+	// this will automatically create tar file
+	extract extends Gunzip.Untar{
+		gzFile LAZY gzFileName ; 
+		outputDirectory LAZY outputDirectoryBase ;
+		tarFileName LAZY tempTarFileName ;
+	}
+	
+	buildWSCore extends JavaWSCore {
+		globusLocation LAZY globusLoc;
+		buildFile LAZY buildFilepath;
+	}
+	
+	deploy extends DeployToTomcat {
+		globusLocation LAZY globusLoc;
+		tomcatDir LAZY tomcatLoc;
+		target "deployTomcat";
+	}
+ 		
+}
+
+sfConfig extends Sequence{
+	
+	srcFile "";
+	
+	download extends FTPDownload{
+		 localFile LAZY srcFile ;
+	}
+	
+	gt4setup extends WSCoreInstallation{
+		gzFileName LAZY srcFile ;
 	}
 }
