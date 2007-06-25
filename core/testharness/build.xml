@@ -210,11 +210,10 @@ For more information: www.smartfrog.org
   
 
   <!-- refactoring of test run process-->
-  <target name="init-system-test-run" depends="init-tests,probe-for-components">
+  <target name="init-system-test-run" depends="init-tests,probe-for-components,declare-system-test-tasks">
+
     <presetdef name="junit-system-test-run" >
-    <sf-junit
-      errorProperty="test.failed"
-      failureProperty="test.failed"
+     <sf-junit
       fork="true"
       forkmode="once"
       maxmemory="512m"      
@@ -223,6 +222,9 @@ For more information: www.smartfrog.org
         value="${test.smartfrog.classesdir}" />
       <syspropertyset >
         <propertyref prefix="runtime"/>
+      </syspropertyset>
+      <syspropertyset>
+        <propertyref prefix="test."/>
       </syspropertyset>
       <classpath refid="testharness.daemon.classpath"/>
       <!-- #Test case isolation technique -->
@@ -240,11 +242,11 @@ For more information: www.smartfrog.org
           <exclude name="${componenttests}logger/**/*Test.class"
             unless="logger.present"/>
           <exclude name="${componenttests}utils/**/*Test.class"
-            unless="utils.present"/>
+            unless="installer.present"/>
 
         </fileset>
       </batchtest>
-    </sf-junit>
+     </sf-junit>
     </presetdef>
   </target>
 
@@ -295,16 +297,8 @@ For more information: www.smartfrog.org
       </sequential>
     </macrodef>
 
-    <probe4 resource="org/smartfrog/services/ant/components.sf" property="ant.present"/>
-    <probe4 resource="org/smartfrog/services/email/emailer.sf" property="emailer.present"/>
-    <probe4 resource="org/smartfrog/services/scripting/scriptPrim.sf"
-        property="scripting.present"/>
-    <probe4 resource="org/smartfrog/services/ssh/password.sf"
-        property="ssh.present"/>
-    <probe4 resource="org/smartfrog/services/comm/slp/sf/SFSlpDA.sf"
-        property="slp.present"/>
     <probe4 resource="org/smartfrog/services/installer/sfInstaller.sf"
-        property="utils.present"/>
+        property="installer.present"/>
   </target>
 
   <!-- =================================================================== -->
@@ -312,33 +306,18 @@ For more information: www.smartfrog.org
   <!-- we don't force a failure in this target if the tests failed, because-->
   <!-- there is existing code to run reports and halt-->
   <!-- =================================================================== -->
-  <target name="system-tests" depends="common.system-tests,init-daemon-with-logging,
+  <target name="system-tests" depends="ready-to-test,init-daemon-with-logging,
     init-system-test-run"
     description="run system tests"
     if="system.tests.enabled">
-    <sf-functionaltest testTimeout="600" shutdownTime="20">
-      <application>
-        <!-- if the port is in use, this will fail to open the port-->
-        <!-- which is ok as we want to debug. but, the running daemon will-->
-        <!-- always be stopped afterwards-->
-        <start-logging-daemon spawn="false" />
-      </application>
-      <probe>
-        <socket port="${smartfrog.daemon.port}" server="localhost"/>
-      </probe>
+    <sf-system-test>
       <test>
         <junit-system-test-run/>
-        <!--<fail if="test.failed">Junit failed</fail>-->
+        <sf-system-test-validate/>
       </test>
-      <teardown>
-        <sf-stopdaemon failonerror="false"/>
-<!--
-        <sf-junitreport data="${test.data.dir}"
-          reports="${test.reports.dir}"
-          />
--->
-      </teardown>
-    </sf-functionaltest>
+    </sf-system-test>
+
+
   </target>
 
 </project>
