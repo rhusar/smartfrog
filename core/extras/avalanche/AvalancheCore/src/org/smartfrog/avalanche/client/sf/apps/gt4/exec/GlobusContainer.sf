@@ -1,5 +1,5 @@
 #include "/org/smartfrog/components.sf"
-#include "org.smartfrog/avalanche/client/sf/exec/simple/StartComponent.sf"
+#include "org/smartfrog/avalanche/client/sf/exec/simple/StartComponent.sf"
 
 GlobusContainer extends StartComponent {
 	componentName "globusContainer";	// The component must be deployed as
