@@ -28,6 +28,9 @@ org/smartfrog/avalanche/client/sf/apps/gt4/exec/SFStopContainer.class
 org/smartfrog/avalanche/client/sf/apps/gt4/javawscore/SFDeployToTomcat.class
 org/smartfrog/avalanche/client/sf/apps/gt4/javawscore/SFJavaWSCore.class
 org/smartfrog/avalanche/client/sf/apps/gt4/javawscore/SFUndeployFrmTomcat.class
+org/smartfrog/avalanche/client/sf/apps/gt4wscore/SFDeployToTomcat.class
+org/smartfrog/avalanche/client/sf/apps/gt4wscore/SFJavaWSCore.class
+org/smartfrog/avalanche/client/sf/apps/gt4wscore/SFUndeployFrmTomcat.class
 org/smartfrog/avalanche/client/sf/apps/gt4/security/SFGridSecurity.class
 org/smartfrog/avalanche/client/sf/apps/gt4/wsgram/SFConfigureSudo.class
 org/smartfrog/avalanche/client/sf/apps/ca/SFCAService.class
@@ -36,3 +39,4 @@ org/smartfrog/avalanche/client/sf/apps/gt4/security/SFSetupHostCerts.class
 org/smartfrog/avalanche/client/sf/apps/gt4/security/SFSetupUserCerts.class
 org/smartfrog/avalanche/client/sf/apps/gt4/security/SFUpdateGridMapFile.class
 org/smartfrog/avalanche/client/sf/apps/gt4/security/SFConfigureSecurity.class
+org/smartfrog/avalanche/client/sf/jboss/JBossImpl.class

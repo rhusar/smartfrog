@@ -202,8 +202,13 @@
 
 	<target name="ca" depends="compile-src,compile-rmi,copySF,copyTemplates">
 		<jar jarfile="${dist.dir}/lib/client/ca.jar" basedir="${build.classes.dir}" includes="**/sf/apps/ca/**"/>
-	</target>	
-	
+	</target>
+
+
+	<target name="jboss" depends="compile-src,compile-rmi,copySF">
+		<jar jarfile="${dist.dir}/lib/client/jboss.jar" basedir="${build.classes.dir}" includes="**/sf/jboss/**"/>
+	</target>
+
 	<!--
 	 setupBDB.java target is used to populate default settings in the database.
 	 This file uses initsettings.xml file to load the values into database.
@@ -220,7 +225,7 @@
 	<target name="allJars" 
 		depends="coreJar,sfXMPPClient,shared,simpleExecComponentJar,ftpComponentJar,sfAntJar,gnubuild,gt4build,gridftp,
 		gt4prereqs,clientutils,diskutils,gt4exec,gt4javawscore,gt4security,gt4wsgram,ca,compressComponentJar,rpmComponentJar,
-		sfUninstallJar">
+		sfUninstallJar,sfGT4WSCoreJar,jboss">
     </target>
 
 	<target name="docs">
@@ -239,7 +244,7 @@
 	  </javadoc>
 	</target>
 
-    <target name="clean">
+    <target name="clean" depends="init">
         <delete dir="${build.classes.dir}"/>
         <delete dir="${dist.dir}"/>
     </target>
