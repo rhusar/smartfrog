@@ -12,12 +12,14 @@ For more information: www.smartfrog.org
 #include "/org/smartfrog/components.sf"
 #include "org/smartfrog/sfcore/workflow/components.sf"
 
-sfConfig extends Parallel {
-	asynchCreateChild true;
-	JavaWSCore extends Prim {
+JavaWSCore extends Prim {
 		sfClass "org.smartfrog.avalanche.client.sf.apps.gt4.javawscore.SFJavaWSCore";
 		globusLocation "";
 		buildFile ""; 
 		shouldTerminate true;
-	}
+}
+
+sfConfig extends Parallel {
+	asynchCreateChild true;
+	buildWSCore extends JavaWSCore; 
 }

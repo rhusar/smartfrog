@@ -12,9 +12,7 @@ For more information: www.smartfrog.org
 #include "/org/smartfrog/components.sf"
 #include "org/smartfrog/sfcore/workflow/components.sf"
 
-sfConfig extends Parallel {
-	asynchCreateChild true;
-	DeployToTomcat extends Prim {
+DeployToTomcat extends Prim {
 		sfClass "org.smartfrog.avalanche.client.sf.apps.gt4.javawscore.SFDeployToTomcat";
 		globusLocation "";
 		tomcatDir ""; 
@@ -36,5 +34,11 @@ sfConfig extends Parallel {
 		valveClassName ["className", "org.globus.tomcat.coyote.valves.HTTPSValve"];
 		
 		shouldTerminate true;
+}
+
+sfConfig extends Parallel {
+	asynchCreateChild true;
+	deploy extends DeployToTomcat {
 	}
+	
 }
