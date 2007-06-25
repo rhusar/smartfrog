@@ -51,7 +51,7 @@ public class SFCAService extends PrimImpl implements Prim,CAService {
 	public synchronized void sfTerminateWith(TerminationRecord arg0) {
 		super.sfTerminateWith(arg0);
 	}
-	
+
 	public String getCaCert() throws RemoteException {
 		String cert = null ; 
 		try {

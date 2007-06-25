@@ -30,9 +30,9 @@ public class CAConstants {
 	//public static String opensslDir = "/usr/local/grit/openssl";
 	public static String caDir = null;
 	public static String opensslDir = null;
-	public static String confFileTmpl = "/org.smartfrog/avalanche/client/" +
+	public static String confFileTmpl = "/org/smartfrog/avalanche/client/" +
 										"sf/apps/ca/openssl.cnf.tmpl";
-	public static String gridConfTmpl = "/org.smartfrog/avalanche/client/" +
+	public static String gridConfTmpl = "/org/smartfrog/avalanche/client/" +
 										"sf/apps/ca/grid-security.conf.tmpl";
 	public static String confFile = null;
 	public static String gridConfFile = null; 
