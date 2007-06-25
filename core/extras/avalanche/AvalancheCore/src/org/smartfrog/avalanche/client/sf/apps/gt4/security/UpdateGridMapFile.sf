@@ -13,7 +13,7 @@ For more information: www.smartfrog.org
 #include "org/smartfrog/services/ssh/sshExec.sf"
 #include "org/smartfrog/sfcore/workflow/components.sf"
 
-UpdateGridMapFile extends SSHSession {
+/*UpdateGridMapFile extends SSHSession {
 	SSHCmdExec:host "localhost";
 	SSHCmdExec:username "";
 	SSHCmdExec:password "";
@@ -36,4 +36,14 @@ sfConfig extends Parallel {
 		SSHCmdExec:password ATTRIB rootPassword;	
 		SSHCmdExec:commands ATTRIB addEntryCmd;
 	}
+}*/
+
+UpdateGridMapFile extends Prim {
+	sfClass "org.smartfrog.avalanche.client.sf.apps.gt4.security.SFUpdateGridMapFile";
+	globusLoc "";
+	certFile "";
+	mapUser "";
+	certSubject "";	
 }
+
+sfConfig extends UpdateGridMapFile;

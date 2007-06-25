@@ -22,12 +22,15 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.Properties;
+import java.net.InetAddress;
 
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimImpl;
 
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.prim.TerminationRecord;
+import org.smartfrog.sfcore.compound.Compound;
+import org.smartfrog.sfcore.processcompound.SFProcess;
 
 import org.smartfrog.avalanche.client.sf.apps.utils.FileUtils;
 import org.smartfrog.avalanche.shared.CAService;
@@ -43,8 +46,11 @@ public class SFSetupUserCerts extends PrimImpl implements Prim {
 	
 	private boolean shouldTerminate;
 	
-	private CAService caService = null ; 
-	private String globusLocation, userPassphrase ; 
+	private CAService caService = null ;
+        private String caHost;
+	private String caLocator;
+
+	private String globusLocation, userPassphrase, user ; 
 	GridSecurity gridSecurity ; 
 
 	/**
@@ -60,11 +66,29 @@ public class SFSetupUserCerts extends PrimImpl implements Prim {
 		
 		// optional attribute
 		shouldTerminate = sfResolve(SHDTERMINATE, true, false);
-		
-		System.out.println("Resolving ....."+ sfResolve("caServerLocator"));
+	
+		System.out.println("Resolving .....");	
+		//System.out.println("Resolving ....."+ sfResolve("caServerLocator"));
 		globusLocation = (String)sfResolve("globusLoc", globusLocation, true);
-		caService = (CAService)sfResolve("caServerLocator");
+		
+		//caService = (CAService)sfResolve("caServerLocator");
+		
+		caHost = (String)sfResolve("caServerHost", caHost, true);
+		caLocator = (String)sfResolve("caServerLocator", caLocator, true);
+
+		try{	
+			Compound cp = SFProcess.getRootLocator().getRootProcessCompound(InetAddress.getByName(caHost));
+			Prim app = (Prim)cp.sfResolveHere(caLocator);
+			caService = (CAService) app;
+		} catch (Exception ex) {
+			sfLog().err("Error while getting reference to CA Service", ex);			
+			throw new SmartFrogException("Error while getting reference to CA Service", ex);
+		}
+		
 		userPassphrase = (String)sfResolve("userPassphrase", userPassphrase, true);
+
+		user = (String) sfResolve("user", user, true);
+		
 		gridSecurity = new GridSecurity(globusLocation);
 	}
 	
@@ -76,17 +100,26 @@ public class SFSetupUserCerts extends PrimImpl implements Prim {
 			// request user certificate
 			Properties usrProps = new Properties();
 			usrProps.setProperty("-passphrase", userPassphrase);
-			gridSecurity.reqUserCert(usrProps);
+			usrProps.setProperty("-cn", user);
+			//gridSecurity.reqUserCert(usrProps);
+			gridSecurity.reqUserCert(usrProps, user);
 			
 			// get signed user certificate from CA
 			// needs user access
-			File userReqFile = new File(SecurityConstants.userCertReq);
+
+			String userCertReq = File.separatorChar + "home" + File.separatorChar + user + File.separatorChar +
+				File.separatorChar + ".globus" + File.separatorChar + 
+				"usercert_request.pem";
+			//File userReqFile = new File(SecurityConstants.userCertReq);
+			File userReqFile = new File(userCertReq);
 			String userReqStr = FileUtils.file2String(userReqFile);
 			String userCert = caService.signCert(userReqStr);
 			
 			// install user certificate on client machine
 			// needs user access
-			String destDir = System.getProperty("user.home") + File.separatorChar +
+		//	String destDir = System.getProperty("user.home") + File.separatorChar +
+		//				".globus" + File.separatorChar;
+			String destDir = File.separatorChar + "home" + File.separatorChar + user + File.separatorChar +
 						".globus" + File.separatorChar;
 			File userDestDir = new File(destDir);
 			gridSecurity.installSignedCert(userCert, userDestDir, "usercert.pem");

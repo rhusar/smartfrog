@@ -19,12 +19,15 @@ package org.smartfrog.avalanche.client.sf.apps.gt4.security;
 
 import java.io.IOException;
 import java.rmi.RemoteException;
+import java.net.InetAddress;
 
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimImpl;
 
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.prim.TerminationRecord;
+import org.smartfrog.sfcore.compound.Compound;
+import org.smartfrog.sfcore.processcompound.SFProcess;
 
 import org.smartfrog.avalanche.shared.CAService;
 
@@ -40,6 +43,9 @@ public class SFConfigureSecurity extends PrimImpl implements Prim {
 	private boolean shouldTerminate;
 	
 	private CAService caService = null ; 
+//	private SFCAService caService = null ; 
+	private String caHost;
+	private String caLocator;
 	private String globusLocation; 
 	GridSecurity gridSecurity ; 
 
@@ -57,11 +63,28 @@ public class SFConfigureSecurity extends PrimImpl implements Prim {
 		// optional attribute
 		shouldTerminate = sfResolve(SHDTERMINATE, true, false);
 		
-		System.out.println("Resolving ....."+ sfResolve("caServerLocator"));
+		System.out.println("Resolving .....");
+		//System.out.println("Resolving ....."+ sfResolve("caServerLocator"));
 		globusLocation = (String)sfResolve("globusLoc", globusLocation, true);
-		caService = (CAService)sfResolve("caServerLocator");
+		//caService = (CAService)sfResolve("caServerLocator");
+		caHost = (String)sfResolve("caServerHost", caHost, true);
+		caLocator = (String)sfResolve("caServerLocator", caLocator, true);
+		
+		try{	
+			Compound cp = SFProcess.getRootLocator().getRootProcessCompound(InetAddress.getByName(caHost));
+			//Prim app = (Prim)cp.sfResolve(Reference.fromString(caLocator));
+			Prim app = (Prim)cp.sfResolveHere(caLocator);
+			caService = (CAService) app;
+	//	caService = (SFCAService)sfResolve("caServerLocator", caService, true);
+	//	caService = (SFCAService)(app.sfResolve("caServerLocator", caService, true));
+	//	caService = ((SFCAService)sfResolve("caServerLocator")).getCAService();
 		//System.out.println("caService");
-		gridSecurity = new GridSecurity(globusLocation);
+			gridSecurity = new GridSecurity(globusLocation);
+		} catch (Exception ex) {
+			sfLog().err("Error while getting reference to CA Service", ex);			
+			throw new SmartFrogException("Error while getting reference to CA Service", ex);
+		}
+		
 	}
 	
 	public synchronized void sfStart() throws SmartFrogException, RemoteException {
@@ -75,7 +98,11 @@ public class SFConfigureSecurity extends PrimImpl implements Prim {
 			sfLog().info("Trying to get CA certificate from CA");
 			caCert = caService.getCaCert();
 			String caInfo = caService.caInfo();
-			gridSecurity.configureSecurity(caCert, caInfo);			
+			gridSecurity.configureSecurity(caCert, caInfo);	
+			
+			CAUtils utils = new CAUtils(caCert);
+			String hashKey = utils.getCAHash();	
+			this.sfParent().sfAddAttribute("caHashkey", hashKey);	
 		} catch (IOException ioe) {
 			sfLog().err("Error while setting up grid security", ioe);			
 			throw new SmartFrogException("Error while setting up grid security", ioe);			
