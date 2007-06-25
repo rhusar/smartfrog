@@ -28,8 +28,11 @@ sfConfig extends Parallel {
 		sedVendor "GNU";
 		makeVendor "GNU";
 		sudo "sudo";
-		postgresVersion "";
+	//	postgresVersion "";
 		
+		perlPath "";
+		perlVersion "";
+	
 		shouldTerminate true;
 	}
 }
