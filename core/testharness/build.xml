@@ -39,6 +39,13 @@ For more information: www.smartfrog.org
   You can enable/disable unit tests by setting unit.tests to true or false;
   system tests by setting system.tests to true or false. By default both are enabled.
 
+  Failing tests are those that we know fail, but don't want cruise control or
+  other things to halt. To run them, set
+  
+  run.failing.tests=true
+
+  In build.properties or -Drun.failing.tests=true on the command line
+
   Do not run the system tests outside a secure environment, unless
   you are running a daemon that is secure.
 
@@ -54,6 +61,7 @@ For more information: www.smartfrog.org
    <!-- override point -->
   <property file="build.properties" />
   <property name="ivy.enabled" value="true"/>
+  <property name="system.tests" value="true" />
   <!-- this component keeps its test files in a different place from the
        rest, for historical reasons (i.e. it is nothing but test) -->
   <property name="test.src.dir" location="testcases" />
@@ -135,6 +143,11 @@ For more information: www.smartfrog.org
       and refer to it in this list. That way we can track which tests
        fail and why
     -->
+    <echo level="verbose">
+      system.tests.enabled=${system.tests.enabled}
+      run.failing.tests=${run.failing.tests}
+      testcase=${testcase}
+    </echo>
     <patternset id="teststhatfail">
       <exclude unless="run.failing.tests" name="${systemtests}/java/LibraryTest.*"/>
       <!--http://jira.smartfrog.org/jira/browse/SFOS-25-->
@@ -224,20 +237,8 @@ For more information: www.smartfrog.org
           <patternset refid="teststhatfail"/>
 
           <!-- other conditional components -->
-          <exclude name="${componenttests}ssh/**/*Test.class"
-            unless="ssh.present"/>
-          <exclude name="${componenttests}scripting/**/*Test.class"
-            unless="scripting.present"/>
-          <exclude name="${componenttests}net/**/*Test.class"
-            unless="net.present"/>
           <exclude name="${componenttests}logger/**/*Test.class"
             unless="logger.present"/>
-          <exclude name="${componenttests}emailer/**/*Test.class"
-            unless="emailer.present"/>
-          <exclude name="${componenttests}ant/**/*Test.class"
-            unless="ant.present"/>
-          <exclude name="${componenttests}slp/**/*Test.class"
-            unless="slp.present"/>
           <exclude name="${componenttests}utils/**/*Test.class"
             unless="utils.present"/>
 
