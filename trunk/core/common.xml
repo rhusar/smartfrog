@@ -184,6 +184,7 @@
     <!--copy all proxy settings from the running JVM-->
     <propertyset id="proxy.settings">
       <propertyref prefix="http."/>
+      <propertyref prefix="https."/>
       <propertyref prefix="socks."/>
     </propertyset>
 
@@ -891,40 +892,6 @@ java.class.path=
   </target>
 
   <!-- ========================================================== -->
-  <!-- set up an HTTP proxy -->
-  <!-- there is a bit of a problem here for laptops whose proxy varies from
-  location to location; we are ignoring that for now. -->
-  <!-- ========================================================== -->
-
-  <target name="init-web-proxy" if="http.proxy.host" depends="init">
-    <property name="http.proxy.port" value="80" />
-    <property name="http.proxy.user" value="" />
-    <property name="http.proxy.password" value="" />
-    <setproxy
-      proxyhost="${http.proxy.host}"
-      proxyport="${http.proxy.port}"
-      proxyuser="${http.proxy.user}"
-      proxypassword="${http.proxy.password}"
-      />
-  </target>
-
-  <!-- ========================================================== -->
-  <!-- set up a socks proxy -->
-  <!-- ========================================================== -->
-  <target name="init-socks-proxy" if="socks.proxy.host" depends="init">
-    <property name="socks.proxy.port" value="1080" />
-    <setproxy
-      socksproxyhost="${socks.proxy.host}"
-      socksproxyport="${socks.proxy.port}"
-      />
-  </target>
-
-  <!-- ========================================================== -->
-  <!-- conditionally initialise socks or web proxy, if configured -->
-  <!-- ========================================================== -->
-  <target name="init-proxy" depends="init-web-proxy,init-socks-proxy"/>
-
-  <!-- ========================================================== -->
   <!-- location of testharness; create a relevant path -->
   <!-- ========================================================== -->
 
@@ -1411,7 +1378,7 @@ java.class.path=
         </syspropertyset>
         <sysproperty key="org.smartfrog.codebase" value="${codebase}"/>
         <syspropertyset>
-          <propertyref prefix="runtime"/>
+          <propertyref prefix="runtime."/>
         </syspropertyset>
       </sf-junit>
     </presetdef>
@@ -1598,7 +1565,7 @@ java.class.path=
   <!-- ========================================================== -->
   <!-- init all the maven2 support   -->
   <!-- ========================================================== -->
-  <target name="m2-init" depends="init,init-proxy,declare-extended-smartfrog-tasks,load-versions">
+  <target name="m2-init" depends="init,declare-extended-smartfrog-tasks,load-versions">
     <!-- Maven2 stuff
       All components build into the org.smartfrog group, unless otherwise stated, but
       are their own artifacts.
