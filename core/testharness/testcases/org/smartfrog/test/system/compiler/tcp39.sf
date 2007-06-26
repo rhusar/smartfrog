@@ -22,7 +22,7 @@ For more information: www.smartfrog.org
 #include "org/smartfrog/components.sf"
 
 /* using codebase to load the included sf files . Move sfExamples.jar to a http location and then parse this description file*/
-#codebase "http://localhost:8080/sfExamples.jar" #include "org/smartfrog/examples/counter/components.sf"
+#codebase "http://smartfrog.sourceforge.net/repository/org/smartfrog/sfExamples/3.11.000beta/sfExamples-3.11.000beta.jar" #include "org/smartfrog/examples/counter/components.sf"
 
 sfConfig extends Counter {
          limit 20;
