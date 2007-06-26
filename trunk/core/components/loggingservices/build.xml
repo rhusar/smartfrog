@@ -32,7 +32,7 @@ For more information: www.smartfrog.org
   <property file="build.properties" />
   <property name="root.dir" location="../../"  />
   <property name="ivy.enabled" value="true"/>
-
+  <property name="system.tests" value="true"/>
 
   <!-- Import common stuff -->
   <!--available file="../../common.xml" property="root.dir" value="../.."/-->
@@ -48,50 +48,11 @@ For more information: www.smartfrog.org
 
  <property name="Name.System" value="sfLoggingServices"/>
 
-  <!-- ========================================================== -->
-  <!-- ========================================================== -->
-  <target name="init" depends="init-standard-output-dirs,use-smartfrog-tasks">
 
-    <!-- the compile time path includes net-->
-<!--     <path id="compile.classpath">
-      <path refid="smartfrog.classpath"/>
-      <fileset dir="${net.lib.dir}">
-        <include name="**/*.jar"/>
-      </fileset>
-    </path>
 
-    <path id="run.classpath">
-      <path refid="compile.classpath"/>
-      <path location="${target.jar}" />
-    </path>
-     -->
-    <tstamp/>
-    <property name="Name.Company" value="(C) Copyright 1998-2006 Hewlett-Packard Development Company, LP"/>
-    <property name="version" value="smartfrog logging services"/>
-    <!--property name="Version" value="1.00.000_beta"/-->
-    <property name="year" value="2006"/>
-    <property name="releases.dir" value="releases"/>
-    <echo message=""/>
+  <target name="init" depends="common.init">
     <echo message="==================================================================="/>
-    <echo message="= ${Name.System} ${version}, ${Name.Company} (${ant.version})"/>
-  </target>
-
-
-  <!-- ========================================================== -->
-  <!-- this is an override point -->
-  <!-- set the verified.ok property if everything needed is present -->
-  <!-- Do Not Fail. This test is used to control conditional builds -->
-  <!-- NB, set property verify.fail.message to something meaningful
-       for better diagnostic messages on failure (see assert-prerequisites)
-       -->
-  <!-- ========================================================== -->
-  <target name="verify-prerequisites" depends="pre-verify-prerequisites">
-      <available property="verified.ok"
-          classname="org.apache.log4j.Logger"
-          classpathref="compile.classpath"
-          ignoresystemclasses="false"/>
-      <property name="verify.fail.message"
-        value="No apache Log4J found"/>
+    <echo message="= ${ant.project.name}"/>
   </target>
 
   <!-- ========================================================== -->
