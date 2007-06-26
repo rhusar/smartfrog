@@ -17,7 +17,7 @@ sfConfig extends Compound {
 
     testHello extends Test {
         sfMeta extends DATA {
-            sfFactory LAZY ROOT:env:bundleTest;
+            sfFactory LAZY PROCESS:env:bundleTest;
             sfClass "org.smartfrog.osgi.test.TestImpl";                            
         }
 

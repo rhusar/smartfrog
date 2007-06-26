@@ -29,19 +29,19 @@ public class SFSynchronousUserBundleListener implements BundleListener {
     }
 
     private void register(Bundle bundle) {
-        if (hasManifestHeader(bundle))
-            // HACK : package-visible field
-            synchronized(SFClassLoader.userBundles) {
-                SFClassLoader.userBundles.add(bundle);
-            }
+//        if (hasManifestHeader(bundle))
+//            // HACK : package-visible field
+//            synchronized(SFClassLoader.userBundles) {
+//                SFClassLoader.userBundles.add(bundle);
+//            }
     }
 
     private void unregister(Bundle bundle) {
-        if (hasManifestHeader(bundle))
-            // HACK
-            synchronized(SFClassLoader.userBundles) {
-                SFClassLoader.userBundles.remove(bundle);
-            }
+//        if (hasManifestHeader(bundle))
+//            // HACK
+//            synchronized(SFClassLoader.userBundles) {
+//                SFClassLoader.userBundles.remove(bundle);
+//            }
     }
 
     private boolean hasManifestHeader(Bundle bundle) {

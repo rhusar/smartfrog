@@ -49,8 +49,7 @@ public class SmartFrogActivator {
                             new DefaultClassLoadingEnvironmentImpl()
                     );
                     */
-                    bundleContext.addBundleListener(new SFSynchronousUserBundleListener(bundleContext));
-
+                    
                     logService.info("SmartFrog daemon running...");
                 } catch (Exception e) {
                     logService.error("Error during daemon startup", e);
