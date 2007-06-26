@@ -56,6 +56,11 @@ For more information: www.smartfrog.org
   to the ivy repository
 
 
+  Other properties used in testing
+  test.localHost    hostname to use for a localhost
+  test.processHost  hostname to use when we want to deploy on a host
+  test.remoteHost   a remote host to deploy to
+
 </description>
 
    <!-- override point -->
@@ -177,6 +182,14 @@ For more information: www.smartfrog.org
     <echo level="verbose" >
       testharness.daemon.classpath=${toString:testharness.daemon.classpath}
     </echo>
+
+
+    <!--set up some other properties-->
+    <property name="test.localHost" value="localhost" />
+    <!--override this to set the property that is used for test process hosts-->
+    <property name="test.processHost" value="localhost" />
+    <property name="test.remoteHost" value="localhost" />
+    <property name="test.smartfrog.dist.dir" location="${smartfrog.dist.dir}" />
   </target>
   
   <!-- ========================================================== -->
@@ -219,10 +232,6 @@ For more information: www.smartfrog.org
       errorProperty="system.test.failed"
       failureProperty="system.test.failed"
        >
-      <sysproperty key="test.smartfrog.classesdir"
-        value="${test.smartfrog.classesdir}" />
-       <sysproperty key="test.classes.dir"
-           value="${test.classes.dir}"/>
       <syspropertyset >
         <propertyref prefix="runtime"/>
       </syspropertyset>
@@ -241,9 +250,6 @@ For more information: www.smartfrog.org
           <!-- failing tests excluded unless run.failing.tests is set -->
           <patternset refid="teststhatfail"/>
 
-          <!-- other conditional components -->
-          <exclude name="${componenttests}logger/**/*Test.class"
-            unless="logger.present"/>
           <exclude name="${componenttests}utils/**/*Test.class"
             unless="installer.present"/>
 
