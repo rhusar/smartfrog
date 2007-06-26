@@ -74,27 +74,12 @@ public class BundleClassLoadingEnvironmentImpl extends PrimImpl implements Class
         }
     }
 
-    public Prim getComponent(ComponentDescription askedFor) throws SmartFrogDeploymentException {
-        String sfClass = null;
-        try {
-
-            sfClass = (String) askedFor.sfResolveHere(SmartFrogCoreKeys.SF_CLASS);
-            Class primClass = bundle.loadClass(sfClass);
-            return (Prim) primClass.newInstance();
-
-        } catch (ClassNotFoundException e) {
-            throw new SmartFrogDeploymentException(MessageUtil.formatMessage(
-                    MSG_CLASS_NOT_FOUND, sfClass), e, this, null);
-        } catch (InstantiationException instexcp) {
-            throw new SmartFrogDeploymentException(MessageUtil.formatMessage(
-                    MSG_INSTANTIATION_ERROR, "Prim"), instexcp, this, null);
-        } catch (IllegalAccessException illaexcp) {
-            throw new SmartFrogDeploymentException(MessageUtil.formatMessage(
-                    MSG_ILLEGAL_ACCESS, "Prim", "newInstance()"), illaexcp, this, null);
-        } catch (SmartFrogResolutionException e) {
-            throw new SmartFrogDeploymentException(MessageUtil.formatMessage(
-                    MSG_UNRESOLVED_REFERENCE, SmartFrogCoreKeys.SF_CLASS), e, this, null);
-        }
+    public Prim getComponent(ComponentDescription askedFor) throws ClassNotFoundException,
+            InstantiationException, IllegalAccessException, SmartFrogResolutionException
+    {
+        String sfClass = (String) askedFor.sfResolveHere(SmartFrogCoreKeys.SF_CLASS);
+        Class primClass = bundle.loadClass(sfClass);
+        return (Prim) primClass.newInstance();
     }
 
 

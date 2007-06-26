@@ -8,6 +8,5 @@ OSGiBundleCompound extends Compound {
 OSGiBundle extends Prim {
     sfClass "org.smartfrog.osgi.BundleClassLoadingEnvironmentImpl";
 
-    location extends String;
-    cleanupWhenUnused true;
+    location extends String;    
 }

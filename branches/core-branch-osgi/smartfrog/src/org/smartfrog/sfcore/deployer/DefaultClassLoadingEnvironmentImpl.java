@@ -4,6 +4,8 @@ import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
+import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
+import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 
 import java.rmi.RemoteException;
 import java.net.URL;
@@ -17,19 +19,25 @@ public class DefaultClassLoadingEnvironmentImpl extends PrimImpl implements Clas
     public DefaultClassLoadingEnvironmentImpl() throws RemoteException {
     }
 
-    public Prim getComponent(ComponentDescription askedFor) throws RemoteException, SmartFrogDeploymentException {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    public Prim getComponent(ComponentDescription askedFor) throws SmartFrogResolutionException,
+            ClassNotFoundException, InstantiationException, IllegalAccessException
+    {
+        ComponentDescription meta = (ComponentDescription)
+                askedFor.sfResolveHere(SmartFrogCoreKeys.SF_METADATA);
+        String className = (String) meta.sfResolveHere(SmartFrogCoreKeys.SF_CLASS);
+        Class primClass = Class.forName(className);
+        return (Prim) primClass.newInstance();
     }
 
     public URL getResource(String location) throws RemoteException {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return getClass().getResource(location);
     }
 
     public InputStream getResourceAsStream(String location) throws RemoteException {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return getClass().getResourceAsStream(location);
     }
 
     public Enumeration getResources(String location) throws IOException {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return getClass().getClassLoader().getResources(location);
     }
 }

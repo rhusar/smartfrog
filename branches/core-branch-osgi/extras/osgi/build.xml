@@ -4,9 +4,11 @@
     <property file="build.properties" />
 
     <target name="init">
-        <fileset id="child.projects" dir="." >
-            <include name="*/build.xml" />
-        </fileset>
+        <filelist id="child.projects" dir="." >
+            <file name="daemon-bundle/build.xml" />
+            <file name="rmiclassloading-extension-bundle/build.xml" />
+            <file name="test-bundle/build.xml" />
+        </filelist>
     </target>
     
     <target name="all" depends="copyJarsAround"/>
@@ -14,7 +16,7 @@
 
     <target name="bundles" depends="smartfrog-dist">
         <subant target="dist" >
-            <fileset refid="child.projects" />
+            <filelist refid="child.projects" />
             <property name="javadocs.disabled" value="${javadoc.disabled}"/>
         </subant>
     </target>
@@ -55,7 +57,7 @@
 
     <target name="clean" depends="init">
         <subant target="clean" >
-            <fileset refid="child.projects" />
+            <filelist refid="child.projects" />
         </subant>        
     </target>
 
