@@ -49,7 +49,7 @@ public class SFDeployer implements MessageKeys {
      * Name of default deployer.
      */
     private static final String DEFAULT_DEPLOYER =
-            "org.smartfrog.sfcore.processcompound.PrimProcessDeployerImpl";
+            "org.smartfrog.sfcore.deployer.ComponentFactoryDeployerImpl";
 
     /**
      * Name of default implementation of ComponentDescription.

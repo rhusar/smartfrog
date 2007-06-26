@@ -86,7 +86,7 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
      *  Initialized to log into the core log: SF_CORE_LOG
      *  It can be replaced using sfSetLog()
      */
-    private LogSF  sfLog = LogFactory.sfGetProcessLog();;
+    private LogSF  sfLog = LogFactory.sfGetProcessLog();
 
     /** Static attribute that hold the lifecycle hooks for sfDeploy. */
     public static final PrimHookSet sfDeployHooks = new PrimHookSet();
@@ -172,7 +172,7 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
      */
     public Object sfResolveHere(Object name)
         throws SmartFrogResolutionException {
-        Object result = null;
+        Object result;
         try {
            result = sfContext.sfResolveAttribute(name);
            try {
@@ -309,7 +309,7 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
      */
     public Object sfResolve(Reference r, int index)
         throws SmartFrogResolutionException, RemoteException {
-        Object obj = null;
+        Object obj;
 
         try {
             obj = r.resolve(this, index);
@@ -363,7 +363,7 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
      * @throws RemoteException In case of Remote/network error
      */
     public String sfDeployedProcessName() throws RemoteException {
-        String value = (String) System.getProperty(
+        String value = System.getProperty(
                 "org.smartfrog.sfcore.processcompound.sfProcessName");
 
         if (value == null) {
@@ -666,10 +666,8 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
             }
 
             if (es) {
-                //Default value=0 = Anonymous port.
-                int port = 0;
+                //Default value = 0 = Anonymous port.
                 Object portObj = sfResolveHere(SmartFrogCoreKeys.SF_EXPORT_PORT,false);
-                Object exportRef = null;
 
                 sfExport(portObj);
             }
@@ -717,8 +715,7 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
      * @throws RemoteException In case of Remote/nework error
      * @throws SmartFrogException  if failed to export
      */
-    protected Object sfExport(Object portObj) throws RemoteException,
-        RemoteException, SmartFrogException {
+    protected Object sfExport(Object portObj) throws RemoteException, SmartFrogException {
         Object exportRef=null;
         int port = 0; //default value
         if ((portObj!=null)) {
@@ -1424,7 +1421,7 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
     public LogSF sfGetApplicationLog() throws SmartFrogException, RemoteException {
         //@todo should we use prim name and get a hierarchy of logs?
          //this.sfResolveHere(SmartFrogCoreKeys.SF_APP_LOG_NAME,false);
-        String sfLogName=null;
+        String sfLogName;
         try {
             // Check or sfLog attribute in component, if not initially defined
             // then it will be created during sfDeploy.
@@ -1498,7 +1495,7 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
     public ComponentDescription sfDiagnosticsReport() {
       ComponentDescription cd = null;
       try {
-        cd = new ComponentDescriptionImpl(null,(Context)new ContextImpl(), false);
+        cd = new ComponentDescriptionImpl(null, new ContextImpl(), false);
         //cd.setPrimParent(this);
         StringBuffer report = new StringBuffer();
         Diagnostics.doReport(report,this);
@@ -1644,7 +1641,7 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
 
     /**
      * Control of complete update process for a component, running through all the above phases.
-     * @param desc
+     * @param desc The new description to be used for the component.
      * @throws java.rmi.RemoteException
      * @throws org.smartfrog.sfcore.common.SmartFrogUpdateException
      */
@@ -1716,7 +1713,7 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
     * @param name attribute key for tags
     * @param tags a set of tags
     *
-    * @throws SmartFrogException the attribute does not exist;
+    * @throws SmartFrogContextException the attribute does not exist;
     */
    public void sfSetTags(Object name, Set tags) throws SmartFrogContextException, RemoteException {
       sfContext.sfSetTags(name, tags);
@@ -1729,7 +1726,7 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
     * @param name attribute key for tags
     * @return the set of tags
     *
-    * @throws SmartFrogException the attribute does not exist;
+    * @throws SmartFrogContextException the attribute does not exist;
     */
    public Set sfGetTags(Object name) throws SmartFrogContextException, RemoteException {
         return sfContext.sfGetTags(name);
@@ -1741,7 +1738,7 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
     * @param name attribute key for tags
     * @param tag a tag to add to the set
     *
-    * @throws SmartFrogException the attribute does not exist;
+    * @throws SmartFrogContextException the attribute does not exist;
     */
    public void sfAddTag(Object name, String tag) throws SmartFrogContextException, RemoteException {
          sfContext.sfAddTag(name,tag);
@@ -1753,7 +1750,7 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
     * @param name attribute key for tags
     * @param tag a tag to remove from the set
     *
-    * @throws SmartFrogException the attribute does not exist;
+    * @throws SmartFrogContextException the attribute does not exist;
     *
     */
    public void sfRemoveTag(Object name, String tag) throws SmartFrogContextException, RemoteException {
@@ -1765,7 +1762,7 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
     *
     * @param name attribute key for tags
     * @param tags  a set of tags to add to the set
-    * @throws SmartFrogException
+    * @throws SmartFrogContextException
     *          the attribute does not exist;
     */
    public void sfAddTags(Object name, Set tags) throws SmartFrogContextException, RemoteException {
@@ -1777,7 +1774,7 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
     *
     * @param name attribute key for tags
     * @param tags  a set of tags to remove from the set
-    * @throws SmartFrogException
+    * @throws SmartFrogContextException
     *          the attribute does not exist;
     */
    public void sfRemoveTags(Object name, Set tags)  throws SmartFrogContextException, RemoteException {
@@ -1803,7 +1800,7 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
     * @param tag the tag to chack
     *
     * @return whether or not the attribute has that tag
-    * @throws SmartFrogException the attribute does not exist
+    * @throws SmartFrogContextException the attribute does not exist
     */
    public boolean sfContainsTag(Object name, String tag) throws SmartFrogContextException, RemoteException {
         return sfContext.sfContainsTag(name, tag);
@@ -1817,10 +1814,10 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
     *
     * @param tags a set of tags
     *
-    * @throws SmartFrogException the attribute does not exist;
+    * @throws SmartFrogContextException the attribute does not exist;
     */
    public void sfSetTags(Set tags) throws SmartFrogContextException, RemoteException {
-       Object key = null;
+       Object key;
        if (sfParent!=null) {
          key = sfParent.sfAttributeKeyFor(this);
          sfParent.sfSetTags(key,tags);
@@ -1837,10 +1834,10 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
     *
     * @return the set of tags
     *
-    * @throws SmartFrogException the attribute does not exist;
+    * @throws SmartFrogContextException the attribute does not exist;
     */
    public Set sfGetTags() throws SmartFrogContextException, RemoteException {
-       Object key = null;
+       Object key;
        if (sfParent!=null) {
          key = sfParent.sfAttributeKeyFor(this);
          return sfParent.sfGetTags(key);
@@ -1856,11 +1853,11 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
     *
     * @param tag a tag to add to the set
     *
-    * @throws SmartFrogException the attribute does not exist;
+    * @throws SmartFrogContextException the attribute does not exist;
     */
    public void sfAddTag( String tag) throws SmartFrogContextException, RemoteException {
-       Object key = null;
-       if (sfParent!=null) {
+       Object key;
+       if (sfParent != null) {
          key = sfParent.sfAttributeKeyFor(this);
          sfParent.sfAddTag(key,tag);
        } else {
@@ -1875,11 +1872,11 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
     *
     * @param tag a tag to remove from the set
     *
-    * @throws SmartFrogException the attribute does not exist;
+    * @throws SmartFrogContextException the attribute does not exist;
     *
     */
    public void sfRemoveTag( String tag) throws SmartFrogContextException, RemoteException {
-       Object key = null;
+       Object key;
        if (sfParent!=null) {
          key = sfParent.sfAttributeKeyFor(this);
          sfParent.sfRemoveTag(key,tag);
@@ -1894,11 +1891,11 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
     * add a tag to the tag set of this component
     *
     * @param tags  a set of tags to add to the set
-    * @throws SmartFrogException
+    * @throws SmartFrogContextException
     *          the attribute does not exist;
     */
    public void sfAddTags( Set tags) throws SmartFrogContextException, RemoteException {
-      Object key = null;
+      Object key;
        if (sfParent!=null) {
          key = sfParent.sfAttributeKeyFor(this);
          sfParent.sfAddTags(key,tags);
@@ -1913,18 +1910,15 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
     * remove a tag from the tag set of this component if it exists
     *
     * @param tags  a set of tags to remove from the set
-    * @throws SmartFrogException
+    * @throws SmartFrogContextException
     *          the attribute does not exist;
     */
    public void sfRemoveTags( Set tags)  throws SmartFrogContextException, RemoteException {
-       Object key = null;
-        if (sfParent!=null) {
-          key = sfParent.sfAttributeKeyFor(this);
-          sfParent.sfRemoveTags(tags);
+       if (sfParent!=null) {
+           sfParent.sfRemoveTags(tags);
         } else {
-          Prim parent = SFProcess.getProcessCompound();
-          key = parent.sfAttributeKeyFor(this);
-          parent.sfRemoveTags(tags);
+           Prim parent = SFProcess.getProcessCompound();
+           parent.sfRemoveTags(tags);
         }
    }
 
@@ -1935,17 +1929,14 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
     * @param tag the tag to chack
     *
     * @return whether or not the attribute has that tag
-    * @throws SmartFrogException the attribute does not exist
+    * @throws SmartFrogContextException the attribute does not exist
     */
    public boolean sfContainsTag(String tag) throws SmartFrogContextException, RemoteException {
-        Object key = null;
-        if (sfParent!=null) {
-          key = sfParent.sfAttributeKeyFor(this);
-          return sfParent.sfContainsTag(tag);
+       if (sfParent!=null) {
+           return sfParent.sfContainsTag(tag);
         } else {
-          Prim parent = SFProcess.getProcessCompound();
-          key = parent.sfAttributeKeyFor(this);
-          return parent.sfContainsTag(tag);
+           Prim parent = SFProcess.getProcessCompound();
+           return parent.sfContainsTag(tag);
         }
    }
 

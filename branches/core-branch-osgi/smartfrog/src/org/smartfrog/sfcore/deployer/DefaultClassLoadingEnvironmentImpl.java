@@ -1,32 +1,38 @@
 package org.smartfrog.sfcore.deployer;
 
-import org.smartfrog.sfcore.prim.PrimImpl;
-import org.smartfrog.sfcore.prim.Prim;
-import org.smartfrog.sfcore.componentdescription.ComponentDescription;
-import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
+import org.smartfrog.sfcore.componentdescription.ComponentDescription;
+import org.smartfrog.sfcore.prim.Prim;
 
-import java.rmi.RemoteException;
-import java.net.URL;
-import java.io.InputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.rmi.RemoteException;
 import java.util.Enumeration;
 
-public class DefaultClassLoadingEnvironmentImpl extends PrimImpl implements ClassLoadingEnvironment {
-
-
-    public DefaultClassLoadingEnvironmentImpl() throws RemoteException {
-    }
+public class DefaultClassLoadingEnvironmentImpl implements ClassLoadingEnvironment {
 
     public Prim getComponent(ComponentDescription askedFor) throws SmartFrogResolutionException,
             ClassNotFoundException, InstantiationException, IllegalAccessException
     {
-        ComponentDescription meta = (ComponentDescription)
-                askedFor.sfResolveHere(SmartFrogCoreKeys.SF_METADATA);
-        String className = (String) meta.sfResolveHere(SmartFrogCoreKeys.SF_CLASS);
+        String className;
+        try {
+            // Component using the new sfMeta syntax
+            ComponentDescription meta = (ComponentDescription)
+                    askedFor.sfResolveHere(SmartFrogCoreKeys.SF_METADATA);
+            className = resolveClassName(meta);
+        } catch (SmartFrogResolutionException e) {
+            // Component using the old sfClass syntax
+            className = resolveClassName(askedFor);
+        }
+        
         Class primClass = Class.forName(className);
         return (Prim) primClass.newInstance();
+    }
+
+    private String resolveClassName(ComponentDescription meta) throws SmartFrogResolutionException {
+        return (String) meta.sfResolveHere(SmartFrogCoreKeys.SF_CLASS);
     }
 
     public URL getResource(String location) throws RemoteException {
