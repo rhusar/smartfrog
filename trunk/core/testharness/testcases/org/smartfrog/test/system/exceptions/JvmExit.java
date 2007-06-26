@@ -46,7 +46,7 @@ public class JvmExit extends PrimImpl implements Prim {
      */
     public void sfDeploy() throws SmartFrogException, RemoteException {
         super.sfDeploy();
-        System.out.println("Going to exit....");
+        sfLog().warn("Going to exit....");
         System.exit(10);
     }
 }
