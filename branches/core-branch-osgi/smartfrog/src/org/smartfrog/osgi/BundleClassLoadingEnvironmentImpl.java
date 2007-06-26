@@ -3,7 +3,6 @@ package org.smartfrog.osgi;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
-
 import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
@@ -13,16 +12,13 @@ import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.reference.Reference;
-import org.smartfrog.sfcore.reference.ReferencePart;
 
 import java.io.IOException;
 import java.io.InputStream;
-
 import java.net.URL;
-
 import java.rmi.RemoteException;
-
 import java.util.Enumeration;
+import java.util.Dictionary;
 
 
 public class BundleClassLoadingEnvironmentImpl extends PrimImpl
@@ -51,12 +47,19 @@ public class BundleClassLoadingEnvironmentImpl extends PrimImpl
 
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
-        // TODO: Handle fragment bundles correctly (must not start them)
-        try {
-            bundle.start();
-        } catch (BundleException e) {
-            SmartFrogException.forward("Error when starting bundle", e);
+
+        if (isNotFragment(bundle)) {
+            try {
+                bundle.start();
+            } catch (BundleException e) {
+                SmartFrogException.forward("Error when starting bundle", e);
+            }
         }
+    }
+
+    private boolean isNotFragment(Bundle bundle) {
+        Dictionary headers = bundle.getHeaders();
+        return headers.get("Fragment-Host") == null;        
     }
 
     public void sfTerminate(TerminationRecord status) {
