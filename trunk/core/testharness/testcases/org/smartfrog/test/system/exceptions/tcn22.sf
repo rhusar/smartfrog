@@ -23,7 +23,7 @@ For more information: www.smartfrog.org
  * Kills the remote SF daemon running on host1.
  */
 
-host1 "ebnt171.india.hp.com"; // Update the host name before running the test
+host1 PROPERTY test.processHost;
 
 sfConfig extends {
     sfProcessHost ATTRIB host1;

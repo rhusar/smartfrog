@@ -40,13 +40,13 @@ T eb97201.india.hp.com:rootProcess:ex1:spawn, primContext: included
  */
 
 
-Example1 extends Compound {// a Compound is a grouping of components sharing a lifecycle
+Example1 extends Compound {
      // there are two components, generator and printer, both defined in netComponents.sf
      // the output (value) of the generator is linked to the input (printVal) of the printer
      generator extends Generator {
-         outputs:value:to LAZY ATTRIB printer:inputs:printVal;
-         interval 1; // speed it up a bit,a number every second
-         min 1;
+       outputs:value:to LAZY ATTRIB printer:inputs:printVal;
+       interval 1; // speed it up a bit,a number every second
+       min 1;
        max 10;
      }
      printer extends Printer;         // Printer is defined in netComponents.sf

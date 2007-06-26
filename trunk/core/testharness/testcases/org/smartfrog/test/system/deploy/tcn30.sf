@@ -21,8 +21,8 @@ For more information: www.smartfrog.org
 #include "org/smartfrog/components.sf"
 
 // Edit the values of hosts
-localHost "eb96121";
-remoteHost "ebnt171";
+localHost PROPERTY test.localHost;
+remoteHost PROPERTY test.remoteHost //was "ebnt171";
 
 sfConfig extends Compound {
     sfProcessHost ATTRIB localHost; 

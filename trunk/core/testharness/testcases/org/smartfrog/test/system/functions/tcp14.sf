@@ -21,7 +21,7 @@ For more information: www.smartfrog.org
 #include "org/smartfrog/components.sf"
 
 /**
- * Inculde the Parser extensions for functions.
+ * Include the Parser extensions for functions.
  */
 #include "org/smartfrog/functions.sf"
 
