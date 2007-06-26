@@ -49,6 +49,11 @@
         changing="true"
         rev="latest.integration"
         conf="build->default"/>
+    <dependency org="org.smartfrog"
+        name="sf-testharness"
+        changing="true"
+        rev="latest.integration"
+        conf="test->default"/>        
     <dependency org="log4j"
         name="log4j"
         rev="${log4j.version}"
