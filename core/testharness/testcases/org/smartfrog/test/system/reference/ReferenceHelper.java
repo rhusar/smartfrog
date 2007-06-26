@@ -57,41 +57,23 @@ public class ReferenceHelper extends PrimImpl implements Prim{
     public void sfDeploy() throws SmartFrogException, RemoteException {
         super.sfDeploy();
         String tcName = sfResolve("testcasename", "tcn39", true);
-        if(tcName.equals("tcn39")) {
+        if (tcName.equals("tcn39")) {
             // get boolean attribute
             boolean bool1 = sfResolve("bool1", true, true);
-            System.out.println("Value ==>"+ bool1);
-        }else if (tcName.equals("tcn40")) {
+            System.out.println("Value ==>" + bool1);
+        } else if (tcName.equals("tcn40")) {
             double attrDouble = sfResolve("dob1", 0.0, true);
-        }else if (tcName.equals("tcn41")) {
-            int intAttr = sfResolve("intAttr", 15, new Integer(12), 
-                                            new Integer (20), true);
-        }else if (tcName.equals("tcn42")) {
-            int intAttr = sfResolve("intAttr", 8, new Integer(5), 
-                                            new Integer (9), true);
-        }else if (tcName.equals("tcn62")) {
-            int integer = ((Integer)sfResolve("integer1")).intValue();
-	}else if (tcName.equals("tcn63")) {
-            String name = sfResolve("name1",true).toString();
-	}
-    }
-
-    /**
-     * Starts the component.
-     *
-     *@throws  Exception  Description of the Exception
-     */
-    public void sfStart() throws SmartFrogException, RemoteException {
-        super.sfStart();
-    }
-
-    /**
-     * Terminats the component
-     *
-     *@param  t  Termination Record
-     */
-    public void sfTerminateWith(TerminationRecord t) {
-        super.sfTerminateWith(t);
+        } else if (tcName.equals("tcn41")) {
+            int intAttr = sfResolve("intAttr", 15, new Integer(12),
+                    new Integer(20), true);
+        } else if (tcName.equals("tcn42")) {
+            int intAttr = sfResolve("intAttr", 8, new Integer(5),
+                    new Integer(9), true);
+        } else if (tcName.equals("tcn62")) {
+            int integer = ((Integer) sfResolve("integer1")).intValue();
+        } else if (tcName.equals("tcn63")) {
+            String name = sfResolve("name1", true).toString();
+        }
     }
 
     // End LifeCycle methods
