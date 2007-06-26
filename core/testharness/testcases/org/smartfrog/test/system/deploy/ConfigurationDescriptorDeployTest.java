@@ -24,7 +24,6 @@ package org.smartfrog.test.system.deploy;
 import org.smartfrog.test.SmartFrogTestBase;
 
 import org.smartfrog.sfcore.common.ConfigurationDescriptor;
-import org.smartfrog.sfcore.common.SmartFrogInitException;
 import org.smartfrog.SFSystem;
 
 
@@ -32,10 +31,8 @@ import java.util.Enumeration;
 import java.util.Vector;
 
 import java.rmi.RemoteException;
-import java.net.UnknownHostException;
-import org.smartfrog.sfcore.common.SmartFrogException;
+
 import org.smartfrog.sfcore.common.OptionSet;
-import org.smartfrog.sfcore.security.SFGeneralSecurityException;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.test.unit.sfcore.common.ConfigurationDescriptorTestURLs;
 
@@ -43,11 +40,9 @@ import org.smartfrog.test.unit.sfcore.common.ConfigurationDescriptorTestURLs;
 public class ConfigurationDescriptorDeployTest extends SmartFrogTestBase implements ConfigurationDescriptorTestURLs {
 
 
-
     public ConfigurationDescriptorDeployTest (String s) {
         super(s);
     }
-
 
 //    public void testConstructionParse1() {
 //        ConfigurationDescriptor cd =null;
@@ -157,21 +152,20 @@ public class ConfigurationDescriptorDeployTest extends SmartFrogTestBase impleme
         testDescription = "- Test descriptions file: \n   " + testDescription + " -  \n";
         Vector cfgDescS = OptionSet.readCfgDescriptorsFile (fileURL);
         try {
-            startSmartFrog();
             Object deployedApp=null;
-            System.out.println("\n Testing: " + testDescription + "\n    ");
+            getLog().info("\n Testing: " + testDescription + "\n    ");
             for (Enumeration items = cfgDescS.elements(); items.hasMoreElements();) {
               ConfigurationDescriptor cfgDesc =(ConfigurationDescriptor)items.nextElement();
-              System.out.println("\n    To deploy: " + cfgDesc.toString("\n    "));
+                getLog().info("\n    To deploy: " + cfgDesc.toString("\n    "));
               deployedApp = SFSystem.runConfigurationDescriptor( cfgDesc,true);
-              System.out.println("\n      Result: "+ cfgDesc.toString("\n    "));
+                getLog().info("\n      Result: "+ cfgDesc.toString("\n    "));
 //                if (deployedApp instanceof Prim) {
-//                    System.out.println("\n" + testDescription + "\n    " + cfgDesc.toString("\n    "+ ((Prim) deployedApp).sfCompleteName()));
+//                    log.info("\n" + testDescription + "\n    " + cfgDesc.toString("\n    "+ ((Prim) deployedApp).sfCompleteName()));
 //                } else if (deployedApp instanceof ConfigurationDescriptor) {
 //                    Throwable exception = ((ConfigurationDescriptor) deployedApp).resultException;
 //                    if (exception != null) ;
 //                    {
-//                        System.out.println("\n Exception for: " +  testDescription + "\n    " + exception.toString());
+//                        log.info("\n Exception for: " +  testDescription + "\n    " + exception.toString());
 //                        throw exception;
 //                    }
 //                 }
@@ -180,8 +174,7 @@ public class ConfigurationDescriptorDeployTest extends SmartFrogTestBase impleme
                     return ((Prim) deployedApp);
              }
         } catch (Throwable throwable) {
-            System.out.println("\n" + testDescription + "\n    " + fileURL);
-            logChainedException(throwable);
+            logThrowable(testDescription + "\n    " + fileURL,throwable);
             throw throwable;
         }
         fail(testDescription + "something odd came back");
@@ -194,11 +187,6 @@ public class ConfigurationDescriptorDeployTest extends SmartFrogTestBase impleme
         String sfact = fileURLTest01;
         String description = "testFileURLTest01 (" + sfact + ")";
         application = deployExpectingSuccessFile(sfact, description);
-        Thread.sleep(10*1000);
-//        terminateSmartFrog();
-//        Thread.sleep(5*1000);
-//        startSmartFrog();
-
     }
 //
 //    public void testurlTest02() throws Throwable {
