@@ -923,7 +923,7 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
      */
     public synchronized void sfDeploy()
         throws SmartFrogException, RemoteException {
-        this.sfSetLog(sfGetApplicationLog());
+        sfSetLog(sfGetApplicationLog());
         sfCompleteName(); //prime the name cache...
 
         if (sfIsTerminated) {
