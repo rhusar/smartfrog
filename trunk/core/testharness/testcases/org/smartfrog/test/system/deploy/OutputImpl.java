@@ -43,16 +43,9 @@ public class OutputImpl extends PrimImpl implements Prim, Output, Remote {
     }
 
     // lifecycle methods
-    public void sfDeploy() throws SmartFrogException {
-        try {
-            // get the binding to forward to, if non-existant fail
-            to = (Input) sfResolve("to");
-        } catch (SmartFrogException sfe) {
-            //TODO: terminate the component
-            throw sfe;
-        } catch (Exception t) {
-            //TODO: terminate the component
-            throw new SmartFrogDeploymentException(t, this);
-        }
+    public void sfDeploy() throws SmartFrogException, RemoteException {
+        super.sfDeploy();
+        // get the binding to forward to, if non-existant fail
+        to = (Input) sfResolve("to");
     }
 }
