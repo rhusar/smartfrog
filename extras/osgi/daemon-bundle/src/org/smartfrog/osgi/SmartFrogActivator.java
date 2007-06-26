@@ -10,6 +10,7 @@ import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.processcompound.ProcessCompound;
 import org.smartfrog.sfcore.security.SFSynchronousUserBundleListener;
+import org.smartfrog.sfcore.deployer.DefaultClassLoadingEnvironmentImpl;
 
 public class SmartFrogActivator {
     private ProcessCompound rootProcess = null;
@@ -42,7 +43,12 @@ public class SmartFrogActivator {
                         }
                     });
                     rootProcess.sfAddAttribute(SmartFrogCoreKeys.SF_CORE_BUNDLE_CONTEXT, bundleContext);
-
+                    /* Doesn't really work, as runSmartFrog() already creates lots of components...
+                    rootProcess.sfAddAttribute(
+                            SmartFrogCoreKeys.SF_DEFAULT_COMPONENT_FACTORY,
+                            new DefaultClassLoadingEnvironmentImpl()
+                    );
+                    */
                     bundleContext.addBundleListener(new SFSynchronousUserBundleListener(bundleContext));
 
                     logService.info("SmartFrog daemon running...");

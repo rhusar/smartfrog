@@ -60,7 +60,7 @@ public class PrimProcessDeployerImpl extends PrimHostDeployerImpl {
 
         // try to look up process name; if it exists, look up in the
         // root process compound (parent of the current?)
-        String processName = null;
+        String processName;
 
         try {
             processName = (String) target.sfResolve(refProcessName);

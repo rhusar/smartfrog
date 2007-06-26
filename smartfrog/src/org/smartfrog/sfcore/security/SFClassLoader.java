@@ -82,7 +82,7 @@ public class SFClassLoader {
      * Loads (or reloads) from a system property from where we are downloading
      * components, represented by a space separated urls.
      */
-    public synchronized static void loadTargetClassBase() {
+    private synchronized static void loadTargetClassBase() {
         targetClassBase = System.getProperty(SF_CODEBASE_PROPERTY);
     }
 
@@ -92,7 +92,7 @@ public class SFClassLoader {
      *
      * @return a string containing the space separated URLs.
      */
-    public synchronized static String getTargetClassBase() {
+    private synchronized static String getTargetClassBase() {
         if (targetClassBase == null) {
             loadTargetClassBase();
         }

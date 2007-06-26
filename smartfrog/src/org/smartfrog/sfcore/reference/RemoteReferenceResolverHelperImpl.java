@@ -15,7 +15,7 @@ import org.smartfrog.sfcore.prim.Prim;
 import java.rmi.RemoteException;
 
 
- public abstract class RemoteReferenceResolverHelperImpl extends Object  {
+ public abstract class RemoteReferenceResolverHelperImpl  {
     protected RemoteReferenceResolverHelperImpl() {
     }
 
@@ -596,7 +596,7 @@ import java.rmi.RemoteException;
             if (referenceObj instanceof SFNull) {return null;}
 
             if (referenceObj instanceof Vector) {
-                String[] array = null;
+                String[] array;
 
                 if (!(((Vector) referenceObj).isEmpty())) {
                     ((Vector) referenceObj).trimToSize();
@@ -997,10 +997,7 @@ import java.rmi.RemoteException;
                 return (referenceObj);
             } else {
                 illegalClassType = true;
-                String defaultValueClass="";
-                                if (defaultValue!=null){
-                                   defaultValueClass=defaultValue.getClass().toString();
-                                }
+                String defaultValueClass = defaultValue.getClass().toString();
                 throw SmartFrogResolutionException.illegalClassType(reference,
                                     this.sfCompleteNameSafe()
                                     , referenceObj , referenceObj.getClass().toString()
@@ -1013,7 +1010,7 @@ import java.rmi.RemoteException;
             }
         }
         return defaultValue;
-    };
+    }
 
     /**
      * Resolves a referencePart given a string and gets a boolean. Utility
