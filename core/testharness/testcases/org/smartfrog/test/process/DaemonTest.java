@@ -34,7 +34,7 @@ import java.net.InetAddress;
 
 public class DaemonTest extends TestCase {
 
-    private static final String home = System.getProperty("smartfrog.dist.dir");
+    private static final String home = System.getProperty("test.smartfrog.dist.dir");
 
     public DaemonTest(String name) {
         super(name);
