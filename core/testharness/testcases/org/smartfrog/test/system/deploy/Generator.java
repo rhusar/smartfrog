@@ -75,7 +75,7 @@ public class Generator extends NetElemImpl implements Remote {
 
             while (true) {
                 int v = Math.abs((r.nextInt() % diff)) + min;
-                System.out.println(name + " generating " + v);
+                sfLog().info(name + " generating " + v);
                 addValue(v);
 
                 try {
