@@ -78,7 +78,7 @@ public class Comp2 extends PrimImpl implements Prim {
         String ln = null;
         //write something to the file
         fileWriter.write(msg, 0, msg.length());
-        System.out.println("Please shutdown the daemon in 10 sec..");
+        sfLog().warn("Please shutdown the daemon in 10 sec..");
         try {
             Thread.sleep(10000);
         } catch (Exception ex) {
@@ -93,7 +93,7 @@ public class Comp2 extends PrimImpl implements Prim {
      */
     public void sfTerminateWith(TerminationRecord t) {
         super.sfTerminateWith(t);
-        System.out.println("sfTerminateWith of Comp2...");
+        sfLog().info("sfTerminateWith of Comp2...");
         // close the o/p stream
         //try {
             fileWriter.close();

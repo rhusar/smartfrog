@@ -88,7 +88,7 @@ public class Comp1 extends PrimImpl implements Prim {
      */
     public void sfTerminateWith(TerminationRecord t) {
         super.sfTerminateWith(t);
-        System.out.println("sfTerminateWith of Comp1...");
+        sfLog().info("sfTerminateWith of Comp1...");
         // close the o/p stream
         //try {
             fileWriter.close();
