@@ -207,7 +207,6 @@ For more information: www.smartfrog.org
       </batchtest>
     </sf-junit>
   </target>
-  
 
   <!-- refactoring of test run process-->
   <target name="init-system-test-run" depends="init-tests,probe-for-components,declare-system-test-tasks">
@@ -216,10 +215,14 @@ For more information: www.smartfrog.org
      <sf-junit
       fork="true"
       forkmode="once"
-      maxmemory="512m"      
-      >
+      maxmemory="512m"
+      errorProperty="system.test.failed"
+      failureProperty="system.test.failed"
+       >
       <sysproperty key="test.smartfrog.classesdir"
         value="${test.smartfrog.classesdir}" />
+       <sysproperty key="test.classes.dir"
+           value="${test.classes.dir}"/>
       <syspropertyset >
         <propertyref prefix="runtime"/>
       </syspropertyset>
@@ -265,6 +268,7 @@ For more information: www.smartfrog.org
     <fail unless="inifile.found">No file:${smartfrog.iniFile}</fail>
     <presetdef name="start-logging-daemon">
       <sf-startdaemon-debug failonerror="false"
+          spawn="false"
           classpathref="testharness.daemon.classpath">
         <sysproperty key="java.util.config.logging.config.file"
             file="${config.dir}/logging.properties" />
@@ -311,6 +315,9 @@ For more information: www.smartfrog.org
     description="run system tests"
     if="system.tests.enabled">
     <sf-system-test>
+      <application>
+        <start-logging-daemon />
+      </application>
       <test>
         <junit-system-test-run/>
         <sf-system-test-validate/>
