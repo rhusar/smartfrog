@@ -47,10 +47,13 @@ public class ComponentFactoryDeployerImpl extends PrimProcessDeployerImpl
 
         try {
             ComponentFactory factory;
-            if (metadata != null)
-                 factory = (ComponentFactory) metadata.sfResolveHere(SmartFrogCoreKeys.SF_FACTORY);
-            else
+
+            if (metadata != null) {
+                Reference factoryRef = (Reference) metadata.sfResolveHere(SmartFrogCoreKeys.SF_FACTORY);
+                factory = (ComponentFactory) metadata.sfResolve(factoryRef); 
+            } else {
                 factory = defaultFactory();
+            }
 
             return factory.getComponent(target);
 

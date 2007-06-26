@@ -469,10 +469,9 @@ public class DeployEntry implements Entry {
      * @return
      */
     public Object getEntryTags(){
-       Object parent = null;
-       Object tags = "";
         try {
-            if (entry instanceof Prim){
+            Object tags = "";
+            if (entry instanceof Prim) {
                      tags = ((Prim) entry).sfGetTags();
             } else if (entry instanceof ComponentDescription){
                      tags = (( ComponentDescription) entry).sfGetTags();

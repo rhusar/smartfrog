@@ -2,10 +2,10 @@
 #include "org/smartfrog/osgi/components.sf"
 
 sfConfig extends Compound {
-    //sfProcessComponentName "env";
+    sfProcessComponentName "env";
 
     bundleTest extends OSGiBundle {
-        location "file:sf-test-osgi-3.10.051dev.jar";
+        location "file:sf-test-osgi-3.11.000beta.jar";
     }
     
 }
