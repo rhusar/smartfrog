@@ -20,11 +20,9 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.sfcore.common;
 
-//import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.SFSystem;
 import org.smartfrog.sfcore.componentdescription.ComponentDescriptionImpl;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
-import java.util.Vector;
 
 /**
  * Class used to store some flags used for log reporting.
