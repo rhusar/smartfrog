@@ -53,7 +53,7 @@ public class CyclicImpl extends PrimImpl implements Prim,Cyclic {
      */
     public void sfDeploy() throws SmartFrogException, RemoteException {
             super.sfDeploy();
-    System.out.println("DEPLOYED");
+        sfLog().info("DEPLOYED");
     }
 
     /**
@@ -63,18 +63,18 @@ public class CyclicImpl extends PrimImpl implements Prim,Cyclic {
      */
     public void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
-    System.out.println("STARTED");
-    attr1 = sfResolve(ATTR1,attr1,true);
-    System.out.println("ATTRIBUTE-1:" + attr1);
+        sfLog().info("STARTED");
+        attr1 = sfResolve(ATTR1, attr1, true);
+        sfLog().info("ATTRIBUTE-1:" + attr1);
     }
 
     /**
-     *  sfTerminate
+     * sfTerminate
      *
-     *@param  t  Description of the Parameter
+     * @param t Description of the Parameter
      */
     public void sfTerminateWith(TerminationRecord t) {
-    System.out.println("TERMINATED");
+        sfLog().info("TERMINATED");
         super.sfTerminateWith(t);
     }
 
