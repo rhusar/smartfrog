@@ -6,8 +6,6 @@
   <description>
     This build file aggregates artifacts from other projects to cut a release.
 
-    It does not use common.xml; it uses the mixin/state xml files instead, because its work
-    bears no resemblance to a normal build.
   </description>
 
   <!--we are a component -->
@@ -224,9 +222,7 @@
 
     <property name="rpm.metadata.dir" location="metadata/rpm"/>
     <loadproperties srcFile="${rpm.metadata.dir}/rpm.properties"/>
-
-    <property name="rpm.release.version" value="2" />
-    <property name="rpm.framework" value="Development/Tools" />    
+    
     <newdir name="build.rpm.dir" location="${build.dir}/rpm" />
 
 
