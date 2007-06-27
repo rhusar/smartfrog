@@ -195,7 +195,7 @@ public abstract class SmartFrogTestBase extends TestCase {
 
     /**
      * Get the log of this test class
-     * @return
+     * @return the log (which will never be null)
      */
     protected static Log getLog() {
         return log;
