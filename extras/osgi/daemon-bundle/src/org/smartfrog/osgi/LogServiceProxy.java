@@ -1,7 +1,7 @@
 package org.smartfrog.osgi;
 
-import org.osgi.service.log.LogService;
 import org.osgi.framework.ServiceReference;
+import org.osgi.service.log.LogService;
 
 public class LogServiceProxy implements LogService {
 
@@ -33,7 +33,7 @@ public class LogServiceProxy implements LogService {
         }
     }
 
-    private LogService logService;
+    private LogService logService = new LogServiceFallback();
 
 
     public void error(final String s, final Throwable e) {

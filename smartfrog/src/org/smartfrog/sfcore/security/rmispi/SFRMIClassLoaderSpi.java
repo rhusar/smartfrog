@@ -34,17 +34,10 @@ import java.security.ProtectionDomain;
  */
 public class SFRMIClassLoaderSpi extends RMIClassLoaderSpi {
     /** A debugging utility to print messages. */
-    private static SFDebug debug;
-
-    /**
-     * Initializes the debugging.
-     */
-    static {
-        debug = SFDebug.getInstance("SFRMIClassLoaderSpi");
-    }
+    private static SFDebug debug = SFDebug.getInstance("SFRMIClassLoaderSpi");
 
     /** Default RMI class loader implementation. */
-    RMIClassLoaderSpi defaultProviderInstance = null;
+    private RMIClassLoaderSpi defaultProviderInstance = null;
     /** A flag that states whether SF security checks are active. */
     private static boolean securityOn = false;
 
