@@ -593,9 +593,8 @@ public class SFSystem implements MessageKeys {
      * @see SFClassLoader
      */
     public static InputStream getInputStreamForResource(String resourceSFURL) throws SmartFrogException {
-        InputStream  is = null;
-        is = SFClassLoader.getResourceAsStream(resourceSFURL);
-        if(is == null) {
+        InputStream  is = SFClassLoader.getResourceAsStream(resourceSFURL);
+        if (is == null) {
             throw new SmartFrogException(MessageUtil.formatMessage(MSG_FILE_NOT_FOUND, resourceSFURL));
         }
         return is;

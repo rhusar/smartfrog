@@ -61,7 +61,7 @@ public class PrimDeployerImpl implements ComponentDeployer, MessageKeys {
                 SmartFrogCoreKeys.SF_CODE_BASE);
 
     /** The target description to work of. */
-    public ComponentDescription target;
+    protected ComponentDescription target;
 
     /**
      * Constructs a component deployer for given description.

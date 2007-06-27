@@ -7,4 +7,4 @@ Fragment-Host: system.bundle; extension=bootclasspath
 Bundle-Description: SmartFrog RMI Service Provider Interface extension bundle
 Bundle-Vendor: HP Labs
 Bundle-Classpath: sf-rmi-spi.jar
-Export-Package: org.smartfrog.sfcore.security.rmispi; version=1.0.0
+Export-Package: org.smartfrog.sfcore.security.rmispi;version=1.0.0

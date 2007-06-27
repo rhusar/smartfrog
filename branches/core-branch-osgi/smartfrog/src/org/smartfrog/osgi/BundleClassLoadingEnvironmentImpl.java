@@ -62,7 +62,7 @@ public class BundleClassLoadingEnvironmentImpl extends PrimImpl
         return headers.get("Fragment-Host") == null;        
     }
 
-    public void sfTerminate(TerminationRecord status) {
+    public void sfTerminateWith(TerminationRecord status) {
         try {
             bundle.uninstall();
         } catch (BundleException e) {

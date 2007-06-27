@@ -57,27 +57,12 @@ public class SFClassLoader {
     private static String targetClassBase = null;
 
     /** A debugging utility to print messages. */
-    private static final SFDebug debug;
-
-    /**
-     * Initializes the debugging.
-     */
-    static {
-        debug = SFDebug.getInstance("SFClassLoader");
-    }
+    private static final SFDebug debug = SFDebug.getInstance("SFClassLoader");
 
     /**
      * Don't let anyone create one of these.
      */
     private SFClassLoader() {
-    }
-
-    /**
-     * Loads (or reloads) from a system property from where we are downloading
-     * components, represented by a space separated urls.
-     */
-    private synchronized static void loadTargetClassBase() {
-        targetClassBase = System.getProperty(SF_CODEBASE_PROPERTY);
     }
 
     /**
@@ -88,7 +73,7 @@ public class SFClassLoader {
      */
     private synchronized static String getTargetClassBase() {
         if (targetClassBase == null) {
-            loadTargetClassBase();
+            targetClassBase = System.getProperty(SF_CODEBASE_PROPERTY);
         }
 
         return targetClassBase;
@@ -106,7 +91,7 @@ public class SFClassLoader {
      *
      * @return A class loader for that codebase.
      */
-    static ClassLoader getClassLoader(String codebase) {
+    private static ClassLoader getClassLoader(String codebase) {
         if (codebase != null) {
             try {
                 return RMIClassLoader.getClassLoader(codebase);
@@ -119,7 +104,7 @@ public class SFClassLoader {
             }
         }
 
-        return Thread.currentThread().getContextClassLoader();
+        return SFClassLoader.class.getClassLoader();
     }
 
     /**
@@ -209,7 +194,7 @@ public class SFClassLoader {
      *
      * @throws Exception if failed to convert string to URL
      */
-    static URL stringToURL(String s) throws Exception {
+    private static URL stringToURL(String s) throws Exception {
         try {
             return (((s.endsWith(".jar")) && (!(s.startsWith("jar:"))))
             ? new URL("jar:" + s + "!/") : new URL(s));
@@ -234,8 +219,9 @@ public class SFClassLoader {
      *
      * @throws ClassNotFoundException The resource does not exist or it does not meet the
      *            security requirements.
+     * @throws java.io.IOException If accessing the resource fails (IO or network problem)
      */
-    protected static InputStream getURLAsStream(URL resourceURL)
+    private static InputStream getURLAsStream(URL resourceURL)
             throws ClassNotFoundException, IOException {
         URLConnection con = resourceURL.openConnection();
         InputStream in = getLocalInputStream(con);
@@ -263,7 +249,7 @@ public class SFClassLoader {
      *
      * @throws IOException in case of any error
      */
-    protected static InputStream getLocalInputStream(URLConnection con) throws IOException {
+    private static InputStream getLocalInputStream(URLConnection con) throws IOException {
         InputStream in = con.getInputStream();
         Certificate[] certs = null;
 
@@ -307,8 +293,9 @@ public class SFClassLoader {
      * @return input stream to the resource
      *
      * @throws ClassNotFoundException if unable to locate the resource
+     * @throws java.io.IOException If accessing the resource fails (IO or network problem)
      */
-    static InputStream getResourceHelper(String resourceInJar, String codebase)
+    private static InputStream getResourceHelper(String resourceInJar, String codebase)
             throws ClassNotFoundException, IOException {
         ClassLoader cl = getClassLoader(codebase);
         if (debug !=null) {
@@ -335,7 +322,7 @@ public class SFClassLoader {
      *
      * @throws ClassNotFoundException if the class cannot be located
      */
-    static Class forNameHelper(String className, String codebase)
+    private static Class forNameHelper(String className, String codebase)
         throws ClassNotFoundException {
         Class cl = Class.forName(className, true, getClassLoader(codebase));
         /* The classes referenced by cl, and loaded by the same class loader
@@ -356,10 +343,10 @@ public class SFClassLoader {
      * @param isForName whether we are loading a class or other resource
      *
      * @return A class or an input stream to the resource
-     * @throws ClassNotFoundException
-     * @throws IOException
+     * @throws ClassNotFoundException The required class is not found.
+     * @throws IOException If accessing the resource fails (IO or network problem). Does not happen for class loading.
      */
-    static Object opHelper(String name, String codebase, boolean isForName)
+    private static Object opHelper(String name, String codebase, boolean isForName)
             throws ClassNotFoundException, IOException {
         if (isForName) {
             return forNameHelper(name, codebase);
@@ -380,7 +367,7 @@ public class SFClassLoader {
      *
      * @return A class or an input stream to the resource
      */
-    static Object classLoaderHelper(String name, String codebase,
+    private static Object classLoaderHelper(String name, String codebase,
         boolean useDefaultCodebase, boolean isForName) {
         if (debug != null) debug.println(" * classLoaderHelper: name "+name+", codebase "+codebase+", usedefaultcodebase "+useDefaultCodebase+", isforname "+isForName+", getTargetClassBase() "+getTargetClassBase());
         String msg = (isForName ? "forName" : "getResourceAsStream");

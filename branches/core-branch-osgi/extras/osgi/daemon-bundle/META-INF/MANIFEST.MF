@@ -11,13 +11,13 @@ Bundle-Classpath: smartfrog.jar,
                   .
 Service-Component: OSGI-INF/daemon.xml
 Import-Package: org.osgi.framework,
-                org.osgi.service.log; resolution:=optional,
+                org.osgi.service.log,
                 org.osgi.service.component,
-                org.smartfrog.sfcore.security.rmispi; version=1.0.0
-Export-Package: org.smartfrog; version=1.0.0,
-                org.smartfrog.sfcore; version=1.0.0,
-                org.smartfrog.sfcore.prim; version=1.0.0,
-                org.smartfrog.sfcore.common; version=1.0.0,
-                org.smartfrog.sfcore.reference; version=1.0.0,
-                org.smartfrog.sfcore.compound; version=1.0.0,
-                org.smartfrog.sfcore.componentdescription; version=1.0.0
+                org.smartfrog.sfcore.security.rmispi;version=1.0.0
+Export-Package: org.smartfrog;version=1.0.0,
+                org.smartfrog.sfcore;version=1.0.0,
+                org.smartfrog.sfcore.prim;version=1.0.0,
+                org.smartfrog.sfcore.common;version=1.0.0,
+                org.smartfrog.sfcore.reference;version=1.0.0,
+                org.smartfrog.sfcore.compound;version=1.0.0,
+                org.smartfrog.sfcore.componentdescription;version=1.0.0
