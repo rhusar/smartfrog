@@ -825,16 +825,33 @@ java.class.path=
       <path refid="build.classpath"/>
     </path>
   </target>
+
+
+  <!--
+    SFOS-167 shows how Ant holds on to task definitions for a long time, longer than we can
+    sustain on a windows client build. To reduce Permanent Generation heap space, we are
+    not loading the tasks if they are already present
+  -->
+  <target name="probe-for-smartfrog-tasks" >
+    <condition property="sf.tasks.loaded">
+      <typefound name="sf-startdaemon"/>
+    </condition>
+  </target>
   
   <!-- ========================================================== -->
   <!-- probe for tasks and use them if they are found; fail if not -->
   <!-- ========================================================== -->
-  <target name="use-smartfrog-tasks" depends="use-smartfrog-tasks-classic,use-smartfrog-tasks-ivy"
-    description="declare the classpath and imports for the smartfrog tasks">
+  <target name="use-smartfrog-tasks"
+      depends="use-smartfrog-tasks-classic,use-smartfrog-tasks-ivy,probe-for-smartfrog-tasks"
+      unless="sf.tasks.loaded"
+      description="declare the classpath and imports for the smartfrog tasks">
     <available
       classname="org.smartfrog.tools.ant.Parse"
       classpathref="smartfrog.tasks.classpath"
       property="sfTasks.present"/>
+    <echo level="verbose">
+      Loading tasks from  ${toString:smartfrog.tasks.classpath}
+    </echo>
     <fail unless="sfTasks.present">
       Smartfrog tasks not found in
       ${toString:smartfrog.tasks.classpath}
@@ -1709,23 +1726,39 @@ java.class.path=
     </condition>
     <mkdir dir="${ivy.reports.dir}" />
     <mkdir dir="${ivy.lib.dir}" />
+
+    <!--first check for ivy being loaded-->
+    <condition property="ivy.tasks.loaded">
+      <typefound name="configure" uri="antlib:fr.jayasoft.ivy.ant"/>
+    </condition>
+
   </target>
 
   <target name="maybe-declare-ivy" if="ivy.enabled"
-          depends="ivy-properties">
+      unless="ivy.tasks.loaded"
+      depends="ivy-properties">
     <typedef uri="antlib:fr.jayasoft.ivy.ant" onerror="fail"
-             resource="${ivy.resource}">
+             >
       <classpath>
         <pathelement location="${ivy.jar}"/>
       </classpath>
     </typedef>
   </target>
 
-  <target name="declare-ivy" unless="ivy.enabled"
-          depends="maybe-declare-ivy"
+  <!--
+    second check for ivy being loaded; this will kick in
+    after maybe-declare-ivy.
+  -->
+  <target name="probe-for-ivy-tasks" depends="maybe-declare-ivy">
+    <condition property="ivy.tasks.loaded2" >
+      <typefound name="configure" uri="antlib:fr.jayasoft.ivy.ant"/>
+    </condition>
+  </target>
+
+  <target name="declare-ivy" unless="ivy.tasks.loaded2"
+          depends="probe-for-ivy-tasks"
           >
-    <typedef uri="antlib:fr.jayasoft.ivy.ant" onerror="fail"
-             resource="fr/jayasoft/ivy/ant/antlib.xml">
+    <typedef uri="antlib:fr.jayasoft.ivy.ant" onerror="fail">
       <classpath>
         <pathelement location="${ivy.jar}"/>
       </classpath>
