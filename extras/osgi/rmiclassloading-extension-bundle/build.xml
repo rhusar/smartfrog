@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<project name="rmi-spi-osgi" default="all">
+<project name="rmi-spi-bundle" default="all">
     <!--
         /** (C) Copyright Hewlett-Packard Development Company, LP
 

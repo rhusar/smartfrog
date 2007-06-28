@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<project name="daemon-osgi" default="default" basedir=".">
+<project name="daemon-bundle" default="default" basedir=".">
     <!--
     /** (C) Copyright Hewlett-Packard Development Company, LP
 
