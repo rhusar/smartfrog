@@ -32,13 +32,13 @@ public class SecurityConstants {
 	public static String subjectStart = "subject= ";
 	
 	public static String signingPolicyTmpl = 
-		"/org.smartfrog/avalanche/client/sf/apps/gt4/security/" +
+		"/org/smartfrog/avalanche/client/sf/apps/gt4/security/" +
 			"ca-signing-policy.conf.tmpl";
 	public static String hostSSLConfTmpl = 
-		"/org.smartfrog/avalanche/client/sf/apps/gt4/security/" +
+		"/org/smartfrog/avalanche/client/sf/apps/gt4/security/" +
 			"globus-host-ssl.conf.tmpl";
 	public static String userSSLConfTmpl = 
-		"/org.smartfrog/avalanche/client/sf/apps/gt4/security/" +
+		"/org/smartfrog/avalanche/client/sf/apps/gt4/security/" +
 			"globus-user-ssl.conf.tmpl";
 	public static String gridSecConf = certificateDir + "/grid-security.conf." +
 				"__HASH__";

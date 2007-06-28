@@ -9,7 +9,7 @@ You should have received a copy of the GNU Lesser General Public License along w
 
 For more information: www.smartfrog.org
 */
-package test.org.smartfrog.avalanche.client.sf.disk;
+package org.smartfrog.services.avalanche.test.system.avalanche.client;
 
 import java.io.File;
 

@@ -20,11 +20,19 @@ For more information: www.smartfrog.org
 
 #include "/org/smartfrog/test/system/assertions/testcompounds/components.sf";
 
-sfConfig extends ExpectDeployFailure {
+/**
+ * here we deploy a testblock that stays deployed after the run.
+ * We expect the child to terminate with an abnormal after the wrong failure message was received
+ * this may not be the semantics we want, but it is what is currently implemented...
+ */
+
+sfConfig extends TestBlock {
+  action extends ExpectDeployFailure {
     sfShouldTerminate false;
 
     action extends FailAbnormal {
-        message "failure message";
+      message "failure message";
     }
     exitText action:message;
+  }
 }

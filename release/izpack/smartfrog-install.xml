@@ -559,11 +559,14 @@ Select this if you want to install all the SmartFrog components in the distribut
     <pack name="Scripting" required="no" preselected="no">
       <description>
         Scripting support.
-        This component does not contain any of the libraries that are needed.
+        Includes BeanShell bsh-${bsh.version}.jar
       </description>
       <file src="ivy/lib/package-scripting/sf-scripting-${smartfrog.version}.jar"
           targetdir="$INSTALL_PATH/lib"
           />
+      <file src="ivy/lib/package-scripting/bsh-${bsh.version}.jar"
+        targetdir="$INSTALL_PATH/lib"
+        />
       <file src="ivy/lib/package-scripting/sf-scripting-javadocs-${smartfrog.version}.zip"
           targetdir="$INSTALL_PATH"
           unpack="true"/>

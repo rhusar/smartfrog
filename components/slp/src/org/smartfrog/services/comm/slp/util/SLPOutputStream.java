@@ -26,68 +26,56 @@
 
 package org.smartfrog.services.comm.slp.util;
 
-import java.io.*;
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 
-public class SLPOutputStream {    
+public class SLPOutputStream {
     private DataOutputStream stream;
     private ByteArrayOutputStream baos;
-    
+
     public SLPOutputStream(ByteArrayOutputStream out) {
         baos = out;
         stream = new DataOutputStream(baos);
     }
-    
+
     /**
-        Writes an int to the stream using 3 bytes.
-     This is currently not properly implemented. It only uses 2 bytes
-     for the int, setting the first to 0.
-     A short should, however, be more than enough to contain the length of the message
-     unless an extremely large MTU is used.
+     * Writes an int to the stream using 3 bytes. This is currently not properly implemented. It only uses 2 bytes for
+     * the int, setting the first to 0. A short should, however, be more than enough to contain the length of the
+     * message unless an extremely large MTU is used.
      */
     public void writeInt3B(int value) throws IOException {
         // write an int to the stream using 3 bytes.
         stream.writeByte(0);
         stream.writeShort(value);
     }
-    
-    /**
-        Writes an int to the stream (4 bytes)
-    */
+
+    /** Writes an int to the stream (4 bytes) */
     public void writeInt(int value) throws IOException {
         stream.writeInt(value);
     }
-    
-    /**
-        Writes a short value to the stream (2 bytes)
-     */
+
+    /** Writes a short value to the stream (2 bytes) */
     public void writeShort(int value) throws IOException {
         stream.writeShort(value);
     }
-    
-    /**
-        Writes a string to the stream
-     */
+
+    /** Writes a string to the stream */
     public void writeString(String s) throws IOException {
         stream.writeBytes(s);
     }
-    
-    /**
-        Writes one byte to the stream
-     */
+
+    /** Writes one byte to the stream */
     public void writeByte(int value) throws IOException {
         stream.writeByte(value);
     }
-    
-    /**
-        Returns a byte arry holding the contents of the stream.
-     */
+
+    /** Returns a byte arry holding the contents of the stream. */
     public byte[] getByteArray() {
         return baos.toByteArray();
     }
-    
-    /**
-        Returns the number of bytes written to the stream
-     */
+
+    /** Returns the number of bytes written to the stream */
     public int getSize() {
         return baos.size();
     }

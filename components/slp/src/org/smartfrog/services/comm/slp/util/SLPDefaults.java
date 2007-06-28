@@ -26,10 +26,7 @@
 
 package org.smartfrog.services.comm.slp.util;
 
-/**
-    This class holds the default values for the possible configuration parameters
-    of the SLP library.
-*/
+/** This class holds the default values for the possible configuration parameters of the SLP library. */
 public class SLPDefaults {
     // timing values
     public static final int DEF_CONFIG_MC_MAX = 15000; // 15 seconds
@@ -39,7 +36,7 @@ public class SLPDefaults {
     public static final int DEF_CONFIG_DA_BEAT = 10800000; // 3 hours
     public static final int DEF_CONFIG_DA_FIND = 900000; // 900 seconds
     public static final int DEF_CONFIG_CLOSE_CONN = 300000; // 5 minutes
-    
+
     // behaviour
     public static final boolean DEF_CONFIG_BCONLY = false; // broadcast only
     public static final String DEF_CONFIG_USEDA = ""; // use predefined DA
@@ -48,7 +45,7 @@ public class SLPDefaults {
     public static final String DEF_CONFIG_SCOPE_LIST = "default";
     public static final String DEF_CONFIG_SPI_STRING = ""; // currently not supported
     public static final String DEF_CONFIG_DA_SPI_STRING = ""; // currently not supported
-    
+
     // misc values
     public static final int DEF_CONFIG_MTU = 1400; // mtu for datagram packets
     public static final int DEF_CONFIG_SLP_PORT = 427; // slp port
@@ -56,24 +53,21 @@ public class SLPDefaults {
     public static final int DEF_CONFIG_SAPORT = 0; // sa unicast port (0 means any port)
     public static final String DEF_CONFIG_LOCALE = "en"; // default locale
     public static final String DEF_CONFIG_MC_ADDR = "239.255.255.253";
-    
+
     // debug
     public static final boolean DEF_CONFIG_DEBUG = false;
     public static final boolean DEF_CONFIG_LOG_ERRORS = false;
     public static final boolean DEF_CONFIG_LOG_MSG = false;
     public static final String DEF_CONFIG_LOGFILE = "";
-	public static final boolean DEF_CONFIG_SFLOG = false;
-    
+    public static final boolean DEF_CONFIG_SFLOG = false;
+
     // properties object...
     private static java.util.Properties defProperties = null;
-    
+
     // return the default properties...
-    /**
-        Returns a Properties object holding the default values for
-        all supported properties.
-    */
+    /** Returns a Properties object holding the default values for all supported properties. */
     public static java.util.Properties getDefaultProperties() {
-        if(defProperties == null) {
+        if (defProperties == null) {
             defProperties = new java.util.Properties();
             // set timing values
             defProperties.setProperty("net.slp.multicastMaximumWait", Integer.toString(DEF_CONFIG_MC_MAX));
@@ -100,9 +94,9 @@ public class SLPDefaults {
             defProperties.setProperty("net.slp.logErrors", Boolean.toString(DEF_CONFIG_LOG_ERRORS));
             defProperties.setProperty("net.slp.logMsg", Boolean.toString(DEF_CONFIG_LOG_MSG));
             defProperties.setProperty("net.slp.logfile", DEF_CONFIG_LOGFILE);
-			defProperties.setProperty("net.slp.sflog", Boolean.toString(DEF_CONFIG_SFLOG));
+            defProperties.setProperty("net.slp.sflog", Boolean.toString(DEF_CONFIG_SFLOG));
         }
-        
-        return (java.util.Properties)defProperties.clone();
+
+        return (java.util.Properties) defProperties.clone();
     }
 }

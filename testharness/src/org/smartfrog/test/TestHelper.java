@@ -34,11 +34,13 @@ import java.rmi.ConnectException;
 public class TestHelper {
 
     /**
-     * name of a property naming a directory
+     * name of a property naming a directory.
+     * {@value}
      */
     public static final String CLASSESDIR = "test.smartfrog.classesdir";
     /**
-     * name of a property naming a directory
+     * name of a property naming the host.
+     * {@value}
      */
     public static final String HOSTNAME = "test.smartfrog.hostname";
 

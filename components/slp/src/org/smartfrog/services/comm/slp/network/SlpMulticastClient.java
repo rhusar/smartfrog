@@ -27,16 +27,16 @@
 package org.smartfrog.services.comm.slp.network;
 
 import org.smartfrog.services.comm.slp.ServiceLocationException;
+
 import java.net.InetAddress;
-import java.net.InetSocketAddress;
 import java.net.MulticastSocket;
 
 public class SlpMulticastClient extends SlpUdpClient {
     private int port;
     private InetAddress address;
     private InetAddress iface;
-        
-    public SlpMulticastClient(String addr, InetAddress iface, 
+
+    public SlpMulticastClient(String addr, InetAddress iface,
                               int port, int MTU, SlpUdpCallback cb) throws ServiceLocationException {
         super(MTU);
         // update variables
@@ -45,7 +45,7 @@ public class SlpMulticastClient extends SlpUdpClient {
             this.port = port;
             this.iface = iface;
             this.callback = cb;
-        
+
             // create socket
             //MulticastSocket s = new MulticastSocket(new InetSocketAddress(address, port));
             MulticastSocket s = new MulticastSocket(port);
@@ -54,15 +54,16 @@ public class SlpMulticastClient extends SlpUdpClient {
             // set correct interface and join multicast group.
             //s.setInterface(iface); // Is this needed ?
             s.joinGroup(address);
-        
+
             // set timeout to 0. (no timeout)
             s.setSoTimeout(0);
-            
+
             socket = s;
-        }catch(Exception ex) {
-            throw new ServiceLocationException(ServiceLocationException.NETWORK_INIT_FAILED);
+        } catch (Exception ex) {
+            throw new ServiceLocationException(ServiceLocationException.NETWORK_INIT_FAILED,
+                    "Failed to initilize multicast network to " + addr, ex);
         }
-        
+
         //start listenerthread...
         Thread t = new Thread(this);
         t.start();

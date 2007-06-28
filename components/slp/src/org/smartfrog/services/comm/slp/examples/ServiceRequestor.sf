@@ -7,8 +7,7 @@ sfConfig extends Compound {
         	serviceType "service:sf-prim:printer";	       
 	}
 
-	g extends Generator 
-	{
+	g extends Generator {
 		messages ["hello", "1"  ];
 
 		printer LAZY loc:result;

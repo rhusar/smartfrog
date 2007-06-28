@@ -55,7 +55,7 @@ public class DeadlockImpl extends PrimImpl implements Prim,Deadlock {
      */
     public void sfDeploy() throws SmartFrogException, RemoteException {
         super.sfDeploy();
-        System.out.println("DEPLOYED "+this.sfCompleteNameSafe().toString());
+        sfLog().info("DEPLOYED "+sfCompleteNameSafe().toString());
     }
 
     /**
@@ -65,13 +65,13 @@ public class DeadlockImpl extends PrimImpl implements Prim,Deadlock {
      */
     public void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
-        System.out.println("STARTED "+this.sfCompleteNameSafe().toString());
+        sfLog().info("STARTED "+sfCompleteNameSafe().toString());
         //optional
         attr1 = sfResolve(ATTR1,attr1,false);
-        System.out.println("ATTRIBUTE-1 (OPT):" + attr1);
+        sfLog().info("ATTRIBUTE-1 (OPT):" + attr1);
         //mandatory
         attr1 = sfResolve(ATTR1,attr1,true);
-        System.out.println("ATTRIBUTE-1 (MAND):" + attr1);
+        sfLog().info("ATTRIBUTE-1 (MAND):" + attr1);
     }
 
     /**
@@ -81,10 +81,10 @@ public class DeadlockImpl extends PrimImpl implements Prim,Deadlock {
      */
     public void sfTerminateWith(TerminationRecord t) {
         StringBuffer msg = new StringBuffer("TERMINATED ");
-        msg.append(this.sfCompleteNameSafe().toString());
+        msg.append(sfCompleteNameSafe().toString());
         msg.append("; ");
         msg.append(t.toString());
-        System.out.println(msg);
+        sfLog().info(msg);
         super.sfTerminateWith(t);
     }
 

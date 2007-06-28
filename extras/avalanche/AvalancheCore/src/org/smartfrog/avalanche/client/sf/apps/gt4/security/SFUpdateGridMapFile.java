@@ -62,10 +62,10 @@ public class SFUpdateGridMapFile extends PrimImpl implements Prim {
 		
 		//System.out.println("Resolving ....."+ sfResolve("caServerLocator"));
 		globusLocation = (String)sfResolve("globusLoc", globusLocation, true);
-		certFile = (String)sfResolve("certFile", certFile, true);
+		certFile = (String)sfResolve("certFile", certFile, false);
 		gridSecurity = new GridSecurity(globusLocation);
 		mapUser = (String)sfResolve("mapUser", mapUser, true);
-		certSubject = (String)sfResolve("certSubject", certSubject, true);
+		certSubject = (String)sfResolve("certSubject", certSubject, false);
 	}
 	
 	public synchronized void sfStart() throws SmartFrogException, RemoteException {

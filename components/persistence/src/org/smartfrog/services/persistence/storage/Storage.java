@@ -304,7 +304,7 @@ public abstract class Storage implements Serializable {
      * stroage description it will create a NullStorageImpl implementation of the 
      * storage.
      *
-     * @param context Context
+     * @param configData Context
      * @throws SmartFrogDeploymentException
      */
     public static Storage createNewStorage(ComponentDescription configData) throws

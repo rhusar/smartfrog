@@ -11,8 +11,8 @@ For more information: www.smartfrog.org
 */
 #include "/org/smartfrog/components.sf"
 #include "/org/smartfrog/sfcore/workflow/components.sf"
-#include "org.smartfrog/avalanche/client/sf/apps/gt4/gridftp/GridFTPPrereqs.sf"
-#include "org.smartfrog/avalanche/client/sf/apps/gt4/gridftp/InstallGridFTP.sf"
+#include "org/smartfrog/avalanche/client/sf/apps/gt4/gridftp/GridFTPPrereqs.sf"
+#include "org/smartfrog/avalanche/client/sf/apps/gt4/gridftp/InstallGridFTP.sf"
 
 sfConfig extends Parallel {
 	asynchCreateChild true;
@@ -26,15 +26,15 @@ sfConfig extends Parallel {
 		
 		// Check Pre-reqs
 		GFTPPrereqs extends GridFTPPrereqs {
-			cVersion ATTRIB cVer;
+			cVersion LAZY cVer;
 		}
 		
 		// Installs GFTP
 		installGFTP extends InstallGridFTP {
-			installerDir ATTRIB instDir;
-			globusLoc ATTRIB globusLocation;
-			configureOpts ATTRIB configOpts;
-			makeTargets ATTRIB makeTargts;
+			installerDir LAZY instDir;
+			globusLoc LAZY globusLocation;
+			configureOpts LAZY configOpts;
+			makeTargets LAZY makeTargts;
 		}
 	}
 }

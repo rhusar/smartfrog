@@ -27,35 +27,35 @@
 package org.smartfrog.services.comm.slp.messages;
 
 import org.smartfrog.services.comm.slp.ServiceLocationException;
-import org.smartfrog.services.comm.slp.ServiceURL;
 import org.smartfrog.services.comm.slp.ServiceType;
+import org.smartfrog.services.comm.slp.ServiceURL;
 import org.smartfrog.services.comm.slp.util.SLPInputStream;
 import org.smartfrog.services.comm.slp.util.SLPOutputStream;
 import org.smartfrog.services.comm.slp.util.SLPUtil;
 
-import java.util.Vector;
-import java.util.Locale;
 import java.io.IOException;
+import java.util.Locale;
+import java.util.Vector;
 
 /**
-    A class representing the SLP Attribute request message.
- <pre>
- 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|       Service Location header (function = AttrRqst = 6)       |
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|       Length of PRList        |         PRList String         \
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|         Length of URL         |              URL              \
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|   Length of scope-list        |        scope-list string      \
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|   Length of tag-list string   |        tag-list string        \
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|    Length of SLP SPI string   |       SLP SPI string          \
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- </pre>
-*/
+ * A class representing the SLP Attribute request message.
+ * <pre>
+ * 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+ * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ * |       Service Location header (function = AttrRqst = 6)       |
+ * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ * |       Length of PRList        |         PRList String         \
+ * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ * |         Length of URL         |              URL              \
+ * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ * |   Length of scope-list        |        scope-list string      \
+ * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ * |   Length of tag-list string   |        tag-list string        \
+ * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ * |    Length of SLP SPI string   |       SLP SPI string          \
+ * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ * </pre>
+ */
 public class SLPAttrReqMessage extends SLPMessageHeader {
     /** List of previous responders */
     private String PRList;
@@ -71,10 +71,10 @@ public class SLPAttrReqMessage extends SLPMessageHeader {
     private Vector tags;
     /** The SPI string for this message */
     private String SPI;
-    
+
     private ServiceURL serviceUrl = null;
     private ServiceType serviceType = null;
-    
+
     public SLPAttrReqMessage() {
         super(SLPMSG_ATTRREQ);
         PRList = "";
@@ -85,7 +85,7 @@ public class SLPAttrReqMessage extends SLPMessageHeader {
         tagList = "";
         SPI = "";
     }
-    
+
     public SLPAttrReqMessage(String u, Vector tags, Vector s, Locale lang) {
         super(SLPMSG_ATTRREQ, lang);
         PRList = "";
@@ -93,13 +93,13 @@ public class SLPAttrReqMessage extends SLPMessageHeader {
         this.tags = tags;
         scopes = s;
         SPI = "";
-        
+
         // create scope string...
         scopeStr = SLPUtil.vectorToString(scopes);
-        
+
         // create taglist string
         tagList = SLPUtil.vectorToString(tags);
-        
+
         // calculate length...
         length += 5; // length fields
         length += PRList.length();
@@ -108,7 +108,7 @@ public class SLPAttrReqMessage extends SLPMessageHeader {
         length += tagList.length();
         length += SPI.length();
     }
-    
+
     public void toOutputStream(SLPOutputStream stream) throws ServiceLocationException {
         super.toOutputStream(stream);
         try {
@@ -122,11 +122,11 @@ public class SLPAttrReqMessage extends SLPMessageHeader {
             stream.writeString(tagList);  // tag-list.
             stream.writeShort(SPI.length()); // length of SPI string
             stream.writeString(SPI); // SPI string.
-        }catch(IOException ioe) {
+        } catch (IOException ioe) {
             throw new ServiceLocationException(ServiceLocationException.INTERNAL_SYSTEM_ERROR);
         }
     }
-    
+
     public void fromInputStream(SLPInputStream stream) throws ServiceLocationException {
         super.fromInputStream(stream);
         try {
@@ -140,73 +140,75 @@ public class SLPAttrReqMessage extends SLPMessageHeader {
             tagList = stream.readString(len); // tag-list
             len = stream.readShort(); // length of SPI string
             SPI = stream.readString(len); // SPI string
-            if(len != 0) {
+            if (len != 0) {
                 throw new ServiceLocationException(ServiceLocationException.AUTHENTICATION_UNKNOWN);
             }
-        }catch(IOException ioe) {
+        } catch (IOException ioe) {
             throw new ServiceLocationException(ServiceLocationException.PARSE_ERROR);
         }
-        
+
         // create scope vector...
         scopes = SLPUtil.stringToVector(scopeStr);
-        
+
         // create tag vector
         tags = SLPUtil.parseTags(tagList);
-        
+
         // create URL or ServiceType
         try {
-            if(url.indexOf("//") != -1) {
+            if (url.indexOf("//") != -1) {
                 serviceUrl = new ServiceURL(url);
-            }
-            else {
+            } else {
                 serviceType = new ServiceType(url);
             }
-        }catch(Exception ex) {
+        } catch (Exception ex) {
             throw new ServiceLocationException(ServiceLocationException.PARSE_ERROR);
         }
     }
-    
+
     public String getPRList() {
         return PRList;
     }
-    
+
     public ServiceURL getURL() {
         return serviceUrl;
     }
-    
+
     public ServiceType getServiceType() {
         return serviceType;
     }
-    
+
     public Vector getScopes() {
         return scopes;
     }
-    
+
     public Vector getTags() {
         return tags;
     }
-    
+
     public String getSPI() {
         return SPI;
     }
-    
+
     public void addResponder(String resp) {
         length -= PRList.length();
-        if(PRList.equals("")) PRList = resp;
-        else PRList = PRList + "," + resp;
-        
+        if (PRList.equals("")) {
+            PRList = resp;
+        } else {
+            PRList = PRList + "," + resp;
+        }
+
         length += PRList.length();
     }
-	
-	public String toString() {
-		String s = super.toString();
-		s += "PRList: " + PRList + "\n"
-		  + "URL: " + url.toString() + "\n"
-		  + "Scope list: " + scopeStr + "\n"
-		  + "Tag list: " + tagList + "\n"
-		  + "*** End Of Message ***";
-		
-		return s;
-	}
+
+    public String toString() {
+        String s = super.toString();
+        s += "PRList: " + PRList + "\n"
+                + "URL: " + url.toString() + "\n"
+                + "Scope list: " + scopeStr + "\n"
+                + "Tag list: " + tagList + "\n"
+                + "*** End Of Message ***";
+
+        return s;
+    }
 }
 

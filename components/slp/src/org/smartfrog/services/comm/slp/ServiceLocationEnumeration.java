@@ -31,12 +31,10 @@ import java.util.Enumeration;
 
 public interface ServiceLocationEnumeration extends Enumeration {
 
-/**
- * Returns the next value or block until it becomes available.
- */
-  public abstract Object next() throws ServiceLocationException;
+    /** Returns the next value or block until it becomes available. */
+    public abstract Object next() throws ServiceLocationException;
 
 /**
-    Returns true if the given Object exists in the enumeration
-*/
+ Returns true if the given Object exists in the enumeration
+ */
 }

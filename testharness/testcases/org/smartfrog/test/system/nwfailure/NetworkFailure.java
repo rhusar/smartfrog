@@ -54,19 +54,20 @@ public class NetworkFailure extends PrimImpl implements Prim {
     public void sfDeploy() throws SmartFrogException, RemoteException {
         super.sfDeploy();
         // ask use to remove network cord to induce n/w failure
-        BufferedReader br =  new BufferedReader(new 
-                                InputStreamReader(System.in));
-        System.out.print("Please disconnet the n/w cord from your machine "+
+        BufferedReader br;
+        sfLog().warn("Please disconnet the n/w cord from your machine "+
                 "and type yes after done:");
         String ln = null;
         try {
             do {
-                System.out.print("Please disconnect the n/w cord from your "+
+                br = new BufferedReader(new
+                        InputStreamReader(System.in));
+                sfLog().warn("Please disconnect the n/w cord from your "+
                         "machine and type yes after done:");
                 ln = br.readLine();
             }
             while (!ln.equalsIgnoreCase("yes"));
-            System.out.println("Deployed");
+            sfLog().info("Deployed");
         }catch (IOException ioex) {
             throw new SmartFrogDeploymentException(ioex);
         }
@@ -79,27 +80,20 @@ public class NetworkFailure extends PrimImpl implements Prim {
      */
     public void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
-        System.out.println("In sfStart");
+        sfLog().info("In sfStart");
         try {
             // if n/w connectivity is missing attr would not get value defined
             // in sf description
             attr = sfResolve("message", attr, true);
-            System.out.println("The value of attribute:"+ attr);
+            sfLog().info("The value of attribute:"+ attr);
         }catch (RemoteException re) {
-            sfTerminate(TerminationRecord.abnormal("N/w Error: "+ re,
-                                  sfCompleteNameSafe()));
+            sfTerminate(TerminationRecord.abnormal("Network Error: "+ re,
+                                  sfCompleteNameSafe(),re));
             throw re;
         }
     }
 
-    /**
-     *  sfTerminate
-     *
-     *@param  t  Description of the Parameter
-     */
-    public void sfTerminateWith(TerminationRecord t) {
-        super.sfTerminateWith(t);
-    }
+
 
     // End LifeCycle methods
 }

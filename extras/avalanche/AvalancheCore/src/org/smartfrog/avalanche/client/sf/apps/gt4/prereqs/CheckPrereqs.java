@@ -55,7 +55,7 @@ public class CheckPrereqs extends CheckCommand implements PrereqConstants {
 		tools.put("make", new Integer(MAKE));
 		tools.put("sudo", new Integer(SUDO));
 		tools.put("zlib", new Integer(ZLIB));
-		tools.put("postgres", new Integer(POSTGRES));
+	//	tools.put("postgres", new Integer(POSTGRES));
 		tools.put("perl", new Integer(PERL));		
 	}
 	

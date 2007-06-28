@@ -18,8 +18,8 @@ For more information: www.smartfrog.org
 
 */
 
-#include "org/smartfrog/components.sf"
-#include "org/smartfrog/test/system/deploy/netComponents.sf"
+#include "/org/smartfrog/components.sf"
+#include "/org/smartfrog/test/system/deploy/netComponents.sf"
 
 /*
 Error Tested:
@@ -30,13 +30,13 @@ SmartFrogLifecycleException:: sfDeploy:
 ts1
 */
 
-Example1 extends Compound {// a Compound is a grouping of components sharing a lifecycle
+Example1 extends Compound {
      // there are two components, generator and printer, both defined in netComponents.sf
      // the output (value) of the generator is linked to the input (printVal) of the printer
      generator extends Generator {
-         outputs:value:to LAZY ATTRIB printer:inputs:printVal;
-         interval 1; // speed it up a bit,a number every second
-         min 1;
+       outputs:value:to LAZY ATTRIB printer:inputs:printVal;
+       interval 1; // speed it up a bit,a number every second
+       min 1;
        max 10;
      }
      printer extends Printer;         // Printer is defined in netComponents.sf
@@ -47,7 +47,7 @@ Example1 extends Compound {// a Compound is a grouping of components sharing a l
  * here it is defined to contain Example1
  */
 
-sfConfig extends Compound { // web compound provides the web registration and management for its sub-components
+sfConfig extends Compound { 
     sfProcessComponentName "default"; // this will normally be set as part of the sfStart, it is
                                         // the name by which it will be known to the SF system (if not
                                         // provided a new unique name is generated

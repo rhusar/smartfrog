@@ -18,7 +18,7 @@ For more information: www.smartfrog.org
 
 */
 
-#include "org/smartfrog/components.sf"
+#include "/org/smartfrog/components.sf"
 
 /**
  * Includes the Display Component.
@@ -35,7 +35,7 @@ For more information: www.smartfrog.org
  */
 #include "/org/smartfrog/services/management/components.sf"
 
-#include "org/smartfrog/examples/counter/components.sf"
+#include "/org/smartfrog/examples/counter/components.sf"
 
 MyCounter extends Counter {
     limit 3;

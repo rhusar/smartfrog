@@ -11,11 +11,30 @@ For more information: www.smartfrog.org
 */
 #include "/org/smartfrog/components.sf"
 #include "/org/smartfrog/sfcore/workflow/components.sf"
-#include "org.smartfrog/avalanche/client/sf/compress/uncompress.sf"
-#include "org.smartfrog/avalanche/client/sf/ftp/FTPDownload.sf"
-#include "org/smartfrog/sfcore/workflow/components.sf"
+#include "/org/smartfrog/avalanche/client/sf/compress/uncompress.sf"
+#include "/org/smartfrog/avalanche/client/sf/ftp/FTPDownload.sf"
+#include "/org/smartfrog/sfcore/workflow/components.sf"
 
 sfConfig extends Parallel {
+	asynchCreateChild true;
+	ftpunzipuntarComp extends Sequence {
+		srcFile "";
+		installDir "";
+		tempTarFileName "";
+		
+		download extends  FTPDownload {
+			localFile LAZY srcFile ;
+		}
+		
+		extract extends Gunzip.Untar {
+			gzFile LAZY srcFile ; 
+			outputDirectory LAZY installDir ;
+			tarFileName LAZY tempTarFileName ;
+		}
+	}
+}
+
+/*sfConfig extends Parallel {
 	asynchCreateChild true;
 	ftpunzipuntarComp extends Sequence {
 		srcFile "";
@@ -32,4 +51,4 @@ sfConfig extends Parallel {
 			tarFileName ATTRIB tempTarFileName ;
 		}
 	}
-}
+}*/

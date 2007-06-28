@@ -31,5 +31,5 @@ sfConfig extends ExpectDeploy {
     }
     exitText "wrong message";
   }
-  exitText "xyz";
+  exitText "Expected action to terminate with the status";
 }

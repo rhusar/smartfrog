@@ -20,8 +20,8 @@ For more information: www.smartfrog.org
 
 #include "org/smartfrog/components.sf"
 
-rHost "ebnt171";
-lHost "localhost";
+rHost PROPERTY test.remoteHost;//"ebnt171";
+lHost PROPERTY test.localHost;
 
 sfConfig extends Compound { 
     sfProcessHost ATTRIB rHost;  //remote host 

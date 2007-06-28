@@ -19,7 +19,7 @@ For more information: www.smartfrog.org
 */
 
 //#include "com/hp/SmartFrog/components.sf"
-#include "org/smartfrog/components.sf"
+#include "/org/smartfrog/components.sf"
 
 sfConfig extends Compound{
         component1 extends Prim {

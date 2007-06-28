@@ -54,7 +54,7 @@ public class CheckCommand {
 			}*/
 			
 			exitVal = p.waitFor();
-			//System.out.println(cmd + " found in path");
+		//	System.out.println(cmd + " found in path");
 		} catch (IOException ioe) {
 			throw new IOException("Error occured while executing " + 
 					chkCmd);

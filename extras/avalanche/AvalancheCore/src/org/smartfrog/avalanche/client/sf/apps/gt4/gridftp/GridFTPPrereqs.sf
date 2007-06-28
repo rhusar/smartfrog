@@ -23,3 +23,12 @@ sfConfig extends Parallel {
 		shouldTerminate true;
 	}
 }
+
+GridFTPPrereqs extends Prim {
+		sfClass "org.smartfrog.avalanche.client.sf.apps.gt4.gridftp.SFGridFTPPrereqs";
+		cVersion "";
+		tarVendor "GNU";
+		sedVendor "GNU";
+		makeVendor "GNU";
+		shouldTerminate true;
+	}

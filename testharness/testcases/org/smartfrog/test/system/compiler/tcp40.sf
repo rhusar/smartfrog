@@ -18,5 +18,5 @@ For more information: www.smartfrog.org
 **/
 
 /* using codebase to load the included sf files . Move sfExamples.jar to a http location and then parse this description file*/
-#codebase "http://localhost:8080/sfExamples.jar" #include "org/smartfrog/examples/counter/example.sf"
+#codebase "http://smartfrog.sourceforge.net/repository/org/smartfrog/sfExamples/3.11.000beta/sfExamples-3.11.000beta.jar" #include "org/smartfrog/examples/counter/example.sf"
 

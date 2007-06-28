@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.rmi.RemoteException;
 import java.rmi.ConnectException;
+
 import org.smartfrog.sfcore.compound.CompoundImpl;
 import org.smartfrog.SFSystem;
 import org.smartfrog.sfcore.common.*;
@@ -11,24 +12,24 @@ import org.smartfrog.sfcore.processcompound.SFProcess;
 import org.smartfrog.sfcore.processcompound.ProcessCompound;
 import org.smartfrog.sfcore.security.*;
 
-public class StartDaemon { 
+public class StartDaemon {
 
-       	private static final String fileSeparator = File.separator;
+    private static final String fileSeparator = File.separator;
 
-	private static final String pathSeparator = System.getProperty("path.separator");
+    private static final String pathSeparator = System.getProperty("path.separator");
 
-	private static String sfHome = null;
-	private static String distPath = null;
-	private static String iniFile = null;
-	private static String sfDefault = null;
-        static ProcessCompound sfDaemon = null;
+    private static String sfHome = null;
+    private static String distPath = null;
+    private static String iniFile = null;
+    private static String sfDefault = null;
+    static ProcessCompound sfDaemon = null;
 
-	public StartDaemon(String sfHomePath) throws Exception {
+    public StartDaemon(String sfHomePath) throws Exception {
         sfHome = sfHomePath;
-	distPath = sfHome + fileSeparator + "lib" + fileSeparator;
+        distPath = sfHome + fileSeparator + "lib" + fileSeparator;
         iniFile = sfHome + fileSeparator + "bin" + fileSeparator + "default.ini";
         sfDefault = sfHome + fileSeparator + "bin" + fileSeparator + "default.sf";
-       /* try {
+        /* try {
             getSFDaemon();
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -39,27 +40,27 @@ public class StartDaemon {
         } else {
             System.out.println("sfDaemon NOT Ready. Something went wrong");
         }*/
-	   }
-    
-	static public void main(String[] args) throws Exception{
-		 sfHome = args[0];
-	 	 distPath = sfHome + fileSeparator + "lib" + fileSeparator;
-         	 iniFile = sfHome + fileSeparator + "bin" + fileSeparator + "default.ini";
-        	 sfDefault = sfHome + fileSeparator + "bin" + fileSeparator + "default.sf";
-	 	try {
-			getSFDaemon();
-		} catch (Exception ex) {
-            		ex.printStackTrace();
-            		throw ex;
-        	}
-	 	if (sfDaemon != null) {
-         	   System.out.println("sfDaemon Ready");
-        	} else {
-            	System.out.println("sfDaemon NOT Ready. Something went wrong");
-        	}
-  	}
+    }
 
-	public static ProcessCompound getSFDaemon() throws RemoteException, SFGeneralSecurityException, SmartFrogException, Exception {
+    static public void main(String[] args) throws Exception {
+        sfHome = args[0];
+        distPath = sfHome + fileSeparator + "lib" + fileSeparator;
+        iniFile = sfHome + fileSeparator + "bin" + fileSeparator + "default.ini";
+        sfDefault = sfHome + fileSeparator + "bin" + fileSeparator + "default.sf";
+        try {
+            getSFDaemon();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            throw ex;
+        }
+        if (sfDaemon != null) {
+            System.out.println("sfDaemon Ready");
+        } else {
+            System.out.println("sfDaemon NOT Ready. Something went wrong");
+        }
+    }
+
+    public static ProcessCompound getSFDaemon() throws RemoteException, SFGeneralSecurityException, SmartFrogException, Exception {
         try {  // there is a Daemon  running in local system
             sfDaemon = SFProcess.getRootLocator().getRootProcessCompound(null, 3800);
         } catch (ConnectException cEx) {  // there is no Daemon  running in local system
@@ -69,13 +70,13 @@ public class StartDaemon {
         return sfDaemon;
     }
 
-	private static void setSFDaemonEnv() {
-	//set system properties for starting the Daemon
+    private static void setSFDaemonEnv() {
+        //set system properties for starting the Daemon
         System.setProperty("org.smartfrog.sfcore.processcompound.sfProcessName", "rootProcess");
         System.setProperty("org.smartfrog.iniFile", iniFile);
         System.setProperty("org.smartfrog.sfcore.processcompound.sfDefault.sfDefault", sfDefault);
 
-	// SmartFrog dist jar files
+        // SmartFrog dist jar files
         File[] sfBaseJars = (new File(distPath)).listFiles(new FilenameFilter() {
             public boolean accept(File f, String s) {
                 if (s.endsWith(".jar")) {
@@ -84,12 +85,12 @@ public class StartDaemon {
                 return false;
             }
         });
-	// Set the classpath to includes all jar files in dist lib directory
+        // Set the classpath to includes all jar files in dist lib directory
         String baseClasssPath = "";
         for (int i = 0; i < sfBaseJars.length; i++) {
             baseClasssPath += sfBaseJars[i].getAbsolutePath() + pathSeparator;
         }
         System.setProperty("java.class.path", System.getProperty("java.class.path") + pathSeparator + baseClasssPath);
-}
+    }
 
 }

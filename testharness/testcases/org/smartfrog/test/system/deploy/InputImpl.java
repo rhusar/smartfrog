@@ -31,8 +31,8 @@ import org.smartfrog.sfcore.reference.Reference;
 
 
 public class InputImpl extends PrimImpl implements Prim, Input, Remote {
-    String me;
-    NetElem function;
+    private String me;
+    private NetElem function;
 
     // standard constructor
     public InputImpl() throws RemoteException {
@@ -46,6 +46,7 @@ public class InputImpl extends PrimImpl implements Prim, Input, Remote {
 
     // lifecycle methods
     public void sfDeploy() throws SmartFrogException, RemoteException {
+        super.sfDeploy();
         try {
             // get the function part; currently the parent
             // (perhaps should be a link...)
@@ -53,12 +54,12 @@ public class InputImpl extends PrimImpl implements Prim, Input, Remote {
 
             // get my name in the "inputs" context for use as my ID
             me = (String) (sfParent().sfAttributeKeyFor(this));
-        } catch (Exception e) {
+        } catch (RemoteException e) {
             try {
                 Reference name = sfCompleteName();
                 terminateComponent(this, e, name);
                 throw new SmartFrogDeploymentException(e, this);
-            } catch (Throwable th) { // the call to sfCompleteName has failed
+            } catch (RemoteException th) { // the call to sfCompleteName has failed
                 terminateComponent(this, e, null);
                 throw new SmartFrogDeploymentException(e, this);
             }

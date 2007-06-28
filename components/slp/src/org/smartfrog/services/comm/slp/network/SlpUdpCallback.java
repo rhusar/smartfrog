@@ -29,28 +29,30 @@ package org.smartfrog.services.comm.slp.network;
 import java.net.DatagramPacket;
 
 /**
-    This interface defines the methods that can be called from the
-    SlpUdpClient classes. All classes that are to be notified of incoming
-    udp traffic must implement these.
-*/
+ * This interface defines the methods that can be called from the SlpUdpClient classes. All classes that are to be
+ * notified of incoming udp traffic must implement these.
+ */
 public interface SlpUdpCallback {
     /**
-        Called when a packet is received from the network.
-        @param p The received packet.
-        @return A boolean saying if the listener should continue running.
-    */
+     * Called when a packet is received from the network.
+     *
+     * @param p The received packet.
+     * @return A boolean saying if the listener should continue running.
+     */
     public abstract boolean udpReceived(DatagramPacket p);
-    
+
     /**
-        Called when a timeout occurs when waiting for data to arrive.
-        @return A boolean saying if the listener should continue running.
-    */
+     * Called when a timeout occurs when waiting for data to arrive.
+     *
+     * @return A boolean saying if the listener should continue running.
+     */
     public abstract boolean udpTimeout();
-    
+
     /**
-        Called when an exception is caught by the UdpClient class.
-        @param e The exception.
-        @return A boolean saying if the listener should continue running.
-    */
+     * Called when an exception is caught by the UdpClient class.
+     *
+     * @param e The exception.
+     * @return A boolean saying if the listener should continue running.
+     */
     public abstract boolean udpError(Exception e);
 }

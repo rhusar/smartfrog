@@ -32,9 +32,16 @@ public class TerminationRecordException extends Exception {
 
 
     /**
+     * simple constructor for deserialization
+     */
+    public TerminationRecordException() {
+    }
+
+    /**
      * Constructs a new exception with <code>null</code> as its detail message.
      * The cause is not initialized, and may subsequently be initialized by a
      * call to {@link #initCause}.
+     * @param record the termination record
      */
     public TerminationRecordException(TerminationRecord record) {
         this.record = record;
@@ -47,6 +54,7 @@ public class TerminationRecordException extends Exception {
      *
      * @param message the detail message. The detail message is saved for
      *                later retrieval by the {@link #getMessage()} method.
+     * @param record the termination record
      */
     public TerminationRecordException(String message, TerminationRecord record) {
         super(message);

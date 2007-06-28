@@ -26,7 +26,7 @@
         extends="redist"/>
     <conf name="documentation"
           description="all documentation artifacts"/>
-    <conf name="test-helpers" visibility="private"
+    <conf name="test-helpers" visibility="private" extends="redist"
       description="everything needed inside the daemon for testing" />
 
   </configurations>
@@ -50,6 +50,21 @@
     <dependency org="junit"
         name="junit"
         rev="${junit.version}"
-        conf="compile,redist,test-helpers->default"/>
+        conf="compile,redist->default"/>
+
+    <!--log4j is not forced into the redists, nor the compile-->
+    <dependency org="log4j"
+        name="log4j"
+        rev="${log4j.version}"
+        conf="test-helpers->default"
+        />
+    <!--it is essential that only the master JAR of commons logging
+    is pulled in, as its dependencies are usually a mess, including things
+    like out of date servlet APIs, bits of Avalon, etc.
+    -->
+    <dependency org="commons-logging"
+        name="commons-logging"
+        rev="${commons-logging.version}"
+        conf="compile,redist->master"/>
   </dependencies>
 </ivy-module>

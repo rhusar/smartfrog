@@ -12,7 +12,7 @@ For more information: www.smartfrog.org
 #include "/org/smartfrog/components.sf"
 #include "org/smartfrog/sfcore/workflow/components.sf"
 
-sfConfig extends Parallel {
+/*sfConfig extends Parallel {
 	asynchCreateChild true;
 	CAService extends Prim {
 		sfClass "org.smartfrog.avalanche.client.sf.apps.ca.SFCAService";
@@ -24,4 +24,21 @@ sfConfig extends Parallel {
 		
 		shouldTerminate false; 
 	}
+}*/
+
+CAService extends Prim {
+		sfClass "org.smartfrog.avalanche.client.sf.apps.ca.SFCAService";
+	//	sfProcessComponentName "caService";
+		
+		caPassphrase "" ;
+		caDir "";
+		opensslDir "";
+		
+		shouldTerminate false; 
 }
+
+sfConfig extends CAService;
+
+
+
+

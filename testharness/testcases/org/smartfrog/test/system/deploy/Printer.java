@@ -28,7 +28,7 @@ public class Printer extends NetElemImpl implements Remote {
     }
 
     public int evaluate(String from, int value) {
-        System.out.println(name + " received value " + value);
+        sfLog().info(name + " received value " + value);
 
         return value;
     }

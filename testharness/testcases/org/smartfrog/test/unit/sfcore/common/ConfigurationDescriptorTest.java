@@ -23,23 +23,13 @@
 package org.smartfrog.test.unit.sfcore.common;
 
 import org.smartfrog.sfcore.common.ConfigurationDescriptor;
-import org.smartfrog.sfcore.common.SmartFrogInitException;
-import org.smartfrog.SFSystem;
-import junit.framework.Assert;
-
 import org.smartfrog.test.SmartFrogTestBase;
-
-import java.util.Enumeration;
-
 import java.rmi.RemoteException;
 import java.net.UnknownHostException;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.security.SFGeneralSecurityException;
-import org.smartfrog.sfcore.prim.Prim;
 
-import junit.framework.TestCase;
-
-public class ConfigurationDescriptorTest extends TestCase implements ConfigurationDescriptorTestURLs {
+public class ConfigurationDescriptorTest extends SmartFrogTestBase implements ConfigurationDescriptorTestURLs {
 
     public ConfigurationDescriptorTest (String s) {
         super(s);
@@ -81,19 +71,22 @@ public class ConfigurationDescriptorTest extends TestCase implements Configurati
 //    }
 
     /**
-         * Deploy a component, expecting a smartfrog exception. You can
-         * also specify the classname of a contained fault -which, if specified,
-         * must be contained, and some text to be searched for in this exception.
-         * @param sfact  SFACT: SmartFrog Action Descriptors
-         * @param testDescription Description for the test
-         * @param exceptionName name of the exception thrown
-         * @param searchString string which must be found in the exception message
-         * @param containedExceptionName optional classname of a contained
-         * exception; does not have to be the full name; a fraction will suffice.
-         * @param containedExceptionText optional text in the contained fault.
-         * Ignored if the containedExceptionClass parametere is null.
-         * @throws RemoteException in the event of remote trouble.
-         */
+     * Deploy a component, expecting a smartfrog exception. You can
+     * also specify the classname of a contained fault -which, if specified,
+     * must be contained, and some text to be searched for in this exception.
+     * @param sfact  SFACT: SmartFrog Action Descriptors
+     * @param testDescription Description for the test
+     * @param exceptionName name of the exception thrown
+     * @param searchString string which must be found in the exception message
+     * @param containedExceptionName optional classname of a contained
+     * exception; does not have to be the full name; a fraction will suffice.
+     * @param containedExceptionText optional text in the contained fault.
+     * Ignored if the containedExceptionClass parameter is null.
+     * @throws SmartFrogException smartfrog problems
+     * @throws RemoteException in the event of remote trouble.
+     * @throws UnknownHostException unknown host
+     * @throws SFGeneralSecurityException security problems
+     */
         protected void deployExpectingException2(String sfact,
                                                 String testDescription,
                                                 String exceptionName,
@@ -102,13 +95,13 @@ public class ConfigurationDescriptorTest extends TestCase implements Configurati
                                                 String containedExceptionText) throws SmartFrogException,
                 RemoteException, UnknownHostException, SFGeneralSecurityException {
             testDescription = "- Test description: "+testDescription+" -  \n";
-            System.out.println("\n"+testDescription+"\n");
+            getLog().info("\n"+testDescription+"\n");
 
             ConfigurationDescriptor cfgDesc=null;
             try {
                 cfgDesc = new ConfigurationDescriptor(sfact);
                 fail(testDescription+ "We expected an exception here:"+exceptionName
-                         +" but not exception was thrown");
+                         +" but no exception was thrown");
 
              } catch (Throwable thr) {
                  if (cfgDesc!=null) {
@@ -163,16 +156,12 @@ public class ConfigurationDescriptorTest extends TestCase implements Configurati
          * @throws RemoteException in the event of remote trouble.
          */
         protected void deployExpectingSuccess2(String sfact, String testDescription)
-                                                        throws Exception,Throwable {
+                                                        throws Throwable {
             testDescription = "- Test description: "+testDescription+" -  \n";
-            System.out.println("\n"+testDescription+"\n");
+            getLog().info("\n"+testDescription+"\n");
 
-            try {
-                ConfigurationDescriptor cfgDesc = new ConfigurationDescriptor(sfact);
-            } catch (Throwable throwable) {
-               fail(testDescription + throwable.getMessage());
-               throw throwable;
-            }
+            ConfigurationDescriptor cfgDesc = new ConfigurationDescriptor(sfact);
+
         }
 
 
@@ -268,11 +257,11 @@ public class ConfigurationDescriptorTest extends TestCase implements Configurati
 
         // This one has to be the last successful test. It terminates the
         // daemon
-        public void testurlTest100 ()throws Throwable{
-           String sfact = urlTest100;
-           String description = "testurlTest100("+sfact+")";
-           deployExpectingSuccess2(sfact,description);
-        }
+
+    public void testurlTest100() throws Throwable {
+        String description = "testurlTest100(" + urlTest100 + ")";
+        deployExpectingSuccess2(urlTest100, description);
+    }
 
 //        public void testurlTest16 ()throws Throwable{
 //           String sfact = urlTest16;

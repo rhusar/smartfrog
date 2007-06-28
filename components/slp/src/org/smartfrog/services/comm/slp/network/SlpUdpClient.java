@@ -27,14 +27,15 @@
 package org.smartfrog.services.comm.slp.network;
 
 import org.smartfrog.services.comm.slp.ServiceLocationException;
-import java.net.DatagramSocket;
-import java.net.DatagramPacket;
+
 import java.io.InterruptedIOException;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
 
 /**
-    The SlpUdpClient class and subclasses are responsible for listening for
-    incoming UDP messages and sending datagrams from the SLP agents.
-*/
+ * The SlpUdpClient class and subclasses are responsible for listening for incoming UDP messages and sending datagrams
+ * from the SLP agents.
+ */
 public abstract class SlpUdpClient implements Runnable {
     protected DatagramSocket socket;
     protected boolean running = true;
@@ -42,80 +43,77 @@ public abstract class SlpUdpClient implements Runnable {
     protected int MTU;
     protected DatagramPacket packet = null;
     protected SlpUdpCallback callback = null;
-    
+
     /**
-        Creates a new SlpUdpClient.
-        @param mtu The MTU for SLP messages.
-    */
+     * Creates a new SlpUdpClient.
+     *
+     * @param mtu The MTU for SLP messages.
+     */
     public SlpUdpClient(int mtu) {
         MTU = mtu;
         data = new byte[MTU];
         socket = null; // create socket in subclass !
     }
-    
-    /**
-        Stops the listener thread, and closes the socket.
-    */
+
+    /** Stops the listener thread, and closes the socket. */
     public synchronized void close() {
         running = false;
         try {
             socket.close();
-        }catch(Exception e) { }
+        } catch (Exception e) {
+        }
     }
-    
+
     /**
-        Sends a datagrampacket.
-        @param p The packet to send.
-        @exception ServiceLocationException if there is an error.
-    */
+     * Sends a datagrampacket.
+     *
+     * @param p The packet to send.
+     * @throws ServiceLocationException if there is an error.
+     */
     public synchronized void send(DatagramPacket p) throws ServiceLocationException {
-        throw new ServiceLocationException(ServiceLocationException.INTERNAL_SYSTEM_ERROR);
-    }
-    
-    /**
-        Sends a datagrampacket and regisers a callback.
-        This is to be used when one wants to receive replies after sending a message
-        through a shared SlpUdpClient.
-        @param p The packet to send.
-        @param id The XID of the message we want the replies for.
-        @param cb The SlpUdpCallback that will handle the replies.
-    */
-    public synchronized boolean send(DatagramPacket p, int id, SlpUdpCallback cb) throws ServiceLocationException {
-        throw new ServiceLocationException(ServiceLocationException.INTERNAL_SYSTEM_ERROR);
-    }
-    
-    /**
-        Removes the callback registered with a shared SlpUdpClient.
-    */
-    public synchronized void removeCallback(int id) throws ServiceLocationException {
         throw new ServiceLocationException(ServiceLocationException.INTERNAL_SYSTEM_ERROR);
     }
 
     /**
-        Runs the listener thread.
-        Listens for incoming messages, and calls the appropriate callback methods.
-    */
-    public void run( ) {
+     * Sends a datagrampacket and regisers a callback. This is to be used when one wants to receive replies after
+     * sending a message through a shared SlpUdpClient.
+     *
+     * @param p  The packet to send.
+     * @param id The XID of the message we want the replies for.
+     * @param cb The SlpUdpCallback that will handle the replies.
+     */
+    public synchronized boolean send(DatagramPacket p, int id, SlpUdpCallback cb) throws ServiceLocationException {
+        throw new ServiceLocationException(ServiceLocationException.INTERNAL_SYSTEM_ERROR);
+    }
+
+    /** Removes the callback registered with a shared SlpUdpClient. */
+    public synchronized void removeCallback(int id) throws ServiceLocationException {
+        throw new ServiceLocationException(ServiceLocationException.INTERNAL_SYSTEM_ERROR);
+    }
+
+    /** Runs the listener thread. Listens for incoming messages, and calls the appropriate callback methods. */
+    public void run() {
         while (running) {
             try {
                 packet = new DatagramPacket(data, MTU);
                 socket.receive(packet);
-                if(running) running = callback.udpReceived(packet);
-                
+                if (running) running = callback.udpReceived(packet);
+
             } catch (InterruptedIOException e) {
-                if(running) running = callback.udpTimeout();
+                if (running) running = callback.udpTimeout();
             }
             catch (Exception e) {
-                if(running) running = callback.udpError(e);
+                if (running) running = callback.udpError(e);
             }
         }
-        
+
         // try to close socket.
         try {
             socket.close();
-        }catch(Exception e) { } // ignore error
+        } catch (Exception e) {
+        } // ignore error
     }
-    
+
     /** Returns the port this object is listening to. */
     public int getPort() {
         return socket.getLocalPort();

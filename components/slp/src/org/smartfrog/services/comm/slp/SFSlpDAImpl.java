@@ -26,37 +26,32 @@
 
 package org.smartfrog.services.comm.slp;
 
-import org.smartfrog.sfcore.prim.PrimImpl;
-import org.smartfrog.sfcore.prim.Prim;
-import org.smartfrog.sfcore.prim.TerminationRecord;
+import org.smartfrog.services.comm.slp.agents.DirectoryAgent;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.logging.LogSF;
+import org.smartfrog.sfcore.prim.Prim;
+import org.smartfrog.sfcore.prim.PrimImpl;
+import org.smartfrog.sfcore.prim.TerminationRecord;
 
 import java.rmi.RemoteException;
 import java.util.Properties;
 
-import org.smartfrog.services.comm.slp.agents.DirectoryAgent;
-
-/**
-    SmartFrog component for the Directory Agent.
-*/
+/** SmartFrog component for the Directory Agent. */
 public class SFSlpDAImpl extends PrimImpl implements Prim, SFSlpDA {
     private DirectoryAgent da;
-	private LogSF slpLog = null;
-    
+    private LogSF slpLog = null;
+
     public SFSlpDAImpl() throws RemoteException {
-        
+
     }
-    
-    /**
-        Creates an instance of the SLP DA.
-    */
+
+    /** Creates an instance of the SLP DA. */
     public void sfDeploy() throws SmartFrogException, RemoteException {
         super.sfDeploy();
         // get properties
         Properties properties = new Properties();
-        String s = (String)sfResolve("slp_config_interface");
-        if(!s.equals("")) properties.setProperty("net.slp.interface", s);
+        String s = (String) sfResolve("slp_config_interface");
+        if (!s.equals("")) properties.setProperty("net.slp.interface", s);
         properties.setProperty("net.slp.useScopes", sfResolve("slp_config_scope_list").toString());
         properties.setProperty("net.slp.mtu", sfResolve("slp_config_mtu").toString());
         properties.setProperty("net.slp.port", sfResolve("slp_config_port").toString());
@@ -65,8 +60,8 @@ public class SFSlpDAImpl extends PrimImpl implements Prim, SFSlpDA {
         properties.setProperty("net.slp.logErrors", sfResolve("slp_config_log_errors").toString());
         properties.setProperty("net.slp.logMsg", sfResolve("slp_config_log_msg").toString());
         properties.setProperty("net.slp.logfile", sfResolve("slp_config_logfile").toString());
-		properties.setProperty("net.slp.sflog", sfResolve("slp_config_sflog").toString());
-        
+        properties.setProperty("net.slp.sflog", sfResolve("slp_config_sflog").toString());
+
         // create DA.
         da = new DirectoryAgent(properties);
         // logging.
@@ -75,10 +70,8 @@ public class SFSlpDAImpl extends PrimImpl implements Prim, SFSlpDA {
             da.setSFLog(slpLog);
         }
     }
-    
-    /**
-        Terminates the Directory Agent.
-    */
+
+    /** Terminates the Directory Agent. */
     public void sfTerminateWith(TerminationRecord tr) {
         //System.out.println("Killing DA");
         da.killDA();
