@@ -50,15 +50,21 @@ public class CertUtils {
 		rt = Runtime.getRuntime();
 	}
 	
-	public void gridCertReq(Properties props) 
+	public void gridCertReq(Properties props, String user) 
 			throws GT4SecurityException {
 		String cmd = new String(globusBin + File.separatorChar + 
 				"grid-cert-request");
 		Process p = null;
 		BufferedReader cmdError = null;
 		BufferedReader cmdOutput = null;
-		String[] envs = {"GLOBUS_LOCATION="+globusLoc, 
-						"HOME="+System.getProperty("user.home")};
+
+		String userHome = null;
+		if (user != null)
+			userHome =File.separatorChar + "home" + File.separatorChar + user;
+		else
+			userHome = System.getProperty("user.home");	
+		
+		String[] envs = {"GLOBUS_LOCATION="+globusLoc, "HOME="+userHome};
 		
 		try {
 			if (null == props) {

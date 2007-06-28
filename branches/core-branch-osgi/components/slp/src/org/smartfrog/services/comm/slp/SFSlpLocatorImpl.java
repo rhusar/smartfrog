@@ -26,16 +26,22 @@
 
 package org.smartfrog.services.comm.slp;
 
-import org.smartfrog.sfcore.prim.*;
-import org.smartfrog.sfcore.reference.*;
-import org.smartfrog.sfcore.common.*;
+import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.logging.LogSF;
+import org.smartfrog.sfcore.prim.Prim;
+import org.smartfrog.sfcore.prim.PrimImpl;
+import org.smartfrog.sfcore.prim.TerminationRecord;
+import org.smartfrog.sfcore.reference.HereReferencePart;
+import org.smartfrog.sfcore.reference.Reference;
+import org.smartfrog.sfcore.reference.ReferencePart;
 
-import java.util.*;
-import java.net.*;
+import java.net.InetAddress;
 import java.net.UnknownHostException;
-
-import java.rmi.*;
+import java.rmi.RemoteException;
+import java.util.Locale;
+import java.util.Properties;
+import java.util.Vector;
 
 /**
  * Implements an SLP Locator component for SmartFrog. Can be used to locate any service. The result of the discovery is
@@ -95,7 +101,7 @@ public class SFSlpLocatorImpl extends PrimImpl implements Prim, SFSlpLocator {
         // get parameters for service discovery.
         String srvTypeStr = sfResolve(ATTR_SERVICE_TYPE).toString();
         if (srvTypeStr.equals("")) {
-            throw new SmartFrogResolutionException(EXCEPTION_NO_SERVICE_TYPE,this);
+            throw new SmartFrogResolutionException(EXCEPTION_NO_SERVICE_TYPE, this);
         }
         serviceType = new ServiceType(srvTypeStr);
         searchFilter = sfResolve(ATTR_SEARCH_FILTER).toString();
@@ -128,20 +134,20 @@ public class SFSlpLocatorImpl extends PrimImpl implements Prim, SFSlpLocator {
 
     /**
      * Override the parent by looking for a child called result over SLP.
+     *
      * @param r
      * @param index
      * @return any resolved object
      * @throws SmartFrogResolutionException if the SLP service could not be found, or resolution failed for other
-     * reasons.
+     *                                      reasons.
      * @throws RemoteException
      */
     public synchronized Object sfResolve(Reference r, int index) throws SmartFrogResolutionException, RemoteException {
         ReferencePart part = r.elementAt(index);
-        if(part instanceof HereReferencePart) {
-            HereReferencePart here=(HereReferencePart) part;
-            Object value=here.getValue();
-            String s = value.toString();
-            if (ATTR_RESULT.equals(s)) {
+        if (part instanceof HereReferencePart) {
+            HereReferencePart here = (HereReferencePart) part;
+            Object value = here.getValue();
+            if (ATTR_RESULT.equals(value.toString())) {
                 sfLog().debug("Starting service discovery...");
                 // discover it...
                 if (discoveryResults == null) {
@@ -221,13 +227,14 @@ public class SFSlpLocatorImpl extends PrimImpl implements Prim, SFSlpLocator {
 
     /**
      * Look up an object
+     *
      * @param sle an enumeration to use
      * @return the object discovered.
      * @throws ServiceLocationException if discovery failed
      */
     protected Object getDiscoveredObject(ServiceLocationEnumeration sle) throws SmartFrogResolutionException {
 
-        if(sle.hasMoreElements()) {
+        if (sle.hasMoreElements()) {
             ServiceURL url = (ServiceURL) sle.nextElement();
             // if the URL has a host part, we have a String or InetAddress.
             String host = url.getHost();
@@ -255,7 +262,7 @@ public class SFSlpLocatorImpl extends PrimImpl implements Prim, SFSlpLocator {
             }
         }
 
-        throw new SmartFrogResolutionException(EXCEPTION_NO_SLP_SERVICE,this);
+        throw new SmartFrogResolutionException(EXCEPTION_NO_SLP_SERVICE, this);
     }
 }
 

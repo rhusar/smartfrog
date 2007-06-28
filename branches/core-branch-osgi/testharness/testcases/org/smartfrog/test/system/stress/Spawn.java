@@ -43,16 +43,16 @@ public class Spawn extends CompoundImpl implements Prim{
                                       new Reference("sfDestination");
 
   /** The component description to be deployed. */
-  ComponentDescription offspringDescription;
+  private ComponentDescription offspringDescription;
   
   /** The generic name prefix used to name the siblings */
-  String offspringName = "copy";
+  private String offspringName = "copy";
   
   /** The number of copies to be deployed.  */
-  int familySize;
+  private int familySize;
   
   /** The destination */
-  Compound destination;
+  private Compound destination;
 
   /**
    * Default constructor
@@ -69,28 +69,28 @@ public class Spawn extends CompoundImpl implements Prim{
    * Then deploy the copies in the destination component.
    */
   public void sfDeploy() throws SmartFrogException, RemoteException {
-    try {
-        super.sfDeploy();
-        offspringDescription = (ComponentDescription) 
-                                    sfResolve(refOffspringDescription);
-        familySize = ((Integer) sfResolve(refFamilySize)).intValue() ;
-        offspringName = (String) sfResolve(refOffspringName);
-        try {
-               destination = (Compound) sfResolve (refDestination);
-        } catch (SmartFrogResolutionException rex ){
-           destination = this;
-        }
-    } catch (Throwable th) {
-            throw new SmartFrogDeploymentException(th, this);
-    }
-    for (int i = 0 ; i < familySize ; i ++) {
-      String copyName = offspringName + (new Integer(i)).toString();
-      Prim p = sfDeployComponentDescription(
-          copyName,
-          destination,
-          (ComponentDescription)offspringDescription.copy(),
-          null);
-      p.sfDeploy();
-     }
+      try {
+          super.sfDeploy();
+          offspringDescription = (ComponentDescription)
+                  sfResolve(refOffspringDescription);
+          familySize = ((Integer) sfResolve(refFamilySize)).intValue();
+          offspringName = (String) sfResolve(refOffspringName);
+          try {
+              destination = (Compound) sfResolve(refDestination);
+          } catch (SmartFrogResolutionException rex) {
+              destination = this;
+          }
+      } catch (Throwable th) {
+          throw new SmartFrogDeploymentException(th, this);
+      }
+      for (int i = 0; i < familySize; i++) {
+          String copyName = offspringName + (new Integer(i)).toString();
+          Prim p = sfDeployComponentDescription(
+                  copyName,
+                  destination,
+                  (ComponentDescription) offspringDescription.copy(),
+                  null);
+          p.sfDeploy();
+      }
   }
 }

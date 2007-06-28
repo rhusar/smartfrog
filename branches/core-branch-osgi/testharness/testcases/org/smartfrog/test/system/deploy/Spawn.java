@@ -43,13 +43,13 @@ public class Spawn extends CompoundImpl implements Prim{
     new Reference("sfDestination");
 
   /** The component description to be deployed. */
-  ComponentDescription offspringDescription;
+  private ComponentDescription offspringDescription;
   /** The generic name prefix used to name the siblings */
-  String offspringName = "copy";
+  private String offspringName = "copy";
   /** The number of copies to be deployed.  */
-  int familySize;
+  private int familySize;
   /** The destination */
-  Compound destination;
+  private Compound destination;
 
   /**
    * Default constructor
@@ -64,46 +64,46 @@ public class Spawn extends CompoundImpl implements Prim{
    * Then deploy the copies in the destination component.
    */
   public void sfDeploy() throws SmartFrogException, RemoteException {
-    try {
-    super.sfDeploy();
-        offspringDescription = (ComponentDescription) sfResolve(refOffspringDescription);
-        familySize = ((Integer) sfResolve(refFamilySize)).intValue() ;
-    //try {
-        offspringName = (String) sfResolve(refOffspringName);
-    //} catch (SmartFrogResolutionException ex) {}
-     
-    String str = null;
-    System.out.println(str.toString()); // -> To Fail
-    try {
-           destination = (Compound) sfResolve (refDestination);
-    } catch (SmartFrogResolutionException rex ){
-       destination = this;
-    }
-    } catch (SmartFrogException sfex) {
-            // add the context in case of failure
-            sfex.put("sfStartFailure", this.sfContext);
+      try {
+          super.sfDeploy();
+          offspringDescription = (ComponentDescription) sfResolve(refOffspringDescription);
+          familySize = ((Integer) sfResolve(refFamilySize)).intValue();
+          //try {
+          offspringName = (String) sfResolve(refOffspringName);
+          //} catch (SmartFrogResolutionException ex) {}
 
-            // trigger termination of component
-            try {
-                Reference name = sfCompleteName();
-                terminateComponent(this, sfex, name);
-                throw sfex;
-            } catch (Throwable t) { // the call to sfCompleteName has failed
-                terminateComponent(this, sfex, null);
-            }
-        } catch (Throwable t) {
-                Reference name = sfCompleteName();
-                terminateComponent(this, t, name);
-                throw new SmartFrogDeploymentException(t, this);
-        }
-    for (int i = 0 ; i < familySize ; i ++) {
-      String copyName = offspringName + (new Integer(i)).toString();
-      Prim p = sfDeployComponentDescription(
-          copyName,
-          destination,
-          (ComponentDescription)offspringDescription.copy(),
-          null);
-      p.sfDeploy();
-     }
+          String str = null;
+          System.out.println(str.toString()); // -> To Fail
+          try {
+              destination = (Compound) sfResolve(refDestination);
+          } catch (SmartFrogResolutionException rex) {
+              destination = this;
+          }
+      } catch (SmartFrogException sfex) {
+          // add the context in case of failure
+          sfex.put("sfStartFailure", sfContext);
+
+          // trigger termination of component
+          try {
+              Reference name = sfCompleteName();
+              terminateComponent(this, sfex, name);
+              throw sfex;
+          } catch (Throwable t) { // the call to sfCompleteName has failed
+              terminateComponent(this, sfex, null);
+          }
+      } catch (Throwable t) {
+          Reference name = sfCompleteName();
+          terminateComponent(this, t, name);
+          throw new SmartFrogDeploymentException(t, this);
+      }
+      for (int i = 0; i < familySize; i++) {
+          String copyName = offspringName + (new Integer(i)).toString();
+          Prim p = sfDeployComponentDescription(
+                  copyName,
+                  destination,
+                  (ComponentDescription) offspringDescription.copy(),
+                  null);
+          p.sfDeploy();
+      }
   }
 }

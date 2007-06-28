@@ -17,7 +17,7 @@ then
 	. /etc/sysconfig/smartfrog
 fi
 
-# Add Smartfrog and Java to the path
+# Add Smartfrog to the path
 PATH="$${PATH-}:$${SFHOME}/bin"
 
 # Export the Display Variable

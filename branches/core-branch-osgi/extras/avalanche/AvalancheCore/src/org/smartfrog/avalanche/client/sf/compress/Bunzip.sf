@@ -10,7 +10,7 @@ You should have received a copy of the GNU Lesser General Public License along w
 For more information: www.smartfrog.org
 */
 #include "/org/smartfrog/components.sf"
-#include "org.smartfrog/avalanche/client/sf/compress/uncompress.sf"
+#include "/org/smartfrog/avalanche/client/sf/compress/uncompress.sf"
 #include "org/smartfrog/sfcore/workflow/components.sf"
 
 sfConfig extends Parallel {

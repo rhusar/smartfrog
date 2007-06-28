@@ -67,7 +67,7 @@
     <property name="core.dir" location="${antfile.dir}"/>
     
     <!-- This is to decide the directory structure for the components, and default is false -->
-    <property name="is.component" value="false"  />
+    <property name="is.component" value="true"  />
 
     <!-- the common.properties file lets you provide a single declaration of
     overrides (like the compiler settings) that apply across
@@ -90,11 +90,15 @@
     <property name="javac.debug.level" value="lines,vars,source" />
     <property name="javac.java.version" value="1.4" />
     <property name="javac.include.ant" value="false" />
+    <property name="javac.max.memory" value="192m" />
 
     <property name="smartfrog.daemon.port" value="3800" />
-    <!--use the forking compiler-->
+    <!--use the forking compiler with tuned memory use and profiling diagnostics-->
     <property name="rmic.compiler" value="forking"/>
-
+    <property name="rmic.max.memory" value="192m" />
+    <property name="rmic.forking.commandline.extras" value="" />
+    <property name="rmic.forking.commandline" 
+      value="-J-Xmx${rmic.max.memory} -J-XX:+HeapDumpOnOutOfMemoryError ${rmic.forking.commandline.extras}"/>
     
     <property name="extras.dir"
       location="${core.dir}/extras"/>
@@ -180,6 +184,7 @@
     <!--copy all proxy settings from the running JVM-->
     <propertyset id="proxy.settings">
       <propertyref prefix="http."/>
+      <propertyref prefix="https."/>
       <propertyref prefix="socks."/>
     </propertyset>
 
@@ -333,11 +338,13 @@ java.class.path=
     <!-- define a new javac task with new default options -->
     <presetdef name="sf-javac">
        <javac debug="${javac.debug.mode}"
+            fork="true"
             nowarn="true"
             deprecation="${javac.deprecation.mode}"
             source="${javac.java.version}"
             target="${javac.java.version}"
             includeAntRuntime="${javac.include.ant}"
+            memoryMaximumSize="${javac.max.memory}"
             includes="**/*.java"
             >
        </javac>
@@ -480,7 +487,9 @@ java.class.path=
       <rmic
         compiler="${rmic.compiler}"
         verify="true"
-        stubversion="1.2" />
+        stubversion="1.2" >
+        <compilerarg line="${rmic.forking.commandline}" compiler="forking" /> 
+      </rmic>
     </presetdef>
   </target>
 
@@ -642,7 +651,7 @@ java.class.path=
         smartfrog and our lib dir -->
   <!-- ========================================================== -->
 
-  <target name="declare-base.compile.classpath" depends="init" >
+  <target name="declare-base.compile.classpath" depends="init"  unless="ivy.enabled">
     <path id="base.compile.classpath">
       <path refid="smartfrog.classpath"/>
     </path>
@@ -816,16 +825,33 @@ java.class.path=
       <path refid="build.classpath"/>
     </path>
   </target>
+
+
+  <!--
+    SFOS-167 shows how Ant holds on to task definitions for a long time, longer than we can
+    sustain on a windows client build. To reduce Permanent Generation heap space, we are
+    not loading the tasks if they are already present
+  -->
+  <target name="probe-for-smartfrog-tasks" >
+    <condition property="sf.tasks.loaded">
+      <typefound name="sf-startdaemon"/>
+    </condition>
+  </target>
   
   <!-- ========================================================== -->
   <!-- probe for tasks and use them if they are found; fail if not -->
   <!-- ========================================================== -->
-  <target name="use-smartfrog-tasks" depends="use-smartfrog-tasks-classic,use-smartfrog-tasks-ivy"
-    description="declare the classpath and imports for the smartfrog tasks">
+  <target name="use-smartfrog-tasks"
+      depends="use-smartfrog-tasks-classic,use-smartfrog-tasks-ivy,probe-for-smartfrog-tasks"
+      unless="sf.tasks.loaded"
+      description="declare the classpath and imports for the smartfrog tasks">
     <available
       classname="org.smartfrog.tools.ant.Parse"
       classpathref="smartfrog.tasks.classpath"
       property="sfTasks.present"/>
+    <echo level="verbose">
+      Loading tasks from  ${toString:smartfrog.tasks.classpath}
+    </echo>
     <fail unless="sfTasks.present">
       Smartfrog tasks not found in
       ${toString:smartfrog.tasks.classpath}
@@ -881,40 +907,6 @@ java.class.path=
     </presetdef>
 
   </target>
-
-  <!-- ========================================================== -->
-  <!-- set up an HTTP proxy -->
-  <!-- there is a bit of a problem here for laptops whose proxy varies from
-  location to location; we are ignoring that for now. -->
-  <!-- ========================================================== -->
-
-  <target name="init-web-proxy" if="http.proxy.host" depends="init">
-    <property name="http.proxy.port" value="80" />
-    <property name="http.proxy.user" value="" />
-    <property name="http.proxy.password" value="" />
-    <setproxy
-      proxyhost="${http.proxy.host}"
-      proxyport="${http.proxy.port}"
-      proxyuser="${http.proxy.user}"
-      proxypassword="${http.proxy.password}"
-      />
-  </target>
-
-  <!-- ========================================================== -->
-  <!-- set up a socks proxy -->
-  <!-- ========================================================== -->
-  <target name="init-socks-proxy" if="socks.proxy.host" depends="init">
-    <property name="socks.proxy.port" value="1080" />
-    <setproxy
-      socksproxyhost="${socks.proxy.host}"
-      socksproxyport="${socks.proxy.port}"
-      />
-  </target>
-
-  <!-- ========================================================== -->
-  <!-- conditionally initialise socks or web proxy, if configured -->
-  <!-- ========================================================== -->
-  <target name="init-proxy" depends="init-web-proxy,init-socks-proxy"/>
 
   <!-- ========================================================== -->
   <!-- location of testharness; create a relevant path -->
@@ -1403,7 +1395,7 @@ java.class.path=
         </syspropertyset>
         <sysproperty key="org.smartfrog.codebase" value="${codebase}"/>
         <syspropertyset>
-          <propertyref prefix="runtime"/>
+          <propertyref prefix="runtime."/>
         </syspropertyset>
       </sf-junit>
     </presetdef>
@@ -1590,7 +1582,7 @@ java.class.path=
   <!-- ========================================================== -->
   <!-- init all the maven2 support   -->
   <!-- ========================================================== -->
-  <target name="m2-init" depends="init,init-proxy,declare-extended-smartfrog-tasks,load-versions">
+  <target name="m2-init" depends="init,declare-extended-smartfrog-tasks,load-versions">
     <!-- Maven2 stuff
       All components build into the org.smartfrog group, unless otherwise stated, but
       are their own artifacts.
@@ -1734,23 +1726,39 @@ java.class.path=
     </condition>
     <mkdir dir="${ivy.reports.dir}" />
     <mkdir dir="${ivy.lib.dir}" />
+
+    <!--first check for ivy being loaded-->
+    <condition property="ivy.tasks.loaded">
+      <typefound name="configure" uri="antlib:fr.jayasoft.ivy.ant"/>
+    </condition>
+
   </target>
 
   <target name="maybe-declare-ivy" if="ivy.enabled"
-          depends="ivy-properties">
+      unless="ivy.tasks.loaded"
+      depends="ivy-properties">
     <typedef uri="antlib:fr.jayasoft.ivy.ant" onerror="fail"
-             resource="${ivy.resource}">
+             >
       <classpath>
         <pathelement location="${ivy.jar}"/>
       </classpath>
     </typedef>
   </target>
 
-  <target name="declare-ivy" unless="ivy.enabled"
-          depends="maybe-declare-ivy"
+  <!--
+    second check for ivy being loaded; this will kick in
+    after maybe-declare-ivy.
+  -->
+  <target name="probe-for-ivy-tasks" depends="maybe-declare-ivy">
+    <condition property="ivy.tasks.loaded2" >
+      <typefound name="configure" uri="antlib:fr.jayasoft.ivy.ant"/>
+    </condition>
+  </target>
+
+  <target name="declare-ivy" unless="ivy.tasks.loaded2"
+          depends="probe-for-ivy-tasks"
           >
-    <typedef uri="antlib:fr.jayasoft.ivy.ant" onerror="fail"
-             resource="fr/jayasoft/ivy/ant/antlib.xml">
+    <typedef uri="antlib:fr.jayasoft.ivy.ant" onerror="fail">
       <classpath>
         <pathelement location="${ivy.jar}"/>
       </classpath>

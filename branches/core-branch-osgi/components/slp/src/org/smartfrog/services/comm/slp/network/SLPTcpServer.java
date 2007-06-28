@@ -26,37 +26,35 @@
 
 package org.smartfrog.services.comm.slp.network;
 
-import org.smartfrog.services.comm.slp.ServiceLocationException;
 import org.smartfrog.services.comm.slp.agents.SLPMessageCallbacks;
-import org.smartfrog.services.comm.slp.util.SLPInputStream;
-import org.smartfrog.services.comm.slp.util.SLPOutputStream;
-import org.smartfrog.services.comm.slp.messages.SLPMessageHeader;
 
-import java.net.*;
-import java.io.*;
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.ServerSocket;
+import java.net.Socket;
 
 
 public class SLPTcpServer extends Thread {
     private ServerSocket serverSocket = null;
     private SLPMessageCallbacks agent;
     private boolean isRunning = true;
-    
+
     public SLPTcpServer(InetAddress address, int port, SLPMessageCallbacks a) throws IOException {
         int backlog = 5;
         agent = a;
         //System.out.println("Creating serversocket: " + address.toString() + " - " + port);
         serverSocket = new ServerSocket(port, backlog, address);
     }
-    
+
     public void run() {
-        while(isRunning) {
+        while (isRunning) {
             Socket s = null;
             try {
                 s = serverSocket.accept();
-            }catch(Exception e) {
+            } catch (Exception e) {
                 //ioe.printStackTrace();
             }
-            if(s != null) {
+            if (s != null) {
                 SLPTcpRequestHandler handler = new SLPTcpRequestHandler(s, agent);
                 //System.out.println("TCPServer: Received request - Starting handler...");
                 handler.start();
@@ -64,46 +62,16 @@ public class SLPTcpServer extends Thread {
         }
         try {
             serverSocket.close();
-        }catch(Exception e) {
+        } catch (Exception e) {
             //e.printStackTrace();
         }
     }
-    
+
     public void stopThread() {
         isRunning = false;
         try {
             serverSocket.close();
-        }catch(Exception e) { }
-    }
-}
-
-class SLPTcpRequestHandler extends Thread {
-    private Socket socket;
-    private InputStream istream;
-    private OutputStream ostream;
-    private SLPMessageCallbacks agent;
-    
-    SLPTcpRequestHandler(Socket s, SLPMessageCallbacks a) {
-        socket = s;
-        agent = a;
-    }
-    
-    public void run() {
-        try {
-            istream = socket.getInputStream();
-            ostream = socket.getOutputStream();
-            SLPInputStream sis = new SLPInputStream(istream);
-            int version = sis.readByte();
-            int function = sis.readByte();
-            //System.out.println("TCP request: v="+version+", f="+function);
-            SLPMessageHeader msgReply = agent.handleNonReplyMessage(function, sis, false);
-            SLPOutputStream sos = new SLPOutputStream(new ByteArrayOutputStream());
-            msgReply.toOutputStream(sos);
-            ostream.write(sos.getByteArray());
-        }catch(IOException e) {
-            //e.printStackTrace();
-        }catch(ServiceLocationException e) {
-            //e.printStackTrace();
+        } catch (Exception e) {
         }
     }
 }

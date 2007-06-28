@@ -136,9 +136,14 @@
 		<!--Copy Dependent jars to Avalanche SmartFrog lib dir-->
     		<copy file="lib/ant.jar" todir="${avalanche.home}/smartfrog/lib"/>
     		<copy file="lib/ant-launcher.jar" todir="${avalanche.home}/smartfrog/lib"/>
+    		<copy file="lib/tools.jar" todir="${avalanche.home}/smartfrog/lib"/>
     		<copy file="lib/commons-logging-1.0.3.jar" todir="${avalanche.home}/smartfrog/lib"/>
 		<copy file="lib/commons-net-1.2.0.jar" todir="${avalanche.home}/smartfrog/lib"/>
-		
+    		<copy file="lib/xalan.jar" todir="${avalanche.home}/smartfrog/lib"/>
+    		<copy file="lib/sf-net.jar" todir="${avalanche.home}/smartfrog/lib"/>
+    		<copy file="lib/sf-ssh.jar" todir="${avalanche.home}/smartfrog/lib"/>
+    		<copy file="lib/jsch-20040505.jar" todir="${avalanche.home}/smartfrog/lib"/>
+		<!-- copy ssh jars also-->	
 		
 		<!--Copy SFInstaller template to Avalanche SmartFrog boot dir-->
 		<copy file="boot/sfinstaller.vm" todir="${avalanche.home}/smartfrog/boot"/>
@@ -172,6 +177,9 @@
 		<copy file="lib/xml-apis-1.0.jar" todir="${avalanche.home}/temp/smartfrog/dist/lib"/>
 		<copy file="lib/sfinterface-3.0.0.jar" todir="${avalanche.home}/temp/smartfrog/dist/lib"/>
 		<copy file="lib/sf-quartz.jar" todir="${avalanche.home}/temp/smartfrog/dist/lib"/>
+		<copy file="lib/ant.jar" todir="${avalanche.home}/temp/smartfrog/dist/lib"/>
+		<copy file="lib/ant-launcher.jar" todir="${avalanche.home}/temp/smartfrog/dist/lib"/>
+		<copy file="lib/tools.jar" todir="${avalanche.home}/temp/smartfrog/dist/lib"/>
 		<delete file="${avalanche.home}/temp/smartfrog/dist/bin/sfDaemon"/>
 		<delete file="${avalanche.home}/temp/smartfrog/dist/bin/setSFProperties"/>
 		<copy file="boot\smartfrog\dist\bin\sfDaemon" todir="${avalanche.home}/temp/smartfrog/dist/bin"/>
@@ -310,7 +318,7 @@
 			<arg line="wildfire.exe"/>
 		</exec>
 
-		<exec dir="${avalanche.home}/smartfrog/dist/bin" executable="sh" os="Linux">
+		<exec dir="${xmpp.home}/bin" executable="sh" os="Linux">
 			<arg value="/c"/>
 			<arg line="wildfire"/>
 		</exec>
@@ -323,7 +331,7 @@
 			<arg line="startup.bat"/>
 		</exec>
 
-		<exec dir="${avalanche.home}/smartfrog/dist/bin" executable="sh" os="Linux">
+		<exec dir="${tomcat.home}/bin" executable="sh" os="Linux">
 			<arg value="/c"/>
 			<arg line="startup.sh"/>
 		</exec>

@@ -32,12 +32,15 @@ public class SFCheckPrereqs extends PrimImpl implements Prim {
 	private final String SUDO = "sudo";
 	private final String POSTGRESVER = "postgresVersion";
 	private final String SHDTERMINATE = "shouldTerminate";
-	
+	private final String PERLPATH = "perlPath";
+	private final String PERLVERSION = "perlVersion";
+
 	private String javaPath, javaVersion;
 	private String antPath, antVersion;
 	private String cVersion,tarVendor;
 	private String sedVendor, makeVendor;
 	private String sudo, postgresVersion;
+	private String perlPath, perlVersion;
 	private boolean shouldTerminate;
 
 	/**
@@ -60,7 +63,9 @@ public class SFCheckPrereqs extends PrimImpl implements Prim {
 		sedVendor = (String)sfResolve(SEDVENDOR, sedVendor, true);
 		makeVendor = (String)sfResolve(MAKEVENDOR, makeVendor, true);
 		sudo = (String)sfResolve(SUDO, sudo, true);
-		postgresVersion = (String)sfResolve(POSTGRESVER, postgresVersion, true);
+	//	postgresVersion = (String)sfResolve(POSTGRESVER, postgresVersion, true);
+		perlPath = (String)sfResolve(PERLPATH, perlPath, true);
+		perlVersion = (String)sfResolve(PERLVERSION, perlVersion, true);
 		
 		// optional attribute
 		shouldTerminate = (boolean)sfResolve(SHDTERMINATE, true, false);
@@ -78,8 +83,10 @@ public class SFCheckPrereqs extends PrimImpl implements Prim {
 			chk.checkCmd("cc", cVersion);
 			chk.checkCmd("make", null, makeVendor);
 			chk.checkCmd("sudo", null, null);
-			chk.checkCmd("postgres", postgresVersion);
-			chk.checkCmd("perl", null, null);
+		//	chk.checkCmd("postgres", postgresVersion);
+		//	chk.checkCmd("perl", null, null);
+			chk.checkCmd(perlPath,"perl", perlVersion, null);
+
 		} catch(IOException ioe) {
 			sfLog().err("Exception in checking pre-requisites", ioe);
 			throw new SmartFrogException("Exception in checking pre-requisites", 

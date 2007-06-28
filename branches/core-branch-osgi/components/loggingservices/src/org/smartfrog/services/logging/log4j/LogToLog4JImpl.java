@@ -227,7 +227,7 @@ public class LogToLog4JImpl implements LogToLog4J, Log, LogMessage, LogLevel, Se
      * bind the logger to a URL
      *
      * @param configuratorURL URL of the configuration
-     * @throws FactoryConfigurationError
+     * @throws FactoryConfigurationError if the configuration is invalid
      */
     private void configureWithURL(URL configuratorURL) throws FactoryConfigurationError {
         if (configuratorURL.getFile().endsWith(".xml")) {
@@ -352,7 +352,7 @@ public class LogToLog4JImpl implements LogToLog4J, Log, LogMessage, LogLevel, Se
     }
 
     /**
-     * <p> Set logging level. </p>
+     * Set the logging level>
      * It only does the change when it is different
      *
      * @param currentLogLevel new logging level
@@ -370,7 +370,7 @@ public class LogToLog4JImpl implements LogToLog4J, Log, LogMessage, LogLevel, Se
     }
 
     /**
-     * <p> Get logging level. </p>
+     * Get the logging level.
      */
     public int getLevel() {
         Level levelLog4J = logger.getEffectiveLevel();

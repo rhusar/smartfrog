@@ -65,7 +65,7 @@ public class TestCompoundsTest extends DeployingTestBase {
     }
 
     public void testFailureWrongMessage() throws Throwable {
-        TerminationRecord record = deployToAbnormalTermination("testFailureWrongMessage");
+        TerminationRecord record = deployToNormalTermination("testFailureWrongMessage");
         assertRecordContains(record, TestCompoundImpl.TEST_FAILED_WRONG_STATUS, null, null);
     }
 

@@ -34,7 +34,7 @@
   <property file="build.properties"/>
   <property name="javac.java.version" value="1.5"/>
   <property name="is.component" value="true"/>
-  <property name="system.tests.enabled" value="true"/>
+  <property name="system.tests" value="true"/>
 
   <property name="root.dir" location="../.."/>
   <property name="antbuild.dir" location="${root.dir}/antbuild"/>

@@ -26,80 +26,71 @@
 
 package org.smartfrog.services.comm.slp;
 
+import org.smartfrog.services.comm.slp.util.SLPDefaults;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.processcompound.PrimProcessDeployerImpl;
 import org.smartfrog.sfcore.processcompound.ProcessCompound;
-import org.smartfrog.sfcore.common.Context;
 import org.smartfrog.sfcore.reference.Reference;
 
-import java.util.Vector;
 import java.util.Locale;
 import java.util.Properties;
-
-import org.smartfrog.services.comm.slp.ServiceURL;
-import org.smartfrog.services.comm.slp.ServiceLocationEnumeration;
-import org.smartfrog.services.comm.slp.ServiceLocationManager;
-import org.smartfrog.services.comm.slp.Locator;
-import org.smartfrog.services.comm.slp.ServiceType;
-import org.smartfrog.services.comm.slp.util.SLPDefaults;
+import java.util.Vector;
 
 /**
-    A special SmartFrog deployer class that will use SLP to look for an
-    advertised ProcessCompound in which to deploy the component.
-*/
+ * A special SmartFrog deployer class that will use SLP to look for an advertised ProcessCompound in which to deploy the
+ * component.
+ */
 public class SFSlpDeployerImpl extends PrimProcessDeployerImpl {
     protected static final Reference refServiceType = new Reference("serviceType");
     protected static final Reference refSearchFilter = new Reference("searchFilter");
     protected static final Reference refScopes = new Reference("searchScopes");
     protected static final Reference refConfig = new Reference("slpConfig");
     protected static final Reference isDone = new Reference("discoveryDone");
-    
+
     protected String serviceType = null;
     protected String searchFilter = null;
     protected Vector scopes = null;
-    
+
     public SFSlpDeployerImpl(ComponentDescription descr) {
         super(descr);
     }
-    
-    /**
-        Does a search for a ProcessCompound using SLP.
-    */
+
+    /** Does a search for a ProcessCompound using SLP. */
     protected ProcessCompound getProcessCompound() throws Exception {
 
         // perform SLP Discovery...
         boolean discoveryCompleted = true;
         try {
             target.sfResolve(isDone);
-        }catch(SmartFrogResolutionException e) {
+        } catch (SmartFrogResolutionException e) {
             discoveryCompleted = false;
         }
-        if(!discoveryCompleted) {
+        if (!discoveryCompleted) {
             ServiceLocationEnumeration urls = null;
             ServiceType type = null;
-			Properties p = getSlpConfiguration();
+            Properties p = getSlpConfiguration();
             try {
-                if(scopes == null || scopes.isEmpty()) {
+                if (scopes == null || scopes.isEmpty()) {
                     scopes = ServiceLocationManager.findScopes();
                 }
                 type = new ServiceType(serviceType);
                 ServiceLocationManager.setProperties(p);
                 Locator loc = ServiceLocationManager.getLocator(new Locale(p.getProperty("net.slp.locale")));
                 urls = loc.findServices(type, scopes, searchFilter);
-            
+
                 // take the first URL
-                ServiceURL url = (ServiceURL)urls.nextElement();
-            
-                if(url != null) {
+                ServiceURL url = (ServiceURL) urls.nextElement();
+
+                if (url != null) {
                     // set smartfrog attributes to use...
                     target.sfReplaceAttribute("sfProcessHost", url.getHost());
                     String pname = url.getURLPath();
-                    if(!pname.equals("")) {
+                    if (!pname.equals("")) {
                         target.sfReplaceAttribute("sfProcessName", pname.substring(1));
                     }
                 }
-            }catch(Exception ex) {
+            } catch (Exception ex) {
                 // don't care...
                 System.out.println(ex.toString());
                 ex.printStackTrace();
@@ -109,37 +100,34 @@ public class SFSlpDeployerImpl extends PrimProcessDeployerImpl {
         }
         return super.getProcessCompound();
     }
-    
-    /**
-        Reads the SLP configuration from the description.
-    */
+
+    /** Reads the SLP configuration from the description. */
     protected Properties getSlpConfiguration() throws SmartFrogResolutionException {
-        Properties properties = new Properties( SLPDefaults.getDefaultProperties() );
+        Properties properties = new Properties(SLPDefaults.getDefaultProperties());
         // try to find configuration
         ComponentDescription descr = null;
 
-		// get the SLP configuration.
-		// This component description MUST be present with at least the service type given.
-		descr = (ComponentDescription)target.sfResolve(refConfig);
+        // get the SLP configuration.
+        // This component description MUST be present with at least the service type given.
+        descr = (ComponentDescription) target.sfResolve(refConfig);
 
-        
         // get service type, filter and scopes
-        serviceType = (String)descr.sfResolve(refServiceType); // required
+        serviceType = (String) descr.sfResolve(refServiceType); // required
         try {
-            searchFilter = (String)descr.sfResolve(refSearchFilter);
-        }catch(SmartFrogResolutionException ex) {
+            searchFilter = (String) descr.sfResolve(refSearchFilter);
+        } catch (SmartFrogResolutionException ex) {
             searchFilter = "";
         }
         try {
-            scopes = (Vector)descr.sfResolve(refScopes);
-        }catch(SmartFrogResolutionException ex) {
+            scopes = (Vector) descr.sfResolve(refScopes);
+        } catch (SmartFrogResolutionException ex) {
             // don't care...
         }
-        
+
         // read configuration...
         try {
-            String s = (String)descr.sfResolve("slp_config_interface");
-            if(!s.equals("")) properties.setProperty("net.slp.interface", s);
+            String s = (String) descr.sfResolve("slp_config_interface");
+            if (!s.equals("")) properties.setProperty("net.slp.interface", s);
             properties.setProperty("net.slp.multicastMaximumWait", descr.sfResolve("slp_config_mc_max").toString());
             properties.setProperty("net.slp.randomWaitBound", descr.sfResolve("slp_config_rnd_wait").toString());
             properties.setProperty("net.slp.initialTimeout", descr.sfResolve("slp_config_retry").toString());
@@ -155,12 +143,12 @@ public class SFSlpDeployerImpl extends PrimProcessDeployerImpl {
             properties.setProperty("net.slp.logErrors", descr.sfResolve("slp_config_log_errors").toString());
             properties.setProperty("net.slp.logMsg", descr.sfResolve("slp_config_log_msg").toString());
             properties.setProperty("net.slp.logfile", descr.sfResolve("slp_config_logfile").toString());
-        }catch(Exception e) {
+        } catch (Exception e) {
             // ignored...
             System.out.println(e.toString());
             e.printStackTrace();
         }
-        
+
         return properties;
     }
 }
