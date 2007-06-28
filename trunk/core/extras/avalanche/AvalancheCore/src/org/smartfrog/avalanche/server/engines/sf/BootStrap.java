@@ -22,6 +22,8 @@ import java.io.File;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
+import java.util.Map;
+
 import org.smartfrog.services.sfinstaller.Daemon;
 import org.smartfrog.services.sfinstaller.TemplateGen;
 import org.smartfrog.services.sfinterface.*;
@@ -166,11 +168,21 @@ public class BootStrap {
 					if (serverOS.startsWith("Windows") || serverOS.startsWith("windows")){
 							d  = new Daemon(hosts[i], os, hosts[i], transferType, accessType, username, password, 
 								bootDir + File.separator + File.separator + sfReleaseFileWindows, 
-								null, null, null, null, null, null, null, sfReleaseName, java_home,avalancheHome);
+								null,
+                                    null,
+                                    null,
+                                    null,
+                                    null,
+                                    null,
+                                    null,
+                                    sfReleaseName,
+                                    java_home,
+                                    avalancheHome,null,null,null);
 					}else{	
 							d  = new Daemon(hosts[i], os, hosts[i], transferType, accessType, username, password, 
 								bootDir + File.separator + sfReleaseFileWindows, 
-								null, null, null, null, null, null, null, sfReleaseName, java_home,avalancheHome);
+								null, null, null, null, null, null, null, sfReleaseName, java_home,avalancheHome
+                                    , null, null, null);
 					}
 				}else{
 					// all unixes are same
@@ -178,11 +190,13 @@ public class BootStrap {
 					if (serverOS.startsWith("Windows") || serverOS.startsWith("windows")){
 							d  = new Daemon(hosts[i], os, hosts[i], transferType, accessType, username, password, 
 							bootDir + File.separator + File.separator + sfReleaseFileUnix, 
-							null, null, null, null, null, null, null, sfReleaseName, java_home,avalancheHome);
+							null, null, null, null, null, null, null, sfReleaseName, java_home,avalancheHome
+                                    , null, null, null);
 					}else{
 							d  = new Daemon(hosts[i], os, hosts[i], transferType, accessType, username, password, 
 							bootDir + File.separator + sfReleaseFileUnix, 
-							null, null, null, null, null, null, null, sfReleaseName, java_home,avalancheHome);
+							null, null, null, null, null, null, null, sfReleaseName, java_home,avalancheHome
+                                    , null, null, null);
 					}
 					
 				}
@@ -199,7 +213,7 @@ public class BootStrap {
 			
 			// to read from map and write to data. all and then create a description
 			log.info("TemplateGen Map : "+ map);
-			TemplateGen.createTemplate(map, templateFile, outputFile, false, false, null, null, logFileDir);
+			TemplateGen.createTemplate(map, templateFile, outputFile, false, false, null, logFileDir);
 
 			File of = new File(outputFile);
 			if( !of.exists() ){
