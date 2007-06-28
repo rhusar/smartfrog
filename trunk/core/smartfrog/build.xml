@@ -169,7 +169,7 @@
   <property name="rmic.max.memory" value="192m" />
   <property name="rmic.forking.commandline.extras" value="" />
   <property name="rmic.forking.commandline" 
-    value="-J-Xmx${rmic.max.memory} -J-XX:+HeapDumpOnOutOfMemoryError ${rmic.forking.commandline.extras}"/>
+    value="-J-Xmx${rmic.max.memory} ${rmic.forking.commandline.extras}"/>
  
   <!-- override point for javacc -->
   <property name="javacc.dir" location="javacc"/>
