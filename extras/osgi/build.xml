@@ -11,7 +11,7 @@
         </filelist>
     </target>
     
-    <target name="all" depends="copyJarsAround"/>
+    <target name="all" depends="bundles"/>
 
 
     <target name="bundles" depends="smartfrog-dist">
