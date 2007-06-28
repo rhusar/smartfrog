@@ -98,7 +98,7 @@
     <property name="rmic.max.memory" value="192m" />
     <property name="rmic.forking.commandline.extras" value="" />
     <property name="rmic.forking.commandline" 
-      value="-J-Xmx${rmic.max.memory} -J-XX:+HeapDumpOnOutOfMemoryError ${rmic.forking.commandline.extras}"/>
+      value="-J-Xmx${rmic.max.memory} ${rmic.forking.commandline.extras}"/>
     
     <property name="extras.dir"
       location="${core.dir}/extras"/>
