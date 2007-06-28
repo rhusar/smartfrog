@@ -30,10 +30,17 @@
     <artifact name="sf-test-bundle" conf="compile"/>
   </publications>
   <dependencies>
-    <dependency org="org.smartfrog"
-      name="smartfrog"
-      changing="true"
-      rev="latest.integration"
-      conf="compile->core"/>
+
+      <dependency org="org.smartfrog"
+        name="smartfrog"
+        changing="true"
+        rev="latest.integration"
+        conf="compile->core"/>
+
+     <dependency org="org.smartfrog"
+        name="sf-tasks" changing="true"
+        rev="latest.integration"
+        conf="build->default"/>
+
   </dependencies>
 </ivy-module>

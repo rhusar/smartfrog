@@ -29,23 +29,28 @@
   <publications>
     <artifact name="sf-daemon-bundle" conf="compile"/>
   </publications>
-  <dependencies>
-    <dependency org="org.smartfrog"
-      name="smartfrog"
-      changing="true"
-      rev="latest.integration"
-      conf="compile->examples"/>
-      <dependency org="org.smartfrog"
-                  name="sf-tasks" changing="true"
-                  rev="latest.integration"
-                  conf="build->default"/>
-      <dependency org="org.osgi"
+    <dependencies>
+
+        <dependency org="org.smartfrog"
+                    name="smartfrog"
+                    changing="true"
+                    rev="latest.integration"
+                    conf="compile->core"/>
+
+        <dependency org="org.smartfrog"
+                    name="sf-tasks" changing="true"
+                    rev="latest.integration"
+                    conf="build->default"/>
+
+        <dependency org="org.osgi"
                   name="osgi_R4_core"
                   rev="1.0"
                   conf="compile->default"/>
-      <dependency org="org.osgi"
+
+        <dependency org="org.osgi"
                   name="osgi_R4_compendium"
                   rev="1.0"
                   conf="compile->default"/>
+
   </dependencies>
 </ivy-module>
