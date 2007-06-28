@@ -315,7 +315,7 @@
       target="${javac.java.version}"
       memoryMaximumSize="${javac.max.memory}"
       >
-      <classpath refid="smartfrog.class.path"/>
+      <classpath refid="compile.classpath"/>
     </javac>
   </target>
 
@@ -330,7 +330,7 @@
         verify="true"
         compiler="${rmic.compiler}"
         includes="**/*.class">
-        <classpath refid="smartfrog.class.path"/>
+        <classpath refid="compile.classpath"/>
         <compilerarg line="${rmic.forking.commandline}" compiler="forking" />
       </rmic>
   </target>
