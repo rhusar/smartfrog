@@ -29,6 +29,8 @@ import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.Vector;
 import java.util.Set;
+import java.lang.reflect.Method;
+import java.lang.reflect.Field;
 
 import org.smartfrog.sfcore.common.Diagnostics;
 import org.smartfrog.sfcore.common.Context;
@@ -151,6 +153,9 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
     /** Reference that caches cannonical name. */
     protected Reference sfCompleteName = null;
 
+
+    /** Name of tag for attribute injection */
+    private final String injectionTag = "sfInject";
 
     /**
      * Used in conjunction with sfDeployWith to set parent and context after
@@ -439,6 +444,8 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
      * value added is a component description, then its parent is
      * set to this and/or if the one removed is a component description then
      * its parent is reset.
+     * If the attribute is defined as requiring injection - the attribute will
+     * be injected after the value of the attribute has been set.
      *
      * @param name of attribute to replace
      * @param value value to add or replace
@@ -446,13 +453,14 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
      * @return the old value if present, null otherwise. It old value
      * was a component description, then its prim parent is reset.
      *
-     * @throws SmartFrogRuntimeException when name or value are null
+     * @throws SmartFrogRuntimeException when name or value are null, or injection failed
      * @throws RemoteException In case of Remote/nework error
      */
     public synchronized Object sfReplaceAttribute(Object name, Object value)
         throws SmartFrogRuntimeException, RemoteException {
 
         Prim valueParent = null;
+
         try {
             if (value instanceof ComponentDescription) {
                 //Set right parentage for ComponentDescription
@@ -463,6 +471,8 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
             if ((oldValue!=null) && (oldValue instanceof ComponentDescription)) {
                ((ComponentDescription)oldValue).setPrimParent(null);
             }
+
+            if (sfContainsTag(name, injectionTag)) injectAttribute(name, value);
             return oldValue;
         } catch (SmartFrogContextException ex) {
             if (valueParent!=null){
@@ -903,23 +913,96 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
      * started and if there is a parent the deployed component is added to the
      * heartbeat. Subclasses can override to provide additional deployment
      * behavior.
+     * Attributees that require injection are handled during sfDeploy().
      *
      * @throws SmartFrogException error while deploying
      * @throws RemoteException In case of network/rmi error
      */
     public synchronized void sfDeploy()
         throws SmartFrogException, RemoteException {
-        this.sfSetLog(sfGetApplicationLog());
-        Reference componentId = sfCompleteName();
+        sfSetLog(sfGetApplicationLog());
+        sfCompleteName(); //prime the name cache...
+
         if (sfIsTerminated) {
-            throw new SmartFrogDeploymentException(MessageUtil.formatMessage(MSG_DEPLOY_COMP_TERMINATED, componentId.toString()),
+            throw new SmartFrogDeploymentException(MessageUtil.formatMessage(MSG_DEPLOY_COMP_TERMINATED, sfCompleteName().toString()),
                     this);
         }
+        injectAttributes();
         sfDeployHooks.applyHooks(this, null);
         sfIsDeployed = true;
     }
 
-    /**
+   /** Iterate over all the attributes in the context to see if they require to be injected (have the sfIntect tag)
+    *  and if so, carry out the injection using injectAttribute
+    *
+    * @throws SmartFrogException - an error occured during one  of the injections
+    */
+   private void injectAttributes() throws SmartFrogException {
+         Iterator i = null;
+         try { i = sfAttributes(); } catch (Exception e) {}
+         while (i.hasNext()) {
+            Object name = i.next();
+
+            boolean needsInjection = false;
+            try { needsInjection = sfContainsTag(name, injectionTag); } catch (Exception e) {}
+            if (needsInjection) {
+               Object value = null;
+               try {
+                  value = sfResolve(new Reference(ReferencePart.here(name)));
+               } catch (Exception e) {
+                    throw new SmartFrogDeploymentException(
+                          MessageUtil.formatMessage(MSG_INJECTION_VALUE_FAILED, sfCompleteNameSafe().toString(), name), e, this, null
+                        );
+               }
+               injectAttribute(name, value);
+            }
+         }
+   }
+
+   /** Inject an attribute into the component
+    * Injection consists of calling a setter method or the direct assignment to a field of the component.
+    * The setter method name is concatenation of "set" with the attribute name nad must take an Object
+    * as a parameter (it may generate a class-caste internally). If the setter is not defined, a field with the same
+    * name as the attribute will be asssigned to the value. If neither the setter nor the field exist, an exception
+    * is generated.
+    *
+    * @param name the name of the attribute being injected
+    * @param value the value of the attribute
+    * @throws SmartFrogDeploymentException most probably neither the setter nor the field exists in the comopnent
+    */
+   private void injectAttribute(Object name, Object value) throws SmartFrogDeploymentException {
+      try {
+         String injectorName = "set" + name;
+
+         Class [] p = null;
+         try {  p = new Class[] {Class.forName("java.lang.Object")};  } catch (Exception e) {}
+
+         Method m = getClass().getMethod(injectorName, p);
+         Object[] values = new Object[] {value};
+         try {
+            m.invoke(this, values);
+         } catch (Exception e) {
+           throw new SmartFrogDeploymentException(
+                 MessageUtil.formatMessage(MSG_INJECTION_SETMETHOD_FAILED, sfCompleteNameSafe().toString(), name, value), e, this, null
+               );
+         }
+      } catch (NoSuchMethodException nsm) {
+         try {
+            Field f = getClass().getField(name.toString());
+            f.set(this, value);
+         } catch (NoSuchFieldException nsf) {
+           throw new SmartFrogDeploymentException(
+                 MessageUtil.formatMessage(MSG_INJECTION_FAILED, sfCompleteNameSafe().toString(), name), this, null
+               );
+         } catch (Exception e) {
+           throw new SmartFrogDeploymentException(
+                 MessageUtil.formatMessage(MSG_INJECTION_SETFIELD_FAILED, sfCompleteNameSafe().toString(), name, value), e, this, null
+               );
+         }
+      }
+   }
+
+   /**
      * Can be called to start components. Subclasses should override to provide
      * functionality Do not block in this call, but spawn off any main loops!
      *

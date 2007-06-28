@@ -40,7 +40,7 @@ import java.io.PrintWriter;
 /**
  *  Creating a Configuration Descriptor with options
  */
-public class ConfigurationDescriptor implements MessageKeys{
+public class ConfigurationDescriptor implements MessageKeys {
     private static final String SF_PARSE_TIME = "sfParseTime";
     private static final String SF_DEPLOY_TIME = "sfDeployTime";
     private static final String ATTR_PARSE_REPORT = "parseReport";

@@ -67,16 +67,15 @@ DirectoryClasspath extends Classpath {
 }
 
 
-LibraryClasspathSchema extends ClasspathSchema {
-    repository extends Compulsory;
-    libraries extends Vector;
-}
 
 LibraryClasspath extends Classpath {
-    libraryClasspathSchema extends LibraryClasspathSchema;
+    schema extends ClasspathSchema {
+      repository extends Compulsory;
+      libraries extends Vector;
+      };
      sfClass "org.smartfrog.services.os.java.LibraryClasspathImpl";
-
 }
+
 /**
  * SFOS-13 implies this is not implemented.
  */

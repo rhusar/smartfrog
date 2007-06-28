@@ -370,7 +370,7 @@ public class PopUpTree extends JComponent implements ActionListener {
             try {
                 Prim objPrim = ((Prim)node);
                 message.append ("\n*************** State *****************\n");
-                Dump dumpObj = new DefaultDumper(objPrim);
+                Dump dumpObj = new DefaultDumper();
                 objPrim.sfDumpState(dumpObj);
                 message.append (dumpObj.toString());
                 name = ((Prim)objPrim).sfCompleteName().toString();
@@ -389,7 +389,7 @@ public class PopUpTree extends JComponent implements ActionListener {
         if (node instanceof Prim) {
             try {
                 Prim objPrim = ((Prim)node);
-                Dump dumpObj = new DefaultDumper(objPrim);
+                Dump dumpObj = new DefaultDumper();
                 objPrim.sfDumpState(dumpObj);
                 //Get directory
                 name = ((Prim)objPrim).sfCompleteName().toString();

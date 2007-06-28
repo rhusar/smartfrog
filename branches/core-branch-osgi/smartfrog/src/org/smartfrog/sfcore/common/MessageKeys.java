@@ -32,6 +32,26 @@ public interface MessageKeys {
     public static String MSG_DEPLOY_COMP_TERMINATED
                                             = "MSG_DEPLOY_COMP_TERMINATED";
     /**
+     * Message key: receiving deploy request after the component is terminated.
+     */
+    public static String MSG_INJECTION_FAILED
+                                            = "MSG_INJECTION_FAILED";
+    /**
+     * Message key: receiving deploy request after the component is terminated.
+     */
+    public static String MSG_INJECTION_SETFIELD_FAILED
+                                            = "MSG_INJECTION_SETFILED_FAILED";
+    /**
+     * Message key: receiving deploy request after the component is terminated.
+     */
+    public static String MSG_INJECTION_SETMETHOD_FAILED
+                                            = "MSG_INJECTION_SETMETHOD_FAILED";
+    /**
+     * Message key: receiving deploy request after the component is terminated.
+     */
+    public static String MSG_INJECTION_VALUE_FAILED
+                                            = "MSG_INJECTION_VALUE_FAILED";
+    /**
      * Message key: receiving start request after the component is terminated.
      */
     public static String MSG_START_COMP_TERMINATED

@@ -37,7 +37,7 @@ import java.util.*;
 import java.io.*;
 
 
-public class DefaultDumper implements Dump, Dumper, Serializable {
+public class DefaultDumper extends java.rmi.server.UnicastRemoteObject implements Dump, Dumper {
 
     private Reference rootRef = null;
 
@@ -57,8 +57,12 @@ public class DefaultDumper implements Dump, Dumper, Serializable {
      * it could need more time to reach the final result*/
     long timeout = (1*30*15*1000L); //(2*60*1000L);
 
+    public DefaultDumper() throws java.rmi.RemoteException {
+        super();
+    }
 
-    public DefaultDumper (Prim from){
+    public DefaultDumper (Prim from) throws java.rmi.RemoteException  {
+        this();
         try {
             rootRef = from.sfCompleteName();
         } catch (RemoteException e) {
@@ -68,7 +72,11 @@ public class DefaultDumper implements Dump, Dumper, Serializable {
 
    /**
      * Components use this methods to dump their state to when requested (using
-     * sfDumpState).
+     * sfDumpState). With this information, this object builds an internal
+     * representation of the component and its children.
+     * This will result in a description of the component which is parseable, and deployable
+     * again... Unless someone removed attributes which are essential to
+     * startup that is.
      *
      * @param state state of component (application specific)
      * @param from source of this call
@@ -76,6 +84,10 @@ public class DefaultDumper implements Dump, Dumper, Serializable {
      * @throws java.rmi.RemoteException In case of Remote/nework error
      */
     public void dumpState(Object state, Prim from) throws RemoteException {
+       if (rootRef==null){
+            rootRef = from.sfCompleteName();
+       }
+       //Calculate number of children
        Integer numberOfChildren = new Integer(0);
        if (from instanceof Compound) {
           int numberC = 0;
@@ -85,10 +97,12 @@ public class DefaultDumper implements Dump, Dumper, Serializable {
           }
           numberOfChildren = new Integer (numberC);
        }
+       //add number of pending visits
        visiting(from.sfCompleteName().toString(),numberOfChildren);
+
        Context stateCopy =  (Context)((Context)state).clone();
 
-       //Remove non desired sf keys
+       //Filter: Remove non desired sf attribute keys
        for (int i=0; i< this.sfKeysToBeRemoved.length; i++){
            if (stateCopy.sfContainsAttribute(sfKeysToBeRemoved[i])) {
                try {
@@ -98,18 +112,21 @@ public class DefaultDumper implements Dump, Dumper, Serializable {
                }
            }
        }
-
+       // Are we visiting the parent component
        if (rootRef == from.sfCompleteName()){
            cd = new ComponentDescriptionImpl(null,(Context)stateCopy,false);
-           //if (sfLog().isInfoEnabled()) sfLog().info("New CD: "+rootRef+"\n "+from.sfCompleteName());
+           if (sfLog().isInfoEnabled()) sfLog().info("New CD: "+rootRef+"\n "+from.sfCompleteName());
        } else {
-           //if (sfLog().isInfoEnabled()) sfLog().info("From: "+from.sfCompleteName());
+           if (sfLog().isInfoEnabled()) sfLog().info("From: "+from.sfCompleteName());
+           //Calculate relative reference to rootRef
            Reference searchRef =  (Reference)from.sfCompleteName().copy();
            for (Enumeration e = rootRef.elements(); e.hasMoreElements();) {
                searchRef.removeElement((ReferencePart)e.nextElement());
            }
+           //Get name
            String name = ((HereReferencePart)(searchRef.lastElement())).getValue().toString();
            searchRef.removeElement(searchRef.lastElement());
+
            modifyCD(searchRef, name, stateCopy);
        }
        //System.out.println("***************************\nFrom: "+from.sfCompleteName()+"\n"+cd+"\n**************************");
@@ -125,8 +142,11 @@ public class DefaultDumper implements Dump, Dumper, Serializable {
      */
     public void modifyCD(Reference whereRef,String name, Context contextCopy ) {
         try {
+            //Find parent
             ComponentDescription placeHolder = (ComponentDescription)cd.sfResolve(whereRef);
+            //Create child
             ComponentDescription child =new ComponentDescriptionImpl(placeHolder, contextCopy,true);
+            //Add child to parent CD
             placeHolder.sfReplaceAttribute(name, child);
         } catch (SmartFrogException e) {
             if (sfLog().isErrorEnabled()) sfLog().error(e);
@@ -135,39 +155,42 @@ public class DefaultDumper implements Dump, Dumper, Serializable {
 
 
     /**
-      * Tries to get the the String once  the object finished visiting all nodes
-      * or until given timeout expires.
+     * Returns a component description representation of the component and its children.
+     * This will give a description of the component which is parseable, and deployable
+     * again... Unless someone removed attributes which are essential to
+     * startup that is.
+     *
+      * Tries to get the the ComponentDescription once  the object finished visiting all nodes
+      * or until a given timeout expires.
       *
       * @param timeout max time to wait in millis
       *
-      * @return The string representation of the description
+      * @return The component description representing the deployed system
       *
-      * @throws Exception attribute not found after timeout
-      * @throws RemoteException if there is any network or remote error
+      * @throws Exception operation not completed after timeout
      *
       */
      public ComponentDescription getComponentDescription ( long timeout) throws SmartFrogException {
          long endTime = (new Date()).getTime()+timeout;
          synchronized (visitingLock) {
              while (visitingLocks.longValue()!=0L) {
-                     // try to return the String if not visiting logs.
-                     // if name in locks => process not ready, pretend not found...
-                     if (visitingLocks.longValue()==0L){
-                         return cd;
-                     } else {
-                         // not found, wait for leftover timeout
-                        long now = (new Date()).getTime();
-                        if (now>=endTime) {
-                         throw new SmartFrogException("Description creation Timeout ("+ (timeout/1000) +"sec)");
-                        }
-                         try {
-                             visitingLock.wait(endTime-now);
-                         } catch (InterruptedException e) {
-                             return cd;
-                         }
-
-                     }
-            }
+                 // try to return the String if not visiting logs.
+                 // if name in locks => process not ready, pretend not found...
+                 if (visitingLocks.longValue()==0L){
+                     return cd;
+                 } else {
+                    // not found, wait for leftover timeout
+                    long now = (new Date()).getTime();
+                    if (now>=endTime) {
+                      throw new SmartFrogException("Description creation Timeout ("+ (timeout/1000) +"secs)");
+                    }//if
+                    try {
+                       visitingLock.wait(endTime-now);
+                    } catch (InterruptedException e) {
+                       return cd;
+                    }//try
+                 }//else
+            }//while
             return cd;
         }
     }
@@ -182,15 +205,13 @@ public class DefaultDumper implements Dump, Dumper, Serializable {
          // Notify any waiting threads that an attribute was added
          synchronized (visitingLock) {
              visitingLocks= new Long (visitingLocks.longValue() + numberOfChildren.longValue());
-             //if (sfLog().isInfoEnabled()) sfLog().info("Visiting #"+visitingLocks+ " "+name);
+             if (sfLog().isInfoEnabled()) sfLog().info("Visiting #"+visitingLocks+ " "+name);
          }
      }
 
      /**
       * Allows a visitor to notify that it has fishished
-      * ready to receive deployment requests.
       *
-
       * @throws RemoteException if there is any network or remote error
       *
       */
@@ -205,6 +226,11 @@ public class DefaultDumper implements Dump, Dumper, Serializable {
          }
      }
 
+    /**
+     * Returns a deployable String representation of the application component description
+     * @param timeout
+     * @return
+     */
     protected String getCDAsString(long timeout) {
         try {
             return "sfConfig extends {\n" + getComponentDescription(timeout).toString() + "}";
@@ -216,7 +242,8 @@ public class DefaultDumper implements Dump, Dumper, Serializable {
 
 
     /**
-      * Tries to get the the String once the object finished visiting all nodes
+      * Tries to get the the String representation of the coponent description
+     *  once the object finished visiting all nodes
       * or until given timeout expires.
       *
       * @param timeout max time to wait in millis
@@ -254,7 +281,8 @@ public class DefaultDumper implements Dump, Dumper, Serializable {
      * description of the component which is parseable, and deployable
      * again... Unless someone removed attributes which are essential to
      * startup that is. Large description trees should be written out using
-     * writeOn since memory for large strings runs out quick! toString() times out
+     * getCDtoFile since memory for large strings runs out quick! toString() times out
+     * by default. See @see setTimeout to change default value.
      *
      * @return string representation of component
      */
@@ -267,6 +295,15 @@ public class DefaultDumper implements Dump, Dumper, Serializable {
            return (ex.toString());
        }
     }
+
+    /**
+     * Returns a string representation of the component stored into a file. This will give a
+     * description of the component which is parseable, and deployable
+     * again... Unless someone removed attributes which are essential to
+     * startup that is. This operation times out
+     * by default. See @see setTimeout to change default value.
+     * It overwrites existing files without warning.
+     */
 
     public void getCDtoFile(String fileName){
         Writer out = null;
@@ -293,7 +330,7 @@ public class DefaultDumper implements Dump, Dumper, Serializable {
     }
 
     /**
-     *
+     * For logging messages.
      * @return LogSF
      */
     public LogSF sfLog(){
