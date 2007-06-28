@@ -10,7 +10,6 @@ import org.smartfrog.sfcore.logging.LogFactory;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.processcompound.PrimProcessDeployerImpl;
 import org.smartfrog.sfcore.reference.Reference;
-import org.smartfrog.sfcore.reference.ReferencePart;
 
 import java.rmi.RemoteException;
 
@@ -25,11 +24,8 @@ import java.rmi.RemoteException;
 public class ComponentFactoryDeployerImpl extends PrimProcessDeployerImpl
         implements ComponentDeployer
 {
-    private ComponentDescription target;
-
     public ComponentFactoryDeployerImpl(ComponentDescription target) {
-        super(target);
-        this.target = target;
+        super(target);    
     }
 
     protected Prim getPrimInstance() throws SmartFrogDeploymentException, RemoteException {
