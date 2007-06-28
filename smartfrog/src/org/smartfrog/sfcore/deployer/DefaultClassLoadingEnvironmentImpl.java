@@ -16,17 +16,7 @@ public class DefaultClassLoadingEnvironmentImpl implements ClassLoadingEnvironme
     public Prim getComponent(ComponentDescription askedFor) throws SmartFrogResolutionException,
             ClassNotFoundException, InstantiationException, IllegalAccessException
     {
-        String className;
-        try {
-            // Component using the new sfMeta syntax
-            ComponentDescription meta = (ComponentDescription)
-                    askedFor.sfResolveHere(SmartFrogCoreKeys.SF_METADATA);
-            className = resolveClassName(meta);
-        } catch (SmartFrogResolutionException e) {
-            // Component using the old sfClass syntax
-            className = resolveClassName(askedFor);
-        }
-        
+        String className = resolveClassName(askedFor);
         Class primClass = Class.forName(className);
         return (Prim) primClass.newInstance();
     }
