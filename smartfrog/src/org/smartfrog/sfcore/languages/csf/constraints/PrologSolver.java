@@ -2,33 +2,25 @@ package org.smartfrog.sfcore.languages.csf.constraints;
 
 import java.util.Collections;
 import java.util.Enumeration;
-import java.util.Hashtable;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Stack;
 import java.util.Vector;
 
 import org.smartfrog.SFSystem;
-import org.smartfrog.sfcore.common.SFNull;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.componentdescription.CDVisitor;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.languages.csf.csfcomponentdescription.CSFComponentDescription;
 import org.smartfrog.sfcore.languages.csf.csfcomponentdescription.FreeVar;
-import org.smartfrog.sfcore.reference.Reference;
 
 abstract public class PrologSolver extends CoreSolver {
-    private final String theoryFile = "plc.ecl";
-    private final String theoryFileProperty = "opt.smartfrog.sfcore.languages.csf.constraints.prologTheoryFile";
-    private final String varNameBase = "SFV";
-    private final char referenceDelimiter = '@';
+	private final String pathswitch = "/../constraints/";
+	private final String coreFileSuffix = "core.ecl";
+    private final String theoryFileSuffix = "base.ecl";
+    private final String theoryFilePath = "opt.smartfrog.sfcore.languages.csf.constraints.theoryFilePath";
     private CSFComponentDescription top;
-    private Hashtable bindings;
-    private Hashtable initialBindings;
     private Vector constraints = new Vector();
-    private Vector allocations = new Vector();
-    private Vector allVariables = new Vector(); // all variables in the description, should be empty after mapping back...
 
     /**
      * Implemention of the solver interface method., Solve the constraints and bind the variables.
@@ -48,518 +40,117 @@ abstract public class PrologSolver extends CoreSolver {
     public void solve(CSFComponentDescription cd) throws SmartFrogResolutionException {
         top = cd;
 
-        String filename = System.getProperty(theoryFileProperty);
-        if (filename==null) {
-        	filename = SFSystem.getEnv("SFHOME");
-        	if (filename==null){
-        		throw new SmartFrogResolutionException("Environment variable SFHOME must be set. Context: constraint processing");
-        	}
-        	filename += "/../"+"constraints"+"/"+theoryFile;
-	    }
+        String sfhome = SFSystem.getEnv("SFHOME");
+        
+        if (sfhome==null){
+    		throw new SmartFrogResolutionException("Environment variable SFHOME must be set. Context: constraint processing");
+    	}
+                
+        String corefile = sfhome+pathswitch+coreFileSuffix;
+        String thfile = sfhome+pathswitch+theoryFileSuffix;
        
         // create the theory
         try {
-            prepareTheory(filename);
+            prepareTheory(cd,corefile,thfile);
         } catch (Exception e) {
             throw new SmartFrogResolutionException("Unable to parse base theory for constraint resolution. ", e);
         }
 
+        //Add the path root
+        String thpath = System.getProperty(theoryFilePath);
+        
+        if (thpath!=null){
+        	try {
+        		runGoal("add_path(\""+thpath+"\")");
+        	} catch (Exception e) {
+                throw new SmartFrogResolutionException("Unable to add root theory file path. ", e);
+            }	
+        }
+        
         // collect and process the constraints
-        initialBindings = new Hashtable();
         try {
             collectConstraints();
         } catch (Exception e) {
             throw new SmartFrogResolutionException("Error collecting constraints during constraint resolution", e);
         }
 
-        if (constraints.size()!=0) {
-        
-            //System.out.println("solving:"+cd);
-
-	    // solve the constraints
-	    try {
-		    solveConstraints(initialBindings);
-	    } catch (Exception e) {
-		throw new SmartFrogResolutionException("Error in solving constraints, probable inconsistency", e);
+        if (constraints.size()!=0) {       
+		    // solve the constraints
+		    try {
+			    solveConstraints();
+		    } catch (Exception e) {
+			throw new SmartFrogResolutionException("Error in solving constraints", e);
+		    }	
 	    }
 
-	    // map values back
-	    try {
-		mapBindings();
-	    } catch (Exception e) {
-		throw new SmartFrogResolutionException("Error updating description with variable bindings during constraint resolution", e);
-	    }
-        
-	    //System.out.println("solving:"+cd);
-
-	}
-
-        int size = allocations.size();
-        System.out.println(""+size);
-        
-		if (allocations.size()!=0){
-			for(int i=0;i<allocations.size();i++){
-			    Constraint c = (Constraint) allocations.get(i);
-			    String attr = c.getQuery();
-			    cd = (CSFComponentDescription) c.getComponent();
-			    
-			    System.out.println("solving:"+cd);
-			    
-			    try {
-			    	runGoal("init.");
-			    } catch (Exception e){
-			    	throw new SmartFrogResolutionException("Problem with initialing constraint solving theory for allocation", e);
-			    }
-			    
-			    Vector producers, consumers, colocations, nocolocations, hosteds, default_host_cap, default_vm_req;
-			    producers= consumers= colocations= nocolocations= hosteds= default_host_cap= default_vm_req= null;
-			    
-			    try {
-				   producers = (Vector) cd.sfResolve("producers");
-				   consumers = (Vector) cd.sfResolve("consumers");
-			    } catch (SmartFrogResolutionException sfre){
-			    	throw new SmartFrogResolutionException("Error in resolving allocation attributes: one/both of producers/consumers are missing", sfre);
-			    }			    
-			    try {
-			    	colocations = (Vector) cd.sfResolve("colocations");
-			    } catch (SmartFrogResolutionException sfre){
-			        ;
-			    }
-			    try {
-			    	nocolocations = (Vector) cd.sfResolve("noncolocations");
-			    } catch (SmartFrogResolutionException sfre){
-			    	;
-			    }	
-			    try {
-			    	hosteds = (Vector) cd.sfResolve("hosted");
-			    } catch (SmartFrogResolutionException sfre){
-			    	;
-			    }	
-			    
-			    try {
-			    	default_host_cap = (Vector) cd.sfResolve("default_host_cap");
-			    } catch (SmartFrogResolutionException sfre){
-			    	;
-			    }	
-			    
-			    try {
-			    	default_vm_req = (Vector) cd.sfResolve("default_vm_req");
-			    } catch (SmartFrogResolutionException sfre){
-			    	;
-			    }	
-			    
-			    //assert producer information...
-			    String assert_s="";
-			    for (int p=0;p<producers.size();p++){
-			    	if (p>0) assert_s+=", ";
-			    	assert_s+=" assert(host_cap(";
-			    	Object producer = producers.get(p);
-			    	if (producer instanceof Vector){
-			    		Vector producera = (Vector) producer;
-				    	String host = (String) producera.get(0);
-				    	assert_s+=host+", [";
-				    	Vector caps = (Vector) producera.get(1);
-				    	for (int ca=0;ca<caps.size();ca++){
-				    		if (ca>0) assert_s+=", ";
-				    		Integer cap = (Integer) caps.get(ca);
-				    		assert_s+=cap.toString();
-				    	}
-				    	assert_s+="]))";
-			    	} else {
-			    		String host = (String) producer;
-			    		assert_s+=host+", nil))";
-			    	}
-			    }
-			    assert_s+=".";
-			    
-			    //System.out.println(assert_s);
-			    
-			    try {
-			    	runGoal(assert_s);
-			    } catch (Exception e){
-			    	throw new SmartFrogResolutionException("Problem with initialing constraint solving theory for allocation: producers", e);
-			    }
-			    
-			    //assert consumer information...
-			    assert_s="";
-			    for (int co=0;co<consumers.size();co++){
-			    	if (co>0) assert_s+=", ";
-			    	assert_s+=" assert(vm_req(";
-			    	Object consumer = consumers.get(co);
-			    	if (consumer instanceof Vector){
-			    		Vector consumera = (Vector) consumer;
-				    	String vm = (String) consumera.get(0);
-				    	assert_s+=vm+", [";
-				    	Vector reqs = (Vector) consumera.get(1);
-				    	for (int re=0;re<reqs.size();re++){
-				    		if (re>0) assert_s+=", ";
-				    		Integer req = (Integer) reqs.get(re);
-				    		assert_s+=req.toString();
-				    	}
-				    	assert_s+="]))";			    		
-			    	} else {
-			    		String vm = (String) consumer;
-			    		assert_s+=vm+", nil))";			    		
-			    	}
-			    }
-			    assert_s+=".";
-			    
-			    //System.out.println(assert_s);
-			    
-			    
-			    try {
-			    	runGoal(assert_s);
-			    } catch (Exception e){
-			    	throw new SmartFrogResolutionException("Problem with initialing constraint solving theory for allocation: consumers", e);
-			    }
-
-			    
-			    assert_s="";
-			    if (colocations!=null){
-			    	for (int cols=0;cols<colocations.size();cols++){
-				    	if (cols>0) assert_s+=", ";
-				    	assert_s+=" assert(colo_list([";
-				    	Vector colocation = (Vector) colocations.get(cols);
-				    	for (int col=0;col<colocation.size();col++){
-				    		if (col>0) assert_s+=", ";
-				    		String col_s = (String) colocation.get(col);
-				    		assert_s+=col_s;
-				    	}
-				    	assert_s+="]))";
-				    }
-				    assert_s+=".";
-				    
-				    try {
-				    	runGoal(assert_s);
-				    } catch (Exception e){
-				    	throw new SmartFrogResolutionException("Problem with initialing constraint solving theory for allocation: colocations", e);
-				    }
-
-			    	
-			    }
-			    			    
-			    assert_s="";
-			    if (nocolocations!=null){
-			    	for (int nocols=0;nocols<nocolocations.size();nocols++){
-				    	if (nocols>0) assert_s+=", ";
-				    	assert_s+=" assert(nocolo_list([";
-				    	Vector nocolocation = (Vector) nocolocations.get(nocols);
-				    	for (int nocol=0;nocol<nocolocation.size();nocol++){
-				    		if (nocol>0) assert_s+=", ";
-				    		String nocol_s = (String) nocolocation.get(nocol);
-				    		assert_s+=nocol_s;
-				    	}
-				    	assert_s+="]))";
-				    }
-				    assert_s+=".";
-				    
-				    try {
-				    	runGoal(assert_s);
-				    } catch (Exception e){
-				    	throw new SmartFrogResolutionException("Problem with initialing constraint solving theory for allocation: noncolocations", e);
-				    }
-	
-			    }
-	
-			    //System.out.println(assert_s);
-			    
-			    assert_s="";
-			    if (hosteds!=null){
-			    	for (int h=0;h<hosteds.size();h++){
-				    	if (h>0) assert_s+=", ";
-				    	assert_s+=" assert(hosted(";
-				    	Vector hosted = (Vector) hosteds.get(h);
-				    	String vm = (String) hosted.get(0);
-				    	String host = (String) hosted.get(1);
-				    	assert_s+=vm+", "+host+"))";
-				    }
-				    assert_s+=".";
-				    
-				    
-				    try {
-				    	runGoal(assert_s);
-				    } catch (Exception e){
-				    	throw new SmartFrogResolutionException("Problem with initialing constraint solving theory for allocation: hosted", e);
-				    }
-	
-	
-			    }
-			    
-			    //System.out.println(assert_s);
-			    
-			    assert_s="";
-			    if (default_vm_req!=null){
-			    	assert_s+=" assert(default_vm_req([";
-			    	for (int dv=0;dv<default_vm_req.size();dv++){
-				    	if (dv>0) assert_s+=", ";
-				    	Integer req = (Integer) default_vm_req.get(dv);
-				    	assert_s+=req.toString();
-				    }
-				    assert_s+="])).";
-				    
-				    try {
-				    	runGoal(assert_s);
-				    } catch (Exception e){
-				    	throw new SmartFrogResolutionException("Problem with initialing constraint solving theory for allocation: default_vm_req", e);
-				    }
-			    }
-			    
-			    //System.out.println(assert_s);
-			    
-			    assert_s="";
-			    if (default_host_cap!=null){
-			    	assert_s+=" assert(default_host_cap([";
-			    	for (int dh=0;dh<default_host_cap.size();dh++){
-				    	if (dh>0) assert_s+=", ";
-				    	Integer cap = (Integer) default_host_cap.get(dh);
-				    	assert_s+=cap.toString();
-				    }
-				    assert_s+="])).";
-				    
-				    try {
-				    	runGoal(assert_s);
-				    } catch (Exception e){
-				    	throw new SmartFrogResolutionException("Problem with initialing constraint solving theory for allocation: default_host_cap", e);
-				    }
-			    }
-			    
-			    //System.out.println(assert_s);
-			    
-				String query_s = "SFRESULT = ASSIGNMENTS, assign(ASSIGNMENTS).";
-				
-				try {
-				    solveQuery(query_s);
-			    } catch (Exception e){
-			    	throw new SmartFrogResolutionException("Problem with initialing constraint solving theory for allocation: hosted", e);
-			    }
-				
-			    try {
-					Vector assignments = getResults();
-					cd.sfAddAttribute(attr, assignments);
-			    } catch (Exception e){
-			    	throw new SmartFrogResolutionException("Problem extracting results from allocation attempt", e);
-			    }
-			    	
-			   System.out.println("solving:"+cd);
-			}
-		}
-		try {
+ 		try {
 	    	destroy();
 	    } catch (Exception e){
 	    	throw new SmartFrogResolutionException("Problem with destroying constraint solver", e);
 	    }
     }
 
-    /**
-     * Process the references in the constraint - delimited by the solver chaarcter - looking up the value in the hierarchy starting from the component
-     * to which the constraint is attached. Also deal with character escapes...
-     */
-    private String processReferences(ComponentDescription cd,
-                                     String pString) throws SmartFrogResolutionException {
-        int index = 0;
-        int length = pString.length();
-        char refDel = referenceDelimiter();
-        char theChar;
-        //System.out.println("processing string " + pString);
-        StringBuffer fixed = new StringBuffer(length);
-
-        while (index < length) {
-            theChar = pString.charAt(index++);
-            if (theChar == refDel) {
-                if (index >= length) throw new SmartFrogResolutionException("reference not terminated" + fixed + "... on component " + cd.sfCompleteName());
-
-                theChar = pString.charAt(index++);
-                if (theChar == refDel) { // we don't have a reference
-                    fixed.append(theChar);
-                } else {// we have the start of a reference
-                    fixed.append(' ');
-
-                    Reference ref = null;
-                    try {//extract the reference
-                        StringBuffer refString = new StringBuffer();
-                        while (theChar != refDel) {
-                            refString.append(theChar);
-                            if (index >= length) throw new SmartFrogResolutionException("reference not terminated " + fixed + "... on component " + cd.sfCompleteName());
-                            theChar = pString.charAt(index++);
-                        }
-                        ref = Reference.fromString(refString.toString());
-                        //System.out.println("ref is " + ref);
-                    } catch (SmartFrogResolutionException e) {
-                        throw new SmartFrogResolutionException("unable to build reference at " + fixed.toString());
-                    }
-
-                    Object o = null;
-                    try {
-                        o = cd.sfResolve(ref);
-                        //System.out.println("found " + o);
-                    } catch (SmartFrogResolutionException e) {
-                        throw new SmartFrogResolutionException("unable to resolve reference " + ref.toString() + " on component " + cd.sfCompleteName());
-                    }
-
-                    if (o instanceof FreeVar) {
-                        fixed.append(freeVariableName((FreeVar) o));
-                    } else {
-                        FreeVar fv = new FreeVar();
-                        String fvname = freeVariableName(fv);
-                        fixed.append(fvname);
-                        initialBindings.put(fvname, mapValueIn(o));
-                    }
-
-                    fixed.append(' ');
-                }
-            } else {
-                fixed.append(theChar);
-            }
-        }
-        return fixed.toString();
-    }
 
     private void collectConstraints() throws Exception {
         top.visit(new ConstraintCollector(), false);
-        //System.out.println("unordered constraints " + constraints);
+ 
         //Need to adjust search priorities
-	int highest=0;
-	for (int i=0;i<constraints.size();i++){
-	    int priority = ((Constraint) constraints.get(i)).getPriority();
-	    if (priority>highest) highest=priority;
-	}
-	for (int i=0;i<constraints.size();i++){
-		Constraint constraint = (Constraint) constraints.get(i);
-	    int priority = constraint.getPriority();
-	    if (priority<0) {
-		constraint.setPriority((priority * -1) + highest); //switch sign and start from highest
-	    }
-	}
-	Collections.sort(constraints);
-        //System.out.println("ordered constraints " + constraints);
+		int highest=0;
+		for (int i=0;i<constraints.size();i++){
+			Constraint c = (Constraint) constraints.get(i);
+		    int priority = c.getPriority();
+		    if (priority>highest) highest=priority;
+        	String context = c.getComponent().sfCompleteName().toString();
+        	c.setQuery(ann_preprocess(c.getQuery(), remove_ref_prefix(context)));
+		}
+		for (int i=0;i<constraints.size();i++){
+			Constraint constraint = (Constraint) constraints.get(i);
+		    int priority = constraint.getPriority();
+		    if (constraint.isDoCons()) {
+			constraint.setPriority(priority + highest + 1); 
+		    }
+		}
+		Collections.sort(constraints);
+		//System.out.println("ordered constraints " + constraints);
+    }
+    
+    protected String remove_ref_prefix(String ref){
+    	String ref1 = "";
+    	int idx = ref.indexOf(":");
+    	if (idx!=-1) ref1 = ref.substring(idx+1, ref.length());
+    	return ref1;
+    }
+    
+    protected String create_ref_str(ComponentDescription cd){
+    	String ref = cd.sfCompleteName().toString();
+    	String ref1 = remove_ref_prefix(ref);
+    	if (ref1.compareTo("")==0) return ref1;
+    	else return ref1+":";
     }
 
-    private void solveConstraints(Hashtable initialBindings) throws Exception {
+    private void solveConstraints() throws Exception {
         StringBuffer totalConstraint = new StringBuffer();
 
-        totalConstraint.append(" SFVRESULT = [");
+        totalConstraint.append("hash_create(sfvar(0)), ");
         boolean first=true;
-        for (Enumeration n = allVariables.elements(); n.hasMoreElements();) {
+        for (Enumeration e = constraints.elements(); e.hasMoreElements();) {
         	if (first) first=false;
         	else totalConstraint.append(", ");
-            String fv = freeVariableName((FreeVar) n.nextElement());
-            totalConstraint.append(fv);
+        	Constraint c = (Constraint) e.nextElement();
+        	totalConstraint.append(c.getQuery());
         }
-        totalConstraint.append("]");
         
-        for (Enumeration b = initialBindings.keys(); b.hasMoreElements();) {
-        	totalConstraint.append(", ");
-            String name = (String) b.nextElement();
-            totalConstraint.append(name);
-            totalConstraint.append("=");
-            totalConstraint.append(initialBindings.get(name).toString());
-        }
-
-        for (Enumeration e = constraints.elements(); e.hasMoreElements();) {
-        	totalConstraint.append(", ");
-            String query = ((Constraint) e.nextElement()).getQuery();
-            totalConstraint.append(query);
-        }
-        totalConstraint.append(".");
+        //Preprocess agg constraint goal
+	    String goal=agg_preprocess(totalConstraint.toString());
+         
+	    //System.out.println(goal);
+        runGoal(goal);
         
-        //System.out.println("solving prolog constraint " + totalConstraint);
         
-        solveQuery(totalConstraint.toString());
-        
-        bindings = new Hashtable();
-
-        for (int k = 0; k < allVariables.size(); k++) {
-            bindings.put(freeVariableName((FreeVar)allVariables.elementAt(k)), getBinding(k));
-        } 
-    }
-
-    private void mapBindings() throws Exception {
-        allVariables = new Vector();
+        //Retrieve FreeVar mappings...
         top.visit(new BindingMapper(), false);
-        if (allVariables.size() > 0) {
-            throw new SmartFrogResolutionException("Unbound variable(s) in attribute(s) " + allVariables);
-        }
     }
-
-    /**
-     * Method to convert an SF value to an object suitable for the solver
-     * This should be the inverse of mapValueOut
-     *
-     * @param v the value to convert
-     * @return the converted value
-     */
-    public Object mapValueIn(Object v) throws SmartFrogResolutionException {
-        if (v instanceof Number) {
-            return v;
-        } else if (v instanceof Boolean) {
-            return v;
-        } else if (v instanceof String) {
-            return "'" + v + "'";
-        } else if (v instanceof SFNull) {
-            return "'sfnull'";
-        } else if (v instanceof Vector) {
-            Vector result = new Vector();
-            for (Enumeration e = ((Vector) v).elements(); e.hasMoreElements();) {
-                result.add(mapValueIn(e.nextElement()));
-            }
-            return result;
-        } else if (v instanceof FreeVar) {
-            return varNameBase + ((FreeVar) v).getId();
-        } else {
-            throw new SmartFrogResolutionException("unable to handle SF data in constraint: " + v);
-        }
-    }
-
-    /**
-     * Method to convert an object returned by the solver into one suited for SF
-     * This should be the inverse of mapValueIn
-     *
-     * @param v the value to convert
-     * @return the converted value
-     */
-    public Object mapValueOut(Object v) throws SmartFrogResolutionException {
-        if (v instanceof Number) {
-            return v;
-        } else if (v instanceof Boolean) {
-            return v;
-        } else if (v instanceof Vector) {
-            Vector result = new Vector();
-            for (Enumeration e = ((Vector) v).elements(); e.hasMoreElements();) {
-                result.add(mapValueOut(e.nextElement()));
-            }
-            return result;
-        } else if (v instanceof String) {
-            String vs = (String) v;
-            if (vs.equals("'sfnull'")) {
-                return SFNull.get();
-            } else if ((vs.charAt(0) == '\'') & (vs.charAt(vs.length() - 1) == '\'')) {
-                return vs.substring(1, vs.length() - 1);
-            } else if (vs.startsWith(varNameBase)) {
-                String ind = vs.substring(varNameBase.length(), vs.length());
-                int index = new Integer(ind).intValue();
-                return new FreeVar(index);
-            } else {
-                throw new SmartFrogResolutionException("unknown data returned from solver " + v);
-            }
-        } else {
-            throw new SmartFrogResolutionException("unknown data returned from solver " + v);
-        }
-    }
-
-    private String freeVariableName(FreeVar v) {
-        return varNameBase + v.getId();
-    }
-
-    /**
-     * Return the reference delimiter for the query and theory strings. Two consecutive characters are used to escape
-     * the character.
-     *
-     * @return '@' as the delimiter
-     */
-    private char referenceDelimiter() {
-        return referenceDelimiter;
-    }
-
+ 
     // handle all the constraints, and whilst about it, collect details of all the variables
     private class ConstraintCollector implements CDVisitor {
         public void actOn(ComponentDescription cd, Stack s) throws SmartFrogException {
@@ -568,78 +159,50 @@ abstract public class PrologSolver extends CoreSolver {
             for (Enumeration e = cs.elements(); e.hasMoreElements();) {
                 Constraint c = (Constraint) e.nextElement();
                 c.setComponent(cd);
-                c.setQuery(processReferences(cd, c.getQuery()));
-                if (c.getAllocating()){
-                	allocations.add(c);
-                } else {
-                    constraints.add(c);
-                }
-            }
-            //collect the variables that require binding
-            for (Iterator i = cd.sfValues(); i.hasNext();) {
-                Object value = i.next();
-                if (value instanceof Vector) {
-                    findVarsInVector((Vector) value);
-                } else if (value instanceof FreeVar) {
-                    allVariables.add(value);
-                }
+                constraints.add(c);
             }
         }
-
-        private void findVarsInVector(Vector value) {
-            for (Enumeration e = value.elements(); e.hasMoreElements();) {
-                Object n = e.nextElement();
-                if (n instanceof FreeVar) {
-                    allVariables.add(n);
-                } else if (n instanceof Vector) {
-                    findVarsInVector((Vector) n);
-                }
-            }
-        }
-    }
-
+     }
+       
     private class BindingMapper implements CDVisitor {
         public void actOn(ComponentDescription cd, Stack s) throws Exception {
             for (Iterator i = cd.sfAttributes(); i.hasNext();) {
                 Object key = i.next();
                 Object value = cd.sfResolveHere(key);
                 if (value instanceof FreeVar) {
-                    String freevar = freeVariableName((FreeVar) value);
-                    Object boundValue = bindings.get(freevar);
-                    if (boundValue == null) {
-                        allVariables.add(cd.sfCompleteName().toString() + ":" + key);
-                    } else {
-                        cd.sfReplaceAttribute(key, mapValueOut(boundValue));
-                    }
+                	FreeVar fv = (FreeVar) value;
+                	Object data = fv.getProvData();
+                	if (data==null) {
+                		throw new SmartFrogResolutionException("Unbound variables after constraint solving.");
+                	}
+                	else cd.sfReplaceAttribute(key, data);
                 } else if (value instanceof Vector) {
                     replaceVarsInVector((Vector)value, cd, key);
                 }
             }
         }
 
-        private void replaceVarsInVector(Vector value, ComponentDescription cd, Object key) {
-            for (int i = 0; i< value.size(); i++) {
-                Object n = value.elementAt(i);
-                if (n instanceof FreeVar) {
-                    //System.out.println(n + " " + value + " " + bindings);
-                    Object b = bindings.get(freeVariableName((FreeVar)n));
-                    //System.out.println(b);
-                    if (b == null) {
-                        allVariables.add(cd.sfCompleteName().toString() + ":" + key);
-                    } else {
-                        value.set(i,b);
-                    }
-                } else if (n instanceof Vector) {
-                    replaceVarsInVector((Vector) n, cd, key);
+        private void replaceVarsInVector(Vector vec, ComponentDescription cd, Object key) throws Exception {
+            for (int i = 0; i< vec.size(); i++) {
+                Object value = vec.elementAt(i);
+                if (value==null) throw new SmartFrogResolutionException("Unbound variables after constraint solving.");
+                else if (value instanceof FreeVar) {
+                	FreeVar fv = (FreeVar) value;
+                	Object data = fv.getProvData();
+                	if (data==null) {
+               		throw new SmartFrogResolutionException("Unbound variables after constraint solving.");
+                	}
+                	else vec.set(i, data);
+                } else if (value instanceof Vector) {
+                    replaceVarsInVector((Vector)value, cd, key);
                 }
             }
         }
     }
-
-    abstract public void prepareTheory(String prologFile) throws Exception;
-    abstract public void solveQuery(String totalConstraint) throws Exception;
-    abstract public void runGoal(String totalConstraint) throws Exception;
+    
+    abstract public void prepareTheory(ComponentDescription cd, String coreFile, String prologFile) throws Exception;
+    abstract public void runGoal(String goal) throws Exception;
+    abstract public String ann_preprocess(String goal, String context) throws Exception;
+    abstract public String agg_preprocess(String goal) throws Exception;
     abstract public void destroy() throws Exception;
-    abstract public Object getBinding(int var);
-    abstract public Vector getResults();
 }

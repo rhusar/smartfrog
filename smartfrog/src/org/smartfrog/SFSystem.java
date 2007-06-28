@@ -61,7 +61,7 @@ import org.smartfrog.sfcore.parser.SFParser;
  * <P>
  * You can create your own main loop, using the utility methods in this class.
  * The main loop of SFSystem reads an optionset, checks if -c or /? missing to
- * pring usage string (and exit). It then reads the system properties, and
+ * print usage string (and exit). It then reads the system properties, and
  * does a deployFromURLs given the URLs on the command line. Any exception or
  * error causes the main loop to do an exit. If the /e option is present on
  * the command line, the main loop exits after deployment. This is good for
@@ -74,7 +74,7 @@ import org.smartfrog.sfcore.parser.SFParser;
  */
 public class SFSystem implements MessageKeys {
 
-    /** A flag that ensures only one system initialization. */
+    /** A flag that ensures only one system initialisation. */
     private static boolean alreadySystemInit = false;
 
     /** Save System.in and System.out so we can restore things on shutdown */
@@ -92,7 +92,7 @@ public class SFSystem implements MessageKeys {
 
     /**
      * Entry point to get system properties. Works around a bug in some JVM's
-     * (ie. Solaris) to return the default correctly.
+     * (i.e. Solaris) to return the default correctly.
      *
      * @param key property key to look up
      * @param def default to return if key not present

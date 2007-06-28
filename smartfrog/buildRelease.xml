@@ -172,14 +172,23 @@
     <patternset refid="excluded.cruft"/>
   </patternset>
 
-  <!--everything in the bin dir other than the unix stuff-->
+  <!--DOS binaries-->
+  <patternset id="dos.bin">
+    <include name="*.bat"/>
+    <include name="*.cmd"/>
+  </patternset>
+  
+  <!--everything in the bin dir other than the unix and DOS stuff-->
   <patternset id="other.bin">
     <include name="metadata/*"/>
     <include name="*"/>
+    <include name="sfGui.bat"/>
     <exclude name="smartfrog"/>
     <exclude name="sf*"/>
     <exclude name="*.pl"/>
     <exclude name="*.py"/>
+    <exclude name="*.bat"/>
+    <exclude name="*.cmd"/>
     <patternset refid="excluded.cruft"/>
   </patternset>
 
@@ -313,11 +322,13 @@
     <zipfileset id="doc.files.zf" dir="docs" prefix="${prefix}/docs">
       <patternset refid="docs.pattern" />
     </zipfileset>
+
     <!--docs in the dist/docs subdir-->
     <zipfileset id="dist.doc.files.zf" dir="${dist}/docs/"
         prefix="${prefix}/dist/docs">
       <patternset refid="docs.pattern" />
     </zipfileset>
+
     <!-- distributables. Leaves out but docs but includes binaries without setting permissions-->
     <zipfileset id="dist.main.zf" dir="${dist}" prefix="${prefix}/dist">
       <include name="**"/>
@@ -333,6 +344,10 @@
         filemode="${exec}" prefix="${prefix}/dist/bin">
       <patternset refid="unix.bin" />
     </zipfileset>
+    <zipfileset id="dist.dos.bin.zf"
+        dir="${dist}/bin/" prefix="${prefix}/dist/bin">
+      <patternset refid="dos.bin" />
+    </zipfileset>
     <zipfileset id="dist.other.bin.zf"
         dir="${dist}/bin/" prefix="${prefix}/dist/bin">
       <patternset refid="other.bin" />
@@ -341,6 +356,10 @@
         prefix="${prefix}/dist/bin/security">
       <patternset refid="unix.bin" />
     </zipfileset>
+    <zipfileset id="security.dos.bin.zf" dir="${dist}/bin/security"
+        prefix="${prefix}/dist/bin/security">
+      <patternset refid="dos.bin" />
+    </zipfileset>
     <zipfileset id="security.other.bin.zf" dir="${dist}/bin/security"
         prefix="${prefix}/dist/bin/security">
       <patternset refid="other.bin" />
@@ -348,6 +367,10 @@
     <zipfileset id="unix.bin.zf" dir="bin" filemode="${exec}"
         prefix="${prefix}/bin">
       <patternset refid="unix.bin" />
+    </zipfileset>
+    <zipfileset id="dos.bin.zf" dir="bin" filemode="${exec}"
+        prefix="${prefix}/bin">
+      <patternset refid="dos.bin" />
     </zipfileset>
     <zipfileset id="other.bin.zf" dir="bin"
         prefix="${prefix}/bin">
@@ -377,8 +400,10 @@
         <zipfileset refid="dist.main.zf" />
         <zipfileset refid="dist.doc.files.zf" />
         <zipfileset refid="dist.unix.bin.zf" />
+        <zipfileset refid="dist.dos.bin.zf" />
         <zipfileset refid="dist.other.bin.zf" />
         <zipfileset refid="security.unix.bin.zf" />
+        <zipfileset refid="security.dos.bin.zf" />
         <zipfileset refid="security.other.bin.zf" />
       </zip>
     </presetdef>
@@ -403,6 +428,7 @@
     <make-dist-zip destfile="${all.zip}" >
       <zipfileset refid="doc.files.zf"/>
       <zipfileset refid="unix.bin.zf" />
+      <zipfileset refid="dos.bin.zf" />
       <zipfileset refid="other.bin.zf" />
       <zipfileset refid="main.zf" />
       <zipfileset refid="lib.zf" />
@@ -449,6 +475,10 @@
         filemode="${exec}" prefix="${prefix}/dist/bin">
       <patternset refid="unix.bin" />
     </tarfileset>
+    <tarfileset id="dist.dos.bin.tf" dir="${dist}/bin/"
+       prefix="${prefix}/dist/bin">
+      <patternset refid="dos.bin" />
+    </tarfileset>
     <tarfileset id="dist.other.bin.tf"
         dir="${dist}/bin/" prefix="${prefix}/dist/bin">
       <patternset refid="other.bin" />
@@ -456,6 +486,10 @@
     <tarfileset id="security.unix.bin.tf" dir="${dist}/bin/security" filemode="${exec}"
         prefix="${prefix}/dist/bin/security">
       <patternset refid="unix.bin" />
+    </tarfileset>
+    <tarfileset id="security.dos.bin.tf" dir="${dist}/bin/security"
+        prefix="${prefix}/dist/bin/security">
+      <patternset refid="dos.bin" />
     </tarfileset>
     <tarfileset id="security.other.bin.tf" dir="${dist}/bin/security"
         prefix="${prefix}/dist/bin/security">
@@ -472,6 +506,10 @@
     <tarfileset id="lib.tf" dir="lib"
         prefix="${prefix}/lib">
       <patternset refid="other.bin" />
+    </tarfileset>
+    <tarfileset id="dos.bin.tf" dir="bin"
+        prefix="${prefix}/bin">
+      <patternset refid="dos.bin" />
     </tarfileset>
     <tarfileset id="other.bin.tf" dir="bin"
         prefix="${prefix}/bin">
@@ -493,8 +531,10 @@
         <tarfileset refid="dist.main.tf" />
         <tarfileset refid="dist.doc.files.tf" />
         <tarfileset refid="dist.unix.bin.tf" />
+        <tarfileset refid="dist.dos.bin.tf" />
         <tarfileset refid="dist.other.bin.tf" />
         <tarfileset refid="security.unix.bin.tf" />
+        <tarfileset refid="security.dos.bin.tf" />
         <tarfileset refid="security.other.bin.tf" />
       </tar>
     </presetdef>
@@ -521,6 +561,7 @@
     <make-dist-tar destfile="${all.tar}" >
       <tarfileset refid="doc.files.tf"/>
       <tarfileset refid="unix.bin.tf" />
+      <tarfileset refid="dos.bin.tf" />
       <tarfileset refid="other.bin.tf" />
       <tarfileset refid="main.tf" />
       <tarfileset refid="lib.tf" />

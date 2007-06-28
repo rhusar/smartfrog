@@ -335,69 +335,32 @@ TOKEN : /* Literals */
             )
         )* "#")
       >
-    | <SELECTING: ("#selecting#" (               // for backward compatibility
-          (~["#","\\"])
+    | <CONSTRAINT: ("#cons" (":" (["0"-"9"])+){0,1} "#" (
+          (~["\\"])
           | ("\\"
-              ( ["n","t","b","r","f","\\","'","#","="]
+              ( ["n","t","b","r","f","\\","'","="]
               | ["0"-"3"] ["0"-"7"] ["0"-"7"]
               )
             )
-        )* "#")
-      >
-    | <ALLOCATE: ("#allocate(" (["A"-"Z","a"-"z"]) (["A"-"Z","a"-"z","0"-"9"])* ")##")>
-    | <BINDING: ("#binding#" (                        // for backward compatibility
-          (~["#","\\"])
-          | ("\\"
-              ( ["n","t","b","r","f","\\","'","#","="]
-              | ["0"-"3"] ["0"-"7"] ["0"-"7"]
-              )
-            )
-        )* "#")
-      >
-     | <CHECKING: ("#checking#" (                      // for backward compatibility
-          (~["#","\\"])
-          | ("\\"
-              ( ["n","t","b","r","f","\\","'","#","="]
-              | ["0"-"3"] ["0"-"7"] ["0"-"7"]
-              )
-            )
-        )* "#")
-      >
-     | <CONSTRAINT: ("#constraint:" (["0"-"9"])+ "#" (
-          (~["#","\\"])
-          | ("\\"
-              ( ["n","t","b","r","f","\\","'","#","="]
-              | ["0"-"3"] ["0"-"7"] ["0"-"7"]
-              )
-            )
-        )* "#")
+        )* "\\#")
       >
      | <DECL: ("#decl#" (
-          (~["#","\\"])
+          (~["\\"])
           | ("\\"
-              ( ["n","t","b","r","f","\\","'","#","="]
+              ( ["n","t","b","r","f","\\","'","="]
               | ["0"-"3"] ["0"-"7"] ["0"-"7"]
               )
             )
-        )* "#")
+        )* "\\#")
       >
-     | <SEARCH: ("#search:" (["0"-"9"])+ "#" (
-          (~["#","\\"])
+     | <DO: ("#do" (":" (["0"-"9"])+){0,1} "#" (
+          (~["\\"])
           | ("\\"
-              ( ["n","t","b","r","f","\\","'","#","="]
+              ( ["n","t","b","r","f","\\","'","="]
               | ["0"-"3"] ["0"-"7"] ["0"-"7"]
               )
             )
-        )* "#")
-      >
-     | <SUCHTHAT: ("#suchThat#" (                     // for backward compatibility
-          (~["#","\\"])
-          | ("\\"
-              ( ["n","t","b","r","f","\\","'","#","="]
-              | ["0"-"3"] ["0"-"7"] ["0"-"7"]
-              )
-            )
-        )* "#")
+        )* "\\#")
       >
     | <INTEGER: (("-")? ["0"-"9"] (["0"-"9"])*)
         | "0" >
@@ -863,39 +826,35 @@ void Constraints(CSFComponentDescription comp) :
 {
     String suchThat = "";
     int priority = 0;
-    boolean allocating = false;
+    boolean docons=false;
     Token t;
 }
 {
     (
-       ( (t = <CHECKING> | t = <SUCHTHAT>)           //note important that checking and suchthat have 8 chars!!!:-)
-            { priority = 25;
-              suchThat = fixEscapes(t.image.substring(10, t.image.length() - 1)); }
-       | t = <DECL>
+       ( t = <DECL>
             { priority = 0;
-              suchThat = fixEscapes(t.image.substring(6, t.image.length() - 1));  }
+              suchThat = fixEscapes(t.image.substring(6, t.image.length() - 2));  }
        | t = <CONSTRAINT>
-            { priority = (new Integer(t.image.substring(12, t.image.indexOf("#", 12)))).intValue();
-              suchThat = fixEscapes(t.image.substring(t.image.indexOf("#", 12) + 1, t.image.length() - 1)); }
-       | t = <SEARCH>
-            { priority = -(new Integer(t.image.substring(8, t.image.indexOf("#", 8)))).intValue();
-              suchThat = fixEscapes(t.image.substring(t.image.indexOf("#", 8) + 1, t.image.length() - 1)); }
-       | t = <BINDING>
-            { priority = 50;
-              suchThat = fixEscapes(t.image.substring(9, t.image.length() - 1));  }
-       | t = <SELECTING>
-            { priority = 75;
-              suchThat = fixEscapes(t.image.substring(11, t.image.length() - 1)); }
-       | t = <ALLOCATE>
-	   { suchThat = t.image.substring(10, t.image.indexOf(")", 10));
-             allocating = true; }
+            { try {
+                 priority = (new Integer(t.image.substring(6, t.image.indexOf("#", 6)))).intValue();
+              } catch (NumberFormatException nfe) {
+              	;
+              }
+              suchThat = fixEscapes(t.image.substring(t.image.indexOf("#", 5) + 1, t.image.length() - 2)); }
+       | t = <DO>
+            { 
+              try {
+                 priority = (new Integer(t.image.substring(4, t.image.indexOf("#", 4)))).intValue();
+              } catch (NumberFormatException nfe) {
+              	;
+              }
+              suchThat = fixEscapes(t.image.substring(t.image.indexOf("#", 3) + 1, t.image.length() - 2)); 
+              docons=true;
+              }
        )
       {
        try {
-	   if (allocating)
-	       comp.addConstraint(new Constraint(suchThat));
-           else 
-               comp.addConstraint(new Constraint(suchThat, priority));
+            comp.addConstraint(new Constraint(suchThat, priority, docons));
        } catch (Exception  se) {
             throw new ParseException("Error creating constraint, exception thrown: " + se);
        }

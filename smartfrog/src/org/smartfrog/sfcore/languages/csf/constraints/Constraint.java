@@ -21,11 +21,9 @@
 package org.smartfrog.sfcore.languages.csf.constraints;
 
 
-import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.common.Copying;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
-
-import java.util.Hashtable;
+import org.smartfrog.sfcore.reference.Reference;
 
 
 /**
@@ -39,13 +37,12 @@ import java.util.Hashtable;
  */
 public class Constraint implements Copying, Comparable {
 
-    private boolean allocating = false;
+    private boolean docons = false;
     private String query = null;
-    private int priority = 0; //lowest expected, though negative priorties may be given
+    private int priority = 0; 
 
     private Object solverState = null;
     private ComponentDescription cd = null;
-    private Hashtable bindings;
 
     /**
      * the Name of the component
@@ -61,23 +58,14 @@ public class Constraint implements Copying, Comparable {
      *
      * @param query  the query string  #suchThat#...#
      */
-    public Constraint(String query, int priority) {
+    public Constraint(String query, int priority, boolean docons) {
        setQuery(query);
        setPriority(priority);
-       //System.out.println("building constraint " + priority + " " + query);
+       setDoCons(docons);
     }
-
-    public Constraint(String attr) {
-       setAllocating(true);
-       setQuery(attr);
-       //System.out.println("building allocation " + query);
-    }
-
+   
     public String toString() {
-	if (allocating) 
-            return "#allocate("+query+")##";
-	else 
-	    return "#constraint:"+priority+"#"+query+"#";
+	    return "#cons:"+priority+"#"+query+"#";
     }
 
     /**
@@ -117,24 +105,6 @@ public class Constraint implements Copying, Comparable {
     }
 
     /**
-     * Get the bindings - state used by the solvers
-     *
-     * @return the ComponentDescription
-     */
-    public Hashtable getBindings() {
-        return bindings;
-    }
-
-    /**
-     * Get the bindings - state used by the solvers
-     *
-     * @param bindings the ComponentDescription
-     */
-    public void setBindings(Hashtable bindings) {
-        this.bindings = bindings;
-    }
-
-    /**
      * Get the query string #suchThat#...#
      *
      * @return the query string
@@ -152,25 +122,26 @@ public class Constraint implements Copying, Comparable {
         this.query = query;
     }
 
+
     /**
-     * Get whether allocating 
+     * Whether a "do" constraint
      *
-     * @return allocation answer
+     * @return whether do constraint
      */
-    public boolean getAllocating() {
-        return allocating;
+    public boolean isDoCons() {
+        return docons;
     }
 
     /**
-     * Set allocating 
+     * Get the query string for #suchThat#...#
      *
-     * @param allocating whether allocating
+     * @param query the query string
      */
-    public void setAllocating(boolean allocating) {
-        this.allocating = allocating;
+    public void setDoCons(boolean docons) {
+        this.docons = docons;
     }
 
-
+    
        /**
      * Get the priority for #suchThat:ppp#...#
      *
@@ -190,10 +161,7 @@ public class Constraint implements Copying, Comparable {
     }
 
     public Object copy() {
-	if (allocating)
-	    return new Constraint(query);
-	else 
-	    return new Constraint(query, priority);
+	    return new Constraint(query, priority, docons);
     }
 
     public Object clone() {
