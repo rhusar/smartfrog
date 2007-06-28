@@ -12,11 +12,17 @@ For more information: www.smartfrog.org
 package tests.org.smartfrog.avalanche.server;
 
 import java.io.File;
+import java.util.Date;
+
+import org.w3c.dom.Document;
 
 import org.smartfrog.avalanche.core.activeHostProfile.ActiveProfileType;
+import org.smartfrog.avalanche.server.ActiveProfileManager;
 import org.smartfrog.avalanche.server.AvalancheFactory;
 import org.smartfrog.avalanche.server.HostManager;
+import org.smartfrog.avalanche.server.engines.sf.SFAdapter;
 import org.smartfrog.avalanche.settings.xdefault.SettingsDocument;
+import org.smartfrog.avalanche.util.XMLUtils;
 
 /**
  * 
