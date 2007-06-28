@@ -11,34 +11,30 @@ import org.smartfrog.sfcore.deployer.ClassLoadingEnvironment;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.prim.TerminationRecord;
-import org.smartfrog.sfcore.reference.Reference;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.rmi.RemoteException;
 import java.util.Enumeration;
-import java.util.Dictionary;
 
 
 public class BundleClassLoadingEnvironmentImpl extends PrimImpl
     implements ClassLoadingEnvironment
 {
     public static final String LOCATION_ATTRIBUTE = "location";
-    private Bundle bundle;
+    private Bundle hostBundle = null;
 
     public BundleClassLoadingEnvironmentImpl() throws RemoteException {}
 
     public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
         super.sfDeploy();
 
-        BundleContext daemonBundleContext = (BundleContext) sfResolve(
-                Reference.fromString("PROCESS:" + SmartFrogCoreKeys.SF_CORE_BUNDLE_CONTEXT)
-        );
+        BundleContext daemonBundleContext = OSGiUtilities.getDaemonBundleContext(this);
         String location = (String) sfResolve(LOCATION_ATTRIBUTE);
 
         try {
-            bundle = daemonBundleContext.installBundle(location);
+            hostBundle = daemonBundleContext.installBundle(location);
         } catch (BundleException e) {
             throw SmartFrogException.forward(
                 "Error when installing bundle from location: " + location, e);
@@ -48,23 +44,18 @@ public class BundleClassLoadingEnvironmentImpl extends PrimImpl
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
 
-        if (isNotFragment(bundle)) {
+        if (OSGiUtilities.isNotFragment(hostBundle)) {
             try {
-                bundle.start();
+                hostBundle.start();
             } catch (BundleException e) {
                 SmartFrogException.forward("Error when starting bundle", e);
             }
         }
     }
 
-    private boolean isNotFragment(Bundle bundle) {
-        Dictionary headers = bundle.getHeaders();
-        return headers.get("Fragment-Host") == null;        
-    }
-
     public void sfTerminateWith(TerminationRecord status) {
         try {
-            bundle.uninstall();
+            hostBundle.uninstall();
         } catch (BundleException e) {
             sfLog().error("Error when uninstalling bundle", e);
         }
@@ -73,7 +64,7 @@ public class BundleClassLoadingEnvironmentImpl extends PrimImpl
     }
 
     public URL getResource(String location) throws RemoteException {
-        return bundle.getResource(location);
+        return hostBundle.getResource(location);
     }
 
     public InputStream getResourceAsStream(String location)
@@ -91,12 +82,11 @@ public class BundleClassLoadingEnvironmentImpl extends PrimImpl
             SmartFrogResolutionException
     {
         String sfClass = (String) askedFor.sfResolveHere(SmartFrogCoreKeys.SF_CLASS);
-        Class primClass = bundle.loadClass(sfClass);
-
+        Class primClass = hostBundle.loadClass(sfClass);
         return (Prim) primClass.newInstance();
     }
 
     public Enumeration getResources(String location) throws IOException {
-        return bundle.getResources(location);
+        return hostBundle.getResources(location);
     }
 }

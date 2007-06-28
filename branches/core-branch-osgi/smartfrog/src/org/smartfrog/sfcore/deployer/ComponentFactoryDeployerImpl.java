@@ -25,11 +25,6 @@ import java.rmi.RemoteException;
 public class ComponentFactoryDeployerImpl extends PrimProcessDeployerImpl
         implements ComponentDeployer
 {
-    private final Reference DEFAULT_FACTORY_REF = new Reference(
-            new Reference(ReferencePart.process()).addElement(
-                    ReferencePart.here(SmartFrogCoreKeys.SF_DEFAULT_COMPONENT_FACTORY)
-            )
-    );
     private ComponentDescription target;
 
     public ComponentFactoryDeployerImpl(ComponentDescription target) {
@@ -49,13 +44,15 @@ public class ComponentFactoryDeployerImpl extends PrimProcessDeployerImpl
             ComponentFactory factory;
 
             if (metadata != null) {
+                // Component using the new sfMeta syntax
                 Reference factoryRef = (Reference) metadata.sfResolveHere(SmartFrogCoreKeys.SF_FACTORY);
-                factory = (ComponentFactory) metadata.sfResolve(factoryRef); 
+                factory = (ComponentFactory) metadata.sfResolve(factoryRef);
+                return factory.getComponent(metadata);
             } else {
+                // Component using the old sfClass-only syntqx
                 factory = defaultFactory();
+                return factory.getComponent(target);
             }
-
-            return factory.getComponent(target);
 
         } catch (ClassNotFoundException e) {
             throw new SmartFrogDeploymentException(MessageUtil.formatMessage(
@@ -75,10 +72,6 @@ public class ComponentFactoryDeployerImpl extends PrimProcessDeployerImpl
     }
 
     private ComponentFactory defaultFactory() {
-//        try {
-//            return (ComponentFactory) target.sfResolve(DEFAULT_FACTORY_REF);
-//        } catch (SmartFrogResolutionException e) {
-            return new DefaultClassLoadingEnvironmentImpl();
-//        }
+        return new DefaultClassLoadingEnvironmentImpl();
     }
 }
