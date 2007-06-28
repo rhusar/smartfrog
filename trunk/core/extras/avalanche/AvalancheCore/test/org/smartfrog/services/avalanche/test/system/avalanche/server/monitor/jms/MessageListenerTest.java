@@ -15,6 +15,7 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 
 import org.smartfrog.avalanche.server.monitor.jms.ListenerThread;
+import org.smartfrog.avalanche.server.monitor.jms.MessageListener;
 
 import junit.framework.TestCase;
 

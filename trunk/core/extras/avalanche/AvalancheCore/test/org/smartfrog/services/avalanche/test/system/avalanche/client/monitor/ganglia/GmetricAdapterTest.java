@@ -12,6 +12,7 @@ For more information: www.smartfrog.org
 package tests.org.smartfrog.avalanche.client.monitor.ganglia;
 
 
+import org.smartfrog.avalanche.client.monitor.ganglia.* ;
 import org.smartfrog.avalanche.client.monitor.*;
 import junit.framework.TestCase;
 
