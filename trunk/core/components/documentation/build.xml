@@ -252,8 +252,8 @@
       </fileset>
     </copy>
 
-    <copy todir="${dist.doc.dir}/smartfrogdoc/">
-      <fileset dir="${src.skin.dir}">
+    <copy todir="${dist.doc.dir}/en/smartfrogdoc">
+      <fileset dir="${skin.dir}">
         <include name="*.gif"/>
       </fileset>
     </copy>
