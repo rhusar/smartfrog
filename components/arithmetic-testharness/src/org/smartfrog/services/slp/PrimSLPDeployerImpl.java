@@ -9,6 +9,7 @@ import org.smartfrog.sfcore.processcompound.ProcessCompound;
 import org.smartfrog.sfcore.common.*;
 import org.smartfrog.sfcore.processcompound.SFProcess;
 import org.smartfrog.sfcore.componentdescription.*;
+import org.smartfrog.sfcore.deployer.ComponentFactory;
 
 import java.util.*;
 import java.net.*;
@@ -38,8 +39,8 @@ public class PrimSLPDeployerImpl extends PrimHostDeployerImpl {
   /** Constructor
    *
    * @param descr target to operate on */
-  public PrimSLPDeployerImpl(ComponentDescription descr) {
-    super(descr);
+  public PrimSLPDeployerImpl(ComponentDescription descr, ComponentFactory factory) {
+    super(descr, factory);
   }
   public String buildServiceQuery(ComponentDescription attributesRequirements){
     String result = "";

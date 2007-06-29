@@ -24,6 +24,7 @@ import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.reference.Reference;
+import org.smartfrog.sfcore.deployer.ComponentFactory;
 
 
 /**
@@ -43,8 +44,8 @@ public class PrimProcessDeployerImpl extends PrimHostDeployerImpl {
      *
      * @param descr description of the component that is to be deployed
      */
-    public PrimProcessDeployerImpl(ComponentDescription descr) {
-        super(descr);
+    public PrimProcessDeployerImpl(ComponentDescription descr, ComponentFactory componentFactory) {
+        super(descr, componentFactory);
     }
 
     /**

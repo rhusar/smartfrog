@@ -24,6 +24,7 @@ import java.io.IOException;
 
 import org.smartfrog.sfcore.common.MessageKeys;
 import org.smartfrog.sfcore.deployer.ComponentDeployer;
+import org.smartfrog.sfcore.deployer.ComponentFactory;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 
 import org.smartfrog.sfcore.logging.LogFactory;
@@ -48,16 +49,13 @@ import org.objectweb.proactive.ProActive;
  */
 public class AsynPrimDeployerImpl extends PrimDeployerImpl implements ComponentDeployer, MessageKeys {
 
-    /** ProcessLog. This log is used to log into the core log: SF_CORE_LOG */
-    private LogSF  sflog = LogFactory.sfGetProcessLog();
-
     /**
      * Constructs a component deployer for given description.
      *
      * @param descr target description
      */
-    public AsynPrimDeployerImpl (ComponentDescription descr) {
-        super (descr);
+    public AsynPrimDeployerImpl (ComponentDescription descr, ComponentFactory factory) {
+        super (descr, factory);
     }
 
     /**

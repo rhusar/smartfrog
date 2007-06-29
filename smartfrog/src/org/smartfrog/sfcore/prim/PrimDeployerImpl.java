@@ -31,6 +31,7 @@ import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
 import org.smartfrog.sfcore.deployer.ComponentDeployer;
+import org.smartfrog.sfcore.deployer.ComponentFactory;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.componentdescription.ComponentDescriptionImpl;
 import org.smartfrog.sfcore.common.ContextImpl;
@@ -63,13 +64,17 @@ public class PrimDeployerImpl implements ComponentDeployer, MessageKeys {
     /** The target description to work of. */
     protected ComponentDescription target;
 
+    /** The factory used to get the component instance. */
+    private ComponentFactory componentFactory;
+
     /**
      * Constructs a component deployer for given description.
      *
      * @param descr target description
      */
-    public PrimDeployerImpl(ComponentDescription descr) {
+    public PrimDeployerImpl(ComponentDescription descr, ComponentFactory componentFactory) {
         target = descr;
+        this.componentFactory = componentFactory;
     }
 
     /**
@@ -89,7 +94,7 @@ public class PrimDeployerImpl implements ComponentDeployer, MessageKeys {
 
         try {
             // create instance
-            Prim dComponent = getPrimInstance();
+            Prim dComponent = componentFactory.getComponent(target);
 
             // deploy component after wiping out the parentage of any
             // descriptions in the context. Prim is not a valid parent, so
@@ -107,17 +112,11 @@ public class PrimDeployerImpl implements ComponentDeployer, MessageKeys {
             dComponent.sfDeployWith(parent, cxt);
 
             return dComponent;
-        } catch (InstantiationException instexcp) {
-            throw new SmartFrogDeploymentException(MessageUtil.formatMessage(
-                    MSG_INSTANTIATION_ERROR, "Prim"), instexcp, null, cxt);
-        } catch (IllegalAccessException illaexcp) {
-            throw new SmartFrogDeploymentException(MessageUtil.formatMessage(
-                    MSG_ILLEGAL_ACCESS, "Prim", "newInstance()"), illaexcp, null, cxt);
         } catch (SmartFrogException sfdex){
             throw ((SmartFrogDeploymentException)SmartFrogDeploymentException.forward(sfdex));
         } catch (Throwable t) {
-            throw new SmartFrogDeploymentException(null, t, null, cxt);
-       }
+            throw new SmartFrogDeploymentException("Error when trying to deploy component", t, null, cxt);
+        }
     }
 
     protected Prim getPrimInstance() throws Exception {

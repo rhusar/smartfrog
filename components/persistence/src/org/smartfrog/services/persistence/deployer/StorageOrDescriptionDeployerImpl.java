@@ -28,11 +28,12 @@ import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.processcompound.PrimProcessDeployerImpl;
 import org.smartfrog.sfcore.processcompound.SFProcess;
 import org.smartfrog.sfcore.reference.Reference;
+import org.smartfrog.sfcore.deployer.ComponentFactory;
 
 public class StorageOrDescriptionDeployerImpl extends PrimProcessDeployerImpl {
 
-	public StorageOrDescriptionDeployerImpl(ComponentDescription descr) {
-		super(descr);		
+	public StorageOrDescriptionDeployerImpl(ComponentDescription descr, ComponentFactory factory) {
+		super(descr, factory);		
 	}
 
 	public Prim deploy(Reference name, Prim parent, Context params)
