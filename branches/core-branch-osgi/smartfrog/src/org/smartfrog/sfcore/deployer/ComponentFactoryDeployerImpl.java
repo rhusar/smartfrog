@@ -45,21 +45,11 @@ public class ComponentFactoryDeployerImpl extends PrimProcessDeployerImpl
                 factory = (ComponentFactory) metadata.sfResolve(factoryRef);
                 return factory.getComponent(metadata);
             } else {
-                // Component using the old sfClass-only syntqx
+                // Component using the old sfClass-only syntax
                 factory = defaultFactory();
                 return factory.getComponent(target);
             }
-
-        } catch (ClassNotFoundException e) {
-            throw new SmartFrogDeploymentException(MessageUtil.formatMessage(
-                    MSG_CLASS_NOT_FOUND), e, null, null);
-        } catch (InstantiationException instexcp) {
-            throw new SmartFrogDeploymentException(MessageUtil.formatMessage(
-                    MSG_INSTANTIATION_ERROR, "Prim"), instexcp, null, null);
-        } catch (IllegalAccessException illaexcp) {
-            throw new SmartFrogDeploymentException(MessageUtil.formatMessage(
-                    MSG_ILLEGAL_ACCESS, "Prim", "newInstance()"), illaexcp,
-                null, null);
+        
         } catch (SmartFrogResolutionException e) {
             throw new SmartFrogDeploymentException(MessageUtil.formatMessage(
                     MSG_UNRESOLVED_REFERENCE, SmartFrogCoreKeys.SF_CLASS), e,

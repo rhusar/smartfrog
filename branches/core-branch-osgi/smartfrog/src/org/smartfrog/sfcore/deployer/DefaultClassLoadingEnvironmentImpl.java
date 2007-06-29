@@ -4,6 +4,7 @@ import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.prim.Prim;
+import org.smartfrog.osgi.AbstractClassLoadingEnvironment;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -11,9 +12,12 @@ import java.net.URL;
 import java.rmi.RemoteException;
 import java.util.Enumeration;
 
-public class DefaultClassLoadingEnvironmentImpl implements ClassLoadingEnvironment {
+public class DefaultClassLoadingEnvironmentImpl extends AbstractClassLoadingEnvironment {
 
-    public Prim getComponent(ComponentDescription askedFor) throws SmartFrogResolutionException,
+
+    public DefaultClassLoadingEnvironmentImpl() {}
+
+    protected Prim getComponentImpl(ComponentDescription askedFor) throws SmartFrogResolutionException,
             ClassNotFoundException, InstantiationException, IllegalAccessException
     {
         String className = resolveClassName(askedFor);

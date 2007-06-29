@@ -19,9 +19,7 @@ import java.rmi.RemoteException;
 import java.util.Enumeration;
 
 
-public class BundleClassLoadingEnvironmentImpl extends PrimImpl
-    implements ClassLoadingEnvironment
-{
+public class BundleClassLoadingEnvironmentImpl extends AbstractClassLoadingEnvironment {
     public static final String LOCATION_ATTRIBUTE = "location";
     private Bundle hostBundle = null;
 
@@ -67,17 +65,7 @@ public class BundleClassLoadingEnvironmentImpl extends PrimImpl
         return hostBundle.getResource(location);
     }
 
-    public InputStream getResourceAsStream(String location)
-        throws RemoteException
-    {
-        try {
-            return getResource(location).openStream();
-        } catch (IOException e) {
-            return null; // Same as in java.lang.ClassLoader to be consistent
-        }
-    }
-
-    public Prim getComponent(ComponentDescription askedFor)
+    protected Prim getComponentImpl(ComponentDescription askedFor)
         throws ClassNotFoundException, InstantiationException, IllegalAccessException,
             SmartFrogResolutionException
     {
