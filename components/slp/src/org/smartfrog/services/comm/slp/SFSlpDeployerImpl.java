@@ -32,7 +32,6 @@ import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.processcompound.PrimProcessDeployerImpl;
 import org.smartfrog.sfcore.processcompound.ProcessCompound;
 import org.smartfrog.sfcore.reference.Reference;
-import org.smartfrog.sfcore.deployer.ComponentFactory;
 
 import java.util.Locale;
 import java.util.Properties;
@@ -53,8 +52,8 @@ public class SFSlpDeployerImpl extends PrimProcessDeployerImpl {
     protected String searchFilter = null;
     protected Vector scopes = null;
 
-    public SFSlpDeployerImpl(ComponentDescription descr, ComponentFactory factory) {
-        super(descr, factory);
+    public SFSlpDeployerImpl(ComponentDescription descr) {
+        super(descr);
     }
 
     /** Does a search for a ProcessCompound using SLP. */

@@ -34,7 +34,6 @@ import org.smartfrog.sfcore.common.ContextImpl;
 import org.smartfrog.sfcore.processcompound.SFProcess;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.processcompound.ProcessCompound;
-import org.smartfrog.sfcore.deployer.ComponentFactory;
 
 
 /**
@@ -115,8 +114,8 @@ public class DNSDeployerImpl extends PrimProcessDeployerImpl {
      *
      * @param descr a <code>ComponentDescription</code> value
      */
-    public DNSDeployerImpl(ComponentDescription descr, ComponentFactory factory) {
-        super(descr, factory);
+    public DNSDeployerImpl(ComponentDescription descr) {
+        super(descr);
     }
 
 

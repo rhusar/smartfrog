@@ -22,7 +22,6 @@ package org.smartfrog.sfcore.deployer;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.rmi.RemoteException;
 
 import org.smartfrog.sfcore.common.Context;
 import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
@@ -100,18 +99,20 @@ public class SFDeployer implements MessageKeys {
     private static ComponentDeployer getDeployer(ComponentDescription component) throws SmartFrogException {
         String className = (String) component.sfResolveHere(SmartFrogCoreKeys.SF_DEPLOYER_CLASS,false);
 
-        if (className == null) {
-            className = DEFAULT_DEPLOYER;
-        }
+        if (className == null) className = DEFAULT_DEPLOYER;        
 
         try {
-            Class deplClass = SFClassLoader.forName(className);
-            Class[] deplConstArgsTypes = {ComponentDescription.class, ComponentFactory.class};
-            Constructor deplConst = deplClass.
-                                getConstructor(deplConstArgsTypes);
-            Object[] deplConstArgs = { component, getComponentFactory(component) };
 
-            return (ComponentDeployer) deplConst.newInstance(deplConstArgs);
+            Class deplClass = SFClassLoader.forName(className);
+            Class[] deplConstArgsTypes = { ComponentDescription.class };
+            Constructor deplConst = deplClass.getConstructor(deplConstArgsTypes);
+            Object[] deplConstArgs = { component };
+
+            ComponentDeployer deployer = (ComponentDeployer)
+                    deplConst.newInstance(deplConstArgs);
+            deployer.setComponentFactory(getComponentFactory(component));
+            return deployer;
+
         } catch (NoSuchMethodException nsmetexcp) {
             throw new SmartFrogDeploymentException(MessageUtil.formatMessage(
                     MSG_METHOD_NOT_FOUND, className, "getConstructor()"),
@@ -133,7 +134,9 @@ public class SFDeployer implements MessageKeys {
         }
     }
 
-    private static ComponentFactory getComponentFactory(ComponentDescription component) throws SmartFrogResolutionException {
+    private static ComponentFactory getComponentFactory(ComponentDescription component)
+            throws SmartFrogResolutionException
+    {
         ComponentDescription metadata = null;
         try {
             metadata = (ComponentDescription) component.sfResolveHere(SmartFrogCoreKeys.SF_METADATA);
@@ -143,7 +146,7 @@ public class SFDeployer implements MessageKeys {
 
         if (metadata != null) {
             // Component using the new sfMeta syntax.
-            // The sffactory attribute needs to be resolved in those two steps because sfMeta is declared as such:
+            // The sfFactory attribute needs to be resolved in those two steps because sfMeta is declared as such:
             // sfMeta extends DATA { ... sfFactory LAZY xxx; }
             Reference factoryRef = (Reference) metadata.sfResolveHere(SmartFrogCoreKeys.SF_FACTORY);
             return (ComponentFactory) metadata.sfResolve(factoryRef);

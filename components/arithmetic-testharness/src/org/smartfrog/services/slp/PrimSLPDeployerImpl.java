@@ -1,18 +1,20 @@
 
 package org.smartfrog.services.slp;
 
-import org.smartfrog.sfcore.prim.*;
-import org.smartfrog.sfcore.parser.*;
-import org.smartfrog.sfcore.reference.*;
+import org.smartfrog.sfcore.common.Context;
+import org.smartfrog.sfcore.common.SmartFrogResolutionException;
+import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.processcompound.PrimHostDeployerImpl;
 import org.smartfrog.sfcore.processcompound.ProcessCompound;
-import org.smartfrog.sfcore.common.*;
 import org.smartfrog.sfcore.processcompound.SFProcess;
-import org.smartfrog.sfcore.componentdescription.*;
-import org.smartfrog.sfcore.deployer.ComponentFactory;
+import org.smartfrog.sfcore.reference.Reference;
+import org.smartfrog.sfcore.reference.ReferencePart;
 
-import java.util.*;
-import java.net.*;
+import java.net.InetAddress;
+import java.util.Enumeration;
+import java.util.Locale;
+import java.util.StringTokenizer;
+import java.util.Vector;
 
 /** Implements a specialized description deployer. This deployer uses
  *  a service description in the target component to find through SLP
@@ -39,9 +41,10 @@ public class PrimSLPDeployerImpl extends PrimHostDeployerImpl {
   /** Constructor
    *
    * @param descr target to operate on */
-  public PrimSLPDeployerImpl(ComponentDescription descr, ComponentFactory factory) {
-    super(descr, factory);
+  public PrimSLPDeployerImpl(ComponentDescription descr) {
+    super(descr);
   }
+    
   public String buildServiceQuery(ComponentDescription attributesRequirements){
     String result = "";
     if (attributesRequirements != null) {

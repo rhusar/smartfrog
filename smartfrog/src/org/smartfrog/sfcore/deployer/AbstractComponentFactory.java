@@ -13,9 +13,9 @@ import java.rmi.RemoteException;
 import java.io.InputStream;
 import java.io.IOException;
 
-public abstract class AbstractClassLoadingEnvironment extends PrimImpl implements ClassLoadingEnvironment {
+public abstract class AbstractComponentFactory extends PrimImpl implements ClassLoadingEnvironment {
 
-    protected AbstractClassLoadingEnvironment() {}
+    protected AbstractComponentFactory() {}
 
 
     public Prim getComponent(ComponentDescription askedFor) throws SmartFrogDeploymentException {
