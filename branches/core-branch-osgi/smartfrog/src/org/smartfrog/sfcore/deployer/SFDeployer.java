@@ -22,6 +22,7 @@ package org.smartfrog.sfcore.deployer;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.rmi.RemoteException;
 
 import org.smartfrog.sfcore.common.Context;
 import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
@@ -34,32 +35,20 @@ import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.security.SFClassLoader;
-
+import org.smartfrog.sfcore.logging.LogFactory;
 
 
 /**
  * Access point to the deployer infrastructure. At this point,
  * it simply uses either the default deployer or the sfDeployerClass provided
  * as part of the component description that is to be deployed.
- *
  */
 public class SFDeployer implements MessageKeys {
     /**
      * Name of default deployer.
      */
     private static final String DEFAULT_DEPLOYER =
-            "org.smartfrog.sfcore.deployer.ComponentFactoryDeployerImpl";
-
-    /**
-     * Name of default implementation of ComponentDescription.
-     */
-    private static final String COMPONENT_DESCRIPTION =
-        "org.smartfrog.sfcore.componentdescription.ComponentDescription";
-
-
-    //
-    // ComponentDeployer
-    //
+            "org.smartfrog.sfcore.processcompound.PrimProcessDeployerImpl";
 
     /**
      * Deploy description. Constructs the real deployer using getDeployer
@@ -117,11 +106,10 @@ public class SFDeployer implements MessageKeys {
 
         try {
             Class deplClass = SFClassLoader.forName(className);
-            Class[] deplConstArgsTypes = { SFClassLoader.
-                    forName(COMPONENT_DESCRIPTION) };
+            Class[] deplConstArgsTypes = {ComponentDescription.class, ComponentFactory.class};
             Constructor deplConst = deplClass.
                                 getConstructor(deplConstArgsTypes);
-            Object[] deplConstArgs = { component };
+            Object[] deplConstArgs = { component, getComponentFactory(component) };
 
             return (ComponentDeployer) deplConst.newInstance(deplConstArgs);
         } catch (NoSuchMethodException nsmetexcp) {
@@ -143,5 +131,29 @@ public class SFDeployer implements MessageKeys {
                     MSG_INVOCATION_TARGET, className), intarexcp,
                 null, component.sfContext());
         }
+    }
+
+    private static ComponentFactory getComponentFactory(ComponentDescription component) throws SmartFrogResolutionException {
+        ComponentDescription metadata = null;
+        try {
+            metadata = (ComponentDescription) component.sfResolveHere(SmartFrogCoreKeys.SF_METADATA);
+        } catch (SmartFrogResolutionException e) {
+            LogFactory.sfGetProcessLog().ignore(e);
+        }
+
+        if (metadata != null) {
+            // Component using the new sfMeta syntax.
+            // The sffactory attribute needs to be resolved in those two steps because sfMeta is declared as such:
+            // sfMeta extends DATA { ... sfFactory LAZY xxx; }
+            Reference factoryRef = (Reference) metadata.sfResolveHere(SmartFrogCoreKeys.SF_FACTORY);
+            return (ComponentFactory) metadata.sfResolve(factoryRef);
+        } else {
+            // Component using the old sfClass-only syntax
+            return defaultFactory();
+        }
+    }
+
+    private static ComponentFactory defaultFactory() {
+        return new DefaultClassLoadingEnvironmentImpl();
     }
 }

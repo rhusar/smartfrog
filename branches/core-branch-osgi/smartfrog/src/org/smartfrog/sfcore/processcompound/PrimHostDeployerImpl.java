@@ -32,6 +32,7 @@ import org.smartfrog.sfcore.reference.Reference;
 
 import org.smartfrog.sfcore.logging.LogFactory;
 import org.smartfrog.sfcore.logging.LogSF;
+import org.smartfrog.sfcore.deployer.ComponentFactory;
 
 /**
  * Implements a specialized description deployer. This deployer uses the
@@ -61,8 +62,8 @@ public class PrimHostDeployerImpl extends PrimDeployerImpl {
      *
      * @param descr target to operate on
      */
-    public PrimHostDeployerImpl(ComponentDescription descr) {
-        super(descr);
+    public PrimHostDeployerImpl(ComponentDescription descr, ComponentFactory componentFactory) {
+        super(descr, componentFactory);
     }
 
     /**
