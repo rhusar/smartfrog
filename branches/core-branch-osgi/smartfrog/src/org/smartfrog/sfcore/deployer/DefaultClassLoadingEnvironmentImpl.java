@@ -4,15 +4,13 @@ import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.prim.Prim;
-import org.smartfrog.sfcore.deployer.AbstractClassLoadingEnvironment;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URL;
 import java.rmi.RemoteException;
 import java.util.Enumeration;
 
-public class DefaultClassLoadingEnvironmentImpl extends AbstractClassLoadingEnvironment {
+public class DefaultClassLoadingEnvironmentImpl extends AbstractComponentFactory {
 
 
     public DefaultClassLoadingEnvironmentImpl() {}
@@ -31,10 +29,6 @@ public class DefaultClassLoadingEnvironmentImpl extends AbstractClassLoadingEnvi
 
     public URL getResource(String location) throws RemoteException {
         return getClass().getResource(location);
-    }
-
-    public InputStream getResourceAsStream(String location) throws RemoteException {
-        return getClass().getResourceAsStream(location);
     }
 
     public Enumeration getResources(String location) throws IOException {

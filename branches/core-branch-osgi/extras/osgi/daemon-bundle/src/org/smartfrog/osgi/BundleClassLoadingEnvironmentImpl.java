@@ -7,7 +7,7 @@ import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
-import org.smartfrog.sfcore.deployer.AbstractClassLoadingEnvironment;
+import org.smartfrog.sfcore.deployer.AbstractComponentFactory;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 
@@ -17,7 +17,7 @@ import java.rmi.RemoteException;
 import java.util.Enumeration;
 
 
-public class BundleClassLoadingEnvironmentImpl extends AbstractClassLoadingEnvironment {
+public class BundleClassLoadingEnvironmentImpl extends AbstractComponentFactory {
     public static final String LOCATION_ATTRIBUTE = "location";
     private Bundle hostBundle = null;
 

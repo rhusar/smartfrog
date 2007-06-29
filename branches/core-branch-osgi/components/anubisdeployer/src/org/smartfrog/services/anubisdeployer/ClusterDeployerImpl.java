@@ -65,7 +65,7 @@ public class ClusterDeployerImpl extends PrimProcessDeployerImpl {
      * @param descr target to operate on
      */
     public ClusterDeployerImpl(ComponentDescription descr, ComponentFactory factory) {
-        super(descr, factory);
+        super(descr);
     }
 
     public Prim deploy(Reference name, Prim parent, Context params)

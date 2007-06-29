@@ -23,16 +23,15 @@ package org.smartfrog.services.asyndeployer;
 import java.io.IOException;
 
 import org.smartfrog.sfcore.common.MessageKeys;
+import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
+import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
 import org.smartfrog.sfcore.deployer.ComponentDeployer;
 import org.smartfrog.sfcore.deployer.ComponentFactory;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
-
-import org.smartfrog.sfcore.logging.LogFactory;
-import org.smartfrog.sfcore.logging.LogSF;
 import org.smartfrog.sfcore.prim.PrimDeployerImpl;
 import org.smartfrog.sfcore.prim.Prim;
-import org.smartfrog.sfcore.processcompound.ProcessCompound;
 import org.smartfrog.sfcore.processcompound.ProcessCompoundImpl;
+
 import org.objectweb.proactive.core.descriptor.data.ProActiveDescriptor;
 import org.objectweb.proactive.core.descriptor.data.VirtualNode;
 import org.objectweb.proactive.core.node.Node;
@@ -54,31 +53,41 @@ public class AsynPrimDeployerImpl extends PrimDeployerImpl implements ComponentD
      *
      * @param descr target description
      */
-    public AsynPrimDeployerImpl (ComponentDescription descr, ComponentFactory factory) {
-        super (descr, factory);
+    public AsynPrimDeployerImpl (ComponentDescription descr) {
+        super(descr);
     }
 
-    /**
-     *
-     * @param primClass
-     * @return a new instance
-     * @throws ProActiveException
-     * @throws IOException
-     */
-     protected Prim createPrimInstance(Class primClass) throws Exception {
-        Prim dComponent = null;
-        ProActiveDescriptor descriptorPad = ProActive.getProactiveDescriptor("RootNode.xml");
+    private class ProActiveComponentFactory implements ComponentFactory {
 
-        descriptorPad.activateMappings();
+        /**
+         *
+         * @param primClass
+         * @return a new instance
+         * @throws ProActiveException
+         * @throws IOException
+         */
+        public Prim getComponent(ComponentDescription askedFor) throws SmartFrogDeploymentException {
+            try {
+                String primClassName = (String) askedFor.sfResolveHere(SmartFrogCoreKeys.SF_CLASS);
 
-        VirtualNode vnode = descriptorPad.getVirtualNode("RootNode");
-        Node[] nodes = vnode.getNodes();
+                Prim dComponent;
+                ProActiveDescriptor descriptorPad = ProActive.getProactiveDescriptor("RootNode.xml");
 
-        dComponent = (Prim) ProActive.newActive(primClass.getName(), null, nodes[0]);
-        ProActive.register(dComponent, "RootProcessCompound");
-        dComponent = (ProcessCompound) ProActive.lookupActive(ProcessCompoundImpl.class.getName(), "RootProcessCompound");
-    //
-        return dComponent;
-    }
+                descriptorPad.activateMappings();
 
+                VirtualNode vnode = descriptorPad.getVirtualNode("RootNode");
+                Node[] nodes = vnode.getNodes();
+
+                dComponent = (Prim) ProActive.newActive(primClassName, null, nodes[0]);
+                ProActive.register(dComponent, "RootProcessCompound");
+                // Huh. Is this really meant to return a ProcessCompound instead of the component instance ?
+                dComponent = (Prim) ProActive.lookupActive(ProcessCompoundImpl.class.getName(), "RootProcessCompound");
+
+                return dComponent;
+
+            } catch (Exception e) {
+                throw new SmartFrogDeploymentException(e);
+            }
+        }
+    }    
 }

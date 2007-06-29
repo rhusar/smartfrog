@@ -32,12 +32,11 @@ import org.smartfrog.sfcore.componentdescription.ComponentDescriptionImpl;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.processcompound.PrimProcessDeployerImpl;
 import org.smartfrog.sfcore.reference.Reference;
-import org.smartfrog.sfcore.deployer.ComponentFactory;
 
 public class StorageRecoveryDeployerImpl extends PrimProcessDeployerImpl {
 
-    public StorageRecoveryDeployerImpl( ComponentDescription descr, ComponentFactory factory ) {
-        super( descr, factory );
+    public StorageRecoveryDeployerImpl( ComponentDescription descr ) {
+        super( descr );
     }
 
     public Prim deploy( Reference name, Prim parent, Context params ) throws

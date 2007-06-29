@@ -26,7 +26,6 @@ import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.common.MessageUtil;
 import org.smartfrog.sfcore.common.Context;
 import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.sfcore.deployer.ComponentFactory;
 
 
 /**
@@ -43,8 +42,8 @@ public class DNSComponentDeployerImpl extends PrimDeployerImpl  {
      *
      * @param target a <code>ComponentDescription</code> value
      */
-    public DNSComponentDeployerImpl(ComponentDescription target, ComponentFactory factory) {
-        super(target, factory);
+    public DNSComponentDeployerImpl(ComponentDescription target) {
+        super(target);
     }
 
 

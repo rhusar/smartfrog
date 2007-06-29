@@ -25,7 +25,6 @@ import java.util.Enumeration;
 import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
 import org.smartfrog.sfcore.common.Context;
 import org.smartfrog.sfcore.common.MessageKeys;
-import org.smartfrog.sfcore.common.MessageUtil;
 import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
@@ -61,7 +60,7 @@ public class PrimDeployerImpl implements ComponentDeployer, MessageKeys {
     protected static final Reference refCodeBase = new Reference(
                 SmartFrogCoreKeys.SF_CODE_BASE);
 
-    /** The target description to work of. */
+    /** The target description to work off. */
     protected ComponentDescription target;
 
     /** The factory used to get the component instance. */
@@ -72,8 +71,11 @@ public class PrimDeployerImpl implements ComponentDeployer, MessageKeys {
      *
      * @param descr target description
      */
-    public PrimDeployerImpl(ComponentDescription descr, ComponentFactory componentFactory) {
+    public PrimDeployerImpl(ComponentDescription descr) {
         target = descr;
+    }
+
+    public void setComponentFactory(ComponentFactory componentFactory) {
         this.componentFactory = componentFactory;
     }
 
@@ -146,7 +148,7 @@ public class PrimDeployerImpl implements ComponentDeployer, MessageKeys {
      *
      * @return class code base for that description.
      */
-    protected String getSfCodeBase(ComponentDescription desc) {
+    private String getSfCodeBase(ComponentDescription desc) {
         try {
             return (String) desc.sfResolve(refCodeBase);
         } catch (Exception e) {
@@ -177,8 +179,8 @@ public class PrimDeployerImpl implements ComponentDeployer, MessageKeys {
             obj =  target.sfResolve(refClass);
             targetClassName = (String) obj;
 
-            // We look in the default code base if everything else fails.
-            return SFClassLoader.forName(targetClassName,targetCodeBase, true);
+            // 3rd parameter = true: We look in the default code base if everything else fails.
+            return SFClassLoader.forName(targetClassName, targetCodeBase, true);
         } catch (SmartFrogResolutionException resex) {
             resex.put(SmartFrogRuntimeException.SOURCE, target.sfCompleteName());
             resex.fillInStackTrace();
