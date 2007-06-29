@@ -17,16 +17,16 @@ For more information: www.smartfrog.org
  */
 package org.smartfrog.avalanche.client.sf.apps.gt4.build;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.smartfrog.avalanche.client.sf.apps.gnubuild.BuildUtils;
+import org.smartfrog.avalanche.client.sf.apps.gnubuild.GNUBuildException;
+import org.smartfrog.avalanche.client.sf.apps.utils.FileUtils;
+import org.smartfrog.avalanche.client.sf.disk.DiskUtils;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.Properties;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import org.smartfrog.avalanche.client.sf.apps.gnubuild.*;
-import org.smartfrog.avalanche.client.sf.apps.utils.*;
-import org.smartfrog.avalanche.client.sf.disk.DiskUtils;
 
 /**
  * @author sandya

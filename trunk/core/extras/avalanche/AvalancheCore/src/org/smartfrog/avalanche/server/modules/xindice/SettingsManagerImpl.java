@@ -20,16 +20,18 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.xindice.core.Collection;
 import org.apache.xindice.core.DBException;
+import org.smartfrog.avalanche.server.DatabaseAccessException;
+import org.smartfrog.avalanche.server.SettingsManager;
+import org.smartfrog.avalanche.settings.sfConfig.SfConfigsDocument;
+import org.smartfrog.avalanche.settings.sfConfig.SfConfigsType;
+import org.smartfrog.avalanche.settings.xdefault.SettingsDocument;
+import org.smartfrog.avalanche.settings.xdefault.SettingsType;
+import org.smartfrog.avalanche.util.XMLUtils;
+import org.smartfrog.avalanche.util.XbeanUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
-import org.smartfrog.avalanche.settings.xdefault.*;
-import org.smartfrog.avalanche.server.DatabaseAccessException;
-import org.smartfrog.avalanche.server.SettingsManager;
-import org.smartfrog.avalanche.server.modules.*;
-import org.smartfrog.avalanche.settings.sfConfig.*;
-import org.smartfrog.avalanche.util.*;
-import java.io.File ; 
+import java.io.File;
 
 /**
  * @author sanjay, Jun 29, 2005

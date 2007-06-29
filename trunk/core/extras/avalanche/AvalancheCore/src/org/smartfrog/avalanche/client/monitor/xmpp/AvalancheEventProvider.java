@@ -12,13 +12,6 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.avalanche.client.monitor.xmpp;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-
 import org.jivesoftware.smack.packet.IQ;
 import org.jivesoftware.smack.provider.IQProvider;
 import org.w3c.dom.Document;
@@ -28,8 +21,10 @@ import org.w3c.dom.NodeList;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
-import org.smartfrog.avalanche.shared.MonitoringEvent;
-import org.smartfrog.avalanche.util.XMLUtils;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 
 public class AvalancheEventProvider implements IQProvider {
 

@@ -11,11 +11,10 @@ For more information: www.smartfrog.org
 */
 package tests.org.smartfrog.avalanche.client.sf.compress;
 
-import java.io.File;
-
+import junit.framework.TestCase;
 import org.smartfrog.avalanche.client.sf.compress.ZipUtils;
 
-import junit.framework.TestCase;
+import java.io.File;
 
 public class ZipUtilsTest extends TestCase {
 
