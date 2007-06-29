@@ -23,7 +23,6 @@ package org.smartfrog.services.dns;
 import org.smartfrog.sfcore.processcompound.PrimProcessDeployerImpl;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
-import java.net.UnknownHostException;
 import java.net.InetAddress;
 import org.smartfrog.sfcore.componentdescription.ComponentDescriptionImpl;
 import org.xbill.DNS.Resolver;
@@ -51,32 +50,28 @@ public class DNSDeployerImpl extends PrimProcessDeployerImpl {
 
 
     /** Whether to ignore exceptions and keep on trying with other target. */
-    boolean tryAll = false;
+    private boolean tryAll = false;
 
     /** Whether to  to query the user to select the target. */
-    boolean interactive = false;
+    private boolean interactive = false;
     
     /**  A default name for the service exported by a SF deployment engine. */
-    String serviceTypeName = null;
+    private String serviceTypeName = null;
 
     /**  A set of attribute/value pairs that must match contents in the
        TXT record.*/
-    ComponentDescription mustHave = 
+    private ComponentDescription mustHave =
         new ComponentDescriptionImpl(null,
                                      new ContextImpl(), false);
     
     /** An optional ip address for the DNS server. */
-    String dnsResolverAddress = null;
+    private String dnsResolverAddress = null;
 
     /** A default port for the DNS server. */
-    int dnsResolverPort = DNSComponent.DEFAULT_PORT;
+    private int dnsResolverPort = DNSComponent.DEFAULT_PORT;
 
     /** Use TCP for DNS queries. */
-    boolean dnsResolverTCP = true;
-
-    /** All the valid service instances that have been found by
-        this deployer. */
-    DNSServiceInstance[] allInstances = new DNSServiceInstance[0];
+    private boolean dnsResolverTCP = true;
 
     /** An attribute name for alternative location info of the process
         compound. */
@@ -166,8 +161,8 @@ public class DNSDeployerImpl extends PrimProcessDeployerImpl {
 
         if (isPatchNeeded()) {
             configureDeployer();
-            allInstances = findTargets();
-           if (allInstances.length == 0) {
+            DNSServiceInstance[] allInstances = findTargets();
+            if (allInstances.length == 0) {
                throw new SmartFrogDeploymentException("no services found");
            }
            if (interactive) {
