@@ -209,12 +209,15 @@ chmod a+wx /tmp/sflogs
 chgrp ${rpm.groupname} /tmp/sflogs
 chown ${rpm.username} /tmp/sflogs
 
+%postun
+#at uninstall time, we delete all logs
+rm -rf /tmp/sflogs
+rm -rf %{basedir}/log
 
 # -----------------------------------------------------------------------------
 
 %clean
 rm -rf $RPM_BUILD_ROOT
-rm -rf /tmp/sflogs
 
 # -----------------------------------------------------------------------------
 
@@ -319,7 +322,15 @@ rm -rf /tmp/sflogs
 
 # -----------------------------------------------------------------------------
 #after installing, we set symlinks
-%post daemon 
+%post daemon
+rm -f %{rcd}/rc0.d/K60hpsmartfrog
+rm -f %{rcd}/rc1.d/K60hpsmartfrog
+rm -f %{rcd}/rc2.d/S60hpsmartfrog
+rm -f %{rcd}/rc3.d/S60hpsmartfrog
+rm -f %{rcd}/rc4.d/S60hpsmartfrog
+rm -f %{rcd}/rc5.d/S60hpsmartfrog
+rm -f %{rcd}/rc6.d/S60hpsmartfrog
+
 ln -s %{initsmartfrog} %{rcd}/rc0.d/K60hpsmartfrog
 ln -s %{initsmartfrog} %{rcd}/rc1.d/K60hpsmartfrog
 ln -s %{initsmartfrog} %{rcd}/rc2.d/S60hpsmartfrog
