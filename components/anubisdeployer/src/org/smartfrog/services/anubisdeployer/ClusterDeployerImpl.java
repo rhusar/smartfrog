@@ -46,7 +46,7 @@ public class ClusterDeployerImpl extends PrimProcessDeployerImpl {
 
     public static final String CLUSTERCOMPOUNDCLASS =
             "org.smartfrog.services.anubisdeployer.ClusterCompoundImpl";
-    static String uniqueNameBase;
+    private static String uniqueNameBase;
     public static final String ATTR_CLUSTER_NODE_MANAGEMENT = "clusterNodeManagement";
     public static final String ATTR_CLUSTER_STATUS_MONITOR = "clusterStatusMonitor";
 
