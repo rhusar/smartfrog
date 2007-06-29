@@ -18,7 +18,7 @@ For more information: www.smartfrog.org
 
 */
 
-package org.smartfrog.sfcore.componentdescription;
+package org.smartfrog.sfcore.deployer;
 
 import org.smartfrog.sfcore.common.Context;
 import org.smartfrog.sfcore.common.SmartFrogDeploymentException;

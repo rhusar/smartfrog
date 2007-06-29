@@ -21,10 +21,9 @@ For more information: www.smartfrog.org
 package org.smartfrog.services.asyndeployer;
 
 import java.io.IOException;
-import java.util.HashMap;
 
 import org.smartfrog.sfcore.common.MessageKeys;
-import org.smartfrog.sfcore.componentdescription.ComponentDeployer;
+import org.smartfrog.sfcore.deployer.ComponentDeployer;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 
 import org.smartfrog.sfcore.logging.LogFactory;
