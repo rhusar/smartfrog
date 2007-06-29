@@ -12,18 +12,17 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.avalanche.client.monitor.xmpp;
 
-import java.io.StringWriter;
-import java.util.Map;
-
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.TransformerException;
-
 import org.jivesoftware.smack.packet.IQ;
+import org.smartfrog.avalanche.shared.MonitoringEvent;
+import org.smartfrog.avalanche.util.XMLUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
-import org.smartfrog.avalanche.shared.MonitoringEvent;
-import org.smartfrog.avalanche.util.XMLUtils;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.TransformerException;
+import java.io.StringWriter;
+import java.util.Map;
+
 /**
  * 
  * @author sanjaydahiya

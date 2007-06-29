@@ -17,17 +17,15 @@ For more information: www.smartfrog.org
  */
 package org.smartfrog.avalanche.client.sf.apps.gt4.gridftp;
 
-import java.io.IOException;
-import java.rmi.RemoteException;
-
-import org.smartfrog.sfcore.prim.Prim;
-import org.smartfrog.sfcore.prim.PrimImpl;
-
-import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.sfcore.prim.TerminationRecord;
-
 import org.smartfrog.avalanche.client.sf.apps.gt4.prereqs.CheckPrereqs;
 import org.smartfrog.avalanche.client.sf.apps.gt4.prereqs.PrereqException;
+import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.prim.Prim;
+import org.smartfrog.sfcore.prim.PrimImpl;
+import org.smartfrog.sfcore.prim.TerminationRecord;
+
+import java.io.IOException;
+import java.rmi.RemoteException;
 
 /**
  * @author sandya

@@ -11,8 +11,7 @@ For more information: www.smartfrog.org
 */
 package tests.org.smartfrog.avalanche.server.engines.sf;
 
-import java.net.InetAddress;
-
+import junit.framework.TestCase;
 import org.smartfrog.avalanche.core.host.ArgumentType;
 import org.smartfrog.avalanche.core.host.HostType;
 import org.smartfrog.avalanche.core.module.PlatformSelectorType;
@@ -21,7 +20,7 @@ import org.smartfrog.avalanche.server.HostManager;
 import org.smartfrog.avalanche.server.ServerSetup;
 import org.smartfrog.avalanche.server.engines.sf.BootStrap;
 
-import junit.framework.TestCase;
+import java.net.InetAddress;
 
 public class BootStrapTest extends TestCase {
 

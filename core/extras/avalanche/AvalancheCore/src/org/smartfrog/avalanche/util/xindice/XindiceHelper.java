@@ -15,23 +15,20 @@ For more information: www.smartfrog.org
  */
 package org.smartfrog.avalanche.util.xindice;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.xerces.dom.DocumentImpl;
 import org.apache.xindice.core.Collection;
 import org.apache.xindice.core.DBException;
 import org.apache.xindice.tools.command.Command;
 import org.apache.xindice.util.Configuration;
+import org.smartfrog.avalanche.server.RepositoryConfig;
+import org.smartfrog.avalanche.server.modules.ModuleCreationException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xmldb.api.base.Database;
-import org.xmldb.api.modules.CollectionManagementService;
-
-import org.smartfrog.avalanche.server.RepositoryConfig;
-import org.smartfrog.avalanche.server.modules.*;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.xmldb.api.base.XMLDBException;
- 
+
 
 /**
  * @author sanjay, Apr 24, 2005

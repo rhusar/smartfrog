@@ -11,6 +11,7 @@ For more information: www.smartfrog.org
 */
 package tests.org.smartfrog.avalanche.server;
 
+import junit.framework.TestCase;
 import org.smartfrog.avalanche.core.activeHostProfile.ActiveProfileType;
 import org.smartfrog.avalanche.core.activeHostProfile.ModuleStateType;
 import org.smartfrog.avalanche.core.defaultHostProfile.DefaultProfileType;
@@ -18,24 +19,11 @@ import org.smartfrog.avalanche.core.host.ArgumentType;
 import org.smartfrog.avalanche.core.host.HostType;
 import org.smartfrog.avalanche.core.hostGroup.HostGroupType;
 import org.smartfrog.avalanche.core.hostGroup.HostGroupType.Hosts;
-import org.smartfrog.avalanche.core.module.ActionType;
-import org.smartfrog.avalanche.core.module.DistributionType;
-import org.smartfrog.avalanche.core.module.ModuleType;
-import org.smartfrog.avalanche.core.module.PlatformSelectorType;
-import org.smartfrog.avalanche.core.module.VersionType;
+import org.smartfrog.avalanche.core.module.*;
 import org.smartfrog.avalanche.core.moduleGroup.ModuleGroupType;
 import org.smartfrog.avalanche.core.moduleGroup.ModuleGroupType.Modules;
-import org.smartfrog.avalanche.server.ActiveProfileManager;
-import org.smartfrog.avalanche.server.AvalancheFactory;
-import org.smartfrog.avalanche.server.DefaultProfileManager;
-import org.smartfrog.avalanche.server.HostGroupManager;
-import org.smartfrog.avalanche.server.HostManager;
-import org.smartfrog.avalanche.server.ModuleGroupManager;
-import org.smartfrog.avalanche.server.ModulesManager;
-import org.smartfrog.avalanche.server.SettingsManager;
+import org.smartfrog.avalanche.server.*;
 import org.smartfrog.avalanche.settings.xdefault.SettingsType;
-
-import junit.framework.TestCase;
 
 public class AvalancheFactoryTest extends TestCase {
 

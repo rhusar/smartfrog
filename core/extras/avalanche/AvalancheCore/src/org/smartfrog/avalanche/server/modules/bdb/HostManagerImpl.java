@@ -11,12 +11,14 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.avalanche.server.modules.bdb;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-
+import com.sleepycat.je.Cursor;
+import com.sleepycat.je.Database;
+import com.sleepycat.je.DatabaseEntry;
+import com.sleepycat.je.DatabaseException;
+import com.sleepycat.je.LockMode;
+import com.sleepycat.je.OperationStatus;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.smartfrog.avalanche.core.host.HostDocument;
 import org.smartfrog.avalanche.core.host.HostType;
 import org.smartfrog.avalanche.server.DatabaseAccessException;
@@ -25,13 +27,8 @@ import org.smartfrog.avalanche.server.HostManager;
 import org.smartfrog.avalanche.server.modules.bdb.bindings.HostBinding;
 import org.smartfrog.avalanche.server.monitor.handlers.HostUpdateHandler;
 
-import com.sleepycat.je.Cursor;
-import com.sleepycat.je.Database;
-import com.sleepycat.je.DatabaseEntry;
-import com.sleepycat.je.DatabaseException;
-import com.sleepycat.je.LockMode;
-import com.sleepycat.je.OperationStatus;
-import com.sleepycat.je.Transaction;
+import java.util.ArrayList;
+import java.util.Iterator;
 
 public class HostManagerImpl implements HostManager{
 	private Database database ; 

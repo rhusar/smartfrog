@@ -17,18 +17,17 @@ For more information: www.smartfrog.org
  */
 package org.smartfrog.avalanche.client.sf.apps.gt4.javawscore;
 
-import java.rmi.RemoteException;
-import java.util.Hashtable;
-import java.util.Vector;
-import java.util.Properties;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimImpl;
-
-import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.prim.TerminationRecord;
+
+import java.rmi.RemoteException;
+import java.util.Hashtable;
+import java.util.Properties;
+import java.util.Vector;
 
 
 /**

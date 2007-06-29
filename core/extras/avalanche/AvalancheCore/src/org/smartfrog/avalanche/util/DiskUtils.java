@@ -14,8 +14,16 @@ For more information: www.smartfrog.org
  *
  */
 package org.smartfrog.avalanche.util;
-import java.io.*; 
-import java.nio.channels.*;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.nio.channels.FileChannel;
 
 
 /**

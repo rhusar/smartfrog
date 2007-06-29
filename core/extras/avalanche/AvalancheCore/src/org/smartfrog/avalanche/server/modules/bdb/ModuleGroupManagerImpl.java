@@ -11,23 +11,22 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.avalanche.server.modules.bdb;
 
-import java.util.ArrayList;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import org.smartfrog.avalanche.core.moduleGroup.ModuleGroupDocument;
-import org.smartfrog.avalanche.core.moduleGroup.ModuleGroupType;
-import org.smartfrog.avalanche.server.DatabaseAccessException;
-import org.smartfrog.avalanche.server.DuplicateEntryException;
-import org.smartfrog.avalanche.server.ModuleGroupManager;
-import org.smartfrog.avalanche.server.modules.bdb.bindings.ModuleGroupBinding;
 import com.sleepycat.je.Cursor;
 import com.sleepycat.je.Database;
 import com.sleepycat.je.DatabaseEntry;
 import com.sleepycat.je.DatabaseException;
 import com.sleepycat.je.LockMode;
 import com.sleepycat.je.OperationStatus;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.smartfrog.avalanche.core.moduleGroup.ModuleGroupDocument;
+import org.smartfrog.avalanche.core.moduleGroup.ModuleGroupType;
+import org.smartfrog.avalanche.server.DatabaseAccessException;
+import org.smartfrog.avalanche.server.DuplicateEntryException;
+import org.smartfrog.avalanche.server.ModuleGroupManager;
+import org.smartfrog.avalanche.server.modules.bdb.bindings.ModuleGroupBinding;
+
+import java.util.ArrayList;
 
 public class ModuleGroupManagerImpl implements ModuleGroupManager{
 	private Database database ; 
