@@ -369,8 +369,12 @@ public class SFClassLoader {
      */
     private static Object classLoaderHelper(String name, String codebase,
         boolean useDefaultCodebase, boolean isForName) {
-        if (debug != null) debug.println(" * classLoaderHelper: name "+name+", codebase "+codebase+", usedefaultcodebase "+useDefaultCodebase+", isforname "+isForName+", getTargetClassBase() "+getTargetClassBase());
+        if (debug != null) debug.println(
+                " * classLoaderHelper: name "+name+", codebase "+codebase
+                        +", usedefaultcodebase "+useDefaultCodebase
+                        +", isforname "+isForName+", getTargetClassBase() "+getTargetClassBase());
         String msg = (isForName ? "forName" : "getResourceAsStream");
+
         Object result;
         // "default" equivalent to "not set".
         if ("default".equals(codebase)) {
@@ -457,8 +461,8 @@ public class SFClassLoader {
 
     private static void logOpHelperException(String msg, String name, String codebase, Throwable t) {
         if (debug != null) {
-            debug.println(msg + " cannot find "+name+" in " + codebase +
-                " getting exception " + t.getMessage());
+            debug.println(msg + " cannot find " + name + " in " + codebase +
+                ". Getting exception: " + t.getMessage());
         }
     }
 

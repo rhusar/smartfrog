@@ -6,7 +6,6 @@ import org.smartfrog.sfcore.security.SFClassLoader;
 abstract public class CoreSolver implements Solver {
     private static String solverClassname = "org.smartfrog.sfcore.languages.csf.constraints.NullSolver";
 
-    private static Class solverClass = null;
     private static Solver solver = null;
 
     /**
@@ -24,7 +23,7 @@ abstract public class CoreSolver implements Solver {
                 String classname = System.getProperty("org.smartfrog.sfcore.languages.csf.constraints.SolverClassName");
 		//System.out.println("Solver Class Name:"+classname);
                 if (classname != null) solverClassname = classname;
-                solverClass = SFClassLoader.forName(solverClassname);
+                Class solverClass = SFClassLoader.forName(solverClassname);
                 solver = (Solver) solverClass.newInstance();
             } catch (Exception e) {
                 throw new SmartFrogResolutionException("Unable to construct constraint solver", e);

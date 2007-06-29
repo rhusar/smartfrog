@@ -2,20 +2,15 @@ package org.smartfrog.sfcore.deployer;
 
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.prim.Prim;
-import org.smartfrog.sfcore.deployer.ClassLoadingEnvironment;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.common.MessageUtil;
 import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
 
-import java.rmi.RemoteException;
-import java.io.InputStream;
-import java.io.IOException;
+public abstract class AbstractComponentFactoryUsingClassLoader extends PrimImpl implements ComponentFactory {
 
-public abstract class AbstractComponentFactory extends PrimImpl implements ClassLoadingEnvironment {
-
-    protected AbstractComponentFactory() {}
+    protected AbstractComponentFactoryUsingClassLoader() {}
 
 
     public Prim getComponent(ComponentDescription askedFor) throws SmartFrogDeploymentException {
@@ -49,14 +44,5 @@ public abstract class AbstractComponentFactory extends PrimImpl implements Class
     protected abstract Prim getComponentImpl(ComponentDescription askedFor)
             throws ClassNotFoundException, InstantiationException,
                    IllegalAccessException, SmartFrogResolutionException, SmartFrogDeploymentException;
-
-    public InputStream getResourceAsStream(String location)
-        throws RemoteException
-    {
-        try {
-            return getResource(location).openStream();
-        } catch (IOException e) {
-            return null; // Same as in java.lang.ClassLoader to be consistent
-        }
-    }
+    
 }

@@ -20,24 +20,17 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.sfcore.prim;
 
-import java.util.Enumeration;
-
-import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
 import org.smartfrog.sfcore.common.Context;
 import org.smartfrog.sfcore.common.MessageKeys;
 import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
+import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.deployer.ComponentDeployer;
 import org.smartfrog.sfcore.deployer.ComponentFactory;
-import org.smartfrog.sfcore.componentdescription.ComponentDescription;
-import org.smartfrog.sfcore.componentdescription.ComponentDescriptionImpl;
-import org.smartfrog.sfcore.common.ContextImpl;
 import org.smartfrog.sfcore.reference.Reference;
-import org.smartfrog.sfcore.security.SFClassLoader;
-import org.smartfrog.sfcore.logging.LogFactory;
-import org.smartfrog.sfcore.logging.LogSF;
+
+import java.util.Enumeration;
 
 
 /**
@@ -48,17 +41,6 @@ import org.smartfrog.sfcore.logging.LogSF;
  *
  */
 public class PrimDeployerImpl implements ComponentDeployer, MessageKeys {
-
-    /** ProcessLog. This log is used to log into the core log: SF_CORE_LOG */
-    private LogSF  sflog = LogFactory.sfGetProcessLog();
-
-    /** Efficiency holder of sfClass reference. */
-    protected static final Reference refClass = new Reference(
-                SmartFrogCoreKeys.SF_CLASS);
-
-    /** Efficiency holder of sfCodeBase reference. */
-    protected static final Reference refCodeBase = new Reference(
-                SmartFrogCoreKeys.SF_CODE_BASE);
 
     /** The target description to work off. */
     protected ComponentDescription target;
@@ -119,99 +101,6 @@ public class PrimDeployerImpl implements ComponentDeployer, MessageKeys {
         } catch (Throwable t) {
             throw new SmartFrogDeploymentException("Error when trying to deploy component", t, null, cxt);
         }
-    }
-
-    protected Prim getPrimInstance() throws Exception {
-        final Class primClass = getPrimClass();
-        Prim dComponent = createPrimInstance(primClass);
-        return dComponent;
-    }
-
-    /**
-     *  Create a instance of Prim from primClass
-     * @param primClass
-     * @return Prim instance
-     * @throws Exception
-     * @throws InstantiationException
-     * @throws IllegalAccessException
-     */
-    protected Prim createPrimInstance(Class primClass) throws Exception {
-        Prim dComponent = (Prim) primClass.newInstance();
-        return dComponent;
-    }
-
-    /**
-     * Gets the class code base by resolving the sfCodeBase attribute in the
-     * given description.
-     *
-     * @param desc Description in which we resolve the code base.
-     *
-     * @return class code base for that description.
-     */
-    private String getSfCodeBase(ComponentDescription desc) {
-        try {
-            return (String) desc.sfResolve(refCodeBase);
-        } catch (Exception e) {
-            // Not found, return null...
-        }
-
-        return null;
-    }
-
-    /**
-     * Get the class for the primitive to be deployed. This is where the
-     * sfClass attribute is looked up, using the classloader returned by
-     * getPrimClassLoader
-     *
-     * @return class for target
-     *
-     * @exception Exception failed to load class
-     */
-    protected Class getPrimClass() throws Exception {
-        String targetCodeBase = null;
-        String targetClassName;
-        Object obj = null;
-        try {
-            // extract code base
-            targetCodeBase = getSfCodeBase(target);
-
-            // extract class name
-            obj =  target.sfResolve(refClass);
-            targetClassName = (String) obj;
-
-            // 3rd parameter = true: We look in the default code base if everything else fails.
-            return SFClassLoader.forName(targetClassName, targetCodeBase, true);
-        } catch (SmartFrogResolutionException resex) {
-            resex.put(SmartFrogRuntimeException.SOURCE, target.sfCompleteName());
-            resex.fillInStackTrace();
-
-            throw resex;
-        } catch (java.lang.ClassCastException ccex){
-            Object name = null;
-            if (target.sfContext().containsKey(SmartFrogCoreKeys.SF_PROCESS_COMPONENT_NAME)) {
-                name =target.sfResolveHere(SmartFrogCoreKeys.SF_PROCESS_COMPONENT_NAME,false);
-            }
-            throw new SmartFrogDeploymentException (refClass,null,name,target,
-              null,"Wrong class when resolving '"+refClass+ "': '"
-              +obj+"' ("+obj.getClass().getName()+")" , ccex, targetCodeBase);
-        } catch (java.lang.ClassNotFoundException cnfex){
-            Object name = null;
-            if (target.sfContext().containsKey(SmartFrogCoreKeys.SF_PROCESS_COMPONENT_NAME)) {
-                name =target.sfResolveHere(SmartFrogCoreKeys.SF_PROCESS_COMPONENT_NAME,false);
-            }
-            ComponentDescription cdInfo = new ComponentDescriptionImpl(null,new ContextImpl(),false);
-            try {
-              if (targetCodeBase != null) cdInfo.sfAddAttribute("sfCodeBase",
-                  targetCodeBase);
-              cdInfo.sfAddAttribute("java.class.path",System.getProperty("java.class.path"));
-              cdInfo.sfAddAttribute("org.smartfrog.sfcore.processcompound.sfProcessName",
-                  System.getProperty("org.smartfrog.sfcore.processcompound.sfProcessName"));
-            } catch (SmartFrogException sfex){
-              if (sflog.isDebugEnabled()) sflog.debug("",sfex);
-            }
-            throw new SmartFrogDeploymentException (refClass,null,name,target,null,"Class not found", cnfex, cdInfo);
-        }
-
     }
 
     //

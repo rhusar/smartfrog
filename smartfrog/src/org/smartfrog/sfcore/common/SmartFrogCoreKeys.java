@@ -341,9 +341,4 @@ public interface SmartFrogCoreKeys {
      */
     public static final String SF_METADATA = "sfMeta";
 
-    /**
-     * Attribute of the root process; implements the {@link org.smartfrog.sfcore.deployer.ComponentFactory}
-     * interface.
-     */
-    public static final String SF_DEFAULT_COMPONENT_FACTORY = "sfDefaultComponentFactory";
 }
