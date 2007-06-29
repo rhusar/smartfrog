@@ -608,6 +608,23 @@
           username="root"
           />
     </presetdef>
+    <macrodef name="validate-rpm-result">
+      <attribute name="result" />
+      <sequential >
+        <echo>
+          @{result}
+        </echo>
+        <fail>
+          <condition >
+            <contains
+                string="@{result}"
+                substring="does not exist"/>
+          </condition>
+          The rpm contains files belonging to an unknown user.
+        </fail>
+      </sequential>
+    </macrodef>
+
     <fileset id="rpm.upload.fileset" dir="${upload.dir}">
       <include name="*.rpm"/>
     </fileset>
@@ -622,7 +639,8 @@
   </target>
 
   <target name="rpm-upload" depends="rpm-upload-init" >
-    <rpmssh command="mkdir -p ${rpm.full.ssh.dir};rm ${rpm.full.ssh.dir}/smartfrog-*.rpm"/>
+    <rpmssh command="mkdir -p ${rpm.full.ssh.dir}"/>
+    <rpmssh command="rm ${rpm.full.ssh.dir}/smartfrog-*.rpm" failonerror="false"/>
     <property name="rpm.ssh.path"
         value="${rpm.ssh.user}@${rpm.ssh.server}:${rpm.full.ssh.dir}" />
     <scp remoteToDir="${rpm.ssh.path}"
@@ -635,15 +653,22 @@
   </target>
 
   <target name="rpm-remote-install-core" depends="rpm-upload" >
-    <rootssh command="cd ${rpm.full.ssh.dir};rpm --upgrade --force ${rpm.verbosity} ${target.rpm.shortname}" />
+    <rootssh command="cd ${rpm.full.ssh.dir};rpm --upgrade --force ${rpm.verbosity} ${target.rpm.shortname}"
+        outputProperty="rpm.result.core"/>
+    <validate-rpm-result result="${rpm.result.core}" />
   </target>
 
   <target name="rpm-remote-install-daemon" depends="rpm-upload" >
-    <rootssh command="cd ${rpm.full.ssh.dir};rpm --upgrade --force ${rpm.verbosity} smartfrog-daemon-*.rpm" />
+    <rootssh command="cd ${rpm.full.ssh.dir};rpm --upgrade --force ${rpm.verbosity} smartfrog-daemon-*.rpm"
+        outputProperty="rpm.result.daemon"/>
+    <validate-rpm-result result="${rpm.result.daemon}" />
+
   </target>
 
   <target name="rpm-remote-install-demo" depends="rpm-upload" >
-    <rootssh command="cd ${rpm.full.ssh.dir};rpm --upgrade --force ${rpm.verbosity} smartfrog-demo-*.rpm" />
+    <rootssh command="cd ${rpm.full.ssh.dir};rpm --upgrade --force ${rpm.verbosity} smartfrog-demo-*.rpm"
+        outputProperty="rpm.result.demo"/>
+    <validate-rpm-result result="${rpm.result.demo}" />
   </target>
 
 
