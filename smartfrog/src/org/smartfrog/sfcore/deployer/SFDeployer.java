@@ -31,7 +31,6 @@ import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
-import org.smartfrog.sfcore.deployer.ComponentDeployer;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.security.SFClassLoader;
@@ -109,7 +108,7 @@ public class SFDeployer implements MessageKeys {
      * @throws SmartFrogException failed to construct target deployer
      * @see org.smartfrog.sfcore.processcompound.PrimProcessDeployerImpl
      */
-    protected static ComponentDeployer getDeployer(ComponentDescription component) throws SmartFrogException {
+    private static ComponentDeployer getDeployer(ComponentDescription component) throws SmartFrogException {
         String className = (String) component.sfResolveHere(SmartFrogCoreKeys.SF_DEPLOYER_CLASS,false);
 
         if (className == null) {
