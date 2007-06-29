@@ -168,7 +168,7 @@ public class PrimDeployerImpl implements ComponentDeployer, MessageKeys {
      * @return class for target
      * @throws Exception failed to load class
      */
-    private Class getPrimClass() throws SmartFrogResolutionException, SmartFrogDeploymentException {
+    protected Class getPrimClass() throws SmartFrogResolutionException, SmartFrogDeploymentException {
         String targetCodeBase = null;
         String targetClassName;
         Object obj = null;
