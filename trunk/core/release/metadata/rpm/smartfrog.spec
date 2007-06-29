@@ -320,24 +320,24 @@ rm -rf /tmp/sflogs
 # -----------------------------------------------------------------------------
 #after installing, we set symlinks
 %post daemon 
-ln -s %{initsmartfrog} %{rcd}/rc0.d/K60smartfrog
-ln -s %{initsmartfrog} %{rcd}/rc1.d/K60smartfrog
-ln -s %{initsmartfrog} %{rcd}/rc2.d/S60smartfrog
-ln -s %{initsmartfrog} %{rcd}/rc3.d/S60smartfrog
-ln -s %{initsmartfrog} %{rcd}/rc4.d/S60smartfrog
-ln -s %{initsmartfrog} %{rcd}/rc5.d/S60smartfrog
-ln -s %{initsmartfrog} %{rcd}/rc6.d/S60smartfrog
+ln -s %{initsmartfrog} %{rcd}/rc0.d/K60hpsmartfrog
+ln -s %{initsmartfrog} %{rcd}/rc1.d/K60hpsmartfrog
+ln -s %{initsmartfrog} %{rcd}/rc2.d/S60hpsmartfrog
+ln -s %{initsmartfrog} %{rcd}/rc3.d/S60hpsmartfrog
+ln -s %{initsmartfrog} %{rcd}/rc4.d/S60hpsmartfrog
+ln -s %{initsmartfrog} %{rcd}/rc5.d/S60hpsmartfrog
+ln -s %{initsmartfrog} %{rcd}/rc6.d/S60hpsmartfrog
 
 # -----------------------------------------------------------------------------
 # at uninstall time, we blow away the symlinks
 %postun daemon
-rm %{rcd}/rc0.d/K60smartfrog
-rm %{rcd}/rc1.d/K60smartfrog
-rm %{rcd}/rc2.d/S60smartfrog
-rm %{rcd}/rc3.d/S60smartfrog
-rm %{rcd}/rc4.d/S60smartfrog
-rm %{rcd}/rc5.d/S60smartfrog
-rm %{rcd}/rc6.d/S60smartfrog
+rm %{rcd}/rc0.d/K60hpsmartfrog
+rm %{rcd}/rc1.d/K60hpsmartfrog
+rm %{rcd}/rc2.d/S60hpsmartfrog
+rm %{rcd}/rc3.d/S60hpsmartfrog
+rm %{rcd}/rc4.d/S60hpsmartfrog
+rm %{rcd}/rc5.d/S60hpsmartfrog
+rm %{rcd}/rc6.d/S60hpsmartfrog
 
 %files daemon
 #and the etc stuff
