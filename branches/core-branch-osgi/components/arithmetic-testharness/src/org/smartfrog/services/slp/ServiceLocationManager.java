@@ -50,7 +50,7 @@ public class ServiceLocationManager {
   public static String defaultScope = "DEFAULT";
 
   /** The vector of configured scopes for this host */
-  public static Vector scopes;
+  public static List scopes;
 
   /** The current locator instance number */
   protected static int locInstCount = 0;
@@ -84,7 +84,7 @@ public class ServiceLocationManager {
    * @return a Vector of configured scopes.
    * @throws ServiceLocationException if the operation fails.
    */
-  public static Vector findScopes() throws ServiceLocationException {
+  public static List findScopes() throws ServiceLocationException {
     if (scopes == null)
       addScope(defaultScope);
     return scopes;
@@ -100,7 +100,7 @@ public class ServiceLocationManager {
     if (scopes == null)
       scopes = new Vector();
     if (!scopes.contains(scope)){
-      scopes.addElement(scope);
+      scopes.add(scope);
     }
   }
   /**
@@ -116,10 +116,9 @@ public class ServiceLocationManager {
    * @throws Exception if the operation fails.
    */
   private static Object instantiateSLPAgent(String agentClassName, Locale locale) throws Exception{
-    Class[] parameters = new Class[1];
-    Object[] args = new Object[1];
-    parameters[0] = SFClassLoader.forName("java.util.Locale");
-    args[0] = locale;
+    Class[] parameters = { Locale.class };
+    Object[] args = { locale };
+    
     // should probably be spawned in a new Thread...
     return SFClassLoader.forName(agentClassName).getConstructor(parameters).newInstance(args);
   }

@@ -145,8 +145,8 @@ public interface ProcessCompound extends Compound {
     /**
      * Replaces the piece of code that is run at system shutdown. This is used
      * when the daemon is embedded; the default code calls System.exit().
-     * @param hook The callback that will be run at system shutdown.
+     * @param handler The callback that will be run at system shutdown.
      * @throws RemoteException if there is any network or remote error
      */
-    public void replaceShutdownHook(Runnable hook) throws RemoteException;
+    public void replaceShutdownHandler(ShutdownHandler handler) throws RemoteException;
 }

@@ -32,7 +32,7 @@ import org.smartfrog.sfcore.languages.sf.sfcomponentdescription.SFComponentDescr
 
 
 /**
- * Phase is a class that implements a phase on a ComponentDescritpion. It is
+ * Phase is a class that implements a phase on a ComponentDescription. It is
  * iterated over the tree by the visitor pattern implemented on
  * ComponentDescription.
  */
@@ -64,19 +64,26 @@ public class Phase implements CDVisitor {
     protected PhaseAction phaseAction(Object action,
                                       SFComponentDescription cd,
                                       Stack path)
-            throws SmartFrogResolutionException {
+            throws SmartFrogResolutionException
+    {
         try {
+
             PhaseAction p = (PhaseAction) (SFClassLoader.forName((String) action).newInstance());
             p.forComponent(cd, phaseName, path);
             return p;
-        } catch (Exception ex){
+
+        } catch (Exception ex) {
             String actionClass;
             if (action!=null) {
               actionClass = action.toString();
             } else {
               actionClass = "null";
             }
-            throw (SmartFrogResolutionException)SmartFrogResolutionException.forward(phaseName+" ("+ actionClass +", internal cause: "+ex.getMessage()+ ")", ex);
+
+            throw (SmartFrogResolutionException) SmartFrogResolutionException.forward(
+                    phaseName + " (" + actionClass + ", internal cause: " + ex.getMessage() + ")",
+                    ex
+            );
         }
     }
 

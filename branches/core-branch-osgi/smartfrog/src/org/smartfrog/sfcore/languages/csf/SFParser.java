@@ -126,7 +126,7 @@ public class SFParser implements StreamLanguageParser {
             if (includeHandlerClass == null) {
                 includeHandlerClass = SFClassLoader.forName(includeHandlerClassName);
             }
-            Class[] includeHandlerConstArgsTypes = {java.lang.String.class};
+            Class[] includeHandlerConstArgsTypes = {String.class};
 
             Constructor includeHandlerConst = includeHandlerClass.getConstructor(includeHandlerConstArgsTypes);
 
@@ -146,7 +146,7 @@ public class SFParser implements StreamLanguageParser {
 //          throw new SmartFrogException(MessageUtil.formatMessage(
 //              MessageKeys.MSG_INVOCATION_TARGET, includeHandlerClassName), intarexcp);
         } catch (Throwable ex) {
-            throw (SmartFrogException) SmartFrogException.forward(ex);
+            throw SmartFrogException.forward(ex);
         }
     }
 
@@ -273,7 +273,7 @@ public class SFParser implements StreamLanguageParser {
     }
 
     /**
-     * Parses any primtiive value (ie no links, component descriptions) from given string. This is NOT a cheap method since a
+     * Parses any primitive value (ie no links, component descriptions) from given string. This is NOT a cheap method since a
      * new DefaultParser will be constructed to create the reference.
      *
      * @param is input stream to parse

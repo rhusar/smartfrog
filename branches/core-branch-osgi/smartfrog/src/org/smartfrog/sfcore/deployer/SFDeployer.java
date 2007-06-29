@@ -72,13 +72,14 @@ public class SFDeployer implements MessageKeys {
             if (name != null) {
                 Object tmp = component.sfResolve(name);
 
-                if (!(tmp instanceof ComponentDescription)) {
+                if (!(tmp instanceof ComponentDescription))
                     SmartFrogResolutionException.notComponent(name, component.sfCompleteName());
-                }
 
                 return deploy((ComponentDescription) tmp, null, parent, params);
             }
+
             return getDeployer(component).deploy(name, parent, params);
+
         } catch (SmartFrogException sfex){
             throw (SmartFrogDeploymentException) SmartFrogDeploymentException.forward(sfex);
         }
@@ -157,6 +158,6 @@ public class SFDeployer implements MessageKeys {
     }
 
     private static ComponentFactory defaultFactory() {
-        return new DefaultClassLoadingEnvironmentImpl();
+        return new OldAlgorithmComponentFactory();
     }
 }

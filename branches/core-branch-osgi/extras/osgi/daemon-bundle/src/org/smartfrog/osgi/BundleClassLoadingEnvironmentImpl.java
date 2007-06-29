@@ -7,7 +7,7 @@ import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
-import org.smartfrog.sfcore.deployer.AbstractComponentFactory;
+import org.smartfrog.sfcore.deployer.AbstractComponentFactoryUsingClassLoader;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 
@@ -17,7 +17,7 @@ import java.rmi.RemoteException;
 import java.util.Enumeration;
 
 
-public class BundleClassLoadingEnvironmentImpl extends AbstractComponentFactory {
+public class BundleClassLoadingEnvironmentImpl extends AbstractComponentFactoryUsingClassLoader {
     public static final String LOCATION_ATTRIBUTE = "location";
     private Bundle hostBundle = null;
 
@@ -59,10 +59,6 @@ public class BundleClassLoadingEnvironmentImpl extends AbstractComponentFactory 
         super.sfTerminate(status);
     }
 
-    public URL getResource(String location) throws RemoteException {
-        return hostBundle.getResource(location);
-    }
-
     protected Prim getComponentImpl(ComponentDescription askedFor)
         throws ClassNotFoundException, InstantiationException, IllegalAccessException,
             SmartFrogResolutionException
@@ -72,7 +68,4 @@ public class BundleClassLoadingEnvironmentImpl extends AbstractComponentFactory 
         return (Prim) primClass.newInstance();
     }
 
-    public Enumeration getResources(String location) throws IOException {
-        return hostBundle.getResources(location);
-    }
 }

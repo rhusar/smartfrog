@@ -70,12 +70,12 @@ public class SFProcess implements MessageKeys {
     /**
      * processCompound description
      */
-    protected static ComponentDescription processCompoundDescription;
+    private static ComponentDescription processCompoundDescription;
 
     /**
      * Root locator to get and set the root process compound for this HOST
      */
-    protected static RootLocator rootLocator;
+    private static RootLocator rootLocator;
 
     /**
      * Reference to root locator class.
@@ -95,8 +95,7 @@ public class SFProcess implements MessageKeys {
 //     */
 //    private LogSF sflog = sfLog();
 
-    private SFProcess (){
-    }
+    private SFProcess () {}
 
     /**
      * Sets the root locator for this process. The root locator will be used to
@@ -292,11 +291,11 @@ public class SFProcess implements MessageKeys {
      * @return the previous value.
      */
     static synchronized boolean markProcessCompoundTerminated() {
-        boolean isTerminated=processCompoundTerminated;
-        if(!isTerminated) {
+        boolean wasTerminated = processCompoundTerminated;
+        if(!wasTerminated)
             processCompoundTerminated=true;
-        }
-        return isTerminated;
+        
+        return wasTerminated;
     }
 
     /**
@@ -482,7 +481,7 @@ public class SFProcess implements MessageKeys {
      */
     public static ProcessCompound sfSelectTargetProcess(InetAddress host, String subProcess)
             throws SmartFrogException, RemoteException {
-        ProcessCompound target = null;
+        ProcessCompound target;
         try {
             target = SFProcess.getProcessCompound();
             if (host != null) {

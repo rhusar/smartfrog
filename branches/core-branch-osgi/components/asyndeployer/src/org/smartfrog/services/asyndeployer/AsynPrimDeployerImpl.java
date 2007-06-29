@@ -57,11 +57,18 @@ public class AsynPrimDeployerImpl extends PrimDeployerImpl implements ComponentD
         super(descr);
     }
 
+    public void setComponentFactory(ComponentFactory componentFactory) {
+        // Discard the component factory from above and use ours.
+        // Temporary fix: the real fix would be switching to a proper ComponentFactory,
+        // declared by the sfMeta:sfFactory attribute.
+        super.setComponentFactory(new ProActiveComponentFactory());
+    }
+
     private class ProActiveComponentFactory implements ComponentFactory {
 
         /**
          *
-         * @param primClass
+         * @param askedFor
          * @return a new instance
          * @throws ProActiveException
          * @throws IOException

@@ -131,8 +131,8 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
     private StreamGobbler errorGobbler;
     private StreamGobbler outputGobbler;
 
-    private Runnable shutdownHook = new Runnable() {
-        public void run() {
+    private ShutdownHandler shutdownHandler = new ShutdownHandler() {
+        public void shutdown(ProcessCompound pc) {
             ExitCodes.exitWithError(ExitCodes.EXIT_CODE_SUCCESS);
         }
     };
@@ -531,13 +531,12 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
             shutdownRMIRegistry(sfLog());
             SFSystem.cleanShutdown();
 
-            shutdownHook.run();
+            shutdownHandler.shutdown(this);
 
             // They shouldn't be stopped before not to loose output
-            // (including output from the hook).
+            // (including output from the shutdown handler).
             outputGobbler.stopThread();
             errorGobbler.stopThread();
-
         }
     }
 
@@ -660,8 +659,8 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
         systemExit = exit;
     }
 
-    public void replaceShutdownHook(Runnable hook) {
-        shutdownHook = hook;
+    public void replaceShutdownHandler(ShutdownHandler handler) {
+        shutdownHandler = handler;
     }
 
     /**
