@@ -1,4 +1,4 @@
-package org.smartfrog.osgi;
+package org.smartfrog.sfcore.deployer;
 
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.prim.Prim;
@@ -27,7 +27,7 @@ public abstract class AbstractClassLoadingEnvironment extends PrimImpl implement
             return getComponentImpl(askedFor);
         } catch (ClassNotFoundException e) {
             throw deploymentException(MessageUtil.formatMessage(
-                MSG_CLASS_NOT_FOUND, className), e, askedFor);
+                    MSG_CLASS_NOT_FOUND, className), e, askedFor);
         } catch (InstantiationException instexcp) {
             throw deploymentException(MessageUtil.formatMessage(
                     MSG_INSTANTIATION_ERROR, "Prim"), instexcp, askedFor);

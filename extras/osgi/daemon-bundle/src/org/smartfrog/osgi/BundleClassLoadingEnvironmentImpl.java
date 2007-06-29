@@ -7,13 +7,11 @@ import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
-import org.smartfrog.sfcore.deployer.ClassLoadingEnvironment;
+import org.smartfrog.sfcore.deployer.AbstractClassLoadingEnvironment;
 import org.smartfrog.sfcore.prim.Prim;
-import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URL;
 import java.rmi.RemoteException;
 import java.util.Enumeration;

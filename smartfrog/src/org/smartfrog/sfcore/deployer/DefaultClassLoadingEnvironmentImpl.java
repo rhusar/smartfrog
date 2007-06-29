@@ -4,7 +4,7 @@ import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.prim.Prim;
-import org.smartfrog.osgi.AbstractClassLoadingEnvironment;
+import org.smartfrog.sfcore.deployer.AbstractClassLoadingEnvironment;
 
 import java.io.IOException;
 import java.io.InputStream;

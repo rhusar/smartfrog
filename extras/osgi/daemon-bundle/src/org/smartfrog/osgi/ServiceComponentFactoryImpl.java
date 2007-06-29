@@ -3,6 +3,8 @@ package org.smartfrog.osgi;
 import org.osgi.framework.*;
 import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
+import org.smartfrog.sfcore.common.MessageUtil;
+import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.deployer.ComponentFactory;
 import org.smartfrog.sfcore.prim.Prim;
@@ -58,10 +60,20 @@ public class ServiceComponentFactoryImpl extends PrimImpl implements ComponentFa
      * @throws SmartFrogDeploymentException Should not happen (except in case of programmer error).
      */
     public Prim getComponent(ComponentDescription askedFor)
-            throws SmartFrogResolutionException, SmartFrogDeploymentException
+            throws SmartFrogDeploymentException
     {
 
-        String interfaceName = (String) askedFor.sfResolveHere(INTERFACE_NAME_ATTRIBUTE); 
+        String interfaceName;
+        try {
+            interfaceName = (String) askedFor.sfResolveHere(INTERFACE_NAME_ATTRIBUTE);
+        } catch (SmartFrogResolutionException e) {
+            throw new SmartFrogDeploymentException(
+                    MessageUtil.formatMessage(MSG_UNRESOLVED_REFERENCE, INTERFACE_NAME_ATTRIBUTE),
+                    e,
+                    this,
+                    askedFor.sfContext()
+            );
+        }
 
         final UnregisterOnTerminateInvocationHandler invocationHandler =
                 new UnregisterOnTerminateInvocationHandler(interfaceName);
