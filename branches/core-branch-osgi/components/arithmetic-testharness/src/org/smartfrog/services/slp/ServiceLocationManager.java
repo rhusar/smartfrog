@@ -50,7 +50,7 @@ public class ServiceLocationManager {
   public static String defaultScope = "DEFAULT";
 
   /** The vector of configured scopes for this host */
-  public static List scopes;
+  public static Vector scopes;
 
   /** The current locator instance number */
   protected static int locInstCount = 0;
@@ -84,7 +84,7 @@ public class ServiceLocationManager {
    * @return a Vector of configured scopes.
    * @throws ServiceLocationException if the operation fails.
    */
-  public static List findScopes() throws ServiceLocationException {
+  public static Vector findScopes() throws ServiceLocationException {
     if (scopes == null)
       addScope(defaultScope);
     return scopes;
