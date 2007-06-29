@@ -161,10 +161,8 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
      * Used in conjunction with sfDeployWith to set parent and context after
      * creation.
      *
-     * @throws RemoteException In case of network/rmi error
      */
-    public PrimImpl() throws RemoteException {
-    }
+    public PrimImpl() {}
 
     /**
      * Find an attribute in this component context.

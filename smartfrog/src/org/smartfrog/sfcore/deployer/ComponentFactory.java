@@ -1,6 +1,5 @@
 package org.smartfrog.sfcore.deployer;
 
-import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.prim.Prim;
@@ -19,13 +18,9 @@ public interface ComponentFactory extends Remote {
      *
      * @param askedFor The ComponentDescription to work off.
      * @return The newly created component instance.
-     * @throws RemoteException
-     * @throws ClassNotFoundException
-     * @throws InstantiationException
-     * @throws IllegalAccessException
-     * @throws SmartFrogResolutionException
+     * @throws RemoteException     
      * @throws SmartFrogDeploymentException
      */
-    Prim getComponent(ComponentDescription askedFor) throws RemoteException,
-            ClassNotFoundException, InstantiationException, IllegalAccessException, SmartFrogResolutionException, SmartFrogDeploymentException;
+    Prim getComponent(ComponentDescription askedFor)
+            throws RemoteException, SmartFrogDeploymentException;
 }
