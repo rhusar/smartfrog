@@ -46,7 +46,7 @@
 %define srcdir          %{basedir}/src
 %define examples        %{srcdir}/org/smartfrog/examples
 %define rcd             /etc/rc.d
-%define initsmartfrog   %{rcd}/init.d/smartfrog
+%define initsmartfrog   %{rcd}/init.d/hpsmartfrog
 
 # -----------------------------------------------------------------------------
 
@@ -204,12 +204,17 @@ mkdir %{basedir}/log
 chmod a+wx %{basedir}/log
 chgrp ${rpm.groupname} %{basedir}/log
 chown ${rpm.username} %{basedir}/log
+mkdir /tmp/sflogs
+chmod a+wx /tmp/sflogs
+chgrp ${rpm.groupname} /tmp/sflogs
+chown ${rpm.username} /tmp/sflogs
 
 
 # -----------------------------------------------------------------------------
 
 %clean
 rm -rf $RPM_BUILD_ROOT
+rm -rf /tmp/sflogs
 
 # -----------------------------------------------------------------------------
 
@@ -234,47 +239,47 @@ rm -rf $RPM_BUILD_ROOT
 %config %{bindir}/default.ini
 %config %{bindir}/default.sf
 
-%attr(755, -, -) %{bindir}/smartfrog
-%attr(755, -, -) %{bindir}/setSFDefaultProperties
-%attr(755, -, -) %{bindir}/setSFDynamicClassLoadingProperties
-%attr(755, -, -) %{bindir}/setSFProperties
-%attr(755, -, -) %{bindir}/setSFSecurityProperties
-%attr(755, -, -) %{bindir}/sfDaemon
-%attr(755, -, -) %{bindir}/sfDetachAndTerminate
-%attr(755, -, -) %{bindir}/sfDiag
-%attr(755, -, -) %{bindir}/sfDiagnostics
-%attr(755, -, -) %{bindir}/sfGui
-%attr(755, -, -) %{bindir}/sfManagementConsole
-%attr(755, -, -) %{bindir}/sfParse
-%attr(755, -, -) %{bindir}/sfPing
-%attr(755, -, -) %{bindir}/sfRun
-%attr(755, -, -) %{bindir}/sfStart
-%attr(755, -, -) %{bindir}/sfStop
-%attr(755, -, -) %{bindir}/sfStopDaemon
-%attr(755, -, -) %{bindir}/sfTerminate
-%attr(755, -, -) %{bindir}/sfUpdate
-%attr(755, -, -) %{bindir}/sfVersion
+%attr(755, ${rpm.username},${rpm.groupname}) %{bindir}/smartfrog
+%attr(755, ${rpm.username},${rpm.groupname}) %{bindir}/setSFDefaultProperties
+%attr(755, ${rpm.username},${rpm.groupname}) %{bindir}/setSFDynamicClassLoadingProperties
+%attr(755, ${rpm.username},${rpm.groupname}) %{bindir}/setSFProperties
+%attr(755, ${rpm.username},${rpm.groupname}) %{bindir}/setSFSecurityProperties
+%attr(755, ${rpm.username},${rpm.groupname}) %{bindir}/sfDaemon
+%attr(755, ${rpm.username},${rpm.groupname}) %{bindir}/sfDetachAndTerminate
+%attr(755, ${rpm.username},${rpm.groupname}) %{bindir}/sfDiag
+%attr(755, ${rpm.username},${rpm.groupname}) %{bindir}/sfDiagnostics
+%attr(755, ${rpm.username},${rpm.groupname}) %{bindir}/sfGui
+%attr(755, ${rpm.username},${rpm.groupname}) %{bindir}/sfManagementConsole
+%attr(755, ${rpm.username},${rpm.groupname}) %{bindir}/sfParse
+%attr(755, ${rpm.username},${rpm.groupname}) %{bindir}/sfPing
+%attr(755, ${rpm.username},${rpm.groupname}) %{bindir}/sfRun
+%attr(755, ${rpm.username},${rpm.groupname}) %{bindir}/sfStart
+%attr(755, ${rpm.username},${rpm.groupname}) %{bindir}/sfStop
+%attr(755, ${rpm.username},${rpm.groupname}) %{bindir}/sfStopDaemon
+%attr(755, ${rpm.username},${rpm.groupname}) %{bindir}/sfTerminate
+%attr(755, ${rpm.username},${rpm.groupname}) %{bindir}/sfUpdate
+%attr(755, ${rpm.username},${rpm.groupname}) %{bindir}/sfVersion
 #%attr(755, -, -) %{bindir}/
 %{bindir}/*.bat
 #bin/metadata
 %{bindir}/metadata
 #bin/security
-%attr(755, -, -) %{binsecurity}/smartfrog
-%attr(755, -, -) %{binsecurity}/sfDaemon
-%attr(755, -, -) %{binsecurity}/sfDetachAndTerminate
-#%attr(755, -, -) %{binsecurity}/sfDiag
-#%attr(755, -, -) %{binsecurity}/sfDiagnostics
-#%attr(755, -, -) %{binsecurity}/sfGui
-%attr(755, -, -) %{binsecurity}/sfManagementConsole
-%attr(755, -, -) %{binsecurity}/sfParse
-#%attr(755, -, -) %{binsecurity}/sfPing
-%attr(755, -, -) %{binsecurity}/sfRun
-%attr(755, -, -) %{binsecurity}/sfStart
-%attr(755, -, -) %{binsecurity}/sfStop
-%attr(755, -, -) %{binsecurity}/sfStopDaemon
-%attr(755, -, -) %{binsecurity}/sfTerminate
-%attr(755, -, -) %{binsecurity}/sfUpdate
-%attr(755, -, -) %{binsecurity}/sfVersion
+%attr(755, ${rpm.username},${rpm.groupname}) %{binsecurity}/smartfrog
+%attr(755, ${rpm.username},${rpm.groupname}) %{binsecurity}/sfDaemon
+%attr(755, ${rpm.username},${rpm.groupname}) %{binsecurity}/sfDetachAndTerminate
+#%attr(755, ${rpm.username},${rpm.groupname}) %{binsecurity}/sfDiag
+#%attr(755, ${rpm.username},${rpm.groupname}) %{binsecurity}/sfDiagnostics
+#%attr(755, ${rpm.username},${rpm.groupname}) %{binsecurity}/sfGui
+%attr(755, ${rpm.username},${rpm.groupname}) %{binsecurity}/sfManagementConsole
+%attr(755, ${rpm.username},${rpm.groupname}) %{binsecurity}/sfParse
+#%attr(755, ${rpm.username},${rpm.groupname}) %{binsecurity}/sfPing
+%attr(755, ${rpm.username},${rpm.groupname}) %{binsecurity}/sfRun
+%attr(755, ${rpm.username},${rpm.groupname}) %{binsecurity}/sfStart
+%attr(755, ${rpm.username},${rpm.groupname}) %{binsecurity}/sfStop
+%attr(755, ${rpm.username},${rpm.groupname}) %{binsecurity}/sfStopDaemon
+%attr(755, ${rpm.username},${rpm.groupname}) %{binsecurity}/sfTerminate
+%attr(755, ${rpm.username},${rpm.groupname}) %{binsecurity}/sfUpdate
+%attr(755, ${rpm.username},${rpm.groupname}) %{binsecurity}/sfVersion
 %{binsecurity}/*.bat
 
 #now the files in the lib directory...use ant library versions to include version numbers
@@ -337,7 +342,7 @@ rm %{rcd}/rc6.d/S60smartfrog
 %files daemon
 #and the etc stuff
 %defattr(0644,root,root,0755)
-%attr(755, root,root) /etc/rc.d/init.d/smartfrog
+%attr(755, root,root) /etc/rc.d/init.d/hpsmartfrog
 %attr(755, root,root) /etc/profile.d/smartfrog.sh
 %attr(755, root,root) /etc/profile.d/smartfrog.csh
 /etc/sysconfig/smartfrog
