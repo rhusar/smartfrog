@@ -673,7 +673,7 @@
 
 
 
-  <target name="rpm-remote-install" depends="rpm-remote-install-core,rpm-remote-install-demo,rpm-remote-install-daemon" >
+  <target name="rpm-remote-install" depends="rpm-remote-uninstall,rpm-remote-install-core,rpm-remote-install-demo,rpm-remote-install-daemon" >
   </target>
 
   <target name="rpm-remote-uninstall" depends="rpm-upload-init" >
@@ -681,9 +681,26 @@
         failonerror="false"/>
   </target>
 
-  <target name="rpm-remote-test" depends="rpm-remote-install" >
+  <target name="rpm-remote-test" depends="rpm-remote-version" />
+
+  <target name="rpm-remote-version" depends="rpm-remote-install" >
     <rpmssh command="sfVersion"
         outputProperty="rpm.test.results"/>
+    <echo>${rpm.test.results}</echo>
+    <fail>
+      <condition>
+        <not>
+          <contains string="${rpm.test.results}" substring="${smartfrog.version}"/>
+        </not>
+      </condition> 
+      Did not find "${smartfrog.version}" in "${rpm.test.results}", which implies
+      the installed smartfrog is not what we just built and pushed up.
+    </fail>
+  </target>
+
+  <target name="rpm-remote-daemon" depends="rpm-remote-install" >
+    <rpmssh command="smartfrog"
+        outputProperty="rpm.daemon.results"/>
     <echo>${rpm.test.results}</echo>
     <fail>
       <not>
@@ -693,7 +710,6 @@
       the installed smartfrog is not what we just built and pushed up.
     </fail>
   </target>
-
 
 
   <!--
