@@ -50,10 +50,6 @@
     <!--<artifact name="sf-core-documentation" conf="documentation" ext="zip"/>-->
   </publications>
   <dependencies>
-      <dependency org="org.osgi"
-                  name="osgi_R4_core"
-                  rev="1.0"
-                  conf="compile->default"/>
 
       <!--javacc is used for the javacc task-->
 
@@ -61,5 +57,6 @@
                   name="javacc"
                   rev="3.2"
                   conf="javacc->default"/>
+      
   </dependencies>
 </ivy-module>
