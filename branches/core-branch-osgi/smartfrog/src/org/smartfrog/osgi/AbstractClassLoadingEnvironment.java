@@ -21,25 +21,29 @@ public abstract class AbstractClassLoadingEnvironment extends PrimImpl implement
     public Prim getComponent(ComponentDescription askedFor) throws SmartFrogDeploymentException {
         String className = null;
         try {
-            // Not pretty - needed to have a proper error message, and pass tests.
+            // Not pretty - but needed to have a proper error message, and pass tests.
             className = (String) askedFor.sfResolveHere(SmartFrogCoreKeys.SF_CLASS);
 
             return getComponentImpl(askedFor);
         } catch (ClassNotFoundException e) {
-            throw new SmartFrogDeploymentException(MessageUtil.formatMessage(
-                    MSG_CLASS_NOT_FOUND, className), e, null, null);
+            throw deploymentException(MessageUtil.formatMessage(
+                MSG_CLASS_NOT_FOUND, className), e, askedFor);
         } catch (InstantiationException instexcp) {
-            throw new SmartFrogDeploymentException(MessageUtil.formatMessage(
-                    MSG_INSTANTIATION_ERROR, "Prim"), instexcp, null, null);
+            throw deploymentException(MessageUtil.formatMessage(
+                    MSG_INSTANTIATION_ERROR, "Prim"), instexcp, askedFor);
         } catch (IllegalAccessException illaexcp) {
-            throw new SmartFrogDeploymentException(MessageUtil.formatMessage(
+            throw deploymentException(MessageUtil.formatMessage(
                     MSG_ILLEGAL_ACCESS, "Prim", "newInstance()"), illaexcp,
-                    null, null);
+                    askedFor);
         } catch (SmartFrogResolutionException e) {
-            throw new SmartFrogDeploymentException(MessageUtil.formatMessage(
+            throw deploymentException(MessageUtil.formatMessage(
                     MSG_UNRESOLVED_REFERENCE, SmartFrogCoreKeys.SF_CLASS), e,
-                    null, null);
+                    askedFor);
         }
+    }
+
+    private SmartFrogDeploymentException deploymentException(String message, Exception e, ComponentDescription askedFor) {
+        return new SmartFrogDeploymentException(message, e, this, askedFor.sfContext());
     }
 
     protected abstract Prim getComponentImpl(ComponentDescription askedFor)
