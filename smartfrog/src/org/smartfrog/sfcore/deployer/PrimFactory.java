@@ -4,10 +4,7 @@ import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.prim.Prim;
 
-import java.rmi.Remote;
-import java.rmi.RemoteException;
-
-public interface PrimFactory extends Remote {
+public interface PrimFactory {
     /**
      * Creates the component instance from a given description. It is not mandatory that the given description
      * be that of the whole component: it can be a sub-attribute of the component description for example.
@@ -18,9 +15,7 @@ public interface PrimFactory extends Remote {
      *
      * @param askedFor The ComponentDescription to work off.
      * @return The newly created component instance.
-     * @throws RemoteException     
      * @throws SmartFrogDeploymentException
      */
-    Prim getComponent(ComponentDescription askedFor)
-            throws RemoteException, SmartFrogDeploymentException;
+    Prim getComponent(ComponentDescription askedFor) throws SmartFrogDeploymentException;
 }

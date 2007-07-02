@@ -12,6 +12,7 @@ import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.processcompound.ProcessCompound;
 import org.smartfrog.sfcore.processcompound.ShutdownHandler;
 
+/** @noinspection PublicMethodNotExposedInInterface*/
 public class SmartFrogActivator {
     private ProcessCompound rootProcess = null;
     private boolean alreadyStopping = false;
@@ -38,7 +39,8 @@ public class SmartFrogActivator {
                     // has not been replaced yet.
                     rootProcess.replaceShutdownHandler(new ShutdownHandlerOSGi(bundle));
                     rootProcess.sfAddAttribute(SmartFrogCoreKeys.SF_CORE_BUNDLE_CONTEXT, bundleContext);
-                    
+                    rootProcess.replaceSubprocessStarter(new EquinoxSubprocessStarterImpl());
+
                     logService.info("SmartFrog daemon running...");
                 } catch (Exception e) {
                     logService.error("Error during daemon startup", e);
@@ -55,9 +57,6 @@ public class SmartFrogActivator {
             }
         });
 
-//        ClassLoader bundleCL = getClass().getClassLoader();
-//        printClassLoaderDebug(bundleCL);
-//        startDaemon.setContextClassLoader(bundleCL);
         startDaemon.setName("SmartFrog Daemon Startup Thread");
         startDaemon.start();
     }
@@ -76,23 +75,6 @@ public class SmartFrogActivator {
             }
         }
     }
-
-//    private void printClassLoaderDebug(final ClassLoader bundleCL) {
-//        logService.debug("Current thread context CL: " + Thread.currentThread().getContextClassLoader());
-//        logService.debug("System CL " + ClassLoader.getSystemClassLoader());
-//        printClassLoaderHierarchy(bundleCL);
-//        logService.debug("Setting the startup thread context CL to the bundle's CL.");
-//    }
-//
-//    private void printClassLoaderHierarchy(final ClassLoader bundleCL) {
-//        ClassLoader curr = bundleCL;
-//        int depth = 0;
-//        while (curr != null) {
-//            logService.debug("Classloader of depth " + depth + " : " + curr);
-//            depth++;
-//            curr = curr.getParent();
-//        }
-//    }
 
     public void setLog(LogService log) {
         logService.setLog(log);
