@@ -119,7 +119,7 @@ public class SFParser implements StreamLanguageParser {
    public static IncludeHandler getIncludeHandler(String codebase) throws Exception {
       try {
           if (includeHandlerClass == null) {
-             includeHandlerClass = SFClassLoader.forName(includeHandlerClassName);
+             includeHandlerClass = Class.forName(includeHandlerClassName);
           }
           Class[] includeHandlerConstArgsTypes = {java.lang.String.class};
 
@@ -145,7 +145,7 @@ public class SFParser implements StreamLanguageParser {
 //          throw new SmartFrogException(MessageUtil.formatMessage(
 //              MessageKeys.MSG_INVOCATION_TARGET, includeHandlerClassName), intarexcp);
       } catch (Throwable ex) {
-          throw (SmartFrogException)SmartFrogException.forward(ex);
+          throw SmartFrogException.forward(ex);
       }
   }
 
@@ -159,7 +159,7 @@ public class SFParser implements StreamLanguageParser {
       try {
          if (factory == null) {
             if (factoryClass == null) {
-               factoryClass = SFClassLoader.forName(factoryClassName);
+               factoryClass = Class.forName(factoryClassName);
                factory = (Factory) factoryClass.newInstance();
             }
          }

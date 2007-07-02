@@ -89,9 +89,8 @@ public class DefaultIncludeHandler implements IncludeHandler {
      * @exception Exception failed to locate or open include
      */
     protected InputStream openInclude(String include, String codebase) throws Exception {
-        InputStream is = null;
-
-        is = SFClassLoader.getResourceAsStream(include, actualCodebase(codebase), true);
+        // TODO: Obtain .sf files, PhaseActions and Functions through a ParseTimeResourceFactory
+        InputStream is = SFClassLoader.getResourceAsStream(include, actualCodebase(codebase), true);
 
         if (is == null) {
             throw new Exception("Include file: " + include + " not found");

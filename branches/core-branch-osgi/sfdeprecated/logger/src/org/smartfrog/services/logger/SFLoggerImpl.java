@@ -91,7 +91,7 @@ public class SFLoggerImpl extends PrimImpl implements Prim, SFLogger {
                 File dir = new File(logsDir);
                 dir.mkdir();
                 fileHandler = new FileHandler(logsDir+File.separator+logFile);
-                Class classFormatter = org.smartfrog.sfcore.security.SFClassLoader.forName(logFormatter);
+                Class classFormatter = Class.forName(logFormatter);
                 Formatter formatter = (Formatter) classFormatter.newInstance();
                 fileHandler.setFormatter(formatter);
                 logger.addHandler(fileHandler);

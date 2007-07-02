@@ -68,6 +68,7 @@ public class Phase implements CDVisitor {
     {
         try {
 
+            // TODO: Obtain .sf files, PhaseActions and Functions through a ParseTimeResourceFactory
             PhaseAction p = (PhaseAction) (SFClassLoader.forName((String) action).newInstance());
             p.forComponent(cd, phaseName, path);
             return p;

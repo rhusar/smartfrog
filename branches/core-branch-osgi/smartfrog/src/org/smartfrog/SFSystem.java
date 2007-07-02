@@ -224,11 +224,11 @@ public class SFSystem implements MessageKeys {
 
         try {
             if (errClass != null) {
-                System.setErr((PrintStream) SFClassLoader.forName(errClass).newInstance());
+                System.setErr((PrintStream) Class.forName(errClass).newInstance());
             }
 
             if (outClass != null) {
-                System.setOut((PrintStream) SFClassLoader.forName(outClass).newInstance());
+                System.setOut((PrintStream) Class.forName(outClass).newInstance());
             }
         } catch (InstantiationException e) {
             throw SmartFrogException.forward(e);
@@ -593,6 +593,8 @@ public class SFSystem implements MessageKeys {
      * @see SFClassLoader
      */
     public static InputStream getInputStreamForResource(String resourceSFURL) throws SmartFrogException {
+        // TODO: Figure out how this is used:
+        // is this supposed to see user-provided files or just files in the SmartFrog-core JAR?
         InputStream  is = SFClassLoader.getResourceAsStream(resourceSFURL);
         if (is == null) {
             throw new SmartFrogException(MessageUtil.formatMessage(MSG_FILE_NOT_FOUND, resourceSFURL));
