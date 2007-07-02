@@ -5,7 +5,7 @@ sfConfig extends Compound {
     sfProcessComponentName "env";
 
     bundleTest extends OSGiBundle {
-        location "file:sf-test-osgi-3.11.000beta.jar";
+        location "file:sf-test-bundle-3.11.001beta.jar";
     }
     
 }

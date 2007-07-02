@@ -146,7 +146,7 @@ public class PlainJVMSubprocessStarterImpl implements SubprocessStarter {
 
                         //Add special parameters to named subprocesses
                         //@todo add Junit test for this feature
-                        //@todo test what happens with special caracters
+                        //@todo test what happens with special characters
                         // prefixed by 'org.smartfrog.sfcore.processcompound.jvm'+NAME+.property=value
                         String specialParameters = SmartFrogCoreProperty.propBaseSFProcess + "jvm." + name + ".";
 
@@ -369,8 +369,7 @@ public class PlainJVMSubprocessStarterImpl implements SubprocessStarter {
             } else if (sysClasspath != null) {
                 res = sysClasspath;
             }
-        } else {
-            //   String pathSeparator = SFSystem.getProperty("path.separator",";");
+        } else {            
             res = "";
             if (cdClasspath != null) {
                 res += cdClasspath;
