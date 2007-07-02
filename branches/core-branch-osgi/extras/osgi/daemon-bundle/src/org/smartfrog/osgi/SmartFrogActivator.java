@@ -6,6 +6,7 @@ import org.osgi.framework.BundleException;
 import org.osgi.service.component.ComponentContext;
 import org.osgi.service.log.LogService;
 import org.smartfrog.SFSystem;
+import org.smartfrog.osgi.logging.LogServiceProxy;
 import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.processcompound.ProcessCompound;
@@ -13,12 +14,12 @@ import org.smartfrog.sfcore.processcompound.ShutdownHandler;
 
 public class SmartFrogActivator {
     private ProcessCompound rootProcess = null;
-    private LogServiceProxy logService = new LogServiceProxy();
     private boolean alreadyStopping = false;
     private final Object lock = new Object();
 
-    public synchronized void activate(final ComponentContext componentContext) throws Exception {
+    private static LogServiceProxy logService = new LogServiceProxy();
 
+    public synchronized void activate(final ComponentContext componentContext) throws Exception {
         logService.info("Starting smartfrog...");
 
         System.getProperties().load(
@@ -61,15 +62,17 @@ public class SmartFrogActivator {
         startDaemon.start();
     }
 
-    public void deactivate(final ComponentContext bundleContext) throws Exception {
+    public void deactivate(final ComponentContext componentContext) throws Exception {
         synchronized (lock) {
             if (!alreadyStopping) {
                 alreadyStopping = true;
                 logService.info("Stopping SmartFrog...");
 
-                rootProcess.sfTerminate(new TerminationRecord("normal", "Stopping daemon", null));
-                rootProcess = null; // Triggers garbage collection
+                rootProcess.sfTerminate(new TerminationRecord("normal", "Stopping daemon", null));                
                 logService.info("SmartFrog daemon stopped.");
+                
+                rootProcess = null; // Triggers garbage collection, hopefully
+                logService = null;
             }
         }
     }
@@ -97,6 +100,10 @@ public class SmartFrogActivator {
 
     public void unsetLog(LogService log) {
         logService.unsetLog(log);
+    }
+
+    public static LogService getLogServiceProxy() {
+        return logService;
     }
 
 

@@ -1,4 +1,4 @@
-package org.smartfrog.osgi;
+package org.smartfrog.osgi.logging;
 
 import org.osgi.framework.ServiceReference;
 import org.osgi.service.log.LogService;

@@ -81,9 +81,6 @@ public class OSGiBundleCompound extends CompoundImpl implements Compound {
         log.debug("OSGiBundleCompound deployed.");
     }
 
-    /*
-     * TODO: Use Declarative Services for log service
-     */
     private void logBundleDetails(LogSF log, String bundleURL) {
         if (log.isDebugEnabled()) {
             log.debug("Bundle ID : " + childBundle.getBundleId());

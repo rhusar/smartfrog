@@ -23,7 +23,7 @@
 
 
     <target name="daemon-bundle" depends="smartfrog-dist">
-        <subant  target="dist" >
+        <subant target="dist" >
             <fileset file="daemon-bundle/build.xml" />
             <property name="javadocs.disabled" value="${javadoc.disabled}"/>
         </subant>
@@ -42,16 +42,16 @@
         </subant>
     </target>
 
-    <target name="copyJarsAround" depends="bundles">
+    <target name="copyJarsAround">
         <!--
         <copy file="./build/${bundle.filename}"
               todir="C:\\knopflerfish_osgi_2.0.1\\knopflerfish.org\\osgi"
               overwrite="true"/>
         -->
         <copy todir="${user.home}/Dev/equinox/plugins" overwrite="true">
-            <fileset file="daemon-bundle/dist/lib/sf-daemon-osgi*.jar"/>
-            <fileset file="rmiclassloading-extension-bundle/dist/lib/sf-rmi-spi-osgi*.jar"/>
-            <fileset file="test-bundle/dist/lib/sf-test-osgi*.jar"/>
+            <fileset file="daemon-bundle/dist/lib/sf-daemon-bundle*.jar"/>
+            <fileset file="rmiclassloading-extension-bundle/dist/lib/sf-rmi-spi-bundle*.jar"/>
+            <fileset file="test-bundle/dist/lib/sf-test-bundle*.jar"/>
         </copy>
     </target>
 
