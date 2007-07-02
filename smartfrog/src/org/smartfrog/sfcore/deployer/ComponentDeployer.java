@@ -26,7 +26,7 @@ import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.reference.Reference;
 
 /**
- * Deploys a new {@link Prim} in the component hierarchy, delegating object creation to a {@link ComponentFactory}.
+ * Deploys a new {@link Prim} in the component hierarchy, delegating object creation to a {@link PrimFactory}.
  * Implementations are used to deploy a single Prim, and are discarded afterwards.
  * Thus they must have a public, one-argument constructor that takes the Prim's {@link org.smartfrog.sfcore.componentdescription.ComponentDescription}. 
  */
@@ -48,7 +48,7 @@ public interface ComponentDeployer {
 
     /**
      * Sets the factory to be used. Always called before {@link this.deploy()}. 
-     * @param componentFactory The factory to be used to create component instances.
+     * @param primFactory The factory to be used to create component instances.
      */
-    void setComponentFactory(ComponentFactory componentFactory);
+    void setComponentFactory(PrimFactory primFactory);
 }

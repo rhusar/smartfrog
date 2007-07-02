@@ -13,7 +13,7 @@ import org.smartfrog.sfcore.reference.Reference;
  * Implements the sfCodebase-aware component creation, as currently documented.
  * The code was originally in PrimImpl.
  */
-public class OldAlgorithmComponentFactory extends AbstractComponentFactoryUsingClassLoader {
+public class OldAlgorithmPrimFactory extends AbstractPrimFactoryUsingClassLoader {
 
     private LogSF sfLog = LogFactory.sfGetProcessLog();
 

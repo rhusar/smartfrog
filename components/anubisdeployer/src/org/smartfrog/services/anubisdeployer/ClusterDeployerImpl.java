@@ -38,7 +38,7 @@ import org.smartfrog.sfcore.processcompound.ProcessCompound;
 import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.reference.ReferencePart;
 import org.smartfrog.sfcore.processcompound.SFProcess;
-import org.smartfrog.sfcore.deployer.ComponentFactory;
+import org.smartfrog.sfcore.deployer.PrimFactory;
 
 /**
  *
@@ -64,7 +64,7 @@ public class ClusterDeployerImpl extends PrimProcessDeployerImpl {
      *
      * @param descr target to operate on
      */
-    public ClusterDeployerImpl(ComponentDescription descr, ComponentFactory factory) {
+    public ClusterDeployerImpl(ComponentDescription descr, PrimFactory factory) {
         super(descr);
     }
 

@@ -24,7 +24,7 @@ import org.smartfrog.sfcore.common.*;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.componentdescription.ComponentDescriptionImpl;
 import org.smartfrog.sfcore.deployer.ComponentDeployer;
-import org.smartfrog.sfcore.deployer.ComponentFactory;
+import org.smartfrog.sfcore.deployer.PrimFactory;
 import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.security.SFClassLoader;
 import org.smartfrog.sfcore.logging.LogSF;
@@ -46,7 +46,7 @@ public class PrimDeployerImpl implements ComponentDeployer, MessageKeys {
     protected ComponentDescription target;
 
     /** The factory used to get the component instance. */
-    private ComponentFactory componentFactory;
+    private PrimFactory primFactory;
 
     /**
      * Constructs a component deployer for given description.
@@ -57,8 +57,8 @@ public class PrimDeployerImpl implements ComponentDeployer, MessageKeys {
         target = descr;
     }
 
-    public void setComponentFactory(ComponentFactory componentFactory) {
-        this.componentFactory = componentFactory;
+    public void setComponentFactory(PrimFactory primFactory) {
+        this.primFactory = primFactory;
     }
 
     /**
@@ -78,7 +78,7 @@ public class PrimDeployerImpl implements ComponentDeployer, MessageKeys {
 
         try {
             // create instance
-            Prim dComponent = componentFactory.getComponent(target);
+            Prim dComponent = primFactory.getComponent(target);
 
             // deploy component after wiping out the parentage of any
             // descriptions in the context. Prim is not a valid parent, so
@@ -140,7 +140,7 @@ public class PrimDeployerImpl implements ComponentDeployer, MessageKeys {
     }
 
     // BEGIN LEGACY CODE //////////////
-    // This is now in OldAlgorithmComponentFactory, but DNSComponentDeployerImpl needs it here.
+    // This is now in OldAlgorithmPrimFactory, but DNSComponentDeployerImpl needs it here.
     // Should be removed very soon.
 
 

@@ -8,9 +8,9 @@ import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.common.MessageUtil;
 import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
 
-public abstract class AbstractComponentFactoryUsingClassLoader extends PrimImpl implements ComponentFactory {
+public abstract class AbstractPrimFactoryUsingClassLoader extends PrimImpl implements PrimFactory {
 
-    protected AbstractComponentFactoryUsingClassLoader() {}
+    protected AbstractPrimFactoryUsingClassLoader() {}
 
 
     public Prim getComponent(ComponentDescription askedFor) throws SmartFrogDeploymentException {

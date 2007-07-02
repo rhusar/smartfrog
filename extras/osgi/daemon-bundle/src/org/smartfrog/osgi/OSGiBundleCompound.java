@@ -19,7 +19,7 @@ import java.util.Dictionary;
 import java.util.Enumeration;
 
 /**
- * @deprecated Use BundleClassLoadingEnvironmentImpl instead.
+ * @deprecated Use BundlePrimFactoryImpl instead.
  */
 public class OSGiBundleCompound extends CompoundImpl implements Compound {
     private static final String BUNDLE_URL = "bundleURL";
