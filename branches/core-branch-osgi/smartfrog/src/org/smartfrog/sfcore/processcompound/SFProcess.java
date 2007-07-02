@@ -43,6 +43,7 @@ import java.util.Enumeration;
 import java.util.Properties;
 import java.rmi.ConnectException;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 
 import org.smartfrog.sfcore.logging.LogFactory;
 import org.smartfrog.sfcore.logging.LogSF;
@@ -321,9 +322,12 @@ public class SFProcess implements MessageKeys {
                 Constructor constructor = irqHandlerClass.getConstructor(new Class[0]);
                 InterruptHandler handler=(InterruptHandler) constructor.newInstance(new Object[0]);
                 handler.bind("INT", sfLog());
-            } catch (Throwable e) {
+            } catch (NoClassDefFoundError e) {
                 sfLog().error("Could not create an interrupt handler from "+ INTERRUPT_HANDLER
                         +"\nSmartFrog may be running on a JVM which does not support this feature",e);
+            } catch (Exception e) {
+                sfLog().error("Could not create an interrupt handler from " + INTERRUPT_HANDLER
+                        + "\nSmartFrog may be running on a JVM which does not support this feature", e);
             }
         }
 
