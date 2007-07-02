@@ -26,7 +26,7 @@ import org.smartfrog.sfcore.common.MessageKeys;
 import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
 import org.smartfrog.sfcore.deployer.ComponentDeployer;
-import org.smartfrog.sfcore.deployer.ComponentFactory;
+import org.smartfrog.sfcore.deployer.PrimFactory;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.prim.PrimDeployerImpl;
 import org.smartfrog.sfcore.prim.Prim;
@@ -57,14 +57,14 @@ public class AsynPrimDeployerImpl extends PrimDeployerImpl implements ComponentD
         super(descr);
     }
 
-    public void setComponentFactory(ComponentFactory componentFactory) {
+    public void setComponentFactory(PrimFactory primFactory) {
         // Discard the component factory from above and use ours.
-        // Temporary fix: the real fix would be switching to a proper ComponentFactory,
+        // Temporary fix: the real fix would be switching to a proper PrimFactory,
         // declared by the sfMeta:sfFactory attribute.
-        super.setComponentFactory(new ProActiveComponentFactory());
+        super.setComponentFactory(new ProActivePrimFactory());
     }
 
-    private class ProActiveComponentFactory implements ComponentFactory {
+    private class ProActivePrimFactory implements PrimFactory {
 
         /**
          *

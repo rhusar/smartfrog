@@ -135,7 +135,7 @@ public class SFDeployer implements MessageKeys {
         }
     }
 
-    private static ComponentFactory getComponentFactory(ComponentDescription component)
+    private static PrimFactory getComponentFactory(ComponentDescription component)
             throws SmartFrogResolutionException
     {
         ComponentDescription metadata = null;
@@ -150,14 +150,14 @@ public class SFDeployer implements MessageKeys {
             // The sfFactory attribute needs to be resolved in those two steps because sfMeta is declared as such:
             // sfMeta extends DATA { ... sfFactory LAZY xxx; }
             Reference factoryRef = (Reference) metadata.sfResolveHere(SmartFrogCoreKeys.SF_FACTORY);
-            return (ComponentFactory) metadata.sfResolve(factoryRef);
+            return (PrimFactory) metadata.sfResolve(factoryRef);
         } else {
             // Component using the old sfClass-only syntax
             return defaultFactory();
         }
     }
 
-    private static ComponentFactory defaultFactory() {
-        return new OldAlgorithmComponentFactory();
+    private static PrimFactory defaultFactory() {
+        return new OldAlgorithmPrimFactory();
     }
 }

@@ -9,7 +9,7 @@ import org.smartfrog.sfcore.prim.Prim;
  * The component factory that should be used for framework components.
  * Those come from the same classloader as this class.
  */
-public class FrameworkClassLoadingEnvironmentImpl extends AbstractComponentFactoryUsingClassLoader {
+public class FrameworkClassLoadingEnvironmentImpl extends AbstractPrimFactoryUsingClassLoader {
 
     public FrameworkClassLoadingEnvironmentImpl() {}
 

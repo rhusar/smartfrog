@@ -330,7 +330,7 @@ public interface SmartFrogCoreKeys {
     public static final String SF_FINAL= "sfFinal";
 
     /**
-     * Attribute inside SF_METADATA used to select the ComponentFactory
+     * Attribute inside SF_METADATA used to select the PrimFactory
      * component used to create a component instance. 
      */
     public static final String SF_FACTORY = "sfFactory";

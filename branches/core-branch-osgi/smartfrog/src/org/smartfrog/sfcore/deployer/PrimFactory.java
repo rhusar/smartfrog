@@ -7,7 +7,7 @@ import org.smartfrog.sfcore.prim.Prim;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 
-public interface ComponentFactory extends Remote {
+public interface PrimFactory extends Remote {
     /**
      * Creates the component instance from a given description. It is not mandatory that the given description
      * be that of the whole component: it can be a sub-attribute of the component description for example.

@@ -7,21 +7,18 @@ import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
-import org.smartfrog.sfcore.deployer.AbstractComponentFactoryUsingClassLoader;
+import org.smartfrog.sfcore.deployer.AbstractPrimFactoryUsingClassLoader;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 
-import java.io.IOException;
-import java.net.URL;
 import java.rmi.RemoteException;
-import java.util.Enumeration;
 
 
-public class BundleClassLoadingEnvironmentImpl extends AbstractComponentFactoryUsingClassLoader {
+public class BundlePrimFactoryImpl extends AbstractPrimFactoryUsingClassLoader {
     public static final String LOCATION_ATTRIBUTE = "location";
     private Bundle hostBundle = null;
 
-    public BundleClassLoadingEnvironmentImpl() throws RemoteException {}
+    public BundlePrimFactoryImpl() throws RemoteException {}
 
     public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
         super.sfDeploy();

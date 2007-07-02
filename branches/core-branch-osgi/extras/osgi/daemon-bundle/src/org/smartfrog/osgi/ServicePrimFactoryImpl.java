@@ -4,9 +4,8 @@ import org.osgi.framework.*;
 import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.common.MessageUtil;
-import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
-import org.smartfrog.sfcore.deployer.ComponentFactory;
+import org.smartfrog.sfcore.deployer.PrimFactory;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.prim.TerminationRecord;
@@ -17,14 +16,14 @@ import java.lang.reflect.Proxy;
 import java.rmi.RemoteException;
 
 /**
- * A {@link ComponentFactory} implementation that gets components instances from the OSGi service registry.
+ * A {@link PrimFactory} implementation that gets components instances from the OSGi service registry.
  * As OSGi services can come and go, this factory creates dynamic proxies that track the requested service.
  * When it becomes unavailable, any invocation of its method will throw Exception.
  *
  * For now, we suppose that the interface name we get from the component description is the name of
  * an interface that extends Prim. In the case of user error, nasty ClassCastExceptions will pop up.
  */
-public class ServiceComponentFactoryImpl extends PrimImpl implements ComponentFactory {
+public class ServicePrimFactoryImpl extends PrimImpl implements PrimFactory {
 
     private BundleContext daemonBundleContext = null;
     private final Method sfTerminateMethod;
@@ -39,7 +38,7 @@ public class ServiceComponentFactoryImpl extends PrimImpl implements ComponentFa
      * @throws RemoteException If PrimImpl constructor fails with this exception.
      * @throws NoSuchMethodException Should not happen (except in case of programmer error).
      */
-    public ServiceComponentFactoryImpl() throws RemoteException, NoSuchMethodException {
+    public ServicePrimFactoryImpl() throws RemoteException, NoSuchMethodException {
         sfTerminateMethod = Prim.class.getMethod("sfTerminate", new Class[]{ TerminationRecord.class });
     }
 
