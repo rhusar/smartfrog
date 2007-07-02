@@ -148,7 +148,7 @@ public class SFSecurityEnvironmentImpl implements SFSecurityEnvironment {
 
             // Open and check integrity of the key store.
             ks = KeyStore.getInstance("JKS");
-            ks.load(SFClassLoader.getResourceAsStream(keyStoreName),
+            ks.load(getClass().getResourceAsStream(keyStoreName),
                 keyStorePasswd.toCharArray());
         } catch (Exception e) {
             throw new SFGeneralSecurityException(e.getMessage());

@@ -104,6 +104,7 @@ public class SFParse implements MessageKeys {
             Phases top;
             InputStream is=null;
             try {
+                // TODO: Access user-provided component descriptions through a PrimFactory-style component, deployed on the parsing daemon
                 is = SFClassLoader.getResourceAsStream(fileUrl);
                 if (is == null) {
                     String msg = MessageUtil.

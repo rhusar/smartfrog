@@ -149,7 +149,7 @@ public class SFProcess implements MessageKeys {
         try {
             if (rootLocator == null) {
                 className = (String) getProcessCompoundDescription().sfResolve(refRootLocatorClass);
-                rootLocator = (RootLocator) SFClassLoader.forName(className).newInstance();
+                rootLocator = (RootLocator) Class.forName(className).newInstance();
             }
         } catch (ClassNotFoundException cnfexcp) {
             // TODO: Check

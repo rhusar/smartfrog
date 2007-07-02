@@ -106,7 +106,7 @@ public class SFSecurityProperties {
 
             // At this point there is NO security, so we don't have integrity
             // check of this file... (we rely on the OS).
-            is = SFClassLoader.getResourceAsStream(propertiesFileName);
+            is = SFSecurityProperties.class.getResourceAsStream(propertiesFileName);
 
             if (is != null) {
                 System.getProperties().load(is);

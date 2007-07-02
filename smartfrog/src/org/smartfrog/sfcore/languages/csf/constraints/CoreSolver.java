@@ -23,7 +23,7 @@ abstract public class CoreSolver implements Solver {
                 String classname = System.getProperty("org.smartfrog.sfcore.languages.csf.constraints.SolverClassName");
 		//System.out.println("Solver Class Name:"+classname);
                 if (classname != null) solverClassname = classname;
-                Class solverClass = SFClassLoader.forName(solverClassname);
+                Class solverClass = Class.forName(solverClassname);
                 solver = (Solver) solverClass.newInstance();
             } catch (Exception e) {
                 throw new SmartFrogResolutionException("Unable to construct constraint solver", e);

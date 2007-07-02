@@ -104,6 +104,7 @@ public class SFDeployer implements MessageKeys {
 
         try {
 
+            // TODO: Turn Deployers into full-blown Prims
             Class deplClass = SFClassLoader.forName(className);
             Class[] deplConstArgsTypes = { ComponentDescription.class };
             Constructor deplConst = deplClass.getConstructor(deplConstArgsTypes);

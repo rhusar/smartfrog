@@ -23,17 +23,14 @@ package org.smartfrog.services.jmx.mbeanbrowser;
 import java.io.*;
 import java.net.MalformedURLException;
 import java.awt.*;
-import javax.swing.UIManager;
 
 import org.smartfrog.sfcore.prim.*;
 import org.smartfrog.sfcore.common.*;
 import org.smartfrog.sfcore.parser.*;
 import org.smartfrog.sfcore.componentdescription.*;
 import org.smartfrog.sfcore.reference.*;
-import org.smartfrog.sfcore.security.SFClassLoader;
 import org.smartfrog.services.jmx.communication.ConnectionFactory;
 import org.smartfrog.services.jmx.communication.ServerAddress;
-import java.util.Vector;
 
 //import com.sun.management.jmx.*;
 import mx4j.*;
@@ -272,7 +269,7 @@ public class MBeanBrowser extends PrimImpl implements Prim, Serializable {
      *@exception  Exception  Description of the Exception
      */
     public static ComponentDescription getMBeanBrowserDescription() throws Exception {
-        InputStream is = SFClassLoader.getResourceAsStream("org/smartfrog/services/jmx/mbeanbrowser/MBeanBrowser.sf");
+        InputStream is = MBeanBrowser.class.getResourceAsStream("org/smartfrog/services/jmx/mbeanbrowser/MBeanBrowser.sf");
         Phases descr = (new SFParser("sf").sfParse(is));
         //Vector phases = new Vector();
    //     phases.add("type");

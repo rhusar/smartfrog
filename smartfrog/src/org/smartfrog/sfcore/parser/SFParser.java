@@ -115,7 +115,7 @@ public class SFParser implements Parser, MessageKeys {
     private StreamLanguageParser getParser() throws SmartFrogException {
 
         try {
-            Class parserClass = SFClassLoader.forName(languagesPrefix + "." +
+            Class parserClass = Class.forName(languagesPrefix + "." +
                     theLanguage + ".SFParser");
 
             return (StreamLanguageParser) parserClass.newInstance();

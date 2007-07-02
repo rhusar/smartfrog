@@ -115,12 +115,11 @@ public class ServiceLocationManager {
    * @return an instance of User or Service Agent.
    * @throws Exception if the operation fails.
    */
-  private static Object instantiateSLPAgent(String agentClassName, Locale locale) throws Exception{
+  private static Object instantiateSLPAgent(String agentClassName, Locale locale) throws Exception {
     Class[] parameters = { Locale.class };
     Object[] args = { locale };
     
-    // should probably be spawned in a new Thread...
-    return SFClassLoader.forName(agentClassName).getConstructor(parameters).newInstance(args);
+    return Class.forName(agentClassName).getConstructor(parameters).newInstance(args);
   }
 
   /**

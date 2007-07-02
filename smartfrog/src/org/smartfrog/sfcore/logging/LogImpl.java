@@ -469,7 +469,7 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
    public static Log loadLogger(String name, ComponentDescription configuration,Integer logLevel, String targetClassName , String targetCodeBase)
           throws SmartFrogLogException{
           try {
-            Class deplClass = SFClassLoader.forName(targetClassName, targetCodeBase, true);
+            Class deplClass = Class.forName(targetClassName);
 
             Class[] deplConstArgsTypes = { String.class, ComponentDescription.class , Integer.class };
 
