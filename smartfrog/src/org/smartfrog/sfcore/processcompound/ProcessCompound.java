@@ -149,4 +149,6 @@ public interface ProcessCompound extends Compound {
      * @throws RemoteException if there is any network or remote error
      */
     public void replaceShutdownHandler(ShutdownHandler handler) throws RemoteException;
+
+    public void replaceSubprocessStarter(SubprocessStarter starter) throws RemoteException;
 }
