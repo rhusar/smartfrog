@@ -47,6 +47,10 @@
 %define examples        %{srcdir}/org/smartfrog/examples
 %define rcd             /etc/rc.d
 %define initsmartfrog   %{rcd}/init.d/hpsmartfrog
+%define logdir          ${rpm.log.dir}
+#this is some other log directory that gets picked up by logtofileimpl
+#see http://jira.smartfrog.org/jira/browse/SFOS-235
+%define logdir2         /tmp/sflogs
 
 # -----------------------------------------------------------------------------
 
@@ -200,19 +204,19 @@ cp -dpr . $RPM_BUILD_ROOT
 
 #after installing create a log directory that is world writeable, so that people running the init.d
 #daemon by hand don't need to be root (SFOS-173)
-mkdir %{basedir}/log
-chmod a+wx %{basedir}/log
-chgrp ${rpm.groupname} %{basedir}/log
-chown ${rpm.username} %{basedir}/log
-mkdir /tmp/sflogs
-chmod a+wx /tmp/sflogs
-chgrp ${rpm.groupname} /tmp/sflogs
-chown ${rpm.username} /tmp/sflogs
+mkdir -p %{logdir}
+chmod a+wx %{logdir}
+chgrp ${rpm.groupname} %{logdir}
+chown ${rpm.username} %{logdir}
+mkdir -p %{logdir2}
+chmod a+wx %{logdir2}
+chgrp ${rpm.groupname} %{logdir2}
+chown ${rpm.username} %{logdir2}
 
 %postun
 #at uninstall time, we delete all logs
-rm -rf /tmp/sflogs
-rm -rf %{basedir}/log
+rm -rf %{logdir}
+rm -rf %{logdir2}
 
 # -----------------------------------------------------------------------------
 
