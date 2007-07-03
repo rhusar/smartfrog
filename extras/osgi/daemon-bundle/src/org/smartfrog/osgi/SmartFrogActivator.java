@@ -23,6 +23,7 @@ public class SmartFrogActivator {
 
     private static LogServiceProxy logService = new LogServiceProxy();
 
+    // Check whether synchronization is actually needed
     public synchronized void activate(final ComponentContext componentContext) throws Exception {
         logService.info("Starting smartfrog...");
 
@@ -38,7 +39,12 @@ public class SmartFrogActivator {
                     // Danger: If runSmartFrog() fails after the rootProcess
                     // has been created, it might call System.exit() as the shutdown handler
                     // has not been replaced yet.
-                    rootProcess.replaceShutdownHandler(new ShutdownHandlerOSGi(bundle));
+                    // sfIsRoot() doesn't seem to work here, so done manually 
+                    if (isRoot()) {
+                        rootProcess.replaceShutdownHandler(new ShutdownHandlerOSGi(bundle));
+                    }
+                    // If we're a subprocess, this is a throwaway OSGi framework anyway, so calling System.exit is OK.
+                    
                     addBundleContextAttribute(bundleContext);
                     rootProcess.replaceSubprocessStarter(new EquinoxSubprocessStarterImpl());
 
@@ -60,6 +66,11 @@ public class SmartFrogActivator {
 
         startDaemon.setName("SmartFrog Daemon Startup Thread");
         startDaemon.start();
+    }
+
+    private boolean isRoot() {
+        return System.getProperty(SmartFrogCoreProperty.sfProcessName)
+                .equals(SmartFrogCoreKeys.SF_ROOT_PROCESS);
     }
 
     private void addBundleContextAttribute(BundleContext bundleContext) throws SmartFrogRuntimeException, RemoteException {
@@ -87,8 +98,7 @@ public class SmartFrogActivator {
                 rootProcess.sfTerminate(new TerminationRecord("normal", "Stopping daemon", null));                
                 logService.info("SmartFrog daemon stopped.");
                 
-                rootProcess = null; // Triggers garbage collection, hopefully
-                logService = null;
+                rootProcess = null; // Triggers garbage collection, hopefully                
             }
         }
     }
