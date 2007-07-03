@@ -405,20 +405,19 @@ public class ComponentHelper {
 
 
     /**
-     * Load a class in the classloader, using the SmartFrog classloader.
-     * {@link SFClassLoader#forName(String, String, boolean)}
+     * Load a class in the owner's class loading space. Equivalent to calling
+     * Class.forName() in the owner. 
      * @param classname
      * @return class
      * @throws SmartFrogResolutionException if the class could not be found
      * @throws RemoteException for network problems
      */
     public Class loadClass(String classname) throws SmartFrogResolutionException, RemoteException {
-        String targetCodeBase = getCodebase();
-
         try {
-            return SFClassLoader.forName(classname, targetCodeBase, true);
+            return owner.getClass().getClassLoader().loadClass(classname);
         } catch (ClassNotFoundException ignored) {
-            throw new SmartFrogResolutionException("Not found: " + classname + " in " + targetCodeBase);
+            throw new SmartFrogResolutionException("Not found: " + classname
+                    + ". Classloader: " + owner.getClass().getClassLoader());
 
         }
     }
