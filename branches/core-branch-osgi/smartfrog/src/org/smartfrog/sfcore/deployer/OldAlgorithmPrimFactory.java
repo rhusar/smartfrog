@@ -82,8 +82,8 @@ public class OldAlgorithmPrimFactory extends AbstractPrimFactoryUsingClassLoader
                 if (targetCodeBase != null) cdInfo.sfAddAttribute(SmartFrogCoreKeys.SF_CODE_BASE,
                         targetCodeBase);
                 cdInfo.sfAddAttribute("java.class.path", System.getProperty("java.class.path"));
-                cdInfo.sfAddAttribute("org.smartfrog.sfcore.processcompound.sfProcessName",
-                        System.getProperty("org.smartfrog.sfcore.processcompound.sfProcessName"));
+                cdInfo.sfAddAttribute(SmartFrogCoreProperty.sfProcessName,
+                        System.getProperty(SmartFrogCoreProperty.sfProcessName));
             } catch (SmartFrogException sfex) {
                 if (sfLog.isDebugEnabled()) sfLog.debug("", sfex);
             }

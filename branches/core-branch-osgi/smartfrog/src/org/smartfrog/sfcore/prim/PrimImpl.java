@@ -32,23 +32,8 @@ import java.util.Set;
 import java.lang.reflect.Method;
 import java.lang.reflect.Field;
 
+import org.smartfrog.sfcore.common.*;
 import org.smartfrog.sfcore.common.Diagnostics;
-import org.smartfrog.sfcore.common.Context;
-import org.smartfrog.sfcore.common.ContextImpl;
-import org.smartfrog.sfcore.common.Logger;
-import org.smartfrog.sfcore.common.MessageKeys;
-import org.smartfrog.sfcore.common.MessageUtil;
-import org.smartfrog.sfcore.common.SFMarshalledObject;
-import org.smartfrog.sfcore.common.SmartFrogContextException;
-import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
-import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
-import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.sfcore.common.SmartFrogLifecycleException;
-import org.smartfrog.sfcore.common.SmartFrogLivenessException;
-import org.smartfrog.sfcore.common.SmartFrogResolutionException;
-import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
-import org.smartfrog.sfcore.common.SmartFrogUpdateException;
-import org.smartfrog.sfcore.common.TerminatorThread;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.componentdescription.ComponentDescriptionImpl;
 import org.smartfrog.sfcore.logging.LogFactory;
@@ -367,7 +352,7 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
      */
     public String sfDeployedProcessName() throws RemoteException {
         String value = System.getProperty(
-                "org.smartfrog.sfcore.processcompound.sfProcessName");
+                SmartFrogCoreProperty.sfProcessName);
 
         if (value == null) {
             return SmartFrogCoreKeys.SF_ROOT;

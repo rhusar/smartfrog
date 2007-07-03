@@ -251,11 +251,5 @@ public class SmartFrogCoreProperty {
                               propBaseSFParserSF + "includeHandlerClass";
 
 
-    /**
-     * Property used to change the daemon shutdown behaviour, useful when embedding it.
-     * The value of the property must be the name of a class implementing
-     * org.smartfrog.sfcore.processcompound.ShutdownHandler and have a public no-argument constructor.
-     */
-   public final static String daemonShutdownHandler =
-           SmartFrogCorePropertySecurity.propBase + "daemon.shutdown.handler";  
+   public static final String sfProcessName = "org.smartfrog.sfcore.processcompound.sfProcessName"; 
 }

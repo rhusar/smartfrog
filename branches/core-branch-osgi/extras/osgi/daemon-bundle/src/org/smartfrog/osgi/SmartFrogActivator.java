@@ -8,9 +8,13 @@ import org.osgi.service.log.LogService;
 import org.smartfrog.SFSystem;
 import org.smartfrog.osgi.logging.LogServiceProxy;
 import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
+import org.smartfrog.sfcore.common.SmartFrogCoreProperty;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.processcompound.ProcessCompound;
 import org.smartfrog.sfcore.processcompound.ShutdownHandler;
+
+import java.io.IOException;
+import java.util.Properties;
 
 /** @noinspection PublicMethodNotExposedInInterface*/
 public class SmartFrogActivator {
@@ -23,9 +27,7 @@ public class SmartFrogActivator {
     public synchronized void activate(final ComponentContext componentContext) throws Exception {
         logService.info("Starting smartfrog...");
 
-        System.getProperties().load(
-                getClass().getResourceAsStream("system.properties")
-        );
+        loadProperties();
 
         Thread startDaemon = new Thread(new Runnable() {
             public void run() {
@@ -59,6 +61,18 @@ public class SmartFrogActivator {
 
         startDaemon.setName("SmartFrog Daemon Startup Thread");
         startDaemon.start();
+    }
+
+    private void loadProperties() throws IOException {
+        // We need to keep the sfProcessName if it was passed by a -D flag
+        // (which means we're being started as a subprocess)
+        String sfProcessName = System.getProperty(SmartFrogCoreProperty.sfProcessName);
+
+        System.getProperties().load(
+                getClass().getResourceAsStream("system.properties")
+        );
+        if (sfProcessName != null)
+            System.setProperty(SmartFrogCoreProperty.sfProcessName, sfProcessName);
     }
 
     public void deactivate(final ComponentContext componentContext) throws Exception {
