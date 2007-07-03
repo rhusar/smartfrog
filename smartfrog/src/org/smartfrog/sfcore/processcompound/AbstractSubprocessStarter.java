@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Collection;
 import java.util.Vector;
 import java.util.Iterator;
+import java.io.IOException;
 
 public abstract class AbstractSubprocessStarter implements SubprocessStarter {
     private final Log sfLog = LogFactory.sfGetProcessLog();
@@ -66,15 +67,28 @@ public abstract class AbstractSubprocessStarter implements SubprocessStarter {
 
         String[] runCmdArray = new String[runCmd.size()];
         runCmd.copyInto(runCmdArray);
-        if (sfLog.isTraceEnabled())
+        if (sfLog.isDebugEnabled())
             sfLog.trace("startProcess[" + name + "].runCmd: " + runCmd.toString());
-        //noinspection CallToRuntimeExec
-        return Runtime.getRuntime().exec(runCmdArray);
+
+        Process subprocess;
+        try {
+            //noinspection CallToRuntimeExec
+            subprocess = Runtime.getRuntime().exec(runCmdArray);
+        } catch (IOException e) {
+            if (sfLog.isDebugEnabled()) sfLog.debug("Could not start subprocess", e);
+            throw e;
+        }
+        doPostStartupSteps();
+        return subprocess;
     }
+
+    protected abstract void doPostStartupSteps() throws Exception;
 
     protected abstract void addParameters
             (ProcessCompound parentProcess, List runCmd, String name, ComponentDescription cd)
             throws Exception;
+
+    
 
     /**
      * Constructs sequence of -D statements for the new sub-process by
