@@ -28,6 +28,10 @@ public class PlainJVMSubprocessStarterImpl extends AbstractSubprocessStarter {
         addProcessClassName(parentProcess, runCmd, cd);
     }
 
+    protected void doPostStartupSteps() throws Exception {
+        // Nothing to to
+    }
+
     /**
      * Get the class name for the subprocess. Looks up the sfProcessClass
      * attribute out of the current target
@@ -36,7 +40,7 @@ public class PlainJVMSubprocessStarterImpl extends AbstractSubprocessStarter {
      * @param cd  component description with extra process configuration (ex. sfProcessClass)
      * @throws Exception failed to construct classname
      */
-    protected void addProcessClassName(ProcessCompound parentProcess, List cmd, ComponentDescription cd) throws Exception {
+    private void addProcessClassName(ProcessCompound parentProcess, List cmd, ComponentDescription cd) throws Exception {
         String pClass = (String) cd.sfResolveHere(SmartFrogCoreKeys.SF_PROCESS_CLASS, false);
         if (pClass == null) {
             pClass = (String) parentProcess.sfResolveHere(SmartFrogCoreKeys.SF_PROCESS_CLASS);
@@ -94,7 +98,7 @@ public class PlainJVMSubprocessStarterImpl extends AbstractSubprocessStarter {
      * @throws Exception failed to construct classpath
      */
     //@todo document how new classpath works for subProcesses.
-    protected void addProcessSFCodeBase(ProcessCompound parentProcess, List cmd, Object name, ComponentDescription cd) throws Exception {
+    private void addProcessSFCodeBase(ProcessCompound parentProcess, List cmd, Object name, ComponentDescription cd) throws Exception {
         String res = null;
         String replaceBoolKey = SmartFrogCoreKeys.SF_PROCESS_REPLACE_SF_CODEBASE;
         String attributeKey = SmartFrogCoreKeys.SF_PROCESS_SF_CODEBASE;
@@ -186,7 +190,7 @@ public class PlainJVMSubprocessStarterImpl extends AbstractSubprocessStarter {
      * @param cd  component description with extra process configuration (ex. sfProcessConfig)
      * @throws Exception failed to construct defines
      */
-    protected void addProcessEnvVars(List cmd, ComponentDescription cd)
+    private void addProcessEnvVars(List cmd, ComponentDescription cd)
             throws Exception
     {
         ComponentDescription sfProcessEnvVars = (ComponentDescription) cd.sfResolveHere(
@@ -226,7 +230,7 @@ public class PlainJVMSubprocessStarterImpl extends AbstractSubprocessStarter {
      * @param name name for subprocess
      * @throws Exception failed to construct defines
      */
-    protected void addProcessDefines(List cmd, Object name)
+    private void addProcessDefines(List cmd, Object name)
             throws Exception
     {
         Properties props = System.getProperties();

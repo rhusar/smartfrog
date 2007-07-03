@@ -947,7 +947,7 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
      *
      * @exception Exception failed to deploy new naming compound
      */
-    protected ProcessCompound addNewProcessCompound(Object name, ComponentDescription cd)
+    private ProcessCompound addNewProcessCompound(Object name, ComponentDescription cd)
         throws Exception {
 
         if (! isProcessCreationAllowed()) {
