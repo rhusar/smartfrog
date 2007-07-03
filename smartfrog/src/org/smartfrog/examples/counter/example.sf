@@ -50,9 +50,13 @@ sfConfig extends Counter {
          sfProcessName "fooProcess";
 
          equinoxConsolePort 1234;
-         smartFrogBundleLocation "file:/home/olivier/Dev/equinox/plugins/sf-daemon-bundle-3.11.001beta.jar";
+         //smartFrogBundleLocation "file:/home/olivier/Dev/equinox/plugins/sf-daemon-bundle-3.11.001beta.jar";
          smartFrogExtensionBundleLocation "file:/home/olivier/Dev/equinox/plugins/sf-rmi-spi-bundle-3.11.001beta.jar"; 
          equinoxJarFile "/home/olivier/Dev/equinox/plugins/org.eclipse.osgi_3.2.2.R32x_v20070118.jar";
+         logBundleLocation "file:/home/olivier/Dev/equinox/plugins/org.eclipse.equinox.log_1.0.1.R32x_v20060717.jar";
+         servicesBundleLocation "file:/home/olivier/Dev/equinox/plugins/org.eclipse.osgi.services_3.1.100.v20060601.jar";
+         declarativeServicesBundleLocation "file:/home/olivier/Dev/equinox/plugins/org.eclipse.equinox.ds_1.0.0.v20060601a.jar";
+
          equinoxConfigurationArea "/tmp/equinoxtest/";
 };
 

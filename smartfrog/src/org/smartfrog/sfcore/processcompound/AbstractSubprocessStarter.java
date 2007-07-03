@@ -1,23 +1,22 @@
 package org.smartfrog.sfcore.processcompound;
 
-import org.smartfrog.sfcore.componentdescription.ComponentDescription;
-import org.smartfrog.sfcore.componentdescription.ComponentDescriptionImpl;
+import org.smartfrog.sfcore.common.ContextImpl;
 import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
 import org.smartfrog.sfcore.common.SmartFrogCoreProperty;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
-import org.smartfrog.sfcore.common.ContextImpl;
+import org.smartfrog.sfcore.componentdescription.ComponentDescription;
+import org.smartfrog.sfcore.componentdescription.ComponentDescriptionImpl;
 import org.smartfrog.sfcore.logging.Log;
 import org.smartfrog.sfcore.logging.LogFactory;
 
-import java.util.List;
 import java.util.Collection;
-import java.util.Vector;
 import java.util.Iterator;
-import java.io.IOException;
+import java.util.List;
+import java.util.Vector;
 
 public abstract class AbstractSubprocessStarter implements SubprocessStarter {
     private final Log sfLog = LogFactory.sfGetProcessLog();
-
+    
     /**
      * Gets the process java start command. Looks up the sfProcessJava
      * attribute. sfProcessJava could be a String or a Collection
@@ -71,24 +70,41 @@ public abstract class AbstractSubprocessStarter implements SubprocessStarter {
             sfLog.trace("startProcess[" + name + "].runCmd: " + runCmd.toString());
 
         Process subprocess;
-        try {
-            //noinspection CallToRuntimeExec
-            subprocess = Runtime.getRuntime().exec(runCmdArray);
-        } catch (IOException e) {
-            if (sfLog.isDebugEnabled()) sfLog.debug("Could not start subprocess", e);
-            throw e;
-        }
+
+        //noinspection CallToRuntimeExec
+        subprocess = Runtime.getRuntime().exec(runCmdArray);
+
+        if (subprocess != null)
+            startStreamGobblerThreads(subprocess, name);
+        
         doPostStartupSteps();
         return subprocess;
     }
 
     protected abstract void doPostStartupSteps() throws Exception;
 
+    
     protected abstract void addParameters
             (ProcessCompound parentProcess, List runCmd, String name, ComponentDescription cd)
             throws Exception;
 
-    
+
+    private synchronized void startStreamGobblerThreads(Process process, Object name) {
+        // Two gobblers will redirect the System.out and System.err to
+        // the System.out of the any error message.
+        StreamGobbler errorGobbler = new StreamGobbler(process.getErrorStream(), "err");
+        // any output?
+        StreamGobbler outputGobbler = new StreamGobbler(process.getInputStream(), "out");
+
+        // kick them off
+        errorGobbler.setName(name + ".errorGobbler");
+        outputGobbler.setName(name + ".outputGobbler");
+        errorGobbler.start();
+        outputGobbler.start();
+
+        // We forget about those threads, but it's fine because they stop by themselves
+        // when the subprocess is killed, and get garbage collected.
+    }
 
     /**
      * Constructs sequence of -D statements for the new sub-process by

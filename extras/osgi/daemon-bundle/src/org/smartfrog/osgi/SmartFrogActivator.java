@@ -1,20 +1,19 @@
 package org.smartfrog.osgi;
 
-import org.osgi.framework.Bundle;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.BundleException;
+import org.osgi.framework.*;
 import org.osgi.service.component.ComponentContext;
 import org.osgi.service.log.LogService;
 import org.smartfrog.SFSystem;
 import org.smartfrog.osgi.logging.LogServiceProxy;
 import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
 import org.smartfrog.sfcore.common.SmartFrogCoreProperty;
+import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.processcompound.ProcessCompound;
 import org.smartfrog.sfcore.processcompound.ShutdownHandler;
 
 import java.io.IOException;
-import java.util.Properties;
+import java.rmi.RemoteException;
 
 /** @noinspection PublicMethodNotExposedInInterface*/
 public class SmartFrogActivator {
@@ -40,7 +39,7 @@ public class SmartFrogActivator {
                     // has been created, it might call System.exit() as the shutdown handler
                     // has not been replaced yet.
                     rootProcess.replaceShutdownHandler(new ShutdownHandlerOSGi(bundle));
-                    rootProcess.sfAddAttribute(SmartFrogCoreKeys.SF_CORE_BUNDLE_CONTEXT, bundleContext);
+                    addBundleContextAttribute(bundleContext);
                     rootProcess.replaceSubprocessStarter(new EquinoxSubprocessStarterImpl());
 
                     logService.info("SmartFrog daemon running...");
@@ -61,6 +60,10 @@ public class SmartFrogActivator {
 
         startDaemon.setName("SmartFrog Daemon Startup Thread");
         startDaemon.start();
+    }
+
+    private void addBundleContextAttribute(BundleContext bundleContext) throws SmartFrogRuntimeException, RemoteException {
+        rootProcess.sfAddAttribute(SmartFrogCoreKeys.SF_CORE_BUNDLE_CONTEXT, new BundleContextWrapper(bundleContext));
     }
 
     private void loadProperties() throws IOException {
@@ -119,4 +122,5 @@ public class SmartFrogActivator {
             }
         }
     }
+
 }

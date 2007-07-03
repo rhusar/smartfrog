@@ -121,8 +121,6 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
      * been requested, but not yet ready
      */
     protected final Set processLocks = new HashSet();
-    private StreamGobbler errorGobbler;
-    private StreamGobbler outputGobbler;
 
     private ShutdownHandler shutdownHandler = new ShutdownHandler() {
         public void shutdown(ProcessCompound pc) {
@@ -498,6 +496,8 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
         if (sfIsRoot){
             try {
                 SFProcess.getRootLocator().unbindRootProcessCompound();
+                // TODO: Move to root locator, as this is RMI-specific
+                shutdownRMIRegistry(sfLog());
             } catch (Exception ex) {
                 sfLog().ignore(ex);
             }
@@ -517,15 +517,9 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
                 sfLog().ignore(thr);
             }
 
-            shutdownRMIRegistry(sfLog());
             SFSystem.cleanShutdown();
 
             shutdownHandler.shutdown(this);
-
-            // They shouldn't be stopped before not to loose output
-            // (including output from the shutdown handler).
-            outputGobbler.stopThread();
-            errorGobbler.stopThread();
         }
     }
 
@@ -973,9 +967,6 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
         // Start process
         Process process = subprocessStarter.startProcess(this, name.toString(), cd);
 
-        if (process != null)
-            startStreamGobblerThreads(process, name);
-
         try {
             // Wait for new compound to appear and try to return it
             ProcessCompound newPc = (ProcessCompound) sfResolveHereOrWait(name, timeout);
@@ -991,23 +982,9 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
         } catch (Exception ex) {
             // failed to find new compound. Destroy process and re-throw
             // exception
-            process.destroy();
+            //process.destroy();
             throw ex;
         }
-    }
-
-    private synchronized void startStreamGobblerThreads(Process process, Object name) {
-        // Two gobblers will redirect the System.out and System.err to
-        // the System.out of the any error message.
-        errorGobbler = new StreamGobbler(process.getErrorStream(), "err");
-        // any output?
-        outputGobbler = new StreamGobbler(process.getInputStream(), "out");
-
-        // kick them off
-        errorGobbler.setName(name + ".errorGobbler");
-        outputGobbler.setName(name + ".outputGobbler");
-        errorGobbler.start();
-        outputGobbler.start();
     }
 
     private boolean isProcessCreationAllowed() throws SmartFrogResolutionException {
