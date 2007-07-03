@@ -44,8 +44,8 @@ public class OptionSet {
 
     /** Usage string for SFSystem. */
     public String usage = "\n" +
-        " Usage: java -D... org.smartfrog.SFSystem [-a SFACT] [-f SFREF] [-e] [-d]\n" +
-        "    or: java -D... org.smartfrog.SFSystem -?\n";
+        " Usage: SFSystem [-a SFACT] [-f SFREF] [-e] [-d] [-headless]\n" +
+        "    or: SFSystem -?\n";
 
     /** Help string for SFSystem. */
     public String help = "\n" + Version.copyright() + " - v." +
@@ -94,6 +94,7 @@ public class OptionSet {
         "\n" +
         "    -e (exit): The daemon will terminate after finishing the deployment." + "\n" +
         "    -d (diagnostics): print information that might be helpful to diagnose or report problems." + "\n" +
+        "    -headless : The daemon will run in headless mode\n" +
         "";
 
 
@@ -121,6 +122,11 @@ public class OptionSet {
     public boolean diagnostics = false;
 
     /**
+     * was headless operation requested
+     */
+    public boolean headless = false;
+
+    /**
      * Creates an OptionSet from an array of arguments.
      *
      * @param args arguments to create from
@@ -133,8 +139,9 @@ public class OptionSet {
 
         while ((i < args.length) && (errorString == null)) {
             try {
-                if (args[i].charAt(0) == optionFlagIndicator) {
-                    switch (args[i].charAt(1)) {
+                String currentArg = args[i];
+                if (currentArg.charAt(0) == optionFlagIndicator) {
+                    switch (currentArg.charAt(1)) {
                     case '?':
                         errorString = "SFSystem help" + help;
                         exitCode = ExitCodes.EXIT_CODE_SUCCESS;
@@ -172,12 +179,19 @@ public class OptionSet {
                         diagnostics = true;
                         break;
 
+                    case 'h':
+                        //check for the full string
+                        if ("-headless".equals(currentArg)) {
+                            headless = true;
+                            break;
+                        }
+
                     default:
-                        errorString = "unknown option " + args[i].charAt(1);
+                        errorString = "unknown option " + currentArg.charAt(1);
                         exitCode = ExitCodes.EXIT_ERROR_CODE_BAD_ARGS;
                     }
                 } else {
-                    errorString = "illegal option format for option " + args[i];
+                    errorString = "illegal option format for option " + currentArg;
                     exitCode = ExitCodes.EXIT_ERROR_CODE_BAD_ARGS;
                 }
 
@@ -189,10 +203,7 @@ public class OptionSet {
                    errorString = "illegal format for options \n";
             	   errorString += e.getMessage() + "\n";
                 }
-                //Logger.logQuietly(e);
-                if (SFSystem.sfLog().isIgnoreEnabled()) {
-                  SFSystem.sfLog().ignore(e);
-                }
+              SFSystem.sfLog().ignore(e);
 
             }
         }
@@ -233,27 +244,20 @@ public class OptionSet {
                      }
                    }
                } catch (SmartFrogInitException ex){
-//                 Logger.logQuietly(ex);
                  if (SFSystem.sfLog().isIgnoreEnabled()) {
-                   SFSystem.sfLog().ignore(ex);
+                   SFSystem.sfLog().ignore("While reading in "+fileURL,ex);
                  }
 
                }
             }
         }  catch (Exception e) {
-//            Logger.log(e);
-          if (SFSystem.sfLog().isTraceEnabled()) {
             SFSystem.sfLog().trace(e);
-          }
-          throw SmartFrogException.forward(e);
+            throw SmartFrogException.forward(e);
         } finally {
             try {
                 file.close();
-            } catch (Exception ex){
-              //Logger.logQuietly(ex);
-              if (SFSystem.sfLog().isIgnoreEnabled()) {
+            } catch (Exception ex) {
                 SFSystem.sfLog().ignore(ex);
-              }
             }
         }
         return cfgDescriptors;

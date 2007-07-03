@@ -89,6 +89,7 @@ public class SFSystem implements MessageKeys {
      * root process. Will be null after termination.
      */
     private ProcessCompound rootProcess;
+    public static final String HEADLESS_MODE_MESSAGE = "Running in headless mode";
 
     /**
      * Entry point to get system properties. Works around a bug in some JVM's
@@ -372,11 +373,13 @@ public class SFSystem implements MessageKeys {
 
         OptionSet opts = new OptionSet(args);
 
-        showDiagnostics(opts);
+        maybeShowDiagnostics(opts);
 
         if (opts.errorString != null) {
             exitWith(opts.errorString, ExitCodes.EXIT_ERROR_CODE_GENERAL);
         }
+        //engage headless mode
+        maybeGoHeadless(opts);
         try {
             setRootProcess(runSmartFrog(opts.cfgDescriptors));
         } catch (SmartFrogException sfex) {
@@ -445,10 +448,10 @@ public class SFSystem implements MessageKeys {
     }
 
     /**
-     * Shows diagnostics report
+     * Shows diagnostics report if using {@link OptionSet#diagnostics} is true
      * @param opts OptionSet
      */
-    private void showDiagnostics(OptionSet opts) {
+    private void maybeShowDiagnostics(OptionSet opts) {
       if (opts.diagnostics){
         //org.smartfrog.sfcore.common.Diagnostics.doReport(System.out);
         StringBuffer report = new StringBuffer();
@@ -456,6 +459,18 @@ public class SFSystem implements MessageKeys {
         sfLog().out(report.toString());
       }
     }
+
+    /**
+     * Turn headless support on if requested, using {@link OptionSet#headless}
+     * @param opts the option set
+     */
+    private void maybeGoHeadless(OptionSet opts) {
+        if(opts.headless) {
+            sfLog().info(HEADLESS_MODE_MESSAGE);
+            System.setProperty("java.awt.headless", "true");
+        }
+    }
+
 
     /**
      * Prints StackTrace
