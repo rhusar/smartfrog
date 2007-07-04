@@ -1,0 +1,13 @@
+#include "org/smartfrog/sfcore/prim/prim.sf"
+
+PrimDeployer extends Prim {
+    sfClass "org.smartfrog.sfcore.prim.PrimDeployerImpl";
+}
+
+PrimHostDeployer extends Prim {
+    sfClass "org.smartfrog.sfcore.processcompound.PrimHostDeployerImpl";
+}
+
+PrimProcessDeployer extends Prim {
+    sfClass "org.smartfrog.sfcore.processcompound.PrimProcessDeployerImpl";
+}

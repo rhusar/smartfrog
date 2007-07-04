@@ -157,8 +157,14 @@ public interface SmartFrogCoreKeys {
      * Attribute that holds the class name for deployer.
      *
      * Value {@value}
+     * @deprecated Deployers are now Prims and should be referred to by using {@link this.SF_DEPLOYER}.
      */
     public final static String SF_DEPLOYER_CLASS ="sfDeployerClass";
+
+    /**
+     * Attribute that holds a LAZY reference to the deployer to be used.
+     */
+    public final static String SF_DEPLOYER = "sfDeployer";
 
     /**
      * Attribute that determines asynchronous or synchronous termination

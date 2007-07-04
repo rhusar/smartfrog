@@ -40,7 +40,7 @@ import java.util.Enumeration;
  * implements the ComponentDeployer interface.
  *
  */
-public class PrimDeployerImpl implements ComponentDeployer, MessageKeys {
+public class PrimDeployerImpl extends PrimImpl implements ComponentDeployer, MessageKeys {
 
     /** The target description to work off. */
     protected ComponentDescription target;
@@ -48,17 +48,13 @@ public class PrimDeployerImpl implements ComponentDeployer, MessageKeys {
     /** The factory used to get the component instance. */
     private PrimFactory primFactory;
 
-    /**
-     * Constructs a component deployer for given description.
-     *
-     * @param descr target description
-     */
-    public PrimDeployerImpl(ComponentDescription descr) {
-        target = descr;
-    }
 
     public void setComponentFactory(PrimFactory primFactory) {
         this.primFactory = primFactory;
+    }
+
+    public void setTargetComponentDescription(ComponentDescription target) {
+        this.target = target;
     }
 
     /**
@@ -167,6 +163,7 @@ public class PrimDeployerImpl implements ComponentDeployer, MessageKeys {
      *
      * @return class for target
      * @throws Exception failed to load class
+     * @deprecated This is now in OldAlgorithmPrimFactory
      */
     protected Class getPrimClass() throws SmartFrogResolutionException, SmartFrogDeploymentException {
         String targetCodeBase = null;

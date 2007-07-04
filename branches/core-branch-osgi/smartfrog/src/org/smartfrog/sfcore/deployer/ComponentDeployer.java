@@ -24,13 +24,11 @@ import org.smartfrog.sfcore.common.Context;
 import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.reference.Reference;
+import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 
 /**
- * Deploys a new {@link Prim} in the component hierarchy, delegating object creation to a {@link PrimFactory}.
- * Implementations are used to deploy a single Prim, and are discarded afterwards.
- * Thus they must have a public, one-argument constructor that takes the Prim's {@link org.smartfrog.sfcore.componentdescription.ComponentDescription}. 
+ * Deploys a new {@link Prim} in the component hierarchy, delegating object creation to a {@link PrimFactory}. 
  */
-// TODO: Look into reusing instances - it must be pretty bad to create loads of these during deployment !
 public interface ComponentDeployer {
     /**
      * Deploys description for which this deployer was created.
@@ -51,4 +49,10 @@ public interface ComponentDeployer {
      * @param primFactory The factory to be used to create component instances.
      */
     void setComponentFactory(PrimFactory primFactory);
+
+    /**
+     * Passes the deployment target. Always called before {@link this.deploy()}.
+     * @param target Description of the component to be deployed.
+     */
+    void setTargetComponentDescription(ComponentDescription target);
 }

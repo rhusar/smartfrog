@@ -20,21 +20,12 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.sfcore.deployer;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-
-import org.smartfrog.sfcore.common.Context;
-import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
-import org.smartfrog.sfcore.common.MessageKeys;
-import org.smartfrog.sfcore.common.MessageUtil;
-import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.sfcore.common.SmartFrogResolutionException;
-import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
+import org.smartfrog.sfcore.common.*;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
+import org.smartfrog.sfcore.logging.LogFactory;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.reference.Reference;
-import org.smartfrog.sfcore.security.SFClassLoader;
-import org.smartfrog.sfcore.logging.LogFactory;
+import org.smartfrog.sfcore.processcompound.PrimProcessDeployerImpl;
 
 
 /**
@@ -43,11 +34,9 @@ import org.smartfrog.sfcore.logging.LogFactory;
  * as part of the component description that is to be deployed.
  */
 public class SFDeployer implements MessageKeys {
-    /**
-     * Name of default deployer.
-     */
-    private static final String DEFAULT_DEPLOYER =
-            "org.smartfrog.sfcore.processcompound.PrimProcessDeployerImpl";
+
+    private static ComponentDeployer defaultComponentDeployer = new PrimProcessDeployerImpl();
+    private static PrimFactory defaultPrimFactory = new OldAlgorithmPrimFactory();
 
     /**
      * Deploy description. Constructs the real deployer using getDeployer
@@ -97,43 +86,21 @@ public class SFDeployer implements MessageKeys {
      * @throws SmartFrogException failed to construct target deployer
      * @see org.smartfrog.sfcore.processcompound.PrimProcessDeployerImpl
      */
-    private static ComponentDeployer getDeployer(ComponentDescription component) throws SmartFrogException {
-        String className = (String) component.sfResolveHere(SmartFrogCoreKeys.SF_DEPLOYER_CLASS,false);
+    private static ComponentDeployer getDeployer(ComponentDescription component)
+            throws SmartFrogResolutionException
+    {
 
-        if (className == null) className = DEFAULT_DEPLOYER;        
-
+        ComponentDeployer deployer;
         try {
-
-            // TODO: Turn Deployers into full-blown Prims
-            Class deplClass = SFClassLoader.forName(className);
-            Class[] deplConstArgsTypes = { ComponentDescription.class };
-            Constructor deplConst = deplClass.getConstructor(deplConstArgsTypes);
-            Object[] deplConstArgs = { component };
-
-            ComponentDeployer deployer = (ComponentDeployer)
-                    deplConst.newInstance(deplConstArgs);
-            deployer.setComponentFactory(getComponentFactory(component));
-            return deployer;
-
-        } catch (NoSuchMethodException nsmetexcp) {
-            throw new SmartFrogDeploymentException(MessageUtil.formatMessage(
-                    MSG_METHOD_NOT_FOUND, className, "getConstructor()"),
-                nsmetexcp, null, component.sfContext());
-        } catch (ClassNotFoundException cnfexcp) {
-            throw new SmartFrogDeploymentException(MessageUtil.formatMessage(
-                    MSG_CLASS_NOT_FOUND, className), cnfexcp, null, component.sfContext());
-        } catch (InstantiationException instexcp) {
-            throw new SmartFrogDeploymentException(MessageUtil.formatMessage(
-                    MSG_INSTANTIATION_ERROR, className), instexcp, null, component.sfContext());
-        } catch (IllegalAccessException illaexcp) {
-            throw new SmartFrogDeploymentException(MessageUtil.formatMessage(
-                    MSG_ILLEGAL_ACCESS, className, "newInstance()"), illaexcp,
-                null, component.sfContext());
-        } catch (InvocationTargetException intarexcp) {
-            throw new SmartFrogDeploymentException(MessageUtil.formatMessage(
-                    MSG_INVOCATION_TARGET, className), intarexcp,
-                null, component.sfContext());
+            Reference deployerRef = (Reference) component.sfResolveHere(SmartFrogCoreKeys.SF_FACTORY);
+            deployer = (ComponentDeployer) component.sfResolve(deployerRef);
+        } catch (SmartFrogResolutionException e) {
+            LogFactory.sfGetProcessLog().ignore(e);
+            deployer = defaultDeployer();
         }
+
+        deployer.setComponentFactory(getComponentFactory(component));
+        return deployer;
     }
 
     private static PrimFactory getComponentFactory(ComponentDescription component)
@@ -159,6 +126,10 @@ public class SFDeployer implements MessageKeys {
     }
 
     private static PrimFactory defaultFactory() {
-        return new OldAlgorithmPrimFactory();
+        return defaultPrimFactory;
+    }
+
+    private static ComponentDeployer defaultDeployer() {
+        return defaultComponentDeployer;
     }
 }

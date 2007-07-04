@@ -110,16 +110,6 @@ public class DNSDeployerImpl extends PrimProcessDeployerImpl {
     public static final String SERVICE_TYPE_NAME = "serviceTypeName";
 
    /**
-     * Creates a new <code>DNSDeployerImpl</code> instance.
-     *
-     * @param descr a <code>ComponentDescription</code> value
-     */
-    public DNSDeployerImpl(ComponentDescription descr) {
-        super(descr);
-    }
-
-
-    /**
      * Adds the process locator info to a description. It should 
      * sign the sub-description if security is on.
      *
