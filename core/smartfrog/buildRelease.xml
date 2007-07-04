@@ -84,12 +84,6 @@
     <echo message="            - Generate PDF: sfReference.pdf"/>
     <echo message="            - Generate PDF: sfUserManual.pdf"/>
     <echo message=" "/>
-    <echo message="  3. Tag cvs with new version using: "/>
-    <echo message="         Ex. cvs tag release3_01_003_alpha "/>
-    <echo message=" "/>
-    <echo message="  4. Clean checkout with tag: "/>
-    <echo message="         Ex. cvs checkout -r release3_02_000_alpha core"/>
-    <echo message=" "/>
     <echo message="  5. Build new release: "/>
     <echo message="         Go to fresh module directory and run:"/>
     <echo message="             ant release "/>
@@ -102,12 +96,7 @@
     <echo message="         Ex. BIN distribution: 'dist\build.xml build'  "/>
     <echo message="                               'dist\build.xml jdocs'"/>
     <echo message=" "/>
-    <echo message="  8. Upload files to web site."/>
-    <echo message=" "/>
-    <echo message="  Note: to retag something add move tag parameter:"/>
-    <echo message="         Ex. cvs tag -F release3_01_001_alpha buildRelease.xml"/>
-    <echo message="        to remove tag something add move tag parameter:"/>
-    <echo message="         Ex. cvs tag -d release3_01_001_alpha buildRelease.xml"/>
+
     <echo message="-------------------------------------------------------------"/>
     <echo message=""/>
   </target>
@@ -309,11 +298,11 @@
     <mkdir dir="${release.dir}" />
     <mkdir dir="${release.unzip.dir}" />
 
-    <property name="dist.zip" location="${release.dir}/${prefix}.${DSTAMP}_dist.zip"/>
-    <property name="all.zip" location="${release.dir}/${prefix}.${DSTAMP}_all.zip"/>
-    <property name="dist.tar" location="${release.dir}/${prefix}.${DSTAMP}_dist.tar"/>
+    <property name="dist.zip" location="${release.dir}/${prefix}_dist.zip"/>
+    <property name="all.zip" location="${release.dir}/${prefix}_all.zip"/>
+    <property name="dist.tar" location="${release.dir}/${prefix}_dist.tar"/>
     <property name="dist.tar.gz" location="${dist.tar}.gz"/>
-    <property name="all.tar" location="${release.dir}/${prefix}.${DSTAMP}_all.tar"/>
+    <property name="all.tar" location="${release.dir}/${prefix}_all.tar"/>
     <property name="all.tar.gz" location="${all.tar}.gz"/>
 
   </target>
