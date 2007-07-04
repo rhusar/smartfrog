@@ -12,6 +12,7 @@ import java.io.FileReader;
 import java.io.StreamTokenizer;
 import java.io.BufferedWriter;
 import java.io.OutputStreamWriter;
+import java.util.Properties;
 
 /** Instantiates a meta-template with the customization that our
  * experimental setting requires, e.g., the names and number of
@@ -37,12 +38,13 @@ public class RemoteTemplateGen {
   Vector allDaemons;
 
   String installDir = null;
+  String sharedDir = null;
   
   char optionFlagIndicator = '-';
 
   public final String usage =   "\n" +
     "Usage: java org.smartfrog.tools.testharness.templateGen.TemplateGen " +
-    "-t <templateFile> -h <hostsFile> -o <outputfile> -d <installDir>";
+    "-t <templateFile> -h <hostsFile> -o <outputfile> -d <installDir> -s <sharedDir>";
 
   
   /**
@@ -132,10 +134,13 @@ public class RemoteTemplateGen {
       BufferedWriter writer =
               new BufferedWriter(new OutputStreamWriter(out));
       try {
-          Velocity.init();
+		Properties p = new Properties();
+		p.setProperty("file.resource.loader.path", "/");
+          Velocity.init(p);
           VelocityContext context = new VelocityContext();
           context.put("allDaemons", allDaemons);
           context.put("installDir", installDir);
+          context.put("sharedDir", sharedDir);
           template = Velocity.getTemplate(templateFileName);
           if (template != null) {
               template.merge(context, writer);
@@ -171,6 +176,9 @@ public class RemoteTemplateGen {
                             break;
                         case'd':
                             installDir = args[++i];
+                            break;
+                        case's':
+                            sharedDir = args[++i];
                             break;
                         case'o':
                             outputFileName = args[++i];
