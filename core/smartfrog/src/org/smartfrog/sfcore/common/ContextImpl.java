@@ -314,7 +314,7 @@ public class ContextImpl extends OrderedHashtable implements Context, Serializab
     *          the attribute does not exist;
     */
    public synchronized Set sfGetTags(Object name) throws SmartFrogContextException {
-      if (!containsKey(name))
+      if ( name==null || !containsKey(name))
          throw new SmartFrogContextException("Attribute " + name + " does not exists for getting tags");
       if (attributeTags.containsKey(name)) { // return a copy
          Set s = new HashSet();
