@@ -36,11 +36,11 @@
 
 
   <!-- override point -->
-  <property file="setup.properties"/>
   <property environment="env"/>
+  <property file="setup.properties"/>
   <property name="root.dir" location=".."/>
   <property name="avalanche.home" location="${root.dir}/server"/>
-  <property name="build.classes.dir" location="build"/>
+  <property name="build.classes.dir" location="build/classes"/>
   <property name="lib" location="lib"/>
   
   <import file="build.xml"/>
@@ -99,8 +99,9 @@
 	 This should not be part of production environment
 	 -->		
 	<target name="setupBDB" depends="setupAvalancheHome">
-		<java classname="tests.org.smartfrog.avalanche.server.SetupBDB">
-			<arg line="${avalanche.home}"/>
+		<java classname="org.smartfrog.avalanche.util.SetupBDB"
+                failonerror="true">
+			<arg value="${avalanche.home}"/>
 			<classpath refid="avalanche-core.class.path"/>
 			<!--classpath location="${build.classes.dir}"/-->
 		</java>
