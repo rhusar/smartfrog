@@ -27,9 +27,6 @@ import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.processcompound.PrimProcessDeployerImpl;
 import org.smartfrog.sfcore.reference.Reference;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-
 
 /**
  * Access point to the deployer infrastructure. At this point,
