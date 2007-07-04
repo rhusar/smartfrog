@@ -33,6 +33,7 @@ public class EquinoxSubprocessStarterImpl extends AbstractSubprocessStarter {
 
 
     protected void addParameters(ProcessCompound parentProcess, List runCmd, String name, ComponentDescription cd) throws Exception {
+        // Equinox startup options:
         // http://help.eclipse.org/help32/index.jsp?topic=/org.eclipse.platform.doc.isv/reference/misc/runtime-options.html
 
         consolePort = (Integer) cd.sfResolveHere(EQUINOX_CONSOLE_PORT);
@@ -68,12 +69,15 @@ public class EquinoxSubprocessStarterImpl extends AbstractSubprocessStarter {
 
             socket = new Socket("localhost", consolePort.intValue());
             writer = new PrintWriter(socket.getOutputStream());
+
             writer.println("install " + servicesBundleLocation);
+            writer.println("start 1");
             writer.println("install " + logBundleLocation);
             writer.println("start 2");
             writer.println("install " + dsBundleLocation);
             writer.println("start 3");
             writer.println("install " + smartFrogExtBundleLocation);
+            // Extension bundles cannot be started
             writer.println("install " + smartFrogBundleLocation);
             writer.println("start 5");
         } finally {

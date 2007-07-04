@@ -7,6 +7,7 @@ import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.logging.Log;
 import org.smartfrog.sfcore.logging.LogLevel;
 
+/** @noinspection ClassWithTooManyMethods*/
 public class LogToOSGiLogServiceImpl implements Log, LogLevel {
 
     private int logLevel;

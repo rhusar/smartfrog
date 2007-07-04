@@ -83,17 +83,17 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
     MessageKeys {
 
     /** A number used to generate a unique ID for registration */
-    public  static long registrationNumber = 0;
+    public static long registrationNumber = 0;
 
     /** Name of this processcompound. If one is present it is a subprocess. */
-    protected String sfProcessName = null;
+    private String sfProcessName = null;
 
     /**
      * Whether the process is a Root (whether is starts and registers with a
      * registry). Default is not. set using property
      * org.smartfrog.sfcore.processcompound.sfProcessName="rootProcess"
      */
-    protected boolean sfIsRoot = false;
+    private boolean sfIsRoot = false;
 
     /**
      * Whether the ProcessCompound should shutdown the SmartFrog daemon
@@ -111,19 +111,19 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
      * of pings for which it should be consecutively with no components for
      * the process to be GCed. If this is set to 0, the GC is disabled.
      */
-    protected int gcTimeout = -1;
+    private int gcTimeout = -1;
     /** The countdown to check the gcTimeout. */
-    protected int countdown = 0;
+    private int countdown = 0;
 
 
     /**
      * A set that contains the names of the sub-processes that have
      * been requested, but not yet ready
      */
-    protected final Set processLocks = new HashSet();
+    private final Set processLocks = new HashSet();
 
     private ShutdownHandler shutdownHandler = new ShutdownHandler() {
-        public void shutdown(ProcessCompound pc) {
+        public void shutdown(ProcessCompound processCompound) {
             ExitCodes.exitWithError(ExitCodes.EXIT_CODE_SUCCESS);
         }
     };
