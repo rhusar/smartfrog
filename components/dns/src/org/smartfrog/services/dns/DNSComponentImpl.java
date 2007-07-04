@@ -97,8 +97,9 @@ public abstract class DNSComponentImpl extends ComponentDescriptionImpl
         throws SmartFrogDeploymentException {
 
         // we could make the deployer customizable here...
-        return new DNSComponentDeployerImpl(component).
-            deployComponent(parentComponent);
+        DNSComponentDeployerImpl dnsComponentDeployer = new DNSComponentDeployerImpl();
+        dnsComponentDeployer.setTargetComponentDescription(component);
+        return dnsComponentDeployer.deployComponent(parentComponent);
     }
 
     /**
