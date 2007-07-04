@@ -120,21 +120,13 @@ public class SFDeployer implements MessageKeys {
             throws SmartFrogException
     {        
         try {
-
-            Class deplClass = Class.forName(className);
-            Class[] deplConstArgsTypes = {ComponentDescription.class};
-            Constructor deplConst = deplClass.getConstructor(deplConstArgsTypes);
-            Object[] deplConstArgs = {component};
-
+            
             ComponentDeployer deployer = (ComponentDeployer)
-                    deplConst.newInstance(deplConstArgs);
+                    Class.forName(className).newInstance();
             deployer.setComponentFactory(getComponentFactory(component));
+            deployer.setTargetComponentDescription(component);
             return deployer;
 
-        } catch (NoSuchMethodException nsmetexcp) {
-            throw new SmartFrogDeploymentException(MessageUtil.formatMessage(
-                    MSG_METHOD_NOT_FOUND, className, "getConstructor()"),
-                    nsmetexcp, null, component.sfContext());
         } catch (ClassNotFoundException cnfexcp) {
             throw new SmartFrogDeploymentException(MessageUtil.formatMessage(
                     MSG_CLASS_NOT_FOUND, className), cnfexcp, null, component.sfContext());
@@ -144,10 +136,6 @@ public class SFDeployer implements MessageKeys {
         } catch (IllegalAccessException illaexcp) {
             throw new SmartFrogDeploymentException(MessageUtil.formatMessage(
                     MSG_ILLEGAL_ACCESS, className, "newInstance()"), illaexcp,
-                    null, component.sfContext());
-        } catch (InvocationTargetException intarexcp) {
-            throw new SmartFrogDeploymentException(MessageUtil.formatMessage(
-                    MSG_INVOCATION_TARGET, className), intarexcp,
                     null, component.sfContext());
         }
     }
