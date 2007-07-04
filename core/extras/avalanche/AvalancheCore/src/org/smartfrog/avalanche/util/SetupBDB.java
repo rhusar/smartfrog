@@ -11,7 +11,6 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.avalanche.util;
 
-import org.smartfrog.avalanche.core.activeHostProfile.ActiveProfileType;
 import org.smartfrog.avalanche.server.AvalancheFactory;
 import org.smartfrog.avalanche.settings.xdefault.SettingsDocument;
 import org.smartfrog.avalanche.util.XMLUtils;
@@ -41,15 +40,31 @@ public class SetupBDB {
 
 	// **MUST** Set AVALANCHE_HOME on the server.
 	//String avalancheHome = "/home/grid/avalanche-test"; // "/Users/sanjaydahiya/dev/data/avalanche"
-	static String avalancheHome = null;
+	private String avalancheHome = null;
 	//static String avalancheServerOS = null;
 
 	// settings file to load data from, it can be changed to any location.
 	// ** Make Sure This File is Present**
-	String settingsFile = avalancheHome + File.separator + "conf"
-			+ File.separator + "initsettings.xml";
+	private String settingsFile;
 
-	/**
+
+    public SetupBDB(String avalancheHome) {
+        this.avalancheHome = avalancheHome;
+        settingsFile = avalancheHome + File.separator + "conf"
+                    + File.separator + "initsettings.xml";
+
+    }
+
+
+    public String getAvalancheHome() {
+        return avalancheHome;
+    }
+
+    public String getSettingsFile() {
+        return settingsFile;
+    }
+
+    /**
 	 * Loads initsettings.xml in Avalanche Server database. This file is present
 	 * in the development environment but need not be there in the production
 	 * environment. The database which goes along with the distribution contains
@@ -77,9 +92,32 @@ public void setup() throws Exception{
 	 * @param args
 	 */
 	public static void main(String[] args) throws Exception {
-		avalancheHome = args[0];
+		if(args.length<1) {
+            exit("Usage SetupDBD avalanche_home_dir");
+        }
 		//avalancheServerOS = args[1];
-		(new SetupBDB()).setup();
-	}
+        String dir = args[0];
+        File f=new File(dir);
+        if(!f.exists() ) {
+            exit("Not foumd: "+dir);
+        }
+        if(!f.isDirectory()) {
+            exit("Not a directory: "+dir);
+        }
+        SetupBDB bdb=null;
+        try {
+            bdb = new SetupBDB(dir);
+            bdb.setup();
+        } catch (Exception e) {
+            System.err.print("Could not open "+
+                    bdb!=null?bdb.getSettingsFile():dir);
+            e.printStackTrace();
+        }
+    }
+
+    private static void exit(String message) {
+        System.err.println(message);
+        System.exit(-1);
+    }
 
 }
