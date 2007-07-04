@@ -423,19 +423,20 @@ For more information: www.smartfrog.org
         </fileset>
         <fileset dir="extras" includes="**/build.xml">
           <!--no CDL -->
-          <exclude name="cdl/build.xml"/>
+          <exclude name="cdl/build.xml" unless="cdl.enabled"/>
           <!--not ready for ivy builds yet-->
-          <exclude name="sfgui/build.xml" />
+          <exclude name="sfgui/build.xml" unless="sfgui.enabled"/>
+          <exclude name="extras/avalanche/**/build.xml" unless="avalanche.enabled"/>
         </fileset>
         <fileset dir="components" includes="**/build.xml" >
           <!--no cddlm here-->
-          <exclude name="deployapi/build.xml"/>
+          <exclude name="deployapi/build.xml" unless="deployapi.enabled"/>
           <!--not really that useful-->
           <exclude name="releasetest/build.xml"/>
           <!--cargo support is on hold until 3.12-->
-          <exclude name="cargo/build.xml"/>
+          <exclude name="cargo/build.xml" unless="cargo.enabled"/>
           <!--lacks the artifacts to compile-->
-          <exclude name="constraints/build.xml"/>
+          <exclude name="constraints/build.xml" unless="constraints.enabled"/>
           <!--These need java 1.5 or later-->
           <exclude name="database/build.xml" unless="java1.5+"/>
           <exclude name="junit/build.xml" unless="java1.5+"/>
