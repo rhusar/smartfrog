@@ -5,20 +5,28 @@ import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.prim.Prim;
 
+import java.io.InputStream;
+
 /**
  * The component factory that should be used for framework components.
  * Those come from the same classloader as this class.
  */
-public class FrameworkClassLoadingEnvironmentImpl extends AbstractPrimFactoryUsingClassLoader {
+public class CoreClassesClassLoadingEnvironment extends AbstractClassLoadingEnvironment {
 
-    public FrameworkClassLoadingEnvironmentImpl() {}
+    public CoreClassesClassLoadingEnvironment() {}
 
     protected Prim getComponentImpl(ComponentDescription askedFor) throws SmartFrogResolutionException,
             ClassNotFoundException, InstantiationException, IllegalAccessException
     {
         String className = (String) askedFor.sfResolveHere(SmartFrogCoreKeys.SF_CLASS);
-        Class primClass = Class.forName(className);
-        return (Prim) primClass.newInstance();
+        return (Prim) newInstance(className);
     }
 
+    protected Object newInstance(String className) throws ClassNotFoundException, InstantiationException, IllegalAccessException {
+        return Class.forName(className).newInstance();
+    }
+
+    public InputStream getComponentDescription(String pathname) {
+        return getClass().getResourceAsStream(pathname);
+    }
 }

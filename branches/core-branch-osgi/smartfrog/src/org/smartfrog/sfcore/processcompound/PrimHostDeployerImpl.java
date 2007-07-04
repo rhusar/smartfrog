@@ -20,18 +20,16 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.sfcore.processcompound;
 
-import java.net.InetAddress;
-
 import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
 import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
-import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimDeployerImpl;
 import org.smartfrog.sfcore.reference.Reference;
-
-import org.smartfrog.sfcore.logging.LogFactory;
 import org.smartfrog.sfcore.logging.LogSF;
+import org.smartfrog.sfcore.logging.LogFactory;
+
+import java.net.InetAddress;
 
 /**
  * Implements a specialized description deployer. This deployer uses the
@@ -44,9 +42,6 @@ import org.smartfrog.sfcore.logging.LogSF;
  *
  */
 public class PrimHostDeployerImpl extends PrimDeployerImpl {
-
-    /** ProcessLog. This log is used to log into the core log: SF_CORE_LOG */
-    private LogSF  sflog = LogFactory.sfGetProcessLog();
 
     /** Efficiency holder of sfProcessHost attribute. */
     protected static final Reference refProcessHost =
@@ -129,9 +124,13 @@ public class PrimHostDeployerImpl extends PrimDeployerImpl {
             } else {
                 return pc.sfDeployComponentDescription(null, parent, target, null);
             }
-        }catch (Exception ex){
-            if (sflog.isErrorEnabled()) sflog.error(ex);
+        } catch (Exception ex){
+            sfLog().error(ex);
             throw (SmartFrogDeploymentException)SmartFrogDeploymentException.forward("PrimHostDeployerImpl.deploy",ex);
         }
+    }
+
+    private LogSF sfLog() {
+        return LogFactory.sfGetProcessLog();
     }
 }

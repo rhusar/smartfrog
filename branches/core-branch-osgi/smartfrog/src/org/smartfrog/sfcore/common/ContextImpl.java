@@ -34,7 +34,7 @@ import java.io.*;
  */
 public class ContextImpl extends OrderedHashtable implements Context, Serializable, PrettyPrinting, Copying {
 
-   Map attributeTags = new HashMap();
+    private Map attributeTags = new HashMap();
 
    /**
      * Creates an empty context with default capacity.
@@ -187,19 +187,17 @@ public class ContextImpl extends OrderedHashtable implements Context, Serializab
       */
      public synchronized Object sfAddAttribute(Object name, Object value)
          throws SmartFrogContextException{
-         if ((name == null) || (value == null)) {
+
+       if ((name == null) || (value == null)) {
            if (name == null) {
                throw new SmartFrogContextException(
                MessageUtil.formatMessage(MessageKeys.MSG_NULL_DEF_METHOD, "'name'",
                                          "sfAddAttribute") );
-           }
-           if (value == null) {
+           } else { // value == null
                throw new SmartFrogContextException(
                MessageUtil.formatMessage(MessageKeys.MSG_NULL_DEF_METHOD, "'value'",
                                          "sfAddAttribute name:'"+name+"'"));
            }
-
-             return null;
          }
 
          if (this.containsKey(name)) {

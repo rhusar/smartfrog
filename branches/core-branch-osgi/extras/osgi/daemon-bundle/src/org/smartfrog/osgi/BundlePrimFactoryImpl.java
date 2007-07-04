@@ -7,14 +7,17 @@ import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
-import org.smartfrog.sfcore.deployer.AbstractPrimFactoryUsingClassLoader;
+import org.smartfrog.sfcore.deployer.AbstractClassLoadingEnvironment;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 
 import java.rmi.RemoteException;
+import java.io.InputStream;
+import java.io.IOException;
+import java.net.URL;
 
 
-public class BundlePrimFactoryImpl extends AbstractPrimFactoryUsingClassLoader {
+public class BundlePrimFactoryImpl extends AbstractClassLoadingEnvironment {
     public static final String LOCATION_ATTRIBUTE = "location";
     private Bundle hostBundle = null;
 
@@ -46,7 +49,7 @@ public class BundlePrimFactoryImpl extends AbstractPrimFactoryUsingClassLoader {
         }
     }
 
-    public void sfTerminateWith(TerminationRecord status) {
+    protected void sfTerminateWith(TerminationRecord status) {
         try {
             hostBundle.uninstall();
         } catch (BundleException e) {
@@ -65,4 +68,16 @@ public class BundlePrimFactoryImpl extends AbstractPrimFactoryUsingClassLoader {
         return (Prim) primClass.newInstance();
     }
 
+    protected Object newInstance(String className) throws ClassNotFoundException, InstantiationException, IllegalAccessException {
+        return hostBundle.loadClass(className).newInstance();
+    }
+
+    public InputStream getComponentDescription(String pathname) {
+        URL url = hostBundle.getResource(pathname);
+        try {
+            return url != null ? url.openStream() : null;
+        } catch (IOException e) {
+            return null;
+        }
+    }
 }

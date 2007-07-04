@@ -105,7 +105,7 @@ public class SFApplyReference extends SFReference implements ReferencePhases {
         //     and invoke function with copy of CD, return result
 
         Context forFunction = new ContextImpl();
-        String functionClass = null;
+        String functionClass;
         Object result;
         boolean isLazy = false;
 

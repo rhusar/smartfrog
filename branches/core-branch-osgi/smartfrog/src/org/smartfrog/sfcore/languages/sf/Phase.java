@@ -39,7 +39,6 @@ import org.smartfrog.sfcore.languages.sf.sfcomponentdescription.SFComponentDescr
 public class Phase implements CDVisitor {
     /** The name of the phase. */
     protected String phaseName;
-    protected Stack path;
 
     /**
      * Construct a phase object for a specific named phase.
@@ -74,15 +73,8 @@ public class Phase implements CDVisitor {
             return p;
 
         } catch (Exception ex) {
-            String actionClass;
-            if (action!=null) {
-              actionClass = action.toString();
-            } else {
-              actionClass = "null";
-            }
-
             throw (SmartFrogResolutionException) SmartFrogResolutionException.forward(
-                    phaseName + " (" + actionClass + ", internal cause: " + ex.getMessage() + ")",
+                    phaseName + " (" + action + ", internal cause: " + ex.getMessage() + ")",
                     ex
             );
         }

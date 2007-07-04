@@ -1,21 +1,19 @@
 package org.smartfrog.sfcore.deployer;
 
-import org.smartfrog.sfcore.prim.Prim;
+import org.smartfrog.sfcore.common.*;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.componentdescription.ComponentDescriptionImpl;
-import org.smartfrog.sfcore.common.*;
-import org.smartfrog.sfcore.security.SFClassLoader;
-import org.smartfrog.sfcore.logging.LogSF;
-import org.smartfrog.sfcore.logging.LogFactory;
+import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.reference.Reference;
+import org.smartfrog.sfcore.security.SFClassLoader;
+
+import java.io.InputStream;
 
 /**
  * Implements the sfCodebase-aware component creation, as currently documented.
  * The code was originally in PrimImpl.
  */
-public class OldAlgorithmPrimFactory extends AbstractPrimFactoryUsingClassLoader {
-
-    private LogSF sfLog = LogFactory.sfGetProcessLog();
+public class OldAlgorithmPrimFactory extends AbstractClassLoadingEnvironment {
 
     /**
      * Efficiency holder of sfClass reference.
@@ -36,6 +34,10 @@ public class OldAlgorithmPrimFactory extends AbstractPrimFactoryUsingClassLoader
                    SmartFrogDeploymentException
     {
         return (Prim) getPrimClass(askedFor).newInstance();
+    }
+
+    protected Object newInstance(String className) throws ClassNotFoundException, InstantiationException, IllegalAccessException {
+        return SFClassLoader.forName(className).newInstance();
     }
 
 
@@ -85,7 +87,7 @@ public class OldAlgorithmPrimFactory extends AbstractPrimFactoryUsingClassLoader
                 cdInfo.sfAddAttribute(SmartFrogCoreProperty.sfProcessName,
                         System.getProperty(SmartFrogCoreProperty.sfProcessName));
             } catch (SmartFrogException sfex) {
-                if (sfLog.isDebugEnabled()) sfLog.debug("", sfex);
+                if (sfLog().isDebugEnabled()) sfLog().debug("", sfex);
             }
             throw new SmartFrogDeploymentException(refClass, null, name, target, null, "Class not found", cnfex, cdInfo);
         }
@@ -106,4 +108,8 @@ public class OldAlgorithmPrimFactory extends AbstractPrimFactoryUsingClassLoader
         }
     }
 
+
+    public InputStream getComponentDescription(String pathname) {
+        return SFClassLoader.getResourceAsStream(pathname);
+    }
 }

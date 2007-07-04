@@ -9,9 +9,9 @@ import java.io.InputStream;
 /**
  * A factory used to access user-provided resources needed at parse time.
  */
-public interface ParseTimeResourcesFactory {
-    Function getFunction(ComponentDescription cd);
-    PhaseAction getPhaseAction(ComponentDescription cd);
+public interface ParseTimeResourceFactory {
+    Function getFunction(String className) throws Exception;
+    PhaseAction getPhaseAction(String className) throws Exception;
     InputStream getComponentDescription(String pathname);
     // getConstraintSolver also someday 
 }
