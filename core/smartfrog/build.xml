@@ -727,13 +727,7 @@
 
   <target name="installed" depends="dist" description="install everything ready to run"/>
 
-
-
-  <!-- =================================================================== -->
-  <!-- define a macro to checksum a jar, then checksum all the output jars-->
-  <!-- =================================================================== -->
-  <target name="checksum-target-jar"
-    description="checksum our target jars" depends="jars">
+  <target name="sha1macro">
 
     <macrodef name="sha1">
       <attribute name="file"/>
@@ -742,6 +736,14 @@
         <checksum file="@{file}" algorithm="sha1"/>
       </sequential>
     </macrodef>
+
+  </target>
+
+  <!-- =================================================================== -->
+  <!-- define a macro to checksum a jar, then checksum all the output jars-->
+  <!-- =================================================================== -->
+  <target name="checksum-target-jar"
+    description="checksum our target jars" depends="jars,sha1macro">
 
     <sha1 file="${smartfrog.jar}" />
     <sha1 file="${sf-examples.jar}" />
@@ -810,13 +812,16 @@
 
 
    <!-- create POMs from templates held in the metadata dir -->
-   <target name="m2-pom" depends="m2-init" >
+   <target name="m2-pom" depends="m2-init,sha1macro" >
      <expandingcopy file="${metadata.dir}/smartfrog.pom"
        tofile="${smartfrog.pom}"/>
      <expandingcopy file="${metadata.dir}/sfServices.pom"
          tofile="${sf-services.pom}"/>
      <expandingcopy file="${metadata.dir}/sfExamples.pom"
          tofile="${sf-examples.pom}"/>
+     <sha1 file="${smartfrog.pom}" />
+     <sha1 file="${sf-services.pom}" />
+     <sha1 file="${sf-examples.pom}" />
    </target>
 
 
