@@ -291,7 +291,8 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
                 final Writer result = new StringWriter();
 			    PrintWriter printWriter = new PrintWriter(result);
 			    thr.printStackTrace(printWriter);
-                System.err.print("[FATAL] Stack trace: "+printWriter.toString());
+                printWriter.close();
+                System.err.print("[FATAL] Stack trace: "+result.toString());
             }
         }
         if ((localLog!=null)&&(localLog.isTraceEnabled())) {
