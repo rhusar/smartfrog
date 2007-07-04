@@ -4,6 +4,13 @@ import org.osgi.framework.ServiceReference;
 import org.osgi.service.log.LogService;
 
 public class LogServiceProxy implements LogService {
+    private static final LogServiceProxy instance = new LogServiceProxy();
+
+    public static LogServiceProxy getInstance() {
+        return instance;
+    }
+
+    private LogServiceProxy() {}
 
     private static class LogServiceFallback implements LogService {
 
