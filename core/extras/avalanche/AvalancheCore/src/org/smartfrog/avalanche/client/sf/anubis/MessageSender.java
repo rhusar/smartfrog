@@ -36,7 +36,7 @@ public class MessageSender {
 	
 	
 	public void init() throws Exception{
-        Properties p = new Properties(); 
+        Properties p = new Properties();
         p.put(Context.INITIAL_CONTEXT_FACTORY, 
              "org.mom4j.jndi.InitialCtxFactory"); 
         

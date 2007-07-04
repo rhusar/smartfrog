@@ -554,7 +554,7 @@ Display display= null;
 
 
  	public static void main(String []args) throws Exception{
-		String url = "/home/sanjay/dev/AttribTest1.sf" ;
+		String url = "D:\\programming\\java\\SmartFrog\\components\\quartz\\src\\org\\smartfrog\\services\\sfinterface\\test\\AttribTest1.sf" ;
 		Map map = SmartFrogAdapterImpl.getAllAttribute(url);
 		
 		Set s = map.keySet();
