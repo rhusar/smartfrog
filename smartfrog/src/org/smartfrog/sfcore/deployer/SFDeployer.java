@@ -24,8 +24,11 @@ import org.smartfrog.sfcore.common.*;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.logging.LogFactory;
 import org.smartfrog.sfcore.prim.Prim;
-import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.processcompound.PrimProcessDeployerImpl;
+import org.smartfrog.sfcore.reference.Reference;
+
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 
 
 /**
@@ -87,9 +90,18 @@ public class SFDeployer implements MessageKeys {
      * @see org.smartfrog.sfcore.processcompound.PrimProcessDeployerImpl
      */
     private static ComponentDeployer getDeployer(ComponentDescription component)
+            throws SmartFrogException
+    {
+        String className = (String) component.sfResolveHere(SmartFrogCoreKeys.SF_DEPLOYER_CLASS, false);
+        if (className != null)
+            return oldDeployerSyntax(className, component);        
+        else
+            return newDeployerSyntax(component);
+    }
+
+    private static ComponentDeployer newDeployerSyntax(ComponentDescription component)
             throws SmartFrogResolutionException
     {
-
         ComponentDeployer deployer;
         try {
             Reference deployerRef = (Reference) component.sfResolveHere(SmartFrogCoreKeys.SF_FACTORY);
@@ -102,6 +114,42 @@ public class SFDeployer implements MessageKeys {
         deployer.setTargetComponentDescription(component);
         deployer.setComponentFactory(getComponentFactory(component));
         return deployer;
+    }
+
+    private static ComponentDeployer oldDeployerSyntax(String className, ComponentDescription component)
+            throws SmartFrogException
+    {        
+        try {
+
+            Class deplClass = Class.forName(className);
+            Class[] deplConstArgsTypes = {ComponentDescription.class};
+            Constructor deplConst = deplClass.getConstructor(deplConstArgsTypes);
+            Object[] deplConstArgs = {component};
+
+            ComponentDeployer deployer = (ComponentDeployer)
+                    deplConst.newInstance(deplConstArgs);
+            deployer.setComponentFactory(getComponentFactory(component));
+            return deployer;
+
+        } catch (NoSuchMethodException nsmetexcp) {
+            throw new SmartFrogDeploymentException(MessageUtil.formatMessage(
+                    MSG_METHOD_NOT_FOUND, className, "getConstructor()"),
+                    nsmetexcp, null, component.sfContext());
+        } catch (ClassNotFoundException cnfexcp) {
+            throw new SmartFrogDeploymentException(MessageUtil.formatMessage(
+                    MSG_CLASS_NOT_FOUND, className), cnfexcp, null, component.sfContext());
+        } catch (InstantiationException instexcp) {
+            throw new SmartFrogDeploymentException(MessageUtil.formatMessage(
+                    MSG_INSTANTIATION_ERROR, className), instexcp, null, component.sfContext());
+        } catch (IllegalAccessException illaexcp) {
+            throw new SmartFrogDeploymentException(MessageUtil.formatMessage(
+                    MSG_ILLEGAL_ACCESS, className, "newInstance()"), illaexcp,
+                    null, component.sfContext());
+        } catch (InvocationTargetException intarexcp) {
+            throw new SmartFrogDeploymentException(MessageUtil.formatMessage(
+                    MSG_INVOCATION_TARGET, className), intarexcp,
+                    null, component.sfContext());
+        }
     }
 
     private static PrimFactory getComponentFactory(ComponentDescription component)

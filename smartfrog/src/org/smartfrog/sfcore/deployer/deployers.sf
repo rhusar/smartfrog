@@ -2,12 +2,15 @@
 
 PrimDeployer extends Prim {
     sfClass "org.smartfrog.sfcore.prim.PrimDeployerImpl";
+    sfExport false;
 }
 
 PrimHostDeployer extends Prim {
     sfClass "org.smartfrog.sfcore.processcompound.PrimHostDeployerImpl";
+    sfExport false;
 }
 
 PrimProcessDeployer extends Prim {
     sfClass "org.smartfrog.sfcore.processcompound.PrimProcessDeployerImpl";
+    sfExport false;
 }

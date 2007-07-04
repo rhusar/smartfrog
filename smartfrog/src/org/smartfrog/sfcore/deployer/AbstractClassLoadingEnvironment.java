@@ -1,19 +1,21 @@
 package org.smartfrog.sfcore.deployer;
 
-import org.smartfrog.sfcore.prim.PrimImpl;
-import org.smartfrog.sfcore.prim.Prim;
-import org.smartfrog.sfcore.componentdescription.ComponentDescription;
-import org.smartfrog.sfcore.common.SmartFrogResolutionException;
-import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.common.MessageUtil;
 import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
+import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
+import org.smartfrog.sfcore.common.SmartFrogResolutionException;
+import org.smartfrog.sfcore.componentdescription.ComponentDescription;
+import org.smartfrog.sfcore.languages.sf.PhaseAction;
+import org.smartfrog.sfcore.parser.ParseTimeResourceFactory;
+import org.smartfrog.sfcore.prim.Prim;
+import org.smartfrog.sfcore.prim.PrimImpl;
+import org.smartfrog.sfcore.reference.Function;
 
-public abstract class AbstractPrimFactoryUsingClassLoader extends PrimImpl implements PrimFactory {
+public abstract class AbstractClassLoadingEnvironment extends PrimImpl
+        implements PrimFactory, ParseTimeResourceFactory
+{
 
-    protected AbstractPrimFactoryUsingClassLoader() {}
-
-
-    public Prim getComponent(ComponentDescription askedFor) throws SmartFrogDeploymentException {
+    public final Prim getComponent(ComponentDescription askedFor) throws SmartFrogDeploymentException {
         String className = null;
         try {
             // Not pretty - but needed to have a proper error message, and pass tests.
@@ -44,5 +46,15 @@ public abstract class AbstractPrimFactoryUsingClassLoader extends PrimImpl imple
     protected abstract Prim getComponentImpl(ComponentDescription askedFor)
             throws ClassNotFoundException, InstantiationException,
                    IllegalAccessException, SmartFrogResolutionException, SmartFrogDeploymentException;
-    
+
+    protected abstract Object newInstance(String className) throws ClassNotFoundException, InstantiationException,
+            IllegalAccessException;
+
+    public final Function getFunction(String className) throws Exception {
+        return (Function) newInstance(className);
+    }
+
+    public final PhaseAction getPhaseAction(String className) throws Exception {
+        return (PhaseAction) newInstance(className);
+    }
 }

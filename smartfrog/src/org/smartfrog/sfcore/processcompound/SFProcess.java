@@ -34,7 +34,6 @@ import org.smartfrog.sfcore.deployer.SFDeployer;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.reference.Reference;
-import org.smartfrog.sfcore.security.SFClassLoader;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -43,7 +42,6 @@ import java.util.Enumeration;
 import java.util.Properties;
 import java.rmi.ConnectException;
 import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 
 import org.smartfrog.sfcore.logging.LogFactory;
 import org.smartfrog.sfcore.logging.LogSF;
