@@ -25,12 +25,10 @@ public class SmartFrogActivator {
     private boolean alreadyStopping = false;
     private final Object lock = new Object();
 
-    private static LogServiceProxy logService = new LogServiceProxy();
-
 
     /** @noinspection FeatureEnvy*/
     protected void activate(final ComponentContext componentContext) throws Exception {
-        logService.info("Starting smartfrog...");
+        getLog().info("Starting smartfrog...");
 
         loadProperties();
 
@@ -44,9 +42,9 @@ public class SmartFrogActivator {
                     processCompound = SFSystem.runSmartFrog();
                     configureProcessCompound(bundleContext);
 
-                    logService.info("SmartFrog daemon running...");
+                    getLog().info("SmartFrog daemon running...");
                 } catch (Exception e) {
-                    logService.error("Error during daemon startup", e);
+                    getLog().error("Error during daemon startup", e);
                     try {
                         // Normally not needed, as the termination of the root process
                         // call stop() already. Only useful if startup fails early, before
@@ -54,7 +52,7 @@ public class SmartFrogActivator {
                         bundle.stop();
                     } catch (BundleException e1) {
                         // Fails if the activate method has not returned yet
-                        logService.error("Could not stop after startup error", e1);
+                        getLog().error("Could not stop after startup error", e1);
                     }
                 }
             }
@@ -63,6 +61,8 @@ public class SmartFrogActivator {
         startDaemon.setName("SmartFrog Daemon Startup Thread");
         startDaemon.start();
     }
+
+    private LogServiceProxy getLog() {return LogServiceProxy.getInstance();}
 
     /** @noinspection FeatureEnvy*/
     private void configureProcessCompound(BundleContext bundleContext) throws RemoteException, SmartFrogRuntimeException {
@@ -94,25 +94,21 @@ public class SmartFrogActivator {
     }
 
     protected void setLog(LogService log) {
-        logService.setLog(log);
+        getLog().setLog(log);
     }
 
     protected void unsetLog(LogService log) {
-        logService.unsetLog(log);
-    }
-
-    public static LogService getLogServiceProxy() {
-        return logService;
+        getLog().unsetLog(log);
     }
 
     protected void deactivate(final ComponentContext componentContext) throws Exception {
         synchronized (lock) {
             if (!alreadyStopping) {
                 alreadyStopping = true;
-                logService.info("Stopping SmartFrog...");
+                getLog().info("Stopping SmartFrog...");
 
                 processCompound.sfTerminate(new TerminationRecord("normal", "Stopping daemon", null));
-                logService.info("SmartFrog daemon stopped.");
+                getLog().info("SmartFrog daemon stopped.");
 
                 processCompound = null; // Triggers garbage collection, hopefully
             }
@@ -129,9 +125,9 @@ public class SmartFrogActivator {
                 synchronized (lock) {
                     if (!alreadyStopping) bundle.stop();
                 }
-                logService.info("Bundle stopped.");
+                getLog().info("Bundle stopped.");
             } catch (Exception e) {
-                logService.error("Could not stop bundle", e);
+                getLog().error("Could not stop bundle", e);
             }
         }
     }

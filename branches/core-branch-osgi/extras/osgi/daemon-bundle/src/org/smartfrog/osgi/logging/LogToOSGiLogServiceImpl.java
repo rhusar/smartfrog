@@ -1,7 +1,6 @@
 package org.smartfrog.osgi.logging;
 
 import org.osgi.service.log.LogService;
-import org.smartfrog.osgi.SmartFrogActivator;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.logging.Log;
@@ -19,7 +18,7 @@ public class LogToOSGiLogServiceImpl implements Log, LogLevel {
         prefix = "[" + name + "] ";
 
         logLevel = initialLevel.intValue();
-        osgiLog = SmartFrogActivator.getLogServiceProxy();
+        osgiLog = LogServiceProxy.getInstance();
     }
 
     public void debug(Object message) {
