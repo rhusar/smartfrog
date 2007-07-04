@@ -72,6 +72,9 @@
     <mkdir dir="${dist.dir}/lib"/>
     <mkdir dir="${dist.dir}/lib/client"/>
     <mkdir dir="${build.classes.dir}"/>
+    <copy todir="lib">
+      <fileset file="${env.JAVA_HOME}/lib/tools.jar" />
+    </copy>
   </target>
 
   <target name="clean" depends="init">
