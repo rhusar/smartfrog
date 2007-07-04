@@ -99,6 +99,7 @@ public class SFDeployer implements MessageKeys {
             deployer = defaultDeployer();
         }
 
+        deployer.setTargetComponentDescription(component);
         deployer.setComponentFactory(getComponentFactory(component));
         return deployer;
     }
