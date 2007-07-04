@@ -265,7 +265,7 @@
 		<mkdir dir="${tomcat.home}/webapps/AvalancheGUI/WEB-INF/lib"/>
 		<!-- COPY UI files to Tomcat-->
 		<copy todir="${tomcat.home}/webapps/AvalancheGUI">
-      			<fileset dir="${root.dir}/AvalancheGUI"/>
+      			<fileset dir="${avalanche.root}/AvalancheGUI"/>
 		</copy>
 		<!--Copy smartFrog jars-->
 		<copy todir="${tomcat.home}/webapps/AvalancheGUI/WEB-INF/lib">
@@ -334,12 +334,14 @@
 	</target>
 
 	<target name="startTomcat">
-		<exec dir="${tomcat.home}/bin" executable="cmd" os="Windows XP, Windows NT">
+		<exec dir="${tomcat.home}/bin" executable="cmd" os="Windows XP, Windows NT"
+        failonerror="true">
 			<arg value="/c"/>
 			<arg line="startup.bat"/>
 		</exec>
 
-		<exec dir="${tomcat.home}/bin" executable="sh" os="Linux">
+		<exec dir="${tomcat.home}/bin" executable="sh" os="Linux"
+        failonerror="true">
 			<arg value="/c"/>
 			<arg line="startup.sh"/>
 		</exec>
