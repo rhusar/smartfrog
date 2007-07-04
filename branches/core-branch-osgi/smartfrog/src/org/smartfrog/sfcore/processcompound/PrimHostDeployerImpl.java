@@ -26,8 +26,6 @@ import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimDeployerImpl;
 import org.smartfrog.sfcore.reference.Reference;
-import org.smartfrog.sfcore.logging.LogSF;
-import org.smartfrog.sfcore.logging.LogFactory;
 
 import java.net.InetAddress;
 
@@ -128,9 +126,5 @@ public class PrimHostDeployerImpl extends PrimDeployerImpl {
             sfLog().error(ex);
             throw (SmartFrogDeploymentException)SmartFrogDeploymentException.forward("PrimHostDeployerImpl.deploy",ex);
         }
-    }
-
-    private LogSF sfLog() {
-        return LogFactory.sfGetProcessLog();
     }
 }

@@ -40,7 +40,7 @@ import java.util.Enumeration;
  * implements the ComponentDeployer interface.
  *
  */
-public class PrimDeployerImpl implements ComponentDeployer, MessageKeys {
+public class PrimDeployerImpl extends PrimImpl implements ComponentDeployer, MessageKeys {
 
     /** The target description to work off. */
     protected ComponentDescription target;
