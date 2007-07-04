@@ -118,7 +118,8 @@ public class RPMUtils {
 
         // TODO: optimize this useless if-block  SFOS-222 
         String command = "rpm -i ";
-		if (installOptions.length() != 0) 
+		//if (installOptions.length() != 0) 
+		if (installOptions != null) 
 			command = "rpm -i " + installOptions;
 		
 		String cmd = command + " " + rpmPackage;		
