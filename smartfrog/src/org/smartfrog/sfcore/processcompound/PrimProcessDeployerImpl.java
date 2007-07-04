@@ -39,15 +39,6 @@ public class PrimProcessDeployerImpl extends PrimHostDeployerImpl {
                 SmartFrogCoreKeys.SF_PROCESS_NAME);
 
     /**
-     * Constructs PrimHostDeployerImpl object with component description.
-     *
-     * @param descr description of the component that is to be deployed
-     */
-    public PrimProcessDeployerImpl(ComponentDescription descr) {
-        super(descr);
-    }
-
-    /**
      * Returns the process compound with a particular process name.
      * @return process compound on host with name
      *

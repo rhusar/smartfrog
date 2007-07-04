@@ -52,10 +52,6 @@ public class SFSlpDeployerImpl extends PrimProcessDeployerImpl {
     protected String searchFilter = null;
     protected Vector scopes = null;
 
-    public SFSlpDeployerImpl(ComponentDescription descr) {
-        super(descr);
-    }
-
     /** Does a search for a ProcessCompound using SLP. */
     protected ProcessCompound getProcessCompound() throws Exception {
 

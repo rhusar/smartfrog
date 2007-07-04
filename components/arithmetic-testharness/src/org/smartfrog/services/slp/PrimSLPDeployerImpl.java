@@ -38,14 +38,7 @@ public class PrimSLPDeployerImpl extends PrimHostDeployerImpl {
     new Reference(ReferencePart.here("sfDeployerScopes"));
   public static String deployerServiceType = "smartfrogDeployer";
 
-  /** Constructor
-   *
-   * @param descr target to operate on */
-  public PrimSLPDeployerImpl(ComponentDescription descr) {
-    super(descr);
-  }
-    
-  public String buildServiceQuery(ComponentDescription attributesRequirements){
+  private String buildServiceQuery(ComponentDescription attributesRequirements){
     String result = "";
     if (attributesRequirements != null) {
       Context cxt = attributesRequirements.sfContext();
@@ -62,27 +55,26 @@ public class PrimSLPDeployerImpl extends PrimHostDeployerImpl {
 /**
  * The actual discovery of the service.
  */
-  public ServiceLocationEnumeration discoverService(ComponentDescription serviceDescription) throws ServiceLocationException{
+  private ServiceLocationEnumeration discoverService(ComponentDescription serviceDescription) throws ServiceLocationException{
     // initialize default values
     String deployerType = deployerServiceType;
-    ServiceType serviceType = new ServiceType(deployerType);
     String language = "en";
     Vector scopes = new Vector();
-    Locale locale = null;
+    Locale locale;
     String serviceQuery = "";
 
     if (serviceDescription !=null) {
       // extract the locale & the deployer type
-      //System.out.println(" --PrimSLPDeployerImpl-- Looking for deployer: " +serviceDescription);
+      sfLog().debug("Looking for deployer: " + serviceDescription);
       Context serviceInfo = serviceDescription.sfContext();
       deployerType = (String) serviceInfo.get("sfDeployerType");
-
 
       // get the locale of the service
       if (serviceInfo.containsKey("sfLocale")){
         language = (String) serviceInfo.get("sfLocale");
-      } else { // default will be "en"
-        System.out.println(" Default locale adopted for location : " + language);
+      } else {
+        // default will be "en"
+        sfLog().debug(" Default locale adopted for location : " + language);
       }
       // get the attributes desired and build the query
       serviceQuery = (serviceInfo.containsKey("serviceQuery"))?
@@ -91,21 +83,19 @@ public class PrimSLPDeployerImpl extends PrimHostDeployerImpl {
       // if scopes are not specified, use the ServiceLocationManager's
       try {
         for (StringTokenizer st = new StringTokenizer((String) serviceInfo.get("scopes"),","); st.hasMoreElements();){
-          scopes.addElement((String) st.nextToken());
+          scopes.addElement(st.nextToken());
         }
       } catch (Exception ex) {
+          sfLog().ignore(ex);
       }
     }
     if (scopes.isEmpty()) scopes = ServiceLocationManager.findScopes();
-//    System.out.println("language " + language);
+
     locale = new Locale(language,"");
     if (deployerType.indexOf(ServiceType.servicePrefix)==-1)
         deployerType = ServiceType.servicePrefix+deployerType ;
-    serviceType = new ServiceType(deployerType);
-//System.out.println(" locale " + locale );
-//System.out.println(" setyp "+ serviceType);
-//
-//System.out.println(" Scopes "+ scopes);
+    ServiceType serviceType = new ServiceType(deployerType);
+
     // get the locator
     Locator loco = ServiceLocationManager.getLocator(locale);
     return loco.findServices(serviceType,scopes,serviceQuery);
@@ -127,7 +117,7 @@ public class PrimSLPDeployerImpl extends PrimHostDeployerImpl {
       deployerDescription = (ComponentDescription) target.sfResolve(refDeployerDesc);
       // take the first of the enumeration returned.
     } catch (SmartFrogResolutionException resex) {
-      System.out.println("Adopting standard deployer type : "+ deployerServiceType);
+      sfLog().debug("Adopting standard deployer type : "+ deployerServiceType);
     }
     Enumeration pcEnum = this.discoverService(deployerDescription);
     if (pcEnum.hasMoreElements()){
@@ -147,11 +137,11 @@ public class PrimSLPDeployerImpl extends PrimHostDeployerImpl {
       InetAddress hostAddress = null;
       try {
         hostAddress = InetAddress.getByName(host);
-      } catch (Exception resex) {
-        throw new Exception("Deployer host of service provider unreachable.");
+      } catch (Exception e) {
+        throw new Exception("Deployer host of service provider unreachable.", e);
       }
      // String sfProcessComponentName = deployerURL.getURLPath();
-      ProcessCompound pc = null;
+      ProcessCompound pc;
       if (port!=0)
         pc = SFProcess.getRootLocator().getRootProcessCompound(hostAddress, port);
       else

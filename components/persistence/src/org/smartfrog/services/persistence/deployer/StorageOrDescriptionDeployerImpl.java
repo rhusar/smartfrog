@@ -31,10 +31,6 @@ import org.smartfrog.sfcore.reference.Reference;
 
 public class StorageOrDescriptionDeployerImpl extends PrimProcessDeployerImpl {
 
-	public StorageOrDescriptionDeployerImpl(ComponentDescription descr) {
-		super(descr);
-	}
-
 	public Prim deploy(Reference name, Prim parent, Context params)
 			throws SmartFrogDeploymentException {
 

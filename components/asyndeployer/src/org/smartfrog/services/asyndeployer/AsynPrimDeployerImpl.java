@@ -48,15 +48,6 @@ import org.objectweb.proactive.ProActive;
  */
 public class AsynPrimDeployerImpl extends PrimDeployerImpl implements ComponentDeployer, MessageKeys {
 
-    /**
-     * Constructs a component deployer for given description.
-     *
-     * @param descr target description
-     */
-    public AsynPrimDeployerImpl (ComponentDescription descr) {
-        super(descr);
-    }
-
     public void setComponentFactory(PrimFactory primFactory) {
         // Discard the component factory from above and use ours.
         // Temporary fix: the real fix would be switching to a proper PrimFactory,

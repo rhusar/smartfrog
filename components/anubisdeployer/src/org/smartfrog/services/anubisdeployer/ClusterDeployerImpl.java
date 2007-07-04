@@ -59,15 +59,6 @@ public class ClusterDeployerImpl extends PrimProcessDeployerImpl {
         }
     }
 
-    /**
-     * Constructs the ClusetrDeployerImpl with ComponentDescription.
-     *
-     * @param descr target to operate on
-     */
-    public ClusterDeployerImpl(ComponentDescription descr, PrimFactory factory) {
-        super(descr);
-    }
-
     public Prim deploy(Reference name, Prim parent, Context params)
             throws SmartFrogDeploymentException {
         target = preprocess(target);

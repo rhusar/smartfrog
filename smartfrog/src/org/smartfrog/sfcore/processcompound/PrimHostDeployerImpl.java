@@ -56,14 +56,6 @@ public class PrimHostDeployerImpl extends PrimDeployerImpl {
     protected static final Reference refRootLocatorPort =
         new Reference(SmartFrogCoreKeys.SF_ROOT_LOCATOR_PORT);
 
-    /**
-     * Constructs the PrimHostDeployerImpl with ComponentDescription.
-     *
-     * @param descr target to operate on
-     */
-    public PrimHostDeployerImpl(ComponentDescription descr) {
-        super(descr);
-    }
 
     /**
      * Returns the process compound on a particular host and with a particular

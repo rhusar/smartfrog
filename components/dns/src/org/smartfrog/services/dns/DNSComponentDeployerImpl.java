@@ -38,16 +38,6 @@ public class DNSComponentDeployerImpl extends PrimDeployerImpl  {
 
 
     /**
-     * Creates a new <code>DNSComponentDeployer</code> instance.
-     *
-     * @param target a <code>ComponentDescription</code> value
-     */
-    public DNSComponentDeployerImpl(ComponentDescription target) {
-        super(target);
-    }
-
-
-    /**
      * Creates a DNS component instantiated from a description, calling its
      * initialization method sfDeployWith.
      *

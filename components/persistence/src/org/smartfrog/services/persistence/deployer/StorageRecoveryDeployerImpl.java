@@ -35,10 +35,6 @@ import org.smartfrog.sfcore.reference.Reference;
 
 public class StorageRecoveryDeployerImpl extends PrimProcessDeployerImpl {
 
-    public StorageRecoveryDeployerImpl( ComponentDescription descr ) {
-        super( descr );
-    }
-
     public Prim deploy( Reference name, Prim parent, Context params ) throws
             SmartFrogDeploymentException {
         target = preprocess( target );
