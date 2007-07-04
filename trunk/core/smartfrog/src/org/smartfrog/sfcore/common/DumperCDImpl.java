@@ -62,7 +62,7 @@ public class DumperCDImpl implements Dumper, Serializable {
      * Special keys that are created by the runtime and that should be removed to have a deployable description.
      * Value: @value
      */
-    private String[] sfKeysToBeRemoved = new String[] {"sfHost", "sfProcess", "sfLog", "sfBootDate","sfParseTime","sfDeployTime"};
+    private String[] sfKeysToBeRemoved = new String[] {"sfHost", "sfProcess", "sfLog", "sfBootDate","sfParseTime","sfDeployTime","sfTraceDeployLifeCycle","sfTraceStartLifeCycle"};
 
     /** Default timeout (@value msecs), in large distributed deployments
      * it could need more time to reach the final result*/
