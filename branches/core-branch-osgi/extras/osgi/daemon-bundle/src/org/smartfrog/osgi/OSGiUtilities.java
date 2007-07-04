@@ -2,6 +2,7 @@ package org.smartfrog.osgi;
 
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.Constants;
 import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.reference.Reference;
@@ -23,6 +24,6 @@ public class OSGiUtilities {
 
     public static boolean isNotFragment(Bundle bundle) {
         Dictionary headers = bundle.getHeaders();
-        return headers.get("Fragment-Host") == null;
+        return headers.get(Constants.FRAGMENT_HOST) == null;
     }
 }

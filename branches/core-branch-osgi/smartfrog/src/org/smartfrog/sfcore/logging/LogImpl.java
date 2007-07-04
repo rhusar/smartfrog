@@ -20,31 +20,23 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.sfcore.logging;
 
-import org.smartfrog.sfcore.common.Logger;
-
-import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.sfcore.common.SmartFrogLogException;
-import org.smartfrog.sfcore.prim.TerminationRecord;
+import org.smartfrog.sfcore.common.*;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.componentdescription.ComponentDescriptionImpl;
+import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.reference.Reference;
 
-import org.smartfrog.sfcore.security.SFClassLoader;
-import org.smartfrog.sfcore.common.MessageKeys;
-import org.smartfrog.sfcore.common.MessageUtil;
-import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
-
+import java.io.PrintWriter;
+import java.io.Serializable;
+import java.io.StringWriter;
+import java.io.Writer;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.io.Serializable;
-import java.io.PrintWriter;
-import java.io.Writer;
-import java.io.StringWriter;
 import java.lang.reflect.Method;
 import java.rmi.RemoteException;
 import java.util.Enumeration;
 import java.util.Hashtable;
-import org.smartfrog.sfcore.common.*;
+import java.util.List;
 import java.util.Vector;
 
 public class LogImpl implements LogSF, LogRegistration, Serializable {
@@ -316,14 +308,14 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
     private void loadStartUpLoggers(String name, Object configurationClass, String configurationCodeBase, Vector loggersConfiguration) throws RemoteException, SmartFrogLogException {
         if (configurationClass instanceof String) {
             localLog = loadLogger(name, (ComponentDescription)loggersConfiguration.firstElement(), new Integer(currentLogLevel), (String)configurationClass, configurationCodeBase);
-            if (localLog.isDebugEnabled()) localLog.debug("Logger registered: "+ localLog.getClass().toString());
+            if (localLog.isDebugEnabled()) localLog.debug("Logger registered: "+ localLog.getClass());
         } else if (configurationClass instanceof Vector) {
             String className = null;
-            ComponentDescription loggerConfiguration = null;
-            Log logger = null;
-            for (int i = 0; i<((Vector)configurationClass).size(); i++) {
+            ComponentDescription loggerConfiguration;
+            Log logger;
+            for (int i = 0; i<((List)configurationClass).size(); i++) {
                 try {
-                    className = (String)((Vector)configurationClass).get(i);
+                    className = (String)((List)configurationClass).get(i);
                     loggerConfiguration = (ComponentDescription)loggersConfiguration.get(i);
                     logger = loadLogger(name, loggerConfiguration,
                                         new Integer(currentLogLevel), className,
@@ -334,7 +326,7 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
                         register("localLog"+i, logger);
                     }
                     if (isDebugEnabled()) {
-                        debug("Logger registered: "+logger.getClass().toString());
+                        debug("Logger registered: " + logger.getClass());
                     }
                 } catch (Exception ex) {
                    if (i ==0) {

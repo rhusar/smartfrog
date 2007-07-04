@@ -3,64 +3,106 @@ package org.smartfrog.osgi;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.processcompound.ProcessCompound;
 import org.smartfrog.sfcore.processcompound.AbstractSubprocessStarter;
-import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
-import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.common.SmartFrogCoreProperty;
-import org.osgi.framework.BundleContext;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.Constants;
+import org.osgi.service.packageadmin.PackageAdmin;
+import org.osgi.service.packageadmin.ExportedPackage;
 
-import java.util.List;
+import java.util.*;
 import java.net.Socket;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.rmi.RemoteException;
+import java.io.File;
 
 public class EquinoxSubprocessStarterImpl extends AbstractSubprocessStarter {
         
-    private static final String SMARTFROG_EXT_BUNDLE_LOCATION = "smartFrogExtensionBundleLocation";
     private static final String EQUINOX_JAR_FILE = "equinoxJarFile";
     private static final String EQUINOX_CONSOLE_PORT = "equinoxConsolePort";
     private static final String EQUINOX_CONFIGURATION_AREA = "equinoxConfigurationArea";
-    private static final String DS_BUNDLE_LOCATION = "declarativeServicesBundleLocation";
-    private static final String SERVICES_BUNDLE_LOCATION = "servicesBundleLocation";
-    private static final String LOG_BUNDLE_LOCATION = "logBundleLocation";
     
     private Integer consolePort;
-    private String smartFrogBundleLocation;
-    private String smartFrogExtBundleLocation;
-    private String servicesBundleLocation;
-    private String logBundleLocation;
-    private String dsBundleLocation;
 
+    private PackageAdmin packageAdmin;
+    private Bundle daemonBundle;
+    // List<Bundle>
+    private List bundlesToInstall;
+
+    public EquinoxSubprocessStarterImpl(Bundle daemonBundle) {
+        this.daemonBundle = daemonBundle;
+    }
+
+    void setPackageAdmin(PackageAdmin packageAdmin) {
+        this.packageAdmin = packageAdmin;
+    }
+
+    void unsetPackageAdmin(PackageAdmin packageAdmin) {
+        this.packageAdmin = null;
+    }
 
     protected void addParameters(ProcessCompound parentProcess, List runCmd, String name, ComponentDescription cd) throws Exception {
         // Equinox startup options:
         // http://help.eclipse.org/help32/index.jsp?topic=/org.eclipse.platform.doc.isv/reference/misc/runtime-options.html
 
-        consolePort = (Integer) cd.sfResolveHere(EQUINOX_CONSOLE_PORT);
-        smartFrogBundleLocation = getSmartFrogBundleLocation(parentProcess);
-        smartFrogExtBundleLocation = (String) cd.sfResolveHere(SMARTFROG_EXT_BUNDLE_LOCATION);
-        servicesBundleLocation = (String) cd.sfResolveHere(SERVICES_BUNDLE_LOCATION);
-        logBundleLocation = (String) cd.sfResolveHere(LOG_BUNDLE_LOCATION);
-        dsBundleLocation = (String) cd.sfResolveHere(DS_BUNDLE_LOCATION);
+        bundlesToInstall = retrieveDaemonBundleDependencies();
+        bundlesToInstall.add(daemonBundle);
+
+        consolePort = (Integer) cd.sfResolveHere(EQUINOX_CONSOLE_PORT);                
+        String configurationArea = (String) cd.sfResolveHere(EQUINOX_CONFIGURATION_AREA, false);
+        if (configurationArea == null) configurationArea = createTempDir(name);
 
         // TODO: This is supposed to be done by addProcessAttributes, but it adds nothings, whereas only this makes things work.
-        runCmd.add("-D"+ SmartFrogCoreProperty.sfProcessName+"="+name);
+        runCmd.add("-D" + SmartFrogCoreProperty.sfProcessName + "=" + name);
 
         runCmd.add("-jar");
         runCmd.add(cd.sfResolveHere(EQUINOX_JAR_FILE).toString());
         runCmd.add("-console");
         runCmd.add(consolePort.toString());
         runCmd.add("-configuration");
-        runCmd.add(cd.sfResolveHere(EQUINOX_CONFIGURATION_AREA).toString());        
+        runCmd.add(configurationArea);
     }
 
-    private String getSmartFrogBundleLocation(ProcessCompound parentProcess) throws RemoteException, SmartFrogResolutionException {
-        return (
-                (BundleContext) parentProcess.sfResolveHere(SmartFrogCoreKeys.SF_CORE_BUNDLE_CONTEXT)
-        ).getBundle().getLocation();
+    private List retrieveDaemonBundleDependencies() {
+        // List<Bundle>
+        List dependencies = new ArrayList();
+
+        // Eeek.
+        // No other way to get imported packages (?)
+        Dictionary dict = daemonBundle.getHeaders();
+        String importsString = (String) dict.get(Constants.IMPORT_PACKAGE);
+        String[] imports = importsString.split(",");
+        for (int i=0; i<imports.length; i++) {
+            String[] nameAndAttrs = imports[i].split(";");
+            String packageName = nameAndAttrs[0].trim();
+            dependencies.add(getExportingBundle(packageName));
+        }
+
+        return dependencies;
     }
 
-    protected void doPostStartupSteps() throws IOException, InterruptedException {
+    private Bundle getExportingBundle(String packageName) {
+        ExportedPackage[] exportedPackages = packageAdmin.getExportedPackages(packageName);
+        for (int i=0; i<exportedPackages.length; i++) {
+            if (contains(exportedPackages[i].getImportingBundles(), daemonBundle))
+                return exportedPackages[i].getExportingBundle();
+        }
+        throw new IllegalStateException("Exporting bundle not found for package: " + packageName);
+    }
+
+    private boolean contains(Object[] objects, Object o) {
+        for (int i=0; i<objects.length; i++)
+            if (objects[i].equals(o)) return true;
+        return false;
+    }
+
+    private String createTempDir(String name) throws IOException {
+        File tempFile = File.createTempFile("smartfrog-" + name + "-equinox-config", null);
+        if (! tempFile.delete()) throw new IOException("Could not delete temporary file");
+        if (!tempFile.mkdir()) throw new IOException("Could not create temporary directory");
+        return tempFile.getAbsolutePath();
+    }
+
+   protected void doPostStartupSteps() throws IOException, InterruptedException {
         Socket socket = null;
         PrintWriter writer = null;
         try {
@@ -70,16 +112,12 @@ public class EquinoxSubprocessStarterImpl extends AbstractSubprocessStarter {
             socket = new Socket("localhost", consolePort.intValue());
             writer = new PrintWriter(socket.getOutputStream());
 
-            writer.println("install " + servicesBundleLocation);
-            writer.println("start 1");
-            writer.println("install " + logBundleLocation);
-            writer.println("start 2");
-            writer.println("install " + dsBundleLocation);
-            writer.println("start 3");
-            writer.println("install " + smartFrogExtBundleLocation);
-            // Extension bundles cannot be started
-            writer.println("install " + smartFrogBundleLocation);
-            writer.println("start 5");
+            for (int i=0; i<bundlesToInstall.size(); i++) {
+                final Bundle bundle = (Bundle) bundlesToInstall.get(i);
+                writer.println("install " + bundle.getLocation());
+                if (OSGiUtilities.isNotFragment(bundle))
+                    writer.println("start " + i);
+            }
         } finally {
             if (writer != null) writer.close();
             if (socket != null) socket.close();            
