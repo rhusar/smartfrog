@@ -101,7 +101,7 @@ public class SFDeployer implements MessageKeys {
     {
         ComponentDeployer deployer;
         try {
-            Reference deployerRef = (Reference) component.sfResolveHere(SmartFrogCoreKeys.SF_FACTORY);
+            Reference deployerRef = (Reference) component.sfResolveHere(SmartFrogCoreKeys.SF_DEPLOYER);
             deployer = (ComponentDeployer) component.sfResolve(deployerRef);
         } catch (SmartFrogResolutionException e) {
             LogFactory.sfGetProcessLog().ignore(e);
@@ -144,7 +144,8 @@ public class SFDeployer implements MessageKeys {
         try {
             metadata = (ComponentDescription) component.sfResolveHere(SmartFrogCoreKeys.SF_METADATA);
         } catch (SmartFrogResolutionException e) {
-            LogFactory.sfGetProcessLog().ignore(e);
+            // LogFactory.sfGetProcessLog().ignore(e);
+            // Too vebose for my liking.
         }
 
         if (metadata != null) {

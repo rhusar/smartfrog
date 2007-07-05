@@ -41,6 +41,8 @@ import org.smartfrog.sfcore.security.SFClassLoader;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 
 import org.smartfrog.sfcore.languages.sf.sfcomponentdescription.SFComponentDescription;
+import org.smartfrog.sfcore.languages.sf.sfreference.SFReference;
+import org.smartfrog.sfcore.processcompound.SFProcess;
 
 /**
  * Implements the Parser interface for SmartFrog parsers. This implementation
@@ -435,4 +437,29 @@ public class SFParser implements Parser, MessageKeys {
 
      }
 
+    /**
+     * Locate the include and returns an input stream on it. This uses
+     * SFSystem.stringToURL to check whether include is a URL or a file. On
+     * failure it tries to use standard getResourceAsStream to get the inlude
+     * of the classpath. Subclasses can override to provide additional means
+     * of locating includes.
+     *
+     * @param include include to locate
+     * @param from an optional from where the include may be found. If null, use the default code base
+     *
+     * @return input stream on located include
+     *
+     * @exception Exception failed to locate or open include
+     */
+    public static InputStream openInclude(String include, SFReference from) throws Exception {
+        String fullInclude = include;
+        if (!include.startsWith("/")) fullInclude = "/" + include;
+        ParseTimeResourceFactory factory = SFProcess.getResourceFactory(from);
+        InputStream is = factory.getComponentDescription(fullInclude);
+
+        if (is == null)
+            throw new Exception("Include file: " + include + " not found");
+
+        return is;
+    }
 }

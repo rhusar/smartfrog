@@ -7,5 +7,6 @@ sfConfig extends Compound {
     bundleTest extends OSGiBundle {
         location "file:sf-test-bundle-3.11.001beta.jar";
     }
-    
+
+    deployerTest extends PrimProcessDeployer;
 }

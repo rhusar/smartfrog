@@ -20,20 +20,14 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.sfcore.languages.sf;
 
-import java.io.InputStream;
-
 import org.smartfrog.SFSystem;
-import org.smartfrog.sfcore.common.SmartFrogParseException;
-import org.smartfrog.sfcore.common.SmartFrogCoreProperty;
+import org.smartfrog.sfcore.common.*;
 import org.smartfrog.sfcore.languages.sf.sfcomponentdescription.SFComponentDescription;
 import org.smartfrog.sfcore.parser.Phases;
-import org.smartfrog.sfcore.parser.StreamLanguageParser;
 import org.smartfrog.sfcore.parser.ReferencePhases;
-import org.smartfrog.sfcore.security.SFClassLoader;
-import java.lang.reflect.Constructor;
-import org.smartfrog.sfcore.common.MessageUtil;
-import org.smartfrog.sfcore.common.MessageKeys;
-import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.parser.StreamLanguageParser;
+
+import java.io.InputStream;
 
 
 /**
@@ -111,27 +105,17 @@ public class SFParser implements StreamLanguageParser {
     *  Constructs an includehandler using the includeHandlerClass (prepended by
     *  propBase) system property.
     *
-    * @param codebase an optional codebase where the include may be found. If null, use the default code base
-    *
     *@return                new include handler
     *@exception  Exception  failed to construct handler
     */
-   public static IncludeHandler getIncludeHandler(String codebase) throws Exception {
+   public static IncludeHandler getIncludeHandler() throws Exception {
       try {
           if (includeHandlerClass == null) {
              includeHandlerClass = Class.forName(includeHandlerClassName);
           }
-          Class[] includeHandlerConstArgsTypes = {java.lang.String.class};
 
-          Constructor includeHandlerConst = includeHandlerClass.getConstructor(includeHandlerConstArgsTypes);
+          return (IncludeHandler) includeHandlerClass.newInstance();
 
-          Object[] deplConstArgs = {codebase};
-
-          return (IncludeHandler)includeHandlerConst.newInstance(deplConstArgs);
-
-      } catch (NoSuchMethodException nsmetexcp) {
-          throw new SmartFrogException(MessageUtil.formatMessage(
-              MessageKeys.MSG_METHOD_NOT_FOUND, includeHandlerClassName, "getConstructor()"), nsmetexcp);
       } catch (ClassNotFoundException cnfexcp) {
           throw new SmartFrogException(MessageUtil.formatMessage(
               MessageKeys.MSG_CLASS_NOT_FOUND, includeHandlerClassName), cnfexcp);
@@ -141,9 +125,6 @@ public class SFParser implements StreamLanguageParser {
       } catch (IllegalAccessException illaexcp) {
           throw new SmartFrogException(MessageUtil.formatMessage(
               MessageKeys.MSG_ILLEGAL_ACCESS, includeHandlerClassName, "newInstance()"), illaexcp);
-//      } catch (InvocationTargetException intarexcp) {
-//          throw new SmartFrogException(MessageUtil.formatMessage(
-//              MessageKeys.MSG_INVOCATION_TARGET, includeHandlerClassName), intarexcp);
       } catch (Throwable ex) {
           throw SmartFrogException.forward(ex);
       }
@@ -231,7 +212,7 @@ public class SFParser implements StreamLanguageParser {
     */
    public Phases sfParse(InputStream is, String codebase) throws SmartFrogParseException {
       try {
-         return sfParse(is, getIncludeHandler(codebase));
+         return sfParse(is, getIncludeHandler());
       } catch (Throwable thr) {
          throw (SmartFrogParseException)SmartFrogParseException.forward(thr);
       }
