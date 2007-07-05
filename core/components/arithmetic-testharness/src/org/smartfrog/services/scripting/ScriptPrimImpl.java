@@ -26,6 +26,7 @@ import java.net.InetAddress;
 import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.io.Reader;
+import java.io.InputStream;
 
 import org.smartfrog.SFSystem;
 import org.smartfrog.sfcore.prim.*;
@@ -98,9 +99,15 @@ public class ScriptPrimImpl
    */
   public Reader getScript(String script) {
     try {
-      return new InputStreamReader(SFClassLoader.getResourceAsStream(script));
+        InputStream stream = SFClassLoader.getResourceAsStream(script);
+        if(stream==null) {
+            //assume its a script
+            return new StringReader(script);
+        }
+        return new InputStreamReader(stream);
     }
     catch (Exception ex) {
+        //assume it is a script
       return new StringReader(script);
     }
   }
