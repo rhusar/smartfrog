@@ -52,7 +52,7 @@ public interface StreamLanguageParser {
      * default include handler.
      *
      * @param is input stream to parse and compile from
-     * @param codebase an optional codebase where the include may be found. If null, use the default code base
+     * @param codebase Deprecated. Unused
      *
      * @return root component containing parsed component(s)
      *

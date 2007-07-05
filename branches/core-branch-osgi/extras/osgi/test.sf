@@ -1,21 +1,18 @@
 #include "org/smartfrog/components.sf"
-#include "org/smartfrog/osgi/test/components.sf"
 
-/*
-sfConfig extends OSGiBundleCompound {
-
-    bundleURL "file:sf-test-osgi-3.10.051dev.jar";
-
-    testHello extends Test {
-        message "Servez a ce monsieur, le vieux petit juge blond assis au fond, une biere hollandaise et des kiwis, parce qu'il y tient.";
-    }
-
-}
-*/
+// The new include syntax.
+#from PROCESS:env:bundleTest #include "org/smartfrog/osgi/test/components.sf"
 
 sfConfig extends Compound {
 
+    subprocess extends Prim {
+        // The new deployer syntax
+        sfDeployer LAZY PROCESS:env:deployerTest;
+        sfProcessName "testProcess";
+    }
+
     testHello extends Test {
+        // The new Prim syntax
         sfMeta extends DATA {
             sfFactory LAZY PROCESS:env:bundleTest;
             sfClass "org.smartfrog.osgi.test.TestImpl";                            

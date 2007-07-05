@@ -216,32 +216,35 @@ public class SFParse implements MessageKeys {
          if (opts.statusReport){
            printTotalReport(report);
          }
-         if (opts.statusReportHTML){
-           printItemReportHTML(report);
-           try {
-              FileWriter newFile = new FileWriter(opts.fileName+"_report.html");
-              newFile.write("<!doctype HTML PUBLIC \"-//W3C//DTD HTML 4.0 Transitional//EN\"><html>");
-              newFile.write("<body>"+"\n");
-              newFile.write("<font color=\"BLUE\" size=\"5\">Status report<font/>"+"\n");
-              newFile.write("<table border=\"1\">"+"\n");
-              newFile.write(printTotalReportHTML(report));
-              newFile.write("<table/>");
-              newFile.write("<font color=\"BLUE\" size=\"5\">Error report<font/>"+"\n");
-              newFile.write("<table border=\"1\">"+"\n");
-              newFile.write(printTotalReportHTML(errorReport));
-              newFile.write("<table/>");
-              newFile.write("<body/>"+"\n");
-              newFile.write("<html/>"+"\n");
-              newFile.flush();
-              newFile.close();
-              SFSystem.sfLog().out("Report created: "+opts.fileName+"_report.html");
+        if (opts.statusReportHTML) {
+            printItemReportHTML(report);
+            FileWriter newFile = null;
+            try {
+                newFile = new FileWriter(opts.fileName + "_report.html");
+                newFile.write("<!doctype HTML PUBLIC \"-//W3C//DTD HTML 4.0 Transitional//EN\"><html>");
+                newFile.write("<body>" + "\n");
+                newFile.write("<font color=\"BLUE\" size=\"5\">Status report<font/>" + "\n");
+                newFile.write("<table border=\"1\">" + "\n");
+                newFile.write(printTotalReportHTML(report));
+                newFile.write("<table/>");
+                newFile.write("<font color=\"BLUE\" size=\"5\">Error report<font/>" + "\n");
+                newFile.write("<table border=\"1\">" + "\n");
+                newFile.write(printTotalReportHTML(errorReport));
+                newFile.write("<table/>");
+                newFile.write("<body/>" + "\n");
+                newFile.write("<html/>" + "\n");
+                newFile.flush();
+                SFSystem.sfLog().out("Report created: " + opts.fileName + "_report.html");
             } catch (IOException e) {
-              if (SFSystem.sfLog().isErrorEnabled()){
                 SFSystem.sfLog().error(e);
-              }
-              //Logger.log(e);
+            } finally {
+                if (newFile != null) try {
+                    newFile.close();
+                } catch (IOException e) {
+                    SFSystem.sfLog().error(e);
+                }
             }
-         }
+        }
     }
 
     /**

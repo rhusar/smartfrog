@@ -107,7 +107,8 @@ public class SmartFrogActivator {
                 alreadyStopping = true;
                 getLog().info("Stopping SmartFrog...");
 
-                processCompound.sfTerminate(new TerminationRecord("normal", "Stopping daemon", null));
+                if (processCompound != null) // In case startup failed before runSmartFrog() returned
+                    processCompound.sfTerminate(new TerminationRecord("normal", "Stopping daemon", null));
                 getLog().info("SmartFrog daemon stopped.");
 
                 processCompound = null; // Triggers garbage collection, hopefully

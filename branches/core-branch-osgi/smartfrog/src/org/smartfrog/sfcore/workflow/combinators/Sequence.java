@@ -23,7 +23,6 @@ package org.smartfrog.sfcore.workflow.combinators;
 import java.rmi.RemoteException;
 
 import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.compound.Compound;
 import org.smartfrog.sfcore.prim.Prim;
@@ -123,7 +122,7 @@ public class Sequence extends EventCompoundImpl implements Compound {
      * @return true whenever a child component is not started
      */
     protected boolean onChildTerminated(TerminationRecord status, Prim comp) {
-        boolean terminate = true;
+        boolean terminate;
         if (status.isNormal()) {
 
             if (actionKeys.hasMoreElements()) {

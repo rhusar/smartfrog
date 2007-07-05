@@ -31,6 +31,7 @@ import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.componentdescription.ComponentDescriptionImpl;
 import org.smartfrog.sfcore.deployer.SFDeployer;
+import org.smartfrog.sfcore.deployer.CoreClassesClassLoadingEnvironment;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.reference.Reference;
@@ -45,6 +46,8 @@ import java.lang.reflect.Constructor;
 
 import org.smartfrog.sfcore.logging.LogFactory;
 import org.smartfrog.sfcore.logging.LogSF;
+import org.smartfrog.sfcore.parser.ParseTimeResourceFactory;
+import org.smartfrog.sfcore.languages.sf.sfreference.SFReference;
 
 
 /**
@@ -566,5 +569,15 @@ public class SFProcess implements MessageKeys {
         processCompoundDescription = null;
         rootLocator = null;
         processCompoundTerminated = false;
+    }
+
+    public static ParseTimeResourceFactory getResourceFactory(Reference from) throws RemoteException, SmartFrogResolutionException {
+        if (from == null) return defaultResourceFactory();
+        return (ParseTimeResourceFactory)
+                getProcessCompound().sfResolve(from);
+    }
+
+    private static ParseTimeResourceFactory defaultResourceFactory() {
+        return new CoreClassesClassLoadingEnvironment();
     }
 }
