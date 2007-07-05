@@ -114,11 +114,13 @@
         rev="${xmlbeans.version}"
         conf="compile,redist->default"/>
 
-
     <dependency org="org.apache.xalan"
         name="xalan"
         rev="${xalan.version}"
         conf="compile,redist->default"/>
+  </dependencies>
+
+  <!--
     <dependency org="org.apache"
         name=""
         rev="${.version}"
@@ -135,9 +137,7 @@
         name="stax"
         rev="${stax.version}"
         conf="redist->default"/>
-  </dependencies>
 
-  <!--
   Missing:
   mom4j-client
   mom4j.jar
