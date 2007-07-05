@@ -20,9 +20,9 @@
 
 package org.smartfrog.services.os.java;
 
-import org.smartfrog.sfcore.prim.PrimImpl;
-import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.componentdescription.ComponentDescription;
+import org.smartfrog.sfcore.prim.PrimImpl;
 
 import java.rmi.RemoteException;
 import java.util.Vector;

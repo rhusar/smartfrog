@@ -21,7 +21,6 @@ package org.smartfrog.services.os.java;
 
 import org.smartfrog.services.filesystem.FileUsingComponent;
 import org.smartfrog.services.os.download.Download;
-import org.smartfrog.sfcore.common.SmartFrogException;
 
 import java.rmi.RemoteException;
 

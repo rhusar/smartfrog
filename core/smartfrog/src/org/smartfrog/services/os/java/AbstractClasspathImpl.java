@@ -1,16 +1,16 @@
 package org.smartfrog.services.os.java;
 
-import org.smartfrog.sfcore.prim.PrimImpl;
-import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
 import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
+import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.utils.ComponentHelper;
 
-import java.rmi.RemoteException;
-import java.util.List;
-import java.util.Vector;
-import java.util.ArrayList;
 import java.io.File;
 import java.net.MalformedURLException;
+import java.rmi.RemoteException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Vector;
 
 /**
  * This is the base class, with a helper method to set the attributes
