@@ -42,8 +42,14 @@ if defined SFSECURITY set SFLIBPATH=%SFHOME%\signedLib
 rem reset CLASSPATH
 set CLASSPATH=
 
+rem SF/lib (SF core libs)
 call "%SFHOME%\bin\setClassPath"
 
+rem SF/lib (SF core libs)
+set SFLIBPATH=%SFHOME%\lib.ext
+CALL "%SFHOME%\bin\setClassPath"
+
+rem now user defined classpaths
 if not defined SFUSERHOME goto continue2
   set SFLIBPATH=%SFUSERHOME%
   CALL "%SFHOME%\bin\setClassPath"

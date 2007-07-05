@@ -63,8 +63,8 @@ public class SFSecurity {
         try {
             if (alreadyInit == false) {
                 // Add the new RMIClassLoaderSpi
-                System.setProperty("java.rmi.server.RMIClassLoaderSpi",
-                    "org.smartfrog.sfcore.security." + "SFRMIClassLoaderSpi");
+                System.setProperty("java.rmi.server.RMIClassLoaderSpi", "org.smartfrog.sfcore.security." + "SFRMIClassLoaderSpi");
+
                 SFSecurityProperties.readSecurityProperties();
 
                 if (Boolean.getBoolean(SFSecurityProperties.propSecurityOn)) {
@@ -115,13 +115,15 @@ public class SFSecurity {
                     RMISocketFactory.setSocketFactory(securityEnv.getRMISocketFactory());
                     securityOn = true;
                 } else {
-
-//                     InetAddress rmissfBindAddr = InetAddress.getByName("guijarro-j-3.hpl.hp.com");
-//                     RMIClientSocketFactory  rmicsf = new org.smartfrog.sfcore.processcompound.SFClientSocketFactory();
-//                     RMIServerSocketFactory rmissf = new org.smartfrog.sfcore.processcompound.SFServerSocketFactory(rmissfBindAddr);
-//                     RMISocketFactory rmisf = new SFRMISocketFactory(rmicsf, rmissf);
-
-                    System.setSecurityManager(new DummySecurityManager());
+                    //System.setSecurityManager(new DummySecurityManager());
+                    // if a java.security.policy is set then we initialize standard java security
+                    // This is necessary for dynamic classloading to work.
+                    String secPro = System.getProperty("java.security.policy");
+                    if  (secPro!=null ) {
+                        System.out.println("New Security manager added, using: "+secPro);
+                        System.setSecurityManager(new SecurityManager());
+                    }
+                    
                     securityOn = false;
                     //Notification moved to SFSyten after the ini file is read.
                 }
