@@ -47,7 +47,6 @@ import java.lang.reflect.Constructor;
 import org.smartfrog.sfcore.logging.LogFactory;
 import org.smartfrog.sfcore.logging.LogSF;
 import org.smartfrog.sfcore.parser.ParseTimeResourceFactory;
-import org.smartfrog.sfcore.languages.sf.sfreference.SFReference;
 
 
 /**

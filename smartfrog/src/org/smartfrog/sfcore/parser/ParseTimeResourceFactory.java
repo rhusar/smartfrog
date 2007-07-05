@@ -1,6 +1,5 @@
 package org.smartfrog.sfcore.parser;
 
-import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.languages.sf.PhaseAction;
 import org.smartfrog.sfcore.reference.Function;
 
