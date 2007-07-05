@@ -323,12 +323,12 @@
 	<target name="startXMPP">
 		<exec dir="${xmpp.home}/bin" executable="cmd" os="Windows XP, Windows NT">
 			<arg value="/c"/>
-			<arg line="wildfire.exe"/>
+			<arg line="openfire.exe"/>
 		</exec>
 
 		<exec dir="${xmpp.home}/bin" executable="sh" os="Linux">
 			<arg value="/c"/>
-			<arg line="wildfire"/>
+			<arg line="openfire"/>
 		</exec>
 		
 	</target>
