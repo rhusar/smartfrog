@@ -34,7 +34,7 @@
 
     For JavaCC, download it from https://javacc.dev.java.net/ and install the
     relevant JAR files into the javacc subdirectory
-</description>
+  </description>
 
 
 
@@ -258,6 +258,7 @@
   <!-- =================================================================== -->
   <target name="release" depends="clean, dist,jdocs, generatedoc"
       description="Creates clean new release"/>
+
   <!-- =================================================================== -->
   <!--                                                                     -->
   <!-- =================================================================== -->
@@ -807,7 +808,6 @@
          </filterchain>
        </copy>
      </presetdef>
-
    </target>
 
 
@@ -925,7 +925,7 @@ ${ivy.reports.dir}
     <copy file="${sf-examples.jar}" todir="${artifacts.dir}" />
   </target>
 
-  <target name="ready-to-publish" depends="copy-target-jars,ivy-report,package-install-artifact"/>
+  <target name="ready-to-publish" depends="copy-target-jars,ivy-report,unzip-install-artifact"/>
 
   <target name="ivy-publish" depends="ready-to-publish" if="ivy.found">
     <ivy:publish resolver="local" pubrevision="${Version}"
@@ -957,18 +957,50 @@ ${ivy.reports.dir}
     </zip>
   </target>
 
-  <!--the install artifact is a snapshot of the dist tree-->
+  <!--
+  the install artifact is the core com
+  -->
   <target name="package-install-artifact" depends="artifact-names,ready-to-dist">
     <zip destfile="${sf-core-install.zip}">
-      <zipfileset dir="${dist.dir}" includes="**/*"/>
+      <zipfileset dir="${dist.dir}" >
+        <include name="**/*" />
+        <exclude name="lib/*" />
+        <exclude name="bin/sfGui*" />
+      </zipfileset>
+      <zipfileset dir="${dist.dir}/lib" prefix="lib">
+        <include name="${smartfrog.stub}.*" />
+        <include name="${sf-services.stub}.*" />
+        <include name="${sf-examples.stub}.*" />
+      </zipfileset>
     </zip>
   </target>
 
-  <target name="unzip-install-artifact" depends="package-install-artifact" >
-    <unzip src="${sf-core-install.zip}" dest="${artifacts.dir}/install"/>
+  <target name="unzip-install-artifact" depends="package-install-artifact,declare-assertions" >
+    <property name="unzip.install.dir" location="${artifacts.dir}/install" />
+    <unzip src="${sf-core-install.zip}" dest="${unzip.install.dir}"/>
+    <fileexists file="${unzip.install.dir}/lib/${smartfrog.stub}.jar" />
+    <fileexists file="${unzip.install.dir}/lib/${sf-services.stub}.jar" />
+    <fileexists file="${unzip.install.dir}/lib/${sf-examples.stub}.jar" />
   </target>
 
   <target name="publish-all" depends="published" />  
+
+  <!--declare some useful assertions-->
+  <target name="declare-assertions">
+    <macrodef name="fileexists">
+      <attribute name="file"/>
+      <sequential >
+        <fail>
+          <condition>
+            <not>
+              <available file="@{file}" />
+            </not>
+          </condition>
+          Missing file:@{file}
+        </fail>
+      </sequential>
+    </macrodef>
+  </target>
 
   <!-- ========================================================== -->
   <!-- print meaningful diagnostics -->
