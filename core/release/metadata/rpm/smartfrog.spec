@@ -46,11 +46,11 @@
 %define srcdir          %{basedir}/src
 %define examples        %{srcdir}/org/smartfrog/examples
 %define rcd             /etc/rc.d
-%define initsmartfrog   %{rcd}/init.d/hpsmartfrog
+%define initsmartfrog   %{rcd}/init.d/${rpm.daemon.name}
 %define logdir          ${rpm.log.dir}
 #this is some other log directory that gets picked up by logtofileimpl
 #see http://jira.smartfrog.org/jira/browse/SFOS-235
-%define logdir2         /tmp/sflogs
+#%define logdir2         /tmp/sflogs
 
 # -----------------------------------------------------------------------------
 
@@ -85,6 +85,9 @@ SmartFrog consists of a language for describing component collections and
 component configuration parameters, and a runtime environment which
 activates and manages the components to deliver and maintain running systems.
 SmartFrog and its components are implemented in Java.
+
+This RPM installs smartfrog into %{basedir} and adds scripts to /etc/profile.d
+and /etc/sysconfig so that SmartFrog is available on the command line.
 
 #In this RPM SmartFrog is configured to log to files /var/log/smartfrog_*.log with logLevel=3 (INFO)
 #using LogToFileImpl. The GUI is turned off.
@@ -125,9 +128,11 @@ Summary:        init.d and and /etc/ scripts for %{name}
 Requires:       %{name} = %{version}-%{release}
 #
 %description daemon
-This package provides the scripts for /etc/rc.d, /etc/profile.d and /etc/sysconfig for SmartFrog to be available on the command line and as a startup daemon. 
+This package provides the scripts for /etc/rc.d, as a startup daemon.
 
-Running the SmartFrog as a daemon is a security risk unless the daemon is set up with security, especially if port 3800 is openened in the firewall. At that point anyone can get a process running as root to run any program they wish.
+Running the SmartFrog as a daemon is a security risk unless the daemon
+is set up with security, especially if port 3800 is openened in the firewall.
+At that point anyone can get a process running as root to run any program they wish.
 
 
 # -----------------------------------------------------------------------------
@@ -208,15 +213,15 @@ mkdir -p %{logdir}
 chmod a+wx %{logdir}
 chgrp ${rpm.groupname} %{logdir}
 chown ${rpm.username} %{logdir}
-mkdir -p %{logdir2}
-chmod a+wx %{logdir2}
-chgrp ${rpm.groupname} %{logdir2}
-chown ${rpm.username} %{logdir2}
+#mkdir -p %{logdir2}
+#chmod a+wx %{logdir2}
+#chgrp ${rpm.groupname} %{logdir2}
+#chown ${rpm.username} %{logdir2}
 
 %postun
 #at uninstall time, we delete all logs
 rm -rf %{logdir}
-rm -rf %{logdir2}
+#rm -rf %{logdir2}
 
 # -----------------------------------------------------------------------------
 
@@ -255,7 +260,7 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755, ${rpm.username},${rpm.groupname}) %{bindir}/sfDetachAndTerminate
 %attr(755, ${rpm.username},${rpm.groupname}) %{bindir}/sfDiag
 %attr(755, ${rpm.username},${rpm.groupname}) %{bindir}/sfDiagnostics
-%attr(755, ${rpm.username},${rpm.groupname}) %{bindir}/sfGui
+#%attr(755, ${rpm.username},${rpm.groupname}) %{bindir}/sfGui
 %attr(755, ${rpm.username},${rpm.groupname}) %{bindir}/sfManagementConsole
 %attr(755, ${rpm.username},${rpm.groupname}) %{bindir}/sfParse
 %attr(755, ${rpm.username},${rpm.groupname}) %{bindir}/sfPing
@@ -274,12 +279,8 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755, ${rpm.username},${rpm.groupname}) %{binsecurity}/smartfrog
 %attr(755, ${rpm.username},${rpm.groupname}) %{binsecurity}/sfDaemon
 %attr(755, ${rpm.username},${rpm.groupname}) %{binsecurity}/sfDetachAndTerminate
-#%attr(755, ${rpm.username},${rpm.groupname}) %{binsecurity}/sfDiag
-#%attr(755, ${rpm.username},${rpm.groupname}) %{binsecurity}/sfDiagnostics
-#%attr(755, ${rpm.username},${rpm.groupname}) %{binsecurity}/sfGui
 %attr(755, ${rpm.username},${rpm.groupname}) %{binsecurity}/sfManagementConsole
 %attr(755, ${rpm.username},${rpm.groupname}) %{binsecurity}/sfParse
-#%attr(755, ${rpm.username},${rpm.groupname}) %{binsecurity}/sfPing
 %attr(755, ${rpm.username},${rpm.groupname}) %{binsecurity}/sfRun
 %attr(755, ${rpm.username},${rpm.groupname}) %{binsecurity}/sfStart
 %attr(755, ${rpm.username},${rpm.groupname}) %{binsecurity}/sfStop
@@ -297,7 +298,10 @@ rm -rf $RPM_BUILD_ROOT
 %{basedir}/private
 %{basedir}/signedLib
 
-
+#and the shell scripts
+%attr(755, root,root) /etc/profile.d/smartfrog.sh
+%attr(755, root,root) /etc/profile.d/smartfrog.csh
+/etc/sysconfig/smartfrog
 
 #%doc # add docs here
 #%{javadir}/*
@@ -327,45 +331,45 @@ rm -rf $RPM_BUILD_ROOT
 # -----------------------------------------------------------------------------
 #after installing, we set symlinks
 %post daemon
-rm -f %{rcd}/rc0.d/K60hpsmartfrog
-rm -f %{rcd}/rc1.d/K60hpsmartfrog
-rm -f %{rcd}/rc2.d/S60hpsmartfrog
-rm -f %{rcd}/rc3.d/S60hpsmartfrog
-rm -f %{rcd}/rc4.d/S60hpsmartfrog
-rm -f %{rcd}/rc5.d/S60hpsmartfrog
-rm -f %{rcd}/rc6.d/S60hpsmartfrog
+rm -f %{rcd}/rc0.d/K60${rpm.daemon.name}
+rm -f %{rcd}/rc1.d/K60${rpm.daemon.name}
+rm -f %{rcd}/rc2.d/S60${rpm.daemon.name}
+rm -f %{rcd}/rc3.d/S60${rpm.daemon.name}
+rm -f %{rcd}/rc4.d/S60${rpm.daemon.name}
+rm -f %{rcd}/rc5.d/S60${rpm.daemon.name}
+rm -f %{rcd}/rc6.d/S60${rpm.daemon.name}
 
-ln -s %{initsmartfrog} %{rcd}/rc0.d/K60hpsmartfrog
-ln -s %{initsmartfrog} %{rcd}/rc1.d/K60hpsmartfrog
-ln -s %{initsmartfrog} %{rcd}/rc2.d/S60hpsmartfrog
-ln -s %{initsmartfrog} %{rcd}/rc3.d/S60hpsmartfrog
-ln -s %{initsmartfrog} %{rcd}/rc4.d/S60hpsmartfrog
-ln -s %{initsmartfrog} %{rcd}/rc5.d/S60hpsmartfrog
-ln -s %{initsmartfrog} %{rcd}/rc6.d/S60hpsmartfrog
+ln -s %{initsmartfrog} %{rcd}/rc0.d/K60${rpm.daemon.name}
+ln -s %{initsmartfrog} %{rcd}/rc1.d/K60${rpm.daemon.name}
+ln -s %{initsmartfrog} %{rcd}/rc2.d/S60${rpm.daemon.name}
+ln -s %{initsmartfrog} %{rcd}/rc3.d/S60${rpm.daemon.name}
+ln -s %{initsmartfrog} %{rcd}/rc4.d/S60${rpm.daemon.name}
+ln -s %{initsmartfrog} %{rcd}/rc5.d/S60${rpm.daemon.name}
+ln -s %{initsmartfrog} %{rcd}/rc6.d/S60${rpm.daemon.name}
 
 # -----------------------------------------------------------------------------
 # at uninstall time, we blow away the symlinks
 %postun daemon
-rm %{rcd}/rc0.d/K60hpsmartfrog
-rm %{rcd}/rc1.d/K60hpsmartfrog
-rm %{rcd}/rc2.d/S60hpsmartfrog
-rm %{rcd}/rc3.d/S60hpsmartfrog
-rm %{rcd}/rc4.d/S60hpsmartfrog
-rm %{rcd}/rc5.d/S60hpsmartfrog
-rm %{rcd}/rc6.d/S60hpsmartfrog
+rm -f %{rcd}/rc0.d/K60${rpm.daemon.name}
+rm -f %{rcd}/rc1.d/K60${rpm.daemon.name}
+rm -f %{rcd}/rc2.d/S60${rpm.daemon.name}
+rm -f %{rcd}/rc3.d/S60${rpm.daemon.name}
+rm -f %{rcd}/rc4.d/S60${rpm.daemon.name}
+rm -f %{rcd}/rc5.d/S60${rpm.daemon.name}
+rm -f %{rcd}/rc6.d/S60${rpm.daemon.name}
 
 %files daemon
 #and the etc stuff
 %defattr(0644,root,root,0755)
-%attr(755, root,root) /etc/rc.d/init.d/hpsmartfrog
-%attr(755, root,root) /etc/profile.d/smartfrog.sh
-%attr(755, root,root) /etc/profile.d/smartfrog.csh
-/etc/sysconfig/smartfrog
+%attr(755, root,root) /etc/rc.d/init.d/${rpm.daemon.name}
+
 # -----------------------------------------------------------------------------
 
 %changelog
 # to get the date, run:   date +"%a %b %d %y"
-
+* Tue Jul 03 2007 Steve Loughran <steve_l@users.sourceforge.net> 3.11.0001-1
+- moved scripts to smartfrog.rpm
+- moved directories
 * Fri Jun 22 2007 Steve Loughran <steve_l@users.sourceforge.net> 3.11.0000-3
 - fixing permissions of the log directory; creating a new user on demand
 * Tue May 22 2007 Steve Loughran <steve_l@users.sourceforge.net> 3.11.0000-1
