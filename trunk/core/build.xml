@@ -426,7 +426,7 @@ For more information: www.smartfrog.org
           <exclude name="cdl/build.xml" unless="cdl.enabled"/>
           <!--not ready for ivy builds yet-->
           <exclude name="sfgui/build.xml" unless="sfgui.enabled"/>
-          <exclude name="extras/avalanche/**/build.xml" unless="avalanche.enabled"/>
+          <exclude name="avalanche/**/build.xml" unless="avalanche.enabled"/>
         </fileset>
         <fileset dir="components" includes="**/build.xml" >
           <!--no cddlm here-->
