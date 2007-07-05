@@ -878,8 +878,9 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
      */
     public static ComponentDescription sfComponentDescription(String url,
                   String language, Vector phases, Reference ref, String codebase)
-        throws SmartFrogException {
-        Phases descr = null;
+        throws SmartFrogException
+    {
+        Phases descr;
         try {
             descr = (new SFParser(language)).sfParseResource(url,codebase);
         } catch (Exception thr) {
@@ -888,7 +889,7 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
                 +" ["+ thr.toString()+"]", thr);
         }
         try {
-            if (phases==null) {
+            if (phases == null) {
                descr = descr.sfResolvePhases();
             } else {
                descr = descr.sfResolvePhases(phases);
@@ -906,7 +907,7 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
         }
         if (!(obj instanceof ComponentDescription)){
            throw new SmartFrogResolutionException(null,null,"Error resolving '"
-                 +ref.toString()+"' in "+ url
+                 + ref + "' in " + url
                  + ". The result is not a ComponentDescription, resolved to: "
                  + obj.toString()
                  +" ("+obj.getClass().getName()+")" );
