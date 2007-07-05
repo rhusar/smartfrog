@@ -12,6 +12,6 @@ rem -- Dynamic classloading: CODEBASE --
 set SERVER=http://localhost:8080
 set CODEBASE="%SERVER%/sfExamples.jar"
 
-set SFCODEBASE="-Dorg.smartfrog.codebase=%CODEBASE%"
+set SFCODEBASE=-Djava.security.policy=="%SFHOME%\private\sf.no.security.policy" -Djava.security.manager -Dorg.smartfrog.codebase=%CODEBASE%
 
 rem -------------------End user properties-------------------------

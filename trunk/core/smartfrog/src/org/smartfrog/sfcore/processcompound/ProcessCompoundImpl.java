@@ -1307,13 +1307,14 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
             }
         }
 
-        if (SFSecurity.isSecurityOn()) {
-            // Pass java.security.policy
-            String secProp = props.getProperty("java.security.policy");
+        // Pass java.security.policy if it is defined
+        String secProp = props.getProperty("java.security.policy");
 
-            if (secProp != null) {
-                cmd.addElement("-Djava.security.policy=" + secProp);
-            }
+        if (secProp != null) {
+            cmd.addElement("-Djava.security.policy=" + secProp);
+        }
+
+        if (SFSecurity.isSecurityOn()) {
 
             // org.smartfrog.sfcore.security.propFile
             secProp = props.getProperty(SFSecurityProperties.propPropertiesFileName);

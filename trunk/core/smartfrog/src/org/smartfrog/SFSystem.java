@@ -553,19 +553,8 @@ public class SFSystem implements MessageKeys {
             // Read init properties
             readPropertiesFromIniFile();
             sfLog();
-            // Notify status of Security
-            if (!SFSecurity.isSecurityOn()){
-                String securityRequired = System.getProperty(SFSecurityProperties.propSecurityRequired,"false");
-                Boolean secured=Boolean.valueOf(securityRequired);
-                if(secured.booleanValue()) {
-                    //we need security, but it is not enabled
-                    throw new SFGeneralSecurityException(MessageUtil.formatMessage(ERROR_NO_SECURITY_BUT_REQUIRED));
-                }
-                if (sfLog().isWarnEnabled()) {
-                    sfLog().warn(MessageUtil.formatMessage(WARN_NO_SECURITY));
-                }
+            notifySecurityStatus();
 
-            }
             // Init logging properties
             Logger.init();
 
@@ -580,6 +569,27 @@ public class SFSystem implements MessageKeys {
                 }
             }
             alreadySystemInit = true;
+        }
+    }
+
+    public static void notifySecurityStatus() throws SFGeneralSecurityException {
+        // Notify status of Security
+        if (!SFSecurity.isSecurityOn()){
+            String securityRequired = System.getProperty(SFSecurityProperties.propSecurityRequired,"false");
+            Boolean secured=Boolean.valueOf(securityRequired);
+            if(secured.booleanValue()) {
+                //we need security, but it is not enabled
+                throw new SFGeneralSecurityException(MessageUtil.formatMessage(ERROR_NO_SECURITY_BUT_REQUIRED));
+            }
+            if (sfLog().isWarnEnabled()) {
+                sfLog().warn(MessageUtil.formatMessage(WARN_NO_SECURITY));
+            }
+
+        }
+        // if this property is set the a sec manager is created
+        String secPro = System.getProperty("java.security.policy");
+        if  (secPro!=null ) {
+            if (sfLog().isDebugEnabled()) sfLog().debug("Using java security policy: "+secPro);
         }
     }
 
