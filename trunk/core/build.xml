@@ -47,6 +47,7 @@ For more information: www.smartfrog.org
     <property name="extras.dir" location="extras" />
     <property name="ant.project" location="${extras.dir}/ant" />
     <property file="${components.project}/libraries.properties" />
+    <property name="maven.enabled" value="false" />
     <!-- work out our java version by introspection -->
     <condition property="java1.5+" >
       <available classname="java.lang.Readable"/>
@@ -302,28 +303,36 @@ For more information: www.smartfrog.org
 <!-- =================================================================== -->
 <!--  Maven site:generate-->
 <!-- =================================================================== -->
-  <target name="mavenReport" depends="svnupdate" 
-    description="run 'maven site:generate'" if="maven.present">
-        <exec executable="maven" dir="${cruise.base.dir}">
-            <arg line="site:generate" />
-        </exec>
-    </target>
 
-  <target name="mavenReportNoSVNUpdate"  
-    description="run 'maven site:generate'" if="maven.present">
-        <exec executable="maven" dir="${cruise.base.dir}">
-            <arg line="site:generate" />
-        </exec>
-    </target>
+  <target name="mavenReport" depends="svnupdate,mavenReportNoSVNUpdate"
+    description="run 'maven site:generate'" >
+  </target>
+
+  <target name="mavenReportNoSVNUpdate"
+      description="run 'maven site:generate'" if="should.maven">
+    <exec executable="maven" dir="${cruise.base.dir}" failonerror="true">
+      <arg value="site:generate"/>
+    </exec>
+  </target>
+
+
+
+  <target name="ready-to-maven" depends="init">
+    <condition property="should.maven">
+      <and>
+        <isset property="maven.present"/>
+        <istrue value="${maven.enabled}" />
+      </and>
+    </condition>
+
+
+
+  </target>
 
   <!-- =================================================================== -->
   <!-- release all sub-projects                                              -->
   <!-- =================================================================== -->
-  <target name="old-release" depends="init" description="release">
-    <forward2 dir="${main.project}" target="dist"  />
-    <forward2 dir="${ant.project}" target="dist"  />
-    <forward2 dir="${components.project}" target="release" antfile="createRelease.xml"  />
-  </target>
+
 
   <target name="release" depends="clean,ivy-purge,dist"
       description="create a clean release -purges all artifacts from the ivy repository too"
