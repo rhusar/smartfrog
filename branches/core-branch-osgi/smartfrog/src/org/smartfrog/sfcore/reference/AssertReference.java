@@ -1,15 +1,13 @@
 package org.smartfrog.sfcore.reference;
 
-import org.smartfrog.sfcore.common.*;
-
-import org.smartfrog.sfcore.security.SFClassLoader;
+import org.smartfrog.sfcore.common.Copying;
+import org.smartfrog.sfcore.common.SmartFrogAssertionResolutionException;
+import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.componentdescription.ComponentDescriptionImpl;
-import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimImpl;
 
 import java.io.Serializable;
-import java.util.Iterator;
 
 /**
  * The subclass of Reference that is a function application. The structure of the classes is
@@ -33,14 +31,14 @@ public class AssertReference extends ApplyReference implements Copying, Cloneabl
      * Checks if this and given reference are equal. Two references are
      * considered to be equal if the component they wrap are ==
      *
-     * @param ref to be compared
+     * @param o to be compared
      * @return true if equal, false if not
      */
-    public boolean equals(Object ref) {
-        if (!(ref instanceof AssertReference))
+    public boolean equals(Object o) {
+        if (!(o instanceof AssertReference))
             return false;
         
-        return super.equals(ref);
+        return super.equals(o);
     }
 
     /**

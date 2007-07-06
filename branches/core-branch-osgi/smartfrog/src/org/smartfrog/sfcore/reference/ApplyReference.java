@@ -61,19 +61,16 @@ public class ApplyReference extends Reference implements Copying, Cloneable, Ser
      * Checks if this and given reference are equal. Two references are
      * considered to be equal if the component they wrap are ==
      *
-     * @param ref to be compared
+     * @param o to be compared
      * @return true if equal, false if not
      */
-    public boolean equals(Object ref) {
-        if (!(ref instanceof ApplyReference)) {
+    public boolean equals(Object o) {
+        if (!(o instanceof ApplyReference)) {
             return false;
         }
 
-        if (((ApplyReference) ref).comp != comp) {
-            return false;
-        }
+        return ((ApplyReference) o).comp == comp;
 
-        return true;
     }
 
     /**
@@ -127,26 +124,20 @@ public class ApplyReference extends Reference implements Copying, Cloneable, Ser
 
         initComp(rr);
 
-        Object result = createAndApplyFunction(rr, remote);
-
-        return result;
+        return createAndApplyFunction(rr, remote);
     }
 
 
     private Object createAndApplyFunction(Object rr, boolean remote) throws SmartFrogResolutionException {
-        Object result;
+        Context forFunction;
+        Function function;
+
         try {
             // First try to use the new syntax
             ComponentDescription metadata = (ComponentDescription) comp.sfResolveHere(SmartFrogCoreKeys.SF_METADATA);
-            Context forFunction = createContext(SmartFrogCoreKeys.SF_METADATA);
-            Function function = createFunction(metadata);
+            forFunction = createContext(SmartFrogCoreKeys.SF_METADATA);
+            function = createFunction(metadata);
 
-            try {
-                if (remote) result = function.doit(forFunction, null, (RemoteReferenceResolver) rr);
-                else result = function.doit(forFunction, null, (ReferenceResolver) rr);
-            } catch (SmartFrogException e) {
-                throw new SmartFrogResolutionException("Function invocation failed", e);
-            }
         } catch (ClassCastException cce) {
             throw new SmartFrogResolutionException("The sfMeta attribute is not a DATA block", cce);
 
@@ -160,11 +151,18 @@ public class ApplyReference extends Reference implements Copying, Cloneable, Ser
             } catch (ClassCastException cce) {
                 throw new SmartFrogResolutionException("function class is not a string", cce);
             }
-            Context forFunction = createContext(SmartFrogCoreKeys.SF_FUNCTION_CLASS);
-            result = createFunctionOldSyntax(functionClass);
-
+            forFunction = createContext(SmartFrogCoreKeys.SF_FUNCTION_CLASS);
+            function = createFunctionOldSyntax(functionClass);         
         }
-        return result;
+        
+        try {
+            if (remote)
+                return function.doit(forFunction, null, (RemoteReferenceResolver) rr);
+            else
+                return function.doit(forFunction, null, (ReferenceResolver) rr);
+        } catch (SmartFrogException e) {
+            throw new SmartFrogResolutionException("Function invocation failed", e);
+        }
     }
 
     private Function createFunctionOldSyntax(String functionClass) throws SmartFrogResolutionException {
