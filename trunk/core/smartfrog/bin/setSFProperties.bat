@@ -5,10 +5,10 @@ rem  SF ENV PROPERTIES  - Please edit with your preferences
 rem  ------------------------------------------------------
 
 rem Uncomment to enable Dynamic ClassLoading
-rem  set SFDYNAMICCLASSLOADING_ON=ENABLED
+rem set SFDYNAMICCLASSLOADING_ON=ENABLED
 
 rem Uncomment to enable Security
-rem  set SFSECURITY_ON=ENABLED
+rem set SFSECURITY_ON=ENABLED
 
 rem To define a user classpath, use variable SFUSERCLASSPATH
 rem set SFUSERCLASSPATH=.
@@ -32,9 +32,9 @@ if defined SFDYNAMICCLASSLOADING_ON call "%SFHOME%\bin\setSFDynamicClassLoadingP
 if defined SFSECURITY_ON call "%SFHOME%\bin\setSFSecurityProperties"
 
 
-if defined SFSECURITY   set SFCMDPARAMETERS=%SFCMDPARAMETERS% %SFSECURITY%
 if defined SFDEFAULTINI set SFCMDPARAMETERS=%SFCMDPARAMETERS% %SFDEFAULTINI%
 if defined SFCODEBASE   set SFCMDPARAMETERS=%SFCMDPARAMETERS% %SFCODEBASE%
+if defined SFSECURITY   set SFCMDPARAMETERS=%SFCMDPARAMETERS% %SFSECURITY%
 
 set SFLIBPATH=%SFHOME%\lib
 if defined SFSECURITY set SFLIBPATH=%SFHOME%\signedLib
