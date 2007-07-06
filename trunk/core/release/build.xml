@@ -507,7 +507,7 @@
           username="${ssh.user}"
           passphrase="${ssh.passphrase}"
           trust="${ssh.trust}"
-          timeout="60000"
+          timeout="6000000"
           keyfile="${ssh.keyfile}"
           />
     </presetdef>
@@ -589,6 +589,10 @@
 
   <target name="upload-no-rebuild" depends="can-upload,scp-upload,ftp-upload"
       description="upload the existing artifacts"/>
+
+  <target name="checksums" depends="ready-to-upload-rpms">
+
+  </target>
 
   <!--
         ====================================================
