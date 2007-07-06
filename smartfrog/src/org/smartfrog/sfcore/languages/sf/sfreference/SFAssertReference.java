@@ -15,11 +15,26 @@ import java.util.Iterator;
 /**
  * Representation of Assert Reference for the SF Language
  */
-public class SFAssertReference extends SFApplyReference implements ReferencePhases {    
+public class SFAssertReference extends SFReference implements ReferencePhases {
+    protected SFComponentDescription comp;
     protected SFComponentDescription copyComp;
 
     public SFAssertReference(SFComponentDescription comp) {
-        super(comp);
+        super();
+        this.comp = comp;
+    }
+
+    /**
+     * Get tje run-time version of the reference
+     *
+     * @return the reference
+     * @throws org.smartfrog.sfcore.common.SmartFrogCompilationException
+     */
+    public Reference sfAsReference() throws SmartFrogCompilationException {
+        AssertReference ar = new AssertReference(comp.sfAsComponentDescription());
+        ar.setEager(getEager());
+        ar.setData(getData());
+        return ar;
     }
 
     /**
@@ -29,9 +44,11 @@ public class SFAssertReference extends SFApplyReference implements ReferencePhas
      * @see org.smartfrog.sfcore.common.Copying
      */
     public Object copy() {
-        SFAssertReference ret = (SFAssertReference) super.copy();
+        SFAssertReference ret = (SFAssertReference) clone();
 
+        ret.comp = (SFComponentDescription) comp.copy();
         ret.setEager(eager);
+
         return ret;
     }
 
@@ -42,9 +59,10 @@ public class SFAssertReference extends SFApplyReference implements ReferencePhas
      * @return clone of reference
      */
     public Object clone() {
-        SFAssertReference res = (SFAssertReference) super.clone();        
-
+        SFAssertReference res = (SFAssertReference) super.clone();
+        res.comp = comp;
         res.setEager(eager);
+
         return res;
     }
 
@@ -52,14 +70,26 @@ public class SFAssertReference extends SFApplyReference implements ReferencePhas
      * Checks if this and given reference are equal. Two references are
      * considered to be equal if the component they wrap are ==
      *
-     * @param o to be compared
+     * @param ref to be compared
      * @return true if equal, false if not
      */
-    public boolean equals(Object o) {
-        if (!(o instanceof SFAssertReference))
+    public boolean equals(Object ref) {
+        if (!(ref instanceof SFAssertReference)) {
             return false;
+        }
 
-        return super.equals(o);
+        return ((SFAssertReference) ref).comp == comp;
+
+    }
+
+    /**
+     * Returns the hashcode for this reference. Hash code for reference is made
+     * out of the sum of the parts hashcodes
+     *
+     * @return integer hashcode
+     */
+    public int hashCode() {
+        return comp.hashCode();
     }
 
     /**
@@ -79,7 +109,7 @@ public class SFAssertReference extends SFApplyReference implements ReferencePhas
         //     resolve all non-sf attributes, if they are links
         //     if any return s LAZY object, set self to lazy and return self, otherwise update copy
         //     and invoke function with copy of CD, return result
-        
+
         Context forFunction = new ContextImpl();
         String functionClass = null;
         Object result;
@@ -119,7 +149,14 @@ public class SFAssertReference extends SFApplyReference implements ReferencePhas
                 Object value = null;
                 try {
                      value = comp.sfResolve(new Reference(ReferencePart.here(name)));
-                    addAttributeToContext(name, value, forFunction);
+                     try {
+                        comp.sfReplaceAttribute(name, value);
+                        forFunction.sfAddAttribute(name, value);
+                    } catch (SmartFrogContextException e) {
+                        //shouldn't happen
+                    } catch (SmartFrogRuntimeException e) {
+                        //shouldn't happen
+                    }
                 } catch (SmartFrogLazyResolutionException e) {
                     if (assertionPhase.equals("static")) {
                         throw new SmartFrogResolutionException("Static assertion cannot evaluate due to LAZY attributes");
@@ -155,7 +192,7 @@ public class SFAssertReference extends SFApplyReference implements ReferencePhas
                 Function function = (Function) SFClassLoader.forName(functionClass).newInstance();
                 result = function.doit(forFunction, null, rr);
             } catch (Exception e) {
-                System.out.println("obtained " + e);                
+                System.out.println("obtained " + e);
                 throw (SmartFrogResolutionException)SmartFrogResolutionException.forward("failed to create or evaluate function class " + functionClass + " with data " + forFunction, e);
             }
         }
@@ -207,9 +244,9 @@ public class SFAssertReference extends SFApplyReference implements ReferencePhas
         //     if any return s LAZY object, set self to lazy and return self, otherwise update copy
         //     and invoke function with copy of CD, return result
         Context forFunction = new ContextImpl();
-        String functionClass;
+        String functionClass = null;
         Object result;
-        String assertionPhase;
+        String assertionPhase = "dynamic";
         boolean hasLazy = false;
         copyComp = (SFComponentDescription)comp.copy();
 
@@ -242,16 +279,25 @@ public class SFAssertReference extends SFApplyReference implements ReferencePhas
 
             String nameS = name.toString();
             if (!nameS.equals("sfFunctionClass") && !nameS.equals("sfAssertionPhase")) {
-                Object value;
+                Object value = null;
                 try {
                      value = comp.sfResolve(new Reference(ReferencePart.here(name)));
-                    addAttributeToContext(name, value, forFunction);
+                     try {
+                        comp.sfReplaceAttribute(name, value);
+                        forFunction.sfAddAttribute(name, value);
+                    } catch (SmartFrogContextException e) {
+                        //shouldn't happen
+                    } catch (SmartFrogRuntimeException e) {
+                        //shouldn't happen
+                    }
                 } catch (SmartFrogLazyResolutionException e) {
                     if (assertionPhase.equals("static")) {
                         throw new SmartFrogResolutionException("Static assertion cannot evaluate due to LAZY attributes");
                     }
                     hasLazy = true;
                 }
+
+
             }
         }
 
