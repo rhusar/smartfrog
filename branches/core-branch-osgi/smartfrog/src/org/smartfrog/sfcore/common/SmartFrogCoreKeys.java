@@ -347,4 +347,5 @@ public interface SmartFrogCoreKeys {
      */
     public static final String SF_METADATA = "sfMeta";
 
+    public static final String SF_FUNCTION_CLASS = "sfFunctionClass";
 }

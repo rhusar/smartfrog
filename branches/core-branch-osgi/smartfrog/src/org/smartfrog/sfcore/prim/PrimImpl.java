@@ -788,11 +788,7 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
                 SFProcess.getProcessCompound().sfDeRegister(this);
             }
         } catch (Exception ex) {
-            // @TODO: Log. Ignore.
-            //Logger.logQuietly(ex);
-            if (sfLog().isIgnoreEnabled()){
-              sfLog().ignore(ex);
-            }
+            sfLog().ignore(ex);            
         }
     }
 
@@ -1045,11 +1041,7 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
         try {
             sfTerminateWithHooks.applyHooks(this, status);
         } catch (Exception ex) {
-            // @TODO: Log. Ignore.
-            //Logger.logQuietly(ex);
-            if (sfLog().isIgnoreEnabled()){
-              sfLog().ignore(ex);
-            }
+            sfLog().ignore(ex);
         }
 
         deregisterWithProcessCompound();
@@ -1117,9 +1109,7 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
         try {
             org.smartfrog.sfcore.security.SecureRemoteObject.unexportObject(this, true);
         } catch (NoSuchObjectException ex) {
-            // @TODO: Log. Ignore.
-            //Logger.logQuietly(ex);
-            if (sfLog().isIgnoreEnabled()){ sfLog().ignore(ex); }
+            sfLog().ignore(ex);
         }
 
         //synchronized (this) {
@@ -1159,9 +1149,7 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
             sfStartLivenessSender();
             sfParentageChanged();
         } catch (SmartFrogResolutionException ex){
-            //@Todo: log
-            sfLog().ignore("unknown at detach time",ex);
-            //ignore
+            sfLog().ignore("unknown at detach time", ex);            
         }
 
     }
@@ -1180,7 +1168,7 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
             sfParent = null;
             terminateNotifying(status, null);
         } catch (Exception ex) {
-            if (sfLog().isIgnoreEnabled()){ sfLog().ignore(ex); }
+            sfLog().ignore(ex);
         }
     }
 

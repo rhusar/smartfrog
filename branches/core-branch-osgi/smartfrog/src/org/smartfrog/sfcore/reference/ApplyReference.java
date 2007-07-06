@@ -1,16 +1,12 @@
 package org.smartfrog.sfcore.reference;
 
 import org.smartfrog.sfcore.common.*;
-
-import org.smartfrog.sfcore.languages.sf.sfcomponentdescription.SFComponentDescription;
-import org.smartfrog.sfcore.security.SFClassLoader;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
+import org.smartfrog.sfcore.parser.ParseTimeResourceFactory;
 import org.smartfrog.sfcore.prim.Prim;
 
 import java.io.Serializable;
-import java.util.Enumeration;
 import java.util.Iterator;
-import java.rmi.RemoteException;
 
 /**
  * The subclass of Reference that is a function application. The structure of the classes is
@@ -25,6 +21,8 @@ import java.rmi.RemoteException;
  * If
  */
 public class ApplyReference extends Reference implements Copying, Cloneable, Serializable {
+    // This will cause NotSerializableExceptions if someone tries to serialize us,
+    // but the class should not be Serializable anyway
     protected ComponentDescription comp;
 
     public ApplyReference(ComponentDescription comp) {
@@ -94,57 +92,13 @@ public class ApplyReference extends Reference implements Copying, Cloneable, Ser
      * @param rr    ReferenceResolver to be used for resolving this reference
      * @param index index of first referencepart to start resolving at
      * @return value found on resolving this function
-     * @throws SmartFrogResolutionException if reference failed to resolve
+     * @throws org.smartfrog.sfcore.common.SmartFrogResolutionException
+     *          if reference failed to resolve
      */
     public Object resolve(ReferenceResolver rr, int index)
-            throws SmartFrogResolutionException {
-        //take a new context...
-        //     iterate over the attributes of comp- ignoring any beginning with sf;
-        //     cache sfFunctionClass attribute;
-        //     resolve all non-sf attributes, if they are links
-        //     if any return s LAZY object, set self to lazy and return self, otherwise update copy
-        //     and invoke function with copy of CD, return result
-
-        Context forFunction = new ContextImpl();
-        String functionClass = null;
-        Object result;
-
-        if (getData()) return this;
-
-        if (rr instanceof ComponentDescription)
-            comp.setParent((ComponentDescription) rr);
-        else if (rr instanceof Prim)
-            comp.setPrimParent((Prim) rr);
-
-        try {
-            functionClass = (String) comp.sfResolveHere("sfFunctionClass");
-        } catch (ClassCastException e) {
-            throw new SmartFrogResolutionException("function class is not a string", e);
-        }
-
-        for (Iterator v = comp.sfAttributes(); v.hasNext();) {
-            Object name = v.next();
-            String nameS = name.toString();
-            if (!nameS.equals("sfFunctionClass")){
-                Object value = comp.sfResolve(new Reference(ReferencePart.here(name)));
-                try {
-                    forFunction.sfAddAttribute(name, value);
-                } catch (SmartFrogContextException e) {
-                    //shouldn't happen
-                }
-            }
-        }
-        if (functionClass == null) {
-            throw new SmartFrogResolutionException("unknown function class ");
-        }
-        try {
-            Function function = (Function) (SFClassLoader.forName((String) functionClass)
-                    .newInstance());
-            result = function.doit(forFunction, null, rr);
-        } catch (Exception e) {
-            throw new SmartFrogResolutionException("failed to create function class " + functionClass, e);
-        }
-        return result;
+            throws SmartFrogResolutionException
+    {
+        return doResolve(rr, false);
     }
 
     /**
@@ -153,61 +107,118 @@ public class ApplyReference extends Reference implements Copying, Cloneable, Ser
      * @param rr    ReferenceResolver to be used for resolving this reference
      * @param index index of first referencepart to start resolving at
      * @return value found on resolving this function
-     * @throws SmartFrogResolutionException if reference failed to resolve
+     * @throws org.smartfrog.sfcore.common.SmartFrogResolutionException
+     *          if reference failed to resolve
      */
     public Object resolve(RemoteReferenceResolver rr, int index)
-            throws SmartFrogResolutionException {
-        //take a new context...
+            throws SmartFrogResolutionException
+    {
+        return doResolve(rr, true);
+    }
+
+    private Object doResolve(Object rr, final boolean remote) throws SmartFrogResolutionException {//take a new context...
         //     iterate over the attributes of comp- ignoring any beginning with sf;
         //     cache sfFunctionClass attribute;
         //     resolve all non-sf attributes, if they are links
         //     if any return s LAZY object, set self to lazy and return self, otherwise update copy
         //     and invoke function with copy of CD, return result
-        Context forFunction = new ContextImpl();
-        String functionClass = null;
+
+        if (getData()) return this;
+
+        initComp(rr);
+
+        Object result = createAndApplyFunction(rr, remote);
+
+        return result;
+    }
+
+
+    private Object createAndApplyFunction(Object rr, boolean remote) throws SmartFrogResolutionException {
         Object result;
+        try {
+            // First try to use the new syntax
+            ComponentDescription metadata = (ComponentDescription) comp.sfResolveHere(SmartFrogCoreKeys.SF_METADATA);
+            Context forFunction = createContext(SmartFrogCoreKeys.SF_METADATA);
+            Function function = createFunction(metadata);
 
-        if (getData()) {
-            return this;
-        }
+            try {
+                if (remote) result = function.doit(forFunction, null, (RemoteReferenceResolver) rr);
+                else result = function.doit(forFunction, null, (ReferenceResolver) rr);
+            } catch (SmartFrogException e) {
+                throw new SmartFrogResolutionException("Function invocation failed", e);
+            }
+        } catch (ClassCastException cce) {
+            throw new SmartFrogResolutionException("The sfMeta attribute is not a DATA block", cce);
 
-        if (rr instanceof ComponentDescription) {
-            comp.setParent((ComponentDescription) rr);
-        } else if (rr instanceof Prim) {
-            comp.setPrimParent((Prim) rr);
+
+        } catch (SmartFrogResolutionException e) {
+
+            // Using the old syntax
+            String functionClass;
+            try {
+                functionClass = (String) comp.sfResolveHere(SmartFrogCoreKeys.SF_FUNCTION_CLASS);
+            } catch (ClassCastException cce) {
+                throw new SmartFrogResolutionException("function class is not a string", cce);
+            }
+            Context forFunction = createContext(SmartFrogCoreKeys.SF_FUNCTION_CLASS);
+            result = createFunctionOldSyntax(functionClass);
+
         }
+        return result;
+    }
+
+    private Function createFunctionOldSyntax(String functionClass) throws SmartFrogResolutionException {
+        if (functionClass == null)
+            throw new SmartFrogResolutionException("unknown function class");
 
         try {
-            functionClass = (String) comp.sfResolveHere("sfFunctionClass");
-        } catch (ClassCastException e) {
-            throw new SmartFrogResolutionException("function class is not a string", e);
+            return (Function) Class.forName(functionClass).newInstance();
+        } catch (Exception e) {
+            throw new SmartFrogResolutionException("failed to create function class " + functionClass, e);
         }
+    }
 
+    private Function createFunction(ComponentDescription metadata) throws SmartFrogResolutionException {
+        if (metadata == null)
+            throw new SmartFrogResolutionException("sfMeta attribute is null");
+
+        try {
+            Reference factoryRef = (Reference) metadata.sfResolveHere(SmartFrogCoreKeys.SF_FACTORY);
+            ParseTimeResourceFactory factory = (ParseTimeResourceFactory) metadata.sfResolve(factoryRef);
+            return factory.getFunction(metadata);
+        } catch (Exception e) {
+            throw new SmartFrogResolutionException("Failed to create function. sfMeta block: " + metadata, e);
+        }
+    }
+
+    private Context createContext(final String omittedAttribute)
+            throws SmartFrogResolutionException
+    {
+        Context forFunction = new ContextImpl();
         for (Iterator v = comp.sfAttributes(); v.hasNext();) {
             Object name = v.next();
             String nameS = name.toString();
-            if (!nameS.equals("sfFunctionClass")) {
+            if (!nameS.equals(omittedAttribute)) {
                 Object value = comp.sfResolve(new Reference(ReferencePart.here(name)));
                 try {
                     forFunction.sfAddAttribute(name, value);
                 } catch (SmartFrogContextException e) {
-                    //shouldn't happen. but when it does...
+                    //shouldn't happen
                     e.printStackTrace();
                 }
             }
         }
-        if (functionClass == null) {
-            throw new SmartFrogResolutionException("unknown function class ");
-        }
-        try {
-            Function function = (Function) (SFClassLoader.forName((String) functionClass)
-                    .newInstance());
-            result = function.doit(forFunction, null, rr);
-        } catch (Exception e) {
-            throw new SmartFrogResolutionException("failed to create or evaluate function class " + functionClass + " with data " + forFunction, e);
-        }
-        return result;
+        return forFunction;
     }
+
+
+    private void initComp(Object rr) {
+        if (rr instanceof ComponentDescription)
+            comp.setParent((ComponentDescription) rr);
+        else if (rr instanceof Prim)
+            comp.setPrimParent((Prim) rr);
+    }
+
 
     /**
      * Returns string representation of the reference.

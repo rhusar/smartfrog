@@ -57,16 +57,6 @@ public class ResourceLoader {
 
 
     /**
-     * load with a given codebase; goes through the smartfrog loader.
-     *
-     * @param sfCodebase the codebase
-     */
-    public ResourceLoader(String sfCodebase) {
-        this.codebase = sfCodebase;
-    }
-
-
-    /**
      * get the sfcodebase from a component. This is used to trigger sfcodebase
      * operation.
      *

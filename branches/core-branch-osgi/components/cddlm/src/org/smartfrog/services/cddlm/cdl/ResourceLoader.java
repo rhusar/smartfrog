@@ -56,16 +56,6 @@ public class ResourceLoader {
 
 
     /**
-     * load with a given codebase; goes through the smartfrog loader.
-     *
-     * @param sfCodebase
-     */
-    public ResourceLoader(String sfCodebase) {
-        this.codebase = sfCodebase;
-    }
-
-
-    /**
      * get the sfcodebase from a component. This is used to trigger sfcodebase
      * operation.
      *
@@ -90,15 +80,13 @@ public class ResourceLoader {
             throws RuntimeException {
         String targetCodeBase = codebase;
 
-        InputStream in = SFClassLoader.getResourceAsStream(resourcename,
+        return SFClassLoader.getResourceAsStream(resourcename,
                 targetCodeBase,
                 true);
-        return in;
     }
 
     private InputStream loadResourceThroughClassloader(String resourceName) {
-        InputStream in = loader.getResourceAsStream(resourceName);
-        return in;
+        return loader.getResourceAsStream(resourceName);
     }
 
     private void assertResourceLoaded(InputStream in, String resourcename)

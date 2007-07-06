@@ -50,7 +50,8 @@ public abstract class AbstractClassLoadingEnvironment extends PrimImpl
     protected abstract Object newInstance(String className) throws ClassNotFoundException, InstantiationException,
             IllegalAccessException;
 
-    public final Function getFunction(String className) throws Exception {
+    public final Function getFunction(ComponentDescription metadata) throws Exception {
+        String className = (String) metadata.sfResolveHere(SmartFrogCoreKeys.SF_FUNCTION_CLASS);
         return (Function) newInstance(className);
     }
 
