@@ -1,0 +1,30 @@
+#include "org/smartfrog/examples/helloworld/generator.sf"
+#include "org/smartfrog/services/comm/slp/components.sf"
+
+#include "org/smartfrog/examples/workflow/base.sf"
+
+
+sfConfig extends Compound {
+	
+	loc extends SFSlpLocator {
+    serviceType "service:sf-prim:printer";	       
+	//		locator_discovery_delay 60000; 
+	}
+	
+	g extends Generator 
+	{
+		messages ["hello", "1" , "ad" , "afrf" ,
+		  "wr" ,"wr" ,"wr" ,"wr" ,"wr" ,"wr" ,"wr" ,
+		  "wr" ,"wr" ,"wr" ,"wr" ,"wr" ,"wr" ,"wr" ,
+		  "wr" ,"wr" ,"wr" ,"wr" ,"wr" ,"wr" ,"wr" ,
+		  "wr" ,"wr" ,"wr" ,"wr" ,"wr" ,"wr" ,"wr" ,
+		  "wr" ,"wr" ,"wr" ,"wr" ,"wr" ,"wr" ,"wr" ,
+		  "wr" ,"wr" ,"wr" ,"wr" ,"wr" ,"wr" ,"wr" ,
+		  "wr" ,"wr" ,"wr"];
+
+		printer LAZY loc:result;
+		
+	}
+	
+
+}

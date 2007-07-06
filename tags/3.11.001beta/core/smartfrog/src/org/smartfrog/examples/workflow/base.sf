@@ -1,0 +1,83 @@
+/** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
+
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+For more information: www.smartfrog.org
+
+*/
+
+#include "org/smartfrog/components.sf";
+#include "org/smartfrog/functions.sf";
+#include "org/smartfrog/sfcore/workflow/components.sf";
+
+
+/**
+ * Simulate a number of basic actions - such as
+ *      copying and removing files
+ *      running daemons
+ *
+ * These are simulated (view them as testing stubs for the overall logic)
+ * using the DoNothing component and the scripting capability.
+ */
+
+
+
+/**
+ * The copyfile component is given a URL of a file, and the name of the file to
+ * create.
+ * This component issues a message stating that the file has been copied, delays
+ * * a couple of seconds, and terminates.
+ */
+
+Copyfile extends DoNothing {
+    time 800;
+    fromURL "http://defaultHost/defaultFile"; // default URL to copy to file
+    toFile "/tmp/default";                    // default name for file
+
+    message extends concat {
+        a "copied file from ";
+        b ATTRIB fromURL;
+        c " to file ";
+        d ATTRIB toFile;
+    }
+}
+
+
+/**
+ * The removefile component is given a filename to remove.
+ * It simulates doing so by issuing a message to that fact, then terminates
+ * after two seconds.
+ */
+
+Removefile extends DoNothing {
+    time 500;                              // time in millisecs
+    file "/tmp/default";                    // default name for file
+
+    message extends concat {
+        a "file ";
+        b ATTRIB file;
+        c " has been removed";
+    }
+}
+
+
+/**
+ * The RunDaemon component issues a message stating that the daemon is running,
+ * delays a couple of seconds, and terminates.
+ */
+RunDaemon extends DoNothing {
+    time 1000;
+    message "echo running daemon";
+}
