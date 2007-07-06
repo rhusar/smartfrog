@@ -9,7 +9,7 @@ import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.common.SmartFrogLazyResolutionException;
 
 /**
- * Representation of reference for hte SF language
+ * Representation of reference for the SF language
  */
 public class SFReference extends Reference implements ReferencePhases {
     public Reference sfAsReference() throws SmartFrogCompilationException {

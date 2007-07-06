@@ -244,18 +244,15 @@ public class ContextImpl extends OrderedHashtable implements Context, Serializab
          if ((name == null) || (value == null)) {
              if (name == null) {
                  throw new SmartFrogContextException(
-                 MessageUtil.formatMessage(MSG_NULL_DEF_METHOD, "'name'",
-                                           "sfReplaceAttribute"));
-             }
-             if (value == null) {
+                         MessageUtil.formatMessage(MSG_NULL_DEF_METHOD, "'name'",
+                                 "sfReplaceAttribute"));
+             } else {
                  throw new SmartFrogContextException(
-                 MessageUtil.formatMessage(MSG_NULL_DEF_METHOD, "'value'",
-                                           "sfReplaceAttribute"));
+                         MessageUtil.formatMessage(MSG_NULL_DEF_METHOD, "'value'",
+                                 "sfReplaceAttribute"));
+
              }
-
-             return null;
          }
-
          return this.put(name, value);
      }
 
