@@ -17,11 +17,11 @@ import java.io.IOException;
 import java.net.URL;
 
 
-public class BundlePrimFactoryImpl extends AbstractClassLoadingEnvironment {
+public class BundleClassLoadingEnvironment extends AbstractClassLoadingEnvironment {
     public static final String LOCATION_ATTRIBUTE = "location";
     private Bundle hostBundle = null;
 
-    public BundlePrimFactoryImpl() throws RemoteException {}
+    public BundleClassLoadingEnvironment() throws RemoteException {}
 
     public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
         super.sfDeploy();

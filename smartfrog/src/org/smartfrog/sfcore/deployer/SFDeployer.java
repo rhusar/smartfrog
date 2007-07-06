@@ -36,7 +36,7 @@ import org.smartfrog.sfcore.reference.Reference;
 public class SFDeployer implements MessageKeys {
 
     private static ComponentDeployer defaultComponentDeployer = new PrimProcessDeployerImpl();
-    private static PrimFactory defaultPrimFactory = new OldAlgorithmPrimFactory();
+    private static PrimFactory defaultPrimFactory = new OldAlgorithmClassLoadingEnvironment();
 
     /**
      * Deploy description. Constructs the real deployer using getDeployer

@@ -13,7 +13,7 @@ import java.io.InputStream;
  * Implements the sfCodebase-aware component creation, as currently documented.
  * The code was originally in PrimImpl.
  */
-public class OldAlgorithmPrimFactory extends AbstractClassLoadingEnvironment {
+public class OldAlgorithmClassLoadingEnvironment extends AbstractClassLoadingEnvironment {
 
     /**
      * Efficiency holder of sfClass reference.

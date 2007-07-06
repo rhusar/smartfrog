@@ -136,7 +136,7 @@ public class PrimDeployerImpl extends PrimImpl implements ComponentDeployer, Mes
     }
 
     // BEGIN LEGACY CODE //////////////
-    // This is now in OldAlgorithmPrimFactory, but DNSComponentDeployerImpl needs it here.
+    // This is now in OldAlgorithmClassLoadingEnvironment, but DNSComponentDeployerImpl needs it here.
     // Should be removed very soon.
 
 
@@ -163,7 +163,7 @@ public class PrimDeployerImpl extends PrimImpl implements ComponentDeployer, Mes
      *
      * @return class for target
      * @throws Exception failed to load class
-     * @deprecated This is now in OldAlgorithmPrimFactory
+     * @deprecated This is now in OldAlgorithmClassLoadingEnvironment
      */
     protected Class getPrimClass() throws SmartFrogResolutionException, SmartFrogDeploymentException {
         String targetCodeBase = null;
