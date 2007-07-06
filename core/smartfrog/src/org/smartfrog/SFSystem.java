@@ -587,9 +587,11 @@ public class SFSystem implements MessageKeys {
 
         }
         // if this property is set the a sec manager is created
-        String secPro = System.getProperty("java.security.policy");
+        String secPro = System.getProperty(SmartFrogCoreProperty.codebase);
         if  (secPro!=null ) {
             if (sfLog().isDebugEnabled()) sfLog().debug("Using java security policy: "+secPro);
+        } else {
+            if (sfLog().isDebugEnabled()) sfLog().debug("No security manager loaded by SmartFrog");
         }
     }
 

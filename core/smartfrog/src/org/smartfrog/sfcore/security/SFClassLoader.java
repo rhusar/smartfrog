@@ -50,7 +50,7 @@ public class SFClassLoader {
      * separated URLS) from which we download componenents and their
      * descriptions.
      */
-    public static final String SF_CODEBASE_PROPERTY = SmartFrogCoreProperty.propBase+"codebase";
+    public static final String SF_CODEBASE_PROPERTY = SmartFrogCoreProperty.codebase;
 
     /** Space separated urls from which we download the components */
     private static String targetClassBase = null;

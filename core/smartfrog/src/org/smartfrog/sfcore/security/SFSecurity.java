@@ -120,10 +120,9 @@ public class SFSecurity {
                     // This is necessary for dynamic classloading to work.
                     String secPro = System.getProperty("java.security.policy");
                     if  (secPro!=null ) {
-                        System.out.println("New Security manager added, using: "+secPro);
                         System.setSecurityManager(new SecurityManager());
                     }
-                    
+
                     securityOn = false;
                     //Notification moved to SFSyten after the ini file is read.
                 }
