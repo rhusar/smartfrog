@@ -474,7 +474,6 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
       } catch (SmartFrogTypeResolutionException te) {
          throw te; // this was from the sutyping - possibly a override of sfFinal
       } catch (Exception excpt) {
-         excpt.printStackTrace();
          resState.addUnresolved(type, sfCompleteName(), null, excpt);
          return false;
       }
