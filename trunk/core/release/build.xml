@@ -49,7 +49,7 @@
     <newdir name="dist.rpm.dir" location="${dist.dir}/rpm" />
     <property name="kernel.dir" location="../smartfrog"/>
     <newdir name="release.dir" location="${build.dir}/releases" />
-    <property name="ssh.trust" value="yes" />
+    <property name="ssh.trust" value="true" />
     <newdir  name="tmp.dir" location="${build.dir}/tmp" />
     <newdir  name="upload.dir" location="${build.dir}/upload" />
 
@@ -496,6 +496,21 @@
     <property name="ssh.propfile"
         location="${server.dir}/${server}.properties" />
     <loadproperties srcfile="${ssh.propfile}" />
+    <echo>
+      SCP target is ${ssh.server}
+      User is ${ssh.user}
+      trust=${ssh.trust}
+      keyfile=${ssh.keyfile}
+    </echo>
+    <presetdef name="ssh-remote">
+      <sshexec host="${ssh.server}"
+          username="${ssh.user}"
+          passphrase="${ssh.passphrase}"
+          trust="${ssh.trust}"
+          timeout="60000"
+          keyfile="${ssh.keyfile}"
+          />
+    </presetdef>
   </target>
 
   <target name="ready-to-upload-rpms"
@@ -525,22 +540,15 @@
     </fileset>
   </target>
 
+  <target name="ssh-test" depends="ssh-ls" >
+    <echo >ssh appears to be working</echo>
+  </target>
+  <target name="ssh-ls" depends="load-server-settings" >
+    <ssh-remote command="ls"/>
+  </target>
 
   <target name="scp-upload" depends="upload-init" if="ssh.enabled">
-    <echo>
-      SCP target is ${ssh.server}
-      User is ${ssh.user}
-      trust=${ssh.trust}
-      keyfile=${ssh.keyfile}
-    </echo>
-    <presetdef name="ssh-remote">
-      <sshexec host="${ssh.server}"
-          username="${ssh.user}"
-          passphrase="${ssh.passphrase}"
-          trust="${ssh.trust}"
-          keyfile="${ssh.keyfile}"
-          />
-    </presetdef>
+
     <ssh-remote command="mkdir -p ${ssh.dir}"/>
     <property name="ssh.path"
         value="${ssh.user}@${ssh.server}:${ssh.dir}" />
