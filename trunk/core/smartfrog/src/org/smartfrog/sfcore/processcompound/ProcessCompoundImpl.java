@@ -42,6 +42,7 @@ import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.reference.ReferencePart;
 import org.smartfrog.sfcore.security.SFSecurity;
 import org.smartfrog.sfcore.security.SFSecurityProperties;
+import org.smartfrog.sfcore.security.SFClassLoader;
 import org.smartfrog.sfcore.common.*;
 
 
@@ -1149,7 +1150,7 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
         String res = null;
         String replaceBoolKey =  SmartFrogCoreKeys.SF_PROCESS_REPLACE_SF_CODEBASE;
         String attributeKey = SmartFrogCoreKeys.SF_PROCESS_SF_CODEBASE;
-        String sysPropertyKey =  "org.smartfrog.codebase";
+        String sysPropertyKey =  SmartFrogCoreProperty.codebase;
 	    String pathSeparator = " ";
 
         res = addProcessSpecialSystemVar(cd, res, replaceBoolKey, attributeKey, sysPropertyKey, pathSeparator);

@@ -58,6 +58,8 @@ import java.util.Properties;
 import java.util.TimeZone;
 import java.util.Vector;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
+import org.smartfrog.sfcore.security.SFClassLoader;
+
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.InetAddress;
@@ -508,7 +510,7 @@ public final class Diagnostics {
         out.append("* Java security policy:     ");out.append(nameP);out.append("\n");
       }
 
-      nameP =System.getProperty("org.smartfrog.codebase");
+      nameP =System.getProperty(SmartFrogCoreProperty.codebase);
       if ((nameP!=null)&& !nameP.equals("")){
         out.append("* SF codebase:     ");out.append(nameP);out.append("\n");
       }
