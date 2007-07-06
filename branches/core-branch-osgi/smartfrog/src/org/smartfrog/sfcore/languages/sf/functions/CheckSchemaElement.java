@@ -139,7 +139,7 @@ public class CheckSchemaElement extends BaseFunction {
      * @return true if object class is equal or descedant from schema class.
      * @throws java.lang.ClassNotFoundException
      */
-    private boolean isValidClass (String schemaClass, Object foundClassToValidate) throws java.lang.ClassNotFoundException {
+    private boolean isValidClass (String schemaClass, Object foundClassToValidate) throws ClassNotFoundException {
         return ((schemaClass.equals("anyClass"))
                 ||
                 (SFClassLoader.forName(schemaClass).isAssignableFrom(foundClassToValidate.getClass())));
