@@ -14,9 +14,10 @@ import java.io.InputStream;
  * Those come from the same classloader as this class.
  *
  * This is not a Prim so that it can be used without problem when there isn't a logger available.
- * (and process compound, etc)
+ * (and process compound, etc). So some code is copied from AbstractClassLoadingEnvironment (eeek).
  */
 public class CoreClassesClassLoadingEnvironment implements PrimFactory, ParseTimeResourceFactory, MessageKeys {
+
     public final Prim getComponent(ComponentDescription askedFor) throws SmartFrogDeploymentException {
         String className = null;
         try {
@@ -45,7 +46,8 @@ public class CoreClassesClassLoadingEnvironment implements PrimFactory, ParseTim
         return new SmartFrogDeploymentException(message, e, null, askedFor.sfContext());
     }
 
-    public final Function getFunction(String className) throws Exception {
+    public final Function getFunction(ComponentDescription metadata) throws Exception {
+        String className = (String) metadata.sfResolveHere(SmartFrogCoreKeys.SF_FUNCTION_CLASS);
         return (Function) newInstance(className);
     }
 
