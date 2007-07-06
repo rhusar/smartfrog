@@ -17,11 +17,11 @@ For more information: www.smartfrog.org
 
 MySQLInstallation extends Sequence {
 	gzFileName "";
-	tempTarFileName "mysql-5.0.41-linux-i686.tar";
+	tempTarFileName "";
 	
-	installDir "/tmp";
+	installDir "";
 
-	mysqlHome "/tmp/mysql-5.0.41-linux-i686";
+	mysqlHome "";
 	
 	// this will automatically create tar file
 	extract extends Gunzip.Untar{
@@ -39,14 +39,11 @@ MySQLInstallation extends Sequence {
 
 sfConfig extends Sequence{
 	
-	srcFile "/tmp/mysql-5.0.41-linux-i686.tar.gz";
+	srcFile "";
 	
 	download extends FTPDownload{
 		localFile LAZY srcFile ;
-		server "ebnt171"; 								
-		userName "root"; 
-		password "angad";
-		downloadFile "/temp/mysql-5.0.41-linux-i686.tar.gz";
+		
 	}
 	
 	mysql extends MySQLInstallation{
