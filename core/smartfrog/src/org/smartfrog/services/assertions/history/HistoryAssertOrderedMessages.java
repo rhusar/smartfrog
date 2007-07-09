@@ -39,7 +39,6 @@ public class HistoryAssertOrderedMessages extends AbstractHistoryPrimImpl implem
   //Optional : errorText;
   //errorText
 }
-
      */
     public HistoryAssertOrderedMessages() throws RemoteException {
     }

@@ -30,7 +30,6 @@ public class HistoryEvent implements Serializable {
     public String message;
     public int index;
 
-
     public HistoryEvent(long timestamp, String message) {
         this.timestamp = timestamp;
         this.message = message;

@@ -36,7 +36,6 @@ public class HistoryImpl extends PrimImpl implements History {
     public HistoryImpl() throws RemoteException {
     }
 
-
     /**
      * Add an event to the history
      * @param event a new event to add

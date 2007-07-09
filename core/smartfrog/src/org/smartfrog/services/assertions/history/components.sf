@@ -43,7 +43,6 @@ HistoryLog extends Prim {
   terminateMessage "";
 }
 
-
 /**
  * a component that checks for a logged message when deployed
  */
