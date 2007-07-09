@@ -1,11 +1,22 @@
 package org.smartfrog.sfcore.languages.sf.sfreference;
 
-import org.smartfrog.sfcore.reference.*;
+import org.smartfrog.sfcore.common.Context;
+import org.smartfrog.sfcore.common.ContextImpl;
+import org.smartfrog.sfcore.common.SmartFrogCompilationException;
+import org.smartfrog.sfcore.common.SmartFrogContextException;
+import org.smartfrog.sfcore.common.SmartFrogFunctionResolutionException;
+import org.smartfrog.sfcore.common.SmartFrogLazyResolutionException;
+import org.smartfrog.sfcore.common.SmartFrogResolutionException;
+import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
+import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.languages.sf.sfcomponentdescription.SFComponentDescription;
 import org.smartfrog.sfcore.parser.ReferencePhases;
-import org.smartfrog.sfcore.common.*;
-import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.prim.Prim;
+import org.smartfrog.sfcore.reference.ApplyReference;
+import org.smartfrog.sfcore.reference.Reference;
+import org.smartfrog.sfcore.reference.ReferencePart;
+import org.smartfrog.sfcore.reference.ReferenceResolver;
+import org.smartfrog.sfcore.reference.RemoteReferenceResolver;
 
 import java.util.Iterator;
 
@@ -145,7 +156,7 @@ public class SFApplyReference extends SFReference implements ReferencePhases {
         return ApplyReference.createAndApplyFunction(rr, true, comp, forFunction);
     }
     
-    private void addAttributeToContext(Object value, Object name, Context forFunction) {
+    protected void addAttributeToContext(Object value, Object name, Context forFunction) {
         if (value != null) {
             try {
                 comp.sfReplaceAttribute(name, value);
