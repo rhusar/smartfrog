@@ -6,19 +6,16 @@ if [ -z "$SFHOME" -o ! -d "$SFHOME" ] ; then
     export SFHOME;
     echo SFHOME undefined, using $SFHOME as base directory;
 fi
-if [ -z $1 ] ; then
+
+if [ $# -eq 1 ] && [ $1 == "-?" ];then
+   echo "Usage: sfStart HostName ApplicationName URL [URL...]"
+   exit 0
+elif [ ! $# -ge 3 ];then
    echo "Insufficient arguments to use sfStart"
-   echo "Usage: sfStart HostName ApplicationName URL"
+   echo "Usage: sfStart HostName ApplicationName URL [URL...]"
    exit 69
 fi
-if [ $# -eq 1 ] && [ $1 == "-?" ];then
-   echo "Usage: sfStart HostName ApplicationName URL"
-   exit 0
-elif [ $# -ne 3 ];then
-   echo "Wrong number of arguments for sfStart"
-   echo "Usage: sfStart HostName ApplicationName URL"
-   exit 69
-fi 
+
 #for i in $SFHOME/lib/*.jar; do CLASSPATH=$i:$CLASSPATH; done
 #export CLASSPATH
 
