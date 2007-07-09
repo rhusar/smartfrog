@@ -26,15 +26,18 @@ export DISPLAY
 ProgName="SmartFrog Daemon"
 ProgDir="$$SFHOME/bin"
 ProgBin="sfDaemon"
+Filename="hpsmartfrog"
+LockFile="/var/lock/subsys/$$ProgBin"
+RunFile=/var/run/$$ProgBin.pid
 ProgStop="sfStopDaemon localhost"
-ProgLog="$$SFHOME/log/sfDaemon.log"
+ProgLog="${rpm.log.dir}/$$Filename.log"
 
 test -x $$ProgDir/$$ProgBin || exit 0
 
-if [ ! -d $$SFHOME/log ]
-then
-	mkdir $$SFHOME/log
-fi
+#if [ ! -d $$SFHOME/log ]
+#then
+#mkdir $$SFHOME/log
+#fi
 
       
 # Change the major init functions into our functions.
@@ -52,11 +55,11 @@ start() {
 
 	echo "" >> $$ProgLog
 	echo "---- Starting $$ProgName -----" >> $$ProgLog
-	nohup $$ProgDir/$$ProgBin >>$$ProgLog  2>&1 &
+	nohup $$ProgDir/$$ProgBin -headless >>$$ProgLog  2>&1 &
 	RETVAL=$$?
 	if [ $$RETVAL -eq 0 ]; then
 	    success
-	    touch /var/lock/subsys/$$ProgBin
+	    touch $$LockFile
 	else
 	    failure
 	    fi;
@@ -72,7 +75,7 @@ stop() {
 	$$ProgDir/$$ProgStop >>$$ProgLog 2>&1
 	
 	RETVAL=$$?
-	[ $$RETVAL -eq 0 ] && rm -f /var/lock/subsys/$$ProgBin /var/run/$$ProgBin.pid
+	[ $$RETVAL -eq 0 ] && rm -f $$LockFile $$RunFile
 	success
 	echo
 	return $$RETVAL

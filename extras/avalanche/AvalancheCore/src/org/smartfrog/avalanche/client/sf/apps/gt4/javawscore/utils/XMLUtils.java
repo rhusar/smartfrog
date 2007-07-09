@@ -17,28 +17,28 @@ For more information: www.smartfrog.org
  */
 package org.smartfrog.avalanche.client.sf.apps.gt4.javawscore.utils;
 
-import java.util.* ;
-import java.io.*;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-
-import org.w3c.dom.*;
-
-import org.w3c.dom.xpath.XPathEvaluator ;
 import org.apache.xerces.parsers.DOMParser;
+import org.apache.xpath.domapi.XPathEvaluatorImpl;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.w3c.dom.xpath.XPathEvaluator;
 import org.w3c.dom.xpath.XPathNSResolver;
 import org.w3c.dom.xpath.XPathResult;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
-import org.apache.xpath.domapi.XPathEvaluatorImpl;
 
-import javax.xml.transform.TransformerFactory;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-import javax.xml.transform.TransformerException;
+import java.io.InputStream;
+import java.io.StringReader;
+import java.io.Writer;
+import java.util.ArrayList;
 
 /**
  * @author sanjay

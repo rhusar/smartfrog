@@ -17,18 +17,18 @@ For more information: www.smartfrog.org
  */
 package org.smartfrog.avalanche.client.sf.exec.simple;
 
-import java.rmi.RemoteException;
-
-import org.smartfrog.sfcore.prim.Prim;
-import org.smartfrog.sfcore.prim.PrimImpl;
-import org.smartfrog.sfcore.compound.Compound;
-import org.smartfrog.sfcore.processcompound.SFProcess;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.compound.Compound;
+import org.smartfrog.sfcore.prim.Prim;
+import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.prim.TerminationRecord;
+import org.smartfrog.sfcore.processcompound.SFProcess;
+
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.rmi.RemoteException;
 
 /**
  * @author bnaveen

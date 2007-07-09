@@ -11,18 +11,17 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.avalanche.client.sf.anubis;
 
-import java.rmi.RemoteException;
-import java.util.HashMap;
-import java.util.Map;
-
+import org.smartfrog.avalanche.shared.MonitoringConstants;
+import org.smartfrog.avalanche.shared.MonitoringEvent;
 import org.smartfrog.services.anubis.locator.AnubisLocator;
 import org.smartfrog.services.anubis.locator.AnubisProvider;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimImpl;
 
-import org.smartfrog.avalanche.shared.MonitoringConstants;
-import org.smartfrog.avalanche.shared.MonitoringEvent;
+import java.rmi.RemoteException;
+import java.util.HashMap;
+import java.util.Map;
 
 public class SFModuleStateManager extends PrimImpl implements Prim {
 	private Map activeInstances = new HashMap();

@@ -116,6 +116,15 @@ public class ComponentHelper {
 
 
     /**
+     * Checks is prim is a remote reference
+      * @param prim reference to a component
+     *  @return true is prim is an instance of RemoteStub
+     */
+   public static boolean isRemote (Prim prim){
+       return (prim instanceof java.rmi.server.RemoteStub);
+   }
+
+    /**
      * Returns the complete name for any component from the root of the
      * application and does not throw any exception. If an exception is
      * thrown it will return a new empty reference.
@@ -382,7 +391,7 @@ public class ComponentHelper {
      * @throws SmartFrogException if the resource is not on the classpath
      * @throws RemoteException in case of Remote/network error
      */
-    public String loadResourceToString(String resourcename, Charset encoding) 
+    public String loadResourceToString(String resourcename, Charset encoding)
             throws SmartFrogException, RemoteException {
         InputStream in= loadResource(resourcename);
         try {

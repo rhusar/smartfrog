@@ -6,16 +6,15 @@
  */
 package org.smartfrog.avalanche.client.sf.apps.gt4.exec;
 
+import org.smartfrog.avalanche.client.sf.exec.simple.StartComponent;
+import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.prim.Prim;
+import org.smartfrog.sfcore.prim.PrimImpl;
+import org.smartfrog.sfcore.prim.TerminationRecord;
+
 import java.io.IOException;
 import java.rmi.RemoteException;
 
-import org.smartfrog.sfcore.prim.Prim;
-import org.smartfrog.sfcore.prim.PrimImpl;
-
-import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.sfcore.prim.TerminationRecord;
-
-import org.smartfrog.avalanche.client.sf.exec.simple.StartComponent;
 /**
  * @author sandya
  *

@@ -11,12 +11,11 @@ For more information: www.smartfrog.org
 */
 package tests.org.smartfrog.avalanche.server;
 
+import junit.framework.TestCase;
 import org.smartfrog.avalanche.core.host.HostType;
 import org.smartfrog.avalanche.server.AvalancheFactory;
 import org.smartfrog.avalanche.server.HostManager;
 import org.smartfrog.avalanche.server.ServerSetup;
-
-import junit.framework.TestCase;
 
 public class ServerSetupTest extends TestCase {
 
