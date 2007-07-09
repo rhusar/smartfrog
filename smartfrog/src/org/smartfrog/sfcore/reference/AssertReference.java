@@ -53,7 +53,7 @@ public class AssertReference extends ApplyReference implements Copying, Cloneabl
             throws SmartFrogResolutionException
     {
         Object result = super.resolve(rr, index);
-        checkAssert(result, rr, false);
+        checkAssert(this, result, rr, false);
         return result;
     }
 
@@ -69,22 +69,22 @@ public class AssertReference extends ApplyReference implements Copying, Cloneabl
             throws SmartFrogResolutionException
     {
         Object result = super.resolve(rr, index);
-        checkAssert(result, rr, true);
+        checkAssert(this, result, rr, true);
         return result;
     }
 
-    private void checkAssert(Object result, Object rr, boolean remote) throws SmartFrogAssertionResolutionException {
+    public static void checkAssert(Object _this, Object result, Object rr, boolean remote) throws SmartFrogAssertionResolutionException {
         if (result instanceof Boolean) {
             if (!((Boolean) result).booleanValue())
                 throw new SmartFrogAssertionResolutionException("Assertion failure (false) for "
-                        + this + sfCompleteNameSafe(rr, remote));
+                        + _this + sfCompleteNameSafe(rr, remote));
         } else {
             throw new SmartFrogAssertionResolutionException("Assertion failure (non boolean result) for "
-                    + this + sfCompleteNameSafe(rr, remote));
+                    + _this + sfCompleteNameSafe(rr, remote));
         }
     }
 
-    private String sfCompleteNameSafe(Object rr, boolean remote) {
+    private static String sfCompleteNameSafe(Object rr, boolean remote) {
         if (remote) {
             if (rr instanceof PrimImpl) return " in component " + ((PrimImpl) rr).sfCompleteNameSafe();
             else return " <complete name unknown>";
