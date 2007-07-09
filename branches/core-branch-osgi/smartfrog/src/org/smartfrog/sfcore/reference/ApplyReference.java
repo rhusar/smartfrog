@@ -154,13 +154,8 @@ public class ApplyReference extends Reference implements Copying, Cloneable, Ser
         } catch (SmartFrogResolutionException e) {
 
             // Using the old syntax
-            String functionClass;
-            try {
-                functionClass = (String) comp.sfResolveHere(SmartFrogCoreKeys.SF_FUNCTION_CLASS);
-            } catch (ClassCastException cce) {
-                throw new SmartFrogResolutionException("function class is not a string", cce);
-            }
-            function = createFunctionOldSyntax(functionClass);         
+            String functionClass = getFunctionClass(comp);
+            function = createFunctionOldSyntax(functionClass);
         }
         
         try {
@@ -175,10 +170,21 @@ public class ApplyReference extends Reference implements Copying, Cloneable, Ser
         }
     }
 
-    private static Function createFunctionOldSyntax(String functionClass) throws SmartFrogResolutionException {
+    public static String getFunctionClass(ComponentDescription comp) throws SmartFrogResolutionException {
+        String functionClass;
+        try {
+            functionClass = (String) comp.sfResolveHere(SmartFrogCoreKeys.SF_FUNCTION_CLASS);
+        } catch (ClassCastException cce) {
+            throw new SmartFrogResolutionException("function class is not a string", cce);
+        }
+        
         if (functionClass == null)
             throw new SmartFrogResolutionException("unknown function class");
 
+        return functionClass;
+    }
+
+    private static Function createFunctionOldSyntax(String functionClass) throws SmartFrogResolutionException {
         try {
             return (Function) Class.forName(functionClass).newInstance();
         } catch (Exception e) {
