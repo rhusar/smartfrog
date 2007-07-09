@@ -268,18 +268,6 @@
     <jar jarfile="${dist.dir}/lib/client/jboss.jar" basedir="${build.classes.dir}" includes="**/sf/jboss/**"/>
   </target>
 
-  <!--
-   setupBDB.java target is used to populate default settings in the database.
-   This file uses initsettings.xml file to load the values into database.
-   This should not be part of production environment
-   -->
-  <target name="setupBDB">
-    <java classname="org.smartfrog.avalanche.util.SetupBDB">
-      <arg file="src\org\smartfrog\avalanche\server\initsettings.xml"/>
-      <classpath refid="avalanche-core.class.path"/>
-
-    </java>
-  </target>
 
   <target name="allJars"
       depends="coreJar,sfXMPPClient,shared,simpleExecComponentJar,ftpComponentJar,sfAntJar,gnubuild,gt4build,gridftp,
