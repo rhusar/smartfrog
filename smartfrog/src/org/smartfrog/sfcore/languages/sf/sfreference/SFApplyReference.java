@@ -116,7 +116,7 @@ public class SFApplyReference extends SFReference implements ReferencePhases {
 
         if (isLazy) throw new SmartFrogLazyResolutionException("function has lazy parameter");
 
-        return ApplyReference.createAndApplyFunction(rr, false, comp, forFunction);
+        return createAndInvokeFunction(forFunction, rr, false);
     }
 
     /**
@@ -212,28 +212,16 @@ public class SFApplyReference extends SFReference implements ReferencePhases {
     }
 
     private Object createAndInvokeFunction(Context forFunction, Object rr, boolean remote) throws SmartFrogResolutionException {
-        String functionClass;
-        Object result;
-        try {
-            functionClass = (String) comp.sfResolveHere(SmartFrogCoreKeys.SF_FUNCTION_CLASS);
-        } catch (ClassCastException e) {
-            throw new SmartFrogFunctionResolutionException("function class is not a string", e);
-        }
-
-        if (functionClass == null) {
-            throw new SmartFrogFunctionResolutionException("unknown function class ");
-        }
-
+        String functionClass = ApplyReference.getFunctionClass(comp);
 
         try {
             Function function = (Function) SFClassLoader.forName(functionClass).newInstance();
-            if (remote) result = function.doit(forFunction, null, (RemoteReferenceResolver) rr);
-            else result = function.doit(forFunction, null, (ReferenceResolver) rr);
+            if (remote) return function.doit(forFunction, null, (RemoteReferenceResolver) rr);
+            else return function.doit(forFunction, null, (ReferenceResolver) rr);
         } catch (Exception e) {
-            throw (SmartFrogResolutionException) SmartFrogResolutionException.forward("failed to create or evaluate function class " + functionClass + " with data " + forFunction, e);
+            throw (SmartFrogResolutionException) SmartFrogResolutionException.forward
+                    ("failed to create or evaluate function class " + functionClass + " with data " + forFunction, e);
         }
-
-        return result;
     }
 
     /**

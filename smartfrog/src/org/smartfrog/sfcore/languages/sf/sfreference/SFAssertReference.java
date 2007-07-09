@@ -168,7 +168,7 @@ public class SFAssertReference extends SFReference implements ReferencePhases {
     private Object createAndInvokeFunction(Context forFunction, Object rr, boolean remote)
             throws SmartFrogResolutionException
     {
-        String functionClass = getFunctionClass();
+        String functionClass = ApplyReference.getFunctionClass(comp);
 
         try {
             Function function = (Function) SFClassLoader.forName(functionClass).newInstance();
@@ -191,19 +191,6 @@ public class SFAssertReference extends SFReference implements ReferencePhases {
             throw new SmartFrogAssertionResolutionException("Assertion failure (non boolean result) for " +
                     this + sfCompleteNameSafe(rr));
         }
-    }
-
-    private String getFunctionClass() throws SmartFrogResolutionException {
-        String functionClass;
-        try {
-            functionClass = (String) comp.sfResolveHere(SmartFrogCoreKeys.SF_FUNCTION_CLASS);
-        } catch (ClassCastException e) {
-            throw new SmartFrogResolutionException("function class is not a string", e);
-        }
-
-        if (functionClass == null)
-            throw new SmartFrogResolutionException("unknown function class ");
-        return functionClass;
     }
 
     private String getAssertionPhase() throws SmartFrogResolutionException {
