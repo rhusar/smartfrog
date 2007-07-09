@@ -1,8 +1,18 @@
 package org.smartfrog.sfcore.languages.sf.sfreference;
 
-import org.smartfrog.sfcore.common.*;
+import org.smartfrog.sfcore.common.Context;
+import org.smartfrog.sfcore.common.ContextImpl;
+import org.smartfrog.sfcore.common.SFTempValue;
+import org.smartfrog.sfcore.common.SmartFrogLazyResolutionException;
+import org.smartfrog.sfcore.common.SmartFrogResolutionException;
+import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
 import org.smartfrog.sfcore.languages.sf.sfcomponentdescription.SFComponentDescription;
-import org.smartfrog.sfcore.reference.*;
+import org.smartfrog.sfcore.reference.ApplyReference;
+import org.smartfrog.sfcore.reference.AssertReference;
+import org.smartfrog.sfcore.reference.Reference;
+import org.smartfrog.sfcore.reference.ReferencePart;
+import org.smartfrog.sfcore.reference.ReferenceResolver;
+import org.smartfrog.sfcore.reference.RemoteReferenceResolver;
 
 import java.util.Iterator;
 
@@ -29,7 +39,6 @@ public class SFAssertReference extends SFApplyReference {
             throws SmartFrogResolutionException
     {
         return doResolve(rr, true);
-
     }
 
     /**
@@ -42,9 +51,9 @@ public class SFAssertReference extends SFApplyReference {
      *          if reference failed to resolve
      */
     public Object resolve(ReferenceResolver rr, int index)
-            throws SmartFrogResolutionException {
+            throws SmartFrogResolutionException
+    {
         return doResolve(rr, false);
-
     }
 
     private Object doResolve(Object rr, boolean remote) throws SmartFrogResolutionException {//take a new context...
@@ -137,23 +146,14 @@ public class SFAssertReference extends SFApplyReference {
             if (!nameS.startsWith(ApplyReference.SF_ATTRIBUTE_PREFIX)) {
                 Object value;
                 try {
-                     value = comp.sfResolve(new Reference(ReferencePart.here(name)));
-                     try {
-                        comp.sfReplaceAttribute(name, value);
-                        forFunction.sfAddAttribute(name, value);
-                    } catch (SmartFrogContextException e) {
-                        //shouldn't happen
-                    } catch (SmartFrogRuntimeException e) {
-                        //shouldn't happen
-                    }
+                    value = comp.sfResolve(new Reference(ReferencePart.here(name)));
+                    addAttributeToContext(name, value, forFunction);
                 } catch (SmartFrogLazyResolutionException e) {
                     if (assertionPhase.equals("static")) {
                         throw new SmartFrogResolutionException("Static assertion cannot evaluate due to LAZY attributes");
                     }
                     hasLazy = true;
                 }
-
-
             }
         }
         return hasLazy;
