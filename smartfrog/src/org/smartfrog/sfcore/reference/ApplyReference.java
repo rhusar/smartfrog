@@ -24,7 +24,7 @@ public class ApplyReference extends Reference implements Copying, Cloneable, Ser
     // This will cause NotSerializableExceptions if someone tries to serialize us,
     // but the class should not be Serializable anyway
     protected ComponentDescription comp;
-    private static final String SF_ATTRIBUTE_PREFIX = "sf";
+    public static final String SF_ATTRIBUTE_PREFIX = "sf";
 
     public ApplyReference(ComponentDescription comp) {
         super();
@@ -157,16 +157,20 @@ public class ApplyReference extends Reference implements Copying, Cloneable, Ser
             String functionClass = getFunctionClass(comp);
             function = createFunctionOldSyntax(functionClass);
         }
-        
-        try {
 
+        return evaluateFunction(remote, function, forFunction, rr);
+    }
+
+    public static Object evaluateFunction(boolean remote, Function function, Context forFunction, Object rr) throws SmartFrogResolutionException {
+        try {
             if (remote)
                 return function.doit(forFunction, null, (RemoteReferenceResolver) rr);
             else
                 return function.doit(forFunction, null, (ReferenceResolver) rr);
 
         } catch (SmartFrogException e) {
-            throw new SmartFrogResolutionException("Function invocation failed", e);
+            throw (SmartFrogResolutionException) SmartFrogResolutionException.forward
+                    ("Failed to evaluate function: " + function + " with data " + forFunction, e);
         }
     }
 
@@ -184,7 +188,7 @@ public class ApplyReference extends Reference implements Copying, Cloneable, Ser
         return functionClass;
     }
 
-    private static Function createFunctionOldSyntax(String functionClass) throws SmartFrogResolutionException {
+    public static Function createFunctionOldSyntax(String functionClass) throws SmartFrogResolutionException {
         try {
             return (Function) Class.forName(functionClass).newInstance();
         } catch (Exception e) {
