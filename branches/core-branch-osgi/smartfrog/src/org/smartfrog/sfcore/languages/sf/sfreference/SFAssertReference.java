@@ -109,7 +109,6 @@ public class SFAssertReference extends SFReference implements ReferencePhases {
         //     resolve all non-sf attributes, if they are links
         //     if any return s LAZY object, set self to lazy and return self, otherwise update copy
         //     and invoke function with copy of CD, return result
-        String assertionPhase;
 
         copyComp = (SFComponentDescription)comp.copy();
 
@@ -117,57 +116,23 @@ public class SFAssertReference extends SFReference implements ReferencePhases {
 
         initParent(rr);
 
-        try {
-            assertionPhase = (String) comp.sfResolveHere("sfAssertionPhase");
-        } catch (ClassCastException e) {
-            throw new SmartFrogResolutionException("assertion phase is not a string", e);
-        } catch (SmartFrogResolutionException e) {
-           assertionPhase = "dynamic";
-        }
-        if (!(assertionPhase.equals("dynamic") || assertionPhase.equals("static") || assertionPhase.equals("staticLazy"))) {
-            throw new SmartFrogResolutionException("assertion phase is not a valid - must be static, staticLazy or dynamic");
-        }
+        String assertionPhase = getAssertionPhase();
 
         Context forFunction = new ContextImpl();
         boolean hasLazy = createContext(forFunction, assertionPhase);
 
         if (hasLazy) return getLazyValue(assertionPhase);
 
-        String functionClass;
-        try {
-            functionClass = (String) comp.sfResolveHere(SmartFrogCoreKeys.SF_FUNCTION_CLASS);
-        } catch (ClassCastException e) {
-            throw new SmartFrogResolutionException("function class is not a string", e);
-        }
+        String functionClass = getFunctionClass();
 
-        if (functionClass == null)
-            throw new SmartFrogResolutionException("unknown function class ");
+        Object result = createAndInvokeFunction(functionClass, forFunction, rr);
 
-        Object result;
-        try {
-            Function function = (Function) SFClassLoader.forName(functionClass).newInstance();
-            result = function.doit(forFunction, null, rr);
-        } catch (Exception e) {
-            System.out.println("obtained " + e);
-            throw (SmartFrogResolutionException)SmartFrogResolutionException.forward("failed to create or evaluate function class " + functionClass + " with data " + forFunction, e);
-        }
+        checkAssertion(result, rr);
 
-        if (result instanceof Boolean) {
-            if (!((Boolean) result).booleanValue()) throw new SmartFrogAssertionResolutionException("Assertion failure (false) for "
-                    + this +
-                    ((rr instanceof ComponentDescriptionImpl) ?
-                        " in component "
-                        + ((ComponentDescriptionImpl)rr).sfCompleteNameSafe()
-                            : ""));
-        } else {
-            throw new SmartFrogAssertionResolutionException("Assertion failure (non boolean result) for " +
-                    this +
-                    ((rr instanceof ComponentDescriptionImpl) ?
-                        " in component "
-                        + ((ComponentDescriptionImpl)rr).sfCompleteNameSafe()
-                            : ""));
-        }
+        return resultDependingOnPhase(assertionPhase);
+    }
 
+    private Object resultDependingOnPhase(String assertionPhase) {
         if (assertionPhase.equals("dynamic")) {
             setEager(false);
             comp = (SFComponentDescription) copyComp.copy();
@@ -180,6 +145,57 @@ public class SFAssertReference extends SFReference implements ReferencePhases {
         } else { //static or staticLazy
             return SFTempValue.get();
         }
+    }
+
+    private Object createAndInvokeFunction(String functionClass, Context forFunction, ReferenceResolver rr) throws SmartFrogResolutionException {
+        Object result;
+        try {
+            Function function = (Function) SFClassLoader.forName(functionClass).newInstance();
+            result = function.doit(forFunction, null, rr);
+        } catch (Exception e) {
+            System.out.println("obtained " + e);
+            throw (SmartFrogResolutionException)SmartFrogResolutionException.forward("failed to create or evaluate function class " + functionClass + " with data " + forFunction, e);
+        }
+        return result;
+    }
+
+    private void checkAssertion(Object result, Object rr) throws SmartFrogAssertionResolutionException {
+        if (result instanceof Boolean) {
+            if (!((Boolean) result).booleanValue())
+                throw new SmartFrogAssertionResolutionException("Assertion failure (false) for "
+                        + this + sfCompleteNameSafe(rr));
+        } else {
+            throw new SmartFrogAssertionResolutionException("Assertion failure (non boolean result) for " +
+                    this + sfCompleteNameSafe(rr));
+        }
+    }
+
+    private String getFunctionClass() throws SmartFrogResolutionException {
+        String functionClass;
+        try {
+            functionClass = (String) comp.sfResolveHere(SmartFrogCoreKeys.SF_FUNCTION_CLASS);
+        } catch (ClassCastException e) {
+            throw new SmartFrogResolutionException("function class is not a string", e);
+        }
+
+        if (functionClass == null)
+            throw new SmartFrogResolutionException("unknown function class ");
+        return functionClass;
+    }
+
+    private String getAssertionPhase() throws SmartFrogResolutionException {
+        String assertionPhase;
+        try {
+            assertionPhase = (String) comp.sfResolveHere("sfAssertionPhase");
+        } catch (ClassCastException e) {
+            throw new SmartFrogResolutionException("assertion phase is not a string", e);
+        } catch (SmartFrogResolutionException e) {
+           assertionPhase = "dynamic";
+        }
+        if (!(assertionPhase.equals("dynamic") || assertionPhase.equals("static") || assertionPhase.equals("staticLazy"))) {
+            throw new SmartFrogResolutionException("assertion phase is not a valid - must be static, staticLazy or dynamic");
+        }
+        return assertionPhase;
     }
 
     private void initParent(Object rr) {
@@ -223,23 +239,13 @@ public class SFAssertReference extends SFReference implements ReferencePhases {
         //     if any return s LAZY object, set self to lazy and return self, otherwise update copy
         //     and invoke function with copy of CD, return result
         Object result;
-        String assertionPhase;
         copyComp = (SFComponentDescription)comp.copy();
 
         if (getData()) return this;
 
         initParent(rr);
 
-        try {
-            assertionPhase = (String) comp.sfResolveHere("sfAssertionPhase");
-        } catch (ClassCastException e) {
-            throw new SmartFrogResolutionException("assertion phase is not a string", e);
-        } catch (SmartFrogResolutionException e) {
-           assertionPhase = "dynamic";
-        }
-        if (!(assertionPhase.equals("dynamic") || assertionPhase.equals("static") || assertionPhase.equals("staticLazy"))) {
-            throw new SmartFrogResolutionException("assertion phase is not a valid - must be static, staticLazy or dynamic");
-        }
+        String assertionPhase = getAssertionPhase();
 
         Context forFunction = new ContextImpl();
         boolean hasLazy = createContext(forFunction, assertionPhase);
@@ -260,28 +266,7 @@ public class SFAssertReference extends SFReference implements ReferencePhases {
 
         checkAssertion(result, rr);
 
-        if (assertionPhase.equals("dynamic")) {
-            setEager(false);
-            comp = (SFComponentDescription) copyComp.copy();
-            try {
-                comp.sfRemoveAttribute("sfAssertionPhase");
-            } catch (SmartFrogRuntimeException e) {
-                //ignore
-            }
-            return this;
-        } else { //static or staticLazy
-            return SFTempValue.get();
-        }
-    }
-
-    private void checkAssertion(Object result, Object rr) throws SmartFrogAssertionResolutionException {
-        if (result instanceof Boolean) {
-            if (!((Boolean) result).booleanValue()) throw new SmartFrogAssertionResolutionException("Assertion failure (false) for "
-                    + this + sfCompleteNameSafe(rr));
-        } else {
-            throw new SmartFrogAssertionResolutionException("Assertion failure (non boolean result) for " +
-                    this + sfCompleteNameSafe(rr));
-        }
+        return resultDependingOnPhase(assertionPhase);
     }
 
     private String sfCompleteNameSafe(Object rr) {
@@ -333,22 +318,23 @@ public class SFAssertReference extends SFReference implements ReferencePhases {
         Object result;
         String functionClass;
         try {
-        functionClass = (String) comp.sfResolveHere("sfFunctionClass");
-    } catch (ClassCastException e) {
-        throw new SmartFrogResolutionException("function class is not a string", e);
-    }
+            functionClass = (String) comp.sfResolveHere("sfFunctionClass");
+        } catch (ClassCastException e) {
+            throw new SmartFrogResolutionException("function class is not a string", e);
+        }
 
         if (functionClass == null) {
             throw new SmartFrogResolutionException("unknown function class ");
         }
 
         try {
-        Function function = (Function) SFClassLoader.forName(functionClass).newInstance();
-        result = function.doit(forFunction, null, rr);
-    } catch (Exception e) {
-        System.out.println("obtained " + e);
-        throw (SmartFrogResolutionException)SmartFrogResolutionException.forward("failed to create or evaluate function class " + functionClass + " with data " + forFunction, e);
-    }
+            Function function = (Function) SFClassLoader.forName(functionClass).newInstance();
+            result = function.doit(forFunction, null, rr);
+        } catch (Exception e) {
+            System.out.println("obtained " + e);
+            throw (SmartFrogResolutionException) SmartFrogResolutionException.forward
+                    ("failed to create or evaluate function class " + functionClass + " with input " + forFunction, e);
+        }
         return result;
     }
 
