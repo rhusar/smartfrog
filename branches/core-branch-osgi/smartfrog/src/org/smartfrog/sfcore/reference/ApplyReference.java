@@ -24,6 +24,7 @@ public class ApplyReference extends Reference implements Copying, Cloneable, Ser
     // This will cause NotSerializableExceptions if someone tries to serialize us,
     // but the class should not be Serializable anyway
     protected ComponentDescription comp;
+    private static final String SF_ATTRIBUTE_PREFIX = "sf";
 
     public ApplyReference(ComponentDescription comp) {
         super();
@@ -128,19 +129,20 @@ public class ApplyReference extends Reference implements Copying, Cloneable, Ser
     }
 
 
-    private Object createAndApplyFunction(Object rr, boolean remote) throws SmartFrogResolutionException {
-        Context forFunction;
+    private Object createAndApplyFunction(Object rr, boolean remote)
+            throws SmartFrogResolutionException
+    {        
         Function function;
+        Context forFunction = createContext();
 
         try {
             // First try to use the new syntax
-            ComponentDescription metadata = (ComponentDescription) comp.sfResolveHere(SmartFrogCoreKeys.SF_METADATA);
-            forFunction = createContext(SmartFrogCoreKeys.SF_METADATA);
+            ComponentDescription metadata = (ComponentDescription)
+                    comp.sfResolveHere(SmartFrogCoreKeys.SF_METADATA);
             function = createFunction(metadata);
 
         } catch (ClassCastException cce) {
             throw new SmartFrogResolutionException("The sfMeta attribute is not a DATA block", cce);
-
 
         } catch (SmartFrogResolutionException e) {
 
@@ -151,15 +153,16 @@ public class ApplyReference extends Reference implements Copying, Cloneable, Ser
             } catch (ClassCastException cce) {
                 throw new SmartFrogResolutionException("function class is not a string", cce);
             }
-            forFunction = createContext(SmartFrogCoreKeys.SF_FUNCTION_CLASS);
             function = createFunctionOldSyntax(functionClass);         
         }
         
         try {
+
             if (remote)
                 return function.doit(forFunction, null, (RemoteReferenceResolver) rr);
             else
                 return function.doit(forFunction, null, (ReferenceResolver) rr);
+
         } catch (SmartFrogException e) {
             throw new SmartFrogResolutionException("Function invocation failed", e);
         }
@@ -189,14 +192,14 @@ public class ApplyReference extends Reference implements Copying, Cloneable, Ser
         }
     }
 
-    private Context createContext(final String omittedAttribute)
+    private Context createContext()
             throws SmartFrogResolutionException
     {
         Context forFunction = new ContextImpl();
         for (Iterator v = comp.sfAttributes(); v.hasNext();) {
             Object name = v.next();
             String nameS = name.toString();
-            if (!nameS.equals(omittedAttribute)) {
+            if (!nameS.startsWith(SF_ATTRIBUTE_PREFIX)) {
                 Object value = comp.sfResolve(new Reference(ReferencePart.here(name)));
                 try {
                     forFunction.sfAddAttribute(name, value);
