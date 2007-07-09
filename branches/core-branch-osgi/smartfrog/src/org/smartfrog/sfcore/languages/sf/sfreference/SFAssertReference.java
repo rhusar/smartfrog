@@ -109,26 +109,13 @@ public class SFAssertReference extends SFReference implements ReferencePhases {
         //     resolve all non-sf attributes, if they are links
         //     if any return s LAZY object, set self to lazy and return self, otherwise update copy
         //     and invoke function with copy of CD, return result
+        String assertionPhase;
 
-        Context forFunction = new ContextImpl();
-        String functionClass = null;
-        Object result;
-        String assertionPhase = "dynamic";
-        boolean hasLazy = false;
         copyComp = (SFComponentDescription)comp.copy();
 
         if (getData()) return this;
 
-        if (rr instanceof ComponentDescription)
-            comp.setParent((ComponentDescription) rr);
-        else if (rr instanceof Prim)
-            comp.setPrimParent((Prim) rr);
-
-        try {
-            functionClass = (String) comp.sfResolveHere("sfFunctionClass");
-        } catch (ClassCastException e) {
-            throw new SmartFrogResolutionException("function class is not a string", e);
-        }
+        initParent(rr);
 
         try {
             assertionPhase = (String) comp.sfResolveHere("sfAssertionPhase");
@@ -141,60 +128,28 @@ public class SFAssertReference extends SFReference implements ReferencePhases {
             throw new SmartFrogResolutionException("assertion phase is not a valid - must be static, staticLazy or dynamic");
         }
 
-        for (Iterator v = comp.sfAttributes(); v.hasNext();) {
-            Object name = v.next();
+        Context forFunction = new ContextImpl();
+        boolean hasLazy = createContext(forFunction, assertionPhase);
 
-            String nameS = name.toString();
-            if (!nameS.equals("sfFunctionClass") && !nameS.equals("sfAssertionPhase")) {
-                Object value = null;
-                try {
-                     value = comp.sfResolve(new Reference(ReferencePart.here(name)));
-                     try {
-                        comp.sfReplaceAttribute(name, value);
-                        forFunction.sfAddAttribute(name, value);
-                    } catch (SmartFrogContextException e) {
-                        //shouldn't happen
-                    } catch (SmartFrogRuntimeException e) {
-                        //shouldn't happen
-                    }
-                } catch (SmartFrogLazyResolutionException e) {
-                    if (assertionPhase.equals("static")) {
-                        throw new SmartFrogResolutionException("Static assertion cannot evaluate due to LAZY attributes");
-                    }
-                    hasLazy = true;
-                }
+        if (hasLazy) return getLazyValue(assertionPhase);
 
-
-            }
+        String functionClass;
+        try {
+            functionClass = (String) comp.sfResolveHere(SmartFrogCoreKeys.SF_FUNCTION_CLASS);
+        } catch (ClassCastException e) {
+            throw new SmartFrogResolutionException("function class is not a string", e);
         }
 
-        if (functionClass == null) {
+        if (functionClass == null)
             throw new SmartFrogResolutionException("unknown function class ");
-        }
 
-        if (hasLazy) {
-            if (assertionPhase.equals("static")) {
-                throw new SmartFrogResolutionException("Static assertion cannot evaluate due to LAZY attributes");
-            } else if (assertionPhase.equals("staticLazy")){
-                return SFTempValue.get();
-            } else { //(assertionPhase.equals("dynamic")) {
-                setEager(false);
-                comp = (SFComponentDescription)copyComp.copy();
-                try {
-                    comp.sfRemoveAttribute("sfAssertionPhase");
-                } catch (SmartFrogRuntimeException e) {
-                    //ignore
-                }
-                return this;
-            }
-        } else {
-            try {
-                Function function = (Function) SFClassLoader.forName(functionClass).newInstance();
-                result = function.doit(forFunction, null, rr);
-            } catch (Exception e) {
-                System.out.println("obtained " + e);
-                throw (SmartFrogResolutionException)SmartFrogResolutionException.forward("failed to create or evaluate function class " + functionClass + " with data " + forFunction, e);
-            }
+        Object result;
+        try {
+            Function function = (Function) SFClassLoader.forName(functionClass).newInstance();
+            result = function.doit(forFunction, null, rr);
+        } catch (Exception e) {
+            System.out.println("obtained " + e);
+            throw (SmartFrogResolutionException)SmartFrogResolutionException.forward("failed to create or evaluate function class " + functionClass + " with data " + forFunction, e);
         }
 
         if (result instanceof Boolean) {
@@ -227,6 +182,30 @@ public class SFAssertReference extends SFReference implements ReferencePhases {
         }
     }
 
+    private void initParent(Object rr) {
+        if (rr instanceof ComponentDescription)
+            comp.setParent((ComponentDescription) rr);
+        else if (rr instanceof Prim)
+            comp.setPrimParent((Prim) rr);
+    }
+
+    private Object getLazyValue(String assertionPhase) throws SmartFrogResolutionException {
+        if (assertionPhase.equals("static")) {
+            throw new SmartFrogResolutionException("Static assertion cannot evaluate due to LAZY attributes");
+        } else if (assertionPhase.equals("staticLazy")) {
+            return SFTempValue.get();
+        } else { //(assertionPhase.equals("dynamic")) {
+            setEager(false);
+            comp = (SFComponentDescription) copyComp.copy();
+            try {
+                comp.sfRemoveAttribute("sfAssertionPhase");
+            } catch (SmartFrogRuntimeException e) {
+                //ignore
+            }
+            return this;
+        }
+    }
+
     /**
      * Resolves this apply reference by applying the function - unless this is data..
      *
@@ -243,18 +222,13 @@ public class SFAssertReference extends SFReference implements ReferencePhases {
         //     resolve all non-sf attributes, if they are links
         //     if any return s LAZY object, set self to lazy and return self, otherwise update copy
         //     and invoke function with copy of CD, return result
-        Context forFunction = new ContextImpl();
         Object result;
         String assertionPhase;
-        boolean hasLazy = false;
         copyComp = (SFComponentDescription)comp.copy();
 
         if (getData()) return this;
 
-        if (rr instanceof ComponentDescription)
-            comp.setParent((ComponentDescription) rr);
-        else if (rr instanceof Prim)
-            comp.setPrimParent((Prim) rr);
+        initParent(rr);
 
         try {
             assertionPhase = (String) comp.sfResolveHere("sfAssertionPhase");
@@ -267,12 +241,71 @@ public class SFAssertReference extends SFReference implements ReferencePhases {
             throw new SmartFrogResolutionException("assertion phase is not a valid - must be static, staticLazy or dynamic");
         }
 
+        Context forFunction = new ContextImpl();
+        boolean hasLazy = createContext(forFunction, assertionPhase);
+
+        if (hasLazy) {
+            if (assertionPhase.equals("static")) {
+                throw new SmartFrogResolutionException("Static assertion cannot evaluate due to LAZY attributes");
+            } else if (assertionPhase.equals("staticLazy")) {
+                return SFTempValue.get();
+            } else { //(assertionPhase.equals("dynamic")) {
+                setEager(false);
+                comp = (SFComponentDescription) copyComp.copy();
+                return this;
+            }
+        }
+
+        result = createAndInvokeFunction(forFunction, rr);
+
+        checkAssertion(result, rr);
+
+        if (assertionPhase.equals("dynamic")) {
+            setEager(false);
+            comp = (SFComponentDescription) copyComp.copy();
+            try {
+                comp.sfRemoveAttribute("sfAssertionPhase");
+            } catch (SmartFrogRuntimeException e) {
+                //ignore
+            }
+            return this;
+        } else { //static or staticLazy
+            return SFTempValue.get();
+        }
+    }
+
+    private void checkAssertion(Object result, Object rr) throws SmartFrogAssertionResolutionException {
+        if (result instanceof Boolean) {
+            if (!((Boolean) result).booleanValue()) throw new SmartFrogAssertionResolutionException("Assertion failure (false) for "
+                    + this + sfCompleteNameSafe(rr));
+        } else {
+            throw new SmartFrogAssertionResolutionException("Assertion failure (non boolean result) for " +
+                    this + sfCompleteNameSafe(rr));
+        }
+    }
+
+    private String sfCompleteNameSafe(Object rr) {
+        return ((rr instanceof PrimImpl) ?
+            " in component "
+            + ((PrimImpl)rr).sfCompleteNameSafe()
+                : "");
+    }
+
+    /**
+     * 
+     * @param forFunction
+     * @param assertionPhase
+     * @return True iif a lazy parameter was passed to the function
+     * @throws SmartFrogResolutionException
+     */
+    private boolean createContext(Context forFunction, String assertionPhase) throws SmartFrogResolutionException {
+        boolean hasLazy = false;
         for (Iterator v = comp.sfAttributes(); v.hasNext();) {
             Object name = v.next();
 
             String nameS = name.toString();
             if (!nameS.equals("sfFunctionClass") && !nameS.equals("sfAssertionPhase")) {
-                Object value = null;
+                Object value;
                 try {
                      value = comp.sfResolve(new Reference(ReferencePart.here(name)));
                      try {
@@ -293,49 +326,7 @@ public class SFAssertReference extends SFReference implements ReferencePhases {
 
             }
         }
-
-        if (hasLazy) {
-            if (assertionPhase.equals("static")) {
-                throw new SmartFrogResolutionException("Static assertion cannot evaluate due to LAZY attributes");
-            } else if (assertionPhase.equals("staticLazy")) {
-                return SFTempValue.get();
-            } else { //(assertionPhase.equals("dynamic")) {
-                setEager(false);
-                comp = (SFComponentDescription) copyComp.copy();
-                return this;
-            }
-        }
-
-        result = createAndInvokeFunction(forFunction, rr);
-
-        if (result instanceof Boolean) {
-            if (!((Boolean) result).booleanValue()) throw new SmartFrogAssertionResolutionException("Assertion failure (false) for "
-                    + this +
-                    ((rr instanceof PrimImpl) ?
-                        " in component "
-                        + ((PrimImpl)rr).sfCompleteNameSafe()
-                            : ""));
-        } else {
-            throw new SmartFrogAssertionResolutionException("Assertion failure (non boolean result) for " +
-                    this +
-                    ((rr instanceof PrimImpl) ?
-                        " in component "
-                        + ((PrimImpl)rr).sfCompleteNameSafe()
-                            : ""));
-        }
-
-        if (assertionPhase.equals("dynamic")) {
-            setEager(false);
-            comp = (SFComponentDescription) copyComp.copy();
-            try {
-                comp.sfRemoveAttribute("sfAssertionPhase");
-            } catch (SmartFrogRuntimeException e) {
-                //ignore
-            }
-            return this;
-        } else { //static or staticLazy
-            return SFTempValue.get();
-        }
+        return hasLazy;
     }
 
     private Object createAndInvokeFunction(Context forFunction, RemoteReferenceResolver rr) throws SmartFrogResolutionException {
