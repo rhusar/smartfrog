@@ -168,7 +168,18 @@ public class SFAssertReference extends SFReference implements ReferencePhases {
     private Object createAndInvokeFunction(Context forFunction, Object rr, boolean remote)
             throws SmartFrogResolutionException
     {
-        return ApplyReference.createAndApplyFunction(rr, remote, comp, forFunction);
+        String functionClass = getFunctionClass();
+
+        try {
+            Function function = (Function) SFClassLoader.forName(functionClass).newInstance();
+
+            if (remote) return function.doit(forFunction, null, (RemoteReferenceResolver) rr);
+            else return function.doit(forFunction, null, (ReferenceResolver) rr);
+        } catch (Exception e) {
+            System.out.println("obtained " + e);
+            throw (SmartFrogResolutionException)SmartFrogResolutionException.forward
+                    ("failed to create or evaluate function class " + functionClass + " with input " + forFunction, e);
+        }
     }
 
     private void checkAssertion(Object result, Object rr) throws SmartFrogAssertionResolutionException {
