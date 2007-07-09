@@ -140,6 +140,7 @@ public class CheckSchemaElement extends BaseFunction {
      * @throws java.lang.ClassNotFoundException
      */
     private boolean isValidClass (String schemaClass, Object foundClassToValidate) throws ClassNotFoundException {
+        // TODO: Find an appropriate way of accessing user classes
         return ((schemaClass.equals("anyClass"))
                 ||
                 (SFClassLoader.forName(schemaClass).isAssignableFrom(foundClassToValidate.getClass())));
@@ -190,9 +191,7 @@ public class CheckSchemaElement extends BaseFunction {
         if (description == null) description = "";
 
         String errorString = "error in schema: ";
-        //errorString = errorString +
-        //   (description.equals("") ? ": ": "(" + description + "): " ) ;
-
+        
         String binding = (String)context.get("binding");
         if (!(binding.equals("anyBinding") || binding.equals("eager") || binding.equals("lazy") )) {
             throw new SmartFrogAssertionResolutionException (
