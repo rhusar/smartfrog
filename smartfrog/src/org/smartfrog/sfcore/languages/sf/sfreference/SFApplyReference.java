@@ -174,7 +174,7 @@ public class SFApplyReference extends SFReference implements ReferencePhases {
         for (Iterator v = comp.sfAttributes(); v.hasNext();) {
             Object name = v.next();
             String nameS = name.toString();
-            if (!nameS.startsWith(ApplyReference.SF_ATTRIBUTE_PREFIX)) {
+            if (isNotFiltered(nameS)) {
                 Object value = null;
 
                 try {
@@ -198,7 +198,7 @@ public class SFApplyReference extends SFReference implements ReferencePhases {
             Object name = v.next();
 
             String nameS = name.toString();
-            if (!nameS.startsWith(ApplyReference.SF_ATTRIBUTE_PREFIX)) {
+            if (isNotFiltered(nameS)) {
                 Object value;
 
                 try {
@@ -211,6 +211,10 @@ public class SFApplyReference extends SFReference implements ReferencePhases {
             }
         }
         return forFunction;
+    }
+
+    protected boolean isNotFiltered(String nameS) {
+        return ApplyReference.isNotFiltered(nameS);
     }
 
     protected void initComp(Object rr) {

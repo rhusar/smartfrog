@@ -28,20 +28,6 @@ public class AssertReference extends ApplyReference implements Copying, Cloneabl
     }
 
     /**
-     * Checks if this and given reference are equal. Two references are
-     * considered to be equal if the component they wrap are ==
-     *
-     * @param o to be compared
-     * @return true if equal, false if not
-     */
-    public boolean equals(Object o) {
-        if (!(o instanceof AssertReference))
-            return false;
-        
-        return super.equals(o);
-    }
-
-    /**
      * Resolves this apply reference by applying the function - unless this is data..
      *
      * @param rr    ReferenceResolver to be used for resolving this reference

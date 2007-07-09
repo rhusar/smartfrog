@@ -216,7 +216,7 @@ public class ApplyReference extends Reference implements Copying, Cloneable, Ser
         for (Iterator v = comp.sfAttributes(); v.hasNext();) {
             Object name = v.next();
             String nameS = name.toString();
-            if (!nameS.startsWith(SF_ATTRIBUTE_PREFIX)) {
+            if (isNotFiltered(nameS)) {
                 Object value = comp.sfResolve(new Reference(ReferencePart.here(name)));
                 try {
                     forFunction.sfAddAttribute(name, value);
@@ -227,6 +227,10 @@ public class ApplyReference extends Reference implements Copying, Cloneable, Ser
             }
         }
         return forFunction;
+    }
+
+    public static boolean isNotFiltered(String nameS) {
+        return !nameS.startsWith(SF_ATTRIBUTE_PREFIX) || nameS.equals(SmartFrogCoreKeys.SF_CLASS);
     }
 
 
