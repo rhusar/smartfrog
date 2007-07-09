@@ -53,7 +53,7 @@ public class AssertReference extends ApplyReference implements Copying, Cloneabl
             throws SmartFrogResolutionException
     {
         Object result = super.resolve(rr, index);
-        checkAssert(result, rr, true);
+        checkAssert(result, rr, false);
         return result;
     }
 

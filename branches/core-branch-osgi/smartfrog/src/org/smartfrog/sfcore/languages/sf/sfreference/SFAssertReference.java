@@ -101,9 +101,29 @@ public class SFAssertReference extends SFReference implements ReferencePhases {
      * @throws org.smartfrog.sfcore.common.SmartFrogResolutionException
      *          if reference failed to resolve
      */
+    public Object resolve(RemoteReferenceResolver rr, int index)
+            throws SmartFrogResolutionException
+    {
+        return doResolve(rr, true);
+
+    }
+
+    /**
+     * Resolves this apply reference by applying the function - unless this is data..
+     *
+     * @param rr    ReferenceResolver to be used for resolving this reference
+     * @param index index of first referencepart to start resolving at
+     * @return value found on resolving this function
+     * @throws org.smartfrog.sfcore.common.SmartFrogResolutionException
+     *          if reference failed to resolve
+     */
     public Object resolve(ReferenceResolver rr, int index)
             throws SmartFrogResolutionException {
-        //take a new context...
+        return doResolve(rr, false);
+
+    }
+
+    private Object doResolve(Object rr, boolean remote) throws SmartFrogResolutionException {//take a new context...
         //     iterate over the attributes of comp- ignoring any beginning with sf;
         //     cache sfFunctionClass attribute;
         //     resolve all non-sf attributes, if they are links
@@ -119,13 +139,11 @@ public class SFAssertReference extends SFReference implements ReferencePhases {
         String assertionPhase = getAssertionPhase();
 
         Context forFunction = new ContextImpl();
-        boolean hasLazy = createContext(forFunction, assertionPhase);
+        boolean hasLazyAttributes = createContext(forFunction, assertionPhase);
 
-        if (hasLazy) return getLazyValue(assertionPhase);
+        if (hasLazyAttributes) return getLazyValue(assertionPhase);
 
-        String functionClass = getFunctionClass();
-
-        Object result = createAndInvokeFunction(functionClass, forFunction, rr);
+        Object result = createAndInvokeFunction(forFunction, rr, remote);
 
         checkAssertion(result, rr);
 
@@ -147,16 +165,21 @@ public class SFAssertReference extends SFReference implements ReferencePhases {
         }
     }
 
-    private Object createAndInvokeFunction(String functionClass, Context forFunction, ReferenceResolver rr) throws SmartFrogResolutionException {
-        Object result;
+    private Object createAndInvokeFunction(Context forFunction, Object rr, boolean remote)
+            throws SmartFrogResolutionException
+    {
+        String functionClass = getFunctionClass();
+
         try {
             Function function = (Function) SFClassLoader.forName(functionClass).newInstance();
-            result = function.doit(forFunction, null, rr);
+            
+            if (remote) return function.doit(forFunction, null, (RemoteReferenceResolver) rr);
+            else return function.doit(forFunction, null, (ReferenceResolver) rr);
         } catch (Exception e) {
             System.out.println("obtained " + e);
-            throw (SmartFrogResolutionException)SmartFrogResolutionException.forward("failed to create or evaluate function class " + functionClass + " with data " + forFunction, e);
+            throw (SmartFrogResolutionException)SmartFrogResolutionException.forward
+                    ("failed to create or evaluate function class " + functionClass + " with input " + forFunction, e);
         }
-        return result;
     }
 
     private void checkAssertion(Object result, Object rr) throws SmartFrogAssertionResolutionException {
@@ -222,53 +245,6 @@ public class SFAssertReference extends SFReference implements ReferencePhases {
         }
     }
 
-    /**
-     * Resolves this apply reference by applying the function - unless this is data..
-     *
-     * @param rr    ReferenceResolver to be used for resolving this reference
-     * @param index index of first referencepart to start resolving at
-     * @return value found on resolving this function
-     * @throws org.smartfrog.sfcore.common.SmartFrogResolutionException if reference failed to resolve
-     */
-    public Object resolve(RemoteReferenceResolver rr, int index)
-            throws SmartFrogResolutionException {
-        //take a new context...
-        //     iterate over the attributes of comp- ignoring any beginning with sf;
-        //     cache sfFunctionClass attribute;
-        //     resolve all non-sf attributes, if they are links
-        //     if any return s LAZY object, set self to lazy and return self, otherwise update copy
-        //     and invoke function with copy of CD, return result
-        Object result;
-        copyComp = (SFComponentDescription)comp.copy();
-
-        if (getData()) return this;
-
-        initParent(rr);
-
-        String assertionPhase = getAssertionPhase();
-
-        Context forFunction = new ContextImpl();
-        boolean hasLazy = createContext(forFunction, assertionPhase);
-
-        if (hasLazy) {
-            if (assertionPhase.equals("static")) {
-                throw new SmartFrogResolutionException("Static assertion cannot evaluate due to LAZY attributes");
-            } else if (assertionPhase.equals("staticLazy")) {
-                return SFTempValue.get();
-            } else { //(assertionPhase.equals("dynamic")) {
-                setEager(false);
-                comp = (SFComponentDescription) copyComp.copy();
-                return this;
-            }
-        }
-
-        result = createAndInvokeFunction(forFunction, rr);
-
-        checkAssertion(result, rr);
-
-        return resultDependingOnPhase(assertionPhase);
-    }
-
     private String sfCompleteNameSafe(Object rr) {
         return ((rr instanceof PrimImpl) ?
             " in component "
@@ -314,30 +290,6 @@ public class SFAssertReference extends SFReference implements ReferencePhases {
         return hasLazy;
     }
 
-    private Object createAndInvokeFunction(Context forFunction, RemoteReferenceResolver rr) throws SmartFrogResolutionException {
-        Object result;
-        String functionClass;
-        try {
-            functionClass = (String) comp.sfResolveHere("sfFunctionClass");
-        } catch (ClassCastException e) {
-            throw new SmartFrogResolutionException("function class is not a string", e);
-        }
-
-        if (functionClass == null) {
-            throw new SmartFrogResolutionException("unknown function class ");
-        }
-
-        try {
-            Function function = (Function) SFClassLoader.forName(functionClass).newInstance();
-            result = function.doit(forFunction, null, rr);
-        } catch (Exception e) {
-            System.out.println("obtained " + e);
-            throw (SmartFrogResolutionException) SmartFrogResolutionException.forward
-                    ("failed to create or evaluate function class " + functionClass + " with input " + forFunction, e);
-        }
-        return result;
-    }
-
     /**
      * Returns string representation of the reference.
      * Overrides Object.toString.
@@ -350,7 +302,7 @@ public class SFAssertReference extends SFReference implements ReferencePhases {
         res += (data ? "DATA " : "");
 
         res += "ASSERT {";
-        res += comp.sfContext().toString();
+        res += comp.sfContext();
         res += "}";
 
         return res;
