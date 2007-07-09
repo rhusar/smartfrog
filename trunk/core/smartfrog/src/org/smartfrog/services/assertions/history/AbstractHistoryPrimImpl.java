@@ -23,6 +23,7 @@ import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.utils.ComponentHelper;
+import org.smartfrog.services.assertions.SmartFrogAssertionException;
 
 import java.rmi.RemoteException;
 
@@ -35,12 +36,11 @@ public abstract class AbstractHistoryPrimImpl extends PrimImpl {
     protected AbstractHistoryPrimImpl() throws RemoteException {
     }
 
-
     /**
      * Get the log
-     * @return
-     * @throws SmartFrogResolutionException
-     * @throws RemoteException
+     * @return the resolved component
+     * @throws SmartFrogAssertionException for invalid events
+     * @throws RemoteException for RMI-related problems
      */
     protected History resolveHistory() throws SmartFrogResolutionException, RemoteException {
         Prim logPrim = null;

@@ -73,13 +73,11 @@ public class HistoryLogImpl extends AbstractHistoryPrimImpl implements Remote {
         log(ATTR_DEPLOY_MESSAGE);
     }
 
-
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
         log(ATTR_START_MESSAGE);
         queueForTermination("HistoryLog");
     }
-
 
     protected synchronized void sfTerminateWith(TerminationRecord status) {
         super.sfTerminateWith(status);

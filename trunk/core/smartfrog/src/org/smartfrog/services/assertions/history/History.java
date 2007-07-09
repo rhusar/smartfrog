@@ -26,7 +26,6 @@ import java.rmi.RemoteException;
 
 /** created 09-Jul-2007 12:10:42 */
 
-
 public interface History extends Remote {
     /**
      * Add an event to the history

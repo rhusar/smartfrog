@@ -35,7 +35,6 @@ public class HistoryLogAssertion extends AbstractHistoryPrimImpl implements Remo
     public HistoryLogAssertion() throws RemoteException {
     }
 
-
     /**
      * Assert that the event is in the history log
      * @throws SmartFrogException
