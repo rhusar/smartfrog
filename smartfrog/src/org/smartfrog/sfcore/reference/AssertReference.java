@@ -87,11 +87,11 @@ public class AssertReference extends ApplyReference implements Copying, Cloneabl
     private String sfCompleteNameSafe(Object rr, boolean remote) {
         if (remote) {
             if (rr instanceof PrimImpl) return " in component " + ((PrimImpl) rr).sfCompleteNameSafe();
-            else return "<complete name unknown>";
+            else return " <complete name unknown>";
         } else {
             if (rr instanceof ComponentDescriptionImpl)
                 return " in component " + ((ComponentDescriptionImpl) rr).sfCompleteNameSafe();
-            else return "<complete name unknown>";
+            else return " <complete name unknown>";
         }
     }
     /**
