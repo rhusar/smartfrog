@@ -183,6 +183,7 @@ public class PopUpTree extends JComponent implements ActionListener {
         tempComp = comp;
         tempX = x;
         tempY = y;
+        this.parent = parent;
         if ( getNode() instanceof Prim){
           menuItemRemoveAttribute.setVisible(false);
             menuItemDetach.setVisible(true);
@@ -209,10 +210,8 @@ public class PopUpTree extends JComponent implements ActionListener {
             menuItemDumpState.setVisible(false);
             menuItemDumpStateToFile.setVisible(false);
             menuItemEditTags.setVisible(true);
-        }
+        } else return;  // do not show a popup if no node has been clicked on
         popupTree.show(comp, x, y);
-        this.parent = parent;
-
     }
 
     /**
@@ -441,7 +440,9 @@ public class PopUpTree extends JComponent implements ActionListener {
      */
     public Object getNode() {
         TreePath tpath = ((JTree) tempComp).getPathForLocation(tempX, tempY);
-        Object node = (((DeployEntry) (tpath.getLastPathComponent())).getEntry());
+        Object node = null;
+        if (tpath != null)
+            node = (((DeployEntry) (tpath.getLastPathComponent())).getEntry());
         return node;
     }
     /**
