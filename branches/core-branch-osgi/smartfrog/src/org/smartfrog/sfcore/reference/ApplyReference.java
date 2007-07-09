@@ -174,7 +174,7 @@ public class ApplyReference extends Reference implements Copying, Cloneable, Ser
         }
     }
 
-    public static String getFunctionClass(ComponentDescription comp) throws SmartFrogResolutionException {
+    private static String getFunctionClass(ComponentDescription comp) throws SmartFrogResolutionException {
         String functionClass;
         try {
             functionClass = (String) comp.sfResolveHere(SmartFrogCoreKeys.SF_FUNCTION_CLASS);

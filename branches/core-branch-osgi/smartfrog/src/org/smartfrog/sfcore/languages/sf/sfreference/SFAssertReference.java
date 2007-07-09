@@ -143,7 +143,7 @@ public class SFAssertReference extends SFReference implements ReferencePhases {
 
         Object result = ApplyReference.createAndApplyFunction(rr, remote, comp, forFunction);
 
-        checkAssertion(result, rr);
+        AssertReference.checkAssert(this, result, rr, remote);
 
         return resultDependingOnPhase(assertionPhase);
     }
@@ -160,17 +160,6 @@ public class SFAssertReference extends SFReference implements ReferencePhases {
             return this;
         } else { //static or staticLazy
             return SFTempValue.get();
-        }
-    }
-
-    private void checkAssertion(Object result, Object rr) throws SmartFrogAssertionResolutionException {
-        if (result instanceof Boolean) {
-            if (!((Boolean) result).booleanValue())
-                throw new SmartFrogAssertionResolutionException("Assertion failure (false) for "
-                        + this + sfCompleteNameSafe(rr));
-        } else {
-            throw new SmartFrogAssertionResolutionException("Assertion failure (non boolean result) for " +
-                    this + sfCompleteNameSafe(rr));
         }
     }
 
@@ -211,13 +200,6 @@ public class SFAssertReference extends SFReference implements ReferencePhases {
             }
             return this;
         }
-    }
-
-    private String sfCompleteNameSafe(Object rr) {
-        return ((rr instanceof PrimImpl) ?
-            " in component "
-            + ((PrimImpl)rr).sfCompleteNameSafe()
-                : "");
     }
 
     /**
