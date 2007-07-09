@@ -5,10 +5,8 @@ import org.smartfrog.sfcore.languages.sf.sfcomponentdescription.SFComponentDescr
 import org.smartfrog.sfcore.parser.ReferencePhases;
 import org.smartfrog.sfcore.common.*;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
-import org.smartfrog.sfcore.componentdescription.ComponentDescriptionImpl;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimImpl;
-import org.smartfrog.sfcore.security.SFClassLoader;
 
 import java.util.Iterator;
 
@@ -143,7 +141,7 @@ public class SFAssertReference extends SFReference implements ReferencePhases {
 
         if (hasLazyAttributes) return getLazyValue(assertionPhase);
 
-        Object result = createAndInvokeFunction(forFunction, rr, remote);
+        Object result = ApplyReference.createAndApplyFunction(rr, remote, comp, forFunction);
 
         checkAssertion(result, rr);
 
@@ -162,23 +160,6 @@ public class SFAssertReference extends SFReference implements ReferencePhases {
             return this;
         } else { //static or staticLazy
             return SFTempValue.get();
-        }
-    }
-
-    private Object createAndInvokeFunction(Context forFunction, Object rr, boolean remote)
-            throws SmartFrogResolutionException
-    {
-        String functionClass = ApplyReference.getFunctionClass(comp);
-
-        try {
-            Function function = (Function) SFClassLoader.forName(functionClass).newInstance();
-
-            if (remote) return function.doit(forFunction, null, (RemoteReferenceResolver) rr);
-            else return function.doit(forFunction, null, (ReferenceResolver) rr);
-        } catch (Exception e) {
-            System.out.println("obtained " + e);
-            throw (SmartFrogResolutionException)SmartFrogResolutionException.forward
-                    ("failed to create or evaluate function class " + functionClass + " with input " + forFunction, e);
         }
     }
 

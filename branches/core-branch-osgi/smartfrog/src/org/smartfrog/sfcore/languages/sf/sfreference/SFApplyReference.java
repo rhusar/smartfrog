@@ -6,7 +6,6 @@ import org.smartfrog.sfcore.parser.ReferencePhases;
 import org.smartfrog.sfcore.common.*;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.prim.Prim;
-import org.smartfrog.sfcore.security.SFClassLoader;
 
 import java.util.Iterator;
 
@@ -101,7 +100,7 @@ public class SFApplyReference extends SFReference implements ReferencePhases {
         //     iterate over the attributes of comp- ignoring any beginning with sf;
         //     cache sfFunctionClass attribute;
         //     resolve all non-sf attributes, if they are links
-        //     if any return s LAZY object, set self to lazy and return self, otherwise update copy
+        //     if any returns LAZY object, set self to lazy and return self, otherwise update copy
         //     and invoke function with copy of CD, return result
 
 
@@ -116,7 +115,7 @@ public class SFApplyReference extends SFReference implements ReferencePhases {
 
         if (isLazy) throw new SmartFrogLazyResolutionException("function has lazy parameter");
 
-        return createAndInvokeFunction(forFunction, rr, false);
+        return ApplyReference.createAndApplyFunction(rr, false, comp, forFunction);
     }
 
     /**
@@ -144,7 +143,7 @@ public class SFApplyReference extends SFReference implements ReferencePhases {
 
         Context forFunction = createContext();
 
-        return createAndInvokeFunction(forFunction, rr, true);
+        return ApplyReference.createAndApplyFunction(rr, true, comp, forFunction);
     }
     
     private boolean createContext(Context forFunction) throws SmartFrogResolutionException {
@@ -152,7 +151,7 @@ public class SFApplyReference extends SFReference implements ReferencePhases {
         for (Iterator v = comp.sfAttributes(); v.hasNext();) {
             Object name = v.next();
             String nameS = name.toString();
-            if (!nameS.startsWith("sf")){
+            if (!nameS.startsWith(ApplyReference.SF_ATTRIBUTE_PREFIX)){
                 Object value = null;
 
                 try {
@@ -189,7 +188,7 @@ public class SFApplyReference extends SFReference implements ReferencePhases {
             Object name = v.next();
 
             String nameS = name.toString();
-            if (!nameS.startsWith("sf")) {
+            if (!nameS.startsWith(ApplyReference.SF_ATTRIBUTE_PREFIX)) {
                 Object value;
 
                 try {
@@ -209,19 +208,6 @@ public class SFApplyReference extends SFReference implements ReferencePhases {
             comp.setParent((ComponentDescription) rr);
         else if (rr instanceof Prim)
             comp.setPrimParent((Prim) rr);
-    }
-
-    private Object createAndInvokeFunction(Context forFunction, Object rr, boolean remote) throws SmartFrogResolutionException {
-        String functionClass = ApplyReference.getFunctionClass(comp);
-
-        try {
-            Function function = (Function) SFClassLoader.forName(functionClass).newInstance();
-            if (remote) return function.doit(forFunction, null, (RemoteReferenceResolver) rr);
-            else return function.doit(forFunction, null, (ReferenceResolver) rr);
-        } catch (Exception e) {
-            throw (SmartFrogResolutionException) SmartFrogResolutionException.forward
-                    ("failed to create or evaluate function class " + functionClass + " with data " + forFunction, e);
-        }
     }
 
     /**
