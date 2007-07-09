@@ -1,93 +1,19 @@
 package org.smartfrog.sfcore.languages.sf.sfreference;
 
-import org.smartfrog.sfcore.reference.*;
-import org.smartfrog.sfcore.languages.sf.sfcomponentdescription.SFComponentDescription;
-import org.smartfrog.sfcore.parser.ReferencePhases;
 import org.smartfrog.sfcore.common.*;
-import org.smartfrog.sfcore.componentdescription.ComponentDescription;
-import org.smartfrog.sfcore.prim.Prim;
-import org.smartfrog.sfcore.prim.PrimImpl;
+import org.smartfrog.sfcore.languages.sf.sfcomponentdescription.SFComponentDescription;
+import org.smartfrog.sfcore.reference.*;
 
 import java.util.Iterator;
 
 /**
  * Representation of Assert Reference for the SF Language
  */
-public class SFAssertReference extends SFReference implements ReferencePhases {
-    protected SFComponentDescription comp;
+public class SFAssertReference extends SFApplyReference {
     protected SFComponentDescription copyComp;
 
     public SFAssertReference(SFComponentDescription comp) {
-        super();
-        this.comp = comp;
-    }
-
-    /**
-     * Get tje run-time version of the reference
-     *
-     * @return the reference
-     * @throws org.smartfrog.sfcore.common.SmartFrogCompilationException
-     */
-    public Reference sfAsReference() throws SmartFrogCompilationException {
-        AssertReference ar = new AssertReference(comp.sfAsComponentDescription());
-        ar.setEager(getEager());
-        ar.setData(getData());
-        return ar;
-    }
-
-    /**
-     * Returns a copy of the reference, by cloning itself and the function part
-     *
-     * @return copy of reference
-     * @see org.smartfrog.sfcore.common.Copying
-     */
-    public Object copy() {
-        SFAssertReference ret = (SFAssertReference) clone();
-
-        ret.comp = (SFComponentDescription) comp.copy();
-        ret.setEager(eager);
-
-        return ret;
-    }
-
-    /**
-     * Makes a clone of the reference. The inside ref holder is cloned, but the
-     * contained component is NOT.
-     *
-     * @return clone of reference
-     */
-    public Object clone() {
-        SFAssertReference res = (SFAssertReference) super.clone();
-        res.comp = comp;
-        res.setEager(eager);
-
-        return res;
-    }
-
-    /**
-     * Checks if this and given reference are equal. Two references are
-     * considered to be equal if the component they wrap are ==
-     *
-     * @param ref to be compared
-     * @return true if equal, false if not
-     */
-    public boolean equals(Object ref) {
-        if (!(ref instanceof SFAssertReference)) {
-            return false;
-        }
-
-        return ((SFAssertReference) ref).comp == comp;
-
-    }
-
-    /**
-     * Returns the hashcode for this reference. Hash code for reference is made
-     * out of the sum of the parts hashcodes
-     *
-     * @return integer hashcode
-     */
-    public int hashCode() {
-        return comp.hashCode();
+        super(comp);
     }
 
     /**
@@ -128,11 +54,11 @@ public class SFAssertReference extends SFReference implements ReferencePhases {
         //     if any return s LAZY object, set self to lazy and return self, otherwise update copy
         //     and invoke function with copy of CD, return result
 
-        copyComp = (SFComponentDescription)comp.copy();
+        copyComp = (SFComponentDescription) comp.copy();
 
         if (getData()) return this;
 
-        initParent(rr);
+        initComp(rr);
 
         String assertionPhase = getAssertionPhase();
 
@@ -178,13 +104,6 @@ public class SFAssertReference extends SFReference implements ReferencePhases {
         return assertionPhase;
     }
 
-    private void initParent(Object rr) {
-        if (rr instanceof ComponentDescription)
-            comp.setParent((ComponentDescription) rr);
-        else if (rr instanceof Prim)
-            comp.setPrimParent((Prim) rr);
-    }
-
     private Object getLazyValue(String assertionPhase) throws SmartFrogResolutionException {
         if (assertionPhase.equals("static")) {
             throw new SmartFrogResolutionException("Static assertion cannot evaluate due to LAZY attributes");
@@ -215,7 +134,7 @@ public class SFAssertReference extends SFReference implements ReferencePhases {
             Object name = v.next();
 
             String nameS = name.toString();
-            if (!nameS.equals("sfFunctionClass") && !nameS.equals("sfAssertionPhase")) {
+            if (!nameS.startsWith(ApplyReference.SF_ATTRIBUTE_PREFIX)) {
                 Object value;
                 try {
                      value = comp.sfResolve(new Reference(ReferencePart.here(name)));
