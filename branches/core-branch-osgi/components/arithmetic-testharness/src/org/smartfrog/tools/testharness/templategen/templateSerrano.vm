@@ -64,6 +64,13 @@ MonitoredDaemon extends Compound {
     shellCmdAtt_05b ""; // ATTRIB iniSFFile;
     shellCmdAtt_06a "-Dorg.smartfrog.sfcore.processcompound.sfProcessName=";
     shellCmdAtt_06b "rootProcess";
+#if ($dynamicLoadingOn)
+    shellCmdAtt_10a "-Dorg.smartfrog.codebase=";
+    shellCmdAtt_10b ATTRIB httpCodebase;
+    shellCmdAtt_07a "-Djava.security.policy==";
+    shellCmdAtt_07b ATTRIB nosecPolicy;
+    shellCmdAtt_11 "-Djava.security.manager";
+#end
 #if ($securityOn)
     shellCmdAtt_07a "-Djava.security.policy==";
     shellCmdAtt_07b ATTRIB secPolicy;
@@ -76,14 +83,7 @@ MonitoredDaemon extends Compound {
 //    shellCmdAtt_48 "-Djava.security.debug=policy";
 //    shellCmdAtt_49 "-Djavax.net.debug=ssl";
 #end
-#if ($dynamicLoadingOn)
-    shellCmdAtt_10a "-Dorg.smartfrog.codebase=";
-    shellCmdAtt_10b ATTRIB httpCodebase;
-#if ($securityOn)
-//    shellCmdAtt_90a "-Djava.rmi.server.codebase=";
-//    shellCmdAtt_90b ATTRIB httpCodebase;
-#end
-#end
+
     shellCmdAtt_12a "";
     shellCmdAtt_12b "";
     shellCmdAtt_14a "";
@@ -143,6 +143,13 @@ Scheduler extends SchedulerCompound {
           shellCmdAtt_02 ATTRIB classPath;
           shellCmdAtt_03a "-Dorg.smartfrog.sfcore.processcompound.sfRootLocatorPort=";
           shellCmdAtt_03b ATTRIB port;
+#if ($dynamicLoadingOn)
+          shellCmdAtt_10a "-Dorg.smartfrog.codebase=";
+          shellCmdAtt_10b ATTRIB httpCodebase;
+          shellCmdAtt_04a "-Djava.security.policy==";
+          shellCmdAtt_04b ATTRIB nosecPolicy;
+    	  shellCmdAtt_11 "-Djava.security.manager";
+#end
 #if ($securityOn)
           shellCmdAtt_04a "-Djava.security.policy==";
           shellCmdAtt_04b ATTRIB secPolicy;
@@ -154,14 +161,7 @@ Scheduler extends SchedulerCompound {
 //          shellCmdAtt_47 "-Dorg.smartfrog.sfcore.security.debug=true";
 //          shellCmdAtt_48 "-Djava.security.debug=policy";
 #end
-#if ($dynamicLoadingOn)
-          shellCmdAtt_10a "-Dorg.smartfrog.codebase=";
-          shellCmdAtt_10b ATTRIB httpCodebase;
-#if ($securityOn)
-//          shellCmdAtt_90a "-Djava.rmi.server.codebase=";
-//          shellCmdAtt_90b ATTRIB httpCodebase;
-#end
-#end
+
           shellCmdAtt_17 "org.smartfrog.SFSystem";
           shellCmdAtt_18 "-a";
           //shellCmdAtt_19a LAZY ATTRIB name;
@@ -182,6 +182,13 @@ Scheduler extends SchedulerCompound {
           shellCmdAtt_02 ATTRIB classPath;
           shellCmdAtt_03a "-Dorg.smartfrog.sfcore.processcompound.sfRootLocatorPort=";
           shellCmdAtt_03b ATTRIB port;
+#if ($dynamicLoadingOn)
+          shellCmdAtt_10a "-Dorg.smartfrog.codebase=";
+          shellCmdAtt_10b ATTRIB httpCodebase;
+          shellCmdAtt_04a "-Djava.security.policy==";
+          shellCmdAtt_04b ATTRIB nosecPolicy;
+    	  shellCmdAtt_11 "-Djava.security.manager";
+#end
 #if ($securityOn)
           shellCmdAtt_04a "-Djava.security.policy==";
           shellCmdAtt_04b ATTRIB secPolicy;
@@ -253,6 +260,7 @@ TemplateSerrano extends Compound {
   classPath "${principalDaemon.sfHome}/${libSubdir}${mainJar}#foreach ($jar in $libJars):${principalDaemon.sfHome}/${libSubdir}${jar}#end";
 #if ($dynamicLoadingOn)
   httpCodebase "#foreach ($jar in $httpJars)http://${principalDaemon.host}:8080/${jar} #end";
+  nosecPolicy "${principalDaemon.sfHome}/private/sf.no.security.policy";
 #end
 #if ($securityOn)
         secPolicy "${principalDaemon.sfHome}/private/sf.policy";

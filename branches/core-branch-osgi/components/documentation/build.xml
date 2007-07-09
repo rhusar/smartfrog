@@ -72,20 +72,20 @@
 
 	<import file="../../../forrest/main/forrest.antproxy.xml"/>
 -->
-  <property name="forrest.src.dir" location="build/src"/>
+  <property name="forrest.src.dir" location="src"/>
   <property name="documentation.dir" location="${forrest.src.dir}/documentation"/>
 
   <target name="init" depends="core.init,forrest.init">
     <echo level="verbose">Created forrest project template</echo>
 
     <property name="comp.home" location="."/>
-    <property name="xdocs.skin.dir" location="${forrest.src.dir}/content/xdocs"/>
+    <property name="xdocs.skin.dir" location="${documentation.dir}/content/xdocs"/>
     <property name="xdocs.dir" location="${xdocs.skin.dir}/smartfrogdoc"/>
-    <property name="src.xdocs.dir" location="master/xdocs"/>
+    <!--property name="src.xdocs.dir" location="master/xdocs"/>
     <property name="src.content.dir" location="master/content"/>
     <property name="src.documentation.dir" location="master/documentation"/>
-    <property name="src.skin.dir" location="master/skin"/>
-    <property name="skin.dir" location="${forrest.src.dir}/skin"/>
+    <property name="src.skin.dir" location="master/skin"/!-->
+    <property name="skin.dir" location="master/skin"/>
 
 
 
@@ -119,12 +119,12 @@
   </target>
 
   <target name="mkdirs" depends="init">
-    <mkdir dir="${skin.dir}"/>
+    <!--mkdir dir="${skin.dir}"/-->
     <mkdir dir="${xdocs.dir}"/>
   </target>
 
   <target name="copy-properties" depends="mkdirs">
-    <copy todir="${forrest.src.dir}" file="${src.skin.dir}/forrest.properties"/>
+    <copy todir="${comp.home}" file="${skin.dir}/forrest.properties"/>
   </target>
 
 
@@ -135,14 +135,14 @@
   <target name="prepare-docs" depends="seedforrest,copy-properties">
 
     <copy todir="${xdocs.dir}">
-      <fileset dir="${src.skin.dir}">
+      <fileset dir="${skin.dir}">
         <include name="SFComponents.xml"/>
         <include name="*.gif"/>
       </fileset>
     </copy>
 
     <copy todir="${xdocs.skin.dir}" overwrite="true">
-      <fileset dir="${src.skin.dir}">
+      <fileset dir="${skin.dir}">
         <include name="index.xml"/>
         <include name="site.xml"/>
         <include name="tabs.xml"/>
@@ -169,12 +169,12 @@
     <!--<forrest-component component="xmpp" />-->
 
 
-    <copy todir="${src.documentation.dir}" overwrite="true"
-        file="${src.skin.dir}/skinconf.xml">
+    <copy todir="${documentation.dir}" overwrite="true"
+        file="${skin.dir}/skinconf.xml">
     </copy>
 
     <copy todir="${xdocs.skin.dir}/images">
-      <fileset dir="${src.skin.dir}">
+      <fileset dir="${skin.dir}">
         <include name="sf.*"/>
         <include name="frog.*"/>
         <include name="sourceforge.*"/>
@@ -185,12 +185,14 @@
   </target>
 
   <target name="forrest-presets" depends="init">
+	
     <presetdef name="run-forrest">
       <exec dir="${comp.home}" failonerror="true">
         <env key="FORREST_HOME" value="${env.FORREST_HOME}"/>
         <env key="ANT_OPTS" value="${ant.opts.forrest}"/>
       </exec>
     </presetdef>
+   
     <presetdef name="run-forrest-on-windows">
       <run-forrest executable="${env.FORREST_HOME}/bin/forrest.bat"
           osfamily="windows">
@@ -198,18 +200,19 @@
         <arg value="-Djava.awt.headless\=true"/>
       </run-forrest>
     </presetdef>
+   
     <presetdef name="run-forrest-on-unix">
       <run-forrest executable="${env.FORREST_HOME}/bin/forrest"
           osfamily="unix">
-        <!--<arg value="-Dforrest.jvmargs=true"/>-->
+	  <!--  <arg value="-Dforrest.jvmargs=true"/>-->
         <arg value="-Djava.awt.headless=true"/>
       </run-forrest>
     </presetdef>
-  </target>
+    </target>
 
-  <target name="generate-site" depends="forrest-presets,prepare-docs">
+  <target name="generate-site" depends="prepare-docs, forrest-presets">
 
-    <!--antcall target="site"/-->
+	  
     <run-forrest-on-windows>
       <arg value="site"/>
     </run-forrest-on-windows>
@@ -217,6 +220,24 @@
       <arg value="site"/>
     </run-forrest-on-unix>
   </target>
+
+<!--target name="generate-site" depends="prepare-docs" >
+
+	<exec dir="${comp.home}" executable="${env.FORREST_HOME}/bin/forrest.bat" os="Windows 2000, Windows_NT, Windows XP">
+	        <arg value="-Dforrest.jvmargs\=true"/>
+		<arg value="-Djava.awt.headless\=true"/>
+		<arg value="site"/>
+	</exec>     
+	<exec dir="${comp.home}" executable="${env.FORREST_HOME}/bin/forrest" os="Linux">
+	      <arg value="-Dforrest.jvmargs=-Djava.awt.headless=true"/>
+	      <arg value="site"/>
+	    </exec>
+  
+    </target-->
+
+
+
+    
 
 
   <target name="copy-forrest-docs" depends="generate-site">
@@ -231,8 +252,8 @@
       </fileset>
     </copy>
 
-    <copy todir="${dist.doc.dir}/smartfrogdoc/">
-      <fileset dir="${src.skin.dir}">
+    <copy todir="${dist.doc.dir}/en/smartfrogdoc">
+      <fileset dir="${skin.dir}">
         <include name="*.gif"/>
       </fileset>
     </copy>

@@ -22,7 +22,7 @@
 	
 	<action>
 		<name>DOWNLOAD</name>
-	<action>
+	</action>
 	<action>
 		<name>INSTALL</name>
 	</action>

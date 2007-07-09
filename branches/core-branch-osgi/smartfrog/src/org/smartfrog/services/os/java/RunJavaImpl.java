@@ -19,14 +19,14 @@
  */
 package org.smartfrog.services.os.java;
 
-import org.smartfrog.services.os.runshell.RunShellImpl;
 import org.smartfrog.services.filesystem.FileIntf;
+import org.smartfrog.services.os.runshell.RunShellImpl;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogInitException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.logging.Log;
-import org.smartfrog.sfcore.utils.PlatformHelper;
 import org.smartfrog.sfcore.reference.Reference;
+import org.smartfrog.sfcore.utils.PlatformHelper;
 
 import java.io.File;
 import java.rmi.RemoteException;

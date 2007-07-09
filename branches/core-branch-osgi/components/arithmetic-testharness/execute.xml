@@ -40,7 +40,7 @@
   <property name="root.dir" location="../.."/>
   <property name="smartfrog.home" location="../../../smartfrog"/>
   <property name="sharedFolder" location="${root.dir}/../"/>
-  <property name="arithmetic.dir" location="${sharedFolder}/core/components/arithmetic-testharness"/>
+  <property name="arithmetic.dir" location="${sharedFolder}/components/arithmetic-testharness"/>
   <property name="build.dir" location="build"/>
   <property name="build.classes.dir" location="${build.dir}/classes"/>
 
@@ -84,8 +84,13 @@
       <arg value="startRemoteDaemons.sf"/>
       <arg value="-d"/>
       <arg file="${smartfrog.home}"/>
+      <arg value="-s"/>
+      <arg file="${sharedFolder}"/>
       <classpath>
         <fileset dir="${dist.lib.dir}">
+          <include name="**/*.jar"/>
+        </fileset>
+        <fileset dir="${lib.dir}">
           <include name="**/*.jar"/>
         </fileset>
       </classpath>
@@ -101,6 +106,7 @@
     <exec dir="${arithmetic.dir}/src/org/smartfrog/tools/testharness/templategen" executable="sh">
       <arg value="doAll"/>
       <env key="SFHOME" value="${smartfrog.home}"/>
+      <env key="ATH_HOME" value="${arithmetic.dir}"/>
     </exec>
   </target>
 
@@ -123,6 +129,14 @@
     <copy todir="${smartfrog.home}/dist/lib">
       <fileset dir="${arithmetic.dir}/dist/lib"/>
     </copy>
+    
+    <copy todir="${smartfrog.home}/dist/lib">
+      <fileset dir="${arithmetic.dir}/lib"/>
+    </copy>
+    
+    <copy todir="${arithmetic.dir}/dist/lib">
+      <fileset dir="${arithmetic.dir}/lib"/>
+    </copy>
 
     <exec dir="${sharedFolder}/daemons" executable="sh">
       <arg
@@ -133,65 +147,17 @@
     <copy file="security.xml"
           todir="${sharedFolder}/daemons/demoCA/${releaseName}/dist"/>
 
-    <!--property name="host1.keystore" location="${sharedFolder}/daemons/demoCA/${releaseName}/dist/private/host1/mykeys.st"/>
-  <property name="host1.properties" location="${sharedFolder}/daemons/demoCA/${releaseName}/dist/private/host1/SFSecurity.properties"/>
-  <property name="host1.alias" value="self"/-->
-
-    <!--sf-security id="host1"
-     keystore="${host1.keystore}"
-     securityFile="${host1.properties}"
-     alias="${host1.alias}"
-   /-->
-
-    <!--sf-sign jar="${sharedFolder}/daemons/demoCA/${releaseName}/dist/lib/sf-arithmetic-testharness.jar" signedjar="${sharedFolder}/daemons/demoCA/${releaseName}/dist/signedLib/sf-arithemtic-testharness.jar">
-     <security
-       keystore="${host1.keystore}"
-       securityFile="${host1.properties}"
-       alias="${host1.alias}"
-     />
-     <fileset dir="${sharedFolder}/daemons/demoCA/${releaseName}/dist/lib" includes="**/s*.jar" />
-   </sf-sign-->
-
     <exec dir="${sharedFolder}/daemons" executable="sh">
       <arg
           line="${arithmetic.dir}/bin/copysignedlibs ${sharedFolder}/daemons/demoCA/${releaseName}/dist/signedLib ${sharedFolder} ${releaseName} ${hostList}"/>
     </exec>
-    <!--antcall target="signjarbuild">
-        <param name="jarname" value="${dist.lib.dir}/sfExamples.jar"/>
-        <param name="signedjarname" value="${dist.signedLib.dir}/sfExamples.jar"/>
-    </antcall>
-
-    <antcall target="signjarbuild">
-        <param name="jarname" value="${dist.lib.dir}/smartfrog.jar"/>
-        <param name="signedjarname" value="${dist.signedLib.dir}/smartfrog.jar"/>
-    </antcall>
-
-    <antcall target="signjarbuild">
-        <param name="jarname" value="${dist.lib.dir}/sfServices.jar"/>
-        <param name="signedjarname" value="${dist.signedLib.dir}/sfServices.jar"/>
-    </antcall>
-
-    <antcall target="signjarbuild">
-        <param name="jarname" value="${dist.lib.dir}/sf-arithmetic-testharness.jar"/>
-        <param name="signedjarname" value="${dist.signedLib.dir}/sf-arithmetic-testharness.jar"/>
-    </antcall>
-
-    <antcall target="signjarbuild">
-        <param name="jarname" value="${dist.lib.dir}/sf-net.jar"/>
-        <param name="signedjarname" value="${dist.signedLib.dir}/sf-net.jar"
-/>
-    </antcall>
-
-    <antcall target="signjarbuild">
-        <param name="jarname" value="${dist.lib.dir}/sf-scripting.jar"/>
-        <param name="signedjarname" value="${dist.signedLib.dir}/sf-scripting.jar"/>
-    </antcall-->
-
   </target>
 
   <!-- Start the Driver Daemon-->
   <target name="startDriverDaemon" depends="buildATH" description="Starts the Driver node Daemon">
-    <antcall target="start-daemon-if-needed"/>
+    <!--antcall target="start-daemon-if-needed"/-->
+    <sf-startdaemon classpathref="smartfrog.classpath" logStackTraces="true" spawn="true"/>
+
   </target>
 
 
@@ -206,7 +172,7 @@
     <sf-waitfordaemon maxwait="20" timeoutproperty="daemon.missing"/>
     <fail if="daemon.missing">No daemon, or daemon not responding at port ${smartfrog.daemon.port}</fail>
 
-    <sf-deploy classpathref="smartfrog.classpath">
+    <sf-deploy classpathref="smartfrog.classpath" logStackTraces="true">
       <application name="startDaemon" descriptor="startRemoteDaemons.sf"/>
     </sf-deploy>
   </target>
@@ -220,7 +186,7 @@
     <sleep minutes="15"/>
 
 
-    <sf-deploy classpathref="smartfrog.classpath">
+    <sf-deploy classpathref="smartfrog.classpath" logStackTraces="true">
       <application name="startApp" descriptor="org/smartfrog/regtest/arithmetic/templategen/exampleTH.sf"/>
     </sf-deploy>
   </target>
@@ -249,7 +215,7 @@
 
   <target name="stopDaemons">
     <exec dir="${sharedFolder}" executable="sh">
-      <arg line="${arithmetic.dir}/bin/stopDaemons ${sharedFolder} ${hostList}"/>
+      <arg line="${arithmetic.dir}/bin/stopDaemons ${smartfrog.home} ${hostList}"/>
     </exec>
   </target>
 
@@ -271,7 +237,7 @@
       <fileset dir="${arithmetic.dir}/src/org/smartfrog/tools/testharness/templategen" includes="**/template*.sf"/>
     </delete>
     <delete>
-      <fileset dir="${smartfrog.home}" includes="**/*.out"/>
+      <fileset dir="${sharedFolder}" includes="**/*.out"/>
     </delete>
   </target>
 </project>

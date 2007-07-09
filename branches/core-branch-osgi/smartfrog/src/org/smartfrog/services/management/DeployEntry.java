@@ -21,12 +21,11 @@ For more information: www.smartfrog.org
 package org.smartfrog.services.management;
 
 import java.util.Enumeration;
+import java.util.Set;
+import java.util.HashSet;
 
 import org.smartfrog.services.trace.Entry;
-import org.smartfrog.sfcore.common.Context;
-import org.smartfrog.sfcore.common.ContextImpl;
-import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
-import org.smartfrog.sfcore.common.SmartFrogLogException;
+import org.smartfrog.sfcore.common.*;
 import org.smartfrog.sfcore.compound.Compound;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimImpl;
@@ -469,21 +468,30 @@ public class DeployEntry implements Entry {
      * @return
      */
     public Object getEntryTags(){
+        Set tags = new HashSet();
+        tags.add("tags_error");
         try {
-            Object tags = "";
-            if (entry instanceof Prim) {
+            if (entry instanceof Prim){
                      tags = ((Prim) entry).sfGetTags();
             } else if (entry instanceof ComponentDescription){
+                try {
                      tags = (( ComponentDescription) entry).sfGetTags();
-            } else {
+                } catch (SmartFrogContextException ex){
+                     //only show in trace - it will happen when browsing "*copy*" descriptions
+                     if (sfLog().isTraceEnabled()) sfLog().trace("Error DeployEntry.getEntryTags()" +  ex.toString(),ex);
                      return tags;
+                }
+            } else {
+                return tags;
             }
-            if (tags==null) tags="";
+            if (tags==null) tags=new HashSet();
             return tags;
 
         } catch (Exception e) {
             if (sfLog().isErrorEnabled()) sfLog().error("Error DeployEntry.getEntryTags()" +  e.toString(),e);
-            return "[tags error]";
+            tags = new HashSet();
+            tags.add("[tags error]");
+            return tags;
         }
 
     }

@@ -32,6 +32,8 @@ import org.smartfrog.sfcore.prim.*;
 
 import java.rmi.RemoteException;
 import java.util.Set;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 
 
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
@@ -42,7 +44,8 @@ import org.smartfrog.services.display.WindowUtilities;
 import org.smartfrog.sfcore.processcompound.SFProcess;
 import org.smartfrog.sfcore.processcompound.ProcessCompound;
 import org.smartfrog.sfcore.parser.SFParser;
-import org.smartfrog.sfcore.common.DefaultDumper;
+import org.smartfrog.sfcore.common.DumperCDImpl;
+import org.smartfrog.sfcore.common.Dumper;
 
 
 /**
@@ -180,6 +183,7 @@ public class PopUpTree extends JComponent implements ActionListener {
         tempComp = comp;
         tempX = x;
         tempY = y;
+        this.parent = parent;
         if ( getNode() instanceof Prim){
           menuItemRemoveAttribute.setVisible(false);
             menuItemDetach.setVisible(true);
@@ -206,10 +210,8 @@ public class PopUpTree extends JComponent implements ActionListener {
             menuItemDumpState.setVisible(false);
             menuItemDumpStateToFile.setVisible(false);
             menuItemEditTags.setVisible(true);
-        }
+        } else return;  // do not show a popup if no node has been clicked on
         popupTree.show(comp, x, y);
-        this.parent = parent;
-
     }
 
     /**
@@ -370,12 +372,17 @@ public class PopUpTree extends JComponent implements ActionListener {
             try {
                 Prim objPrim = ((Prim)node);
                 message.append ("\n*************** State *****************\n");
-                Dump dumpObj = new DefaultDumper();
-                objPrim.sfDumpState(dumpObj);
-                message.append (dumpObj.toString());
-                name = ((Prim)objPrim).sfCompleteName().toString();
+                Dumper dumper = new DumperCDImpl(objPrim);
+                objPrim.sfDumpState(dumper.getDumpVisitor());
+                message.append (dumper.toString());
+                name = (objPrim).sfCompleteName().toString();
             } catch (Exception ex) {
-                message.append("\n Error: "+ex.toString());
+                if (sfLog().isErrorEnabled()) sfLog().error (ex);
+                StringWriter sw = new StringWriter();
+                PrintWriter pr = new PrintWriter(sw,true);
+                ex.printStackTrace(pr);
+                pr.close();
+                message.append("\n Error: "+ex.toString()+"\n"+sw.toString());
             }
         }
         modalDialog("State for "+ name ,  message.toString(), "", source);
@@ -389,13 +396,13 @@ public class PopUpTree extends JComponent implements ActionListener {
         if (node instanceof Prim) {
             try {
                 Prim objPrim = ((Prim)node);
-                Dump dumpObj = new DefaultDumper();
-                objPrim.sfDumpState(dumpObj);
+                Dumper dumper = new DumperCDImpl(objPrim);
+                objPrim.sfDumpState(dumper.getDumpVisitor());
                 //Get directory
-                name = ((Prim)objPrim).sfCompleteName().toString();
+                name = (objPrim).sfCompleteName().toString();
                 String fileName = modalOptionDialog ("Save to","file:","\\dump.sf");
                 if (fileName == null) return;
-                ((DefaultDumper)dumpObj).getCDtoFile(fileName);
+                ((DumperCDImpl)dumper).getCDtoFile(fileName);
             } catch (Exception ex) {
                 if (sfLog().isErrorEnabled()) sfLog().error (ex);
                 WindowUtilities.showError(this,ex.toString());
@@ -433,7 +440,9 @@ public class PopUpTree extends JComponent implements ActionListener {
      */
     public Object getNode() {
         TreePath tpath = ((JTree) tempComp).getPathForLocation(tempX, tempY);
-        Object node = (((DeployEntry) (tpath.getLastPathComponent())).getEntry());
+        Object node = null;
+        if (tpath != null)
+            node = (((DeployEntry) (tpath.getLastPathComponent())).getEntry());
         return node;
     }
     /**

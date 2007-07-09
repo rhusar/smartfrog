@@ -11,9 +11,6 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.avalanche.client.persist;
 
-import java.io.File;
-import java.io.UnsupportedEncodingException;
-
 import com.sleepycat.bind.EntryBinding;
 import com.sleepycat.bind.serial.SerialBinding;
 import com.sleepycat.bind.serial.StoredClassCatalog;
@@ -24,6 +21,9 @@ import com.sleepycat.je.DatabaseException;
 import com.sleepycat.je.Environment;
 import com.sleepycat.je.EnvironmentConfig;
 import com.sleepycat.je.LockMode;
+
+import java.io.File;
+import java.io.UnsupportedEncodingException;
 
 /**
  * Helper class to create BDB database in given location. 

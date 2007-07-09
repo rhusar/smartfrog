@@ -11,15 +11,13 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.avalanche.server.monitor.xmpp;
 
+import org.smartfrog.avalanche.server.monitor.handlers.MessageHandler;
+import org.smartfrog.avalanche.server.monitor.jms.MessageListener;
+import org.smartfrog.avalanche.shared.MonitoringEvent;
+
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-
-import org.smartfrog.avalanche.server.monitor.handlers.ActiveProfileUpdateHandler;
-import org.smartfrog.avalanche.server.monitor.handlers.MessageHandler;
-import org.smartfrog.avalanche.server.monitor.jms.MessageListener;
-import org.smartfrog.avalanche.shared.MonitoringConstants;
-import org.smartfrog.avalanche.shared.MonitoringEvent;
 
 /**
  * This class logs in as a user on the xmpp server, and receives messages and 

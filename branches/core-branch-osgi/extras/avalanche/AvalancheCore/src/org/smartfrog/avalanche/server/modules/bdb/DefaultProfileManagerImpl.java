@@ -11,18 +11,6 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.avalanche.server.modules.bdb;
 
-import java.util.ArrayList;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import org.smartfrog.avalanche.core.defaultHostProfile.DefaultProfileDocument;
-import org.smartfrog.avalanche.core.defaultHostProfile.DefaultProfileType;
-import org.smartfrog.avalanche.core.module.PlatformSelectorType;
-import org.smartfrog.avalanche.server.DatabaseAccessException;
-import org.smartfrog.avalanche.server.DefaultProfileManager;
-import org.smartfrog.avalanche.server.DuplicateEntryException;
-import org.smartfrog.avalanche.server.modules.bdb.bindings.DefaultProfileBinding;
 import com.sleepycat.bind.tuple.TupleInput;
 import com.sleepycat.bind.tuple.TupleOutput;
 import com.sleepycat.je.Cursor;
@@ -31,6 +19,17 @@ import com.sleepycat.je.DatabaseEntry;
 import com.sleepycat.je.DatabaseException;
 import com.sleepycat.je.LockMode;
 import com.sleepycat.je.OperationStatus;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.smartfrog.avalanche.core.defaultHostProfile.DefaultProfileDocument;
+import org.smartfrog.avalanche.core.defaultHostProfile.DefaultProfileType;
+import org.smartfrog.avalanche.core.module.PlatformSelectorType;
+import org.smartfrog.avalanche.server.DatabaseAccessException;
+import org.smartfrog.avalanche.server.DefaultProfileManager;
+import org.smartfrog.avalanche.server.DuplicateEntryException;
+import org.smartfrog.avalanche.server.modules.bdb.bindings.DefaultProfileBinding;
+
+import java.util.ArrayList;
 
 public class DefaultProfileManagerImpl implements DefaultProfileManager{
 	private Database database ; 

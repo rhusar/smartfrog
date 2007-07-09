@@ -11,13 +11,11 @@ For more information: www.smartfrog.org
 */
 package tests.org.smartfrog.avalanche.server.monitor.jms;
 
+import junit.framework.TestCase;
+import org.smartfrog.avalanche.server.monitor.jms.ListenerThread;
+
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-
-import org.smartfrog.avalanche.server.monitor.jms.ListenerThread;
-import org.smartfrog.avalanche.server.monitor.jms.MessageListener;
-
-import junit.framework.TestCase;
 
 public class MessageListenerTest extends TestCase {
 

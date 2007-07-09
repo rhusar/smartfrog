@@ -11,7 +11,9 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.avalanche.server.monitor.jms;
 
-import java.util.Properties;
+import org.smartfrog.avalanche.shared.MonitoringConstants;
+import org.smartfrog.avalanche.shared.MonitoringEvent;
+import org.smartfrog.avalanche.shared.MonitoringEventDefaultImpl;
 
 import javax.jms.MapMessage;
 import javax.jms.Queue;
@@ -22,10 +24,7 @@ import javax.jms.QueueSession;
 import javax.jms.Session;
 import javax.naming.Context;
 import javax.naming.InitialContext;
-
-import org.smartfrog.avalanche.shared.MonitoringConstants;
-import org.smartfrog.avalanche.shared.MonitoringEvent;
-import org.smartfrog.avalanche.shared.MonitoringEventDefaultImpl;
+import java.util.Properties;
 
 public class MessageListener {
 	

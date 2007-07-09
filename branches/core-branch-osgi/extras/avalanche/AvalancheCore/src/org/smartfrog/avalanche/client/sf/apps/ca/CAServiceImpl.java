@@ -17,16 +17,15 @@ For more information: www.smartfrog.org
  */
 package org.smartfrog.avalanche.client.sf.apps.ca;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.smartfrog.avalanche.client.sf.apps.utils.FileUtils;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import org.smartfrog.avalanche.client.sf.apps.utils.*;
 
 
 /**
