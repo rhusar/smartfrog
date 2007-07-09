@@ -125,16 +125,23 @@ public class ApplyReference extends Reference implements Copying, Cloneable, Ser
 
         initComp(rr);
 
-        return createAndApplyFunction(rr, remote);
+        return createAndApplyFunction(rr, remote, comp, createContext());
     }
 
 
-    private Object createAndApplyFunction(Object rr, boolean remote)
+    /**
+     * Hack. This is a step towards eliminating duplicated code in SFAssertReference and SFApplyReference.
+     * @param rr
+     * @param remote
+     * @param comp
+     * @param forFunction
+     * @return
+     * @throws SmartFrogResolutionException
+     */
+    public static Object createAndApplyFunction(Object rr, boolean remote, final ComponentDescription comp, final Context forFunction)
             throws SmartFrogResolutionException
     {        
         Function function;
-        Context forFunction = createContext();
-
         try {
             // First try to use the new syntax
             ComponentDescription metadata = (ComponentDescription)
@@ -168,7 +175,7 @@ public class ApplyReference extends Reference implements Copying, Cloneable, Ser
         }
     }
 
-    private Function createFunctionOldSyntax(String functionClass) throws SmartFrogResolutionException {
+    private static Function createFunctionOldSyntax(String functionClass) throws SmartFrogResolutionException {
         if (functionClass == null)
             throw new SmartFrogResolutionException("unknown function class");
 
@@ -179,7 +186,7 @@ public class ApplyReference extends Reference implements Copying, Cloneable, Ser
         }
     }
 
-    private Function createFunction(ComponentDescription metadata) throws SmartFrogResolutionException {
+    private static Function createFunction(ComponentDescription metadata) throws SmartFrogResolutionException {
         if (metadata == null)
             throw new SmartFrogResolutionException("sfMeta attribute is null");
 

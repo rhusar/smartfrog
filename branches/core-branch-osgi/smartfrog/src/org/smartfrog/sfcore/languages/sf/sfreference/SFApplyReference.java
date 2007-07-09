@@ -6,7 +6,6 @@ import org.smartfrog.sfcore.parser.ReferencePhases;
 import org.smartfrog.sfcore.common.*;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.prim.Prim;
-import org.smartfrog.sfcore.security.SFClassLoader;
 
 import java.util.Iterator;
 
@@ -116,7 +115,7 @@ public class SFApplyReference extends SFReference implements ReferencePhases {
 
         if (isLazy) throw new SmartFrogLazyResolutionException("function has lazy parameter");
 
-        return createAndInvokeFunction(forFunction, rr, false);
+        return ApplyReference.createAndApplyFunction(rr, false, comp, forFunction);
     }
 
     /**
@@ -144,7 +143,7 @@ public class SFApplyReference extends SFReference implements ReferencePhases {
 
         Context forFunction = createContext();
 
-        return createAndInvokeFunction(forFunction, rr, true);
+        return ApplyReference.createAndApplyFunction(rr, true, comp, forFunction);
     }
     
     private boolean createContext(Context forFunction) throws SmartFrogResolutionException {
@@ -209,31 +208,6 @@ public class SFApplyReference extends SFReference implements ReferencePhases {
             comp.setParent((ComponentDescription) rr);
         else if (rr instanceof Prim)
             comp.setPrimParent((Prim) rr);
-    }
-
-    private Object createAndInvokeFunction(Context forFunction, Object rr, boolean remote) throws SmartFrogResolutionException {
-        String functionClass;
-        Object result;
-        try {
-            functionClass = (String) comp.sfResolveHere(SmartFrogCoreKeys.SF_FUNCTION_CLASS);
-        } catch (ClassCastException e) {
-            throw new SmartFrogFunctionResolutionException("function class is not a string", e);
-        }
-
-        if (functionClass == null) {
-            throw new SmartFrogFunctionResolutionException("unknown function class ");
-        }
-
-
-        try {
-            Function function = (Function) SFClassLoader.forName(functionClass).newInstance();
-            if (remote) result = function.doit(forFunction, null, (RemoteReferenceResolver) rr);
-            else result = function.doit(forFunction, null, (ReferenceResolver) rr);
-        } catch (Exception e) {
-            throw (SmartFrogResolutionException) SmartFrogResolutionException.forward("failed to create or evaluate function class " + functionClass + " with data " + forFunction, e);
-        }
-
-        return result;
     }
 
     /**
