@@ -178,10 +178,10 @@ public class EventPrimImpl extends PrimImpl implements EventRegistration,
             Object s = sfResolve(l);
             if (s instanceof EventRegistration){
                 receiveFrom.addElement(s);
-                ((EventRegistration)s).register((EventSink) this);
+                ((EventRegistration)s).register(this);
             } else {
                if (sfLog().isErrorEnabled()){
-                   sfLog().error("'"+ l + "' in '"+receiveRef+"' does not implement EventRegistration and I cannot be register with it.");
+                   sfLog().error("'"+ l + "' in '"+receiveRef+"' does not implement EventRegistration");
                }
             }
         }
