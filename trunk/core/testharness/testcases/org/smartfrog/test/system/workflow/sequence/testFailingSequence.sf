@@ -25,7 +25,7 @@ For more information: www.smartfrog.org
  * sequence termination. First component creates a temp dir and third component
  * removes that but second component fails and thus third is never executed.
  */
-testSequence extends Sequence {
+FailingSequence extends Sequence {
         //to diagnose RMI problems
         sfExport true;
 
@@ -45,6 +45,10 @@ testSequence extends Sequence {
         }
 }
 
-sfConfig extends TestBlock {
-    action extends testSequence;
+
+TestFailingSequence extends TestBlock {
+    action extends FailingSequence;
 }
+
+
+sfConfig extends TestFailingSequence ;

@@ -25,7 +25,7 @@ For more information: www.smartfrog.org
  * test a sequence, assert both toggle to true
  */
 
-sfConfig extends TestBlock {
+TestEmptySequence extends TestBlock {
 
     action extends Sequence {
   }
@@ -33,4 +33,4 @@ sfConfig extends TestBlock {
 }
 
 
-
+sfConfig extends TestEmptySequence;

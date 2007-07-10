@@ -26,7 +26,7 @@ For more information: www.smartfrog.org
  * removes that but second component fails and thus third is never executed.
  * we use the check of the toggle value as the way of looking into the system
  */
-sfConfig extends TestBlock {
+TestFailingSequence2 extends TestBlock {
     action extends Sequence {
 
       //set sfConfig:value=false
@@ -49,3 +49,5 @@ sfConfig extends TestBlock {
     }
 
 }
+
+sfConfig extends TestFailingSequence2 ;
