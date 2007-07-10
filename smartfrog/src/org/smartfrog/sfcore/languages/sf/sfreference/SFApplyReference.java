@@ -158,7 +158,10 @@ public class SFApplyReference extends SFReference implements ReferencePhases {
     
     protected void addAttributeToContext(Object value, Object name, Context forFunction) {
         if (value != null) {
-            try {
+            try {                                
+                if (value instanceof Reference) {
+                    value = comp.sfResolve((Reference) value);
+                }
                 comp.sfReplaceAttribute(name, value);
                 forFunction.sfAddAttribute(name, value);
             } catch (SmartFrogContextException e) {
@@ -173,8 +176,7 @@ public class SFApplyReference extends SFReference implements ReferencePhases {
         boolean lazy = false;
         for (Iterator v = comp.sfAttributes(); v.hasNext();) {
             Object name = v.next();
-            String nameS = name.toString();
-            if (ApplyReference.isNotFiltered(nameS)) {
+            if (ApplyReference.isNotFiltered(name.toString())) {
                 Object value = null;
 
                 try {

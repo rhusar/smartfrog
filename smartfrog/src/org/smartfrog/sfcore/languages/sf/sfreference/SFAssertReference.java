@@ -9,8 +9,6 @@ import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
 import org.smartfrog.sfcore.languages.sf.sfcomponentdescription.SFComponentDescription;
 import org.smartfrog.sfcore.reference.ApplyReference;
 import org.smartfrog.sfcore.reference.AssertReference;
-import org.smartfrog.sfcore.reference.Reference;
-import org.smartfrog.sfcore.reference.ReferencePart;
 import org.smartfrog.sfcore.reference.ReferenceResolver;
 import org.smartfrog.sfcore.reference.RemoteReferenceResolver;
 
@@ -103,12 +101,13 @@ public class SFAssertReference extends SFApplyReference {
         try {
             assertionPhase = (String) comp.sfResolveHere("sfAssertionPhase");
         } catch (ClassCastException e) {
-            throw new SmartFrogResolutionException("assertion phase is not a string", e);
+            throw (SmartFrogResolutionException) SmartFrogResolutionException.forward
+                    ("assertion phase is not a string", e);
         } catch (SmartFrogResolutionException e) {
            assertionPhase = "dynamic";
         }
         if (!(assertionPhase.equals("dynamic") || assertionPhase.equals("static") || assertionPhase.equals("staticLazy"))) {
-            throw new SmartFrogResolutionException("assertion phase is not a valid - must be static, staticLazy or dynamic");
+            throw new SmartFrogResolutionException("assertion phase is not valid - must be static, staticLazy or dynamic");
         }
         return assertionPhase;
     }
@@ -142,15 +141,15 @@ public class SFAssertReference extends SFApplyReference {
         for (Iterator v = comp.sfAttributes(); v.hasNext();) {
             Object name = v.next();
 
-            String nameS = name.toString();
-            if (ApplyReference.isNotFiltered(nameS)) {
+            if (ApplyReference.isNotFiltered(name.toString())) {
                 Object value;
                 try {
-                    value = comp.sfResolve(new Reference(ReferencePart.here(name)));
-                    addAttributeToContext(name, value, forFunction);
+                    value = comp.sfResolveHere(name);
+                    addAttributeToContext(value, name, forFunction);
                 } catch (SmartFrogLazyResolutionException e) {
                     if (assertionPhase.equals("static")) {
-                        throw new SmartFrogResolutionException("Static assertion cannot evaluate due to LAZY attributes");
+                        throw (SmartFrogResolutionException) SmartFrogResolutionException.forward
+                                ("Static assertion cannot evaluate due to LAZY attributes", e);
                     }
                     hasLazy = true;
                 }

@@ -51,7 +51,7 @@ public class CheckAssertions extends BaseFunction {
                         failedAssertions.add(key.toString() + ": evaluates to false");
                     }
                 } else {
-                    failedAssertions.add(key + ": has non-boolean " + value.getClass());
+                    failedAssertions.add("\""+key+"\"" + ": has non-boolean value: " + value + " of type: " + value.getClass());
                 }
             }
         }
