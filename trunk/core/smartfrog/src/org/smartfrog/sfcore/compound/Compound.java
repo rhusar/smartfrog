@@ -42,7 +42,7 @@ public interface Compound extends Prim, ChildMinder {
      * parent compound. Also start heartbeating the deployed component
      * if the component registers. Note that the remaining lifecycle methods must
      * still be invoked on the created component - namely sfDeploy() and sfStart().
-     * This is primarily an internal method - the prefered method for end users is
+     * This is primarily an internal method - the preferred method for end users is
      * {@link #sfCreateNewChild}.
      *
      * @param cmp compiled component to deploy
