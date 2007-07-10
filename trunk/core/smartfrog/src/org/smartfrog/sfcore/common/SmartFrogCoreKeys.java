@@ -323,4 +323,31 @@ public interface SmartFrogCoreKeys {
      * Value {@value}
      */
     public static final String SF_FINAL= "sfFinal";
+
+
+    /**
+     * Time attribute set in ActionDeploy deployment
+     *
+     * Value {@value}
+     */
+    String SF_TIME_PARSE = "sfParseTime";
+    /**
+     * Time attribute set in ActionDeploy deployment
+     *
+     * Value {@value}
+     */
+    String SF_TIME_DEPLOY = "sfDeployTime";
+
+    /**
+     * Time attribute set in ActionDeploy deployment
+     *
+     * Value {@value}
+     */
+    String SF_TIME_START = "sfStartTime";
+    
+    /**
+     * The language attribute, which can be set/found from the context.
+     * {@value}
+     */
+    String KEY_LANGUAGE = "#language";
 }
