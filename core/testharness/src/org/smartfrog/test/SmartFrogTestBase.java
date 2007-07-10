@@ -581,18 +581,7 @@ public abstract class SmartFrogTestBase extends TestCase {
         return deployedApp;
     }
 
-    /**
-     * log a chained exception if there is one; do nothing if not.
-     * There because JUnit 3.8.1 is not aware of chaining (yet), presumably
-     * through a need to work with pre1.4 stuff
-     * @param throwable what was thrown
-     */
-    private void logChainedException(Throwable throwable) {
-        Throwable cause = throwable.getCause();
-        if(cause!=null) {
-            logThrowable("nested fault in "+throwable,cause);
-        }
-    }
+
 
     /**
      * log a throwable
@@ -601,14 +590,6 @@ public abstract class SmartFrogTestBase extends TestCase {
      */
     public void logThrowable(String message, Throwable thrown) {
         log.error(message,thrown);
-/* Once SFOS-191 appears stable, we can remove this
-        String info = extractDiagnosticsInfo(thrown);
-        log.error(message+"\n"+info+"\n");
-        Throwable nested = thrown.getCause();
-        if (nested != null && nested!=thrown) {
-            logThrowable("nested fault:" , nested);
-        }
-*/
     }
 
     /**

@@ -25,7 +25,7 @@ For more information: www.smartfrog.org
  * test a sequence, assert both toggle to true
  */
 
-sfConfig extends TestBlock {
+TestSequence extends TestBlock {
 
     action extends Sequence {
       //set sfConfig:value=false
@@ -40,6 +40,8 @@ sfConfig extends TestBlock {
   }
 
 }
+
+sfConfig extends TestSequence ;
 
 
 
