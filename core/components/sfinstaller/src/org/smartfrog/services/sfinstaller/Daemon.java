@@ -93,8 +93,9 @@ public class Daemon {
 
   /** An identifier for a ssh type. */
   public final static String SSH="ssh";
+    private static final boolean EMAIL_REQUIRED = false;
 
- /**
+    /**
    * Class Constructor.
    *
    * @param name logical name for the daemon
@@ -121,16 +122,28 @@ public class Daemon {
    *  
    */
   public Daemon(String name, String os, String host, String transfertype, String logintype, String user, String password, String localfile1, String localfile2, String localfile3, String keyfile, String secproperties, String smartfrogjar, String servicesjar, String examplesjar, String releasename, String javahome, String installdir, String emailto, String emailfrom, String emailserver) {
-   
-    if (os.equals(LINUX))
-       {
-    	if ((name==null) || (os==null) || (host==null) || (transfertype==null) || (logintype==null) || (user ==null) || (password ==null) || (localfile1==null) || (releasename==null) || (javahome== null) || (installdir == null) || (emailto == null) || (emailfrom == null) || (emailserver == null))
-	  	throw new IllegalArgumentException("invalid inputs "+ name + os + host + transfertype + logintype + user + password + localfile1 + releasename + javahome + installdir + emailto + emailfrom + emailserver);
-	 }
-    if (os.equals(WINDOWS))
+
+     require("name",name);
+     require("os",os);
+     require("host", host );
+     require("transfertype", transfertype );
+     require("logintype", logintype );
+     require("user", user );
+     require("password", password );
+     require("localfile1", localfile1 );
+     require("releasename", releasename );
+     require("javahome", javahome );
+     require("installdir", installdir );
+     if (EMAIL_REQUIRED) {
+         require("emailto", emailto );
+         require("emailfrom", emailfrom );
+         require("emailserver", emailserver );
+     }
+
+     if (os.equals(WINDOWS))
 	 {
-	 if ((name==null) || (os==null) || (host==null)  || (transfertype==null) || (logintype==null) || (user == null) || (password == null) || (localfile1==null) || (localfile2==null) || (localfile3==null) || (releasename==null)  || (javahome== null) || (installdir == null) || (emailto == null) || (emailfrom == null) || (emailserver == null))
-      throw new IllegalArgumentException("invalid inputs "+ name + os + host + transfertype + logintype + user + password + localfile1 + localfile2 + localfile3 + releasename + javahome + installdir + emailto + emailfrom + emailserver);
+         require("localfile2", localfile2 );
+         require("localfile3", localfile3);
 	 }
     this.name = name;
     this.os = os;
@@ -155,7 +168,18 @@ public class Daemon {
     this.emailfrom = emailfrom;
     this.emailserver = emailserver;
   }
-      
+
+    /**
+     * Check that a value is not null
+     * @param name name of the argument
+     * @param value current value
+     * @throws IllegalArgumentException if there an invalid value
+     */
+  public void require(String name,String value) {
+      if(value==null) {
+          throw new IllegalArgumentException("No value supplied to required argument "+name);
+      }
+  }
 
   public String getHost() { return host;}
 

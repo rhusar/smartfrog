@@ -61,10 +61,13 @@ public class BootStrap {
 	public static final String sfWorkDir = "work";
 	
 	public static final String sfInstallLocationUnix = "." ; // create in user home by deault  
-	public static final String sfInstallLocationWindows = "c:\\" ;  // create in c:\\ by default 
- 
+	public static final String sfInstallLocationWindows = "c:\\" ;  // create in c:\\ by default
+    private static final String DEFAULT_EMAILTO = "";
+    private static final String DEFAULT_EMAILFROM = "";
+    private static final String DEFAULT_EMAILSERVER = "";
 
-	public BootStrap(AvalancheFactory f, ServerSetup setup) {
+
+    public BootStrap(AvalancheFactory f, ServerSetup setup) {
 		this.factory = f ;
 		this.setup = setup;
 		//serverOS = factory.getAvalancheServerOS();
@@ -135,8 +138,11 @@ public class BootStrap {
 						for( int j=0;j<transferModes.length;j++){
 							if( transferModes[j].getIsDefault() ){
 								transferType = transferModes[j].getType();
+/* see SFOS-268
+
 								username = transferModes[j].getUser();
 								password = transferModes[j].getPassword();
+*/
 							}
 						}
 					}
@@ -183,12 +189,13 @@ public class BootStrap {
                                     null,
                                     sfReleaseName,
                                     java_home,
-                                    avalancheHome,null,null,null);
+                                    avalancheHome,
+                                    DEFAULT_EMAILTO, DEFAULT_EMAILFROM, DEFAULT_EMAILSERVER);
 					}else{	
 							d  = new Daemon(hosts[i], os, hosts[i], transferType, accessType, username, password, 
 								bootDir + File.separator + sfReleaseFileWindows, 
 								null, null, null, null, null, null, null, sfReleaseName, java_home,avalancheHome
-                                    , null, null, null);
+                                    , DEFAULT_EMAILTO, DEFAULT_EMAILFROM, DEFAULT_EMAILSERVER);
 					}
 				}else{
 					// all unixes are same
@@ -196,13 +203,13 @@ public class BootStrap {
 					if (serverOS.startsWith("Windows") || serverOS.startsWith("windows")){
 							d  = new Daemon(hosts[i], os, hosts[i], transferType, accessType, username, password, 
 							bootDir + File.separator + File.separator + sfReleaseFileUnix, 
-							null, null, null, null, null, null, null, sfReleaseName, java_home,avalancheHome
-                                    , null, null, null);
+							null, null, null, null, null, null, null, sfReleaseName, java_home,avalancheHome,
+                                    DEFAULT_EMAILTO, DEFAULT_EMAILFROM, DEFAULT_EMAILSERVER);
 					}else{
 							d  = new Daemon(hosts[i], os, hosts[i], transferType, accessType, username, password, 
 							bootDir + File.separator + sfReleaseFileUnix, 
-							null, null, null, null, null, null, null, sfReleaseName, java_home,avalancheHome
-                                    , null, null, null);
+							null, null, null, null, null, null, null, sfReleaseName, java_home,avalancheHome,
+                                    DEFAULT_EMAILTO, DEFAULT_EMAILFROM, DEFAULT_EMAILSERVER);
 					}
 					
 				}
