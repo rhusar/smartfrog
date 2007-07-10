@@ -20,6 +20,8 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.sfcore.languages.sf.functions;
 
+import java.util.regex.Pattern;
+
 /**
  * Defines the Format function that takes a format string and a set of 
  * parameters and creates a resultant string which has the values of the 
@@ -36,7 +38,6 @@ public class Format extends BaseFunction {
      */
     protected Object doFunction() {
         String format;
-        String formatted = "";
         String[] s = new String[10];
 
         format = (String) context.get("format");
@@ -53,10 +54,11 @@ public class Format extends BaseFunction {
             }
         }
 
-        formatted = new String(format);
-
+        StringBuffer formatted = new StringBuffer(format);
         for (int i = 0; i < 10; i++) {
-            formatted = formatted.replaceAll("\\$" + i, s[i]);
+            Pattern.compile("\\$" + i)
+                    .matcher(formatted)
+                    .replaceAll(s[i]);
         }
 
         return formatted;

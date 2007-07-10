@@ -596,14 +596,12 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
     */
    public void doLinkResolve(ResolutionState resState) throws
        SmartFrogResolutionException {
-       Object key = null;
-       Object value = null;
-       Object result = null;
+       
 
        for (Enumeration e = sfContext.keys(); e.hasMoreElements(); ) {
            // Get next attribute key and value
-           key = e.nextElement();
-           value = sfContext.get(key);
+           Object key = e.nextElement();
+           Object value = sfContext.get(key);
 
            // If value is reference resolve and place result in its place
            if (value instanceof ComponentResolver) {
@@ -633,7 +631,7 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
                Reference rv = (Reference)value;
                if (!rv.getData()) {
                    try {
-                       result = sfResolve((Reference) value);
+                       Object result = sfResolve((Reference) value);
                        sfContext.put(key, result);
                        if (result instanceof SFComponentDescription) {
                            // need to do this as it may link to the file root!

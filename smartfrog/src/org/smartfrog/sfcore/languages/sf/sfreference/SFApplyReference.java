@@ -174,11 +174,11 @@ public class SFApplyReference extends SFReference implements ReferencePhases {
         for (Iterator v = comp.sfAttributes(); v.hasNext();) {
             Object name = v.next();
             String nameS = name.toString();
-            if (isNotFiltered(nameS)) {
+            if (ApplyReference.isNotFiltered(nameS)) {
                 Object value = null;
 
                 try {
-                    value = comp.sfResolve(new Reference(ReferencePart.here(name)));
+                    value = comp.sfResolveHere(name);
                 } catch (StackOverflowError e) {
                     throw new SmartFrogFunctionResolutionException(e);
                 } catch (SmartFrogLazyResolutionException e) {
@@ -198,7 +198,7 @@ public class SFApplyReference extends SFReference implements ReferencePhases {
             Object name = v.next();
 
             String nameS = name.toString();
-            if (isNotFiltered(nameS)) {
+            if (ApplyReference.isNotFiltered(nameS)) {
                 Object value;
 
                 try {
@@ -211,10 +211,6 @@ public class SFApplyReference extends SFReference implements ReferencePhases {
             }
         }
         return forFunction;
-    }
-
-    protected boolean isNotFiltered(String nameS) {
-        return ApplyReference.isNotFiltered(nameS);
     }
 
     protected void initComp(Object rr) {

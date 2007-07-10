@@ -63,16 +63,16 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
 
 
     /** Context of attributes (key value pairs). */
-    public Context sfContext;
+    protected Context sfContext;
 
     /** Parent of this description. */
-    public ComponentDescription parent;
+    protected ComponentDescription parent;
 
     /** PrimParent of this description. */
-    public Prim primParent;
+    protected Prim primParent;
 
     /** Whether this description is eager or lazy. */
-    public boolean eager;
+    protected boolean eager;
 
     /** Log: it cannot be initialized before LogImpl is ready
      * LogImpl uses ComponentDescription.sfResolve to read its initial
@@ -90,6 +90,7 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
      */
     public ComponentDescriptionImpl(ComponentDescription parent, Context cxt, boolean eager) {
         if (cxt == null)  //@todo remove all the new ContextImpl() throughout the code, replace by null!
+        // Or a Null Object implementation of Context, maybe ?
            this.sfContext = new ContextImpl();
         else
            this.sfContext = cxt;
@@ -479,7 +480,7 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
      */
     public Object sfResolveHere(Object name)
         throws SmartFrogResolutionException {
-        Object result = null;
+        Object result;
         try {
             result=sfContext.sfResolveAttribute(name);
         } catch (SmartFrogContextException ex) {
@@ -1190,24 +1191,22 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
     public static ComponentDescription getClassComponentDescription (Object obj,
           boolean addSystemProperties, Vector newPhases,String languageExtension) throws SmartFrogException {
         //Get Component description for this log class
-        String className = obj.getClass().toString();
-        if (obj instanceof java.lang.String) className = obj.toString();
-        if (className.startsWith("class ")) {
-            className = className.substring(6);
-        }
+        String className = obj.getClass().getName();
+        if (obj instanceof String) className = obj.toString();
+
         String tempClassName = className.replace('.','/');
         String urlDescription = tempClassName+"."+languageExtension;
-        Reference selectedRef = new Reference (tempClassName.substring(tempClassName.lastIndexOf("/")+1));
+        Reference selectedRef = new Reference (tempClassName.substring(tempClassName.lastIndexOf("/") + 1));
 
-        Vector phases = null;
+        Vector phases;
         if (newPhases!=null){
             phases = newPhases;
         } else {
-            Phases top = null;
-            top = new SFParser(languageExtension).sfParseResource( urlDescription.toLowerCase());
+            Phases top;
+            top = new SFParser(languageExtension).sfParseResource(urlDescription.toLowerCase());
             phases = top.sfGetPhases();
             //This only works for SF 1 language. This should be more generic.
-            if ((languageExtension.equals("sf"))&&(phases.contains(PhaseNames.SFCONFIG))){
+            if ((languageExtension.equals("sf")) && (phases.contains(PhaseNames.SFCONFIG))){
                 phases.remove(PhaseNames.SFCONFIG);
             }
         }

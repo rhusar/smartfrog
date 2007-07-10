@@ -7,6 +7,8 @@ import org.smartfrog.sfcore.prim.Prim;
 
 import java.io.Serializable;
 import java.util.Iterator;
+import java.util.Collection;
+import java.util.LinkedList;
 
 /**
  * The subclass of Reference that is a function application. The structure of the classes is
@@ -229,8 +231,16 @@ public class ApplyReference extends Reference implements Copying, Cloneable, Ser
         return forFunction;
     }
 
+    private static final Collection filtered; // Collection<String>
+    static {
+        filtered = new LinkedList();
+        filtered.add("sfFunctionClass");
+        filtered.add("sfAssertionPhase");
+    }
+
     public static boolean isNotFiltered(String nameS) {
-        return !nameS.startsWith(SF_ATTRIBUTE_PREFIX) || nameS.equals(SmartFrogCoreKeys.SF_CLASS);
+        // return !nameS.startsWith(SF_ATTRIBUTE_PREFIX) || nameS.equals(SmartFrogCoreKeys.SF_CLASS);
+        return ! filtered.contains(nameS);
     }
 
 

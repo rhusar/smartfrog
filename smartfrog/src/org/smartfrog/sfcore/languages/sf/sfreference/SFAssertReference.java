@@ -143,7 +143,7 @@ public class SFAssertReference extends SFApplyReference {
             Object name = v.next();
 
             String nameS = name.toString();
-            if (isNotFiltered(nameS)) {
+            if (ApplyReference.isNotFiltered(nameS)) {
                 Object value;
                 try {
                     value = comp.sfResolve(new Reference(ReferencePart.here(name)));
