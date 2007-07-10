@@ -326,7 +326,9 @@ public class SFSystem implements MessageKeys {
             if (configuration.resultException == null) {
                 configuration.setResult(ConfigurationDescriptor.Result.FAILED, null,thrown);
             } else {
-                if (sfLog().isIgnoreEnabled()){ sfLog().ignore(thrown);}
+                if (!throwException){
+                    sfLog().ignore("Received a second exception on startup",thrown);
+                }
             }
             if (throwException) {
                 throw SmartFrogException.forward(thrown);
