@@ -26,7 +26,7 @@ import org.smartfrog.sfcore.languages.sf.sfcomponentdescription.SFComponentDescr
 /**
  *  This is the default factory for tree nodes for the SmartFrog parser.
  */
-public interface Factory {
+public interface ParserNodeFactory {
    /**
     *  Return a SF1ComponentDescriptionImpl for a root or default node - an
     *  error otherwise.

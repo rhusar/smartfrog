@@ -48,7 +48,7 @@ public class SFParser implements StreamLanguageParser {
     * Default SF parser factory class
     */
    public static final String defaultSFFactoryClass =
-                            "org.smartfrog.sfcore.languages.sf.DefaultFactory";
+                            "org.smartfrog.sfcore.languages.sf.DefaultParserNodeFactory";
 
   /**
    * Default SF parser Include Handler class
@@ -87,7 +87,7 @@ public class SFParser implements StreamLanguageParser {
     *  Constructs a factory using the factoryClass (prepended by propBase)
     *  system property.
     */
-   protected static Factory factory = null;
+   protected static ParserNodeFactory factory = null;
 
 
    //
@@ -136,12 +136,12 @@ public class SFParser implements StreamLanguageParser {
     *@return                     The factory value
     *@exception  ParseException error creating factory class
     */
-   public static Factory getFactory() throws ParseException {
+   public static ParserNodeFactory getFactory() throws ParseException {
       try {
          if (factory == null) {
             if (factoryClass == null) {
                factoryClass = Class.forName(factoryClassName);
-               factory = (Factory) factoryClass.newInstance();
+               factory = (ParserNodeFactory) factoryClass.newInstance();
             }
          }
       } catch (Exception ex) {
@@ -160,7 +160,7 @@ public class SFParser implements StreamLanguageParser {
     *@return                     tree node
     *@exception  ParseException  non existant component type
     */
-   public static SFComponentDescription componentFactory(String componentType)
+   public static SFComponentDescription createNode(String componentType)
           throws ParseException {
       return getFactory().node(componentType);
    }
@@ -179,7 +179,7 @@ public class SFParser implements StreamLanguageParser {
     */
    public Phases sfParse(InputStream is, IncludeHandler handler) throws SmartFrogParseException {
        try{
-           SFComponentDescription root = componentFactory("root");
+           SFComponentDescription root = createNode("root");
            (new DefaultParser(is, handler)).Attributes(root);
            return root;
        } catch (ParseException pe){

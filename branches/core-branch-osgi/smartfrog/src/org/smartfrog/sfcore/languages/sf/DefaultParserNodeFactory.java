@@ -26,11 +26,11 @@ import org.smartfrog.sfcore.languages.sf.sfcomponentdescription.SFComponentDescr
 /**
  *  This is the default factory for tree nodes for the SmartFrog parser.
  */
-public class DefaultFactory implements Factory {
+public class DefaultParserNodeFactory implements ParserNodeFactory {
    /**
     *  Constructor.
     */
-   public DefaultFactory() { }
+   public DefaultParserNodeFactory() { }
 
 
    /**
