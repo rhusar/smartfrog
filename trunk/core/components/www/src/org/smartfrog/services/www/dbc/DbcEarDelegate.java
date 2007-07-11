@@ -23,6 +23,7 @@ import org.smartfrog.services.www.JavaEnterpriseApplication;
 import org.smartfrog.sfcore.prim.Prim;
 
 /**
+ * This delegate will queue copy operations when deploying EAR files.
  * created 19-Jun-2006 16:57:38
  */
 
@@ -32,6 +33,10 @@ public class DbcEarDelegate extends AbstractDbcDelegate implements JavaEnterpris
         super(server, owner);
     }
 
+    /**
+     * Return the extension
+     * @return ".ear"
+     */
     public String getExtension() {
         return ".ear";
     }

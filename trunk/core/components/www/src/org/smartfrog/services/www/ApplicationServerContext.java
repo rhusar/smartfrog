@@ -38,15 +38,15 @@ public interface ApplicationServerContext extends Remote {
     /**
      * {@value}
      */
-    final static String ATTR_CONTEXT_PATH = "contextPath";
+    String ATTR_CONTEXT_PATH = "contextPath";
     /**
      * {@value}
      */
-    final static String ATTR_SERVER = "server";
+    String ATTR_SERVER = "server";
     /**
      * absolute path is the path up to the first "*" {@value}
      */
-    final static String ATTR_ABSOLUTE_PATH = "absolutePath";
+    String ATTR_ABSOLUTE_PATH = "absolutePath";
     /**
      * name or File reference of a file {@value}
      */
@@ -62,16 +62,16 @@ public interface ApplicationServerContext extends Remote {
     /**
      * start the component
      *
-     * @throws SmartFrogException
-     * @throws RemoteException
+     * @throws SmartFrogException for deployment problems
+     * @throws RemoteException for RMI/Networking problems
      */
     void start() throws SmartFrogException, RemoteException;
 
     /**
      * this method is here for server-specific implementation classes,
      *
-     * @throws RemoteException
-     * @throws SmartFrogException
+     * @throws SmartFrogException for deployment problems
+     * @throws RemoteException for RMI/Networking problems
      */
     public void terminate() throws RemoteException, SmartFrogException;
 
@@ -79,8 +79,8 @@ public interface ApplicationServerContext extends Remote {
     /**
      * liveness check
      *
-     * @throws SmartFrogLivenessException
-     * @throws RemoteException
+     * @throws SmartFrogException for deployment problems
+     * @throws RemoteException for RMI/Networking problems
      */
     void ping() throws SmartFrogLivenessException, RemoteException;
 }
