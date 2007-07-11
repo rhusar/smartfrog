@@ -77,6 +77,12 @@
     </patternset>
   </target>
 
+  <target name="cleanAll" depends="clean,cleanUI" />
+
+  <target name="cleanUI">
+    <delete dir="${tomcat.home}/webapps/AvalancheGUI" />
+  </target>
+
   <target name="clean">
     <delete dir="${avalanche.home}"/>
   </target>
@@ -261,7 +267,7 @@
 
 	<target name="setupUI" depends="init" if="tomcat.home">
 
-    <mkdir dir="${tomcat.home}/webapps/AvalancheGUI"/>
+    <mkdir dir="${tomcat.home}/webapps/AvalancheGUI" />
 		<mkdir dir="${tomcat.home}/webapps/AvalancheGUI/WEB-INF/lib"/>
 		<!-- COPY UI files to Tomcat-->
 		<copy todir="${tomcat.home}/webapps/AvalancheGUI">
