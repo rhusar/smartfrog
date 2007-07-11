@@ -617,7 +617,7 @@ SmartFrog to deploy complex systems.
       <file src="ivy/lib/package-www/sf-www-documentation-${smartfrog.version}.zip"
           targetdir="$INSTALL_PATH"
           unpack="true"/>
-      <file src="ivy/lib/package-www/sf-tomcat-${smartfrog.version}.jar"
+<!--      <file src="ivy/lib/package-www/sf-tomcat-${smartfrog.version}.jar"
           targetdir="$INSTALL_PATH/lib"
           />
       <file src="ivy/lib/package-www/sf-tomcat-javadocs-${smartfrog.version}.zip"
@@ -625,17 +625,17 @@ SmartFrog to deploy complex systems.
           unpack="true"/>
       <file src="ivy/lib/package-www/sf-tomcat-documentation-${smartfrog.version}.zip"
           targetdir="$INSTALL_PATH"
-          unpack="true"/>
+          unpack="true"/>-->
 
       <file src="ivy/lib/package-www/sf-jetty-${smartfrog.version}.jar"
           targetdir="$INSTALL_PATH/lib"
           />
-      <file src="ivy/lib/package-www/commons-httpclient-${commons-httpclient.version}.jar"
+<!--      <file src="ivy/lib/package-www/commons-httpclient-${commons-httpclient.version}.jar"
           targetdir="$INSTALL_PATH/lib"
           />
       <file src="ivy/lib/package-www/commons-codec-${commons-codec.version}.jar"
           targetdir="$INSTALL_PATH/lib"
-          />
+          />-->
       <file src="ivy/lib/package-www/servlet-api-${servletapi.version}.jar"
           targetdir="$INSTALL_PATH/lib"
           />
