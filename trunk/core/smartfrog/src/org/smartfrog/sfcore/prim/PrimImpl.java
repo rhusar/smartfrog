@@ -274,8 +274,9 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
     }
 
     /**
-     * Resolves a given reference. Forwards to indexed resolve with index 0
-     * and return resulting attribute value.
+     * Resolves a (copy of) a given reference. Forwards to indexed resolve with index 0
+     * after making sure that the DATA flag is unset if necessary.
+     * Method returns the resulting attribute value.
      *
      * @param r reference to resolve
      *
@@ -286,14 +287,16 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
      */
     public Object sfResolve(Reference r)
         throws SmartFrogResolutionException, RemoteException {
-        Object obj = sfResolve(r, 0);
+        Reference rn = (Reference) r.copy();
+        rn.setData(false);
+        Object obj = sfResolve(rn, 0);
         if (obj instanceof SFMarshalledObject){
             //  Unmarshall!Obj.
             obj = ((SFMarshalledObject)obj).get();
         }
         try {
             if (sfLog().isTraceEnabled()) {
-                sfLog().trace(sfCompleteNameSafe()+" sfResolved '"+ r.toString()+"' to '"+obj.toString()+"'");
+                sfLog().trace(sfCompleteNameSafe()+" sfResolved '"+ rn.toString()+"' to '"+obj.toString()+"'");
             }
         } catch (Throwable thr) {thr.printStackTrace();} //ignore
         return obj;

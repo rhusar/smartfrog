@@ -20,7 +20,7 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.sfcore.parser;
 
-import java.io.InputStream;
+import java.io.Reader;
 
 import org.smartfrog.sfcore.common.SmartFrogParseException;
 
@@ -34,75 +34,75 @@ import org.smartfrog.sfcore.common.SmartFrogParseException;
  */
 public interface StreamLanguageParser {
     /**
-     * Parses component(s) from an input stream. Returns a root component which
+     * Parses component(s) from a reader. Returns a root component which
      * contains the parsed components. Includes should be handled by some
      * default include handler.
      *
-     * @param is input stream to parse and compile from
+     * @param reader the reader to parse and compile from
      *
      * @return root component containing parsed component(s)
      *
      * @exception org.smartfrog.sfcore.common.SmartFrogParseException error parsing stream
      */
-    public Phases sfParse(InputStream is) throws SmartFrogParseException;
+    public Phases sfParse(Reader reader) throws SmartFrogParseException;
 
     /**
-     * Parses component(s) from an input stream. Returns a root component which
+     * Parses component(s) from a reader. Returns a root component which
      * contains the parsed components. Includes should be handled by some
      * default include handler.
      *
-     * @param is input stream to parse and compile from
+     * @param reader the reader to parse and compile from
      * @param codebase an optional codebase where the include may be found. If null, use the default code base
      *
      * @return root component containing parsed component(s)
      *
      * @exception org.smartfrog.sfcore.common.SmartFrogParseException error parsing stream
      */
-    public Phases sfParse(InputStream is, String codebase) throws SmartFrogParseException;
+    public Phases sfParse(Reader reader, String codebase) throws SmartFrogParseException;
 
     /**
-     * Parses a reference from an input stream. Used by components and
+     * Parses a reference from a reader. Used by components and
      * developers to quickly build references from a string (eg. sfResolve in
      * Prim)
      *
-     * @param is input stream to parse for a reference
+     * @param reader the reader to parse and compile from
      *
      * @return parsed reference
      *
      * @exception org.smartfrog.sfcore.common.SmartFrogParseException failed to parse reference
      */
-    public ReferencePhases sfParseReference(InputStream is) throws SmartFrogParseException;
+    public ReferencePhases sfParseReference(Reader reader) throws SmartFrogParseException;
 
     /**
-     * Parses any value from an input stream. (the meaning of "any" is language dependant)
+     * Parses any value from a reader. (the meaning of "any" is language dependant)
      *
-     * @param is input stream to parse for a value
+     * @param reader the reader to parse and compile from
      *
      * @return parsed value
      *
      * @exception org.smartfrog.sfcore.common.SmartFrogParseException failed to parse any value
      */
-    public Object sfParseAnyValue(InputStream is) throws SmartFrogParseException;
+    public Object sfParseAnyValue(Reader reader) throws SmartFrogParseException;
 
     /**
-     * Parses a primitive value from an input stream. (the meaning of primitive is language dependant)
+     * Parses a primitive value from a reader. (the meaning of primitive is language dependant)
      *
-     * @param is input stream to parse for a value
+     * @param reader the reader to parse and compile from
      *
      * @return parsed value
      *
      * @exception org.smartfrog.sfcore.common.SmartFrogParseException failed to parse primitive value
      */
-    public Object sfParsePrimitiveValue(InputStream is) throws SmartFrogParseException;
+    public Object sfParsePrimitiveValue(Reader reader) throws SmartFrogParseException;
 
     /**
-     * Parses tags from an input stream.
+     * Parses tags from a reader.
      *
-     * @param is string to parse for a value
+     * @param reader the reader to parse and compile from
      *
      * @return parsed value
      *
      * @exception org.smartfrog.sfcore.common.SmartFrogParseException failed to parse tags
      */
-    public Object sfParseTags(InputStream is) throws SmartFrogParseException;
+    public Object sfParseTags(Reader reader) throws SmartFrogParseException;
 }
