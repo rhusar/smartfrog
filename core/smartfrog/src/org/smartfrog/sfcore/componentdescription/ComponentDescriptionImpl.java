@@ -20,10 +20,6 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.sfcore.componentdescription;
 
-import java.io.IOException;
-import java.io.Serializable;
-import java.io.StringWriter;
-import java.io.Writer;
 import java.util.*;
 
 import org.smartfrog.sfcore.common.Context;
@@ -50,7 +46,7 @@ import java.rmi.*;
 import org.smartfrog.sfcore.reference.HereReferencePart;
 import org.smartfrog.sfcore.languages.sf.PhaseNames;
 
-import java.io.InputStream;
+import java.io.*;
 
 
 /**
@@ -570,7 +566,9 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
 
 
     /**
-     * Resolve a given reference. Forwards to indexed resolve with index 0.
+     * Resolves a (copy of) a given reference. Forwards to indexed resolve with index 0
+     * after making sure that the DATA flag is unset if necessary.
+     * Method returns the resulting attribute value.
      *
      * @param r reference to resolve
      *
@@ -579,6 +577,8 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
      * @throws SmartFrogResolutionException occurred while resolving
      */
     public Object sfResolve(Reference r) throws SmartFrogResolutionException {
+        Reference rn = (Reference) r.copy();
+        rn.setData(false);
         Object obj = sfResolve(r, 0);
         if (obj instanceof SFMarshalledObject){
             //  Unmarshall!Obj.
@@ -668,6 +668,17 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
         }
 
         return sw.toString();
+    }
+
+    /**
+     * Writes this component description on a stream encoded as utf-8.
+     *
+     * @param ps utf-8 encoded stream to write on
+     *
+     * @throws IOException failure while writing
+     */
+    public void writeOn(OutputStream ps) throws IOException {
+        writeOn(new OutputStreamWriter(ps, "utf-8"), 0);
     }
 
     /**

@@ -5,6 +5,8 @@ import org.smartfrog.sfcore.security.SFClassLoader;
 
 import java.util.Vector;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 
 /**
  * This is the default include handler for the SmartFrog parser. This simply
@@ -64,11 +66,11 @@ public class DefaultIncludeHandler implements IncludeHandler {
      * @param include include to locate
      * @param codebase an optional codebase where hte include may be found. If null, use the default code base
      *
-     * @return input stream on located include
+     * @return reader (UTF-8) on located include
      *
      * @exception Exception failed to locate or open include
      */
-    protected InputStream openInclude(String include, String codebase) throws Exception {
+    protected Reader openInclude(String include, String codebase) throws Exception {
         InputStream is = null;
 
         is = SFClassLoader.getResourceAsStream(include, actualCodebase(codebase), true);
@@ -77,7 +79,7 @@ public class DefaultIncludeHandler implements IncludeHandler {
             throw new Exception("Include file: " + include + " not found");
         }
 
-        return is;
+        return new InputStreamReader(is, "utf-8");
     }
 
     /**

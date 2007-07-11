@@ -177,6 +177,7 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
      * Resolves a refererence starting at given index. If the reference is
      * lazy, it is returned since component descriptions are not supposed to
      * chain on lazy references.
+     * @TODO why is this here? no longer seems necessary from the definiton
      *
      * @param r reference to resolve
      * @param index index in reference to start to resolve
