@@ -22,23 +22,25 @@ For more information: www.smartfrog.org
 
 
 /**
- * schema for the base jetty server extends
- * base webserver schema
+ * The deploy by copy component takes a destination directory.
+ * an optional startup component
  */
 DeployByCopyServerSchema extends Schema {
   destDir extends FilenameType;
   startup   extends OptionalCD;
   shutdown  extends OptionalCD;
+  synchronousCopy extends Boolean;
 }
 
 /**
- * this is not yet complete enough to be instantiable
+ * This server 
  */
 DeployByCopyServer extends ApplicationServer {
     sfClass "org.smartfrog.services.www.dbc.DeployByCopyServerImpl";
     deployByCopyServerSchema extends DeployByCopyServerSchema;
     serverHost "localhost";
     port 8080;
+    synchronousCopy true;
     supportsServletContext false;
     supportsWAR true;
     supportsEAR true;

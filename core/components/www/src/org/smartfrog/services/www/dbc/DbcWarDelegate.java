@@ -23,6 +23,7 @@ import org.smartfrog.services.www.JavaWebApplication;
 import org.smartfrog.sfcore.prim.Prim;
 
 /**
+ * Deploy a WAR file
  * created 19-Jun-2006 16:57:38
  */
 
@@ -31,6 +32,12 @@ public class DbcWarDelegate extends AbstractDbcDelegate implements JavaWebApplic
     public DbcWarDelegate(DeployByCopyServerImpl server, Prim owner) {
         super(server, owner);
     }
+
+    /**
+     * Return the extension
+     *
+     * @return ".war"
+     */
 
     public String getExtension() {
         return ".war";
