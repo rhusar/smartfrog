@@ -46,8 +46,8 @@ rem SF/lib (SF core libs)
 call "%SFHOME%\bin\setClassPath"
 
 rem SF/lib (SF core libs)
-set SFLIBPATH=%SFHOME%\lib.ext
-CALL "%SFHOME%\bin\setClassPath"
+rem set SFLIBPATH=%SFHOME%\lib.ext
+rem CALL "%SFHOME%\bin\setClassPath"
 
 rem now user defined classpaths
 if not defined SFUSERHOME goto continue2
