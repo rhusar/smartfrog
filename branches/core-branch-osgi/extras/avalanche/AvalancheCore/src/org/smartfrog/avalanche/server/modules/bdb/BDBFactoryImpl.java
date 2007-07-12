@@ -11,11 +11,10 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.avalanche.server.modules.bdb;
 
-import java.io.File;
-
+import com.sleepycat.je.Database;
+import com.sleepycat.je.DatabaseException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.smartfrog.avalanche.server.ActiveProfileManager;
 import org.smartfrog.avalanche.server.AvalancheFactory;
 import org.smartfrog.avalanche.server.DefaultProfileManager;
@@ -25,8 +24,8 @@ import org.smartfrog.avalanche.server.ModuleGroupManager;
 import org.smartfrog.avalanche.server.ModulesManager;
 import org.smartfrog.avalanche.server.SettingsManager;
 import org.smartfrog.avalanche.server.modules.ModuleCreationException;
-import com.sleepycat.je.Database;
-import com.sleepycat.je.DatabaseException;
+
+import java.io.File;
 
 public class BDBFactoryImpl extends AvalancheFactory{
 	private static Log log = LogFactory.getLog(BDBFactoryImpl.class);
@@ -66,7 +65,6 @@ public class BDBFactoryImpl extends AvalancheFactory{
 	}
 	/**
 	 * Returns AvalancheRepository, if required database collection doesnt exist it creates it. 
-	 * @param path
 	 * @return
 	 * @throws ModuleCreationException
 	 */

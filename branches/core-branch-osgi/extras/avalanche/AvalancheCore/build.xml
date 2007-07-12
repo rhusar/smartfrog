@@ -72,6 +72,9 @@
     <mkdir dir="${dist.dir}/lib"/>
     <mkdir dir="${dist.dir}/lib/client"/>
     <mkdir dir="${build.classes.dir}"/>
+    <copy todir="lib">
+      <fileset file="${env.JAVA_HOME}/lib/tools.jar" />
+    </copy>
   </target>
 
   <target name="clean" depends="init">
@@ -265,18 +268,6 @@
     <jar jarfile="${dist.dir}/lib/client/jboss.jar" basedir="${build.classes.dir}" includes="**/sf/jboss/**"/>
   </target>
 
-  <!--
-   setupBDB.java target is used to populate default settings in the database.
-   This file uses initsettings.xml file to load the values into database.
-   This should not be part of production environment
-   -->
-  <target name="setupBDB">
-    <java classname="tests.org.smartfrog.avalanche.server.SetupBDB">
-      <arg value="C:\\sf\\avalanche\\avalanche-server"/>
-      <classpath refid="avalanche-core.class.path"/>
-
-    </java>
-  </target>
 
   <target name="allJars"
       depends="coreJar,sfXMPPClient,shared,simpleExecComponentJar,ftpComponentJar,sfAntJar,gnubuild,gt4build,gridftp,
@@ -296,7 +287,7 @@
         windowtitle="Avalanche Server API"
         linksource="yes">
       <doctitle><![CDATA[<h1>Avalanche API</h1>]]></doctitle>
-      <bottom><![CDATA[<i>Copyright &#169; 2006 Hewlett Packard. All Rights Reserved.</i>]]></bottom>
+      <bottom><![CDATA[<i>Copyright &#169; 2007 Hewlett Packard. All Rights Reserved.</i>]]></bottom>
     </javadoc>
   </target>
 

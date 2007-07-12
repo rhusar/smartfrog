@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<project name="kernel-release" default="process" basedir=".">
+<project name="kernel-release" default="release" basedir=".">
   <!--
   /** (C) Copyright 1998-2007 Hewlett-Packard Development Company, LP
 
@@ -30,8 +30,19 @@
     ============
     To use: ant -f buildRelease release
 
+    set gui.enabled=true to include smartfrog gui components
+    set tasks.enabled=true to include the tasks
+    set logging.enabled=true to include logging
 
   </description>
+
+  <!--look for two override points-->
+  <property file="build.properties" />
+  <property file="../build.properties" />
+
+
+
+
   <!-- =================================================================== -->
   <!-- Initialization target                                               -->
   <!-- =================================================================== -->
@@ -47,6 +58,29 @@
     <echo message=""/>
     <echo message="==================================================================="/>
     <echo message="In the kernel-release project"/>
+
+    <!--a macro that defaults to not setting a property include.name
+      unless the property name.enabled is already set.
+    -->
+
+    <macrodef name="disable">
+      <attribute name="name"/>
+      <sequential>
+        <property name="@{name}.enabled" value="false" />
+        <condition property="include.@{name}">
+          <istrue value="${@{name}.enabled}" />
+        </condition>
+        <echo level="verbose">include.@{name}=${include.@{name}}</echo>
+      </sequential>
+    </macrodef>
+
+    <!--we cannot drop the gui until it builds and publishes under Ivy -->
+    <!--<property name="gui.enabled" value="true" />-->
+    <disable name="gui" />
+
+    <!--logging and tasks, they are under control-->
+    <disable name="logging" />
+    <disable name="tasks" />
   </target>
 
   <!-- =================================================================== -->
@@ -84,12 +118,6 @@
     <echo message="            - Generate PDF: sfReference.pdf"/>
     <echo message="            - Generate PDF: sfUserManual.pdf"/>
     <echo message=" "/>
-    <echo message="  3. Tag cvs with new version using: "/>
-    <echo message="         Ex. cvs tag release3_01_003_alpha "/>
-    <echo message=" "/>
-    <echo message="  4. Clean checkout with tag: "/>
-    <echo message="         Ex. cvs checkout -r release3_02_000_alpha core"/>
-    <echo message=" "/>
     <echo message="  5. Build new release: "/>
     <echo message="         Go to fresh module directory and run:"/>
     <echo message="             ant release "/>
@@ -102,12 +130,7 @@
     <echo message="         Ex. BIN distribution: 'dist\build.xml build'  "/>
     <echo message="                               'dist\build.xml jdocs'"/>
     <echo message=" "/>
-    <echo message="  8. Upload files to web site."/>
-    <echo message=" "/>
-    <echo message="  Note: to retag something add move tag parameter:"/>
-    <echo message="         Ex. cvs tag -F release3_01_001_alpha buildRelease.xml"/>
-    <echo message="        to remove tag something add move tag parameter:"/>
-    <echo message="         Ex. cvs tag -d release3_01_001_alpha buildRelease.xml"/>
+
     <echo message="-------------------------------------------------------------"/>
     <echo message=""/>
   </target>
@@ -146,6 +169,8 @@
   <property name="dos-executables" value="**/*.bat,**/*.cmd"/>
 
 
+
+
   <!-- =================================================================== -->
   <!-- define the patterns for different parts of the archives             -->
   <!-- patterns are not bound to a specific directory, so can be reused    -->
@@ -169,6 +194,7 @@
     <include name="*.py"/>
     <exclude name="*.bat"/>
     <exclude name="*.cmd"/>
+    <exclude name="sfGui" unless="include.gui" />
     <patternset refid="excluded.cruft"/>
   </patternset>
 
@@ -176,6 +202,7 @@
   <patternset id="dos.bin">
     <include name="*.bat"/>
     <include name="*.cmd"/>
+    <exclude name="sfGUI*.bat" unless="include.gui" />
   </patternset>
   
   <!--everything in the bin dir other than the unix and DOS stuff-->
@@ -231,14 +258,23 @@
     <patternset refid="excluded.cruft"/>
   </patternset>
 
-  <patternset id="lib.pattern">
-    <include name="lib/**/*.jar"/>
-  </patternset>
 
+  <patternset id="lib.pattern">
+    <include name="smartfrog*.jar"/>
+    <include name="sfServices*.jar"/>
+    <include name="sfExamples*.jar"/>
+    <exclude name="SFGuiTools*.jar" unless="include.gui" />
+    <exclude name="SFGuiBrowser*.jar" unless="include.gui" />
+    <exclude name="sf-loggingservices*.jar" unless="include.logging"/>
+    <exclude name="log4j-*.jar" unless="include.logging"/>
+    <exclude name="commons-logging-*.jar" unless="include.logging"/>
+    <exclude name="sf-tasks*.jar" unless="include.tasks" />
+  </patternset>
 
   <target name="clean" >
     <delete dir="${release.dir}" />
   </target>
+  
   <!-- =================================================================== -->
   <!-- FixCRLF for different platforms                                     -->
   <!-- =================================================================== -->
@@ -287,19 +323,6 @@
         </fileset>
       </classpath>
       </java>
-      <!--copy todir="${dist.lib.dir}">
-	 <fileset dir="${dist.lib.dir}">
-		 <include name="**/*.jar"/>
-	 </fileset>
-	 <mapper type="glob" from="*.jar" to="*-${version}.jar"/>
-     </copy-->
-
-     <!--copy todir="${lib}">
-	 <fileset dir="${lib}">
-		 <include name="**/*.jar"/>
-	 </fileset>
-	 <mapper type="glob" from="*.jar" to="*-${version}.jar"/>
-     </copy-->
   </target>
 
   <target name="ready-to-release" depends="init, initrelease, fixCRLF" >
@@ -309,11 +332,11 @@
     <mkdir dir="${release.dir}" />
     <mkdir dir="${release.unzip.dir}" />
 
-    <property name="dist.zip" location="${release.dir}/${prefix}.${DSTAMP}_dist.zip"/>
-    <property name="all.zip" location="${release.dir}/${prefix}.${DSTAMP}_all.zip"/>
-    <property name="dist.tar" location="${release.dir}/${prefix}.${DSTAMP}_dist.tar"/>
+    <property name="dist.zip" location="${release.dir}/${prefix}_dist.zip"/>
+    <property name="all.zip" location="${release.dir}/${prefix}_all.zip"/>
+    <property name="dist.tar" location="${release.dir}/${prefix}_dist.tar"/>
     <property name="dist.tar.gz" location="${dist.tar}.gz"/>
-    <property name="all.tar" location="${release.dir}/${prefix}.${DSTAMP}_all.tar"/>
+    <property name="all.tar" location="${release.dir}/${prefix}_all.tar"/>
     <property name="all.tar.gz" location="${all.tar}.gz"/>
 
   </target>
@@ -332,7 +355,7 @@
     <!-- distributables. Leaves out but docs but includes binaries without setting permissions-->
     <zipfileset id="dist.main.zf" dir="${dist}" prefix="${prefix}/dist">
       <include name="**"/>
-      <!--exclude name="lib/**"/-->
+      <exclude name="lib/**" />
       <exclude name="bin/**"/>
       <exclude name="docs/**"/>
       <exclude name="classes/**"/>
@@ -376,20 +399,17 @@
         prefix="${prefix}/bin">
       <patternset refid="other.bin" />
     </zipfileset>
-    <zipfileset id="lib.zf" dir="lib"
-        prefix="${prefix}/lib">
-      <patternset refid="other.bin" />
-    </zipfileset>
-    <zipfileset id="other.bin.zf" dir="bin"
-        prefix="${prefix}/bin">
-      <patternset refid="other.bin" />
-    </zipfileset>
     <!-- source -->
     <zipfileset id="main.zf" dir="."
         prefix="${prefix}/">
       <patternset refid="source.pattern" />
     </zipfileset>
-    <zipfileset id="lib.zf" dir="."
+
+    <zipfileset id="dist.lib.zf" dir="${dist}/lib"
+        prefix="${prefix}/dist/lib">
+      <patternset refid="lib.pattern" />
+    </zipfileset>
+    <zipfileset id="lib.zf" dir="lib"
         prefix="${prefix}/lib">
       <patternset refid="lib.pattern" />
     </zipfileset>
@@ -402,6 +422,7 @@
         <zipfileset refid="dist.unix.bin.zf" />
         <zipfileset refid="dist.dos.bin.zf" />
         <zipfileset refid="dist.other.bin.zf" />
+        <zipfileset refid="dist.lib.zf" />
         <zipfileset refid="security.unix.bin.zf" />
         <zipfileset refid="security.dos.bin.zf" />
         <zipfileset refid="security.other.bin.zf" />
@@ -424,6 +445,8 @@
 
   <target name="all-zip" depends="zipfilesets"
       description="all zip">
+
+
     <!--extend the dist file with extra stuff-->
     <make-dist-zip destfile="${all.zip}" >
       <zipfileset refid="doc.files.zf"/>
@@ -460,10 +483,10 @@
         prefix="${prefix}/dist/docs">
       <patternset refid="docs.pattern" />
     </tarfileset>
-    <!-- distributables. Leaves out but docs but includes binaries without setting permissions-->
+    <!-- distributables. Leaves out docs, lib and  binaries-->
     <tarfileset id="dist.main.tf" dir="${dist}" prefix="${prefix}/dist">
       <include name="**"/>
-      <!--exclude name="lib/**"/-->
+      <exclude name="lib/**"/>
       <exclude name="bin/**"/>
       <exclude name="docs/**"/>
       <exclude name="classes/**"/>
@@ -503,28 +526,23 @@
         prefix="${prefix}/bin">
       <patternset refid="other.bin" />
     </tarfileset>
-    <tarfileset id="lib.tf" dir="lib"
-        prefix="${prefix}/lib">
-      <patternset refid="other.bin" />
-    </tarfileset>
     <tarfileset id="dos.bin.tf" dir="bin"
         prefix="${prefix}/bin">
       <patternset refid="dos.bin" />
-    </tarfileset>
-    <tarfileset id="other.bin.tf" dir="bin"
-        prefix="${prefix}/bin">
-      <patternset refid="other.bin" />
     </tarfileset>
     <!-- source -->
     <tarfileset id="main.tf" dir="."
         prefix="${prefix}/">
       <patternset refid="source.pattern" />
     </tarfileset>
-    <tarfileset id="lib.tf" dir="."
+    <tarfileset id="dist.lib.tf" dir="${dist}/lib"
+        prefix="${prefix}/dist/lib">
+      <patternset refid="lib.pattern" />
+    </tarfileset>
+    <tarfileset id="lib.tf" dir="lib"
         prefix="${prefix}/lib">
       <patternset refid="lib.pattern" />
     </tarfileset>
-
 
     <presetdef name="make-dist-tar">
       <tar longfile="gnu" >
@@ -533,6 +551,7 @@
         <tarfileset refid="dist.unix.bin.tf" />
         <tarfileset refid="dist.dos.bin.tf" />
         <tarfileset refid="dist.other.bin.tf" />
+        <tarfileset refid="dist.lib.tf" />
         <tarfileset refid="security.unix.bin.tf" />
         <tarfileset refid="security.dos.bin.tf" />
         <tarfileset refid="security.other.bin.tf" />
@@ -588,14 +607,14 @@
   <!-- =================================================================== -->
   <!-- release                                                             -->
   <!-- =================================================================== -->
-  <target name="release" depends="zip,tar"
+  <target name="release" depends="zip,tar,expand"
       description="Creates zip with release packages">
   </target>
 
   <target name="expand" depends="unzip,untar"
     description="make the distributables, then expand them" />
 
-  <target name="oldrelease" depends="dist-zip" >
+ <!-- <target name="oldrelease" depends="dist-zip" >
 
      <tar tarfile="${release.dir}/${prefix}.${DSTAMP}_DIST.tar" >
        <tarfileset dir="." prefix="${prefix}">
@@ -606,7 +625,6 @@
        <tarfileset dir="." prefix="${prefix}" >
          <exclude name="${dist}/bin/**"/>
 	       <include name="${dist}/**"/>
-	       <!--exclude name="${dist}/lib/**"/-->
          <exclude name="${dist}/classes/**"/>
          <exclude name="${dist}/docs/**"/>
          <patternset refid="excluded.cruft"/>
@@ -614,9 +632,6 @@
        <tarfileset dir="${dist}/docs/" prefix="${prefix}/dist/docs">
          <patternset refid="docs.pattern" />
        </tarfileset>
-       <!--tarfileset dir="." prefix="${prefix}">
-	      <include name="${dist}/lib/**/*-${version}.jar"/>
-       </tarfileset-->
        <tarfileset dir="." mode="755" prefix="${prefix}">
          <include name="${dist}/bin/**"/>
          <exclude name="${dist}/bin/**/*.sf"/>
@@ -634,8 +649,8 @@
         <include name="bin/**/*.bat"/>
         <include name="bin/**/*.ini"/>
       	<include name="lib/**"/>
-	      <!--include name="lib/*-${version}.jar"/>
-	      <include name="lib/readme.txt"/-->
+	      --><!--include name="lib/*-${version}.jar"/>
+	      <include name="lib/readme.txt"/--><!--
         <patternset refid="source.pattern"/>
        </tarfileset>
        <tarfileset dir="bin" prefix="${prefix}/bin" mode="755">
@@ -659,14 +674,10 @@
        <tarfileset dir="." prefix="${prefix}">
          <exclude name="${dist}/bin/**"/>
 	       <include name="${dist}/**"/>
-	        <!--exclude name="${dist}/lib/**"/-->
          <exclude name="${dist}/classes/**"/>
          <exclude name="${dist}/classes/**"/>
          <exclude name="${dist}/docs/**"/>
         </tarfileset>
-       <!--tarfileset dir="." prefix="${prefix}">
-	        <include name="${dist}/lib/**/*-${version}.jar"/>
-        </tarfileset-->
        <tarfileset dir="." mode="755" prefix="${prefix}">
          <include name="${dist}/bin/**"/>
          <exclude name="${dist}/bin/**/*.sf"/>
@@ -676,25 +687,7 @@
     </tar>
     <gzip src="${release.dir}/${prefix}.${DSTAMP}_ALL.tar" zipfile="${release.dir}/${prefix}.${DSTAMP}_ALL.tar.gz"/>
     <delete file="${release.dir}/${prefix}.${DSTAMP}_ALL.tar"/>
-<!--
-    <zip destfile="../${prefix}.${DSTAMP}_JDOCS.zip">
-       <zipfileset dir="." prefix="${prefix}">
-        <include name="${dist}/docs/jdocs/**"/>
-       </zipfileset>
-    </zip>
-     <tar tarfile="../${prefix}.${DSTAMP}_JDOCS.tar" >
-      <tarfileset dir="." prefix="${prefix}">
-        <include name="${dist}/docs/jdocs/**"/>
-       </tarfileset>
-     </tar>
-    <gzip src="../${prefix}.${DSTAMP}_JDOCS.tar" zipfile="../${prefix}.${DSTAMP}_JDOCS.tar.gz"/>
-    <delete file="../${prefix}.${DSTAMP}_JDOCS.tar"/>
-    -->
-
-    <!--delete>
-	  <fileset dir="${lib}" includes="**/*-${version}.jar"/>
-     </delete-->
-  </target>
+  </target>-->
 </project>
 
 <!-- End of file -->

@@ -46,10 +46,10 @@ import org.smartfrog.services.deployapi.transport.wsrf.WSRPResourceSource;
 import org.smartfrog.services.deployapi.transport.wsrf.WsrfUtils;
 import org.smartfrog.services.filesystem.filestore.AddedFilestore;
 import org.smartfrog.services.filesystem.filestore.FileEntry;
-import org.smartfrog.sfcore.common.ActionDeploy;
 import org.smartfrog.sfcore.common.ConfigurationDescriptor;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLivenessException;
+import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 
@@ -438,7 +438,7 @@ public class Application implements WSRPResourceSource, LifecycleListener {
                 config.setSubProcess(subprocess);
             }
             //select the language
-            config.setContextAttribute(ActionDeploy.KEY_LANGUAGE,language.getExtension());
+            config.setContextAttribute(SmartFrogCoreKeys.KEY_LANGUAGE,language.getExtension());
             //tell the CDL runtime what the root component should be
             log.info("Deploying " + url + " to " + hostname+" as "+language.getDescription());
             //deploy, throwing an exception if we cannot

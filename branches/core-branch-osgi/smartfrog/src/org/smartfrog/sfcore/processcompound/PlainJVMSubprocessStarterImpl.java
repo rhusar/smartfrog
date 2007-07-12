@@ -102,7 +102,7 @@ public class PlainJVMSubprocessStarterImpl extends AbstractSubprocessStarter {
         String res = null;
         String replaceBoolKey = SmartFrogCoreKeys.SF_PROCESS_REPLACE_SF_CODEBASE;
         String attributeKey = SmartFrogCoreKeys.SF_PROCESS_SF_CODEBASE;
-        String sysPropertyKey = "org.smartfrog.codebase";
+        String sysPropertyKey = SmartFrogCoreProperty.codebase;
         String pathSeparator = " ";
 
         res = addProcessSpecialSystemVar(parentProcess, cd, res, replaceBoolKey, attributeKey, sysPropertyKey, pathSeparator);
@@ -283,13 +283,14 @@ public class PlainJVMSubprocessStarterImpl extends AbstractSubprocessStarter {
             }
         }
 
-        if (SFSecurity.isSecurityOn()) {
-            // Pass java.security.policy
-            String secProp = props.getProperty("java.security.policy");
+        // Pass java.security.policy if it is defined
+        String secProp = props.getProperty("java.security.policy");
 
-            if (secProp != null) {
-                cmd.add("-Djava.security.policy=" + secProp);
-            }
+        if (secProp != null) {
+            cmd.add("-Djava.security.policy=" + secProp);
+        }
+
+        if (SFSecurity.isSecurityOn()) {
 
             // org.smartfrog.sfcore.security.propFile
             secProp = props.getProperty(SFSecurityProperties.propPropertiesFileName);

@@ -47,6 +47,7 @@ For more information: www.smartfrog.org
     <property name="extras.dir" location="extras" />
     <property name="ant.project" location="${extras.dir}/ant" />
     <property file="${components.project}/libraries.properties" />
+    <property name="maven.enabled" value="false" />
     <!-- work out our java version by introspection -->
     <condition property="java1.5+" >
       <available classname="java.lang.Readable"/>
@@ -302,28 +303,36 @@ For more information: www.smartfrog.org
 <!-- =================================================================== -->
 <!--  Maven site:generate-->
 <!-- =================================================================== -->
-  <target name="mavenReport" depends="svnupdate" 
-    description="run 'maven site:generate'" if="maven.present">
-        <exec executable="maven" dir="${cruise.base.dir}">
-            <arg line="site:generate" />
-        </exec>
-    </target>
 
-  <target name="mavenReportNoSVNUpdate"  
-    description="run 'maven site:generate'" if="maven.present">
-        <exec executable="maven" dir="${cruise.base.dir}">
-            <arg line="site:generate" />
-        </exec>
-    </target>
+  <target name="mavenReport" depends="svnupdate,mavenReportNoSVNUpdate"
+    description="run 'maven site:generate'" >
+  </target>
+
+  <target name="mavenReportNoSVNUpdate"
+      description="run 'maven site:generate'" if="should.maven">
+    <exec executable="maven" dir="${cruise.base.dir}" failonerror="true">
+      <arg value="site:generate"/>
+    </exec>
+  </target>
+
+
+
+  <target name="ready-to-maven" depends="init">
+    <condition property="should.maven">
+      <and>
+        <isset property="maven.present"/>
+        <istrue value="${maven.enabled}" />
+      </and>
+    </condition>
+
+
+
+  </target>
 
   <!-- =================================================================== -->
   <!-- release all sub-projects                                              -->
   <!-- =================================================================== -->
-  <target name="old-release" depends="init" description="release">
-    <forward2 dir="${main.project}" target="dist"  />
-    <forward2 dir="${ant.project}" target="dist"  />
-    <forward2 dir="${components.project}" target="release" antfile="createRelease.xml"  />
-  </target>
+
 
   <target name="release" depends="clean,ivy-purge,dist"
       description="create a clean release -purges all artifacts from the ivy repository too"
@@ -356,13 +365,13 @@ For more information: www.smartfrog.org
 
 
   <!-- =================================================================== -->
-<!-- Gump target for distribution -->
-<!-- =================================================================== -->
-  <target name="gump-dist" depends="dist" />
+  <!-- Gump target for distribution -->
+  <!-- =================================================================== -->
+  <target name="gump-dist" depends="ivy-purge,dist" />
 
-<!-- =================================================================== -->
-<!-- Gump best practises say unit tests only -->
-<!-- =================================================================== -->
+  <!-- =================================================================== -->
+  <!-- Gump best practises say unit tests only -->
+  <!-- =================================================================== -->
   <target name="gump-test" depends="test" />
 
 
@@ -423,19 +432,20 @@ For more information: www.smartfrog.org
         </fileset>
         <fileset dir="extras" includes="**/build.xml">
           <!--no CDL -->
-          <exclude name="cdl/build.xml"/>
+          <exclude name="cdl/build.xml" unless="cdl.enabled"/>
           <!--not ready for ivy builds yet-->
-          <exclude name="sfgui/build.xml" />
+          <exclude name="sfgui/build.xml" unless="sfgui.enabled"/>
+          <exclude name="avalanche/**/build.xml" unless="avalanche.enabled"/>
         </fileset>
         <fileset dir="components" includes="**/build.xml" >
           <!--no cddlm here-->
-          <exclude name="deployapi/build.xml"/>
+          <exclude name="deployapi/build.xml" unless="deployapi.enabled"/>
           <!--not really that useful-->
           <exclude name="releasetest/build.xml"/>
           <!--cargo support is on hold until 3.12-->
-          <exclude name="cargo/build.xml"/>
+          <exclude name="cargo/build.xml" unless="cargo.enabled"/>
           <!--lacks the artifacts to compile-->
-          <exclude name="constraints/build.xml"/>
+          <exclude name="constraints/build.xml" unless="constraints.enabled"/>
           <!--These need java 1.5 or later-->
           <exclude name="database/build.xml" unless="java1.5+"/>
           <exclude name="junit/build.xml" unless="java1.5+"/>

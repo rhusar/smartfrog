@@ -29,6 +29,9 @@ import org.smartfrog.sfcore.common.SmartFrogFunctionResolutionException;
  * Defines the IfThenElse function.
  */
 public class IfThenElse extends BaseFunction implements MessageKeys {
+    private static final String IF = "if";
+    private static final String THEN = "then";
+    private static final String ELSE = "else";
 
     /**
      * The method to implement the functionality of the if-then-else function.
@@ -37,21 +40,21 @@ public class IfThenElse extends BaseFunction implements MessageKeys {
      * @throws SmartFrogFunctionResolutionException if any of the parameters are not there or of the wrong type
      *  */
     protected Object doFunction() throws SmartFrogFunctionResolutionException {
-    Object ifObj = context.get("if");
-    Object elseObj = context.get("else");
-    Object thenObj = context.get("then");
+    Object ifObj = context.get(IF);
+    Object elseObj = context.get(ELSE);
+    Object thenObj = context.get(THEN);
 
     if (ifObj == null)
         throw new SmartFrogFunctionResolutionException(
-                      MessageUtil.formatMessage(MISSING_PARAMETER, "if"),
+                      MessageUtil.formatMessage(MISSING_PARAMETER, IF),
                       null, name, null);
     if (thenObj == null)
         throw new SmartFrogFunctionResolutionException(
-                      MessageUtil.formatMessage(MISSING_PARAMETER, "then"),
+                      MessageUtil.formatMessage(MISSING_PARAMETER, THEN),
                       null, name, null);
     if (elseObj == null)
         throw new SmartFrogFunctionResolutionException(
-                      MessageUtil.formatMessage(MISSING_PARAMETER, "else"),
+                      MessageUtil.formatMessage(MISSING_PARAMETER, ELSE),
                       null, name,null);
     if (!(ifObj instanceof Boolean))
         throw new SmartFrogFunctionResolutionException(

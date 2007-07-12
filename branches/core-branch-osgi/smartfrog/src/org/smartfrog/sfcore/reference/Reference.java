@@ -437,15 +437,14 @@ public class Reference implements Copying, Cloneable, Serializable {
     public Object resolve(ReferenceResolver rr, int index)
         throws SmartFrogResolutionException {
         // If no elements, the rr is the requested object
-        // if it is data, then return the data
-        if (size() == 0 || getData()) {
+        if (size() == 0) {      //used to be, but can't see why this works...: (size() == 0 || getData())
             return rr;
         }
 
         // Forward the resolution request to the reference part, which will
         // resolve given this reference, its index and the resolver
         try {
-        return elementAt(index).resolve(rr, this, index);
+            return elementAt(index).resolve(rr, this, index);
         } catch (SmartFrogResolutionException e) {
             if (optional) return defaultValue;
             throw e;

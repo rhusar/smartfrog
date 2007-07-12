@@ -17,8 +17,11 @@ For more information: www.smartfrog.org
  */
 package org.smartfrog.avalanche.server.ftp;
 
-import org.smartfrog.avalanche.server.modules.*;
-import org.smartfrog.avalanche.server.*;
+import org.smartfrog.avalanche.server.RepositoryConfig;
+import org.smartfrog.avalanche.server.modules.Repository;
+import org.smartfrog.avalanche.server.modules.RepositoryConfigException;
+import org.smartfrog.avalanche.server.modules.RepositoryFactory;
+
 /**
  * @author sanjay
  *

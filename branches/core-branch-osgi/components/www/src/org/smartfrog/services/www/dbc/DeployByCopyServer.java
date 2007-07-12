@@ -39,10 +39,11 @@ public interface DeployByCopyServer extends JavaWebApplicationServer {
     public static final String ATTR_DEPLOY_DIR = "destDir";
 
     /**
-     * Clean up directory: boolean
+     * Clean up directory: boolean.
+     * This is currently unused.
      * {@value}
      */
-    public static final String ATTR_CLEAN_DIRECTORY = "cleanDir";
+    public static final String ATTR_CLEAN_DIRECTORY = "cleanDirOnStartup";
 
 
     /**
@@ -59,6 +60,12 @@ public interface DeployByCopyServer extends JavaWebApplicationServer {
      * {@value}
      */
     public static final String ATTR_SHUTDOWN_COMPONENT = "shutdown";
+
+    /**
+     * Flag to control whether or not a copy is synchronous.
+     * {@value}
+     */
+    public static final String ATTR_SYNCHRONOUS_COPY = "synchronousCopy";
 
 
 }

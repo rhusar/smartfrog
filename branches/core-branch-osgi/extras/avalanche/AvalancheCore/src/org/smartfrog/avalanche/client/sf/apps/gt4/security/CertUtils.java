@@ -17,15 +17,15 @@ For more information: www.smartfrog.org
  */
 package org.smartfrog.avalanche.client.sf.apps.gt4.security;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Enumeration;
 import java.util.Properties;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 /**
  * @author sandya

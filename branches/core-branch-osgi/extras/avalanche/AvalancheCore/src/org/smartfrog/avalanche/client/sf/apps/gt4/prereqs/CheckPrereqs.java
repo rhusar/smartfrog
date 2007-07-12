@@ -17,16 +17,15 @@ For more information: www.smartfrog.org
  */
 package org.smartfrog.avalanche.client.sf.apps.gt4.prereqs;
 
-import java.util.ArrayList;
-import java.util.Hashtable;
-import java.io.File;
-import java.io.IOException;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.smartfrog.avalanche.client.sf.apps.gt4.build.GT4Constants;
 import org.smartfrog.avalanche.client.sf.exec.ant.AntUtils;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Hashtable;
 
 
 /**

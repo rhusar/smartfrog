@@ -20,13 +20,10 @@
 package org.smartfrog.services.os.java;
 
 import org.smartfrog.services.filesystem.FileSystem;
-import org.smartfrog.services.filesystem.FileUsingComponentImpl;
 import org.smartfrog.services.filesystem.FileUsingCompoundImpl;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
-import org.smartfrog.sfcore.common.SmartFrogLifecycleException;
 import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
-import org.smartfrog.sfcore.compound.CompoundImpl;
 import org.smartfrog.sfcore.logging.Log;
 import org.smartfrog.sfcore.utils.PlatformHelper;
 

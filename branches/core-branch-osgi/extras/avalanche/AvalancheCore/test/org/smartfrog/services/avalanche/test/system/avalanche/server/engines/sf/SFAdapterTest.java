@@ -11,13 +11,12 @@ For more information: www.smartfrog.org
 */
 package tests.org.smartfrog.avalanche.server.engines.sf;
 
+import junit.framework.TestCase;
+import org.smartfrog.services.sfinterface.SmartFrogAdapterImpl;
+
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
-
-import org.smartfrog.services.sfinterface.SmartFrogAdapterImpl;
-
-import junit.framework.TestCase;
 
 public class SFAdapterTest extends TestCase {
 
