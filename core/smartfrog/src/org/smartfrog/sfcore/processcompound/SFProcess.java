@@ -322,7 +322,7 @@ public class SFProcess implements MessageKeys {
                 Constructor constructor = irqHandlerClass.getConstructor(new Class[0]);
                 InterruptHandler handler=(InterruptHandler) constructor.newInstance(new Object[0]);
                 handler.bind("INT", sfLog());
-            } catch (Exception e) {
+            } catch (NoClassDefFoundError e) {
                 sfLog().error("Could not create an interrupt handler from "+ INTERRUPT_HANDLER
                         +"\nSmartFrog may be running on a JVM which does not support this feature",e);
             }
