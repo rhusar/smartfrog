@@ -10,6 +10,11 @@ import org.smartfrog.sfcore.parser.ParseTimeResourceFactory;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.reference.Function;
+import org.smartfrog.sfcore.security.SFSecurity;
+
+import java.io.InputStream;
+import java.io.IOException;
+import java.net.URL;
 
 public abstract class AbstractClassLoadingEnvironment extends PrimImpl
         implements PrimFactory, ParseTimeResourceFactory
@@ -47,8 +52,13 @@ public abstract class AbstractClassLoadingEnvironment extends PrimImpl
             throws ClassNotFoundException, InstantiationException,
                    IllegalAccessException, SmartFrogResolutionException, SmartFrogDeploymentException;
 
-    protected abstract Object newInstance(String className) throws ClassNotFoundException, InstantiationException,
-            IllegalAccessException;
+    protected Object newInstance(String className) throws ClassNotFoundException, InstantiationException,
+            IllegalAccessException
+    {
+        Class clazz = getClassLoader().loadClass(className);
+        SFSecurity.checkSecurity(clazz);
+        return clazz.newInstance();
+    }
 
     public final Function getFunction(ComponentDescription metadata) throws Exception {
         String className = (String) metadata.sfResolveHere(SmartFrogCoreKeys.SF_FUNCTION_CLASS);
@@ -58,4 +68,16 @@ public abstract class AbstractClassLoadingEnvironment extends PrimImpl
     public final PhaseAction getPhaseAction(String className) throws Exception {
         return (PhaseAction) newInstance(className);
     }
+
+
+    public InputStream getResourceAsStream(String pathname) {
+        try {
+            return SFSecurity.getSecureInputStream(getResource(pathname));
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    protected abstract URL getResource(String pathname);
 }

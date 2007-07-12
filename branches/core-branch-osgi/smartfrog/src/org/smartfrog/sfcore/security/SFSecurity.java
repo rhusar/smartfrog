@@ -21,12 +21,14 @@ For more information: www.smartfrog.org
 package org.smartfrog.sfcore.security;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.RMISocketFactory;
 import java.net.InetAddress;
-import org.smartfrog.sfcore.security.rmispi.SFCommunityPermission;
+import java.net.URL;
+
 import org.smartfrog.sfcore.security.rmispi.SFRMIClassLoaderSpi;
 
 
@@ -142,13 +144,17 @@ public class SFSecurity {
      * the code involved is signed by a trusted key.
      */
     public static void checkSFCommunity() {
-        SecurityManager securitymanager = System.getSecurityManager();
-
-        if (securitymanager != null) {
-            securitymanager.checkPermission(new SFCommunityPermission());
-        }
+        SFRMIClassLoaderSpi.checkSFCommunity();
     }
 
+    public static InputStream getSecureInputStream(URL url) throws IOException {
+        return SFClassLoader.getSecureInputStream(url.openConnection());
+    }
+
+    public static void checkSecurity(Class clazz) {
+        SFRMIClassLoaderSpi.quickReject(clazz.getProtectionDomain());
+    }
+    
     /**
      * Returns whether the SF security checks are active or not. This can only
      * be changed once at initialization time for security reasons.

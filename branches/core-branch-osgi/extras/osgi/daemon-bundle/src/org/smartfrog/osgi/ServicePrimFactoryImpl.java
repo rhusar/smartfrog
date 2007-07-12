@@ -51,6 +51,11 @@ public class ServicePrimFactoryImpl extends PrimImpl implements PrimFactory {
         daemonBundleContext = OSGiUtilities.getDaemonBundleContext(this);
     }
 
+
+    public ClassLoader getClassLoader() {
+        return getClass().getClassLoader();
+    }
+
     /**
      *
      * @param askedFor The contents of the sfMeta attribute of the Prim we're deploying.

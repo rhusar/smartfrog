@@ -8,19 +8,20 @@ import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
 
 import java.io.InputStream;
+import java.io.IOException;
 import java.rmi.RemoteException;
 import java.net.URLClassLoader;
 import java.net.URL;
 import java.net.MalformedURLException;
 import java.util.List;
+import java.util.Enumeration;
 
 /**
  * Loads classes and creates components from remote code repositories.
  * The attribute of name {@link this.ATTR_CODEBASE} should be a list of URLs to code repositories.
- * Actual classloading is handled by <code>URLClassLoader</code>. 
- * @see URLClassLoader
+ * Actual classloading is handled by {@link URLClassLoader}.  
  */
-public class RemoteClassLoadingEnvironment extends AbstractClassLoadingEnvironment {
+public class URLClassLoadingEnvironment extends AbstractClassLoadingEnvironment {
 
     private ClassLoader urlClassLoader;
     public static final String ATTR_CODEBASE = "codebase";
@@ -43,8 +44,12 @@ public class RemoteClassLoadingEnvironment extends AbstractClassLoadingEnvironme
         urlClassLoader = new URLClassLoader(urlArray, getClass().getClassLoader());
     }
 
-    public InputStream getComponentDescription(String pathname) {
+    public InputStream getResourceAsStream(String pathname) {
         return urlClassLoader.getResourceAsStream(pathname);
+    }
+
+    protected URL getResource(String pathname) {
+        return urlClassLoader.getResource(pathname);
     }
 
     protected Prim getComponentImpl(ComponentDescription askedFor)
@@ -55,9 +60,7 @@ public class RemoteClassLoadingEnvironment extends AbstractClassLoadingEnvironme
         return (Prim) newInstance(className);
     }
 
-    protected Object newInstance(String className)
-            throws ClassNotFoundException, InstantiationException, IllegalAccessException
-    {
-        return urlClassLoader.loadClass(className).newInstance();
+    public ClassLoader getClassLoader() {
+        return urlClassLoader;
     }
 }

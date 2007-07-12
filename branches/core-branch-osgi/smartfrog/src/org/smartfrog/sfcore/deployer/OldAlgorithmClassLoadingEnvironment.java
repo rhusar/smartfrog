@@ -1,6 +1,12 @@
 package org.smartfrog.sfcore.deployer;
 
-import org.smartfrog.sfcore.common.*;
+import org.smartfrog.sfcore.common.ContextImpl;
+import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
+import org.smartfrog.sfcore.common.SmartFrogCoreProperty;
+import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
+import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.common.SmartFrogResolutionException;
+import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.componentdescription.ComponentDescriptionImpl;
 import org.smartfrog.sfcore.prim.Prim;
@@ -8,6 +14,7 @@ import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.security.SFClassLoader;
 
 import java.io.InputStream;
+import java.net.URL;
 
 /**
  * Implements the sfCodebase-aware component creation, as currently documented.
@@ -109,7 +116,15 @@ public class OldAlgorithmClassLoadingEnvironment extends AbstractClassLoadingEnv
     }
 
 
-    public InputStream getComponentDescription(String pathname) {
+    public InputStream getResourceAsStream(String pathname) {
         return SFClassLoader.getResourceAsStream(pathname);
+    }
+
+    protected URL getResource(String pathname) {
+        throw new UnsupportedOperationException();
+    }
+
+    public ClassLoader getClassLoader() {
+        throw new UnsupportedOperationException();
     }
 }

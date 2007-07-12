@@ -18,23 +18,21 @@ import java.util.Vector;
  */
 public class DefaultIncludeHandler implements IncludeHandler {
 
-    String baseCodebase;
-
     /**
      * Parses given include. This implementation constructs a new DefaultParser
      * on the result of openInclude and uses the AttributeList methods to
      * construct the vector of attributes
      *
      * @param include include file to parse
-     * @param codebase an optional codebase where the include may be found. If null, use the default codebase
+     * @param from an optional from where the include may be found. If null, use the default from
      *
      * @return vector of attribute name X value pairs
      *
      * @exception Exception error while locating or parsing include
      */
-    public Vector parseInclude(String include, SFReference codebase) throws Exception {
+    public Vector parseInclude(String include, SFReference from) throws Exception {
         return (new org.smartfrog.sfcore.languages.csf.DefaultParser(
-                org.smartfrog.sfcore.parser.SFParser.openInclude(include, codebase),
+                org.smartfrog.sfcore.parser.SFParser.openInclude(include, from),
                 new DefaultIncludeHandler())).AttributeList();
     }
 
