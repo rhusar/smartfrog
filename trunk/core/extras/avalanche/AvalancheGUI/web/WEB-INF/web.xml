@@ -52,7 +52,7 @@ For more information: www.smartfrog.org
 	<description> Avalanche Demo GUI </description>
 	<context-param>
 		<param-name>avalancheHome</param-name>
-		<param-value>/home/grid/avl-test</param-value>
+		<param-value>D:\programming\java\SmartFrog\extras\avalanche\server</param-value>
 		<description>Path to Avalanche Home.</description>
 	</context-param>
 	<context-param>
@@ -62,7 +62,7 @@ For more information: www.smartfrog.org
 	</context-param>
 	<context-param>
 		<param-name>xmppServer</param-name>
-		<param-value>16.180.106.113</param-value>
+		<param-value>localhost</param-value>
 		<description>XMPP Server Address</description>
 	</context-param>
 	<context-param>

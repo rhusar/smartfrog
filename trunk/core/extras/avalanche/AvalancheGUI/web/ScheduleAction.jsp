@@ -24,7 +24,7 @@ For more information: www.smartfrog.org
 <%@ page import="java.util.*"%>
 <%@ page import="java.net.*"%>
    
-<%@ include file="InitBeans.jspjsp" %>
+<%@ include file="InitBeans.jsp" %>
 
 <%
     

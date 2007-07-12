@@ -173,7 +173,7 @@ setNextSubtitle("System Settings Page");
 }
 %>
 
-<form method="post" action="SaveSettings.jspjsp">
+<form method="post" action="SaveSettings.jsp">
 <table id='osTable' cellspacing="2" cellpadding="4" border="1" style="border-collapse: collapse" bordercolor="#00FFFF">
     <tbody>
         <tr>
