@@ -5,7 +5,7 @@
 \#include "org/smartfrog/services/ssh/sshExec.sf"
 \#include "org/smartfrog/sfcore/workflow/components.sf"
 
-#set( $avEventServer = "16.180.106.113" ) 
+#set( $avEventServer = "localhost" ) 
 
 sfConfig extends Parallel {
     asynchCreateChild true;
