@@ -344,7 +344,14 @@ public interface SmartFrogCoreKeys {
      * Value {@value}
      */
     String SF_TIME_START = "sfStartTime";
-    
+
+    /**
+     * Time this component was started
+     *
+     * Value {@value}
+     */
+    String SF_TIME_STARTED_AT = "sfStartedAtTime";
+
     /**
      * The language attribute, which can be set/found from the context.
      * {@value}
