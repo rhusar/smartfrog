@@ -138,11 +138,8 @@ public class BootStrap {
 						for( int j=0;j<transferModes.length;j++){
 							if( transferModes[j].getIsDefault() ){
 								transferType = transferModes[j].getType();
-/* see SFOS-268
-
 								username = transferModes[j].getUser();
 								password = transferModes[j].getPassword();
-*/
 							}
 						}
 					}
