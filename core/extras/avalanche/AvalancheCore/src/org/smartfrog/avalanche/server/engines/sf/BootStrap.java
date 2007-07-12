@@ -1,14 +1,14 @@
 /**
-(C) Copyright 1998-2007 Hewlett-Packard Development Company, LP
+ (C) Copyright 1998-2007 Hewlett-Packard Development Company, LP
 
-This library is free software; you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License as published by the Free Software Foundation; either version 2.1 of the License, or (at your option) any later version.
+ This library is free software; you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License as published by the Free Software Foundation; either version 2.1 of the License, or (at your option) any later version.
 
-This library is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for more details.
+ This library is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for more details.
 
-You should have received a copy of the GNU Lesser General Public License along with this library; if not, write to the Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ You should have received a copy of the GNU Lesser General Public License along with this library; if not, write to the Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-For more information: www.smartfrog.org
-*/
+ For more information: www.smartfrog.org
+ */
 /*
  * Created on Jul 26, 2005
  *
@@ -40,222 +40,196 @@ import java.util.HashMap;
 
 
 /**
- * Provides Host Ignition functionality ( Installs smartfrog on other nodes). Avalanche Server must be installed 
- * started before using this class. It uses Avalanche dayabase to get details of Hosts so the hosts must be added 
- * to Avalanche before ignition is attempted. 
+ * Provides Host Ignition functionality ( Installs smartfrog on other nodes). Avalanche Server must be installed
+ * started before using this class. It uses Avalanche dayabase to get details of Hosts so the hosts must be added
+ * to Avalanche before ignition is attempted.
+ *
  * @author sanjay, Jul 26, 2005
- * 
  */
 public class BootStrap {
-	protected AvalancheFactory factory ;
-	protected ServerSetup setup ;
-	protected String bootDir ;
-	protected String serverOS;
-	private static Log log = LogFactory.getLog(BootStrap.class);
-	
-	public static final String sfReleaseFileUnix = "smartfrog.tar.gz";
-	public static final String sfReleaseFileWindows = "smartfrog.zip";
-	
-	public static final String sfReleaseName = "smartfrog";
-	public static final String sfTemplate = "sfinstaller.vm";
-	public static final String sfWorkDir = "work";
-	
-	public static final String sfInstallLocationUnix = "." ; // create in user home by deault  
-	public static final String sfInstallLocationWindows = "c:\\" ;  // create in c:\\ by default
+    protected AvalancheFactory factory;
+    protected ServerSetup setup;
+    protected String bootDir;
+    protected String serverOS;
+    private static Log log = LogFactory.getLog(BootStrap.class);
+
+    public static final String sfReleaseFileUnix = "smartfrog.tar.gz";
+    public static final String sfReleaseFileWindows = "smartfrog.zip";
+
+    public static final String sfReleaseName = "smartfrog";
+    public static final String sfTemplate = "sfinstaller.vm";
+    public static final String sfWorkDir = "work";
+
+    public static final String sfInstallLocationUnix = "."; // create in user home by deault
+    public static final String sfInstallLocationWindows = "c:\\";  // create in c:\\ by default
     private static final String DEFAULT_EMAILTO = "";
     private static final String DEFAULT_EMAILFROM = "";
     private static final String DEFAULT_EMAILSERVER = "";
 
 
     public BootStrap(AvalancheFactory f, ServerSetup setup) {
-		this.factory = f ;
-		this.setup = setup;
-		//serverOS = factory.getAvalancheServerOS();
-		serverOS =System.getProperty("os.name");
-		System.out.println("OS===" + serverOS);
-		//if (serverOS.equals("windows")){
-		if (serverOS.startsWith("Windows") || serverOS.startsWith("windows")){
-			bootDir = factory.getAvalancheHome() + File.separator + File.separator + 
-						"smartfrog" + File.separator + File.separator +
-						"boot" ;
-		}else{
-			bootDir = factory.getAvalancheHome() + File.separator + 
-						"smartfrog" + File.separator + 
-						"boot" ;
-		}
-		
-	}
+        this.factory = f;
+        this.setup = setup;
+        //serverOS = factory.getAvalancheServerOS();
+        serverOS = System.getProperty("os.name");
+        System.out.println("OS===" + serverOS);
 
-	/**
-	 * Ignites a list of hosts. These hosts should exist in Avalanche database, this method
-	 * piicks up host properties and access details from Avalanche database and uses that information
-	 * to ignite the hosts. 
-	 * @param hosts
-	 * @throws HostIgnitionException
-	 */
-	public void ignite(String []hosts) throws HostIgnitionException{
-		try{
-			HostManager hostManager = factory.getHostManager();
-			
-			String templateFile = bootDir + java.io.File.separator +  sfTemplate; 
-			
-			String outDir = bootDir + java.io.File.separator + sfWorkDir ;
-			
-			String outputFile = outDir + File.separator  + "hostIgnition" + getDateTime() + ".sf";  
-			
-			String avalancheHome = null; 
+        bootDir = factory.getAvalancheHome() + File.separator +
+                "smartfrog" + File.separator +
+                "boot";
+    }
 
-			HashMap map = new HashMap();
-			for( int i=0;i<hosts.length;i++){
-				// create client adapter in XMPP server
-				setup.addClientAdapter(hosts[i]);
-				HostType h = hostManager.getHost(hosts[i]);
-				HostType.AccessModes am = h.getAccessModes();
-				
-				// setting default tyoes to ssh and scp
-				String accessType = "ssh";
-				
-				String username = h.getUser();
-				String password = h.getPassword(); 
+    /**
+     * Ignites a list of hosts. These hosts should exist in Avalanche database, this method
+     * piicks up host properties and access details from Avalanche database and uses that information
+     * to ignite the hosts.
+     *
+     * @param hosts
+     * @throws HostIgnitionException
+     */
+    public void ignite(String[] hosts) throws HostIgnitionException {
+        try {
+            HostManager hostManager = factory.getHostManager();
 
-				if( am != null ) {
-					AccessModeType []modes = am.getModeArray();
-					
-					if( null != modes ) {
-						for( int j=0;j<modes.length;j++){
-							if( modes[j].getIsDefault() ){
-								accessType = modes[j].getType();
-							}
-						}
-					}
-				}
-				String transferType = "scp";
-				HostType.TransferModes tm = h.getTransferModes();
-				if( null != tm ){
-					DataTransferModeType []transferModes = tm.getModeArray();
-					
-					if( null != transferModes ){
-						for( int j=0;j<transferModes.length;j++){
-							if( transferModes[j].getIsDefault() ){
-								transferType = transferModes[j].getType();
-								username = transferModes[j].getUser();
-								password = transferModes[j].getPassword();
-							}
-						}
-					}
-				}
-				
-				ArgumentType argType = h.getArguments();
-				ArgumentType.Argument[] args = argType.getArgumentArray();
-				String java_home = null ;
-				for(int j=0;j<args.length;j++){
-					if( args[j].getName().equals("JAVA_HOME")){
-						java_home = args[j].getValue();
-					}
-					if( args[j].getName().equals("AVALANCHE_HOME")){
-						avalancheHome = args[j].getValue();
-					}
-				}
-				
-				
-				String os = h.getPlatformSelector().getOs();
-				
-				if( os.equals("windows")){
-						avalancheHome = (null==avalancheHome)?sfInstallLocationWindows:avalancheHome ;  
-				}else{
-					avalancheHome = (null==avalancheHome)?sfInstallLocationUnix:avalancheHome ;
-				}
-				
-				Daemon d = null ;
-				// supporting only windows and unix now.
-				log.info("Host Ignition - " + hosts[i] + ", OS :" + os + "transferType : " + transferType 
-						+ ", AccessType : " + accessType + ", UserName" + username );
-				log.info("JAVA_HOME : " + java_home + ", AVALANCHE_HOME : " + avalancheHome );
-				
-				if(os.equals("windows") ){
-					//if (serverOS.equals("windows")){
-					if (serverOS.startsWith("Windows") || serverOS.startsWith("windows")){
-							d  = new Daemon(hosts[i], os, hosts[i], transferType, accessType, username, password, 
-								bootDir + File.separator + File.separator + sfReleaseFileWindows, 
-								null,
-                                    null,
-                                    null,
-                                    null,
-                                    null,
-                                    null,
-                                    null,
-                                    sfReleaseName,
-                                    java_home,
-                                    avalancheHome,
-                                    DEFAULT_EMAILTO, DEFAULT_EMAILFROM, DEFAULT_EMAILSERVER);
-					}else{	
-							d  = new Daemon(hosts[i], os, hosts[i], transferType, accessType, username, password, 
-								bootDir + File.separator + sfReleaseFileWindows, 
-								null, null, null, null, null, null, null, sfReleaseName, java_home,avalancheHome
-                                    , DEFAULT_EMAILTO, DEFAULT_EMAILFROM, DEFAULT_EMAILSERVER);
-					}
-				}else{
-					// all unixes are same
-					//if (serverOS.equals("windows")){
-					if (serverOS.startsWith("Windows") || serverOS.startsWith("windows")){
-							d  = new Daemon(hosts[i], os, hosts[i], transferType, accessType, username, password, 
-							bootDir + File.separator + File.separator + sfReleaseFileUnix, 
-							null, null, null, null, null, null, null, sfReleaseName, java_home,avalancheHome,
-                                    DEFAULT_EMAILTO, DEFAULT_EMAILFROM, DEFAULT_EMAILSERVER);
-					}else{
-							d  = new Daemon(hosts[i], os, hosts[i], transferType, accessType, username, password, 
-							bootDir + File.separator + sfReleaseFileUnix, 
-							null, null, null, null, null, null, null, sfReleaseName, java_home,avalancheHome,
-                                    DEFAULT_EMAILTO, DEFAULT_EMAILFROM, DEFAULT_EMAILSERVER);
-					}
-					
-				}
+            String templateFile = bootDir + java.io.File.separator + sfTemplate;
 
-				map.put(hosts[i], d);
-			}
-			String logFileDir= null;
-			//if (serverOS.equals("windows")){
-			if (serverOS.startsWith("Windows") || serverOS.startsWith("windows")){
-				logFileDir = factory.getAvalancheHome() + File.separator + File.separator + "logs"+ File.separator ;
-			} else{
-				logFileDir = factory.getAvalancheHome() + File.separator +  "logs" ;
-			}			
-			
-			// to read from map and write to data. all and then create a description
-			log.info("TemplateGen Map : "+ map);
-			TemplateGen.createTemplate(map, templateFile, outputFile, false, false, null, logFileDir);
+            String outDir = bootDir + java.io.File.separator + sfWorkDir;
 
-			File of = new File(outputFile);
-			if( !of.exists() ){
-				throw new HostIgnitionException("Template creation failed ! File :" + outputFile);
-			}
-			
+            String outputFile = outDir + File.separator + "hostIgnition" + getDateTime() + ".sf";
 
-			SmartfrogAdapter adapter = null ;
-			String sfHome = factory.getAvalancheHome() + File.separator + "smartfrog" + 
-								File.separator  + "dist";
-			adapter = new SmartFrogAdapterImpl(sfHome);
-			
-			SmartFrogAdapterImpl.setLogFilePath(logFileDir);
+            String avalancheHome = null;
 
-			HashMap attrMap = new HashMap();
-			// run the description on local host for remote deployments.
-			log.info("SF : " + outputFile);
-			adapter.submit(outputFile, attrMap, new String[]{"localhost"});
-			
-			java.io.File f = new File (outputFile) ; 
-			//if( !f.delete() ){
-			//	log.error("Temporary smartfrog HostIgnition File delete failed");
-			//}
-		}catch(Exception e){
-			log.error(e);
-			throw new HostIgnitionException(e);
-		}
-	}
-	private String getDateTime(){
-		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd_HH_mm_ss");
+            HashMap map = new HashMap();
+            for (int i = 0; i < hosts.length; i++) {
+                // create client adapter in XMPP server
+                setup.addClientAdapter(hosts[i]);
+                HostType h = hostManager.getHost(hosts[i]);
+                HostType.AccessModes am = h.getAccessModes();
+
+                // setting default tyoes to ssh and scp
+                String accessType = "ssh";
+
+                String username = h.getUser();
+                String password = h.getPassword();
+
+                if (am != null) {
+                    AccessModeType[] modes = am.getModeArray();
+
+                    if (null != modes) {
+                        for (int j = 0; j < modes.length; j++) {
+                            if (modes[j].getIsDefault()) {
+                                accessType = modes[j].getType();
+                                break;
+                            }
+                        }
+                    }
+                }
+                String transferType = "scp";
+                HostType.TransferModes tm = h.getTransferModes();
+                if (null != tm) {
+                    DataTransferModeType[] transferModes = tm.getModeArray();
+
+                    if (null != transferModes) {
+                        for (int j = 0; j < transferModes.length; j++) {
+                            if (transferModes[j].getIsDefault()) {
+                                transferType = transferModes[j].getType();
+                                username = transferModes[j].getUser();
+                                password = transferModes[j].getPassword();
+                                break;
+                            }
+                        }
+                    }
+                }
+
+                ArgumentType argType = h.getArguments();
+                ArgumentType.Argument[] args = argType.getArgumentArray();
+                String java_home = null;
+                for (int j = 0; j < args.length; j++) {
+                    if (args[j].getName().equals("JAVA_HOME")) {
+                        java_home = args[j].getValue();
+                    }
+                    if (args[j].getName().equals("AVALANCHE_HOME")) {
+                        avalancheHome = args[j].getValue();
+                    }
+                }
+
+                String os = h.getPlatformSelector().getOs();
+
+                // if the install location hasn't been set use the default locations
+                if (null == avalancheHome)
+                    avalancheHome = ( os.equals("windows") ? sfInstallLocationWindows : sfInstallLocationUnix );
+
+                Daemon d = null;
+                // supporting only windows and unix now.
+                log.info("Host Ignition - " + hosts[i] + ", OS : " + os + ", transferType : " + transferType
+                        + ", AccessType : " + accessType + ", UserName : " + username);
+                log.info("JAVA_HOME : " + java_home + ", AVALANCHE_HOME : " + avalancheHome);
+
+                // decide about the filename, depending on the target os
+                String strLocalfile1 = bootDir + File.separator + (os.equals("windows") ? sfReleaseFileWindows : sfReleaseFileUnix);
+
+                d = new Daemon(hosts[i],                // name
+                                os,                     // os
+                                hosts[i],               // host
+                                transferType,           // transfer type
+                                accessType,             // access type
+                                username,               // username
+                                password,               // password
+                                strLocalfile1,          // localfile1
+                                null,                   // localfile2
+                                null,                   // localfile3
+                                null,                   // keyfile
+                                null,                   // secproperties
+                                null,                   // smartfrogjar
+                                null,                   // servicesjar
+                                null,                   // examplesjar
+                                sfReleaseName,          // releasename
+                                java_home,              // javahome
+                                avalancheHome,          // installdir
+                                DEFAULT_EMAILTO,        // emailto
+                                DEFAULT_EMAILFROM,      // emailfrom
+                                DEFAULT_EMAILSERVER);   // emailserver
+
+                map.put(hosts[i], d);
+            }
+            String logFileDir = factory.getAvalancheHome() + File.separator + "logs";
+
+            // to read from map and write to data. all and then create a description
+            log.info("TemplateGen Map : " + map);
+            TemplateGen.createTemplate(map, templateFile, outputFile, false, false, null, logFileDir);
+
+            File of = new File(outputFile);
+            if (!of.exists()) {
+                throw new HostIgnitionException("Template creation failed ! File :" + outputFile);
+            }
+
+
+            SmartfrogAdapter adapter = null;
+            String sfHome = factory.getAvalancheHome() + File.separator + "smartfrog" +
+                    File.separator + "dist";
+            adapter = new SmartFrogAdapterImpl(sfHome);
+
+            SmartFrogAdapterImpl.setLogFilePath(logFileDir);
+
+            HashMap attrMap = new HashMap();
+            // run the description on local host for remote deployments.
+            log.info("SF : " + outputFile);
+            adapter.submit(outputFile, attrMap, new String[]{"localhost"});
+
+            java.io.File f = new File(outputFile);
+            //if( !f.delete() ){
+            //	log.error("Temporary smartfrog HostIgnition File delete failed");
+            //}
+        } catch (Exception e) {
+            log.error(e);
+            throw new HostIgnitionException(e);
+        }
+    }
+
+    private String getDateTime() {
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd_HH_mm_ss");
         java.util.Date date = new java.util.Date();
         return dateFormat.format(date);
-	}
-	
+    }
+
 }
