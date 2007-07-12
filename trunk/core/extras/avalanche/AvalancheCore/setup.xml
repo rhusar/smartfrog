@@ -274,7 +274,7 @@
 		<mkdir dir="${tomcat.home}/webapps/AvalancheGUI/WEB-INF/lib"/>
 		<!-- COPY UI files to Tomcat-->
 		<copy todir="${tomcat.home}/webapps/AvalancheGUI">
-      			<fileset dir="${avalanche.root}/AvalancheGUI"/>
+      			<fileset dir="${avalanche.root}/AvalancheGUI/web"/>
 		</copy>
 		<!--Copy smartFrog jars-->
 		<copy todir="${tomcat.home}/webapps/AvalancheGUI/WEB-INF/lib">
