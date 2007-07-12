@@ -26,7 +26,7 @@ For more information: www.smartfrog.org
 <%@ page import="org.smartfrog.avalanche.settings.sfConfig.*"%>
 <%@ page import="java.util.*"%>
 
-<%@ include file="InitBeans.jspjsp" %>
+<%@ include file="InitBeans.jsp" %>
 
 <%
     String errMsg = null; 
@@ -112,7 +112,7 @@ setNextSubtitle("Action Arguments Page");
     );
   </script>
 </div>
-<%@ include file="Message.jspjsp" %>
+<%@ include file="Message.jsp" %>
 
 <!-- Actual Body starts here -->
 <form action="SaveSFAction.jsp?pageAction=setActionArgs&&title=<%=title%>"

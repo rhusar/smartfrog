@@ -70,7 +70,7 @@ setNextSubtitle("Deployment Engines Page");
   </script>
 </div>
 
-<%@ include file="Message.jspjsp" %>
+<%@ include file="Message.jsp" %>
 
 <!-- Actual Body starts here -->
 <table border="0" cellpadding="0" cellspacing="0" class="dataTable" id="sfSettingsTable">

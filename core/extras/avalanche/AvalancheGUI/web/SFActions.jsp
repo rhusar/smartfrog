@@ -27,7 +27,7 @@ For more information: www.smartfrog.org
 <%@	page import="org.smartfrog.avalanche.settings.xdefault.*"%>
 <%@	page import="org.smartfrog.avalanche.settings.sfConfig.*"%>
 
-<%@ include file="InitBeans.jspjsp" %>
+<%@ include file="InitBeans.jsp" %>
 
 <%
   	String errMsg = null; 
@@ -46,7 +46,7 @@ For more information: www.smartfrog.org
 <!DOCTYPE HTML PUBLIC "-//w3c//dtd html 4.0 transitional//en">
 <html>
 <head>
-<%@ include file="common.jspjsp" %>
+<%@ include file="common.jsp" %>
 <style type="text/css">
 a{
 text-decoration:none;
@@ -88,7 +88,7 @@ setNextSubtitle("Supported Actions Page");
     </script>
 </div>
 
-<%@ include file="Message.jspjsp" %>
+<%@ include file="Message.jsp" %>
 
 <!-- Actual Body starts here -->
 <table  border="0" cellpadding="0" cellspacing="0" class="dataTable tableHasCheckboxes" id="actionListTable">

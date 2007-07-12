@@ -26,7 +26,7 @@ For more information: www.smartfrog.org
 <%@	page import="org.smartfrog.avalanche.server.*"%>
 <%@	page import="org.smartfrog.avalanche.core.host.*"%>
   
-<%@ include file="InitBeans.jspjsp" %>
+<%@ include file="InitBeans.jsp" %>
 
 <% 
   	String errMsg = null; 
@@ -64,7 +64,7 @@ For more information: www.smartfrog.org
 <!DOCTYPE HTML PUBLIC "-//w3c//dtd html 4.0 transitional//en">
 <html>
 <head>
-<%@ include file="common.jspjsp" %>
+<%@ include file="common.jsp" %>
 </head>
 <script language="javascript">
 
@@ -93,7 +93,7 @@ setNextSubtitle("Host Basic Settings Page");
 <%	if( null != hostId ){ %>
 <form id='addHostFrm' name='addHostFrm' method='post' action='SaveHost1.jsp?action=bs&&next=am&&hostId=<%=hostId %>'>
 <%}     else{ %>
-<form id='addHostFrm' name='addHostFrm' method='post' action='SaveHost1.jspjsp?action=bs&&next=am'>
+<form id='addHostFrm' name='addHostFrm' method='post' action='SaveHost1.jsp?action=bs&&next=am'>
     <%      } %>
 
 <!-- This is the page menu -->

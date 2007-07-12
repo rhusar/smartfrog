@@ -24,7 +24,7 @@ For more information: www.smartfrog.org
 <html>
 <head>
 <title>Avalanche</title>
-<%@ include file="common.jspjsp" %>
+<%@ include file="common.jsp" %>
     <script language="javascript">
         function setBody(url) {
             document.getElementById('bodyPaneFrame').src = url;
@@ -113,7 +113,7 @@ For more information: www.smartfrog.org
 </iframe>
 -->
 
-<%@ include file="SidePane.jspjsp" %>
+<%@ include file="SidePane.jsp" %>
 <!--
 	width="84%" height="90%"
 	marginwidth="1" marginheight="1"

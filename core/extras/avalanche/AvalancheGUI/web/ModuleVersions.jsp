@@ -72,7 +72,7 @@ setNextSubtitle("Module Versions Page");
 oneVoiceWritePageMenu("ModuleVersions","header");
 </script>
 
-<%@ include file="Message.jspjsp" %>
+<%@ include file="Message.jsp" %>
 
 <!-- Actual Body starts here -->
 <br/><br/>

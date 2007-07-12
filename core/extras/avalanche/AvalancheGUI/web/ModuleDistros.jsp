@@ -77,7 +77,7 @@ setNextSubtitle("Module Distributions Page");
 oneVoiceWritePageMenu("ModuleDistros","header");
 </script>
 
-<%@ include file="Message.jspjsp" %>
+<%@ include file="Message.jsp" %>
 <!-- Actual Body starts here -->
 <div align="center">
 <br/><br/>

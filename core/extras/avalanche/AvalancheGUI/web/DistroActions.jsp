@@ -26,7 +26,7 @@ For more information: www.smartfrog.org
 <%@	page import="org.smartfrog.avalanche.settings.sfConfig.*"%>
 <%@	page import="org.smartfrog.avalanche.settings.xdefault.*"%>
   	
-<%@ include file="InitBeans.jspjsp" %>
+<%@ include file="InitBeans.jsp" %>
 
 <%
   	String errMsg = null; 
@@ -175,7 +175,7 @@ For more information: www.smartfrog.org
 );
 </script>
 
-<%@ include file="Message.jspjsp" %>
+<%@ include file="Message.jsp" %>
 <!-- Actual Body starts here -->
 <br/>
 <center>

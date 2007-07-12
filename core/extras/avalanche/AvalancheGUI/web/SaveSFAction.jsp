@@ -27,7 +27,7 @@ For more information: www.smartfrog.org
 <%@	page import="org.smartfrog.avalanche.settings.xdefault.*"%>
 <%@	page import="org.smartfrog.avalanche.settings.sfConfig.*"%>
 
-<%@ include file="InitBeans.jspjsp" %>
+<%@ include file="InitBeans.jsp" %>
 <%
     String errMsg = null; 
     

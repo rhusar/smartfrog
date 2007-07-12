@@ -27,7 +27,7 @@ For more information: www.smartfrog.org
 <%@	page import="org.smartfrog.avalanche.server.modules.*"%>
 <%@	page import="org.smartfrog.avalanche.core.host.*"%>
 
-<%@ include file="InitBeans.jspjsp" %>
+<%@ include file="InitBeans.jsp" %>
 
 <% 
   	String errMsg = null; 
@@ -82,7 +82,7 @@ For more information: www.smartfrog.org
 <!DOCTYPE HTML PUBLIC "-//w3c//dtd html 4.0 transitional//en">
 <html>
 <head>
-<%@ include file="common.jspjsp" %>
+<%@ include file="common.jsp" %>
 </head>
 
 <script language="javascript">
@@ -109,7 +109,7 @@ For more information: www.smartfrog.org
     setNextSubtitle("List Modules Page");
 </script>
 
-<form id="moduleListFrm" name="moduleListFrm" method="post" action="SaveModule.jspjsp">
+<form id="moduleListFrm" name="moduleListFrm" method="post" action="SaveModule.jsp">
 
     <!-- This is the page menu -->
     <br/>
@@ -123,7 +123,7 @@ For more information: www.smartfrog.org
                 </script>
             </div>
 
-            <%@ include file="Message.jspjsp" %>
+            <%@ include file="Message.jsp" %>
 
 <!-- Actual Body starts here -->
 <table border="0" cellpadding="0" cellspacing="0" class="dataTable tableHasCheckboxes" id="moduleListTable">
@@ -205,7 +205,7 @@ For more information: www.smartfrog.org
 <div id="addModuleDiv" style="display:none;">
     <center>
 
-        <form name="addModFrm" method="post" action="SaveModule.jspjsp?pageAction=addMod">
+        <form name="addModFrm" method="post" action="SaveModule.jsp?pageAction=addMod">
             <table id="hostListTable" border="0" cellpadding="0" cellspacing="0" class="dataTable">
                 <caption>New Module</caption>
                 <tbody>

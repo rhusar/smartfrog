@@ -24,7 +24,7 @@ For more information: www.smartfrog.org
 <html>
 <head>
 <title>Side Panel</title>
-<%@ include file="common.jspjsp" %>
+<%@ include file="common.jsp" %>
 
 </head> 
 

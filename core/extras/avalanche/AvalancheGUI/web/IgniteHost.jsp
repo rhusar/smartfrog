@@ -24,7 +24,7 @@ For more information: www.smartfrog.org
 <%@	page import="org.smartfrog.avalanche.server.engines.sf.*"%>
 <%@	page import="org.smartfrog.avalanche.server.engines.*"%>
 
-<%@ include file="InitBeans.jspjsp" %>
+<%@ include file="InitBeans.jsp" %>
 
 <%
   	HostManager manager = factory.getHostManager();
