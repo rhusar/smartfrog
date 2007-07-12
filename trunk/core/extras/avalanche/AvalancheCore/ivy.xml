@@ -80,7 +80,7 @@
         conf="compile,runtime->default"/>
     <!--pulls in log4J and commons-logging-->
     <dependency org="org.smartfrog"
-        name="sf-logging"
+        name="sf-loggingservices"
         rev="latest.integration"
         conf="runtime->default"/>
     <!--adds commons.net-->
@@ -114,11 +114,18 @@
         rev="${xmlbeans.version}"
         conf="compile,redist->default"/>
 
-    <dependency org="org.apache.xalan"
+    <dependency org="xalan"
         name="xalan"
         rev="${xalan.version}"
         conf="compile,redist->default"/>
-  </dependencies>
+  <dependency org="org.sourceforge.mom4j"
+      name="mom4j-client"
+      rev="${mom4j.version}"
+      conf="compile,redist->default"/>
+  <dependency org="org.sourceforge.mom4j"
+      name="mom4j"
+      rev="${mom4j.version}"
+      conf="compile,redist->default"/>
 
   <!--
     <dependency org="org.apache"
@@ -144,12 +151,6 @@
   je.jar
 
   -->
-<!--  <dependency org="org.sourceforge.mom4j"
-      name="mom4j-client"
-      rev="${mom4j.version}"
-      conf="compile,redist->default"/>
-  <dependency org="org.sourceforge.mom4j"
-      name="mom4j"
-      rev="${mom4j.version}"
-      conf="compile,redist->default"/>-->
+  </dependencies>
+
 </ivy-module>
