@@ -264,7 +264,7 @@ want izpack to see it, double escape the $$ symbol.-->
       <executable stage="never" targetfile="$INSTALL_PATH/bin/sfDetachAndTerminate" failure="warn"/>
       <executable stage="never" targetfile="$INSTALL_PATH/bin/sfDiag" failure="warn"/>
       <executable stage="never" targetfile="$INSTALL_PATH/bin/sfDiagnostics" failure="warn"/>
-      <executable stage="never" targetfile="$INSTALL_PATH/bin/sfGui" failure="warn"/>
+      <!--<executable stage="never" targetfile="$INSTALL_PATH/bin/sfGui" failure="warn"/>-->
       <executable stage="never" targetfile="$INSTALL_PATH/bin/sfParse" failure="warn"/>
       <executable stage="never" targetfile="$INSTALL_PATH/bin/sfPing" failure="warn"/>
       <executable stage="never" targetfile="$INSTALL_PATH/bin/sfRun" failure="warn"/>
@@ -307,28 +307,6 @@ SmartFrog to deploy complex systems.
           targetdir="$INSTALL_PATH/source"
           unpack="true"/>
     </pack>
-
-    <!--doesnt automatically turn everything on, the way I'd hoped-->
-    <!--
-    <pack name="Everything" required="no" preselected="no">
-      <description>
-Select this if you want to install all the SmartFrog components in the distribution
-      </description>
-      <depends packname="Ant"/>
-      <depends packname="Anubis"/>
-      <depends packname="Database"/>
-      <depends packname="JMX"/>
-      <depends packname="Logging"/>
-      <depends packname="Networking"/>
-      <depends packname="Quartz"/>
-      <depends packname="Scripting"/>
-      <depends packname="xunit"/>
-      <depends packname="JUnit"/>
-      <depends packname="WWW"/>
-      <depends packname="XML"/>
-      <depends packname="XMPP"/>
-    </pack>-->
-
 
     <pack name="Ant" required="no" preselected="no">
       <description>
@@ -639,7 +617,7 @@ Select this if you want to install all the SmartFrog components in the distribut
       <file src="ivy/lib/package-www/sf-www-documentation-${smartfrog.version}.zip"
           targetdir="$INSTALL_PATH"
           unpack="true"/>
-      <file src="ivy/lib/package-www/sf-tomcat-${smartfrog.version}.jar"
+<!--      <file src="ivy/lib/package-www/sf-tomcat-${smartfrog.version}.jar"
           targetdir="$INSTALL_PATH/lib"
           />
       <file src="ivy/lib/package-www/sf-tomcat-javadocs-${smartfrog.version}.zip"
@@ -647,17 +625,17 @@ Select this if you want to install all the SmartFrog components in the distribut
           unpack="true"/>
       <file src="ivy/lib/package-www/sf-tomcat-documentation-${smartfrog.version}.zip"
           targetdir="$INSTALL_PATH"
-          unpack="true"/>
+          unpack="true"/>-->
 
       <file src="ivy/lib/package-www/sf-jetty-${smartfrog.version}.jar"
           targetdir="$INSTALL_PATH/lib"
           />
-      <file src="ivy/lib/package-www/commons-httpclient-${commons-httpclient.version}.jar"
+<!--      <file src="ivy/lib/package-www/commons-httpclient-${commons-httpclient.version}.jar"
           targetdir="$INSTALL_PATH/lib"
           />
       <file src="ivy/lib/package-www/commons-codec-${commons-codec.version}.jar"
           targetdir="$INSTALL_PATH/lib"
-          />
+          />-->
       <file src="ivy/lib/package-www/servlet-api-${servletapi.version}.jar"
           targetdir="$INSTALL_PATH/lib"
           />

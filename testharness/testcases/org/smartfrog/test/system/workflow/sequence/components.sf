@@ -23,3 +23,4 @@ For more information: www.smartfrog.org
 #include "/org/smartfrog/sfcore/workflow/combinators/sequence.sf"
 #include "/org/smartfrog/services/filesystem/touchfile.sf"
 #include "/org/smartfrog/sfcore/workflow/combinators/delay.sf"
+#include "/org/smartfrog/services/assertions/history/components.sf"

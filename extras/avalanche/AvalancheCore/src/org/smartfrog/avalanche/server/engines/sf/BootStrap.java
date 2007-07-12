@@ -15,22 +15,28 @@ For more information: www.smartfrog.org
  */
 package org.smartfrog.avalanche.server.engines.sf;
 
-import org.smartfrog.avalanche.server.* ;
-import org.smartfrog.avalanche.core.host.*;
+import org.smartfrog.avalanche.core.host.AccessModeType;
+import org.smartfrog.avalanche.core.host.ArgumentType;
+import org.smartfrog.avalanche.core.host.DataTransferModeType;
+import org.smartfrog.avalanche.core.host.HostType;
+import org.smartfrog.avalanche.server.AvalancheFactory;
+import org.smartfrog.avalanche.server.HostManager;
+import org.smartfrog.avalanche.server.ServerSetup;
+import org.smartfrog.avalanche.server.engines.HostIgnitionException;
+import org.smartfrog.services.sfinstaller.Daemon;
+import org.smartfrog.services.sfinstaller.TemplateGen;
+import org.smartfrog.services.sfinterface.SmartFrogAdapterImpl;
+import org.smartfrog.services.sfinterface.SmartfrogAdapter;
+import org.smartfrog.sfcore.logging.Log;
+import org.smartfrog.sfcore.logging.LogFactory;
 
 import java.io.File;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
-import java.util.Map;
 
-import org.smartfrog.services.sfinstaller.Daemon;
-import org.smartfrog.services.sfinstaller.TemplateGen;
-import org.smartfrog.services.sfinterface.*;
-import org.smartfrog.avalanche.server.engines.HostIgnitionException;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+//import org.apache.commons.logging.Log;
+//import org.apache.commons.logging.LogFactory;
 
 
 /**
@@ -55,10 +61,13 @@ public class BootStrap {
 	public static final String sfWorkDir = "work";
 	
 	public static final String sfInstallLocationUnix = "." ; // create in user home by deault  
-	public static final String sfInstallLocationWindows = "c:\\" ;  // create in c:\\ by default 
- 
+	public static final String sfInstallLocationWindows = "c:\\" ;  // create in c:\\ by default
+    private static final String DEFAULT_EMAILTO = "";
+    private static final String DEFAULT_EMAILFROM = "";
+    private static final String DEFAULT_EMAILSERVER = "";
 
-	public BootStrap(AvalancheFactory f, ServerSetup setup) {
+
+    public BootStrap(AvalancheFactory f, ServerSetup setup) {
 		this.factory = f ;
 		this.setup = setup;
 		//serverOS = factory.getAvalancheServerOS();
@@ -177,12 +186,13 @@ public class BootStrap {
                                     null,
                                     sfReleaseName,
                                     java_home,
-                                    avalancheHome,null,null,null);
+                                    avalancheHome,
+                                    DEFAULT_EMAILTO, DEFAULT_EMAILFROM, DEFAULT_EMAILSERVER);
 					}else{	
 							d  = new Daemon(hosts[i], os, hosts[i], transferType, accessType, username, password, 
 								bootDir + File.separator + sfReleaseFileWindows, 
 								null, null, null, null, null, null, null, sfReleaseName, java_home,avalancheHome
-                                    , null, null, null);
+                                    , DEFAULT_EMAILTO, DEFAULT_EMAILFROM, DEFAULT_EMAILSERVER);
 					}
 				}else{
 					// all unixes are same
@@ -190,13 +200,13 @@ public class BootStrap {
 					if (serverOS.startsWith("Windows") || serverOS.startsWith("windows")){
 							d  = new Daemon(hosts[i], os, hosts[i], transferType, accessType, username, password, 
 							bootDir + File.separator + File.separator + sfReleaseFileUnix, 
-							null, null, null, null, null, null, null, sfReleaseName, java_home,avalancheHome
-                                    , null, null, null);
+							null, null, null, null, null, null, null, sfReleaseName, java_home,avalancheHome,
+                                    DEFAULT_EMAILTO, DEFAULT_EMAILFROM, DEFAULT_EMAILSERVER);
 					}else{
 							d  = new Daemon(hosts[i], os, hosts[i], transferType, accessType, username, password, 
 							bootDir + File.separator + sfReleaseFileUnix, 
-							null, null, null, null, null, null, null, sfReleaseName, java_home,avalancheHome
-                                    , null, null, null);
+							null, null, null, null, null, null, null, sfReleaseName, java_home,avalancheHome,
+                                    DEFAULT_EMAILTO, DEFAULT_EMAILFROM, DEFAULT_EMAILSERVER);
 					}
 					
 				}

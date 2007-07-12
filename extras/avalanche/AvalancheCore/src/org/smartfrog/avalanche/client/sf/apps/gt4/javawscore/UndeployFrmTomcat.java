@@ -17,21 +17,19 @@ For more information: www.smartfrog.org
  */
 package org.smartfrog.avalanche.client.sf.apps.gt4.javawscore;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.TransformerException;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.smartfrog.avalanche.client.sf.apps.gt4.javawscore.utils.EditXML;
+import org.smartfrog.avalanche.client.sf.disk.DiskUtils;
+import org.smartfrog.avalanche.client.sf.exec.simple.StartComponent;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 
-import org.smartfrog.avalanche.client.sf.disk.DiskUtils;
-import org.smartfrog.avalanche.client.sf.exec.simple.StartComponent;
-import org.smartfrog.avalanche.client.sf.apps.gt4.javawscore.utils.EditXML;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.TransformerException;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 
 /**
  * @author sandya

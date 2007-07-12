@@ -11,22 +11,18 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.avalanche.client.sf.test;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.rmi.RemoteException;
-
-import org.smartfrog.services.anubis.locator.AnubisLocator;
-import org.smartfrog.services.anubis.locator.AnubisProvider;
-import org.smartfrog.sfcore.prim.Prim;
-import org.smartfrog.sfcore.prim.PrimImpl;
-import org.smartfrog.sfcore.prim.TerminationRecord;
-
-import org.smartfrog.sfcore.common.SmartFrogException;
-
 import org.smartfrog.avalanche.client.sf.anubis.SFModuleStateManager;
 import org.smartfrog.avalanche.shared.MonitoringConstants;
 import org.smartfrog.avalanche.shared.MonitoringEvent;
 import org.smartfrog.avalanche.shared.MonitoringEventDefaultImpl;
+import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.prim.Prim;
+import org.smartfrog.sfcore.prim.PrimImpl;
+import org.smartfrog.sfcore.prim.TerminationRecord;
+
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.rmi.RemoteException;
 
 
 /**

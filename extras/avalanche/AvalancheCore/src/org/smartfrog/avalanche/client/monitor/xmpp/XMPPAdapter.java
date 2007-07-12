@@ -18,7 +18,6 @@ import org.jivesoftware.smack.SSLXMPPConnection;
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.packet.Message;
-
 import org.smartfrog.avalanche.shared.MonitoringEvent;
 import org.smartfrog.avalanche.shared.XMPPEventExtension;
 

@@ -216,11 +216,11 @@
         changing="true"
         rev="${ivy.smartfrog.version}"
         conf="package-www->master,redist,documentation"/>
-    <dependency org="org.smartfrog"
+<!--    <dependency org="org.smartfrog"
         name="sf-tomcat"
         changing="true"
         rev="${ivy.smartfrog.version}"
-        conf="package-www->master,redist,documentation"/>
+        conf="package-www->master,redist,documentation"/>-->
     <dependency org="org.smartfrog"
         name="sf-jetty"
         changing="true"

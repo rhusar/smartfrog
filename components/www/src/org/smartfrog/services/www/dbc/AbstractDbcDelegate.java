@@ -27,21 +27,26 @@ import org.smartfrog.sfcore.common.SmartFrogLivenessException;
 import org.smartfrog.sfcore.prim.Prim;
 
 import java.io.File;
-import java.io.IOException;
 import java.rmi.RemoteException;
 
 /**
- * created 19-Jun-2006 16:43:01
+ * This is the base class for all deploy by copy delegates.
+ * It deploys by copying in its start() operation. This is not a Prim derivative;
+ * it is a simple POJO that implements {@link ApplicationServerContext}
+ * Created 19-Jun-2006 16:43:01
  */
 
 public abstract class AbstractDbcDelegate implements ApplicationServerContext {
 
-    private File sourceFile;
-    private File destDir;
-    private File destFile;
     private DeployByCopyServerImpl server;
     private Prim declaration;
+    private QueuedFile operation;
 
+    /**
+     * Bind to a server, taking in a reference to the (possibly remote) owner interface)
+     * @param server owner server
+     * @param owner owner as a Prim interface.
+     */
     public AbstractDbcDelegate(DeployByCopyServerImpl server, Prim owner) {
         this.server = server;
         this.declaration = owner;
@@ -51,11 +56,28 @@ public abstract class AbstractDbcDelegate implements ApplicationServerContext {
         return declaration;
     }
 
+    /**
+     * Get the extension of this artifact.
+     * @return something like ".ear"
+     */
     public abstract String getExtension();
 
+    /**
+     * Base class deploy is a no-op.
+     * @throws SmartFrogException subclasses may throw this
+     * @throws RemoteException subclasses may throw this
+     */
     public void deploy() throws SmartFrogException, RemoteException {
     }
 
+    /**
+     * Deploy by determining the source file, and doing a blocking copy.
+     * If the source file is missing, A {@link SmartFrogDeploymentException} with
+     * text {@link #ERROR_FILE_NOT_FOUND} is thrown. IOExceptions are passed on
+     * nested inside a {@link SmartFrogDeploymentException}.
+     * @throws SmartFrogException if the deployment failed
+     * @throws RemoteException for network problems.
+     */
     public void start() throws SmartFrogException, RemoteException {
         String source =
                 FileSystem.lookupAbsolutePath(getDeclaration(),
@@ -65,11 +87,7 @@ public abstract class AbstractDbcDelegate implements ApplicationServerContext {
                         true,
                         null);
         //sanity check
-        sourceFile = new File(source);
-        if (!sourceFile.exists()) {
-            throw new SmartFrogDeploymentException(ERROR_FILE_NOT_FOUND +
-                    sourceFile);
-        }
+        File sourceFile = new File(source);
         String filename = sourceFile.getName();
         if (filename.endsWith(getExtension())) {
             filename = filename.substring(0, filename.length() - getExtension().length());
@@ -81,36 +99,51 @@ public abstract class AbstractDbcDelegate implements ApplicationServerContext {
         if (contextPath.startsWith("/")) {
             contextPath = contextPath.substring(1);
         }
-        String absolutePath = "/" + contextPath;
+        String absolutePath = '/' + contextPath;
         getDeclaration().sfReplaceAttribute(ATTR_ABSOLUTE_PATH, absolutePath);
 
         //create the full extension now.
         filename = contextPath + getExtension();
-        //do nothing
-        destDir = server.getDestDir();
-        destFile = new File(destDir, filename);
-        server.sfLog().info("Deploying "
-                +sourceFile.getAbsolutePath()
-                +" to "
-                +destFile.getAbsolutePath());
-        try {
-            FileSystem.fCopy(sourceFile, destFile);
-        } catch (IOException e) {
-            throw SmartFrogDeploymentException.forward(e);
+
+        //queue/execute the operation.
+        operation = server.queueCopy(sourceFile, filename);
+        pingOperation();
+    }
+
+    /**
+     * Poll for the completed state of the operation
+     * @throws SmartFrogException
+     */
+    protected void pingOperation() throws SmartFrogException {
+        if (operation != null) {
+            operation.ping();
         }
     }
 
+    /**
+     * Terminate by deleting the destination file. If it cannot be deleted
+     * (i.e. the file is locked), we queue a {@link File#deleteOnExit()} operation,
+     * which <i>may</i> delete it later.
+     * @throws RemoteException  subclasses may throw this
+     * @throws SmartFrogException subclasses may throw this
+     */
     public void terminate() throws RemoteException, SmartFrogException {
         //delete the destination file
-        server.sfLog().info("undeploying "+destFile);
-        if (destFile != null && destFile.exists() && !destFile.delete()) {
-            destFile.deleteOnExit();
-        }
+        server.sfLog().info("undeploying "+operation);
+        operation.deleteDestFile();
     }
 
+    /**
+     * Ping operation checks that the destination file exists
+     * @throws SmartFrogLivenessException if the destination file is absent
+     * @throws RemoteException subclasses may throw this
+     */
     public void ping() throws SmartFrogLivenessException, RemoteException {
-        if (!destFile.exists()) {
-            throw new SmartFrogLivenessException("Deployed File " + destFile + " has disappeared");
+        try {
+            pingOperation();
+        } catch (SmartFrogException e) {
+            throw (SmartFrogLivenessException)
+                    SmartFrogLivenessException.forward(e);
         }
     }
 }

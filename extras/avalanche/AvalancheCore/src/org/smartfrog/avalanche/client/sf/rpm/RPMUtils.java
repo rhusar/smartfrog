@@ -17,15 +17,13 @@ For more information: www.smartfrog.org
  */
 package org.smartfrog.avalanche.client.sf.rpm;
 
-import java.lang.Runtime;
-import java.lang.Process;
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.io.File;
-import java.io.IOException;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStreamReader;
 
 /**
  * @author sandya
@@ -117,9 +115,11 @@ public class RPMUtils {
         	return false;
         }
         */
-        
+
+        // TODO: optimize this useless if-block  SFOS-222 
         String command = "rpm -i ";
-		if (installOptions.length() != 0) 
+		//if (installOptions.length() != 0) 
+		if (installOptions != null) 
 			command = "rpm -i " + installOptions;
 		
 		String cmd = command + " " + rpmPackage;		

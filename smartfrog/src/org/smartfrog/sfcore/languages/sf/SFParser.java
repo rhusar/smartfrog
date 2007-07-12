@@ -19,6 +19,7 @@ For more information: www.smartfrog.org
 */
 
 package org.smartfrog.sfcore.languages.sf;
+import java.io.Reader;
 
 import org.smartfrog.SFSystem;
 import org.smartfrog.sfcore.common.*;
@@ -167,20 +168,20 @@ public class SFParser implements StreamLanguageParser {
 
 
    /**
-    *  Parse an input stream. Creates a DefaultParser and a root component
+    *  Parse a Reader. Creates a DefaultParser and a root component
     *  description and uses the Attributes rule in the DefaultParser to fill in
     *  the root. Inlcudes are handled by the given include handler.
     *
-    *@param  is                      input stream to parse
+    *@param  reader                  reader to parse
     *@param  handler                 include handler
     *
     *@return                         root description with parsed attributes
     *@exception  SmartFrogParseException  failure while parsing
     */
-   public Phases sfParse(InputStream is, IncludeHandler handler) throws SmartFrogParseException {
+   public Phases sfParse(Reader reader, IncludeHandler handler) throws SmartFrogParseException {
        try{
            SFComponentDescription root = componentFactory("root");
-           (new DefaultParser(is, handler)).Attributes(root);
+           (new DefaultParser(reader, handler)).Attributes(root);
            return root;
        } catch (ParseException pe){
          throw (SmartFrogParseException)SmartFrogParseException.forward(pe);
@@ -189,46 +190,45 @@ public class SFParser implements StreamLanguageParser {
 
 
    /**
-    *  Parse an input stream. Forwards to the expanded parse method with the
+    *  Parse a Reader. Forwards to the expanded parse method with the
     *  result of getIncludeHandler.
     *
-    *@param  is                      input stream to parse
+    *@param  reader                  reader to parse
     *@return                         root description with parsed attributes
     *@exception  SmartFrogParseException  failure while parsing
     */
-   public Phases sfParse(InputStream is) throws SmartFrogParseException {
-      return sfParse(is, (String)null);
+   public Phases sfParse(Reader reader) throws SmartFrogParseException {
+      return sfParse(reader, (String)null);
    }
 
    /**
-    *  Parse an input stream. Forwards to the expanded parse method with the
+    *  Parse a Reader. Forwards to the expanded parse method with the
     *  result of getIncludeHandler.
     *
-    *@param  is                      input stream to parse
+    *@param  reader                  reader to parse
     * @param codebase an optional codebase where the include may be found. If null, use the default code base
     *
     *@return                         root description with parsed attributes
     *@exception  SmartFrogParseException  failure while parsing
     */
-   public Phases sfParse(InputStream is, String codebase) throws SmartFrogParseException {
+   public Phases sfParse(Reader reader, String codebase) throws SmartFrogParseException {
       try {
-         return sfParse(is, getIncludeHandler());
+         return sfParse(reader, getIncludeHandler());
       } catch (Throwable thr) {
          throw (SmartFrogParseException)SmartFrogParseException.forward(thr);
       }
    }
 
    /**
-    *  Parses a reference from given string. This is NOT a cheap method since a
-    *  new DefaultParser will be constructed to create the reference.
+    *  Parses a reference.
     *
-    *@param  is                      input stream to parse
+    *@param  reader                  reader to parse
     *@return                         parsed reference
     *@exception  SmartFrogParseException  failure while parsing reference
     */
-   public ReferencePhases sfParseReference(InputStream is) throws SmartFrogParseException {
+   public ReferencePhases sfParseReference(Reader reader) throws SmartFrogParseException {
        try {
-           return (new DefaultParser(is, null)).Reference();
+           return (new DefaultParser(reader, null)).Reference();
        } catch (ParseException pe){
            //throw new SmartFrogParseException (pe.getMessage(),pe);
            throw new SmartFrogParseException ("Error parsing reference from InputStream", pe);
@@ -236,16 +236,15 @@ public class SFParser implements StreamLanguageParser {
    }
 
    /**
-    *  Parses any value (ie as allowed in an attribute definition) from given string. This is NOT a cheap method since a
-    *  new DefaultParser will be constructed to create the reference.
+    *  Parses any value (ie as allowed in an attribute definition).
     *
-    *@param  is                      input stream to parse
+    *@param  reader                  reader to parse
     *@return                         parsed value
     *@exception  SmartFrogParseException  failure while parsing value
     */
-   public Object sfParseAnyValue(InputStream is) throws SmartFrogParseException {
+   public Object sfParseAnyValue(Reader reader) throws SmartFrogParseException {
        try {
-           return (new DefaultParser(is, null)).AnyValue();
+           return (new DefaultParser(reader, null)).AnyValue();
        } catch (ParseException pe){
            //throw new SmartFrogParseException (pe.getMessage(),pe);
            throw new SmartFrogParseException ("Error parsing any value from InputStream", pe);
@@ -253,16 +252,15 @@ public class SFParser implements StreamLanguageParser {
    }
 
    /**
-    *  Parses any primtiive value (ie no links, component descriptions) from given string. This is NOT a cheap method since a
-    *  new DefaultParser will be constructed to create the reference.
+    *  Parses any primtiive value (ie no links, component descriptions)
     *
-    *@param  is                      input stream to parse
+    *@param  reader                  reader to parse
     *@return                         parsed value
     *@exception  SmartFrogParseException  failure while parsing primitive value
     */
-   public Object sfParsePrimitiveValue(InputStream is) throws SmartFrogParseException {
+   public Object sfParsePrimitiveValue(Reader reader) throws SmartFrogParseException {
        try {
-           return (new DefaultParser(is, null)).PrimitiveValue();
+           return (new DefaultParser(reader, null)).PrimitiveValue();
        } catch (ParseException pe){
            //throw new SmartFrogParseException (pe.getMessage(),pe);
            throw new SmartFrogParseException ("Error parsing primitive value from InputStream", pe);
@@ -270,16 +268,15 @@ public class SFParser implements StreamLanguageParser {
    }
 
    /**
-    *  Parses tags from given string. This is NOT a cheap method since a
-    *  new DefaultParser will be constructed to create the reference.
+    *  Parses tags.
     *
-    *@param  is                      input stream to parse
+    *@param  reader                  reader to parse
     *@return                         parsed value
     *@exception  SmartFrogParseException  failure while parsing value
     */
-   public Object sfParseTags(InputStream is) throws SmartFrogParseException {
+   public Object sfParseTags(Reader reader) throws SmartFrogParseException {
        try {
-           return (new DefaultParser(is, null)).TagsSet();
+           return (new DefaultParser(reader, null)).TagsSet();
        } catch (ParseException pe){
            throw new SmartFrogParseException ("Error parsing Tags from InputStream", pe);
        }

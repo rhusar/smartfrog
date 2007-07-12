@@ -7,8 +7,8 @@ shift
 count=0
 for x in $@;
   do 
-   	if [ -e "$DEST/daemons/$x/$RELNAME/dist/daemon.out" ]; then
-    		 count=$((count + `grep -c "SFStart" $DEST/daemons/$x/$RELNAME/dist/daemon.out`))
+   	if [ -e "$DEST/daemons/$x/nohup.out" ]; then
+    		 count=$((count + `grep -c "SFStart" $DEST/daemons/$x/nohup.out`))
 	fi
  done
 if [ $count  -eq 4 ]; then

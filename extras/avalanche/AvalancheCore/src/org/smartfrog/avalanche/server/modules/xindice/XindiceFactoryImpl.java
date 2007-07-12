@@ -20,11 +20,17 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.xindice.core.Collection;
 import org.apache.xindice.core.DBException;
-
-import org.smartfrog.avalanche.util.xindice.*;
-
-import org.smartfrog.avalanche.server.*;
+import org.smartfrog.avalanche.server.ActiveProfileManager;
+import org.smartfrog.avalanche.server.AvalancheFactory;
+import org.smartfrog.avalanche.server.DefaultProfileManager;
+import org.smartfrog.avalanche.server.HostGroupManager;
+import org.smartfrog.avalanche.server.HostManager;
+import org.smartfrog.avalanche.server.ModuleGroupManager;
+import org.smartfrog.avalanche.server.ModulesManager;
+import org.smartfrog.avalanche.server.RepositoryConfig;
+import org.smartfrog.avalanche.server.SettingsManager;
 import org.smartfrog.avalanche.server.modules.ModuleCreationException;
+import org.smartfrog.avalanche.util.xindice.XindiceHelper;
 
 /**
  * @author sanjay, May 7, 2005

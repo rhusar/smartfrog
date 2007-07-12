@@ -12,11 +12,10 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.avalanche.shared;
 
+import org.jivesoftware.smack.packet.PacketExtension;
+
 import java.util.Map;
 
-//import javax.xml.parsers.ParserConfigurationException;
-
-import org.jivesoftware.smack.packet.PacketExtension;
 /**
  * XMPP/Jabber extention for Avalanche Events. Implements standard Avalanche  MonitoringEvent 
  * interface so it can be used with xmpp/jabber without changing rest of Avalanche system. 

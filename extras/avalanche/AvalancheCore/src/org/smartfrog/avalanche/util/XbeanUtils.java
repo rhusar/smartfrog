@@ -22,9 +22,8 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.xindice.core.Collection;
 import org.apache.xindice.core.DBException;
 import org.apache.xmlbeans.XmlObject;
-import org.w3c.dom.*;
-
-
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
 
 
 public class XbeanUtils {

@@ -330,14 +330,8 @@ public interface SmartFrogCoreKeys {
     public final static String SF_CORE_BUNDLE_CONTEXT = "sfCoreBundleContext";
 
     /**
-     * Tag to mark an attribute as final, after which placement fails
-     * Value {@value}
-     */
-    public static final String SF_FINAL= "sfFinal";
-
-    /**
      * Attribute inside SF_METADATA used to select the PrimFactory
-     * component used to create a component instance. 
+     * component used to create a component instance.
      */
     public static final String SF_FACTORY = "sfFactory";
 
@@ -348,4 +342,44 @@ public interface SmartFrogCoreKeys {
     public static final String SF_METADATA = "sfMeta";
 
     public static final String SF_FUNCTION_CLASS = "sfFunctionClass";
+
+    /**
+     * Tag to mark an attribute as final, after which placement fails
+     * Value {@value}
+     */
+    public static final String SF_FINAL= "sfFinal";
+
+
+    /**
+     * Time attribute set in ActionDeploy deployment
+     *
+     * Value {@value}
+     */
+    String SF_TIME_PARSE = "sfParseTime";
+    /**
+     * Time attribute set in ActionDeploy deployment
+     *
+     * Value {@value}
+     */
+    String SF_TIME_DEPLOY = "sfDeployTime";
+
+    /**
+     * Time attribute set in ActionDeploy deployment
+     *
+     * Value {@value}
+     */
+    String SF_TIME_START = "sfStartTime";
+
+    /**
+     * Time this component was started
+     *
+     * Value {@value}
+     */
+    String SF_TIME_STARTED_AT = "sfStartedAtTime";
+
+    /**
+     * The language attribute, which can be set/found from the context.
+     * {@value}
+     */
+    String KEY_LANGUAGE = "#language";
 }

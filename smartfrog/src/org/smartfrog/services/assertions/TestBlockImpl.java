@@ -23,6 +23,9 @@ import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.workflow.eventbus.EventCompoundImpl;
 import org.smartfrog.sfcore.workflow.combinators.DelayedTerminator;
+import org.smartfrog.sfcore.workflow.events.DeployedEvent;
+import org.smartfrog.sfcore.workflow.events.StartedEvent;
+import org.smartfrog.sfcore.workflow.events.TerminatedEvent;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
@@ -33,6 +36,11 @@ import java.rmi.RemoteException;
 
 /**
  * created 13-Oct-2006 16:46:44
+ *
+ * The testblock sends out lifecycle events to anyone interested; this can be used
+ * by monitors to walk the testblock through a controlled state sequence, and to await test
+ * results.
+ * Test results are notified as a {@link TestCompletedEvent}
  */
 
 public class TestBlockImpl extends EventCompoundImpl implements TestBlock {
@@ -111,6 +119,7 @@ public class TestBlockImpl extends EventCompoundImpl implements TestBlock {
     public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
         super.sfDeploy();
         checkActionDefined();
+        sendEvent(new DeployedEvent(this));
     }
 
 
@@ -138,11 +147,24 @@ public class TestBlockImpl extends EventCompoundImpl implements TestBlock {
         } catch (SmartFrogDeploymentException e) {
             startupException(e);
         }
+        sendEvent(new StartedEvent(this));
+    }
+
+
+    /**
+     * Send out notifications of termination
+     * @param status
+     */
+    public void sfTerminateWith(TerminationRecord status) {
+        sendEvent(new TerminatedEvent(this, status));
+        super.sfTerminateWith(status);
     }
 
     /**
      * turn a startup exception into a cleaner exit
      * @param e exception
+     * @throws SmartFrogRuntimeException smartfrog problems
+     * @throws RemoteException RMI problems
      */
     private void startupException(Exception e)
             throws SmartFrogRuntimeException, RemoteException {
@@ -180,6 +202,8 @@ public class TestBlockImpl extends EventCompoundImpl implements TestBlock {
             actionTerminator = null;
         }
         setTestBlockAttributes(record, forcedTimeout);
+        //send out a completion event
+        sendEvent(new TestCompletedEvent(this,succeeded,forcedTimeout, false, record));
         //this can trigger a shutdown if we want it
         new ComponentHelper(this).sfSelfDetachAndOrTerminate(record);
     }

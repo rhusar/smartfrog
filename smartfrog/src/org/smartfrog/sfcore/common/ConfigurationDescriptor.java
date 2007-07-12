@@ -56,24 +56,26 @@ public class ConfigurationDescriptor implements MessageKeys {
         private Action() {
         }
 
-        final static public String ACT_DEPLOY = "DEPLOY";
-        final static public int DEPLOY = 0;
-        final static public String ACT_TERMINATE = "TERMINATE";
-        final static public int TERMINATE = 1;
-        final static public String ACT_UNDEFINED = "UNDEFINED";
-        final static public int UNDEFINED = 2;
-        final static public String ACT_DETACH= "DETACH";
-        final static public int DETACH = 3;
-        final static public String ACT_DETaTERM = "DETaTERM";
-        final static public int DETaTERM = 4;
-        final static public String ACT_PING = "PING";
-        final static public int PING = 5;
-        final static public String ACT_PARSE = "PARSE";
-        final static public int PARSE = 6;
-        final static public String ACT_DIAGNOSTICS = "DIAGNOSTICS";
-        final static public int DIAGNOSTICS = 7;
-        final static public String ACT_UPDATE = "UPDATE";
-        final static public int UPDATE = 8;
+        public static final String ACT_DEPLOY = "DEPLOY";
+        public static final int DEPLOY = 0;
+        public static final String ACT_TERMINATE = "TERMINATE";
+        public static final int TERMINATE = 1;
+        public static final String ACT_UNDEFINED = "UNDEFINED";
+        public static final int UNDEFINED = 2;
+        public static final String ACT_DETACH= "DETACH";
+        public static final int DETACH = 3;
+        public static final String ACT_DETaTERM = "DETaTERM";
+        public static final int DETaTERM = 4;
+        public static final String ACT_PING = "PING";
+        public static final int PING = 5;
+        public static final String ACT_PARSE = "PARSE";
+        public static final int PARSE = 6;
+        public static final String ACT_DIAGNOSTICS = "DIAGNOSTICS";
+        public static final int DIAGNOSTICS = 7;
+        public static final String ACT_UPDATE = "UPDATE";
+        public static final int UPDATE = 8;
+        public static final String ACT_LOAD = "LOAD";
+        public static final int LOAD = 9;
 
         final static public String[] type = {
                       ACT_DEPLOY,
@@ -84,7 +86,9 @@ public class ConfigurationDescriptor implements MessageKeys {
                       ACT_PING,
                       ACT_PARSE,
                       ACT_DIAGNOSTICS,
-                      ACT_UPDATE};
+                      ACT_UPDATE,
+                      ACT_LOAD
+        };
     }
 
 
@@ -136,10 +140,10 @@ public class ConfigurationDescriptor implements MessageKeys {
         private Result() {
         }
 
-        final static public int SUCCESSFUL=0;
-        final static public int FAILED=1;
-        final static public int UNDEFINED=2;
-        final static public int UNKNOWN=3;
+        public static final int SUCCESSFUL=0;
+        public static final int FAILED=1;
+        public static final int UNDEFINED=2;
+        public static final int UNKNOWN=3;
         final static String[] type = {"SUCCESSFUL",
                                "FAILED",
                                "UNDEFINED",
@@ -540,7 +544,7 @@ public class ConfigurationDescriptor implements MessageKeys {
      *            ex. foo
      *            ex. "HOST localhost:foo"
      *            ex. 'HOST localhost:foo'
-     *      - ACTION: possible actions: DEPLOY, TERMINATE, DETACH, DETaTERM, PING, PARSE, DIAGNOSTICS, UPDATE
+     *      - ACTION: possible actions: DEPLOY, TERMINATE, DETACH, DETaTERM, PING, PARSE, DIAGNOSTICS, UPDATE, LOAD
      *      - url: description used by ACTION
      *            ex. /home/sf/foo.sf
      *            ex. "c:\sf\foo.sf"
@@ -564,13 +568,11 @@ public class ConfigurationDescriptor implements MessageKeys {
      *</pre>
      * @see Action
      * @throws SmartFrogInitException  failure in some part of the process
-     *
-     // TODO fix this text for JavaDocs
      */
     public ConfigurationDescriptor (String deploymentURL) throws SmartFrogInitException {
         try {
             originalSFACT = deploymentURL;
-            if (SFSystem.sfLog().isDebugEnabled()){SFSystem.sfLog().debug("Parsing SFACT: ["+originalSFACT+"]");               }
+            if (SFSystem.sfLog().isDebugEnabled()){SFSystem.sfLog().debug("Parsing SFACT: ["+originalSFACT+"]"); }
 
             if (deploymentURL==null) {
                 throw new SmartFrogInitException("Deployment URL: null");
@@ -854,6 +856,9 @@ public class ConfigurationDescriptor implements MessageKeys {
                 break;
             case Action.UPDATE:
                 action = new ActionUpdate();
+                break;
+            case Action.LOAD:
+                action = new ActionLoad();
                 break;
             default:
                 throw new SmartFrogInitException("Action type unknown");

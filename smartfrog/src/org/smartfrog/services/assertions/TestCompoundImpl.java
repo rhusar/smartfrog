@@ -27,6 +27,9 @@ import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.workflow.combinators.DelayedTerminator;
 import org.smartfrog.sfcore.workflow.conditional.ConditionCompound;
+import org.smartfrog.sfcore.workflow.events.DeployedEvent;
+import org.smartfrog.sfcore.workflow.events.StartedEvent;
+import org.smartfrog.sfcore.workflow.events.TerminatedEvent;
 import org.smartfrog.sfcore.utils.ComponentHelper;
 import org.smartfrog.sfcore.utils.ShouldDetachOrTerminate;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
@@ -34,6 +37,10 @@ import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import java.rmi.RemoteException;
 
 /**
+ * Runner of test children.
+ *
+ * This compound sends lifeecycle events to any listener, and it sends a TestCompletedEvent for every child that completes
+ *
  * created 22-Sep-2006 16:43:35
  */
 
@@ -109,6 +116,7 @@ public class TestCompoundImpl extends ConditionCompound
         exitType = sfResolve(ATTR_EXIT_TYPE, exitType, true);
         exitText = sfResolve(ATTR_EXIT_TEXT, exitText, true);
         shouldTerminate = sfResolve(ShouldDetachOrTerminate.ATTR_SHOULD_TERMINATE,true,true);
+        sendEvent(new DeployedEvent(this));
     }
 
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
@@ -191,6 +199,9 @@ public class TestCompoundImpl extends ConditionCompound
                 !expectTerminate);
         actionTerminator.start();
 
+        //report we have started up
+        sendEvent(new StartedEvent(this));
+
         //now deploy the tests.
         //any failure in tests is something to report, as is any failure of the tests to finish.
 
@@ -211,16 +222,6 @@ public class TestCompoundImpl extends ConditionCompound
                     false);
             testsTerminator.start();
         }
-    }
-
-    /**
-     * Ping handler. This would be the place to provide feedback w.r.t the result of the deployed action.
-     * @param source
-     * @throws SmartFrogLivenessException
-     * @throws RemoteException
-     */
-    public void sfPing(Object source) throws SmartFrogLivenessException, RemoteException {
-        super.sfPing(source);
     }
 
     /**
@@ -258,15 +259,17 @@ public class TestCompoundImpl extends ConditionCompound
         }
         shutdown(actionTerminator);
         shutdown(testsTerminator);
+        sendEvent(new TerminatedEvent(this, status));
     }
 
     /**
-     * shut down the action terminator if we need to. We assume the superclass
-     * terminator is already terminating the children, so there is no need
-     * to tell the action terminator to do it. Therefore, this should only be called
-     * from sfTerminateWith
+     * Shut down the specified terminator if we need to.
      *
-     * @param terminator
+     * We assume the superclass terminator is already terminating the children, so there is no need
+     * to tell the action terminator to do it. Therefore, this should only be called
+     * from {@link #sfTerminateWith(TerminationRecord)}
+     *
+     * @param terminator terminator to shut down
      */
     private void shutdown(DelayedTerminator terminator) {
         if (terminator != null) {
@@ -344,7 +347,7 @@ public class TestCompoundImpl extends ConditionCompound
         }
 
         //start teardown, etc.
-        //kicks in on normal abnormal ter
+        //kicks in on both normal and abnormal termination
         if(tearDownTime && teardownCD!=null) {
             try {
                 sfLog().debug("Starting teardown component");

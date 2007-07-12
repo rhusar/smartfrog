@@ -1,17 +1,14 @@
 package org.smartfrog.services.os.java;
 
-import org.smartfrog.sfcore.prim.PrimImpl;
+import org.smartfrog.services.filesystem.FileSystem;
+import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
-import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
-import org.smartfrog.services.filesystem.FileSystem;
 
-import java.rmi.RemoteException;
 import java.io.File;
-import java.io.FilenameFilter;
 import java.io.FileFilter;
+import java.rmi.RemoteException;
 
-import sun.misc.JarFilter;
 
 /**
  */

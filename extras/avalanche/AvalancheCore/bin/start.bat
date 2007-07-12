@@ -8,7 +8,7 @@ set SFHOME=%AVALANCHE_HOME%\smartfrog\dist
 
 if defined XMPP_HOME goto continue2
 echo SET XMPP_HOME to the installation directory of XMPP Server
-set XMPP_HOME=C:\installed\wildfire
+set XMPP_HOME=C:\installed\openfire
 
 :continue2
 if defined TOMCAT_HOME goto start
@@ -30,7 +30,7 @@ rem copy %SFHOME_BASE%\dist\signedLib\*.* %SFHOME%\signedLib
 
 rem start sfDaemon.bat -f org/smartfrog/services/quartz/scheduler/SchedulerSetup.sf
 start sfDaemon.bat 
-start wildfire.exe
+start openfire.exe
 call startup.bat
 
 

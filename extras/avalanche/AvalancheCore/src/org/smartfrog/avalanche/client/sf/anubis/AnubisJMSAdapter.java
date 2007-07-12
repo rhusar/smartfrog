@@ -12,11 +12,9 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.avalanche.client.sf.anubis;
 
+import org.smartfrog.avalanche.shared.MonitoringEvent;
 import org.smartfrog.services.anubis.locator.AnubisListener;
 import org.smartfrog.services.anubis.locator.AnubisValue;
-import org.smartfrog.services.anubis.locator.ValueData;
-
-import org.smartfrog.avalanche.shared.MonitoringEvent;
 
 /**
  * extends AnubisListener, this should be registered on the server side

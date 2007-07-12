@@ -12,12 +12,12 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.avalanche.client.monitor.ganglia;
 
-import java.util.Iterator;
-import java.util.Map;
-
 import org.smartfrog.avalanche.client.monitor.MonitoringEvent;
 import org.smartfrog.avalanche.client.monitor.MonitoringService;
 import org.smartfrog.avalanche.client.monitor.Provider;
+
+import java.util.Iterator;
+import java.util.Map;
 
 /**
  * gmetric adapter - calls gmetric, whcih should be installed prior.

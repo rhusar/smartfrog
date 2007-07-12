@@ -11,14 +11,13 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.avalanche.server.modules.bdb.bindings;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import org.smartfrog.avalanche.settings.sfConfig.SfConfigsDocument;
 import com.sleepycat.bind.tuple.TupleBinding;
 import com.sleepycat.bind.tuple.TupleInput;
 import com.sleepycat.bind.tuple.TupleOutput;
 import com.sleepycat.je.DatabaseEntry;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.smartfrog.avalanche.settings.sfConfig.SfConfigsDocument;
 
 public class SFConfigBinding extends TupleBinding {
     private static Log log = LogFactory.getLog(SFConfigBinding.class);
