@@ -21,30 +21,20 @@ For more information: www.smartfrog.org
 package org.smartfrog.sfcore.common;
 
 import org.smartfrog.sfcore.reference.Reference;
-import org.smartfrog.sfcore.prim.Dump;
 
 import java.rmi.RemoteException;
 import java.rmi.Remote;
 
-/**
- * @since 3.11.001
- */
-
 public interface Dumper extends Remote {
-
+    
     void visiting(String name, Integer numberOfChildren) throws RemoteException;
 
     void visited(String name) throws RemoteException;
 
-    void modifyCD(Reference from, Context stateCopy) throws Exception, RemoteException;
+    void modifyCD(Reference searchRef,  String name, Context stateCopy) throws RemoteException;
 
     public void setTimeout(long timeout) throws RemoteException;
 
     public void sfKeysToBeRemoved (String[] sfKeysToBeRemoved) throws RemoteException;
 
-    public String[] getSFKeysToBeRemoved () throws RemoteException;
-
-    public Reference getRootRef() throws RemoteException;
-
-    public Dump getDumpVisitor() throws RemoteException;
 }

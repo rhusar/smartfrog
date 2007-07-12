@@ -1,8 +1,9 @@
 package org.smartfrog.services.os.java;
 
-import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
-
 import java.rmi.RemoteException;
+
+import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
+import org.smartfrog.sfcore.prim.PrimImpl;
 
 public class Maven2Policy extends AbstractPolicy implements LocalCachePolicy,
         RemoteCachePolicy {

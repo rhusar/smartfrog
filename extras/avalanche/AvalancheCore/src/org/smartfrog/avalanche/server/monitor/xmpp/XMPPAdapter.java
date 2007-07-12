@@ -18,6 +18,7 @@ import org.jivesoftware.smack.Roster;
 import org.jivesoftware.smack.SSLXMPPConnection;
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException;
+
 import org.smartfrog.avalanche.server.monitor.handlers.DefaultHostStateChangeHandler;
 import org.smartfrog.avalanche.server.monitor.handlers.MessageHandler;
 

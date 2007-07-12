@@ -11,9 +11,11 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.services.avalanche.test.system.avalanche.client;
 
-import junit.framework.TestCase;
-
 import java.io.File;
+
+import org.smartfrog.avalanche.client.sf.disk.DiskUtils;
+
+import junit.framework.TestCase;
 
 public class DiskUtilsTest extends TestCase {
 

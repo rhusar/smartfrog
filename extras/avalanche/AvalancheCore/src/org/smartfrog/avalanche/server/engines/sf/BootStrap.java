@@ -15,28 +15,22 @@ For more information: www.smartfrog.org
  */
 package org.smartfrog.avalanche.server.engines.sf;
 
-import org.smartfrog.avalanche.core.host.AccessModeType;
-import org.smartfrog.avalanche.core.host.ArgumentType;
-import org.smartfrog.avalanche.core.host.DataTransferModeType;
-import org.smartfrog.avalanche.core.host.HostType;
-import org.smartfrog.avalanche.server.AvalancheFactory;
-import org.smartfrog.avalanche.server.HostManager;
-import org.smartfrog.avalanche.server.ServerSetup;
-import org.smartfrog.avalanche.server.engines.HostIgnitionException;
-import org.smartfrog.services.sfinstaller.Daemon;
-import org.smartfrog.services.sfinstaller.TemplateGen;
-import org.smartfrog.services.sfinterface.SmartFrogAdapterImpl;
-import org.smartfrog.services.sfinterface.SmartfrogAdapter;
-import org.smartfrog.sfcore.logging.Log;
-import org.smartfrog.sfcore.logging.LogFactory;
+import org.smartfrog.avalanche.server.* ;
+import org.smartfrog.avalanche.core.host.*;
 
 import java.io.File;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
+import java.util.Map;
 
-//import org.apache.commons.logging.Log;
-//import org.apache.commons.logging.LogFactory;
+import org.smartfrog.services.sfinstaller.Daemon;
+import org.smartfrog.services.sfinstaller.TemplateGen;
+import org.smartfrog.services.sfinterface.*;
+import org.smartfrog.avalanche.server.engines.HostIgnitionException;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 
 /**

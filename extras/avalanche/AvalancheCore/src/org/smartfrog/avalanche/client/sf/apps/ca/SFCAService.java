@@ -11,13 +11,14 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.avalanche.client.sf.apps.ca;
 
-import org.smartfrog.avalanche.shared.CAService;
+import java.rmi.RemoteException;
+
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 
-import java.rmi.RemoteException;
+import org.smartfrog.avalanche.shared.CAService;
 
 public class SFCAService extends PrimImpl implements Prim,CAService {
 

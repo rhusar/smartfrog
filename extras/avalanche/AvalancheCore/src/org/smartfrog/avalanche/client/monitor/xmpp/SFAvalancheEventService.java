@@ -11,19 +11,20 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.avalanche.client.monitor.xmpp;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.rmi.RemoteException;
+import java.util.Calendar;
+
 import org.jivesoftware.smack.XMPPException;
-import org.smartfrog.avalanche.shared.MonitoringConstants;
-import org.smartfrog.avalanche.shared.MonitoringEvent;
-import org.smartfrog.avalanche.shared.MonitoringEventDefaultImpl;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.rmi.RemoteException;
-import java.util.Calendar;
+import org.smartfrog.avalanche.shared.MonitoringConstants;
+import org.smartfrog.avalanche.shared.MonitoringEvent;
+import org.smartfrog.avalanche.shared.MonitoringEventDefaultImpl;
 
 /**
  * XMPP based event component. This can be looked up by other 

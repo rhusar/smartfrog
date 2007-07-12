@@ -13,9 +13,9 @@
  */
 package org.smartfrog.services.os.java;
 
-import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
-
 import java.rmi.RemoteException;
+
+import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
 
 /**
  * policy for flattening local files

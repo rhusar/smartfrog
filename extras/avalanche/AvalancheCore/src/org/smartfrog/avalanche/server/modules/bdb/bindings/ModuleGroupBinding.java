@@ -11,11 +11,11 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.avalanche.server.modules.bdb.bindings;
 
+import org.smartfrog.avalanche.core.moduleGroup.ModuleGroupDocument;
 import com.sleepycat.bind.tuple.TupleBinding;
 import com.sleepycat.bind.tuple.TupleInput;
 import com.sleepycat.bind.tuple.TupleOutput;
 import com.sleepycat.je.DatabaseEntry;
-import org.smartfrog.avalanche.core.moduleGroup.ModuleGroupDocument;
 
 public class ModuleGroupBinding extends TupleBinding{
 

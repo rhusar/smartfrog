@@ -11,18 +11,19 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.avalanche.server.monitor.xmpp;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jivesoftware.smack.Roster;
 import org.jivesoftware.smack.RosterListener;
 import org.jivesoftware.smack.packet.Presence;
+
 import org.smartfrog.avalanche.server.monitor.handlers.HostStateChangeHandler;
 import org.smartfrog.avalanche.shared.HostStateEvent;
 import org.smartfrog.avalanche.shared.HostStateEventDefaultImpl;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
 
 /**
  * This class listens for Liveness status of nodes, when it receives a liveness

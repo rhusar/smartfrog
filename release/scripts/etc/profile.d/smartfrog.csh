@@ -1,12 +1,14 @@
-#!/bin/csh
+#!/bin/sh
 # This file contains environment variables needed by the Smartfrog Daemon
 
-set SFHOME="${rpm.install.dir}"
+export SFHOME="${rpm.install.dir}"
 
 # Add the directory of the SmartFrog executables to the path
-if ( "$$path" !~ "*/$$SFHOME/bin*" ) then
-  set path="$$SFHOME/bin $$path"
-  echo $path
-endif
-
+if echo ":$${PATH-}:" | grep ":$${SFHOME}:" > /dev/null 2>&1
+then
+	:
+else
+	PATH="$${PATH-}:$${SFHOME}/bin"
+	export PATH
+fi
 

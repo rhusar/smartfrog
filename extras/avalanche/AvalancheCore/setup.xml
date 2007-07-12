@@ -5,7 +5,7 @@
 >
 ]-->
 
-<project name="setup" default="setup" >
+<project name="setup" default="default">
 
   <!--
   /** (C) Copyright 1998-2007 Hewlett-Packard Development Company, LP
@@ -36,34 +36,28 @@
 
 
   <!-- override point -->
-  <property environment="env"/>
   <property file="setup.properties"/>
-  <property name="avalanche.root" location=".."/>
-  <property name="root.dir" location="../../.."/>
-  <property name="smartfrog.home" location="${root.dir}/smartfrog/"/>  
-  <property name="avalanche.home" location="${avalanche.root}/server"/>
-  <property name="build.classes.dir" location="build/classes"/>
-
-  <property name="avalanche.types.lib" location="dist/lib/avalanche-types.jar" />
+  <property environment="env"/>
+  <property name="root.dir" location=".."/>
+  <property name="avalanche.home" location="${root.dir}/server"/>
+  <property name="build.classes.dir" location="build"/>
   <property name="lib" location="lib"/>
   
-<!--  <import file="build.xml"/>-->
+  <import file="build.xml"/>
 
-
-
+  <path id="avalanche-core.class.path">
+	   <pathelement path="${classpath}"/>
+	      <fileset dir="${lib}">
+	        <include name="*.jar"/>
+	        <include name="${avalanche.types.lib}"/>
+             </fileset>
+	     <pathelement location="${build.classes.dir}"/>
+  </path>
+     
   <target name="init">
-    <property name="releaseName" location="SmartFrog"/>
+    <property name="releaseName" location="SmartFrog.${Version}"/>
     <!--TODO: need to extract the release file name-->
     <property name="settingsFile" location="src/org/smartfrog/avalanche/server/initsettings.xml"/>
-    <path id="avalanche-core.class.path">
-      <!--<pathelement path="${java.classpath}"/>-->
-      <fileset dir="${lib}">
-        <include name="*.jar"/>
-      </fileset>
-      <fileset file="${avalanche.types.lib}"/>
-      <pathelement location="${build.classes.dir}"/>
-    </path>
-    <echo level="verbose">avalanche-core.class.path=${toString:avalanche-core.class.path}</echo>
   </target>
 
   <target name="init.scripts.pattern" depends="init">
@@ -105,9 +99,8 @@
 	 This should not be part of production environment
 	 -->		
 	<target name="setupBDB" depends="setupAvalancheHome">
-		<java classname="org.smartfrog.avalanche.util.SetupBDB"
-                failonerror="true">
-			<arg value="${avalanche.home}"/>
+		<java classname="tests.org.smartfrog.avalanche.server.SetupBDB">
+			<arg line="${avalanche.home}"/>
 			<classpath refid="avalanche-core.class.path"/>
 			<!--classpath location="${build.classes.dir}"/-->
 		</java>
@@ -121,9 +114,9 @@
       			<fileset dir="${smartfrog.home}/private"/>
 		</copy-->	
 		<!--Copy smartFrog jars to Avalanche SmartFrog dist dir-->
-    <copy todir="${avalanche.home}/smartfrog/dist">
-      <fileset dir="${smartfrog.home}/dist"/>
-    </copy>
+    		<copy todir="${avalanche.home}/smartfrog/dist">
+      			<fileset dir="${smartfrog.home}/dist"/>
+		</copy>
 		
 		<!--Copy Avalanche server jars to Avalanche SmartFrog dist dir-->
 		<copy todir="${avalanche.home}/smartfrog/dist/lib">
@@ -139,17 +132,17 @@
 		<copy todir="${avalanche.home}/smartfrog/lib">
 			<fileset dir="dist/lib/client" includes="*.jar" excludes="sfXmppClient.jar"/>
     		</copy>
-
-    <!--Copy Dependent jars to Avalanche SmartFrog lib dir-->
-    <copy file="lib/ant.jar" todir="${avalanche.home}/smartfrog/lib"/>
-    <copy file="lib/ant-launcher.jar" todir="${avalanche.home}/smartfrog/lib"/>
-    <copy file="lib/tools.jar" todir="${avalanche.home}/smartfrog/lib"/>
-    <copy file="lib/commons-logging-1.0.3.jar" todir="${avalanche.home}/smartfrog/lib"/>
-    <copy file="lib/commons-net-1.2.0.jar" todir="${avalanche.home}/smartfrog/lib"/>
-    <copy file="lib/xalan.jar" todir="${avalanche.home}/smartfrog/lib"/>
-    <copy file="lib/sf-net.jar" todir="${avalanche.home}/smartfrog/lib"/>
-    <copy file="lib/sf-ssh.jar" todir="${avalanche.home}/smartfrog/lib"/>
-    <copy file="lib/jsch-20040505.jar" todir="${avalanche.home}/smartfrog/lib"/>
+		
+		<!--Copy Dependent jars to Avalanche SmartFrog lib dir-->
+    		<copy file="lib/ant.jar" todir="${avalanche.home}/smartfrog/lib"/>
+    		<copy file="lib/ant-launcher.jar" todir="${avalanche.home}/smartfrog/lib"/>
+    		<copy file="lib/tools.jar" todir="${avalanche.home}/smartfrog/lib"/>
+    		<copy file="lib/commons-logging-1.0.3.jar" todir="${avalanche.home}/smartfrog/lib"/>
+		<copy file="lib/commons-net-1.2.0.jar" todir="${avalanche.home}/smartfrog/lib"/>
+    		<copy file="lib/xalan.jar" todir="${avalanche.home}/smartfrog/lib"/>
+    		<copy file="lib/sf-net.jar" todir="${avalanche.home}/smartfrog/lib"/>
+    		<copy file="lib/sf-ssh.jar" todir="${avalanche.home}/smartfrog/lib"/>
+    		<copy file="lib/jsch-20040505.jar" todir="${avalanche.home}/smartfrog/lib"/>
 		<!-- copy ssh jars also-->	
 		
 		<!--Copy SFInstaller template to Avalanche SmartFrog boot dir-->
@@ -218,7 +211,7 @@
 	</target>
 
 	<!--target name="setup" depends="createXMPPEnabledSmartFrog, securitySetup, setupUI" /-->
-	<target name="setup" depends="createXMPPEnabledSmartFrog, setupUI" />
+	<target name="setup" depends="clean, createXMPPEnabledSmartFrog, setupUI" />
 
 	<target name="createbundle" depends="init.scripts.pattern">
 		<zip destfile="${avalanche.home}/temp/smartfrog.zip">
@@ -259,13 +252,12 @@
 		<copy file="${avalanche.home}/temp/smartfrog.zip" todir="${avalanche.home}/smartfrog/boot"/>
 	</target>
 
-	<target name="setupUI" depends="init" if="tomcat.home">
-
-    <mkdir dir="${tomcat.home}/webapps/AvalancheGUI"/>
+	<target name="setupUI" depends="init">
+		<mkdir dir="${tomcat.home}/webapps/AvalancheGUI"/>
 		<mkdir dir="${tomcat.home}/webapps/AvalancheGUI/WEB-INF/lib"/>
 		<!-- COPY UI files to Tomcat-->
 		<copy todir="${tomcat.home}/webapps/AvalancheGUI">
-      			<fileset dir="${avalanche.root}/AvalancheGUI"/>
+      			<fileset dir="${root.dir}/AvalancheGUI"/>
 		</copy>
 		<!--Copy smartFrog jars-->
 		<copy todir="${tomcat.home}/webapps/AvalancheGUI/WEB-INF/lib">
@@ -323,25 +315,23 @@
 	<target name="startXMPP">
 		<exec dir="${xmpp.home}/bin" executable="cmd" os="Windows XP, Windows NT">
 			<arg value="/c"/>
-			<arg line="openfire.exe"/>
+			<arg line="wildfire.exe"/>
 		</exec>
 
 		<exec dir="${xmpp.home}/bin" executable="sh" os="Linux">
 			<arg value="/c"/>
-			<arg line="openfire"/>
+			<arg line="wildfire"/>
 		</exec>
 		
 	</target>
 
 	<target name="startTomcat">
-		<exec dir="${tomcat.home}/bin" executable="cmd" os="Windows XP, Windows NT"
-        failonerror="true">
+		<exec dir="${tomcat.home}/bin" executable="cmd" os="Windows XP, Windows NT">
 			<arg value="/c"/>
 			<arg line="startup.bat"/>
 		</exec>
 
-		<exec dir="${tomcat.home}/bin" executable="sh" os="Linux"
-        failonerror="true">
+		<exec dir="${tomcat.home}/bin" executable="sh" os="Linux">
 			<arg value="/c"/>
 			<arg line="startup.sh"/>
 		</exec>

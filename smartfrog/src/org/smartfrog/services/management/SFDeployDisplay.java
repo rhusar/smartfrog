@@ -58,6 +58,8 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
    protected JButton refreshNode = new JButton();
    protected JButton refreshPanes = new JButton();
    private JPanel panelTree = null;
+   private JTree tree = null;
+   private JScrollPane scrollPaneTree = null;
 
    final JCheckBoxMenuItem jCheckBoxMenuItemShowCDasChild = new JCheckBoxMenuItem();
    final JMenuItem jMenuScriptingPanel = new JMenuItem();
@@ -103,12 +105,8 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
       String positionDisplay = opts.windowPosition;
 
       try {
-         if(startConsole(nameDisplay, height, width, positionDisplay,
-               showRootProcess,showCDasChild, showScripting, hostname, port, true)!=null) {
-             sflog.out("Running.");
-         } else {
-             sflog.out("Failed to start console");
-         }
+         startConsole(nameDisplay, height, width, positionDisplay,
+               showRootProcess,showCDasChild, showScripting, hostname, port, true);
       } catch (java.net.UnknownHostException uex) {
          exitWith("Error: Unknown host.", ExitCodes.EXIT_ERROR_CODE_GENERAL);
       } catch (java.rmi.ConnectException cex) {
@@ -117,6 +115,8 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
          sfLogStatic().error("Error in SFDeployDisplay.main():" + e,e);
          exitWith("Error in SFDeployDisplay.main():" + e, ExitCodes.EXIT_ERROR_CODE_GENERAL);
       }
+
+      sflog.out("Running.");
    }
 
 
@@ -128,8 +128,7 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
     *@param  width             width of the window
     *@param  positionDisplay   position  of display
     *@param  showRootProcess   boolean to enable display of root process
-    *@param  showCDasChild     boolean to enable display of CDs as children
-    *@param  showScripting     boolean to enable scripting
+    *@param  showCDasChild   boolean to enable display of CDs as children
     *@param  hostname          host name
     *@param  port              port
     *@param  shouldSystemExit  boolean to indicate exit at close of window
@@ -158,6 +157,9 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
 
       if (showRootProcess) {
          sfLogStatic().warn(" showing rootProcess");
+         //Logger.log(" showing rootProcess");
+      } else {
+         //System.out.println("");
       }
 
       final Display newDisplay;
@@ -279,27 +281,17 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
 
     /**
      * Add Frog Icon
-     * @param newDisplay Display Object -can be null
-     * @return true if the icon was found and added to the display
+     * @param newDisplay Display Object
      */
-    private static boolean addFrogIcon(Display newDisplay) {
-        if (newDisplay == null) {
-            return false;
-        }
-        String imagesPath = SFDeployDisplay.class.getPackage().getName() + ".";
-        imagesPath = imagesPath.replace('.', '/');
-        imagesPath = imagesPath + "frogb.gif";
-        Image image = Display.createImage(imagesPath);
-        if(image!=null) {
-            newDisplay.setIconImage(image);
-            return true;
-        } else {
-            return false;
-        }
-    }
+   private static void addFrogIcon(Display newDisplay) {
+       String imagesPath = SFDeployDisplay.class.getPackage().getName()+".";
+       imagesPath = imagesPath.replace('.', '/');
+       imagesPath = imagesPath+"frogb.gif";
+       newDisplay.setIconImage(Display.createImage(imagesPath));
+   }
 
 
-    /**
+   /**
     *  Prints given error string and exits system
     *
     *@param  str  string to print on out
@@ -509,12 +501,13 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
     *@throws  SmartFrogException  If unable to deploy the component
     *@throws  RemoteException     If RMI or network error
     */
-    public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
-        super.sfDeploy();
-        if (org.smartfrog.services.display.WindowUtilities.areGraphicsAvailable()) {
-            createManagementPaneAsynch();
-        }
-    }
+   public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
+//      try {
+         super.sfDeploy();
+         //createManagementPane();
+        createManagementPaneAsynch();
+      //end panelTree example
+   }
 
      /**
      * Starts in a separate thread
@@ -633,14 +626,12 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
     *@param  t  The reason why it was terminated
     */
    public synchronized void sfTerminateWith(TerminationRecord t) {
-       if (display != null) {
-           display.dispose();
-       }
-       super.sfTerminateWith(t);
+      this.display.dispose();
+      super.sfTerminateWith(t);
    }
 
 
-    /**
+   /**
     *  Main processing method for the SFDeployDisplay object
     */
    public void run() { }

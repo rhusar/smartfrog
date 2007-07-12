@@ -108,11 +108,10 @@ public class AttribReferencePart extends HereReferencePart {
         Object result = rr.sfResolveHere(getValue(),false);
 
         if (result == null) {
-            Object parent = rr.sfResolveParent();
-            if (parent == null) {
+            if (rr.sfResolveParent() == null) {
                 throw SmartFrogResolutionException.notFound(r, null);
             }
-            return forwardReference(parent, r, index);
+            return forwardReference(rr.sfResolveParent(), r, index);
         }
 
         try {

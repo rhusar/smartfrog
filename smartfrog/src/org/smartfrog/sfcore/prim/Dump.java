@@ -37,7 +37,7 @@ public interface Dump extends Remote {
      * @param state state of component (application specific)
      * @param from source of this call
      *
-     * @throws RemoteException In case of Remote/nework error
+     * @throws RemoteException In case of Remote/nework error  
      */
     public void dumpState(Object state, Prim from) throws RemoteException;
 }

@@ -12,14 +12,15 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.avalanche.client.persist;
 
-import com.sleepycat.je.DatabaseException;
+import java.io.File;
+import java.rmi.RemoteException;
+
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 
-import java.io.File;
-import java.rmi.RemoteException;
+import com.sleepycat.je.DatabaseException;
 
 /**
  * Smartfrog component provides persistance service to other smartfrog components. 

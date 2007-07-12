@@ -1,22 +1,11 @@
 package org.smartfrog.sfcore.languages.sf.sfreference;
 
-import org.smartfrog.sfcore.common.Context;
-import org.smartfrog.sfcore.common.ContextImpl;
-import org.smartfrog.sfcore.common.SmartFrogCompilationException;
-import org.smartfrog.sfcore.common.SmartFrogContextException;
-import org.smartfrog.sfcore.common.SmartFrogFunctionResolutionException;
-import org.smartfrog.sfcore.common.SmartFrogLazyResolutionException;
-import org.smartfrog.sfcore.common.SmartFrogResolutionException;
-import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
-import org.smartfrog.sfcore.componentdescription.ComponentDescription;
+import org.smartfrog.sfcore.reference.*;
 import org.smartfrog.sfcore.languages.sf.sfcomponentdescription.SFComponentDescription;
 import org.smartfrog.sfcore.parser.ReferencePhases;
+import org.smartfrog.sfcore.common.*;
+import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.prim.Prim;
-import org.smartfrog.sfcore.reference.ApplyReference;
-import org.smartfrog.sfcore.reference.Reference;
-import org.smartfrog.sfcore.reference.ReferencePart;
-import org.smartfrog.sfcore.reference.ReferenceResolver;
-import org.smartfrog.sfcore.reference.RemoteReferenceResolver;
 
 import java.util.Iterator;
 
@@ -66,6 +55,7 @@ public class SFApplyReference extends SFReference implements ReferencePhases {
      */
     public Object clone() {
         SFApplyReference res = (SFApplyReference) super.clone();
+        res.comp = comp;
         return res;
     }
 
@@ -156,12 +146,31 @@ public class SFApplyReference extends SFReference implements ReferencePhases {
         return ApplyReference.createAndApplyFunction(rr, true, comp, forFunction);
     }
     
-    protected void addAttributeToContext(Object value, Object name, Context forFunction) {
-        if (value != null) {
-            try {                                
-                if (value instanceof Reference) {
-                    value = comp.sfResolve((Reference) value);
+    private boolean createContext(Context forFunction) throws SmartFrogResolutionException {
+        boolean lazy = false;
+        for (Iterator v = comp.sfAttributes(); v.hasNext();) {
+            Object name = v.next();
+            String nameS = name.toString();
+            if (!nameS.startsWith(ApplyReference.SF_ATTRIBUTE_PREFIX)){
+                Object value = null;
+
+                try {
+                    value = comp.sfResolve(new Reference(ReferencePart.here(name)));
+                } catch (StackOverflowError e) {
+                    throw new SmartFrogFunctionResolutionException(e);
+                } catch (SmartFrogLazyResolutionException e) {
+                   lazy = true;
                 }
+
+                addAttributeToContext(value, name, forFunction);
+            }
+        }
+        return lazy;
+    }
+
+    private void addAttributeToContext(Object value, Object name, Context forFunction) {
+        if (value != null) {
+            try {
                 comp.sfReplaceAttribute(name, value);
                 forFunction.sfAddAttribute(name, value);
             } catch (SmartFrogContextException e) {
@@ -172,27 +181,6 @@ public class SFApplyReference extends SFReference implements ReferencePhases {
         }
     }
 
-    private boolean createContext(Context forFunction) throws SmartFrogResolutionException {
-        boolean lazy = false;
-        for (Iterator v = comp.sfAttributes(); v.hasNext();) {
-            Object name = v.next();
-            if (ApplyReference.isNotFiltered(name.toString())) {
-                Object value = null;
-
-                try {
-                    value = comp.sfResolveHere(name);
-                } catch (StackOverflowError e) {
-                    throw new SmartFrogFunctionResolutionException(e);
-                } catch (SmartFrogLazyResolutionException e) {
-                    lazy = true;
-                }
-
-                addAttributeToContext(value, name, forFunction);
-            }
-        }
-        return lazy;
-    }
-
 
     private Context createContext() throws SmartFrogResolutionException {
         Context forFunction = new ContextImpl();
@@ -200,7 +188,7 @@ public class SFApplyReference extends SFReference implements ReferencePhases {
             Object name = v.next();
 
             String nameS = name.toString();
-            if (ApplyReference.isNotFiltered(nameS)) {
+            if (!nameS.startsWith(ApplyReference.SF_ATTRIBUTE_PREFIX)) {
                 Object value;
 
                 try {
@@ -215,7 +203,7 @@ public class SFApplyReference extends SFReference implements ReferencePhases {
         return forFunction;
     }
 
-    protected void initComp(Object rr) {
+    private void initComp(Object rr) {
         if (rr instanceof ComponentDescription)
             comp.setParent((ComponentDescription) rr);
         else if (rr instanceof Prim)

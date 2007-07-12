@@ -17,14 +17,15 @@ For more information: www.smartfrog.org
  */
 package org.smartfrog.avalanche.client.sf.apps.gt4.javawscore;
 
+import java.io.File;
+import java.util.Properties;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.smartfrog.avalanche.client.sf.disk.DiskUtils;
 import org.smartfrog.avalanche.client.sf.exec.ant.AntException;
 import org.smartfrog.avalanche.client.sf.exec.ant.AntUtils;
-
-import java.io.File;
-import java.util.Properties;
 
 /**
  * @author sandya

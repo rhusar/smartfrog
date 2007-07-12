@@ -11,6 +11,11 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.avalanche.server.monitor.xmpp;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jivesoftware.smack.PacketListener;
@@ -18,19 +23,15 @@ import org.jivesoftware.smack.filter.PacketFilter;
 import org.jivesoftware.smack.packet.Packet;
 import org.jivesoftware.smack.packet.PacketExtension;
 import org.jivesoftware.smack.provider.ProviderManager;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.xml.sax.SAXException;
+
 import org.smartfrog.avalanche.server.monitor.handlers.MessageHandler;
 import org.smartfrog.avalanche.shared.MonitoringEvent;
 import org.smartfrog.avalanche.shared.MonitoringEventDefaultImpl;
 import org.smartfrog.avalanche.shared.XMPPEventExtension;
 import org.smartfrog.avalanche.util.XMLUtils;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.xml.sax.SAXException;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
 
 /**
  * Implements PacketListener, this class is passed to XMPP client libraries 

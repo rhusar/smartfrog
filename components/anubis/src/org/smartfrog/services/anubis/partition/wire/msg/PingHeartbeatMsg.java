@@ -87,7 +87,7 @@ public class PingHeartbeatMsg extends HeartbeatMsg {
      * @param id Identity
      */
     public synchronized void setPingBit(Identity id) {
-        pings.add(id.id);
+        pings.contains(id.id);
     }
 
     public synchronized void clearPingBit(Identity id) {

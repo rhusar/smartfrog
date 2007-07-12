@@ -17,14 +17,18 @@ For more information: www.smartfrog.org
  */
 package org.smartfrog.avalanche.client.sf.apps.gt4.gridftp;
 
-import org.smartfrog.avalanche.client.sf.apps.gnubuild.GNUBuildException;
-import org.smartfrog.sfcore.common.SmartFrogException;
+import java.rmi.RemoteException;
+import java.util.Enumeration;
+import java.util.Properties;
+import java.util.Vector;
+
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimImpl;
+
+import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 
-import java.rmi.RemoteException;
-import java.util.Properties;
+import org.smartfrog.avalanche.client.sf.apps.gnubuild.GNUBuildException;
 
 /**
  * @author sandya

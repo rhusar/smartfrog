@@ -15,8 +15,7 @@ For more information: www.smartfrog.org
  */
 package org.smartfrog.avalanche.server;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Holder for configration attributes. Attributes vary depending on different

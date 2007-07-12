@@ -22,7 +22,6 @@ package org.smartfrog.sfcore.security;
 
 import org.smartfrog.sfcore.security.rmispi.SFDebug;
 import org.smartfrog.sfcore.security.rmispi.SFRMIClassLoaderSpi;
-import org.smartfrog.sfcore.common.SmartFrogCoreProperty;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -56,7 +55,7 @@ public class SFClassLoader {
      * separated URLS) from which we download componenents and their
      * descriptions.
      */
-    public static final String SF_CODEBASE_PROPERTY = SmartFrogCoreProperty.codebase;
+    public static final String SF_CODEBASE_PROPERTY = SmartFrogCorePropertySecurity.propBase+"codebase";
 
     /** Space separated urls from which we download the components */
     private static String targetClassBase = null;
@@ -314,7 +313,7 @@ public class SFClassLoader {
             }
         }
 
-        return getURLAsStream(cl.getResource(resourceInJar));
+        return getURLAsStream(cl.getResource(resourceInJar));        
     }
 
     /**

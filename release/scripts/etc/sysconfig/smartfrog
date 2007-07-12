@@ -14,11 +14,9 @@ then
 	HOME=/root
 fi
 
-#SFOS
-#if [[ $$DISPLAY == "" ]]
-#then
-#	export DISPLAY=localhost:8
-# export DISPLAY
-#fi
+if [[ $$DISPLAY == "" ]]
+then
+	DISPLAY=localhost:8
+fi
 
-export HOME
+export HOME DISPLAY

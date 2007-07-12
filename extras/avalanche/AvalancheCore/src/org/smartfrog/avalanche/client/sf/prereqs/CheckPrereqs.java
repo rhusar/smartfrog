@@ -17,13 +17,14 @@ For more information: www.smartfrog.org
  */
 package org.smartfrog.avalanche.client.sf.prereqs;
 
-import org.smartfrog.avalanche.client.sf.exec.ant.AntUtils;
-import org.smartfrog.sfcore.logging.Log;
-import org.smartfrog.sfcore.logging.LogFactory;
-
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Hashtable;
+import java.io.IOException;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import org.smartfrog.avalanche.client.sf.exec.ant.AntUtils;
 
 
 /**

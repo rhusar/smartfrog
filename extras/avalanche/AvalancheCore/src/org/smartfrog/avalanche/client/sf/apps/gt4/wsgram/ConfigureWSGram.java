@@ -17,16 +17,17 @@ For more information: www.smartfrog.org
  */
 package org.smartfrog.avalanche.client.sf.apps.gt4.wsgram;
 
+import java.io.File;
+import java.io.IOException;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.smartfrog.avalanche.client.sf.apps.gnubuild.GNUBuildException;
 import org.smartfrog.avalanche.client.sf.apps.gt4.build.Installation;
 import org.smartfrog.avalanche.client.sf.apps.gt4.prereqs.CheckCommand;
 import org.smartfrog.avalanche.client.sf.apps.gt4.security.SecurityConstants;
 import org.smartfrog.avalanche.client.sf.apps.utils.FileUtils;
-
-import java.io.File;
-import java.io.IOException;
 
 /**
  * @author sandya

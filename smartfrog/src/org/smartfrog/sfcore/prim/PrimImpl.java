@@ -1886,7 +1886,7 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
     * Get the TAGS for this component. TAGS are simply uninterpreted strings associated
     * with each attribute.
     *
-    * @return the set of tags or null if no tags found
+    * @return the set of tags
     *
     * @throws SmartFrogContextException the attribute does not exist;
     */
@@ -1894,19 +1894,11 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
        Object key;
        if (sfParent!=null) {
          key = sfParent.sfAttributeKeyFor(this);
-         if (key ==null) {
-             return null;
-         } else {
-             return sfParent.sfGetTags(key);
-         }
+         return sfParent.sfGetTags(key);
        } else {
          Prim parent = SFProcess.getProcessCompound();
          key = parent.sfAttributeKeyFor(this);
-         if (key ==null) {
-             return null;
-         } else {
-             return parent.sfGetTags(key);
-         }
+         return parent.sfGetTags(key);
        }
    }
 

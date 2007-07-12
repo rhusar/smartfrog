@@ -22,29 +22,29 @@ package org.smartfrog.services.os.java;
 import org.smartfrog.services.filesystem.FileIntf;
 import org.smartfrog.services.filesystem.FileSystem;
 import org.smartfrog.services.filesystem.FileUsingCompoundImpl;
-import org.smartfrog.services.os.download.Download;
 import org.smartfrog.services.os.download.DownloadImpl;
+import org.smartfrog.services.os.download.Download;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
-import org.smartfrog.sfcore.logging.Log;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.utils.ComponentHelper;
+import org.smartfrog.sfcore.logging.Log;
 
+import java.rmi.RemoteException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.net.ConnectException;
-import java.net.MalformedURLException;
-import java.net.NoRouteToHostException;
-import java.rmi.RemoteException;
-import java.security.DigestInputStream;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
+import java.util.Vector;
 import java.util.Iterator;
 import java.util.Locale;
-import java.util.Vector;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.security.DigestInputStream;
+import java.net.MalformedURLException;
+import java.net.NoRouteToHostException;
+import java.net.ConnectException;
 
 /**
  * Implementation of a library artifact.

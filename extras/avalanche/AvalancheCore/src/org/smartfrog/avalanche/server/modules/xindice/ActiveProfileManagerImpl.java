@@ -20,12 +20,11 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.xindice.core.Collection;
 import org.apache.xindice.core.DBException;
-import org.smartfrog.avalanche.core.activeHostProfile.ActiveProfileDocument;
-import org.smartfrog.avalanche.core.activeHostProfile.ActiveProfileType;
+import org.w3c.dom.Document;
+import org.smartfrog.avalanche.core.activeHostProfile.*;
 import org.smartfrog.avalanche.server.ActiveProfileManager;
 import org.smartfrog.avalanche.server.DatabaseAccessException;
 import org.smartfrog.avalanche.util.XbeanUtils;
-import org.w3c.dom.Document;
 
 /**
  * @author sanjay, Jul 29, 2005

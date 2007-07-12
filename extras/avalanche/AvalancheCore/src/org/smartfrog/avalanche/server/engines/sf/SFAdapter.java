@@ -15,52 +15,49 @@ For more information: www.smartfrog.org
  */
 package org.smartfrog.avalanche.server.engines.sf;
 
+import org.smartfrog.services.sfinterface.* ; 
+import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.processcompound.ProcessCompound;
+import org.smartfrog.sfcore.processcompound.SFProcess;
+import org.smartfrog.sfcore.prim.Prim;
+import org.smartfrog.sfcore.prim.PrimImpl;
+import org.smartfrog.sfcore.componentdescription.ComponentDescription;
+import org.smartfrog.sfcore.componentdescription.ComponentDescriptionImpl;
+import org.smartfrog.sfcore.common.Context;
+import org.smartfrog.sfcore.common.ContextImpl;
+import org.smartfrog.sfcore.compound.Compound;
+import org.smartfrog.sfcore.compound.CompoundImpl;
+import org.smartfrog.sfcore.prim.TerminationRecord;
+import org.smartfrog.sfcore.reference.Reference;
+
+import org.smartfrog.services.management.SFDeployDisplay;
+import org.smartfrog.services.display.Display;
+import javax.swing.JOptionPane;
+import javax.swing.JDialog;
+import javax.swing.JFrame;
+
+import org.smartfrog.services.quartz.scheduler.*;
+import org.smartfrog.services.quartz.collector.DataSource;
+
+import org.smartfrog.services.quartz.*;
 import org.quartz.JobDetail;
 import org.quartz.Scheduler;
 import org.quartz.SimpleTrigger;
 import org.quartz.TriggerUtils;
-import org.smartfrog.avalanche.core.activeHostProfile.ActiveProfileType;
-import org.smartfrog.avalanche.core.activeHostProfile.ModuleStateType;
-import org.smartfrog.avalanche.core.host.ArgumentType.Argument;
-import org.smartfrog.avalanche.core.host.HostType;
-import org.smartfrog.avalanche.server.ActiveProfileManager;
-import org.smartfrog.avalanche.server.AvalancheFactory;
-import org.smartfrog.avalanche.server.DatabaseAccessException;
-import org.smartfrog.avalanche.server.HostManager;
-import org.smartfrog.avalanche.server.SettingsManager;
-import org.smartfrog.avalanche.server.modules.ModuleCreationException;
-import org.smartfrog.avalanche.settings.sfConfig.SfConfigsType;
-import org.smartfrog.avalanche.settings.sfConfig.SfDescriptionType;
-import org.smartfrog.avalanche.shared.MonitoringEvent;
-import org.smartfrog.services.display.Display;
-import org.smartfrog.services.quartz.collector.DataSource;
-import org.smartfrog.services.sfinterface.SFMutiHostSubmitException;
-import org.smartfrog.services.sfinterface.SFParseException;
-import org.smartfrog.services.sfinterface.SFSubmitException;
-import org.smartfrog.services.sfinterface.SmartFrogAdapterImpl;
-import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.sfcore.compound.Compound;
-import org.smartfrog.sfcore.processcompound.SFProcess;
 
-import javax.swing.*;
-import java.io.File;
-import java.io.FilenameFilter;
-import java.net.InetAddress;
+import org.smartfrog.avalanche.server.modules.*;
+import org.smartfrog.avalanche.server.*;
+import org.smartfrog.avalanche.core.activeHostProfile.*;
+import org.smartfrog.avalanche.core.host.HostType;
+import org.smartfrog.avalanche.core.host.ArgumentType.Argument;
+import org.smartfrog.avalanche.settings.sfConfig.* ;
+import org.smartfrog.avalanche.shared.MonitoringEvent;
+
+import java.text.*;
+import java.util.*; 
+import java.io.* ;
+import java.net.InetAddress; 
 import java.net.UnknownHostException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.Vector;
 
 /**
  * @author sanjay, Jul 29, 2005
@@ -72,7 +69,7 @@ public class SFAdapter{
 
 	protected AvalancheFactory avalancheFactory ; 
 	
-	protected Scheduler sched ;
+	protected Scheduler sched ; 
 	    
 	private Vector machines = new Vector();
 
@@ -398,7 +395,7 @@ public class SFAdapter{
 	 * Extracts all attributes from the given smartfrog descriptions. 
 	 * @param sfURL
 	 * @return
-	 * @throws Exception         
+	 * @throws Exception
 	 */
 	public static Map getSFAttributes(String sfURL) throws Exception{
 		return SmartFrogAdapterImpl.getAllAttribute(sfURL);
@@ -554,7 +551,7 @@ Display display= null;
 
 
  	public static void main(String []args) throws Exception{
-		String url = "D:\\programming\\java\\SmartFrog\\components\\quartz\\src\\org\\smartfrog\\services\\sfinterface\\test\\AttribTest1.sf" ;
+		String url = "/home/sanjay/dev/AttribTest1.sf" ;
 		Map map = SmartFrogAdapterImpl.getAllAttribute(url);
 		
 		Set s = map.keySet();

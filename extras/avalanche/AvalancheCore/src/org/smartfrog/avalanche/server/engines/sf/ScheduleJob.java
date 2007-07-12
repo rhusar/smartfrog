@@ -19,7 +19,10 @@ import org.quartz.Job;
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
+import org.smartfrog.services.sfinterface.SmartFrogAdapterImpl;
+import org.smartfrog.services.sfinterface.SmartfrogAdapter;
 
+import java.util.Date;
 import java.util.Map;
 
 /**

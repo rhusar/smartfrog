@@ -14,9 +14,9 @@
 
 package org.smartfrog.services.os.java;
 
-import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
-
 import java.io.Serializable;
+
+import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
 
 /**
  * Wire representation of an artifact. This is one way only: there is no way to create a 

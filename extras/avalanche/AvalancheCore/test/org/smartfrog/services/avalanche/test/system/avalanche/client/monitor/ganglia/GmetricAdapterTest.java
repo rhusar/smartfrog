@@ -12,10 +12,9 @@ For more information: www.smartfrog.org
 package tests.org.smartfrog.avalanche.client.monitor.ganglia;
 
 
+import org.smartfrog.avalanche.client.monitor.ganglia.* ;
+import org.smartfrog.avalanche.client.monitor.*;
 import junit.framework.TestCase;
-import org.smartfrog.avalanche.client.monitor.MonitoringEvent;
-import org.smartfrog.avalanche.client.monitor.MonitoringService;
-import org.smartfrog.avalanche.client.monitor.MonitoringServiceLocator;
 
 public class GmetricAdapterTest extends TestCase {
 

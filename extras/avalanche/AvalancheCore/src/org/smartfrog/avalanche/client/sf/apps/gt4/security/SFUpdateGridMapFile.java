@@ -17,12 +17,20 @@ For more information: www.smartfrog.org
  */
 package org.smartfrog.avalanche.client.sf.apps.gt4.security;
 
-import org.smartfrog.sfcore.common.SmartFrogException;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.rmi.RemoteException;
+import java.util.Properties;
+
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimImpl;
+
+import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 
-import java.rmi.RemoteException;
+import org.smartfrog.avalanche.client.sf.apps.utils.FileUtils;
+import org.smartfrog.avalanche.shared.CAService;
 
 /**
  * @author sandya

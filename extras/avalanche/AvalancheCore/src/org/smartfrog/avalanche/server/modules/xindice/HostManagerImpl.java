@@ -19,14 +19,14 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.xindice.core.Collection;
 import org.apache.xindice.core.DBException;
-import org.smartfrog.avalanche.core.host.HostDocument;
-import org.smartfrog.avalanche.core.host.HostType;
+import org.w3c.dom.Document;
+
 import org.smartfrog.avalanche.server.DatabaseAccessException;
 import org.smartfrog.avalanche.server.HostManager;
-import org.smartfrog.avalanche.server.modules.ModuleCreationException;
+import org.smartfrog.avalanche.server.modules.*;
 import org.smartfrog.avalanche.server.monitor.handlers.HostUpdateHandler;
-import org.smartfrog.avalanche.util.XbeanUtils;
-import org.w3c.dom.Document;
+import org.smartfrog.avalanche.core.host.*;
+import org.smartfrog.avalanche.util.*;
 
 /**
  * @author sanjay, Jun 26, 2005

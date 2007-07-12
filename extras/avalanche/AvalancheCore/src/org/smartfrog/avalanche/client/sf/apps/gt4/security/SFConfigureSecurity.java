@@ -17,17 +17,19 @@ For more information: www.smartfrog.org
  */
 package org.smartfrog.avalanche.client.sf.apps.gt4.security;
 
-import org.smartfrog.avalanche.shared.CAService;
-import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.sfcore.compound.Compound;
+import java.io.IOException;
+import java.rmi.RemoteException;
+import java.net.InetAddress;
+
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimImpl;
+
+import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.prim.TerminationRecord;
+import org.smartfrog.sfcore.compound.Compound;
 import org.smartfrog.sfcore.processcompound.SFProcess;
 
-import java.io.IOException;
-import java.net.InetAddress;
-import java.rmi.RemoteException;
+import org.smartfrog.avalanche.shared.CAService;
 
 /**
  * @author sandya

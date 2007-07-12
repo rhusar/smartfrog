@@ -11,15 +11,15 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.avalanche.client.sf.disk;
 
+import java.io.File;
+import java.io.IOException;
+import java.rmi.RemoteException;
+
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.reference.Reference;
-
-import java.io.File;
-import java.io.IOException;
-import java.rmi.RemoteException;
 
 
 public class SFDeleteFile extends PrimImpl implements Prim {

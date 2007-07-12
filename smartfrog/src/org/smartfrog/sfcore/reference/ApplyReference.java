@@ -7,8 +7,6 @@ import org.smartfrog.sfcore.prim.Prim;
 
 import java.io.Serializable;
 import java.util.Iterator;
-import java.util.Collection;
-import java.util.LinkedList;
 
 /**
  * The subclass of Reference that is a function application. The structure of the classes is
@@ -194,8 +192,7 @@ public class ApplyReference extends Reference implements Copying, Cloneable, Ser
         try {
             return (Function) Class.forName(functionClass).newInstance();
         } catch (Exception e) {
-            throw (SmartFrogResolutionException) SmartFrogResolutionException.forward
-                    ("failed to create function class " + functionClass, e);
+            throw new SmartFrogResolutionException("failed to create function class " + functionClass, e);
         }
     }
 
@@ -208,8 +205,7 @@ public class ApplyReference extends Reference implements Copying, Cloneable, Ser
             ParseTimeResourceFactory factory = (ParseTimeResourceFactory) metadata.sfResolve(factoryRef);
             return factory.getFunction(metadata);
         } catch (Exception e) {
-            throw (SmartFrogResolutionException) SmartFrogResolutionException.forward
-                    ("Failed to create function. sfMeta block: " + metadata, e);
+            throw new SmartFrogResolutionException("Failed to create function. sfMeta block: " + metadata, e);
         }
     }
 
@@ -219,8 +215,9 @@ public class ApplyReference extends Reference implements Copying, Cloneable, Ser
         Context forFunction = new ContextImpl();
         for (Iterator v = comp.sfAttributes(); v.hasNext();) {
             Object name = v.next();
-            if (isNotFiltered(name.toString())) {
-                Object value = comp.sfResolveHere(name);
+            String nameS = name.toString();
+            if (!nameS.startsWith(SF_ATTRIBUTE_PREFIX)) {
+                Object value = comp.sfResolve(new Reference(ReferencePart.here(name)));
                 try {
                     forFunction.sfAddAttribute(name, value);
                 } catch (SmartFrogContextException e) {
@@ -230,18 +227,6 @@ public class ApplyReference extends Reference implements Copying, Cloneable, Ser
             }
         }
         return forFunction;
-    }
-
-    private static final Collection filtered; // Collection<String>
-    static {
-        filtered = new LinkedList();
-        filtered.add("sfFunctionClass");
-        filtered.add("sfAssertionPhase");
-    }
-
-    public static boolean isNotFiltered(String nameS) {
-        // return !nameS.startsWith(SF_ATTRIBUTE_PREFIX) || nameS.equals(SmartFrogCoreKeys.SF_CLASS);
-        return ! filtered.contains(nameS);
     }
 
 
