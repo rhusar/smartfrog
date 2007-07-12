@@ -31,6 +31,7 @@ import org.smartfrog.sfcore.compound.Compound;
 
 
 import java.rmi.RemoteException;
+import java.util.Date;
 
 /**
  * Deploy a component
@@ -192,6 +193,7 @@ public class ActionDeploy extends ConfigurationAction {
        }
 
         //finally, attach times
+        addAttributeQuietly(comp, SmartFrogCoreKeys.SF_TIME_STARTED_AT, new Date(beginTime).toString());
         addTime(comp, SmartFrogCoreKeys.SF_TIME_PARSE, parseTime - beginTime);
         addTime(comp, SmartFrogCoreKeys.SF_TIME_DEPLOY, deployTime -parseTime);
         addTime(comp, SmartFrogCoreKeys.SF_TIME_START, startTime - deployTime);
@@ -202,13 +204,23 @@ public class ActionDeploy extends ConfigurationAction {
      * Add a time to the component; ignore any exceptions
      * @param comp compoent to add
      * @param name key name
-     * @param time time to add
+     * @param time time to add; if <=0 the attribute is not added
      */
     private static void addTime(Prim comp, String name, long time) {
+        if (time >= 0) {
+            addAttributeQuietly(comp, name, new Long(time));
+        }
+    }
+
+    /**
+     * Add an an attribute, do not report any problems
+     * @param comp component
+     * @param name attribute name
+     * @param value object to add
+     */
+    private static void addAttributeQuietly(Prim comp, String name, Object value) {
         try {
-            if(time>=0) {
-                comp.sfAddAttribute(name, new Long(time));
-            }
+            comp.sfAddAttribute(name, value);
         } catch (SmartFrogRuntimeException ignored) {
 
         } catch (RemoteException ignored) {
@@ -276,9 +288,9 @@ public class ActionDeploy extends ConfigurationAction {
      * @param name name of the component
      * @param parent parent flag
      * @param targetP target
-     * @return
-     * @throws SmartFrogException
-     * @throws RemoteException
+     * @return the deployed prim
+     * @throws SmartFrogException for deployment problems
+     * @throws RemoteException for network problems
      */
     protected Prim doDeploy(ConfigurationDescriptor configuration, String name, Prim parent, ProcessCompound targetP) throws SmartFrogException, RemoteException {
         Prim prim;
