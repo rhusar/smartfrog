@@ -273,4 +273,12 @@ public class SFRMIClassLoaderSpi extends RMIClassLoaderSpi {
     public static void setSecurityOn(boolean securityOn) {
         SFRMIClassLoaderSpi.securityOn = securityOn;
     }
+
+    public static void checkSFCommunity() {
+        SecurityManager securitymanager = System.getSecurityManager();
+
+        if (securitymanager != null) {
+            securitymanager.checkPermission(new SFCommunityPermission());
+        }
+    }
 }

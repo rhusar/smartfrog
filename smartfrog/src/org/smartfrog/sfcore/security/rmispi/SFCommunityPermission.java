@@ -26,15 +26,20 @@ import java.security.BasicPermission;
 /**
  * Permission obtained when the class/resource was obtained from a fully
  * trusted origin inside the SF community.
+ *
+ * This is not granted anywhere, but trusted classes have AllPermissions,
+ * which implies any Permission - thus it implies this one.
+ *
+ * Package-private so that user code cannot play with it.
  */
-public class SFCommunityPermission extends BasicPermission {
+class SFCommunityPermission extends BasicPermission {
     /** String name for the smartfrog permission. */
-    public final static String SF_PERMISSION_NAME = "SFCommunity";
+    private final static String SF_PERMISSION_NAME = "SFCommunity";
     
     /**
      * Constructs SFCommunityPermission object.
      */
     public SFCommunityPermission() {
-        super("SF_PERMISSION_NAME");
+        super(SF_PERMISSION_NAME);
     }
 }

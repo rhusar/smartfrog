@@ -30,23 +30,22 @@ import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.componentdescription.ComponentDescriptionImpl;
-import org.smartfrog.sfcore.deployer.SFDeployer;
+import org.smartfrog.sfcore.deployer.CodeRepository;
 import org.smartfrog.sfcore.deployer.CoreClassesClassLoadingEnvironment;
+import org.smartfrog.sfcore.deployer.SFDeployer;
+import org.smartfrog.sfcore.logging.LogFactory;
+import org.smartfrog.sfcore.logging.LogSF;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.reference.Reference;
 
+import java.lang.reflect.Constructor;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.rmi.ConnectException;
 import java.rmi.RemoteException;
 import java.util.Enumeration;
 import java.util.Properties;
-import java.rmi.ConnectException;
-import java.lang.reflect.Constructor;
-
-import org.smartfrog.sfcore.logging.LogFactory;
-import org.smartfrog.sfcore.logging.LogSF;
-import org.smartfrog.sfcore.parser.ParseTimeResourceFactory;
 
 
 /**
@@ -570,13 +569,12 @@ public class SFProcess implements MessageKeys {
         processCompoundTerminated = false;
     }
 
-    public static ParseTimeResourceFactory getResourceFactory(Reference from) throws RemoteException, SmartFrogResolutionException {
-        if (from == null) return defaultResourceFactory();
-        return (ParseTimeResourceFactory)
-                getProcessCompound().sfResolve(from);
+    public static CodeRepository getCodeRepository(Reference from) throws RemoteException, SmartFrogResolutionException {
+        if (from == null) return defaultRepository();
+        return (CodeRepository) getProcessCompound().sfResolve(from);
     }
 
-    private static ParseTimeResourceFactory defaultResourceFactory() {
+    private static CodeRepository defaultRepository() {
         return new CoreClassesClassLoadingEnvironment();
     }
 }

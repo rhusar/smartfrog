@@ -41,6 +41,7 @@ import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.languages.sf.sfcomponentdescription.SFComponentDescription;
 import org.smartfrog.sfcore.languages.sf.sfreference.SFReference;
 import org.smartfrog.sfcore.processcompound.SFProcess;
+import org.smartfrog.sfcore.deployer.CodeRepository;
 
 /**
  * Implements the Parser interface for SmartFrog parsers. This implementation
@@ -619,10 +620,16 @@ public class SFParser implements Parser, MessageKeys {
      * @exception Exception failed to locate or open include
      */
     public static Reader openInclude(String include, SFReference from) throws Exception {
-        String fullInclude = include;
-        if (!include.startsWith("/")) fullInclude = "/" + include;
-        ParseTimeResourceFactory factory = SFProcess.getResourceFactory(from);
-        InputStream is = factory.getComponentDescription(fullInclude);
+
+        CodeRepository repository = SFProcess.getCodeRepository(from);
+        InputStream is = repository.getResourceAsStream(include);
+
+        if (is == null) {
+            String fullInclude;
+            if (include.startsWith("/")) fullInclude = include.substring(1);
+            else fullInclude = "/" + include;
+            is = repository.getResourceAsStream(fullInclude);
+        }
 
         if (is == null)
             throw new Exception("Include file: " + include + " not found");

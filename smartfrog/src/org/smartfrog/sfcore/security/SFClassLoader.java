@@ -229,7 +229,7 @@ public class SFClassLoader {
     private static InputStream getURLAsStream(URL resourceURL)
             throws ClassNotFoundException, IOException {
         URLConnection con = resourceURL.openConnection();
-        InputStream in = getLocalInputStream(con);
+        InputStream in = getSecureInputStream(con);
 
         if (in != null) {
             return in;
@@ -254,7 +254,7 @@ public class SFClassLoader {
      *
      * @throws IOException in case of any error
      */
-    private static InputStream getLocalInputStream(URLConnection con) throws IOException {
+    public static InputStream getSecureInputStream(URLConnection con) throws IOException {
         InputStream in = con.getInputStream();
         Certificate[] certs = null;
 

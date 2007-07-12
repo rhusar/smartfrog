@@ -87,5 +87,9 @@ public class AsynPrimDeployerImpl extends PrimDeployerImpl implements ComponentD
                 throw new SmartFrogDeploymentException(e);
             }
         }
+
+        public ClassLoader getClassLoader() {
+            throw new UnsupportedOperationException("TODO: Figure out what class loader is used by ProActive.newActive");
+        }
     }    
 }

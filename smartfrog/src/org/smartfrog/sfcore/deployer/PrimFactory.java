@@ -18,4 +18,13 @@ public interface PrimFactory {
      * @throws SmartFrogDeploymentException
      */
     Prim getComponent(ComponentDescription askedFor) throws SmartFrogDeploymentException;
+
+    /**
+     * Returns the class loader used to create classes from this factory. It is needed to allow RMI
+     * to create instances of classes coming from this factory through deserialization.
+     * The only method used will be loadClass() so the class loader returned can be a proxy that only implements
+     * that method properly.
+     * @return The classloader that underlies this factory.
+     */
+    ClassLoader getClassLoader();
 }

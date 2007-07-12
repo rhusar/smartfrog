@@ -6,6 +6,7 @@ import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.parser.ParseTimeResourceFactory;
 import org.smartfrog.sfcore.reference.Function;
 import org.smartfrog.sfcore.languages.sf.PhaseAction;
+import org.smartfrog.sfcore.security.SFSecurity;
 
 import java.io.InputStream;
 
@@ -56,10 +57,16 @@ public class CoreClassesClassLoadingEnvironment implements PrimFactory, ParseTim
     }
 
     protected Object newInstance(String className) throws ClassNotFoundException, InstantiationException, IllegalAccessException {
-        return Class.forName(className).newInstance();
+        Class clazz = getClass().getClassLoader().loadClass(className);
+        SFSecurity.checkSecurity(clazz);
+        return clazz.newInstance();
     }
 
-    public InputStream getComponentDescription(String pathname) {
-        return getClass().getResourceAsStream(pathname);
+    public InputStream getResourceAsStream(String pathname) {
+        return getClass().getClassLoader().getResourceAsStream(pathname);
+    }
+
+    public ClassLoader getClassLoader() {
+        return getClass().getClassLoader();
     }
 }
