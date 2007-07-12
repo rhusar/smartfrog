@@ -109,14 +109,13 @@ public class SFSecurity {
                     RMISocketFactory.setSocketFactory(securityEnv.getRMISocketFactory());
                     SFRMIClassLoaderSpi.setSecurityOn(true);
                 } else {
-                    //System.setSecurityManager(new DummySecurityManager());
-                    // if a java.security.policy is set then we initialize standard java security
-                    // This is necessary for dynamic classloading to work.
-                    String secPro = System.getProperty("java.security.policy");
-                    if  (secPro!=null ) {
-                        System.setSecurityManager(new SecurityManager());
-                    }
 
+//                     InetAddress rmissfBindAddr = InetAddress.getByName("guijarro-j-3.hpl.hp.com");
+//                     RMIClientSocketFactory  rmicsf = new org.smartfrog.sfcore.processcompound.SFClientSocketFactory();
+//                     RMIServerSocketFactory rmissf = new org.smartfrog.sfcore.processcompound.SFSSLServerSocketFactory(rmissfBindAddr);
+//                     RMISocketFactory rmisf = new SFRMISocketFactory(rmicsf, rmissf);
+
+                    System.setSecurityManager(new DummySecurityManager());
                     SFRMIClassLoaderSpi.setSecurityOn(false);
                     //Notification moved to SFSyten after the ini file is read.
                 }
@@ -175,7 +174,7 @@ public class SFSecurity {
         if (isSecurityOn()) {
             realRMIRegistry = LocateRegistry.createRegistry(port,
                 securityEnv.getEmptyRMIClientSocketFactory(),
-                securityEnv.getRMIServerSocketFactory());
+                securityEnv.getRMIServerSocketFactory());            
         } else {
             SFServerSocketFactory nonSecServerSocketFactory = new SFServerSocketFactory(bindAddr);
             realRMIRegistry =  LocateRegistry.createRegistry(port,null, nonSecServerSocketFactory);

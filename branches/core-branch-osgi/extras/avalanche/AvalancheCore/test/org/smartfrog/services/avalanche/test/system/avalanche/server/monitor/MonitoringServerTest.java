@@ -11,10 +11,11 @@ For more information: www.smartfrog.org
 */
 package tests.org.smartfrog.avalanche.server.monitor;
 
-import junit.framework.TestCase;
 import org.smartfrog.avalanche.server.monitor.ModuleState;
 import org.smartfrog.avalanche.server.monitor.ganglia.GmondAdapter;
 import org.smartfrog.avalanche.util.XMLUtils;
+
+import junit.framework.TestCase;
 
 public class MonitoringServerTest extends TestCase {
 	

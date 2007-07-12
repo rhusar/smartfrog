@@ -49,12 +49,6 @@
     <newdir name="dist.rpm.dir" location="${dist.dir}/rpm" />
     <property name="kernel.dir" location="../smartfrog"/>
     <newdir name="release.dir" location="${build.dir}/releases" />
-    <property name="ssh.trust" value="true" />
-    <newdir  name="tmp.dir" location="${build.dir}/tmp" />
-    <newdir  name="upload.dir" location="${build.dir}/upload" />
-
-    <property name="server.dir"
-        location="metadata/servers/" />
 
   </target>
 
@@ -253,11 +247,10 @@
     <property name="smartfrog.rpmfiles.tar.gz"
         location="${smartfrog.rpmfiles.tar}.gz"/>
     <property name="rpm.suffix"
-        value="${smartfrog.version}-${rpm.release.version}.noarch.rpm" />
-    <property name="target.rpm.shortname"
-        value="smartfrog-${rpm.suffix}" />
+        value="${smartfrog.version}-${rpm.release.version}.rpm" />
+
     <property name="target.rpm"
-        location="${dist.rpm.dir}/${target.rpm.shortname}" />
+        location="${dist.rpm.dir}/smartfrog-${rpm.suffix}" />
     <property name="demo.rpm"
         location="${dist.rpm.dir}/smartfrog-demo-${rpm.suffix}" />
     <property name="daemon.rpm"
@@ -311,17 +304,8 @@
     <unzip src="${sf-core-install.zip}"
       dest="${core.install.dir}" />
   </target>
-
-  <target name="copy-scripts" depends="init-rpm" >
-    <expandingcopy todir="${build.rpm.dir}/root/" >
-      <fileset dir="scripts" includes="**/*" />
-    </expandingcopy>
-    <property name="profile.d" location="${build.rpm.dir}/root/etc/profile.d" />
-    <property name="init.d" location="${build.rpm.dir}/root/etc/init.d" />
-  </target>
-
-
-  <target name="prepare-binary-rpm" depends="copy-scripts,expand-core" >
+  
+  <target name="prepare-binary-rpm" depends="expand-core" >
     <expandingcopy todir="${build.rpm.dir}/root/" >
       <fileset dir="scripts" includes="**/*" />
     </expandingcopy>
@@ -329,59 +313,6 @@
       <fileset dir="${build.rpm.dir}/root/" includes="**/*" />
     </sf-tar>
     <gzip src="${smartfrog.rpmfiles.tar}" destfile="${smartfrog.rpmfiles.tar.gz}" />
-  </target>
-
-  <!--copy rpms, but do not create them on demand-->
-  <target name="copy-rpms"
-      depends="init-rpm">
-    <copy todir="${upload.dir}" flatten="true">
-      <fileset dir="${dist.rpm.dir}" includes="*.rpm" />
-    </copy>
-  </target>
-
-
-  <!-- this tests the scripts, on linux only, of course-->
-  <target name="test-scripts" depends="test-sh,test-csh">
-
-  </target>
-
-  <target name="test-sh" depends="copy-scripts">
-    <exec executable="sh" failonerror="true">
-      <arg value="--verbose" />
-      <arg file="${profile.d}/smartfrog.sh"/>
-    </exec>
-  </target>
-
-  <target name="test-csh" depends="copy-scripts">
-
-    <exec executable="csh" failonerror="true">
-      <arg value="-v" />
-      <arg file="${profile.d}/smartfrog.csh"/>
-    </exec>
-  </target>
-
-
-  <target name="expand-rpm-debian" depends="rpm,copy-rpms"
-      description="expand the rpm on a debian system, but do not install it">
-    <newdir name="rpm.expanded.dir" location="${build.rpm.dir}/expanded" />
-    <exec executable="/usr/bin/alien" failonerror="true"
-       dir="${rpm.expanded.dir}" >
-      <arg value="--generate"/>
-      <arg value="--scripts"/>
-      <arg file="${target.rpm}"/>
-    </exec>
-    <echo> RPM expanded into ${rpm.expanded.dir}</echo>
-  </target>
-
-  <target name="install-rpm-rhat" depends="rpm,copy-rpms"
-      description="install the rpm on a RedHat system">
-    <echo> installing RPM ${target.rpm}</echo>
-    <exec executable="rpm" failonerror="true" >
-      <arg value="--upgrade"/>
-      <arg value="--vv"/>
-      <arg file="${target.rpm}"/>
-    </exec>
-    <echo> installed RPM ${target.rpm}</echo>
   </target>
 
 
@@ -486,47 +417,28 @@
   </target>
 
 
-  <target name="load-server-settings" depends="init">
+  <target name="load-server-settings">
+    <property name="server.dir"
+        location="metadata/servers/" />
     <fail unless="server">
-      Failed.
       Set the "server" property to the name of a server
       whose connection settings are in a property file under
-      ${server.dir}.
+      ${server.dir}!
     </fail>
     <property name="ssh.propfile"
         location="${server.dir}/${server}.properties" />
     <loadproperties srcfile="${ssh.propfile}" />
-    <echo>
-      SCP target is ${ssh.server}
-      User is ${ssh.user}
-      trust=${ssh.trust}
-      keyfile=${ssh.keyfile}
-    </echo>
-    <presetdef name="ssh-remote">
-      <sshexec host="${ssh.server}"
-          username="${ssh.user}"
-          passphrase="${ssh.passphrase}"
-          trust="${ssh.trust}"
-          timeout="6000000"
-          keyfile="${ssh.keyfile}"
-          />
-    </presetdef>
   </target>
-
-  <target name="ready-to-upload-rpms"
-      depends="copy-rpms">
-
-  </target>
-
-
 
   <target name="upload-init"
-      depends="init,ready-to-upload-rpms,check-scp,load-server-settings,check-ftp,locate-core-install">
-
+      depends="init,init-rpm,check-scp,load-server-settings,check-ftp,locate-core-install">
+    <property name="ssh.trust" value="yes" />
+    <newdir  name="tmp.dir" location="${build.dir}/tmp" />
+    <newdir  name="upload.dir" location="${build.dir}/upload" />
     <copy todir="${upload.dir}" flatten="true">
+      <fileset dir="${dist.rpm.dir}" includes="*.rpm" />
       <fileset file="${izpack.jar}" />
     </copy>
-
     <copy tofile="${upload.dir}/smartfrog-core-distribution.zip"
         file="${sf-core-install.zip}" />
     <copy todir="${upload.dir}" >
@@ -540,16 +452,16 @@
     </fileset>
   </target>
 
-  <target name="ssh-test" depends="ssh-ls" >
-    <echo >ssh appears to be working</echo>
-  </target>
-  <target name="ssh-ls" depends="load-server-settings" >
-    <ssh-remote command="ls"/>
-  </target>
 
+  <!-- insert trust="true" to turn on trust -->
   <target name="scp-upload" depends="upload-init" if="ssh.enabled">
-
-    <ssh-remote command="mkdir -p ${ssh.dir}"/>
+    <echo>SCP target is ${ssh.server}</echo>
+    <sshexec host="${ssh.server}"
+        username="${ssh.user}"
+        passphrase="${ssh.passphrase}"
+        trust="${ssh.trust}"
+        keyfile="${ssh.keyfile}"
+        command="mkdir -p ${ssh.dir}"/>
     <property name="ssh.path"
         value="${ssh.user}@${ssh.server}:${ssh.dir}" />
     <scp remoteToDir="${ssh.path}"
@@ -559,7 +471,12 @@
         verbose="${ssh.verbose}" >
       <fileset refid="upload.fileset"/>
     </scp>
-    <ssh-remote command="chmod a+r ${ssh.dir}/*"/>
+    <sshexec host="${ssh.server}"
+        username="${ssh.user}"
+        passphrase="${ssh.passphrase}"
+        trust="${ssh.trust}"
+        keyfile="${ssh.keyfile}"
+        command="chmod a+r ${ssh.dir}/*"/>
   </target>
 
   <target name="ftp-upload" depends="upload-init" if="ftp.enabled">
@@ -590,173 +507,27 @@
   <target name="upload-no-rebuild" depends="can-upload,scp-upload,ftp-upload"
       description="upload the existing artifacts"/>
 
-  <target name="checksums" depends="ready-to-upload-rpms">
-
-  </target>
-
-  <!--
-        ====================================================
-            RPM uploads
-        ====================================================
-  -->
-
-  <target name="rpm-upload-init" depends="check-scp,init,ready-to-upload-rpms">
-    <fail unless="rpm.server">
-      Failed.
-      Set the "rpm.server" property to the name of a server
-      whose connection settings are in a property file under
-      ${server.dir}.
-    </fail>
-    <property name="rpm.propfile"
-        location="${server.dir}/rpm.${rpm.server}.properties" />
-    <loadproperties srcfile="${rpm.propfile}" />
-    <echo>SCP target is ${rpm.server} at ${rpm.ssh.server}</echo>
-    <presetdef name="rpmssh">
-      <sshexec host="${rpm.ssh.server}"
-          username="${rpm.ssh.user}"
-          passphrase="${rpm.ssh.passphrase}"
-          trust="${rpm.ssh.trust}"
-          keyfile="${rpm.ssh.keyfile}"
-          timeout="60000"
-          />
-    </presetdef>
-    <presetdef name="rootssh">
-      <rpmssh
-          username="root"
-          />
-    </presetdef>
-    <macrodef name="validate-rpm-result">
-      <attribute name="result" />
-      <sequential >
-        <echo>
-          @{result}
-        </echo>
-        <fail>
-          <condition >
-            <contains
-                string="@{result}"
-                substring="does not exist"/>
-          </condition>
-          The rpm contains files belonging to an unknown user.
-        </fail>
-      </sequential>
-    </macrodef>
-
-    <fileset id="rpm.upload.fileset" dir="${upload.dir}">
-      <include name="*.rpm"/>
-    </fileset>
-    <!--override this to -vv for extra diagnostics -->
-    <property name="rpm.verbosity" value ="-v" />
-    <!--this is the full rpm destination-->
-    <property name="rpm.full.ssh.dir" value="/home/${rpm.ssh.user}/${rpm.ssh.dir}" />
-    <echo >
-      remote server is ${rpm.ssh.server}
-      remote directory is ${rpm.full.ssh.dir}
-    </echo>
-  </target>
-
-  <target name="rpm-upload" depends="rpm-upload-init" >
-    <rpmssh command="mkdir -p ${rpm.full.ssh.dir}"/>
-    <rpmssh command="rm ${rpm.full.ssh.dir}/smartfrog-*.rpm" failonerror="false"/>
-    <property name="rpm.ssh.path"
-        value="${rpm.ssh.user}@${rpm.ssh.server}:${rpm.full.ssh.dir}" />
-    <scp remoteToDir="${rpm.ssh.path}"
-        passphrase="${rpm.ssh.passphrase}"
-        keyfile="${rpm.ssh.keyfile}"
-        trust="${rpm.ssh.trust}"
-        verbose="${rpm.ssh.verbose}" >
-      <fileset refid="rpm.upload.fileset"/>
-    </scp>
-  </target>
-
-  <target name="rpm-remote-install-core" depends="rpm-upload" >
-    <rootssh command="cd ${rpm.full.ssh.dir};rpm --upgrade --force ${rpm.verbosity} ${target.rpm.shortname}"
-        outputProperty="rpm.result.core"/>
-    <validate-rpm-result result="${rpm.result.core}" />
-  </target>
-
-  <target name="rpm-remote-install-daemon" depends="rpm-upload" >
-    <rootssh command="cd ${rpm.full.ssh.dir};rpm --upgrade --force ${rpm.verbosity} smartfrog-daemon-*.rpm"
-        outputProperty="rpm.result.daemon"/>
-    <validate-rpm-result result="${rpm.result.daemon}" />
-
-  </target>
-
-  <target name="rpm-remote-install-demo" depends="rpm-upload" >
-    <rootssh command="cd ${rpm.full.ssh.dir};rpm --upgrade --force ${rpm.verbosity} smartfrog-demo-*.rpm"
-        outputProperty="rpm.result.demo"/>
-    <validate-rpm-result result="${rpm.result.demo}" />
-  </target>
-
-  <target name="rpm-ready-to-remote-install" depends="rpm-remote-uninstall"/>
-
-
-  <target name="rpm-remote-install" depends="rpm-remote-install-core,rpm-remote-install-demo,rpm-remote-install-daemon" >
-  </target>
-
-  <target name="rpm-remote-uninstall" depends="rpm-upload-init" >
-    <rootssh command="rpm --erase ${rpm.verbosity} smartfrog smartfrog-daemon smartfrog-demo"
-        failonerror="false"/>
-  </target>
-
-  <target name="rpm-remote-test" depends="rpm-remote-version,rpm-remote-install" />
-
-  <target name="rpm-remote-version" depends="rpm-ready-to-remote-install,rpm-remote-install-core" >
-    <rpmssh command="sfVersion"
-        outputProperty="rpm.test.results"/>
-    <echo>${rpm.test.results}</echo>
-    <fail>
-      <condition>
-        <not>
-          <contains string="${rpm.test.results}" substring="${smartfrog.version}"/>
-        </not>
-      </condition> 
-      Did not find "${smartfrog.version}" in "${rpm.test.results}", which implies
-      the installed smartfrog is not what we just built and pushed up.
-    </fail>
-  </target>
-
-  <target name="rpm-remote-daemon" depends="rpm-remote-install-daemon" >
-    <rpmssh command="smartfrog"
-        outputProperty="rpm.daemon.results"/>
-    <echo>${rpm.test.results}</echo>
-    <fail>
-      <not>
-        <contains string="${rpm.test.results}" substring="${smartfrog.version}" />
-      </not>
-      Did not find "${smartfrog.version}" in "${rpm.test.results}", which implies
-      the installed smartfrog is not what we just built and pushed up.
-    </fail>
-  </target>
-
-
-  <!--
-        ====================================================
-            Subversion tagging
-        ====================================================
-  -->
   <target name="svn-init" depends="init">
+    <fail unless="svn.revision">
+      The property svn.revision must be set to define which revision to use
+    </fail>
     <property name="svn.tag" value="release${smartfrog.version}" />
     <echo>SVN tag="${svn.tag}"</echo>
+    <property name="svn.message"
+      value="release ${smartfrog.version} from revision ${svn.revision} on ${build.date} by ${user.name}" />
+    <echo>SVN message="${svn.message}"</echo>
     <property name="svn.url" value="https://smartfrog.svn.sourceforge.net/svnroot/smartfrog/" />
   </target>
 
   <!--
-  Usage: ant svn-tag -Dsvn.tag=3.11.001beta -Dsvn.revision=HEAD
   Issue a command like
     svn copy https://smartfrog.svn.sourceforge.net/svnroot/smartfrog/trunk -r 4328 \
            https://smartfrog.svn.sourceforge.net/svnroot/smartfrog/tags/release-1.0 \
-      -m "release3.11.001beta"
+      -m "release3.11.000beta1"
 
   -->
   <target name="svn-tag" depends="svn-init"
   description="Tag a version of the SVN repository; set svn.revision to the specific revision required">
-    <fail unless="svn.revision">
-      The property svn.revision must be set to define which revision to use
-    </fail>
-    <property name="svn.message"
-        value="release ${svn.tag} (${smartfrog.version}) from revision ${svn.revision} on ${build.date} by ${user.name}" />
-    <echo>SVN message="${svn.message}"</echo>
     <echo>issuing SVN command</echo>
     <exec failonerror="true"
         executable="svn">
@@ -768,18 +539,16 @@
       <arg value="-m" />
       <arg value="${svn.message}"/>
     </exec>
-    <echo>Tag URL: ${svn.url}/tags/${svn.tag}</echo>
   </target>
 
 <!--
-Usage ant svn-deletetag -Dsvn.tag=3.11.001beta
 svn delete  https://smartfrog.svn.sourceforge.net/svnroot/smartfrog/tags/something \
              -m "Removing unwanted tag."
 -->
   <target name="svn-deletetag" depends="svn-init"
-    description="remove an unwanted tag; set svn.tag to the specific tag name">
+    description="remove an unwanted tag; set svn.tag to the specific tag name, or have it worked out from svn.revision">
     <property name="svn.delete.message"
-      value="removing revision ${svn.tag} on ${build.date} by ${user.name}" />
+      value="removing revision ${svn.revision} on ${build.date} by ${user.name}" />
     <echo>issuing SVN command</echo>
     <exec failonerror="true"
         executable="svn">

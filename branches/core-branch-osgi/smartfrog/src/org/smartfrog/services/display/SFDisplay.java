@@ -238,27 +238,15 @@ public class SFDisplay extends PrimImpl implements Prim, PrintMsgInt, PrintErrMs
             }
 
         } catch (Exception e) {
-            restoreOutputStreams();
+             System.setErr(sysErr);
              // TODO: Get the message from message bundle
              System.err.println("Error in SFDisplay.sfDeploy():" + e);
              throw new SmartFrogDeploymentException(e, this);
         }
    }
 
-    private synchronized void restoreOutputStreams() {
-        if(sysErr!=null) {
-            System.setErr(sysErr);
-            sysErr=null;
 
-        }
-        if(sysOut!=null) {
-            System.setOut(sysOut);
-            sysOut=null;
-        }
-    }
-
-
-    /**
+   /**
     *Reads attributes defined in SF description. All attributes are optional.
     *
     *@throws SmartFrogResolutionException if it fails to read an attribute
@@ -341,16 +329,21 @@ public class SFDisplay extends PrimImpl implements Prim, PrintMsgInt, PrintErrMs
     */
    public synchronized void sfTerminateWith(TerminationRecord t) {
       try {
-          restoreOutputStreams();
+         if (redirectStd) {
+            System.setErr(sysErr);
+            System.setOut(sysOut);
+         }
 
          if (screenEditable) {
             System.setIn(sysIn);
          }
       } catch (Exception e) {
+         System.setErr(sysErr);
          if (sfLog().isErrorEnabled()) sfLog().error("Error in SFDisplay.sfTerminateWith():" + e,e);
       }
 
       try {
+         //System.out.println("Client: SFTerminate");
           if (display != null) {
               display.dispose();
               display = null;

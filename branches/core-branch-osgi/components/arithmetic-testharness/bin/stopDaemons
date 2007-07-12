@@ -2,7 +2,7 @@
 export TOP=$PWD
 export DEST=$1
 shift
-export SFHOME=$DEST/dist
+export SFHOME=$DEST/core/smartfrog/dist
 export PATH=$SFHOME/bin:$PATH
 #cd $DEST/testbed/core/smartfrog/dist/bin
 for x in $@;

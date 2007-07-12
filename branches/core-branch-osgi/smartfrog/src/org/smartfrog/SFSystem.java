@@ -89,7 +89,6 @@ public class SFSystem implements MessageKeys {
      * root process. Will be null after termination.
      */
     private ProcessCompound rootProcess;
-    public static final String HEADLESS_MODE_MESSAGE = "Running in headless mode";
 
     /**
      * Entry point to get system properties. Works around a bug in some JVM's
@@ -374,13 +373,11 @@ public class SFSystem implements MessageKeys {
 
         OptionSet opts = new OptionSet(args);
 
-        maybeShowDiagnostics(opts);
+        showDiagnostics(opts);
 
         if (opts.errorString != null) {
             exitWith(opts.errorString, ExitCodes.EXIT_ERROR_CODE_GENERAL);
         }
-        //engage headless mode
-        maybeGoHeadless(opts);
         try {
             setRootProcess(runSmartFrog(opts.cfgDescriptors));
         } catch (SmartFrogException sfex) {
@@ -447,10 +444,10 @@ public class SFSystem implements MessageKeys {
     }
 
     /**
-     * Shows diagnostics report if using {@link OptionSet#diagnostics} is true
+     * Shows diagnostics report
      * @param opts OptionSet
      */
-    private void maybeShowDiagnostics(OptionSet opts) {
+    private void showDiagnostics(OptionSet opts) {
       if (opts.diagnostics){
         //org.smartfrog.sfcore.common.Diagnostics.doReport(System.out);
         StringBuffer report = new StringBuffer();
@@ -458,18 +455,6 @@ public class SFSystem implements MessageKeys {
         sfLog().out(report.toString());
       }
     }
-
-    /**
-     * Turn headless support on if requested, using {@link OptionSet#headless}
-     * @param opts the option set
-     */
-    private void maybeGoHeadless(OptionSet opts) {
-        if(opts.headless) {
-            sfLog().info(HEADLESS_MODE_MESSAGE);
-            System.setProperty("java.awt.headless", "true");
-        }
-    }
-
 
     /**
      * Prints StackTrace
@@ -549,8 +534,19 @@ public class SFSystem implements MessageKeys {
             // Read init properties
             readPropertiesFromIniFile();
             sfLog();
-            notifySecurityStatus();
+            // Notify status of Security
+            if (!SFSecurity.isSecurityOn()){
+                String securityRequired = System.getProperty(SFSecurityProperties.propSecurityRequired,"false");
+                Boolean secured=Boolean.valueOf(securityRequired);
+                if(secured.booleanValue()) {
+                    //we need security, but it is not enabled
+                    throw new SFGeneralSecurityException(MessageUtil.formatMessage(ERROR_NO_SECURITY_BUT_REQUIRED));
+                }
+                if (sfLog().isWarnEnabled()) {
+                    sfLog().warn(MessageUtil.formatMessage(WARN_NO_SECURITY));
+                }
 
+            }
             // Init logging properties
             Logger.init();
 
@@ -565,29 +561,6 @@ public class SFSystem implements MessageKeys {
                 }
             }
             alreadySystemInit = true;
-        }
-    }
-
-    public static void notifySecurityStatus() throws SFGeneralSecurityException {
-        // Notify status of Security
-        if (!SFSecurity.isSecurityOn()){
-            String securityRequired = System.getProperty(SFSecurityProperties.propSecurityRequired,"false");
-            Boolean secured=Boolean.valueOf(securityRequired);
-            if(secured.booleanValue()) {
-                //we need security, but it is not enabled
-                throw new SFGeneralSecurityException(MessageUtil.formatMessage(ERROR_NO_SECURITY_BUT_REQUIRED));
-            }
-            if (sfLog().isWarnEnabled()) {
-                sfLog().warn(MessageUtil.formatMessage(WARN_NO_SECURITY));
-            }
-
-        }
-        // if this property is set the a sec manager is created
-        String secPro = System.getProperty(SmartFrogCoreProperty.codebase);
-        if  (secPro!=null ) {
-            if (sfLog().isDebugEnabled()) sfLog().debug("Using java security policy: "+secPro);
-        } else {
-            if (sfLog().isDebugEnabled()) sfLog().debug("No security manager loaded by SmartFrog");
         }
     }
 

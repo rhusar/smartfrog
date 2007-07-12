@@ -1,27 +1,93 @@
 package org.smartfrog.sfcore.languages.sf.sfreference;
 
-import org.smartfrog.sfcore.common.Context;
-import org.smartfrog.sfcore.common.ContextImpl;
-import org.smartfrog.sfcore.common.SFTempValue;
-import org.smartfrog.sfcore.common.SmartFrogLazyResolutionException;
-import org.smartfrog.sfcore.common.SmartFrogResolutionException;
-import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
+import org.smartfrog.sfcore.reference.*;
 import org.smartfrog.sfcore.languages.sf.sfcomponentdescription.SFComponentDescription;
-import org.smartfrog.sfcore.reference.ApplyReference;
-import org.smartfrog.sfcore.reference.AssertReference;
-import org.smartfrog.sfcore.reference.ReferenceResolver;
-import org.smartfrog.sfcore.reference.RemoteReferenceResolver;
+import org.smartfrog.sfcore.parser.ReferencePhases;
+import org.smartfrog.sfcore.common.*;
+import org.smartfrog.sfcore.componentdescription.ComponentDescription;
+import org.smartfrog.sfcore.prim.Prim;
+import org.smartfrog.sfcore.prim.PrimImpl;
 
 import java.util.Iterator;
 
 /**
  * Representation of Assert Reference for the SF Language
  */
-public class SFAssertReference extends SFApplyReference {
+public class SFAssertReference extends SFReference implements ReferencePhases {
+    protected SFComponentDescription comp;
     protected SFComponentDescription copyComp;
 
     public SFAssertReference(SFComponentDescription comp) {
-        super(comp);
+        super();
+        this.comp = comp;
+    }
+
+    /**
+     * Get tje run-time version of the reference
+     *
+     * @return the reference
+     * @throws org.smartfrog.sfcore.common.SmartFrogCompilationException
+     */
+    public Reference sfAsReference() throws SmartFrogCompilationException {
+        AssertReference ar = new AssertReference(comp.sfAsComponentDescription());
+        ar.setEager(getEager());
+        ar.setData(getData());
+        return ar;
+    }
+
+    /**
+     * Returns a copy of the reference, by cloning itself and the function part
+     *
+     * @return copy of reference
+     * @see org.smartfrog.sfcore.common.Copying
+     */
+    public Object copy() {
+        SFAssertReference ret = (SFAssertReference) clone();
+
+        ret.comp = (SFComponentDescription) comp.copy();
+        ret.setEager(eager);
+
+        return ret;
+    }
+
+    /**
+     * Makes a clone of the reference. The inside ref holder is cloned, but the
+     * contained component is NOT.
+     *
+     * @return clone of reference
+     */
+    public Object clone() {
+        SFAssertReference res = (SFAssertReference) super.clone();
+        res.comp = comp;
+        res.setEager(eager);
+
+        return res;
+    }
+
+    /**
+     * Checks if this and given reference are equal. Two references are
+     * considered to be equal if the component they wrap are ==
+     *
+     * @param ref to be compared
+     * @return true if equal, false if not
+     */
+    public boolean equals(Object ref) {
+        if (!(ref instanceof SFAssertReference)) {
+            return false;
+        }
+
+        return ((SFAssertReference) ref).comp == comp;
+
+    }
+
+    /**
+     * Returns the hashcode for this reference. Hash code for reference is made
+     * out of the sum of the parts hashcodes
+     *
+     * @return integer hashcode
+     */
+    public int hashCode() {
+        return comp.hashCode();
     }
 
     /**
@@ -37,6 +103,7 @@ public class SFAssertReference extends SFApplyReference {
             throws SmartFrogResolutionException
     {
         return doResolve(rr, true);
+
     }
 
     /**
@@ -49,9 +116,9 @@ public class SFAssertReference extends SFApplyReference {
      *          if reference failed to resolve
      */
     public Object resolve(ReferenceResolver rr, int index)
-            throws SmartFrogResolutionException
-    {
+            throws SmartFrogResolutionException {
         return doResolve(rr, false);
+
     }
 
     private Object doResolve(Object rr, boolean remote) throws SmartFrogResolutionException {//take a new context...
@@ -61,11 +128,11 @@ public class SFAssertReference extends SFApplyReference {
         //     if any return s LAZY object, set self to lazy and return self, otherwise update copy
         //     and invoke function with copy of CD, return result
 
-        copyComp = (SFComponentDescription) comp.copy();
+        copyComp = (SFComponentDescription)comp.copy();
 
         if (getData()) return this;
 
-        initComp(rr);
+        initParent(rr);
 
         String assertionPhase = getAssertionPhase();
 
@@ -101,15 +168,21 @@ public class SFAssertReference extends SFApplyReference {
         try {
             assertionPhase = (String) comp.sfResolveHere("sfAssertionPhase");
         } catch (ClassCastException e) {
-            throw (SmartFrogResolutionException) SmartFrogResolutionException.forward
-                    ("assertion phase is not a string", e);
+            throw new SmartFrogResolutionException("assertion phase is not a string", e);
         } catch (SmartFrogResolutionException e) {
            assertionPhase = "dynamic";
         }
         if (!(assertionPhase.equals("dynamic") || assertionPhase.equals("static") || assertionPhase.equals("staticLazy"))) {
-            throw new SmartFrogResolutionException("assertion phase is not valid - must be static, staticLazy or dynamic");
+            throw new SmartFrogResolutionException("assertion phase is not a valid - must be static, staticLazy or dynamic");
         }
         return assertionPhase;
+    }
+
+    private void initParent(Object rr) {
+        if (rr instanceof ComponentDescription)
+            comp.setParent((ComponentDescription) rr);
+        else if (rr instanceof Prim)
+            comp.setPrimParent((Prim) rr);
     }
 
     private Object getLazyValue(String assertionPhase) throws SmartFrogResolutionException {
@@ -141,18 +214,27 @@ public class SFAssertReference extends SFApplyReference {
         for (Iterator v = comp.sfAttributes(); v.hasNext();) {
             Object name = v.next();
 
-            if (ApplyReference.isNotFiltered(name.toString())) {
+            String nameS = name.toString();
+            if (!nameS.equals("sfFunctionClass") && !nameS.equals("sfAssertionPhase")) {
                 Object value;
                 try {
-                    value = comp.sfResolveHere(name);
-                    addAttributeToContext(value, name, forFunction);
+                     value = comp.sfResolve(new Reference(ReferencePart.here(name)));
+                     try {
+                        comp.sfReplaceAttribute(name, value);
+                        forFunction.sfAddAttribute(name, value);
+                    } catch (SmartFrogContextException e) {
+                        //shouldn't happen
+                    } catch (SmartFrogRuntimeException e) {
+                        //shouldn't happen
+                    }
                 } catch (SmartFrogLazyResolutionException e) {
                     if (assertionPhase.equals("static")) {
-                        throw (SmartFrogResolutionException) SmartFrogResolutionException.forward
-                                ("Static assertion cannot evaluate due to LAZY attributes", e);
+                        throw new SmartFrogResolutionException("Static assertion cannot evaluate due to LAZY attributes");
                     }
                     hasLazy = true;
                 }
+
+
             }
         }
         return hasLazy;

@@ -17,22 +17,25 @@ For more information: www.smartfrog.org
  */
 package org.smartfrog.avalanche.client.sf.apps.gt4.javawscore;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.smartfrog.avalanche.client.sf.apps.gt4.javawscore.utils.EditXML;
 import org.smartfrog.avalanche.client.sf.disk.DiskUtils;
 import org.smartfrog.avalanche.client.sf.exec.ant.AntException;
 import org.smartfrog.avalanche.client.sf.exec.ant.AntUtils;
-import org.w3c.dom.Element;
-import org.xml.sax.SAXException;
+import org.smartfrog.avalanche.client.sf.apps.gt4.javawscore.utils.EditXML;
 
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.TransformerException;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.Hashtable;
 import java.util.Properties;
+import java.util.Hashtable;
+
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.TransformerException;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import org.w3c.dom.Element;
+import org.xml.sax.SAXException;
 
 
 /**

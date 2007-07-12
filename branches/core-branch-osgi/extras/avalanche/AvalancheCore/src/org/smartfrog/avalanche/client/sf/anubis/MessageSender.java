@@ -11,8 +11,7 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.avalanche.client.sf.anubis;
 
-import org.smartfrog.avalanche.shared.MonitoringConstants;
-import org.smartfrog.avalanche.shared.MonitoringEvent;
+import java.util.Properties;
 
 import javax.jms.MapMessage;
 import javax.jms.Queue;
@@ -23,7 +22,9 @@ import javax.jms.QueueSession;
 import javax.jms.Session;
 import javax.naming.Context;
 import javax.naming.InitialContext;
-import java.util.Properties;
+
+import org.smartfrog.avalanche.shared.MonitoringConstants;
+import org.smartfrog.avalanche.shared.MonitoringEvent;
 
 public class MessageSender {
 	QueueConnection qc = null; 
@@ -36,7 +37,7 @@ public class MessageSender {
 	
 	
 	public void init() throws Exception{
-        Properties p = new Properties();
+        Properties p = new Properties(); 
         p.put(Context.INITIAL_CONTEXT_FACTORY, 
              "org.mom4j.jndi.InitialCtxFactory"); 
         

@@ -19,25 +19,26 @@
  */
 package org.smartfrog.services.os.java;
 
-import org.smartfrog.services.filesystem.FileSystem;
-import org.smartfrog.services.filesystem.FileUsingComponentImpl;
-import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
-import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.prim.TerminationRecord;
+import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.utils.ComponentHelper;
+import org.smartfrog.services.filesystem.FileUsingComponentImpl;
+import org.smartfrog.services.filesystem.FileSystem;
 
-import java.io.BufferedInputStream;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
 import java.rmi.RemoteException;
+import java.util.Properties;
+import java.util.Vector;
+import java.util.Enumeration;
+import java.util.List;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
-import java.util.List;
-import java.util.Properties;
-import java.util.Vector;
+import java.io.InputStream;
+import java.io.IOException;
+import java.io.FileInputStream;
+import java.io.BufferedInputStream;
+import java.io.FileNotFoundException;
 
 /**
  * created 28-Feb-2006 13:50:52

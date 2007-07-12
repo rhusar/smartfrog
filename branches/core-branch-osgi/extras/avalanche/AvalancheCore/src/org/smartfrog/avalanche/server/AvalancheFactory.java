@@ -11,12 +11,12 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.avalanche.server;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.smartfrog.avalanche.server.modules.ModuleCreationException;
 import org.smartfrog.avalanche.server.modules.bdb.BDBFactoryImpl;
 import org.smartfrog.avalanche.server.modules.xindice.XindiceFactoryImpl;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Main access point for Avalanche Database, its an abstract factory class 

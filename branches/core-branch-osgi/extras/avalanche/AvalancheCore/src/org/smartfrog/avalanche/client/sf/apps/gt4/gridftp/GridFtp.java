@@ -17,13 +17,14 @@ For more information: www.smartfrog.org
  */
 package org.smartfrog.avalanche.client.sf.apps.gt4.gridftp;
 
+import java.util.Properties;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.smartfrog.avalanche.client.sf.apps.gnubuild.GNUBuildException;
+
 import org.smartfrog.avalanche.client.sf.apps.gt4.build.Configure;
 import org.smartfrog.avalanche.client.sf.apps.gt4.build.Installation;
-
-import java.util.Properties;
+import org.smartfrog.avalanche.client.sf.apps.gnubuild.*;
 
 /**
  * @author sandya

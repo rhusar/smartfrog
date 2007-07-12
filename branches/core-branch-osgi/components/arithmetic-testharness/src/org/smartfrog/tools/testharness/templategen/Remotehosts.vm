@@ -14,14 +14,15 @@ sfConfig extends Parallel {
 	    Telnet:timeout 70000;
 	    #if ($daemon.isLinux())
             Telnet:ostype "linux";
-	    Telnet:commands ["cd ${sharedDir}/daemons/$daemon.host",
-			     "export SFHOME=${installDir}/dist",
+	    Telnet:commands ["cd ${installDir}",
+			     "cd ../../../daemons/${daemon.host}",
+                             "export SFHOME=${installDir}/dist",
                              "export PATH=$SFHOME/bin:$PATH",
 		             "nohup sfDaemon &"];
 	    #elseif ($daemon.isWindows())
             	Telnet:ostype "windows";
 	        Telnet:shellPrompt "C:\\>";
-		Telnet:commands ["cd ${sharedDir}",
+		Telnet:commands ["cd ${installDir}",
 	                	 ("start_sfdaemon.bat ${daemon.javahome} ${installDir}\\" ++"dist server"), 
 				 "net start Daemon"];
 	    #end

@@ -30,6 +30,8 @@ import org.smartfrog.sfcore.parser.Phases;
 import org.smartfrog.sfcore.parser.StreamLanguageParser;
 import org.smartfrog.sfcore.parser.ReferencePhases;
 
+import org.smartfrog.sfcore.security.SFClassLoader;
+
 import org.smartfrog.sfcore.common.SmartFrogParseException;
 import org.smartfrog.sfcore.common.MessageKeys;
 import org.smartfrog.sfcore.common.MessageUtil;
@@ -59,7 +61,7 @@ public class SFParser implements StreamLanguageParser {
      * Default SF parser factory class
      */
     public static final String defaultSFFactoryClass =
-            "org.smartfrog.sfcore.languages.csf.DefaultParserNodeFactory";
+            "org.smartfrog.sfcore.languages.csf.DefaultFactory";
 
     /**
      * Default SF parser Include Handler class

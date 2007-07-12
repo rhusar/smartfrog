@@ -27,7 +27,7 @@ import java.util.Enumeration;
 
 /**
  * Function that validates all the attributes that represent assertions - these are attributes that do
- * not start with the prefix "sf".
+ * not start with the prefix "sf". These are filtered by the code that creates our context.
  */
 public class CheckAssertions extends BaseFunction {
     /**
@@ -45,16 +45,15 @@ public class CheckAssertions extends BaseFunction {
             Object key = e.nextElement();
             Object value = context.get(key);
 
-            if (!key.toString().startsWith("sf")) {
-                if (value instanceof Boolean) {
-                    if (!((Boolean) value).booleanValue()) {
-                        failedAssertions.add(key.toString() + ": evaluates to false");
-                    }
-                } else {
-                    failedAssertions.add("\""+key+"\"" + ": has non-boolean value: " + value + " of type: " + value.getClass());
+            if (value instanceof Boolean) {
+                if (!((Boolean) value).booleanValue()) {
+                    failedAssertions.add(key.toString() + ": evaluates to false");
                 }
+            } else {
+                failedAssertions.add(key + ": has non-boolean " + value.getClass());
             }
         }
+
         if (failedAssertions.size() > 0) {
             throw new SmartFrogAssertionResolutionException("assertions have failed for: " + failedAssertions);
         } else {

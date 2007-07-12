@@ -11,18 +11,20 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.avalanche.server;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.jivesoftware.smack.AccountManager;
 import org.jivesoftware.smack.XMPPException;
+
+import org.smartfrog.avalanche.server.engines.sf.SFAdapter;
 import org.smartfrog.avalanche.server.modules.ModuleCreationException;
 import org.smartfrog.avalanche.server.monitor.handlers.ActiveProfileUpdateHandler;
 import org.smartfrog.avalanche.server.monitor.handlers.HostUpdateHandler;
 import org.smartfrog.avalanche.server.monitor.handlers.HostUpdateRosterHandler;
 import org.smartfrog.avalanche.server.monitor.xmpp.XMPPAdapter;
-import org.smartfrog.sfcore.logging.Log;
-import org.smartfrog.sfcore.logging.LogFactory;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Wrapper class for Avalanche server initialization and shutdown. This can be used independently 
@@ -77,7 +79,7 @@ public class ServerSetup {
 	private String eventListenerPwd = "xlistener" ;
 	
 	
-	private static Log log = LogFactory.getLog(ServerSetup.class);
+	private static Log log = LogFactory.getLog(ServerSetup.class);	
 	static XMPPAdapter adminAdapter = new XMPPAdapter();
 	static XMPPAdapter listenerAdapter = new XMPPAdapter();
 	

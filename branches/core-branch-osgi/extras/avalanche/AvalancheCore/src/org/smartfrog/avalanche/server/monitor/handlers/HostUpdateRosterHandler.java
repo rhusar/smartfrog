@@ -11,23 +11,25 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.avalanche.server.monitor.handlers;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jivesoftware.smack.AccountManager;
 import org.jivesoftware.smack.Roster;
 import org.jivesoftware.smack.RosterEntry;
+import org.jivesoftware.smack.XMPPException;
+
 import org.smartfrog.avalanche.core.host.HostType;
 import org.smartfrog.avalanche.server.monitor.xmpp.XMPPAdapter;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Whenever a new Host is added to Avalanche server, this handler is called 
  * it creates a user in XMPP server for the new Host. Similarly it is also 
  * called if a host is deleted from XMPP server and it deletes the user for 
  * deleted host from XMPP server. 
- * @see org.smartfrog.avalanche.server.HostManager
+ * @see HostManager
  * @author sanjaydahiya
  *
  */

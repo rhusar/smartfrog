@@ -14,6 +14,7 @@ package org.smartfrog.avalanche.server.monitor.handlers;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jivesoftware.smack.Roster;
+
 import org.smartfrog.avalanche.core.activeHostProfile.ActiveProfileType;
 import org.smartfrog.avalanche.core.activeHostProfile.ModuleStateType;
 import org.smartfrog.avalanche.server.ActiveProfileManager;

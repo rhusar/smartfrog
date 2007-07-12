@@ -17,13 +17,14 @@ For more information: www.smartfrog.org
  */
 package org.smartfrog.avalanche.client.sf.exec.simple;
 
-import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.sfcore.prim.Prim;
-import org.smartfrog.sfcore.prim.PrimImpl;
-import org.smartfrog.sfcore.prim.TerminationRecord;
-
 import java.io.IOException;
 import java.rmi.RemoteException;
+
+import org.smartfrog.sfcore.prim.Prim;
+import org.smartfrog.sfcore.prim.PrimImpl;
+
+import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.prim.TerminationRecord;
 
 /**
  * @author bnaveen

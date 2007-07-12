@@ -11,10 +11,10 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.avalanche.shared;
 
+import java.util.Map;
+
 import org.smartfrog.services.anubis.locator.AnubisValue;
 import org.smartfrog.services.anubis.locator.names.ProviderInstance;
-
-import java.util.Map;
 
 /**
  * Avalanche Monitoring event implementation for Anubis. 

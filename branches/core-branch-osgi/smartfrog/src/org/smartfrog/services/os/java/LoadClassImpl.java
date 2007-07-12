@@ -19,19 +19,20 @@
  */
 package org.smartfrog.services.os.java;
 
-import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.sfcore.logging.Log;
-import org.smartfrog.sfcore.logging.LogFactory;
-import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimImpl;
+import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.TerminationRecord;
+import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.security.SFClassLoader;
 import org.smartfrog.sfcore.utils.ComponentHelper;
+import org.smartfrog.sfcore.logging.LogFactory;
+import org.smartfrog.sfcore.logging.Log;
 
+import java.rmi.RemoteException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.rmi.RemoteException;
-import java.util.Iterator;
 import java.util.Vector;
+import java.util.Iterator;
 
 /**
  * Class to force load another class (and keep it in memory till we undeploy.

@@ -15,9 +15,8 @@ For more information: www.smartfrog.org
  */
 package org.smartfrog.avalanche.server.modules;
 
-import org.smartfrog.avalanche.server.RepositoryConfig;
-
 import java.io.InputStream;
+import org.smartfrog.avalanche.server.* ;
 
 /**
  * @author sanjay

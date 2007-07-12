@@ -183,7 +183,7 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
     protected ProcessCompound sfLocateParent()
         throws SmartFrogException, RemoteException
     {
-        if (sfParent != null) return (ProcessCompound) sfParent;
+        if (sfParent != null) return (ProcessCompound) sfParent;        
         if (sfProcessName == null) return null;
 
         ProcessCompound root;

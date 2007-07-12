@@ -11,14 +11,15 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.avalanche.client.sf.anubis;
 
-import org.smartfrog.avalanche.shared.MonitoringConstants;
+import java.rmi.RemoteException;
+
 import org.smartfrog.services.anubis.locator.AnubisListener;
 import org.smartfrog.services.anubis.locator.AnubisLocator;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimImpl;
 
-import java.rmi.RemoteException;
+import org.smartfrog.avalanche.shared.MonitoringConstants;
 
 public class SFListenerDeployer extends PrimImpl implements Prim {
 	

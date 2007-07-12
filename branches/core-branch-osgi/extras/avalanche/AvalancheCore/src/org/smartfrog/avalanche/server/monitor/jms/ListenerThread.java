@@ -11,12 +11,14 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.avalanche.server.monitor.jms;
 
-import org.smartfrog.avalanche.server.monitor.handlers.MessageHandler;
-import org.smartfrog.avalanche.shared.MonitoringEvent;
-
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+
+import org.smartfrog.avalanche.server.monitor.handlers.ActiveProfileUpdateHandler;
+import org.smartfrog.avalanche.server.monitor.handlers.MessageHandler;
+import org.smartfrog.avalanche.shared.MonitoringConstants;
+import org.smartfrog.avalanche.shared.MonitoringEvent;
 
 /**
  * Start this class after the JMS server has been initialized. It listens for new events

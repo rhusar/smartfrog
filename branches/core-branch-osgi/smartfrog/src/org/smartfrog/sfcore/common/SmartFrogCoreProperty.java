@@ -35,14 +35,6 @@ public class SmartFrogCoreProperty {
 
     //System
 
-    /**
-     * Property to read the codebase for smartfrog dynamic classloading
-     *
-     * Value {@value}
-     * @see org.smartfrog.SFSystem
-     */
-    public static final String codebase = SmartFrogCorePropertySecurity.propBase + "codebase";
-
     /** Property name for class name for standard output stream.
      *
      * Value {@value}

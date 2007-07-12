@@ -21,7 +21,9 @@ package org.smartfrog.services.os.java;
 
 import org.smartfrog.services.filesystem.FileUsingComponent;
 import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
 
+import java.rmi.Remote;
 import java.rmi.RemoteException;
 
 /**

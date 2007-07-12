@@ -20,9 +20,10 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.services.os.java;
 
-import org.smartfrog.sfcore.common.SmartFrogException;
-
+import java.rmi.Remote;
 import java.rmi.RemoteException;
+
+import org.smartfrog.sfcore.common.SmartFrogException;
 
 /**
  * Interface that remote cache policies should implement

@@ -11,6 +11,11 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.avalanche.client.sf.anubis;
 
+import java.io.IOException;
+import java.rmi.RemoteException;
+
+import javax.xml.parsers.ParserConfigurationException;
+
 import org.mom4j.api.Mom4jConfig;
 import org.mom4j.api.Mom4jConsole;
 import org.mom4j.api.Mom4jFactory;
@@ -20,10 +25,6 @@ import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.xml.sax.SAXException;
-
-import javax.xml.parsers.ParserConfigurationException;
-import java.io.IOException;
-import java.rmi.RemoteException;
 
 public class SFJMSSetup extends PrimImpl implements Prim {
 

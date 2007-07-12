@@ -1,8 +1,9 @@
 package org.smartfrog.services.os.java;
 
-import org.smartfrog.sfcore.common.SmartFrogException;
-
+import java.rmi.Remote;
 import java.rmi.RemoteException;
+
+import org.smartfrog.sfcore.common.SmartFrogException;
 
 /**
  * This implements a naming policy for the filesystem cache

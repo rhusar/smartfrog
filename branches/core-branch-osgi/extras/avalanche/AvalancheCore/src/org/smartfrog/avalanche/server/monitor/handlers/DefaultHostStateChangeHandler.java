@@ -13,13 +13,13 @@ package org.smartfrog.avalanche.server.monitor.handlers;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.smartfrog.avalanche.core.activeHostProfile.ActiveProfileType;
 import org.smartfrog.avalanche.server.ActiveProfileManager;
 import org.smartfrog.avalanche.server.AvalancheFactory;
 import org.smartfrog.avalanche.server.DatabaseAccessException;
 import org.smartfrog.avalanche.server.modules.ModuleCreationException;
 import org.smartfrog.avalanche.shared.HostStateEvent;
-
 /**
  * Updates state of the host in Active Profile. This is invoked when a host goes down or a 
  * new host comes up. 

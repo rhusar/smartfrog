@@ -11,13 +11,9 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.avalanche.server.modules.bdb;
 
-import com.sleepycat.je.Database;
-import com.sleepycat.je.DatabaseEntry;
-import com.sleepycat.je.DatabaseException;
-import com.sleepycat.je.LockMode;
-import com.sleepycat.je.OperationStatus;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.smartfrog.avalanche.server.DatabaseAccessException;
 import org.smartfrog.avalanche.server.SettingsManager;
 import org.smartfrog.avalanche.server.modules.bdb.bindings.SFConfigBinding;
@@ -26,6 +22,11 @@ import org.smartfrog.avalanche.settings.sfConfig.SfConfigsDocument;
 import org.smartfrog.avalanche.settings.sfConfig.SfConfigsType;
 import org.smartfrog.avalanche.settings.xdefault.SettingsDocument;
 import org.smartfrog.avalanche.settings.xdefault.SettingsType;
+import com.sleepycat.je.Database;
+import com.sleepycat.je.DatabaseEntry;
+import com.sleepycat.je.DatabaseException;
+import com.sleepycat.je.LockMode;
+import com.sleepycat.je.OperationStatus;
 
 public class SettingsManagerImpl implements SettingsManager{
 	private Database database ; 

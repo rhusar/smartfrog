@@ -21,7 +21,6 @@ For more information: www.smartfrog.org
 package org.smartfrog.sfcore.compound;
 
 import java.rmi.RemoteException;
-import java.rmi.server.RemoteObject;
 import java.util.Enumeration;
 import java.util.Vector;
 import java.util.Iterator;
@@ -32,7 +31,6 @@ import org.smartfrog.sfcore.deployer.SFDeployer;
 import org.smartfrog.sfcore.prim.*;
 import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.reference.ReferencePart;
-import org.smartfrog.sfcore.utils.ComponentHelper;
 
 
 /**
@@ -660,22 +658,13 @@ public class CompoundImpl extends PrimImpl implements Compound {
      */
     public void sfDumpState(Dump target) {
         super.sfDumpState(target);
-        // call sfDumpState in every child.
-        // remote childrens are called in a separate thread
-        for (Enumeration e = sfChildren(); e.hasMoreElements();) {
-            Prim elem = (Prim)e.nextElement();
-            if (ComponentHelper.isRemote(elem)) {
-              new DumpCall(elem, target).start();
-            } else {
-                String name="unnamed";
-                try {
-                    name = elem.sfCompleteName().toString();
-                    elem.sfDumpState(target);
-                } catch (Exception ignored) {
-                    if (sfLog().isErrorEnabled()) sfLog().error("Error during sfDumpState for "+name, ignored);
-                }
-            }
 
+        for (Enumeration e = sfChildren(); e.hasMoreElements();) {
+            Object elem = e.nextElement();
+
+            if (elem instanceof Prim) {
+                new DumpCall((Prim) elem, target).start();
+            }
         }
     }
 
@@ -824,12 +813,10 @@ public class CompoundImpl extends PrimImpl implements Compound {
          * Run part, just do the call, ignoring exceptions
          */
         public void run() {
-            String name="unnamed";
             try {
-                name = prim.sfCompleteName().toString();
                 prim.sfDumpState(dump);
             } catch (Exception ignored) {
-                if (sfLog().isErrorEnabled()) sfLog().error("Error during sfDumpState for "+name, ignored);
+                // ignore
             }
         }
     }

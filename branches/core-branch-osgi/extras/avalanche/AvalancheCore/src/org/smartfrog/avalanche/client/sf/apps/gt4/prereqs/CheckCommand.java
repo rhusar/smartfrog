@@ -11,13 +11,12 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.avalanche.client.sf.apps.gt4.prereqs;
 
+import java.lang.Runtime;
+import java.lang.Process;
+import java.io.*;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStreamReader;
 
 /**
  * @author sandya

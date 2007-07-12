@@ -34,7 +34,7 @@
 
     For JavaCC, download it from https://javacc.dev.java.net/ and install the
     relevant JAR files into the javacc subdirectory
-  </description>
+</description>
 
 
 
@@ -258,7 +258,6 @@
   <!-- =================================================================== -->
   <target name="release" depends="clean, dist,jdocs, generatedoc"
       description="Creates clean new release"/>
-
   <!-- =================================================================== -->
   <!--                                                                     -->
   <!-- =================================================================== -->
@@ -748,7 +747,13 @@
 
   <target name="installed" depends="dist" description="install everything ready to run"/>
 
-  <target name="sha1macro">
+
+
+  <!-- =================================================================== -->
+  <!-- define a macro to checksum a jar, then checksum all the output jars-->
+  <!-- =================================================================== -->
+  <target name="checksum-target-jar"
+    description="checksum our target jars" depends="jars">
 
     <macrodef name="sha1">
       <attribute name="file"/>
@@ -757,14 +762,6 @@
         <checksum file="@{file}" algorithm="sha1"/>
       </sequential>
     </macrodef>
-
-  </target>
-
-  <!-- =================================================================== -->
-  <!-- define a macro to checksum a jar, then checksum all the output jars-->
-  <!-- =================================================================== -->
-  <target name="checksum-target-jar"
-    description="checksum our target jars" depends="jars,sha1macro">
 
     <sha1 file="${smartfrog.jar}" />
     <sha1 file="${sf-examples.jar}" />
@@ -829,20 +826,18 @@
          </filterchain>
        </copy>
      </presetdef>
+
    </target>
 
 
    <!-- create POMs from templates held in the metadata dir -->
-   <target name="m2-pom" depends="m2-init,sha1macro" >
+   <target name="m2-pom" depends="m2-init" >
      <expandingcopy file="${metadata.dir}/smartfrog.pom"
        tofile="${smartfrog.pom}"/>
      <expandingcopy file="${metadata.dir}/sfServices.pom"
          tofile="${sf-services.pom}"/>
      <expandingcopy file="${metadata.dir}/sfExamples.pom"
          tofile="${sf-examples.pom}"/>
-     <sha1 file="${smartfrog.pom}" />
-     <sha1 file="${sf-services.pom}" />
-     <sha1 file="${sf-examples.pom}" />
    </target>
 
 
@@ -959,7 +954,7 @@ ${ivy.reports.dir}
     <copy file="${sf-rmi-spi.jar}" todir="${artifacts.dir}" />
   </target>
 
-  <target name="ready-to-publish" depends="copy-target-jars,ivy-report,unzip-install-artifact"/>
+  <target name="ready-to-publish" depends="copy-target-jars,ivy-report,package-install-artifact"/>
 
   <target name="ivy-publish" depends="ready-to-publish" if="ivy.found">
     <ivy:publish resolver="local" pubrevision="${Version}"
@@ -991,50 +986,18 @@ ${ivy.reports.dir}
     </zip>
   </target>
 
-  <!--
-  the install artifact is the core com
-  -->
+  <!--the install artifact is a snapshot of the dist tree-->
   <target name="package-install-artifact" depends="artifact-names,ready-to-dist">
     <zip destfile="${sf-core-install.zip}">
-      <zipfileset dir="${dist.dir}" >
-        <include name="**/*" />
-        <exclude name="lib/*" />
-        <exclude name="bin/sfGui*" />
-      </zipfileset>
-      <zipfileset dir="${dist.dir}/lib" prefix="lib">
-        <include name="${smartfrog.stub}.*" />
-        <include name="${sf-services.stub}.*" />
-        <include name="${sf-examples.stub}.*" />
-      </zipfileset>
+      <zipfileset dir="${dist.dir}" includes="**/*"/>
     </zip>
   </target>
 
-  <target name="unzip-install-artifact" depends="package-install-artifact,declare-assertions" >
-    <property name="unzip.install.dir" location="${artifacts.dir}/install" />
-    <unzip src="${sf-core-install.zip}" dest="${unzip.install.dir}"/>
-    <fileexists file="${unzip.install.dir}/lib/${smartfrog.stub}.jar" />
-    <fileexists file="${unzip.install.dir}/lib/${sf-services.stub}.jar" />
-    <fileexists file="${unzip.install.dir}/lib/${sf-examples.stub}.jar" />
+  <target name="unzip-install-artifact" depends="package-install-artifact" >
+    <unzip src="${sf-core-install.zip}" dest="${artifacts.dir}/install"/>
   </target>
 
   <target name="publish-all" depends="published" />  
-
-  <!--declare some useful assertions-->
-  <target name="declare-assertions">
-    <macrodef name="fileexists">
-      <attribute name="file"/>
-      <sequential >
-        <fail>
-          <condition>
-            <not>
-              <available file="@{file}" />
-            </not>
-          </condition>
-          Missing file:@{file}
-        </fail>
-      </sequential>
-    </macrodef>
-  </target>
 
   <!-- ========================================================== -->
   <!-- print meaningful diagnostics -->

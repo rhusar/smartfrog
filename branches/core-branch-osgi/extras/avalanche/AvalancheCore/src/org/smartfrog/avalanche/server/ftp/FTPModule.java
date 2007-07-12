@@ -17,20 +17,16 @@ For more information: www.smartfrog.org
  */
 package org.smartfrog.avalanche.server.ftp;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+
+import org.smartfrog.avalanche.server.modules.*;
+import org.smartfrog.avalanche.util.*;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPFile;
-import org.smartfrog.avalanche.server.modules.Module;
-import org.smartfrog.avalanche.server.modules.ModuleCreationException;
-import org.smartfrog.avalanche.server.modules.ModuleFilter;
-import org.smartfrog.avalanche.server.modules.Repository;
-import org.smartfrog.avalanche.server.modules.RepositoryConnectException;
-import org.smartfrog.avalanche.util.DiskUtils;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 
 
 /**
