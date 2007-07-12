@@ -80,6 +80,7 @@
   <target name="cleanAll" depends="clean,cleanUI" />
 
   <target name="cleanUI">
+    <fail unless="tomcat.home">Tomcat home is not set. Set property tomcat.home in setup.properties file.</fail>
     <delete dir="${tomcat.home}/webapps/AvalancheGUI" />
   </target>
 
@@ -265,7 +266,9 @@
 		<copy file="${avalanche.home}/temp/smartfrog.zip" todir="${avalanche.home}/smartfrog/boot"/>
 	</target>
 
-	<target name="setupUI" depends="init" if="tomcat.home">
+	<target name="setupUI" depends="init">
+
+	<fail unless="tomcat.home">Tomcat home is not set. Set property tomcat.home in setup.properties file.</fail>
 
     <mkdir dir="${tomcat.home}/webapps/AvalancheGUI" />
 		<mkdir dir="${tomcat.home}/webapps/AvalancheGUI/WEB-INF/lib"/>
