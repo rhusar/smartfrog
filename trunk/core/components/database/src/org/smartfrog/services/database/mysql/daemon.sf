@@ -25,6 +25,7 @@
 
 #include "/org/smartfrog/sfcore/workflow/combinators/finally.sf"
 #include "/org/smartfrog/services/os/runshell/components.sf"
+#include "/org/smartfrog/functions.sf"
 
   /**
    * the various names of the mysql programs.
@@ -42,7 +43,7 @@
     socketpath_unix "/tmp/mysql.sock";
     //default named pipe name on NT systems
     socketpath_nt "MySql";
-    socketpath socketpath_unix;
+    socketpath (socketpath_unix ++ "." ++ random);
     //this sets up the socket path
     socketpath_argument ("--socket=" ++ socketpath);
     //with it passed down to the app after the arguments vector
