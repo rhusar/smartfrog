@@ -53,7 +53,7 @@ public class HistoryAssertOrderedMessages extends AbstractHistoryPrimImpl implem
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
         String message1 = sfResolve(ATTR_MESSAGE1, "", true);
-        String message2 = sfResolve(ATTR_MESSAGE1, "", true);
+        String message2 = sfResolve(ATTR_MESSAGE2, "", true);
         History history = resolveHistory();
         history.assertEventsOrdered(message1,message2);
         queueForTermination("HistoryAssertOrderedMessages");
