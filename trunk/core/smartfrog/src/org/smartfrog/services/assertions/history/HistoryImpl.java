@@ -168,7 +168,7 @@ public class HistoryImpl extends PrimImpl implements History {
     public void assertEventsOrdered(String text1,String text2) throws SmartFrogAssertionException {
         HistoryEvent event1 = assertEventFound(text1,true,null);
         HistoryEvent event2 = assertEventFound(text2, true, null);
-        if(event1.index>=event2.index) {
+        if(event1.index>event2.index) {
             throw new SmartFrogAssertionException(
                     "Event "+event1+" came after "+event2+"\nin\n"+toString(),
                     this);
