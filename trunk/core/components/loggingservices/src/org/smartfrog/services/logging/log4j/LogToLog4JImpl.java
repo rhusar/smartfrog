@@ -47,7 +47,7 @@ import java.net.URL;
 /**
  * Logger that wraps Log4J.
  */
-public class LogToLog4JImpl implements LogToLog4J, Log, LogMessage, LogLevel, Serializable {
+public class LogToLog4JImpl implements LogToLog4J, Log, LogMessage, LogLevel {
 
     public static final String[] LOG4J_LEVELS =
             {"ALL", "DEBUG", "DEBUG", "INFO", "WARN", "ERROR", "FATAL", "OFF"};
