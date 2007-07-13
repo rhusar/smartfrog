@@ -326,6 +326,11 @@ public class SFProcess implements MessageKeys {
                 sfLog().error("Could not create an interrupt handler from "+ INTERRUPT_HANDLER
                         +"\nSmartFrog may be running on a JVM which does not support this feature",e);
             }
+            catch (Exception ex)
+            {
+                // see SFOS-159
+                sfLog().error("SFOS-159 Unhandled exceptions caught.", ex);
+            }
         }
 
         ComponentDescription descr = (ComponentDescription) getProcessCompoundDescription().copy();
