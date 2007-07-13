@@ -139,7 +139,7 @@
 		
 		<!--Copy Dependent jars to Avalanche SmartFrog dist dir-->
 		<copy todir="${avalanche.home}/smartfrog/dist/lib">
-			<fileset dir="lib" includes="*.jar" excludes="sf-quartz.jar"/>
+			<fileset dir="lib" includes="*.jar"/>
 		</copy>
 		
 		<!--Copy Avalanche client jars to Avalanche SmartFrog lib dir-->
@@ -189,7 +189,6 @@
 		<copy file="lib/xercesImpl.jar" todir="${avalanche.home}/temp/smartfrog/dist/lib"/>
 		<copy file="lib/xml-apis.jar" todir="${avalanche.home}/temp/smartfrog/dist/lib"/>
 		<copy file="lib/xml-apis-1.0.jar" todir="${avalanche.home}/temp/smartfrog/dist/lib"/>
-		<copy file="lib/sfinterface-3.0.0.jar" todir="${avalanche.home}/temp/smartfrog/dist/lib"/>
 		<copy file="lib/sf-quartz.jar" todir="${avalanche.home}/temp/smartfrog/dist/lib"/>
 		<copy file="lib/ant.jar" todir="${avalanche.home}/temp/smartfrog/dist/lib"/>
 		<copy file="lib/ant-launcher.jar" todir="${avalanche.home}/temp/smartfrog/dist/lib"/>
@@ -274,7 +273,7 @@
 		<mkdir dir="${tomcat.home}/webapps/AvalancheGUI/WEB-INF/lib"/>
 		<!-- COPY UI files to Tomcat-->
 		<copy todir="${tomcat.home}/webapps/AvalancheGUI">
-      			<fileset dir="${avalanche.root}/AvalancheGUI/web"/>
+      			<fileset dir="${avalanche.root}/AvalancheGUI"/>
 		</copy>
 		<!--Copy smartFrog jars-->
 		<copy todir="${tomcat.home}/webapps/AvalancheGUI/WEB-INF/lib">
