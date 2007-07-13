@@ -23,6 +23,7 @@ import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLivenessException;
 import org.smartfrog.sfcore.common.SmartFrogExtractedException;
+import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.workflow.combinators.DelayedTerminator;
@@ -121,6 +122,8 @@ public class TestCompoundImpl extends ConditionCompound
 
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
+        //report we have started up
+        sendEvent(new StartedEvent(this));
         Exception exception=null;
         //deploy and evaluate the condition.
         //then decide whether to run or not.
@@ -128,6 +131,7 @@ public class TestCompoundImpl extends ConditionCompound
         if (getCondition() !=null && !evaluate()) {
             skipped=true;
             sfLog().info("Skipping test run " + name);
+            //initiate cleanup
             finish();
             //end do not deploy anything else
             return;
@@ -199,13 +203,11 @@ public class TestCompoundImpl extends ConditionCompound
                 !expectTerminate);
         actionTerminator.start();
 
-        //report we have started up
-        sendEvent(new StartedEvent(this));
 
         //now deploy the tests.
         //any failure in tests is something to report, as is any failure of the tests to finish.
-
         startTests();
+
     }
 
     /**
@@ -243,8 +245,9 @@ public class TestCompoundImpl extends ConditionCompound
     }
 
     /**
-     * When terminating we shutdown the action and the tests
-     * @param status
+     * When terminating we shutdown the action and the tests,
+     * and Send out notifications of termination
+     * @param status exit status
      */
     public synchronized void sfTerminateWith(TerminationRecord status) {
         super.sfTerminateWith(status);
@@ -331,7 +334,7 @@ public class TestCompoundImpl extends ConditionCompound
                     sfLog().error(errorText);
                     error = TerminationRecord.abnormal(errorText, childStatus.id);
                     //propagate any exception
-                    error.cause=childStatus.cause;
+                    error.setCause(childStatus.getCause());
                 }
             }
             tearDownTime=true;
@@ -371,18 +374,19 @@ public class TestCompoundImpl extends ConditionCompound
                 succeeded = true;
             }
         }
+        try {
+            endTestRun(getStatus(), forcedTimeout);
+        } catch (SmartFrogRuntimeException e) {
+            sfLog().ignore(e);
+        } catch (RemoteException e) {
+            sfLog().ignore(e);
+        }
 
         //if the error record is non null, terminate ourselves with the new record
         if (error != null) {
-            setStatus(error);
-            failed=true;
             sfTerminate(error);
             //dont forward, as we are terminating with an error
             terminate = false;
-        } else {
-            setStatus(childStatus);
-            finished=true;
-            succeeded=true;
         }
         //trigger termination.
         return terminate;
@@ -437,14 +441,38 @@ public class TestCompoundImpl extends ConditionCompound
     }
 
     /**
-     * Set the status for the component. This method remarshalls any exception into a form which
-     * can be used to send over the wire cleanly
-     * @param status
+     * Set the termination record for the component. 
+     * @param status status record
      */
     protected void setStatus(TerminationRecord status) {
         this.status = status;
-        if(status.cause!=null) {
-            status.cause= SmartFrogExtractedException.convert(status.cause);
-        }
+        status.setCause(SmartFrogExtractedException.convert(status.getCause()));
+    }
+
+    protected void endTestRun(TerminationRecord record,boolean forcedTimeout) throws SmartFrogRuntimeException, RemoteException {
+        //send out a completion event
+        sendEvent(new TestCompletedEvent(this, succeeded, forcedTimeout, isSkipped(), record));
+        setTestBlockAttributes(record, forcedTimeout);
+    }
+
+    /**
+     * Set the various attributes of the component based on whether the test record was success or not
+     *
+     * @param record  termination record
+     * @param timeout did we time out
+     * @throws SmartFrogRuntimeException SmartFrog errors
+     * @throws RemoteException           network errors
+     */
+    public void setTestBlockAttributes(
+            TerminationRecord record,
+            boolean timeout)
+            throws SmartFrogRuntimeException, RemoteException {
+        boolean success = record.isNormal();
+        sfLog().debug("Terminated Test with status " + record + " timeout=" + timeout);
+        sfReplaceAttribute(ATTR_STATUS, record);
+        sfReplaceAttribute(ATTR_FINISHED, Boolean.TRUE);
+        sfReplaceAttribute(ATTR_SUCCEEDED, Boolean.valueOf(success));
+        sfReplaceAttribute(ATTR_FAILED, Boolean.valueOf(!success));
+        sfReplaceAttribute(ATTR_FORCEDTIMEOUT, Boolean.valueOf(timeout));
     }
 }

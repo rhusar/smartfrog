@@ -17,23 +17,29 @@
  For more information: www.smartfrog.org
 
  */
-package org.smartfrog.sfcore.workflow.events;
+package org.smartfrog.test;
 
-import org.smartfrog.sfcore.prim.Prim;
-
-/** created 10-Jul-2007 17:04:13 */
-
-public class DeployedEvent extends LifecycleEvent {
+/** Created 12-Jul-2007 16:13:41 */
 
 
-    public DeployedEvent() {
-    }
-
-    public DeployedEvent(Prim component) {
-        super(component);
-    }
-
-    public String getEventName() {
-        return "DeployedEvent";
-    }
+public interface TestProperties {
+    int RMI_CALLBACKS_PORT = 3802;
+    String PROPERTY_TEST_RMI_CALLBACKS_PORT = "test.rmi.callbacks.port";
+    int TIMEOUT = 10000;
+    /**
+     * Default startup timeout: {@value}
+     */
+    int STARTUP_TIMEOUT = TIMEOUT;
+    /**
+     * Default execute timeout: {@value}
+     */
+    int EXECUTE_TIMEOUT = TIMEOUT;
+    /**
+     * configuration point: {@value}
+     */
+    String TEST_TIMEOUT_STARTUP = "test.timeout.startup";
+    /**
+     * configuration point: {@value}
+     */
+    String TEST_TIMEOUT_EXECUTE = "test.timeout.execute";
 }

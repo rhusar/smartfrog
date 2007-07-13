@@ -30,7 +30,6 @@ public class TestCompletedEvent extends LifecycleEvent {
     private boolean succeeded = false;
     private boolean forcedTimeout = false;
     private boolean skipped = false;
-    private volatile TerminationRecord status;
 
 
     public TestCompletedEvent() {
@@ -38,11 +37,10 @@ public class TestCompletedEvent extends LifecycleEvent {
 
 
     public TestCompletedEvent(Prim component, boolean succeeded, boolean forcedTimeout, boolean skipped, TerminationRecord status) {
-        super(component);
+        super(component,status);
         this.succeeded = succeeded;
         this.forcedTimeout = forcedTimeout;
         this.skipped = skipped;
-        this.status = status;
     }
 
     public boolean isSucceeded() {
@@ -60,7 +58,22 @@ public class TestCompletedEvent extends LifecycleEvent {
         return skipped;
     }
 
-    public TerminationRecord getStatus() {
-        return status;
+    /**
+     * {@inheritDoc}
+     */
+    public String getEventName() {
+        return "TestCompletedEvent";
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    public String toString() {
+        StringBuffer buffer=new StringBuffer(super.toString());
+        buffer.append("\nsucceeded:"+succeeded);
+        buffer.append("\nforcedTimeout:" + forcedTimeout);
+        buffer.append("\nskipped:" + skipped);
+        return buffer.toString();
     }
 }

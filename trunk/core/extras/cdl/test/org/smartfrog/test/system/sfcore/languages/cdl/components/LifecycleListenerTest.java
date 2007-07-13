@@ -13,12 +13,16 @@ public class LifecycleListenerTest extends CdlDeployingTestBase {
         super(name);
     }
 
-
     public void testNormalWorkflow() throws Throwable {
         application = deployExpectingSuccess(FILES + "testNormalWorkflow.sf",
                 "testNormalWorkflow");
         TestCompound block = (TestCompound) application;
         expectSuccessfulTermination(block);
+        assertAttributeEquals(application, "value", true);
+    }
+
+    public void testNormalWorkflowEvent() throws Throwable {
+        expectSuccessfulTestRun(FILES,"testNormalWorkflow");
         assertAttributeEquals(application, "value", true);
     }
 }
