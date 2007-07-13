@@ -108,7 +108,7 @@ public class BootStrap {
 			HashMap map = new HashMap();
 			for( int i=0;i<hosts.length;i++){
 				// create client adapter in XMPP server
-			//	setup.addClientAdapter(hosts[i]);
+				setup.addClientAdapter(hosts[i]);
 				HostType h = hostManager.getHost(hosts[i]);
 				HostType.AccessModes am = h.getAccessModes();
 				
