@@ -32,6 +32,7 @@ import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 
 import java.io.InputStream;
+import java.io.Reader;
 
 /**
  * This is a parser for CDL XML streams. The base SFParser class contains some
@@ -43,6 +44,7 @@ import java.io.InputStream;
  */
 
 public class SFParser implements StreamLanguageParser {
+    private static final String NOT_IMPLEMENTED = "Not implemented";
 
     /**
      * Parses component(s) from an input stream. Returns a root component which
@@ -110,7 +112,7 @@ public class SFParser implements StreamLanguageParser {
      */
     public ReferencePhases sfParseReference(InputStream is) throws SmartFrogParseException {
         //TODO
-        throw new SmartFrogParseException("Not implemented");
+        throw new SmartFrogParseException(NOT_IMPLEMENTED);
     }
 
     /**
@@ -124,7 +126,7 @@ public class SFParser implements StreamLanguageParser {
     public Object sfParseAnyValue(InputStream is)
             throws SmartFrogParseException {
         //TODO
-        throw new SmartFrogParseException("Not implemented");
+        throw new SmartFrogParseException(NOT_IMPLEMENTED);
     }
 
     /**
@@ -138,12 +140,43 @@ public class SFParser implements StreamLanguageParser {
     public Object sfParsePrimitiveValue(InputStream is)
             throws SmartFrogParseException {
         //TODO
-        throw new SmartFrogParseException("Not implemented");
+        throw new SmartFrogParseException(NOT_IMPLEMENTED);
     }
 
 
-    public Object sfParseTags(InputStream is) throws SmartFrogParseException {
+    protected void notImplemented() throws SmartFrogParseException {
         //TODO
-        throw new SmartFrogParseException("Not implemented");
+        throw new SmartFrogParseException(NOT_IMPLEMENTED);
+    }
+
+
+    public Phases sfParse(Reader reader) throws SmartFrogParseException {
+        //TODO
+        throw new SmartFrogParseException(NOT_IMPLEMENTED);
+    }
+
+    public Phases sfParse(Reader reader, String codebase) throws SmartFrogParseException {
+        //TODO
+        throw new SmartFrogParseException(NOT_IMPLEMENTED);
+    }
+
+    public ReferencePhases sfParseReference(Reader reader) throws SmartFrogParseException {
+        //TODO
+        throw new SmartFrogParseException(NOT_IMPLEMENTED);
+    }
+
+    public Object sfParseAnyValue(Reader reader) throws SmartFrogParseException {
+        //TODO
+        throw new SmartFrogParseException(NOT_IMPLEMENTED);
+    }
+
+    public Object sfParsePrimitiveValue(Reader reader) throws SmartFrogParseException {
+        //TODO
+        throw new SmartFrogParseException(NOT_IMPLEMENTED);
+    }
+
+    public Object sfParseTags(Reader reader) throws SmartFrogParseException {
+        //TODO
+        throw new SmartFrogParseException(NOT_IMPLEMENTED);
     }
 }
