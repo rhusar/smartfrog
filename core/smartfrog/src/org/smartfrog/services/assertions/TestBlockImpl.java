@@ -136,10 +136,11 @@ public class TestBlockImpl extends EventCompoundImpl implements TestBlock {
         super.sfStart();
         long timeout = sfResolve(ATTR_TIMEOUT,0L,true);
         boolean expectTimeout=sfResolve(ATTR_EXPECTTIMEOUT,false,true);
+        sendEvent(new StartedEvent(this));
         try {
             actionPrim =sfCreateNewChild(ACTION,action, null);
             if(timeout>0) {
-                actionTerminator=new DelayedTerminator(actionPrim, timeout, sfLog(),"timeout",expectTimeout);
+                actionTerminator=new DelayedTerminator(actionPrim, timeout, sfLog(), ATTR_TIMEOUT,expectTimeout);
                 actionTerminator.start();
             }
         } catch (RemoteException e) {
@@ -147,13 +148,12 @@ public class TestBlockImpl extends EventCompoundImpl implements TestBlock {
         } catch (SmartFrogDeploymentException e) {
             startupException(e);
         }
-        sendEvent(new StartedEvent(this));
     }
 
 
     /**
      * Send out notifications of termination
-     * @param status
+     * @param status exit status
      */
     public void sfTerminateWith(TerminationRecord status) {
         sendEvent(new TerminatedEvent(this, status));
@@ -188,9 +188,7 @@ public class TestBlockImpl extends EventCompoundImpl implements TestBlock {
         }
         finished=true;
         //guarantee that the cause is shareable
-        if (record.cause != null) {
-            record.cause = SmartFrogExtractedException.convert(record.cause);
-        }
+        record.setCause(SmartFrogExtractedException.convert(record.getCause()));
         status = record;
         succeeded=record.isNormal();
         failed=!succeeded;
@@ -242,10 +240,10 @@ public class TestBlockImpl extends EventCompoundImpl implements TestBlock {
     /**
      * Set the various attributes of the component
      * based on whether the test record was success or not
-     * @param record
+     * @param record termination record
      * @param timeout did we time out
-     * @throws SmartFrogRuntimeException
-     * @throws RemoteException
+     * @throws SmartFrogRuntimeException SmartFrog errors
+     * @throws RemoteException network errors
      */
     public void setTestBlockAttributes(
             TerminationRecord record,

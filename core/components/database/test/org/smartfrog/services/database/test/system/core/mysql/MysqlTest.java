@@ -77,7 +77,7 @@ public class MysqlTest extends DeployingTestBase {
         if (mysqlPresent) {
             deployAndTerminate(template);
         } else {
-            System.out.println("Skipping test "+template+" as mysql is not found");
+            getLog().info("Skipping test "+template+" as mysql is not found");
         }
     }
 

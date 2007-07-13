@@ -33,5 +33,7 @@ public class StartedEvent extends LifecycleEvent {
         super(component);
     }
 
-
+    public String getEventName() {
+        return "StartedEvent";
+    }
 }

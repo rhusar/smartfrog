@@ -101,7 +101,6 @@ TestCompound extends ActionCompound {
       description ##a component that is run after the tests pass/fail
         to perform teardown or post-process.
         the action will always have been terminated (cleanly or not) by the time this component is deployed.
-        NOT IMPLEMENTED
         #;
     }
     teardownTimeout extends OptionalInteger {

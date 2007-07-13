@@ -60,6 +60,9 @@ For more information: www.smartfrog.org
   test.localHost    hostname to use for a localhost
   test.processHost  hostname to use when we want to deploy on a host
   test.remoteHost   a remote host to deploy to
+  test.timeout.startup startup limit for testblock/sfunit test runs
+  test.timeout.execute excution limit limit for test runs
+
 
 </description>
 

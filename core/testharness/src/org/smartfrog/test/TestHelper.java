@@ -55,6 +55,17 @@ public class TestHelper {
     }
 
     /**
+     * get any test property; these are (currently) extracted from the JVM props
+     *
+     * @param property     system property
+     * @param defaultValue default value
+     * @return the system property value or the default, if that is undefined
+     */
+    public static int getTestPropertyInt(String property, int defaultValue) {
+        return Integer.getInteger(property, defaultValue).intValue();
+    }
+
+    /**
      * get a mandatory property for the test,
      * @param property system property
      * @return the value
