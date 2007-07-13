@@ -167,7 +167,7 @@ public class Sequence extends EventCompoundImpl implements Compound {
                 text.append("- error in child component\n");
                 text.append(status.toString());
                 text.append("\n");
-                sfLog().error(text.toString(),status.cause);
+                sfLog().error(text.toString(),status.getCause());
             }
             terminate = true;
         }
