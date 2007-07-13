@@ -34,8 +34,8 @@ public class LogUtils {
      */
     public static Throwable extractCause(SmartFrogException cause, TerminationRecord tr) {
         Throwable throwable = cause;
-        if(cause==null && tr!=null && tr.cause!=null) {
-            throwable=tr.cause;
+        if(cause==null && tr!=null && tr.getCause()!=null) {
+            throwable=tr.getCause();
         }
         return throwable;
     }
