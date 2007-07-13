@@ -48,7 +48,13 @@
   <property name="lib" location="lib"/>
   
 <!--  <import file="build.xml"/>-->
-
+  <target name="env_diag">
+      <fail unless="env.JAVA_HOME">Environment variable 'JAVA_HOME' not set.</fail>
+      <fail unless="env.TOMCAT_HOME">Environment variable 'TOMCAT_HOME' not set.</fail>
+      <fail unless="env.XMPP_HOME">Environment variable 'XMPP_HOME' not set.</fail>
+      <fail unless="env.AVALANCHE_HOME">Environment variable 'AVALANCHE_HOME' not set.</fail>
+      <echo>No environment variables missing.</echo>
+  </target>
 
 
   <target name="init">
@@ -224,7 +230,7 @@
 	</target>
 
 	<!--target name="setup" depends="createXMPPEnabledSmartFrog, securitySetup, setupUI" /-->
-	<target name="setup" depends="createXMPPEnabledSmartFrog, setupUI" />
+	<target name="setup" depends="env_diag, createXMPPEnabledSmartFrog, setupUI" />
 
 	<target name="createbundle" depends="init.scripts.pattern">
 		<zip destfile="${avalanche.home}/temp/smartfrog.zip">
@@ -355,6 +361,8 @@
 		</exec>
 		
 	</target>
+
+    
 
 </project>
 
