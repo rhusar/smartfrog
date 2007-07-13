@@ -42,12 +42,10 @@ public class JavaPackageImpl extends PrimImpl implements JavaPackage {
     private Vector requiredClasses;
     private Vector requiredResources;
     private Vector uriClasspathList;
-    private Vector classpathList;
     private Vector sources;
     private boolean useCodebase;
     private ComponentHelper helper;
     private String uriClasspath;
-    private String classpath;
 
     /**
      * our log
@@ -206,7 +204,6 @@ public class JavaPackageImpl extends PrimImpl implements JavaPackage {
     /**
      * test for a resource being present
      * We also search the parent tree, which is potentially wrong
-     * @todo: only look in the specified files
      * @param loader
      * @param resource
      */
