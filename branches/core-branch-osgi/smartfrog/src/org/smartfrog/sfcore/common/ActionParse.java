@@ -32,6 +32,7 @@ import org.smartfrog.sfcore.security.SFClassLoader;
 import java.util.Vector;
 import org.smartfrog.sfcore.componentdescription.ComponentDescriptionImpl;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
+import org.smartfrog.SFLoader;
 
 /**
  * Parse a component
@@ -171,11 +172,7 @@ public class ActionParse extends ConfigurationAction implements Serializable {
 
             InputStream is = null;
             try {
-                is = SFClassLoader.getResourceAsStream(fileUrl);
-                if (is==null) {
-                    String msg = MessageUtil.formatMessage(MessageKeys.MSG_URL_TO_PARSE_NOT_FOUND, fileUrl);
-                    throw new SmartFrogParseException(msg);
-                }
+                is = SFLoader.getInputStreamSFException(fileUrl);
                 top = (new SFParser(language)).sfParse(is);
                 report.sfAddAttribute("raw", top.toString());
                 report.sfAddAttribute("raw result", "OK");

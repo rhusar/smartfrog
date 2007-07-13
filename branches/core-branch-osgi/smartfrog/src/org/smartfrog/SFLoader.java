@@ -5,6 +5,9 @@ import org.smartfrog.sfcore.deployer.CoreClassesClassLoadingEnvironment;
 import org.smartfrog.sfcore.security.SFSecurity;
 import org.smartfrog.sfcore.security.SFClassLoader;
 import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.common.SmartFrogParseException;
+import org.smartfrog.sfcore.common.MessageUtil;
+import org.smartfrog.sfcore.common.MessageKeys;
 
 import java.io.InputStream;
 import java.io.IOException;
@@ -94,5 +97,18 @@ public class SFLoader {
             if (bStrm != null) { try { bStrm.close();} catch (IOException swallowed) { } }
             if (iStrm != null) { try { iStrm.close();} catch (IOException swallowed) { } }
         }
+    }
+
+    public static InputStream getInputStreamSFException(String url) throws SmartFrogParseException {
+        InputStream is;
+        try {
+            // TODO: Check if access to a user code repository is needed
+            is = getInputStream(url, null);
+        } catch (IOException e) {
+            String msg = MessageUtil.
+                    formatMessage(MessageKeys.MSG_URL_TO_PARSE_NOT_FOUND, url);
+            throw new SmartFrogParseException(msg, e);
+        }
+        return is;
     }
 }

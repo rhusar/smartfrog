@@ -11,6 +11,7 @@ import org.smartfrog.sfcore.security.SFClassLoader;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.parser.SFParser;
 import org.smartfrog.sfcore.parser.Phases;
+import org.smartfrog.SFLoader;
 
 import java.rmi.RemoteException;
 import java.util.Vector;
@@ -79,7 +80,8 @@ public class Autoloader extends CompoundImpl implements Compound {
            // construct name, and access through the class loader the resource.
            // create as new child of self
             try {
-                InputStream is = SFClassLoader.getResourceAsStream(fullName);
+                // TODO: Figure out if it's OK to use the core classes core repository. I suspect it's not.
+                InputStream is = SFLoader.getInputStream(fullName, null);
                 Phases p = new SFParser(language).sfParse(is);
                 p = p.sfResolvePhases();
                 ComponentDescription cd = p.sfAsComponentDescription();

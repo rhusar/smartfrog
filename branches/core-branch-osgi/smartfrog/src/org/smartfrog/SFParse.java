@@ -104,13 +104,7 @@ public class SFParse implements MessageKeys {
             Phases top;
             InputStream is=null;
             try {
-                try {
-                    is = SFLoader.getInputStream(fileUrl, null);
-                } catch (IOException e) {
-                    String msg = MessageUtil.
-                            formatMessage(MSG_URL_TO_PARSE_NOT_FOUND, fileUrl);
-                    throw new SmartFrogParseException(msg);
-                }
+                is = SFLoader.getInputStreamSFException(fileUrl);
 
                 top = (new SFParser(language)).sfParse(is);
                 if (opts.verbose && !opts.quiet) {
