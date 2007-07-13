@@ -199,10 +199,10 @@ public class SFClassLoader {
      *
      * @throws Exception if failed to convert string to URL
      */
-    private static URL stringToURL(String s) throws Exception {
+    public static URL stringToURL(String s) throws Exception {
         try {
-            return (((s.endsWith(".jar")) && (!(s.startsWith("jar:"))))
-            ? new URL("jar:" + s + "!/") : new URL(s));
+            if (s.endsWith(".jar") && !s.startsWith("jar:")) return new URL("jar:" + s + "!/");
+            else return new URL(s);
         } catch (Exception ex) {
             // ignore, try another one
         }

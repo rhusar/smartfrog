@@ -40,7 +40,7 @@ import org.smartfrog.sfcore.logging.LogFactory;
 
 import javax.swing.JPanel;
 
-import org.smartfrog.SFSystem;
+import org.smartfrog.SFLoader;
 
 /**
  * A panel to display a graph. It uses two arrays, one for x axis, a second one
@@ -232,7 +232,7 @@ public class GraphPanel extends JPanel implements ComponentListener,
 
     public Image createImage(String SFURL) {
         try {
-            byte imageData[] =  SFSystem.getByteArrayForResource(SFURL);
+            byte imageData[] =  SFLoader.getByteArrayForResource(SFURL);
             Image img = java.awt.Toolkit.getDefaultToolkit().createImage(imageData, 0, imageData.length);
 
             return img;

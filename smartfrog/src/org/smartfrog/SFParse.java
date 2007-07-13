@@ -104,18 +104,20 @@ public class SFParse implements MessageKeys {
             Phases top;
             InputStream is=null;
             try {
-                // TODO: Access user-provided component descriptions through a PrimFactory-style component, deployed on the parsing daemon
-                is = SFClassLoader.getResourceAsStream(fileUrl);
-                if (is == null) {
+                try {
+                    is = SFLoader.getInputStream(fileUrl, null);
+                } catch (IOException e) {
                     String msg = MessageUtil.
                             formatMessage(MSG_URL_TO_PARSE_NOT_FOUND, fileUrl);
                     throw new SmartFrogParseException(msg);
                 }
+
                 top = (new SFParser(language)).sfParse(is);
                 if (opts.verbose && !opts.quiet) {
                     printPhase("raw", top.toString());
                 }
                 report.add("   "+"raw phase: OK");
+
             } catch (Exception ex) {
                 //report.add("   "+"raw phase: "+ex.getMessage());
                 report.add("   "+ "raw" +" phase: FAILED!");

@@ -19,7 +19,7 @@
  */
 package org.smartfrog.services.display;
 
-import org.smartfrog.SFSystem;
+import org.smartfrog.SFLoader;
 import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
@@ -1403,7 +1403,7 @@ public class Display extends JFrame implements ActionListener, KeyListener, Font
 
     public static Image createImage(String imagesPath) {
         try {
-            byte imageData[] = SFSystem.getByteArrayForResource(imagesPath);
+            byte imageData[] = SFLoader.getByteArrayForResource(imagesPath);
             Image img = java.awt.Toolkit.getDefaultToolkit().createImage(imageData, 0, imageData.length);
             return img;
         } catch (Exception e) {

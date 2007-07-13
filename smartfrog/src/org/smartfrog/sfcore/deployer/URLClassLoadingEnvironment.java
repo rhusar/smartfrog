@@ -44,22 +44,6 @@ public class URLClassLoadingEnvironment extends AbstractClassLoadingEnvironment 
         urlClassLoader = new URLClassLoader(urlArray, getClass().getClassLoader());
     }
 
-    public InputStream getResourceAsStream(String pathname) {
-        return urlClassLoader.getResourceAsStream(pathname);
-    }
-
-    protected URL getResource(String pathname) {
-        return urlClassLoader.getResource(pathname);
-    }
-
-    protected Prim getComponentImpl(ComponentDescription askedFor)
-            throws ClassNotFoundException, InstantiationException,
-            IllegalAccessException, SmartFrogResolutionException, SmartFrogDeploymentException
-    {
-        String className = (String) askedFor.sfResolveHere(SmartFrogCoreKeys.SF_CLASS);
-        return (Prim) newInstance(className);
-    }
-
     public ClassLoader getClassLoader() {
         return urlClassLoader;
     }
