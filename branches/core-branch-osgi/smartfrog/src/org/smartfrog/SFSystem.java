@@ -21,6 +21,8 @@ For more information: www.smartfrog.org
 package org.smartfrog;
 
 import org.smartfrog.sfcore.common.ConfigurationDescriptor;
+import org.smartfrog.sfcore.common.Diagnostics;
+import org.smartfrog.sfcore.common.ExitCodes;
 import org.smartfrog.sfcore.common.Logger;
 import org.smartfrog.sfcore.common.MessageKeys;
 import org.smartfrog.sfcore.common.MessageUtil;
@@ -30,16 +32,17 @@ import org.smartfrog.sfcore.common.SmartFrogCoreProperty;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.logging.LogFactory;
 import org.smartfrog.sfcore.logging.LogSF;
+import org.smartfrog.sfcore.parser.SFParser;
+import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.processcompound.ProcessCompound;
 import org.smartfrog.sfcore.processcompound.SFProcess;
-import org.smartfrog.sfcore.security.SFClassLoader;
 import org.smartfrog.sfcore.security.SFGeneralSecurityException;
 import org.smartfrog.sfcore.security.SFSecurity;
 import org.smartfrog.sfcore.security.SFSecurityProperties;
-import org.smartfrog.sfcore.prim.TerminationRecord;
-import org.smartfrog.sfcore.common.ExitCodes;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.PrintStream;
 import java.net.UnknownHostException;
 import java.rmi.ConnectException;
 import java.rmi.RemoteException;
@@ -47,8 +50,6 @@ import java.util.Date;
 import java.util.Enumeration;
 import java.util.Properties;
 import java.util.Vector;
-import org.smartfrog.sfcore.common.Diagnostics;
-import org.smartfrog.sfcore.parser.SFParser;
 
 
 /**
@@ -613,53 +614,20 @@ public class SFSystem implements MessageKeys {
     }
 
     /**
-     * Gets input stream for the given resource. Throws exception if stream is
-     * null.
+     * Gets input stream for the given resource. Throws exception if the resource isn't found.
      * @param resourceSFURL Name of the resource. SF url valid.
      * @return Input stream for the resource
      * @throws SmartFrogException if input stream could not be created for the
      * resource
-     * @see SFClassLoader
      */
     public static InputStream getInputStreamForResource(String resourceSFURL) throws SmartFrogException {
-        // TODO: Figure out how this is used:
-        // is this supposed to see user-provided files or just files in the SmartFrog-core JAR?
-        InputStream  is = SFClassLoader.getResourceAsStream(resourceSFURL);
-        if (is == null) {
-            throw new SmartFrogException(MessageUtil.formatMessage(MSG_FILE_NOT_FOUND, resourceSFURL));
+        InputStream is;
+        try {
+            is = SFLoader.getInputStream(resourceSFURL, null);
+        } catch(IOException e) {
+            throw new SmartFrogException(MessageUtil.formatMessage(MSG_FILE_NOT_FOUND, resourceSFURL), e);
         }
         return is;
-    }
-
-    /**
-     * Gets ByteArray for the given resource. Throws exception if stream is
-     * null.
-     * @param resourceSFURL Name of the resource. SF url valid.
-     * @return ByteArray (byte []) with the resource data
-     * @throws SmartFrogException if input stream could not be created for the
-     * resource
-     * @see SFClassLoader
-     */
-    public static byte[] getByteArrayForResource(String resourceSFURL) throws SmartFrogException {
-        ByteArrayOutputStream bStrm = null;
-        DataInputStream iStrm = null;
-        try {
-            iStrm = new DataInputStream(getInputStreamForResource(resourceSFURL));
-            byte resourceData[];
-            bStrm = new ByteArrayOutputStream();
-            int ch;
-            while ((ch = iStrm.read())!=-1) {
-                bStrm.write(ch);
-            }
-            resourceData = bStrm.toByteArray();
-            bStrm.close();
-            return resourceData;
-        } catch (IOException ex) {
-          throw SmartFrogException.forward(ex);
-        } finally {
-          if (bStrm!=null) { try { bStrm.close();} catch (IOException swallowed) { } }
-          if (iStrm!=null) { try { iStrm.close();} catch (IOException swallowed) { } }
-        }
     }
 
     /**
@@ -712,7 +680,7 @@ public class SFSystem implements MessageKeys {
                         (rootProcess).sfCompleteName()));
             }
         } catch (RemoteException e) {
-            e.printStackTrace(System.err);
+            e.printStackTrace();
         } finally {
             setRootProcess(null);
         }

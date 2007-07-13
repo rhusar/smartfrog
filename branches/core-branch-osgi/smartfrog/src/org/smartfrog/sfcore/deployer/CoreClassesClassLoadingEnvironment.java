@@ -9,6 +9,8 @@ import org.smartfrog.sfcore.languages.sf.PhaseAction;
 import org.smartfrog.sfcore.security.SFSecurity;
 
 import java.io.InputStream;
+import java.io.IOException;
+import java.net.URL;
 
 /**
  * The component factory that should be used for framework components.
@@ -62,8 +64,11 @@ public class CoreClassesClassLoadingEnvironment implements PrimFactory, ParseTim
         return clazz.newInstance();
     }
 
-    public InputStream getResourceAsStream(String pathname) {
-        return getClass().getClassLoader().getResourceAsStream(pathname);
+    public InputStream getResourceAsStream(String pathname) throws IOException {
+        // NOT getClass().getResourceAsStream(), because the handling of forward slashes is different
+        URL resourceURL = getClass().getClassLoader().getResource(pathname);
+        if (resourceURL == null) throw new IOException("Resource not found: " + pathname);
+        return SFSecurity.getSecureInputStream(resourceURL);
     }
 
     public ClassLoader getClassLoader() {

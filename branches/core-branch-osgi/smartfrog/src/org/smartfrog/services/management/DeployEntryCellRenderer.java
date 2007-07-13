@@ -32,6 +32,7 @@ import org.smartfrog.sfcore.processcompound.ProcessCompound;
 import org.smartfrog.sfcore.common.*;
 import org.smartfrog.sfcore.logging.LogSF;
 import org.smartfrog.sfcore.logging.LogFactory;
+import org.smartfrog.SFLoader;
 
 public class DeployEntryCellRenderer extends DefaultTreeCellRenderer {
 
@@ -92,7 +93,7 @@ public class DeployEntryCellRenderer extends DefaultTreeCellRenderer {
    */
   protected static ImageIcon createImageIcon(String path) {
     try {
-      return new ImageIcon(org.smartfrog.SFSystem.getByteArrayForResource(path));
+      return new ImageIcon(SFLoader.getByteArrayForResource(path));
     } catch (SmartFrogException ex) {
       if (sfLogStatic.isErrorEnabled()) sfLogStatic.error(ex);
     }

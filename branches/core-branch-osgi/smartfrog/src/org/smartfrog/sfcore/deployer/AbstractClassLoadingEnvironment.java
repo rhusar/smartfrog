@@ -23,10 +23,10 @@ public abstract class AbstractClassLoadingEnvironment extends PrimImpl
     public final Prim getComponent(ComponentDescription askedFor) throws SmartFrogDeploymentException {
         String className = null;
         try {
-            // Not pretty - but needed to have a proper error message, and pass tests.
-            className = (String) askedFor.sfResolveHere(SmartFrogCoreKeys.SF_CLASS);
 
-            return getComponentImpl(askedFor);
+            className = (String) askedFor.sfResolveHere(SmartFrogCoreKeys.SF_CLASS);
+            return (Prim) newInstance(className);
+
         } catch (ClassNotFoundException e) {
             throw deploymentException(MessageUtil.formatMessage(
                     MSG_CLASS_NOT_FOUND, className), e, askedFor);
@@ -48,10 +48,6 @@ public abstract class AbstractClassLoadingEnvironment extends PrimImpl
         return new SmartFrogDeploymentException(message, e, this, askedFor.sfContext());
     }
 
-    protected abstract Prim getComponentImpl(ComponentDescription askedFor)
-            throws ClassNotFoundException, InstantiationException,
-                   IllegalAccessException, SmartFrogResolutionException, SmartFrogDeploymentException;
-
     protected Object newInstance(String className) throws ClassNotFoundException, InstantiationException,
             IllegalAccessException
     {
@@ -70,14 +66,9 @@ public abstract class AbstractClassLoadingEnvironment extends PrimImpl
     }
 
 
-    public InputStream getResourceAsStream(String pathname) {
-        try {
-            return SFSecurity.getSecureInputStream(getResource(pathname));
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
-        }
+    public InputStream getResourceAsStream(String pathname) throws IOException {
+        URL resourceURL = getClassLoader().getResource(pathname);
+        if (resourceURL == null) throw new IOException("Resource not found: " + pathname);
+        return SFSecurity.getSecureInputStream(resourceURL);
     }
-
-    protected abstract URL getResource(String pathname);
 }

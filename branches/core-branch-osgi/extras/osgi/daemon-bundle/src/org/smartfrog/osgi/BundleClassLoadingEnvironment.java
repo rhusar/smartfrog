@@ -42,6 +42,10 @@ public class BundleClassLoadingEnvironment extends AbstractClassLoadingEnvironme
             public Class loadClass(String name) throws ClassNotFoundException {
                 return hostBundle.loadClass(name);
             }
+
+            public URL getResource(String name) {
+                return hostBundle.getResource(name);
+            }
         };
     }
 
@@ -67,36 +71,8 @@ public class BundleClassLoadingEnvironment extends AbstractClassLoadingEnvironme
         super.sfTerminate(status);
     }
 
-    protected Prim getComponentImpl(ComponentDescription askedFor)
-        throws ClassNotFoundException, InstantiationException, IllegalAccessException,
-            SmartFrogResolutionException
-    {
-        String sfClass = (String) askedFor.sfResolveHere(SmartFrogCoreKeys.SF_CLASS);
-        return (Prim) newInstance(sfClass);
-    }
-
-    protected Object newInstance(String className) throws ClassNotFoundException, InstantiationException, IllegalAccessException {
-        Class clazz = hostBundle.loadClass(className);
-        SFSecurity.checkSecurity(clazz);
-        return clazz.newInstance();
-    }
-
-    public InputStream getResourceAsStream(String pathname) {
-        URL url = hostBundle.getResource(pathname);
-        try {
-            return url != null ? url.openStream() : null;
-        } catch (IOException e) {
-            return null;
-        }
-    }
-
-    protected URL getResource(String pathname) {
-        return hostBundle.getResource(pathname);
-    }
-
     /**
-     * Returns a crippled class loader, that does only one thing properly : load classes from the user bundle.
-     * Thus the only functional method is loadClass().
+     * Returns a wrapper class loader that delagates to this bundle.
      * @return
      */
     public ClassLoader getClassLoader() {
