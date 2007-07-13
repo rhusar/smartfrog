@@ -39,14 +39,12 @@ For more information: www.smartfrog.org
   	if ( null != targetHost) {
 	System.out.println("HOSTNMAE===" + targetHost);
 	}*/
-    	SFAdapter adapter = new SFAdapter(factory, scheduler);
+    SFAdapter adapter = new SFAdapter(factory, scheduler);
 	String []selectedHosts = request.getParameterValues("selectedHost");
   	if( null != selectedHosts ){
 	  	for( int i=0;i<selectedHosts.length;i++){
 		//	System.out.println(selectedHosts[i]);
 			adapter.startMngConsole(selectedHosts[i]);
-			adapter.startMngConsole("lritusab.asiapacific.hpqcorp.net");
-			
 	  	}
   	}
   	// forward to the host listing
