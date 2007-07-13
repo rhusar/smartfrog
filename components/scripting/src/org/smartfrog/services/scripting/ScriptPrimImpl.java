@@ -29,10 +29,13 @@ import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.security.SFClassLoader;
+import org.smartfrog.SFLoader;
 
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StringReader;
+import java.io.InputStream;
+import java.io.IOException;
 import java.net.InetAddress;
 import java.rmi.RemoteException;
 import java.util.Enumeration;
@@ -106,9 +109,11 @@ public class ScriptPrimImpl
      */
     public Reader getScript(String script) {
         try {
-            return new InputStreamReader(SFClassLoader.getResourceAsStream(script));
-        }
-        catch (Exception ex) {
+            // TODO: Pass the user code's code repository
+            InputStream stream = SFLoader.getInputStream(script, null);
+            return new InputStreamReader(stream);
+        } catch (IOException ex) {
+            //assume it is a script
             return new StringReader(script);
         }
     }

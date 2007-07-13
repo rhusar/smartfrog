@@ -35,7 +35,6 @@ import org.smartfrog.sfcore.common.SmartFrogException;
 
 
 import org.smartfrog.sfcore.reference.Reference;
-import org.smartfrog.sfcore.security.SFClassLoader;
 
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 
@@ -204,11 +203,7 @@ public class SFParser implements Parser, MessageKeys {
      public Phases sfParseResource(String url, String codebase) throws SmartFrogParseException {
          InputStream is=null;
          try {
-             is = SFClassLoader.getResourceAsStream(url,codebase, true);
-             if (is==null) {
-                 throw new SmartFrogParseException(
-                 MessageUtil.formatMessage(MSG_URL_TO_PARSE_NOT_FOUND,url));
-             }
+             is = SFLoader.getInputStreamSFException(url);
              return sfParse(is);
          } catch (SmartFrogParseException spex){
              throw spex;
@@ -226,9 +221,9 @@ public class SFParser implements Parser, MessageKeys {
          }
      }
 
-   /*
-   * ************************** Core parsing **********************************
-   */
+    /*
+    * ************************** Core parsing **********************************
+    */
 
    /**
     * Parses component(s) from a reader. Returns a root component which

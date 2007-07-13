@@ -20,6 +20,9 @@
 package org.smartfrog.test;
 
 import junit.framework.TestCase;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.smartfrog.SFLoader;
 import org.smartfrog.SFSystem;
 import org.smartfrog.services.assertions.SmartFrogAssertionException;
 import org.smartfrog.sfcore.common.ConfigurationDescriptor;
@@ -35,18 +38,15 @@ import org.smartfrog.sfcore.parser.SFParser;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.reference.Reference;
-import org.smartfrog.sfcore.security.SFClassLoader;
 import org.smartfrog.sfcore.security.SFGeneralSecurityException;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.UnknownHostException;
-import java.rmi.RemoteException;
 import java.rmi.NoSuchObjectException;
+import java.rmi.RemoteException;
 
 /**
  * A base class for smartfrog tests
@@ -636,12 +636,7 @@ public abstract class SmartFrogTestBase extends TestCase {
         Phases phases=null;
         InputStream is=null;
         try {
-            is = SFClassLoader.getResourceAsStream(resource);
-            if (is == null) {
-                String msg = MessageUtil.
-                        formatMessage(MessageKeys.MSG_URL_TO_PARSE_NOT_FOUND, resource);
-                throw new SmartFrogParseException(msg);
-            }
+            is = SFLoader.getInputStreamSFException(resource);
             String extension = determineLanguage(resource);
             phases = (new SFParser(extension)).sfParse(is);
         } finally {

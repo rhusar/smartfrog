@@ -25,6 +25,7 @@ The work was part of the final semester Project work.
 package org.smartfrog.services.sfdebugger;
 
 import java.io.InputStream;
+import java.io.IOException;
 import java.util.Vector;
 import java.util.Stack;
 
@@ -39,6 +40,7 @@ import org.smartfrog.sfcore.parser.Phases;
 import org.smartfrog.sfcore.parser.SFParser;
 import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.security.SFClassLoader;
+import org.smartfrog.SFLoader;
 
 /**
   * Defines a way to get the static breakpoints vector
@@ -78,9 +80,14 @@ public class Breakpoints extends ComponentDescriptionImpl implements CDVisitor {
 		try {
 		String language = SFParser.getLanguageFromUrl(url);
   	  
-		stream = SFClassLoader.getResourceAsStream(url);
-		
-		BreakpointsVec.add("HERE Root");
+		try {
+            // TODO: Get access to user code code repository (eg. the JAR that has the breakpoints file)
+            stream = SFLoader.getInputStream(url, null);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+            BreakpointsVec.add("HERE Root");
 		
 		CD = new Breakpoints();
 		

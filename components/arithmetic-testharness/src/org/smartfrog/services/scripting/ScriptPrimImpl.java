@@ -27,8 +27,10 @@ import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.io.Reader;
 import java.io.InputStream;
+import java.io.IOException;
 
 import org.smartfrog.SFSystem;
+import org.smartfrog.SFLoader;
 import org.smartfrog.sfcore.prim.*;
 import org.smartfrog.sfcore.common.*;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
@@ -99,14 +101,10 @@ public class ScriptPrimImpl
    */
   public Reader getScript(String script) {
     try {
-        InputStream stream = SFClassLoader.getResourceAsStream(script);
-        if(stream==null) {
-            //assume its a script
-            return new StringReader(script);
-        }
+        // TODO: Pass the user code's code repository
+        InputStream stream = SFLoader.getInputStream(script, null);
         return new InputStreamReader(stream);
-    }
-    catch (Exception ex) {
+    } catch (IOException ex) {
         //assume it is a script
       return new StringReader(script);
     }

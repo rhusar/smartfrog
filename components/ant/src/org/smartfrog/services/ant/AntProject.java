@@ -443,7 +443,7 @@ public class AntProject {
 
 
     private void validateAnt() throws SmartFrogDeploymentException {
-        if (SFClassLoader.getResourceAsStream("/org/apache/tools/ant/Project.class") == null) {
+        if (getClass().getResourceAsStream("/org/apache/tools/ant/Project.class") == null) {
             throw new SmartFrogDeploymentException(
                     "Cannot initialize Ant. WARNING: Perhaps ant.jar is not in CLASSPATH ...");
         }
