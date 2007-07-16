@@ -110,7 +110,7 @@
        security reasons, unless security is active-->
 
    <target name="ready-to-system-test"
-     depends="package-tests,ready-to-test,init-codebase,declare-system-test-tasks,published" />
+     depends="package-tests,ready-to-test,init-codebase,declare-system-test-tasks" />
 
    <target name="system-tests" depends="ready-to-system-test"
      if="system.tests.enabled"

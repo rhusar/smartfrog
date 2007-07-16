@@ -10,7 +10,7 @@
   <import file="core.xml"/>
 
   <!--define the published state-->
-  <target name="published" depends="ivy-publish-all"/>
+  <target name="published" depends="ivy-publish"/>
 
 
   <target name="ivy-init" depends="init-core,load-version-info,artifact-names">
@@ -56,16 +56,13 @@
   <target name="ivy-publish" depends="ready-to-publish-all,ready-to-publish,ivy-resolve">
     <ivy:publish resolver="local" pubrevision="${artifact.version}"
         overwrite="true"
-        artifactspattern="${dist.dir}/lib/${ivy.publish.pattern}" />
+        artifactspattern="${dist.lib.dir}/${ivy.publish.pattern}" />
   </target>
 
   <target name="ready-to-publish-all" depends="ready-to-publish,documents-processed"/>
 
   <target name="ivy-publish-all" depends="ivy-publish">
   </target>
-  <!--
-    this target does the local install, copy
-  -->
 
   <target name="ivy-install" depends="ivy-publish"
       description="Component built and installed locally"/>
