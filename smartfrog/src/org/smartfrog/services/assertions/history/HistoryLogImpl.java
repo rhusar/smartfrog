@@ -41,6 +41,7 @@ import java.rmi.RemoteException;
 
 public class HistoryLogImpl extends AbstractHistoryPrimImpl implements Remote {
 
+
     public static final String ATTR_DEPLOY_MESSAGE="deployMessage";
     public static final String ATTR_START_MESSAGE="startMessage";
     public static final String ATTR_TERMINATE_MESSAGE="terminateMessage";
@@ -49,6 +50,13 @@ public class HistoryLogImpl extends AbstractHistoryPrimImpl implements Remote {
     }
 
 
+    /**
+     * L
+     * @param attribute
+     * @throws SmartFrogResolutionException
+     * @throws RemoteException
+     * @throws SmartFrogAssertionException
+     */
     protected void log(String attribute) throws SmartFrogResolutionException, RemoteException, SmartFrogAssertionException {
         String message=sfResolve(attribute,"",false);
         logMessage(message);
@@ -65,6 +73,7 @@ public class HistoryLogImpl extends AbstractHistoryPrimImpl implements Remote {
         if(message!=null && message.length()>0) {
             History history = resolveHistory();
             history.log(message);
+            sfLog().info(message);
         }
     }
 

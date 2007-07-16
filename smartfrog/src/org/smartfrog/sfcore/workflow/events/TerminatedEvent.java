@@ -26,25 +26,22 @@ import org.smartfrog.sfcore.prim.TerminationRecord;
 
 public class TerminatedEvent extends LifecycleEvent {
 
-    private TerminationRecord status;
+
 
     public TerminatedEvent() {
     }
 
-
-    public TerminatedEvent(Prim component, TerminationRecord record) {
-        super(component);
-        this.status = record;
-        resetComponent();
+    public TerminatedEvent(Prim component, TerminationRecord status) {
+        super(component, status);
     }
-
 
     public boolean isAlive() {
         return false;
     }
 
-
-    public TerminationRecord getStatus() {
-        return status;
+    public String getEventName() {
+        return "TerminatedEvent";
     }
+
+
 }

@@ -22,7 +22,6 @@ package org.smartfrog.sfcore.common;
 import org.smartfrog.sfcore.prim.Prim;
 
 import java.io.Serializable;
-import java.rmi.RemoteException;
 
 /**
  * A SmartFrogExtractedException is a special exception that can be built from existing exceptions.
@@ -102,34 +101,6 @@ public class SmartFrogExtractedException extends SmartFrogException implements S
     }
 
     /**
-     * To forward SmartFrog exceptions instead of chain them.
-     *
-     * @param thr throwable object to be forwarded
-     *
-     * @return SmartFrogException that is a SmartFrogLogException
-     */
-    public static SmartFrogException forward (Throwable thr){
-        return convert(thr);
-    }
-
-    /**
-     * To forward SmartFrogExtractedException exceptions instead of chain them.
-     * If thr is an instance of SmartFrogExtractedException then the exception is returned
-     * without any modification, if not a new SmartFrogLogException is created
-     * with message as a paramenter
-     * @param message message
-     * @param thr throwable object to be forwarded
-     * @return Throwable that is a SmartFrogLogException
-     */
-    public static SmartFrogException forward (String message, Throwable thr){
-        SmartFrogException exception = convert(thr);
-        if (message != null) {
-            exception.add(CONTEXT_MSG, message);
-        }
-        return exception;
-    }
-
-    /**
      * Fill in the attributes from the thrown exception
      * @param thrown the thrown exception
      */
@@ -204,30 +175,42 @@ public class SmartFrogExtractedException extends SmartFrogException implements S
      * a  SmartFrogExtractedException</li>
      * <ol>
      *
-     * @param thrown the fault that was thrown.
+     * @param thrown the fault that was thrown. If null, a null exception is returned.
      * @return a new (potentially nested) fault tree, in which all Exceptions have been converted to a serialized
      * form that the far end can hande.
      */
-    public static SmartFrogException convert(Throwable thrown) {
-        boolean isSmartFrogException=thrown instanceof SmartFrogException;
+    public static Throwable convert(Throwable thrown) {
+        if(thrown==null) {
+            return null;
+        }
+        boolean convert;
+
+        if (thrown instanceof SmartFrogException) {
+            convert = false;
+        } else {
+            String classname = thrown.getClass().getName();
+            convert = !classname.startsWith("java.") && !classname.startsWith("javax.");
+        }
+
+
         Throwable cause = thrown.getCause();
-        SmartFrogException exception;
+        Throwable exception;
         boolean hasCause=cause!=null && cause!=thrown;
         if(hasCause) {
             //if we have a cause, recursively convert us
-            SmartFrogException newCause=convert(cause);
-            if (isSmartFrogException && newCause == cause) {
-                //no change in the child, and we are of the right type
-                exception = (SmartFrogException) thrown;
+            Throwable newCause=convert(cause);
+            if (!convert && newCause == cause) {
+                //no change in the child, and we are of an allowed type
+                exception = thrown;
             } else {
                 //the child changed or we are of the wrong type
                 exception = createFromThrowable(thrown, newCause);
             }
         } else {
             //no children. This is the base of the cause tree.
-            if(isSmartFrogException) {
-                //cast to a SmartFrogException and return unchanged.
-                exception = (SmartFrogException) thrown;
+            if(!convert) {
+                //and return unchanged.
+                exception = thrown;
             } else {
                 //we need to remarshall us
                 exception = createFromThrowable(thrown,null);
@@ -242,7 +225,7 @@ public class SmartFrogExtractedException extends SmartFrogException implements S
      * @param cause any nested cause; can be null
      * @return an exception with the parame
      */
-    private static SmartFrogExtractedException createFromThrowable(Throwable thrown, SmartFrogException cause) {
+    private static SmartFrogExtractedException createFromThrowable(Throwable thrown, Throwable cause) {
         SmartFrogExtractedException fault = new SmartFrogExtractedException(thrown.getMessage());
         fault.fillInFromThrowable(thrown);
         if(cause!=null) {

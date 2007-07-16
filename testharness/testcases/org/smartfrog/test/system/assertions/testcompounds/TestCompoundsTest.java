@@ -44,7 +44,7 @@ public class TestCompoundsTest extends DeployingTestBase {
 
     public void testFailure() throws Throwable {
         TerminationRecord record = deployToAbnormalTermination("testFailure");
-        assertRecordContains(record, "failure message",null,null);
+        assertTerminationRecordContains(record, "failure message",null,null);
     }
 
     private TerminationRecord deployToAbnormalTermination(String test) throws Throwable {
@@ -66,7 +66,7 @@ public class TestCompoundsTest extends DeployingTestBase {
 
     public void testFailureWrongMessage() throws Throwable {
         TerminationRecord record = deployToNormalTermination("testFailureWrongMessage");
-        assertRecordContains(record, TestCompoundImpl.TEST_FAILED_WRONG_STATUS, null, null);
+        assertTerminationRecordContains(record, TestCompoundImpl.TEST_FAILED_WRONG_STATUS, null, null);
     }
 
     public void testFailureWrongMessageNested() throws Throwable {
@@ -76,6 +76,6 @@ public class TestCompoundsTest extends DeployingTestBase {
 
     public void testSmartFrogException() throws Throwable {
         TerminationRecord record = deployToNormalTermination("testSmartFrogException");
-        assertRecordContains(record, null, SmartFrogException.class.toString(), "SFE");
+        assertTerminationRecordContains(record, null, SmartFrogException.class.toString(), "SFE");
     }
 }

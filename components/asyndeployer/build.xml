@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<project name="AsynDeployer" default="default">
+<project name="asyndeployer" default="default">
 
 <!--
 /** (C) Copyright 2007 Hewlett-Packard Development Company, LP
@@ -30,12 +30,9 @@ For more information: www.smartfrog.org
 
   <property name="is.component" value="true"/>
   <property file="build.properties"/>
+  <echo message="==================================================================="/>
+  <echo message="= ${ant.project.name}"/>
   <property name="root.dir" location="../.."/>
   <import file="${root.dir}/common.xml"/>
-
-  <target name="init" depends="common.init">
-    <echo message="==================================================================="/>
-    <echo message="= ${ant.project.name}"/>
-  </target>
 
 </project>

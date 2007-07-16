@@ -34,7 +34,7 @@ import org.smartfrog.avalanche.settings.sfConfig.SfDescriptionType;
 import org.smartfrog.avalanche.shared.MonitoringEvent;
 import org.smartfrog.services.display.Display;
 import org.smartfrog.services.quartz.collector.DataSource;
-import org.smartfrog.services.sfinterface.SFMutiHostSubmitException;
+import org.smartfrog.services.sfinterface.SFMultiHostSubmitException;
 import org.smartfrog.services.sfinterface.SFParseException;
 import org.smartfrog.services.sfinterface.SFSubmitException;
 import org.smartfrog.services.sfinterface.SmartFrogAdapterImpl;
@@ -381,7 +381,7 @@ public class SFAdapter{
 			throw new SFSubmitException(e);
 		}catch(SFParseException e){
 			throw new SFSubmitException(e);
-		}catch(SFMutiHostSubmitException e){
+		}catch(SFMultiHostSubmitException e){
 			throw new SFSubmitException(e);
 		}catch(Exception e){
 			throw new SFSubmitException(e);

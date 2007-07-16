@@ -29,15 +29,18 @@ History extends Prim {
 }
 
 
+HistoryComponent extends Prim {
+  sfShouldTerminate true;
+  history TBD;
+}
+
 /**
  * this component logs a message when deployed, started, and terminated
  * if the specific message string is empty, it is not logged.
  */
 
-HistoryLog extends Prim {
+HistoryLog extends HistoryComponent {
   sfClass "org.smartfrog.services.assertions.history.HistoryLogImpl";
-  sfShouldTerminate "true";
-  history TBD;
   deployMessage "";
   startMessage "";
   terminateMessage "";
@@ -47,10 +50,8 @@ HistoryLog extends Prim {
  * a component that checks for a logged message when deployed
  */
 
-HistoryLogAssertion extends Prim {
+HistoryLogAssertion extends HistoryComponent {
   sfClass "org.smartfrog.services.assertions.history.HistoryLogAssertion";
-  sfShouldTerminate "true";
-  history TBD;
   message TBD;
   //Optional : errorText;
   //errorText
@@ -59,10 +60,8 @@ HistoryLogAssertion extends Prim {
 /**
  * assert that there are two events, message1 being logged before message2
  */
-HistoryAssertOrderedMessages extends Prim {
+HistoryAssertOrderedMessages extends HistoryComponent {
   sfClass "org.smartfrog.services.assertions.history.HistoryAssertOrderedMessages";
-  sfShouldTerminate "true";
-  history TBD;
   message1;
   message2;
 }

@@ -89,6 +89,8 @@ public class SFProcess implements MessageKeys {
     protected static final Reference refProcessCompound = new Reference(
                 "ProcessCompound");
     private static final String INTERRUPT_HANDLER = "org.smartfrog.sfcore.processcompound.InterruptHandlerImpl";
+    private static final String ERROR_NO_INTERRUPT_HANDLER = "Could not create an interrupt handler from "+ INTERRUPT_HANDLER
+            +"\nSmartFrog may be running on a JVM which does not support this feature";
 
 //    /** ProcessLog. This log is used to log into the core log: SF_CORE_LOG
 //     *  It can be replaced using sfSetLog()
@@ -294,7 +296,7 @@ public class SFProcess implements MessageKeys {
         boolean wasTerminated = processCompoundTerminated;
         if(!wasTerminated)
             processCompoundTerminated=true;
-        
+
         return wasTerminated;
     }
 
@@ -322,11 +324,11 @@ public class SFProcess implements MessageKeys {
                 InterruptHandler handler=(InterruptHandler) constructor.newInstance(new Object[0]);
                 handler.bind("INT", sfLog());
             } catch (NoClassDefFoundError e) {
-                sfLog().error("Could not create an interrupt handler from "+ INTERRUPT_HANDLER
-                        +"\nSmartFrog may be running on a JVM which does not support this feature",e);
-            } catch (Exception e) {
-                sfLog().error("Could not create an interrupt handler from " + INTERRUPT_HANDLER
-                        + "\nSmartFrog may be running on a JVM which does not support this feature", e);
+                //class not found
+                sfLog().error(ERROR_NO_INTERRUPT_HANDLER,e);
+            } catch (Exception ex) {
+                //all the other ways things could fail; see SFOS-159
+                sfLog().error(ERROR_NO_INTERRUPT_HANDLER, ex);
             }
         }
 
