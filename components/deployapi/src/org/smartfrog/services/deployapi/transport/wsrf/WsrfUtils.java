@@ -27,7 +27,7 @@ import static org.ggf.cddlm.generated.api.CddlmConstants.PROPERTY_MUWS_MANAGEABI
 import org.ggf.cddlm.generated.api.CddlmConstants;
 import org.smartfrog.projects.alpine.om.base.SoapElement;
 import org.smartfrog.projects.alpine.wsa.AlpineEPR;
-import org.smartfrog.services.xml.utils.ResourceLoader;
+import org.smartfrog.sfcore.common.ResourceLoader;
 import org.smartfrog.services.xml.utils.XmlCatalogResolver;
 import org.smartfrog.services.deployapi.system.Constants;
 import org.smartfrog.services.deployapi.binding.XomHelper;

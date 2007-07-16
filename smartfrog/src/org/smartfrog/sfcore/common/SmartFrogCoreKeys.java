@@ -195,15 +195,23 @@ public interface SmartFrogCoreKeys {
      *
      * Value {@value}
      */
-    public final static String SF_SCHEMA_DESCRIPTION="sfSchemaDescription";
+    public final static String SF_SCHEMA_DESCRIPTION = "sfSchemaDescription";
 
     /**
      * Attribute that defines the codebase for a component.
-     *
+     * @deprecated The use of codebase URLs is deprecated.
+     * Use the {@link org.smartfrog.sfcore.deployer.CodeRepository} interface instead,
+     * along with the attribute {@link this.SF_CODE_REPOSITORY}.
      * Value {@value}
      */
     public final static String SF_CODE_BASE = "sfCodeBase";
 
+    /**
+     * Attibute that references the {@link org.smartfrog.sfcore.deployer.CodeRepository}
+     * a component comes from. Initialized by the {@link org.smartfrog.sfcore.deployer.PrimFactory}
+     * that creates the component. 
+     */
+    public static final String SF_CODE_REPOSITORY = "sfCodeRepository";
 
     /**
      * Attribute that defines how often to send liveness in seconds.
@@ -355,31 +363,31 @@ public interface SmartFrogCoreKeys {
      *
      * Value {@value}
      */
-    String SF_TIME_PARSE = "sfParseTime";
+    public static final String SF_TIME_PARSE = "sfParseTime";
     /**
      * Time attribute set in ActionDeploy deployment
      *
      * Value {@value}
      */
-    String SF_TIME_DEPLOY = "sfDeployTime";
+    public static final String SF_TIME_DEPLOY = "sfDeployTime";
 
     /**
      * Time attribute set in ActionDeploy deployment
      *
      * Value {@value}
      */
-    String SF_TIME_START = "sfStartTime";
+    public static final String SF_TIME_START = "sfStartTime";
 
     /**
      * Time this component was started
      *
      * Value {@value}
      */
-    String SF_TIME_STARTED_AT = "sfStartedAtTime";
+    public static final String SF_TIME_STARTED_AT = "sfStartedAtTime";
 
     /**
      * The language attribute, which can be set/found from the context.
      * {@value}
      */
-    String KEY_LANGUAGE = "#language";
+    public static final String KEY_LANGUAGE = "#language";
 }

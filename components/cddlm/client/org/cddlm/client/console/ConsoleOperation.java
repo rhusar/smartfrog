@@ -30,7 +30,7 @@ import org.cddlm.client.common.ServerBinding;
 import org.smartfrog.services.cddlm.api.CallbackInfo;
 import org.smartfrog.services.cddlm.cdl.CdlDocument;
 import org.smartfrog.services.cddlm.cdl.CdlParser;
-import org.smartfrog.services.cddlm.cdl.ResourceLoader;
+import org.smartfrog.sfcore.common.ResourceLoader;
 import org.smartfrog.services.cddlm.cdl.XomAxisHelper;
 import org.smartfrog.services.cddlm.generated.api.DeployApiConstants;
 import org.smartfrog.services.cddlm.generated.api.endpoint.CddlmSoapBindingStub;

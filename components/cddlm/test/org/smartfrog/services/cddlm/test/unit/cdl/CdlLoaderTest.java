@@ -27,7 +27,7 @@ import nu.xom.ParsingException;
 import org.apache.axis.message.MessageElement;
 import org.smartfrog.services.cddlm.cdl.CdlDocument;
 import org.smartfrog.services.cddlm.cdl.CdlParser;
-import org.smartfrog.services.cddlm.cdl.ResourceLoader;
+import org.smartfrog.sfcore.common.ResourceLoader;
 import org.smartfrog.services.cddlm.cdl.XomAxisHelper;
 import org.w3c.dom.DOMImplementation;
 

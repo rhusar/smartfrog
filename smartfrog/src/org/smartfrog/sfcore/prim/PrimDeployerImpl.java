@@ -89,6 +89,8 @@ public class PrimDeployerImpl extends PrimImpl implements ComponentDeployer, Mes
                 }
             }
 
+            cxt.put(SmartFrogCoreKeys.SF_CODE_REPOSITORY, primFactory.getCodeRepository());
+
             dComponent.sfDeployWith(parent, cxt);
 
             return dComponent;

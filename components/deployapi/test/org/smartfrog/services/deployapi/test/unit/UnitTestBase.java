@@ -23,7 +23,7 @@ import junit.framework.TestCase;
 
 import org.smartfrog.services.deployapi.system.Constants;
 import org.smartfrog.services.deployapi.transport.faults.BaseException;
-import org.smartfrog.services.xml.utils.ResourceLoader;
+import org.smartfrog.sfcore.common.ResourceLoader;
 import org.smartfrog.services.xml.utils.XmlCatalogResolver;
 
 import javax.xml.namespace.QName;

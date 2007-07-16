@@ -22,6 +22,7 @@ package org.smartfrog.services.cddlm.cdl;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.smartfrog.services.cddlm.generated.api.DeployApiConstants;
+import org.smartfrog.sfcore.common.ResourceLoader;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;

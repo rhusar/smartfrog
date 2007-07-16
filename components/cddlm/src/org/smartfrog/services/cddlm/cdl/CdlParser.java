@@ -26,6 +26,7 @@ import nu.xom.ParsingException;
 import org.apache.axis.message.MessageElement;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
+import org.smartfrog.sfcore.common.ResourceLoader;
 
 import java.io.File;
 import java.io.IOException;

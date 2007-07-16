@@ -27,6 +27,7 @@ import org.smartfrog.sfcore.logging.LogFactory;
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.security.SFClassLoader;
 import org.smartfrog.sfcore.utils.ComponentHelper;
+import org.smartfrog.SFLoader;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -98,7 +99,7 @@ public class JavaPackageImpl extends PrimImpl implements JavaPackage {
      * @throws SmartFrogException
      * @throws RemoteException
      */
-    public void readValuesAndSetUpClasspath() throws SmartFrogException, RemoteException {
+    private void readValuesAndSetUpClasspath() throws SmartFrogException, RemoteException {
         boolean debugEnabled = log.isDebugEnabled();
         sources = sfResolve(ATTR_SOURCE,
                         (Vector) null,
@@ -182,19 +183,21 @@ public class JavaPackageImpl extends PrimImpl implements JavaPackage {
         if(requiredClasses==null && requiredResources==null) {
             return;
         }
-        ClassLoader loader=null;
+
         if (requiredClasses != null) {
             Iterator classes=requiredClasses.iterator() ;
             while (classes.hasNext()) {
                 String classname = (String) classes.next();
-                checkForClass(loader,classname);
+                // TODO: Pass a classloader
+                checkForClass(null ,classname);
             }
         }
         if (requiredResources != null) {
             Iterator resources = requiredResources.iterator();
             while (resources.hasNext()) {
                 String resource = (String) resources.next();
-                checkForResource(loader, resource);
+                // TODO: Pass a classloader
+                checkForResource(null, resource);
             }
         }
 
@@ -211,14 +214,13 @@ public class JavaPackageImpl extends PrimImpl implements JavaPackage {
             throws SmartFrogLivenessException {
         InputStream in=null;
         try {
-            in = SFClassLoader.getResourceAsStream(resource,uriClasspath,false);
-            /*
-            URL url=loader.getResource(resource);
-            */
-            if(in==null) {
-                throw new SmartFrogLivenessException("could not find "+resource
-                    +" in "+uriClasspath,this);
-            }
+            //TODO: Change to either use a CodeRepository or pass the ClassLoader correctly
+            //in = loader.getResourceAsStream(resource);
+            in = SFLoader.getInputStream(resource, null);
+            
+        } catch (IOException e) {
+            throw new SmartFrogLivenessException("could not find " + resource
+                    + " in " + uriClasspath, this);
         } finally {
             if(in!=null) {
                 try {

@@ -4,8 +4,11 @@ import org.osgi.framework.*;
 import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.common.MessageUtil;
+import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
+import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.deployer.PrimFactory;
+import org.smartfrog.sfcore.deployer.CodeRepository;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.prim.TerminationRecord;
@@ -56,6 +59,14 @@ public class ServicePrimFactoryImpl extends PrimImpl implements PrimFactory {
         return getClass().getClassLoader();
     }
 
+    public CodeRepository getCodeRepository() {
+        try {
+            return (CodeRepository) sfResolve(SmartFrogCoreKeys.SF_CODE_REPOSITORY);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
     /**
      *
      * @param askedFor The contents of the sfMeta attribute of the Prim we're deploying.
@@ -83,7 +94,7 @@ public class ServicePrimFactoryImpl extends PrimImpl implements PrimFactory {
                 new UnregisterOnTerminateInvocationHandler(interfaceName);
 
         // We pass our classloader: the newly created proxy class will
-        // be defined by our classloader.
+        // be attached to our classloader.
         return (Prim) Proxy.newProxyInstance(
                 getClass().getClassLoader(),
                 new Class[] {Prim.class},
