@@ -35,20 +35,26 @@ public interface TestListenerLog extends LogRemote {
 
     /**
      * Add a listener to log events
-     * @param listener
-     * @throws RemoteException
+     * @param listener the listeer (must not be null)
+     * @throws SmartFrogException implementation-specific errors.
+     * In {@link TestListenerLogImpl#addLogListener(LogListener)}, a SmartFrogException is thrown if the
+     * listener is already listed as listening to the log
+     * @throws RemoteException network problems
      */
     public void addLogListener(LogListener listener) throws SmartFrogException, RemoteException;
 
     /**
      * Remove a log listener. Harmless if the log is not active
-     * @param listener
-     * @throws RemoteException
+     * @param listener listener
+     * @throws SmartFrogException implementation-specific errors
+     * @throws RemoteException network problems
      */
     public void removeLogListener(LogListener listener) throws SmartFrogException, RemoteException;
 
     /**
      * Remove all listeners
+     * @throws SmartFrogException implementation-specific errors
+     * @throws RemoteException network problems
      */
-    void clearListeners() throws RemoteException;
+    void clearListeners() throws RemoteException, SmartFrogException;
 }
