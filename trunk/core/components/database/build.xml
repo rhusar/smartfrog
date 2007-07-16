@@ -30,33 +30,22 @@
   <!-- override point -->
   <property file="build.properties"/>
   <property name="javac.java.version" value="1.5"/>
+  <property name="ivy.enabled" value="true"/>
   <property name="is.component" value="true"/>
   <property name="system.tests" value="true"/>
 
   <property name="root.dir" location="../.."/>
-  <property name="antbuild.dir" location="${root.dir}/antbuild"/>
-  <property name="xml.dir" location="${antbuild.dir}/xml"/>
 
+  <echo message="==================================================================="/>
+  <echo message="= ${ant.project.name}"/>
+
+  <!--work out if mysql is around-->
+  <available property="test.mysql.present"
+      file="mysqld" filepath="${env.PATH}"/>
+  <available property="test.mysql.present"
+      file="mysqld.exe" filepath="${env.Path}"/>
 
   <!-- Import common stuff -->
-  <import file="${xml.dir}/systemtest.xml"/>
-  <import file="${xml.dir}/gui.xml"/>
-  <import file="${xml.dir}/dist.xml"/>
-  <import file="${xml.dir}/state.xml"/>
-
-  <!---->
-  <target name="default" depends="published" />
-
-
-  <target name="init" depends="core.init">
-    <echo message="==================================================================="/>
-    <echo message="= ${ant.project.name}"/>
-
-    <!--work out if mysql is around-->
-    <available property="test.mysql.present"
-        file="mysqld" filepath="${env.PATH}"/>
-    <available property="test.mysql.present"
-        file="mysqld.exe" filepath="${env.Path}"/>
-  </target>
+  <import file="${root.dir}/common.xml"/>
 
 </project>
