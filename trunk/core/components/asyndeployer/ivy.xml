@@ -1,7 +1,7 @@
 <?xml version="1.0" ?>
 <?xml-stylesheet type="text/xsl" href="http://ivyrep.jayasoft.org/ivy-doc.xsl"?>
 <ivy-module version="1.0">
-  <info organisation="org.smartfrog" module="sf-dado">
+  <info organisation="org.smartfrog" module="sf-asyndeployer">
     <license name="LGPL"/>
     <ivyauthor name="kumaravel Ganesan" url="http://www.gkvel.org"/>
     <description>
@@ -40,10 +40,10 @@
   </publications>
   <dependencies>
     <dependency org="org.smartfrog"
-      name="smartfrog"
-      changing="true"
-      rev="latest.integration"
-      conf="compile,runtime,daemon->services"/>
+        name="smartfrog"
+        changing="true"
+        rev="latest.integration"
+        conf="compile,runtime,daemon->services"/>
     <dependency org="org.smartfrog"
         name="sf-tasks"
         changing="true"
@@ -56,21 +56,21 @@
         conf="test->default"/>
 
     <dependency org="javax.activation"
-                name="activation"
-                rev="${activation.version}"
-                conf="compile,redist->default"/>
+        name="activation"
+        rev="${activation.version}"
+        conf="compile,redist->default"/>
     <dependency org="javax.mail"
-                name="mail"
-                rev="${mail.version}"
-                conf="compile,redist->default"/>
+        name="mail"
+        rev="${mail.version}"
+        conf="compile,redist->default"/>
 
 
-       <!--the jasco dependency-->
-           
+    <!--the jasco dependency-->
+
     <dependency org="asm"
-                name="asm"
-                rev="${asm.version}"
-                conf="compile,redist->default"/>
+        name="asm"
+        rev="${asm.version}"
+        conf="compile,redist->default"/>
     <dependency org="org.objectweb.fractal"
         name="fractal"
         rev="${fractal.version}"
