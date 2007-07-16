@@ -15,6 +15,8 @@ import java.net.URL;
 import java.net.MalformedURLException;
 import java.util.List;
 import java.util.Enumeration;
+import java.util.Collections;
+import java.util.Arrays;
 
 /**
  * Loads classes and creates components from remote code repositories.
@@ -25,15 +27,22 @@ public class URLClassLoadingEnvironment extends AbstractClassLoadingEnvironment 
 
     private ClassLoader urlClassLoader;
     public static final String ATTR_CODEBASE = "codebase";
+    private URL[] urlArray;
 
     public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
         super.sfDeploy();
 
-        List urls = (List) sfResolve(ATTR_CODEBASE);
-        URL[] urlArray = new URL[urls.size()];
+        final Object codebase = sfResolve(ATTR_CODEBASE);
+        List urls;
+        if (codebase instanceof String) urls = Arrays.asList(new Object[] {codebase});
+        else urls = (List) codebase;
+
+        urlArray = new URL[urls.size()];
         try {
-        for (int i=0; i<urlArray.length; i++)
-            urlArray[i] = new URL((String) urls.get(i));
+            for (int i=0; i<urlArray.length; i++) {
+                urlArray[i] = new URL((String) urls.get(i));
+                check(urlArray[i]);
+            }
         } catch (MalformedURLException e) {
             throw SmartFrogException.forward
                     ("Malformed URL in attribute \"" + ATTR_CODEBASE + "\"", e);
@@ -41,10 +50,23 @@ public class URLClassLoadingEnvironment extends AbstractClassLoadingEnvironment 
 
         // The parent class loader is the one that loaded SmartFrog core classes,
         // so user components will be linked properly with the core classes/interfaces they use.
-        urlClassLoader = new URLClassLoader(urlArray, getClass().getClassLoader());
+        urlClassLoader = new URLClassLoader(urlArray, getClass().getClassLoader());        
+    }
+
+    private void check(URL url) throws SmartFrogException {
+        try {
+            url.openStream();
+        } catch (IOException e) {
+            throw new SmartFrogException("The URL is unreachable: " + url, e);
+        }
     }
 
     public ClassLoader getClassLoader() {
         return urlClassLoader;
+    }
+
+    public String toString() {
+        return "URLClassLoadingEnvironment@" + System.identityHashCode(this)
+                + "[ urls=" + Arrays.toString(urlArray) + " ]";
     }
 }

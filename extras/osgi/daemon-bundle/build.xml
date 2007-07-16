@@ -28,7 +28,7 @@
     <!-- Import common stuff -->
     <import file="../../../common.xml"/>
 
-    <target name="createjar" depends="generate-versioned-jar" if="is.component.enabled">
+    <target name="createjar" depends="generate-versioned-jar">
         <sf-jar destfile="${target.jar}"
                 manifest="./META-INF/MANIFEST.MF">
             <zipfileset dir="${build.classes.dir}"/>
