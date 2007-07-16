@@ -1,0 +1,105 @@
+#!/bin/sh
+
+###### Definitions
+
+USAGE="Usage: $0 [-h|--help] | [-t|--target] targethost [-n|--name] ApplicationName [[-e|--environment] env_description_URL.sf [env_description_URL.sf...]] [-a|--application] description_URL.sf"
+
+# Prints a message, the usage message, and exits. Arguments:
+# $1: Message string, required.
+# $2: Exit value (default: 69)
+usage()
+{
+    echo "$1"
+    echo $USAGE
+    if [ ! -z $2 ]; then
+        exit $2
+    else
+        exit 69
+    fi
+}
+
+# Escapes spaces in the argument
+add_backslashes () {
+    echo "$1" | sed -e 's/ /\\ /g'
+}
+
+###### Start of main script
+
+## Setting SFHOME
+if [ -z "$SFHOME" -o ! -d "$SFHOME" ] ; then
+    SFHOME=`dirname "$0"`/..
+    SFHOME=`cd "$SFHOME" && pwd`
+    export SFHOME
+    echo "SFHOME undefined, using $SFHOME as base directory."
+fi
+
+## Include setSFProperties
+. "$SFHOME/bin/setSFProperties"
+
+## Setting the application name : fall back to user name if option is set by setSFProperties
+if test "$USERNAMEPREFIX_ON"; then
+    APPNAME="`whoami`_$2";
+else
+    APPNAME="$2";
+fi
+
+## Process command line arguments.
+while [ ! -z $1 ]; do
+    case "$1" in
+        -h | --help)
+            usage "This script is used to start a new SmartFrog application on a running daemon. It allows the use of an arbitrary number of environment setup descriptions, followed by a single description for the application itself." 0
+            ;;
+        -t | --target)
+            if [ -z $2 ]; then
+                usage "Missing target hostname"
+            fi
+            TARGETHOST="$2"
+            shift
+            ;;
+        -n | --name)
+            if [ -z $2 ]; then
+                usage "Missing application name"
+            fi
+            APPNAME="$2"
+            shift
+            ;;
+        -a | --application)
+            if [ -z $2 ]; then
+                usage "Missing application description URL"
+            fi
+            APPDESCRIPTION="$2"
+            shift
+            ;;
+        -e | --environment)
+            ENVSCRIPTS=
+            i=1
+            # While the next argument exists and does not start with a dash.
+            while [ ! -z "$2" ] && (echo "$2" | grep -q -v '^-'); do
+                ENVSCRIPTS="$ENVSCRIPTS "" -Dorg.smartfrog.sfcore.processcompound.sfDefault.env""$i"=`add_backslashes "$2"`
+                i=`expr $i + 1`
+                shift
+            done
+            if [ -z "$ENVSCRIPTS" ]; then
+                usage "At least one environment description is needed if the -e option is used."
+            fi
+            ;;
+        *)
+            usage "Unrecognized argument: $1"
+            ;;
+    esac
+
+    shift
+done
+
+## Post-parse checks
+if [ -z "$APPNAME" ]; then usage "Missing application name"; fi
+if [ -z "$TARGETHOST" ]; then usage "Missing deployment target host name"; fi
+if [ -z "$APPDESCRIPTION" ]; then usage "Missing application description URL"; fi
+
+
+## Finally, run SmartFrog with the parsed arguments.
+if test "$SFSECURITY"; then
+        java $ENVSCRIPTS $SFSECURITY "$SFDEFAULTINI" org.smartfrog.SFSystem -a \"$APPNAME\":DEPLOY:\"$APPDESCRIPTION\"::\"$TARGETHOST\": -e
+else
+        java $ENVSCRIPTS "$SFDEFAULTINI" org.smartfrog.SFSystem -a \"$APPNAME\":DEPLOY:\"$APPDESCRIPTION\"::\"$TARGETHOST\": -e
+fi

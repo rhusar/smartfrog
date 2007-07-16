@@ -107,6 +107,9 @@ public class SmartFrogCoreProperty {
      */
     public static final String propBaseSFProcess = SmartFrogCorePropertySecurity.propBase +"sfcore.processcompound.";
 
+
+    public static final String defaultDescrName = "sfDefault";
+    
     /**
      * Base for process compound default property names to load default
      * descriptions.
@@ -114,8 +117,7 @@ public class SmartFrogCoreProperty {
      *  Value {@value}
      * @see org.smartfrog.sfcore.processcompound.SFProcess
      */
-    public static final String defaultDescPropBase = propBaseSFProcess + "sfDefault.";
-
+    public static final String defaultDescPropBase = propBaseSFProcess + defaultDescrName + ".";
 
     //Compound
 

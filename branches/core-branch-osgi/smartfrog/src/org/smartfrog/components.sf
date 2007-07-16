@@ -24,5 +24,4 @@ For more information: www.smartfrog.org
 
 #include "/org/smartfrog/sfcore/prim/prim.sf"
 #include "/org/smartfrog/sfcore/compound/compound.sf"
-#include "/org/smartfrog/sfcore/deployer/deployers.sf"
 

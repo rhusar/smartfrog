@@ -25,10 +25,12 @@ import java.util.Date;
 import java.util.Enumeration;
 import java.util.Properties;
 import java.util.Vector;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.Collections;
+import java.util.List;
 import java.util.Iterator;
+import java.util.Comparator;
 import java.net.InetAddress;
 
 import org.smartfrog.SFSystem;
@@ -43,12 +45,9 @@ import org.smartfrog.sfcore.reference.HereReferencePart;
 import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.reference.ReferencePart;
 import org.smartfrog.sfcore.security.SFSecurity;
-import org.smartfrog.sfcore.security.SFSecurityProperties;
-import org.smartfrog.sfcore.security.SmartFrogCorePropertySecurity;
 
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
-import java.util.*;
 
 
 /**
@@ -411,8 +410,11 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
         String url;
         String key = null;
         try {
-            for (Enumeration e = props.keys(); e.hasMoreElements(); ) {
-                key = e.nextElement().toString();
+            List keyList = Collections.list(props.propertyNames());
+            Collections.sort(keyList);
+
+            for (Iterator it = keyList.iterator(); it.hasNext(); ) {
+                key = it.next().toString();
                 if (key.startsWith(SmartFrogCoreProperty.defaultDescPropBase)) {
                     // Collects all properties refering to default descriptions that
                     // have to be deployed inmediately after process compound
@@ -430,7 +432,6 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
            else throw new SmartFrogDeploymentException ("deploying default description for '" + key+"'", sfex,comp,nameContext);
         }
     }
-
 
     /**
      * Process compound sub-component termination policy is currently not to

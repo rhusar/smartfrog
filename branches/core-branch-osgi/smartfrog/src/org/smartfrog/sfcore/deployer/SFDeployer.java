@@ -36,7 +36,7 @@ import org.smartfrog.sfcore.reference.Reference;
 public class SFDeployer implements MessageKeys {
 
     private static ComponentDeployer defaultComponentDeployer = new PrimProcessDeployerImpl();
-    private static PrimFactory defaultPrimFactory = new OldAlgorithmClassLoadingEnvironment();
+    private static PrimFactory defaultPrimFactory = new CoreClassesClassLoadingEnvironment();
 
     /**
      * Deploy description. Constructs the real deployer using getDeployer
@@ -104,7 +104,8 @@ public class SFDeployer implements MessageKeys {
             Reference deployerRef = (Reference) component.sfResolveHere(SmartFrogCoreKeys.SF_DEPLOYER);
             deployer = (ComponentDeployer) component.sfResolve(deployerRef);
         } catch (SmartFrogResolutionException e) {
-            LogFactory.sfGetProcessLog().ignore(e);
+            // Distracting for now
+            // LogFactory.sfGetProcessLog().ignore(e);
             deployer = defaultDeployer();
         }
 

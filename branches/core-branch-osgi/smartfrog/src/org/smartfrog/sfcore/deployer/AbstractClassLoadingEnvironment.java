@@ -72,7 +72,7 @@ public abstract class AbstractClassLoadingEnvironment extends PrimImpl
 
     public InputStream getResourceAsStream(String pathname) throws IOException {
         URL resourceURL = getClassLoader().getResource(pathname);
-        if (resourceURL == null) throw new IOException("Resource not found: " + pathname);
+        if (resourceURL == null) throw new IOException("Resource not found: " + pathname + " in repository: " + this);
         return SFSecurity.getSecureInputStream(resourceURL);
     }
 }

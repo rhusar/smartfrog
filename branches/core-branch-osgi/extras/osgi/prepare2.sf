@@ -1,10 +1,10 @@
 #include "org/smartfrog/components.sf"
-#include "org/smartfrog/osgi/components.sf"
+#include "org/smartfrog/sfcore/deployer/environments.sf"
 #include "org/smartfrog/sfcore/deployer/deployers.sf"
 
 
-BundleTest extends OSGiBundle {
-    location "file:/home/olivier/Dev/SmartFrog-core/extras/osgi/test-bundle/dist/lib/sf-test-bundle-3.11.003dev.jar";
+URLCLTest extends URLClassLoadingEnvironment {
+    codebase "file:/home/olivier/Dev/SmartFrog-core/extras/osgi/test-bundle/dist/lib/sf-test-bundle-3.11.003dev.jar";
 }
 
 sfConfig extends Compound {
@@ -12,14 +12,14 @@ sfConfig extends Compound {
     parser extends Compound {
         sfProcessComponentName "envParser";
 
-        bundleTest extends BundleTest;
+        urlCLTest extends URLCLTest;
     }
 
     target extends Compound {
         sfProcessName "rootProcess";
         sfProcessComponentName "envTarget";
 
-        bundleTest extends BundleTest;
+        urlCLTest extends URLCLTest;
         deployerTest extends PrimProcessDeployer;
     }
 

@@ -1,0 +1,7 @@
+#include "org/smartfrog/components.sf"
+
+URLClassLoadingEnvironment extends Prim {
+    sfClass "org.smartfrog.sfcore.deployer.URLClassLoadingEnvironment";
+    codebase extends Vector;
+    sfExport false;
+}
