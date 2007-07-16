@@ -38,6 +38,8 @@
   <!-- override point -->
   <property environment="env"/>
   <property file="setup.properties"/>
+  <property name="tomcat.home" value="${env.TOMCAT_HOME}" />
+  <property name="xmpp.home" value="${env.XMPP_HOME}" />
   <property name="avalanche.root" location=".."/>
   <property name="root.dir" location="../../.."/>
   <property name="smartfrog.home" location="${root.dir}/smartfrog/"/>  
