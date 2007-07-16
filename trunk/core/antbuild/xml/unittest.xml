@@ -55,7 +55,7 @@
   <!-- this is an override point -->
   <!-- ========================================================== -->
 
-  <target name="ready-to-test" depends="init,dist,package-tests"/>
+  <target name="ready-to-test" depends="init,published,dist,package-tests"/>
 
 
   <!-- ========================================================== -->
