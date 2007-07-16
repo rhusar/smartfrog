@@ -12,8 +12,8 @@ import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.reference.Function;
 import org.smartfrog.sfcore.security.SFSecurity;
 
-import java.io.InputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 
 public abstract class AbstractClassLoadingEnvironment extends PrimImpl
@@ -42,6 +42,10 @@ public abstract class AbstractClassLoadingEnvironment extends PrimImpl
                     MSG_UNRESOLVED_REFERENCE, SmartFrogCoreKeys.SF_CLASS), e,
                     askedFor);
         }
+    }
+
+    public CodeRepository getCodeRepository() {
+        return this;
     }
 
     private SmartFrogDeploymentException deploymentException(String message, Exception e, ComponentDescription askedFor) {

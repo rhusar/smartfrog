@@ -23,7 +23,7 @@ import org.apache.axis.message.MessageElement;
 import org.apache.axis.types.URI;
 import org.cddlm.client.console.Options;
 import org.smartfrog.services.cddlm.api.Processor;
-import org.smartfrog.services.cddlm.cdl.ResourceLoader;
+import org.smartfrog.sfcore.common.ResourceLoader;
 import org.smartfrog.services.cddlm.generated.api.DeployApiConstants;
 import org.smartfrog.services.cddlm.generated.api.types.DeploymentDescriptorType;
 import org.smartfrog.services.cddlm.generated.api.types.NotificationInformationType;

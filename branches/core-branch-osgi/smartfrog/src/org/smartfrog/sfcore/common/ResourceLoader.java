@@ -17,17 +17,14 @@
  For more information: www.smartfrog.org
 
  */
-package org.smartfrog.services.cddlm.cdl;
+package org.smartfrog.sfcore.common;
 
-import org.smartfrog.sfcore.common.SmartFrogResolutionException;
-import org.smartfrog.sfcore.prim.Prim;
-import org.smartfrog.sfcore.security.SFClassLoader;
-import org.smartfrog.sfcore.utils.ComponentHelper;
+import org.smartfrog.SFLoader;
+import org.smartfrog.sfcore.deployer.CodeRepository;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.rmi.RemoteException;
 
 /**
  * This is something that can hand off resource loading to whatever does
@@ -39,8 +36,8 @@ import java.rmi.RemoteException;
 
 public class ResourceLoader {
 
-    private String codebase = null;
     private ClassLoader loader = null;
+    private CodeRepository repository = null;
 
     public ResourceLoader() {
         loader = getClass().getClassLoader();
@@ -59,14 +56,10 @@ public class ResourceLoader {
      * get the sfcodebase from a component. This is used to trigger sfcodebase
      * operation.
      *
-     * @param owner
-     * @throws SmartFrogResolutionException
-     * @throws RemoteException
+     * @param source The {@link CodeRepository} to load resources from.     
      */
-    public ResourceLoader(Prim owner) throws SmartFrogResolutionException,
-            RemoteException {
-        ComponentHelper helper = new ComponentHelper(owner);
-        codebase = helper.getCodebase();
+    public ResourceLoader(CodeRepository source) {
+        this.repository = source;
     }
 
     /**
@@ -76,24 +69,16 @@ public class ResourceLoader {
      * @return an input stream if the resource was found and loaded
      * @throws RuntimeException if the resource is not on the classpath
      */
-    private InputStream loadResourceThroughSmartFrog(String resourcename)
-            throws RuntimeException {
-        String targetCodeBase = codebase;
-
-        return SFClassLoader.getResourceAsStream(resourcename,
-                targetCodeBase,
-                true);
+    private InputStream loadResourceThroughSmartFrog(String resourcename) throws IOException {
+        return SFLoader.getInputStream(resourcename, repository);
     }
 
-    private InputStream loadResourceThroughClassloader(String resourceName) {
-        return loader.getResourceAsStream(resourceName);
-    }
-
-    private void assertResourceLoaded(InputStream in, String resourcename)
-            throws IOException {
-        if ( in == null ) {
-            throw new IOException("Not found: " + resourcename);
+    private InputStream loadResourceThroughClassloader(String resourceName) throws IOException {
+        InputStream in = loader.getResourceAsStream(resourceName);
+        if (in == null) {
+            throw new IOException("Not found: " + resourceName);
         }
+        return in;
     }
 
     /**
@@ -105,12 +90,11 @@ public class ResourceLoader {
      */
     public InputStream loadResource(String resourceName) throws IOException {
         InputStream in;
-        if ( codebase != null ) {
+        if ( loader == null ) {
             in = loadResourceThroughSmartFrog(resourceName);
         } else {
             in = loadResourceThroughClassloader(resourceName);
-        }
-        assertResourceLoaded(in, resourceName);
+        }        
         return in;
     }
 
@@ -122,14 +106,19 @@ public class ResourceLoader {
      * @throws IOException if a resource is missing
      */
     public String loadResourceAsString(String resourceName) throws IOException {
-        InputStream in=loadResource(resourceName);
-        InputStreamReader reader=new InputStreamReader(in);
-        StringBuffer buffer=new StringBuffer();
-        char[] block=new char[1024];
-        int read;
-        while(((read = reader.read(block))>=0)) {
-            buffer.append(block);
+
+        InputStreamReader reader = null;
+        try {
+            InputStream in = loadResource(resourceName);
+            reader = new InputStreamReader(in);
+            StringBuffer buffer = new StringBuffer();
+            char[] block = new char[1024];
+            while((reader.read(block) >=0)) {
+                buffer.append(block);
+            }
+            return buffer.toString();
+        } finally {
+            if (reader != null) reader.close();            
         }
-        return buffer.toString();
     }
 }

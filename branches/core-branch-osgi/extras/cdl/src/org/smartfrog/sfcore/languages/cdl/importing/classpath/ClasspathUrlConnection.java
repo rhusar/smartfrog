@@ -19,11 +19,9 @@
  */
 package org.smartfrog.sfcore.languages.cdl.importing.classpath;
 
-import org.smartfrog.services.xml.utils.ResourceLoader;
-
+import java.io.IOException;
 import java.net.URL;
 import java.net.URLConnection;
-import java.io.IOException;
 
 /**
  * A stub URL connection that doesnt load stuff

@@ -22,7 +22,7 @@ package org.smartfrog.services.cddlm.test.unit.cdl;
 import junit.framework.TestCase;
 import org.smartfrog.services.cddlm.cdl.CdlCatalog;
 import org.smartfrog.services.cddlm.cdl.Constants;
-import org.smartfrog.services.cddlm.cdl.ResourceLoader;
+import org.smartfrog.sfcore.common.ResourceLoader;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 

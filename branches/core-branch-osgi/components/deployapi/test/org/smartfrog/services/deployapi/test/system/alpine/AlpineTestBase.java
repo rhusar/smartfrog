@@ -43,7 +43,7 @@ import org.smartfrog.services.deployapi.binding.DescriptorHelper;
 import org.smartfrog.services.deployapi.transport.wsrf.WsrfUtils;
 import org.smartfrog.services.filesystem.FileSystem;
 import org.smartfrog.services.xunit.base.TestContextInjector;
-import org.smartfrog.services.xml.utils.ResourceLoader;
+import org.smartfrog.sfcore.common.ResourceLoader;
 import org.smartfrog.services.cddlm.cdl.base.LifecycleStateEnum;
 import org.smartfrog.sfcore.languages.cdl.CdlCatalog;
 import org.smartfrog.sfcore.prim.Prim;

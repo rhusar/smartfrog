@@ -26,7 +26,7 @@ import org.apache.axis.types.URI;
 import org.smartfrog.services.cddlm.api.Constants;
 import org.smartfrog.services.cddlm.api.Processor;
 import org.smartfrog.services.cddlm.cdl.CdlParser;
-import org.smartfrog.services.cddlm.cdl.ResourceLoader;
+import org.smartfrog.sfcore.common.ResourceLoader;
 import org.smartfrog.services.cddlm.generated.api.types.LanguageListType;
 import org.smartfrog.services.cddlm.generated.api.types.LanguageListTypeLanguage;
 import org.smartfrog.services.cddlm.generated.api.types.ServerInformationType;

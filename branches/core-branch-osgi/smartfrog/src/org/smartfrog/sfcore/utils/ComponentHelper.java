@@ -30,7 +30,9 @@ import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.common.TerminatorThread;
 import org.smartfrog.sfcore.security.SFClassLoader;
 import org.smartfrog.sfcore.processcompound.SFProcess;
+import org.smartfrog.sfcore.deployer.CodeRepository;
 import org.smartfrog.services.filesystem.FileSystem;
+import org.smartfrog.SFLoader;
 
 import java.rmi.RemoteException;
 import java.io.InputStream;
@@ -373,12 +375,14 @@ public class ComponentHelper {
      * @throws RemoteException in case of Remote/network error
      */
     public InputStream loadResource(String resourcename)
-            throws SmartFrogException, RemoteException {
-        String targetCodeBase = getCodebase();
-
-        InputStream in = SFClassLoader.getResourceAsStream(resourcename, targetCodeBase, true);
-        if (in == null) {
-            throw new SmartFrogException("Not found: " + resourcename+" in "+targetCodeBase);
+            throws SmartFrogException, RemoteException
+    {
+        final InputStream in;
+        final CodeRepository codeRepository = getCodeRepository();
+        try {
+            in = SFLoader.getInputStream(resourcename, codeRepository);
+        } catch(IOException e) {
+            throw new SmartFrogException("Not found: " + resourcename+" in " + codeRepository);
         }
         return in;
     }
@@ -406,12 +410,25 @@ public class ComponentHelper {
      * @return String codebase of a component
      * @throws SmartFrogResolutionException if failed to resolve
      * @throws RemoteException in case of Remote/network error
+     * @deprecated Use {@link this.getCodeRepository()} instead.
      */
     public String getCodebase() throws SmartFrogResolutionException,
             RemoteException {
         return (String) owner.sfResolve(SmartFrogCoreKeys.SF_CODE_BASE);
     }
 
+    /**
+     * get the codebase of a component
+     *
+     * @return String codebase of a component
+     * @throws SmartFrogResolutionException if failed to resolve
+     * @throws RemoteException              in case of Remote/network error
+     */
+    public CodeRepository getCodeRepository() throws SmartFrogResolutionException,
+            RemoteException
+    {
+        return (CodeRepository) owner.sfResolve(SmartFrogCoreKeys.SF_CODE_REPOSITORY);
+    }
 
     /**
      * Load a class in the owner's class loading space. Equivalent to calling

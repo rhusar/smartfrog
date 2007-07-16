@@ -10,12 +10,12 @@ public interface PrimFactory {
      * be that of the whole component: it can be a sub-attribute of the component description for example.
      * This is left for implementations to decide.
      *
-     * This method throws loads of exceptions so that implementations don't have to do exception wrapping themselves.
-     * We probably want to change that.
+     * Implementations must also set the {@link org.smartfrog.sfcore.common.SmartFrogCoreKeys#SF_CODE_REPOSITORY}
+     * attribute to the repository the component comes from.
      *
      * @param askedFor The ComponentDescription to work off.
      * @return The newly created component instance.
-     * @throws SmartFrogDeploymentException
+     * @throws SmartFrogDeploymentException If the component could not be created (class loading issues, missing attributes, etc).
      */
     Prim getComponent(ComponentDescription askedFor) throws SmartFrogDeploymentException;
 
@@ -27,4 +27,11 @@ public interface PrimFactory {
      * @return The classloader that underlies this factory.
      */
     ClassLoader getClassLoader();
+
+    /**
+     * Allows access to the {@link CodeRepository} this factory is using. This is used by {@link ComponentDeployer}s to set up the
+     * {@link org.smartfrog.sfcore.common.SmartFrogCoreKeys#SF_CODE_REPOSITORY} attribute of components created through it.
+     * @return The CodeRepository associated with this factory.
+     */
+    CodeRepository getCodeRepository();
 }
