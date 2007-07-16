@@ -20,9 +20,12 @@
 package org.smartfrog.sfcore.workflow.events;
 
 import org.smartfrog.sfcore.prim.Prim;
+import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.utils.ComponentHelper;
+import org.smartfrog.sfcore.reference.Reference;
 
 import java.io.Serializable;
+import java.util.Date;
 
 /**
  * Base class for lifecycle events that components may send
@@ -37,19 +40,53 @@ public abstract class LifecycleEvent implements Serializable {
 
     private String componentName;
 
+    private TerminationRecord status;
+
+    public TerminationRecord getStatus() {
+        return status;
+    }
+
+
+    /**
+     * Simple constructor
+     */
     protected LifecycleEvent() {
     }
 
 
+    /**
+     * Set the event to a component
+     * @param component
+     */
     protected LifecycleEvent( Prim component) {
-        this.timestamp = System.currentTimeMillis();
-        this.component = component;
-        if(componentName!=null) {
-            componentName=new ComponentHelper(component).completeNameSafe().toString();
-        }
+        this(component,null);
     }
 
 
+    /**
+     * Set the component and the optional termination record
+     * @param component component
+     * @param status termination record, can be null.
+     */
+    protected LifecycleEvent(Prim component, TerminationRecord status) {
+        this.timestamp = System.currentTimeMillis();
+        this.component = component;
+        if (componentName != null) {
+            Reference reference = new ComponentHelper(component).completeNameOrNull();
+            componentName = reference != null ? reference.toString() : "(unknown)";
+        } else {
+            componentName = "";
+        }
+        this.status = status;
+    }
+
+    /**
+     * Get the name of the event; used in the toString operator
+     * @return the name of this event
+     */
+    public String getEventName() {
+        return getClass().getName();
+    }
 
     /**
      * Is the component alive?
@@ -60,6 +97,14 @@ public abstract class LifecycleEvent implements Serializable {
         return true;
     }
 
+    /**
+     * Get the cause from any termination record. Null if there is no termination record, or if there is no cause
+     *
+     * @return the reason for the tests failing, or null
+     */
+    public Throwable getCause() {
+        return status == null ? null : status.getCause();
+    }
 
     public long getTimestamp() {
         return timestamp;
@@ -75,7 +120,7 @@ public abstract class LifecycleEvent implements Serializable {
      * forget about this component; subclasses can do this after initialisation
      */
     protected void resetComponent() {
-        this.component = null;
+        component = null;
     }
 
     /**
@@ -84,5 +129,25 @@ public abstract class LifecycleEvent implements Serializable {
      */
     public String getComponentName() {
         return componentName;
+    }
+
+
+    /**
+     * String operator includes the buffer, the component name, optional termination record
+     * @return a readable outcome
+     */
+    public String toString() {
+        StringBuffer buf=new StringBuffer();
+        buf.append(getComponentName());
+        buf.append(" -"+getEventName());
+        buf.append(" at ");
+        buf.append(new Date(timestamp).toString());
+        buf.append(" alive: ");
+        buf.append(Boolean.valueOf(isAlive()));
+        if(getStatus()!=null) {
+            buf.append('\n');
+            buf.append(getStatus());
+        }
+        return buf.toString();
     }
 }

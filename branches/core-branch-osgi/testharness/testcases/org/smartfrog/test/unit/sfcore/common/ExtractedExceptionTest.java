@@ -43,7 +43,8 @@ public class ExtractedExceptionTest extends TestCase {
     private SmartFrogException chaina;
     private SmartFrogException chainb;
     private Exception chainc, chaind;
-    SmartFrogException sfe2,sfee2,remote2,npe2,chaina2,chainb2,chainc2,chaind2;
+    private AssertionError ae;
+    Throwable sfe2,sfee2,remote2,npe2,chaina2,chainb2,chainc2,chaind2,ae2;
 
 
     /** Sets up the fixture, for example, open a network connection.
@@ -54,6 +55,7 @@ public class ExtractedExceptionTest extends TestCase {
         sfee = new SmartFrogExtractedException("sfee");
         remote = new RemoteException("remote");
         npe = new NullPointerException("npe");
+        ae = new AssertionError("ae");
         chaina = new SmartFrogException("chain1", sfe);
         chainb = new SmartFrogException("chain2", npe);
         chainc = new SmartFrogException("chain3",
@@ -61,37 +63,45 @@ public class ExtractedExceptionTest extends TestCase {
                         new NullPointerException("npe3")));
         chaind = new RemoteException("chain4",
                 new SmartFrogException("remote4",
-                        new NullPointerException("npe4")));
+                        new AssertionError("npe4")));
         sfe2 = c(sfe);
         sfee2 = c(sfee);
         remote2 = c(remote);
         npe2 = c(npe);
+        ae2 = c(ae);
         chaina2 = c(chaina);
         chainb2 = c(chainb);
+        chaind2=c(chaind);
     }
 
-    protected SmartFrogException c(Throwable t) {
+    protected Throwable c(Throwable t) {
         return SmartFrogExtractedException.convert(t);
     }
 
     protected void assertClassname(String name, SmartFrogExtractedException t) {
-        assertEquals(name,t.shortClassName());
+        assertEquals("Classname comparison",name,t.shortClassName());
     }
 
     protected void assertMessageContains(String text,Throwable t) {
-        assertEquals(text,t.getMessage());
+        assertTrue("Did not find "+text+" in "+t.getMessage(),
+                t.getMessage().indexOf(text)>0);
     }
 
     protected void assertMessageEqual(Throwable expected, Throwable t) {
-        assertEquals(expected.getMessage(), t.getMessage());
+        assertEquals("Message not equal",expected.getMessage(), t.getMessage());
     }
 
     protected void assertLocalMessageEqual(Throwable expected, Throwable t) {
-        assertEquals(expected.getLocalizedMessage(), t.getLocalizedMessage());
+        assertEquals("LocalMessage not equal",
+                expected.getLocalizedMessage(), t.getLocalizedMessage());
     }
 
     protected void assertExtracted(Throwable t) {
-        assertTrue(t instanceof SmartFrogExtractedException);
+        String classname = t.getClass().getName();
+        assertTrue("Throwable is not an ExtractedException:"+classname,
+                t instanceof SmartFrogException
+                || classname.startsWith("javax.")
+                || classname.startsWith("java."));
     }
 
     public void testSFEisUnconverted() throws Exception {
@@ -107,9 +117,14 @@ public class ExtractedExceptionTest extends TestCase {
         assertMatches(chainb, chainb);
     }
 
-    private void assertConverted(Exception t1, SmartFrogException t2) {
+    private void assertConverted(Throwable t1, Throwable t2) {
         assertExtracted(t2);
         assertMatches(t1, t2);
+    }
+
+    private void assertNotConverted(Throwable t1, Throwable t2) {
+        assertSame("No longer the same "+t1.getClass()+" and "+t2.getClass(),
+            t1,t2);
     }
 
     private void assertMatches(Throwable t1, Throwable t2) {
@@ -117,28 +132,31 @@ public class ExtractedExceptionTest extends TestCase {
         assertLocalMessageEqual(t1, t2);
         StackTraceElement[] stack1 = t1.getStackTrace();
         StackTraceElement[] stack2 = t2.getStackTrace();
-        assertEquals(stack1.length,stack2.length);
+        assertEquals("Stack lengths",stack1.length,stack2.length);
         for(int i=0;i<stack1.length;i++) {
-            assertEquals(stack1[i],stack2[i]);
+            assertEquals("Stack element "+i,stack1[i],stack2[i]);
         }
         Throwable cause = t1.getCause();
         if(cause!=null) {
-            assertNotNull(t2.getCause());
+            assertNotNull("cause of second throwable is null",t2.getCause());
             assertMatches(cause,t2.getCause());
         }
     }
 
-    public void testRemoteisConverted() throws Exception {
-        assertMatches(remote, remote2);
+    public void testRemoteisNoConverted() throws Exception {
+        assertNotConverted(remote, remote2);
     }
 
-    public void testNpeConverted() throws Exception {
-        assertExtracted(npe2);
-        assertMatches(npe, npe2);
+    public void testNpeIsNotConverted() throws Exception {
+        assertNotConverted(npe, npe2);
+    }
+
+    public void testAssertionErrorConverted() throws Exception {
+        assertConverted(ae,ae2);
     }
 
     public void testChainANotConverted() throws Exception {
-        assertSame(chaina,chaina2);
+        assertNotConverted(chaina,chaina2);
     }
 
     public void testChainBConverted() throws Exception {

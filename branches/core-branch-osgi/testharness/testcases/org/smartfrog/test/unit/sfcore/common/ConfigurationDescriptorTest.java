@@ -106,7 +106,10 @@ public class ConfigurationDescriptorTest extends SmartFrogTestBase implements Co
              } catch (Throwable thr) {
                  if (cfgDesc!=null) {
                      if (searchString!=null) {
-                         assertContains(cfgDesc.statusString(), searchString,testDescription);
+                         assertContains(cfgDesc.statusString(),
+                                 searchString,
+                                 testDescription,
+                                 thr);
                      }
                      if (containedExceptionName!=null) {
                          Throwable cause = thr.getCause();
@@ -115,38 +118,18 @@ public class ConfigurationDescriptorTest extends SmartFrogTestBase implements Co
                                        cause);
                          assertContains(cause.toString(),
                                         containedExceptionName,
-                                        cfgDesc.statusString());
+                                        cfgDesc.statusString(),
+                                        cause);
 
                          if (containedExceptionText!=null) {
                              assertContains(cause.toString(),
                                             containedExceptionText,
-                                            cfgDesc.statusString());
+                                            cfgDesc.statusString(),
+                                            cause);
                          }
                      }
                  }
              }
-        }
-
-        /**
-         * assert that a throwable's classname is of a given type/substring
-         * @param thrown
-         * @param name
-         */
-        public void assertThrowableNamed(Throwable thrown,String name, String cfgDescMsg) {
-            assertContains(thrown.getClass().getName(),name, cfgDescMsg);
-            //assertContains(thrown.toString(),name, cfgDescMsg);
-        }
-
-        /**
-         * assert that a string contains a substring
-         * @param source
-         * @param substring
-         * @param cfgDescMsg
-         */
-        public void assertContains(String source, String substring, String cfgDescMsg) {
-            assertNotNull("No string to look for ["+substring+"]",source);
-            assertTrue("Did not find ["+substring+"] in ["+source+"]"+"\n, Result:"+cfgDescMsg,
-                    source.indexOf(substring)>=0);
         }
 
         /**

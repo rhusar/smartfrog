@@ -148,7 +148,6 @@ public class Daemon {
      * An identifier for a ssh type.
      */
     public final static String SSH = "ssh";
-    private static final boolean EMAIL_REQUIRED = false;
 
     /**
      * Class Constructor.
@@ -188,11 +187,9 @@ public class Daemon {
         require("releasename", releasename);
         require("javahome", javahome);
         require("installdir", installdir);
-        if (EMAIL_REQUIRED) {
-            require("emailto", emailto);
-            require("emailfrom", emailfrom);
-            require("emailserver", emailserver);
-        }
+        require("emailto", emailto);
+        require("emailfrom", emailfrom);
+        require("emailserver", emailserver);
 
         if (os.equals(WINDOWS)) {
             require("localfile2", localfile2);
@@ -333,6 +330,6 @@ public class Daemon {
 
     public boolean isTelnet() {
         return logintype.equals(TELNET);}
-  
+
   public boolean isSsh() { return logintype.equals(SSH);}
 }

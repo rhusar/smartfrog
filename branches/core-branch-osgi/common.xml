@@ -1836,7 +1836,7 @@ ${ivy.reports.dir}
   <!--jars,-->
   <target name="ready-to-publish" depends="checksum-target-jar,ivy-report"/>
 
-  <!--publish all artifacts-->
+  <!--publish master artifacts-->
   <target name="ivy-publish" depends="ready-to-publish"
       xmlns:ivy="antlib:fr.jayasoft.ivy.ant">
     <ivy:publish resolver="local" pubrevision="${Version}"

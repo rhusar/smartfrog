@@ -59,6 +59,6 @@
     <dependency org="junit"
         name="junit"
         rev="${junit.version}"
-        conf="compile->master;redist->default"/>
+        conf="compile->default;redist->default"/>
   </dependencies>
 </ivy-module>

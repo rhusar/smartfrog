@@ -112,7 +112,7 @@ public class FunctionsSystemTest extends DeployingTestBase {
         application = deployExpectingSuccess(FILES + "tcp12.sf", "tcp12");
         assertNotNull(application);
         String actual = (String) (application.sfResolve("message"));
-        assertContains(expected, actual);
+        assertContains(actual, expected);
     }
     /**
      * Tests "sum" function.
@@ -122,7 +122,7 @@ public class FunctionsSystemTest extends DeployingTestBase {
         application = deployExpectingSuccess(FILES + "tcp13.sf", "tcp13");
         assertNotNull(application);
         String actual = (String) (application.sfResolve("base"));
-        assertContains(expected, actual);
+        assertContains(actual, expected);
     }
     /**
      * Tests "product" function.
@@ -167,7 +167,7 @@ public class FunctionsSystemTest extends DeployingTestBase {
         application = deployExpectingSuccess(FILES + "tcp17.sf", "tcp17");
         assertNotNull(application);
         String actual = (String)(application.sfResolve("today"));
-        assertContains(expected, actual.substring(1, 8));
+        assertContains(actual, expected);
     }
 
     /**

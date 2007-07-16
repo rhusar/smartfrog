@@ -17,23 +17,29 @@
  For more information: www.smartfrog.org
 
  */
-package org.smartfrog.sfcore.workflow.events;
+package org.smartfrog.test.system.workflow.sequence;
 
-import org.smartfrog.sfcore.prim.Prim;
+import org.smartfrog.test.DeployingTestBase;
 
-/** created 10-Jul-2007 17:04:13 */
+/**
+ * This test case tests that the history sequence works.
+ * It also acts as a use case for the test callback code
+ * Created 12-Jul-2007 12:01:40
+ */
 
-public class DeployedEvent extends LifecycleEvent {
+public class HistorySequenceTest extends DeployingTestBase {
 
+    protected static final String FILES = "org/smartfrog/test/system/workflow/sequence/";
 
-    public DeployedEvent() {
+    public HistorySequenceTest(String name) {
+        super(name);
     }
 
-    public DeployedEvent(Prim component) {
-        super(component);
+
+
+    public void testHistorySequence() throws Throwable {
+        runTestsToCompletion(FILES, "testHistorySequence");
     }
 
-    public String getEventName() {
-        return "DeployedEvent";
-    }
+
 }

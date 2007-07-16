@@ -23,6 +23,7 @@ package org.smartfrog.sfcore.prim;
 import java.io.Serializable;
 
 import org.smartfrog.sfcore.reference.Reference;
+import org.smartfrog.sfcore.common.SmartFrogExtractedException;
 
 
 /**
@@ -50,7 +51,10 @@ public final class TerminationRecord implements Serializable {
     /** id of failing component. */
     public Reference id;
 
-    /** exception causing a failure. */
+    /**
+     *  exception causing a failure.
+     * Please do not set this directly; it is only left accessible for compatibility reasons 
+     */
     public Throwable cause;
 
     /**
@@ -65,12 +69,14 @@ public final class TerminationRecord implements Serializable {
         errorType = errType.intern();
         description = descr;
         this.id = id;
-	    this.cause = null;
+        setCause(null);
     }
 
     /**
      * Constructs a new termination record.
-     *
+     * The cause will be converted into a serializable form if the exception is not
+     * believed to be portable
+     * @see SmartFrogExtractedException
      * @param errType error type, system recognized types are "normal",
      *        "abnormal" and "externalReferenceDead".
      * @param descr description of termination
@@ -81,9 +87,26 @@ public final class TerminationRecord implements Serializable {
         errorType = errType.intern();
         description = descr;
         this.id = id;
-        this.cause = cause;
+        setCause(cause);
     }
 
+
+    /**
+     * Get the cause of the exception
+     * @return the cause
+     */
+    public Throwable getCause() {
+        return cause;
+    }
+
+    /**
+     * When the cause is set, it is automatically converted to an portable form.
+     * @param cause the underlying exception
+      @see SmartFrogExtractedException
+     */
+    public void setCause(Throwable cause) {
+        this.cause = SmartFrogExtractedException.convert(cause);
+    }
 
     /**
      * Utility method. Returns a normal termination record.

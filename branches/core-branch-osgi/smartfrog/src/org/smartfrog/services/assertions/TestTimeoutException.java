@@ -17,23 +17,21 @@
  For more information: www.smartfrog.org
 
  */
-package org.smartfrog.sfcore.workflow.events;
+package org.smartfrog.services.assertions;
 
-import org.smartfrog.sfcore.prim.Prim;
+import org.smartfrog.sfcore.common.SmartFrogException;
 
-/** created 10-Jul-2007 17:04:13 */
+/** created 12-Jul-2007 11:55:16 */
 
-public class DeployedEvent extends LifecycleEvent {
+public class TestTimeoutException extends SmartFrogException {
 
-
-    public DeployedEvent() {
+    long timeout;
+    public TestTimeoutException(String message) {
+        super(message);
     }
 
-    public DeployedEvent(Prim component) {
-        super(component);
-    }
-
-    public String getEventName() {
-        return "DeployedEvent";
+    public TestTimeoutException(String message, long timeout) {
+        super(message+" - limit: "+timeout);
+        this.timeout=timeout;
     }
 }
