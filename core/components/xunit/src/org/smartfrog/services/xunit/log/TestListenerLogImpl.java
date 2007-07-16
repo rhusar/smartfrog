@@ -58,7 +58,8 @@ public class TestListenerLogImpl extends AbstractTestLog implements TestListener
     /**
      * Add a listener to log events
      *
-     * @param listener
+     * @param listener listener, can be null
+     * @throws SmartFrogException
      */
     public void addLogListener(LogListener listener) throws SmartFrogException {
         if(listeners.indexOf(listener)>=0) {
