@@ -17,7 +17,7 @@
  For more information: www.smartfrog.org
 
  */
-package org.smartfrog.services.assertions;
+package org.smartfrog.services.assertions.events;
 
 import org.smartfrog.sfcore.workflow.eventbus.EventSink;
 import org.smartfrog.sfcore.workflow.eventbus.EventRegistration;
@@ -26,13 +26,16 @@ import org.smartfrog.sfcore.workflow.events.TerminatedEvent;
 import org.smartfrog.sfcore.workflow.events.LifecycleEvent;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.services.assertions.TestCompletedEvent;
+import org.smartfrog.services.assertions.events.TestCompletedEvent;
+import org.smartfrog.services.assertions.TestTimeoutException;
+import org.smartfrog.services.assertions.TestFailureException;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.rmi.server.RemoteStub;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Iterator;
 
 /**
  * Handler for test lifecycle events.
@@ -54,9 +57,9 @@ public class TestEventSink implements EventSink {
     /**
      * for java1.5+; a queue would be much nicer
      */
-    private List incoming =new ArrayList();
+    private List/*<LifecycleEvent>*/ incoming =new ArrayList();
 
-    private List history=new ArrayList();
+    private List/*<LifecycleEvent>*/ history=new ArrayList();
 
     /**
      * The source of events
@@ -87,7 +90,8 @@ public class TestEventSink implements EventSink {
     /**
      * Cast an application to an EventRegistration interface and subscribe
      * to its events
-     * @param application
+     * @param application the application (which must implement{@link EventRegistration})
+     * @throws RemoteException if something goes wrong with the subscription
      */
     public TestEventSink(Prim application) throws RemoteException {
         this((EventRegistration) application);
@@ -165,11 +169,11 @@ public class TestEventSink implements EventSink {
      * The event is removed from the queue.
      * @return the polled object.
      */
-    public synchronized Object poll() {
+    public synchronized LifecycleEvent poll() {
         if(incoming.size()==0) {
             return null;
         } else {
-            Object event= incoming.remove(0);
+            LifecycleEvent event= (LifecycleEvent) incoming.remove(0);
             history.add(event);
             return event;
         }
@@ -191,8 +195,8 @@ public class TestEventSink implements EventSink {
      * @throws InterruptedException if the thread waiting was interrupted
      */
 
-    public synchronized Object waitForEvent(long timeout) throws InterruptedException {
-        Object event;
+    public synchronized LifecycleEvent waitForEvent(long timeout) throws InterruptedException {
+        LifecycleEvent event;
         event = poll();
         if(event==null) {
             wait(timeout);
@@ -211,8 +215,8 @@ public class TestEventSink implements EventSink {
      * @return the event or null for a timeout
      * @throws InterruptedException if the thread waiting was interrupted
      */
-    public synchronized Object waitForEvent(Class clazz,long timeout) throws InterruptedException {
-        Object event;
+    public synchronized LifecycleEvent waitForEvent(Class clazz,long timeout) throws InterruptedException {
+        LifecycleEvent event;
         do {
             event=waitForEvent(timeout);
             if(event==null) {
@@ -226,9 +230,12 @@ public class TestEventSink implements EventSink {
     /**
      * Handle an event by adding it to the log, then raising a notification
      * @param event the received event
+     * @throws RemoteException if the event is not a LifecyleEvent
      */
-
-    public void event(Object event)  {
+    public void event(Object event) throws RemoteException {
+        if(!(event instanceof LifecycleEvent)) {
+            throw new RemoteException("Only instances of  LifecycleEvent are supported");
+        }
         synchronized(this) {
             incoming.add(event);
             notifyAll();
@@ -285,13 +292,27 @@ public class TestEventSink implements EventSink {
         startApplication(startupTimeout);
         LifecycleEvent event;
         do {
-            event = (LifecycleEvent) waitForEvent(LifecycleEvent.class, executeTimeout);
+            event = waitForEvent(LifecycleEvent.class, executeTimeout);
             if (event == null) {
-                throw new TestTimeoutException(ERROR_TEST_RUN_TIMEOUT, executeTimeout);
+                throw new TestTimeoutException(ERROR_TEST_RUN_TIMEOUT+"\n"+dumpHistory(), executeTimeout);
             }
         } while(!(event instanceof TerminatedEvent) && !(event instanceof TestCompletedEvent));
         return event;
     }
 
 
+    /**
+     * Dump the history to a string, one event per line. Used in timeout reports
+     * @return the history of recevied events.
+     */
+    public String dumpHistory() {
+        StringBuffer buffer=new StringBuffer("Event history has "+history.size()+" events\n");
+        Iterator it=history.iterator();
+        while (it.hasNext()) {
+            LifecycleEvent event = (LifecycleEvent) it.next();
+            buffer.append(event.toString());
+            buffer.append('\n');
+        }
+        return buffer.toString();
+    }
 }
