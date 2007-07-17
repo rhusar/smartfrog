@@ -21,11 +21,9 @@ For more information: www.smartfrog.org
 #include "/org/smartfrog/test/system/assertions/testcompounds/components.sf";
 
 /**
- * here we deploy a testblock that stays deployed after the run.
- * 
+ * deploy a test that is expected to fail
  */
 
-testFailure extends TestBlock {
   action extends ExpectDeployFailure {
     sfShouldTerminate false;
 
@@ -34,6 +32,5 @@ testFailure extends TestBlock {
     }
     exitText action:message;
   }
-}
 
-sfConfig extends testFailure;
+sfConfig extends action;
