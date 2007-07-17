@@ -99,11 +99,9 @@ public class TestCompoundImpl extends ConditionCompound
         //look for the action
         checkActionDefined();
         name = sfCompleteNameSafe();
-
         waitForCD = sfResolve(ATTR_WAITFOR, waitForCD, false);
         tests = sfResolve(ATTR_TESTS, tests, false);
         testTimeout = sfResolve(ATTR_TEST_TIMEOUT, 0L, true);
-        //teardownCD = sfResolve(ATTR_TEARDOWN, teardownCD, false);
         undeployAfter = sfResolve(ATTR_UNDEPLOY_AFTER, 0L, true);
         expectTerminate = sfResolve(ATTR_EXPECT_TERMINATE, false, true);
         exitType = sfResolve(ATTR_EXIT_TYPE, exitType, true);
