@@ -40,6 +40,7 @@ import java.util.Set;
 
 import org.smartfrog.sfcore.common.ContextImpl;
 import org.smartfrog.sfcore.common.SmartFrogContextException;
+import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
 import org.smartfrog.sfcore.logging.LogSF;
 import org.smartfrog.sfcore.logging.LogFactory;
 import org.smartfrog.services.display.FontSize;
@@ -540,7 +541,7 @@ public class DeployTreePanel extends JPanel implements TreeSelectionListener, Fo
      * @throws SmartFrogContextException error in resolving
      * @throws RemoteException in case of remote/network error
      */
-   private Set sfGetTags(Object attribName, Object node) throws SmartFrogContextException, RemoteException {
+   private Set sfGetTags(Object attribName, Object node) throws SmartFrogRuntimeException, RemoteException {
     Set tags=null;
     if (node instanceof Prim){
         tags = ((Prim)node).sfGetTags(attribName);
