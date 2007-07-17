@@ -1406,10 +1406,9 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
    * rooProcess does not do anything. rootProcess does not have tags.
     *
     * @param tags a set of tags
-    *
-    * @throws SmartFrogException the attribute does not exist;
+ * @throws SmartFrogException the attribute does not exist;
     */
-   public void sfSetTags(Set tags) throws SmartFrogContextException, RemoteException {
+   public void sfSetTags(Set tags) throws RemoteException, SmartFrogRuntimeException {
        if (sfParent!=null) super.sfSetTags(tags);
    }
 
@@ -1419,10 +1418,9 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
     * rooProcess returns null. rootProcess does not have tags.
     *
     * @return the set of tags
-    *
-    * @throws SmartFrogException the attribute does not exist;
+ * @throws SmartFrogException the attribute does not exist;
     */
-   public Set sfGetTags() throws SmartFrogContextException, RemoteException {
+   public Set sfGetTags() throws RemoteException, SmartFrogRuntimeException {
        if (sfParent!=null) return super.sfGetTags();
        else return null;
    }
@@ -1431,10 +1429,9 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
      *  rootProcess does not have tags.
      *
      * @param tag a tag to add to the set
-     *
      * @throws SmartFrogException the attribute does not exist;
      */
-    public void sfAddTag( String tag) throws SmartFrogContextException, RemoteException {
+    public void sfAddTag( String tag) throws RemoteException, SmartFrogRuntimeException {
         if (sfParent!=null) super.sfAddTag(tag);
     }
 
@@ -1443,11 +1440,10 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
      * rootProcess does not have tags.
      *
      * @param tag a tag to remove from the set
-     *
      * @throws SmartFrogException the attribute does not exist;
      *
      */
-    public void sfRemoveTag( String tag) throws SmartFrogContextException, RemoteException {
+    public void sfRemoveTag( String tag) throws RemoteException, SmartFrogRuntimeException {
         if (sfParent!=null) super.sfRemoveTag(tag);
     }
 
@@ -1458,7 +1454,7 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
      * @throws SmartFrogException
      *          the attribute does not exist;
      */
-    public void sfAddTags( Set tags) throws SmartFrogContextException, RemoteException {
+    public void sfAddTags( Set tags) throws RemoteException, SmartFrogRuntimeException {
         if (sfParent!=null)super.sfAddTags(tags);
     }
 
@@ -1470,7 +1466,7 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
      * @throws SmartFrogException
      *          the attribute does not exist;
      */
-    public void sfRemoveTags( Set tags)  throws SmartFrogContextException, RemoteException {
+    public void sfRemoveTags( Set tags)  throws RemoteException, SmartFrogRuntimeException {
          if (sfParent!=null) super.sfRemoveTags(tags);
     }
 
@@ -1482,7 +1478,7 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
      * @return whether or not the attribute has that tag
      * @throws SmartFrogException the attribute does not exist
      */
-    public boolean sfContainsTag(String tag) throws SmartFrogContextException, RemoteException {
+    public boolean sfContainsTag(String tag) throws RemoteException, SmartFrogRuntimeException {
          if (sfParent!=null) return super.sfContainsTag(tag);
          return false;
     }

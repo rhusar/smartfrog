@@ -16,56 +16,56 @@ public interface RemoteTagsComponent extends Remote {
     * with each attribute.
     *
     * @param tags a set of tags
-    *
-    * @throws SmartFrogException the attribute does not exist;
+    * @throws SmartFrogRuntimeException failed to perform the operation - implementations
+    * may throw subtypes of SmartFrogRuntimeException to indicate specific problems
     */
-   public void sfSetTags( Set tags) throws SmartFrogContextException, RemoteException;
+   public void sfSetTags( Set tags) throws RemoteException, SmartFrogRuntimeException;
 
    /**
     * Get the TAGS for this Component. TAGS are simply uninterpreted strings associated
     * with each attribute.
     *
     * @return the set of tags
-    *
-    * @throws SmartFrogException the attribute does not exist;
+    * @throws SmartFrogRuntimeException failed to perform the operation - implementations
+    * may throw subtypes of SmartFrogRuntimeException to indicate specific problems
     */
-   public Set sfGetTags() throws SmartFrogContextException, RemoteException;
+   public Set sfGetTags() throws RemoteException, SmartFrogRuntimeException;
 
    /**
     * add a tag to the tag set of this component
     *
     * @param tag a tag to add to the set
-    *
-    * @throws SmartFrogException the attribute does not exist;
+    * @throws SmartFrogRuntimeException failed to perform the operation - implementations
+    * may throw subtypes of SmartFrogRuntimeException to indicate specific problems
     */
-   public void sfAddTag( String tag) throws SmartFrogContextException, RemoteException;
+   public void sfAddTag( String tag) throws RemoteException, SmartFrogRuntimeException;
 
    /**
     * remove a tag from the tag set of this component if it exists
     * @param tag a tag to remove from the set
-    *
-    * @throws SmartFrogException the attribute does not exist;
+    * @throws SmartFrogRuntimeException failed to perform the operation - implementations
+    * may throw subtypes of SmartFrogRuntimeException to indicate specific problems
     *
     */
-   public void sfRemoveTag( String tag) throws SmartFrogContextException, RemoteException;
+   public void sfRemoveTag( String tag) throws RemoteException, SmartFrogRuntimeException;
 
   /**
     * add a tag to the tag set of this component
     *
     * @param tags  a set of tags to add to the set
-    * @throws SmartFrogException
-    *          the attribute does not exist;
+    * @throws SmartFrogRuntimeException failed to perform the operation - implementations
+    * may throw subtypes of SmartFrogRuntimeException to indicate specific problems
     */
-   public void sfAddTags( Set tags) throws SmartFrogContextException, RemoteException;
+   public void sfAddTags( Set tags) throws RemoteException, SmartFrogRuntimeException;
 
    /**
     * remove a tag from the tag set of this component if it exists
     *
     * @param tags  a set of tags to remove from the set
-    * @throws SmartFrogException
-    *          the attribute does not exist;
+    * @throws SmartFrogRuntimeException failed to perform the operation - implementations
+    * may throw subtypes of SmartFrogRuntimeException to indicate specific problems
     */
-   public void sfRemoveTags(Set tags)  throws SmartFrogContextException, RemoteException;
+   public void sfRemoveTags(Set tags)  throws RemoteException, SmartFrogRuntimeException;
 
    /**
     * Return whether or not a tag is in the list of tags for this component
@@ -73,8 +73,9 @@ public interface RemoteTagsComponent extends Remote {
     * @param tag the tag to chack
     *
     * @return whether or not the attribute has that tag
-    * @throws SmartFrogException the attribute does not exist
+    * @throws SmartFrogRuntimeException failed to perform the operation - implementations
+    * may throw subtypes of SmartFrogRuntimeException to indicate specific problems
     */
-   public boolean sfContainsTag( String tag) throws SmartFrogContextException, RemoteException;
+   public boolean sfContainsTag( String tag) throws RemoteException, SmartFrogRuntimeException;
 
 }

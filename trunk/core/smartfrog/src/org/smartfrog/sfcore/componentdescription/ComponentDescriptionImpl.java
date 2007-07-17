@@ -1287,7 +1287,7 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
      * @throws SmartFrogException
      *          the attribute does not exist;
      */
-    public void sfSetTags(Object name, Set tags) throws SmartFrogContextException {
+    public void sfSetTags(Object name, Set tags) throws SmartFrogRuntimeException {
          sfContext.sfSetTags(name, tags);
     }
 
@@ -1300,7 +1300,7 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
      * @throws SmartFrogException
      *          the attribute does not exist;
      */
-    public Set sfGetTags(Object name) throws SmartFrogContextException {
+    public Set sfGetTags(Object name) throws SmartFrogRuntimeException {
           return sfContext.sfGetTags(name);
     }
 
@@ -1312,7 +1312,7 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
      * @throws SmartFrogException
      *          the attribute does not exist;
      */
-    public void sfAddTag(Object name, String tag) throws SmartFrogContextException {
+    public void sfAddTag(Object name, String tag) throws SmartFrogRuntimeException {
          sfContext.sfAddTag(name, tag);
     }
 
@@ -1324,7 +1324,7 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
      * @throws SmartFrogException
      *          the attribute does not exist;
      */
-    public void sfRemoveTag(Object name, String tag) throws SmartFrogContextException {
+    public void sfRemoveTag(Object name, String tag) throws SmartFrogRuntimeException {
          sfContext.sfRemoveTag(name, tag);
     }
 
@@ -1336,7 +1336,7 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
      * @throws SmartFrogException
      *          the attribute does not exist;
      */
-     public void sfAddTags(Object name, Set tags) throws SmartFrogContextException {
+     public void sfAddTags(Object name, Set tags) throws SmartFrogRuntimeException {
          sfContext.sfAddTags(name, tags);
     }
 
@@ -1348,7 +1348,7 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
      * @throws SmartFrogException
      *          the attribute does not exist;
      */
-    public void sfRemoveTags(Object name, Set tags) throws SmartFrogContextException {
+    public void sfRemoveTags(Object name, Set tags) throws SmartFrogRuntimeException {
           sfContext.sfRemoveTags(name, tags);
     }
 
@@ -1360,7 +1360,7 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
      * @throws SmartFrogException
      *          the attribute does not exist;
      */
-    public Iterator sfTags(Object name) throws SmartFrogContextException {
+    public Iterator sfTags(Object name) throws SmartFrogRuntimeException {
           return sfContext.sfTags(name);
     }
 
@@ -1373,7 +1373,7 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
      * @throws SmartFrogException
      *          the attribute does not exist
      */
-    public boolean sfContainsTag(Object name, String tag) throws SmartFrogContextException {
+    public boolean sfContainsTag(Object name, String tag) throws SmartFrogRuntimeException {
           return sfContext.sfContainsTag(name, tag);
     }
 
@@ -1388,7 +1388,7 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
      * @throws SmartFrogException
      *          the attribute does not exist;
      */
-    public void sfSetTags( Set tags) throws SmartFrogContextException {
+    public void sfSetTags( Set tags) throws SmartFrogRuntimeException {
          if (parent!=null) {
              Object key = parent.sfAttributeKeyFor(this);
              parent.sfSetTags(key,tags);
@@ -1410,7 +1410,7 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
      * @throws SmartFrogException
      *          the attribute does not exist;
      */
-    public Set sfGetTags() throws SmartFrogContextException {
+    public Set sfGetTags() throws SmartFrogRuntimeException {
          if (parent!=null) {
              Object key = parent.sfAttributeKeyFor(this);
              return parent.sfGetTags(key);
@@ -1434,7 +1434,7 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
      * @throws SmartFrogException
      *          the attribute does not exist;
      */
-    public void sfAddTag(String tag) throws SmartFrogContextException {
+    public void sfAddTag(String tag) throws SmartFrogRuntimeException {
          if (parent!=null) {
              Object key = parent.sfAttributeKeyFor(this);
              parent.sfAddTag(key,tag);
@@ -1455,7 +1455,7 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
      * @throws SmartFrogException
      *          the attribute does not exist;
      */
-    public void sfRemoveTag(String tag) throws SmartFrogContextException {
+    public void sfRemoveTag(String tag) throws SmartFrogRuntimeException {
          if (parent!=null) {
              Object key = parent.sfAttributeKeyFor(this);
              parent.sfRemoveTag(key,tag);
@@ -1476,7 +1476,7 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
      * @throws SmartFrogException
      *          the attribute does not exist;
      */
-     public void sfAddTags(Set tags) throws SmartFrogContextException {
+     public void sfAddTags(Set tags) throws SmartFrogRuntimeException {
          if (parent!=null) {
              Object key = parent.sfAttributeKeyFor(this);
              parent.sfAddTags(key,tags);
@@ -1497,7 +1497,7 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
      * @throws SmartFrogException
      *          the attribute does not exist;
      */
-    public void sfRemoveTags(Set tags) throws SmartFrogContextException {
+    public void sfRemoveTags(Set tags) throws SmartFrogRuntimeException {
          if (parent!=null) {
              Object key = parent.sfAttributeKeyFor(this);
              parent.sfRemoveTags(key,tags);
@@ -1519,7 +1519,7 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
      * @throws SmartFrogException
      *          the attribute does not exist
      */
-    public boolean sfContainsTag(String tag) throws SmartFrogContextException {
+    public boolean sfContainsTag(String tag) throws SmartFrogRuntimeException {
          if (parent!=null) {
              Object key = parent.sfAttributeKeyFor(this);
              return parent.sfContainsTag(key, tag);

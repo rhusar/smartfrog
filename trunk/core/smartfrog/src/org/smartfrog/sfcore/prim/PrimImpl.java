@@ -1801,10 +1801,9 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
     *
     * @param name attribute key for tags
     * @param tags a set of tags
-    *
-    * @throws SmartFrogException the attribute does not exist;
+ * @throws SmartFrogException the attribute does not exist;
     */
-   public void sfSetTags(Object name, Set tags) throws SmartFrogContextException, RemoteException {
+   public void sfSetTags(Object name, Set tags) throws RemoteException, SmartFrogRuntimeException {
       sfContext.sfSetTags(name, tags);
    }
 
@@ -1814,10 +1813,9 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
     *
     * @param name attribute key for tags
     * @return the set of tags
-    *
-    * @throws SmartFrogException the attribute does not exist;
+ * @throws SmartFrogException the attribute does not exist;
     */
-   public Set sfGetTags(Object name) throws SmartFrogContextException, RemoteException {
+   public Set sfGetTags(Object name) throws RemoteException, SmartFrogRuntimeException {
         return sfContext.sfGetTags(name);
    }
 
@@ -1826,10 +1824,9 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
     *
     * @param name attribute key for tags
     * @param tag a tag to add to the set
-    *
-    * @throws SmartFrogException the attribute does not exist;
+ * @throws SmartFrogException the attribute does not exist;
     */
-   public void sfAddTag(Object name, String tag) throws SmartFrogContextException, RemoteException {
+   public void sfAddTag(Object name, String tag) throws RemoteException, SmartFrogRuntimeException {
          sfContext.sfAddTag(name,tag);
    }
 
@@ -1838,11 +1835,10 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
     *
     * @param name attribute key for tags
     * @param tag a tag to remove from the set
-    *
-    * @throws SmartFrogException the attribute does not exist;
+ * @throws SmartFrogException the attribute does not exist;
     *
     */
-   public void sfRemoveTag(Object name, String tag) throws SmartFrogContextException, RemoteException {
+   public void sfRemoveTag(Object name, String tag) throws RemoteException, SmartFrogRuntimeException {
          sfContext.sfRemoveTag(name, tag);
    }
 
@@ -1851,10 +1847,10 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
     *
     * @param name attribute key for tags
     * @param tags  a set of tags to add to the set
-    * @throws SmartFrogException
+         * @throws SmartFrogException
     *          the attribute does not exist;
     */
-   public void sfAddTags(Object name, Set tags) throws SmartFrogContextException, RemoteException {
+   public void sfAddTags(Object name, Set tags) throws RemoteException, SmartFrogRuntimeException {
         sfContext.sfAddTags(name, tags);
    }
 
@@ -1863,10 +1859,10 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
     *
     * @param name attribute key for tags
     * @param tags  a set of tags to remove from the set
-    * @throws SmartFrogException
+ * @throws SmartFrogException
     *          the attribute does not exist;
     */
-   public void sfRemoveTags(Object name, Set tags)  throws SmartFrogContextException, RemoteException {
+   public void sfRemoveTags(Object name, Set tags)  throws RemoteException, SmartFrogRuntimeException {
         sfContext.sfRemoveTags(name, tags);
    }
 
@@ -1889,9 +1885,9 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
     * @param tag the tag to chack
     *
     * @return whether or not the attribute has that tag
-    * @throws SmartFrogException the attribute does not exist
+ * @throws SmartFrogException the attribute does not exist
     */
-   public boolean sfContainsTag(Object name, String tag) throws SmartFrogContextException, RemoteException {
+   public boolean sfContainsTag(Object name, String tag) throws RemoteException, SmartFrogRuntimeException {
         return sfContext.sfContainsTag(name, tag);
    }
 
@@ -1902,10 +1898,9 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
     * with each attribute.
     *
     * @param tags a set of tags
-    *
-    * @throws SmartFrogException the attribute does not exist;
+ * @throws SmartFrogException the attribute does not exist;
     */
-   public void sfSetTags(Set tags) throws SmartFrogContextException, RemoteException {
+   public void sfSetTags(Set tags) throws RemoteException, SmartFrogRuntimeException {
        Object key = null;
        if (sfParent!=null) {
          key = sfParent.sfAttributeKeyFor(this);
@@ -1922,10 +1917,9 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
     * with each attribute.
     *
     * @return the set of tags or null if no tags found
-    *
-    * @throws SmartFrogException the attribute does not exist;
+ * @throws SmartFrogException the attribute does not exist;
     */
-   public Set sfGetTags() throws SmartFrogContextException, RemoteException {
+   public Set sfGetTags() throws RemoteException, SmartFrogRuntimeException {
        Object key = null;
        if (sfParent!=null) {
          key = sfParent.sfAttributeKeyFor(this);
@@ -1949,10 +1943,9 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
     * add a tag to the tag set of this component
     *
     * @param tag a tag to add to the set
-    *
-    * @throws SmartFrogException the attribute does not exist;
+ * @throws SmartFrogException the attribute does not exist;
     */
-   public void sfAddTag( String tag) throws SmartFrogContextException, RemoteException {
+   public void sfAddTag( String tag) throws RemoteException, SmartFrogRuntimeException {
        Object key = null;
        if (sfParent!=null) {
          key = sfParent.sfAttributeKeyFor(this);
@@ -1968,11 +1961,10 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
     * remove a tag from the tag set of this component if it exists
     *
     * @param tag a tag to remove from the set
-    *
-    * @throws SmartFrogException the attribute does not exist;
+ * @throws SmartFrogException the attribute does not exist;
     *
     */
-   public void sfRemoveTag( String tag) throws SmartFrogContextException, RemoteException {
+   public void sfRemoveTag( String tag) throws RemoteException, SmartFrogRuntimeException {
        Object key = null;
        if (sfParent!=null) {
          key = sfParent.sfAttributeKeyFor(this);
@@ -1988,10 +1980,10 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
     * add a tag to the tag set of this component
     *
     * @param tags  a set of tags to add to the set
-    * @throws SmartFrogException
+ * @throws SmartFrogException
     *          the attribute does not exist;
     */
-   public void sfAddTags( Set tags) throws SmartFrogContextException, RemoteException {
+   public void sfAddTags( Set tags) throws RemoteException, SmartFrogRuntimeException {
       Object key = null;
        if (sfParent!=null) {
          key = sfParent.sfAttributeKeyFor(this);
@@ -2007,10 +1999,10 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
     * remove a tag from the tag set of this component if it exists
     *
     * @param tags  a set of tags to remove from the set
-    * @throws SmartFrogException
+ * @throws SmartFrogException
     *          the attribute does not exist;
     */
-   public void sfRemoveTags( Set tags)  throws SmartFrogContextException, RemoteException {
+   public void sfRemoveTags( Set tags)  throws RemoteException, SmartFrogRuntimeException {
        Object key = null;
         if (sfParent!=null) {
           key = sfParent.sfAttributeKeyFor(this);
@@ -2029,9 +2021,9 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
     * @param tag the tag to chack
     *
     * @return whether or not the attribute has that tag
-    * @throws SmartFrogException the attribute does not exist
+ * @throws SmartFrogException the attribute does not exist
     */
-   public boolean sfContainsTag(String tag) throws SmartFrogContextException, RemoteException {
+   public boolean sfContainsTag(String tag) throws RemoteException, SmartFrogRuntimeException {
         Object key = null;
         if (sfParent!=null) {
           key = sfParent.sfAttributeKeyFor(this);
