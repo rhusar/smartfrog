@@ -97,19 +97,6 @@ TestCompound extends ActionCompound {
         use -1 for no limit"
         #;
     }
-    teardown extends OptionalCD {
-      description ##a component that is run after the tests pass/fail
-        to perform teardown or post-process.
-        the action will always have been terminated (cleanly or not) by the time this component is deployed.
-        #;
-    }
-    teardownTimeout extends OptionalInteger {
-      description ##
-        time in milliseconds to complain if the undeploy of the action component
-        or the execution of the teardown component took too long; use -1 for no limit
-        NOT IMPLEMENTED
-        #;
-    }
     forcePing extends Boolean {
 //        NOT IMPLEMENTED
       description "should we force a set of pings?";

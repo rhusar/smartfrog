@@ -48,15 +48,12 @@ import java.rmi.RemoteException;
 
 public class TestCompoundImpl extends ConditionCompound
         implements TestCompound {
-    private ComponentDescription teardownCD;
-    private Prim teardown;
     private ComponentDescription waitForCD;
     private ComponentDescription tests;
     private Prim waitFor,testsPrim;
 
     protected static final String ACTION_RUNNING = ATTR_ACTION;
     protected static final String TESTS_RUNNING = ATTR_TESTS;
-    protected static final String TEARDOWN_RUNNING = ATTR_TEARDOWN;
     private long undeployAfter;
     private long testTimeout;
     private boolean expectTerminate;
@@ -73,7 +70,6 @@ public class TestCompoundImpl extends ConditionCompound
     private volatile TerminationRecord status;
     private volatile TerminationRecord actionTerminationRecord;
     private volatile TerminationRecord testsTerminationRecord;
-    private volatile TerminationRecord teardownTerminationRecord;
 
     /**
      * The message of a forced shutdown. This is important, as we look for
@@ -152,11 +148,6 @@ public class TestCompoundImpl extends ConditionCompound
         if(exception==null) {
             //a null exception meant the action was deployed successfully
 
-            //the teardown CD is deployed at this time, but not started.
-            //it is brought to life during termination.
-            if (teardownCD != null) {
-                teardown = deployComponentDescription(ATTR_TEARDOWN, teardownCD);
-            }
 
             //if we get here. then it is time to actually start the action.
             //exceptions are caught and compared to expectations.
@@ -210,7 +201,7 @@ public class TestCompoundImpl extends ConditionCompound
 
     /**
      * Start the test runner and a terminator
-     * @throws SmartFrogRuntimeException smartfrog problems
+     * @throws SmartFrogDeploymentException smartfrog problems
      * @throws RemoteException RMI problems
      */
     private void startTests() throws RemoteException, SmartFrogDeploymentException {
@@ -250,10 +241,6 @@ public class TestCompoundImpl extends ConditionCompound
      */
     public synchronized void sfTerminateWith(TerminationRecord record) {
         sendEvent(new TerminatedEvent(this, record));
-        Exception exception = startTeardown();
-        if(exception!=null) {
-            sfLog().warn("When starting the teardown action", exception);
-        }
         super.sfTerminateWith(record);
         shutdown(actionTerminator);
         shutdown(testsTerminator);
@@ -292,14 +279,13 @@ public class TestCompoundImpl extends ConditionCompound
      */
     protected boolean onChildTerminated(TerminationRecord childStatus, Prim child) {
         boolean propagateTermination = shouldTerminate;
-        boolean tearDownTime=false;
         TerminationRecord exitRecord =null;
         if (actionPrim == child) {
             actionTerminationRecord=childStatus;
             //child termination
             if (actionTerminator.isForcedShutdown() && !expectTerminate) {
                 //this is a forced shutdown, all is well
-                sfLog().info("Graceful shutdown of test components");
+                sfLog().info("Forced shutdown of test components (expected)");
             } else {
                 //not a forced shutdown, so why did it die?
                 boolean expected = false;
@@ -329,6 +315,8 @@ public class TestCompoundImpl extends ConditionCompound
                     sfLog().info("Action Exit type mismatch");
                 }
                 if (!expected) {
+                    //the action prim terminated in a way that was not expected
+                    //
                     String errorText = TEST_FAILED_WRONG_STATUS + exitType + "\n"
                             + "and error text " + exitText + "\n"
                             + "but got " + childStatus;
@@ -346,34 +334,16 @@ public class TestCompoundImpl extends ConditionCompound
                     
                 }
             }
-            //decide it is time to run the teardown
-            tearDownTime=true;
         } else if(child == testsPrim) {
             //tests are terminating.
             testsTerminationRecord=childStatus;
-            tearDownTime = true;
             //it is an error if these terminated abnormally, for any reason at all.
             //that is: test failure triggers an undeployment.
             //There is no need to check this, because its implicit.
-            if(!childStatus.isNormal()) {
+            if (!childStatus.isNormal()) {
                 sfLog().info("Tests have failed");
                 //mark this as an error.
-                exitRecord =childStatus;
-            }
-        } else if(child == teardown) {
-            //log whatever happened to the teardown
-            teardownTerminationRecord=childStatus;
-        }
-
-        //start teardown, etc.
-        //kicks in on both normal and abnormal termination
-        if (tearDownTime && teardown != null) {
-            propagateTermination = false;
-            Exception exception = startTeardown();
-            if (exception != null) {
-                //could not start teardown; raise a new failure
-                exitRecord = TerminationRecord.abnormal("failed to start teardown",
-                        name, exception);
+                exitRecord = childStatus;
             }
         }
 
@@ -381,14 +351,15 @@ public class TestCompoundImpl extends ConditionCompound
             //update internal data structures
             finished = true;
             if (exitRecord != null) {
+                //an exit record implies failure
                 setStatus(exitRecord);
-                failed = true;
                 succeeded = false;
             } else {
+                //whereas a child status implies success
                 setStatus(childStatus);
-                failed = false;
                 succeeded = true;
             }
+            failed=!succeeded;
         }
         try {
             endTestRun(getStatus());
@@ -406,24 +377,6 @@ public class TestCompoundImpl extends ConditionCompound
         }
         //trigger termination.
         return propagateTermination;
-    }
-
-    /**
-     * Start the teardown component if it is non null, already deployed, and not started
-     * @return any exception raised while starting the teardown exception.
-     */
-    private synchronized Exception startTeardown() {
-        try {
-            if (teardown!=null && teardown.sfIsDeployed()
-                    && !teardown.sfIsStarted()
-                    && !teardown.sfIsTerminated()) {
-                teardown.sfStart();
-                sfLog().debug("Starting teardown component");
-            }
-        } catch (Exception e) {
-            return e;
-        }
-        return null;
     }
 
 
@@ -498,14 +451,6 @@ public class TestCompoundImpl extends ConditionCompound
      */
     public TerminationRecord getTestsTerminationRecord() {
         return testsTerminationRecord;
-    }
-
-    /**
-     * Get the termination record for this child; may be null
-     * @return a termination record or null
-     */
-    public TerminationRecord getTeardownTerminationRecord() {
-        return teardownTerminationRecord;
     }
 
     /**
