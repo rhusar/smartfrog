@@ -276,9 +276,10 @@ public abstract class SmartFrogTestBase extends TestCase {
             //Deploy and don't throw exception. Exception will be contained
             // in a ConfigurationDescriptor.
             deployedApp = SFSystem.runConfigurationDescriptor(cfgDesc,false);
+            ConfigurationDescriptor deployedCD;
             if ((deployedApp instanceof ConfigurationDescriptor) &&
-                    (((ConfigurationDescriptor) deployedApp).resultException != null)) {
-                searchForExpectedExceptions(deployedApp, cfgDesc, exceptionName,
+                    (deployedCD=(ConfigurationDescriptor) deployedApp).resultException != null) {
+                searchForExpectedExceptions(deployedCD, cfgDesc, exceptionName,
                         searchString, containedExceptionName,containedExceptionText);
                 resultException = ((ConfigurationDescriptor) deployedApp).resultException;
                 return resultException;
@@ -299,20 +300,23 @@ public abstract class SmartFrogTestBase extends TestCase {
     }
 
     /**
-     * Look through an exception chain looking for the expected exceptions.
-     * @param deployedApp
-     * @param cfgDesc
-     * @param exceptionName
-     * @param searchString
-     * @param containedExceptionName
-     * @param containedExceptionText
+     * A deployment failed, and a CD containing exceptions was returned instead of an application.
+     * This method scans through looking for the expected exceptions and
+     * failing if the type or messages do not match
+     * @param deployedApp what was deployed
+     * @param cfgDesc the original configuration descriptor.
+     * @param exceptionName optional substring to find in the outermost exception
+     * @param searchString optional text to find in the outermost exception
+     * @param containedExceptionName optional substring to find in any nested exception
+     * @param containedExceptionText optional text to find in any nested  exception
      */
-    private void searchForExpectedExceptions(Object deployedApp, ConfigurationDescriptor cfgDesc, String exceptionName, String searchString,
+    private void searchForExpectedExceptions(ConfigurationDescriptor deployedApp, ConfigurationDescriptor cfgDesc,
+                                             String exceptionName, String searchString,
                                              String containedExceptionName,
                                              String containedExceptionText) {
         //we got an exception. let's take a look.
         Throwable returnedFault;
-        returnedFault = ((ConfigurationDescriptor) deployedApp).resultException;
+        returnedFault =  deployedApp.resultException;
         assertFaultCauseAndCDContains(returnedFault, exceptionName, searchString, cfgDesc);
         //get any underlying cause
         Throwable cause = returnedFault.getCause();
@@ -708,9 +712,10 @@ public abstract class SmartFrogTestBase extends TestCase {
             //Deploy and don't throw exception. Exception will be contained
             // in a ConfigurationDescriptor.
             deployedApp = SFSystem.runConfigurationDescriptor(cfgDesc,false);
+            ConfigurationDescriptor deployedCD;
             if ((deployedApp instanceof ConfigurationDescriptor) &&
-                    (((ConfigurationDescriptor) deployedApp).resultException != null)) {
-                searchForExpectedExceptions(deployedApp, cfgDesc, EXCEPTION_LIFECYCLE,
+                    ((deployedCD=(ConfigurationDescriptor) deployedApp).resultException != null)) {
+                searchForExpectedExceptions(deployedCD, cfgDesc, EXCEPTION_LIFECYCLE,
                         null, EXCEPTION_SMARTFROG_ASSERTION,null);
                 resultException = ((ConfigurationDescriptor) deployedApp).resultException;
                 return resultException;
