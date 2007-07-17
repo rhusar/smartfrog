@@ -102,10 +102,12 @@
         rev="latest.integration"
         conf="compile,runtime->default"/>
     <!--include XML parser and related services-->
+<!--
     <dependency org="org.smartfrog"
         name="sf-xml"
         rev="latest.integration"
         conf="runtime->default"/>
+-->
     <!--XMPP support -->
     <dependency org="org.smartfrog"
         name="sf-xmpp"
@@ -132,6 +134,10 @@
     <dependency org="com.oracle.berkeleydb"
         name="je"
         rev="${je.version}"
+        conf="compile,redist->default"/>
+    <dependency org="jivesoftware"
+        name="smackx"
+        rev="${smack.version}"
         conf="compile,redist->default"/>
     <dependency org="javax.jms"
         name="jms"
