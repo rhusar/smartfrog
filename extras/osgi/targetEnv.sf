@@ -1,0 +1,14 @@
+#include "org/smartfrog/components.sf"
+#include "org/smartfrog/sfcore/deployer/environments.sf"
+#include "org/smartfrog/sfcore/deployer/deployers.sf"
+
+sfConfig extends Compound {
+
+        sfProcessComponentName "envTarget";
+
+        urlCLTest extends URLClassLoadingEnvironment {
+            codebase "file:/home/olivier/Dev/SmartFrog-core/extras/osgi/test-bundle/dist/lib/sf-test-bundle-3.11.003dev.jar";
+        }
+
+        deployerTest extends PrimProcessDeployer;
+}

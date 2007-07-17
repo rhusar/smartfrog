@@ -1,6 +1,5 @@
 #include "org/smartfrog/components.sf"
 #include "org/smartfrog/sfcore/deployer/environments.sf"
-#include "org/smartfrog/sfcore/deployer/deployers.sf"
 
 
 URLCLTest extends URLClassLoadingEnvironment {
@@ -9,18 +8,7 @@ URLCLTest extends URLClassLoadingEnvironment {
 
 sfConfig extends Compound {
 
-    parser extends Compound {
         sfProcessComponentName "envParser";
-
         urlCLTest extends URLCLTest;
-    }
-
-    target extends Compound {
-        sfProcessName "rootProcess";
-        sfProcessComponentName "envTarget";
-
-        urlCLTest extends URLCLTest;
-        deployerTest extends PrimProcessDeployer;
-    }
 
 }

@@ -415,8 +415,8 @@ public class SFSystem implements MessageKeys {
                  somethingFailed = true;
 		         opts.exitCode = ExitCodes.EXIT_ERROR_CODE_GENERAL;
              }
-             sfLog().out(" - "+(cfgDesc).statusString()+"\n");
-             if (sfLog().isIgnoreEnabled() && cfgDesc.resultException!=null){
+             sfLog().out(" - " + cfgDesc.statusString() + System.getProperty("line.separator"));
+             if (cfgDesc.resultException!=null) {
                sfLog().ignore(cfgDesc.resultException);
             }
          }

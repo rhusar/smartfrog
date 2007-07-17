@@ -380,16 +380,18 @@ public class SmartFrogException extends Exception implements Serializable {
         StringBuffer strb = new StringBuffer();
         strb.append("ALL: ").append(shortClassName()).append(": ");
 
-        if ((getMessage()!=null)&& (!((getCause().toString().equals(getMessage()))))) {
+        if (getMessage() != null && !String.valueOf(getCause()).equals(getMessage())) {
             //Only print message when message != cause
             strb.append (getMessage());
-            strb.append ((((getCause() == null) ) ? "" : (nm+"cause: " + getCauseMessage(nm))));
+            strb.append (getCause() == null ? "" : nm + "cause: " + getCauseMessage(nm));
         } else {
-            strb.append ((((getCause() == null) ) ? "" : (getCauseMessage(nm))));
+            strb.append (getCause() == null ? "" : getCauseMessage(nm));
         }
-        
-        strb.append ((((cxt == null) ||
-            (cxt.size() == 0)) ? "" : (nm+"  context: " + nm +cxt.toString()+nm)));
+
+        if (cxt != null && cxt.size() != 0) {
+            strb.append("  context: " + nm + cxt.toString() + nm);
+        }
+
         return strb.toString();
     }
 
