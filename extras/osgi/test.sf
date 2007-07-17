@@ -1,20 +1,25 @@
 #include "org/smartfrog/components.sf"
 
 // The new include syntax.
-#from PROCESS:envParser:bundleTest #include "org/smartfrog/osgi/test/components.sf"
+#from envParser:clEnvTest #include "org/smartfrog/osgi/test/components.sf"
+
+#include "org/smartfrog/examples/counter/components.sf"
 
 sfConfig extends Compound {
+    sfProcessComponentName "TestApp";
 
-    subprocess extends Prim {
+    subprocess extends Compound {
         // The new deployer syntax
-        sfDeployer LAZY PROCESS:envTarget:deployerTest;
+        sfDeployer LAZY envTarget:deployerTest;
         sfProcessName "testProcess";
+
+        limit 10;
     }
 
     testHello extends Test {
         // The new Prim syntax
         sfMeta extends DATA {
-            sfFactory LAZY PROCESS:envTarget:bundleTest;
+            sfFactory LAZY envTarget:clEnvTest;
             sfClass "org.smartfrog.osgi.test.TestImpl";                            
         }
 
