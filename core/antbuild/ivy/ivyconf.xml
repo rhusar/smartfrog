@@ -33,6 +33,12 @@
       <artifact pattern="${root.dir}/antbuild/repository/${maven2.pattern.ext}"/>
       <ivy pattern="${root.dir}/antbuild/repository/${maven2.pattern}.xml"/>
     </filesystem>
+    <filesystem name="team2">
+      artifacts="true"
+      m2compatible="true" >
+      <artifact pattern="${root.dir}/antbuild/repository/${maven2.pattern.ext}"/>
+      <!--<ivy pattern="${root.dir}/antbuild/repository/${maven2.pattern}.xml"/>-->
+    </filesystem>
     <ibiblio name="maven2"
         root="${ivy.ibiblio.root}"
         pattern="${maven2.pattern.ext}"
@@ -40,12 +46,12 @@
         />
     <chain name="default" dual="true">
       <resolver ref="local"/>
-      <resolver ref="team"/>
+      <resolver ref="team2"/>
       <resolver ref="maven2"/>
     </chain>
     <chain name="internal">
       <resolver ref="local"/>
-      <resolver ref="team"/>
+      <resolver ref="team2"/>
     </chain>
   </resolvers>
   <modules>
