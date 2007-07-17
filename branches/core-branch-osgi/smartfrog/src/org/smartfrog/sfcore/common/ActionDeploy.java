@@ -241,9 +241,9 @@ public class ActionDeploy extends ConfigurationAction {
     public Object execute(ProcessCompound targetP, ConfigurationDescriptor configuration)
        throws SmartFrogException, RemoteException {
        Prim parent = null;
-       String name = null;
-       Reference ref = null;
-       Prim prim=null;
+       String name;
+       Reference ref;
+       Prim prim;
        try {
            name = configuration.getName();
            //Placement
