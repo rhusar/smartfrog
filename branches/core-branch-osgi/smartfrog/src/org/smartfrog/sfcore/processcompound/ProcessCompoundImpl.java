@@ -423,6 +423,8 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
                     name = key.substring(SmartFrogCoreProperty.defaultDescPropBase.length());
 
                     ComponentDescription cd = ComponentDescriptionImpl.sfComponentDescription(url.trim());
+                    final Object givenName = cd.sfResolveHere(SmartFrogCoreKeys.SF_PROCESS_COMPONENT_NAME, false);
+                    if (givenName != null) name = null;
                     sfCreateNewApp(name, cd, nameContext);
                 }
             }
