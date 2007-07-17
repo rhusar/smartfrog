@@ -116,12 +116,14 @@ public class PrimHostDeployerImpl extends PrimDeployerImpl {
 
             if (pc.equals(local)) {
                 if (parent == null) {
+                    // Is this combination possible ?
                     return local.sfDeployComponentDescription(null, parent, target,
                             null);
                 } else {
                     return super.deploy(parent);
                 }
             } else {
+                // Name = null : The name of the component on the remote process is generated automatically, even though the component has a name in the local process. Not pretty.
                 return pc.sfDeployComponentDescription(null, parent, target, null);
             }
         } catch (Exception ex) {            
