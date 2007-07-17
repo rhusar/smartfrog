@@ -63,13 +63,19 @@ while [ ! -z $1 ]; do
             APPNAME="$2"
             shift
             ;;
+
         -a | --application)
-            if [ -z $2 ]; then
-                usage "Missing application description URL"
-            fi
-            APPDESCRIPTION="$2"
-            shift
+            APPSCRIPTS=
+            #i=1
+            # While the next argument exists and does not start with a dash.
+            while [ ! -z "$2" ] && (echo "$2" | grep -q -v '^-'); do
+                #APPSCRIPTS="$APPSCRIPTS -a \"__APPNAME__$i\":DEPLOY:\""`add_backslashes "$2"`"\"::\"__TARGETHOST__\":"
+                APPSCRIPTS="$APPSCRIPTS -a :DEPLOY:\""`add_backslashes "$2"`"\"::\"__TARGETHOST__\":"
+                #i=`expr $i + 1`
+                shift
+            done
             ;;
+
         -e | --environment)
             ENVSCRIPTS=
             i=1
@@ -83,6 +89,7 @@ while [ ! -z $1 ]; do
                 usage "At least one environment description is needed if the -e option is used."
             fi
             ;;
+
         *)
             usage "Unrecognized argument: $1"
             ;;
@@ -92,14 +99,17 @@ while [ ! -z $1 ]; do
 done
 
 ## Post-parse checks
-if [ -z "$APPNAME" ]; then usage "Missing application name"; fi
+#if [ -z "$APPNAME" ]; then usage "Missing application name"; fi
 if [ -z "$TARGETHOST" ]; then usage "Missing deployment target host name"; fi
-if [ -z "$APPDESCRIPTION" ]; then usage "Missing application description URL"; fi
+if [ -z "$APPSCRIPTS" ]; then usage "At least one application description is needed"; fi
 
+## Replace placeholder values
+#APPSCRIPTS=`echo "$APPSCRIPTS" | sed s/__APPNAME__/"$APPNAME"/g`
+APPSCRIPTS=`echo "$APPSCRIPTS" | sed s/__TARGETHOST__/"$TARGETHOST"/g`
 
 ## Finally, run SmartFrog with the parsed arguments.
 if test "$SFSECURITY"; then
-        java $ENVSCRIPTS $SFSECURITY "$SFDEFAULTINI" org.smartfrog.SFSystem -a \"$APPNAME\":DEPLOY:\"$APPDESCRIPTION\"::\"$TARGETHOST\": -e
+        java $ENVSCRIPTS $SFSECURITY "$SFDEFAULTINI" org.smartfrog.SFSystem $APPSCRIPTS -e
 else
-        java $ENVSCRIPTS "$SFDEFAULTINI" org.smartfrog.SFSystem -a \"$APPNAME\":DEPLOY:\"$APPDESCRIPTION\"::\"$TARGETHOST\": -e
+        java $ENVSCRIPTS "$SFDEFAULTINI" org.smartfrog.SFSystem $APPSCRIPTS -e
 fi

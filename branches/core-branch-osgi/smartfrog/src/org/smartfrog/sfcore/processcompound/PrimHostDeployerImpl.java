@@ -62,31 +62,33 @@ public class PrimHostDeployerImpl extends PrimDeployerImpl {
      */
     protected ProcessCompound getProcessCompound() throws Exception {
         InetAddress hostAddress;
-        Object hostname=null;
+        Object hostname = null;
         try {
             hostname = target.sfResolve(refProcessHost);
-	    if (hostname instanceof String) {
-		hostAddress = InetAddress.getByName((String) hostname);
-	    } else if (hostname instanceof InetAddress) {
-		hostAddress = (InetAddress) hostname;
-	    } else {
-                Object name = null;
-                if (target.sfContext().containsKey(SmartFrogCoreKeys.SF_PROCESS_COMPONENT_NAME)) {
-                    name =target.sfResolveHere(SmartFrogCoreKeys.SF_PROCESS_COMPONENT_NAME,false);
-                }
-                throw new SmartFrogDeploymentException (refProcessHost,null,name,target,null,"illegal sfProcessHost class: found " + hostname + ", of class " + hostname.getClass(), null, hostname);
-	    }
+            if (hostname instanceof String) {
+                hostAddress = InetAddress.getByName((String) hostname);
+            } else if (hostname instanceof InetAddress) {
+                hostAddress = (InetAddress) hostname;
+            } else {
+                Object name = getProcessComponentName();
+                throw new SmartFrogDeploymentException(refProcessHost, null, name, target, null, "illegal sfProcessHost class: found " + hostname + ", of class " + hostname.getClass(), null, hostname);
+            }
         } catch (SmartFrogResolutionException resex) {
             return SFProcess.getProcessCompound();
-        } catch (java.net.UnknownHostException unhex){
-                Object name = null;
-                if (target.sfContext().containsKey(SmartFrogCoreKeys.SF_PROCESS_COMPONENT_NAME)) {
-                    name =target.sfResolveHere(SmartFrogCoreKeys.SF_PROCESS_COMPONENT_NAME,false);
-                }
-                throw new SmartFrogDeploymentException (refProcessHost,null,name,target,null,"Unknown host: "+hostname, unhex, hostname);
+        } catch (java.net.UnknownHostException unhex) {
+            Object name = getProcessComponentName();
+            throw new SmartFrogDeploymentException(refProcessHost, null, name, target, null, "Unknown host: " + hostname, unhex, hostname);
         }
 
-        return SFProcess.getRootLocator().getRootProcessCompound(hostAddress) ;
+        return SFProcess.getRootLocator().getRootProcessCompound(hostAddress);
+    }
+
+    private Object getProcessComponentName() throws SmartFrogResolutionException {
+        Object name = null;
+        if (target.sfContext().containsKey(SmartFrogCoreKeys.SF_PROCESS_COMPONENT_NAME)) {
+            name = target.sfResolveHere(SmartFrogCoreKeys.SF_PROCESS_COMPONENT_NAME, false);
+        }
+        return name;
     }
 
     /**

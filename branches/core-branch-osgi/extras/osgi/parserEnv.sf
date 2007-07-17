@@ -9,6 +9,6 @@ URLCLTest extends URLClassLoadingEnvironment {
 sfConfig extends Compound {
 
         sfProcessComponentName "envParser";
-        urlCLTest extends URLCLTest;
+        clEnvTest extends URLCLTest;
 
 }

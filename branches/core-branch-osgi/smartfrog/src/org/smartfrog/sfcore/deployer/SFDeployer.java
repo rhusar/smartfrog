@@ -20,7 +20,14 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.sfcore.deployer;
 
-import org.smartfrog.sfcore.common.*;
+import org.smartfrog.sfcore.common.Context;
+import org.smartfrog.sfcore.common.MessageKeys;
+import org.smartfrog.sfcore.common.MessageUtil;
+import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
+import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
+import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.common.SmartFrogResolutionException;
+import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.processcompound.PrimProcessDeployerImpl;
@@ -103,9 +110,21 @@ public class SFDeployer implements MessageKeys {
         if (deployerRef != null) {
             try {
                 deployer = (ComponentDeployer) component.sfResolve(deployerRef);
-            } catch(ClassCastException e) {
+            } catch (ClassCastException e) {
                 throw wrongType("The " + SmartFrogCoreKeys.SF_DEPLOYER 
                                 + " attribute must be a ComponentDeployer", e, component);
+            }
+            // TODO: Remove hack
+            /*
+            This is necessary because the newly created process compound gets passed down the ComponentDescription again,
+            and ends up calling this a second time. So this time the deployer resolves to the one in the parent process,
+            through RMI - which is not what we want. If the deployer is only used to find a ProcessCompound,
+            it even doesn't make any sense.
+             */
+            try {
+                component.sfRemoveAttribute(SmartFrogCoreKeys.SF_DEPLOYER);
+            } catch (SmartFrogRuntimeException e) {
+                throw (SmartFrogResolutionException) SmartFrogResolutionException.forward(e);
             }
         } else {
             deployer = defaultDeployer();
