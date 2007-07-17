@@ -79,7 +79,7 @@
   </target>
 
 
-  <target name="declare-xmlbean" depends="ivy-resolve">
+  <target name="declare-xmlbean" depends="ivy-resolve,init">
     <ivy:cachepath pathid="xbean.class.path" conf="xbean"
         xmlns:ivy="antlib:fr.jayasoft.ivy.ant"/>
     <taskdef name="xmlbean" classname="org.apache.xmlbeans.impl.tool.XMLBean"
@@ -100,16 +100,6 @@
   </target>
 
 
-<!--
-  <target name="declare-base.compile.classpath" depends="init"  unless="ivy.enabled">
-    <path id="base.compile.classpath">
-      <path refid="smartfrog.classpath"/>
-      <filelist >
-        <file name="" />
-      </filelist>
-    </path>
-  </target>
--->
 
   <target name="pre-compile" depends="common.pre-compile,schema-compile">
 <!--    <copy todir="lib">
@@ -285,6 +275,15 @@
   </target>
 
 
+  <target name="setup-library" depends="ivy-retrieve,schema-compile">
+    <property name="dist.dependencies.dir" location="${dist.dir}/dependencies"/>
+    <mkdir dir="${dist.dependencies.dir}" />
+    <copy todir="${dist.dependencies.dir}" >
+      <fileset dir="${ivy.lib.dir}/default" includes="*.jar" />
+    </copy>
+    <copy todir="${dist.dependencies.dir}" file="${avalanche-types.jar}"/>
+
+  </target>
 
 </project>
 
