@@ -122,9 +122,9 @@ public class PrimHostDeployerImpl extends PrimDeployerImpl {
             } else {
                 return pc.sfDeployComponentDescription(null, parent, target, null);
             }
-        } catch (Exception ex){
-            sfLog().error(ex);
-            throw (SmartFrogDeploymentException)SmartFrogDeploymentException.forward("PrimHostDeployerImpl.deploy",ex);
+        } catch (Exception ex) {            
+            throw (SmartFrogDeploymentException) SmartFrogDeploymentException.forward
+                    ("Failed to deploy the component description: " + target, ex);
         }
     }
 }

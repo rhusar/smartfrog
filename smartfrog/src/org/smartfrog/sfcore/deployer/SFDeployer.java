@@ -22,7 +22,6 @@ package org.smartfrog.sfcore.deployer;
 
 import org.smartfrog.sfcore.common.*;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
-import org.smartfrog.sfcore.logging.LogFactory;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.processcompound.PrimProcessDeployerImpl;
 import org.smartfrog.sfcore.reference.Reference;
@@ -100,12 +99,15 @@ public class SFDeployer implements MessageKeys {
             throws SmartFrogResolutionException
     {
         ComponentDeployer deployer;
-        try {
-            Reference deployerRef = (Reference) component.sfResolveHere(SmartFrogCoreKeys.SF_DEPLOYER);
-            deployer = (ComponentDeployer) component.sfResolve(deployerRef);
-        } catch (SmartFrogResolutionException e) {
-            // Distracting for now
-            // LogFactory.sfGetProcessLog().ignore(e);
+        Reference deployerRef = (Reference) component.sfResolveHere(SmartFrogCoreKeys.SF_DEPLOYER, false);
+        if (deployerRef != null) {
+            try {
+                deployer = (ComponentDeployer) component.sfResolve(deployerRef);
+            } catch(ClassCastException e) {
+                throw wrongType("The " + SmartFrogCoreKeys.SF_DEPLOYER 
+                                + " attribute must be a ComponentDeployer", e, component);
+            }
+        } else {
             deployer = defaultDeployer();
         }
 
@@ -141,12 +143,12 @@ public class SFDeployer implements MessageKeys {
     private static PrimFactory getComponentFactory(ComponentDescription component)
             throws SmartFrogResolutionException
     {
-        ComponentDescription metadata = null;
+        ComponentDescription metadata;
         try {
-            metadata = (ComponentDescription) component.sfResolveHere(SmartFrogCoreKeys.SF_METADATA);
-        } catch (SmartFrogResolutionException e) {
-            // LogFactory.sfGetProcessLog().ignore(e);
-            // Too vebose for my liking.
+            metadata = (ComponentDescription) component.sfResolveHere(SmartFrogCoreKeys.SF_METADATA, false);
+        } catch (ClassCastException e) {
+            throw wrongType("The " + SmartFrogCoreKeys.SF_METADATA
+                    + " attribute must be a component description.", e, component);
         }
 
         if (metadata != null) {
@@ -159,6 +161,16 @@ public class SFDeployer implements MessageKeys {
             // Component using the old sfClass-only syntax
             return defaultFactory();
         }
+    }
+
+    private static SmartFrogResolutionException wrongType
+            (String msg, ClassCastException e, ComponentDescription component)
+    {
+        return new SmartFrogResolutionException(
+                msg + " Faulty description:"
+                        + System.getProperty("line.separator")
+                        + component,
+                e);
     }
 
     private static PrimFactory defaultFactory() {

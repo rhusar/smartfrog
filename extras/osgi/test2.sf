@@ -5,12 +5,14 @@
 
 sfConfig extends Compound {
 
+    /*
     subprocess extends Compound {
         // The new deployer syntax
         sfDeployer LAZY PROCESS:envTarget:deployerTest;
         sfProcessName "testProcess";
     }
-
+    */
+    
     testHello extends Test {
         // The new Prim syntax
         sfMeta extends DATA {
