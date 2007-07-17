@@ -45,36 +45,20 @@
   <property name="root.dir" location="../.."/>
   <!-- Import common stuff -->
   <import file="${root.dir}/common.xml"/>
-  
-  
-  <!-- ========================================================== -->
-  <!-- ========================================================== -->
-  <target name="init"
-    depends="init-standard-output-dirs,use-smartfrog-tasks,use-smartfrog-testharness">
-    <echo message="==================================================================="/>
-    <echo message="= ${ant.project.name}"/>
-    <property name="deploy.sf" value="files/success.sf"/>
-    <property name="default.ini" location="test/files/default.ini"/>
-    <property name="default.sf" location="test/files/default.sf"/>
 
-  </target>
-  
-  
-  <!-- ========================================================== -->
-  <!-- create a distro. 
-       we want both sf-junit and the test har -->
-  <!-- ========================================================== -->
-  <!--target name="dist" depends="package,package-tests"-->
-  <target name="dist" depends="package"
-    description="create a distribution">
 
-  </target>    
-    
-  <target name="dist-tests" depends="package,package-tests"
+  <echo message="==================================================================="/>
+  <echo message="= ${ant.project.name}"/>
+  <property name="default.ini" location="test/files/default.ini"/>
+  <property name="default.sf" location="test/files/default.sf"/>
+
+<!--
+ <target name="dist-tests" depends="package,package-tests"
     description="create a distribution including SF tests">
 
-  </target>        
-    
+  </target>
+-->
+
   
   <!-- ========================================================== -->
   <!-- parse the file -->
@@ -88,11 +72,6 @@
         value="${codebase}"/>
       <!-- source files -->
       <source file="test/org/smartfrog/services/sfunit/test/system/example.sf" />
-      <!-- test files -->
-<!--      <source dir="${test.src.dir}">
-        <include name="files/*.sf"/>
-        <exclude name="files/components.sf"/>
-      </source>-->
     </sf-parse>
   </target>
 
