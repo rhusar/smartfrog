@@ -35,19 +35,18 @@
   <!-- override point -->
   <property file="build.properties"/>
   <!--<property file="setup.properties"/>-->
-
+  <property name="ivy.enabled" value="true"/>
   <property name="root.dir" location="../../.."/>
   <!-- Import common stuff -->
-  <!--<import file="${root.dir}/common.xml"/>-->
-  <import file="../../../common.xml"/>
+  <import file="${root.dir}/common.xml"/>
 
 
 
 
   <target name="init" depends="common.init">
-    <property name="java.class.path" value="${java.class.path};lib/xbean.jar;lib/jsr173_api.jar"/>
 
-    <property name="avalanche-types.jar" location="${dist.dir}/lib/avalanche-types.jar"/>
+    <property name="avalanche-types.jar"
+        location="${dist.dir}/lib/avalanche-types.jar"/>
 
     <property name="src.dir" location="src"/>
     <property name="lib" location="lib"/>
@@ -72,9 +71,6 @@
     <mkdir dir="${dist.dir}/lib"/>
     <mkdir dir="${dist.dir}/lib/client"/>
     <mkdir dir="${build.classes.dir}"/>
-    <copy todir="lib">
-      <fileset file="${env.JAVA_HOME}/lib/tools.jar" />
-    </copy>
   </target>
 
   <target name="clean" depends="init">
@@ -82,50 +78,49 @@
     <delete dir="${dist.dir}"/>
   </target>
 
-  <target name="init-old">
-    <property name="javac.debug.mode" value="on"/>
-    <property name="javac.debug.level" value="lines,vars,source"/>
-    <property name="javac.java.version" value="1.4"/>
-    <property name="build.compiler" value="modern"/>
-    <property name="javac.compiler" value="${build.compiler}"/>
-    <property name="rmitargets" value="${basedir}/rmitargets"/>
-    <!-- *** Change this to point to you local AVALANCHE_HOME on server.
-    -->
 
-    <property name="rmic.compiler" value="sun"/>
-  </target>
-
-
-  <target name="declare-xmlbean" depends="init">
+  <target name="declare-xmlbean" depends="ivy-resolve">
+    <ivy:cachepath pathid="xbean.class.path" conf="xbean"
+        xmlns:ivy="antlib:fr.jayasoft.ivy.ant"/>
     <taskdef name="xmlbean" classname="org.apache.xmlbeans.impl.tool.XMLBean"
         classpathref="xbean.class.path"/>
   </target>
 
   <!-- *** Must export XBEAN jars in CLASSPATH manually, including in build.xml is not working -->
+  <!-- ========================================================== -->
+  <!-- xmlbeans creates various xml classes in avalanche-types.jar-->
+  <!-- which we expand in to build/classes to merge with the final JARs-->
+  <!-- ========================================================== -->
   <target name="schema-compile" depends="declare-xmlbean"
       description="Generate classes from XML Schemas">
     <xmlbean schema="schemas" destfile="${avalanche-types.jar}">
       <classpath refid="xbean.class.path"/>
     </xmlbean>
+    <!--<unzip src="${avalanche-types.jar}" dest="${build.classes.dir}" />-->
   </target>
 
 
+<!--
   <target name="declare-base.compile.classpath" depends="init"  unless="ivy.enabled">
     <path id="base.compile.classpath">
       <path refid="smartfrog.classpath"/>
       <filelist >
-        <file name="${avalanche-types.jar}" />
+        <file name="" />
       </filelist>
     </path>
   </target>
+-->
 
   <target name="pre-compile" depends="common.pre-compile,schema-compile">
 <!--    <copy todir="lib">
       <fileset dir="${smartfrog.home}/dist/lib" includes="**/*.jar"/>
     </copy>-->
   </target>
-<!--
 
+  <!-- ========================================================== -->
+  <!-- this is an override point -->
+  <!-- compile everything, copy useful files over-->
+  <!-- ========================================================== -->
   <target name="compile"
       depends="pre-compile">
     <depend srcdir="${src.dir}"
@@ -133,20 +128,18 @@
         cache="${build.dir}/depends"
         closure="yes"/>
     <sf-javac
-        classpathref="avalanche-core.class.path"
         srcdir="${src.dir}"
-        destdir="${build.classes.dir}"
-        />
+        includeJavaRuntime="true"
+        includeAntRuntime="true"
+        destdir="${build.classes.dir}">
+      <classpath>
+        <path refid="compile.classpath" />
+        <path path="${avalanche-types.jar}" />
+      </classpath>
+    </sf-javac>
     <copy-useful-files src="${src.dir}" dest="${build.classes.dir}"/>
   </target>
 
-  <target name="compile-rmi" depends="compile-src">
-    <rmic includesfile="${rmitargets}" compiler="${rmic.compiler}" stubversion="1.2" base="${build.classes.dir}">
-      <classpath refid="avalanche-core.class.path"/>
-    </rmic>
-  </target>
-
--->
 
   <target name="ready-to-jar" depends="rmi,copyTemplates">
 
