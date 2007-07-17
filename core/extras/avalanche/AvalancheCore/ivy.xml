@@ -28,6 +28,8 @@
     <conf name="redist" description="redistributals excluding smartfrog artifacts"/>
     <conf name="runtime" description="runtime but not the artifact"
         extends="redist"/>
+    <conf name="xbean" visibility="private"
+      description="xbean path"/>  
 </configurations> 
 
   <publications>
@@ -58,21 +60,21 @@
     <dependency org="org.smartfrog"
         name="sf-ant"
         rev="latest.integration"
-        conf="runtime->default"/>
+        conf="compile,runtime->default"/>
     <dependency org="org.smartfrog"
         name="sf-anubis"
         rev="latest.integration"
-        conf="runtime->default"/>
+        conf="compile,runtime->default"/>
     <!--adds jetty and the servlet api-->
     <dependency org="org.smartfrog"
         name="sf-jetty"
         rev="latest.integration"
-        conf="runtime->default"/>
+        conf="compile->default"/>
     <!--adds velocity-->
     <dependency org="org.smartfrog"
         name="sf-installer"
         rev="latest.integration"
-        conf="runtime->default"/>
+        conf="compile,runtime->default"/>
     <!--adds jmx support-->
     <dependency org="org.smartfrog"
         name="sf-jmx"
@@ -82,12 +84,13 @@
     <dependency org="org.smartfrog"
         name="sf-loggingservices"
         rev="latest.integration"
-        conf="runtime->default"/>
+        conf="compile,runtime->default"/>
+
     <!--adds commons.net-->
     <dependency org="org.smartfrog"
         name="sf-net"
         rev="latest.integration"
-        conf="runtime->default"/>
+        conf="compile,runtime->default"/>
     <!--adds jsch-->
     <dependency org="org.smartfrog"
         name="sf-ssh"
@@ -97,7 +100,7 @@
     <dependency org="org.smartfrog"
         name="sf-quartz"
         rev="latest.integration"
-        conf="runtime->default"/>
+        conf="compile,runtime->default"/>
     <!--include XML parser and related services-->
     <dependency org="org.smartfrog"
         name="sf-xml"
@@ -112,45 +115,54 @@
     <dependency org="org.apache.xmlbeans"
         name="xmlbeans"
         rev="${xmlbeans.version}"
-        conf="compile,redist->default"/>
+        conf="xbean,compile,redist->default"/>
 
     <dependency org="xalan"
         name="xalan"
         rev="${xalan.version}"
         conf="compile,redist->default"/>
-  <dependency org="org.sourceforge.mom4j"
-      name="mom4j-client"
-      rev="${mom4j.version}"
-      conf="compile,redist->default"/>
-  <dependency org="org.sourceforge.mom4j"
-      name="mom4j"
-      rev="${mom4j.version}"
-      conf="compile,redist->default"/>
-
-  <!--
-    <dependency org="org.apache"
-        name=""
-        rev="${.version}"
+    <dependency org="org.sourceforge.mom4j"
+        name="mom4j-client"
+        rev="${mom4j.version}"
         conf="compile,redist->default"/>
-    <dependency org="org.apache"
-        name=""
-        rev="${.version}"
+    <dependency org="org.sourceforge.mom4j"
+        name="mom4j"
+        rev="${mom4j.version}"
         conf="compile,redist->default"/>
-    <dependency org="stax"
-        name="stax-api"
-        rev="${stax-api.version}"
+    <dependency org="com.oracle.berkeleydb"
+        name="je"
+        rev="${je.version}"
         conf="compile,redist->default"/>
-    <dependency org="stax"
-        name="stax"
-        rev="${stax.version}"
-        conf="redist->default"/>
+    <dependency org="javax.jms"
+        name="jms"
+        rev="${jms.version}"
+        conf="compile->default"/>
 
-  Missing:
-  mom4j-client
-  mom4j.jar
-  je.jar
+    <dependency org="xerces"
+        name="xercesImpl"
+        rev="${xerces.version}"
+        conf="compile,redist->default"/>
+    <dependency org="xerces"
+        name="xmlParserAPIs"
+        rev="${xerces.version}"
+        conf="compile,redist->default"/>
+    <dependency org="org.apache.xindice"
+        name="xindice"
+        rev="${xindice.version}"
+        conf="compile,redist->default"/>
+    <dependency org="org.xmldb"
+        name="xmldb-api"
+        rev="${xmldb.version}"
+        conf="compile,redist->default"/>
+    <dependency org="org.xmldb"
+        name="xmldb-common"
+        rev="${xmldb.version}"
+        conf="compile,redist->default"/>
+    <dependency org="org.xmldb"
+        name="xmldb-xupdate"
+        rev="${xmldb-xupdate.version}"
+        conf="compile,redist->default"/>
 
-  -->
   </dependencies>
 
 </ivy-module>
