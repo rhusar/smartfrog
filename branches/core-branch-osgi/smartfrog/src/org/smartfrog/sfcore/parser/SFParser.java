@@ -617,7 +617,12 @@ public class SFParser implements Parser, MessageKeys {
      */
     public static Reader openInclude(String include, SFReference from) throws Exception {
         CodeRepository repository = SFProcess.getCodeRepository(from);
-        InputStream is = SFLoader.getInputStream(include, repository);
+        InputStream is;
+        try {
+            is = SFLoader.getInputStream(include, repository);
+        } catch (IOException e) {
+            throw new Exception("Include file: " + include + " not found", e);
+        }
         return new InputStreamReader(is, "utf-8");
     }
 }
