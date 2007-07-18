@@ -5,7 +5,7 @@
 \#include "org/smartfrog/services/ssh/sshExec.sf"
 \#include "org/smartfrog/sfcore/workflow/components.sf"
 
-#set( $avEventServer = "localhost" ) 
+#set( $avEventServer = "16.25.169.176" )
 
 sfConfig extends Parallel {
     asynchCreateChild true;
@@ -19,7 +19,7 @@ sfConfig extends Parallel {
             FTP:password "$daemon.password";
 	    #if ($daemon.isLinux())
 		#if ($securityOn)
-            		FTP:localFiles ["${daemon.localfile1}", "$daemon.keyfile", "${daemon.secproperties}", "${daemon.smartfrogjar}", "${daemon.servicesjar", "${daemon.examplesjar}"];
+            		FTP:localFiles ["${daemon.localfile1}", "${daemon.keyfile}", "${daemon.secproperties}", "${daemon.smartfrogjar}", "${daemon.servicesjar}", "${daemon.examplesjar}"];
             		FTP:remoteFiles ["${daemon.installdir}/release.tar.gz", "${daemon.installdir}/mykeys.st", "${daemon.installdir}/SFSecurity.properties", "${daemon.installdir}/smartfrog.jar", "${daemon.installdir}/sfServices.jar", "${daemon.installdir}/sfExamples.jar"];
 		#else
 			FTP:localFiles ["${daemon.localfile1}"];
@@ -27,7 +27,7 @@ sfConfig extends Parallel {
 		#end
 	    #elseif ($daemon.isWindows())
 		#if ($securityOn)
-		 	FTP:localFiles ["${daemon.localfile1}", "${daemon.localfile2}", "${daemon.localfile3}", "$daemon.keyfile", "${daemon.secproperties}", "${daemon.smartfrogjar}", "${daemon.servicesjar", "${daemon.examplesjar}"];
+		 	FTP:localFiles ["${daemon.localfile1}", "${daemon.localfile2}", "${daemon.localfile3}", "${daemon.keyfile}", "${daemon.secproperties}", "${daemon.smartfrogjar}", "${daemon.servicesjar}", "${daemon.examplesjar}"];
              	 	FTP:remoteFiles ["${daemon.installdir}\\release.zip", "${daemon.installdir}\\JavaService.exe", "${daemon.installdir}\\start_sfdaemon.bat", "${daemon.installdir}\\mykeys.st", "${daemon.installdir}\\SFSecurity.properties", "${daemon.installdir}\\smartfrog.jar", "${daemon.installdir}\\sfServices.jar", "${daemon.installdir}\\sfExamples.jar"];
 		#else
 			FTP:localFiles ["${daemon.localfile1}", "${daemon.localfile2}", "${daemon.localfile3}"];
@@ -44,7 +44,7 @@ sfConfig extends Parallel {
             SCP:password "$daemon.password";
 	    #if ($daemon.isLinux())
 		#if ($securityOn)
-            		SCP:localFiles ["${daemon.localfile1}", "$daemon.keyfile", "${daemon.secproperties}", "${daemon.smartfrogjar}", "${daemon.servicesjar", "${daemon.examplesjar}"];
+            		SCP:localFiles ["${daemon.localfile1}", "$daemon.keyfile", "${daemon.secproperties}", "${daemon.smartfrogjar}", "${daemon.servicesjar}", "${daemon.examplesjar}"];
             		SCP:remoteFiles ["${daemon.installdir}/release.tar.gz", "${daemon.installdir}/mykeys.st", "${daemon.installdir}/SFSecurity.properties", "${daemon.installdir}/smartfrog.jar", "${daemon.installdir}/sfServices.jar", "${daemon.installdir}/sfExamples.jar"];
 		#else
             		SCP:localFiles ["${daemon.localfile1}"];
@@ -141,7 +141,7 @@ sfConfig extends Parallel {
 	                				 ("start_sfdaemon.bat ${daemon.javahome} ${daemon.installdir}\\" ++ "${daemon.releasename}\\dist server -s -d #foreach ($jar in $httpJars)http://${httpServer}:8080/${jar} #end"),
 							 "net start Daemon"];
 				#else 
-					Telnet:commands ["md ${dameon.installdir}",
+					Telnet:commands ["md ${daemon.installdir}",
 \							"cd ${daemon.installdir}",
 							"wzunzip -d release.zip",
 							("cd ${daemon.installdir}\\" ++ "${daemon.releasename}"),
