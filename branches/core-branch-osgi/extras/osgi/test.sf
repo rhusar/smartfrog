@@ -19,7 +19,11 @@ sfConfig extends Compound {
     testHello extends Test {
         // The new Prim syntax
         sfMeta extends DATA {
-            sfFactory LAZY envTarget:clEnvTest;
+            sfClassLoadingEnv LAZY envTarget:clEnvTest;
+            sfDecorator LAZY woodFrogComp;
+            sfDecorator LAZY aopComp {
+                aspect machin;
+            }
             sfClass "org.smartfrog.osgi.test.TestImpl";                            
         }
 

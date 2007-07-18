@@ -2,13 +2,11 @@
 #include "org/smartfrog/sfcore/deployer/environments.sf"
 
 
-URLCLTest extends URLClassLoadingEnvironment {
-    codebase "file:/home/olivier/Dev/SmartFrog-core/extras/osgi/test-bundle/dist/lib/sf-test-bundle-3.11.003dev.jar";
-}
-
 sfConfig extends Compound {
 
         sfProcessComponentName "envParser";
-        clEnvTest extends URLCLTest;
+        clEnvTest extends extends URLClassLoadingEnvironment {
+            codebase "file:/home/olivier/Dev/SmartFrog-core/extras/osgi/test-bundle/dist/lib/sf-test-bundle-3.11.003dev.jar";
+        }
 
 }
