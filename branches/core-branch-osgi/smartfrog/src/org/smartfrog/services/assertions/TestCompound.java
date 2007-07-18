@@ -20,6 +20,9 @@
 package org.smartfrog.services.assertions;
 
 import org.smartfrog.sfcore.workflow.conditional.Conditional;
+import org.smartfrog.sfcore.prim.TerminationRecord;
+
+import java.rmi.RemoteException;
 
 
 /**
@@ -76,14 +79,6 @@ public interface TestCompound extends TestBlock, Conditional {
      */
     String ATTR_TEST_TIMEOUT = "testTimeout";
 
-    /**
-     * a component that is run after the tests pass/fail
-     to perform teardown or post-process.
-     the action will always have been terminated (cleanly or not)
-     by the time this component is deployed.
-     * {@value}
-     */
-    String ATTR_TEARDOWN = "teardown";
 
     /**
      * should we force a set of pings?
@@ -98,13 +93,6 @@ public interface TestCompound extends TestBlock, Conditional {
     String ATTR_PINGINTERVAL = "pingInterval";
 
     /**
-     *         time in milliseconds to complain if the undeploy of the action component
-     or the execution of the teardown component took too long; use -1 for no limit
-     * {@value}
-     */
-    String ATTR_TEARDOWN_TIMEOUT = "teardownTimeout";
-
-    /**
      * string which must be found in the termination errortype attribute using a case sensitive match.
      * {@value}
      */
@@ -116,5 +104,19 @@ public interface TestCompound extends TestBlock, Conditional {
      */
     String ATTR_EXIT_TEXT = "exitText";
 
+
+    /**
+     * Get the termination record for this child; may be null
+     * @return a termination record or null
+     * @throws RemoteException for network problems
+     */
+    TerminationRecord getActionTerminationRecord() throws RemoteException;
+
+    /**
+     * Get the termination record for this child; may be null
+     * @return a termination record or null
+     * @throws RemoteException for network problems
+     */
+    TerminationRecord getTestsTerminationRecord() throws RemoteException;
 
 }

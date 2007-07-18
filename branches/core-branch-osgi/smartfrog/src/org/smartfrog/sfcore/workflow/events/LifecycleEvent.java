@@ -41,6 +41,7 @@ public abstract class LifecycleEvent implements Serializable {
     private String componentName;
 
     private TerminationRecord status;
+    private static final String UNKNOWN_COMPONENT = "(unknown)";
 
     public TerminationRecord getStatus() {
         return status;
@@ -71,11 +72,11 @@ public abstract class LifecycleEvent implements Serializable {
     protected LifecycleEvent(Prim component, TerminationRecord status) {
         this.timestamp = System.currentTimeMillis();
         this.component = component;
-        if (componentName != null) {
+        if (component!=null && componentName != null) {
             Reference reference = new ComponentHelper(component).completeNameOrNull();
-            componentName = reference != null ? reference.toString() : "(unknown)";
+            componentName = reference != null ? reference.toString() : UNKNOWN_COMPONENT;
         } else {
-            componentName = "";
+            componentName = UNKNOWN_COMPONENT;
         }
         this.status = status;
     }

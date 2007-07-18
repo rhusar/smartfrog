@@ -246,7 +246,7 @@ rm -rf $RPM_BUILD_ROOT
 
 
 #Bin directory and beneath
-
+%attr(755, ${rpm.username},${rpm.groupname}) %dir %{bindir}
 #these are config files that should be protected
 %config %{bindir}/default.ini
 %config %{bindir}/default.sf

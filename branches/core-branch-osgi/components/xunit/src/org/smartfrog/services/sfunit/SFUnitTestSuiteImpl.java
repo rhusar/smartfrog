@@ -97,9 +97,27 @@ public class SFUnitTestSuiteImpl extends AbstractTestSuite
     /**
      * return the tests prim
      *
-     * @return the child component. this will be null after termination.
+     * @return null, always
      */
     public Prim getAction() {
+        return null;
+    }
+
+    /**
+     * Stub implementation
+     *
+     * @return null always
+     */
+    public TerminationRecord getActionTerminationRecord()  {
+        return null;
+    }
+
+    /**
+     * Stub implementation
+     *
+     * @return null always
+     */
+    public TerminationRecord getTestsTerminationRecord() throws RemoteException {
         return null;
     }
 

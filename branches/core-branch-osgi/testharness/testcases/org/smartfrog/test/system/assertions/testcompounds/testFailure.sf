@@ -22,11 +22,10 @@ For more information: www.smartfrog.org
 
 /**
  * here we deploy a testblock that stays deployed after the run.
- * We expect the child to terminate with an abnormal after the wrong failure message was received
- * this may not be the semantics we want, but it is what is currently implemented...
+ * 
  */
 
-sfConfig extends TestBlock {
+testFailure extends TestBlock {
   action extends ExpectDeployFailure {
     sfShouldTerminate false;
 
@@ -36,3 +35,5 @@ sfConfig extends TestBlock {
     exitText action:message;
   }
 }
+
+sfConfig extends testFailure;

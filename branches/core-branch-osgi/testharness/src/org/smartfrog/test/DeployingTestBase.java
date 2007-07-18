@@ -25,8 +25,8 @@ import org.smartfrog.sfcore.common.ConfigurationDescriptor;
 import org.smartfrog.sfcore.workflow.events.LifecycleEvent;
 import org.smartfrog.sfcore.workflow.events.TerminatedEvent;
 import org.smartfrog.services.assertions.TestBlock;
-import org.smartfrog.services.assertions.TestCompletedEvent;
-import org.smartfrog.services.assertions.TestEventSink;
+import org.smartfrog.services.assertions.events.TestCompletedEvent;
+import org.smartfrog.services.assertions.events.TestEventSink;
 import org.smartfrog.services.assertions.TestTimeoutException;
 import org.smartfrog.SFSystem;
 
@@ -307,14 +307,18 @@ public abstract class DeployingTestBase extends SmartFrogTestBase implements Tes
      * @param event event to analyse
      * @param errorText optional error text
      */
-    protected void assertTestRunFailed(LifecycleEvent event,String errorText) {
+    protected void assertTestRunFailed(LifecycleEvent event,boolean abnormalStatus,String errorText) {
         assertTrue("not a TestCompletedEvent: "+event,event instanceof TestCompletedEvent);
         TestCompletedEvent testBlock=(TestCompletedEvent) event;
         assertTrue("test did not fail",testBlock.isFailed());
         assertFalse("test succeeded",testBlock.isSucceeded());
         TerminationRecord status = testBlock.getStatus();
         assertNotNull("No termination record",status);
-        assertFalse("Status is normal",status.isNormal());
+        if(abnormalStatus) {
+            assertFalse("Status is normal when it should be abnormal:"+status,status.isNormal());
+        } else {
+            assertTrue("Status is abnormal when it should be normal:" + status, status.isNormal());
+        }
         if(errorText!=null) {
             assertEquals(errorText, status.description);
         }
@@ -326,7 +330,7 @@ public abstract class DeployingTestBase extends SmartFrogTestBase implements Tes
 
     protected TestCompletedEvent expectAbnormalTestRun(String packageName, String filename) throws Throwable {
         LifecycleEvent event = runTestDeployment(packageName, filename);
-        assertTestRunFailed(event, null);
+        assertTestRunFailed(event,false, null);
         return (TestCompletedEvent)event;
     }
 
