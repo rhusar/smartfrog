@@ -23,7 +23,15 @@ package org.smartfrog.test;
 
 
 public interface TestProperties {
+
+    /**
+     * Default port for RMI callbacks: {@value}
+     */
     int RMI_CALLBACKS_PORT = 3802;
+
+    /**
+     * Name of the property that defines the port for RMI callbacks {@value}
+     */
     String PROPERTY_TEST_RMI_CALLBACKS_PORT = "test.rmi.callbacks.port";
     int TIMEOUT = 10000;
     /**

@@ -31,6 +31,8 @@ import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
 import org.smartfrog.sfcore.common.SmartFrogExtractedException;
 import org.smartfrog.sfcore.utils.ComponentHelper;
+import org.smartfrog.services.assertions.events.TestCompletedEvent;
+import org.smartfrog.services.assertions.events.TestStartedEvent;
 
 import java.rmi.RemoteException;
 
@@ -147,17 +149,19 @@ public class TestBlockImpl extends EventCompoundImpl implements TestBlock {
             startupException(e);
         } catch (SmartFrogDeploymentException e) {
             startupException(e);
+        } finally {
+            sendEvent(new TestStartedEvent(this,actionPrim));
         }
     }
 
 
     /**
      * Send out notifications of termination
-     * @param status exit status
+     * @param record exit status
      */
-    public void sfTerminateWith(TerminationRecord status) {
-        sendEvent(new TerminatedEvent(this, status));
-        super.sfTerminateWith(status);
+    public void sfTerminateWith(TerminationRecord record) {
+        sendEvent(new TerminatedEvent(this, record));
+        super.sfTerminateWith(record);
     }
 
     /**
@@ -218,18 +222,18 @@ public class TestBlockImpl extends EventCompoundImpl implements TestBlock {
      * Always return false if you start new components from this method!
      * </p>
      *
-     * @param status exit record of the component
+     * @param record exit record of the component
      * @param comp   child component that is terminating
      * @return true if the termination event is to be forwarded up the chain.
      */
-    protected boolean onChildTerminated(TerminationRecord status, Prim comp)
+    protected boolean onChildTerminated(TerminationRecord record, Prim comp)
             throws SmartFrogRuntimeException, RemoteException {
         if(comp == actionPrim) {
             //this is the action terminating,
             //forget about our now-terminated child (it cannot be serialized any more)
             actionPrim =null;
             //log the closure and continue
-            end(status);
+            end(record);
             return false;
         } else {
             //something unknown

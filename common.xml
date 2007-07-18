@@ -850,7 +850,7 @@ java.class.path=
       classpathref="smartfrog.tasks.classpath"
       property="sfTasks.present"/>
     <echo level="verbose">
-      Loading tasks from  ${toString:smartfrog.tasks.classpath}
+      Loading tasks from ${toString:smartfrog.tasks.classpath}
     </echo>
     <fail unless="sfTasks.present">
       Smartfrog tasks not found in

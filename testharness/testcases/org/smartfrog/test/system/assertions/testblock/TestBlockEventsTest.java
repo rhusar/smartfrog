@@ -49,12 +49,12 @@ public class TestBlockEventsTest extends DeployingTestBase {
 
     public void testFailure() throws Throwable {
         LifecycleEvent event=runTestDeployment(FILES, "testFailure");
-        assertTestRunFailed(event, "failure message");
+        assertTestRunFailed(event, true,"failure message");
     }
 
     public void testSmartFrogException() throws Throwable {
         LifecycleEvent event = runTestDeployment(FILES, "testSmartFrogException");
-        assertTestRunFailed(event,TestBlockImpl.ERROR_STARTUP_FAILURE);
+        assertTestRunFailed(event,true,TestBlockImpl.ERROR_STARTUP_FAILURE);
     }
 
 }
