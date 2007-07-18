@@ -66,7 +66,6 @@ public class CargoServerImpl extends PrimImpl implements CargoServer, Runnable {
     private LocalContainer container;
     private LocalConfiguration configuration;
     private String containerClassname;
-    private String codebase;
     private Thread thread;
     //internal state tracking
     private int state;
@@ -190,10 +189,7 @@ public class CargoServerImpl extends PrimImpl implements CargoServer, Runnable {
         }
 
         configurationClass = sfResolve(ATTR_CONFIGURATION_CLASS, "", true);
-        codebase = sfResolve(SmartFrogCoreKeys.SF_CODE_BASE,
-                (String) null,
-                false);
-
+        
         containerClassname = sfResolve(ATTR_CONTAINER_CLASS, "", true);
 
         //classpath setup

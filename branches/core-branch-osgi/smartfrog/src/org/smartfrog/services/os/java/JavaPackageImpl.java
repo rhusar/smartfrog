@@ -44,16 +44,12 @@ public class JavaPackageImpl extends PrimImpl implements JavaPackage {
     private Vector requiredResources;
     private Vector uriClasspathList;
     private Vector sources;
-    private boolean useCodebase;
-    private ComponentHelper helper;
     private String uriClasspath;
 
     /**
      * our log
      */
-    private Log log;
-    public JavaPackageImpl() throws RemoteException {
-    }
+    private Log log;    
 
     /**
      * Called after instantiation for deployment purposed. Heart monitor is
@@ -68,8 +64,7 @@ public class JavaPackageImpl extends PrimImpl implements JavaPackage {
             RemoteException {
         super.sfDeploy();
         log = LogFactory.getOwnerLog(this, this);
-        helper = new ComponentHelper(this);
-        //now read values and set up classpath
+        
         readValuesAndSetUpClasspath();
     }
 
@@ -126,14 +121,7 @@ public class JavaPackageImpl extends PrimImpl implements JavaPackage {
 //        classpathList = new Vector(sources.size());
 
         //extract the list from the codebase.
-        useCodebase = sfResolve(ATTR_USECODEBASE, false, false);
-        if(useCodebase) {
-            String codebase= helper.getCodebase();
-            Vector elements=RunJavaUtils.crack(codebase);
-            uriClasspathList.addAll(elements);
-        }
-
-
+        
         Iterator it = sources.listIterator();
         while (it.hasNext()) {
             Object elt = it.next();
