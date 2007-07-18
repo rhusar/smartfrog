@@ -82,7 +82,7 @@ while [ ! -z $1 ]; do
             fi
             ;;
 
-        -e | --environment)
+        -p | --parser)
             ENVSCRIPTS=
             i=1
             while valid "$2"; do
