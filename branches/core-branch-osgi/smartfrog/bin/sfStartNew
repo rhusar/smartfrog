@@ -2,15 +2,17 @@
 
 ###### Definitions
 
-USAGE="Usage: $0 [-h|--help] | [-t|--target] targethost [-n|--name] ApplicationName [[-e|--environment] env_description_URL.sf [env_description_URL.sf...]] [-a|--application] description_URL.sf"
 
 # Prints a message, the usage message, and exits. Arguments:
 # $1: Message string, required.
 # $2: Exit value (default: 69)
-usage()
-{
+usage() {
     echo "$1"
-    echo $USAGE
+    cat<<END
+Usage:  $0 -h|--help
+        $0 -t|--target targethost [-e|--environment env_description_URL.sf [env_description_URL.sf...]]
+        -a|--application [AppName] description_URL.sf [-a|--application [AppName] description_URL.sf...]
+END
     if [ ! -z $2 ]; then
         exit $2
     else
@@ -21,6 +23,17 @@ usage()
 # Escapes spaces in the argument
 add_backslashes () {
     echo "$1" | sed -e 's/ /\\ /g'
+}
+
+# Check if argument is valid (non-empty and not an option switch).
+invalid() {
+    [ -z "$1" ] || (echo "$1" | grep -q '^-')
+}
+
+valid() {
+    if invalid "$1"; then false;
+    else true
+    fi
 }
 
 ###### Start of main script
@@ -36,52 +49,44 @@ fi
 ## Include setSFProperties
 . "$SFHOME/bin/setSFProperties"
 
-## Setting the application name : fall back to user name if option is set by setSFProperties
-if test "$USERNAMEPREFIX_ON"; then
-    APPNAME="`whoami`_$2";
-else
-    APPNAME="$2";
-fi
-
 ## Process command line arguments.
+APPSCRIPTS=
+
 while [ ! -z $1 ]; do
     case "$1" in
         -h | --help)
-            usage "This script is used to start a new SmartFrog application on a running daemon. It allows the use of an arbitrary number of environment setup descriptions, followed by a single description for the application itself." 0
+            usage "This script is used to start a new SmartFrog application on a running daemon. It allows the use of an arbitrary number of parser setup descriptions, followed by an arbitrary number of descriptions for the application itself." 0
             ;;
+
         -t | --target)
-            if [ -z $2 ]; then
-                usage "Missing target hostname"
+            if invalid "$2"; then
+                usage "Missing target hostname after --target option."
             fi
             TARGETHOST="$2"
             shift
             ;;
-        -n | --name)
-            if [ -z $2 ]; then
-                usage "Missing application name"
-            fi
-            APPNAME="$2"
-            shift
-            ;;
 
         -a | --application)
-            APPSCRIPTS=
-            #i=1
-            # While the next argument exists and does not start with a dash.
-            while [ ! -z "$2" ] && (echo "$2" | grep -q -v '^-'); do
-                #APPSCRIPTS="$APPSCRIPTS -a \"__APPNAME__$i\":DEPLOY:\""`add_backslashes "$2"`"\"::\"__TARGETHOST__\":"
-                APPSCRIPTS="$APPSCRIPTS -a :DEPLOY:\""`add_backslashes "$2"`"\"::\"__TARGETHOST__\":"
-                #i=`expr $i + 1`
+            if invalid "$2"; then
+                usage "Missing application description after --application option."
+            fi
+            
+            if invalid "$3"; then
+                # No name given for this description
+                APPSCRIPTS="$APPSCRIPTS -a :DEPLOY:\"$2\"::\"__TARGETHOST__\":"
                 shift
-            done
+            else
+                # Using a name
+                APPSCRIPTS="$APPSCRIPTS -a \"$2\":DEPLOY:\"$3\"::\"__TARGETHOST__\":"            
+                shift 2
+            fi
             ;;
 
         -e | --environment)
             ENVSCRIPTS=
             i=1
-            # While the next argument exists and does not start with a dash.
-            while [ ! -z "$2" ] && (echo "$2" | grep -q -v '^-'); do
-                ENVSCRIPTS="$ENVSCRIPTS "" -Dorg.smartfrog.sfcore.processcompound.sfDefault.env""$i"=`add_backslashes "$2"`
+            while valid "$2"; do
+                ENVSCRIPTS="$ENVSCRIPTS "" -Dorg.smartfrog.sfcore.processcompound.sfDefault.parserEnv""$i"=`add_backslashes "$2"`
                 i=`expr $i + 1`
                 shift
             done
@@ -99,12 +104,10 @@ while [ ! -z $1 ]; do
 done
 
 ## Post-parse checks
-#if [ -z "$APPNAME" ]; then usage "Missing application name"; fi
 if [ -z "$TARGETHOST" ]; then usage "Missing deployment target host name"; fi
 if [ -z "$APPSCRIPTS" ]; then usage "At least one application description is needed"; fi
 
 ## Replace placeholder values
-#APPSCRIPTS=`echo "$APPSCRIPTS" | sed s/__APPNAME__/"$APPNAME"/g`
 APPSCRIPTS=`echo "$APPSCRIPTS" | sed s/__TARGETHOST__/"$TARGETHOST"/g`
 
 ## Finally, run SmartFrog with the parsed arguments.

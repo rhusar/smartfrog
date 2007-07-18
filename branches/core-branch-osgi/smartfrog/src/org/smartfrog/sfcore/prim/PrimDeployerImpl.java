@@ -185,18 +185,10 @@ public class PrimDeployerImpl extends PrimImpl implements ComponentDeployer, Mes
 
             throw resex;
         } catch (ClassCastException ccex) {
-            Object name = null;
-            if (target.sfContext().containsKey(SmartFrogCoreKeys.SF_PROCESS_COMPONENT_NAME)) {
-                name = target.sfResolveHere(SmartFrogCoreKeys.SF_PROCESS_COMPONENT_NAME, false);
-            }
-            throw new SmartFrogDeploymentException(refClass, null, name, target,
+            throw new SmartFrogDeploymentException(refClass, null, getProcessComponentName(), target,
                     null, "Wrong class when resolving '" + refClass + "': '"
                     + obj + "' (" + obj.getClass().getName() + ")", ccex, targetCodeBase);
         } catch (ClassNotFoundException cnfex) {
-            Object name = null;
-            if (target.sfContext().containsKey(SmartFrogCoreKeys.SF_PROCESS_COMPONENT_NAME)) {
-                name = target.sfResolveHere(SmartFrogCoreKeys.SF_PROCESS_COMPONENT_NAME, false);
-            }
             ComponentDescription cdInfo = new ComponentDescriptionImpl(null, new ContextImpl(), false);
             try {
                 if (targetCodeBase != null) cdInfo.sfAddAttribute(SmartFrogCoreKeys.SF_CODE_BASE,
@@ -207,8 +199,12 @@ public class PrimDeployerImpl extends PrimImpl implements ComponentDeployer, Mes
             } catch (SmartFrogException sfex) {
                 if (sfLog.isDebugEnabled()) sfLog.debug("", sfex);
             }
-            throw new SmartFrogDeploymentException(refClass, null, name, target, null, "Class not found", cnfex, cdInfo);
+            throw new SmartFrogDeploymentException(refClass, null, getProcessComponentName(), target, null, "Class not found", cnfex, cdInfo);
         }
+    }
+
+    protected final Object getProcessComponentName() throws SmartFrogResolutionException {
+        return target.sfResolveHere(SmartFrogCoreKeys.SF_PROCESS_COMPONENT_NAME, false);
     }
 
     /**
