@@ -406,21 +406,9 @@ public class ComponentHelper {
     }
 
     /**
-     * get the codebase of a component
-     * @return String codebase of a component
-     * @throws SmartFrogResolutionException if failed to resolve
-     * @throws RemoteException in case of Remote/network error
-     * @deprecated Use {@link this.getCodeRepository()} instead.
-     */
-    public String getCodebase() throws SmartFrogResolutionException,
-            RemoteException {
-        return (String) owner.sfResolve(SmartFrogCoreKeys.SF_CODE_BASE);
-    }
-
-    /**
-     * get the codebase of a component
+     * get the code repository of a component
      *
-     * @return String codebase of a component
+     * @return code repository of a component
      * @throws SmartFrogResolutionException if failed to resolve
      * @throws RemoteException              in case of Remote/network error
      */

@@ -152,13 +152,6 @@ public class PrimDeployerImpl extends PrimImpl implements ComponentDeployer, Mes
             SmartFrogCoreKeys.SF_CLASS);
 
     /**
-     * Efficiency holder of sfCodeBase reference.
-     */
-    private static final Reference refCodeBase = new Reference(
-            SmartFrogCoreKeys.SF_CODE_BASE);
-
-
-    /**
      * Get the class for the primitive to be deployed. This is where the
      * sfClass attribute is looked up, using the classloader returned by
      * getPrimClassLoader
@@ -168,16 +161,14 @@ public class PrimDeployerImpl extends PrimImpl implements ComponentDeployer, Mes
      * @deprecated This is now in OldAlgorithmClassLoadingEnvironment
      */
     protected Class getPrimClass() throws SmartFrogResolutionException, SmartFrogDeploymentException {
-        String targetCodeBase = null;
         String targetClassName;
         Object obj = null;
         try {
 
-            targetCodeBase = getSfCodeBase(target);
             targetClassName = (String) target.sfResolve(refClass);
 
             // 3rd parameter = true: We look in the default code base if everything else fails.
-            return SFClassLoader.forName(targetClassName, targetCodeBase, true);
+            return SFClassLoader.forName(targetClassName, null, true);
 
         } catch (SmartFrogResolutionException resex) {
             resex.put(SmartFrogRuntimeException.SOURCE, target.sfCompleteName());
@@ -187,12 +178,10 @@ public class PrimDeployerImpl extends PrimImpl implements ComponentDeployer, Mes
         } catch (ClassCastException ccex) {
             throw new SmartFrogDeploymentException(refClass, null, getProcessComponentName(), target,
                     null, "Wrong class when resolving '" + refClass + "': '"
-                    + obj + "' (" + obj.getClass().getName() + ")", ccex, targetCodeBase);
+                    + obj + "' (" + obj.getClass().getName() + ")", ccex, null);
         } catch (ClassNotFoundException cnfex) {
             ComponentDescription cdInfo = new ComponentDescriptionImpl(null, new ContextImpl(), false);
             try {
-                if (targetCodeBase != null) cdInfo.sfAddAttribute(SmartFrogCoreKeys.SF_CODE_BASE,
-                        targetCodeBase);
                 cdInfo.sfAddAttribute("java.class.path", System.getProperty("java.class.path"));
                 cdInfo.sfAddAttribute("org.smartfrog.sfcore.processcompound.sfProcessName",
                         System.getProperty("org.smartfrog.sfcore.processcompound.sfProcessName"));
@@ -205,21 +194,6 @@ public class PrimDeployerImpl extends PrimImpl implements ComponentDeployer, Mes
 
     protected final Object getProcessComponentName() throws SmartFrogResolutionException {
         return target.sfResolveHere(SmartFrogCoreKeys.SF_PROCESS_COMPONENT_NAME, false);
-    }
-
-    /**
-     * Gets the class code base by resolving the sfCodeBase attribute in the
-     * given description.
-     *
-     * @param desc Description in which we resolve the code base.
-     * @return class code base for that description.
-     */
-    private String getSfCodeBase(ComponentDescription desc) {
-        try {
-            return (String) desc.sfResolve(refCodeBase);
-        } catch (Exception e) {
-            return null;
-        }
     }
 
     // END LEGACY CODE ////////////////

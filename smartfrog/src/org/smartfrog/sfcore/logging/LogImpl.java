@@ -225,8 +225,6 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
         }
         // logger class set in configuration (Vector or String)
         Object configurationClass = "org.smartfrog.sfcore.logging.LogToFileImpl";
-        // codebase used to load  class set in configuration
-        String configurationCodeBase = null;
 
         Vector loggersConfiguration = null;
 
@@ -238,19 +236,17 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
                configurationClass = getConfigurationClass(classComponentDescription,configurationClass);
                loggersConfiguration = getLoggersConfigurationForConfigurationClass(classComponentDescription, configurationClass, loggersConfiguration);
                configurationLevel = getConfigurationLevel(classComponentDescription,configurationLevel);
-               configurationCodeBase = getConfigurationCodeBase(classComponentDescription,configurationCodeBase);
             }
             // overwriting class configuration with component configuration if provided.
             if (componentComponentDescription!=null){
                 configurationClass = getConfigurationClass(componentComponentDescription,configurationClass);
                 loggersConfiguration = getLoggersConfigurationForConfigurationClass(componentComponentDescription, configurationClass, loggersConfiguration);
-                configurationLevel = getConfigurationLevel(componentComponentDescription,configurationLevel);
-                configurationCodeBase = getConfigurationCodeBase(componentComponentDescription,configurationCodeBase);
+                configurationLevel = getConfigurationLevel(componentComponentDescription,configurationLevel);                
             }
 
             setLevel (configurationLevel);
 
-            loadStartUpLoggers(name, configurationClass, configurationCodeBase, loggersConfiguration);
+            loadStartUpLoggers(name, configurationClass, loggersConfiguration);
 
             //Set lower level of the two, just in case local logger has its own mechanism to set log level
             int i= getLevel(localLog);
@@ -260,7 +256,7 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
 
         } catch (Exception ex ){
             String msg = "Error during initialization of localLog for LogImpl. Next trying to use Default (LogToFile)";
-            String msg2 = "Log '"+name+"' , values [class,level,codebase]: "+ configurationClass +", "+  configurationLevel +", "+ configurationCodeBase +
+            String msg2 = "Log '"+name+"' , values [class,level,codebase]: "+ configurationClass +", "+  configurationLevel + ", " +
                         "\nusing Class ComponentDescription:\n{"+classComponentDescription+
                         "}\n, and using Component ComponentDescription:\n{"+ componentComponentDescription+"}";
 
@@ -288,9 +284,9 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
             }
         }
         if ((localLog!=null)&&(localLog.isTraceEnabled())) {
-            String msg2 = "Log '"+name+"' , values [class,level,codebase]: "+ configurationClass +", "+  configurationLevel +", "+ configurationCodeBase +
-                        "\nusing Class ComponentDescription:\n {"+classComponentDescription+
-                        "}\n, and using Component ComponentDescription:\n{"+ componentComponentDescription+"}";
+            String msg2 = "Log '" + name + "' , values [class,level,codebase]: "+ configurationClass +", "+  configurationLevel + ", " +
+                        "\nusing Class ComponentDescription:\n {" + classComponentDescription +
+                        "}\n, and using Component ComponentDescription:\n{" + componentComponentDescription + "}";
             localLog.trace(msg2);
         }
     }
@@ -299,16 +295,15 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
      *  Loads all predefined loggers and their configurations.
      *
      * @param name String
-     * @param configurationClass Object
-     * @param configurationCodeBase String
+     * @param configurationClass Object     
      * @param loggersConfiguration Vector
      * @throws RemoteException in case of remote/network failure
      * @throws SmartFrogLogException  if failed to register logger
      */
 
-    private void loadStartUpLoggers(String name, Object configurationClass, String configurationCodeBase, Vector loggersConfiguration) throws RemoteException, SmartFrogLogException {
+    private void loadStartUpLoggers(String name, Object configurationClass, Vector loggersConfiguration) throws RemoteException, SmartFrogLogException {
         if (configurationClass instanceof String) {
-            localLog = loadLogger(name, (ComponentDescription)loggersConfiguration.firstElement(), new Integer(currentLogLevel), (String)configurationClass, configurationCodeBase);
+            localLog = loadLogger(name, (ComponentDescription)loggersConfiguration.firstElement(), new Integer(currentLogLevel), (String)configurationClass);
             if (localLog.isDebugEnabled()) localLog.debug("Logger registered: "+ localLog.getClass());
         } else if (configurationClass instanceof Vector) {
             String className = null;
@@ -319,8 +314,7 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
                     className = (String)((List)configurationClass).get(i);
                     loggerConfiguration = (ComponentDescription)loggersConfiguration.get(i);
                     logger = loadLogger(name, loggerConfiguration,
-                                        new Integer(currentLogLevel), className,
-                                        configurationCodeBase);
+                                        new Integer(currentLogLevel), className);
                     if (i==0) {
                         localLog = logger;
                     } else {
@@ -428,19 +422,6 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
         return componentDescription.sfResolve(ATR_LOG_LEVEL, getLevel(), false);
     }
 
-    /**
-     * Reads configurationCodeBase attribute for LogImpl from a componentDescription
-     *
-     * @param componentDescription ComponentDescription
-     * @param configurationCodeBase String
-     * @return String
-     * @throws SmartFrogResolutionException  if failed to resolve
-     */
-    private String getConfigurationCodeBase(ComponentDescription componentDescription,String configurationCodeBase) throws SmartFrogResolutionException {
-        if (componentDescription==null) return configurationCodeBase;
-        return getSfCodeBase(componentDescription);
-    }
-
 
     /**
      *  Registered inputs, distribution list
@@ -460,7 +441,7 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
      * @throws SmartFrogLogException if failed to load
      */
 
-   public static Log loadLogger(String name, ComponentDescription configuration,Integer logLevel, String targetClassName , String targetCodeBase)
+   public static Log loadLogger(String name, ComponentDescription configuration,Integer logLevel, String targetClassName)
           throws SmartFrogLogException{
           try {
             Class deplClass = Class.forName(targetClassName);
@@ -488,7 +469,7 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
         } catch (InvocationTargetException intarexcp) {
             String msg = "Error during initialization of logger."+
                          " Data: name "+name+", targetClassName "+targetClassName+
-                         ", logLevel "+logLevel+", targetCodeBase "+targetCodeBase;
+                         ", logLevel "+logLevel;
             System.err.println("[ERROR] "+msg+", Reason: "+intarexcp.toString());
             intarexcp.getCause().printStackTrace();
             throw new SmartFrogLogException(MessageUtil.formatMessage(MessageKeys.MSG_INVOCATION_TARGET, targetClassName), intarexcp);
@@ -506,26 +487,6 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
     public String getLogName(){
         return this.logName;
     }
-
-
-   /**
-    * Gets the class code base by resolving the sfCodeBase attribute in the
-    * given description.
-    *
-    * @param desc Description in which we resolve the code base.
-    *
-    * @return class code base for that description.
-    */
-   protected String getSfCodeBase(ComponentDescription desc) {
-       try {
-           return (String) desc.sfResolve(new Reference(SmartFrogCoreKeys.SF_CODE_BASE));
-       } catch (Exception e) {
-           // Not found, return null...
-       }
-
-       return null;
-   }
-
 
     /**
      * <p> Set logging level. </p>

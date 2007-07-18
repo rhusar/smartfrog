@@ -198,15 +198,6 @@ public interface SmartFrogCoreKeys {
     public final static String SF_SCHEMA_DESCRIPTION = "sfSchemaDescription";
 
     /**
-     * Attribute that defines the codebase for a component.
-     * @deprecated The use of codebase URLs is deprecated.
-     * Use the {@link org.smartfrog.sfcore.deployer.CodeRepository} interface instead,
-     * along with the attribute {@link this.SF_CODE_REPOSITORY}.
-     * Value {@value}
-     */
-    public final static String SF_CODE_BASE = "sfCodeBase";
-
-    /**
      * Attibute that references the {@link org.smartfrog.sfcore.deployer.CodeRepository}
      * a component comes from. Initialized by the {@link org.smartfrog.sfcore.deployer.PrimFactory}
      * that creates the component. 
