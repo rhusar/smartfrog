@@ -84,7 +84,7 @@ public class CompilerSystemTest extends SmartFrogTestBase {
                 EXCEPTION_DEPLOYMENT,
                 null,
                 EXCEPTION_CLASSNOTFOUND,
-                "Cannot find org.smartfrog.test.system.compiler.PrinterImpl");
+                "ClassNotFoundException: org.smartfrog.test.system.compiler.PrinterImpl");
     }
 
     public void testCaseTCN10() throws Exception {
@@ -111,7 +111,7 @@ public class CompilerSystemTest extends SmartFrogTestBase {
                 EXCEPTION_DEPLOYMENT,
                 "failed to deploy 'data' component",
                 EXCEPTION_CLASSNOTFOUND,
-                "Cannot find kk.class");
+                "ClassNotFoundException: kk.class");
     }
     public void testCaseTCN25() throws Exception {
         deployExpectingException(FILES + "tcn25.sf",
