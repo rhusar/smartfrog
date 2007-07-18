@@ -48,4 +48,8 @@ public class LogUtils {
     public static String stringify(TerminationRecord tr) {
         return "\n" + tr != null ? tr.toString() : "";
     }
+
+    static String format(Object message, TerminationRecord tr) {
+        return message + System.getProperty("line.separator") + stringify(tr);
+    }
 }

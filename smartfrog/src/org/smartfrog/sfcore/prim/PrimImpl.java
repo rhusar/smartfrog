@@ -305,17 +305,18 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
         try {
             obj = r.resolve(this, index);
         } catch (SmartFrogResolutionException rex) {
-            if ((!(rex.containsKey(SmartFrogRuntimeException.SOURCE)))
-                    || (rex.get(SmartFrogRuntimeException.SOURCE)== null)) {
+            if (! rex.containsKey(SmartFrogRuntimeException.SOURCE)
+                || rex.get(SmartFrogRuntimeException.SOURCE) == null)
+            {
                 rex.put(SmartFrogRuntimeException.SOURCE, this.sfCompleteNameSafe());
                 rex.put(SmartFrogResolutionException.DEPTH, new Integer(index));
             }
-            if ((!(rex.containsKey(SmartFrogResolutionException.REFERENCE)))) {
+            if (!rex.containsKey(SmartFrogResolutionException.REFERENCE)) {
                 rex.put(SmartFrogResolutionException.REFERENCE,r);
             }
             rex.appendPath(this.sfCompleteName().toString() + " ");
             throw rex;
-        } catch (java.lang.StackOverflowError st){
+        } catch (StackOverflowError st){
             throw new SmartFrogResolutionException(r,this.sfCompleteNameSafe(),
                st.toString() +". Possible cause: cyclic reference",null,st,this);
         } catch (Throwable thr){
@@ -1419,14 +1420,15 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
      * @return Logger implementing LogSF and Log
      */
     public LogSF sfLog() {
-       if (sfLog==null) {
-        try {
-          sfSetLog(sfGetApplicationLog());
-        } catch (Exception ex) {
-          sfSetLog(sfGetCoreLog());
+        if (sfLog == null) {
+            sfLog = LogFactory.sfGetProcessLog();
+            try {
+                sfSetLog(sfGetApplicationLog());
+            } catch (Exception ex) {
+                sfSetLog(sfGetCoreLog());
+            }
         }
-       }
-       return sfLog;
+        return sfLog;
     }
 
 
@@ -1482,7 +1484,7 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
         try {
             // Check or sfLog attribute in component, if not initially defined
             // then it will be created during sfDeploy.
-            Object obj =sfResolve(SmartFrogCoreKeys.SF_APP_LOG_NAME, true);
+            Object obj = sfResolve(SmartFrogCoreKeys.SF_APP_LOG_NAME, true);
             if (obj instanceof Prim) {
                 sfLogName = ((Prim)obj).sfCompleteName().toString();
             } else {
@@ -1496,7 +1498,7 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
             if (sfParent()!=null){
                 try {
                     // Check or sfLog attribute in parent
-                    sfLogName = (sfParent().sfResolve(SmartFrogCoreKeys.SF_APP_LOG_NAME,"", true));
+                    sfLogName = (sfParent().sfResolve(SmartFrogCoreKeys.SF_APP_LOG_NAME, "", true));
                 } catch (SmartFrogResolutionException rex){
                     sfLogName = (this.sfCompleteName().toString());
                 }

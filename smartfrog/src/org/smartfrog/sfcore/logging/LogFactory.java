@@ -87,7 +87,7 @@ public  class LogFactory {
      */
     public static synchronized LogSF getLog(ComponentDescription cd) throws SmartFrogLogException
     {
-        LogSF log=null;
+        LogSF log;
         try {
             final Reference completeName = cd.sfCompleteName();
             //look for a log
@@ -114,14 +114,15 @@ public  class LogFactory {
      */
     public static synchronized LogSF getLog(String name)
     {
-        LogSF log  = (LogSF)loggers.get(name);
-        if (log!=null) {
+        LogSF log = (LogSF) loggers.get(name);
+        if (log != null)  {
+            return log;
+        } else {
+            log = new LogImpl(name);
+            loggers.put(name, log);
+            if (log.isTraceEnabled()) log.trace("New log created: " + name);
             return log;
         }
-        log = (LogSF)(new LogImpl(name));
-        loggers.put(name, log);
-        if ((log!=null)&&log.isTraceEnabled()) log.trace("New log created: "+ name);
-        return log;
     }
 
     /**
@@ -147,7 +148,7 @@ public  class LogFactory {
     public static LogSF getLog(Prim prim, boolean registerWithCoreLog) throws SmartFrogLogException{
         LogSF log = getLog(prim);
         if (registerWithCoreLog) {
-            String name = null;
+            String name;
             try {
                 name = prim.sfCompleteName().toString();
             } catch (RemoteException e) {
@@ -185,8 +186,8 @@ public  class LogFactory {
      * @return Logger implementing LogSF and Log
      */
     public static LogSF sfGetProcessLog() {
-       LogSF sflog =  getLog (SmartFrogCoreKeys.SF_CORE_LOG);
-       if ((sflog!=null)&&sflog.isTraceEnabled()) sflog.trace("getProcessLog()");
+       LogSF sflog = getLog(SmartFrogCoreKeys.SF_CORE_LOG);
+       if (sflog != null && sflog.isTraceEnabled()) sflog.trace("getProcessLog()");
        /* LogImpl uses ComponentDescription and it needs to enable its log only when that is available */
        ComponentDescriptionImpl.initLog(sflog);
        return sflog;
