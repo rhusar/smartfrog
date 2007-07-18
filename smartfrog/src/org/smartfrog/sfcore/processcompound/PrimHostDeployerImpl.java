@@ -83,14 +83,6 @@ public class PrimHostDeployerImpl extends PrimDeployerImpl {
         return SFProcess.getRootLocator().getRootProcessCompound(hostAddress);
     }
 
-    private Object getProcessComponentName() throws SmartFrogResolutionException {
-        Object name = null;
-        if (target.sfContext().containsKey(SmartFrogCoreKeys.SF_PROCESS_COMPONENT_NAME)) {
-            name = target.sfResolveHere(SmartFrogCoreKeys.SF_PROCESS_COMPONENT_NAME, false);
-        }
-        return name;
-    }
-
     /**
      * Overrides superclass behaviour to forward description to another process
      * based on sfProcessHost attribute.
