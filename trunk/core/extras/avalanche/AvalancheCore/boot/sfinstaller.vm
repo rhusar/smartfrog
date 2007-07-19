@@ -5,7 +5,7 @@
 \#include "org/smartfrog/services/ssh/sshExec.sf"
 \#include "org/smartfrog/sfcore/workflow/components.sf"
 
-#set( $avEventServer = "[XMPP Server IP goes here.]" )
+#set( $avEventServer = "[XMPP Server address goes here.]" )
 
 sfConfig extends Parallel {
     asynchCreateChild true;
