@@ -240,7 +240,7 @@ public abstract class SSHExecImpl extends PrimImpl implements SSHExec {
 
    /**
      * Logs ignored exception
-     * @param msg debug message
+     * @param e debug message
      */
     private void ignore(Exception e) {
         if (log.isDebugEnabled()) {
