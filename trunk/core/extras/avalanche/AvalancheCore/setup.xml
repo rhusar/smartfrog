@@ -36,8 +36,10 @@
 
 
   <!-- override point -->
-  <property environment="env"/>
+
+  <property file="build.properties"/>
   <property file="setup.properties"/>
+  <property environment="env"/>
   <property name="tomcat.home" value="${env.TOMCAT_HOME}" />
   <property name="xmpp.home" value="${env.XMPP_HOME}" />
   <property name="avalanche.root" location=".."/>
