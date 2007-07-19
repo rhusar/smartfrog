@@ -1487,14 +1487,26 @@ java.class.path=
 
   <!-- ========================================================== -->
   <!-- shortcut for testing -->
-  <!-- creates a distribution but without any javadocs (for speed)-->
+  <!-- creates a distribution but without any javadocs (for speed),
+       and cleans up the local cache to guarantee takeup
+  -->
   <!-- ========================================================== -->
   <target name="smartfrog-dist"
-    depends="init-common"
+    depends="-smartfrog-dist,ivy-purge-cache"
     >
     <ant dir="${smartfrog.home}" target="published" inheritall="false">
       <property name="javadoc.disabled" value="true" />
     </ant>
+
+  </target>
+
+  <target name="-smartfrog-dist"
+      depends="init-common"
+      >
+    <ant dir="${smartfrog.home}" target="published" inheritall="false">
+      <property name="javadoc.disabled" value="true" />
+    </ant>
+
   </target>
 
   <!-- ========================================================== -->
@@ -1707,9 +1719,13 @@ java.class.path=
 
 
   <target name="ivy-properties" depends="init-common-simpledefinitions,load-versions" >
+    <property name="ivy.version" value="1.4.1" />
     <property name="ivy.dir" location="${build.dir}/ivy" />
     <property name="ivy.lib.dir" location="${ivy.dir}/lib" />
-    <property name="ivy.version" value="1.4.1" />
+    <property name="ivy.user.dir" location="${user.home}/.ivy" />
+    <property name="ivy.local.dir" location="${ivy.user.dir}/local" />
+    <property name="ivy.cache.dir" location="${ivy.user.dir}/cache" />
+    <property name="ivy.package.name" value="org.smartfrog" />
     <property name="ivy.resource" value="fr/jayasoft/ivy/ant/antlib.xml" />
     <property name="ivy.reports.dir" location="${ivy.dir}/reports"/>
     <property name="ivy.jar"
@@ -1800,6 +1816,13 @@ java.class.path=
   </target>
 
 
+  <target name="ivy-purge-cache" depends="ivy-properties"
+      description="purge all smartfrog artifacts from the cache">
+    <delete dir="${ivy.cache.dir}/${ivy.package.name}" defaultexcludes="false" includeEmptyDirs="true"/>
+    <delete includeEmptyDirs="true">
+      <fileset dir="${ivy.cache.dir}" includes="resolved-${ivy.package.name}-*" defaultexcludes="false" />
+    </delete>
+  </target>
 
   <!--This is a trick. by running the same stuff
   as "maybe-ivy-init" with the opposite condition we, guarantee
@@ -1832,9 +1855,6 @@ ${ivy.reports.dir}
     </echo>
   </target>
 
-  <!--jars,-->
-  <target name="ready-to-publish" depends="checksum-target-jar,ivy-report"/>
-
   <!--publish master artifacts-->
   <target name="ivy-publish" depends="ready-to-publish"
       xmlns:ivy="antlib:fr.jayasoft.ivy.ant">
@@ -1843,6 +1863,10 @@ ${ivy.reports.dir}
           conf="master"
         artifactspattern="${dist.lib.dir}/[artifact]-[revision].[ext]" />
   </target>
+
+
+  <!--jars,-->
+  <target name="ready-to-publish" depends="checksum-target-jar,ivy-report"/>
 
   <target name="ready-to-publish-all"
           depends="ready-to-publish,package-javadocs,package-documents"/>
