@@ -67,15 +67,14 @@ public abstract class DeployingTestBase extends SmartFrogTestBase implements Tes
      * @return true if we are no longer listening -that is we werent listening, or we unsubscribed quietly
      */
     private synchronized boolean stopListening() {
-        boolean result;
         if (eventSink != null) {
-            result = eventSink.unsubscribeQuietly();
+            Thread t = eventSink.asyncUnsubscribe();
             eventSink = null;
+            return t != null;
         } else {
             //we are implicitly no longer listening
-            result = true;
+            return true;
         }
-        return result;
     }
 
     /**
