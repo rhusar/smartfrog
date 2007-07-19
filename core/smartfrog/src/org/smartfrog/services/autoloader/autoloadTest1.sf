@@ -1,6 +1,0 @@
-
-#include "/org/smartfrog/components.sf"
-
-sfConfig extends Compound {
-    text "this is an example of an autoloaded component";
-}
