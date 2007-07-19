@@ -22,7 +22,7 @@ For more information: www.smartfrog.org
 -->
 
 <web-app>
-	<security-constraint> 
+	<security-constraint>
     <web-resource-collection>
      <web-resource-name>A Protected Page</web-resource-name>
      <url-pattern>/Main.jsp</url-pattern>
@@ -31,18 +31,18 @@ For more information: www.smartfrog.org
    <auth-constraint>
      <role-name>admin</role-name>
    </auth-constraint>
-  </security-constraint> 
+  </security-constraint>
 
   <login-config>
    <auth-method>DIGEST</auth-method>
     <realm-name>Digest Authentication</realm-name>
    <!--auth-method>FORM</auth-method>
-   <form-login-config> 
+   <form-login-config>
 	   <form-login-page>/login.jsp</form-login-page>
 	   <form-error-page>/error.jsp</form-error-page>
    </form-login-config-->
   </login-config>
-  
+
   <security-role>
      <role-name>admin</role-name>
   </security-role>
@@ -52,7 +52,7 @@ For more information: www.smartfrog.org
 	<description> Avalanche Demo GUI </description>
 	<context-param>
 		<param-name>avalancheHome</param-name>
-		<param-value>/home/test/avalanche/server</param-value>
+		<param-value>D:\\programming\\java\\SmartFrog\\extras\\avalanche\\server</param-value>
 		<description>Path to Avalanche Home.</description>
 	</context-param>
 	<context-param>
@@ -62,7 +62,7 @@ For more information: www.smartfrog.org
 	</context-param>
 	<context-param>
 		<param-name>xmppServer</param-name>
-		<param-value>16.133.125.200</param-value>
+		<param-value>helmahrt</param-value>
 		<description>XMPP Server Address</description>
 	</context-param>
 	<context-param>
@@ -85,7 +85,7 @@ For more information: www.smartfrog.org
 		<param-value>admin</param-value>
 		<description>XMPP server Admin password</description>
 	</context-param>
-    
+
 	<listener>
 		<listener-class>
 			org.smartfrog.avalanche.server.AvalancheContextListener
