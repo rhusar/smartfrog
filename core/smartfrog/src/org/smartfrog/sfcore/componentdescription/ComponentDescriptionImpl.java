@@ -40,9 +40,9 @@ import org.smartfrog.sfcore.parser.SFParser;
 import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
 import org.smartfrog.sfcore.reference.ReferenceResolverHelperImpl;
 
-import org.smartfrog.sfcore.common.SFMarshalledObject;
 import org.smartfrog.sfcore.common.*;
 import java.rmi.*;
+
 import org.smartfrog.sfcore.reference.HereReferencePart;
 import org.smartfrog.sfcore.languages.sf.PhaseNames;
 
@@ -1287,7 +1287,7 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
      * @throws SmartFrogException
      *          the attribute does not exist;
      */
-    public void sfSetTags(Object name, Set tags) throws SmartFrogRuntimeException {
+    public void sfSetTags(Object name, Set tags) throws SmartFrogContextException {
          sfContext.sfSetTags(name, tags);
     }
 
@@ -1300,7 +1300,7 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
      * @throws SmartFrogException
      *          the attribute does not exist;
      */
-    public Set sfGetTags(Object name) throws SmartFrogRuntimeException {
+    public Set sfGetTags(Object name) throws SmartFrogContextException {
           return sfContext.sfGetTags(name);
     }
 
@@ -1312,7 +1312,7 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
      * @throws SmartFrogException
      *          the attribute does not exist;
      */
-    public void sfAddTag(Object name, String tag) throws SmartFrogRuntimeException {
+    public void sfAddTag(Object name, String tag) throws SmartFrogContextException {
          sfContext.sfAddTag(name, tag);
     }
 
@@ -1324,7 +1324,7 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
      * @throws SmartFrogException
      *          the attribute does not exist;
      */
-    public void sfRemoveTag(Object name, String tag) throws SmartFrogRuntimeException {
+    public void sfRemoveTag(Object name, String tag) throws SmartFrogContextException {
          sfContext.sfRemoveTag(name, tag);
     }
 
@@ -1336,7 +1336,7 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
      * @throws SmartFrogException
      *          the attribute does not exist;
      */
-     public void sfAddTags(Object name, Set tags) throws SmartFrogRuntimeException {
+     public void sfAddTags(Object name, Set tags) throws SmartFrogContextException {
          sfContext.sfAddTags(name, tags);
     }
 
@@ -1348,7 +1348,7 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
      * @throws SmartFrogException
      *          the attribute does not exist;
      */
-    public void sfRemoveTags(Object name, Set tags) throws SmartFrogRuntimeException {
+    public void sfRemoveTags(Object name, Set tags) throws SmartFrogContextException {
           sfContext.sfRemoveTags(name, tags);
     }
 
@@ -1360,7 +1360,7 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
      * @throws SmartFrogException
      *          the attribute does not exist;
      */
-    public Iterator sfTags(Object name) throws SmartFrogRuntimeException {
+    public Iterator sfTags(Object name) throws SmartFrogContextException {
           return sfContext.sfTags(name);
     }
 
@@ -1373,7 +1373,7 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
      * @throws SmartFrogException
      *          the attribute does not exist
      */
-    public boolean sfContainsTag(Object name, String tag) throws SmartFrogRuntimeException {
+    public boolean sfContainsTag(Object name, String tag) throws SmartFrogContextException {
           return sfContext.sfContainsTag(name, tag);
     }
 
@@ -1388,43 +1388,50 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
      * @throws SmartFrogException
      *          the attribute does not exist;
      */
-    public void sfSetTags( Set tags) throws SmartFrogRuntimeException {
-         if (parent!=null) {
-             Object key = parent.sfAttributeKeyFor(this);
-             parent.sfSetTags(key,tags);
-         }else {
-             try {
-                 Object key = primParent.sfAttributeKeyFor(this);
-                 primParent.sfSetTags(key,tags);
-             } catch (RemoteException e) {
-                 throw (SmartFrogContextException)SmartFrogContextException.forward(e);
-             }
-         }
+    public void sfSetTags(Set tags) throws SmartFrogContextException {
+        try {
+            if (parent != null) {
+                Object key = parent.sfAttributeKeyFor(this);
+                parent.sfSetTags(key, tags);
+            } else {
+                Object key = primParent.sfAttributeKeyFor(this);
+                primParent.sfSetTags(key, tags);
+            }
+        } catch (RemoteException e) {
+            throw (SmartFrogContextException) SmartFrogContextException.forward(e);
+        } catch (SmartFrogRuntimeException e) {
+            // can not use forward method to down cast an exception
+            throw new SmartFrogContextException(e);
+        }
     }
 
     /**
-     * Get the TAGS for this component. TAGS are simply uninterpreted strings associated
-     * with each attribute.
-     *
+     * Get the TAGS for this component. TAGS are simply uninterpreted strings
+     * associated with each attribute.
+     * 
      * @return the set of tags
      * @throws SmartFrogException
-     *          the attribute does not exist;
+     *             the attribute does not exist;
      */
-    public Set sfGetTags() throws SmartFrogRuntimeException {
-         if (parent!=null) {
-             Object key = parent.sfAttributeKeyFor(this);
-             return parent.sfGetTags(key);
-         }else {
-             try {
-                 Object key = primParent.sfAttributeKeyFor(this);
-                 if (key==null) {
-                     throw new SmartFrogContextException ("No name found for "+ sfCompleteNameSafe() +" in "+ primParent.sfCompleteName()+", impossible to get its Tags");
-                 }
-                 return primParent.sfGetTags(key);
-             } catch (RemoteException e) {
-                 throw (SmartFrogContextException)SmartFrogContextException.forward(e);
-             }
-         }
+    public Set sfGetTags() throws SmartFrogContextException {
+        try {
+            if (parent != null) {
+                Object key = parent.sfAttributeKeyFor(this);
+                return parent.sfGetTags(key);
+            } else {
+                Object key = primParent.sfAttributeKeyFor(this);
+                if (key == null) {
+                    throw new SmartFrogContextException("No name found for " + sfCompleteNameSafe() + " in "
+                            + primParent.sfCompleteName() + ", impossible to get its Tags");
+                }
+                return primParent.sfGetTags(key);
+            }
+        } catch (RemoteException e) {
+            throw (SmartFrogContextException) SmartFrogContextException.forward(e);
+        } catch (SmartFrogRuntimeException e) {
+            // can not use forward method to down cast an exception
+            throw new SmartFrogContextException(e);
+        }
     }
 
     /**
@@ -1434,103 +1441,122 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
      * @throws SmartFrogException
      *          the attribute does not exist;
      */
-    public void sfAddTag(String tag) throws SmartFrogRuntimeException {
-         if (parent!=null) {
-             Object key = parent.sfAttributeKeyFor(this);
-             parent.sfAddTag(key,tag);
-         }else {
-             try {
-                 Object key = primParent.sfAttributeKeyFor(this);
-                 primParent.sfAddTag(key,tag);
-             } catch (RemoteException e) {
-                 throw (SmartFrogContextException)SmartFrogContextException.forward(e);
-             }
-         }
+    public void sfAddTag(String tag) throws SmartFrogContextException {
+        try {
+            if (parent != null) {
+                Object key = parent.sfAttributeKeyFor(this);
+                parent.sfAddTag(key, tag);
+            } else {
+                Object key = primParent.sfAttributeKeyFor(this);
+                primParent.sfAddTag(key, tag);
+            }
+        } catch (RemoteException e) {
+            throw (SmartFrogContextException) SmartFrogContextException.forward(e);
+        } catch (SmartFrogRuntimeException e) {
+            // can not use forward method to down cast an exception
+            throw new SmartFrogContextException(e);
+        }
     }
 
     /**
      * remove a tag from the tag set of this component if it exists
-     *
-     * @param tag  a tag to remove from the set
+     * 
+     * @param tag
+     *            a tag to remove from the set
      * @throws SmartFrogException
-     *          the attribute does not exist;
+     *             the attribute does not exist;
      */
-    public void sfRemoveTag(String tag) throws SmartFrogRuntimeException {
-         if (parent!=null) {
-             Object key = parent.sfAttributeKeyFor(this);
-             parent.sfRemoveTag(key,tag);
-         }else {
-             try {
-                 Object key = primParent.sfAttributeKeyFor(this);
-                 primParent.sfRemoveTag(key,tag);
-             } catch (RemoteException e) {
-                 throw (SmartFrogContextException)SmartFrogContextException.forward(e);
-             }
-         }
+    public void sfRemoveTag(String tag) throws SmartFrogContextException {
+        try {
+            if (parent != null) {
+                Object key = parent.sfAttributeKeyFor(this);
+                parent.sfRemoveTag(key, tag);
+            } else {
+                Object key = primParent.sfAttributeKeyFor(this);
+                primParent.sfRemoveTag(key, tag);
+            }
+        } catch (RemoteException e) {
+            throw (SmartFrogContextException) SmartFrogContextException.forward(e);
+        } catch (SmartFrogRuntimeException e) {
+            // can not use forward method to down cast an exception
+            throw new SmartFrogContextException(e);
+        }
     }
 
     /**
      * add a tag to the tag set of this component
-     *
-     * @param tags a set of tags to add to the set
+     * 
+     * @param tags
+     *            a set of tags to add to the set
      * @throws SmartFrogException
-     *          the attribute does not exist;
+     *             the attribute does not exist;
      */
-     public void sfAddTags(Set tags) throws SmartFrogRuntimeException {
-         if (parent!=null) {
-             Object key = parent.sfAttributeKeyFor(this);
-             parent.sfAddTags(key,tags);
-         }else {
-             try {
-                 Object key = primParent.sfAttributeKeyFor(this);
-                 primParent.sfAddTags(key,tags);
-             } catch (RemoteException e) {
-                 throw (SmartFrogContextException)SmartFrogContextException.forward(e);
-             }
-         }
+     public void sfAddTags(Set tags) throws SmartFrogContextException {
+        try {
+            if (parent != null) {
+                Object key = parent.sfAttributeKeyFor(this);
+                parent.sfAddTags(key, tags);
+            } else {
+                Object key = primParent.sfAttributeKeyFor(this);
+                primParent.sfAddTags(key, tags);
+            }
+        } catch (RemoteException e) {
+            throw (SmartFrogContextException) SmartFrogContextException.forward(e);
+        } catch (SmartFrogRuntimeException e) {
+            // can not use forward method to down cast an exception
+            throw new SmartFrogContextException(e);
+        }
     }
 
     /**
      * remove a tag from the tag set of this component if it exists
-     *
-     * @param tags a set of tags to remove from the set
+     * 
+     * @param tags
+     *            a set of tags to remove from the set
      * @throws SmartFrogException
-     *          the attribute does not exist;
+     *             the attribute does not exist;
      */
-    public void sfRemoveTags(Set tags) throws SmartFrogRuntimeException {
-         if (parent!=null) {
-             Object key = parent.sfAttributeKeyFor(this);
-             parent.sfRemoveTags(key,tags);
-         }else {
-             try {
-                 Object key = primParent.sfAttributeKeyFor(this);
-                 primParent.sfRemoveTags(key,tags);
-             } catch (RemoteException e) {
-                 throw (SmartFrogContextException)SmartFrogContextException.forward(e);
-             }
-         }
+    public void sfRemoveTags(Set tags) throws SmartFrogContextException {
+        try {
+            if (parent != null) {
+                Object key = parent.sfAttributeKeyFor(this);
+                parent.sfRemoveTags(key, tags);
+            } else {
+                Object key = primParent.sfAttributeKeyFor(this);
+                primParent.sfRemoveTags(key, tags);
+            }
+        } catch (RemoteException e) {
+            throw (SmartFrogContextException) SmartFrogContextException.forward(e);
+        } catch (SmartFrogRuntimeException e) {
+            // can not use forward method to down cast an exception
+            throw new SmartFrogContextException(e);
+        }
     }
 
     /**
      * Return whether or not a tag is in the list of tags for this component
-     *
-     * @param tag  the tag to chack
+     * 
+     * @param tag
+     *            the tag to chack
      * @return whether or not the attribute has that tag
      * @throws SmartFrogException
-     *          the attribute does not exist
+     *             the attribute does not exist
      */
-    public boolean sfContainsTag(String tag) throws SmartFrogRuntimeException {
-         if (parent!=null) {
-             Object key = parent.sfAttributeKeyFor(this);
-             return parent.sfContainsTag(key, tag);
-         }else {
-             try {
-                 Object key = primParent.sfAttributeKeyFor(this);
-                 return primParent.sfContainsTag(key, tag);
-             } catch (RemoteException e) {
-                 throw (SmartFrogContextException)SmartFrogContextException.forward(e);
-             }
-         }
+    public boolean sfContainsTag(String tag) throws SmartFrogContextException {
+        try {
+            if (parent != null) {
+                Object key = parent.sfAttributeKeyFor(this);
+                return parent.sfContainsTag(key, tag);
+            } else {
+                Object key = primParent.sfAttributeKeyFor(this);
+                return primParent.sfContainsTag(key, tag);
+            }
+        } catch (RemoteException e) {
+            throw (SmartFrogContextException) SmartFrogContextException.forward(e);
+        } catch (SmartFrogRuntimeException e) {
+            // can not use forward method to down cast an exception
+            throw new SmartFrogContextException(e);
+        }
     }
 
 
