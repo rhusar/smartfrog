@@ -222,6 +222,8 @@ public class TemplateGen {
             tempEmailServer = getWord(st);
             allDaemons.add(new Daemon(tempLogicalName, tempOS, tempHostName, tempTransferType, tempLoginType, tempUserName, tempPasswordFile, tempLocalFile1, tempLocalFile2, tempLocalFile3, tempKeyFile, tempSecProperties, tempSmartFrogJar, tempServicesJar, tempExamplesJar, tempReleaseName, tempJavaHome, tempInstallDir, tempEmailTo, tempEmailFrom, tempEmailServer));
         }
+
+        r.close();
     }
 
 
