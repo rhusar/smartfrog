@@ -114,17 +114,15 @@ public class ActiveProfileUpdateHandler implements MessageHandler {
 			case MonitoringConstants.HOST_STARTED:
 				// update host state, instead of modules
 				String hostName = e.getHost() ;
-				// if started subscribe to roster
-				if( e.getMessageType() == MonitoringConstants.HOST_STARTED){
-					Roster roster = setup.getListenerAdapter().getRoster();
-					try{
-						roster.createEntry(e.getHost()+"@"+setup.getXmppServer() , e.getHost(), null ) ;
-						log.info("Created Roster Entry for : " + e.getHost());
-					}catch(Exception exc){
-						log.fatal("Roster Add failed for host :" +e.getHost() + exc);
-					}
-					
-				}
+
+                // if started subscribe to roster
+                Roster roster = setup.getListenerAdapter().getRoster();
+                try{
+                    roster.createEntry(e.getHost()+"@"+setup.getXmppServer() , e.getHost(), null ) ;
+                    log.info("Created Roster Entry for : " + e.getHost());
+                }catch(Exception exc){
+                    log.fatal("Roster Add failed for host :" +e.getHost() + exc);
+                }
 				
 				try{
 					ActiveProfileType profile =  profileManager.getProfile(hostName);
