@@ -148,9 +148,9 @@
 		</copy>
 		
 		<!--Copy Dependent jars to Avalanche SmartFrog dist dir-->
-		<copy todir="${avalanche.home}/smartfrog/dist/lib">
+<!--		<copy todir="${avalanche.home}/smartfrog/dist/lib">
 			<fileset dir="lib" includes="*.jar"/>
-		</copy>
+		</copy>-->
 
     <copy todir="${avalanche.home}/smartfrog/dist/lib">
       <fileset dir="${dist.dependencies.dir}" includes="*.jar"/>
