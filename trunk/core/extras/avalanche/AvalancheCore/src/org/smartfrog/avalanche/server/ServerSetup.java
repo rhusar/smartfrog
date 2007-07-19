@@ -11,18 +11,13 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.avalanche.server;
 
-import org.jivesoftware.smack.AccountManager;
 import org.jivesoftware.smack.XMPPException;
-import org.smartfrog.avalanche.server.modules.ModuleCreationException;
 import org.smartfrog.avalanche.server.monitor.handlers.ActiveProfileUpdateHandler;
 import org.smartfrog.avalanche.server.monitor.handlers.HostUpdateHandler;
 import org.smartfrog.avalanche.server.monitor.handlers.HostUpdateRosterHandler;
-import org.smartfrog.avalanche.server.monitor.xmpp.XMPPAdapter;
+import org.smartfrog.avalanche.shared.xmpp.XMPPAdapter;
 import org.smartfrog.sfcore.logging.Log;
 import org.smartfrog.sfcore.logging.LogFactory;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Wrapper class for Avalanche server initialization and shutdown. This can be used independently 
@@ -65,21 +60,23 @@ import java.util.Map;
  *
  */
 public class ServerSetup {
+    private String xmppServer = "localhost";
+	private int xmppServerPort = 0;
 
-	private String xmppServer ; 
-	private int xmppServerPort ; 
-	private String xmppServerAdminUser ; 
+    private String xmppServerAdminUser ;
 	private String xmppServerAdminPassword ; 
 	private String useSSLForXMPP ;
-	private String avalancheHome ;
+
+    private String avalancheHome ;
 	
 	private String eventListenerUser = "avl" ;
 	private String eventListenerPwd = "xlistener" ;
-	
-	
+
 	private static Log log = LogFactory.getLog(ServerSetup.class);
-	static XMPPAdapter adminAdapter = new XMPPAdapter();
-	static XMPPAdapter listenerAdapter = new XMPPAdapter();
+
+    // Create XMPP Adapters with SSL support
+    static XMPPAdapter adminAdapter = null;
+	static XMPPAdapter listenerAdapter = null;
 	
     AvalancheFactory factory = AvalancheFactory.getFactory(AvalancheFactory.BDB);
 
@@ -151,86 +148,86 @@ public class ServerSetup {
 	 * should be set properly before calling this method. 
 	 * @throws Exception
 	 */
-	public void startup() throws Exception {
-		log.info("Initializing Avalanche ...");
-        log.info("Using Avalanche Home : " + avalancheHome) ;
-        
+    public void startup() throws Exception {
+        log.info("Initializing Avalanche ...");
+        log.info("Using Avalanche Home : " + avalancheHome);
+
         //factory.init(avalancheHome, avalancheServerOS);
         factory.init(avalancheHome);
-		
-	// set up Avalanche XMPP adapters, this assumes XMPP server is already up 
-		// running 
-		try{
-            if( null != xmppServer){
-            		adminAdapter.setXmppServer(xmppServer);
-            }
-            adminAdapter.setXmppServerPort(xmppServerPort);
-            if( null != useSSLForXMPP ){
-            	adminAdapter.setUseSSL((new Boolean(useSSLForXMPP)).booleanValue());
-            }
-            
-			// default is use SSL over XMPP running on localhost with default port 5223
-            adminAdapter.init();
-			
-			try{
-				adminAdapter.getConnection().login(xmppServerAdminUser, xmppServerAdminPassword); 
-				log.info("Connected to XMPP server") ;
-				AccountManager am = adminAdapter.getConnection().getAccountManager();
-				
-				// create a user for listener if it doesnt exist already. 
-				// TODO: create listener with a secure password. 
-				if(am.supportsAccountCreation() ){
-					Map attrs = new HashMap();
-					attrs.put("email", "admin@avalanche");
-					attrs.put("name", "admin");
-					attrs.put("registered", "false");
-					am.createAccount(eventListenerUser, eventListenerPwd , attrs);
-					log.info("Added Listener in XMPP server") ;
-				}
-			}catch(XMPPException e){
-				log.error("XMPP error : " + e);
-			}
-			
-			// create a new connection for listener
-            if( null != xmppServer){
-            		listenerAdapter.setXmppServer(xmppServer);
-            }
-            listenerAdapter.setXmppServerPort(xmppServerPort);
-    			if( null != useSSLForXMPP ){
-    				listenerAdapter.setUseSSL((new Boolean(useSSLForXMPP)).booleanValue());
-    			}
-    			
-    			// default is use SSL over XMPP running on localhost with default port 5223
-    			listenerAdapter.init();
-    			try{
-    				listenerAdapter.getConnection().login(eventListenerUser, eventListenerPwd); 
-    				log.info("Connected to XMPP server ...") ;
-    				
-    			}catch(XMPPException e){
-    				log.error("XMPP error, Listener Login failed : " + e);
-    			}
-    			
-    			// handler chain for events coming from client nodes. 
-    			listenerAdapter.addHandler(new ActiveProfileUpdateHandler(this));
-    			// register inbuilt event listeners
-    			listenerAdapter.registerListeners();
-        
-			// register Roster Handlers with the HostManager
-			// this causes Avalanche to register/un register for events 
-			// of the hosts. 
-			HostUpdateHandler hostHandler = new HostUpdateRosterHandler(adminAdapter, listenerAdapter);
 
-	        HostManager hostManager = factory.getHostManager() ;
-	        hostManager.addHandler(hostHandler);
-	        
-	        // TODO : Start Smartfrog on server if its not already running using avalancheHome
-		
-		}catch(XMPPException e){
-			log.fatal("Avalanche InitializAtion failed : ", e);
-		}catch(ModuleCreationException e){
-			log.fatal("Avalanche InitializAtion failed : ", e);
-		}
-	}
+        // set up Avalanche XMPP adapters, this assumes XMPP server is already up
+        // running
+        try {
+            // Creating Adapter to the server specified
+            adminAdapter = new XMPPAdapter(xmppServer, true);
+
+            // Setting the server port
+            if (xmppServerPort != 0)
+                adminAdapter.setXmppServerPort(xmppServerPort);
+
+            // Setting SSL mode
+            if (null != useSSLForXMPP)
+                adminAdapter.setUseSSL((new Boolean(useSSLForXMPP)).booleanValue());
+
+            // Setting username and password
+            adminAdapter.setXmppUserName(xmppServerAdminUser);
+            adminAdapter.setXmppPassword(xmppServerAdminPassword);
+
+            // Initialize the connection
+            adminAdapter.init();
+            try {
+                // Log in to the XMPP Server
+                adminAdapter.login();
+                // Create the listening user
+                adminAdapter.createUser(eventListenerUser, eventListenerPwd, "admin");
+            } catch (XMPPException e) {
+                log.error("Error while creating listening user. Exception: " + e);
+            }
+
+            // create a new connection for listener
+            listenerAdapter = new XMPPAdapter(xmppServer, true);
+
+            // Setting the server port
+            if (xmppServerPort != 0)
+                listenerAdapter.setXmppServerPort(xmppServerPort);
+
+            // Setting SSL mode
+            if (null != useSSLForXMPP)
+                listenerAdapter.setUseSSL((new Boolean(useSSLForXMPP)).booleanValue());
+
+            // Setting username and password
+            listenerAdapter.setXmppUserName(eventListenerUser);
+            listenerAdapter.setXmppPassword(eventListenerPwd);
+
+            // Initialize the connection
+            listenerAdapter.init();
+            try {
+                // Log in to the XMPP server as listening user
+                listenerAdapter.login();
+            } catch (XMPPException e) {
+                // Log error
+                log.error("Error while logging onto XMPP server. Exception: " + e);
+            }
+
+            // handler chain for events coming from client nodes.
+            listenerAdapter.addHandler(new ActiveProfileUpdateHandler(this));
+            // register inbuilt event listeners
+            listenerAdapter.registerListeners();
+
+            // register Roster Handlers with the HostManager
+            // this causes Avalanche to register/un register for events
+            // of the hosts.
+            HostUpdateHandler hostHandler = new HostUpdateRosterHandler(adminAdapter, listenerAdapter);
+
+            HostManager hostManager = factory.getHostManager();
+            hostManager.addHandler(hostHandler);
+
+            // TODO : Start Smartfrog on server if its not already running using avalancheHome
+
+        } catch (XMPPException e) {
+            log.fatal("Avalanche InitializAtion failed : ", e);
+        }
+    }
 	
 	public XMPPAdapter getAdminAdapter(){
 		return adminAdapter ; 
@@ -238,27 +235,6 @@ public class ServerSetup {
 	
 	public XMPPAdapter getListenerAdapter(){
 		return listenerAdapter ; 
-	}
-
-
-        public void addClientAdapter(String clientUser) {
-		try {
-			AccountManager am = adminAdapter.getConnection().getAccountManager();
-			
-			// create a user for client if it doesnt exist already. 
-				// TODO: create client with a secure password. 
-				if(am.supportsAccountCreation() ){
-					Map attrs = new HashMap();
-					attrs.put("name", clientUser);
-					//TODO: currently uname and pwd are same for sending events
-					// change it 
-					String clientPwd = clientUser;
-					am.createAccount(clientUser, clientPwd , attrs);
-					log.info("Added Client User in XMPP server for host...." + clientUser) ;
-				}
-			}catch(XMPPException e){
-				log.error("XMPP error : " + e);
-			}
 	}
 	
 	/**

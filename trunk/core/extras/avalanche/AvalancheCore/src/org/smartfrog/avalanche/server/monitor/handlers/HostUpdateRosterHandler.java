@@ -13,14 +13,11 @@ package org.smartfrog.avalanche.server.monitor.handlers;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.jivesoftware.smack.AccountManager;
 import org.jivesoftware.smack.Roster;
 import org.jivesoftware.smack.RosterEntry;
+import org.jivesoftware.smack.XMPPException;
 import org.smartfrog.avalanche.core.host.HostType;
-import org.smartfrog.avalanche.server.monitor.xmpp.XMPPAdapter;
-
-import java.util.HashMap;
-import java.util.Map;
+import org.smartfrog.avalanche.shared.xmpp.XMPPAdapter;
 
 /**
  * Whenever a new Host is added to Avalanche server, this handler is called 
@@ -35,79 +32,63 @@ public class HostUpdateRosterHandler implements HostUpdateHandler {
 	private XMPPAdapter adminAdapter ; 
 	private XMPPAdapter listenerAdapter ; 
 	private static Log log = LogFactory.getLog(HostUpdateRosterHandler.class);
-	private Roster roster ; 
-	public HostUpdateRosterHandler(XMPPAdapter adminAdapter, XMPPAdapter listenerAdapter){
-		this.adminAdapter = adminAdapter;
-		this.listenerAdapter = listenerAdapter ; 
-		roster = this.listenerAdapter.getRoster();
+	private Roster roster;
+
+    public HostUpdateRosterHandler(XMPPAdapter adminAdapter, XMPPAdapter listenerAdapter){
+		// Save XMPP adapters
+        this.adminAdapter = adminAdapter;
+		this.listenerAdapter = listenerAdapter;
+        // Save roster
+        roster = this.listenerAdapter.getRoster();
 	}
 	/**
-	 * Creates a user for the host, in case of failure it logs the error as fatal. 
+	 * Creates a user for the host, in case of failure it logs the error.
 	 */
 	public void hostAdded(HostType h) {
-		// create a user for this host if it doesnt exist 
-		String hostAddress = null ; 
-		try{
-			AccountManager am = adminAdapter.getConnection().getAccountManager();
-			
-			
-			java.net.InetAddress inetAdd = java.net.InetAddress.getByName(h.getId());
-			hostAddress = inetAdd.getHostName() ; 
-			
-			log.debug("Using IP address for " + h.getId() + " -> " + hostAddress) ;
-			// TODO: create user with a secure password. 
-			if(am.supportsAccountCreation() ){
-				Map attrs = new HashMap();
-				attrs.put("email", hostAddress+ "@avalanche");
-				attrs.put("name", h.getId());
-				attrs.put("registered", "false");
-				am.createAccount(hostAddress, hostAddress , attrs);
-				log.info("Create XMPP Account for Host : " +hostAddress) ;
-			}
-		}catch(Exception e){
-			log.error("Error !! "+ e) ;
-		}
-		
-	/*  // Now registering for Roster in ActiveProfileUpdateHandler after we get a notification from the
-	 *  // client that XMPP client in smartfrog is started. 
-	 * 	// register roster
-		// In a different try block as if account already exist last operation may fail
-		// no harm in trying to register for roster. 
-		try{
-			roster.createEntry(hostAddress+"@"+adminAdapter.getXmppServer() , hostAddress, null ) ;
-			log.info("Created Roster Entry for : " + hostAddress);
-		}catch(Exception e){
-			log.fatal("Roster Add failed for host :" +hostAddress);
-		}
-		*/
+		String hostAddress = null ;
+
+        try {
+            java.net.InetAddress inetAdd = java.net.InetAddress.getByName(h.getId());
+            hostAddress = inetAdd.getHostName() ;
+        } catch (Exception e) {
+            log.error("Host unknown. " + e);
+        }
+
+        // Create user
+        adminAdapter.createUser(hostAddress, hostAddress, h.getId());
+
+        try {
+            // Add roster entry
+            roster.createEntry(hostAddress + "@" + adminAdapter.getXmppServer(), hostAddress, null);
+            log.info("Successfully added roster for host \"" + hostAddress + "\".");
+        } catch (XMPPException xe) {
+            log.error("Could not add roster for host \"" + hostAddress + "\". Exception: " + xe);
+        }
 	}
 
 	/**
-	 * Creates a user for the host, in case of failure it logs the error as fatal. 
+	 * Deletes the username used by the host, in case of failure it logs the error.
 	 */
 	public void hostDeleted(String hostId) {
-		
-		// login as host and delete the account in XMPP server. 
-		XMPPAdapter hostAdapter = new XMPPAdapter();
-		hostAdapter.setXmppServer(adminAdapter.getXmppServer());
-		hostAdapter.setXmppServerPort(adminAdapter.getXmppServerPort());
-		hostAdapter.setUseSSL(adminAdapter.isUseSSL());
-		
-		try{
-			hostAdapter.init();
-			java.net.InetAddress inetAdd = java.net.InetAddress.getByName(hostId);
-			String hostAddress = inetAdd.getHostName() ; 
-			
-			
-			hostAdapter.getConnection().login(hostAddress, hostAddress);
-			
-			AccountManager am = hostAdapter.getConnection().getAccountManager();
-			am.deleteAccount();
-			RosterEntry re = roster.getEntry(hostId) ;
-			roster.removeEntry(re);
-			
-		}catch(Exception e){
-			log.error("Account deletion was not complete : " + e);
-		}
-	}
+        String hostAddress = null;
+
+        try {
+            java.net.InetAddress inetAdd = java.net.InetAddress.getByName(hostId);
+            hostAddress = inetAdd.getHostName();
+        } catch (Exception e) {
+            log.error("Host unknown. " + e);
+        }
+
+        // Delete user
+        adminAdapter.deleteUser(hostAddress, hostAddress);
+
+        try {
+            // Remove roster entry
+            RosterEntry re = roster.getEntry(hostId);
+            roster.removeEntry(re);
+            log.info("Successfully removed roster for host \"" + hostAddress + "\".");
+        } catch (Exception e) {
+            log.error("Error while removing roster for user \"" + hostId + "\". Exception:" + e);
+        }
+    }
 }
