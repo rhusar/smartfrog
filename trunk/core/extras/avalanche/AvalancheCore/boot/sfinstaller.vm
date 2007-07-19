@@ -5,7 +5,7 @@
 \#include "org/smartfrog/services/ssh/sshExec.sf"
 \#include "org/smartfrog/sfcore/workflow/components.sf"
 
-#set( $avEventServer = "16.25.169.176" )
+#set( $avEventServer = "[XMPP Server IP goes here.]" )
 
 sfConfig extends Parallel {
     asynchCreateChild true;
@@ -38,10 +38,10 @@ sfConfig extends Parallel {
             FTP:transferMode "binary";
         }
         #elseif ($daemon.isScp())
-	a extends ScpSession {
-            SCP:host "$daemon.host";
-            SCP:username "$daemon.user";
-            SCP:password "$daemon.password";
+	a extends ScpSessionInlinePassword {
+            SCP:host "${daemon.host}";
+            SCP:username "${daemon.user}";
+            password "${daemon.password}";
 	    #if ($daemon.isLinux())
 		#if ($securityOn)
             		SCP:localFiles ["${daemon.localfile1}", "$daemon.keyfile", "${daemon.secproperties}", "${daemon.smartfrogjar}", "${daemon.servicesjar}", "${daemon.examplesjar}"];
@@ -174,10 +174,10 @@ sfConfig extends Parallel {
 	    #end
 	}
 	#elseif ($daemon.isSsh())
-	b extends SSHSession {
+	b extends SSHSessionInlinePass {
             SSHCmdExec:host "$daemon.host";
             SSHCmdExec:username "$daemon.user";
-            SSHCmdExec:password "$daemon.password";
+            password "$daemon.password";
             SSHCmdExec:logFile "${logDir}${daemon.name}.log";
 	    SSHCmdExec:timeout 70000;
 	    SSHCmdExec:failOnError false;
