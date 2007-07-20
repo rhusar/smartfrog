@@ -458,7 +458,7 @@
         keyfile="${ssh.keyfile}"
         trust="${ssh.trust}"
         verbose="${ssh.verbose}" >
-      <fileset file="maven.zip" />
+      <fileset file="${maven.zip}" />
     </scp>
     <ssh-remote command="unzip ${ssh.maven.dir}/${maven.zip.filename}"/>
     <ssh-remote command="rm ${ssh.maven.dir}/${maven.zip.filename}"/>
