@@ -161,6 +161,7 @@ public class SFClassLoader {
         try {
             // Try first to directly generate a URL from resource
             resourceURL = new URL(resource);
+            debug.println(resourceURL.toString());
 
             return getURLAsStream(resourceURL);
         } catch (Throwable e) {

@@ -18,7 +18,7 @@ import org.jivesoftware.smack.filter.PacketFilter;
 import org.jivesoftware.smack.packet.Packet;
 import org.jivesoftware.smack.packet.PacketExtension;
 import org.jivesoftware.smack.provider.ProviderManager;
-import org.smartfrog.avalanche.server.monitor.handlers.MessageHandler;
+import org.smartfrog.avalanche.shared.handlers.MessageHandler;
 import org.smartfrog.avalanche.shared.MonitoringEvent;
 import org.smartfrog.avalanche.shared.MonitoringEventDefaultImpl;
 import org.smartfrog.avalanche.shared.XMPPEventExtension;

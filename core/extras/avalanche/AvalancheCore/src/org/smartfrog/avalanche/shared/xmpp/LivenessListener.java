@@ -16,7 +16,7 @@ import org.apache.commons.logging.LogFactory;
 import org.jivesoftware.smack.Roster;
 import org.jivesoftware.smack.RosterListener;
 import org.jivesoftware.smack.packet.Presence;
-import org.smartfrog.avalanche.server.monitor.handlers.HostStateChangeHandler;
+import org.smartfrog.avalanche.shared.handlers.HostStateChangeHandler;
 import org.smartfrog.avalanche.shared.HostStateEvent;
 import org.smartfrog.avalanche.shared.HostStateEventDefaultImpl;
 
