@@ -187,7 +187,7 @@
 
   <target name="sfXMPPClient" depends="ready-to-jar">
     <jar jarfile="${dist.dir}/lib/client/sfXmppClient.jar" basedir="${build.classes.dir}"
-        includes="**/client/monitor/xmpp/**"/>
+        includes="**/client/monitor/xmpp/**,**/shared/xmpp/**"/>
   </target>
 
   <target name="shared" depends="ready-to-jar">
