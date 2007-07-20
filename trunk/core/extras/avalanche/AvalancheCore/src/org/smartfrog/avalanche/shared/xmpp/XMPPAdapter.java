@@ -14,10 +14,10 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jivesoftware.smack.*;
 import org.jivesoftware.smack.packet.Message;
-import org.smartfrog.avalanche.server.monitor.handlers.MessageHandler;
+import org.smartfrog.avalanche.shared.handlers.MessageHandler;
 import org.smartfrog.avalanche.shared.MonitoringEvent;
 import org.smartfrog.avalanche.shared.XMPPEventExtension;
-import org.smartfrog.avalanche.server.monitor.handlers.DefaultHostStateChangeHandler;
+import org.smartfrog.avalanche.shared.handlers.DefaultHostStateChangeHandler;
 
 import java.util.Map;
 import java.util.HashMap;
@@ -133,7 +133,9 @@ public class XMPPAdapter {
     }
 
     private String getCurrentConnectionInfo() {
-        return "(User: \"" + xmppUserName + "\", Connection: " + this.getCurrentServerInfo() + ")";
+        return "(User: \"" + xmppUserName + "\", " +
+                "Password: \"" + xmppPassword + "\", " +
+                "Connection: " + this.getCurrentServerInfo() + ")";
     }
 
     /**
@@ -147,7 +149,7 @@ public class XMPPAdapter {
 	 */
     public void init() throws XMPPException {
         if( null == connection ){
-            XMPPConnection.DEBUG_ENABLED = true;
+//            XMPPConnection.DEBUG_ENABLED = true;
             if( useSSL ){
                 connection = new SSLXMPPConnection(xmppServer, xmppServerPort);
                 log.info("Created new XMPP encrypted connection to " + this.getCurrentServerInfo());
@@ -160,7 +162,13 @@ public class XMPPAdapter {
 
     public void login() throws XMPPException {
         // Log in to XMPP Server
-        connection.login(xmppUserName, xmppPassword);
+        try {
+            connection.login(xmppUserName, xmppPassword);
+        } catch (XMPPException e) {
+            log.error("Login failed. " + this.getCurrentConnectionInfo());
+            throw e;
+        }
+
         log.info("Logged in successfully. " + this.getCurrentConnectionInfo());
 
         // Accept incoming roster subscription requests by default.
