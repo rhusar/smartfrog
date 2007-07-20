@@ -739,6 +739,7 @@
     <property name="svn.tag" value="release${smartfrog.version}" />
     <echo>SVN tag="${svn.tag}"</echo>
     <property name="svn.url" value="https://smartfrog.svn.sourceforge.net/svnroot/smartfrog/" />
+    <property name="svn.branch.url" value="${svn.url}/tags/${svn.tag}" />
   </target>
 
   <!--
@@ -749,11 +750,16 @@
       -m "release3.11.001beta"
 
   -->
-  <target name="svn-tag" depends="svn-init"
-  description="Tag a version of the SVN repository; set svn.revision to the specific revision required">
+
+  <target name="svn-revision-check" depends="svn-init">
     <fail unless="svn.revision">
       The property svn.revision must be set to define which revision to use
     </fail>
+
+  </target>
+
+  <target name="svn-tag" depends="svn-init"
+  description="Tag a version of the SVN repository; set svn.revision to the specific revision required">
     <property name="svn.message"
         value="release ${svn.tag} (${smartfrog.version}) from revision ${svn.revision} on ${build.date} by ${user.name}" />
     <echo>SVN message="${svn.message}"</echo>
@@ -764,11 +770,11 @@
       <arg value="-r"/>
       <arg value="${svn.revision}"/>
       <arg value="${svn.url}/trunk"/>
-      <arg value="${svn.url}/tags/${svn.tag}"/>
+      <arg value="${svn.branch.url}"/>
       <arg value="-m" />
       <arg value="${svn.message}"/>
     </exec>
-    <echo>Tag URL: ${svn.url}/tags/${svn.tag}</echo>
+    <echo>Tag URL: ${svn.branch.url}</echo>
   </target>
 
 <!--
@@ -784,10 +790,33 @@ svn delete  https://smartfrog.svn.sourceforge.net/svnroot/smartfrog/tags/somethi
     <exec failonerror="true"
         executable="svn">
       <arg value="delete"/>
-      <arg value="${svn.url}/tags/${svn.tag}"/>
+      <arg value="${svn.branch.url}"/>
       <arg value="-m" />
       <arg value="${svn.delete.message}"/>
     </exec>
+  </target>
+
+  <!--
+  Create the release notes for this release
+  -->
+  <target name="create-release-notes" depends="svn-revision-check"
+      description="
+      Create the release notes for this release.
+      Requires:
+      * svn-revision set for the revision number
+      * smartfrog.version set for the release version
+      "
+      >
+    <property name="announcements.dir" location="doc/announcements" />
+    <property name="target.announcement" location="${announcements.dir}/release_${smartfrog.version}.txt" />
+
+    <expandingcopy tofile="${target.announcement}" >
+      <fileset file="${announcements.dir}/release-template.txt"/>
+    </expandingcopy>
+    <echo>
+      created announcement file: 
+      ${target.announcement}
+    </echo>
   </target>
 
 </project>
