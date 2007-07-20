@@ -138,8 +138,8 @@
   <property name="testCA" value="testCA"/>
   <!-- all protected files -->
   <property name="private" value="private"/>
-  <property name="doc.dir" value="docs"/>
-  <property name="docs" value="${doc.dir}"/>
+  <property name="docs" value="docs"/>
+  <property name="doc.dir" location="${docs}"/>
   <property name="jdocs" value="${doc.dir}/jdocs"/>
   <property name="SFjdocs" value="${doc.dir}/SFjdocs"/>
   <property name="dist.lib.dir" location="${dist.dir}/${lib}"/>
@@ -1117,6 +1117,7 @@ ${ivy.reports.dir}
     <macrodef name="bulkpdf">
       <attribute name="dir" />
       <sequential>
+        <echo>Bulk PDF conversion of @{dir}</echo>
         <ooo>
           <!--<arg value="-invisible" />-->
           <arg value="macro:///SmartFrog.Utils.BulkConvert(@{dir})" />
@@ -1128,6 +1129,7 @@ ${ivy.reports.dir}
   <target name="pdf-doc-folder" depends="init, init-ooo"
       description="Generate PDFs from all .SXW files in the documentation folder">
     <bulkpdf dir="${doc.dir}" />
+    <bulkpdf dir="${doc.dir}/components" />
   </target>
 </project>
 
