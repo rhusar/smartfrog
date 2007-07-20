@@ -24,6 +24,7 @@ import org.smartfrog.avalanche.server.ServerSetup;
 import org.smartfrog.avalanche.server.modules.ModuleCreationException;
 import org.smartfrog.avalanche.shared.MonitoringConstants;
 import org.smartfrog.avalanche.shared.MonitoringEvent;
+import org.smartfrog.avalanche.shared.handlers.MessageHandler;
 
 /**
  * This is a server side handler, this updates the active profile of a host

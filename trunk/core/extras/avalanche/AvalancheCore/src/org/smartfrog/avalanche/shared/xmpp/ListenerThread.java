@@ -11,8 +11,8 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.avalanche.shared.xmpp;
 
-import org.smartfrog.avalanche.server.monitor.handlers.MessageHandler;
-import org.smartfrog.avalanche.server.monitor.jms.MessageListener;
+import org.smartfrog.avalanche.shared.handlers.MessageHandler;
+import org.smartfrog.avalanche.shared.jms.MessageListener;
 import org.smartfrog.avalanche.shared.MonitoringEvent;
 
 import java.util.Iterator;
