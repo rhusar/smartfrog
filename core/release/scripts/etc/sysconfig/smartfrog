@@ -4,8 +4,8 @@
 
 # Home Directory
 SFHOME=${rpm.install.dir}
+export SFHOME
 
-# DISPLAY setting
 #
 # The following settings run to the virtual desktop for root
 #
@@ -13,12 +13,5 @@ if [[ $$HOME == "" ]]
 then
 	HOME=/root
 fi
-
-#SFOS
-#if [[ $$DISPLAY == "" ]]
-#then
-#	export DISPLAY=localhost:8
-# export DISPLAY
-#fi
 
 export HOME
