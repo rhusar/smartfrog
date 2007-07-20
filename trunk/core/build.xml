@@ -552,6 +552,10 @@ ${child.projects.list}
     </delete>
   </target>
 
+  <target name="pdf-doc-folder" depends="ivy-init"
+      description="pass clean down to all the ivy-managed projects">
+    <ivy-delegate target="pdf-doc-folder" />
+  </target>
 
   <target name="ivy-cddlm" depends="ivy-init">
     <ivy-projects reference="cddlm.projects" root="sf-deployapi">
@@ -590,6 +594,8 @@ ${child.projects.list}
       <buildpath refid="ivy.build.projects"/>
     </subant>
   </target>
+
+
 
   <!-- ========================================================== -->
   <!-- this is going to become the full release mechanism, eventually-->

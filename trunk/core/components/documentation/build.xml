@@ -79,12 +79,16 @@
     <echo level="verbose">Created forrest project template</echo>
 
     <property name="comp.home" location="."/>
+    <!--output directories-->
     <property name="xdocs.skin.dir" location="${documentation.dir}/content/xdocs"/>
     <property name="xdocs.dir" location="${xdocs.skin.dir}/smartfrogdoc"/>
-    <!--property name="src.xdocs.dir" location="master/xdocs"/>
+
+    <!--source directories -->
+    <property name="src.xdocs.dir" location="master/xdocs"/>
     <property name="src.content.dir" location="master/content"/>
     <property name="src.documentation.dir" location="master/documentation"/>
-    <property name="src.skin.dir" location="master/skin"/!-->
+    <property name="src.skin.dir" location="master/skin"/>
+
     <property name="skin.dir" location="master/skin"/>
 
 
@@ -124,7 +128,7 @@
   </target>
 
   <target name="copy-properties" depends="mkdirs">
-    <copy todir="${comp.home}" file="${skin.dir}/forrest.properties"/>
+    <copy todir="." file="${skin.dir}/forrest.properties"/>
   </target>
 
 
@@ -132,12 +136,15 @@
     <echo>Created forrest project template</echo>
   </target>
 
-  <target name="prepare-docs" depends="seedforrest,copy-properties">
+  <target name="ready-to-prepare" depends="mkdirs" />
+
+  <target name="copy-master-docs"  depends="ready-to-prepare">
 
     <copy todir="${xdocs.dir}">
       <fileset dir="${skin.dir}">
         <include name="SFComponents.xml"/>
         <include name="*.gif"/>
+        <include name="*.ico"/>
       </fileset>
     </copy>
 
@@ -149,6 +156,18 @@
       </fileset>
     </copy>
 
+
+    <copy todir="${documentation.dir}" overwrite="true"
+        file="master/documentation/skinconf.xml">
+    </copy>
+
+    <copy todir="${xdocs.skin.dir}/images">
+      <fileset dir="${skin.dir}/images" includes="**/*"/>
+    </copy>
+  </target>
+
+  
+  <target name="copy-components"  depends="ready-to-prepare">
     <forrest-component component="ant"/>
     <forrest-component component="anubis"/>
     <!--forrest-component component="anubisdeployer" /-->
@@ -157,37 +176,46 @@
     <forrest-component component="emailer"/>
     <forrest-component component="jetty"/>
     <forrest-component component="jmx"/>
-    <forrest-component component="net"/>
+    <forrest-component component="junit"/>
     <forrest-component component="loggingservices"/>
+    <forrest-component component="net"/>
     <forrest-component component="quartz"/>
     <forrest-component component="sfinstaller"/>
     <forrest-component component="ssh"/>
     <forrest-component component="scripting"/>
     <forrest-component component="slp"/>
+    <!--<forrest-component component="tomcat"/>-->
     <forrest-component component="www"/>
     <forrest-component component="xml"/>
-    <!--<forrest-component component="xmpp" />-->
+    <forrest-component component="xmpp" />
+    <forrest-component component="xunit" />
+  </target>
 
 
-    <copy todir="${documentation.dir}" overwrite="true"
-        file="${skin.dir}/skinconf.xml">
-    </copy>
-
-    <copy todir="${xdocs.skin.dir}/images">
-      <fileset dir="${skin.dir}">
-        <include name="sf.*"/>
-        <include name="frog.*"/>
-        <include name="sourceforge.*"/>
+  <target name="copy-kernel-docs"  depends="ready-to-prepare">
+    <property name="xdocs.kernel.dir" location="${xdocs.dir}/kernel"/>
+    <mkdir dir="${xdocs.kernel.dir}" />
+    <property name="kernel.home" location="../../smartfrog" />
+    <property name="kernel.docs.dir" location="${kernel.home}/docs" />
+    <copy todir="${xdocs.kernel.dir}">
+      <fileset dir="${kernel.docs.dir}">
+        <include name="**/*.sxw" />
+        <exclude name="releaseProcess.sxw" />
+        <include name="**/*.xml" />
+        <include name="antTasksManual/*.html" />
       </fileset>
     </copy>
+  </target>
 
+
+  <target name="prepare-docs" depends="seedforrest,copy-properties,copy-components,copy-master-docs">
     <echo level="verbose">${comp.home}</echo>
   </target>
 
   <target name="forrest-presets" depends="init">
 	
     <presetdef name="run-forrest">
-      <exec dir="${comp.home}" failonerror="true">
+      <exec dir="." failonerror="true">
         <env key="FORREST_HOME" value="${env.FORREST_HOME}"/>
         <env key="ANT_OPTS" value="${ant.opts.forrest}"/>
       </exec>
@@ -242,7 +270,7 @@
 
   <target name="copy-forrest-docs" depends="generate-site">
     <copy todir="${dist.doc.dir}">
-      <fileset dir="${comp.home}/build/site">
+      <fileset dir="build/site">
         <include name="**/*.*"/>
         <exclude name="samples/*.*"/>
         <exclude name="test1.html"/>
@@ -269,4 +297,58 @@
     <echo>Skipping forrest.validate-xdocs</echo>
   </target>-->
 
+
+
+  <!-- ======================================================  -->
+  <!-- Here's some conversion of SXW into .PDF by OOo itself   -->
+  <!-- see http://www.oooforum.org/forum/viewtopic.phtml?t=3772 -->
+  <!-- ======================================================  -->
+
+  <target name="init-ooo">
+    <property name="ooffice.exe" value="ooffice" />
+    <presetdef name="ooo">
+      <exec executable="${ooffice.exe}" failonerror="true">
+      </exec>
+    </presetdef>
+
+    <macrodef name="pdf">
+      <attribute name="file" />
+      <sequential>
+        <ooo>
+          <!--<arg value="-invisible" />-->
+          <arg value="macro:///SmartFrog.Utils.ConvertWordToPDF(@{file})" />
+        </ooo>
+      </sequential>
+    </macrodef>
+
+    <macrodef name="bulkpdf">
+      <attribute name="dir" />
+      <sequential>
+        <ooo>
+          <!--<arg value="-invisible" />-->
+          <arg value="macro:///SmartFrog.Utils.BulkConvert(@{dir})" />
+        </ooo>
+      </sequential>
+    </macrodef>
+  </target>
+
+
+  <target name="pdf" depends="init-ooo,copy-kernel-docs">
+    <bulkpdf dir="${xdocs.kernel.dir}" />
+<!--    <pdf file="${xdocs.kernel.dir}/sfWorkflow.sxw" />-->
+
+  </target>
+
+  <target name="pdf1" depends="init-ooo,copy-kernel-docs">
+<!--    <delete file="${xdocs.kernel.dir}/sfWorkflow.pdf" />-->
+    <pdf file="${xdocs.kernel.dir}/sfWorkflow.sxw" />
+  </target>
+
+
+  <target name="debugPDF" depends="init-ooo">
+    <ooo>
+      <!--<arg value="-invisible" />-->
+      <arg value="macro:///SmartFrog.Utils.debugRun()" />
+    </ooo>
+  </target>
 </project>

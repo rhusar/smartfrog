@@ -1889,7 +1889,47 @@ ${ivy.reports.dir}
 
   <target name="published-distribution" depends="dist,published"
       description="create a distribution and publish all artifacts with Ivy"/>
+
+
+  <!-- ======================================================  -->
+  <!-- Here's some conversion of SXW into .PDF by OOo itself   -->
+  <!-- see http://www.oooforum.org/forum/viewtopic.phtml?t=3772 -->
+  <!-- ======================================================  -->
+
+  <target name="init-ooo">
+    <property name="ooffice.exe" value="ooffice" />
+
+    <presetdef name="ooo">
+      <exec executable="${ooffice.exe}" failonerror="true">
+      </exec>
+    </presetdef>
+
+    <macrodef name="pdf">
+      <attribute name="file" />
+      <sequential>
+        <ooo>
+          <arg value="macro:///SmartFrog.Utils.ConvertWordToPDF(@{file})" />
+        </ooo>
+      </sequential>
+    </macrodef>
+
+    <macrodef name="bulkpdf">
+      <attribute name="dir" />
+      <sequential>
+        <ooo>
+          <!--<arg value="-invisible" />-->
+          <arg value="macro:///SmartFrog.Utils.BulkConvert(@{dir})" />
+        </ooo>
+      </sequential>
+    </macrodef>
+  </target>
+
+  <target name="pdf-doc-folder" depends="init, init-ooo"
+      description="Generate PDFs from all .SXW files in the documentation folder">
+    <bulkpdf dir="${doc.dir}" />
+  </target>
   
+
 </project>
 
 
