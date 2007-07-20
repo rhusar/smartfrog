@@ -760,8 +760,9 @@
 
   <target name="svn-tag" depends="svn-init"
   description="Tag a version of the SVN repository; set svn.revision to the specific revision required">
+    <property name="release.manager" value="${user.name} "/>
     <property name="svn.message"
-        value="release ${svn.tag} (${smartfrog.version}) from revision ${svn.revision} on ${build.date} by ${user.name}" />
+        value="release ${svn.tag} (${smartfrog.version}) from revision ${svn.revision} on ${build.date} by ${release.manager}" />
     <echo>SVN message="${svn.message}"</echo>
     <echo>issuing SVN command</echo>
     <exec failonerror="true"
