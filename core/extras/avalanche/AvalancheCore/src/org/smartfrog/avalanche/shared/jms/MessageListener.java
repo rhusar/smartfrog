@@ -9,7 +9,7 @@ You should have received a copy of the GNU Lesser General Public License along w
 
 For more information: www.smartfrog.org
 */
-package org.smartfrog.avalanche.server.monitor.jms;
+package org.smartfrog.avalanche.shared.jms;
 
 import org.smartfrog.avalanche.shared.MonitoringConstants;
 import org.smartfrog.avalanche.shared.MonitoringEvent;

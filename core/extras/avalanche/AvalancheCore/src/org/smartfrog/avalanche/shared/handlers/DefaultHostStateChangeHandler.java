@@ -9,7 +9,7 @@ You should have received a copy of the GNU Lesser General Public License along w
 
 For more information: www.smartfrog.org
 */
-package org.smartfrog.avalanche.server.monitor.handlers;
+package org.smartfrog.avalanche.shared.handlers;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -17,6 +17,7 @@ import org.smartfrog.avalanche.core.activeHostProfile.ActiveProfileType;
 import org.smartfrog.avalanche.server.ActiveProfileManager;
 import org.smartfrog.avalanche.server.AvalancheFactory;
 import org.smartfrog.avalanche.server.DatabaseAccessException;
+import org.smartfrog.avalanche.shared.handlers.HostStateChangeHandler;
 import org.smartfrog.avalanche.server.modules.ModuleCreationException;
 import org.smartfrog.avalanche.shared.HostStateEvent;
 
