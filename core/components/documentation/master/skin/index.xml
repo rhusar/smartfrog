@@ -22,14 +22,8 @@
   <body>
     <section id="titlepage">
       <title>Smart Framework for Object Groups</title>
-      <p align="justify" style="margin-bottom: 0in">
-        <br/>
-      </p>
-      <p align="justify" style="margin-bottom: 0in">
-        <br/>
-      </p>
 
-      <p align="justify" style="margin-bottom: 0in">SmartFrog is a technology
+      <p >SmartFrog is a technology
         for describing distributed software systems as collections of
         cooperating components, and then activating and managing them. It was
         developed at HP Labs in Bristol, in the UK. The core SmartFrog
@@ -38,24 +32,24 @@
         .
       </p>
 
-      <p align="justify" style="margin-bottom: 0.2in">SmartFrog project
+      <p style="margin-bottom: 0.2in">SmartFrog project
         development is hosted on Sourceforge:
       </p>
       <ul>
         <li>
-          <p align="justify">Project development web site:&nbsp;&nbsp;&nbsp;
+          <p >Project development web site:&nbsp;&nbsp;&nbsp;
             <a href="http://sourceforge.net/projects/smartfrog">http://sourceforge.net/projects/smartfrog</a>
             .
           </p>
         </li>
         <li>
-          <p align="justify" style="margin-bottom: 0.2in">Package downloads:
-            <a href="http://sourceforge.net/project/showfiles.php?group_id=87384&amp;package_id=108447">downloads</a>
+          <p >Package downloads:
+            <a href="http://sourceforge.net/project/showfiles.php?group_id=87384">downloads</a>
             page.
           </p>
         </li>
       </ul>
-      <p align="justify" style="margin-bottom: 0.2in">SmartFrog consists of a
+      <p >SmartFrog consists of a
         <b>language</b>
         for describing component collections and component
         configuration parameters, and a
@@ -64,32 +58,30 @@
         activates and manages the components to deliver and maintain running
         systems.
       </p>
-      <p align="justify" style="margin-bottom: 0.2in">
+      <p >
         <br/>
         <br/>
       </p>
-      <p align="LEFT" style="margin-bottom: 0.2in">
-        <img SRC="smartfrogdoc/overview_html_39c627ce.gif" name="graphics1" align="LEFT" width="271" height="350"
+        <img SRC="smartfrogdoc/overview_html_39c627ce.gif" name="graphics1" width="271" height="350"
             border="0"/>
-      </p>
       <p>
         SmartFrog
         has wide applicability across domains ranging from utility computing
         to large-scale system configuration.
       </p>
-      <p align="LEFT" style="margin-bottom: 0.2in">SmartFrog is a framework
+      <p  >SmartFrog is a framework
         to build from, not a packaged solution. Typically, we write new
         components for each new service, and then use SmartFrog to describe
         and activate them. However, the framework is populated with a number
         of general purpose components that can be reused across services, and
         we are adding to their number.
       </p>
-      <p align="LEFT" style="margin-bottom: 0.2in">SmartFrog and its
+      <p>SmartFrog and its
         components are implemented in Java;, though SmartFrog
         components can easily be written to encapsulate software components
         based on other technologies.
       </p>
-      <p align="LEFT" style="margin-bottom: 0.2in">
+      <p>
         <br/>
         <br/>
       </p>
