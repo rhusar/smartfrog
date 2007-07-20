@@ -445,7 +445,9 @@
 
   <target name="upload-maven-artifacts" depends="init-maven-artifacts,upload-init">
     <fail>
-      <not> <available file="${maven.zip}" /></not>
+      <condition>
+        <not> <available file="${maven.zip}" /></not>
+      </condition>
       No Maven artifacts found in ${maven.zip}
     </fail>
     <ssh-remote command="mkdir -p ${ssh.maven.dir}"/>
