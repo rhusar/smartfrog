@@ -46,7 +46,7 @@
 %define srcdir          %{basedir}/src
 %define examples        %{srcdir}/org/smartfrog/examples
 %define rcd             /etc/rc.d
-%define initsmartfrog   %{rcd}/init.d/${rpm.daemon.name}
+%define smartfrogd   %{rcd}/init.d/${rpm.daemon.name}
 %define logdir          ${rpm.log.dir}
 #this is some other log directory that gets picked up by logtofileimpl
 #see http://jira.smartfrog.org/jira/browse/SFOS-235
@@ -145,13 +145,13 @@ GROUPNAME="${rpm.groupname}"
 # Mabye create a new group
 getent group $${GROUPNAME} > /dev/null
 if [ $$? -ne 0 ]; then
-        groupadd $${GROUPNAME}> /dev/null 2>&1
-        if [ $$? -ne 0 ]; then
-                logger -p auth.err -t %{name} $${GROUPNAME} group could not be created
-                exit 1
-        fi
+  groupadd $${GROUPNAME}> /dev/null 2>&1
+  if [ $$? -ne 0 ]; then
+    logger -p auth.err -t %{name} $${GROUPNAME} group could not be created
+    exit 1
+  fi
 else
-                logger -p auth.info -t %{name} $${GROUPNAME} group already exists
+  logger -p auth.info -t %{name} $${GROUPNAME} group already exists
 fi
 
 # Maybe create a new user
@@ -161,13 +161,13 @@ fi
 # User deletion is left to the System Administartor
 getent passwd $${USERNAME} > /dev/null 2>&1
 if [ $$? -ne 0 ]; then
-        useradd -g ${GROUPNAME} -s /bin/bash -p "*********" -m $${USERNAME} >> /dev/null
-        if [ $$? -ne 0 ]; then
-                logger -p auth.err -t %{name} $${USERNAME} user could not be created
-            exit 2
-        fi
+  useradd -g ${GROUPNAME} -s /bin/bash -p "*********" -m $${USERNAME} >> /dev/null
+  if [ $$? -ne 0 ]; then
+    logger -p auth.err -t %{name} $${USERNAME} user could not be created
+    exit 2
+  fi
 else
-                logger -p auth.info -t %{name} $${USERNAME} user already exists
+  logger -p auth.info -t %{name} $${USERNAME} user already exists
 fi
 
 #Now run the big setup
@@ -213,15 +213,14 @@ mkdir -p %{logdir}
 chmod a+wx %{logdir}
 chgrp ${rpm.groupname} %{logdir}
 chown ${rpm.username} %{logdir}
-#mkdir -p %{logdir2}
-#chmod a+wx %{logdir2}
-#chgrp ${rpm.groupname} %{logdir2}
-#chown ${rpm.username} %{logdir2}
+
+%preun
+#about to uninstall, but all the files are already present
+
 
 %postun
 #at uninstall time, we delete all logs
 rm -rf %{logdir}
-#rm -rf %{logdir2}
 
 # -----------------------------------------------------------------------------
 
@@ -339,13 +338,18 @@ rm -f %{rcd}/rc4.d/S60${rpm.daemon.name}
 rm -f %{rcd}/rc5.d/S60${rpm.daemon.name}
 rm -f %{rcd}/rc6.d/S60${rpm.daemon.name}
 
-ln -s %{initsmartfrog} %{rcd}/rc0.d/K60${rpm.daemon.name}
-ln -s %{initsmartfrog} %{rcd}/rc1.d/K60${rpm.daemon.name}
-ln -s %{initsmartfrog} %{rcd}/rc2.d/S60${rpm.daemon.name}
-ln -s %{initsmartfrog} %{rcd}/rc3.d/S60${rpm.daemon.name}
-ln -s %{initsmartfrog} %{rcd}/rc4.d/S60${rpm.daemon.name}
-ln -s %{initsmartfrog} %{rcd}/rc5.d/S60${rpm.daemon.name}
-ln -s %{initsmartfrog} %{rcd}/rc6.d/S60${rpm.daemon.name}
+ln -s %{smartfrogd} %{rcd}/rc0.d/K60${rpm.daemon.name}
+ln -s %{smartfrogd} %{rcd}/rc1.d/K60${rpm.daemon.name}
+ln -s %{smartfrogd} %{rcd}/rc2.d/S60${rpm.daemon.name}
+ln -s %{smartfrogd} %{rcd}/rc3.d/S60${rpm.daemon.name}
+ln -s %{smartfrogd} %{rcd}/rc4.d/S60${rpm.daemon.name}
+ln -s %{smartfrogd} %{rcd}/rc5.d/S60${rpm.daemon.name}
+ln -s %{smartfrogd} %{rcd}/rc6.d/S60${rpm.daemon.name}
+
+
+%preun daemon
+# shut down the daemon before the uninstallation
+%{smartfrogd} shutdown
 
 # -----------------------------------------------------------------------------
 # at uninstall time, we blow away the symlinks
@@ -367,7 +371,9 @@ rm -f %{rcd}/rc6.d/S60${rpm.daemon.name}
 
 %changelog
 # to get the date, run:   date +"%a %b %d %y"
-* Tue Jul 03 2007 Steve Loughran <steve_l@users.sourceforge.net> 3.11.0001-1
+* Fri Jul 20 2007 Steve Loughran <steve_l@users.sourceforge.net> 3.11.0001-5
+- daemon RPM now runs "smartfrogd shutdown" before uninstalling 
+* Tue Jul 03 2007 Steve Loughran <steve_l@users.sourceforge.net> 3.11.0001-4
 - moved scripts to smartfrog.rpm
 - moved directories
 * Fri Jun 22 2007 Steve Loughran <steve_l@users.sourceforge.net> 3.11.0000-3
