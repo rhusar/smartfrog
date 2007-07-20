@@ -9,21 +9,21 @@ You should have received a copy of the GNU Lesser General Public License along w
 
 For more information: www.smartfrog.org
 */
-package org.smartfrog.avalanche.server.monitor.handlers;
+package org.smartfrog.avalanche.shared.handlers;
 
-import org.smartfrog.avalanche.shared.MonitoringEvent;
+import org.smartfrog.avalanche.shared.HostStateEvent;
+
 /**
- * Provides an interface to server side monitoring event Handlers. T
- * he handlers are indepenent of monitoring protocols
- * it uses an interface MonitoringEvent which can be implemented in different 
- * ways for differnet monitoring protocols. 
+ * Interface for handling host state events. These handlers are added
+ * to Event Listeners. 
  * @author sanjaydahiya
  *
  */
-public interface MessageHandler {
+public interface HostStateChangeHandler {
 	/**
-	 * Callback method invoked by monitoring event listener. 
+	 * Callback method. 
 	 * @param e
 	 */
-	public void handleEvent(MonitoringEvent e);
+	public void handleEvent(HostStateEvent e);
+
 }
