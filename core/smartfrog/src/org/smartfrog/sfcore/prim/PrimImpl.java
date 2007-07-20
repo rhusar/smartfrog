@@ -298,7 +298,9 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
             if (sfLog().isTraceEnabled()) {
                 sfLog().trace(sfCompleteNameSafe()+" sfResolved '"+ rn.toString()+"' to '"+obj.toString()+"'");
             }
-        } catch (Throwable thr) {thr.printStackTrace();} //ignore
+        } catch (Throwable thr) {
+            thr.printStackTrace();
+        } //ignore
         return obj;
     }
 
