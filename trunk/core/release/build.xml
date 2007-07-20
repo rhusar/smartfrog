@@ -388,8 +388,10 @@
   <target name="ready-to-package-maven-artifacts" depends="init-maven-artifacts"/>
 
   <target name="init-maven-artifacts" depends="m2-init">
+    <property name="maven.zip.filename"
+        value="smartfrog-maven-artifacts-${smartfrog.version}.zip" />
     <property name="maven.zip"
-        location="${dist.dir}/smartfrog-maven-artifacts-${smartfrog.version}.zip" />
+        location="${dist.dir}/${maven.zip.filename}" />
     <property name="maven.zip.sha1" location="${maven.zip}.sha1" />
   </target>
 
@@ -440,6 +442,26 @@
 
   <target name="maven-artifacts" depends="expand-maven-artifacts" />
 
+
+  <target name="upload-maven-artifacts" depends="init-maven-artifacts,upload-init">
+    <fail>
+      <not> <available file="${maven.zip}" /></not>
+      No Maven artifacts found in ${maven.zip}
+    </fail>
+    <ssh-remote command="mkdir -p ${ssh.maven.dir}"/>
+    <property name="ssh.maven.path"
+        value="${ssh.user}@${ssh.server}:${ssh.maven.dir}" />
+    <scp remoteToDir="${ssh.maven.path}"
+        passphrase="${ssh.passphrase}"
+        keyfile="${ssh.keyfile}"
+        trust="${ssh.trust}"
+        verbose="${ssh.verbose}" >
+      <fileset file="maven.zip" />
+    </scp>
+    <ssh-remote command="unzip ${ssh.maven.dir}/${maven.zip.filename}"/>
+    <ssh-remote command="rm ${ssh.maven.dir}/${maven.zip.filename}"/>
+    <ssh-remote command="chmod a+r ${ssh.maven.dir}"/>
+  </target>
 
   <!--
     this target calls the kernel's release process to create some release artifacts
@@ -527,8 +549,10 @@
       <fileset file="${izpack.jar}" />
     </copy>
 
+<!--
     <copy tofile="${upload.dir}/smartfrog-core-distribution.zip"
         file="${sf-core-install.zip}" />
+-->
     <copy todir="${upload.dir}" >
       <fileset dir="${release.dir}" includes="*.zip,*.gz" />
     </copy>
@@ -573,6 +597,7 @@
         userid="${ftp.user}"
         password="${ftp.password}"
         action="put"
+        verbose="true"
         remotedir="${ftp.dir}">
       <fileset refid="upload.fileset"/>
     </ftp>
@@ -739,7 +764,7 @@
     <property name="svn.tag" value="release${smartfrog.version}" />
     <echo>SVN tag="${svn.tag}"</echo>
     <property name="svn.url" value="https://smartfrog.svn.sourceforge.net/svnroot/smartfrog/" />
-    <property name="svn.branch.url" value="${svn.url}/tags/${svn.tag}" />
+    <property name="svn.branch.url" value="${svn.url}tags/${svn.tag}" />
   </target>
 
   <!--

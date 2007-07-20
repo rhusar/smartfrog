@@ -1,4 +1,4 @@
-SmartFrog ${smartfrog.version}
+SmartFrog 3.11.003beta
 ======================
 
 This is a new release of SmartFrog, the Java-based, LPGL-licensed distributed
@@ -12,7 +12,7 @@ The release artifacts are available at
 
 http://sourceforge.net/project/showfiles.php?group_id=87384&package_id=176308
 
-This release is ${smartfrog.version}; built from revision ${svn.revision}
+This release is 3.11.003beta; built from revision 4764
 of the SVN repository. This release has an extended language
 with the ability to tag attributes, and includes the following items:
 
@@ -91,9 +91,9 @@ system. Please follow the instructions at
   http://sourceforge.net/svn/?group_id=87384
 and check out smartfrog/trunk/core from our repository.
 
-This release was built with revision ${svn.revision} of the repository, which
+This release was built with revision 4764 of the repository, which
 is available under the SVN branch
-${svn.branch.url}
+https://smartfrog.svn.sourceforge.net/svnroot/smartfrog/tags/release3.11.003beta
 
 We strongly encourage anyone interested in building or extending smartfrog to
 get involved in the smartfrog developer mailing list, which can be found from
@@ -111,6 +111,43 @@ The SmartFrog Team        http://smartfrog.org/
 Changes since last release
 ==========================
 
+** Bug
+    * [SFOS-91] - Abnormal TerminationRecords dont deserialize unless the far end can load every exception in the exception chain
+    * [SFOS-101] - database and junit/xunit builds dont create source or documentation artifacts
+    * [SFOS-147] - LogToLog4JImpl implements Seralizable, but it isnt
+    * [SFOS-272] - Anubis Ping Heartbeat protocol not setting bits in heartbeats
+    * [SFOS-280] - xunit and junit components don't run their published target when core/ant runs published
+    * [SFOS-289] - avalanche ivy resolve too slow
+    * [SFOS-290] - autoloader handles a missing file by throwing an NPE
+    * [SFOS-291] - daemon rpm should shut down smartfrog before uninstalling
+    * [SFOS-297] - callbacks make the daemon lock up under the testharness
+    * [SFOS-303] - Asynchronous logging creating too many threads
+    * [SFOS-304] - smartfrogd status option is broken
+
+
+** Improvement
+    * [SFOS-207] - Is there a way to automate .sxw to .pdf?
+    * [SFOS-270] - Improve logging of deploy times.
+    * [SFOS-281] - change Tags manipulation methods to throw SmartFrogRuntimeException
+    * [SFOS-283] - remove Teardown logic from TestCompound
+    * [SFOS-292] - Revert tag manipulation methods in component descriptions back to throwing SmartFrogContextException - related to SFOS-281
+    * [SFOS-307] - Clean up documentation
+
+** New Feature
+    * [SFOS-232] - Add new History component for testing sequences of operations
+    * [SFOS-271] - Add a way to deploy but not start a component
+
+
+** Task
+    * [SFOS-279] - Move JUnit invocation of SF deployments to callback notifications
+    * [SFOS-288] - code review autoloader class/.sf; add test case
+
+** Sub-task
+    * [SFOS-212] - Build Avalanche under Ivy
+    * [SFOS-219] - Get the source of sfinstall
+    * [SFOS-278] - Replace direct access of TerminationRecord.cause with get/set
+    * [SFOS-284] - add missing dependency jars of Avalanche to SCM repository
+    * [SFOS-285] - Fix setup.xml to work with ivy
 
 
 
