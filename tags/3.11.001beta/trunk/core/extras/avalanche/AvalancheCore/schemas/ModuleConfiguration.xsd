@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<xs:schema 
+  targetNamespace="http://smartfrog.org/avalanche/core/Module"
+  xmlns:xs='http://www.w3.org/2001/XMLSchema'
+  xmlns:av='http://smartfrog.org/avalanche/core/Module'>
+  
+  <xs:element name="module" type="av:moduleType"/>
+
+  <xs:complexType name="moduleType">
+    <xs:sequence>
+      <!-- Module Id, each module has a unique id. 
+        Same ID is used as a key in database which should ensure uniqueness-->
+      <xs:element name="id" type="xs:string" minOccurs="1" maxOccurs="1"/>
+      <!--Optional brief description of the module-->
+      <xs:element name="description" type="xs:string" minOccurs="0" 
+        maxOccurs="1"/>
+        <!--Optional information about vendor of the module-->
+      <xs:element name="vendor" type="xs:string" minOccurs="0" maxOccurs="1"/>
+      
+      <!-- Each module can have many versions -->
+      <xs:element name="version" type="av:versionType" 
+        minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="versionType">
+    <xs:sequence>
+      <!--Each module version can have many platform specific or package specific 
+        distributions -->
+      <xs:element name="distribution" type="av:distributionType" minOccurs="0" 
+        maxOccurs="unbounded"/> 
+    </xs:sequence>
+    <!--Version number of this version, this is a string we dont impose 
+      restriction on format of version -->
+    <xs:attribute name="number" type="xs:string"/>
+    <!--This value is true if this the default version, default version 
+      would be typically a stable version -->
+    <xs:attribute name="default" type="xs:boolean"/>
+  </xs:complexType>
+  
+  <!--Each distribution has a platform selector and a list of actions, actions are typically 
+    INSTALL, UNINSTALL etc -->
+  <xs:complexType name="distributionType">
+    <xs:sequence>
+      <xs:element name="platformSelector" type="av:platformSelectorType" 
+        minOccurs="1" maxOccurs="1"/>
+        
+      <xs:element name="action" type="av:actionType" minOccurs="0" 
+            maxOccurs="unbounded"/>
+            
+    </xs:sequence>
+    <!-- True if this distribution is default for the given version. Default distributions 
+      are typically platform independent distributions-->
+    <xs:attribute name="default" type="xs:boolean"/>
+    <!--This should be a unique identifier, though this schema doesnt define a key attribute 
+      for this, later we may put this constraint-->
+    <xs:attribute name="id" type="xs:string"/>
+  </xs:complexType>
+
+  <xs:complexType name="platformSelectorType">
+    <xs:sequence>
+      <!-- os, platforma and arch can be a regular expressions
+        These are matched against the attributes of a host in auto deployments-->
+      <xs:element name="os" type="xs:string" minOccurs="1" maxOccurs="1"/>
+      <xs:element name="platform" type="xs:string" minOccurs="1" maxOccurs="1"/>
+      <xs:element name="arch" type="xs:string" minOccurs="1" maxOccurs="1"/>
+    </xs:sequence>
+  </xs:complexType>
+  
+  <xs:complexType name="actionType">
+    <xs:sequence>
+      <!--Smartfrog Configuration title for this action. Note that this is 
+        not the configuration URL, since there can be many titles with different 
+        set of default arguments for same URL template-->
+      <xs:element name="configuration" type="xs:string" minOccurs="0" 
+        maxOccurs="1"/>
+        
+        <!--This action can override attributes from template and set default values for 
+          these templates.-->
+      <xs:element name="argument" minOccurs="0" maxOccurs="unbounded">
+        <xs:complexType>
+            <xs:sequence>
+              <!--Name of the attribue as it appears in the smartfrog template-->
+              <xs:element name="name" type="xs:string" minOccurs="1" 
+                maxOccurs="1"/>
+               <!--Value of the attribute to replace before deployment-->
+              <xs:element name="value" type="xs:string" minOccurs="1" 
+                maxOccurs="1"/>
+            </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+    <!--Name of the associated action-->
+    <xs:attribute name="name" type="xs:string" use="required"/>
+    <!--Deployment engine to use while submitting the configuration -->
+    <xs:attribute name="engine" type="xs:string" use="optional"/>
+  </xs:complexType>
+  
+</xs:schema>
