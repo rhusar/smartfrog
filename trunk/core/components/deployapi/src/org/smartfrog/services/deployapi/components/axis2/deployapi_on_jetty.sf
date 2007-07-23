@@ -1,0 +1,145 @@
+/** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
+
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+For more information: www.smartfrog.org
+
+*/
+
+#include "org/smartfrog/services/jetty/components.sf";
+#include "org/smartfrog/services/os/java/components.sf";
+#include "org/smartfrog/services/deployapi/components/axis2/engine.sf";
+
+ /**
+  * this adds the SOAP stack
+  */
+ DeployRuntime extends DeploymentEngine {
+
+
+
+    servletContext extends Axis2ServletContext {
+        resourceBase  PARENT:wardir;
+        contextPath "/";
+        server PARENT:server;
+    }
+
+    /*
+    **
+    * Base servlet for alpine
+    */
+    axis2Servlet extends Axis2Servlet {
+        context LAZY PARENT:servletContext;
+    }
+
+ }
+
+DeployServerOnJetty extends Compound {
+
+    port TBD;
+    jettyhome LAZY PROPERTY java.io.tmpdir;
+    wardir TBD;
+    urlhost LAZY engine:servletContext:ipaddr;
+    urlport port;
+
+    /**
+     * force load our servlets
+     */
+    loadServlets extends LoadClass {
+      create false;
+      classes [
+        Axis2Servlet:className,
+        ApacheJasperServlet:className,
+        "org.mortbay.util.OutputStreamLogSink"
+        ];
+    }
+
+    /**
+     * these we actually force to exist because they have simple constructors
+     */
+    loadDeployApi extends LoadClass {
+      create true;
+      classes [
+        "org.smartfrog.services.deployapi.transport.endpoints.WsrfReceiver",
+        "org.smartfrog.services.deployapi.transport.endpoints.PortalEndpoint",
+        "org.smartfrog.services.deployapi.transport.endpoints.SystemEndpoint"
+        ];
+    }
+    
+    /**
+     * the engine that does the work
+     */
+    engine extends DeployRuntime {
+      port PARENT:urlport;
+      wardir LAZY PARENT:wardir;
+      server LAZY  jettyServer;
+      location LAZY PARENT:location;
+      urlhost PARENT:urlhost;
+    }
+    
+   /*
+    this is the jetty server itself
+    */
+   jettyServer extends CoreJettyServer {
+
+      jettyhome PARENT:jettyhome;
+
+      port PARENT:port;
+
+    }
+
+
+
+    /*
+     turned off because it does not work
+    JSPServlet extends ApacheJasperServlet {
+       context LAZY deployServletContext:servletContext;
+    }
+    */
+
+    listener extends JettyListener {
+        listenerPort port;
+        server LAZY jettyServer;
+    }
+
+    //fetch the page every so often, just to see that we are happy
+    /*
+    liveness false;
+    
+    ping extends LivenessPage {
+        enabled PARENT:liveness;
+        host LAZY PARENT:engine:servletContext:ipaddr;
+        port PARENT:port;
+        // probably "services/Version/getVersion"
+        //page LAZY PARENT:DeployServer:axis2Servlet:absolutePath ;
+        page "services/Version/getVersion";
+        checkFrequency 10;
+    }
+    */
+    
+}
+
+
+sfConfig extends DeployServerOnJetty {
+
+  //get this from the running system
+
+    wardir PROPERTY deployapi.war.dir;
+    port 5050;
+    location "hosted on jetty";
+    liveness true;
+
+}
+
+

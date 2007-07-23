@@ -1,0 +1,41 @@
+#!/bin/sh
+if [ -z "$SFHOME" -o ! -d "$SFHOME" ] ; then
+    #echo "$0"
+    SFHOME=`dirname "$0"`/..
+    SFHOME=`cd "$SFHOME" && pwd`
+    export SFHOME;
+    echo SFHOME undefined, using $SFHOME as base directory;
+fi
+if [ -z $1 ] ; then
+   echo "Insufficient arguments to use sfPing"
+   echo "Usage: sfPing HostName [ComponentName]"
+   exit 69
+fi
+if [ $# -eq 1 ] && [ $1 == "-?" ];then
+   echo "Usage: sfPing HostName [ComponentName]"
+   exit 0
+fi   
+if [ -z $2 ]; then
+    COMPONENT="rootProcess";
+else
+	if test "$USERNAMEPREFIX_ON"; then
+		COMPONENT="`whoami`_$2";
+	else
+		COMPONENT="$2";
+	fi
+fi    
+
+
+. "$SFHOME/bin/setSFProperties"
+
+ACTION=PING
+
+if test "$SFCODEBASE" && ! test "$SFSECURITY"; then
+        java "$SFDEFAULTINI" "$SFCODEBASE" org.smartfrog.SFSystem -a \"$COMPONENT\":$ACTION:::$1: -e
+elif test "$SFSECURITY" && ! test "$SFCODEBASE"; then
+        java "$SFDEFAULTINI" $SFSECURITY org.smartfrog.SFSystem -a \"$COMPONENT\":$ACTION:::$1: -e
+elif test "$SFCODEBASE" && test "$SFSECURITY"; then
+        java "$SFDEFAULTINI" "$SFCODEBASE" $SFSECURITY org.smartfrog.SFSystem -a \"$COMPONENT\":$ACTION:::$1: -e
+else
+        java "$SFDEFAULTINI" org.smartfrog.SFSystem -a \"$COMPONENT\":$ACTION:::$1: -e
+fi

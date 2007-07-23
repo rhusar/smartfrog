@@ -1,0 +1,30 @@
+\#include "org/smartfrog/components.sf"
+\#include "org/smartfrog/services/net/telnet.sf"
+\#include "org/smartfrog/sfcore/workflow/components.sf"
+ 
+
+sfConfig extends Parallel {
+    asynchCreateChild true;
+    #foreach ($daemon in $allDaemons)
+      $daemon.host extends TelnetSession {
+            Telnet:host "$daemon.host";
+            Telnet:username "$daemon.user";
+            Telnet:password "$daemon.password";
+            Telnet:logFile "${daemon.host}.log";
+	    Telnet:timeout 70000;
+	    #if ($daemon.isLinux())
+            Telnet:ostype "linux";
+	    Telnet:commands ["cd ${sharedDir}/daemons/$daemon.host",
+			     "export SFHOME=${installDir}/dist",
+                             "export PATH=$SFHOME/bin:$PATH",
+		             "nohup sfDaemon &"];
+	    #elseif ($daemon.isWindows())
+            	Telnet:ostype "windows";
+	        Telnet:shellPrompt "C:\\>";
+		Telnet:commands ["cd ${sharedDir}",
+	                	 ("start_sfdaemon.bat ${daemon.javahome} ${installDir}\\" ++"dist server"), 
+				 "net start Daemon"];
+	    #end
+	}
+   #end
+}

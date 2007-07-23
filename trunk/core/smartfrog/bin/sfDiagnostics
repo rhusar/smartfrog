@@ -1,0 +1,47 @@
+#!/bin/sh
+if [ -z "$SFHOME" -o ! -d "$SFHOME" ] ; then
+    #echo "$0"
+    SFHOME=`dirname "$0"`/..
+    SFHOME=`cd "$SFHOME" && pwd`
+    export SFHOME;
+    echo SFHOME undefined, using $SFHOME as base directory;
+fi
+if [ -z $1 ] ; then
+   echo "Insufficient arguments to use sfDiagnostics"
+   echo "Usage: sfDiagnostics HostName [ComponentName] [ProcessName]"
+   exit 69
+fi
+if [ $# -eq 1 ] && [ $1 == "-?" ];then
+   echo "Usage: sfDiagnostics HostName [ComponentName] [ProcessName]"
+   exit 0
+fi   
+if [ -z $2 ]; then
+    COMPONENT="rootProcess";
+else
+	if test "$USERNAMEPREFIX_ON"; then
+		COMPONENT="`whoami`_$2";
+	else
+		COMPONENT="$2";
+	fi
+fi    
+
+if [ -z $3 ]; then
+    PROCESS=rootProcess;
+else
+    PROCESS="$3";
+fi    
+
+
+. "$SFHOME/bin/setSFProperties"
+
+ACTION=DIAGNOSTICS
+
+if test "$SFCODEBASE" && ! test "$SFSECURITY"; then
+        java "$SFDEFAULTINI" "$SFCODEBASE" org.smartfrog.SFSystem -a \"$COMPONENT\":$ACTION:::$1:$PROCESS -e
+elif test "$SFSECURITY" && ! test "$SFCODEBASE"; then
+        java "$SFDEFAULTINI" $SFSECURITY org.smartfrog.SFSystem -a \"$COMPONENT\":$ACTION:::$1:$PROCESS -e
+elif test "$SFCODEBASE" && test "$SFSECURITY"; then
+        java "$SFDEFAULTINI" "$SFCODEBASE" $SFSECURITY org.smartfrog.SFSystem -a \"$COMPONENT\":$ACTION:::$1:$PROCESS -e
+else
+        java "$SFDEFAULTINI" org.smartfrog.SFSystem -a \"$COMPONENT\":$ACTION:::$1:$PROCESS -e
+fi

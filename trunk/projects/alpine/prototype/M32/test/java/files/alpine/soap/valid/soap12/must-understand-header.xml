@@ -1,0 +1,15 @@
+<soap:Envelope
+  xmlns:soap="http://www.w3.org/2003/05/soap-envelope">
+  <soap:Header>
+    <t:Transaction
+      xmlns:t="http://example.org/uri1" soap:mustUnderstand="1">
+          5
+    </t:Transaction>
+  </soap:Header>
+  <soap:Body>
+    <m:GetLastTradePrice xmlns:m="http://example.org/uri2">
+      <m:symbol>DIS</m:symbol>
+    </m:GetLastTradePrice>
+  </soap:Body>
+</soap:Envelope>
+
