@@ -18,13 +18,10 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 For more information: www.smartfrog.org
 */
 -->
-<%-- $Id: ActiveView.jsp 81 2006-05-30 06:09:38Z uppada $ --%>
 <%@ page language="java" %>
-
 <%@	page import="org.smartfrog.avalanche.server.modules.*"%>
 <%@	page import="org.smartfrog.avalanche.core.activeHostProfile.*"%>
-
-<%@ include file="InitBeans.jsp" %>
+<%@ include file="header.inc.jsp"%>
 
 <%
   	String errMsg = null; 
@@ -51,12 +48,8 @@ For more information: www.smartfrog.org
   	}
 %>
 
-<!DOCTYPE HTML PUBLIC "-//w3c//dtd html 4.0 transitional//en">
-<html>
-<head>
-<%@ include file="common.jsp" %>
-</head>
 <script language="javascript">
+    <!--
  function toggle(divId)
  {
    var state = document.getElementById(divId).style.display ;
@@ -72,11 +65,9 @@ function submit(target){
 	document.moduleListFrm.action = target ;
 	document.moduleListFrm.submit();
 }
-</script>
 
-<body>
-<script>
 setNextSubtitle("Active View Page");
+    -->
 </script>
 
 <!-- This is the page menu -->
@@ -160,6 +151,4 @@ setNextSubtitle("Active View Page");
 </center>
 </div>
 
-</body>
-
-</html>
+<%@ include file="footer.inc.jsp"%>

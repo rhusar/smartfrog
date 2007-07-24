@@ -19,10 +19,8 @@ For more information: www.smartfrog.org
 */
 -->
 <%@ page language="java" %>
-
 <%@	page import="org.smartfrog.avalanche.server.*"%>
 <%@ page import="org.smartfrog.avalanche.server.engines.sf.*"%>
-
 <%@ include file="InitBeans.jsp" %>
 
 <%
@@ -34,21 +32,15 @@ For more information: www.smartfrog.org
   		throw new Exception ( "Error connecting to hosts database" );
   	}
 
-	/*String targetHost = request.getParameter("hostId");
-
-  	if ( null != targetHost) {
-	System.out.println("HOSTNMAE===" + targetHost);
-	}*/
     SFAdapter adapter = new SFAdapter(factory, scheduler);
 	String []selectedHosts = request.getParameterValues("selectedHost");
   	if( null != selectedHosts ){
-	  	for( int i=0;i<selectedHosts.length;i++){
-		//	System.out.println(selectedHosts[i]);
+	  	for( int i=0; i < selectedHosts.length; i++){
 			adapter.startMngConsole(selectedHosts[i]);
 	  	}
   	}
-  	// forward to the host listing
-  	javax.servlet.RequestDispatcher dispatcher =
-		request.getRequestDispatcher("ListHostsActive.jsp");
+
+    // Redirect
+    javax.servlet.RequestDispatcher dispatcher = request.getRequestDispatcher("host_list_active.jsp");
 	dispatcher.forward(request, response);
 %>

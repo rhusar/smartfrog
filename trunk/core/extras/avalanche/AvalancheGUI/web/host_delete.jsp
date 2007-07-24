@@ -1,4 +1,4 @@
-<!-- /**
+<% /**
 (C) Copyright 1998-2007 Hewlett-Packard Development Company, LP
 
 This library is free software; you can redistribute it and/or
@@ -16,21 +16,29 @@ License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 For more information: www.smartfrog.org
-*/
--->
+*/ %>
 <%@ page language="java" %>
-<!DOCTYPE HTML PUBLIC "-//w3c//dtd html 4.0 transitional//en">
-<html>
-<head>
-    <script type="text/javascript" src="utils.js.js"></script>
-</head>
+<%@	page import="org.smartfrog.avalanche.server.*"%>
+<%@ include file="InitBeans.jsp" %>
 
-<body bgcolor="#FFFFFF">
-<script>
-    setNextSubtitle("Home Page");
-</script>
+<%
+  	String errMsg = null; 
+  	HostManager manager = factory.getHostManager();
+  	
+  	if( null == manager ){
+  		errMsg = "Error connecting to hosts database" ;
+  		throw new Exception ( "Error connecting to hosts database" );
+  	}
+  	
+  	String[] selectedHosts = request.getParameterValues("selectedHost");
+    if( null != selectedHosts ){
+	  	for (int i = 0; i < selectedHosts.length; i++) {
+			manager.removeHost(selectedHosts[i]);
+              out.write(selectedHosts[i]);
+          }
+  	}
 
-Avalanche ...
-
-</body>
-</html>
+      // forward to the host listing
+  	//javax.servlet.RequestDispatcher dispatcher = request.getRequestDispatcher("host_list.jsp");
+	//dispatcher.forward(request, response);
+%>

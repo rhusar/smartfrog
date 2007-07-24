@@ -19,13 +19,12 @@ For more information: www.smartfrog.org
 */
 -->
 <%@ page language="java" %>
-
+<%@ include file="header.inc.jsp"%>
 <%@	page import="org.smartfrog.avalanche.settings.xdefault.*"%>
 <%@	page import="org.smartfrog.avalanche.core.module.*"%>
 <%@	page import="org.smartfrog.avalanche.server.*"%>
 <%@	page import="org.smartfrog.avalanche.core.host.*"%>
-  	
-<%@ include file="InitBeans.jsp" %>  	
+
 <%
     String errMsg = null; 
     HostManager manager = factory.getHostManager();
@@ -68,14 +67,8 @@ For more information: www.smartfrog.org
 	
 %>
 
-<!DOCTYPE HTML PUBLIC "-//w3c//dtd html 4.0 transitional//en">
-<html>
-<head>
-<%@ include file="common.jsp" %>
-</head>
-
 <script language="javascript">
-
+ <!--
 function submit(target){
     document.addHostFrm.action = target ;
     var hostId = <%=(hostId!=null)?("\""+hostId+"\""):null%> ;
@@ -136,14 +129,11 @@ function addRowInTable(table)
     table.getElementsByTagName("tbody")[0].appendChild(newRow);
 }
 
-</script>
-
-<body>
-<script>
 setNextSubtitle("Host Transfer Modes Page");
+    -->
 </script>
 
-<form id='addHostFrm' name='addHostFrm' method='post' action='SaveHost1.jsp?action=tm&&next=props&&hostId=<%=hostId %>'>
+<form id='addHostFrm' name='addHostFrm' method='post' action='host_save.jsp?action=tm&next=env&hostId=<%=hostId %>'>
 
 <!-- This is the page menu -->
 <br>
@@ -151,13 +141,13 @@ setNextSubtitle("Host Transfer Modes Page");
   <script>
     oneVoiceWritePageMenu("HostTM","header",
       "Host Properties",
-	    "javascript:submit('SaveHost1.jsp?action=tm&&next=props')",
+	    "javascript:submit('host_save.jsp?action=tm&next=env')",
       "Transfer Modes",
 	    "",
       "Access Modes",
-	    "javascript:submit('SaveHost1.jsp?action=tm&&next=am')",
+	    "javascript:submit('host_save.jsp?action=tm&next=am')",
       "Basic Settings",
-	    "javascript:submit('SaveHost1.jsp?action=tm&&next=bs')"
+	    "javascript:submit('host_save.jsp?action=tm&next=bs')"
     );
   </script>
 </div>
@@ -236,9 +226,4 @@ setNextSubtitle("Host Transfer Modes Page");
 </center>
 </form>
 
-<script language="JavaScript" type="text/javascript">
-        reconcileEventHandlers();
-</script>
-</body>
-
-</html>
+<%@ include file="footer.inc.jsp"%>

@@ -19,12 +19,12 @@ For more information: www.smartfrog.org
 */
 -->
 <%@ page language="java" %>
-
+<%@ include file="header.inc.jsp"%>
 <%@	page import="org.smartfrog.avalanche.core.module.*"%>
 <%@	page import="org.smartfrog.avalanche.server.*"%>
 <%@	page import="org.smartfrog.avalanche.core.host.*"%>
-
-<%@ include file="InitBeans.jsp" %>
+<h1>Saving host data...</h1>
+<%@ include file="footer.inc.jsp"%>
 
 <%
     String errMsg = null; 
@@ -146,7 +146,7 @@ For more information: www.smartfrog.org
 	    host.setTransferModes(transferModes);
 	    manager.setHost(host);
 	}
-    }else if( pageAction != null && pageAction.equals("props") ){
+    }else if( pageAction != null && pageAction.equals("env") ){
 	if( null != hostId && ! hostId.trim().equals("")){
 	    HostType host = manager.getHost(hostId.trim());
      
@@ -172,28 +172,25 @@ For more information: www.smartfrog.org
 	    manager.setHost(host);
 	}
     }
-     
-    String next = request.getParameter("next");
-    if( null == next ) 
-	    next = "am" ; 
 	    
-    javax.servlet.RequestDispatcher dispatcher = null ; 
-    if( next.equals("am")){
+    javax.servlet.RequestDispatcher dispatcher = null ;
+    dispatcher = request.getRequestDispatcher("host_setup_" + ((request.getParameter("next")==null)?"am":request.getParameter("next")) + ".jsp?hostId=" + request.getParameter("hostId"));
+/*    if( next.equals("am")){
 	// forward to the next page
-	dispatcher = request.getRequestDispatcher("HostAM.jsp?hostId=" +
+	dispatcher = request.getRequestDispatcher("host_setup_am.jsp?hostId=" +
 			hostId);
     }else if ( next.equals("tm")){
 	// forward to the next page
-	dispatcher = request.getRequestDispatcher("HostTM.jsp?hostId=" +
+	dispatcher = request.getRequestDispatcher("host_setup_tm.jsp?hostId=" +
 			hostId);
-    }else if ( next.equals("props")){
+    }else if ( next.equals("env")){
 	// forward to the next page
-	dispatcher = request.getRequestDispatcher("HostProps.jsp?hostId=" +
+	dispatcher = request.getRequestDispatcher("host_setup_env.jsp?hostId=" +
 			hostId);
     }else if ( next.equals("bs")){
 	// forward to the next page
-	dispatcher = request.getRequestDispatcher("HostBS.jsp?hostId=" +
+	dispatcher = request.getRequestDispatcher("host_setup_bs.jsp?hostId=" +
 			hostId);
-    }
+    }*/
     dispatcher.forward(request, response);
 %>

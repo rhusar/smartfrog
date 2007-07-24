@@ -171,7 +171,7 @@ For more information: www.smartfrog.org
                 "Add",
                 "javascript:toggle('newAction')",
                 "Delete",
-                "javascript:submit('SaveModule.jsp?pageAction=delAction&&moduleId=<%=moduleId%>&&version=<%=versionNumber%>&&distroId=<%=distroId %>')"
+                "javascript:submit('SaveModule.jsp?pageAction=delAction&moduleId=<%=moduleId%>&version=<%=versionNumber%>&&distroId=<%=distroId %>')"
 );
 </script>
 

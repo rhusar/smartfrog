@@ -19,15 +19,14 @@ For more information: www.smartfrog.org
 */
 -->
 <%@ page language="java" %>
-
+<%@ include file="header.inc.jsp"%>
 <%@	page import="org.smartfrog.avalanche.settings.xdefault.*"%>
 <%@	page import="org.smartfrog.avalanche.core.module.*"%>
 <%@	page import="org.smartfrog.avalanche.server.*"%>
 <%@	page import="org.smartfrog.avalanche.core.host.*"%>
-  
-<%@ include file="InitBeans.jsp" %>
-  	
-<% 
+
+
+<%
   	String errMsg = null; 
   	HostManager manager = factory.getHostManager();
   	
@@ -67,13 +66,8 @@ For more information: www.smartfrog.org
 	
 %>
 
-<!DOCTYPE HTML PUBLIC "-//w3c//dtd html 4.0 transitional//en">
-<html>
-<head>
-<%@ include file="common.jsp" %>
-</head>
-
 <script language="javascript">
+    <!--
 function submit(target){
 	document.addHostFrm.action = target ;
 	var hostId = <%=(hostId!=null)?("\""+hostId+"\""):null%> ;
@@ -115,14 +109,12 @@ function addRowInTable(table)
     newRow.appendChild(col2);  
     table.getElementsByTagName("tbody")[0].appendChild(newRow);
 }
-</script>
 
-<body>
-<script>
 setNextSubtitle("Host Properties Page");
+    -->
 </script>
 
-<form id='addHostFrm' name='addHostFrm' method='post' action='SaveHost1.jsp?action=props&&next=bs&&hostId=<%=hostId %>'>
+<form id='addHostFrm' name='addHostFrm' method='post' action='host_save.jsp?action=env&next=bs&hostId=<%=hostId %>'>
 
 <!-- This is the page menu -->
 <br>
@@ -132,11 +124,11 @@ setNextSubtitle("Host Properties Page");
       "Host Properties",
 	    "",
       "Transfer Modes",
-	    "javascript:submit('SaveHost1.jsp?action=props&&next=tm')",
+	    "javascript:submit('host_save.jsp?action=env&next=tm')",
       "Access Modes",
-	    "javascript:submit('SaveHost1.jsp?action=props&&next=am')",
+	    "javascript:submit('host_save.jsp?action=env&next=am')",
       "Basic Settings",
-	    "javascript:submit('SaveHost1.jsp?action=props&&next=bs')"
+	    "javascript:submit('host_save.jsp?action=env&next=bs')"
     );
   </script>
 </div>
@@ -205,9 +197,5 @@ setNextSubtitle("Host Properties Page");
 <input type='submit' name='save' value='Save Changes' class="btn">
 </center>
 </form>
-<script language="JavaScript" type="text/javascript">
-        reconcileEventHandlers();
-</script>
-</body>
 
-</html>
+<%@ include file="footer.inc.jsp"%>

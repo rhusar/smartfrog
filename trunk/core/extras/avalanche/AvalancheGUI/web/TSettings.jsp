@@ -385,5 +385,6 @@ Add Deployment Engine </a>
 <input type="submit" name="Save" value="Save Changes"></input>
 </form>
 </center>
-</body>
-</html>
+
+
+<%@ include file="footer.inc.jsp" %>

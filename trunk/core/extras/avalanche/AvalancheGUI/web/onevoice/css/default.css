@@ -124,7 +124,7 @@ ol {margin-left: 22px; padding-left: 0px;}
 	list-style-image:none;
 }
 ol li ol li {
-	list-style:lower-alpha;
+	list-style:lower-latin
 }
 ol li ol li ol li{
 	list-style:lower-roman;
@@ -474,7 +474,6 @@ tr.altRowColor td {
 
 th.sortable,th.sortedAscending,th.sortedDescending {
 	cursor:pointer;
-	cursor:hand;
 }
 
 
@@ -553,7 +552,6 @@ div.visualColumnHeader.sortedAscending div, div.visualColumnHeader.sortedAscendi
 
 div.visualColumnHeader.sortable,div.visualColumnHeader.sortedAscending,div.visualColumnHeader.sortedDescending {
 	cursor:pointer;
-	cursor:hand;
 }
 
 
@@ -603,7 +601,6 @@ div.tabOff {
 	border-right:2px solid #fff;
 
 	cursor:pointer;
-	cursor:hand;
 }
 div.tabOn {
 	background-color:#ccc;
@@ -705,7 +702,6 @@ input.hpButtonVerySmall {
 	font-family: Arial,sans-serif;
 	text-align:center;
 	cursor:pointer;
-	cursor:hand;
 }
 
 div.bWrapperUp,
@@ -844,7 +840,6 @@ div.treeDisclosure {
 	margin:0px;
 	padding:0px;
 	cursor:pointer;
-	cursor:hand;
 }
 /* various paddings and margins for alignment */
 
@@ -1275,7 +1270,6 @@ ul.dropdownMenu li {
 	list-style-image:none;
 	list-style-type:none;
 	cursor:pointer;
-	cursor:hand;
 	font-weight:normal;
 }
 ul.dropdownMenu ul.dropDownMenu li {
@@ -1408,7 +1402,7 @@ tr.treeTableTitleRowClosed div.treeControl {
 
 tr.treeTableTitleRowClosed div.treeTitle, tr.treeTableTitleRowOpen div.treeTitle {
 	padding-bottom:0px;
-	white-space:auto;
+	white-space:nowrap;
 }
 td.nested1,
 td.nested2,
