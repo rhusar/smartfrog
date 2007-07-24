@@ -1,4 +1,4 @@
-<!-- /**
+<% /*
 (C) Copyright 1998-2007 Hewlett-Packard Development Company, LP
 
 This library is free software; you can redistribute it and/or
@@ -16,76 +16,21 @@ License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 
 For more information: www.smartfrog.org
-*/
--->
+*/ %>
 <%-- $Id: ListHostsActive.jsp 478 2007-03-26 07:01:38Z ritu $ --%>
 <%@ page language="java" %>
-
+<%@ include file="header.inc.jsp" %>
 <%@ page import="org.smartfrog.avalanche.server.*" %>
 <%@ page import="org.smartfrog.avalanche.core.host.*" %>
 <%@ page import="org.smartfrog.avalanche.server.engines.sf.*" %>
 
-<%@ include file="InitBeans.jsp" %>
-
-<%
-    String errMsg = null;
-    HostManager manager = factory.getHostManager();
-
-    if (null == manager) {
-        errMsg = "Error connecting to hosts database";
-        throw new Exception("Error connecting to hosts database");
-    }
-
-    String[] hosts = manager.listHosts();
-
-%>
-
-<!DOCTYPE HTML PUBLIC "-//w3c//dtd html 4.0 transitional//en">
-<html>
-<head>
-    <%@ include file="common.jsp" %>
-</head>
-<script language="javascript">
-
-    function submit(target) {
-        document.hostListFrm.action = target;
-        document.hostListFrm.submit();
-    }
-
-    function doDeleteHosts(target) {
-        var selectors = document.getElementsByName("selectedHost");
-        var selectedHosts = new Array();
-
-        for (var i = 0; i < selectors.length; i++)
-        {
-            if (selectors[i].checked)
-                selectedHosts.push(selectors[i]);
-        }
-
-        var count = selectedHosts.length;
-        if (count == 0)
-        {
-            alert("You must select one or more hosts for this action.");
-            return;
-        }
-
-        var alertMsg = "This action will permanently delete ";
-        if (count == 1)
-            alertMsg += "one host."
-        else
-            alertMsg += count + " hosts."
-        alertMsg += " Are you sure you want to continue?";
-        if (confirm(alertMsg))
-            submit(target);
-    }
-</script>
-
-<body>
-<script>
+<script language="JavaScript" type="text/javascript">
+    <!--
     setNextSubtitle("List Active Hosts Page");
+    -->
 </script>
 
-<form id='hostListFrm' name='hostListFrm' method='post' >
+<form id="hostListFrm" name="hostListFrm" method="post" action="">
 
 <!-- This is the page menu -->
 <br/>
@@ -93,10 +38,10 @@ For more information: www.smartfrog.org
 <div align="center">
 <center>
 <div align="center" style="width: 95%;">
-    <script>
-        oneVoiceWritePageMenu("ListHostsActive", "header",
+    <script language="JavaScript" type="text/javascript">
+        oneVoiceWritePageMenu("ListActiveHost", "header",
                 "Add a host",
-                "javascript:submit('HostBS.jsp')"
+                "javascript:window.location.href='host_setup_bs.jsp'"
                 );
     </script>
 </div>
@@ -112,11 +57,20 @@ For more information: www.smartfrog.org
             <th>Manage</th>
             <th>Platform</th>
             <th>Status</th>
-            <!-- th>Console</th -->
         </tr>
     </thead>
     <tbody>
         <%
+            String errMsg = null;
+            HostManager manager = factory.getHostManager();
+
+            if (null == manager) {
+                errMsg = "Error connecting to hosts database";
+                throw new Exception("Error connecting to hosts database");
+            }
+
+            String[] hosts = manager.listHosts();
+
             String rowClass = "";
             SFAdapter adapter = new SFAdapter(factory);
             for (int i = 0; i < hosts.length; i++) {
@@ -159,12 +113,12 @@ For more information: www.smartfrog.org
                 <table cellspacing="0" cellpadding="0">
                     <tr>
                         <td>
-                            <a href="ActiveView.jsp?pageAction=viewSelected&<%=URLhostid%>">
+                            <a href="log_view.jsp?pageAction=viewSelected&<%=URLhostid%>">
                                 [Logs]
                             </a>
                         </td>
                         <td class="data">
-                            <a href="javascript:submit('HostBS.jsp?<%=URLhostid%>')">
+                            <a href="host_setup_bs.jsp?<%=URLhostid%>">
                                 [Settings]
                             </a>
                         </td>
@@ -176,30 +130,6 @@ For more information: www.smartfrog.org
             <td>
                 <%=state ? "Available" : "Not Available"%>
             </td>
-            <!-- td>
-	        <a href="javascript:submit('OpenConsole.jsp?<%=URLhostid%>')">
-	        [ManagementConsole]
-	        </a>
-	      </td>
-		<td>
-		<div  class="verticalButtonSet"><div><div>
-	    	<input type="button" class="hpButtonSmall" title="managementConsole" 
-		onclick="javascript:submit('OpenConsole.jsp?<%=URLhostid%>')"></input>
-		</div></div></div>
-		</td>
-		<td>
-		<div align="center" style="width: 95%;">
-  		<script>
-    			oneVoiceWritePageMenu("ListHostsActive","footer",
-      			"Management interface",
-  			"javascript:submit('OpenConsole.jsp?<%=URLhostid%>')");
-  		</script>
-		</div>
-		</td-->
-            <!-- td class="checkboxCell">
-	    		<input type="checkbox" rowselector="yes"
-			name="selectedHost" value="<%=hosts[i]%>"></input>
-		</td -->
         </tr>
         <%
             }
@@ -208,27 +138,11 @@ For more information: www.smartfrog.org
 </table>
 
 <br/>
-<div align="center" style="width: 95%;">
-    <script language="JavaScript" type="text/javascript">
-        oneVoiceWritePageMenu("ListHostsActive", "footer",
-                "Delete selected hosts",
-                "javascript:doDeleteHosts('DeleteHosts.jsp')",
-                "Stop Avalanche on selected hosts",
-                "javascript:submit('IgniteHost.jsp?pageAction=unIgnite')",
-                "Ignite selected hosts",
-                "javascript:submit('IgniteHost.jsp?pageAction=ignite')",
-                "Open Management Interface of selected hosts",
-                "javascript:submit('OpenConsole.jsp')"
-                );
-    </script>
-</div>
+
+<%@ include file="host_actions.inc.jsp"%>
 
 </center>
 </div>
 </form>
-<script language="JavaScript" type="text/javascript">
-    reconcileEventHandlers();
-</script>
-</body>
 
-</html>
+<%@ include file="footer.inc.jsp" %>

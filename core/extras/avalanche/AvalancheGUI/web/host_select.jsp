@@ -20,14 +20,12 @@ For more information: www.smartfrog.org
 -->
 <%-- $Id: SelectHost.jsp 478 2007-03-26 07:01:38Z ritu $ --%>
 <%@ page language="java" %>
-
+<%@ include file="header.inc.jsp" %>
 <%@	page import="org.smartfrog.avalanche.core.module.*"%>
 <%@	page import="org.smartfrog.avalanche.server.modules.*"%>
 <%@	page import="org.smartfrog.avalanche.server.*"%>
 <%@	page import="org.smartfrog.avalanche.settings.xdefault.*"%>
 <%@	page import="org.smartfrog.avalanche.settings.sfConfig.*"%>
-
-<%@ include file="InitBeans.jsp" %>
 
 <%
     String errMsg = null; 
@@ -103,14 +101,8 @@ For more information: www.smartfrog.org
     }
 %>
 
-<!DOCTYPE HTML PUBLIC "-//w3c//dtd html 4.0 transitional//en">
-<html>
-<head>
-<%@ include file="common.jsp" %>
-</head>
-
-<script language="javascript">
-
+<script language="JavaScript" type="text/javascript">
+<!--
 function submit(target){
 	document.moduleListFrm.action = target ;
 	document.moduleListFrm.submit();
@@ -230,12 +222,10 @@ function hideDefAttr( obj ) {
   obj.style.display = "none";
 }
 
+setNextSubtitle("Select Host Page");
+ -->
 </script>
 
-<body>
-<script>
-setNextSubtitle("Select Host Page");
-</script>
 
 <br/>
 <div align="center">
@@ -530,9 +520,4 @@ setNextSubtitle("Select Host Page");
 </center>
 </div>
 
-<script language="JavaScript" type="text/javascript">
-        reconcileEventHandlers();
-</script>
-
-</body>
-</html>
+<%@ include file="footer.inc.jsp"%>

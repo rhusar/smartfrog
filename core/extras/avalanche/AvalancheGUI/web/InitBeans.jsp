@@ -1,4 +1,4 @@
-<!-- /**
+<% /**
 (C) Copyright 1998-2007 Hewlett-Packard Development Company, LP
 
 This library is free software; you can redistribute it and/or
@@ -16,10 +16,11 @@ License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 For more information: www.smartfrog.org
-*/
--->
+*/ %>
+
 <%@ page language="java" %>
 <%@ page import="org.quartz.Scheduler"%>
+<%@ page import="org.smartfrog.avalanche.server.AvalancheFactory" %>
 
 <%
 	String avalancheHome = getServletContext().getInitParameter("avalancheHome");
@@ -29,6 +30,6 @@ For more information: www.smartfrog.org
 	class="org.smartfrog.avalanche.server.ServerSetup" scope="application"/>
 
 <%
-  	AvalancheFactory factory = setup.getFactory();
-	Scheduler scheduler = (Scheduler)getServletContext().getAttribute("scheduler");
+    AvalancheFactory factory = setup.getFactory();
+    Scheduler scheduler = (Scheduler) getServletContext().getAttribute("scheduler");
 %>

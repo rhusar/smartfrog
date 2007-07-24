@@ -69,7 +69,7 @@ For more information: www.smartfrog.org
 	}
     }
 
-    String []props = request.getParameterValues("prop");
+    String[] props = request.getParameterValues("prop");
     defSettings.setSystemPropertyArray(props);
 
     while( params.hasMoreElements()){

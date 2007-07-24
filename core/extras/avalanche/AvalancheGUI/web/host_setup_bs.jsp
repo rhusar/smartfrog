@@ -1,4 +1,4 @@
-<!-- /**
+<% /*
 (C) Copyright 1998-2007 Hewlett-Packard Development Company, LP
 
 This library is free software; you can redistribute it and/or
@@ -16,35 +16,31 @@ License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 For more information: www.smartfrog.org
-*/
--->
-<%-- $Id: HostBS.jsp 81 2006-05-30 06:09:38Z uppada $ --%>
+*/ %>
 <%@ page language="java" %>
-
+<%@ include file="header.inc.jsp"%>
 <%@	page import="org.smartfrog.avalanche.settings.xdefault.*"%>
 <%@	page import="org.smartfrog.avalanche.core.module.*"%>
 <%@	page import="org.smartfrog.avalanche.server.*"%>
 <%@	page import="org.smartfrog.avalanche.core.host.*"%>
-  
-<%@ include file="InitBeans.jsp" %>
 
-<% 
-  	String errMsg = null; 
+<%
+  	String errMsg = null;
   	HostManager manager = factory.getHostManager();
-  	
+
   	if( null == manager ){
   		errMsg = "Error connecting to hosts database" ;
   		throw new Exception ( "Error connecting to hosts database" );
   	}
-  	
+
   	SettingsManager settingsMgr = factory.getSettingsManager();
-  	SettingsType defSettings = settingsMgr.getDefaultSettings();  
-  	
+  	SettingsType defSettings = settingsMgr.getDefaultSettings();
+
   	String hostId = request.getParameter("hostId");
   	String os = null; 
   	String plaf = null ;
   	String arch = null ;
-  	
+
   	if( null != hostId ){
 	  	HostType host = manager.getHost(hostId);
 	  	if( null != host ){
@@ -56,57 +52,49 @@ For more information: www.smartfrog.org
 		  	}
 	  	}
 	}
-	
-	
-
 %>
 
-<!DOCTYPE HTML PUBLIC "-//w3c//dtd html 4.0 transitional//en">
-<html>
-<head>
-<%@ include file="common.jsp" %>
-</head>
-<script language="javascript">
+<script type="text/javascript" language="JavaScript">
+    <!--
+    setNextSubtitle("Host Basic Settings Page");
 
-function submit(target){
-	var hid = document.getElementById("hostId");
-	if(null != hid){
-		if( hid.value == null || hid.value == ""){
-			alert("Please enter valid Host Id");
-		}
-	}else{
-		document.addHostFrm.action = target ;
-		var hostId = <%=(hostId!=null)?("\""+hostId+"\""):null%> ;
-		if( hostId != null )
-			document.addHostFrm.action = target + "&&hostId=" + hostId ;
-			
-		document.addHostFrm.submit();
-	}
-}
+    function submit(target){
+        var hid = document.getElementById("hostId");
+        if(null != hid){
+            if( hid.value == null || hid.value == ""){
+                alert("Please enter valid Host Id");
+            }
+        }else{
+            document.addHostFrm.action = target ;
+            var hostId = <%=(hostId!=null)?("\""+hostId+"\""):null%> ;
+            if( hostId != null )
+                document.addHostFrm.action = target + "&hostId=" + hostId ;
+
+            document.addHostFrm.submit();
+        }
+    }
+
+    -->
 </script>
 
-<body>
-<script>
-setNextSubtitle("Host Basic Settings Page");
-</script>
-
-<%	if( null != hostId ){ %>
-<form id='addHostFrm' name='addHostFrm' method='post' action='SaveHost1.jsp?action=bs&&next=am&&hostId=<%=hostId %>'>
+<% if( null != hostId ){ %>
+    <form id='addHostFrm' name='addHostFrm' method='post' action='host_save.jsp?action=bs&next=am&hostId=<%=hostId %>'>
 <%}     else{ %>
-<form id='addHostFrm' name='addHostFrm' method='post' action='SaveHost1.jsp?action=bs&&next=am'>
-    <%      } %>
+    <form id='addHostFrm' name='addHostFrm' method='post' action='host_save.jsp?action=bs&next=am'>
+<%      } %>
 
 <!-- This is the page menu -->
 <br/>
-<div align="center" style="width: 95%;">
-  <script>
+
+<div align="center" style="width:95%;">
+  <script type="text/javascript" language="JavaScript">
     oneVoiceWritePageMenu("HostBS","header",
       "Host Properties",
-  	"javascript:submit('SaveHost1.jsp?action=bs&&next=props')",
+  	"javascript:submit('host_save.jsp?action=bs&next=env')",
       "Transfer Modes",
-  	"javascript:submit('SaveHost1.jsp?action=bs&&next=tm')",
+  	"javascript:submit('host_save.jsp?action=bs&next=tm')",
       "Access Modes",
-  	"javascript:submit('SaveHost1.jsp?action=bs&&next=am')",
+  	"javascript:submit('host_save.jsp?action=bs&next=am')",
       "Basic Settings",
   	""
     );
@@ -146,8 +134,7 @@ setNextSubtitle("Host Basic Settings Page");
 		String oses[] = defSettings.getOsArray();
 		for( int i=0;i<oses.length;i++){
 	%>	
-		    <option<%=((os!=null)&&os.equals(oses[i]))?" selected":""%>>			<%=oses[i]%>
-		    </option>
+		    <option<%=((os!=null)&&os.equals(oses[i]))?" selected":""%>><%=oses[i]%></option>
 	<%
 		}
 	%>
@@ -179,9 +166,7 @@ setNextSubtitle("Host Basic Settings Page");
 		    String archs[] = defSettings.getArchArray();
 		    for( int i=0;i<archs.length;i++){
 	%>	
-			<option<%=((arch!=null)&&arch.equals(archs[i]))?" selected":""%>>
-			    <%=archs[i]%>
-			</option>
+			<option<%=((arch!=null)&&arch.equals(archs[i]))?" selected":""%>><%=archs[i]%></option>
 	<%
 		    }
 	%>
@@ -194,9 +179,5 @@ setNextSubtitle("Host Basic Settings Page");
 <input type='submit' name='save' value='Save Changes' class="btn">
 </div>
 </form>
-<script language="JavaScript" type="text/javascript">
-        reconcileEventHandlers();
-</script>
-</body>
 
-</html>
+<%@ include file="footer.inc.jsp"%>

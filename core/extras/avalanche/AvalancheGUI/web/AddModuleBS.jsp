@@ -68,7 +68,7 @@ function submit(target){
 		document.addModuleFrm.action = target ;
 		var mId = <%=(moduleId!=null)?("\""+moduleId+"\""):null%> ;
 		if( mId != null )
-			document.addHostFrm.action = target + "&&hostId=" + mId ;
+			document.addHostFrm.action = target + "&hostId=" + mId ;
 			
 		document.addModuleFrm.submit();
 	}
@@ -99,7 +99,7 @@ setNextSubtitle("Add Module Basic Settings Page");
 <%@ include file="Message.jsp" %>
 
 <!-- Actual Body starts here -->
-<form name='addModuleFrm' method='post' action='SaveModule.jsp?pageAction=setMod&&moduleId=<%=moduleId%>'>
+<form name='addModuleFrm' method='post' action='SaveModule.jsp?pageAction=setMod&moduleId=<%=moduleId%>'>
 <table border="0" cellpadding="0" cellspacing="0" class="dataTable" id="addModuleTable">
   <caption>Module Basic Settings</caption>
   <tbody>

@@ -25,7 +25,7 @@ For more information: www.smartfrog.org
 	<security-constraint>
     <web-resource-collection>
      <web-resource-name>A Protected Page</web-resource-name>
-     <url-pattern>/Main.jsp</url-pattern>
+     <url-pattern>/main.jsp</url-pattern>
    </web-resource-collection>
 
    <auth-constraint>
@@ -35,7 +35,7 @@ For more information: www.smartfrog.org
 
   <login-config>
    <auth-method>DIGEST</auth-method>
-    <realm-name>Digest Authentication</realm-name>
+    <realm-name>Avalanche Portal</realm-name>
    <!--auth-method>FORM</auth-method>
    <form-login-config>
 	   <form-login-page>/login.jsp</form-login-page>
@@ -52,7 +52,7 @@ For more information: www.smartfrog.org
 	<description> Avalanche Demo GUI </description>
 	<context-param>
 		<param-name>avalancheHome</param-name>
-		<param-value>[Avalanche-Server directory goes here.]</param-value>
+		<param-value>C:\\project\\smartfrog\\core\\extras\\avalanche\\server</param-value>
 		<description>Path to Avalanche Home.</description>
 	</context-param>
 	<context-param>
@@ -62,17 +62,17 @@ For more information: www.smartfrog.org
 	</context-param>
 	<context-param>
 		<param-name>xmppServer</param-name>
-		<param-value>[XMPP server address goes here.]</param-value>
+		<param-value>TDoering</param-value>
 		<description>XMPP Server Address</description>
 	</context-param>
 	<context-param>
 		<param-name>xmppServerPort</param-name>
-		<param-value>5223</param-value>
+		<param-value>5222</param-value>
 		<description>XMPP Server Port</description>
 	</context-param>
 	<context-param>
 		<param-name>useSSLForXMPP</param-name>
-		<param-value>true</param-value>
+		<param-value>false</param-value>
 		<description>Default is true</description>
 	</context-param>
 	<context-param>

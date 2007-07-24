@@ -1,4 +1,4 @@
-<!-- /**
+<% /**
 (C) Copyright 1998-2007 Hewlett-Packard Development Company, LP
 
 This library is free software; you can redistribute it and/or
@@ -16,29 +16,14 @@ License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 For more information: www.smartfrog.org
-*/
--->
-<%-- $Id: HostGroups.jsp 50 2006-01-30 19:54:47Z sanjay $ --%>
+*/ %>
+
+
 <%@ page language="java" %>
-<!DOCTYPE HTML PUBLIC "-//w3c//dtd html 4.0 transitional//en">
-<html>
-<head>
-    <style><!--
-    body, td, a, p, .h {
-        font-family: arial, sans-serif;
-    }
+<%@ include file="header.inc.jsp"%>
 
-    .h {
-        font-size: 18px;
-    }
-
-    .q {
-        color: #0000cc;
-    }
-
-    -->
-    </style>
-    <script type="text/javascript" src="utils.js.js"></script>
+<script type="text/javascript" language="JavaScript">
+    <!--
     <script type="text/javascript">
         function toggle(divId)
         {
@@ -51,15 +36,12 @@ For more information: www.smartfrog.org
             }
         }
 
-    </script>
-</head>
-<body bgcolor="#FFFFFF">
-<script>
     setNextSubtitle("Host Groups Page");
+        -->
 </script>
 
 <p>Coming Soon ... </p>
 <hr color="#0000FF">
 
-</body>
-</html>
+
+<%@ include file="footer.inc.jsp" %>

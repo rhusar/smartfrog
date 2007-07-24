@@ -126,7 +126,7 @@ ButtonManager.prototype.init  = function() {
 		if (divs[i].className.indexOf("bWrapper")!=-1) {
 				
 			// some button styles might have two nested divs, making a 2px border, or three.  therefore we have to be careful when we look down inside the divs looking for the buttons. 
-			var button = this.getButtonChild(divs[i]);
+			var button = this.getButtonChild(divs[i])[0];
 
 			// looking up to see if we're in a vertical button set. 
 			var lookingForVerticalButtonSet = divs[i];
@@ -136,7 +136,8 @@ ButtonManager.prototype.init  = function() {
 			if (lookingForVerticalButtonSet) {
 				button.style.width = "100%";
 			}
-			else if ((!button.getAttribute("disableminimumwidth")) && (button.className.indexOf("shrinkWrapButton")==-1)){
+			/* DOES NOT WORK WITH FIREFOX?
+			else if ((!button.getAttribute('disableminimumwidth')) && (button.className.indexOf("shrinkWrapButton")==-1)){
 
 				
 				// setting widths based on which size button this is to be. 
@@ -188,7 +189,7 @@ ButtonManager.prototype.init  = function() {
 				else {
 					divs[i].className = "bWrapperDisabled";
 				}
-			}
+			}*/
 		}
 	}
 }

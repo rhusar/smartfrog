@@ -19,13 +19,12 @@ For more information: www.smartfrog.org
 */
 -->
 <%@ page language="java" %>
-
+<%@ include file="header.inc.jsp"%>
 <%@	page import="org.smartfrog.avalanche.settings.xdefault.*"%>
 <%@	page import="org.smartfrog.avalanche.core.module.*"%>
 <%@	page import="org.smartfrog.avalanche.server.*"%>
 <%@	page import="org.smartfrog.avalanche.core.host.*"%>
-  	
-<%@ include file="InitBeans.jsp" %>
+
 
 <%
   	String errMsg = null; 
@@ -67,19 +66,15 @@ For more information: www.smartfrog.org
 	}
 %>
 
-<!DOCTYPE HTML PUBLIC "-//w3c//dtd html 4.0 transitional//en">
-<html>
-<head>
-<%@ include file="common.jsp" %>
-</head>
 
 <script language="javascript">
+    <!--
 
 function submit(target){
 	document.hostAMFrm.action = target ;
 	var hostId = <%=(hostId!=null)?("\""+hostId+"\""):null%> ;
 	if( hostId != null )
-		document.hostAMFrm.action = target + "&&hostId=" + hostId ;
+		document.hostAMFrm.action = target + "&hostId=" + hostId ;
 	
 	document.hostAMFrm.submit();
 }
@@ -137,15 +132,11 @@ function submit(target){
 	   table.getElementsByTagName("tbody")[0].appendChild(newRow);
  }
 
-
-</script>
-
-<body>
-<script>
 setNextSubtitle("Host Access Modes Page");
+    -->
 </script>
 
-<form id='hostAMFrm' name='hostAMFrm' method='post' action='SaveHost1.jsp?action=am&&next=tm&&hostId=<%=hostId %>'>
+<form id='hostAMFrm' name='hostAMFrm' method='post' action='host_save.jsp?action=am&next=tm&hostId=<%=hostId %>'>
 
 <!-- This is the page menu -->
 <br>
@@ -153,13 +144,13 @@ setNextSubtitle("Host Access Modes Page");
   <script>
     oneVoiceWritePageMenu("HostAM","header",
       "Host Properties",
-	    "javascript:submit('SaveHost1.jsp?action=am&&next=props')",
+	    "javascript:window.location.href='host_save.jsp?action=am&next=env'",
       "Transfer Modes",
-	    "javascript:submit('SaveHost1.jsp?action=am&&next=tm')",
+	    "javascript:window.location.href='host_save.jsp?action=am&next=tm'",
       "Access Modes",
 	    "",
       "Basic Settings",
-	    "javascript:submit('SaveHost1.jsp?action=am&&next=bs')"
+	    "javascript:window.location.href='host_save.jsp?action=am&next=bs'"
     );
   </script>
 </div>
@@ -239,9 +230,6 @@ setNextSubtitle("Host Access Modes Page");
 <input type="submit" name="save" value="Save Changes" class="btn">
 </div>
 </form>
-<script language="JavaScript" type="text/javascript">
-        reconcileEventHandlers();
-</script>
-</body>
 
-</html>
+
+<%@ include file="footer.inc.jsp"%>
