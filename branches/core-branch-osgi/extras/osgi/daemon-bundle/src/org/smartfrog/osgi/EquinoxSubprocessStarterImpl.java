@@ -71,8 +71,12 @@ public class EquinoxSubprocessStarterImpl extends AbstractSubprocessStarter {
             // So that Equinox has enough time to start... Ideally we'd like to have a notification instead
             Thread.sleep(STARTUP_TIMEOUT);
 
+            if (log.isDebugEnabled())
+                log.debug("Trying to connect to Equinox subprocess. Host: 'localhost', port: " + consolePort);
+            
             socket = new Socket("localhost", consolePort);
             writer = new PrintWriter(socket.getOutputStream());
+
             for (int i=0; i<toInstall.length; i++) {
                 if (log.isDebugEnabled()) log.debug("Installing: " + toInstall[i].getLocation());
                 writer.println("install " + toInstall[i].getLocation());

@@ -56,7 +56,9 @@ public class URLClassLoadingEnvironment extends AbstractClassLoadingEnvironment 
     private void check(URL url) throws SmartFrogException {
         try {
             url.openStream();
-        } catch (IOException e) {
+        } catch (Exception e) {
+            // Throws IOExceptions, but also NPEs when the URL is well-formed but invalid according to a specific scheme
+            // (eg. http:foo/bar instead of http://foo/bar), in Sun Java 6 at least. 
             throw new SmartFrogException("The URL is unreachable: " + url, e);
         }
     }
