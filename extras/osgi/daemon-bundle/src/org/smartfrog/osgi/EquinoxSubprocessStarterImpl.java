@@ -1,41 +1,45 @@
 package org.smartfrog.osgi;
 
-import org.smartfrog.sfcore.componentdescription.ComponentDescription;
-import org.smartfrog.sfcore.processcompound.ProcessCompound;
-import org.smartfrog.sfcore.processcompound.AbstractSubprocessStarter;
+import org.eclipse.osgi.service.resolver.BundleDescription;
+import org.eclipse.osgi.service.resolver.PlatformAdmin;
+import org.eclipse.osgi.service.resolver.State;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceReference;
 import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
 import org.smartfrog.sfcore.common.SmartFrogCoreProperty;
-import org.osgi.framework.BundleContext;
+import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.componentdescription.ComponentDescription;
+import org.smartfrog.sfcore.logging.LogFactory;
+import org.smartfrog.sfcore.logging.LogSF;
+import org.smartfrog.sfcore.processcompound.AbstractSubprocessStarter;
+import org.smartfrog.sfcore.processcompound.ProcessCompound;
 
-import java.util.List;
-import java.net.Socket;
-import java.net.URL;
+import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.io.File;
+import java.net.Socket;
+import java.net.URL;
+import java.util.Arrays;
+import java.util.List;
+import java.util.ArrayList;
 
 public class EquinoxSubprocessStarterImpl extends AbstractSubprocessStarter {
-        
-    private static final String SMARTFROG_EXT_BUNDLE_LOCATION = "smartFrogExtensionBundleLocation";    
+    private final LogSF log = LogFactory.sfGetProcessLog();
     private static final String EQUINOX_CONSOLE_PORT = "equinoxConsolePort";
     private static final String EQUINOX_CONFIGURATION_AREA = "equinoxConfigurationArea";
-    private static final String DS_BUNDLE_LOCATION = "declarativeServicesBundleLocation";
-    private static final String SERVICES_BUNDLE_LOCATION = "servicesBundleLocation";
-    private static final String LOG_BUNDLE_LOCATION = "logBundleLocation";
-
-    private int consolePort = 0;
-    private String smartFrogBundleLocation = null;
-    private String smartFrogExtBundleLocation = null;
-    private String servicesBundleLocation = null;
-    private String logBundleLocation = null;
-    private String dsBundleLocation = null;
     // In milliseconds.
     private static final int STARTUP_TIMEOUT = 1000;
 
+    private int consolePort = 0;
+    private BundleDescription[] toInstall;    
+    private ProcessCompound parentProcess;
+    private ServiceReference platformSR;
 
     protected void addParameters(ProcessCompound parentProcess, List runCmd, String name, ComponentDescription cd) throws Exception {
+        this.parentProcess = parentProcess;
+
         consolePort = Integer.parseInt(getSystemProperty(EQUINOX_CONSOLE_PORT));
-        initRequiredBundlesLocations(parentProcess);
+        initRequiredBundlesLocations();
 
         addProcessAttributes(runCmd, name, cd);
         // This is supposed to be done by addProcessAttributes, but it adds nothings, whereas only this makes things work.
@@ -51,20 +55,92 @@ public class EquinoxSubprocessStarterImpl extends AbstractSubprocessStarter {
         runCmd.add(getConfigurationArea(name));
     }
 
+    protected void doPostStartupSteps() throws IOException, InterruptedException {
+        if (log.isDebugEnabled()) {
+            log.debug("Installing bundles: " + Arrays.toString(toInstall));
+        }
+
+        Socket socket = null;
+        PrintWriter writer = null;
+        try {
+            // So that Equinox has enough time to start... Ideally we'd like to have a notification instead
+            Thread.sleep(STARTUP_TIMEOUT);
+
+            socket = new Socket("localhost", consolePort);
+            writer = new PrintWriter(socket.getOutputStream());
+            for (int i=0; i<toInstall.length; i++) {
+                if (log.isDebugEnabled()) log.debug("Installing: " + toInstall[i].getLocation());
+                writer.println("install " + toInstall[i].getLocation());
+                if (isNotFragment(i)) {
+                    // 0 is the bundle ID of the system bundle, which is already there
+                    writer.println("start " + (i + 1));
+                }
+            }
+
+        } finally {
+            if (writer != null) writer.close();
+            if (socket != null) socket.close();
+        }
+    }
+
+    private boolean isNotFragment(int i) {
+        return toInstall[i].getHost() == null;
+    }
+
     private String getConfigurationArea(String name) throws IOException {
         String configArea = getSystemProperty(EQUINOX_CONFIGURATION_AREA);
         if (configArea == null) configArea = createTempDir(name);
         return configArea;
     }
 
-    private void initRequiredBundlesLocations(ProcessCompound parentProcess) throws Exception {
-        smartFrogBundleLocation = getSmartFrogBundleLocation(parentProcess);
+    private void initRequiredBundlesLocations() throws Exception {
+        
+        BundleDescription daemonDescription = getDaemonDescription();
+        BundleDescription[] prerequisites = getPrerequisites();
 
-        // TODO: Use the OSGi Bundle Repository for those
-        servicesBundleLocation = getSystemProperty(SERVICES_BUNDLE_LOCATION);
-        logBundleLocation = getSystemProperty(LOG_BUNDLE_LOCATION);
-        dsBundleLocation = getSystemProperty(DS_BUNDLE_LOCATION);
-        smartFrogExtBundleLocation = getSystemProperty(SMARTFROG_EXT_BUNDLE_LOCATION);
+        toInstall = new BundleDescription[prerequisites.length + 1];
+        System.arraycopy(prerequisites, 0, toInstall, 0, prerequisites.length);
+        toInstall[toInstall.length - 1] = daemonDescription;
+
+        getDaemonBundleContext().ungetService(platformSR);
+    }
+
+    private BundleDescription[] getPrerequisites() throws Exception {
+        // StateHelper.getPrerequisites returns weird things, and only takes into account static dependencies
+        // (while we need a LogService implementation). So we do it by hand for now
+        List prereq = new ArrayList();
+        prereq.add(getBundleDescription("org.eclipse.osgi.services"));
+        prereq.add(getBundleDescription("org.eclipse.equinox.log"));
+        prereq.add(getBundleDescription("org.eclipse.equinox.ds"));
+        prereq.add(getBundleDescription("org.smartfrog.extension.security"));
+        return (BundleDescription[])
+                prereq.toArray(new BundleDescription[prereq.size()]);
+    }
+
+    private BundleDescription getBundleDescription(final String symbolicName) throws Exception {
+        // Can have several bundles with the same symbolic name but different versions
+        BundleDescription[] bundles = getPlatformState().getBundles(symbolicName);
+        if (bundles.length == 0) throw new IllegalStateException("Bundle not installed: " + symbolicName);
+        return bundles[0];
+    }
+
+    private BundleDescription getDaemonDescription() throws Exception {
+        final BundleContext context = getDaemonBundleContext();
+        return getPlatformState().getBundle(context.getBundle().getBundleId());
+    }
+
+    private State getPlatformState() throws Exception {
+        PlatformAdmin platformAdmin = getPlatformAdminService();
+        // false : State is immutable, will throw exceptions if changes are attempted
+        return platformAdmin.getState(false);
+    }
+
+    private PlatformAdmin getPlatformAdminService() throws Exception {
+        final BundleContext daemonBC = getDaemonBundleContext();
+        platformSR = daemonBC.getServiceReference("org.eclipse.osgi.service.resolver.PlatformAdmin");
+        if (platformSR == null) throw new SmartFrogException
+                ("The Equinox PlatformAdmin service is not available. Cannot start a new Equinox instance.", parentProcess);
+        return (PlatformAdmin) daemonBC.getService(platformSR);
     }
 
     private String getSystemProperty(final String property) {
@@ -76,11 +152,7 @@ public class EquinoxSubprocessStarterImpl extends AbstractSubprocessStarter {
         return new URL(bundleURL).getFile();
     }
 
-    private String getSmartFrogBundleLocation(ProcessCompound parentProcess) throws Exception {
-        return getDaemonBundleContext(parentProcess).getBundle().getLocation();
-    }
-
-    private BundleContext getDaemonBundleContext(ProcessCompound parentProcess) throws Exception {
+    private BundleContext getDaemonBundleContext() throws Exception {
         return (BundleContext) parentProcess.sfResolveHere(SmartFrogCoreKeys.SF_CORE_BUNDLE_CONTEXT);
     }
 
@@ -90,30 +162,5 @@ public class EquinoxSubprocessStarterImpl extends AbstractSubprocessStarter {
         if (!tempFile.mkdir()) throw new IOException("Could not create temporary directory");
         return tempFile.getAbsolutePath();
     }
-    
-    protected void doPostStartupSteps() throws IOException, InterruptedException {
-        Socket socket = null;
-        PrintWriter writer = null;
-        try {
-            // So that Equinox has enough time to start... Ideally we'd like to have a notification instead
-            Thread.sleep(STARTUP_TIMEOUT);
 
-            socket = new Socket("localhost", consolePort);
-            writer = new PrintWriter(socket.getOutputStream());
-
-            writer.println("install " + servicesBundleLocation);
-            writer.println("start 1");
-            writer.println("install " + logBundleLocation);
-            writer.println("start 2");
-            writer.println("install " + dsBundleLocation);
-            writer.println("start 3");
-            writer.println("install " + smartFrogExtBundleLocation);
-            // Extension bundles cannot be started
-            writer.println("install " + smartFrogBundleLocation);
-            writer.println("start 5");
-        } finally {
-            if (writer != null) writer.close();
-            if (socket != null) socket.close();            
-        }
-    }
 }

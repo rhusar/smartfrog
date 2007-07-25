@@ -112,7 +112,7 @@ public class SFDeployer implements MessageKeys {
                 deployer = (ComponentDeployer) component.sfResolve(deployerRef);
             } catch (ClassCastException e) {
                 throw wrongType("The " + SmartFrogCoreKeys.SF_DEPLOYER 
-                                + " attribute must be a ComponentDeployer", e, component);
+                                + " attribute must be a ComponentDeployer.", e, component);
             }
             // TODO: Remove hack
             /*
@@ -186,7 +186,7 @@ public class SFDeployer implements MessageKeys {
             (String msg, ClassCastException e, ComponentDescription component)
     {
         return new SmartFrogResolutionException(
-                msg + " Faulty description:"
+                msg + " Faulty description: "
                         + System.getProperty("line.separator")
                         + component,
                 e);
