@@ -10,7 +10,7 @@ usage() {
     echo "$1"
     cat<<END
 Usage:  $0 -h|--help
-        $0 -t|--target targethost [-e|--environment env_description_URL.sf [env_description_URL.sf...]]
+        $0 -t|--target targethost [-p|--parser parser_env_description_URL.sf [parser_env_description_URL.sf...]]
         -a|--application [AppName] description_URL.sf [-a|--application [AppName] description_URL.sf...]
 END
     if [ ! -z $2 ]; then
@@ -91,7 +91,7 @@ while [ ! -z $1 ]; do
                 shift
             done
             if [ -z "$ENVSCRIPTS" ]; then
-                usage "At least one environment description is needed if the -e option is used."
+                usage "At least one parser environment description is needed if the --parser option is used."
             fi
             ;;
 

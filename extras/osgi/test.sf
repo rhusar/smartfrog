@@ -20,7 +20,8 @@ sfConfig extends Compound {
         // The new Prim syntax
         sfMeta extends DATA {
             sfFactory LAZY envTarget:clEnvTest;
-            sfClass "org.smartfrog.osgi.test.TestImpl";
+            // the factory will look upwards too so no need to repeat sfClass if already provided. Can be used to override it though
+            // sfClass "org.smartfrog.osgi.test.TestImpl";
         }
 
         message "Servez a ce monsieur, le vieux petit juge blond assis au fond, une biere hollandaise et des kiwis, parce qu'il y tient.";
