@@ -10,6 +10,8 @@ import org.smartfrog.sfcore.parser.ParseTimeResourceFactory;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.reference.Function;
+import org.smartfrog.sfcore.reference.ReferencePart;
+import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.security.SFSecurity;
 
 import java.io.IOException;
@@ -19,12 +21,15 @@ import java.net.URL;
 public abstract class AbstractClassLoadingEnvironment extends PrimImpl
         implements PrimFactory, ParseTimeResourceFactory
 {
+    private static final Reference sfClassReference = new Reference(
+            ReferencePart.attrib(SmartFrogCoreKeys.SF_CLASS)
+    );
 
     public final Prim getComponent(ComponentDescription askedFor) throws SmartFrogDeploymentException {
         String className = null;
         try {
 
-            className = (String) askedFor.sfResolveHere(SmartFrogCoreKeys.SF_CLASS);
+            className = (String) askedFor.sfResolve(sfClassReference);
             return (Prim) newInstance(className);
 
         } catch (ClassNotFoundException e) {
