@@ -7,7 +7,7 @@ sfConfig extends Compound {
         sfProcessComponentName "envTarget";
 
         clEnvTest extends OSGiBundle {
-            location "file:/home/olivier/Dev/SmartFrog-core/extras/osgi/test-bundle/dist/lib/sf-test-bundle-3.11.003dev.jar";
+            location "http://dhcp-168-86/~olivier/sf-test-bundle-3.11.003dev.jar";
         }
 
         deployerTest extends PrimProcessDeployer;

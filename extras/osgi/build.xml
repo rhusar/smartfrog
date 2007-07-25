@@ -43,12 +43,14 @@
     </target>
 
     <target name="copyJarsAround">
-        <!--
-        <copy file="./build/${bundle.filename}"
-              todir="C:\\knopflerfish_osgi_2.0.1\\knopflerfish.org\\osgi"
-              overwrite="true"/>
-        -->
         <copy todir="${user.home}/Dev/equinox/plugins" overwrite="true">
+            <fileset file="daemon-bundle/dist/lib/sf-daemon-bundle*.jar"/>
+            <fileset file="rmiclassloading-extension-bundle/dist/lib/sf-rmi-spi-bundle*.jar"/>
+            <fileset file="test-bundle/dist/lib/sf-test-bundle*.jar"/>
+
+        </copy>
+
+        <copy todir="${user.home}/public_html" overwrite="true">
             <fileset file="daemon-bundle/dist/lib/sf-daemon-bundle*.jar"/>
             <fileset file="rmiclassloading-extension-bundle/dist/lib/sf-rmi-spi-bundle*.jar"/>
             <fileset file="test-bundle/dist/lib/sf-test-bundle*.jar"/>
