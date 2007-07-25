@@ -28,10 +28,12 @@ public class EquinoxSubprocessStarterImpl extends AbstractSubprocessStarter {
     private static final String EQUINOX_CONSOLE_PORT_START = "baseEquinoxConsolePort";
     private static final String EQUINOX_CONFIGURATION_AREA = "equinoxConfigurationArea";
     // In milliseconds.
-    private static final int STARTUP_TIMEOUT = 1000;
+    private static final int STARTUP_TIMEOUT = 4000;
 
     private int consolePort = 0;
-    // Used to increment base port so that several subprocesses can be started
+
+    // Used to increment base port so that several subprocesses can be started.
+    // Getting a subprocess ID from caller would be nicer
     private static int subprocessNumber = 0;
 
     private BundleDescription[] toInstall;
