@@ -38,7 +38,6 @@ public class SFAvalancheEventService extends PrimImpl implements Prim {
 	
 	private String xmppServer ;
 	private int xmppServerPort = XMPPAdapter.default_xmpp_port;
-	private String xmppPassword ; 
 	private boolean useSSL = true;
 	private String xmppListenerUserId ;
 	private XMPPAdapter adapter ;
@@ -73,12 +72,11 @@ public class SFAvalancheEventService extends PrimImpl implements Prim {
 
 		// xmpp username is ip address of host 
 		try{
-			String userName = InetAddress.getLocalHost().getHostName();
-			adapter.setXmppUserName(userName);
+			String userName = InetAddress.getLocalHost().getHostName().toLowerCase();
 			//TODO: currently uname and pwd are same for sending events
 			// change it 
-			xmppPassword = userName; 
-			adapter.setXmppPassword(xmppPassword);
+			adapter.setXmppUserName(userName);
+			adapter.setXmppPassword(userName);
 		}catch(UnknownHostException e){
 			// should never happen. 
 			throw new SmartFrogException(e);

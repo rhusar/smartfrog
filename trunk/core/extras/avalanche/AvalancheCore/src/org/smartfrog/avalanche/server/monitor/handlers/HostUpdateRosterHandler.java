@@ -49,7 +49,7 @@ public class HostUpdateRosterHandler implements HostUpdateHandler {
 
         try {
             java.net.InetAddress inetAdd = java.net.InetAddress.getByName(h.getId());
-            hostAddress = inetAdd.getHostName() ;
+            hostAddress = inetAdd.getHostName().toLowerCase() ;
         } catch (Exception e) {
             log.error("Host unknown. " + e);
         }
@@ -74,7 +74,7 @@ public class HostUpdateRosterHandler implements HostUpdateHandler {
 
         try {
             java.net.InetAddress inetAdd = java.net.InetAddress.getByName(hostId);
-            hostAddress = inetAdd.getHostName();
+            hostAddress = inetAdd.getHostName().toLowerCase();
         } catch (Exception e) {
             log.error("Host unknown. " + e);
         }
