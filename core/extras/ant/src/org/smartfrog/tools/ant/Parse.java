@@ -63,6 +63,10 @@ public class Parse extends TaskBase implements SysPropertyAdder {
      */
     private boolean logStackTrace = false;
 
+    /**
+     * an optional file of parser targets
+     */
+    private File  parserTargetsFile=null;
 
     /**
      * verbose flag
@@ -83,6 +87,8 @@ public class Parse extends TaskBase implements SysPropertyAdder {
      * parser subprocess
      */
     private Java parser;
+    private static final String ERROR_TOO_MANY_FILES =
+        "Cannot have a parserTargetsFile and a fileset of files to parse";
 
     /**
      * Called by the project to let the task initialize properly. The default
@@ -111,6 +117,15 @@ public class Parse extends TaskBase implements SysPropertyAdder {
         FileSet fs = new FileSet();
         fs.setFile(file);
         addSource(fs);
+    }
+
+    /**
+     * Name a file containing a list of parser targets, one per line.
+     * This or a fileset is required
+     * @param parserTargetsFile file containing files to parse
+     */
+    public void setParserTargetsFile(File parserTargetsFile) {
+        this.parserTargetsFile = parserTargetsFile;
     }
 
     /**
@@ -155,49 +170,34 @@ public class Parse extends TaskBase implements SysPropertyAdder {
      * @throws BuildException
      */
     public void execute() throws BuildException {
-
-        List files = new LinkedList();
-        Iterator src = source.iterator();
-        while (src.hasNext()) {
-            FileSet set = (FileSet) src.next();
-            DirectoryScanner scanner = set.getDirectoryScanner(getProject());
-            String[] included = scanner.getIncludedFiles();
-            for (int i = 0; i < included.length; i++) {
-                File parsefile = new File(scanner.getBasedir(), included[i]);
-                log("scanning " + parsefile, Project.MSG_VERBOSE);
-                files.add(parsefile.toString());
-            }
-        }
-        //at this point the files are all scanned.
-        // Verify we have something interesting
-        if (files.isEmpty()) {
-            log("No source files");
-            return;
-        }
-
-        //now save them to a file.
-        //NB: ignore the deprecation, as this is the only 1.6 compatible tactic
-        File tempFile = FileUtils.newFileUtils().createTempFile("parse",
-                ".txt", null);
-        PrintWriter out = null;
-
+        File tempFile=null;
+        File targetFile;
         int err;
         try {
-            try {
-                out = new PrintWriter(new FileOutputStream(tempFile));
-                src = files.iterator();
-                while (src.hasNext()) {
-                    String s = (String) src.next();
-                    out.println(s);
+
+            //NB: ignore the deprecation, as this is the only 1.6 compatible tactic
+
+            tempFile = FileUtils.newFileUtils().createTempFile("parse",
+                ".txt", null);
+            int filesCount = buildParserTargetsFile(tempFile);
+
+            if(parserTargetsFile!=null) {
+                if(filesCount>0) {
+                    throw new BuildException(ERROR_TOO_MANY_FILES);
+                } else {
+                    targetFile=parserTargetsFile;
                 }
-            } catch (IOException e) {
-                throw new BuildException("while saving to " + tempFile, e);
-            } finally {
-                FileUtils.close(out);
+            } else {
+                targetFile = tempFile;
+                // Verify we have something interesting
+                if (filesCount == 0) {
+                    log("No source files");
+                    return;
+                }
+
             }
 
-
-            //now lets configure the parser
+            //now let's configure the parser
             setupClasspath(parser);
             parser.setFork(true);
             //and add various options to it
@@ -212,12 +212,14 @@ public class Parse extends TaskBase implements SysPropertyAdder {
             }
             parser.createArg().setValue(
                     SmartFrogJVMProperties.PARSER_OPTION_FILENAME);
-            parser.createArg().setFile(tempFile);
+            parser.createArg().setFile(targetFile);
 
             //run it
             err = parser.executeJava();
         } finally {
-            tempFile.delete();
+            if(tempFile!=null) {
+                tempFile.delete();
+            }
         }
 
         //process the results
@@ -234,6 +236,43 @@ public class Parse extends TaskBase implements SysPropertyAdder {
                 throw new BuildException("Java application error code " + err);
         }
 
+    }
+
+    private int buildParserTargetsFile(File tempFile) {
+        int filesCount=0;
+
+        List files = new LinkedList();
+        Iterator src = source.iterator();
+        while (src.hasNext()) {
+            FileSet set = (FileSet) src.next();
+            DirectoryScanner scanner = set.getDirectoryScanner(getProject());
+            String[] included = scanner.getIncludedFiles();
+            for (int i = 0; i < included.length; i++) {
+                File parsefile = new File(scanner.getBasedir(), included[i]);
+                log("scanning " + parsefile, Project.MSG_VERBOSE);
+                files.add(parsefile.toString());
+                filesCount++;
+            }
+        }
+        //at this point the files are all scanned.
+
+        //now save them to a file.
+        if (filesCount>0) {
+            PrintWriter out = null;
+            try {
+                out = new PrintWriter(new FileOutputStream(tempFile));
+                src = files.iterator();
+                while (src.hasNext()) {
+                    String s = (String) src.next();
+                    out.println(s);
+                }
+            } catch (IOException e) {
+                throw new BuildException("while saving to " + tempFile, e);
+            } finally {
+                FileUtils.close(out);
+            }
+        }
+        return filesCount;
     }
 
     /**
