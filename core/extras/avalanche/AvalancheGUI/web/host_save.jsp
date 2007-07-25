@@ -33,38 +33,39 @@ For more information: www.smartfrog.org
 	    errMsg = "Error connecting to hosts database" ;
 	    throw new Exception ( "Error connecting to hosts database" );
     }
-    
+
+    // Retrieve parameters
     String hostId = request.getParameter("hostId");
-    
     String pageAction = request.getParameter("action");
     
     if( pageAction != null && pageAction.equals("bs") ){
-	    // save basic settings
+	    // Retrieve parameters and save them
 	    String os = request.getParameter("os");
 	    String plaf = request.getParameter("platform");
 	    String arch = request.getParameter("arch");
-	    
-	    if( null != hostId && ! hostId.trim().equals("")){
-		HostType host = manager.getHost(hostId.trim());
 
-		if ( null == host ){
-		    host = manager.newHost(hostId);
-		    PlatformSelectorType pst = host.addNewPlatformSelector();
-		    pst.setOs(os);
-		    pst.setPlatform(plaf);
-		    pst.setArch(arch);
-		}else{
-		    PlatformSelectorType pst = host.getPlatformSelector();
-		    if( null == pst) {
-			pst = host.addNewPlatformSelector();
-		    }
-		    pst.setOs(os);
-		    pst.setPlatform(plaf);
-		    pst.setArch(arch);
-		}
-		
-		manager.setHost(host);
-	    }
+        if (hostId != null) {
+            hostId = hostId.trim().toLowerCase();
+            if (!hostId.equals("")) {
+                HostType host = manager.getHost(hostId.trim());
+                if (host == null) {
+                    host = manager.newHost(hostId);
+                    PlatformSelectorType pst = host.addNewPlatformSelector();
+                    pst.setOs(os);
+                    pst.setPlatform(plaf);
+                    pst.setArch(arch);
+                } else {
+                    PlatformSelectorType pst = host.getPlatformSelector();
+                    if (null == pst) {
+                        pst = host.addNewPlatformSelector();
+                    }
+                    pst.setOs(os);
+                    pst.setPlatform(plaf);
+                    pst.setArch(arch);
+                }
+                manager.setHost(host);
+            }
+        }
      }else if( pageAction != null && pageAction.equals("am") ){	
 	if( null != hostId && ! hostId.trim().equals("")){
 	    HostType host = manager.getHost(hostId.trim());
@@ -173,8 +174,8 @@ For more information: www.smartfrog.org
 	}
     }
 	    
-    javax.servlet.RequestDispatcher dispatcher = null ;
-    dispatcher = request.getRequestDispatcher("host_setup_" + ((request.getParameter("next")==null)?"am":request.getParameter("next")) + ".jsp?hostId=" + request.getParameter("hostId"));
+    //javax.servlet.RequestDispatcher dispatcher = null ;
+    //dispatcher = request.getRequestDispatcher();
 /*    if( next.equals("am")){
 	// forward to the next page
 	dispatcher = request.getRequestDispatcher("host_setup_am.jsp?hostId=" +
@@ -192,5 +193,6 @@ For more information: www.smartfrog.org
 	dispatcher = request.getRequestDispatcher("host_setup_bs.jsp?hostId=" +
 			hostId);
     }*/
-    dispatcher.forward(request, response);
+    //dispatcher.forward(request, response);
+    response.sendRedirect("host_setup_" + ((request.getParameter("next")==null)?"am":request.getParameter("next")) + ".jsp?hostId=" + request.getParameter("hostId"));
 %>
