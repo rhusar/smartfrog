@@ -203,8 +203,15 @@ public class SFUnitTestSuiteImpl extends AbstractTestSuite
     }
 
     /**
-     * Test one testblock by <ol> <li> Subscribing to lifecycle events</li> <li> Starting it.</li> <li> Waiting for it
-     * to finish </li> <li> Logging whether it failed or not</li> </li>
+     * Test one testblock.
+     *
+     * TestC
+     * <ol>
+     * <li> Subscribing to lifecycle events</li>
+     * <li> Starting it.</li>
+     * <li> Waiting for it to finish </li>
+     * <li> Logging whether it failed or not</li>
+     * </ol>
      *
      * @param testBlock component to test
      * @return true if the test worked
@@ -236,7 +243,7 @@ public class SFUnitTestSuiteImpl extends AbstractTestSuite
      * @throws SmartFrogException smartfrog problems
      * @throws RemoteException network problems
      */
-    private synchronized boolean deployNextChild() throws SmartFrogException, RemoteException {
+    private boolean deployNextChild() throws SmartFrogException, RemoteException {
         if (testChildrenIterator.hasNext()) {
             testOneChild(testChildrenIterator.next());
             return true;
