@@ -184,34 +184,40 @@ public class ParseOptionSet {
     /**
      * Loads list from file.
      * @param url String url
-     * @return Vector
+     * @return Vector of parsed lines
      */
     private synchronized Vector loadListOfFiles(String url) {
       String thisLine;
       Vector list=new Vector();
-      try {
+        LineNumberReader file=null;
+        try {
           //Do not allow other threads to read from the input
           //or write to the output while this is taking place
-          LineNumberReader file = new LineNumberReader(
+          file = new LineNumberReader(
               new FileReader(url));
           //Loop through each line and add non-blank
           //lines to the Vector
-          while ( (thisLine = file.readLine()) != null) {
-              list.add(thisLine.trim());
+            while ((thisLine = file.readLine()) != null) {
+                String line = thisLine.trim();
+                if (line.length() > 0 && line.charAt(0) != '#') {
+                    list.add(line);
+                }
           }
-          file.close();
       } catch (IOException ex) {
          errorString = ex.getMessage();
          //Logger.log(ex);
          if (SFSystem.sfLog().isErrorEnabled()) {
              SFSystem.sfLog().error(ex);
          }
-      } catch (Exception ex){
-          //Logger.log(ex);
-          if (SFSystem.sfLog().isErrorEnabled()) {
-              SFSystem.sfLog().error(ex);
-          }
-      }
+      } finally {
+            if(file!=null) {
+                try {
+                    file.close();
+                } catch (IOException e) {
+                    SFSystem.sfLog().error(e);
+                }
+            }
+        }
       return list;
    }
 
