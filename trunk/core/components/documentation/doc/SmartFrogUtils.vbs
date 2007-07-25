@@ -4,16 +4,8 @@ REM  *****  BASIC  *****
 
 ' see http://www.oooforum.org/forum/viewtopic.phtml?t=3772
 
-Sub test( cArg )
-   Print "|"+cArg+"|"
-End Sub
-
-Sub debugRun()
-	 ConvertWordToPDF("/home/slo/Projects/SmartFrog/Forge/core/components/documentation/src/documentation/content/xdocs/smartfrogdoc/kernel/sfWorkflow.sxw")
-end sub
-
 Sub ConvertWordToPDF( cFile)
-	ConvertToPDF(cFile,False,true)
+    ConvertToPDF(cFile,False,true)
 end sub
 
 Sub InnerConvertToPDF( cFile ,hidden,quiet)
@@ -34,7 +26,7 @@ Sub InnerConvertToPDF( cFile ,hidden,quiet)
     file2 = Left( cFile, Len( cFile ) - 4 ) + ".pdf"
     url2 = ConvertToURL( file2 )
     if not quiet then
-   		Print "["+cURL+"] => ["+url2+"]"
+        Print "["+cURL+"] => ["+url2+"]"
     end if
     ' Save the document using a filter.
     oDoc.storeToURL( url2, Array(exportValue,))
@@ -59,40 +51,26 @@ End Function
 ' Convert a bunch of SXW Documents.
 
 Sub BulkConvert(cFolder)
-	InnerConvert(cFolder,true)
+    InnerConvert(cFolder,true)
 end sub
 
 Sub InnerConvert(cFolder,quiet)
 ' This is the hardcoded pathname to a folder containing sxw files.
 'cFolder = "/home/someone/temp"
 
-	' Get the pathname of each file within the folder.
-	pattern=cFolder + "/*.*"
-	cFile = Dir$( pattern )
-	converted = 0
-	Do While cFile <> ""
-	' If it is not a directory...
-		If cFile <> "." And cFile <> ".." and  LCase( Right( cFile, 4 ) ) = ".sxw" Then
-			converted = converted + 1
-			InnerConvertToPDF(cFolder+"/"+cFile,false,quiet)
-			' Open the document.
-			'oDoc = StarDesktop.loadComponentFromURL( ConvertToUrl( cFolder + "/" + cFile ), "_blank", 0, Array() )
-
-			' Prepare new filename
-			'cNewName = Left( cFile, Len( cFile ) - 4 )
-			' Save it in OOo format.
-			'oDoc.storeToURL( ConvertToUrl( cFolder + "/" + cNewName + ".sxW" ), Array() )
-
-			' Export it using a filter.
-			'oDoc.storeToURL( ConvertToUrl( cFolder + "/" + cNewName + ".pdf" ),_
-			'Array( MakePropertyValue( "FilterName", "writer_pdf_Export" ) ) )
-
-			' Close the document.
-			'oDoc.dispose()
-		EndIf
-	cFile = Dir$
-	Loop
-	if converted=0 then
-		Print "Warning, no files matching "+pattern+" were found"
+    ' Get the pathname of each file within the folder.
+    pattern=cFolder + "/*.*"
+    cFile = Dir$( pattern )
+    converted = 0
+    Do While cFile <> ""
+    ' If it is not a directory...
+        If cFile <> "." And cFile <> ".." and  LCase( Right( cFile, 4 ) ) = ".sxw" Then
+            converted = converted + 1
+            InnerConvertToPDF(cFolder+"/"+cFile,false,quiet)
+        EndIf
+    cFile = Dir$
+    Loop
+    if converted=0 then
+        Print "Warning, no files matching "+pattern+" were found"
     end if
 End Sub
