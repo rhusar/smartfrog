@@ -231,6 +231,7 @@
     
     <newdir name="build.rpm.dir" location="${build.dir}/rpm" />
 
+    <newdir name="rpm.root.dir" location="${build.rpm.dir}/root/" />
 
     <newdir name="build.rpm.metadata.dir"
         location="${build.rpm.dir}/metadata" />
@@ -307,21 +308,27 @@
 
   <target name="expand-core" depends="init-rpm,prepare-executables">
     <newdir name="core.install.dir"
-      location="${build.rpm.dir}/root/${rpm.install.dir}" />
+      location="${rpm.root.dir}/${rpm.install.dir}" />
     <unzip src="${sf-core-install.zip}"
       dest="${core.install.dir}" />
+    <property name="rpm.lib.dir" location="${core.install.dir}/lib" />
   </target>
 
   <target name="copy-scripts" depends="init-rpm" >
-    <expandingcopy todir="${build.rpm.dir}/root/" >
+    <expandingcopy todir="${rpm.root.dir}" >
       <fileset dir="scripts" includes="**/*" />
     </expandingcopy>
-    <property name="profile.d" location="${build.rpm.dir}/root/etc/profile.d" />
-    <property name="init.d" location="${build.rpm.dir}/root/etc/init.d" />
+    <property name="profile.d" location="${rpm.root.dir}/etc/profile.d" />
+    <property name="init.d" location="${rpm.root.dir}/etc/init.d" />
   </target>
 
+  <target name="rpm-anubis" depends="expand-core">
+    <copy todir="${rpm.lib.dir}" >
+      <fileset file="${ivy.lib.dir}/package-anubis/sf-anubis-${smartfrog.version}.jar" />
+    </copy>
+  </target>
 
-  <target name="prepare-binary-rpm" depends="copy-scripts,expand-core" >
+  <target name="prepare-binary-rpm" depends="copy-scripts,expand-core,rpm-anubis" >
     <expandingcopy todir="${build.rpm.dir}/root/" >
       <fileset dir="scripts" includes="**/*" />
     </expandingcopy>
@@ -676,6 +683,9 @@
     <property name="rpm.verbosity" value ="-v" />
     <!--this is the full rpm destination-->
     <property name="rpm.full.ssh.dir" value="/home/${rpm.ssh.user}/${rpm.ssh.dir}" />
+    <!--list of rpms-->
+    <property name="rpms.list" value ="smartfrog smartfrog-daemon smartfrog-demo smartfrog-anubis" />
+    
     <echo >
       remote server is ${rpm.ssh.server}
       remote directory is ${rpm.full.ssh.dir}
@@ -706,7 +716,6 @@
     <rootssh command="cd ${rpm.full.ssh.dir};rpm --upgrade --force ${rpm.verbosity} smartfrog-daemon-*.rpm"
         outputProperty="rpm.result.daemon"/>
     <validate-rpm-result result="${rpm.result.daemon}" />
-
   </target>
 
   <target name="rpm-remote-install-demo" depends="rpm-upload" >
@@ -715,18 +724,32 @@
     <validate-rpm-result result="${rpm.result.demo}" />
   </target>
 
+  <target name="rpm-remote-install-all" depends="rpm-upload" >
+    <rootssh command="cd ${rpm.full.ssh.dir};rpm --upgrade --force ${rpm.verbosity} smartfrog-*.rpm"
+        outputProperty="rpm.result.all"/>
+    <validate-rpm-result result="${rpm.result.demo}" />
+  </target>
+
+
   <target name="rpm-ready-to-remote-install" depends="rpm-remote-uninstall"/>
 
 
-  <target name="rpm-remote-install" depends="rpm-remote-install-core,rpm-remote-install-demo,rpm-remote-install-daemon" >
+  <target name="rpm-remote-install" depends="rpm-remote-install-all" >
+  </target>
+
+  <target name="rpm-remote-uninstall-strict" depends="rpm-upload-init" >
+    <rootssh command="rpm --erase ${rpm.verbosity} ${rpms.list}"/>
   </target>
 
   <target name="rpm-remote-uninstall" depends="rpm-upload-init" >
-    <rootssh command="rpm --erase ${rpm.verbosity} smartfrog smartfrog-daemon smartfrog-demo"
+    <rootssh command="rpm --erase ${rpm.verbosity} ${rpms.list}"
         failonerror="false"/>
   </target>
 
-  <target name="rpm-remote-test" depends="rpm-remote-version,rpm-remote-install" />
+  <target name="rpm-remote-test" depends="rpm-remote-version,
+    rpm-remote-install,
+    rpm-remote-daemon,
+    rpm-remote-uninstall-strict" />
 
   <target name="rpm-remote-version" depends="rpm-ready-to-remote-install,rpm-remote-install-core" >
     <rpmssh command="sfVersion"
@@ -744,13 +767,15 @@
   </target>
 
   <target name="rpm-remote-daemon" depends="rpm-remote-install-daemon" >
-    <rpmssh command="smartfrog"
+    <rpmssh command="sfVersion"
         outputProperty="rpm.daemon.results"/>
     <echo>${rpm.test.results}</echo>
     <fail>
-      <not>
-        <contains string="${rpm.test.results}" substring="${smartfrog.version}" />
-      </not>
+      <condition>
+        <not>
+          <contains string="${rpm.test.results}" substring="${smartfrog.version}" />
+        </not>
+      </condition>
       Did not find "${smartfrog.version}" in "${rpm.test.results}", which implies
       the installed smartfrog is not what we just built and pushed up.
     </fail>
