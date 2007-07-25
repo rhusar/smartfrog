@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<project name="daemon-bundle" default="default" basedir=".">
+<project name="daemon-bundle" default="default" basedir="." xmlns:ivy="antlib:fr.jayasoft.ivy.ant">
     <!--
     /** (C) Copyright Hewlett-Packard Development Company, LP
 
@@ -27,6 +27,24 @@
     <property name="ivy.enabled" value="true"/>
     <!-- Import common stuff -->
     <import file="../../../common.xml"/>
+
+    <target name="compile"
+            depends="pre-compile">
+        <depend srcdir="${src.dir}"
+                destdir="${build.classes.dir}"
+                cache="${build.dir}/depends"
+                closure="yes"/>
+        <path id="real.compile.classpath">
+            <path refid="compile.classpath"/>
+            <fileset dir="${lib.dir}" includes="*.jar"/>
+        </path>
+        <sf-javac
+                classpathref="real.compile.classpath"
+                srcdir="${src.dir}"
+                destdir="${build.classes.dir}"
+                />
+        <copy-useful-files src="${src.dir}" dest="${build.classes.dir}"/>
+    </target>
 
     <target name="createjar" depends="generate-versioned-jar">
         <sf-jar destfile="${target.jar}"
