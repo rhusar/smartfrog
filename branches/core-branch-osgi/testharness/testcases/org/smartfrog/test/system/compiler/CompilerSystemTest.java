@@ -144,7 +144,7 @@ public class CompilerSystemTest extends SmartFrogTestBase {
                 EXCEPTION_DEPLOYMENT,
                 null,
                 EXCEPTION_RESOLUTION,
-                "Unresolved Reference: HERE sfClass");
+                "Unresolved Reference: sfClass");
     }
 
      public void testCaseTCN95() throws Exception {
