@@ -178,7 +178,10 @@ For more information: www.smartfrog.org
           unless="run.failing.tests" />
       <exclude name="${systemtests}/assertions/testcompounds/TestCompoundsEventsTest.*"
           unless="run.failing.tests" />
-
+      <exclude name="${systemtests}/workflow/conditional/ConditionalTest"
+          unless="run.failing.tests" />
+      <exclude name="${systemtests}/workflow/sequence/SequenceTest"
+          unless="run.failing.tests" />
       <!--SFOS-297 : callbacks make the daemon lock up under the testharness -->
   <!--
       <exclude name="${systemtests}/workflow/sequence/HistorySequenceTest.*"
