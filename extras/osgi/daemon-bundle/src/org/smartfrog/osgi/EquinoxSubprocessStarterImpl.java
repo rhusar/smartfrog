@@ -25,20 +25,23 @@ import java.util.ArrayList;
 
 public class EquinoxSubprocessStarterImpl extends AbstractSubprocessStarter {
     private final LogSF log = LogFactory.sfGetProcessLog();
-    private static final String EQUINOX_CONSOLE_PORT = "equinoxConsolePort";
+    private static final String EQUINOX_CONSOLE_PORT_START = "baseEquinoxConsolePort";
     private static final String EQUINOX_CONFIGURATION_AREA = "equinoxConfigurationArea";
     // In milliseconds.
     private static final int STARTUP_TIMEOUT = 1000;
 
     private int consolePort = 0;
-    private BundleDescription[] toInstall;    
+    // Used to increment base port so that several subprocesses can be started
+    private static int subprocessNumber = 0;
+
+    private BundleDescription[] toInstall;
     private ProcessCompound parentProcess;
     private ServiceReference platformSR;
 
     protected void addParameters(ProcessCompound parentProcess, List runCmd, String name, ComponentDescription cd) throws Exception {
         this.parentProcess = parentProcess;
 
-        consolePort = Integer.parseInt(getSystemProperty(EQUINOX_CONSOLE_PORT));
+        consolePort = Integer.parseInt(getSystemProperty(EQUINOX_CONSOLE_PORT_START)) + subprocessNumber;
         initRequiredBundlesLocations();
 
         addProcessAttributes(runCmd, name, cd);
@@ -53,6 +56,8 @@ public class EquinoxSubprocessStarterImpl extends AbstractSubprocessStarter {
         runCmd.add(String.valueOf(consolePort));
         runCmd.add("-configuration");
         runCmd.add(getConfigurationArea(name));
+        
+        subprocessNumber++;
     }
 
     protected void doPostStartupSteps() throws IOException, InterruptedException {
@@ -163,4 +168,7 @@ public class EquinoxSubprocessStarterImpl extends AbstractSubprocessStarter {
         return tempFile.getAbsolutePath();
     }
 
+    public static void cleanShutdown() {
+        subprocessNumber = 0;
+    }
 }

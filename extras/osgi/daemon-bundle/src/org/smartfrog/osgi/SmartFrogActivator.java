@@ -113,6 +113,8 @@ public class SmartFrogActivator {
 
                 processCompound = null; // Triggers garbage collection, hopefully
             }
+            // TODO: Do it in a nice way, e.g. by passing subprocess number to subprocess starter
+            EquinoxSubprocessStarterImpl.cleanShutdown();
         }
     }
 

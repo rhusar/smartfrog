@@ -8,7 +8,7 @@
 sfConfig extends Compound {
     sfProcessComponentName "TestApp";
 
-    subprocess extends Compound {
+    subprocess extends Counter {
         // The new deployer syntax
         sfDeployer LAZY envTarget:deployerTest;
         sfProcessName "testProcess";
@@ -19,12 +19,8 @@ sfConfig extends Compound {
     testHello extends Test {
         // The new Prim syntax
         sfMeta extends DATA {
-            sfClassLoadingEnv LAZY envTarget:clEnvTest;
-            sfDecorator LAZY woodFrogComp;
-            sfDecorator LAZY aopComp {
-                aspect machin;
-            }
-            sfClass "org.smartfrog.osgi.test.TestImpl";                            
+            sfFactory LAZY envTarget:clEnvTest;
+            sfClass "org.smartfrog.osgi.test.TestImpl";
         }
 
         message "Servez a ce monsieur, le vieux petit juge blond assis au fond, une biere hollandaise et des kiwis, parce qu'il y tient.";
