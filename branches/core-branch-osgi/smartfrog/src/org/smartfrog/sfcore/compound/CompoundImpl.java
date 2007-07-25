@@ -21,7 +21,6 @@ For more information: www.smartfrog.org
 package org.smartfrog.sfcore.compound;
 
 import java.rmi.RemoteException;
-import java.rmi.server.RemoteObject;
 import java.util.Enumeration;
 import java.util.Vector;
 import java.util.Iterator;
@@ -71,14 +70,6 @@ public class CompoundImpl extends PrimImpl implements Compound {
      * sfSyncTerminate attribute "true" or "false"
      */
     protected boolean sfSyncTerminate;
-
-    /**
-     * Creates a compound implementation.
-     *
-     * @throws RemoteException In case of Remote/nework error
-     */
-    public CompoundImpl() throws RemoteException {
-    }
 
     /**
      * An internal SmartFrog method.

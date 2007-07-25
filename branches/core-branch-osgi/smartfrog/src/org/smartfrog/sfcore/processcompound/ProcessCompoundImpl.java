@@ -22,7 +22,6 @@ package org.smartfrog.sfcore.processcompound;
 
 import java.rmi.RemoteException;
 import java.util.Date;
-import java.util.Enumeration;
 import java.util.Properties;
 import java.util.Vector;
 import java.util.HashSet;
@@ -30,7 +29,6 @@ import java.util.Set;
 import java.util.Collections;
 import java.util.List;
 import java.util.Iterator;
-import java.util.Comparator;
 import java.net.InetAddress;
 
 import org.smartfrog.SFSystem;
@@ -128,9 +126,6 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
     };
 
     private SubprocessStarter subprocessStarter = new PlainJVMSubprocessStarterImpl();
-
-    public ProcessCompoundImpl() throws RemoteException {
-    }
 
     /**
      * Test whether the Process Compound is the root process compound or not.
