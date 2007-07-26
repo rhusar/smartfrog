@@ -28,23 +28,7 @@
     <!-- Import common stuff -->
     <import file="../../../common.xml"/>
 
-    <target name="compile"
-            depends="pre-compile">
-        <depend srcdir="${src.dir}"
-                destdir="${build.classes.dir}"
-                cache="${build.dir}/depends"
-                closure="yes"/>
-        <path id="real.compile.classpath">
-            <path refid="compile.classpath"/>
-            <fileset dir="${lib.dir}" includes="*.jar"/>
-        </path>
-        <sf-javac
-                classpathref="real.compile.classpath"
-                srcdir="${src.dir}"
-                destdir="${build.classes.dir}"
-                />
-        <copy-useful-files src="${src.dir}" dest="${build.classes.dir}"/>
-    </target>
+    <target name="compile" depends="pre-compile"/>
 
     <target name="createjar" depends="generate-versioned-jar">
         <sf-jar destfile="${target.jar}"
@@ -55,6 +39,7 @@
                 <include name="smartfrog.jar"/>
                 <include name="sfServices.jar"/>
                 <include name="sfExamples.jar"/>
+                <include name="sfOSGi.jar"/>
             </zipfileset>
         </sf-jar>
         <echo level="verbose">created package ${target.jar}</echo>

@@ -364,6 +364,18 @@
     </copy>
   </target>
   <!-- =================================================================== -->
+  <!-- Copy configuration files that have to be inside the OSGi JAR        -->
+  <!-- =================================================================== -->
+  <target name="copyOSGi" depends="initbuild">
+        <copy todir="${build.classes.dir}">
+            <fileset dir="${src.dir}">
+                <include name="**/osgi/system.properties"/>
+                <include name="**/osgi/default.sf"/>
+                <include name="**/osgi/default.ini"/>
+            </fileset>
+        </copy>
+  </target>
+  <!-- =================================================================== -->
   <!--   Copy .prolog files to "build" directories                             -->
   <!-- =================================================================== -->
   <target name="copyProlog" depends="initbuild">
@@ -567,7 +579,7 @@
   <!--  BUILD                                                              -->
   <!-- =================================================================== -->
   <target name="prebuild"
-    depends="initbuild,generateversion,compile,copySF,copyGif,copyBAT,copyHTML,copyDefault,copySFCD, copyProlog" />
+    depends="initbuild,generateversion,compile,copySF,copyGif,copyBAT,copyHTML,copyDefault,copySFCD,copyProlog,copyOSGi" />
 
   <target name="build"
     depends="prebuild"
@@ -600,18 +612,25 @@
       location="${dist.lib.dir}/${sf-examples.stub}.jar" />
 
     <property name="sf-rmi-spi.title"
-        value="sf-rmi-spi" />
+        value="sfRmiSpi" />
     <property name="sf-rmi-spi.stub"
       value="${sf-rmi-spi.title}-${Version}" />
     <property name="sf-rmi-spi.jar"
       location="${dist.lib.dir}/${sf-rmi-spi.stub}.jar" />
+
+      <property name="sf-osgi.title"
+                value="sfOSGi"/>
+      <property name="sf-osgi.stub"
+                value="${sf-osgi.title}-${Version}"/>
+      <property name="sf-osgi.jar"
+                location="${dist.lib.dir}/${sf-osgi.stub}.jar"/>
 
   </target>
 
   <!--  SmartFrog Jar                                                     -->
   <target name="sfJar" depends="build,target-names">
     <jar jarfile="${smartfrog.jar}" basedir="${build.classes.dir}"
-      includes="**/smartfrog/**" excludes="**/services/**,**/examples/**,**/rmispi/**" manifest="${manifestName}"/>
+      includes="**/smartfrog/**" excludes="**/services/**,**/examples/**,**/rmispi/**,**/osgi/**" manifest="${manifestName}"/>
   </target>
   <!--  sfServices.jar                                               -->
 
@@ -633,7 +652,13 @@
       basedir="${build.classes.dir}" includes="**/rmispi/**" manifest="${manifestName}"/>
   </target>
 
-  <target name="jars" depends="initdist,sfJar,sfServicesJar,sfExamplesJar,sfRmiSpiJar"/>
+    <target name="sfOSGiJar" depends="build,target-names">
+        <!-- Create sfOSGi.jar file -->
+        <jar jarfile="${sf-osgi.jar}"
+             basedir="${build.classes.dir}" includes="**/osgi/**" manifest="${manifestName}"/>
+    </target>
+
+  <target name="jars" depends="initdist,sfJar,sfServicesJar,sfExamplesJar,sfRmiSpiJar,sfOSGiJar"/>
 
   <!-- =================================================================== -->
   <!--  build, create jars and signs them.                                 -->
@@ -718,6 +743,7 @@
       <classpath>
         <pathelement location="${smartfrog.jar}"/>
         <pathelement location="${sf-rmi-spi.jar}"/>
+        <pathelement location="${sf-osgi.jar}"/>
         <pathelement location="${sf-services.jar}"/>
         <pathelement location="${sf-examples.jar}"/>
         <pathelement location="${dist.lib.dir}/sf-scripting.jar"/>
@@ -770,6 +796,7 @@
     <sha1 file="${sf-examples.jar}" />
     <sha1 file="${sf-services.jar}" />
     <sha1 file="${sf-rmi-spi.jar}" />
+    <sha1 file="${sf-osgi.jar}" />
   </target>
 
   <!-- ========================================================== -->
@@ -945,7 +972,12 @@ ${ivy.reports.dir}
 
 
     <target name="ivy.compile.classpath" depends="ivy-resolve">
-      <ivy:cachepath pathid="compile.classpath" conf="compile" />
+      <ivy:cachepath pathid="_compile.classpath" conf="compile" />
+    <!-- HACK HACK -->
+        <path id="compile.classpath">
+            <path refid="_compile.classpath"/>
+            <fileset dir="lib" includes="org.eclipse.*"/>    
+        </path>
       <echo level="verbose">compile.classpath=${toString:compile.classpath}</echo>
     </target>
 
@@ -957,6 +989,7 @@ ${ivy.reports.dir}
     <copy file="${sf-services.jar}" todir="${artifacts.dir}" />
     <copy file="${sf-examples.jar}" todir="${artifacts.dir}" />
     <copy file="${sf-rmi-spi.jar}" todir="${artifacts.dir}" />
+    <copy file="${sf-osgi.jar}" todir="${artifacts.dir}" />
   </target>
 
   <target name="ready-to-publish" depends="copy-target-jars,ivy-report,unzip-install-artifact"/>

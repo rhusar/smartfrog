@@ -6,7 +6,42 @@ import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.logging.Log;
 import org.smartfrog.sfcore.logging.LogLevel;
 
-/** @noinspection ClassWithTooManyMethods*/
+/**
+ * A SmartFrog {@link Log} implementation that logs to the OSGi Log Service.
+ * The Log Service only has 4 log levels, whereas the {@link Log} interface has 5.
+ * The following level conversion rules are used:
+ * <table>
+ * <th>
+ *  <td>SmartFrog log level</td>
+ *  <td>OSGi log level</td>
+ * </th>
+ * <tr>
+ *  <td><code>TRACE</code></td>
+ *  <td><code>DEBUG</code></td>
+ * </tr>
+ * <tr>
+ *  <td><code>DEBUG</code></td>
+ *  <td><code>DEBUG</code></td>
+ * </tr>
+ * <tr>
+ *  <td><code>INFO</code></td>
+ *  <td><code>INFO</code></td>
+ * </tr>
+ * <tr>
+ *  <td><code>WARN</code></td>
+ *  <td><code>WARN</code></td>
+ * </tr>
+ * <tr>
+ *  <td><code>ERROR</code></td>
+ *  <td><code>ERROR</code></td>
+ * </tr>
+ * <tr>
+ *  <td><code>FATAL</code></td>
+ *  <td><code>ERROR</code></td>
+ * </tr>
+ * </table>
+ * @noinspection ClassWithTooManyMethods
+ */
 public class LogToOSGiLogServiceImpl implements Log, LogLevel {
 
     private int logLevel;
@@ -14,6 +49,14 @@ public class LogToOSGiLogServiceImpl implements Log, LogLevel {
     private LogService osgiLog;
 
 
+    /**
+     * Creates a new logger to the OSGi log service.
+     * Called through reflection by {@link org.smartfrog.sfcore.logging.LogImpl}, so needs to have these parameters.
+     * @param name Name of the logger, used as prefix in log messages.
+     * @param configuration Unused (needed because of reflective access).
+     * @param initialLevel Initial logging level.
+     * @throws SmartFrogResolutionException
+     */
     public LogToOSGiLogServiceImpl(String name, ComponentDescription configuration, Integer initialLevel) throws SmartFrogResolutionException {
         prefix = "[" + name + "] ";
 

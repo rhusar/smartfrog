@@ -14,6 +14,7 @@ import org.smartfrog.sfcore.processcompound.ShutdownHandler;
 
 import java.io.IOException;
 import java.rmi.RemoteException;
+import java.util.Enumeration;
 
 /**
  * Starts the SmartFrog daemon with options appropriate to running inside OSGi.
@@ -30,14 +31,14 @@ public class SmartFrogActivator {
     protected void activate(final ComponentContext componentContext) throws Exception {
         getLog().info("Starting smartfrog...");
 
-        loadProperties();
+        final BundleContext bundleContext = componentContext.getBundleContext();
+        final Bundle bundle = bundleContext.getBundle();
+
+        loadProperties(bundle);
 
         Thread startDaemon = new Thread(new Runnable() {
             /** @noinspection FeatureEnvy*/
             public void run() {
-                final BundleContext bundleContext = componentContext.getBundleContext();
-                final Bundle bundle = bundleContext.getBundle();
-
                 try {
                     processCompound = SFSystem.runSmartFrog();
                     configureProcessCompound(bundleContext);
@@ -81,11 +82,11 @@ public class SmartFrogActivator {
         processCompound.sfAddAttribute(SmartFrogCoreKeys.SF_CORE_BUNDLE_CONTEXT, new BundleContextWrapper(bundleContext));
     }
 
-    private void loadProperties() throws IOException {
+    private void loadProperties(Bundle bundle) throws IOException {
         // We need to keep the sfProcessName if it was passed by a -D flag
         // (which means we're being started as a subprocess)
         String sfProcessName = System.getProperty(SmartFrogCoreProperty.sfProcessName);
-
+        
         System.getProperties().load(
                 getClass().getResourceAsStream("system.properties")
         );
