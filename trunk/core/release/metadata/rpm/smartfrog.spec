@@ -95,23 +95,7 @@ and /etc/sysconfig so that SmartFrog is available on the command line.
 #In this RPM SmartFrog is configured to log to files /var/log/smartfrog_*.log with logLevel=3 (INFO)
 #using LogToFileImpl. The GUI is turned off.
 
-# -----------------------------------------------------------------------------
 
-#%package manual
-#Group:          Documentation
-#Summary:        Manual for %{name}
-#
-#%description manual
-#Documentation for %{name}.
-
-# -----------------------------------------------------------------------------
-
-#%package javadoc
-#Group:          Documentation
-#Summary:        Javadoc for %{name}
-#
-#%description javadoc
-#Javadoc for %{name}.
 
 # -----------------------------------------------------------------------------
 
@@ -150,6 +134,18 @@ This package provides Anubis, a partition-aware tuple space.
 The Anubis SmartFrog components can be used to build fault-tolerant distributed
 systems across a set of machines hosted on a single site. Multicast IP is used
 as a heartbeat mechanism.
+
+# -----------------------------------------------------------------------------
+
+%package logging
+Group:         ${rpm.framework}
+Summary:        SmartFrog logging services
+Requires:       %{name} = %{version}-%{release}
+#
+%description logging
+This package integrates SmartFrog with Apache Log4j. It includes the
+commons-logging-${commons-logging.version} and log4j-${log4j.version} libraries
+
 
 # -----------------------------------------------------------------------------
 
@@ -403,6 +399,10 @@ rm -f %{rcd}/rc6.d/S60${rpm.daemon.name}
 %attr(755, root,root) /etc/rc.d/init.d/${rpm.daemon.name}
 
 
+%files anubis
+
+%{libdir}/sf-anubis-${smartfrog.version}.jar
+
 %post anubis
 rm -f %{linkdir}/sf-anubis.jar
 ln -s %{libdir}/sf-anubis-${smartfrog.version}.jar %{linkdir}/sf-anubis.jar
@@ -410,18 +410,32 @@ ln -s %{libdir}/sf-anubis-${smartfrog.version}.jar %{linkdir}/sf-anubis.jar
 %postun anubis
 rm -f %{linkdir}/sf-anubis.jar
 
-%files anubis
+%files logging
 
-%{libdir}/sf-anubis-${smartfrog.version}.jar
+%{libdir}/sf-loggingservices-${smartfrog.version}.jar
+%{libdir}/commons-logging-${commons-logging.version}.jar
+%{libdir}/log4j-${log4j.version}.jar
+
+%post logging
+rm -f %{linkdir}/sf-loggingservices.jar
+ln -s %{libdir}/sf-loggingservices-${smartfrog.version}.jar %{linkdir}/sf-loggingservices.jar
+ln -s %{libdir}/commons-logging-${commons-logging.version}.jar %{linkdir}/commons-logging.jar
+ln -s %{libdir}/log4j-${log4j.version}.jar  %{linkdir}/log4j.version.jar
+
+%postun logging
+rm -f %{linkdir}/sf-loggingservices.jar
+rm -f %{linkdir}/commons-logging.jar
+rm -f %{linkdir}/log4j.version.jar
 
 # -----------------------------------------------------------------------------
 
 %changelog
 # to get the date, run:   date +"%a %b %d %y"
-* Wed Jul 25 2007 Steve Loughran <steve_l@users.sourceforge.net> 3.11.0005-6
+* Wed Jul 25 2007 Steve Loughran <steve_l@users.sourceforge.net> 3.11.0005-1
 - daemon RPM now runs "smartfrogd stop" before uninstalling
 - smartfrog RPM tries to terminate any running smartfrog process before uninstalling
 - anubis RPM provides the anubis JAR
+- logging RPM provides logging services and dependent JARs
 - links without version information added to the dir /opt/smartfrog/links subdirectory for each JAR.
 * Fri Jul 20 2007 Steve Loughran <steve_l@users.sourceforge.net> 3.11.003-5
 - daemon RPM now runs "smartfrogd shutdown" before uninstalling 
