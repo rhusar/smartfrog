@@ -8,7 +8,7 @@ Bundle-Vendor: HP Labs
 Bundle-Classpath: smartfrog.jar,
                   sfServices.jar,
                   sfExamples.jar,
-                  .
+                  sfOSGi.jar
 Service-Component: OSGI-INF/daemon.xml
 Import-Package: org.osgi.framework,
                 org.osgi.service.log,
@@ -21,4 +21,5 @@ Export-Package: org.smartfrog;version=1.0.0,
                 org.smartfrog.sfcore.common;version=1.0.0,
                 org.smartfrog.sfcore.reference;version=1.0.0,
                 org.smartfrog.sfcore.compound;version=1.0.0,
-                org.smartfrog.sfcore.componentdescription;version=1.0.0
+                org.smartfrog.sfcore.componentdescription;version=1.0.0,
+                org.smartfrog.osgi;version=1.0.0

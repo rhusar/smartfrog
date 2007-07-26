@@ -1,11 +1,5 @@
 #include "/org/smartfrog/components.sf"
 
-// Deprecated : use OSGiBundle
-OSGiBundleCompound extends Compound {
-    sfClass "org.smartfrog.osgi.OSGiBundleCompound";
-    bundleURL extends String;
-}
-
 OSGiBundle extends Prim {
     sfClass "org.smartfrog.osgi.BundleClassLoadingEnvironment";
     sfExport false;

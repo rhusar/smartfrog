@@ -53,7 +53,7 @@ public class EquinoxSubprocessStarterImpl extends AbstractSubprocessStarter {
         runCmd.add("-D"+ SmartFrogCoreProperty.sfProcessName+"="+name);
 
 	// Dark magic. This property is supposed to be only read by the Eclipse runtime (ie. things that aren't in when just running Equinox).
-	// However, without it starting a new process hangs after all bundles have been installed. And works when it's there.
+	// However, without it starting a new process hangs after all bundles have been installed. And works when it's there, apparently.
         runCmd.add("-D=eclipse.consoleLog=true");
 
         // Equinox startup options:
