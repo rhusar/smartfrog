@@ -22,6 +22,7 @@ package org.smartfrog.test.system.workflow.conditional;
 import org.smartfrog.test.DeployingTestBase;
 import org.smartfrog.test.system.workflow.delay.DelayTest;
 import org.smartfrog.services.assertions.TestBlock;
+import org.smartfrog.services.assertions.events.TestCompletedEvent;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 
 /**
@@ -34,6 +35,12 @@ public class ConditionalTest extends DeployingTestBase {
     public ConditionalTest(String s) {
         super(s);
     }
+
+/*
+    public void testParseConditionFile() throws Throwable {
+        runTestsToCompletion(FILES,"testParseConditionFile");
+    }
+*/
 
     public void testPassingIf() throws Throwable {
         application = deployExpectingSuccess(FILES + "testPassingIf.sf", "testPassingIf");
@@ -56,9 +63,12 @@ public class ConditionalTest extends DeployingTestBase {
     }
 
     public void testFailingWaitFor() throws Throwable {
-        application = deployExpectingSuccess(FILES + "testFailingWaitFor.sf", "testFailingWaitFor");
-       // expectSuccessfulTermination((TestBlock) application);
-        TerminationRecord tr = expectAbnormalTermination((TestBlock) application);
+        TestCompletedEvent event =
+            expectAbnormalTestRun(FILES, "testFailingWaitFor");
+        TerminationRecord tr;
+        tr=event.getStatus();
+//        application = deployExpectingSuccess(FILES + "testFailingWaitFor.sf", "testFailingWaitFor");
+//        tr = expectAbnormalTermination((TestBlock) application);
         assertNotNull("no description in "+tr,tr);
         String description = tr.description;
         assertTrue("No "+WAITFOR_FAILED+" in "+tr,
