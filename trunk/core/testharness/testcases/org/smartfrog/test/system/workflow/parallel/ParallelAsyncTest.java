@@ -44,44 +44,30 @@ public class ParallelAsyncTest extends DeployingTestBase {
     }
 
 
-    private void expectSuccesfulTermAndToggle() throws Throwable {
-        expectSuccessfulTermination(block);
+    private void expectValueToggled() throws Throwable {
         assertAttributeEquals(application, "value", true);
     }
 
 
     public void testStartFailingParallelNoTerminateAsync() throws Throwable {
-        application = deployExpectingSuccess(FILES + "testStartFailingParallelNoTerminateAsync.sf",
-                "testStartFailingParallelNoTerminateAsync");
-        block = (TestBlock) application;
-        expectSuccesfulTermAndToggle();
+        expectSuccessfulTestRun(FILES, "testStartFailingParallelNoTerminateAsync");
+        expectValueToggled();
     }
 
     public void testStartFailingParallelAsync() throws Throwable {
-        application = deployExpectingSuccess(FILES + "testStartFailingParallelAsync.sf",
-                "testStartFailingParallelAsync");
-        block = (TestBlock) application;
-        expectAbnormalTermination(block);
+        expectAbnormalTestRun(FILES, "testStartFailingParallelAsync", true, null);
     }
 
     public void testStartFailingParallelAsyncNoChild() throws Throwable {
-        application = deployExpectingSuccess(FILES + "testStartFailingParallelAsyncNoChild.sf",
-                "testStartFailingParallelAsyncNoChild");
-        block = (TestBlock) application;
-        expectAbnormalTermination(block);
+        expectAbnormalTestRun(FILES, "testStartFailingParallelAsyncNoChild", true, null);
     }
 
     public void testFailingParallelAsync() throws Throwable {
-        application = deployExpectingSuccess(FILES + "testFailingParallelAsync.sf",
-                "testFailingParallelAsync");
-        block = (TestBlock) application;
-        expectAbnormalTermination(block);
+        expectAbnormalTestRun(FILES, "testFailingParallelAsync", true, null);
     }
 
     public void testFailingParallelAsyncNoChild() throws Throwable {
-        application = deployExpectingSuccess(FILES + "testFailingParallelAsyncNoChild.sf",
-                "testFailingParallelAsyncNoChild");
-        setBlock(application);
-        expectSuccesfulTermAndToggle();
+        expectSuccessfulTestRun(FILES, "testFailingParallelAsyncNoChild");
+        expectValueToggled();
     }
 }
