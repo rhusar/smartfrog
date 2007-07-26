@@ -17,6 +17,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 For more information: www.smartfrog.org
 */ %>
+
 <%@ page language="java" %>
 <%@ include file="header.inc.jsp"%>
 <%@	page import="org.smartfrog.avalanche.settings.xdefault.*"%>
@@ -36,22 +37,30 @@ For more information: www.smartfrog.org
   	SettingsManager settingsMgr = factory.getSettingsManager();
   	SettingsType defSettings = settingsMgr.getDefaultSettings();
 
-  	String hostId = request.getParameter("hostId");
-  	String os = null; 
-  	String plaf = null ;
-  	String arch = null ;
 
-  	if( null != hostId ){
-	  	HostType host = manager.getHost(hostId);
-	  	if( null != host ){
-	  		PlatformSelectorType ps = host.getPlatformSelector();
-	  		if( null != ps ){
-		  		os 	 = ps.getOs();
-		  		plaf = ps.getPlatform();
-		  		arch = ps.getArch();
-		  	}
-	  	}
-	}
+    String os = null;
+    String plaf = null;
+    String arch = null;
+
+    HostType host = null;
+    String hostId = request.getParameter("hostId");
+
+    if (hostId != null) {
+        hostId = hostId.trim().toLowerCase();
+        if (!hostId.equals("")) {
+            host = manager.getHost(hostId);
+            if (null != host) {
+                PlatformSelectorType ps = host.getPlatformSelector();
+                if (null != ps) {
+                    os = ps.getOs();
+                    plaf = ps.getPlatform();
+                    arch = ps.getArch();
+                }
+            }
+        }
+    }
+
+    String site = "host_save.jsp?action=bs&next=";
 %>
 
 <script type="text/javascript" language="JavaScript">
@@ -60,16 +69,17 @@ For more information: www.smartfrog.org
 
     function submit(target){
         var hid = document.getElementById("hostId");
-        if(null != hid){
+
+        if (hid != null) {
             if( hid.value == null || hid.value == ""){
                 alert("Please enter valid Host Id");
             }
-        }else{
-            document.addHostFrm.action = target ;
-            var hostId = <%=(hostId!=null)?("\""+hostId+"\""):null%> ;
-            if( hostId != null )
-                document.addHostFrm.action = target + "&hostId=" + hostId ;
-
+        } else {
+            <%  if (host != null) { %>
+                  document.addHostFrm.action = "<%= site %>" + target + "&hostId=<%= host.getId() %>";
+            <% } else { %>
+                  document.addHostFrm.action = site  + target;
+            <% } %>
             document.addHostFrm.submit();
         }
     }
@@ -77,29 +87,16 @@ For more information: www.smartfrog.org
     -->
 </script>
 
-<% if( null != hostId ){ %>
-    <form id='addHostFrm' name='addHostFrm' method='post' action='host_save.jsp?action=bs&next=am&hostId=<%=hostId %>'>
-<%}     else{ %>
-    <form id='addHostFrm' name='addHostFrm' method='post' action='host_save.jsp?action=bs&next=am'>
-<%      } %>
+<% if (host != null) { %>
+<form id="addHostFrm" name="addHostFrm" method="post" action="<%= site %>am&hostId=<%= host.getId() %>">
+<% } else { %>
+<form id="addHostFrm" name="addHostFrm" method="post" action="<%= site %>am">
+<% } %>
 
 <!-- This is the page menu -->
 <br/>
 
-<div align="center" style="width:95%;">
-  <script type="text/javascript" language="JavaScript">
-    oneVoiceWritePageMenu("HostBS","header",
-      "Host Properties",
-  	"javascript:submit('host_save.jsp?action=bs&next=env')",
-      "Transfer Modes",
-  	"javascript:submit('host_save.jsp?action=bs&next=tm')",
-      "Access Modes",
-  	"javascript:submit('host_save.jsp?action=bs&next=am')",
-      "Basic Settings",
-  	""
-    );
-  </script>
-</div>
+<%@ include file="host_setup_menu.inc.jsp" %>
 
 <!-- Actual Body starts here -->
 <br/>
@@ -112,17 +109,16 @@ For more information: www.smartfrog.org
 	    <td class="medium" align="right">Host:</td> 
 	    <td class="medium"> 
 	<%
-		if( null == hostId) {
+		if (host == null) {
 	%>	
-		    <input type="text" name="hostId" size="30" id='hostId'>
+		    <input type="text" name="hostId" size="30" id="hostId">
 	<%
-		}else{
+		} else {
 	%>
-		    <%=hostId%>
+		    <%= host.getId() %>
 	<%
 		}
 	%>
-
 	    </td>
 	</tr>  			
 
@@ -130,14 +126,15 @@ For more information: www.smartfrog.org
 		<td class="medium" align="right">Operating System:</td> 
 		<td class="medium">  
 		<select name="os">
-	<%
-		String oses[] = defSettings.getOsArray();
-		for( int i=0;i<oses.length;i++){
-	%>	
-		    <option<%=((os!=null)&&os.equals(oses[i]))?" selected":""%>><%=oses[i]%></option>
-	<%
-		}
-	%>
+	    <%
+		    String oses[] = defSettings.getOsArray();
+		    for (int i = 0; i < oses.length; i++) {
+	    %>
+		    <option<%=((os!=null)&&os.equals(oses[i]))?" selected":""%>>
+                <%=oses[i]%>
+ 	    <%
+		    }
+	    %>
 		</select>
 		</td>
 	</tr>  			
@@ -147,7 +144,7 @@ For more information: www.smartfrog.org
 		<select name="platform">
 		<%
 		    String plafs[] = defSettings.getPlatformArray();
-		    for( int i=0;i<plafs.length;i++){
+		    for (int i=0; i<plafs.length; i++) {
 		%>	
 			<option<%=((plaf!=null)&&plaf.equals(plafs[i]))?" selected":""%>>
 			    <%=plafs[i]%>
@@ -162,21 +159,23 @@ For more information: www.smartfrog.org
 	    <td class="medium" align="right">Architecture:</td>
 	    <td class="medium">  
 		<select name="arch">
-	<%
+	    <%
 		    String archs[] = defSettings.getArchArray();
-		    for( int i=0;i<archs.length;i++){
-	%>	
-			<option<%=((arch!=null)&&arch.equals(archs[i]))?" selected":""%>><%=archs[i]%></option>
-	<%
+		    for (int i=0; i<archs.length; i++) {
+	    %>
+			<option<%=((arch!=null)&&arch.equals(archs[i]))?" selected":""%>>
+                <%=archs[i]%>
+            </option>
+	    <%
 		    }
-	%>
+	    %>
 		</select>
 		</td>
 	</tr>  	
     </tbody>
 </table>
 <br/>
-<input type='submit' name='save' value='Save Changes' class="btn">
+<input type="submit" name="save" value="Save Changes" class="btn" onclick="submit('am')"/>
 </div>
 </form>
 

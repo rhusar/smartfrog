@@ -39,41 +39,34 @@ For more information: www.smartfrog.org
   	SettingsType defSettings = settingsMgr.getDefaultSettings();  
   	
 	String []sysProps = defSettings.getSystemPropertyArray();
-	
-  	String hostId = request.getParameter("hostId");
-  	String os = null; 
-  	String plaf = null ;
-  	String arch = null ;
   	
-  	HostType host = manager.getHost(hostId);
-  	if( null != hostId ){
-	  	if( null != host ){
-	  		PlatformSelectorType ps = host.getPlatformSelector();
-	  		if( null != ps ){
-		  		os 	 = ps.getOs();
-		  		plaf = ps.getPlatform();
-		  		arch = ps.getArch();
-		  	}
-	  	}
-	}
-	String propStr = "" ;
+  	HostType host = null;
+    String hostId = request.getParameter("hostId");
+
+    if (hostId != null) {
+        hostId = hostId.trim().toLowerCase();
+        if (!hostId.equals("")) {
+            host = manager.getHost(hostId);
+        }
+    }
+
+    if (host != null) {
+
+    String propStr = "" ;
 	for( int i=0;i<sysProps.length;i++){
 		if ( i != sysProps.length-1 )
 			propStr += "\""+sysProps[i] + "\""+",";
 		else
 			propStr += "\"" +sysProps[i] +"\"";
 	}
-	
+
+    String site = "host_save.jsp?action=env&next=";
 %>
 
-<script language="javascript">
+<script language="javascript" type="text/javascript">
     <!--
 function submit(target){
-	document.addHostFrm.action = target ;
-	var hostId = <%=(hostId!=null)?("\""+hostId+"\""):null%> ;
-	if( hostId != null )
-		document.addHostFrm.action = target + "&&hostId=" + hostId ;
-		
+	document.addHostFrm.action = "<%= site %>" + target + "&hostId=<%= host.getId() %>";
 	document.addHostFrm.submit();
 }
 
@@ -114,24 +107,12 @@ setNextSubtitle("Host Properties Page");
     -->
 </script>
 
-<form id='addHostFrm' name='addHostFrm' method='post' action='host_save.jsp?action=env&next=bs&hostId=<%=hostId %>'>
+<form id='addHostFrm' name='addHostFrm' method='post' action="<%= site %>bs&hostId=<%= host.getId() %>">
 
 <!-- This is the page menu -->
 <br>
-<div align="center" style="width: 95%;">
-  <script>
-    oneVoiceWritePageMenu("HostProps","header",
-      "Host Properties",
-	    "",
-      "Transfer Modes",
-	    "javascript:submit('host_save.jsp?action=env&next=tm')",
-      "Access Modes",
-	    "javascript:submit('host_save.jsp?action=env&next=am')",
-      "Basic Settings",
-	    "javascript:submit('host_save.jsp?action=env&next=bs')"
-    );
-  </script>
-</div>
+
+<%@ include file="host_setup_menu.inc.jsp" %>
 
 <!-- Actual Body starts here -->
 <br/>
@@ -194,8 +175,13 @@ setNextSubtitle("Host Properties Page");
 </script>
 <input type='button' value='Add a Property' class="btn" 
 	onclick="javascript:addRowInTable(getElementById('argumentTable'))">
-<input type='submit' name='save' value='Save Changes' class="btn">
+<input type='submit' name='save' value='Save Changes' class="btn" onclick="submit('bs')">
 </center>
 </form>
+<%
+    } else {
+        response.sendRedirect("host_setup_bs.jsp");
+    }
+%>
 
 <%@ include file="footer.inc.jsp"%>

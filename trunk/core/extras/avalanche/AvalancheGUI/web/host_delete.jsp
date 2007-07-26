@@ -34,11 +34,10 @@ For more information: www.smartfrog.org
     if( null != selectedHosts ){
 	  	for (int i = 0; i < selectedHosts.length; i++) {
 			manager.removeHost(selectedHosts[i]);
-              out.write(selectedHosts[i]);
           }
   	}
 
-      // forward to the host listing
-  	//javax.servlet.RequestDispatcher dispatcher = request.getRequestDispatcher("host_list.jsp");
-	//dispatcher.forward(request, response);
+    // Redirect to host_list.jsp
+  	javax.servlet.RequestDispatcher dispatcher = request.getRequestDispatcher("host_list.jsp");
+	dispatcher.forward(request, response);
 %>

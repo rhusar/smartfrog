@@ -405,6 +405,7 @@ For more information: www.smartfrog.org
 			+ "&&distroId="+distroId);
 	}
     }
+    
     if( null == dispatcher ){
 	    dispatcher = request.getRequestDispatcher("ListModules.jsp");
     }

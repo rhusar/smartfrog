@@ -48,11 +48,6 @@ For more information: www.smartfrog.org
             <%@ include file="Message.jsp" %>
 
             <!-- Actual Body starts here -->
-            <% /* Include header and set title */ %>
-            <%
-                HostManager manager = factory.getHostManager();
-                String[] hosts = manager.listHosts();
-            %>
             <table border="0" cellpadding="0" cellspacing="0" class="dataTable tableHasCheckboxes" id="hostListTable">
                 <caption>Hosts</caption>
                 <thead>
@@ -61,15 +56,12 @@ For more information: www.smartfrog.org
                         <th>Host ID</th>
                         <th>Manage</th>
                         <th>Platform</th>
-<%
-    if (request.getParameter("active") == (Boolean.TRUE).toString()) {
-%>
-                        <th>Status</th>
-<% } %>
                     </tr>
                 </thead>
                 <tbody>
                     <%
+                        HostManager manager = factory.getHostManager();
+                        String[] hosts = manager.listHosts();
                         String rowClass = "";
                         if (hosts.length == 0) {
                     %>
