@@ -1831,7 +1831,6 @@ java.class.path=
   <target name="ivy-init"
           depends="maybe-ivy-init"
       unless="ivy.enabled">
-    <property name="ivy.lib.dir" location="${build.dir}/lib" />
     <ivy:configure file="${core.dir}/antbuild/ivy/ivyconf.xml"/>
   </target>
 
