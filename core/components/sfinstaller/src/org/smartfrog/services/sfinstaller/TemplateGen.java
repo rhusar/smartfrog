@@ -266,12 +266,17 @@ public class TemplateGen {
         }
         template = Velocity.getTemplate(temp);
         //  template = Velocity.getTemplate(templateFileName.toString());
-        BufferedWriter writer =
-                new BufferedWriter(new OutputStreamWriter(out));
-        if (template != null)
-            template.merge(context, writer);
-        writer.flush();
-        writer.close();
+        BufferedWriter writer=null;
+        try {
+            writer = new BufferedWriter(new OutputStreamWriter(out));
+            if (template != null)
+                template.merge(context, writer);
+            writer.flush();
+        } finally {
+            if(writer!=null) {
+                writer.close();
+            }
+        }
     }
 
 
