@@ -131,6 +131,20 @@ public final class TerminationRecord implements Serializable {
     }
 
     /**
+     * Create a normal termination record with a nested cause.
+     *
+     * It may seem odd to include an exception in a normal termination, but it is not unusual in testing 
+     *
+     * @param description description of the termination
+     * @param id          id of component
+     * @param cause an exception to include in the recird
+     * @return a SFTerminationRecord
+     */
+    public static TerminationRecord normal(String description, Reference id, Throwable cause) {
+        return new TerminationRecord(NORMAL, description, id,cause);
+    }
+
+    /**
      * Utility method. Returns an abnormal termination record.
      *
      * @param descr description of abnormal failure

@@ -42,12 +42,12 @@ public class TestCompoundsEventsTest extends DeployingTestBase {
     }
 
     public void testFailure() throws Throwable {
-        TerminationRecord record = deployToAbnormalTermination("testFailure");
+        TerminationRecord record = expectSuccessfulTestRun(FILES, "testFailure").getStatus();
         assertTerminationRecordContains(record, "failure message",null,null);
     }
 
     private TerminationRecord deployToAbnormalTermination(String test) throws Throwable {
-        TestCompletedEvent event = expectAbnormalTestRun(FILES, test);
+        TestCompletedEvent event = expectAbnormalTestRun(FILES, test, true, null);
         return event.getStatus();
     }
 
@@ -62,8 +62,10 @@ public class TestCompoundsEventsTest extends DeployingTestBase {
     }
 
     public void testFailureWrongMessage() throws Throwable {
-        TerminationRecord record = deployToNormalTermination("testFailureWrongMessage");
-        assertTerminationRecordContains(record, TestCompoundImpl.TEST_FAILED_WRONG_STATUS, null, null);
+        expectAbnormalTestRun(FILES, 
+                "testFailureWrongMessage",
+                true,
+                TestCompoundImpl.TEST_FAILED_WRONG_STATUS);
     }
 
     public void NotestFailureWrongMessageNested() throws Throwable {
@@ -73,6 +75,6 @@ public class TestCompoundsEventsTest extends DeployingTestBase {
 
     public void testSmartFrogException() throws Throwable {
         TerminationRecord record = deployToNormalTermination("testSmartFrogException");
-        assertTerminationRecordContains(record, null, SmartFrogException.class.toString(), "SFE");
+        assertTerminationRecordContains(record, null, "org.smartfrog.sfcore.common.SmartFrogException", "SFE");
     }
 }
