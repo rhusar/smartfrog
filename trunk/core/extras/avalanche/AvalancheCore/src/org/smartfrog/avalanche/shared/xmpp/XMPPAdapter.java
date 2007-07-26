@@ -37,17 +37,17 @@ public class XMPPAdapter {
 	public static final int default_xmpp_port = 5222;
 	public static final int default_xmpp_port_ssl = 5223;
 
-    private String xmppServer ;
-	private int xmppServerPort ;
+    private String xmppServer = "localhost";
+	private int xmppServerPort = default_xmpp_port_ssl;
 
-    private String xmppListenerName ;
+    private String xmppListenerName = "listener";
 
     private EventListener listener = new EventListener();
 
-    private String xmppUserName ;
-	private String xmppPassword ;
+    private String xmppUserName = "user";
+	private String xmppPassword = "password";
 
-	private boolean useSSL = false ;
+	private boolean useSSL = true ;
 	private XMPPConnection connection ;
 
 	private static Log log = LogFactory.getLog(XMPPAdapter.class);
@@ -89,7 +89,8 @@ public class XMPPAdapter {
 	}
 
 	public void setXmppUserName(String xmppUserName) {
-		this.xmppUserName = xmppUserName;
+		if (xmppUserName != null)
+            this.xmppUserName = xmppUserName;
 	}
 
     // Get and set password
@@ -98,7 +99,8 @@ public class XMPPAdapter {
 	}
 
 	public void setXmppPassword(String xmppPassword) {
-		this.xmppPassword = xmppPassword;
+        if (xmppPassword != null)
+            this.xmppPassword = xmppPassword;
 	}
 
     // Get and set XMPP server hostname
@@ -107,7 +109,8 @@ public class XMPPAdapter {
 	}
 
 	public void setXmppServer(String xmppServer) {
-		this.xmppServer = xmppServer;
+        if (xmppServer != null)
+            this.xmppServer = xmppServer;
 	}
 
     // Get and set XMPP server port
@@ -116,7 +119,7 @@ public class XMPPAdapter {
 	}
 
 	public void setXmppServerPort(int xmppServerPort) {
-		this.xmppServerPort = xmppServerPort;
+        this.xmppServerPort = xmppServerPort;
 	}
 
     // Get and set XMPP listener name
@@ -163,6 +166,7 @@ public class XMPPAdapter {
     public void login() throws XMPPException {
         // Log in to XMPP Server
         try {
+            log.info("Trying to log in. " + this.getCurrentConnectionInfo());
             connection.login(xmppUserName, xmppPassword);
         } catch (XMPPException e) {
             log.error("Login failed. " + this.getCurrentConnectionInfo());
