@@ -240,7 +240,6 @@
     </replace>
 
     <echo level="verbose">version=${sfversion}</echo>
-    <!--property name="Version" value="${sfversion}"/-->
   </target>
 
   <!-- =================================================================== -->
@@ -304,7 +303,9 @@
   <!-- =================================================================== -->
   <target name="compile-source" depends="initbuild,createParser" description="Compiles the source code">
     <!-- Compile the java code -->
-    <echo level="verbose">${javac.java.version} build.compiler=${build.compiler} javac.compiler=${javac.compiler}</echo>
+    <echo level="verbose">${javac.java.version}
+      build.compiler=${build.compiler}
+      javac.compiler=${javac.compiler}</echo>
     <javac compiler="${javac.compiler}" 
       srcdir="${src.dir}"
       includes="**/*.java" 
@@ -554,6 +555,10 @@
         <pathelement location="${javacc.dir}/javacc.jar"/>
       </classpath>
     </java>
+  </target>
+
+  <target name="documentation" depends="copydocs,target-names">
+
   </target>
 
   <!-- =================================================================== -->
