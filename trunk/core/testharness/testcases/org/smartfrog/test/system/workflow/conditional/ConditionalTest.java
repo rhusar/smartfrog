@@ -28,6 +28,7 @@ import org.smartfrog.sfcore.prim.TerminationRecord;
  * test delays
  */
 public class ConditionalTest extends DeployingTestBase {
+
     protected static final String FILES = "org/smartfrog/test/system/workflow/conditional/";
     private static final String WAITFOR_FAILED = "waitfor failed";
 
