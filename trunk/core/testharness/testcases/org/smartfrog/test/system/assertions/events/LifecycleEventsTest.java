@@ -38,18 +38,10 @@ public class LifecycleEventsTest extends DeployingTestBase {
         super(name);
     }
 
-    private TerminationRecord deployToAbnormalTermination(String test) throws Throwable {
-        TestCompletedEvent event = expectAbnormalTestRun(FILES, test);
-        return event.getStatus();
-    }
-
-    private TerminationRecord deployToNormalTermination(String test) throws Throwable {
-        TestCompletedEvent event = expectSuccessfulTestRun(FILES, test);
-        return event.getStatus();
-    }
-
-
     public void testExpectDeployFailure() throws Throwable {
-        TestCompletedEvent event = expectSuccessfulTestRun(FILES, "testExpectDeployFailure");
+        TestCompletedEvent event = expectAbnormalTestRun(FILES,
+                "testExpectDeployFailure",
+                false,
+                null);
     }
 }
