@@ -153,3 +153,26 @@ XorFF extends Xor {
  -- extends False;
  -- extends False;
 }
+
+UnsetProperty extends IsPropertySet {
+    property ".no.property.of.this.name.expected_12234556686879";
+}
+
+setProperty extends IsPropertySet {
+    property "java.version";
+}
+
+
+//here for parsing
+sfConfig extends Compound {
+  -- extends True;
+ //-- extends OrFF;
+// -- extends XorFT;
+// -- extends XorFF;
+// -- extends AndTF;
+// -- extends StringsEqual;
+// -- extends NotFalse;
+// -- extends True;
+// -- extends False;
+// -- extends UnsetProperty;
+}

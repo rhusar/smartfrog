@@ -213,11 +213,19 @@ For more information: www.smartfrog.org
     <property name="test.remoteHost" value="localhost" />
     <property name="test.smartfrog.dist.dir" location="${smartfrog.dist.dir}" />
   </target>
-  
+
+
+
+  <!--test all the parsing-->
+  <target name="parse-tests" depends="init-tests"  unless="testcase">
+    <sf-parse parserTargetsFile="parsertargets.txt"
+      classpathref="tests.run.classpath"/>
+  </target>
+
   <!-- ========================================================== -->
   <!-- run the unit tests -->
   <!-- ========================================================== -->
-  <target name="unit-tests" depends="init-tests"  unless="testcase"
+  <target name="unit-tests" depends="parse-tests,init-tests"  unless="testcase"
     description="run unit tests">
     <sf-junit
            errorProperty="test.failed"

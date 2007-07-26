@@ -304,6 +304,7 @@ public abstract class DeployingTestBase extends SmartFrogTestBase implements Tes
     /**
      * Assert that a test failed for a specific reason
      * @param event event to analyse
+     * @param abnormalStatus is an abnormal status expected
      * @param errorText optional error text
      */
     protected void assertTestRunFailed(LifecycleEvent event,boolean abnormalStatus,String errorText) {
@@ -323,10 +324,26 @@ public abstract class DeployingTestBase extends SmartFrogTestBase implements Tes
         }
     }
 
+    /**
+     * Do a test run, assert that it failed. The application and eventSink are
+     * both saved in member variables, ready for cleanup in teardown
+     * @param packageName package containing the deployment
+     * @param filename filename (with no .sf extension)
+     * @return the test completion event
+     * @throws Throwable if things go wrong
+     */
     protected TestCompletedEvent expectSuccessfulTestRun(String packageName, String filename) throws Throwable {
         return runTestsToCompletion(packageName,filename);
     }
 
+    /**
+     * Do a test run, assert that it failed. The application and eventSink are
+     * both saved in member variables, ready for cleanup in teardown
+     * @param packageName package containing the deployment
+     * @param filename filename (with no .sf extension)
+     * @return the test completion event
+     * @throws Throwable if things go wrong
+     */
     protected TestCompletedEvent expectAbnormalTestRun(String packageName, String filename) throws Throwable {
         LifecycleEvent event = runTestDeployment(packageName, filename);
         assertTestRunFailed(event,false, null);
