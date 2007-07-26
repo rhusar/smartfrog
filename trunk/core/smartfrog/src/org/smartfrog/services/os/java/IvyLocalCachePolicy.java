@@ -25,45 +25,39 @@ import java.rmi.RemoteException;
 
 public class IvyLocalCachePolicy extends AbstractPolicy implements LocalCachePolicy {
 
-    /** @throws RemoteException  */
+    /**
+     *  @throws RemoteException as the parent does
+     */
     public IvyLocalCachePolicy() throws RemoteException {
     }
 
-    /** @see LocalCachePolicy#createLocalPath(SerializedArtifact) */
+    /**
+     * {@inheritDoc}
+     */
     public String createLocalPath(SerializedArtifact artifact)
             throws RemoteException, SmartFrogRuntimeException {
         SerializedArtifact.assertValid(artifact, true);
         String project = convertProjectToIvyFormat(artifact);
         String urlPath = new StringBuffer().append(project)
-                .append("/")
+                .append('/')
                 .append(artifact.artifact)
-                .append("/")
+                .append('/')
                 .append(artifact.version)
-                .append("/")
-                .append(createIvyArtifactFilename(artifact))
+                .append('/')
+                .append(LibraryHelper.createIvyArtifactFilename(artifact))
                 .toString();
         return urlPath;
     }
 
     /**
+     * {@inheritDoc}
      * In Ivy, this is currently a noop
      *
-     * @param artifact
+     * @param artifact the artifact to convert
      * @return the project of an artifact
      */
     private String convertProjectToIvyFormat(SerializedArtifact artifact) {
         return artifact.project;
-    }
-
-    private String createIvyArtifactFilename(SerializedArtifact artifact) {
-        StringBuffer buffer = new StringBuffer();
-        buffer.append(artifact.artifact);
-        buffer.append(ARTIFACT_SEPARATOR);
-        buffer.append(artifact.version);
-        buffer.append('.');
-        buffer.append(artifact.extension);
-        String filename = buffer.toString();
-        return filename;
     }
 
     /** @see LibraryCachePolicy#getDescription() */
