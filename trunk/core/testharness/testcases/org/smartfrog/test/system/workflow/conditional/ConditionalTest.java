@@ -35,34 +35,27 @@ public class ConditionalTest extends DeployingTestBase {
         super(s);
     }
 
-/*
     public void testParseConditionFile() throws Throwable {
         runTestsToCompletion(FILES,"testParseConditionFile");
     }
-*/
 
     public void testPassingIf() throws Throwable {
-        application = deployExpectingSuccess(FILES + "testPassingIf.sf", "testPassingIf");
-        expectSuccessfulTermination((TestBlock) application);
+        expectSuccessfulTestRun(FILES, "testPassingIf");
     }
 
     public void testPassingWaitFor() throws Throwable {
-        application=deployExpectingSuccess(FILES +"testPassingWaitFor.sf","testPassingWaitFor");
-        expectSuccessfulTermination((TestBlock) application);
+        expectSuccessfulTestRun(FILES, "testPassingWaitFor");
     }
 
     public void testOneWaitFor() throws Throwable {
-        application = deployExpectingSuccess(FILES + "testOneWaitFor.sf", "testOneWaitFor");
-        expectSuccessfulTermination((TestBlock) application);
+        expectSuccessfulTestRun(FILES, "testOneWaitFor");
     }
 
     public void testOneIf() throws Throwable {
-        application = deployExpectingSuccess(FILES + "testOneIf.sf", "testOneIf");
-        expectSuccessfulTermination((TestBlock) application);
+        expectSuccessfulTestRun(FILES, "testOneIf");
     }
 
     public void testFailingWaitFor() throws Throwable {
-        TestCompletedEvent event =
-            expectAbnormalTestRun(FILES, "testFailingWaitFor", false, WAITFOR_FAILED);
+        expectAbnormalTestRun(FILES, "testFailingWaitFor", false, WAITFOR_FAILED);
     }
 }
