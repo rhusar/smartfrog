@@ -19,9 +19,9 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.ArrayList;
 
 public class EquinoxSubprocessStarterImpl extends AbstractSubprocessStarter {
     private final LogSF log = LogFactory.sfGetProcessLog();
@@ -160,7 +160,15 @@ public class EquinoxSubprocessStarterImpl extends AbstractSubprocessStarter {
 
     private String getEquinoxBundleLocation() throws Exception {
         String bundleURL = System.getProperty("osgi.framework");
-        return new URL(bundleURL).getFile();
+
+        File jarFile = new File(new URL(bundleURL).getFile());
+        if (jarFile.canRead()) return jarFile.getAbsolutePath();
+        else {
+            // On Windows, the path is messed up and starts with /
+            jarFile = new File(jarFile.getPath().substring(1));
+            if (jarFile.canRead()) return jarFile.getAbsolutePath();
+            else throw new IOException("The Equinox JAR file cannot be read. Location: " + jarFile.getPath());
+        }
     }
 
     private BundleContext getDaemonBundleContext() throws Exception {
