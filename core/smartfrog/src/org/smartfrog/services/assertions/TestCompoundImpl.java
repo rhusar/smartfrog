@@ -315,19 +315,23 @@ public class TestCompoundImpl extends ConditionCompound
                 if (!expected) {
                     //the action prim terminated in a way that was not expected
                     //
-                    String errorText = TEST_FAILED_WRONG_STATUS + exitType + "\n"
-                            + "and error text " + exitText + "\n"
-                            + "but got " + childStatus;
+                    String errorText = TEST_FAILED_WRONG_STATUS + exitType +
+                        '\n'
+                        + "and error text " + exitText + '\n'
+                        + "but got " + childStatus;
                     sfLog().error(errorText);
                     exitRecord = TerminationRecord.abnormal(errorText, childStatus.id);
                     //propagate any exception
                     exitRecord.setCause(childStatus.getCause());
                 } else {
                     //expected action termination.
-                    //now look at the record, and if it is abnormal, do not propagate it
+                    //now look at the record, and if it is abnormal, convert it
+                    //to a normal status, preserving the message
+                    sfLog().info("Action terminated abnormally, as expected");
                     if(!childStatus.isNormal()) {
-                        exitRecord = TerminationRecord.normal("action terminated with (expected) abnormal exit",
-                                getName());
+                        exitRecord = TerminationRecord.normal(
+                            childStatus.description,
+                                childStatus.id);
                     }
                     
                 }
