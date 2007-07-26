@@ -18,6 +18,8 @@ import org.jivesoftware.smack.RosterEntry;
 import org.jivesoftware.smack.XMPPException;
 import org.smartfrog.avalanche.core.host.HostType;
 import org.smartfrog.avalanche.shared.xmpp.XMPPAdapter;
+import java.net.UnknownHostException;
+import java.net.InetAddress;
 
 /**
  * Whenever a new Host is added to Avalanche server, this handler is called 
@@ -41,54 +43,63 @@ public class HostUpdateRosterHandler implements HostUpdateHandler {
         // Save roster
         roster = this.listenerAdapter.getRoster();
 	}
-	/**
+
+    /**
+     *
+     * @param strHostOrIp is the IP or host name of a system
+     * @return the host name of IP or host given
+     * @throws UnknownHostException
+     */
+    private String resolve(String strHostOrIp) {
+        try {
+            InetAddress inetAdd = InetAddress.getByName(strHostOrIp);
+            return inetAdd.getHostName().toLowerCase();
+        } catch (UnknownHostException e) {
+            return null;
+        }
+    }
+
+    /**
 	 * Creates a user for the host, in case of failure it logs the error.
 	 */
 	public void hostAdded(HostType h) {
-		String hostAddress = null ;
+		String hostAddress = resolve(h.getId());
 
-        try {
-            java.net.InetAddress inetAdd = java.net.InetAddress.getByName(h.getId());
-            hostAddress = inetAdd.getHostName().toLowerCase() ;
-        } catch (Exception e) {
-            log.error("Host unknown. " + e);
+        // if client is a valid machine on the network
+        if (hostAddress != null) {
+            // Create user on the XMPP server
+            adminAdapter.createUser(hostAddress, hostAddress, hostAddress);
+
+            // Try to add new user to the Avalanche user's buddy list
+            try {
+                // Add roster entry
+                roster.createEntry(hostAddress + "@" + adminAdapter.getXmppServer(), hostAddress, null);
+                log.info("Successfully added roster for host \"" + hostAddress + "\".");
+            } catch (XMPPException xe) {
+                log.error("Could not add roster for host \"" + hostAddress + "\". Exception: " + xe);
+            }
         }
-
-        // Create user
-        adminAdapter.createUser(hostAddress, hostAddress, h.getId());
-
-        try {
-            // Add roster entry
-            roster.createEntry(hostAddress + "@" + adminAdapter.getXmppServer(), hostAddress, null);
-            log.info("Successfully added roster for host \"" + hostAddress + "\".");
-        } catch (XMPPException xe) {
-            log.error("Could not add roster for host \"" + hostAddress + "\". Exception: " + xe);
-        }
-	}
+    }
 
 	/**
 	 * Deletes the username used by the host, in case of failure it logs the error.
 	 */
-	public void hostDeleted(String hostId) {
-        String hostAddress = null;
+	public void hostDeleted(HostType h) {
+        String hostAddress = resolve(h.getId());
 
-        try {
-            java.net.InetAddress inetAdd = java.net.InetAddress.getByName(hostId);
-            hostAddress = inetAdd.getHostName().toLowerCase();
-        } catch (Exception e) {
-            log.error("Host unknown. " + e);
-        }
+        // if client is a valid machine on the network
+        if (hostAddress != null) {
+            // Delete user
+            adminAdapter.deleteUser(hostAddress, hostAddress);
 
-        // Delete user
-        adminAdapter.deleteUser(hostAddress, hostAddress);
-
-        try {
-            // Remove roster entry
-            RosterEntry re = roster.getEntry(hostId);
-            roster.removeEntry(re);
-            log.info("Successfully removed roster for host \"" + hostAddress + "\".");
-        } catch (Exception e) {
-            log.error("Error while removing roster for user \"" + hostId + "\". Exception:" + e);
+            try {
+                // Remove roster entry
+                RosterEntry re = roster.getEntry(hostAddress);
+                roster.removeEntry(re);
+                log.info("Successfully removed roster for host \"" + hostAddress + "\".");
+            } catch (Exception e) {
+                log.error("Error while removing roster for user \"" + hostAddress + "\". Exception:" + e);
+            }
         }
     }
 }

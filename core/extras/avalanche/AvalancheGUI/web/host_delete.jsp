@@ -19,25 +19,27 @@ For more information: www.smartfrog.org
 */ %>
 <%@ page language="java" %>
 <%@	page import="org.smartfrog.avalanche.server.*"%>
+<%@ page import="org.smartfrog.avalanche.core.host.HostType" %>
 <%@ include file="InitBeans.jsp" %>
 
 <%
-  	String errMsg = null; 
-  	HostManager manager = factory.getHostManager();
-  	
-  	if( null == manager ){
-  		errMsg = "Error connecting to hosts database" ;
-  		throw new Exception ( "Error connecting to hosts database" );
-  	}
-  	
-  	String[] selectedHosts = request.getParameterValues("selectedHost");
-    if( null != selectedHosts ){
-	  	for (int i = 0; i < selectedHosts.length; i++) {
-			manager.removeHost(selectedHosts[i]);
-          }
-  	}
+    String errMsg = null;
+    HostManager manager = factory.getHostManager();
+
+    if (null == manager) {
+        errMsg = "Error connecting to hosts database";
+        throw new Exception("Error connecting to hosts database");
+    }
+
+    String[] selectedHosts = request.getParameterValues("selectedHost");
+    if (null != selectedHosts) {
+        for (int i = 0; i < selectedHosts.length; i++) {
+            HostType host = manager.getHost(selectedHosts[i]);
+            manager.removeHost(host);
+        }
+    }
 
     // Redirect to host_list.jsp
-  	javax.servlet.RequestDispatcher dispatcher = request.getRequestDispatcher("host_list.jsp");
-	dispatcher.forward(request, response);
+    javax.servlet.RequestDispatcher dispatcher = request.getRequestDispatcher("host_list.jsp");
+    dispatcher.forward(request, response);
 %>

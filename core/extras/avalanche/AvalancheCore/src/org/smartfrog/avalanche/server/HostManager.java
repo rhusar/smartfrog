@@ -86,10 +86,10 @@ public interface HostManager {
 	   /**
 	    * Deletes host data for the host Id. It doesnt delete active profile associated with
 	    * the host. 
-	    * @param hostId
+	    * @param host
 	    * @throws DatabaseAccessException
 	    */
-	   public void removeHost(String hostId) throws DatabaseAccessException; 
+	   public void removeHost(HostType host) throws DatabaseAccessException;
 	   /**
 	    * 
 	    * @param host
