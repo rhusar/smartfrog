@@ -1,5 +1,5 @@
 #include "org/smartfrog/components.sf"
-#from envParser:clEnvTest #include "org/smartfrog/osgi/components.sf"
+#include "org/smartfrog/osgi/components.sf"
 #include "org/smartfrog/sfcore/deployer/deployers.sf"
 
 sfConfig extends Compound {
