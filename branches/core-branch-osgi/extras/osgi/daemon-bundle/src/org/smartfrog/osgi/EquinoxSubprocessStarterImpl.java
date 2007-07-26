@@ -88,25 +88,11 @@ public class EquinoxSubprocessStarterImpl extends AbstractSubprocessStarter {
                     // 0 is the bundle ID of the system bundle, which is already there. So we need to bump IDs
                     writer.println("start " + (i + 1));
                 }
-                logConsoleOutput(socket);
             }
 
         } finally {
             if (writer != null) writer.close();
             if (socket != null) socket.close();
-        }
-    }
-
-    private void logConsoleOutput(Socket socket) throws IOException {
-        if (log.isDebugEnabled()) {
-            BufferedReader reader = null;
-            try {            
-                reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-                String line;
-                while ((line = reader.readLine()) != null) log.debug(line);
-            } finally {
-                if (reader != null) reader.close();
-            }
         }
     }
 
