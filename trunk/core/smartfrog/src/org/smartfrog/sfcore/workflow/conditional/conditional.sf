@@ -28,6 +28,10 @@ OptionalCondition extends OptionalCD {
   description "An optional condition";
 }
 
+ConditionPrim extends Prim {
+  description "A condition";
+}
+
 Conditional extends Prim {
 
 }
