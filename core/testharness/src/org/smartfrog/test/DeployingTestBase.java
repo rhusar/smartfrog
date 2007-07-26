@@ -341,6 +341,26 @@ public abstract class DeployingTestBase extends SmartFrogTestBase implements Tes
     }
 
     /**
+     * Do a test run, assert that it failed. The application and eventSink are both saved in member variables, ready for
+     * cleanup in teardown
+     *
+     * @param packageName package containing the deployment
+     * @param filename    filename (with no .sf extension)
+     * @return the test completion event
+     * @throws Throwable if things go wrong
+     */
+    protected TestCompletedEvent expectTestTimeout(String packageName, String filename) throws Throwable {
+        LifecycleEvent event = runTestDeployment(packageName, filename);
+        conditionalFail(event instanceof TerminatedEvent,
+                "Test run terminated without completing the tests", event);
+        //if not a terminated event, its test results
+        TestCompletedEvent results = (TestCompletedEvent) event;
+        conditionalFail(!results.isForcedTimeout(),
+                "Tests failed to time out", event);
+        return results;
+    }
+
+    /**
      * Do a test run, assert that it failed. The application and eventSink are
      * both saved in member variables, ready for cleanup in teardown
      * @param packageName package containing the deployment
