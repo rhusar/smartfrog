@@ -138,10 +138,12 @@ public class DefaultRootLocatorImpl implements RootLocator, MessageKeys {
                 registry.unbind(defaultName);
              }
          } catch (Exception e) {
+             //braindead
              // to be thrown in getProcessCompound
-             String msg = "unbinding";
-             if (bind) {msg = "binding";}
-             ex = SmartFrogRuntimeException.forward("Exception while "+msg  + "root ProcessCompound", e);
+//             String msg = "unbinding";
+//             if (bind) {msg = "binding";}
+//             ex = SmartFrogRuntimeException.forward("Exception while "+msg  + "root ProcessCompound", e);
+             e.printStackTrace();
          }
      }
     /**
