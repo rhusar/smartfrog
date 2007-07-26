@@ -40,23 +40,17 @@ For more information: www.smartfrog.org
     SettingsType.DataTransferMode sysTransferModes[] =
 		 defSettings.getDataTransferModeArray();
     
+    HostType host = null;
     String hostId = request.getParameter("hostId");
-    String os = null; 
-    String plaf = null ;
-    String arch = null ;
-    
-    HostType host = manager.getHost(hostId);
-    if( null != hostId ){
-	if( null != host ){
-	    PlatformSelectorType ps = host.getPlatformSelector();
-	    if( null != ps ){
-		os   = ps.getOs();
-		plaf = ps.getPlatform();
-		arch = ps.getArch();
-	    }
-	}
+
+    if (hostId != null) {
+        hostId = hostId.trim().toLowerCase();
+        if (!hostId.equals("")) {
+            host = manager.getHost(hostId);
+        }
     }
 
+    if (host != null) {
     String modeStr = "" ;
     for( int i=0; i < sysTransferModes.length; i++){
 	if ( i != sysTransferModes.length-1 )
@@ -64,17 +58,14 @@ For more information: www.smartfrog.org
 	else
 	    modeStr += "\"" +sysTransferModes[i].getName() +"\"";
     }
-	
+
+    String site = "host_save.jsp?action=tm&next=";
 %>
 
-<script language="javascript">
+<script language="JavaScript" type="text/javascript">
  <!--
 function submit(target){
-    document.addHostFrm.action = target ;
-    var hostId = <%=(hostId!=null)?("\""+hostId+"\""):null%> ;
-    if( hostId != null )
-	document.addHostFrm.action = target + "&&hostId=" + hostId ;
-
+    document.addHostFrm.action = "<%= site %>" + target + "&hostId=<%= host.getId() %>";
     document.addHostFrm.submit();
 }
 
@@ -133,24 +124,12 @@ setNextSubtitle("Host Transfer Modes Page");
     -->
 </script>
 
-<form id='addHostFrm' name='addHostFrm' method='post' action='host_save.jsp?action=tm&next=env&hostId=<%=hostId %>'>
+<form id="addHostFrm" name="addHostFrm" method="post" action="<%= site %>env&hostId=<%= host.getId() %>">
 
 <!-- This is the page menu -->
 <br>
-<div align="center" style="width: 95%;">
-  <script>
-    oneVoiceWritePageMenu("HostTM","header",
-      "Host Properties",
-	    "javascript:submit('host_save.jsp?action=tm&next=env')",
-      "Transfer Modes",
-	    "",
-      "Access Modes",
-	    "javascript:submit('host_save.jsp?action=tm&next=am')",
-      "Basic Settings",
-	    "javascript:submit('host_save.jsp?action=tm&next=bs')"
-    );
-  </script>
-</div>
+
+<%@ include file="host_setup_menu.inc.jsp" %>
 
 <!-- Actual Body starts here -->
 <br/>
@@ -222,8 +201,13 @@ setNextSubtitle("Host Transfer Modes Page");
 <br/>
 <input type='button' value='Add a Transfer Mode' class="btn" 
 	onclick="javascript:addRowInTable(getElementById('transferModeTable'))">
-<input type='submit' name='save' value='Save Changes' class="btn">
+<input type='submit' name='save' value='Save Changes' class="btn" onClick="submit('env')">
 </center>
 </form>
+<%
+    } else {
+        response.sendRedirect("host_setup_bs.jsp");
+    }
+%>
 
 <%@ include file="footer.inc.jsp"%>

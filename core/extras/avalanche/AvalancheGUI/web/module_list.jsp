@@ -1,4 +1,4 @@
-<!-- /**
+<% /**
 (C) Copyright 1998-2007 Hewlett-Packard Development Company, LP
 
 This library is free software; you can redistribute it and/or
@@ -16,18 +16,11 @@ License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 For more information: www.smartfrog.org
-*/
--->
-<%-- $Id: ListModules.jsp 81 2006-05-30 06:09:38Z uppada $ --%>
+*/ %>
 <%@ page language="java" %>
-
-<%@	page import="org.smartfrog.avalanche.settings.xdefault.*"%>
+<%@ include file="header.inc.jsp" %>
 <%@	page import="org.smartfrog.avalanche.core.module.*"%>
 <%@	page import="org.smartfrog.avalanche.server.*"%>
-<%@	page import="org.smartfrog.avalanche.server.modules.*"%>
-<%@	page import="org.smartfrog.avalanche.core.host.*"%>
-
-<%@ include file="InitBeans.jsp" %>
 
 <% 
   	String errMsg = null; 
@@ -78,15 +71,8 @@ For more information: www.smartfrog.org
 	settingsMgr.setDefaultSettings(defSettings);
 --%>
 
-
-<!DOCTYPE HTML PUBLIC "-//w3c//dtd html 4.0 transitional//en">
-<html>
-<head>
-<%@ include file="common.jsp" %>
-</head>
-
-<script language="javascript">
-
+<script language="JavaScript" type="text/javascript">
+   <!--
     function toggle(divId)
     {
         var state = document.getElementById(divId).style.display ;
@@ -98,18 +84,47 @@ For more information: www.smartfrog.org
         }
     }
 
+    function deleteModule() {
+        var selectors = document.getElementsByName("selectedModule");
+        var selectedModules = new Array();
+
+        for (var i = 0; i < selectors.length; i++)
+        {
+            if (selectors[i].checked)
+                selectedModules.push(selectors[i]);
+        }
+
+        var count = selectedModules.length;
+        if (count == 0)
+        {
+            alert("You must select one or more modules for this action.");
+            return;
+        }
+
+        var alertMsg = "This action will delete ";
+        if (count == 1)
+            alertMsg += "one modules."
+        else
+            alertMsg += count + " modules."
+
+        alertMsg += " Are you sure you want to continue?";
+
+        if (confirm(alertMsg)) {
+            document.hostListFrm.action = "module_save.jsp?pageAction=delMod";
+            document.hostListFrm.submit();
+        }
+    }
+
     function submit(target) {
         document.moduleListFrm.action = target;
         document.moduleListFrm.submit();
     }
+
+    setNextSubtitle("List Modules Page")
+    -->
 </script>
 
-<body>
-<script>
-    setNextSubtitle("List Modules Page");
-</script>
-
-<form id="moduleListFrm" name="moduleListFrm" method="post" action="SaveModule.jsp">
+<form id="moduleListFrm" name="moduleListFrm" method="post" action="module_save.jsp">
 
     <!-- This is the page menu -->
     <br/>
@@ -189,7 +204,7 @@ For more information: www.smartfrog.org
                 <script>
                     oneVoiceWritePageMenu("ListModules", "footer",
                             "Delete selected modules",
-                            "javascript:submit('SaveModule.jsp?pageAction=delMod')",
+                            "javascript:deleteModule()",
                             "Add a module",
                             "javascript:toggle('addModuleDiv')"
                             );
@@ -205,7 +220,7 @@ For more information: www.smartfrog.org
 <div id="addModuleDiv" style="display:none;">
     <center>
 
-        <form name="addModFrm" method="post" action="SaveModule.jsp?pageAction=addMod">
+        <form name="addModFrm" method="post" action="module_save.jsp?pageAction=addMod">
             <table id="hostListTable" border="0" cellpadding="0" cellspacing="0" class="dataTable">
                 <caption>New Module</caption>
                 <tbody>
@@ -248,9 +263,4 @@ For more information: www.smartfrog.org
     </center>
 </div>
 
-<script language="JavaScript" type="text/javascript">
-    reconcileEventHandlers();
-</script>
-</body>
-
-</html>
+<%@ include file="footer.inc.jsp"%>

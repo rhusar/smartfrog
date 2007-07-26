@@ -1,4 +1,4 @@
-<!-- /**
+<% /**
 (C) Copyright 1998-2007 Hewlett-Packard Development Company, LP
 
 This library is free software; you can redistribute it and/or
@@ -16,66 +16,57 @@ License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 For more information: www.smartfrog.org
-*/
--->
+*/ %>
 <%@ page language="java" %>
 <%@ include file="header.inc.jsp"%>
 <%@	page import="org.smartfrog.avalanche.settings.xdefault.*"%>
-<%@	page import="org.smartfrog.avalanche.core.module.*"%>
 <%@	page import="org.smartfrog.avalanche.server.*"%>
 <%@	page import="org.smartfrog.avalanche.core.host.*"%>
 
 
 <%
-  	String errMsg = null; 
-  	HostManager manager = factory.getHostManager();
-  	
-  	if( null == manager ){
-  		errMsg = "Error connecting to hosts database" ;
-  		throw new Exception ( "Error connecting to hosts database" );
-  	}
-  	
-  	SettingsManager settingsMgr = factory.getSettingsManager();
-  	SettingsType defSettings = settingsMgr.getDefaultSettings();  
-  	
-	SettingsType.AccessMode sysAccessModes[] = defSettings.getAccessModeArray();
-	
-  	String hostId = request.getParameter("hostId");
-  	String os = null; 
-  	String plaf = null ;
-  	String arch = null ;
-  	
-  	HostType host = manager.getHost(hostId);
-  	if( null != hostId ){
-	  	if( null != host ){
-	  		PlatformSelectorType ps = host.getPlatformSelector();
-	  		if( null != ps ){
-		  		os 	 = ps.getOs();
-		  		plaf = ps.getPlatform();
-		  		arch = ps.getArch();
-		  	}
-	  	}
-	}
+    String errMsg = null;
+    HostManager manager = factory.getHostManager();
 
-	String modeStr = "" ;
-	for( int i=0;i<sysAccessModes.length;i++){
-		if ( i != sysAccessModes.length-1 )
-			modeStr += "\"" +sysAccessModes[i].getName() + "\""+",";
-		else
-			modeStr += "\"" + sysAccessModes[i].getName()+ "\"";
-	}
+    if (null == manager) {
+        errMsg = "Error connecting to hosts database";
+        throw new Exception("Error connecting to hosts database");
+    }
+
+    SettingsManager settingsMgr = factory.getSettingsManager();
+    SettingsType defSettings = settingsMgr.getDefaultSettings();
+
+    SettingsType.AccessMode sysAccessModes[] = defSettings.getAccessModeArray();
+
+    HostType host = null;
+    String hostId = request.getParameter("hostId");
+
+    if (hostId != null) {
+        hostId = hostId.trim().toLowerCase();
+        if (!hostId.equals("")) {
+            host = manager.getHost(hostId);
+        }
+    }
+
+    if (host != null) {
+
+    String modeStr = "";
+    for (int i = 0; i < sysAccessModes.length; i++) {
+        if (i != sysAccessModes.length - 1)
+            modeStr += "\"" + sysAccessModes[i].getName() + "\"" + ",";
+        else
+            modeStr += "\"" + sysAccessModes[i].getName() + "\"";
+    }
+
+    String site = "host_save.jsp?action=am&next=";
 %>
 
 
-<script language="javascript">
+<script language="JavaScript" type="text/javascript">
     <!--
 
 function submit(target){
-	document.hostAMFrm.action = target ;
-	var hostId = <%=(hostId!=null)?("\""+hostId+"\""):null%> ;
-	if( hostId != null )
-		document.hostAMFrm.action = target + "&hostId=" + hostId ;
-	
+	document.hostAMFrm.action = "<%= site %>" + target + "&hostId=<%= host.getId() %>";
 	document.hostAMFrm.submit();
 }
 
@@ -136,24 +127,12 @@ setNextSubtitle("Host Access Modes Page");
     -->
 </script>
 
-<form id='hostAMFrm' name='hostAMFrm' method='post' action='host_save.jsp?action=am&next=tm&hostId=<%=hostId %>'>
+<form id="hostAMFrm" name="hostAMFrm" method="post" action="<%= site %>tm&hostId=<%= host.getId() %>">
 
 <!-- This is the page menu -->
 <br>
-<div align="center" style="width: 95%;">
-  <script>
-    oneVoiceWritePageMenu("HostAM","header",
-      "Host Properties",
-	    "javascript:window.location.href='host_save.jsp?action=am&next=env'",
-      "Transfer Modes",
-	    "javascript:window.location.href='host_save.jsp?action=am&next=tm'",
-      "Access Modes",
-	    "",
-      "Basic Settings",
-	    "javascript:window.location.href='host_save.jsp?action=am&next=bs'"
-    );
-  </script>
-</div>
+
+<%@ include file="host_setup_menu.inc.jsp" %>    
 
 <!-- Actual Body starts here -->
 <br/>
@@ -227,9 +206,14 @@ setNextSubtitle("Host Access Modes Page");
 
 <input type="button" value="Add an Access Mode" class="btn" 
   onclick="javascript:addRowInAccessTable(getElementById('accessModeTable'))">
-<input type="submit" name="save" value="Save Changes" class="btn">
+<input type="submit" name="save" value="Save Changes" class="btn" onClick="submit('tm')">
 </div>
 </form>
 
+<%
+    } else {
+        response.sendRedirect("host_setup_bs.jsp");
+    }
+%>
 
 <%@ include file="footer.inc.jsp"%>
