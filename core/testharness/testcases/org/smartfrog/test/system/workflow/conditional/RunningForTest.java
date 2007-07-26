@@ -27,6 +27,7 @@ import org.smartfrog.sfcore.prim.TerminationRecord;
  * tests the RunningFor condition that checks that a componet has been running for a given period of time
  */
 public class RunningForTest extends DeployingTestBase {
+
     protected static final String FILES = "org/smartfrog/test/system/workflow/conditional/";
 
     public RunningForTest(String s) {
