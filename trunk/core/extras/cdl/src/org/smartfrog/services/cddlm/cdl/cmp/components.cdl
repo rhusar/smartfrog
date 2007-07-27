@@ -1,0 +1,58 @@
+<?xml version="1.0"?>
+<cdl:cdl xmlns:cdl="http://www.gridforum.org/namespaces/2005/02/cddlm/CDL-1.0"
+  xmlns:cmp="http://www.gridforum.org/cddlm/components/2005/02"
+    xmlns:sfi="http://smartfrog.org/types/2006/01/">
+
+  <cdl:documentation>
+    This is a base class for defining stuff to extend for the component model; it is
+    where we define our cmp and test classes.
+
+    Historical note: this is the first ever CDL component declaration in the SF tree.
+  </cdl:documentation>
+
+  <cdl:import location="classpath:/org/smartfrog/services/cddlm/cdl/base/components.cdl"/>
+  <cdl:configuration >
+
+    <!--Not part of the spec: a cmp:component-->
+    <cmp:Component >
+      <sfClass sfi:type="trimmed" cdl:ref="cmp:CommandPath" />
+      <cmp:CommandPath >org.smartfrog.services.cddlm.cdl.base.CdlCompoundImpl</cmp:CommandPath>
+    </cmp:Component>
+
+ <!-- Events -->
+    <cmp:Event process="" target="">
+      <cmp:CommandPath>org.smartfrog.services.cdl.cmp.CmpEventImpl</cmp:CommandPath>
+    </cmp:Event>
+
+    <cmp:OnInitalized cdl:extends="cmp:Event"/>
+    <cmp:OnRunning cdl:extends="cmp:Event"/>
+    <cmp:OnFailed cdl:extends="cmp:Event"/>
+    <cmp:OnTerminated cdl:extends="cmp:Event"/>
+
+<!--Notifications -->
+
+    <cmp:Notification process="" target="">
+      <cmp:CommandPath>org.smartfrog.services.cdl.cmp.CmpNotificationImpl</cmp:CommandPath>
+    </cmp:Notification>
+
+    <cmp:OnFault cdl:extends="cmp:Notification" cmp:faultName="" cmp:faultType="" />
+    <cmp:OnChange cdl:extends="cmp:Notification" cmp:property=""/>
+
+
+    <cmp:CmpControlFlow lifecycle="">
+      <cmp:CommandPath>org.smartfrog.services.cdl.cmp.CmpControlFlowImpl</cmp:CommandPath>
+    </cmp:CmpControlFlow>
+
+    
+    <CmpControlFlow cdl:extends="cmp:CmpControlFlow" cmp:lifecycle=""
+      xmns="http://www.gridforum.org/cddlm/components/2005/02">
+    </CmpControlFlow>
+    
+    <cmp:sequence cdl:extends="cmp:CmpControlFlow" />
+    <cmp:reverse cdl:extends="cmp:CmpControlFlow"/>
+    <cmp:flow cdl:extends="cmp:CmpControlFlow"/>
+    <cmp:wait cdl:extends="cmp:CmpControlFlow" cmp:duration="" cmp:until=""/>
+    <cmp:switch cdl:extends="cmp:CmpControlFlow"/>
+
+  </cdl:configuration>
+</cdl:cdl>

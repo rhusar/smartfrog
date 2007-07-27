@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope">
+  <soap:Body>
+    <soap:Fault xmlns=''>
+      <soap:Code>
+        <soap:Value>soap:Client</soap:Value>
+      </soap:Code>
+      <soap:Reason>
+        <soap:Text xml:lang="en">Invalid message format</soap:Text>
+      </soap:Reason>
+      <soap:Role>http://example.org/someactor</soap:Role>
+      <soap:Detail>
+        <m:msg xmlns:m='http://example.org/faults/exceptions'>
+          There were
+          <b>lots</b> of elements in the message that 
+          I did not understand
+        </m:msg>
+      </soap:Detail>
+    </soap:Fault>
+  </soap:Body>
+</soap:Envelope>

@@ -1,0 +1,80 @@
+
+/* This should be added by the testharness and it is common to all tests. */
+sfConfig extends sfConfig1 {
+
+  // host0 is the "root" known by the scheduler to stop sfConfig...
+  host0 "ebnt171.india.hp.com";
+  // all the virtual nodes used by the examples ...
+	host1 "bhargava.india.hp.com";
+  host2 "eb96147.india.hp.com";
+ /* host3 "demo-linux-6.hpl.hp.com";
+  host4 "demo-linux-6.hpl.hp.com";  
+  host5 "demo-linux-6.hpl.hp.com";
+  host6 "demo-linux-6.hpl.hp.com";
+  host7 "demo-linux-6.hpl.hp.com";
+  host8 "demo-linux-6.hpl.hp.com";  
+  host9 "demo-linux-6.hpl.hp.com";
+  host10 "demo-linux-6.hpl.hp.com";
+  host11 "demo-linux-6.hpl.hp.com";
+  host12 "demo-linux-6.hpl.hp.com";  
+  host13 "demo-linux-6.hpl.hp.com";
+  host14 "demo-linux-6.hpl.hp.com";
+  host15 "demo-linux-6.hpl.hp.com";
+  host16 "demo-linux-7.hpl.hp.com";
+  host17 "demo-linux-7.hpl.hp.com";
+  host18 "demo-linux-7.hpl.hp.com";
+  host19 "demo-linux-7.hpl.hp.com";
+  host20 "demo-linux-7.hpl.hp.com";
+  host21 "demo-linux-7.hpl.hp.com";
+  host22 "demo-linux-7.hpl.hp.com";  
+  host23 "demo-linux-7.hpl.hp.com";
+  host24 "demo-linux-7.hpl.hp.com";
+  host25 "demo-linux-7.hpl.hp.com";
+  host26 "demo-linux-7.hpl.hp.com";
+  host27 "demo-linux-7.hpl.hp.com";
+  host28 "demo-linux-7.hpl.hp.com";
+  host29 "demo-linux-7.hpl.hp.com";
+  host30 "demo-linux-7.hpl.hp.com";
+  host31 "demo-linux-7.hpl.hp.com";
+  host32 "demo-linux-8.hpl.hp.com";  
+  host33 "demo-linux-8.hpl.hp.com";
+  host34 "demo-linux-8.hpl.hp.com";
+  host35 "demo-linux-8.hpl.hp.com";
+  host36 "demo-linux-8.hpl.hp.com";
+  host37 "demo-linux-8.hpl.hp.com";
+  host38 "demo-linux-8.hpl.hp.com";
+  host39 "demo-linux-8.hpl.hp.com";
+  host40 "demo-linux-8.hpl.hp.com";
+  host41 "demo-linux-8.hpl.hp.com";
+  host42 "demo-linux-8.hpl.hp.com";  
+  host43 "demo-linux-8.hpl.hp.com";
+  host44 "demo-linux-8.hpl.hp.com";
+  host45 "demo-linux-8.hpl.hp.com";
+  host46 "demo-linux-8.hpl.hp.com";
+  host47 "demo-linux-8.hpl.hp.com";
+  host48 "demo-linux-9.hpl.hp.com";
+  host49 "demo-linux-9.hpl.hp.com";
+  host50 "demo-linux-9.hpl.hp.com";
+  host51 "demo-linux-9.hpl.hp.com";
+  host52 "demo-linux-9.hpl.hp.com";  
+  host53 "demo-linux-9.hpl.hp.com";
+  host54 "win-demo-5.hpl.hp.com";
+  host55 "win-demo-5.hpl.hp.com";
+  host56 "win-demo-5.hpl.hp.com";
+  host57 "win-demo-5.hpl.hp.com";
+  host58 "win-demo-5.hpl.hp.com";
+  host59 "win-demo-5.hpl.hp.com";
+  host60 "win-demo-5.hpl.hp.com";
+  host61 "win-demo-5.hpl.hp.com";
+  host62 "win-demo-5.hpl.hp.com";  
+  host63 "win-demo-5.hpl.hp.com"; */
+        
+  /* Testharness daemons use the normal port(3800). This example should ALWAYS 
+     use this port instead... */
+  port 3801;
+  // deploy the sfConfig in the "root"
+  sfProcessHost ATTRIB host0;
+  numMatches 5;
+  intervalGen 10;
+
+}

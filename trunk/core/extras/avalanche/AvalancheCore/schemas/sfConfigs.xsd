@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<xs:schema 
+  targetNamespace="http://smartfrog.org/avalanche/settings/sfConfig"
+  xmlns:xs='http://www.w3.org/2001/XMLSchema'
+  xmlns:this='http://smartfrog.org/avalanche/settings/sfConfig'>
+
+  <xs:element name="sfConfigs" type="this:sfConfigsType"/>
+    
+    <xs:complexType name="sfConfigsType">
+      <xs:sequence>
+		  
+		 <!-- sfRelease name should match with root directory name 
+			 in sfReleaseFile archive-->
+        <xs:element name="sfReleaseName" type="xs:string" 
+          minOccurs="1" maxOccurs="1"/>
+        <xs:element name="sfBootDir" type="xs:string" 
+          minOccurs="1" maxOccurs="1"/>
+        <xs:element name="sfReleaseFile" type="xs:string" 
+          minOccurs="1" maxOccurs="1"/>
+        <xs:element name="sfTemplateFile" type="xs:string" 
+          minOccurs="1" maxOccurs="1"/>
+        <xs:element name="sfHomeOnServer" type="xs:string" 
+          minOccurs="1" maxOccurs="1"/>
+
+		  		  		  		  		  		  
+		<xs:element name="sfDescription" type="this:sfDescriptionType" 
+          minOccurs="0" maxOccurs="unbounded"/>
+      </xs:sequence>
+   </xs:complexType>
+        
+    <xs:complexType name="sfDescriptionType">
+      <xs:sequence>
+        <!--URL of the .sf file, this file should be present in one of the jar files 
+          present in the classpath-->
+        <xs:element name="url" type="xs:string" minOccurs="1" 
+          maxOccurs="1"/>
+         <!--Title should be unique and should describe what this configuration is meant for -->
+        <xs:element name="title" type="xs:string" minOccurs="1" 
+          maxOccurs="1"/>
+         <!-- This classpath is relative to the base part of exported sfLib directory-->
+        <xs:element name="classPath" type="xs:string" minOccurs="0" 
+          maxOccurs="unbounded"/>
+        <xs:element name="action" type="xs:string" maxOccurs="1" minOccurs="1"/>
+         <xs:element name="argument" minOccurs="0" maxOccurs="unbounded">
+            <xs:complexType>
+                <xs:sequence>
+                  <xs:element name="name" type="xs:string" minOccurs="1" 
+                    maxOccurs="1"/>
+                  <xs:element name="value" type="xs:string" minOccurs="1" 
+                    maxOccurs="1"/>
+                  <xs:element name="description" type="xs:string" minOccurs="1" 
+                    maxOccurs="1"/>
+                </xs:sequence>
+            </xs:complexType>
+          </xs:element>        
+      </xs:sequence>
+    </xs:complexType>
+
+</xs:schema>
+
