@@ -1,4 +1,4 @@
-<!-- /**
+<% /**
 (C) Copyright 1998-2007 Hewlett-Packard Development Company, LP
 
 This library is free software; you can redistribute it and/or
@@ -16,8 +16,7 @@ License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 For more information: www.smartfrog.org
-*/
--->
+*/ %>
 <%@ page language="java" %>
 <%@	page import="org.smartfrog.avalanche.server.*"%>
 <%@ page import="org.smartfrog.avalanche.server.engines.sf.*"%>
@@ -41,6 +40,5 @@ For more information: www.smartfrog.org
   	}
 
     // Redirect
-    javax.servlet.RequestDispatcher dispatcher = request.getRequestDispatcher("host_list_active.jsp");
-	dispatcher.forward(request, response);
+    response.sendRedirect("host_list.jsp?active=true");
 %>

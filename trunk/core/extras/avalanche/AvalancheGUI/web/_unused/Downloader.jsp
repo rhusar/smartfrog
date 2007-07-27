@@ -23,7 +23,7 @@ For more information: www.smartfrog.org
 
 <%@ page import="java.io.*" %>
 
-<%@ include file="InitBeans.jsp" %>
+<%@ include file="../InitBeans.jsp" %>
 <% 
     String file = request.getParameter("filePath");
     

@@ -1,4 +1,4 @@
-<!-- /**
+<% /**
 (C) Copyright 1998-2007 Hewlett-Packard Development Company, LP
 
 This library is free software; you can redistribute it and/or
@@ -16,17 +16,11 @@ License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 For more information: www.smartfrog.org
-*/
--->
-<%-- $Id: ViewModule.jsp 81 2006-05-30 06:09:38Z uppada $ --%>
+*/ %>
 <%@ page language="java" %>
-
+<%@ include file="header.inc.jsp" %>
 <%@	page import="org.smartfrog.avalanche.core.module.*"%>
-<%@	page import="org.smartfrog.avalanche.server.modules.*"%>
 <%@	page import="org.smartfrog.avalanche.server.*"%>
-<%@	page import="org.smartfrog.avalanche.settings.xdefault.*"%>
-
-<%@ include file="InitBeans.jsp" %>
 
 <%
   	String errMsg = null; 
@@ -45,13 +39,8 @@ For more information: www.smartfrog.org
 
 %>
 
-<!DOCTYPE HTML PUBLIC "-//w3c//dtd html 4.0 transitional//en">
-<html>
-<head>
-<%@ include file="common.jsp" %>
-</head>
-<script language="javascript">
-
+<script language="javascript" type="text/javascript">
+ <!--
 function selectColor(div){
 	div.style.background = "#CC99FF" ;
 }
@@ -64,11 +53,9 @@ function submit(formId, target){
 	form.action = target ;
 	form.submit();
 }
-</script>
 
-<body>
-<script>
 setNextSubtitle("View Module Page");
+    -->
 </script>
 
 <br/>
@@ -77,19 +64,11 @@ setNextSubtitle("View Module Page");
 
 <!-- This is the page menu -->
 <div align="center" style="width: 95%;">
-  <script>
+  <script language="JavaScript" type="text/javascript">
     oneVoiceWritePageMenu("ViewModule","header",
-      //"Delete","foo",
       "Edit",
-  	"javasrcript:setLocation('AddModuleBS.jsp?moduleId=<%=moduleId %>')"
+  	"javasrcript:setLocation('module_edit.jsp?moduleId=<%=moduleId %>')"
     );
-//    oneVoiceWritePageMenu("ViewModule","header",
-	//"foobar","#"
-      //"Delete",
-  	//"#"
-      //"Edit",
-  	//"AddModuleBS.jsp?moduleId=<%=moduleId %>"
-    //);
   </script>
 </div>
 
@@ -129,10 +108,10 @@ setNextSubtitle("View Module Page");
     VersionType []versions= module.getVersionArray();
     for (int i=0; i < versions.length; i++) {
       rowClass = rowClass == "" ? "class='altRowColor'" : "";
-      String ver = versions[i].getNumber();
+      String strVersionNumber = versions[i].getNumber();
 %>
     <tr <%=rowClass %>>
-      <td class="medium"><%=ver %> </td>
+      <td class="medium"><a href="module_version_view.jsp?moduleId=Test&version=<%= strVersionNumber %>"><%= strVersionNumber %></a></td>
 <%
       DistributionType []distros = versions[i].getDistributionArray();
 	for (int j=0; j < distros.length; j++) {
@@ -162,7 +141,7 @@ setNextSubtitle("View Module Page");
 	  <span class="headerMenuItem">
 	     <!-- onMouseOver="selectColor(this)"
 	     onMouseOut="unSelectColor(this)"> -->
-	     <a href="javascript:submit('moduleListFrm<%=i %>','SelectHost.jsp?moduleId=<%=moduleId%>&&version=<%=ver%>&&distroId=<%=dId%>&&action=<%=title %>')"><%=actionName %></a>&nbsp;&nbsp; 
+	     <a href="javascript:submit('moduleListFrm<%=i %>','host_select.jsp?moduleId=<%=moduleId%>&version=<%= strVersionNumber %>&distroId=<%=dId%>&action=<%=title %>')"><%=actionName %></a>&nbsp;&nbsp;
 	  </span>
 <%
 	    }
@@ -185,9 +164,5 @@ setNextSubtitle("View Module Page");
 </table>
 </center>
 </div>
-<script language="JavaScript" type="text/javascript">
-        reconcileEventHandlers();
-</script>
-</body>
 
-</html>
+<%@ include file="footer.inc.jsp"%>

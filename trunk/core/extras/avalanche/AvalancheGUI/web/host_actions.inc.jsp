@@ -52,6 +52,10 @@ For more information: www.smartfrog.org
         }
     }
 
+    function openConsole() {
+        perform("host_console.jsp", "open the console for")
+    }
+
     function deleteHosts() {
         perform("host_delete.jsp", "permanently delete");
     }
@@ -75,6 +79,8 @@ For more information: www.smartfrog.org
                                 "javascript:deleteHosts()",
                                 "Stop SmartFrog on selected hosts",
                                 "javascript:stopHosts()",
+                                "Start SmartFrog Console",
+                                "javascript:openConsole()",
                                 "Ignite selected hosts",
                                 "javascript:igniteHosts()");
         -->

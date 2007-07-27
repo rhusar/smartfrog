@@ -1,4 +1,4 @@
-<!-- /**
+<% /**
 (C) Copyright 1998-2007 Hewlett-Packard Development Company, LP
 
 This library is free software; you can redistribute it and/or
@@ -16,18 +16,12 @@ License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 For more information: www.smartfrog.org
-*/
--->
-<%-- $Id: SFActions.jsp 81 2006-05-30 06:09:38Z uppada $ --%>
+*/ %>
 <%@ page language="java" %>
-
-<%@	page import="org.smartfrog.avalanche.core.module.*"%>
-<%@	page import="org.smartfrog.avalanche.server.modules.*"%>
+<%@ include file="header.inc.jsp" %>
 <%@	page import="org.smartfrog.avalanche.server.*"%>
 <%@	page import="org.smartfrog.avalanche.settings.xdefault.*"%>
 <%@	page import="org.smartfrog.avalanche.settings.sfConfig.*"%>
-
-<%@ include file="InitBeans.jsp" %>
 
 <%
   	String errMsg = null; 
@@ -43,18 +37,8 @@ For more information: www.smartfrog.org
 
 %>
 
-<!DOCTYPE HTML PUBLIC "-//w3c//dtd html 4.0 transitional//en">
-<html>
-<head>
-<%@ include file="common.jsp" %>
-<style type="text/css">
-a{
-text-decoration:none;
-}
-</style>
-</head>
-
-<script language="javascript">
+<script language="JavaScript" type="text/javascript">
+    <!--
 function toggle(divId) {
     var state = document.getElementById(divId).style.display ;
     if ( state == "none" )
@@ -70,11 +54,9 @@ function submit(formId, target){
     form.action = target ;
     form.submit();
 }
-</script>
 
-<body>
-<script>
 setNextSubtitle("Supported Actions Page");
+    -->
 </script>
 
 <form name="actionListFrm" id='actionListFrm' method="post">
@@ -122,44 +104,45 @@ setNextSubtitle("Supported Actions Page");
 %>
   </tbody>
 </table>
-<br/>
-<div align="center" style="width: 95%;">
-  <script>
-      oneVoiceWritePageMenu("SFActions","footer",
-	"Delete Selected Actions","javascript:submit('actionListFrm','SaveSFAction.jsp?pageAction=delAction')",
-	"Add an Action","javascript:toggle('newActionDiv')"
-      );
-  </script>
-</div>
+    <br/>
+
+    <div align="center" style="width: 95%;">
+        <script>
+            oneVoiceWritePageMenu("SFActions", "footer",
+                    "Delete Selected Actions", "javascript:submit('actionListFrm','SaveSFAction.jsp?pageAction=delAction')",
+                    "Add an Action", "javascript:toggle('newActionDiv')"
+                    );
+        </script>
+    </div>
 
 </center>
-</div> 
+</div>
 </form>
 
 
 <div id='newActionDiv' style="display:none">
-<center>
-<form id='newActionFrm' name='newActionFrm' method='post' action="SaveSFAction.jsp?pageAction=addAction">
-  <table id="newActionListTable" border="0" cellpadding="0" cellspacing="0" class="dataTable">
-    <caption>New Action</caption>
-    <tbody>
-      <tr>
-	<td class="medium" align="right">Title:</th>
-	<td class="editaleFieldCell">
-	  <input type="text" name="title" size="50">
-	</td>
-      </tr>
-      <tr>
-	<td class="medium" align="right">URL:</th>
-	<td class="editableFieldcell">
-	  <input type="text" name="url" size="50">
-	</td>
-      </tr>
-      <tr>
-	<td class="medium" align="right">Action:</th>
-	<td class="editableFieldCell">
-	  <select name="sfAction">
-<%
+    <center>
+        <form id='newActionFrm' name='newActionFrm' method='post' action="sf_action_save.jsp?pageAction=addAction">
+            <table id="newActionListTable" border="0" cellpadding="0" cellspacing="0" class="dataTable">
+                <caption>New Action</caption>
+                <tbody>
+                    <tr>
+                        <td class="medium" align="right">Title:</td>
+                        <td class="editaleFieldCell">
+                            <input type="text" name="title" size="50">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="medium" align="right">URL:</td>
+                        <td class="editableFieldcell">
+                            <input type="text" name="url" size="50">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="medium" align="right">Action:</td>
+                        <td class="editableFieldCell">
+                            <select name="sfAction">
+                                <%
 	  SettingsType.Action []actionOpts = defSettings.getActionArray();
 	  for( int i = 0;i<actionOpts.length;i++){
 %>
@@ -186,6 +169,6 @@ setNextSubtitle("Supported Actions Page");
 <script language="JavaScript" type="text/javascript">
         reconcileEventHandlers();
 </script>
-</body>
+</div>
 
-</html>
+<%@ include file="footer.inc.jsp" %>

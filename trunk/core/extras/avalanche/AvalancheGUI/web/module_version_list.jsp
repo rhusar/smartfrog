@@ -1,4 +1,4 @@
-<!-- /**
+<% /**
 (C) Copyright 1998-2007 Hewlett-Packard Development Company, LP
 
 This library is free software; you can redistribute it and/or
@@ -16,14 +16,11 @@ License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 For more information: www.smartfrog.org
-*/
--->
+*/ %>
 <%@ page language="java" %>
-
+<%@ include file="header.inc.jsp"%>
 <%@	page import="org.smartfrog.avalanche.core.module.*"%>
-<%@	page import="org.smartfrog.avalanche.server.modules.*"%>
-  	
-<%@ include file="InitBeans.jsp" %>
+<%@	page import="org.smartfrog.avalanche.server.*"%>
 
 <%
     String errMsg = null; 
@@ -37,13 +34,8 @@ For more information: www.smartfrog.org
     String moduleId = request.getParameter("moduleId");
 %>
 
-<!DOCTYPE HTML PUBLIC "-//w3c//dtd html 4.0 transitional//en">
-<html>
-<head>
-<%@ include file="common.jsp" %>
-</head>
-
-<script language="javascript">
+<script language="JavaScript" type="text/javascript">
+    <!--
 function toggle(divId) {
     var state = document.getElementById(divId).style.display ;
     if ( state == "none" ) {
@@ -57,20 +49,16 @@ function submit(target){
     document.moduleListFrm.action = target ;
     document.moduleListFrm.submit();
 }
-</script>
 
-<body>
-<script>
 setNextSubtitle("Module Versions Page");
+
+oneVoiceWritePageMenu("ModuleVersions","header");
+    -->
 </script>
 
 <br/>
-<form id='moduleListFrm' name='moduleListFrm' method='post'>
 
-<!-- This is the page menu -->
-<script>
-oneVoiceWritePageMenu("ModuleVersions","header");
-</script>
+<form id="moduleListFrm" name="moduleListFrm" method="post" action="">
 
 <%@ include file="Message.jsp" %>
 
@@ -81,7 +69,7 @@ oneVoiceWritePageMenu("ModuleVersions","header");
 <table id="hostListTable" class="dataTable" 
 	style="width: 200px; border-collapse: collapse;">
 <caption>
-Module: <a href="ViewModule.jsp?moduleId=<%=moduleId %>"><%=moduleId %></a>
+Module: <a href="module_view.jsp?moduleId=<%=moduleId %>"><%=moduleId %></a>
 </caption>
     <tbody>
 	<tr> 
@@ -100,7 +88,7 @@ Module: <a href="ViewModule.jsp?moduleId=<%=moduleId %>"><%=moduleId %></a>
 			value="<%=verNum%>">
 	    </td>
 	    <td class="medium">
-		<a href="ModuleDistros.jsp?moduleId=<%=moduleId%>&&version=<%=verNum %>">
+		<a href="module_version_view.jsp?moduleId=<%=moduleId%>&&version=<%=verNum %>">
 		  <%=verNum %>
 		</a>
 	    </td>
@@ -114,10 +102,10 @@ Module: <a href="ViewModule.jsp?moduleId=<%=moduleId %>"><%=moduleId %></a>
 
 <div style="width: 250px;">
 <br>
-<script>
+<script language="JavaScript" type="text/javascript">
 oneVoiceWritePageMenu("ModuleVersions","",
   "Delete selected",
-  	"javascript:submit('SaveModule.jsp?moduleId=<%=moduleId%>&&pageAction=delModVer')",
+  	"javascript:submit('module_save.jsp?moduleId=<%=moduleId%>&&pageAction=delModVer')",
   "Add",
   	"javascript:toggle('newVersion')"
 );
@@ -129,7 +117,7 @@ oneVoiceWritePageMenu("ModuleVersions","",
 <center>
 <div id="newVersion" style="display:none">
 
-<form method="post" action="SaveModule.jsp?moduleId=<%=moduleId%>&&pageAction=addModVer">
+<form method="post" action="module_save.jsp?moduleId=<%=moduleId%>&&pageAction=addModVer">
 <table>
 <tr>
     <td class="medium">
@@ -146,9 +134,5 @@ oneVoiceWritePageMenu("ModuleVersions","",
 </div>
 
 </center>
-<script language="JavaScript" type="text/javascript">
-        reconcileEventHandlers();
-</script>
-</body>
 
-</html>
+<%@ include file="footer.inc.jsp"%>

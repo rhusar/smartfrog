@@ -19,11 +19,9 @@ For more information: www.smartfrog.org
 */
 -->
 <%@ page language="java" %>
-
+<%@ include file="header.inc.jsp" %>
 <%@	page import="org.smartfrog.avalanche.core.module.*"%>
-<%@	page import="org.smartfrog.avalanche.server.modules.*"%>
-  	
-<%@ include file="InitBeans.jsp" %>
+<%@	page import="org.smartfrog.avalanche.server.*"%>
 
 <%
   	String errMsg = null; 
@@ -39,13 +37,7 @@ For more information: www.smartfrog.org
 
 %>
 
-<!DOCTYPE HTML PUBLIC "-//w3c//dtd html 4.0 transitional//en">
-<html>
-<head>
-<%@ include file="common.jsp" %>
-</head>
-
-<script language="javascript">
+<script language="JavaScript" type="text/javascript">
  function toggle(divId)
  {
    var state = document.getElementById(divId).style.display ;
@@ -61,10 +53,7 @@ function submit(target){
 	document.moduleListFrm.action = target ;
 	document.moduleListFrm.submit();
 }
-</script>
 
-<body>
-<script>
 setNextSubtitle("Module Distributions Page");
 </script>
 
@@ -83,7 +72,7 @@ oneVoiceWritePageMenu("ModuleDistros","header");
 <br/><br/>
 <table id="hostListTable" class="dataTable" style="width: 300px; border-collapse: collapse;">
 <caption>
-Module: <a href="ViewModule.jsp?moduleId=<%=moduleId %>"><%=moduleId %></a> &gt;&gt; <a href="ModuleVersions.jsp?moduleId=<%=moduleId %>&&version=<%=versionNumber %>"><%=versionNumber %></a>
+Module: <a href="module_version.jsp?moduleId=<%=moduleId %>"><%=moduleId %></a> &gt;&gt; <a href="module_version.jsp?moduleId=<%=moduleId %>&version=<%=versionNumber %>"><%=versionNumber %></a>
 </caption>
     <tbody>
 	<tr> 
@@ -116,7 +105,7 @@ Module: <a href="ViewModule.jsp?moduleId=<%=moduleId %>"><%=moduleId %></a> &gt;
 		<input type="checkbox" name="selectedDistro" value="<%=id%>">
 	    </td>
 	    <td class="data">
-<a href="DistroActions.jsp?moduleId=<%=moduleId %>&&version=<%=versionNumber %>&&distroId=<%=id %>"><%=id %></a>
+<a href="module_distro_action.jsp?moduleId=<%=moduleId %>&version=<%=versionNumber %>&distroId=<%=id %>"><%=id %></a>
 	<br/>(OS=<%=os %>,Arch=<%=arch %>,Platform=<%=plaf %>)
 	    </td>
 	</tr>
@@ -129,10 +118,10 @@ Module: <a href="ViewModule.jsp?moduleId=<%=moduleId %>"><%=moduleId %></a> &gt;
 
 <div style="width: 250px;">
 <br>
-<script>
+<script language="JavaScript" type="text/javascript">
 oneVoiceWritePageMenu("ModuleDistros","",
   "Delete selected",
-  	"javascript:submit('SaveModule.jsp?pageAction=delDistro&&moduleId=<%=moduleId%>&&version=<%=versionNumber%>')",
+  	"javascript:submit('module_save.jsp?pageAction=delDistro&moduleId=<%=moduleId%>&version=<%=versionNumber%>')",
   "Add",
   	"javascript:toggle('newDistro')"
 );
@@ -145,7 +134,7 @@ oneVoiceWritePageMenu("ModuleDistros","",
 <center>
 <div id="newDistro" style="display:none">
 
-<form method="post" action="SaveModule.jsp?pageAction=addDistro&&moduleId=<%=moduleId%>&&version=<%=version.getNumber()%>">
+<form method="post" action="module_save.jsp?pageAction=addDistro&moduleId=<%=moduleId%>&version=<%=version.getNumber()%>">
 
 <table>
 <tr>
@@ -191,7 +180,5 @@ oneVoiceWritePageMenu("ModuleDistros","",
 <script language="JavaScript" type="text/javascript">
         reconcileEventHandlers();
 </script>
-</body>
-</body>
 
-</html>
+<%@ include file="footer.inc.jsp" %>

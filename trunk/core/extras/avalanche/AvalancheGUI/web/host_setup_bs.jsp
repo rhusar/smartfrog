@@ -78,7 +78,7 @@ For more information: www.smartfrog.org
             <%  if (host != null) { %>
                   document.addHostFrm.action = "<%= site %>" + target + "&hostId=<%= host.getId() %>";
             <% } else { %>
-                  document.addHostFrm.action = site  + target;
+                  document.addHostFrm.action = "<%= site %>"  + target;
             <% } %>
             document.addHostFrm.submit();
         }

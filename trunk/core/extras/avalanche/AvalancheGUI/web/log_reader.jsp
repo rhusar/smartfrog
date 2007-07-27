@@ -1,4 +1,4 @@
-<!-- /**
+<% /**
 (C) Copyright 1998-2007 Hewlett-Packard Development Company, LP
 
 This library is free software; you can redistribute it and/or
@@ -16,11 +16,9 @@ License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 For more information: www.smartfrog.org
-*/
--->
+*/ %>
 <%@ page language="java" %>
-
-<%@	page import="java.util.*"%>
+<%@ include file="header.inc.jsp" %>
 <%@	page import="java.io.*"%>
 <%@	page import="org.smartfrog.avalanche.util.*"%>
 
@@ -62,28 +60,16 @@ For more information: www.smartfrog.org
 	
 %>
 
-<!DOCTYPE HTML PUBLIC "-//w3c//dtd html 4.0 transitional//en">
-<html>
-<head>
-    <link rel="stylesheet" type="text/css" href="styles.csscss"/>
-    <script type="text/javascript" src="utils.js"></script>
-</head>
-<script language="javascript">
+<script language="JavaScript" type="text/javascript">
 
     function submit(formId, target) {
         var form = document.getElementById(formId);
         form.action = target;
         form.submit();
     }
-</script>
 
-<body>
-<script>
     setNextSubtitle("Log Reader Page");
-</script>
 
-<!-- This is the page menu -->
-<script>
     writePageMenu("LogReader",
             "Refresh",
             "<%= myURI%>",
@@ -91,11 +77,12 @@ For more information: www.smartfrog.org
   	"LogReader.jsp?filePath=<%=filePath%>&&readAll",
   "Max 200 lines",
   	"LogReader.jsp?filePath=<%=filePath%>&&maxLines=200"
-);
+     );
 </script>
 
 <br/>
 
 <textarea readonly style="width:100%;height:90%"><%=buf.toString()%></textarea>
-</body>
-</html>
+
+
+<%@ include file="footer.inc.jsp" %>
