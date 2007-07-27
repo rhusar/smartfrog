@@ -128,7 +128,10 @@
 
   <target name="ready-to-run" depends="izpack"/>
 
-  <target name="run" depends="ready-to-run">
+  <target name="run" depends="ready-to-run,run-no-rebuild">
+  </target>
+
+  <target name="run-no-rebuild" depends="init">
     <java jar="${izpack.jar}" fork="true">
       <sysproperty key="TRACE" value="${trace.enabled}"/>
     </java>
@@ -672,18 +675,21 @@
         location="${server.dir}/rpm.${rpm.server}.properties" />
     <loadproperties srcfile="${rpm.propfile}" />
     <echo>SCP target is ${rpm.server} at ${rpm.ssh.server}</echo>
+    <property name="ssh.command.timeout" value="60000" />
+    <property name="ssh.rpm.command.timeout" value="600000" />
     <presetdef name="rpmssh">
       <sshexec host="${rpm.ssh.server}"
           username="${rpm.ssh.user}"
           passphrase="${rpm.ssh.passphrase}"
           trust="${rpm.ssh.trust}"
           keyfile="${rpm.ssh.keyfile}"
-          timeout="60000"
+          timeout="${ssh.command.timeout}"
           />
     </presetdef>
     <presetdef name="rootssh">
       <rpmssh
           username="root"
+          timeout="${ssh.rpm.command.timeout}"
           />
     </presetdef>
     <macrodef name="validate-rpm-result">
@@ -721,8 +727,8 @@
   </target>
 
   <target name="rpm-upload" depends="rpm-upload-init" >
+    <rpmssh command="rm -rf ${rpm.full.ssh.dir}/" failonerror="false"/>
     <rpmssh command="mkdir -p ${rpm.full.ssh.dir}"/>
-    <rpmssh command="rm ${rpm.full.ssh.dir}/smartfrog-*.rpm" failonerror="false"/>
     <property name="rpm.ssh.path"
         value="${rpm.ssh.user}@${rpm.ssh.server}:${rpm.full.ssh.dir}" />
     <scp remoteToDir="${rpm.ssh.path}"
@@ -773,7 +779,6 @@
       description="A forced uninstall of the RPMs, no dependency checking">
     <rootssh command="rpm --erase --nodeps ${rpm.verbosity} ${rpms.list}"
         failonerror="false"/>
-    <ssh-remote command="rm -rf ${rpm.full.ssh.dir}/" failonerror="false"/>
   </target>
 
   <target name="rpm-remote-test" depends="rpm-remote-version,
