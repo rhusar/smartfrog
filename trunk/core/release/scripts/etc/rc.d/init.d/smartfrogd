@@ -29,7 +29,7 @@ ProgBin="sfDaemon"
 Filename="smartfrogd"
 LockFile="/var/lock/subsys/$$ProgBin"
 RunFile=/var/run/$$ProgBin.pid
-ProgStop="sfStopDaemon localhost"
+ProgStop="smartfrog -a rootProcess:TERMINATE:::localhost: -e -quietexit"
 ProgLog="${rpm.log.dir}/$$Filename.log"
 
 test -x $$ProgDir/$$ProgBin || exit 0
