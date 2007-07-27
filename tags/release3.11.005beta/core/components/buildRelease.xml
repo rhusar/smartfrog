@@ -1,0 +1,395 @@
+<?xml version="1.0"?>
+<!--
+/** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
+
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+For more information: www.smartfrog.org
+
+*/
+-->
+<!DOCTYPE project [
+     <!ENTITY security SYSTEM "./private/buildSecurity.xml">
+]>
+
+<!-- ===========================================================================
+Introduction
+============
+Makes components release for windows and Linux platforms. 
+Also includes core/extras/ant and common.xml as these are required to 
+build the components but as of now smartfrog release 
+does not contain extras/ant and common.xml.
+TODO: Change the script once SmartFrog release contains ant tasks.
+To use: ant -f buildRelease release
+-->
+<project name="componentsrelease" default="process">
+
+
+
+
+  <!-- =================================================================== -->
+  <!-- Initialization target                                               -->
+  <!-- =================================================================== -->
+  <target name="init">
+    <tstamp/>
+    <property name="Name.Components" value="SmartFrog Components"/>
+    <property name="Name.System" value="components"/>
+    <property name="Name.Company" value="(C) Copyright 1998-2006 Hewlett-Packard Development Company, LP"/>
+    <loadproperties srcFile="version.properties"/>
+    <fail unless="component.version">No property component.version found in file version.properties</fail>
+    <property name="version" value="${component.version}" />
+    <!--property name="version" value="1.00.000_beta"/-->
+    <property name="year" value="2004"/>
+
+    <property name="root.dir" location=".."  />
+    <property name="dist" value="dist"/>   
+	  <property name="releases.dir" value="releases"/>
+    <echo message=""/>
+    <echo message="==================================================================="/>
+    <echo message="= ${Name.Components} - ${Name.Company} "/>
+    <echo message="==================================================================="/>
+
+    <property name="ant.project" location="ant" />
+    <property name="anubis.project" location="anubis" />
+    <property name="anubisdeployer.project" location="anubisdeployer" />
+    <property name="arithmetic-testharness.project" location="arithmetic-testharness" />
+    <property name="cddlm.project" location="cddlm" />
+    <property name="emailer.project" location="emailer" />
+    <property name="jetty.project" location="jetty" />
+    <property name="junit.project" location="junit" />
+    <!--property name="logger.project" location="logger" /-->
+    <property name="net.project" location="net" />
+    <property name="scripting.project" location="scripting" />
+    <property name="ssh.project" location="ssh" />
+    <property name="slp.project" location="slp" />
+    <property name="sfinstaller.project" location="sfinstaller" />
+    <property name="sfLoggingServices.project" location="loggingservices" />
+    <property name="releasetest.project" location="releasetest" />
+    <!--property name="xml.project" location="xml" /-->
+    <property name="www.project" location="www" />
+    <property name="dns.project" location="dns" />
+  </target>
+
+  <!-- =================================================================== -->
+  <!-- Help on usage                                                       -->
+  <!-- =================================================================== -->
+  <target name="help" depends="init" description="Process"> 
+    <echo message="-------------------------------------------------------------"/>
+    <echo message="${Name.Components} Release file"/>
+    <echo message="-------------------------------------------------------------"/>
+    <echo message="* General:  "/>
+    <echo message="    help         --> this message"/>
+    <echo message="    process      --> step by step release guide"/>
+    <echo message="    release      --> generates zip and gz file for release packages"/>
+    <echo message="   "/>
+    <echo message="    help --> this help"/>
+    <echo message="            See the comments inside the build.xml file for more details."/>
+    <echo message="-------------------------------------------------------------"/>
+    <echo message=""/>
+  </target>
+
+  <!-- =================================================================== -->
+  <!-- Help on usage                                                       -->
+  <!-- =================================================================== -->
+  <target name="process" depends="init" description="Help">
+    <echo message=""/>
+    <echo message="-------------------------------------------------------------"/>
+    <echo message=" Step by step guide to make a release"/>
+    <echo message="-------------------------------------------------------------"/>
+    <echo message="  1. a) Change version in buildRelease.xml file to new release name"/>
+    <echo message="         release in this file: ${version}"/>
+    <echo message=" "/>
+    <echo message="  2. Build new release: "/>
+    <echo message="         Go to fresh module directory and run:"/>
+    <echo message="             ant -f buildRelease.xml release"/>
+    <echo message=" "/>
+    <echo message="-------------------------------------------------------------"/>
+    <echo message=""/>
+  </target>
+
+  <!-- =================================================================== -->
+  <!-- initrelease                                                             -->
+  <!-- =================================================================== -->
+  <target name="initrelease">
+    <mkdir dir="../releases"/>
+  </target>
+
+  <!-- =================================================================== -->
+  <!-- allrelease                                                             -->
+  <!-- =================================================================== -->
+  <target name="allrelease" depends="init, initrelease">
+
+    <zip destfile="../releases/${Name.System}.${version}.${DSTAMP}_ALL.zip">
+      <zipfileset dir="." prefix="${Name.System}.${version}/components">
+        <include name="ant/**"/>
+        <include name="anubis/**"/>
+        <include name="anubisdeployer/**"/>
+        <include name="emailer/**"/>
+        <include name="jetty/**"/>
+        <include name="net/**"/>
+        <include name="scripting/**"/>
+        <include name="loggingservices/**"/>
+        <include name="slp/**"/>
+        <include name="ssh/**"/>
+        <include name="sfinstaller/**"/>
+        <include name="dns/**"/>
+        <include name="www/**"/>
+        <include name="lib/**"/>
+        <!--include name="xml/**"/-->
+        <include name="build.xml"/>
+        <!--include name="buildRelease.xml"/-->
+        <include name="releaseBuild.xml"/>
+        <include name="version.properties"/>
+        <include name="libraries.properties"/>
+        <include name="${dist}/**"/>
+        <include name="${dist}/docs/**"/>
+        <include name="${dist}/docs/jdocs/**"/>
+        <include name="${dist}/bin/**"/>
+        <include name="${dist}/lib/**"/>
+        <include name="${dist}/src/**"/>
+        <include name="${dist}/build.xml"/>
+        <include name="${dist}/src.zip"/>
+        <exclude name="**/SVN"/>
+        <exclude name="**/*.dfPackage"/>
+        <exclude name="**/Cvs"/>
+        <exclude name="**/.#*"/>
+        <exclude name="**/*.*~"/>
+        <exclude name="**/releases/**"/>
+        <exclude name="**/build/**"/>
+        <exclude name="ant/test/**"/>
+        <exclude name="anubis/test/**"/>
+        <exclude name="anubisdeployer/test/**"/>
+        <exclude name="emailer/test/**"/>
+        <exclude name="jetty/test/**"/>
+        <exclude name="net/test/**"/>
+        <exclude name="scripting/test/**"/>
+        <exclude name="loggingservices/test/**"/>
+        <exclude name="slp/test/**"/>
+        <exclude name="ssh/test/**"/>
+        <exclude name="sfinstaller/test/**"/>
+        <exclude name="dns/test/**"/>
+        <exclude name="www/test/**"/>
+      </zipfileset>
+	
+   <zipfileset dir=".." prefix="${Name.System}.${version}">
+	   <include name="**/common.xml"/>
+	   <include name="**/extras/ant/dist/**"/>
+	   <include name="**/antbuild/repository/**"/>
+	   <exclude name="**/Cvs" />
+   </zipfileset>
+
+   <zipfileset dir="." prefix="${Name.System}.${version}">
+   <include name="build.example.properties"/>
+   </zipfileset>
+
+   </zip>
+
+    <tar tarfile="../releases/${Name.System}.${version}.${DSTAMP}_ALL.tar">
+      <tarfileset dir="." prefix="${Name.System}.${version}/components">
+        <include name="ant/**"/>
+        <include name="anubis/**"/>
+        <include name="anubisdeployer/**"/>
+        <include name="emailer/**"/>
+        <include name="jetty/**"/>
+        <include name="net/**"/>
+        <include name="scripting/**"/>
+        <include name="loggingservices/**"/>
+        <include name="slp/**"/>
+        <include name="ssh/**"/>
+        <include name="sfinstaller/**"/>
+        <include name="dns/**"/>
+        <include name="www/**"/>
+        <include name="lib/**"/>
+        <!--include name="xml/**"/-->
+        <include name="build.xml"/>
+        <!--include name="buildRelease.xml"/-->
+        <include name="releaseBuild.xml"/>
+        <include name="version.properties"/>
+        <include name="libraries.properties"/>
+        <include name="${dist}/**"/>
+        <include name="${dist}/docs/**"/>
+        <include name="${dist}/docs/jdocs/**"/>
+        <include name="${dist}/bin/**"/>
+        <include name="${dist}/lib/**"/>
+        <include name="${dist}/src/**"/>
+        <include name="${dist}/build.xml"/>
+        <include name="${dist}/src.zip"/>
+        <exclude name="**/SVN"/>
+        <exclude name="**/*.dfPackage"/>
+        <exclude name="**/Cvs"/>
+        <exclude name="**/.#*"/>
+        <exclude name="**/*.*~"/>
+        <exclude name="**/releases/**"/>
+        <exclude name="**/build/**"/>
+        <exclude name="ant/test/**"/>
+        <exclude name="anubis/test/**"/>
+        <exclude name="anubisdeployer/test/**"/>
+        <exclude name="emailer/test/**"/>
+        <exclude name="jetty/test/**"/>
+        <exclude name="net/test/**"/>
+        <exclude name="scripting/test/**"/>
+        <exclude name="loggingservices/test/**"/>
+        <exclude name="slp/test/**"/>
+        <exclude name="ssh/test/**"/>
+        <exclude name="sfinstaller/test/**"/>
+        <exclude name="dns/test/**"/>
+        <exclude name="www/test/**"/>
+      </tarfileset>
+      <tarfileset dir=".." prefix="${Name.System}.${version}">
+        <include name="**/common.xml"/>
+        <include name="**/extras/ant/dist/**"/>
+        <include name="**/antbuild/repository/**"/>
+        <exclude name="**/Cvs"/>
+      </tarfileset>
+
+      <tarfileset dir="." prefix="${Name.System}.${version}">
+        <include name="build.example.properties"/>
+      </tarfileset>
+
+    </tar>
+  
+  <gzip src="../releases/${Name.System}.${version}.${DSTAMP}_ALL.tar" zipfile="../releases/${Name.System}.${version}.${DSTAMP}_ALL.tar.gz"/>
+  <delete file="../releases/${Name.System}.${version}.${DSTAMP}_ALL.tar"/>
+
+  </target>
+
+  <!-- =================================================================== -->
+  <!-- commonrelease                                                         -->
+  <!-- =================================================================== -->
+  <target name="commonrelease" depends="init, initrelease">
+
+    <zip destfile="../releases/${Name.System}.${version}.${DSTAMP}_COMMON_DIST.zip">
+      <zipfileset dir="." prefix="${Name.System}.${version}">
+        <include name="${dist}/**"/>
+        <include name="${dist}/docs/**"/>
+        <include name="${dist}/docs/jdocs/**"/>
+        <include name="${dist}/bin/**"/>
+        <include name="${dist}/lib/**"/>
+        <include name="${dist}/src/**"/>
+        <include name="${dist}/src.zip"/>
+      </zipfileset>
+    </zip>
+
+    <tar tarfile="../releases/${Name.System}.${version}.${DSTAMP}_COMMON_DIST.tar">
+      <tarfileset dir="." prefix="${Name.System}.${version}">
+        <include name="${dist}/**"/>
+        <include name="${dist}/docs/**"/>
+        <include name="${dist}/docs/jdocs/**"/>
+        <include name="${dist}/bin/**"/>
+        <include name="${dist}/lib/**"/>
+        <include name="${dist}/src/**"/>
+        <include name="${dist}/src.zip"/>
+      </tarfileset>
+    </tar>
+  
+  <gzip src="../releases/${Name.System}.${version}.${DSTAMP}_COMMON_DIST.tar" zipfile="../releases/${Name.System}.${version}.${DSTAMP}_COMMON_DIST.tar.gz"/>
+  <delete file="../releases/${Name.System}.${version}.${DSTAMP}_COMMON_DIST.tar"/>
+
+  </target>
+
+  <!-- =================================================================== -->
+  <!-- distrelease                                                         -->
+  <!-- =================================================================== -->
+  <target name="distrelease" depends="init, initrelease">
+
+
+	<macrodef name="copyreleaseszips" >
+      <attribute name="project" description="component to copy"/>
+      <attribute name="releasesdir" default="${releases.dir}" />
+      <attribute name="includes" default="**/*DIST.zip" />
+      
+      <sequential>
+        <copy todir="${releases.dir}">
+          <fileset dir="@{project}/@{releasesdir}" includes="@{includes}" />
+        </copy>
+      </sequential>
+    </macrodef>
+
+    <copyreleaseszips project="${ant.project}" />
+    <copyreleaseszips project="${anubis.project}" />
+    <copyreleaseszips project="${anubisdeployer.project}" />
+    <copyreleaseszips project="${emailer.project}" />
+    <copyreleaseszips project="${jetty.project}" />
+    <copyreleaseszips project="${net.project}" />
+    <copyreleaseszips project="${scripting.project}" />
+    <copyreleaseszips project="${sfLoggingServices.project}"/>
+    <copyreleaseszips project="${slp.project}"  />
+    <copyreleaseszips project="${ssh.project}" />
+    <copyreleaseszips project="${sfinstaller.project}" />
+    <copyreleaseszips project="${dns.project}" />
+    <copyreleaseszips project="${www.project}" />
+    <!--copyreleaseszips project="${xml.project}" /-->
+
+
+    <zip destfile="../releases/${Name.System}.${version}.${DSTAMP}_DIST.zip">
+      <zipfileset dir="." prefix="${Name.System}.${version}">
+        <include name="${releases.dir}/*DIST.zip"/>
+      </zipfileset>
+    </zip>
+	
+
+	<macrodef name="copyreleasestars" >
+      <attribute name="project" description="component to copy"/>
+      <attribute name="releasesdir" default="${releases.dir}" />
+      <attribute name="includes" default="**/*DIST.tar.gz" />
+      
+      <sequential>
+        <copy todir="${releases.dir}">
+          <fileset dir="@{project}/@{releasesdir}" includes="@{includes}" />
+        </copy>
+      </sequential>
+    </macrodef>
+
+    <copyreleasestars project="${ant.project}" />
+    <copyreleasestars project="${anubis.project}" />
+    <copyreleasestars project="${anubisdeployer.project}" />
+    <copyreleasestars project="${emailer.project}" />
+    <copyreleasestars project="${jetty.project}" />
+    <copyreleasestars project="${net.project}" />
+    <copyreleasestars project="${scripting.project}" />
+    <copyreleasestars project="${sfLoggingServices.project}"/>
+    <copyreleasestars project="${slp.project}"  />
+    <copyreleasestars project="${ssh.project}" />
+    <copyreleasestars project="${sfinstaller.project}" />
+    <copyreleasestars project="${dns.project}" />
+    <copyreleasestars project="${www.project}" />
+    <!--copyreleasestars project="${xml.project}" /-->
+
+	
+  <tar tarfile="../releases/${Name.System}.${version}.${DSTAMP}_DIST.tar">
+      <tarfileset dir="." prefix="${Name.System}.${version}">
+	<include name="${releases.dir}/*.gz"/>
+      </tarfileset>
+  </tar>
+  
+  <gzip src="../releases/${Name.System}.${version}.${DSTAMP}_DIST.tar"
+        zipfile="../releases/${Name.System}.${version}.${DSTAMP}_DIST.tar.gz"/>
+  <delete file="../releases/${Name.System}.${version}.${DSTAMP}_DIST.tar"/>
+  <delete dir="${releases.dir}"/>
+  
+  </target>
+
+
+  
+  
+  <!-- =================================================================== -->
+  <!-- release                                                             -->
+  <!-- =================================================================== -->
+  <target name="release" depends="init, initrelease, allrelease,commonrelease, distrelease"
+          description="Creates zip with release packages">
+  </target>
+</project>
+
+<!-- End of file -->

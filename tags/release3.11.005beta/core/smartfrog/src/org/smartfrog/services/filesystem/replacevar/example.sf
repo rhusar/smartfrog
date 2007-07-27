@@ -1,0 +1,58 @@
+/** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
+
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+For more information: www.smartfrog.org
+
+*/
+
+//File-Replace-Variables component
+#include "org/smartfrog/services/filesystem/replacevar/components.sf"
+
+//DeployManagement
+#include "org/smartfrog/services/management/components.sf"
+
+sfConfig extends Compound{
+   DeployMgnt extends DeployManagement {
+     //nameDisplay "Deploy info (Exit:ALT+F4)";
+     redirectStd false;
+     positionDisplay "NW";
+     //widthDisplay 1100;
+     //heightDisplay 600;
+   }
+
+   replace extends SFReplaceFileVar {
+      fileName "fileToParse.txt";
+      newFileName "fileToParse.bat"; //Optional!
+      varReplace2 ["$hola","ciao"];
+      varReplace1 ["hello","$hola"];
+      varReplace3 ["ciao","hello"];
+      shouldDetach true;
+   }
+
+   append extends SFReplaceFileVar {
+      fileName "fileToParse.txt";
+      //newFileName "fileToParse.bat"; //Optional!
+      appendFirst "FirstLine";
+      appendSecond "SecondLine";
+      shouldDetach true;
+   }
+
+
+}
+
+
+
+

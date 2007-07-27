@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?NLS TYPE="org.eclipse.help.contexts"?>
+<contexts>
+
+<!-- Wizard pages -->
+    <context id="SMARTFROG_PROJECT_WIZARD_PAGE_HELP_ID">
+		<description>
+		    This allows you to name your new SmartFrog project.
+		</description>
+		<topic label="Creating a SmartFrog project" 
+		        href="html/tasks/create_SF_project.html"/>
+	</context>	
+	<context id="SMARTFROG_PROJECT_JAVA_WIZARD_PAGE_HELP_ID">
+		<description>
+		    This allows you to specify the settings for your new SmartFrog project.
+		</description>
+		<topic label="Creating a SmartFrog project" 
+		        href="html/tasks/create_SF_project.html"/>
+	</context>
+	<context id="NEW_DESCRIPTION_MAIN_PAGE_HELP_ID">
+		<description>
+		    This allows you to create a new SmartFrog description file.
+		</description>
+		<topic label="Creating a SmartFrog description file" 
+		        href="html/tasks/create_SF_desc.html"/>
+	</context>
+	<context id="PRIM_WIZARD_PAGE_HELP_ID">
+		<description>
+		    This allows you to create a Java Prim component file.
+		</description>
+		<topic label="Creating a Java component file with SmartFrog interfaces" 
+		        href="html/tasks/create_SF_java.html"/>
+	</context>
+	<context id="COMPOUND_WIZARD_PAGE_HELP_ID">
+		<description>
+		    This allows you to create a Java Compound component file.
+		</description>
+		<topic label="Creating a Java component file with SmartFrog interfaces" 
+		        href="html/tasks/create_SF_java.html"/>
+	</context>
+	
+<!-- Editors -->
+   <context id="DESCRIPTION_EDITOR_HELP_ID">
+		<description>
+		    This editor allows you to edit SmartFrog description files.
+		</description>
+		<topic label="Creating a SmartFrog description file" 
+		        href="html/tasks/create_SF_desc.html"/>
+	</context>
+
+<!-- Preference pages -->
+   <context  id="SMARTFRONG_PLUGIN_PREFERENCE_PAGE_HELP_ID" >
+      <description>
+	      This page allows you to set SmartFrog environment general settings.
+	  </description>
+   </context>
+ 
+</contexts>
+

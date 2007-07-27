@@ -1,0 +1,115 @@
+/** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
+
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+For more information: www.smartfrog.org
+
+*/
+
+#include "org/smartfrog/examples/workflow/application.sf"
+#include "org/smartfrog/services/trace/components.sf"
+
+/**
+ * Define a node to be a compound consisting of a web server and an app server
+ */
+Node extends Compound {
+    sfSyncTerminate true;
+    webs extends WebServer;
+    apps extends AppServer;
+}
+
+/**
+ * To experiment with failures we can simulate a rogue node where everything
+ * fails ungracefully by addding a component which terminates abnormally
+ * after a very short time - say 15 seconds
+ */
+RogueNode extends Node {
+    failure extends DoNothing {
+        terminationType "abnormal";
+        time 15000;
+    }
+}
+
+/**
+ * Define a "reliableNode" which is one that tries 3 times to launch the correct * action and if it fails sends a message to the sys admin.
+ * This component is parameterized on the action and retries.
+ */
+
+ScriptPrim extends Prim { }
+
+/**
+ * A component to notify the sys admin about the failure.
+ */
+//NotifySysAdmin extends ScriptPrim {
+//    /**
+//     * Message to be printed in lifecycle method: sfStart.
+//     */
+//    sfStartCode ##
+//        System.out.println("Houston - we have a problem with component ");
+//        System.out.println(prim.sfCompleteName());
+//    #;
+//}
+
+NotifySysAdmin extends DoNothing {
+        message "Houston - we have a problem with component ";
+}
+
+//NotifySuccessSysAdmin extends ScriptPrim {
+//    /**
+//     * Message to be printed in lifecycle method: sfStart.
+//     */
+//    sfStartCode ##
+//        System.out.println("\nSuccess! "+prim.sfCompleteName()+"\n");
+//    #;
+//}
+NotifySuccessSysAdmin extends DoNothing {
+        message "Success!";
+}
+
+
+ReliableNode extends Try {
+    /**
+     * Default action for reliable node.
+     */
+    nodeAction extends LAZY DoNothing;
+    /**
+     * No. of retries to launch correct action.
+     */
+    retries 1;
+    sfSyncTerminate true;
+
+    action extends LAZY Retry {
+        sfSyncTerminate true;
+        action ATTRIB nodeAction;
+        retry PARENT:ATTRIB retries;
+    }
+
+    normal extends LAZY NotifySuccessSysAdmin;
+
+    abnormal extends LAZY NotifySysAdmin;
+}
+
+
+/**
+ * Define a reliable system node and a rogue system node as being the reliable
+ * node wrapping the node and reliablenode
+ */
+SysNode extends ReliableNode {
+    nodeAction extends LAZY Node;
+}
+
+RogueSysNode extends ReliableNode {
+    nodeAction extends LAZY RogueNode;
+}
