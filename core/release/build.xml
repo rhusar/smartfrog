@@ -267,6 +267,11 @@
         location="${dist.rpm.dir}/smartfrog-anubis-${rpm.suffix}" />
     <property name="logging.rpm"
       location="${dist.rpm.dir}/smartfrog-logging-${rpm.suffix}" />
+    <property name="rpms.tar"
+        location="${dist.rpm.dir}/smartfrog-rpm-bundle-${smartfrog.version}.tar" />
+    <property name="rpms.tar.gz"
+      location="${upload.dir}/smartfrog-rpm-bundle-${smartfrog.version}.gz" />
+
     <macrodef name="rpmpackage">
       <attribute name="package"/>
       <sequential >
@@ -305,7 +310,9 @@
 
   <target name="ready-to-rpm" depends="copy-rpm-specs,prepare-binary-rpm"/>
 
-  <target name="rpm" depends="ready-to-rpm"
+  <target name="rpm" depends="gzip-rpm"/>
+
+  <target name="build-rpm" depends="ready-to-rpm"
       if="has.rpm.tools"
       description="create an RPM file of the core smartfrog libraries">
     <rpm
@@ -350,12 +357,23 @@
     <gzip src="${smartfrog.rpmfiles.tar}" destfile="${smartfrog.rpmfiles.tar.gz}" />
   </target>
 
-  <!--copy rpms, but do not create them on demand-->
+  <!--copy rpms, but do not create them-->
   <target name="copy-rpms"
       depends="init-rpm">
     <copy todir="${upload.dir}" flatten="true">
       <fileset dir="${dist.rpm.dir}" includes="*.rpm" />
     </copy>
+  </target>
+
+  <target name="gzip-rpm"
+      depends="build-rpm"
+      description="create a gzip containing all the rpms">
+    <tar destfile="${rpms.tar}">
+      <fileset dir="${dist.rpm.dir}" includes="*.rpm" />
+    </tar>
+    <gzip destfile="${rpms.tar.gz}" >
+      <fileset file="${rpms.tar}" />
+    </gzip>
   </target>
 
 
@@ -562,25 +580,23 @@
   </target>
 
 
+  <!--iniitialise the upload process by copying all the relevant artifacts and creating
+  the upload fileset-->
   <target name="upload-init"
       depends="init,ready-to-upload-rpms,check-scp,load-server-settings,check-ftp,locate-core-install">
 
     <copy todir="${upload.dir}" flatten="true">
       <fileset file="${izpack.jar}" />
     </copy>
-
-<!--
-    <copy tofile="${upload.dir}/smartfrog-core-distribution.zip"
-        file="${sf-core-install.zip}" />
--->
     <copy todir="${upload.dir}" >
       <fileset dir="${release.dir}" includes="*.zip,*.gz" />
     </copy>
     <fileset id="upload.fileset" dir="${upload.dir}">
+      <include name="*.jar"/>
       <include name="*.zip"/>
       <include name="*.rpm"/>
       <include name="*.deb"/>
-      <include name="*.tar.gz"/>
+      <include name="*.gz"/>
     </fileset>
   </target>
 
@@ -757,6 +773,7 @@
       description="A forced uninstall of the RPMs, no dependency checking">
     <rootssh command="rpm --erase --nodeps ${rpm.verbosity} ${rpms.list}"
         failonerror="false"/>
+    <ssh-remote command="rm -rf ${rpm.full.ssh.dir}/" failonerror="false"/>
   </target>
 
   <target name="rpm-remote-test" depends="rpm-remote-version,
