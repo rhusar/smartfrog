@@ -782,10 +782,9 @@
   </target>
 
   <target name="rpm-remote-test" depends="rpm-remote-version,
-    rpm-remote-install,
     rpm-remote-uninstall-strict" />
 
-  <target name="rpm-remote-version" depends="rpm-ready-to-remote-install,rpm-remote-install-core" >
+  <target name="rpm-remote-version" depends="rpm-ready-to-remote-install,rpm-remote-install" >
     <rpmssh command="sfVersion"
         outputProperty="rpm.test.results"/>
     <echo>${rpm.test.results}</echo>
@@ -800,7 +799,7 @@
     </fail>
   </target>
 
-  <target name="rpm-remote-daemon" depends="rpm-remote-install-daemon" >
+<!--  <target name="rpm-remote-daemon" depends="rpm-remote-install-daemon" >
     <rpmssh command="sfVersion"
         outputProperty="rpm.daemon.results"/>
     <echo>${rpm.test.results}</echo>
@@ -813,7 +812,7 @@
       Did not find "${smartfrog.version}" in "${rpm.test.results}", which implies
       the installed smartfrog is not what we just built and pushed up.
     </fail>
-  </target>
+  </target>-->
 
 
   <!--
