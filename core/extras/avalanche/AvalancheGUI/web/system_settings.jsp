@@ -19,18 +19,22 @@ For more information: www.smartfrog.org
 */
 -->
 <%@ page language="java" %>
-<!DOCTYPE HTML PUBLIC "-//w3c//dtd html 4.0 transitional//en">
-<html>
-<head>
-<style><!--
-body, td, a, p, .h{font-family:arial,sans-serif;}
-.h{font-size: 18px;}
-.q{color:#0000cc;}
-//-->
-</style>
+<%@ include file="header.inc.jsp"%>
+<%@	page import="org.smartfrog.avalanche.server.*"%>
+<%@	page import="org.smartfrog.avalanche.settings.xdefault.*"%>
 
-<script type="text/javascript" src="utils.js"></script>
-<script type="text/javascript">
+<%
+  	String errMsg = null;
+  	SettingsManager settMgr = factory.getSettingsManager();
+  	if( null == settMgr ){
+  		errMsg = "Error connecting to settings database" ;
+  		throw new Exception ( "Error connecting to settings database" );
+  	}
+  	SettingsType defSettings = settMgr.getDefaultSettings();
+%>
+
+<script type="text/javascript" language="JavaScript">
+<!--
  function toggle(divId)
  {
    var state = document.getElementById(divId).style.visibility ;
@@ -129,41 +133,15 @@ function addRow3(table, t2id)
 	   table.getElementsByTagName("tbody")[0].appendChild(newRow);
  }
 
-
-</script>
-</head>
-<body bgcolor="#FFFFFF">
-<script>
 setNextSubtitle("System Settings Page");
+-->
 </script>
 
-
-<%@	page import="org.smartfrog.avalanche.server.*"%>
-<%@	page import="org.smartfrog.avalanche.settings.xdefault.*"%>
-
-<%
-		String avlHome =
-               getServletContext().getInitParameter("avalancheHome");
-%>
-
-<jsp:useBean id="setup"
-	class="org.smartfrog.avalanche.server.ServerSetup" scope="application"/>
-
-<%
-  	String errMsg = null; 
-  	avalancheFactory factory = setup.getFactory();
-  	SettingsManager settMgr = factory.getSettingsManager();
-  	if( null == settMgr ){
-  		errMsg = "Error connecting to settings database" ;
-  		throw new Exception ( "Error connecting to settings database" );
-  	}
-  	SettingsType defSettings = settMgr.getDefaultSettings();  
-%>
 <center>
 <big>Configure system settings</big>
 <br><br>
 <%
-	if( null != errMsg ){
+	if(errMsg != null){
 %>
 
 <font color="red">
@@ -173,7 +151,7 @@ setNextSubtitle("System Settings Page");
 }
 %>
 
-<form method="post" action="SaveSettings.jsp">
+<form method="post" action="system_settings_save.jsp">
 <table id='osTable' cellspacing="2" cellpadding="4" border="1" style="border-collapse: collapse" bordercolor="#00FFFF">
     <tbody>
         <tr>

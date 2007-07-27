@@ -1,4 +1,4 @@
-<!-- /**
+<% /**
 (C) Copyright 1998-2007 Hewlett-Packard Development Company, LP
 
 This library is free software; you can redistribute it and/or
@@ -16,17 +16,13 @@ License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 For more information: www.smartfrog.org
-*/
--->
+*/ %>
 <%@ page language="java" %>
-
+<%@ include file="header.inc.jsp" %>
 <%@	page import="org.smartfrog.avalanche.core.module.*"%>
-<%@	page import="org.smartfrog.avalanche.server.modules.*"%>
 <%@	page import="org.smartfrog.avalanche.server.*"%>
 <%@	page import="org.smartfrog.avalanche.settings.sfConfig.*"%>
 <%@	page import="org.smartfrog.avalanche.settings.xdefault.*"%>
-  	
-<%@ include file="InitBeans.jsp" %>
 
 <%
   	String errMsg = null; 
@@ -109,14 +105,8 @@ For more information: www.smartfrog.org
   	
 %>
 
-<!DOCTYPE HTML PUBLIC "-//w3c//dtd html 4.0 transitional//en">
-<html>
-<head>
-    <link rel="stylesheet" type="text/css" href="styles_noa.csscss"/>
-    <script type="text/javascript" src="utils.js.js"></script>
-</head>
-
-<script language="javascript">
+<script language="JavaScript" type="text/javascript">
+    <!--
     function toggle(divId)
     {
         var state = document.getElementById(divId).style.display ;
@@ -156,24 +146,25 @@ For more information: www.smartfrog.org
         }
     }
 
-</script>
-
-<body>
-<script>
     setNextSubtitle("Distribution Actions Page");
+    -->
 </script>
 
 
 <form id='moduleListFrm' name='moduleListFrm' method='post'>
 
-    <script>
-        writePageMenu("DistroActions",
+<div align="center" style="width: 95%;">
+<script language="JavaScript" type="text/javascript">
+<!--
+oneVoiceWritePageMenu("DistroActions","",
                 "Add",
                 "javascript:toggle('newAction')",
                 "Delete",
-                "javascript:submit('SaveModule.jsp?pageAction=delAction&moduleId=<%=moduleId%>&version=<%=versionNumber%>&&distroId=<%=distroId %>')"
-);
+                "javascript:submit('module_save.jsp?pageAction=delAction&moduleId=<%=moduleId%>&version=<%=versionNumber%>&&distroId=<%=distroId %>')"
+)
+-->
 </script>
+</div>
 
 <%@ include file="Message.jsp" %>
 <!-- Actual Body starts here -->
@@ -185,7 +176,7 @@ For more information: www.smartfrog.org
     <tbody>
 	<tr> 
 	    <th class="data" colspan="99">
-Module: <a href="ViewModule.jsp?moduleId=<%=moduleId %>"><%=moduleId %></a> &gt;&gt; <a href="ModuleVersions.jsp?moduleId=<%=moduleId %>&&version=<%=versionNumber %>"><%=versionNumber %></a>
+Module: <a href="module_view.jsp?moduleId=<%=moduleId %>"><%=moduleId %></a> &gt;&gt; <a href="module_version_view.jsp?moduleId=<%=moduleId %>&&version=<%=versionNumber %>"><%=versionNumber %></a>
 	    </th>
 	</tr> 
 	<tr> 
@@ -202,7 +193,7 @@ Module: <a href="ViewModule.jsp?moduleId=<%=moduleId %>"><%=moduleId %></a> &gt;
 		<input type="checkbox" name="selectedAction" value="<%=actions[i].getConfiguration()%>">
 	    </td>
 	    <td class="data">
-		<a href="ModuleActionArgs.jsp?moduleId=<%=moduleId%>&&version=<%=versionNumber%>&&distroId=<%=distroId%>&&title=<%=actions[i].getConfiguration()%>"><%=actions[i].getConfiguration() %></a>
+		<a href="module_distro_action_args.jsp?moduleId=<%=moduleId%>&version=<%=versionNumber%>&distroId=<%=distroId%>&&title=<%=actions[i].getConfiguration()%>"><%=actions[i].getConfiguration() %></a>
 	    </td>
 	    <td class="data">
 		<%=actionName %>
@@ -220,7 +211,7 @@ Module: <a href="ViewModule.jsp?moduleId=<%=moduleId %>"><%=moduleId %></a> &gt;
 <center>
 <div id="newAction" style="display:none">
 
-<form method="post" action="SaveModule.jsp?pageAction=addAction&&moduleId=<%=moduleId%>&&version=<%=version.getNumber()%>&&distroId=<%=distroId %>">
+<form method="post" action="module_save.jsp?pageAction=addAction&&moduleId=<%=moduleId%>&&version=<%=version.getNumber()%>&&distroId=<%=distroId %>">
 
 <table style="border-collapse: collapse;" bordercolor="#800080" border="1">
 <tr>
@@ -275,8 +266,4 @@ Module: <a href="ViewModule.jsp?moduleId=<%=moduleId %>"><%=moduleId %></a> &gt;
 </form>
 </div>
 
-
-</center>
-</body>
-
-</html>
+<%@ include file="footer.inc.jsp" %>

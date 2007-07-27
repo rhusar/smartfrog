@@ -1,4 +1,4 @@
-<!-- /**
+<% /**
 (C) Copyright 1998-2007 Hewlett-Packard Development Company, LP
 
 This library is free software; you can redistribute it and/or
@@ -16,17 +16,13 @@ License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 For more information: www.smartfrog.org
-*/
--->
-<%-- $Id: SFActionArgs.jsp 81 2006-05-30 06:09:38Z uppada $ --%>
+*/ %>
 <%@ page language="java" %>
-
+<%@ include file="header.inc.jsp" %>
 <%@ page import="org.smartfrog.avalanche.server.engines.sf.*"%>
 <%@ page import="org.smartfrog.avalanche.server.*"%>
 <%@ page import="org.smartfrog.avalanche.settings.sfConfig.*"%>
 <%@ page import="java.util.*"%>
-
-<%@ include file="InitBeans.jsp" %>
 
 <%
     String errMsg = null; 
@@ -78,22 +74,12 @@ For more information: www.smartfrog.org
     Set keys = m.keySet();	
 %>
 
-<!DOCTYPE HTML PUBLIC "-//w3c//dtd html 4.0 transitional//en">
-<html>
-<head>
-<%@ include file="common.jsp" %>
-</head>
-
-<script language="javascript">
+<script language="javascript" type="text/javascript">
 function submit(formId, target){
     var form = document.getElementById(formId);
     form.action = target ;
     form.submit();
 }
-</script>
-
-<body>
-<script>
 setNextSubtitle("Action Arguments Page");
 </script>
 <br>
@@ -213,9 +199,5 @@ String inputType = "text";
 <br/>
 </center>
 </div>
-<script language="JavaScript" type="text/javascript">
-        reconcileEventHandlers();
-</script>
-</body>
 
-</html>
+<%@ include file="footer.inc.jsp"%>

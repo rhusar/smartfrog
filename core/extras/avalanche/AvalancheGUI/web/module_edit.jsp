@@ -1,4 +1,4 @@
-<!-- /**
+<% /**
 (C) Copyright 1998-2007 Hewlett-Packard Development Company, LP
 
 This library is free software; you can redistribute it and/or
@@ -16,17 +16,11 @@ License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 For more information: www.smartfrog.org
-*/
--->
-<%-- $Id: AddModuleBS.jsp 81 2006-05-30 06:09:38Z uppada $ --%>
+*/ %>
 <%@ page language="java" %>
-
-<%@	page import="org.smartfrog.avalanche.settings.xdefault.*"%>
 <%@	page import="org.smartfrog.avalanche.core.module.*"%>
 <%@	page import="org.smartfrog.avalanche.server.*"%>
-<%@	page import="org.smartfrog.avalanche.server.modules.*"%>
-  	
-<%@ include file="InitBeans.jsp" %>
+<%@ include file="header.inc.jsp" %>
 
 <%
   	String errMsg = null; 
@@ -51,12 +45,8 @@ For more information: www.smartfrog.org
 	}
 %>
 
-<!DOCTYPE HTML PUBLIC "-//w3c//dtd html 4.0 transitional//en">
-<html>
-<head>
-<%@ include file="common.jsp" %>
-</head>
-<script language="javascript">
+<script language="JavaScript" type="text/javascript">
+    <!--
 
 function submit(target){
 	var hid = document.getElementById("moduleId");
@@ -73,11 +63,9 @@ function submit(target){
 		document.addModuleFrm.submit();
 	}
 }
-</script>
 
-<body>
-<script>
 setNextSubtitle("Add Module Basic Settings Page");
+    -->
 </script>
 
 <br>
@@ -86,12 +74,10 @@ setNextSubtitle("Add Module Basic Settings Page");
 <!-- This is the page menu -->
 
 <div align="center" style="width: 95%;">
-  <script>
+  <script language="JavaScript" type="text/javascript">
     oneVoiceWritePageMenu("AddModuleBS","header",
       "Configure Versions",
-  	"javascript:setLocation('ModuleVersions.jsp?moduleId=<%=moduleId %>')"
-      //"Basic Settings",
-  	//"#"
+  	"javascript:setLocation('module_version_list.jsp?moduleId=<%=moduleId %>')"
     );
   </script>
 </div>
@@ -99,7 +85,7 @@ setNextSubtitle("Add Module Basic Settings Page");
 <%@ include file="Message.jsp" %>
 
 <!-- Actual Body starts here -->
-<form name='addModuleFrm' method='post' action='SaveModule.jsp?pageAction=setMod&moduleId=<%=moduleId%>'>
+<form name='addModuleFrm' method='post' action='module_save.jsp?pageAction=setMod&moduleId=<%=moduleId%>'>
 <table border="0" cellpadding="0" cellspacing="0" class="dataTable" id="addModuleTable">
   <caption>Module Basic Settings</caption>
   <tbody>
@@ -147,10 +133,5 @@ setNextSubtitle("Add Module Basic Settings Page");
 </form>
 </center>
 </div>
-<script language="JavaScript" type="text/javascript">
-        reconcileEventHandlers();
-</script>
 
-</body>
-
-</html>
+<%@ include file="footer.inc.jsp"%>

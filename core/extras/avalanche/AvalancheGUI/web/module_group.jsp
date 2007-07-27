@@ -1,4 +1,4 @@
-<!-- /**
+<% /**
 (C) Copyright 1998-2007 Hewlett-Packard Development Company, LP
 
 This library is free software; you can redistribute it and/or
@@ -16,21 +16,12 @@ License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 For more information: www.smartfrog.org
-*/
--->
+*/ %>
 <%@ page language="java" %>
-<!DOCTYPE HTML PUBLIC "-//w3c//dtd html 4.0 transitional//en">
-<html>
-<head>
-<style><!--
-body, td, a, p, .h{font-family:arial,sans-serif;}
-.h{font-size: 18px;}
-.q{color:#0000cc;}
-//-->
-</style>
+<%@ include file="header.inc.jsp"%>
 
-<script type="text/javascript" src="utils.js"></script>
-<script type="text/javascript">
+<script type="text/javascript" language="JavaScript">
+    <!--
  function toggle(divId)
  {
    var state = document.getElementById(divId).style.visibility ;
@@ -42,15 +33,12 @@ body, td, a, p, .h{font-family:arial,sans-serif;}
    }
  }   
 
-</script> 
-</head>
-<body bgcolor="#FFFFFF">
-<script>
 setNextSubtitle("Module Groups Page");
+
+    -->
 </script>
 
 <p>Coming Soon ... </p>
 <hr color="#0000FF">
 
-</body>
-</html>
+<%@ include file="footer.inc.jsp"%>

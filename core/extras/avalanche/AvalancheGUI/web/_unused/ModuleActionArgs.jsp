@@ -1,4 +1,4 @@
-<!-- /**
+<% /**
 (C) Copyright 1998-2007 Hewlett-Packard Development Company, LP
 
 This library is free software; you can redistribute it and/or
@@ -16,17 +16,12 @@ License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 For more information: www.smartfrog.org
-*/
--->
+*/ %>
 <%@ page language="java" %>
-
+<%@ include file="../header.inc.jsp" %>
 <%@	page import="org.smartfrog.avalanche.core.module.*"%>
-<%@	page import="org.smartfrog.avalanche.server.modules.*"%>
 <%@	page import="org.smartfrog.avalanche.server.*"%>
-<%@	page import="org.smartfrog.avalanche.settings.xdefault.*"%>
 <%@	page import="org.smartfrog.avalanche.settings.sfConfig.*"%>
-
-<%@ include file="InitBeans.jsp" %>
 
 <%
   	String errMsg = null; 
@@ -138,42 +133,30 @@ For more information: www.smartfrog.org
 	}
 %>
 
-<!DOCTYPE HTML PUBLIC "-//w3c//dtd html 4.0 transitional//en">
-<html>
-<head>
-    <link rel="stylesheet" type="text/css" href="styles.csscss"/>
-    <script type="text/javascript" src="utils.js.js"></script>
-</head>
-<script language="javascript">
+<script language="JavaScript" type="text/javascript">
+    <!--
 
     function submit(target) {
         document.moduleListFrm.action = target;
         document.moduleListFrm.submit();
     }
 
-
-</script>
-
-<body>
-<script>
     setNextSubtitle("Module Action Attributes Page");
-</script>
 
-<!-- This is the page menu -->
-<script>
     writePageMenu("ModuleActionArgs",
             "Install",
             "#"
             );
+     -->
 </script>
 
-<%@ include file="Message.jsp" %>
+<%@ include file="../Message.jsp" %>
 <!-- Actual Body starts here -->
 <br/>
 <center>
  
 <form method="post" 
-    action="SaveModule.jsp?pageAction=saveActionArgs&&actionTitle=<%=action.getConfiguration()%>&&engine=<%=action.getEngine()%>&&moduleId=<%=moduleId%>&&version=<%=version%>&&distroId=<%=distroId%>">
+    action="module_save.jsp?pageAction=saveActionArgs&&actionTitle=<%=action.getConfiguration()%>&&engine=<%=action.getEngine()%>&&moduleId=<%=moduleId%>&&version=<%=version%>&&distroId=<%=distroId%>">
 
 <table id='argumentTable' style="border-collapse: collapse;" 
 		bordercolor="#800080" border="1">
@@ -220,6 +203,4 @@ For more information: www.smartfrog.org
 <input type="submit" name="submit" value="Save Changes" class="btn">
 </form>
  
-</body>
-
-</html>
+<%@ include file="../footer.inc.jsp"%>

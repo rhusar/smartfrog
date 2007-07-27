@@ -34,153 +34,167 @@ For more information: www.smartfrog.org
         throw new Exception("Error connecting to hosts database");
     }
 
+    HostType host = null;
+
     // Retrieve parameters
     String hostId = request.getParameter("hostId");
     String pageAction = request.getParameter("action");
 
-    if (hostId != null) {
+    if ((hostId != null) && (pageAction != null)) {
         // Strip off spaces
         hostId = hostId.trim().toLowerCase();
+        pageAction = pageAction.trim().toLowerCase();
 
-    if (!hostId.equals("")) {
-        if (pageAction != null) {
-                // Look up in database
-                HostType host = manager.getHost(hostId);
-                // Basic settings
-                if (pageAction.equals("bs")) {
-                    // Retrieve parameters and save them
-                    String os = request.getParameter("os");
-                    String plaf = request.getParameter("platform");
-                    String arch = request.getParameter("arch");
+        if (!hostId.equals("") && !pageAction.equals("")) { // Basic settings
+            if (pageAction.equals("bs")) {
+                // Retrieve parameters and save them
+                String os = request.getParameter("os");
+                String plaf = request.getParameter("platform");
+                String arch = request.getParameter("arch");
 
-                    try {
-                        // Host specific data
-                        PlatformSelectorType pst = null;
+                try {
+                    // Host specific data
+                    PlatformSelectorType pst = null;
 
-                        if (host == null) {
-                            // Create new entry in database and a new XMPP account
-                            host = manager.newHost(hostId);
-                            // Save data to the database
+                    // Get host from database
+                    host = manager.getHost(hostId);
+
+                    if (host == null) {
+                        // Create new entry in database and a new XMPP account
+                        host = manager.newHost(hostId);
+                        // Save data to the database
+                        pst = host.addNewPlatformSelector();
+                    } else {
+                        // Get data from database
+                        pst = host.getPlatformSelector();
+                        if (null == pst) {
                             pst = host.addNewPlatformSelector();
-                        } else {
-                            // Get data from database
-                            pst = host.getPlatformSelector();
-                            if (null == pst) {
-                                pst = host.addNewPlatformSelector();
+                        }
+                    }
+
+                    // Update the dataset
+                    pst.setOs(os);
+                    pst.setPlatform(plaf);
+                    pst.setArch(arch);
+
+                    // Save the changes
+                    // Save the changes made
+                    manager.setHost(host);
+                } catch (Exception e) {
+
+                }
+            } else {
+                // Look up in database
+                host = manager.getHost(hostId);
+                if (host != null) {
+                    if (pageAction.equals("am")) {
+                        // save access modes for the host
+                        HostType.AccessModes modes =
+                                HostType.AccessModes.Factory.newInstance();
+                        // overwrite existing hosts
+                        java.util.Enumeration params = request.getParameterNames();
+
+                        String defaultAccessMode =
+                                request.getParameter("defaultAccessMode");
+
+                        while (params.hasMoreElements()) {
+                            String param = (String) params.nextElement();
+                            String s = "mode.userName.";
+                            if (param.startsWith(s)) {
+                                // its access Mode
+                                String idx = param.substring(s.length(), param.length());
+
+                                String type = request.getParameter("mode.type." + idx);
+                                String userName = request.getParameter(param);
+                                String password =
+                                        request.getParameter("mode.password." + idx);
+
+                                AccessModeType mode = modes.addNewMode();
+                                mode.setType(type);
+                                mode.setUser(userName);
+                                mode.setPassword(password);
+                                //if( defaultAccessMode != null &&
+                                //type.equals(defaultAccessMode) ){
+                                // FIXME: Bad patch, just set last one default first time,
+                                // there is only one so it should work out.
+                                // issue with javascripting.
+                                mode.setIsDefault(true);
+                                //}
                             }
                         }
+                        // TODO:check if someone deleted host by now.
+                        host.setAccessModes(modes);
+                    } else if (pageAction.equals("tm")) {
+                        HostType.TransferModes transferModes = HostType.TransferModes.Factory.newInstance();
+                        // save access modes for the host
+                        // overwrite existing hosts
+                        java.util.Enumeration params = request.getParameterNames();
 
-                        // Update the dataset
-                        pst.setOs(os);
-                        pst.setPlatform(plaf);
-                        pst.setArch(arch);
+                        String defaultAccessMode =
+                                request.getParameter("defaultTransferMode");
 
-                    } catch (Exception e) {
+                        while (params.hasMoreElements()) {
+                            String param = (String) params.nextElement();
+                            String s = "mode.userName.";
+                            if (param.startsWith(s)) {
+                                // its access Mode
+                                String idx = param.substring(s.length(), param.length());
 
-                    }
-                } else if (pageAction.equals("am")) {
-                    // save access modes for the host
-                    HostType.AccessModes modes =
-                            HostType.AccessModes.Factory.newInstance();
-                    // overwrite existing hosts
-                    java.util.Enumeration params = request.getParameterNames();
+                                String type = request.getParameter("mode.type." + idx);
+                                String userName = request.getParameter(param);
+                                String password =
+                                        request.getParameter("mode.password." + idx);
 
-                    String defaultAccessMode =
-                            request.getParameter("defaultAccessMode");
-
-                    while (params.hasMoreElements()) {
-                        String param = (String) params.nextElement();
-                        String s = "mode.userName.";
-                        if (param.startsWith(s)) {
-                            // its access Mode
-                            String idx = param.substring(s.length(), param.length());
-
-                            String type = request.getParameter("mode.type." + idx);
-                            String userName = request.getParameter(param);
-                            String password =
-                                    request.getParameter("mode.password." + idx);
-
-                            AccessModeType mode = modes.addNewMode();
-                            mode.setType(type);
-                            mode.setUser(userName);
-                            mode.setPassword(password);
-                            //if( defaultAccessMode != null &&
-                            //type.equals(defaultAccessMode) ){
-                            // FIXME: Bad patch, just set last one default first time,
-                            // there is only one so it should work out.
-                            // issue with javascripting.
-                            mode.setIsDefault(true);
-                            //}
+                                DataTransferModeType mode = transferModes.addNewMode();
+                                mode.setType(type);
+                                mode.setUser(userName);
+                                mode.setPassword(password);
+                                //if( defaultAccessMode != null &&
+                                //type.equals(defaultAccessMode) ){
+                                // FIXEME : same as access mods.
+                                mode.setIsDefault(true);
+                                //}
+                            }
                         }
-                    }
-                    // TODO:check if someone deleted host by now.
-                    host.setAccessModes(modes);
-                } else if (pageAction.equals("tm")) {
-                    HostType.TransferModes transferModes = HostType.TransferModes.Factory.newInstance();
-                    // save access modes for the host
-                    // overwrite existing hosts
-                    java.util.Enumeration params = request.getParameterNames();
+                        host.setTransferModes(transferModes);
+                    } else if (pageAction.equals("env")) {
+                        java.util.Enumeration params = request.getParameterNames();
+                        ArgumentType args = ArgumentType.Factory.newInstance();
+                        while (params.hasMoreElements()) {
+                            String param = (String) params.nextElement();
+                            String s = "argument.name.";
+                            if (param.startsWith(s)) {
+                                // its access Mode
+                                String idx = param.substring(s.length(), param.length());
 
-                    String defaultAccessMode =
-                            request.getParameter("defaultTransferMode");
+                                String name = request.getParameter(param);
+                                String value =
+                                        request.getParameter("argument.value." + idx);
 
-                    while (params.hasMoreElements()) {
-                        String param = (String) params.nextElement();
-                        String s = "mode.userName.";
-                        if (param.startsWith(s)) {
-                            // its access Mode
-                            String idx = param.substring(s.length(), param.length());
-
-                            String type = request.getParameter("mode.type." + idx);
-                            String userName = request.getParameter(param);
-                            String password =
-                                    request.getParameter("mode.password." + idx);
-
-                            DataTransferModeType mode = transferModes.addNewMode();
-                            mode.setType(type);
-                            mode.setUser(userName);
-                            mode.setPassword(password);
-                            //if( defaultAccessMode != null &&
-                            //type.equals(defaultAccessMode) ){
-                            // FIXEME : same as access mods.
-                            mode.setIsDefault(true);
-                            //}
+                                ArgumentType.Argument arg = args.addNewArgument();
+                                arg.setName(name);
+                                arg.setValue(value);
+                            }
                         }
+                        host.setArguments(args);
                     }
-                    host.setTransferModes(transferModes);
-                } else if (pageAction.equals("env")) {
-                    java.util.Enumeration params = request.getParameterNames();
-                    ArgumentType args = ArgumentType.Factory.newInstance();
-                    while (params.hasMoreElements()) {
-                        String param = (String) params.nextElement();
-                        String s = "argument.name.";
-                        if (param.startsWith(s)) {
-                            // its access Mode
-                            String idx = param.substring(s.length(), param.length());
-
-                            String name = request.getParameter(param);
-                            String value =
-                                    request.getParameter("argument.value." + idx);
-
-                            ArgumentType.Argument arg = args.addNewArgument();
-                            arg.setName(name);
-                            arg.setValue(value);
-                        }
-                    }
-                    host.setArguments(args);
+                    // Save the changes made
+                    manager.setHost(host);
+                } else {
+                    // Go and create a host
+                    response.sendRedirect("host_setup_bs.jsp");
                 }
-                manager.setHost(host);
+            }
+            // Go to the next page
+            response.sendRedirect("host_setup_" + ((request.getParameter("next") == null) ? "am" : request.getParameter("next")) + ".jsp?hostId=" + request.getParameter("hostId"));
+        } else {
+// Go and create a host
+            response.sendRedirect("host_setup_bs.jsp");
         }
-// Go to the next page
-response.sendRedirect("host_setup_" + ((request.getParameter("next") == null) ? "am" : request.getParameter("next")) + ".jsp?hostId=" + request.getParameter("hostId"));
-} else {
+    } else {
 // Go and create a host
-response.sendRedirect("host_setup_bs.jsp");
-}
-} else {
-// Go and create a host
-response.sendRedirect("host_setup_bs.jsp");
-}
+        response.sendRedirect("host_setup_bs.jsp");
+    }
 
 
 %>

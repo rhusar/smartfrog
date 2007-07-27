@@ -40,6 +40,5 @@ For more information: www.smartfrog.org
     }
 
     // Redirect to host_list.jsp
-    javax.servlet.RequestDispatcher dispatcher = request.getRequestDispatcher("host_list.jsp");
-    dispatcher.forward(request, response);
+    response.sendRedirect("host_list.jsp");
 %>

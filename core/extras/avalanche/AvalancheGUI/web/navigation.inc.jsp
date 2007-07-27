@@ -6,20 +6,22 @@
                     <!--
                     writeMenuHeader("menu1_trigger", "Software Resources");
                     writeMenuStart("menu1");
-                    writeMenuItem("List Modules", "modules_list.jsp", "1");
+                    writeMenuItem("List Modules", "module_list.jsp", "1");
+                    writeMenuItem("Module Groups", "module_group.jsp", "1");
                     writeMenuEnd();
 
                     writeMenuHeader("menu2_trigger", "Hosts");
                     writeMenuStart("menu2");
                     writeMenuItem("List Hosts", "host_list.jsp", "2");
-                    writeMenuItem("List Active Hosts", "host_list_active.jsp", "2");
+                    writeMenuItem("List Active Hosts", "host_list.jsp?active=true", "2");
                     writeMenuItem("Host Groups", "host_group.jsp", "2");
                     writeMenuEnd();
 
                     writeMenuHeader("menu3_trigger", "Configuration");
                     writeMenuStart("menu3");
-                    writeMenuItem("Supported Actions", "sf_actions.jsp", "3");
+                    writeMenuItem("Supported Actions", "sf_action.jsp", "3");
                     writeMenuItem("Deployment Engines", "sf_settings.jsp", "3");
+                    writeMenuItem("System Settings", "system_settings.jsp", "3");
                     writeMenuEnd();
 
                     writeMenuHeader("menu4_trigger", "Reports");

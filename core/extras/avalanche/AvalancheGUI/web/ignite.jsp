@@ -61,10 +61,8 @@ For more information: www.smartfrog.org
             }
         }
 
-    // redirect
-    javax.servlet.RequestDispatcher dispatcher = request.getRequestDispatcher("host_list_active.jsp");
-    dispatcher.forward(request, response);
-
+    // Redirect
+    response.sendRedirect("host_list.jsp?active=true");
 %>
 
 <%@ include file="footer.inc.jsp" %>

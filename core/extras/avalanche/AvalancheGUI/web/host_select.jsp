@@ -259,7 +259,7 @@ setNextSubtitle("Select Host Page");
 </table>
 
 <form method="post"  id="hostTransferList"
-	action="ExecAction.jsp?title=<%=actionTitle%>&&engine=<%=action.getEngine()%>&&moduleId=<%=moduleId%>&&version=<%=version%>&&distroId=<%=distroId%>"
+	action="module_distro_action_exec.jsp?title=<%=actionTitle%>&&engine=<%=action.getEngine()%>&&moduleId=<%=moduleId%>&&version=<%=version%>&&distroId=<%=distroId%>"
     onsubmit="javascript:selectAll(document.getElementById('selectedHosts'))">
 
 <table border="0" cellpadding="0" cellspacing="0" class="dataTable" id="argumentTable">
@@ -487,7 +487,7 @@ setNextSubtitle("Select Host Page");
 </form >
 
 <form method="post"  id="hostTransferList"
-	action="ScheduleAction.jsp?title=<%=actionTitle%>&&engine=<%=action.getEngine()%>&&moduleId=<%=moduleId%>&&version=<%=version%>&&distroId=<%=distroId%>"
+	action="module_distro_action_schedule.jsp?title=<%=actionTitle%>&&engine=<%=action.getEngine()%>&&moduleId=<%=moduleId%>&&version=<%=version%>&&distroId=<%=distroId%>"
 	onsubmit="javascript:copy(document.getElementById('selectedHosts'), document.getElementById('selectedHosts2'))">
       <select style="display:none" size="0" id='selectedHosts2' 
 	name="selectedHosts2" 
@@ -505,7 +505,7 @@ setNextSubtitle("Select Host Page");
 </form>
 
 <!-- form method="post"  id="hostScheduleList"
-	action="ScheduleAction.jsp?title=<%=actionTitle%>&&engine=<%=action.getEngine()%>&&moduleId=<%=moduleId%>&&version=<%=version%>&&distroId=<%=distroId%>"
+	action="module_distro_action_schedule.jsp?title=<%=actionTitle%>&&engine=<%=action.getEngine()%>&&moduleId=<%=moduleId%>&&version=<%=version%>&&distroId=<%=distroId%>"
 	onsubmit="javascript:selectAll(document.getElementById('selectedHosts'))">
 <div style="width:95%;">
 <div class="buttonSet">

@@ -32,12 +32,10 @@ For more information: www.smartfrog.org
     String version = request.getParameter("version");
     
     String actionTitle =  request.getParameter("title");
-    System.out.println("Scheduler TEST : " + moduleId + " " + version + " " + actionTitle); 
     String engine = request.getParameter("engine");
     String distroId = request.getParameter("distroId");
-   // System.out.println("TEST : " + moduleId + " " + version + " " + actionTitle); 
-  //  System.out.println("Scheduler===" + scheduler.getSchedulerName());
-    SFAdapter adapter = new SFAdapter(factory, scheduler);
+    System.out.println("TEST : " + moduleId + " " + version + " " + actionTitle); 
+    SFAdapter adapter = new SFAdapter(factory);
     String setupcacommandsArr[] = {"mkdir -p /etc/grid-security/certificates",
 				"mv /tmp/grid-security.conf.3c9073d6 /etc/grid-security/certificates/",
 				"rm -rf /etc/grid-security/*.conf",
@@ -68,7 +66,7 @@ For more information: www.smartfrog.org
 	// generate smartfrog command
 	
 	// get hosts
-	String []hosts = request.getParameterValues("selectedHosts2");
+	String []hosts = request.getParameterValues("selectedHosts");
 	
 	// get attribute map from GUI, to overwrite 
 	java.util.Map attrMap = new java.util.HashMap();
@@ -177,17 +175,14 @@ For more information: www.smartfrog.org
 	int  avalanchePort = request.getServerPort();
 	
 System.out.println("Setting _Avalanche_server to " + avalancheServer + ":" + avalanchePort);
-System.out.println("Selected hosts " + hosts.length);
 	attrMap.put(SFAdapter.AVALANCHE_SERVER, avalancheServer + ":" 
 		+ avalanchePort);
 	
 	boolean submitStatus = true;
 	try{
 	    String instanceName = actionTitle + "test";
-	    adapter.submitTOScheduler(moduleId, version, instanceName, actionTitle,
+	    Map retCodes = adapter.submit(moduleId, version, instanceName, actionTitle,
 		     attrMap, hosts);
-	    //Map retCodes = adapter.submit(moduleId, version, instanceName, actionTitle,
-	//	     attrMap, hosts);
 	}catch(Exception t){ 
 	    submitStatus = false ;
 	    t.printStackTrace();
@@ -200,13 +195,13 @@ System.out.println("Selected hosts " + hosts.length);
 	if( !submitStatus ){
 		// back to submit page 
 		javax.servlet.RequestDispatcher dispatcher =
-		    request.getRequestDispatcher("SelectHost.jsp?moduleId=" 
-			+ moduleId + "&&version=" + version + "&&distroId=" 
-			+ distroId + "&&action=" + actionTitle);
+		    request.getRequestDispatcher("host_select.jsp?moduleId="
+			+ moduleId + "&version=" + version + "&distroId="
+			+ distroId + "&action=" + actionTitle);
 		dispatcher.forward(request, response);
 	}else{
 	    javax.servlet.RequestDispatcher dispatcher =
-	    		request.getRequestDispatcher("ActiveView.jsp");
+	    		request.getRequestDispatcher("log_view.jsp");
 	    dispatcher.forward(request, response);
 	}
     }

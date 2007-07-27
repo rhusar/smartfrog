@@ -19,7 +19,7 @@ For more information: www.smartfrog.org
 */
 -->
 <%@ page language="java" %>
-<%@	page import="org.smartfrog.avalanche.server.modules.*"%>
+<%@	page import="org.smartfrog.avalanche.server.*"%>
 <%@	page import="org.smartfrog.avalanche.core.activeHostProfile.*"%>
 <%@ include file="header.inc.jsp"%>
 

@@ -175,7 +175,7 @@ For more information: www.smartfrog.org
           </td>
 	  <td><%=modules[i]%></td>
 	  <td align="center">
-	    <a href="ViewModule.jsp?moduleId=<%=modules[i] %>">
+	    <a href="module_view.jsp?moduleId=<%=modules[i] %>">
 		[View]
 	    </a>
 	  </td>
