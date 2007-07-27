@@ -597,8 +597,6 @@
     <fileset id="upload.fileset" dir="${upload.dir}">
       <include name="*.jar"/>
       <include name="*.zip"/>
-      <include name="*.rpm"/>
-      <include name="*.deb"/>
       <include name="*.gz"/>
     </fileset>
   </target>
