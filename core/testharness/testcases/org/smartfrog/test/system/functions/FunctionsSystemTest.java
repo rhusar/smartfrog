@@ -23,6 +23,7 @@ package org.smartfrog.test.system.functions;
 
 import java.util.Vector;
 import java.util.Calendar;
+import java.util.GregorianCalendar;
 
 import org.smartfrog.test.SmartFrogTestBase;
 import org.smartfrog.test.DeployingTestBase;
@@ -162,12 +163,14 @@ public class FunctionsSystemTest extends DeployingTestBase {
      * Tests "date" function.
      */
     public void testCaseTCP17() throws Throwable {
-        Calendar dt = Calendar.getInstance();
-        String expected = dt.getTime().toString();
+        Calendar now = new GregorianCalendar();
+        String year=Integer.toString(now.get(Calendar.YEAR));
+        String day = Integer.toString(now.get(Calendar.DAY_OF_MONTH));
         application = deployExpectingSuccess(FILES + "tcp17.sf", "tcp17");
         assertNotNull(application);
-        String actual = (String)(application.sfResolve("today"));
-        assertContains(actual, expected);
+        String result = (String)(application.sfResolve("today"));
+        assertContains(result, year);
+        assertContains(result, day);
     }
 
     /**
