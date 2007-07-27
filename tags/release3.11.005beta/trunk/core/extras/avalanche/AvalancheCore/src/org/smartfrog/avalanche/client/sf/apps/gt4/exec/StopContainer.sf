@@ -1,0 +1,41 @@
+#include "/org/smartfrog/components.sf"
+#include "/org/smartfrog/sfcore/workflow/components.sf"
+#include "org.smartfrog/avalanche/client/sf/apps/gt4/exec/GridProxy.sf"
+#include "org.smartfrog/avalanche/client/sf/apps/gt4/exec/GlobusStopContainer.sf"
+#include "org.smartfrog/avalanche/client/sf/disk/FileComponents.sf"
+
+StopContainer extends Sequence {
+	gridProxyCmpName "gridProxy";	
+	envVars "GLOBUS_LOCATION=/opt/globus-4.0.1";
+	gridProxyCmpPath "/opt/globus-4.0.1/bin/grid-proxy-init";								
+	gridProxyParameters "-cert /etc/grid-security/containercert.pem -key /etc/grid-security/containerkey.pem";
+	gridContainerProxy "/tmp/containerproxy.pem";
+	
+	containerCmpName "globusContainer";
+	containerCmpPath "/opt/globus-4.0.1/bin/globus-start-container";
+	containerParameters "";
+
+	GridProxyInit extends GridProxy {
+		componentName ATTRIB gridProxyCmpName;
+		env ATTRIB envVars;
+		componentPath ATTRIB gridProxyCmpPath;
+		parameters ATTRIB gridProxyParameters;
+		proxyCert ATTRIB gridContainerProxy;
+	}
+	
+	GTStopContainer extends GlobusStopContainer {
+		sfClass "org.smartfrog.avalanche.client.sf.apps.gt4.exec.SFStopContainer";
+		componentName ATTRIB containerCmpName;
+		env ATTRIB envVars;		
+		componentPath ATTRIB containerCmpPath;
+		parameters ATTRIB containerParameters;
+		proxyCert ATTRIB gridContainerProxy;
+	}
+	
+	DelContainerProxy extends DeleteFile {
+		fileToDelete ATTRIB gridContainerProxy;
+	}
+}
+
+sfConfig extends StopContainer {
+}

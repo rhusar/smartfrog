@@ -1,0 +1,226 @@
+/** (C) Copyright 2006 Hewlett-Packard Development Company, LP
+
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+For more information: www.smartfrog.org
+
+*/
+
+
+#include "/org/smartfrog/services/junit/all.sf"
+#include "org/smartfrog/services/filesystem/mkdir.sf"
+
+/*
+ This is a package of tests that run against a local or remote server
+ that is served up by the endpoint specified.
+ */
+
+  AlpineTestSuite extends JUnit3TestSuite {
+        name "alpine";
+        //full path to the echo endpoint
+        endpoint TBD;
+        properties [
+          ["endpoint",LAZY endpoint]
+        ];
+  }
+
+
+  PortalTestSuite extends AlpineTestSuite {
+        name "portal";
+        package "org.smartfrog.services.deployapi.test.system.alpine.deployapi.api.portal";
+        classes [
+          "Api_01_portal_wsdm_properties_Test",
+          "Api_02_portal_getproperty_unknown_Test",
+          "Api_03_portal_getproperty_unknown_prefix_Test",
+          "Api_04_portal_getPortalState_Test"
+          ];
+    }
+
+  SingleTestSuite extends PortalTestSuite {
+        classes [
+          "Api_01_portal_wsdm_properties_Test"
+          ];
+  }
+
+  CreationTestSuite extends AlpineTestSuite {
+        name "creation";
+        package "org.smartfrog.services.deployapi.test.system.alpine.deployapi.api.creation";
+        classes [
+          "Api_05_system_create_destroy_Test",
+          "Api_06_system_properties_Test",
+          "Api_07_system_destroy_properties_Test",
+          "Api_08_system_destroy_operations_Test",
+          "Api_09_system_active_systems_Test",
+          "Api_10_system_on_invalid_hostname_Test",
+          "Api_11_system_on_valid_hostname_Test",
+          "Api_13_system_multiple_systems_Test",
+          "Api_14_system_lookup_Test",
+          "Api_14a_system_destroy_lookup_Test"
+          ];
+    }
+
+
+  InitializationTestSuite extends AlpineTestSuite {
+        name "initialization";
+        description "test system initialization behaviour";
+        package "org.smartfrog.services.deployapi.test.system.alpine.deployapi.api.initialization";
+        classes [
+          "Api_22_deploy_addfile_Test",
+          "Api_22_deploy_inline_Test",
+          "Api_23_deploy_addfile_Test",
+          "Api_24_unknown_options_ignored_Test",
+          "Api_25_unknown_MU_options_rejected_Test",
+          "Api_26_unknown_languages_rejected_Test",
+          "Api_27_initialize_bad_url_Test",
+          "Api_38_addfile_no_data_Test",
+          "Api_39_addfile_too_much_data_Test",
+          "Api_40_addfile_unknown_scheme_Test",
+          "Api_41_missing_language_rejected_Test"
+          ];
+    }
+
+  LifecycleTestSuite extends AlpineTestSuite {
+        name "lifecycle";
+        description "Lifecycle Events";
+        package "org.smartfrog.services.deployapi.test.system.alpine.deployapi.api.lifecycle";
+        classes [
+          "Api_30_lifecycle_subscribe_Test",
+          "Api_31_destroy_events_Test",
+          "Api_32_failure_events_Test",
+          "Api_33_multiple_lifecycle_listeners_Test",
+          "Api_34_running_events_Test"
+          ];
+    }
+
+  NotificationTestSuite extends AlpineTestSuite {
+        name "notification";
+        description "Notification Events";
+        package "org.smartfrog.services.deployapi.test.system.alpine.deployapi.api.notification";
+        classes [
+          "Api_15_subscribe_system_creation_Test",
+          "Api_16_unsubscribe_Test",
+          "Api_17_create_system_while_subscribed_Test",
+          "Api_18_create_system_while_subscribed_invalid_epr_Test",
+          "Api_18a_subscribe_invalid_topic_data",
+          "Api_19_create_system_while_subscribed_broken_epr_Test",
+          "Api_20_multiple_subscriptions_Test"
+          ];
+    }
+
+    OtherTestSuite extends AlpineTestSuite {
+        name "other";
+        description "Other tests";
+        package "org.smartfrog.services.deployapi.test.system.alpine.deployapi.api";
+        classes [
+          "deploy_invalid.Api_29_init_invalid_cdl_Test"
+          ];
+    }
+
+    DebugTestSuite extends AlpineTestSuite {
+        name "debug";
+        description "debug run";
+        package "org.smartfrog.services.deployapi.test.system.alpine.deployapi.api";
+        classes [
+          ""
+          ];
+    }
+
+    InformativeTestSuite extends AlpineTestSuite {
+        name "informative";
+        description "informative tests";
+        package "org.smartfrog.services.deployapi.test.system.alpine.deployapi.api.informative";
+        classes [
+          "Api_12_resource_id_unique_Test",
+          "Api_28_initialize_with_attachment_Test",
+          "Api_35_get_multiple_portal_properties_Test",
+          "Api_36_g_multiple_system_properties_Test",
+          "Api_37_create_system_remote_host_Test"
+          ];
+    }
+
+  DeployapiTestRunner extends TestRunner {
+
+    endpoint TBD;
+
+    basedir "/tmp";
+
+    subdir "deployapi";
+
+    enabled true;
+
+    singleClass "";
+
+    //this should be linked to the notification handler.
+    notifications TBD;
+
+    destDir extends Mkdir {
+      dir subdir;
+      parentDir LAZY basedir;
+    }
+
+    
+    console extends ConsoleListener {
+    };
+
+    htmlListener extends HtmlTestListener {
+      outputDirectory LAZY destDir:absolutePath;
+    }
+
+    listener extends ChainListener {
+        listeners [ LAZY console, LAZY htmlListener];
+    }
+
+    portal extends PortalTestSuite {
+      singleTest singleClass;
+      endpoint LAZY PARENT:endpoint;
+      if PARENT:enabled;
+    }
+
+    creation extends CreationTestSuite {
+      singleTest singleClass;
+      endpoint LAZY PARENT:endpoint;
+      if PARENT:enabled;
+    }
+
+    initialization extends InitializationTestSuite {
+      singleTest singleClass;
+      endpoint LAZY PARENT:endpoint;
+      if PARENT:enabled;
+    }
+
+    lifecycle extends LifecycleTestSuite {
+      singleTest singleClass;
+      endpoint LAZY PARENT:endpoint;
+      if PARENT:enabled;
+    }
+
+    notification extends NotificationTestSuite {
+      singleTest singleClass;
+      endpoint LAZY PARENT:endpoint;
+      if PARENT:enabled;
+    }
+    informative extends InformativeTestSuite {
+      singleTest singleClass;
+      endpoint LAZY PARENT:endpoint;
+      if PARENT:enabled;
+    }
+    
+    other extends OtherTestSuite {
+      singleTest singleClass;
+      endpoint LAZY PARENT:endpoint;
+      if PARENT:enabled;
+    }
+ }
+

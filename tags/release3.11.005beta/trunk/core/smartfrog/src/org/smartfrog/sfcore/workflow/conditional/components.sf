@@ -1,0 +1,118 @@
+/** (C) Copyright 1998-2007 Hewlett-Packard Development Company, LP
+
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+For more information: www.smartfrog.org
+
+*/
+
+
+#include "/org/smartfrog/sfcore/workflow/conditional/conditional.sf"
+#include "/org/smartfrog/sfcore/workflow/components/terminator.sf"
+
+/*
+ * Conditions
+ * These are components that can be evaluated to true or false, and used in conditional expressions.
+ * By default, these components terminate after doing their work. That is, they are workflow integrated
+ * unless sfShouldTerminate is set to false.
+ */
+
+
+
+/**
+ * Deploy one of two children, depending upon the result of the condition
+ */
+If extends ConditionalEventCompound {
+  ifSchema extends Schema {
+    then extends OptionalCD;
+    else extends OptionalCD;
+  }
+  sfClass "org.smartfrog.sfcore.workflow.conditional.IfImpl";
+}
+
+/**
+ * Wait for a condition to become true.
+ * When it does, the "then" element -if present- is deployed.
+ * if there was a timeout, the "else" element is deployed.
+ * After either action terminates or was skipped, the WaitFor component itself terminates.
+ */
+WaitFor extends If {
+  waitForSchema extends Schema {
+    interval extends Integer {
+      description "pause in milliseconds between tests";
+    };
+    timeout extends Integer {
+      description "time in milliseconds after which the test is deemed to have failed";
+    };
+  }
+  sfClass "org.smartfrog.sfcore.workflow.conditional.WaitForImpl";
+}
+
+/**
+ * A WaitFor component set up to terminate abnormally if a time out occurred
+ */
+
+FailingWaitFor extends WaitFor {
+  message "Timed out";
+
+  else extends Terminator {
+    description PARENT:message;
+    selftype Terminator:ABNORMAL;
+  }
+}
+
+
+/**
+ * This component tests the condition at startup, and can fail if it
+ * is not met.
+ *
+ * After evaluation, the attribute "result" is set to the outcome. This
+ * lets the component be used to generate a LAZY binding attribute for
+ * feeding in to components that take a simple boolean attribute instead
+ * of a full condition.
+ */
+EvaluateCondition extends ConditionalEventCompound {
+  evaluateConditionSchema extends Schema {
+    failOnFalse extends Boolean {
+      description "flag to indicate that the component should terminate with an error on a false condition";
+    }
+    message extends String {
+      description "error text on failure";
+    };
+  }
+  sfClass "org.smartfrog.sfcore.workflow.conditional.EvaluateConditionImpl";
+  message "Condition evaluated to false";
+  failOnFalse true;
+}
+
+/**
+ * This component evaluates the condition every liveness test
+ * and reports a failure if the condition evaluates to false
+ *
+ * It can be used to turn any condition into a system health test.
+ *
+ * The component declares itself non-terminating, so that it remains deployed until
+ * its parent is terminated.
+ */
+LivenessTest extends EvaluateCondition {
+  message "Liveness condition failed";
+  //delay in milliseconds before we start evaluating this test and caring if it fails.
+  sfClass "org.smartfrog.sfcore.workflow.conditional.LivenessTestImpl";
+  sfShouldTerminate false;
+}
+
+
+
+

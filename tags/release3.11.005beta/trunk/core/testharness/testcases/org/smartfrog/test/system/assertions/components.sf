@@ -1,0 +1,73 @@
+/** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
+
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+For more information: www.smartfrog.org
+
+*/
+
+/*
+ this file declares a component that can set a value and will toggle it on demand
+ or on deploy. It can also set the value in a remote target, which lets toggle values
+ outlive their termination.
+ */
+
+
+
+ /**
+  * Include the core smartfrog components.
+  */
+#include "/org/smartfrog/components.sf"
+#include "/org/smartfrog/predicates.sf"
+
+BooleanValues extends WorkflowPrim {
+    sfClass "org.smartfrog.test.system.assertions.BooleanValuesImpl";
+    schema extends Schema {
+      //reference to a remote target
+        target extends OptionalCD;
+        value extends OptionalBoolean;
+        toggle extends OptionalBoolean;
+    }
+    
+    toggle false;
+}
+
+BooleanTrue extends BooleanValues {
+  value true;
+}
+
+BooleanFalse extends BooleanValues {
+  value false;
+}
+
+/**
+ * A component that toggles on start
+ */
+ToggleToTrue extends BooleanFalse {
+  toggle true;
+}
+
+ToggleToFalse extends BooleanTrue {
+  toggle true;
+}
+
+ToggleToTrueWorkflow extends ToggleToTrue {
+  sfShouldTerminate true;
+}
+
+ToggleToFalseWorkflow extends ToggleToFalse {
+  sfShouldTerminate true;
+}
+

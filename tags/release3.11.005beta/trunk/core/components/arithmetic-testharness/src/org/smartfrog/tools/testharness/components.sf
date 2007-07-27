@@ -1,0 +1,6 @@
+#include "/org/smartfrog/components.sf"
+
+#include "/org/smartfrog/tools/testharness/schedulerCompound.sf"
+#include "/org/smartfrog/tools/testharness/synchCompound.sf"
+#include "/org/smartfrog/tools/testharness/notifyOutputFilterPrim.sf"
+

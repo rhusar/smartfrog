@@ -1,0 +1,91 @@
+/** (C) Copyright 2005 Hewlett-Packard Development Company, LP
+
+ This library is free software; you can redistribute it and/or
+ modify it under the terms of the GNU Lesser General Public
+ License as published by the Free Software Foundation; either
+ version 2.1 of the License, or (at your option) any later version.
+
+ This library is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ Lesser General Public License for more details.
+
+ You should have received a copy of the GNU Lesser General Public
+ License along with this library; if not, write to the Free Software
+ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+ For more information: www.smartfrog.org
+
+ */
+
+
+
+#include "/org/smartfrog/projects/alpine/handlers/components.sf"
+
+
+//the simple echo endpoint
+EchoEndpoint extends AlpineEndpoint {
+    name "echo";
+    handlers [
+      MustUnderstandChecker:classname
+      EchoHandler:classname,
+    ];
+}
+
+/**
+ * A fuller example with complete logging and WS-A support
+ */
+AddressedEchoEndpoint extends AlpineEndpoint {
+    name "wsa-echo";
+    handlers [
+      LogCurrentMessageHandler:classname,
+      AddressHandler:classname,
+      MustUnderstandChecker:classname,
+      EchoHandler:classname,
+      LogCurrentMessageHandler:classname
+    ];
+}
+
+AlpineServerOnJetty extends Compound {
+
+    port TBD;
+    home TBD;
+
+
+   jettyServer extends CoreJettyServer {
+
+      jettyhome LAZY PARENT:home;
+
+      port PARENT:port;
+
+      server "alpine";
+
+    }
+
+
+    listener extends JettyListener {
+        listenerPort port;
+        //serverHost host;
+        server LAZY jettyServer;
+    }
+
+    servlets extends ServletContext {
+
+        resourceBase "./tmp";
+        contextPath "/";
+        server LAZY jettyServer;
+
+     }
+
+      alpineServlet extends AlpineServletOnJetty {
+         pathSpec "/alpine/*";
+         initOrder 5;
+         context LAZY servlets;
+      }
+
+}
+
+
+
+
+

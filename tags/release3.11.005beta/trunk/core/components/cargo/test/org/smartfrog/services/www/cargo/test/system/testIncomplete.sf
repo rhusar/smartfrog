@@ -1,0 +1,12 @@
+
+#include "org/smartfrog/services/www/cargo/components.sf"
+
+CargoServerExtension extends CargoServer {
+ port 8080;
+ logging "low";
+}
+
+sfConfig extends Compound {
+    cse extends CargoServerExtension;
+
+}
