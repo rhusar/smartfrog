@@ -42,7 +42,8 @@ import org.smartfrog.sfcore.reference.Reference;
 public class SFDeployer implements MessageKeys {
 
     private static ComponentDeployer defaultComponentDeployer = new PrimProcessDeployerImpl();
-    private static PrimFactory defaultPrimFactory = new CoreClassesClassLoadingEnvironment();
+    private static PrimFactory defaultPrimFactory = new DefaultComponentFactory();
+    private static ClassLoadingEnvironment defaultClassLoadingEnvironment = new CoreClassesClassLoadingEnvironment();
 
     /**
      * Deploy description. Constructs the real deployer using getDeployer
@@ -114,20 +115,20 @@ public class SFDeployer implements MessageKeys {
                 throw wrongType("The " + SmartFrogCoreKeys.SF_DEPLOYER 
                                 + " attribute must be a ComponentDeployer.", e, component);
             }
-            // TODO: Remove hack
-            /*
-            This is necessary because the newly created process compound gets passed down the ComponentDescription again,
-            and ends up calling this a second time. So this time the deployer resolves to the one in the parent process,
-            through RMI - which is not what we want. If the deployer is only used to find a ProcessCompound,
-            it even doesn't make any sense.
-             */
             try {
+                /*
+               TODO: Remove hack by separating the process compound location feature from the ComponentDeployer interface.
+               This is necessary because the newly created process compound gets passed down the ComponentDescription again,
+               and ends up calling this a second time. So this time the deployer resolves to the one in the parent process,
+               through RMI - which is not what we want. If the deployer is only used to find a ProcessCompound,
+               it even doesn't make any sense.
+                */
                 component.sfRemoveAttribute(SmartFrogCoreKeys.SF_DEPLOYER);
             } catch (SmartFrogRuntimeException e) {
                 throw (SmartFrogResolutionException) SmartFrogResolutionException.forward(e);
             }
         } else {
-            deployer = defaultDeployer();
+            deployer = defaultComponentDeployer;
         }
 
         deployer.setTargetComponentDescription(component);
@@ -159,6 +160,13 @@ public class SFDeployer implements MessageKeys {
         }
     }
 
+    /**
+     * Retrieves the PrimFactory to be used from the ComponentDescription.
+     * The PrimFactory is configured with the relevant ClassLoadingEnvironment before being returned.
+     * @param component The description to be read.
+     * @return A ready-to-use PrimFactory.
+     * @throws SmartFrogResolutionException If the required attributes are missing in the description.
+     */
     private static PrimFactory getComponentFactory(ComponentDescription component)
             throws SmartFrogResolutionException
     {
@@ -170,16 +178,26 @@ public class SFDeployer implements MessageKeys {
                     + " attribute must be a component description.", e, component);
         }
 
-        if (metadata != null) {
-            // Component using the new sfMeta syntax.
-            // The sfFactory attribute needs to be resolved in those two steps because sfMeta is declared as such:
-            // sfMeta extends DATA { ... sfFactory LAZY xxx; }
-            Reference factoryRef = (Reference) metadata.sfResolveHere(SmartFrogCoreKeys.SF_FACTORY);
-            return (PrimFactory) metadata.sfResolve(factoryRef);
-        } else {
-            // Component using the old sfClass-only syntax
-            return defaultFactory();
-        }
+        // Component not using the new sfMeta syntax. We'll resolve directly in component
+        if (metadata == null) metadata = component;
+            
+        PrimFactory factory = resolveFactory(metadata);
+        factory.setClassLoadingEnvironment(resolveEnvironment(metadata));
+
+        return factory;
+    }
+
+    private static PrimFactory resolveFactory(ComponentDescription cd) throws SmartFrogResolutionException {
+        Reference factoryRef = (Reference) cd.sfResolveHere(SmartFrogCoreKeys.SF_FACTORY, false);
+        if (factoryRef == null) return defaultPrimFactory;
+        else return (PrimFactory) cd.sfResolve(factoryRef);
+    }
+
+    private static ClassLoadingEnvironment resolveEnvironment(ComponentDescription cd) throws SmartFrogResolutionException {
+        Reference classLoadingEnvRef = (Reference)
+                cd.sfResolveHere(SmartFrogCoreKeys.SF_CLASS_LOADING_ENVIRONMENT, false);
+        if (classLoadingEnvRef == null) return defaultClassLoadingEnvironment;
+        else return (ClassLoadingEnvironment) cd.sfResolve(classLoadingEnvRef);
     }
 
     private static SmartFrogResolutionException wrongType
@@ -192,11 +210,4 @@ public class SFDeployer implements MessageKeys {
                 e);
     }
 
-    private static PrimFactory defaultFactory() {
-        return defaultPrimFactory;
-    }
-
-    private static ComponentDeployer defaultDeployer() {
-        return defaultComponentDeployer;
-    }
 }

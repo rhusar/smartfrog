@@ -1,0 +1,27 @@
+package org.smartfrog.sfcore.deployer;
+
+import org.smartfrog.sfcore.reference.Reference;
+
+import java.io.InputStream;
+import java.io.IOException;
+
+public interface ClassLoadingEnvironment {
+    /**
+     * Loads a resource from this environment.
+     * The resource name must not start with a /.
+     * @param pathname The path to the resource.
+     * @return An InputStream to the resource.
+     * @throws IOException If the resource cannot be accessed.
+     */
+    InputStream getResourceAsStream(String pathname) throws IOException;
+
+    /**
+     * Returns a class loader that has access to the resources of this environment. It is needed to allow RMI
+     * to create instances of classes coming from this factory through deserialization.
+     * The ClassLoader returned must stay the same for the lifetime of this object. Otherwise ClassCastExceptions may appear.
+     * @return The classloader that underlies this factory.
+     */
+    ClassLoader getClassLoader();
+
+    //Reference getComponentReference()
+}

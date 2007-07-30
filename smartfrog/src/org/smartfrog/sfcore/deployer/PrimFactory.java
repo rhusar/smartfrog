@@ -6,32 +6,19 @@ import org.smartfrog.sfcore.prim.Prim;
 
 public interface PrimFactory {
     /**
-     * Creates the component instance from a given description. It is not mandatory that the given description
-     * be that of the whole component: it can be a sub-attribute of the component description for example.
-     * This is left for implementations to decide.
+     * Creates the component instance from its description.
+     * Uses the {@link ClassLoadingEnvironment} passed by {@link this.setClassLoadingEnvironment} to load the Prim class if needed.
+     * Can perform arbitrary transformations on the instance before handing it out. 
      *
-     * Implementations must also set the {@link org.smartfrog.sfcore.common.SmartFrogCoreKeys#SF_CODE_REPOSITORY}
-     * attribute to the repository the component comes from.
-     *
-     * @param askedFor The ComponentDescription to work off.
+     * @param askedFor Description of the component to be created.
      * @return The newly created component instance.
      * @throws SmartFrogDeploymentException If the component could not be created (class loading issues, missing attributes, etc).
      */
     Prim getComponent(ComponentDescription askedFor) throws SmartFrogDeploymentException;
 
     /**
-     * Returns the class loader used to create classes from this factory. It is needed to allow RMI
-     * to create instances of classes coming from this factory through deserialization.
-     * The only method used will be loadClass() so the class loader returned can be a proxy that only implements
-     * that method properly.
-     * @return The classloader that underlies this factory.
+     * Sets the ClassLoadingEnvironment to be used by {@link this.getComponent}.
+     * @param environment The ClassLoadingEnvironment to work from.
      */
-    ClassLoader getClassLoader();
-
-    /**
-     * Allows access to the {@link CodeRepository} this factory is using. This is used by {@link ComponentDeployer}s to set up the
-     * {@link org.smartfrog.sfcore.common.SmartFrogCoreKeys#SF_CODE_REPOSITORY} attribute of components created through it.
-     * @return The CodeRepository associated with this factory.
-     */
-    CodeRepository getCodeRepository();
+    void setClassLoadingEnvironment(ClassLoadingEnvironment environment);
 }

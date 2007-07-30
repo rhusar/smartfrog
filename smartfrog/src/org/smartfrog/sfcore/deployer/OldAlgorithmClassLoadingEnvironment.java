@@ -19,6 +19,8 @@ import java.net.URL;
 /**
  * Implements the sfCodebase-aware component creation, as currently documented.
  * The code was originally in PrimImpl.
+ *
+ * @deprecated Use the combination of ClassLoadingEnvironment and PrimFactory/ParseTimeComponentFactory instead.
  */
 public class OldAlgorithmClassLoadingEnvironment extends AbstractClassLoadingEnvironment {
 
@@ -91,10 +93,6 @@ public class OldAlgorithmClassLoadingEnvironment extends AbstractClassLoadingEnv
 
     public InputStream getResourceAsStream(String pathname) {
         return SFClassLoader.getResourceAsStream(pathname);
-    }
-
-    protected URL getResource(String pathname) {
-        throw new UnsupportedOperationException();
     }
 
     public ClassLoader getClassLoader() {

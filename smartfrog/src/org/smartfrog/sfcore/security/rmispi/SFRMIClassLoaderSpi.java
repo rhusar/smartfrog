@@ -27,10 +27,10 @@ import java.security.ProtectionDomain;
 
 
 /**
- * <code>RMIClassLoaderSpi</code> is the service provider interface for
- * <code>RMIClassLoader</code>. We wrap the default RMIClassLoaderSpi to add
- * extra checks.
+ * Implements the service provider interface for {@link RMIClassLoader}.
  *
+ * This implementation uses SmartFrog references as annotations. These references will point to objects
+ * implementing the {@link ClassLoadingEnvironment} interface 
  */
 public class SFRMIClassLoaderSpi extends RMIClassLoaderSpi {
     /** A debugging utility to print messages. */
@@ -236,7 +236,7 @@ public class SFRMIClassLoaderSpi extends RMIClassLoaderSpi {
      *
      * @param obj Object whose origin we want to check.
      */
-    public static void quickRejectObject(Object obj) {
+    private static void quickRejectObject(Object obj) {
         quickRejectClass(obj.getClass());
     }
 

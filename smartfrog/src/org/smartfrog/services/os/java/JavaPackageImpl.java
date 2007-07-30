@@ -25,8 +25,6 @@ import org.smartfrog.sfcore.common.SmartFrogLivenessException;
 import org.smartfrog.sfcore.logging.Log;
 import org.smartfrog.sfcore.logging.LogFactory;
 import org.smartfrog.sfcore.prim.PrimImpl;
-import org.smartfrog.sfcore.security.SFClassLoader;
-import org.smartfrog.sfcore.utils.ComponentHelper;
 import org.smartfrog.SFLoader;
 
 import java.io.IOException;
@@ -202,7 +200,7 @@ public class JavaPackageImpl extends PrimImpl implements JavaPackage {
             throws SmartFrogLivenessException {
         InputStream in=null;
         try {
-            //TODO: Change to either use a CodeRepository or pass the ClassLoader correctly
+            //TODO: Change to either use a ClassLoadingEnvironment or pass the ClassLoader correctly
             //in = loader.getResourceAsStream(resource);
             in = SFLoader.getInputStream(resource, null);
             
