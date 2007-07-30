@@ -1,6 +1,8 @@
 package org.smartfrog.osgi;
 
-import org.osgi.framework.*;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.BundleException;
 import org.osgi.service.component.ComponentContext;
 import org.osgi.service.log.LogService;
 import org.smartfrog.SFSystem;
@@ -14,7 +16,6 @@ import org.smartfrog.sfcore.processcompound.ShutdownHandler;
 
 import java.io.IOException;
 import java.rmi.RemoteException;
-import java.util.Enumeration;
 
 /**
  * Starts the SmartFrog daemon with options appropriate to running inside OSGi.
@@ -92,6 +93,11 @@ public class SmartFrogActivator {
         );
         if (sfProcessName != null)
             System.setProperty(SmartFrogCoreProperty.sfProcessName, sfProcessName);
+        
+        String policyURL = bundle.getResource("sf.no.security.policy").toString();
+        // TODO
+        //System.out.println(policyURL);
+        //System.setProperty("java.security.policy", policyURL);
     }
 
     protected void setLog(LogService log) {

@@ -95,7 +95,7 @@ public class OldAlgorithmClassLoadingEnvironment extends AbstractClassLoadingEnv
         return SFClassLoader.getResourceAsStream(pathname);
     }
 
-    public ClassLoader getClassLoader() {
+    public ClassLoader getRealClassLoader() {
         throw new UnsupportedOperationException();
     }
 }

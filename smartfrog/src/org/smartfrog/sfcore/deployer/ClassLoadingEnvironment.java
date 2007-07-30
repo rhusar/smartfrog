@@ -1,6 +1,6 @@
 package org.smartfrog.sfcore.deployer;
 
-import org.smartfrog.sfcore.reference.Reference;
+import org.smartfrog.sfcore.security.rmispi.AnnotatedClassLoader;
 
 import java.io.InputStream;
 import java.io.IOException;
@@ -19,9 +19,8 @@ public interface ClassLoadingEnvironment {
      * Returns a class loader that has access to the resources of this environment. It is needed to allow RMI
      * to create instances of classes coming from this factory through deserialization.
      * The ClassLoader returned must stay the same for the lifetime of this object. Otherwise ClassCastExceptions may appear.
-     * @return The classloader that underlies this factory.
+     *
+     * @return A classloader for this environment.
      */
-    ClassLoader getClassLoader();
-
-    //Reference getComponentReference()
+    AnnotatedClassLoader getClassLoader();
 }
