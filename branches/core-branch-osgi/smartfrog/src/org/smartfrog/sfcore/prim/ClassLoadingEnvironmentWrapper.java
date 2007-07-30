@@ -1,6 +1,7 @@
 package org.smartfrog.sfcore.prim;
 
 import org.smartfrog.sfcore.deployer.ClassLoadingEnvironment;
+import org.smartfrog.sfcore.security.rmispi.AnnotatedClassLoader;
 
 import java.io.Serializable;
 import java.io.InputStream;
@@ -18,7 +19,7 @@ public class ClassLoadingEnvironmentWrapper implements Serializable, ClassLoadin
         else throw error();
     }
 
-    public ClassLoader getClassLoader() {
+    public AnnotatedClassLoader getClassLoader() {
         if (wrapped != null) return wrapped.getClassLoader();
         else throw error();
     }

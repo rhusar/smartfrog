@@ -6,6 +6,7 @@ import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
+import org.smartfrog.sfcore.security.rmispi.AnnotatedClassLoader;
 
 import java.io.InputStream;
 import java.io.IOException;
@@ -26,6 +27,7 @@ import java.util.Arrays;
 public class URLClassLoadingEnvironment extends AbstractClassLoadingEnvironment {
 
     private ClassLoader urlClassLoader;
+    private AnnotatedClassLoader loader;
     public static final String ATTR_CODEBASE = "codebase";
     private URL[] urlArray;
 
@@ -50,7 +52,9 @@ public class URLClassLoadingEnvironment extends AbstractClassLoadingEnvironment 
 
         // The parent class loader is the one that loaded SmartFrog core classes,
         // so user components will be linked properly with the core classes/interfaces they use.
-        urlClassLoader = new URLClassLoader(urlArray, getClass().getClassLoader());        
+        urlClassLoader = new URLClassLoader(urlArray, getClass().getClassLoader());
+
+        loader = new AnnotatedClassLoader(urlClassLoader, sfCompleteNameSafe().toString());
     }
 
     private void check(URL url) throws SmartFrogException {
@@ -63,8 +67,8 @@ public class URLClassLoadingEnvironment extends AbstractClassLoadingEnvironment 
         }
     }
 
-    public ClassLoader getClassLoader() {
-        return urlClassLoader;
+    public AnnotatedClassLoader getClassLoader() {
+        return loader;
     }
 
     public String toString() {

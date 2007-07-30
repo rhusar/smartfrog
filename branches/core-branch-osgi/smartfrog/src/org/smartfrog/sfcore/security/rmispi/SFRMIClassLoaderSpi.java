@@ -20,9 +20,15 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.sfcore.security.rmispi;
 
+import org.smartfrog.sfcore.reference.Reference;
+import org.smartfrog.sfcore.common.SmartFrogResolutionException;
+import org.smartfrog.sfcore.processcompound.SFProcess;
+import org.smartfrog.sfcore.deployer.ClassLoadingEnvironment;
+
 import java.net.MalformedURLException;
 import java.rmi.server.RMIClassLoader;
 import java.rmi.server.RMIClassLoaderSpi;
+import java.rmi.RemoteException;
 import java.security.ProtectionDomain;
 
 
@@ -30,7 +36,7 @@ import java.security.ProtectionDomain;
  * Implements the service provider interface for {@link RMIClassLoader}.
  *
  * This implementation uses SmartFrog references as annotations. These references will point to objects
- * implementing the {@link ClassLoadingEnvironment} interface 
+ * implementing the {@link org.smartfrog.sfcore.deployer.ClassLoadingEnvironment} interface 
  */
 public class SFRMIClassLoaderSpi extends RMIClassLoaderSpi {
     /** A debugging utility to print messages. */
@@ -186,7 +192,18 @@ public class SFRMIClassLoaderSpi extends RMIClassLoaderSpi {
         throws MalformedURLException { // SecurityException
 
         ClassLoader result = defaultProviderInstance.getClassLoader(codebase);
-
+//        ClassLoader result;
+//        try {
+//            Reference classLoadingEnvRef = Reference.fromString(codebase);
+//            ClassLoadingEnvironment env = (ClassLoadingEnvironment)
+//                    SFProcess.getProcessCompound().sfResolve(classLoadingEnvRef);
+//            result = env.getClassLoader();
+//        } catch (SmartFrogResolutionException e) {
+//            throw new MalformedURLException("Malformed SmartFrog reference: " + codebase);
+//        } catch (RemoteException e) {
+//            e.printStackTrace();
+//            throw new MalformedURLException(e.getMessage());
+//        }
         if (debug != null) {
             debug.println("getClassLoader:#1 codebase=" + codebase);
         }
@@ -214,6 +231,8 @@ public class SFRMIClassLoaderSpi extends RMIClassLoaderSpi {
      */
     public String getClassAnnotation(Class cl) {
         return defaultProviderInstance.getClassAnnotation(cl);
+        //AnnotatedClassLoader loader = (AnnotatedClassLoader) cl.getClassLoader();
+        //return loader.getAnnotation();
     }
 
     /**

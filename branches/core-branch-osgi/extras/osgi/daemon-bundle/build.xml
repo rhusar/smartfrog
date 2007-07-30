@@ -41,6 +41,7 @@
                 <include name="sfExamples.jar"/>
                 <include name="sfOSGi.jar"/>
             </zipfileset>
+            <zipfileset file="../../../smartfrog/private/*.policy"/>
         </sf-jar>
         <echo level="verbose">created package ${target.jar}</echo>
     </target>
