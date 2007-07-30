@@ -1,4 +1,4 @@
-<!-- /**
+<% /**
 (C) Copyright 1998-2007 Hewlett-Packard Development Company, LP
 
 This library is free software; you can redistribute it and/or
@@ -16,8 +16,7 @@ License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 For more information: www.smartfrog.org
-*/
--->
+*/ %>
 <%@ page language="java" %>
 <%@	page import="org.smartfrog.avalanche.server.*"%>
 <%@	page import="org.smartfrog.avalanche.core.activeHostProfile.*"%>
@@ -48,18 +47,8 @@ For more information: www.smartfrog.org
   	}
 %>
 
-<script language="javascript">
-    <!--
- function toggle(divId)
- {
-   var state = document.getElementById(divId).style.display ;
-   if ( state == "none" )
-   {
-     document.getElementById(divId).style.visibility = "block";
-   }else{
-     document.getElementById(divId).style.visibility = "none";
-   }
- }   
+<script language="javascript" type="text/javascript">
+    <!--   
 
 function submit(target){
 	document.moduleListFrm.action = target ;
@@ -72,14 +61,15 @@ setNextSubtitle("Active View Page");
 
 <!-- This is the page menu -->
 <br/>
+
 <div align="center">
 <center>
+
 <div align="center" style="width: 95%;">
-  <script>
-    oneVoiceWritePageMenu("ActiveView","header"
-    //  "All Hosts",
-    //  	"ActiveView.jsp"
-    );
+  <script language="javascript" type="text/javascript">
+      <!--
+    oneVoiceWritePageMenu("ActiveView","header");
+      -->
   </script>
 </div>
 

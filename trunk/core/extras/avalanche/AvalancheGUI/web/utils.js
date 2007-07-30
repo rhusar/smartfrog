@@ -28,13 +28,12 @@ For more information: www.smartfrog.org */
 // Arguments: subtitle text
 //======================================================================
 function setNextSubtitle(subtitle) {
-    var objStNext = parent.document.getElementById('subtitle_next');
+    var objStNext = parent.document.getElementById('subtitle');
 
-    if (objStNext != null)
-        objStNext.value = subtitle;
-
-    if (parent == null)
-        document.title = "HP Avalanche: " + subtitle;
+    if (objStNext != null) {
+        objStNext.innerHTML = "(" + subtitle + ")";
+        document.title = "Avalanche: " + subtitle;
+    }
 }
 
 //======================================================================
@@ -150,8 +149,6 @@ function oneVoiceWritePageMenu(pageId, loc)
         oneVoiceUtWriteMenuItem(itemText, itemURL);
     }
 
-    doHelp();
-
     d.writeln("</div><div class=\"clearFloats\"></div>");
 
     writeHelpSpace();
@@ -230,27 +227,13 @@ function setBody(url) {
     document.getElementById('bodyPaneFrame').src = url;
 }
 
-//======================================================================
-// Function: writeSubtitle()
-//
-// This function should be invoked each time the body frame is loaded.
-// It copies the value from the hidden "subtitle_next" field into the
-// subtitle field and into the document's title property, for display
-// in the browser's title bar. Individual pages should set the
-// "subtitle_next" field by calling the common function setNextTitle().
-//======================================================================
-function writeSubtitle()
-{
-    var objSt = parent.document.getElementById('subtitle');
-    var objStNext = parent.document.getElementById('subtitle_next');
-
-    var subtitle = objStNext.value;
-
-    if (objSt != null && objStNext != null)
-    {
-        objSt.innerHTML = (subtitle == "") ? "" : "(" + subtitle + ")";
-        document.title = "Avalanche" +
-                         ((subtitle == "") ? "" : ": " + subtitle);
-    }
-    setNextSubtitle("");
-}
+ function toggle(divId)
+ {
+   var state = document.getElementById(divId).style.display ;
+   if ( state == "none" )
+   {
+     document.getElementById(divId).style.visibility = "block";
+   }else{
+     document.getElementById(divId).style.visibility = "none";
+   }
+ }

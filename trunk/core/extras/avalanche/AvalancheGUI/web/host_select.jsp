@@ -1,4 +1,4 @@
-<!-- /**
+<% /**
 (C) Copyright 1998-2007 Hewlett-Packard Development Company, LP
 
 This library is free software; you can redistribute it and/or
@@ -16,9 +16,7 @@ License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 For more information: www.smartfrog.org
-*/
--->
-<%-- $Id: SelectHost.jsp 478 2007-03-26 07:01:38Z ritu $ --%>
+*/ %>
 <%@ page language="java" %>
 <%@ include file="header.inc.jsp" %>
 <%@	page import="org.smartfrog.avalanche.core.module.*"%>
@@ -102,7 +100,7 @@ For more information: www.smartfrog.org
 %>
 
 <script language="JavaScript" type="text/javascript">
-<!--
+
 function submit(target){
 	document.moduleListFrm.action = target ;
 	document.moduleListFrm.submit();
@@ -223,7 +221,7 @@ function hideDefAttr( obj ) {
 }
 
 setNextSubtitle("Select Host Page");
- -->
+
 </script>
 
 
@@ -286,9 +284,7 @@ setNextSubtitle("Select Host Page");
 </caption>
 <caption style="display:none;" id="None">
     <div class="subTitle">
-        <div class=subTitleIcon
-        ">
-        <div></div>
+        <div class="subTitleIcon"></div>
         Action Paramters
     </div>
 </caption>
@@ -407,12 +403,12 @@ setNextSubtitle("Select Host Page");
   <tr>
     <td width="40%">
       Available Targets
-      <span class"sp7">&nbsp;</span>
+      <span class="sp7">&nbsp;</span>
     </td>
     <td></td>
     <td width="40%">
       Selected Targets
-      <span class"sp7">&nbsp;</span>
+      <span class="sp7">&nbsp;</span>
     </td>
   </tr>
 
