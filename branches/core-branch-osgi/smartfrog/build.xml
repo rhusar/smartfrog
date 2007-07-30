@@ -187,8 +187,6 @@
 
   </target>
 
-
-
   <!-- ================================================================== -->
   <!-- running Version.java to generate version information               -->
   <!-- ================================================================== -->
@@ -426,10 +424,23 @@
       </fileset>
     </copy>
   </target>
+
+    <!-- =================================================================== -->
+    <!--                                                                     -->
+    <!-- =================================================================== -->
+    <target name="copyIvyDependencies" depends="initbuild">
+        <ivy:cachepath conf="redist" pathid="redist.jars"/>
+        <echo>redist.jars : ${toString:redist.jars}</echo>
+        <copy todir="${dist.lib.dir}">
+            <fileset file="${toString:redist.jars}"/>
+            <!--<path id="redist.jars"/>-->
+        </copy>
+    </target>
+
   <!-- =================================================================== -->
   <!--                                                                     -->
   <!-- =================================================================== -->
-  <target name="copylibs" depends="initbuild">
+  <target name="copylibs" depends="initbuild,copyIvyDependencies">
     <copy todir="${dist.lib.dir}">
       <fileset dir="${lib}">
         <include name="**/*.jar"/>
@@ -972,12 +983,7 @@ ${ivy.reports.dir}
 
 
     <target name="ivy.compile.classpath" depends="ivy-resolve">
-      <ivy:cachepath pathid="_compile.classpath" conf="compile" />
-    <!-- HACK HACK -->
-        <path id="compile.classpath">
-            <path refid="_compile.classpath"/>
-            <fileset dir="lib" includes="org.eclipse.*"/>    
-        </path>
+      <ivy:cachepath pathid="compile.classpath" conf="compile" />
       <echo level="verbose">compile.classpath=${toString:compile.classpath}</echo>
     </target>
 
