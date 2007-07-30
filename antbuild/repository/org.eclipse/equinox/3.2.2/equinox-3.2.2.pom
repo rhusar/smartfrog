@@ -1,0 +1,10 @@
+<project>
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>org.eclipse</groupId>
+    <artifactId>equinox</artifactId>
+    <name>Equinox</name>
+    <version>3.2.2</version>
+    <description>OSGi framework implementation from Eclipse. Implementation of OSGi R4.0</description>
+    <dependencies>
+    </dependencies>
+</project>

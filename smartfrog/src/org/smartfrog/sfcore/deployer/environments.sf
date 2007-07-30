@@ -3,5 +3,5 @@
 URLClassLoadingEnvironment extends Prim {
     sfClass "org.smartfrog.sfcore.deployer.URLClassLoadingEnvironment";
     codebase extends Vector;
-    sfExport false;
+    // sfExport false; // Would make the Management Console fail when ran remotely
 }
