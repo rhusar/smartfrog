@@ -30,7 +30,7 @@ import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.componentdescription.ComponentDescriptionImpl;
-import org.smartfrog.sfcore.deployer.CodeRepository;
+import org.smartfrog.sfcore.deployer.ClassLoadingEnvironment;
 import org.smartfrog.sfcore.deployer.CoreClassesClassLoadingEnvironment;
 import org.smartfrog.sfcore.deployer.SFDeployer;
 import org.smartfrog.sfcore.logging.LogFactory;
@@ -571,12 +571,12 @@ public class SFProcess implements MessageKeys {
         processCompoundTerminated = false;
     }
 
-    public static CodeRepository getCodeRepository(Reference from) throws RemoteException, SmartFrogResolutionException {
+    public static ClassLoadingEnvironment getCodeRepository(Reference from) throws RemoteException, SmartFrogResolutionException {
         if (from == null) return defaultRepository();
-        return (CodeRepository) getProcessCompound().sfResolve(from);
+        return (ClassLoadingEnvironment) getProcessCompound().sfResolve(from);
     }
 
-    private static CodeRepository defaultRepository() {
+    private static ClassLoadingEnvironment defaultRepository() {
         return new CoreClassesClassLoadingEnvironment();
     }
 }

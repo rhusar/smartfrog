@@ -20,7 +20,7 @@
 package org.smartfrog.sfcore.common;
 
 import org.smartfrog.SFLoader;
-import org.smartfrog.sfcore.deployer.CodeRepository;
+import org.smartfrog.sfcore.deployer.ClassLoadingEnvironment;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -37,7 +37,7 @@ import java.io.InputStreamReader;
 public class ResourceLoader {
 
     private ClassLoader loader = null;
-    private CodeRepository repository = null;
+    private ClassLoadingEnvironment repository = null;
 
     public ResourceLoader() {
         loader = getClass().getClassLoader();
@@ -56,9 +56,9 @@ public class ResourceLoader {
      * get the sfcodebase from a component. This is used to trigger sfcodebase
      * operation.
      *
-     * @param source The {@link CodeRepository} to load resources from.     
+     * @param source The {@link ClassLoadingEnvironment} to load resources from.
      */
-    public ResourceLoader(CodeRepository source) {
+    public ResourceLoader(ClassLoadingEnvironment source) {
         this.repository = source;
     }
 

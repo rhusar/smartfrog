@@ -11,7 +11,7 @@ import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
 import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
-import org.smartfrog.sfcore.deployer.CodeRepository;
+import org.smartfrog.sfcore.deployer.ClassLoadingEnvironment;
 import org.smartfrog.sfcore.deployer.PrimFactory;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimImpl;
@@ -29,11 +29,14 @@ import java.rmi.RemoteException;
  *
  * For now, we suppose that the interface name we get from the component description is the name of
  * an interface that extends Prim. In the case of user error, nasty ClassCastExceptions will pop up.
+ *
+ * This is a proof of concept piece of code and has not been properly tested.
  */
 public class ServicePrimFactoryImpl extends PrimImpl implements PrimFactory {
 
     private BundleContext daemonBundleContext = null;
     private final Method sfTerminateMethod;
+    private ClassLoadingEnvironment environment = null;
 
     /**
      * Attribute name for the name of the interface whose implementation will be used as a SmartFrog component.
@@ -59,16 +62,8 @@ public class ServicePrimFactoryImpl extends PrimImpl implements PrimFactory {
     }
 
 
-    public ClassLoader getClassLoader() {
-        return getClass().getClassLoader();
-    }
-
-    public CodeRepository getCodeRepository() {
-        try {
-            return (CodeRepository) sfResolve(SmartFrogCoreKeys.SF_CODE_REPOSITORY);
-        } catch (Exception e) {
-            return null;
-        }
+    public void setClassLoadingEnvironment(ClassLoadingEnvironment environment) {
+        this.environment = environment;
     }
 
     /**
@@ -97,10 +92,10 @@ public class ServicePrimFactoryImpl extends PrimImpl implements PrimFactory {
         final UnregisterOnTerminateInvocationHandler invocationHandler =
                 new UnregisterOnTerminateInvocationHandler(interfaceName);
 
-        // We pass our classloader: the newly created proxy class will
-        // be attached to our classloader.
+        // We pass the environment's classloader: the newly created proxy class will
+        // be defined by this class loader (hence live within its name space).
         return (Prim) Proxy.newProxyInstance(
-                getClass().getClassLoader(),
+                environment.getClassLoader(),
                 new Class[] {Prim.class},
                 invocationHandler);
     }

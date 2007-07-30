@@ -25,6 +25,7 @@ import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.componentdescription.ComponentDescriptionImpl;
 import org.smartfrog.sfcore.deployer.ComponentDeployer;
 import org.smartfrog.sfcore.deployer.PrimFactory;
+import org.smartfrog.sfcore.deployer.ClassLoadingEnvironment;
 import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.security.SFClassLoader;
 import org.smartfrog.sfcore.logging.LogSF;
@@ -48,6 +49,8 @@ public class PrimDeployerImpl extends PrimImpl implements ComponentDeployer, Mes
     /** The factory used to get the component instance. */
     private PrimFactory primFactory;
 
+    private ClassLoadingEnvironment environment;
+
 
     public void setComponentFactory(PrimFactory primFactory) {
         this.primFactory = primFactory;
@@ -57,6 +60,9 @@ public class PrimDeployerImpl extends PrimImpl implements ComponentDeployer, Mes
         this.target = target;
     }
 
+    public void setClassLoadingEnvironment(ClassLoadingEnvironment env) {
+        this.environment = env;
+    }
     /**
      * Does the basic deployment. The instance created and the deployment
      * forwarded to the primitive. Subclasses can override this to provide
@@ -89,7 +95,9 @@ public class PrimDeployerImpl extends PrimImpl implements ComponentDeployer, Mes
                 }
             }
 
-            cxt.put(SmartFrogCoreKeys.SF_CODE_REPOSITORY, new CodeRepositoryWrapper(primFactory.getCodeRepository()));
+            // Adding the sfCodeRepository attribute.
+            // Used by each Prim to know where it comes from and hence where to look for resources if needed.
+            cxt.put(SmartFrogCoreKeys.SF_CLASS_LOADING_ENVIRONMENT, new ClassLoadingEnvironmentWrapper(environment));
 
             dComponent.sfDeployWith(parent, cxt);
 

@@ -28,9 +28,8 @@ import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.common.TerminatorThread;
-import org.smartfrog.sfcore.security.SFClassLoader;
 import org.smartfrog.sfcore.processcompound.SFProcess;
-import org.smartfrog.sfcore.deployer.CodeRepository;
+import org.smartfrog.sfcore.deployer.ClassLoadingEnvironment;
 import org.smartfrog.services.filesystem.FileSystem;
 import org.smartfrog.SFLoader;
 
@@ -378,11 +377,11 @@ public class ComponentHelper {
             throws SmartFrogException, RemoteException
     {
         final InputStream in;
-        final CodeRepository codeRepository = getCodeRepository();
+        final ClassLoadingEnvironment classLoadingEnvironment = getCodeRepository();
         try {
-            in = SFLoader.getInputStream(resourcename, codeRepository);
+            in = SFLoader.getInputStream(resourcename, classLoadingEnvironment);
         } catch(IOException e) {
-            throw new SmartFrogException("Not found: " + resourcename+" in " + codeRepository);
+            throw new SmartFrogException("Not found: " + resourcename+" in " + classLoadingEnvironment);
         }
         return in;
     }
@@ -412,10 +411,10 @@ public class ComponentHelper {
      * @throws SmartFrogResolutionException if failed to resolve
      * @throws RemoteException              in case of Remote/network error
      */
-    public CodeRepository getCodeRepository() throws SmartFrogResolutionException,
+    public ClassLoadingEnvironment getCodeRepository() throws SmartFrogResolutionException,
             RemoteException
     {
-        return (CodeRepository) owner.sfResolve(SmartFrogCoreKeys.SF_CODE_REPOSITORY);
+        return (ClassLoadingEnvironment) owner.sfResolve(SmartFrogCoreKeys.SF_CODE_REPOSITORY);
     }
 
     /**

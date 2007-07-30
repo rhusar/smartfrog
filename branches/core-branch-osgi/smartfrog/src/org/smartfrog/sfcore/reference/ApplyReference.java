@@ -2,7 +2,7 @@ package org.smartfrog.sfcore.reference;
 
 import org.smartfrog.sfcore.common.*;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
-import org.smartfrog.sfcore.parser.ParseTimeResourceFactory;
+import org.smartfrog.sfcore.parser.ParseTimeComponentFactory;
 import org.smartfrog.sfcore.prim.Prim;
 
 import java.io.Serializable;
@@ -202,7 +202,7 @@ public class ApplyReference extends Reference implements Copying, Cloneable, Ser
 
         try {
             Reference factoryRef = (Reference) metadata.sfResolveHere(SmartFrogCoreKeys.SF_FACTORY);
-            ParseTimeResourceFactory factory = (ParseTimeResourceFactory) metadata.sfResolve(factoryRef);
+            ParseTimeComponentFactory factory = (ParseTimeComponentFactory) metadata.sfResolve(factoryRef);
             return factory.getFunction(metadata);
         } catch (Exception e) {
             throw new SmartFrogResolutionException("Failed to create function. sfMeta block: " + metadata, e);

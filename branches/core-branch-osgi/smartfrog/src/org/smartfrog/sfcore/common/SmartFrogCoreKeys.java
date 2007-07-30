@@ -198,7 +198,7 @@ public interface SmartFrogCoreKeys {
     public final static String SF_SCHEMA_DESCRIPTION = "sfSchemaDescription";
 
     /**
-     * Attibute that references the {@link org.smartfrog.sfcore.deployer.CodeRepository}
+     * Attibute that references the {@link org.smartfrog.sfcore.deployer.ClassLoadingEnvironment}
      * a component comes from. Initialized by the {@link org.smartfrog.sfcore.deployer.PrimFactory}
      * that creates the component. 
      */
@@ -381,4 +381,5 @@ public interface SmartFrogCoreKeys {
      * {@value}
      */
     public static final String KEY_LANGUAGE = "#language";
+    String SF_CLASS_LOADING_ENVIRONMENT = "sfClassLoadingEnvironment";
 }

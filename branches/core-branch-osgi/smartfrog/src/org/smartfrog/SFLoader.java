@@ -1,6 +1,6 @@
 package org.smartfrog;
 
-import org.smartfrog.sfcore.deployer.CodeRepository;
+import org.smartfrog.sfcore.deployer.ClassLoadingEnvironment;
 import org.smartfrog.sfcore.deployer.CoreClassesClassLoadingEnvironment;
 import org.smartfrog.sfcore.security.SFSecurity;
 import org.smartfrog.sfcore.security.SFClassLoader;
@@ -26,13 +26,13 @@ public class SFLoader {
      * <ul>
      * <li>A properly formatted URL.</li>
      * <li>A file name, absolute or relative to the current directory of the running SF daemon.</li>
-     * <li>A path to a resource in the given CodeRepository.</li>
+     * <li>A path to a resource in the given ClassLoadingEnvironment.</li>
      * </ul>
      * @param resource The name of the resource.
-     * @param repository The CodeRepository to look in. Can be null, in this case the core classes repository is used.
+     * @param repository The ClassLoadingEnvironment to look in. Can be null, in this case the core classes repository is used.
      * @return An InputStream to the resource.
      */
-    public static InputStream getInputStream(String resource, CodeRepository repository) throws IOException {
+    public static InputStream getInputStream(String resource, ClassLoadingEnvironment repository) throws IOException {
         URL resourceURL;
 
         try {
@@ -64,7 +64,7 @@ public class SFLoader {
         else return defaultRepository().getResourceAsStream(resourceInJar);
     }
 
-    static CodeRepository defaultRepository() {
+    static ClassLoadingEnvironment defaultRepository() {
         return new CoreClassesClassLoadingEnvironment();
     }
 

@@ -21,15 +21,13 @@ For more information: www.smartfrog.org
 package org.smartfrog.services.asyndeployer;
 
 import java.io.IOException;
-import java.rmi.RemoteException;
 
 import org.smartfrog.sfcore.common.MessageKeys;
 import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
-import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.deployer.ComponentDeployer;
 import org.smartfrog.sfcore.deployer.PrimFactory;
-import org.smartfrog.sfcore.deployer.CodeRepository;
+import org.smartfrog.sfcore.deployer.ClassLoadingEnvironment;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.prim.PrimDeployerImpl;
 import org.smartfrog.sfcore.prim.Prim;
@@ -91,16 +89,9 @@ public class AsynPrimDeployerImpl extends PrimDeployerImpl implements ComponentD
             }
         }
 
-        public ClassLoader getClassLoader() {
-            throw new UnsupportedOperationException("TODO: Figure out what class loader is used by ProActive.newActive");
-        }
-
-        public CodeRepository getCodeRepository() {
-            try {
-                return (CodeRepository) sfResolve(SmartFrogCoreKeys.SF_CODE_REPOSITORY);
-            } catch (Exception e) {
-                return null;
-            }
+        public void setClassLoadingEnvironment(ClassLoadingEnvironment environment) {
+            // Seems like something else inside ProActive takes care of classloading for us.
+            // TODO: Investigate how classloading works in ProActive
         }
     }
 }
