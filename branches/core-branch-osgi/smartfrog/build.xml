@@ -430,11 +430,11 @@
     <!-- =================================================================== -->
     <target name="copyIvyDependencies" depends="initbuild">
         <ivy:cachepath conf="redist" pathid="redist.jars"/>
-        <echo>redist.jars : ${toString:redist.jars}</echo>
-        <copy todir="${dist.lib.dir}">
-            <fileset file="${toString:redist.jars}"/>
-            <!--<path id="redist.jars"/>-->
-        </copy>
+        <!-- Using <copy> with a nested referenced path does not seem to work.
+        Using the undocumented <copypath> instead. -->
+        <copypath destdir="${dist.lib.dir}" pathref="redist.jars">
+            <flattenmapper/>
+        </copypath>
     </target>
 
   <!-- =================================================================== -->
