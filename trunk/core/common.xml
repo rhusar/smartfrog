@@ -190,8 +190,12 @@
 
   </target>
 
-
- <target name="init-common" depends="init-common-simpledefinitions">
+<!--
+  This is a bit of a legacy; in a pure ivy build we should not need it.
+  Instead we'd work out our version from whichever copy of smartfrog we found
+  It will go away in the post 3.11 release.
+-->
+ <target name="bind-to-smartfrog" depends="init-common-simpledefinitions">
 
     <fileset id="smartfrog.core.fileset"
       dir="${smartfrog.dist.lib.dir}">
@@ -251,6 +255,13 @@ java.class.path=
     <fail unless="sf.build.version">No property sf.build.version found in resource ${smartfrog.version.property.resource}</fail>
     <property name="Version" value="${sf.build.version}" />
     <property name="smartfrog.version" value="${sf.build.version}" />
+
+</target>
+
+<target name="init-common" depends="bind-to-smartfrog">
+
+
+
 
     <!-- this is an override point; components call this -component -->
     <property name="jarfile.suffix" value=""/>
@@ -1725,6 +1736,20 @@ java.class.path=
     <property name="ivy.user.dir" location="${user.home}/.ivy" />
     <property name="ivy.local.dir" location="${ivy.user.dir}/local" />
     <property name="ivy.cache.dir" location="${ivy.user.dir}/cache" />
+
+    <!--Ivy 2 uses some separate directories, that also need cleanup-->
+    <property name="ivy2.user.dir" location="${user.home}/.ivy2" />
+    <property name="ivy2.local.dir" location="${ivy2.user.dir}/local" />
+    <property name="ivy2.cache.dir" location="${ivy2.user.dir}/cache" />
+
+
+    <!--here to ensure that any operations on the caches have somewhere to
+    work from-->
+    <mkdir dir="${ivy.cache.dir}" />
+    <mkdir dir="${ivy.local.dir}" />
+    <mkdir dir="${ivy2.cache.dir}" />
+    <mkdir dir="${ivy2.local.dir}" />
+
     <property name="ivy.package.name" value="org.smartfrog" />
     <property name="ivy.resource" value="fr/jayasoft/ivy/ant/antlib.xml" />
     <property name="ivy.reports.dir" location="${ivy.dir}/reports"/>
@@ -1821,6 +1846,10 @@ java.class.path=
     <delete dir="${ivy.cache.dir}/${ivy.package.name}" defaultexcludes="false" includeEmptyDirs="true"/>
     <delete includeEmptyDirs="true">
       <fileset dir="${ivy.cache.dir}" includes="resolved-${ivy.package.name}-*" defaultexcludes="false" />
+    </delete>
+    <delete dir="${ivy2.cache.dir}/${ivy.package.name}" defaultexcludes="false" includeEmptyDirs="true"/>
+    <delete includeEmptyDirs="true">
+      <fileset dir="${ivy2.cache.dir}" includes="resolved-${ivy.package.name}-*" defaultexcludes="false" />
     </delete>
   </target>
 

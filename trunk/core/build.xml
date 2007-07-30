@@ -385,22 +385,38 @@ For more information: www.smartfrog.org
 
 
   <target name="ivy-properties">
-    <property name="ivy.dir" location="${user.home}/.ivy" />
-    <property name="ivy.cache.dir" location="${ivy.dir}/cache" />
-    <property name="ivy.local.dir" location="${ivy.dir}/local" />
+    <property name="ivy.user.dir" location="${user.home}/.ivy" />
+    <property name="ivy.local.dir" location="${ivy.user.dir}/local" />
+    <property name="ivy.cache.dir" location="${ivy.user.dir}/cache" />
+
     <property name="ivy.package.name" value="org.smartfrog" />
     <property name="ivy.smartfrog.version" value="latest.integration" />
     <property name="ivy.jar" location="antbuild/ivy/lib/ivy-${ivy.version}.jar"/>
+    <!--Ivy 2 uses some separate directories, that also need cleanup-->
+    <property name="ivy2.user.dir" location="${user.home}/.ivy2" />
+    <property name="ivy2.local.dir" location="${ivy2.user.dir}/local" />
+    <property name="ivy2.cache.dir" location="${ivy2.user.dir}/cache" />
   </target>
 
+  <target name="ivy-dirs" depends="ivy-properties">
+    <!--here to ensure that any operations on the caches have somewhere to
+   work from-->
+    <mkdir dir="${ivy.cache.dir}" />
+    <mkdir dir="${ivy.local.dir}" />
+    <mkdir dir="${ivy2.cache.dir}" />
+    <mkdir dir="${ivy2.local.dir}" />
+  </target>
   <!-- =================================================================== -->
   <!-- Create an ordered list of all ivy-enabled projects-->
   <!-- Non-ivy projects are ignored-->
   <!-- we also ignore the deployapi components, as their build is more complex-->
   <!-- =================================================================== -->
 
-  <target name="ivy-init" depends="init,ivy-properties"
+  <target name="ivy-init" depends="init,ivy-dirs"
           xmlns:ivy="antlib:fr.jayasoft.ivy.ant">
+
+
+
     <!--load up ivy-->
     <fail>
       <condition>
@@ -490,10 +506,7 @@ For more information: www.smartfrog.org
 
     </macrodef>
 
-    <!--  C:\Documents and Settings\slo\.ivy\local -->
-    <property name="ivy.user.dir" location="${user.home}/.ivy" />
-    <property name="ivy.local.dir" location="${ivy.user.dir}/local" />
-    <property name="ivy.cache.dir" location="${ivy.user.dir}/cache" />
+
     <property name="ivy.report.dir" location="build/ivy/reports" />
     <delete dir="${ivy.report.dir}"/>
   </target>
@@ -539,16 +552,21 @@ ${child.projects.list}
     description="purge all locally published artifacts from the local repository">
   </target>
 
-  <target name="ivy-purge-published" depends="ivy-properties"
+  <target name="ivy-purge-published" depends="ivy-dirs"
     description="purge all locally published artifacts from the local repository">
     <delete dir="${ivy.local.dir}/${ivy.package.name}" defaultexcludes="false" includeEmptyDirs="true"/>
+    <delete dir="${ivy2.local.dir}/${ivy.package.name}" defaultexcludes="false" includeEmptyDirs="true"/>
   </target>
 
-  <target name="ivy-purge-cache" depends="ivy-properties"
+  <target name="ivy-purge-cache" depends="ivy-dirs"
     description="purge all smartfrog artifacts from the cache">
     <delete dir="${ivy.cache.dir}/${ivy.package.name}" defaultexcludes="false" includeEmptyDirs="true"/>
     <delete includeEmptyDirs="true">
       <fileset dir="${ivy.cache.dir}" includes="resolved-${ivy.package.name}-*" defaultexcludes="false" />
+    </delete>
+    <delete dir="${ivy2.cache.dir}/${ivy.package.name}" defaultexcludes="false" includeEmptyDirs="true"/>
+    <delete includeEmptyDirs="true">
+      <fileset dir="${ivy2.cache.dir}" includes="resolved-${ivy.package.name}-*" defaultexcludes="false" />
     </delete>
   </target>
 
