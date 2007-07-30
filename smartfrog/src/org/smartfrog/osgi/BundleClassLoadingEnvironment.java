@@ -3,18 +3,11 @@ package org.smartfrog.osgi;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
-import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
 import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.sfcore.common.SmartFrogResolutionException;
-import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.deployer.AbstractClassLoadingEnvironment;
-import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.TerminationRecord;
-import org.smartfrog.sfcore.security.SFSecurity;
 import org.smartfrog.sfcore.security.rmispi.AnnotatedClassLoader;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.net.URL;
 import java.rmi.RemoteException;
 
