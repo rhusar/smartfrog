@@ -49,10 +49,10 @@ For more information: www.smartfrog.org
 
 	<!-- General description of your web application -->
 	<display-name>Avalanche </display-name>
-	<description> Avalanche Demo GUI </description>
+	<description>Avalanche GUI</description>
 	<context-param>
 		<param-name>avalancheHome</param-name>
-		<param-value>C:\\project\\smartfrog\\core\\extras\\avalanche\\server</param-value>
+		<param-value>[Insert your Avalanche Server Home here.]</param-value>
 		<description>Path to Avalanche Home.</description>
 	</context-param>
 	<context-param>
@@ -62,17 +62,17 @@ For more information: www.smartfrog.org
 	</context-param>
 	<context-param>
 		<param-name>xmppServer</param-name>
-		<param-value>TDoering</param-value>
+		<param-value>[Insert your XMPP Server's IP here.]</param-value>
 		<description>XMPP Server Address</description>
 	</context-param>
 	<context-param>
 		<param-name>xmppServerPort</param-name>
-		<param-value>5222</param-value>
+		<param-value>5223</param-value>
 		<description>XMPP Server Port</description>
 	</context-param>
 	<context-param>
 		<param-name>useSSLForXMPP</param-name>
-		<param-value>false</param-value>
+		<param-value>true</param-value>
 		<description>Default is true</description>
 	</context-param>
 	<context-param>

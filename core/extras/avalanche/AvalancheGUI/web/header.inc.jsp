@@ -56,9 +56,8 @@ For more information: www.smartfrog.org
             <a href="main.jsp"><img src="images/frog.gif" width="40" height="40" border="0" alt="SmartFrog"/></a>
         </td>
         <td class="mastheadTitle">
-            <h2><a href="main.jsp">Avalanche<br/>Deployment System</a></h2>
-            <i><span id="subtitle" style="font-size:10pt;" /></i>
-            <input type="hidden" id="subtitle_next" name="subtitle_next" value="" />
+            <h1><a href="main.jsp" style="text-decoration:none;">Avalanche Deployment System</a></h1>
+            <h2><i><span id="subtitle" style="font-size:10pt;color:lightcyan;" /></i></h2>
         </td>
         <td width="307">
             <div class="mastheadPhoto" style="padding-right:0;">
