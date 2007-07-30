@@ -13,10 +13,6 @@ import java.rmi.RemoteException;
 public abstract class AbstractClassLoadingEnvironment extends PrimImpl
         implements ClassLoadingEnvironment
 {
-    public ClassLoadingEnvironment getCodeRepository() {
-        return this;
-    }
-
     public InputStream getResourceAsStream(String pathname) throws IOException {
         URL resourceURL = getClassLoader().getResource(pathname);
         if (resourceURL == null) throw new IOException("Resource not found: " + pathname + " in repository: " + this);
