@@ -2,6 +2,5 @@
 
 OSGiBundle extends Prim {
     sfClass "org.smartfrog.osgi.BundleClassLoadingEnvironment";
-    // sfExport false; // In principle, we don't want to export that, but not doing it makes the Management Console fail
     location extends String;    
 }
